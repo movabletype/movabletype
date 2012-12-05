@@ -27,29 +27,28 @@
 <form class="create-inline" id="create-inline-notification" style="display: none;">
     <mtapp:setting
        id="email"
-       label="<__trans phrase="Email">"
-       label_class="inline">
-      <input type="text" name="email" id="email" class="text short required email" value="<mt:var name="email" escape="html">" />
+       required="1"
+       label="<__trans phrase="Email">">
+      <input type="text" name="email" id="email" class="text required email" value="<mt:var name="email" escape="html">" />
     </mtapp:setting>
     <mtapp:setting
        id="website"
-       label="<__trans phrase="Website URL">"
-       label_class="inline">
-      <input type="text" name="url" id="url" class="text short url" value="<mt:var name="url" escape="html">">
+       label="<__trans phrase="Website URL">">
+      <input type="text" name="url" id="url" class="text url" value="<mt:var name="url" escape="html">">
     </mtapp:setting>
-    <span class="buttons">
-      <button
-         type="submit"
-         id="submit-new-contact"
-         class="button">
-        <__trans phrase="Add">
-      </button>
-      <button
-         type="button"
-         class="button mt-cancel-action">
-        <__trans phrase="Cancel">
-      </button> 
-    </span>
+    <div class="actions-bar settings-actions-bar">
+        <button
+           type="submit"
+           id="submit-new-contact"
+           class="button action primary">
+          <__trans phrase="Add">
+        </button>
+        <button
+           type="button"
+           class="button action mt-cancel-action">
+          <__trans phrase="Cancel">
+        </button>
+    </div>
 </form>
 </mt:setvarblock>
 
@@ -163,7 +162,7 @@
     }
 
     jQuery('#submit-new-contact').click(function() {
-        if ( !jQuery('#create-inline-notification input').mtValidate() )
+        if ( !jQuery('#create-inline-notification input').mtValidate('simple') )
             return false;
         renderList({
             __mode: 'save',

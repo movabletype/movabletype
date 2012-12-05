@@ -10,16 +10,12 @@ var last_shown;
 function toggleDisplay(selection) {
     var id = 'config-' + selection.value;
     var div = getByID(id);
-    if (div) {
-        if (div.style.display != "block") {
-            if (last_shown) {
-                last_shown.style.display = "none";
-            }
-            div.style.display = "block";
-            last_shown = div;
-        } else {
-            div.style.display = "none";
+    if (div && div.style.display != "block") {
+        if (last_shown) {
+            last_shown.style.display = "none";
         }
+        div.style.display = "block";
+        last_shown = div;
     }
     return false;
 }
@@ -38,7 +34,7 @@ function selectBlog() {
 
 <p class="page-desc"><__trans phrase="Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy."></p>
 
-<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+<form method="post" id="import_form" enctype="multipart/form-data" action="<mt:var name="script_url">" onsubmit="return validate(this)">
   <input type="hidden" name="__mode" value="import" />
   <input type="hidden" id="import_blog_id" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
@@ -85,7 +81,13 @@ function selectBlog() {
       <div id="setpassworddiv" style="display:none;">
         <p><__trans phrase="If you choose to preserve the ownership of the imported entries and any of those users must be created in this installation, you must define a default password for those new accounts."></p>
         <label for="password"><__trans phrase="Default password for new users:"></label> <input type="password" name="password" id="password" class="text password" />
+        <div class="hint"><__trans phrase="Enter the new password."> (<$mt:PasswordValidationRule$>)</div>
       </div>
+      <script type="text/javascript">
+      /* <![CDATA[ */
+      <$mt:PasswordValidation form="import_form" password="password" username=""$>
+      /* ]]> */
+      </script>
     </mt:if>
     </mtapp:setting>
   <mt:else>

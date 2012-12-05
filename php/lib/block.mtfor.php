@@ -1,12 +1,12 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
 # $Id$
 
 function smarty_block_mtfor($args, $content, &$ctx, &$repeat) {
-    $localvars = array('__for_end', '__for_var', '__out', '__for_increment');
+    $localvars = array(array('__for_end', '__for_var', '__out', '__for_increment'), common_loop_vars());
 
     if (!isset($content)) {
         $ctx->localize($localvars);

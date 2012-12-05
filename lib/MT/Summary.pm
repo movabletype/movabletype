@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -216,7 +216,7 @@ sub _set_terms {
     }
     elsif ( !$terms->{class} && !$terms->{type} ) {
         die
-            "Can't process terms without class or type parameter: @{[%$terms]}\n";
+            "Cannot process terms without class or type parameter: @{[%$terms]}\n";
     }
     return $terms;
 }
@@ -226,10 +226,10 @@ sub set_summary {
     my ( $terms, $value, $reset ) = @_;
     return 0 unless $obj;
 
-    die "Can't call set_summary on an object with no id (" . ref($obj) . ")"
+    die "Cannot call set_summary on an object with no id (" . ref($obj) . ")"
         unless $obj->id;
 
-    die "Can't call set_summary with no value (" . ref($obj) . ")"
+    die "Cannot call set_summary with no value (" . ref($obj) . ")"
         unless ( defined $value and !$reset );
 
     $terms = _set_terms($terms);
@@ -254,8 +254,8 @@ sub summarize {
     return 0 unless $obj;
     my $terms  = _set_terms(shift);
     my %params = @_;
-    die "Can't call set_summary without terms" unless $terms;
-    die "Can't call set_summary on an object with no id (" . ref($obj) . ")"
+    die "Cannot call set_summary without terms" unless $terms;
+    die "Cannot call set_summary on an object with no id (" . ref($obj) . ")"
         unless $obj->id;
     die ref($obj) . " has no summary enabled for it\n"
         unless $obj->has_summary;

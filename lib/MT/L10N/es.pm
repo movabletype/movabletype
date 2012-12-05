@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -16,6 +16,9 @@ use vars qw( @ISA %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+
+## php/lib/MTUtil.php
+	'userpic-[_1]-%wx%h%x' => 'avatar-[_1]-%wx%h%x',
 
 ## php/lib/archive_lib.php
 	'Individual' => 'Inidivual',
@@ -36,22 +39,26 @@ use vars qw( @ISA %Lexicon );
 	'Category Weekly' => 'Categorías semanales',
 
 ## php/lib/block.mtassets.php
-	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" debe usarse en combinación con el espacio de nombres.',
+	'sort_by="score" must be used together with a namespace.' => 'sort_by="score" debe usarse junto al espacio de nombres.',
 
 ## php/lib/block.mtauthorhasentry.php
 	'No author available' => 'Ningún autor disponible',
 
 ## php/lib/block.mtauthorhaspage.php
 
+## php/lib/block.mtcalendar.php
+	'You used an [_1] tag without establishing a date context.' => 'Utilizó una etiqueta [_1] sin indicar un contexto de fecha.',
+
 ## php/lib/block.mtentries.php
 
 ## php/lib/block.mtif.php
-	'You used a [_1] tag without a valid name attribute.' => 'Usó la etiqueta [_1] sin un nombre de atributo válido.',
+	'You used an [_1] tag without a valid name attribute.' => 'Utilizó una etiqueta [_1] sin un atributo de nombre válido.',
 	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3] es ilegal.',
 
 ## php/lib/block.mtsethashvar.php
 
 ## php/lib/block.mtsetvarblock.php
+	'You used a [_1] tag without a valid name attribute.' => 'Usó la etiqueta [_1] sin un nombre de atributo válido.',
 	'\'[_1]\' is not a hash.' => '\'[_1]\' no es un hash.',
 	'Invalid index.' => 'Índice no válido.',
 	'\'[_1]\' is not an array.' => '\'[_1]\' no es un array.',
@@ -59,7 +66,7 @@ use vars qw( @ISA %Lexicon );
 
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',
-	'Type the characters you see in the picture above.' => 'Introduzca los caracteres que ve en la imagen de arriba.',
+	'Type the characters shown in the picture above.' => 'Teclee los caracteres mostrados en la imagen de arriba.',
 
 ## php/lib/function.mtassettype.php
 	'image' => 'Imagen',
@@ -73,10 +80,13 @@ use vars qw( @ISA %Lexicon );
 
 ## php/lib/function.mtauthordisplayname.php
 
-## php/lib/function.mtcommentauthorlink.php
+## php/lib/function.mtcommentauthor.php
 	'Anonymous' => 'Anónimo',
 
-## php/lib/function.mtcommentauthor.php
+## php/lib/function.mtcommentauthorlink.php
+
+## php/lib/function.mtcommenternamethunk.php
+	'The \'[_1]\' tag has been deprecated. Please use the \'[_2]\' tag in its place.' => 'La etiqueta \'[_1]\' está obsoleta. Por favor, utilice en su lugar la etiqueta \'[_2]\'.',
 
 ## php/lib/function.mtcommentreplytolink.php
 	'Reply' => 'Responder',
@@ -89,11 +99,25 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/function.mtinclude.php
 	'\'parent\' modifier cannot be used with \'[_1]\'' => 'el modificador \'parent\' no puede usarse con \'[_1]\'',
 
+## php/lib/function.mtpasswordvalidation.php
+	'Password should be longer than [_1] characters' => 'La clave debe tener más de [_1] caracteres',
+	'Password should not include your Username' => 'La clave no debe incluir el nombre de usuario',
+	'Password should include letters and numbers' => 'La clave debe incluir letras y números',
+	'Password should include lowercase and uppercase letters' => 'La clave debe incluir letras en mayúsculas y minúsculas',
+	'Password should contain symbols such as #!$%' => 'La clave debe contener símbolos como #!$%',
+	'You used an [_1] tag without a valid [_2] attribute.' => 'Utilizó una etiqueta [_1] sin un atributo [_2] válido.',
+
+## php/lib/function.mtpasswordvalidationrule.php
+	'minimum length of [_1]' => 'longitud mínima de [_1]',
+	', uppercase and lowercase letters' => ', letras mayúsculas y minúsculas',
+	', letters and numbers' => ', letras y números',
+	', symbols (such as #!$%)' => ', símbolos (como #!$%)',
+
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/function.mtremotesigninlink.php
-	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can not be used.' => 'La autentificación de TypePad no está habilitada en este blog. No se puede usar MTRemoteSignInLink.',
+	'TypePad authentication is not enabled for this blog.  MTRemoteSignInLink cannot be used.' => 'La autentificación de TypePad no está activada para este blog. No se puede utilizar MTRemoteSignInLink.',
 
 ## php/lib/function.mtsetvar.php
 
@@ -105,13 +129,10 @@ use vars qw( @ISA %Lexicon );
 	'\'[_1]\' is not a valid function for an array.' => '\'[_1]\' no es una función válida para un array.',
 
 ## php/lib/function.mtwidgetmanager.php
-	'Error compiling widgetset [_1]' => 'Error compilando el conjunto de widgets [_1]',
+	'Error compiling widget set [_1]' => 'Error compilando el conjunto de widgets [_1]',
 
 ## php/lib/mtdb.base.php
-	'The attribute exclude_blogs denies all include_blogs.' => 'El atributo exclude_blogs cancela todos los include_blogs.',
-
-## php/lib/MTUtil.php
-	'userpic-[_1]-%wx%h%x' => 'avatar-[_1]-%wx%h%x',
+	'When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them.' => 'Cuando se usan juntos los atributos exclude_blogs y include_blogs, no deben indicarse los mismos identificadores de blogs como parámetros de ambos.',
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Página no encontrada - [_1]',
@@ -132,67 +153,77 @@ use vars qw( @ISA %Lexicon );
 	'Web server:' => 'Servidor web:',
 	'(Probably) running under cgiwrap or suexec' => '(Probablemente) Ejecución bajo cgiwrap o suexec',
 	'[_1] [_2] Modules' => 'Módulos [_1] [_2]',
-	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that the module provides.' => 'Los siguientes módulos son <strong>opcionales</strong>. Si el servidor no tiene estos módulos instalados, deberá instalarlos para disponer de la funcionalidad que ofrecen.',
-	'Some of the following modules are required by databases supported by Movable Type. Your server must have DBI and at least one of these related modules installed for proper operation of Movable Type.' => 'Algunos de los siguientes módulos son necesarios para las diferentes gestores de bases de datos en Movable Type. Para ejecutar el sistema, el servidor debe tener instalado DBI y al menos uno de los otros módulos.',
+	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide.' => 'Los siguientes módulos son <strong>opcionales</strong>. Si el servidor no tiene estos módulos instalados, sólo deberá instalarlos si necesita la funcionalidad que proporcionan.',
+	'The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly.' => 'Las bases de datos necesitan los siguientes módulos para su uso con Movable Type. Para que funcione correctamente, el servidor debe tener instalado DBI y al menos uno de estos módulos relacionados. The following modules are required by databases that can be used with Movable Type.',
 	'Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed.' => 'Su sistema o no tiene [_1] instalado, la versión instalada es antigua, o [_1] necesita otro módulo que no está instalado.',
 	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'El servidor no tiene [_1] instalado o [_1] necesita otro módulo que no está instalado.',
 	'Please consult the installation instructions for help in installing [_1].' => 'Por favor, consulte las instrucciones de instalación si quiere ayuda sobre la instalación de [_1].',
-	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN.' => 'La versión de DBD::mysql que tiene instalada es incompatible con Movable Type. Por favor, instale la versión actual disponible en CPAN.',
-	'The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements.' => 'El $mod está instalado correctamente, pero necesita un módulo DBI actualizado. Por favor, consulte la nota de arriba sobre los módulos DBI requeridos.',
+	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'La versión de DBD::mysql que ha instalado no es compatible con Movable Type. Por favor, instale la versión más reciente.',
+	'The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => 'El $mod está instalado correctamente, pero necesita un módulo DBI reciente. Por favor, lea la nota de arriba sobre los requerimientos del módulo DBI.',
 	'Your server has [_1] installed (version [_2]).' => 'El servidor tiene [_1] instalado (versión [_2]).',
 	'Movable Type System Check Successful' => 'Comprobación del sistema realizada con éxito',
 	q{You're ready to go!} => q{¡Ya está preparado!},
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'El servidor tiene todos los módulos necesarios instalados; no tiene que realizar ninguna instalación adicional. Continúe con las instrucciones de instalación.',
 	'CGI is required for all Movable Type application functionality.' => 'El CGI es requerido para todas las funciones del Sistema Movable Type.',
 	'Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Image::Size es necesario para subir ficheros (determina el tamaño de las imágenes transferidas en muchos formatos diferentes).',
-	'File::Spec is required for path manipulation across operating systems.' => 'File::Spec es necesario para la manipulación de la ubición de los archivos en el sistema operativo.',
+	'File::Spec is required to work with file system path information on all supported operating systems.' => 'File::Spec es necesario para trabajar con las rutas del sistema de ficheros en todos los sistemas operativos.',
 	'CGI::Cookie is required for cookie authentication.' => 'CGI::Cookie es necesario para la autentificación de cookies.',
-	'DBI is required to store data in database.' => 'DBI es necesario para guardar información en bases de datos.',
+	'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.' => 'LWP::UserAgent es necesario para crear ficheros de configuración de Movable Type mediante el asistente de instalación.',
+	'DBI is required to work with most supported databases.' => 'DBI es necesario para trabajar con la mayoría de las bases de datos soportadas.',
 	'DBI and DBD::mysql are required if you want to use the MySQL database backend.' => 'DBI y DBD::mysql son necesarios si quiere usar la base de datos MySQL.',
 	'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.' => 'DBI y DBD::Pg son necesarios si quiere usar la base de datos PostgreSQL.',
 	'DBI and DBD::SQLite are required if you want to use the SQLite database backend.' => 'DBI y DBD::SQLite son necesarios si quiere usar la base de datos SQLite.',
 	'DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.' => 'DBI y DBD::SQLite2 son necesarios si quiere usar la base de datos SQLite 2.x.',
+	'Digest::SHA is required in order to provide enhanced protection of user passwords.' => 'Digest::SHA es necesario para ofrecer protección avanzada de las contraseñas de usuarios.',
+	'This module and its dependencies are required in order to operate Movable Type under psgi.' => 'Este módulo y sus dependencias son necesarios para ejecutar Movable Type bajo psgi.',
+	'This module and its dependencies are required to run Movable Type under psgi.' => 'Este módulo y sus dependencias son necesarios para ejecutar Movable Type bajo psgi.',
 	'HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in the configuration file.' => 'HTML::Entities es necesario para codificar algunos caracteres, pero puede desactivar esta funcionalidad usando la opción NoHTMLEntities en el fichero de configuración.',
-	'LWP::UserAgent is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'LWP::UserAgent es opcional; es necesario si desea usar el sistema de TrackBacks, el ping de weblogs.com, o el ping a las actualizaciones recientes de Movable Type.',
 	'HTML::Parser is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'HTML::Parser es opcional; Es necesario si desea usar el sistema de TrackBacks, el ping a weblogs.com o el ping a las actualizaciones recientes de MT.',
 	'SOAP::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.' => 'SOAP::Lite es opcional; es necesario si desea usar la implementación del servidor XML-RCP de Movable Type.',
 	'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.' => 'File::Temp es opcional; es necesario si desea sobreescribir ficheros existentes al subir ficheros.',
 	'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'Scalar::Util es opcional. Es necesario si quiere usar la Cola de Publicación.',
 	'List::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'Lista: Útiles opcionales; esto es necesario si usted desea utilizar la función cola de publicación',
-	'Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.' => 'Image::Magick es opcional; es necesario si desea crear miniaturas de las imágenes transferidas.',
-	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'Este módulo es necesario si desea poder crear miniaturas de las imágenes subidas.',
-	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'Este módulo es necesario si desea usar NetPBM como controlador de imágenes en MT.',
-	'Storable is optional; It is required by certain MT plugins available from third parties.' => 'Storable es opcional; es requerido por algunas extensiones de Movable Type realizadas por terceros.',
+	'[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.' => '[_1] es opcional. Es uno de los procesadores de imágenes que pueden usarse para crear miniaturas de las imágenes transferidas.',
+	'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.' => 'IPC::Run es opcional. Es necesario si va a utilizar NetPBM como procesador de imágenes en Movable Type.',
+	'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.' => 'Storable es opcional. Es necesario por algunas extensiones de Movable Type disponibles a través de terceros desarrolladores.',
 	'Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSA es opcional; si está instalado, se acelerará el registro de identificación de comentarios.',
 	'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support.' => 'Este módulo y sus dependencias son necesarios para permitir a los comentaristas que se autentifiquen mediante proveedores de OpenID, como AOL y Yahoo!, lo que requiere soporte de SSL.',
-	'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.' => 'Cache::File es necesario si desea que los comentaristas puedan autentificarse por Yahoo! Japan mediante OpenID.',
-	'MIME::Base64 is required in order to enable comment registration.' => 'MIME::Base64 es necesario para activar el registro de comentarios.',
+	'Cache::File is required if you would like to be able to allow commenters to authenticate via OpenID using Yahoo! Japan.' => 'Cache::File es necesario si desea que los comentaristas se puedan autentificar vía OpenID utilizando Yahoo! Japón.',
+	'MIME::Base64 is required in order to enable comment registration and in order to send mail via an SMTP Server.' => 'MIME::Base64 es necesario para activar el registro de comentarios y poder enviar correos a través de un servidor SMTP.',
 	'XML::Atom is required in order to use the Atom API.' => 'XML::Atom es necesario para usar el API de Atom.',
-	'Cache::Memcached and memcached server/daemon is required in order to use memcached as caching mechanism used by Movable Type.' => 'Cache::Memcached y el servidor/demonio memcached son necesarios para que Movable Type utilice memcached como mecanismo de caché.',
-	'Archive::Tar is required in order to archive files in backup/restore operation.' => 'Archive::Tar es necesario para archivar los ficheros en las operaciones de copia de respaldo/restauración.',
-	'IO::Compress::Gzip is required in order to compress files in backup/restore operation.' => 'IO::Compress::Gzip es necesario para comprimir los ficheros en las operaciones de copia de respaldo/restauración.',
-	'IO::Uncompress::Gunzip is required in order to decompress files in backup/restore operation.' => 'IO::Uncompress::Gunzip es necesario para descomprimir los ficheros en las operaciones de copia de respaldo/restauración.',
-	'Archive::Zip is required in order to archive files in backup/restore operation.' => 'Archive::Zip es necesario para archivar los ficheros en las operaciones de copia de respaldo/restauración.',
-	'XML::SAX and its dependencies are required in order to restore a backup created in a backup/restore operation.' => 'XML::SAX y/o sus dependencias son necesarias para las operaciones de copia de respaldo/restauración.',
+	'Cache::Memcached and a memcached server are required to use in-memory object caching on the servers where Movable Type is deployed.' => 'Cache::Memcached y un servidor memcached son necesarios para utilizar la caché en memoria de objetos en los servidores donde se vaya instalar Movable Type.',
+	'Archive::Tar is required in order to manipulate files during backup and restore operations.' => 'Archive::Tar es necesario para manipular ficheros durante las operaciones de copias de seguridad y restauraciones.',
+	'IO::Compress::Gzip is required in order to compress files during backup operations.' => 'IO::Compress::Gzip es necesario para comprimir los ficheros durante las operaciones de copias de seguridad.',
+	'IO::Uncompress::Gunzip is required in order to decompress files during restore operation.' => 'IO::Uncompress::Gunzip es necesario para descomprimir ficheros durante la operación de restauración.',
+	'Archive::Zip is required in order to manipulate files during backup and restore operations.' => 'Archive::Zip es necesario para manipular ficheros durante las operaciones de copias de seguridad y restauraciones.',
+	'XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.' => 'XML::SAX y sus dependencias son necesarias para restaurar una copia de seguridad creada en una operación de copia de seguridad/restauración.',
 	'Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'Digest::SHA1 y sus dependencias son necesarias para que los comentaristas se autentifiquen mediante proveedores OpenID, incluyendo LiveJournal.',
-	'Mail::Sendmail is required in order to send mail via an SMTP Server.' => 'Mail::Sendmail es necesario para enviar correo mediante un servidor SMTP.',
+	'Net::SMTP is required in order to send mail via an SMTP Server.' => 'Net::SMTP es necesario para enviar correos vía servidores SMTP.',
+	'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' => 'Este módulo y sus dependencias son necesarios para dar soporte a los mecanismos CRAM-MD5, DIGEST-MD5 o LOGIN SASL.',
+	'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.' => 'Net::SMTP::SSL es necesario para usar autentificación SMTP con una conexión SSL.',
+	'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.' => 'Net::SMTP::TLS es necesario para usar autentificación SMTP con
+el protocolo de comunicación STARTTLS.',
+	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'IO::Socket::SSL es necesario para usar autentificación SMTP con una conexión SSL o con el comando STARTTLS.',
+	'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'Net::SSLeay es necesario para usar autentificación SMTP con una conexión SSL o con el comando STARTTLS.',
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'La etiqueta condicional MTIf utiliza este módulo en un atributo de comprobación.',
 	'This module is used by the Markdown text filter.' => 'El filtro de textos Markdown utiliza este módulo.',
-	'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'mt-search.cgi necesita este módulo si está usando Movable Type con una versión de Perl más antigua de la 5.8.',
+	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'mt-search.cgi necesita este módulo si está usando Movable Type con una versión de Perl anterior a Perl 5.8.',
 	'This module required for action streams.' => 'Este módulo es necesario para los torrentes de acciones.',
 	'The [_1] database driver is required to use [_2].' => 'Es necesario el controlador de la base de datos [_1] para usar [_2].',
+	'DBI is required to store data in database.' => 'DBI es necesario para guardar información en bases de datos.',
 	'Checking for' => 'Comprobando',
 	'Installed' => 'Instalado',
 	'Data Storage' => 'Base de datos',
 	'Required' => 'Necesario',
 	'Optional' => 'Opcional',
 	'Details' => 'Detalles',
+	'unknown' => 'desconocido',
 
 ## default_templates/about_this_page.mtml
 	'About this Entry' => 'Sobre esta entrada',
 	'About this Archive' => 'Sobre este archivo',
 	'About Archives' => 'Sobre los archivos',
-	'This page contains links to all the archived content.' => 'Esta página contiene enlaces a todos los contenidos archivados.',
+	'This page contains links to all of the archived content.' => 'Esta página contiene enlaces a todos los contenidos archivados.',
 	'This page contains a single entry by [_1] published on <em>[_2]</em>.' => 'Esta página contiene una sola entrada realizada por [_1] y publicada el <em>[_2]</em>.',
 	'<a href="[_1]">[_2]</a> was the previous entry in this blog.' => '<a href="[_1]">[_2]</a> es la entrada anterior en este blog.',
 	'<a href="[_1]">[_2]</a> is the next entry in this blog.' => '<a href="[_1]">[_2]</a> es la entrada siguiente en este blog.',
@@ -221,7 +252,7 @@ use vars qw( @ISA %Lexicon );
 	'Banner Footer' => 'Logotipo del pie',
 
 ## default_templates/archive_widgets_group.mtml
-	'This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]' => 'Conjunto personalizado de widgets creado para mostrar contenidos diferentes según el tipo de archivo que incluye. Más información: [_1]',
+	'This is a custom set of widgets that serve different content depending on the type of archive in which it is included. More info: [_1]' => 'Este es un conjunto personalizado de widgets que muestran distinto contenido dependiendo del tipo de archivo en el que esté incluído. Más información: [_1]',
 	'Current Category Monthly Archives' => 'Archivos mensuales de la categoría actual',
 	'Category Archives' => 'Archivos por categoría',
 
@@ -230,8 +261,8 @@ use vars qw( @ISA %Lexicon );
 	'[_1] ([_2])' => '[_1] ([_2])',
 
 ## default_templates/banner_footer.mtml
-	'_POWERED_BY' => 'Motor <a href="http://www.movabletype.org/sitees/" rel="generator"><$MTProductName$></a>',
-	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Este blog tiene una <a href="[_1]">Licencia Creative Commons</a>.',
+	'_POWERED_BY' => 'Motor <a href="http://www.movabletype.org/"><$MTProductName$></a>',
+	'This blog is licensed under an <a href="[_1]">Creative Commons License</a>.' => 'Este blog tiene <a href="[_1]">Licencia Creative Commons</a>.',
 
 ## default_templates/calendar.mtml
 	'Monthly calendar with links to daily posts' => 'Calendario mensual con enlaces a los archivos diarios',
@@ -261,23 +292,6 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/comment_detail.mtml
 	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1] respondió al <a href="[_2]">comentario de [_3]</a>',
 
-## default_templates/commenter_confirm.mtml
-	'Thank you registering for an account to comment on [_1].' => 'Gracias por registrar una cuenta para comentar en [_1].',
-	'For your own security and to prevent fraud, we ask that you please confirm your account and email address before continuing. Once confirmed you will immediately be allowed to comment on [_1].' => 'Para su propia seguridad, y para prevenir fraudes, antes de continuar le solicitamos que confirme su cuenta y dirección de correo. Tras confirmarlas, podrá comentar en [_1].',
-	'To confirm your account, please click on or cut and paste the following URL into a web browser:' => 'Para confirmar su cuenta, haga clic en (o copie y pegue) la URL en un navegador web:',
-	q{If you did not make this request, or you don't want to register for an account to comment on [_1], then no further action is required.} => q{Si no realizó esta petición, o no quiere registrar una cuenta para comentar en [_1], no se necesitan más acciones.},
-	'Thank you very much for your understanding.' => 'Gracias por su comprensión.',
-	'Sincerely,' => 'Cordialmente,',
-	'Mail Footer' => 'Pie del correo',
-
-## default_templates/commenter_notify.mtml
-	q{This email is to notify you that a new user has successfully registered on the blog '[_1]'. Listed below you will find some useful information about this new user.} => q{Este correo electrónico es una notificaión  para informarle que un nuevo usuario ha sido enregistrado con succeso en el blog '[_1]'. Abajo usted encontratá enumeradas algunas informaciones útiles sobre este nuevo usuario.},
-	'New User Information:' => 'Informaciones sobre el nuevo usuario:',
-	'Username: [_1]' => 'Nombre de usuario: [_1]',
-	'Full Name: [_1]' => 'Nombre Completo: [_1]',
-	'Email: [_1]' => 'Correo Electrónico: [_1]',
-	'To view or edit this user, please click on or cut and paste the following URL into a web browser:' => 'Para ver o editar este usuario, por favor, haga clic en (o copie y pegue) la siguiente URL en un navegador:',
-
 ## default_templates/comment_listing.mtml
 	'Comment Detail' => 'Detalle del comentario',
 
@@ -298,10 +312,32 @@ use vars qw( @ISA %Lexicon );
 	'Confirmation...' => 'Confirmación...',
 	'Your comment has been submitted!' => '¡El comentario se ha recibido!',
 	'Thank you for commenting.' => 'Gracias por comentar.',
-	'Your comment has been received and held for approval by the blog owner.' => 'El comentario que envió fue recibido y está retenido para su aprobación por parte del administrador del weblog.',
+	'Your comment has been received and held for review by a blog administrator.' => 'Se ha recibido el comentario y está pendiente de aprobación por parte del administrador del blog.',
 	'Comment Submission Error' => 'Error en el envío de comentarios',
 	'Your comment submission failed for the following reasons: [_1]' => 'El envío del comentario falló por alguna de las siguientes razones: [_1]',
+	'Back' => 'Volver',
 	'Return to the <a href="[_1]">original entry</a>.' => 'Volver a la <a href="[_1]">entrada original</a>.',
+
+## default_templates/comment_throttle.mtml
+	'If this was an error, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, choosing Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses.' => 'Si fue un error, puede desbloquear la dirección IP y permitir al visitante que lo añada de nuevo iniciando una sesión en Movable Type, seleccionando Bloqueo de IPs y eleminando la dirección IP [_1] de la lista de direcciones bloqueadas.',
+	'A visitor to your blog [_1] has automatically been banned by adding more than the allowed number of comments in the last [_2] seconds.' => 'Se bloqueó automáticamente a una persona que visitó su weblog [_1] debido a que insertó más comentarios de los permitidos en menos de [_2] segundos.',
+	q{This was done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is} => q{Se hizo para prevenir que un 'script' malicioso llene el blog con comentarios. La IP bloqueada es},
+
+## default_templates/commenter_confirm.mtml
+	'Thank you registering for an account to comment on [_1].' => 'Gracias por registrar una cuenta para comentar en [_1].',
+	'For your security and to prevent fraud, we ask you to confirm your account and email address before continuing. Once your account is confirmed, you will immediately be allowed to comment on [_1].' => 'Por su seguridad, y para prevenir fraudes, solicitamos que confirme su cuenta y dirección de correo antes de continuar. Tras confirmar su cuenta, podrá comentar de inmediato en [_1].',
+	'To confirm your account, please click on the following URL, or cut and paste this URL into a web browser:' => 'Para confirmar su cuenta, por favor, haga clic en la siguiente URL, o copie y pegue la URL en un navegador:',
+	q{If you did not make this request, or you don't want to register for an account to comment on [_1], then no further action is required.} => q{Si no realizó esta petición, o no quiere registrar una cuenta para comentar en [_1], no se necesitan más acciones.},
+	'Sincerely,' => 'Cordialmente,',
+	'Mail Footer' => 'Pie del correo',
+
+## default_templates/commenter_notify.mtml
+	q{This email is to notify you that a new user has successfully registered on the blog '[_1]'. Here is some information about this new user.} => q{Este correo es para notificarle que se ha registrado un nuevo usuario en el blog '[_1]'. Aquí se detallan algunos datos sobre él.},
+	'New User Information:' => 'Informaciones sobre el nuevo usuario:',
+	'Username: [_1]' => 'Nombre de usuario: [_1]',
+	'Full Name: [_1]' => 'Nombre Completo: [_1]',
+	'Email: [_1]' => 'Correo Electrónico: [_1]',
+	'To view or edit this user, please click on or cut and paste the following URL into a web browser:' => 'Para ver o editar este usuario, por favor, haga clic en (o copie y pegue) la siguiente URL en un navegador:',
 
 ## default_templates/comments.mtml
 	'1 Comment' => '1 comentario',
@@ -311,11 +347,6 @@ use vars qw( @ISA %Lexicon );
 	'Next' => 'Siguiente',
 	'The data is modified by the paginate script' => 'Los datos son modificados por el script de paginación',
 	'Remember personal info?' => '¿Recordar datos personales?',
-
-## default_templates/comment_throttle.mtml
-	'If this was a mistake, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, going to Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses.' => 'Si fue un error, puede desbloquear la dirección IP y permitir al visitante que lo añada de nuevo iniciando una sesión en Movable Type, llendo a Configuración del blog - Bloqueo de IP, y borrando la dirección IP [_1] de la lista de direcciones bloquedas.',
-	'A visitor to your blog [_1] has automatically been banned by adding more than the allowed number of comments in the last [_2] seconds.' => 'Se bloqueó automáticamente a una persona que visitó su weblog [_1] debido a que insertó más comentarios de los permitidos en menos de [_2] segundos.',
-	'This has been done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is' => 'Esto se hizo para impedir que nadie o nada desborde malintencionadamente su weblog con comentarios. La dirección bloqueada es',
 
 ## default_templates/creative_commons.mtml
 
@@ -365,11 +396,22 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Sign in[_2] to comment.' => '[_1]Iniciar una sesión[_2].',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => 'Para comentar [_1]inicie una sesión[_2] o hágalo de forma anónima.',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'Respondiendo al <a href="[_1]" onclick="[_2]">comentario de [_3]</a>',
+	'The sign-in attempt was not successful; Please try again.' => 'El intento de registro no tuvo éxito; por favor, inténtelo de nuevo.',
+
+## default_templates/lockout-ip.mtml
+	'This email is to notify you that an IP address has been locked out.' => 'Este correo es para notificarle que se ha bloqueado una dirección IP.',
+	'IP Address: [_1]' => 'Dirección IP: [_1]',
+	'Recovery: [_1]' => 'Recuperación: [_1]',
+
+## default_templates/lockout-user.mtml
+	'This email is to notify you that a Movable Type user account has been locked out.' => 'Este correo es para notificarle que se ha bloqueado una cuenta de usuario de Movable Type.',
+	'Display Name: [_1]' => 'Nombre: [_1]',
+	'If you want to permit this user to participate again, click the link below.' => 'Si desea permitir que este usuario participe de nuevo, haga clic en el enlace de abajo.',
 
 ## default_templates/main_index.mtml
 
 ## default_templates/main_index_widgets_group.mtml
-	'This is a custom set of widgets that are conditioned to only appear on the homepage (or "main_index"). More info: [_1]' => 'Este es un conjunto personalizado de widgets creados para aparecer solo en la página de inicio (o "main_index"). Más información: [_1]',
+	'This is a custom set of widgets that only appear on the homepage (or "main_index"). More info: [_1]' => 'Este conjunto de widgets sólo aparece en la página de inicio (o "main_index"). Más información: [_1]',
 	'Recent Comments' => 'Comentarios recientes',
 	'Recent Entries' => 'Entradas recientes',
 	'Recent Assets' => 'Multimedia reciente',
@@ -385,8 +427,8 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/new-comment.mtml
 	q{An unapproved comment has been posted on your blog '[_1]', for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Se ha recibido un comentario no aprobado en el blog '[_1]', en la entrada #[_2] ([_3]). Deberá aprobarlo para que aparezca en el sitio.},
-	q{An unapproved comment has been posted on your blog '[_1]', for page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Se ha recibido un comentario no aprobado en el blog '[_1]', en la página #[_2] ([_3]). Deberá aprobarlo para que aparezca en el sitio.},
-	q{An unapproved comment has been posted on your website '[_1]', for page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Se ha recibido un comentario no aprobado en el blog  '[_1]', en la página #[_2] ([_3]). Deberá aprobarlo para que aparezca en el sitio.},
+	q{An unapproved comment has been posted on your blog '[_1]', on page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Se ha recibido un comentario no aprobado en el blog '[_1]', en la página #[_2] ([_3]). Deberá aprobarlo para que aparezca en el sitio.},
+	q{An unapproved comment has been posted on your website '[_1]', on page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Se ha recibido un comentario no aprobado en el sitio web '[_1]', en la página #[_2] ([_3]). Deberá aprobarlo para que aparezca en el sitio.},
 	q{A new comment has been posted on your blog '[_1]', on entry #[_2] ([_3]).} => q{Se ha publicado un comentario en el blog '[_1]', en la entrada #[_2] ([_3]).},
 	q{A new comment has been posted on your blog '[_1]', on page #[_2] ([_3]).} => q{Se ha publicado un comentario en el blog '[_1]', en la página #[_2] ([_3]).},
 	q{A new comment has been posted on your website '[_1]', on page #[_2] ([_3]).} => q{Se ha publicado un comentario en el sitio '[_1]', en la página #[_2] ([_3]).},
@@ -397,13 +439,13 @@ use vars qw( @ISA %Lexicon );
 	'Approve comment:' => 'Comentario aceptado:',
 	'View comment:' => 'Ver comentario:',
 	'Edit comment:' => 'Editar comentario:',
-	'Report comment as spam:' => 'Reportar el comentario como spam:',
+	'Report the comment as spam:' => 'Marcar el comentario como spam:',
 
 ## default_templates/new-ping.mtml
-	q{An unapproved TrackBack has been posted on your blog '[_1]', for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Se ha recibido un TrackBack no aprobado has been posted on your blog '[_1]', for entry #[_2] ([_3]). Deberá aprobar el TrackBack para que aparezca en el sitio.},
-	q{An unapproved TrackBack has been posted on your blog '[_1]', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Se ha recibido un TrackBack no aprobado en el blog '[_1]', en la página #[_2] ([_3]). Deberá aprobar el TrackBack para que aparezca en el sitio.},
-	q{An unapproved TrackBack has been posted on your blog '[_1]', for category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Se ha recibido un TrackBack no aprobado en tu blog '[_1]', en la página #[_2], ([_3]). Deberá aprobar el TrackBack para que aparezca en el sitio.},
-	q{An unapproved TrackBack has been posted on your website '[_1]', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Se ha recibido un TrackBack no aprobado en el sitio '[_1]', en la página #[_2] ([_3]). Deberá aprobar el TrackBack para que aparezca en el sitio.},
+	q{An unapproved TrackBack has been posted on your blog '[_1]', on entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Se ha recibido un TrackBack no aprobado en el blog '[_1]', en la entrada #[_2] ([_3]). Deberá aprobarlo para que aparezca en el sitio.},
+	q{An unapproved TrackBack has been posted on your blog '[_1]', on page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Se ha recibido un TrackBack no aprobado en el blog '[_1]', en la página #[_2] ([_3]). Deberá aprobarlo para que aparezca en el sitio.},
+	q{An unapproved TrackBack has been posted on your blog '[_1]', on category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Se ha recibido un TrackBack no aprobado en el blog '[_1]', en la categoría #[_2] ([_3]). Deberá aprobarlo para que aparezca en el sitio.},
+	q{An unapproved TrackBack has been posted on your website '[_1]', on page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Se ha recibido un TrackBack no aprobado en el sitio web '[_1]', en la página #[_2] ([_3]). Deberá aprobarlo para que aparezca en el sitio.},
 	q{A new TrackBack has been posted on your blog '[_1]', on entry #[_2] ([_3]).} => q{Se ha publicado un nuevo TrackBack en el blog '[_1]', en la entrada #[_2] ([_3]).},
 	q{A new TrackBack has been posted on your blog '[_1]', on page #[_2] ([_3]).} => q{Se ha publicado un nuevo TrackBack en el blog '[_1]', en la página #[_2] ([_3]).},
 	q{A new TrackBack has been posted on your blog '[_1]', on category #[_2] ([_3]).} => q{Se ha publicado un nuevo TrackBack en el blog '[_1]', en la categoría #[_2] ([_3]).},
@@ -447,7 +489,7 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/recent_entries.mtml
 
 ## default_templates/recover-password.mtml
-	'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Se ha recibido una petición para cambiar su contraseña de Movable Type. Para completar el proceso y seleccionar una nueva contraseña, haga clic en el enlace.',
+	'A request was made to change your Movable Type password. To complete this process click on the link below to select a new password.' => 'Se ha solicitado el cambio de su contraseña en Movable Type. Para completar el proceso, haga clic en el enlace de abajo y seleccione una nueva contraseña.',
 	'If you did not request this change, you can safely ignore this email.' => 'Si no solicitó este cambio, ignore este mensaje.',
 
 ## default_templates/search.mtml
@@ -461,9 +503,9 @@ use vars qw( @ISA %Lexicon );
 	'Results tagged &ldquo;[_1]&rdquo;' => 'Resultado de etiquetas &ldquo;[_1]&rdquo;',
 	'No results found for &ldquo;[_1]&rdquo;.' => 'Ningún resultado encontrado para &ldquo;[_1]&rdquo;.',
 	'Instructions' => 'Instrucciones',
-	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'Por defecto, este motor de búsqueda comprueba todas las palabras sin tener en cuenta el orden. Para buscar una frase exacta, encierre la frase entre comillas:',
+	'By default, this search engine looks for all of the specified words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'Por defecto, el motor busca todas las palabras en cualquier orden. Para buscar una frase exacta, enciérrela con comillas:',
 	'movable type' => 'movable type',
-	'The search engine also supports AND, OR, and NOT keywords to specify boolean expressions:' => 'El motor de búsqueda también soporta los operadores AND, OR y NOT para especificar expresiones lógicas:',
+	'The search engine also supports the AND, OR, and NOT boolean operators:' => 'El motor de búsqueda también tiene soporte para los operadores lógicos AND, OR y NOT:',
 	'personal OR publishing' => 'personal OR publicación',
 	'publishing NOT personal' => 'publicación NOT personal',
 
@@ -501,8 +543,97 @@ use vars qw( @ISA %Lexicon );
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Leer más</a>',
 
 ## default_templates/verify-subscribe.mtml
-	'Thanks for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => 'Gracias por suscribirse a las notificaciones sobre actualizaciones en [_1]. Siga el enlace de abajo para confirmar su suscripción:',
+	'Thank you for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => 'Gracias por suscribirse a las notificaciones de novedades de [_1]. Siga el enlace de abajo para confirmar su suscripción:',
 	'If the link is not clickable, just copy and paste it into your browser.' => 'Si no puede hacer clic en el enlace, copie y péguelo en su navegador.',
+
+## lib/MT.pm
+	'Powered by [_1]' => 'Powered by [_1]',
+	'Version [_1]' => 'Versión [_1]',
+	'http://www.movabletype.com/' => 'http://www.movabletype.com/',
+	'Hello, world' => 'Hola, mundo',
+	'Hello, [_1]' => 'Hola, [_1]',
+	'Got an error: [_1]' => 'Ocurrió un error en: [_1]',
+	'Message: [_1]' => 'Mensaje: [_1]',
+	'If it is present, the third argument to add_callback must be an object of type MT::Component or MT::Plugin' => 'Si está presente, el tercer argumento de add_callback debe ser un objeto de tipo MT::Component o MT::Plugin',
+	'Fourth argument to add_callback must be a CODE reference.' => 'El cuarto argumento de add_callback debe ser una referencia a un código.',
+	'Two plugins are in conflict' => 'Dos extensiones están en conflicto',
+	'Invalid priority level [_1] at add_callback' => 'Nivel de prioridad [_1] no válido en add_callback',
+	'Internal callback' => 'Retrollamada interna',
+	'Unnamed plugin' => 'Extensión sin nombre',
+	'[_1] died with: [_2]' => '[_1] murió: [_2]',
+	'Bad LocalLib config ([_1]): ' => 'Configuración de LocalLib incorrecta ([_1]): ',
+	'Bad ObjectDriver config' => 'Configuración de ObjectDriver incorrecta',
+	'Bad CGIPath config' => 'Configuración de CGIPath incorrecta',
+	'Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?' => 'Archivo de configuración no encontrado. ¿Quizás olvidó renombrar mt-config.cgi-original a mt-config.cgi?',
+	'Plugin error: [_1] [_2]' => 'Error en la extensión: [_1] [_2]',
+	'Loading of blog \'[_1]\' failed: [_2]' => 'Falló la carga del blog \'[_1]\': [_2]',
+	'Loading template \'[_1]\' failed.' => 'Fallo cargando la plantilla \'[_1]\'.',
+	'Error while creating email: [_1]' => 'Error durante la creación del correo: [_1]',
+	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.org/documentation/',
+	'An error occurred: [_1]' => 'Ocurrió un error: [_1]',
+	'OpenID' => 'OpenID',
+	'LiveJournal' => 'LiveJournal',
+	'Vox' => 'Vox',
+	'Google' => 'Google',
+	'Yahoo!' => 'Yahoo!',
+	'AIM' => 'AIM',
+	'WordPress.com' => 'WordPress.com',
+	'TypePad' => 'TypePad',
+	'Yahoo! JAPAN' => 'Yahoo! JAPAN',
+	'livedoor' => 'livedoor',
+	'Hatena' => 'Hatena',
+	'Movable Type default' => 'Predefinido de Movable Type',
+
+## lib/MT/App.pm
+	'Invalid request' => 'Petición no válida',
+	'Problem with this request: corrupt character data for character set [_1]' => 'Problema con esta petición: dato corrupto de carácter para el conjunto de caracteres [_1]',
+	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Error cargando el sitio web #[_1] para la provisión de usuarios. Compruebe la directiva NewUserefaultWebsiteId.',
+	'First Weblog' => 'Primer weblog',
+	'Error loading blog #[_1] for user provisioning. Check your NewUserTemplateBlogId setting.' => 'Error de telécargamiento #[_1] que comprende la creación de Usuarios. Por favor, verifique sus parámetros NewUserTemplateBlogId.',
+	'Error provisioning blog for new user \'[_1]\' using template blog #[_2].' => 'Se ha producido un error durante la creación del blog del nuevo usuario \'[_1]\' utilizando la plantilla #[_2].',
+	'Error provisioning blog for new user \'[_1]\' (ID: [_2]).' => 'Se ha producido un error durante la creación del blog del nuevo usuario \'[_1]\' (ID: [_2]).',
+	'Blog \'[_1]\' (ID: [_2]) for user \'[_3]\' (ID: [_4]) has been created.' => 'Blog \'[_1]\' (ID: [_2]) para el usuario \'[_3]\' (ID: [_4]) ha sido creado.',
+	'Error assigning blog administration rights to user \'[_1]\' (ID: [_2]) for blog \'[_3]\' (ID: [_4]). No suitable blog administrator role was found.' => 'Error de asignación de los derechos para el usuario \'[_1]\' (ID: [_2]) para el blog \'[_3]\' (ID: [_4]). Ningún rol de administrador adecuado ha sido encontrado.',
+	'Internal Error: Login user is not initialized.' => 'Error interno: Inicio de sesión de usuarios no inicializada.',
+	'The login could not be confirmed because of a database error ([_1])' => 'No se pudo confirmar el acceso debido a un error de la base de datos ([_1])',
+	'Sorry, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'Lo sentimos, pero no tiene permiso para acceder ninguno de los blogs o sitios web de esta intalación. Si cree que este mensaje se le muestra incorrectamente, por favor, contacte con el administrador de sistemas de Movable Type.',
+	'Cannot load blog #[_1].' => 'No se pudo cargar el blog #[_1].',
+	'Invalid login.' => 'Acceso no válido.',
+	'Failed login attempt by unknown user \'[_1]\'' => 'Intento fallido de inicio de sesión por un usuario desconocido \'[_1]\'',
+	'Failed login attempt by disabled user \'[_1]\'' => 'Intento fallido de inicio de sesión por un usuario deshabilitado \'[_1]\'',
+	'This account has been disabled. Please see your Movable Type system administrator for access.' => 'Esta cuenta ha sido deshabilitada. Por favor, póngase en contacto con el administrador de sistemas de Movable Type.',
+	'Failed login attempt by pending user \'[_1]\'' => 'Intento fallido de inicio de sesión de un usuario pendiente \'[_1]\'',
+	'This account has been deleted. Please see your Movable Type system administrator for access.' => 'Esta cuenta ha sido eliminada. Para acceder, por favor, contacte con el administrador de sistemas de Movable Type.',
+	'User cannot be created: [_1].' => 'No se pudo crear al usuario: [_1].',
+	'User \'[_1]\' has been created.' => 'El usuario \'[_1]\' ha sido creado',
+	'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'Lo sentimos, pero no tiene permisos para acceder a ningún blog o sitio web en esta instalación. Si cree que este mensaje se le muestra por error, por favor, contacte con el administrador de la instalación de Movable Type.',
+	'User \'[_1]\' (ID:[_2]) logged in successfully' => 'Usuario \'[_1]\' (ID:[_2]) inició una sesión correctamente',
+	'Invalid login attempt from user \'[_1]\'' => 'Intento de acceso no válido del usuario \'[_1]\'',
+	'User \'[_1]\' (ID:[_2]) logged out' => 'Usuario \'[_1]\' (ID:[_2]) se desconectó',
+	'User requires password.' => 'El usuario necesita una contraseña.',
+	'Passwords do not match.' => 'Las contraseñas no coinciden.',
+	'URL is invalid.' => 'La URL no es válida.',
+	'User requires display name.' => 'El usuario necesita un pseudónimo.',
+	'[_1] contains an invalid character: [_2]' => '[_1] contiene un caracter no válido: [_2]',
+	'Display Name' => 'Nombre público',
+	'Email Address is invalid.' => 'La dirección de correo no es válida.',
+	'Email Address is required for password reset.' => 'La dirección de correo es necesaria para el reinicio de contraseña.',
+	'User requires username.' => 'El usuario necesita un nombre.',
+	'Username' => 'Nombre de usuario',
+	'A user with the same name already exists.' => 'Ya existe un usuario con el mismo nombre.',
+	'Text entered was wrong.  Try again.' => 'El texto que introdujo es erróneo. Inténtelo de nuevo.',
+	'An error occurred while trying to process signup: [_1]' => 'Ocurrió un error intentando procesar el alta: [_1]',
+	'New Comment Added to \'[_1]\'' => 'Nuevo comentario añadido en \'[_1]\'',
+	'System Email Address is not configured.' => 'La dirección de correo del sistema no está configurada.',
+	'Close' => 'Cerrar',
+	'Failed to open pid file [_1]: [_2]' => 'Falló la apertura del fichero pid [_1]: [_2]',
+	'Failed to send reboot signal: [_1]' => 'Falló el envío de la señal de reinicio: [_1]',
+	'The file you uploaded is too large.' => 'El fichero que transfirió es demasiado grande.',
+	'Unknown action [_1]' => 'Acción desconocida [_1]',
+	'Warnings and Log Messages' => 'Mensajes de alerta y registro',
+	'Removed [_1].' => 'Se eliminó [_1].',
+	'Cannot load entry #[_1].' => 'No se pudo cargar la entrada #[_1].',
+	'You did not have permission for this action.' => 'No tenía permisos para realizar esta acción.',
 
 ## lib/MT/App/ActivityFeeds.pm
 	'Error loading [_1]: [_2]' => 'Error cargando [_1]: [_2]',
@@ -523,7 +654,6 @@ use vars qw( @ISA %Lexicon );
 	'All Pages' => 'Todas las páginas',
 
 ## lib/MT/App/CMS.pm
-	'Invalid request' => 'Petición no válida',
 	'Are you sure you want to remove all trackbacks reported as spam?' => '¿Está seguro de que desea borrar todos los trackbacks marcados como spam?',
 	'Are you sure you want to remove all comments reported as spam?' => '¿Está de que desea borrar todos los comentarios marcados como spam?',
 	'Add a user to this [_1]' => 'Añadir este usuario a este [_1]',
@@ -537,7 +667,6 @@ use vars qw( @ISA %Lexicon );
 	'No such blog [_1]' => 'No existe el blog [_1]',
 	'Invalid parameter' => 'Parámetro no válido',
 	'Edit Template' => 'Editar plantilla',
-	'Back' => 'Volver',
 	'Unknown object type [_1]' => 'Tipo de objeto desconocido [_1]',
 	'None' => 'Ninguno',
 	'Error during publishing: [_1]' => 'Error durante la publicación: [_1]',
@@ -584,6 +713,7 @@ use vars qw( @ISA %Lexicon );
 	'Recover Password(s)' => 'Recuperar contraseña/s',
 	'Enable' => 'Activar',
 	'Disable' => 'Desactivar',
+	'Unlock' => 'Desbloquear',
 	'Remove' => 'Borrar',
 	'Refresh Template(s)' => 'Refrescar plantilla/s',
 	'Move blog(s) ' => 'Trasladar blog(s) ',
@@ -628,20 +758,18 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App/Comments.pm
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Error asignando permisos para comentar al usuario \'[_1] (ID: [_2])\' para el weblog \'[_3] (ID: [_4])\'. No se encontró un rol adecuado.',
-	'Can\'t load blog #[_1].' => 'No se pudo cargar el blog nº[_1].',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Intento de identificación de comentarista no válido desde [_1] en el blog [_2](ID: [_3]) que no permite la autentificación nativa de Movable Type.',
-	'Invalid login.' => 'Acceso no válido.',
 	'Invalid login' => 'Inicio de sesión no válido',
-	'Successfully authenticated but signing up is not allowed.  Please contact system administrator.' => 'La identificación se ha producido con suceso pero la conexión ha sido rechazada.  Por favor contacte el administrador del sistema.',
+	'Successfully authenticated, but signing up is not allowed.  Please contact your Movable Type system administrator.' => 'Autentificado con éxito, pero el registro no está habilitado. Por favor, contacte con el administrador de sistemas de Movable Type.',
 	'You need to sign up first.' => 'Primero identifíquese',
 	'Permission denied.' => 'Permiso denegado.',
 	'Login failed: permission denied for user \'[_1]\'' => 'Falló la identificación: permiso denegado al usuario \'[_1]\'',
 	'Login failed: password was wrong for user \'[_1]\'' => 'Falló la identificación: contraseña errónea del usuario \'[_1]\'',
-	'Failed login attempt by disabled user \'[_1]\'' => 'Intento fallido de inicio de sesión por un usuario deshabilitado \'[_1]\'',
-	'Failed login attempt by unknown user \'[_1]\'' => 'Intento fallido de inicio de sesión por un usuario desconocido \'[_1]\'',
 	'Signing up is not allowed.' => 'No está permitida la inscripción.',
 	'Movable Type Account Confirmation' => 'Confirmación de cuenta - Movable Type',
-	'System Email Address is not configured.' => 'La dirección de correo del sistema no está configurada.',
+	'Your confirmation has expired. Please register again.' => 'La confirmación caducó. Por favor, regístrese de nuevo.',
+	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Regresar a la página original.</a>',
+	'Your confirmation have expired. Please register again.' => 'Su confirmación ha caducado. Por favor, regístrese de nuevo.',
 	'Commenter \'[_1]\' (ID:[_2]) has been successfully registered.' => 'El comentarista \'[_1]\' (ID:[_2]) se inscribió con éxito.',
 	'Thanks for the confirmation.  Please sign in to comment.' => 'Gracias por la confirmación. Por favor, identifíquese para comentar.',
 	'[_1] registered to the blog \'[_2]\'' => '[_1] registrado en el blog \'[_2]\'',
@@ -654,29 +782,23 @@ use vars qw( @ISA %Lexicon );
 	'_THROTTLED_COMMENT' => 'Demasiados comentarios en un corto periodo de tiempo. Por favor, inténtelo dentro de un rato.',
 	'Comments are not allowed on this entry.' => 'No se permiten comentarios en esta entrada.',
 	'Comment text is required.' => 'El texto del comentario es obligatorio.',
-	'An error occurred: [_1]' => 'Ocurrió un error: [_1]',
 	'Registration is required.' => 'El registro es obligatorio.',
 	'Name and E-mail address are required.' => 'El nombre y la dirección de correo son obligatorios.',
 	'Invalid email address \'[_1]\'' => 'Dirección de correo-e no válida \'[_1]\'',
 	'Invalid URL \'[_1]\'' => 'URL no válida \'[_1]\'',
-	'Text entered was wrong.  Try again.' => 'El texto que introdujo es erróneo. Inténtelo de nuevo.',
 	'Comment save failed with [_1]' => 'Fallo guardando comentario con [_1]',
 	'Comment on "[_1]" by [_2].' => 'Comentario en "[_1]" por [_2].',
-	'Publish failed: [_1]' => 'Falló la publicación: [_1]',
-	'Can\'t load template' => 'No se pudo cargar la plantilla',
+	'Publishing failed: [_1]' => 'Falló al publicar: [_1]',
+	'Cannot load template' => 'No se pudo cargar la plantilla',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Falló el intento de comentar por el comentarista pendiente \'[_1]\'',
 	'Registered User' => 'Usuario registrado',
-	'The sign-in attempt was not successful; please try again.' => 'El intento de registro no tuvo éxito; por favor, inténtelo de nuevo.',
-	'Can\'t load entry #[_1].' => 'No se pudo cargar la entrada #[_1].',
+	'You are trying to redirect to external resources. If you trust the site, please click the link: [_1]' => 'Está intentando redireccionar hacia un recurso externo. Si confía en el sitio, haga clic en el enlace: [_1]',
 	'No entry was specified; perhaps there is a template problem?' => 'No se especificó ninguna entrada; ¿quizás hay un problema con la plantilla?',
 	'Somehow, the entry you tried to comment on does not exist' => 'De alguna manera, la entrada en la que intentó comentar no existe',
 	'Invalid entry ID provided' => 'ID de entrada provisto no válido',
-	'All required fields must have valid values.' => 'Todos los campos obligatorios deben tener valores válidos.',
-	'[_1] contains an invalid character: [_2]' => '[_1] contiene un caracter no válido: [_2]',
-	'Display Name' => 'Nombre público',
-	'Passwords do not match.' => 'Las contraseñas no coinciden.',
-	'Email Address is invalid.' => 'La dirección de correo no es válida.',
-	'URL is invalid.' => 'La URL no es válida.',
+	'For improved security, please change your password' => 'Para mejorar la seguridad, por favor cambie su contraseña',
+	'All required fields must be populated.' => 'Debe rellenar todos los campos obligatorios.',
+	'Failed to verify the current password.' => 'Falló la verificación de la contraseña actual.',
 	'Commenter profile has successfully been updated.' => 'Se actualizó con éxito el perfil del comentarista.',
 	'Commenter profile could not be updated: [_1]' => 'No se pudo actualizar el perfil del comentarista: [_1]',
 
@@ -692,68 +814,34 @@ que la dirección provista es correcta y le pertenece.',
 	'The address [_1] was not subscribed.' => 'No se suscribió la dirección [_1].',
 	'The address [_1] has been unsubscribed.' => 'Se desuscribió la dirección [_1].',
 
-## lib/MT/App.pm
-	'Invalid request: corrupt character data for character set [_1]' => 'Petición inválida: caracteres corruptos para el conjunto de caracteres [_1]',
-	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Error cargando el sitio web #[_1] para la provisión de usuarios. Compruebe la directiva NewUserefaultWebsiteId.',
-	'First Weblog' => 'Primer weblog',
-	'Error loading blog #[_1] for user provisioning. Check your NewUserTemplateBlogId setting.' => 'Error de telécargamiento #[_1] que comprende la creación de Usuarios. Por favor, verifique sus parámetros NewUserTemplateBlogId.',
-	'Error provisioning blog for new user \'[_1]\' using template blog #[_2].' => 'Se ha producido un error durante la creación del blog del nuevo usuario \'[_1]\' utilizando la plantilla #[_2].',
-	'Error provisioning blog for new user \'[_1] (ID: [_2])\'.' => 'Se ha producido un error durante la creación del blog del nuevo usuario \'[_1] (ID: [_2])\'.',
-	'Blog \'[_1] (ID: [_2])\' for user \'[_3] (ID: [_4])\' has been created.' => 'Blog \'[_1] (ID: [_2])\' para el usuario \'[_3] (ID: [_4])\' ha sido creado.',
-	'Error assigning blog administration rights to user \'[_1] (ID: [_2])\' for blog \'[_3] (ID: [_4])\'. No suitable blog administrator role was found.' => 'Error de asignación de los derechos para el usuario \'[_1] (ID: [_2])\' para el blog \'[_3] (ID: [_4])\'. Ningún rol de administrador adecuado ha sido encontrado.',
-	'Internal Error: Login user is not initialized.' => 'Error interno: Inicio de sesión de usuarios no inicializada.',
-	'The login could not be confirmed because of a database error ([_1])' => 'No se pudo confirmar el acceso debido a un error de la base de datos ([_1])',
-	'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'Lo sentimos, pero no tiene permisos para acceder a ningún blog o sitio web en esta instalación. Si cree que este mensaje se le muestra por error, por favor, contacte con el administrador de la instalación de Movable Type.',
-	'This account has been disabled. Please see your system administrator for access.' => 'Esta cuenta fue deshabilitada. Por favor, póngase en contacto con el administrador del sistema.',
-	'Failed login attempt by pending user \'[_1]\'' => 'Intento fallido de inicio de sesión de un usuario pendiente \'[_1]\'',
-	'This account has been deleted. Please see your system administrator for access.' => 'Esta cuenta fue eliminada. Por favor, póngase en contacto con el administrador del sistema.',
-	'User cannot be created: [_1].' => 'No se pudo crear al usuario: [_1].',
-	'User \'[_1]\' has been created.' => 'El usuario \'[_1]\' ha sido creado',
-	'User \'[_1]\' (ID:[_2]) logged in successfully' => 'Usuario \'[_1]\' (ID:[_2]) inició una sesión correctamente',
-	'Invalid login attempt from user \'[_1]\'' => 'Intento de acceso no válido del usuario \'[_1]\'',
-	'User \'[_1]\' (ID:[_2]) logged out' => 'Usuario \'[_1]\' (ID:[_2]) se desconectó',
-	'User requires password.' => 'El usuario necesita una contraseña.',
-	'User requires display name.' => 'El usuario necesita un pseudónimo.',
-	'Email Address is required for password reset.' => 'La dirección de correo es necesaria para el reinicio de contraseña.',
-	'User requires username.' => 'El usuario necesita un nombre.',
-	'Username' => 'Nombre de usuario',
-	'A user with the same name already exists.' => 'Ya existe un usuario con el mismo nombre.',
-	'Something wrong happened when trying to process signup: [_1]' => 'Algo mal ocurrió durante el proceso de alta: [_1]',
-	'New Comment Added to \'[_1]\'' => 'Nuevo comentario añadido en \'[_1]\'',
-	'Close' => 'Cerrar',
-	'The file you uploaded is too large.' => 'El fichero que transfirió es demasiado grande.',
-	'Unknown action [_1]' => 'Acción desconocida [_1]',
-	'Warnings and Log Messages' => 'Mensajes de alerta y registro',
-	'Removed [_1].' => 'Se eliminó [_1].',
-	'You did not have permission for this action.' => 'No tenía permisos para realizar esta acción.',
-
-## lib/MT/App/Search/Legacy.pm
-	'You are currently performing a search. Please wait until your search is completed.' => 'En estos momentos está realizando una búsqueda. Por favor, espere hasta que se complete.',
-	'Search failed. Invalid pattern given: [_1]' => 'Falló la búsqueda. Patrón no válido: [_1]',
-	'Search failed: [_1]' => 'Falló la búsqueda: [_1]',
-	'No alternate template is specified for the Template \'[_1]\'' => 'No se especificó una plantilla alternativa para la Plantilla \'[_1]\'',
-	'Opening local file \'[_1]\' failed: [_2]' => 'Fallo abriendo el fichero local \'[_1]\': [_2]',
-	'Publishing results failed: [_1]' => 'Fallo al publicar los resultados: [_1]',
-	'Search: query for \'[_1]\'' => 'Búsqueda: encontrar \'[_1]\'',
-	'Search: new comment search' => 'Búsqueda: nueva búsqueda de comentarios',
-
 ## lib/MT/App/Search.pm
 	'Invalid type: [_1]' => 'Tipo no válido: [_1]',
-	'Search: failed storing results in cache.  [_1] is not available: [_2]' => 'Búsqueda: Fallo al guardar los resultados en la cache. [_1] no está disponible: [_2]',
+	'Failed to cache search results.  [_1] is not available: [_2]' => 'Fallo al cachear los resultados de la búsqueda.  [_1] no está disponible: [_2]',
 	'Invalid format: [_1]' => 'Formato no válido: [_1]',
 	'Unsupported type: [_1]' => 'Tipo no soportado: [_1]',
 	'Invalid query: [_1]' => 'Consulta no válida: [_1]',
 	'Invalid archive type' => 'Tipo de archivo no válido',
 	'Invalid value: [_1]' => 'Valor no válido: [_1]',
 	'No column was specified to search for [_1].' => 'No se especificó ninguna columna para la búsqueda de [_1].',
+	'Search: query for \'[_1]\'' => 'Búsqueda: encontrar \'[_1]\'',
+	'No alternate template is specified for template \'[_1]\'' => 'No se especificó una plantilla alternativa para la plantilla',
+	'Opening local file \'[_1]\' failed: [_2]' => 'Fallo abriendo el fichero local \'[_1]\': [_2]',
 	'No such template' => 'No existe dicha plantilla',
-	'template_id cannot be a global template' => 'template_id no puede ser una plantilla global',
-	'Output file cannot be asp or php' => 'El fichero de salida no puede ser asp o php',
+	'template_id cannot refer to a global template' => 'template_id no puede hacer referencia a una plantilla global',
+	'Output file cannot be of the type asp or php' => 'El fichero de salida no puede ser de tipo asp o php',
 	'You must pass a valid archive_type with the template_id' => 'Debe indicar un archive_type válido con el template_id',
-	'Template must have identifier entry_listing for non-Index archive types' => 'La plantilla debe tener un identificador entry_listing para los tipos de archivo que no sean índice',
-	'Blog file extension cannot be asp or php for these archives' => 'La extensión de ficheros del blog no puede ser asp o php para estos archivos',
-	'Template must have identifier main_index for Index archive type' => 'La plantilla debe tener un identificador main_index para el tipo de archivo índice',
+	'Template must be an entry_listing for non-Index archive types' => 'La plantilla debe ser un entry_listing para los tipos de archivo que no son índices',
+	'Filename extension cannot be asp or php for these archives' => 'La extensión del fichero no puede ser asp o php para estos archivos',
+	'Template must be a main_index for Index archive type' => 'La plantilla debe ser main_index para el tipo de archivo Índice',
 	'The search you conducted has timed out.  Please simplify your query and try again.' => 'La búsqueda que realizaba sobrepasó el tiempo. Por favor, simplifique la consulta e inténtelo de nuevo.',
+
+## lib/MT/App/Search/Legacy.pm
+	'A search is in progress. Please wait until it is completed and try again.' => 'Hay una búsqueda en ejecución. Por favor, espere hasta que haya finalizado e inténtelo de nuevo.',
+	'Search failed. Invalid pattern given: [_1]' => 'Falló la búsqueda. Patrón no válido: [_1]',
+	'Search failed: [_1]' => 'Falló la búsqueda: [_1]',
+	'File not found: [_1]' => 'Fichero no encontrado: [_1]',
+	'Publishing results failed: [_1]' => 'Fallo la publicación de resultados: [_1]',
+	'Search: new comment search' => 'Búsqueda: nueva búsqueda de comentarios',
 
 ## lib/MT/App/Search/TagSearch.pm
 	'TagSearch works with MT::App::Search.' => 'TagSearch funciona con MT::App::Search.',
@@ -762,53 +850,61 @@ que la dirección provista es correcta y le pertenece.',
 	'Invalid entry ID \'[_1]\'' => 'ID de entrada no válido \'[_1]\'',
 	'You must define a Ping template in order to display pings.' => 'Debe definir una plantilla de ping para poderlos mostrar.',
 	'Trackback pings must use HTTP POST' => 'Los pings de Trackback deben usar HTTP POST',
-	'Need a TrackBack ID (tb_id).' => 'Necesita un ID de TrackBack (tb_id).',
+	'TrackBack ID (tb_id) is required.' => 'TrackBack ID (tb_id) es necesario.',
 	'Invalid TrackBack ID \'[_1]\'' => 'ID de TrackBack no válido \'[_1]\'',
 	'You are not allowed to send TrackBack pings.' => 'No se le permite enviar pings de TrackBack.',
-	'You are pinging trackbacks too quickly. Please try again later.' => 'Está enviando pings de TrackBack demasiado rápido. Por favor, inténtelo más tarde.',
-	'Need a Source URL (url).' => 'Necesita una URL de origen (url).',
+	'You are sending TrackBack pings too quickly. Please try again later.' => 'Está enviando pings de TrackBack demasiado rápido. Por favor, inténtelo más tarde.',
+	'You need to provide a Source URL (url).' => 'Debe indicar una URL fuente (url).',
 	'This TrackBack item is disabled.' => 'Este elemento de TrackBack fue deshabilitado.',
 	'This TrackBack item is protected by a passphrase.' => 'Este elemento de TrackBack está protegido por una contraseña.',
 	'TrackBack on "[_1]" from "[_2]".' => 'TrackBack en "[_1]" de "[_2]".',
 	'TrackBack on category \'[_1]\' (ID:[_2]).' => 'TrackBack en la categoría \'[_1]\' (ID:[_2]).',
-	'Can\'t create RSS feed \'[_1]\': ' => 'No se pudo crear la fuente RSS \'[_1]\': ',
-	'New TrackBack Ping to \'[_1]\'' => 'Nuevo ping de TrackBack a \'[_1]\'',
-	'New TrackBack Ping to Category \'[_1]\'' => 'Nuevo ping de TrackBack a la categoría \'[_1]\'',
+	'Cannot create RSS feed \'[_1]\': ' => 'No se pudo crear la fuente RSS \'[_1]\': ',
+	'New TrackBack ping to \'[_1]\'' => 'Nuevo ping de TrackBack en \'[_1]\'',
+	'New TrackBack ping to category \'[_1]\'' => 'Nuevo ping de TrackBack en la categoría \'[_1]\'',
 
 ## lib/MT/App/Upgrader.pm
-	'Could not authenticate using the credentials provided: [_1].' => 'No se pudo autentificar con las credenciales provistas: [_1].',
+	'Could not authenticate using the credentials provided: [_1].' => 'No se pudo autentificar con las credenciales provistas: [_1]',
 	'Both passwords must match.' => 'Ambas contraseñas deben coincidir.',
 	'You must supply a password.' => 'Debe introducir una contraseña.',
-	'The \'Publishing Path\' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click \'Finish Install\' again.' => 'El servidor web no puede escribir en la \'Ruta de publicación\' indicada abajo. Modifique el propietario o los permisos de este directorio y haga clic de nuevo en \'Finalizar instalación\'.',
+	'The \'Website Root\' provided below is not allowed' => 'No está permitido el \'Sitio web raíz\' indicado abajo',
+	'The \'Website Root\' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click \'Finish Install\' again.' => 'El servidor web no puede escribir en el \'Sitio web raíz\' indicado abajo. Modifique los permisos de su directorio y luego haga clic en \'Finalizar instalación\'.',
 	'Invalid session.' => 'Sesión no válida.',
-	'No permissions. Please contact your administrator for upgrading Movable Type.' => 'Sin permisos. Por favor, contacte con su administrador para la actualización de Movable Type.',
+	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => 'Sin permisos. Por favor, contacte con el administrador de Movable Type para obtener asistencia sobre la actualización.',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Type ha sido actualizado a la versión [_1].',
 
 ## lib/MT/App/Viewer.pm
-	'Loading blog with ID [_1] failed' => 'Fallo al cargar el blog con el ID [_1]',
-	'Template publishing failed: [_1]' => 'Fallo al publicar la plantilla: [_1]',
-	'Invalid date spec' => 'Formato de fecha no válido',
-	'Can\'t load templatemap' => 'No se pudo cargar el mapa de plantillas',
-	'Can\'t load template [_1]' => 'No se pudo cargar la plantilla [_1]',
-	'Archive publishing failed: [_1]' => 'Fallo al publicar los archivos: [_1]',
-	'Entry [_1] is not published' => 'La entrada [_1] no está publicada',
+	'Loading blog with ID [_1] failed' => 'Falló al cargar el blog con el ID [_1]',
+	'File not found' => 'Fichero no encontrado',
+	'Template publishing failed: [_1]' => 'Falló al publicar la plantilla: [_1]',
+	'Unknown archive type: [_1]' => 'Tipo de archivo desconocido: [_1]',
+	'Cannot load template [_1]' => 'No se pudo cargar la plantilla [_1]',
+	'Archive publishing failed: [_1]' => 'Falló al publicar los archivos: [_1]',
+	'Invalid entry ID [_1].' => 'Entrada con ID [_1] no válida.',
+	'Entry [_1] was not published.' => 'No se publicó la entrada [_1].',
 	'Invalid category ID \'[_1]\'' => 'Identificador de categoría no válido \'[_1]\'',
+	'Invalid author ID \'[_1]\'' => 'Autor no válido, ID \'[_1]\'',
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => 'Es necesario el controlador [_1] para usar [_2].',
-	'An error occurred while attempting to connect to the database.  Check the settings and try again.' => 'Ocurrió un error intentando conectar a la base de datos. Compruebe la configuración e inténtalo de nuevo.',
-	'Please select database from the list of database and try again.' => 'Por favor, seleccione la base de datos de la lista de bases de datos e inténtelo de nuevo.',
+	'An error occurred while trying to connect to the database.  Check the settings and try again.' => 'Ocurrió un error intentando conectar a la base de datos. Compruebe la configuración e inténtelo de nuevo.',
+	'Please select a database from the list of available databases and try again.' => 'Por favor, seleccione una base de datos de la lista de base de datos disponibles e inténtelo de nuevo.',
 	'SMTP Server' => 'Servidor SMTP',
 	'Sendmail' => 'Sendmail',
 	'Test email from Movable Type Configuration Wizard' => 'Mensaje de comprobación del asistente de configuración de Movable Type',
 	'This is the test email sent by your new installation of Movable Type.' => 'Este es el mensaje de comprobación enviado por su nueva instalación de Movable Type.',
+	'Net::SMTP is required in order to send mail using an SMTP server.' => 'Net::SMTP es necesario para enviar correo usando un servidor SMTP.',
+	'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.' => 'Net::SMTP::TLS es necesario para usar autentificación SMTP con
+el protocolo de comunicación STARTTLS.',
 	'This module is needed to encode special characters, but this feature can be turned off using the NoHTMLEntities option in mt-config.cgi.' => 'Este módulo es necesario para codificar caracteres especiales, pero se puede desactivar esta característica utilizando la opción NoHTMLEntities en mt-config.cgi.',
-	'This module is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'Este módulo es necesario si desea usar el sistema de TrackBacks, el ping de weblogs.com o el ping de Actualizaciones Recientes de Movable Type.',
 	'This module is needed if you want to use the MT XML-RPC server implementation.' => 'Este módulo es necesario si desea usar la implementación del servidor XML-RCP de Movable Type.',
 	'This module is needed if you would like to be able to overwrite existing files when you upload.' => 'Este módulo es necesario si desea poder sobreescribir los ficheros al subirlos.',
+	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'Este módulo es necesario si desea poder crear miniaturas de las imágenes subidas.',
+	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'Este módulo es necesario si desea usar NetPBM como controlador de imágenes en MT.',
 	'This module is required by certain MT plugins available from third parties.' => 'Este módulo lo necesitan algunas extensiones de MT de terceras partes.',
 	'This module accelerates comment registration sign-ins.' => 'Este módulo acelera el registro de identificación en los comentarios.',
-	'This module is needed to enable comment registration.' => 'Este módulo es necesario para habilitar el registro en los comentarios.',
+	'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.' => 'Cache::File es necesario si desea que los comentaristas puedan autentificarse por Yahoo! Japan mediante OpenID.',
+	'This module is needed to enable comment registration. Also, required in order to send mail via an SMTP Server.' => 'Este módulo es necesario para activar el registro de comentarios. También es necesario para enviar correo vía servidores SMTP.',
 	'This module enables the use of the Atom API.' => 'Este módulo permite el uso del interfaz (API) de Atom.',
 	'This module is required in order to use memcached as caching mechanism used by Movable Type.' => 'Este módulo es necesario utilizar memcached como mecanismo de caché.',
 	'This module is required in order to archive files in backup/restore operation.' => 'Este módulo es necesario para archivar ficheros en las operaciones de copias de seguridad y restauración.',
@@ -816,9 +912,14 @@ que la dirección provista es correcta y le pertenece.',
 	'This module is required in order to decompress files in backup/restore operation.' => 'Este módulo es neesario para descomprimir ficheros en las operaciones de copia de seguridad y restauración.',
 	'This module and its dependencies are required in order to restore from a backup.' => 'Este módulo y sus dependencias son necesarios para restaurar una copia de seguridad.',
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'Este módulo y sus dependencias son necesarios para que los comentaristas se autentifiquen mediante proveedores OpenID, incluyendo LiveJournal.',
-	'This module is required for sending mail via SMTP Server.' => 'Este módulo es necesario para el envío de correo a través de servidores SMTP.',
+	'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'mt-search.cgi necesita este módulo si está usando Movable Type con una versión de Perl más antigua de la 5.8.',
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Este módulo es necesario para subir archivos (para determinar el tamaño de las imágenes en diferentes formatos).',
 	'This module is required for cookie authentication.' => 'Este módulo es necsario para la autentificación con cookies.',
+
+## lib/MT/ArchiveType/Author.pm
+	'AUTHOR_ADV' => 'por autor',
+	'author/author-basename/index.html' => 'autor/autor-nombrebase/index.html',
+	'author/author_basename/index.html' => 'autor/autor_nombrebase/index.html',
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
 	'AUTHOR-DAILY_ADV' => 'por día y autor',
@@ -830,11 +931,6 @@ que la dirección provista es correcta y le pertenece.',
 	'author/author-basename/yyyy/mm/index.html' => 'autor/autor-nombrebase/aaaa/mm/index.html',
 	'author/author_basename/yyyy/mm/index.html' => 'autor/autor_nombrebase/aaaa/mm/index.html',
 
-## lib/MT/ArchiveType/Author.pm
-	'AUTHOR_ADV' => 'por autor',
-	'author/author-basename/index.html' => 'autor/autor-nombrebase/index.html',
-	'author/author_basename/index.html' => 'autor/autor_nombrebase/index.html',
-
 ## lib/MT/ArchiveType/AuthorWeekly.pm
 	'AUTHOR-WEEKLY_ADV' => 'por semana y autor',
 	'author/author-basename/yyyy/mm/day-week/index.html' => 'autor/autor-nombrebase/aaaa/mm/dia-semana/index.html',
@@ -845,6 +941,11 @@ que la dirección provista es correcta y le pertenece.',
 	'author/author-basename/yyyy/index.html' => 'autor/autor-nombrebase/aaaa/index.html',
 	'author/author_basename/yyyy/index.html' => 'autor/autor_nombrebase/aaaa/index.html',
 
+## lib/MT/ArchiveType/Category.pm
+	'CATEGORY_ADV' => 'por categoría',
+	'category/sub-category/index.html' => 'categoría/sub-categoría/index.html',
+	'category/sub_category/index.html' => 'categoría/sub_categoría/index.html',
+
 ## lib/MT/ArchiveType/CategoryDaily.pm
 	'CATEGORY-DAILY_ADV' => 'por día y categoría',
 	'category/sub-category/yyyy/mm/dd/index.html' => 'categoría/sub-categoría/aaaa/mm/dd/index.html',
@@ -854,11 +955,6 @@ que la dirección provista es correcta y le pertenece.',
 	'CATEGORY-MONTHLY_ADV' => 'por mes y categoría',
 	'category/sub-category/yyyy/mm/index.html' => 'categoría/sub-categoría/aaaa/mm/index.html',
 	'category/sub_category/yyyy/mm/index.html' => 'categoría/sub_categoría/aaaa/mm/index.html',
-
-## lib/MT/ArchiveType/Category.pm
-	'CATEGORY_ADV' => 'por categoría',
-	'category/sub-category/index.html' => 'categoría/sub-categoría/index.html',
-	'category/sub_category/index.html' => 'categoría/sub_categoría/index.html',
 
 ## lib/MT/ArchiveType/CategoryWeekly.pm
 	'CATEGORY-WEEKLY_ADV' => 'por semana y categoría',
@@ -908,27 +1004,11 @@ que la dirección provista es correcta y le pertenece.',
 	'YEARLY_ADV' => 'anuales',
 	'yyyy/index.html' => 'aaaa/index.html',
 
-## lib/MT/Asset/Audio.pm
-
-## lib/MT/Asset/Image.pm
-	'Images' => 'Imágenes',
-	'Actual Dimensions' => 'Tamaño actual',
-	'[_1] x [_2] pixels' => '[_1] x [_2] píxeles',
-	'Error cropping image: [_1]' => 'Error recortando imagen: [_1]',
-	'Error scaling image: [_1]' => 'Error redimensionando la imagen: [_1]',
-	'Error converting image: [_1]' => 'Error convirtiendo la imagen: [_1]',
-	'Error creating thumbnail file: [_1]' => 'Error creando el fichero de la miniatura: [_1]',
-	'%f-thumb-%wx%h-%i%x' => '%f-miniatura-%wx%h-%i%x',
-	'Can\'t load image #[_1]' => 'No se pudo cargar la imagen nº[_1]',
-	'View image' => 'Ver imagen',
-	'Permission denied setting image defaults for blog #[_1]' => 'Se denegó el permiso para cambiar las opciones predefinidos de imágenes del blog nº[_1]',
-	'Thumbnail image for [_1]' => 'Imagen Thumbnail para [_1]',
-	'Invalid basename \'[_1]\'' => 'Nombre base no válido \'[_1]\'',
-	'Error writing to \'[_1]\': [_2]' => 'Error escribiendo en \'[_1]\': [_2]',
-	'Popup Page for [_1]' => 'Página Popup para [_1]',
-
 ## lib/MT/Asset.pm
-	'Could not remove asset file [_1] from filesystem: [_2]' => 'No se pudo eliminar el fichero multimedia [_1] del sistema de ficheros: [_2]',
+	'Deleted' => 'Eliminado',
+	'Enabled' => 'Activado',
+	'Disabled' => 'Desactivado',
+	'Could not remove asset file [_1] from the filesystem: [_2]' => 'No se pudo eliminar el fichero multimedia [_1] del sistema de ficheros: [_2]',
 	'Description' => 'Descripción',
 	'Location' => 'Lugar',
 	'string(255)' => 'cadena(255)',
@@ -940,10 +1020,27 @@ que la dirección provista es correcta y le pertenece.',
 	'Pixel height' => 'Altura px',
 	'Except Userpic' => 'Avatar Except',
 	'Author Status' => 'Estado autor',
-	'Deleted' => 'Eliminado',
-	'Enabled' => 'Activado',
-	'Disabled' => 'Desactivado',
 	'Assets of this website' => 'Multimedia de este sitio',
+
+## lib/MT/Asset/Audio.pm
+
+## lib/MT/Asset/Image.pm
+	'Images' => 'Imágenes',
+	'Actual Dimensions' => 'Tamaño actual',
+	'[_1] x [_2] pixels' => '[_1] x [_2] píxeles',
+	'Error cropping image: [_1]' => 'Error recortando imagen: [_1]',
+	'Error scaling image: [_1]' => 'Error redimensionando la imagen: [_1]',
+	'Error converting image: [_1]' => 'Error convirtiendo la imagen: [_1]',
+	'Error creating thumbnail file: [_1]' => 'Error creando el fichero de la miniatura: [_1]',
+	'%f-thumb-%wx%h-%i%x' => '%f-miniatura-%wx%h-%i%x',
+	'Cannot load image #[_1]' => 'No se pudo cargar la imagen nº[_1]',
+	'View image' => 'Ver imagen',
+	'Permission denied setting image defaults for blog #[_1]' => 'Se denegó el permiso para cambiar las opciones predefinidos de imágenes del blog nº[_1]',
+	'Thumbnail image for [_1]' => 'Imagen miniatura para [_1]',
+	'Saving [_1] failed: [_2]' => 'Falló al guardar [_1]: [_2]',
+	'Invalid basename \'[_1]\'' => 'Nombre base no válido \'[_1]\'',
+	'Error writing to \'[_1]\': [_2]' => 'Error al escribir en \'[_1]\': [_2]',
+	'Popup page for [_1]' => 'Abrir en página nueva para [_1]',
 
 ## lib/MT/Asset/Video.pm
 	'Videos' => 'Vídeos',
@@ -969,85 +1066,78 @@ que la dirección provista es correcta y le pertenece.',
 	'User \'[_1]\' (user #[_2]) added [lc,_4] #[_3]' => 'Usuario \'[_1]\' (usuario #[_2]) añadido [lc,_4] #[_3]',
 	'User \'[_1]\' (user #[_2]) edited [lc,_4] #[_3]' => 'Usuario \'[_1]\' (usuario #[_2]) editado [lc,_4] #[_3]',
 	'Entry \'[_1]\' ([lc,_5] #[_2]) deleted by \'[_3]\' (user #[_4]) from atom api' => 'Entrada \'[_1]\' ([lc,_5] #[_2]) borrada por \'[_3]\' (usuario #[_4]) desde atom api',
-	'The file([_1]) you uploaded is not allowed.' => 'El fichero que transfirió ([_1]) no está permitido.',
-	'Saving [_1] failed: [_2]' => 'Falló al guardar [_1]: [_2]',
-	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'El módulo de Perl Image::Size es necesario para obtener las dimensiones de las imágenes transferidas.',
+	'The file ([_1]) that you uploaded is not allowed.' => 'El fichero ([_1]) que transfirió no está permitido.',
+	'Invalid image file format.' => 'Formato de imagen no válido.',
+	'Perl module Image::Size is required to determine the width and height of uploaded images.' => 'El módulo de Perl Image::Size es necesario para determinar las dimensiones de las imágenes transferidas.',
+
+## lib/MT/Auth.pm
+	'Bad AuthenticationModule config \'[_1]\': [_2]' => 'Configuración incorrecta de AuthenticationModule \'[_1]\': [_2]',
+	'Bad AuthenticationModule config' => 'Configuración incorrecta de AuthenticationModule',
 
 ## lib/MT/Auth/MT.pm
-	'Failed to verify current password.' => 'Fallo al verificar la contraseña actual.',
+	'Missing required module' => 'Módulo obligatorio no instalado',
 
 ## lib/MT/Auth/OpenID.pm
-	'Couldn\'t save the session' => 'No se pudo guardar la sesión',
+	'Could not save the session' => 'No se pudo guardar la sesión',
 	'Could not load Net::OpenID::Consumer.' => 'No se pudo cargar Net::OpenID::Consumer.',
-	'The address entered does not appear to be an OpenID' => 'La dirección introducida no parecer ser un OpenID',
-	'The text entered does not appear to be a web address' => 'El texto introducido no parece ser una dirección web',
-	'Unable to connect to [_1]: [_2]' => 'Imposible conectarse a [_1]: [_2]',
-	'Could not verify the OpenID provided: [_1]' => 'No se pudo verificar el OpenID provisto: [_1]',
+	'The address entered does not appear to be an OpenID endpoint.' => 'La dirección indicada no parece ser un proveedor de OpenID.',
+	'The text entered does not appear to be a valid web address.' => 'El texto introducido no parece ser una dirección web válida.',
+	'Unable to connect to [_1]: [_2]' => 'No fue posible conectar con [_1]: [_2]',
+	'Could not verify the OpenID provided: [_1]' => 'No se pudo verificar el OpenID indicado: [_1]',
+
+## lib/MT/Auth/TypeKey.pm
+	'Sign in requires a secure signature.' => 'La identificación necesita una firma segura.',
+	'The sign-in validation failed.' => 'Falló el registro de validación.',
+	'This weblog requires commenters to pass an email address. If you would like to do so you may log in again, and give the authentication service permission to pass your email address.' => 'En este blog es necesario que los comentaristas indiquen una dirección de correo. Si es lo que desea, puede iniciar una sesión de nuevo e indicarle al servicio de autentificación su dirección.',
+	'Could not get public key from the URL provided.' => 'No se pudo obtener una clave pública de la URL indicada.',
+	'No public key could be found to validate registration.' => 'No se encontró la clave pública para validar el registro.',
+	'TypePad signature verification returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'La verificación de firmas de TypePad retornó [_1] en [_2] segundos verificando [_3] con [_4]',
+	'VALID' => 'VALIDA',
+	'INVALID' => 'INVALIDO',
+	'The TypePad signature is out of date ([_1] seconds old). Ensure that your server\'s clock is correct.' => 'La firma de TypePad ha caducado ([_1] segundos vieja). Asegúrese de que el reloj del servidor está en hora.',
 
 ## lib/MT/Author.pm
 	'Users' => 'Usuarios',
-	'The approval could not be committed: [_1]' => 'La aprobación no pudo realizarse: [_1]',
+	'Active' => 'Activo',
+	'Pending' => 'Pendiente',
+	'Not Locked Out' => 'No bloqueado',
+	'Locked Out' => 'Bloqueado',
+	'__COMMENTER_APPROVED' => 'Aprobado',
+	'Banned' => 'Bloqueado',
+	'MT Users' => 'Usuarios de MT',
+	'The approval could not be committed: [_1]' => 'No se pudo realizar la aprobación: [_1]',
 	'Userpic' => 'Avatar',
 	'User Info' => 'Info usuario',
 	'__ENTRY_COUNT' => 'Entradas',
 	'__COMMENT_COUNT' => 'Comentarios',
 	'Created by' => 'Creado por',
 	'Status' => 'Estado',
-	'Active' => 'Activo',
-	'Pending' => 'Pendiente',
 	'Website URL' => 'URL del sitio',
 	'Privilege' => 'Privilegio',
+	'Lockout' => 'Bloquear',
 	'Enabled Users' => 'Usuarios habilitados',
 	'Disabled Users' => 'Usuarios deshabilitados',
 	'Pending Users' => 'Usuarios pendientes',
-	'__COMMENTER_APPROVED' => 'Aprobado',
-	'Banned' => 'Bloqueado',
+	'Locked out Users' => 'Bloquear usuarios',
 	'Enabled Commenters' => 'Comentaristas habilitados',
 	'Disabled Commenters' => 'Comentaristas deshabilitados',
 	'Pending Commenters' => 'Comentaristas pendientes',
-	'MT Users' => 'Usuarios de MT',
 	'MT Native Users' => 'Usuarios nativos de MT',
 	'Externally Authenticated Commenters' => 'Comentaristas autentificados externamente',
 
-## lib/MT/Auth.pm
-	'Bad AuthenticationModule config \'[_1]\': [_2]' => 'Configuración incorrecta de AuthenticationModule \'[_1]\': [_2]',
-	'Bad AuthenticationModule config' => 'Configuración incorrecta de AuthenticationModule',
-
-## lib/MT/Auth/TypeKey.pm
-	'Sign in requires a secure signature.' => 'La identificación necesita una firma segura.',
-	'The sign-in validation failed.' => 'Falló el registro de validación.',
-	'This weblog requires commenters to pass an email address. If you\'d like to do so you may log in again, and give the authentication service permission to pass your email address.' => 'Este weblog obliga a que los comentaristas den su dirección de correo electrónico. Si lo desea puede iniciar una sesión de nuevo, y dar al servicio de autentificación permisos para pasar la dirección de correo electrónico.',
-	'Couldn\'t get public key from url provided' => 'No se pudo obtener la clave pública desde la URL indicada',
-	'No public key could be found to validate registration.' => 'No se encontró la clave pública para validar el registro.',
-	'TypePad signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'Verificación de firma de TypePad devolvió [_1] en [_2] segundos verificando [_3] con [_4]',
-	'The TypePad signature is out of date ([_1] seconds old). Ensure that your server\'s clock is correct' => 'La firma de TypePad está caduca (de hace [_1] segundos). Asegúrese que el reloj del servidor está en hora',
-
-## lib/MT/BackupRestore/BackupFileHandler.pm
-	'Uploaded file was not a valid Movable Type backup manifest file.' => 'El fichero transferido no era un fichero no válido de manifiesto de copia de seguridad de Movable Type.',
-	'Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.' => 'El fichero transferido es una copia de seguridad de Movable Type pero con una versión del esquema de datos diferente ([_1]) al de este sistema ([_2]). No es seguro restaurar el fichero en esta versión de Movable Type.',
-	'[_1] is not a subject to be restored by Movable Type.' => '[_1] no es un elemento para ser restaurado por Movable Type.',
-	'[_1] records restored.' => '[_1] registros restaurados.',
-	'Restoring [_1] records:' => 'Restaurando [_1] registros:',
-	'User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.' => 'Se encontró un usuario con el mismo nombre que la persona identificada ([_1]). Saltar la identificación.',
-	'User with the same name \'[_1]\' found (ID:[_2]).  Restore replaced this user with the data backed up.' => 'Se encontró un usuario con el mismo nombre \'[_1]\' (ID:[_2]). La restauración reemplazó este usuario con los datos de la copia de seguridad.',
-	'Tag \'[_1]\' exists in the system.' => 'La etiqueta \'[_1]\' existe en el sistema.',
-	'[_1] records restored...' => '[_1] registros restaurados...',
-	'The role \'[_1]\' has been renamed to \'[_2]\' because a role with the same name already exists.' => 'El rol \'[_1]\' se ha renombrado como \'[_2]\' porque ya existía un rol con el mismo nombre.',
-	'The system level settings for plugin \'[_1]\' already exist.  Skipping this record.' => 'Ya existe una configuración a nivel del sistema para la extensión \'[_1]\'. Se ignora este registro.',
-
-## lib/MT/BackupRestore/ManifestFileHandler.pm
-
 ## lib/MT/BackupRestore.pm
+	"\nCannot write file. Disk full." => "
+No se pudo escribir el fichero. Disco lleno.",
 	'Backing up [_1] records:' => 'Haciendo la copia de seguridad de [_1] registros:',
 	'[_1] records backed up...' => '[_1] registros guardados...',
 	'[_1] records backed up.' => '[_1] registros guardados..',
 	'There were no [_1] records to be backed up.' => 'No habían [_1] registros de los que hacer copia de seguridad.',
-	'Can\'t open directory \'[_1]\': [_2]' => 'No se puede abrir el directorio \'[_1]\': [_2]',
+	'Cannot open directory \'[_1]\': [_2]' => 'No se puede abrir el directorio \'[_1]\': [_2]',
 	'No manifest file could be found in your import directory [_1].' => 'No se encontró fichero de manifiesto en el directorio de importación [_1].',
-	'Can\'t open [_1].' => 'No se pudo abrir [_1].',
+	'Cannot open [_1].' => 'No se pudo abrir [_1].',
 	'Manifest file [_1] was not a valid Movable Type backup manifest file.' => 'El fichero [_1] no es un fichero válido de manifiesto para copias de seguridad de Movable Type.',
 	'Manifest file: [_1]' => 'Fichero de manifiesto: [_1]',
-	'Path was not found for the file ([_1]).' => 'No se encontró la ruta del archivo ([_1]).',
+	'Path was not found for the file, [_1].' => 'No se encontró la ruta del fichero, [_1].',
 	'[_1] is not writable.' => 'No puede escribirse en [_1].',
 	'Error making path \'[_1]\': [_2]' => 'Error creando la ruta \'[_1]\': [_2]',
 	'Copying [_1] to [_2]...' => 'Copiando [_1] a [_2]...',
@@ -1065,10 +1155,29 @@ que la dirección provista es correcta y le pertenece.',
 	'failed' => 'falló',
 	'ok' => 'ok',
 
+## lib/MT/BackupRestore/BackupFileHandler.pm
+	'The uploaded file was not a valid Movable Type backup manifest file.' => 'El fichero transferido no es un fichero con un manifiesto válido de copias de seguridad de Movable Type.',
+	'The uploaded backup manifest file was created with Movable Type, but the schema version ([_1]) differs from the one used by this system ([_2]).  You should not restore this backup to this version of Movable Type.' => 'El fichero transferido con el manifiesto de copia de seguridad fue creado con Movable Type, pero la versión ([_1]) difiera de la usada en este sistema ([_2]). No debería restaurar esta copia de seguridad en esta versión de Movable Type.',
+	'[_1] is not a subject to be restored by Movable Type.' => '[_1] no es un elemento para ser restaurado por Movable Type.',
+	'[_1] records restored.' => '[_1] registros restaurados.',
+	'Restoring [_1] records:' => 'Restaurando [_1] registros:',
+	'A user with the same name as the current user ([_1]) was found in the backup.  Skipping this user record.' => 'En la copia de seguridad se encontró un suuario con el mismo nombre que el usuario actual ([_1]). Este registro de usuario se ignorará.',
+	'A user with the same name \'[_1]\' was found in the backup (ID:[_2]).  Restore replaced this user with the data from the backup.' => 'En la copia de seguridad se encontró un usuario con el mismo nombre \'[_2]\' (ID:[_2]). La restauración reemplazó a este usuario con los datos de la copia de seguridad.',
+	'Tag \'[_1]\' exists in the system.' => 'La etiqueta \'[_1]\' existe en el sistema.',
+	'[_1] records restored...' => '[_1] registros restaurados...',
+	'The role \'[_1]\' has been renamed to \'[_2]\' because a role with the same name already exists.' => 'El rol \'[_1]\' se ha renombrado como \'[_2]\' porque ya existía un rol con el mismo nombre.',
+	'The system level settings for plugin \'[_1]\' already exist.  Skipping this record.' => 'Ya existe una configuración a nivel del sistema para la extensión \'[_1]\'. Se ignora este registro.',
+
+## lib/MT/BackupRestore/BackupFileScanner.pm
+	'Can not restore this file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.' => 'No se pudo restaurar este fichero porque se necesita el módulo de Perl Digest::SHA. Por favor, contacto con el administrador de sistemas de Movable Type.',
+
+## lib/MT/BackupRestore/ManifestFileHandler.pm
+
 ## lib/MT/BasicAuthor.pm
 	'authors' => 'autores',
 
 ## lib/MT/Blog.pm
+	'*Website/Blog deleted*' => '*Sitio/blog borrado*',
 	'First Blog' => 'Primer blog',
 	'No default templates were found.' => 'No se encontraron plantillas predefinidas.',
 	'Clone of [_1]' => 'Clon de [_1]',
@@ -1094,7 +1203,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Theme' => 'Tema',
 
 ## lib/MT/Bootstrap.pm
-	'Got an error: [_1]' => 'Ocurrió un error en: [_1]',
 
 ## lib/MT/Builder.pm
 	'<[_1]> at line [_2] is unrecognized.' => 'No se reconoció a <[_1]> en la línea [_2].',
@@ -1104,26 +1212,15 @@ que la dirección provista es correcta y le pertenece.',
 	'Error in <mt[_1]> tag: [_2]' => 'Error en la etiqueta <mt[_1]>: [_2]',
 	'Unknown tag found: [_1]' => 'Se encontró una etiqueta desconocida: [_1]',
 
-## lib/MT/Category.pm
-	'[quant,_1,entry,entries,No entries]' => '[quant,_1,entraday,entradas,Sin entradas]',
-	'[quant,_1,page,pages,No pages]' => '[quant,_1,página,páginas,Sin páginas]',
-	'Category' => 'Categoría',
-	'Categories must exist within the same blog' => 'Las categorías deben existir en el mismo blog',
-	'Category loop detected' => 'Bucle de categorías detectado',
-	'string(100) not null' => 'cadena(100) no vacía',
-	'Basename' => 'Nombre base',
-	'Parent' => 'Raíz',
-
 ## lib/MT/CMS/AddressBook.pm
-	'No entry ID provided' => 'ID de entrada no provista',
+	'No entry ID was provided' => 'No se especificó el ID de entrada',
 	'No such entry \'[_1]\'' => 'No existe la entrada \'[_1]\'',
-	'No email address for user \'[_1]\'' => 'No hay dirección de correo electrónico asociada al usuario \'[_1]\'',
-	'No valid recipients found for the entry notification.' => 'No se encontraron destinatarios válidos para la notificación de la entrada.',
+	'No valid recipients were found for the entry notification.' => 'No se encontraron destinatarios válidos para la notificación de la entrada.',
 	'[_1] Update: [_2]' => '[_1] Actualiza: [_2]',
-	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Error enviando correo electrónico ([_1]); ¿quizás probando con otra configuración para MailTransfer?',
+	'Error sending mail ([_1]): Try another MailTransfer setting?' => 'Error enviado correo electrónico ([_1]). Inténtelo de nuevo probando con otra configuración para MailTransfer.',
 	'Please select a blog.' => 'Por favor, seleccione un blog.',
-	'The value you entered was not a valid email address' => 'El valor que tecleó no es una dirección válida de correo electrónico',
-	'The value you entered was not a valid URL' => 'La URL que introdujo no es válida.',
+	'The text you entered is not a valid email address.' => 'El texto que introdujo no es una dirección de correo válida.',
+	'The text you entered is not a valid URL.' => 'El texto que introdujo no es una URL válida.',
 	'The e-mail address you entered is already on the Notification List for this blog.' => 'La dirección de correo que introdujo ya está en la Lista de notificaciones de este blog.',
 	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => 'Suscriptor \'[_1]\' (ID:[_2]) borrado de la agenda por \'[_3]\'',
 
@@ -1132,7 +1229,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Files' => 'Ficheros',
 	'Extension changed from [_1] to [_2]' => 'La extensión cambió de [_1] a [_2]',
 	'Upload File' => 'Transferir fichero',
-	'Can\'t load file #[_1].' => 'No se pudo cargar el fichero nº[_1].',
+	'Cannot load file #[_1].' => 'No se pudo cargar el fichero nº[_1].',
 	'No permissions' => 'No tiene permisos',
 	'File \'[_1]\' uploaded by \'[_2]\'' => 'Fichero \'[_1]\' transferido por \'[_2]\'',
 	'File \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Fichero \'[_1]\' (ID:[_2]) transferido por \'[_3]\'',
@@ -1144,20 +1241,20 @@ que la dirección provista es correcta y le pertenece.',
 	'Please select an audio file to upload.' => 'Por favor, seleccione el fichero de audio a transferir.',
 	'Please select an image to upload.' => 'Por favor, seleccione una imagen a transferir.',
 	'Please select a video to upload.' => 'Por favor, seleccione un video a transferir. Please select a video to upload.',
-	'Movable Type was unable to write on the "Upload Destination". Please make sure that the folder is writable from the web server.' => 'Movable Type no pudo escribir en el "Destino de las transferencias". Por favor, asegúrese de que el servidor web puede escribir en el directorio.',
+	'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.' => 'Movable Type no pudo escribir en el "Destino de las transferencias". Por favor, asegúrese de que el servidor puede escribir en ese directorio.',
 	'Invalid extra path \'[_1]\'' => 'Ruta extra no válida \'[_1]\'',
-	'Can\'t make path \'[_1]\': [_2]' => 'No se puede crear la ruta \'[_1]\': [_2]',
+	'Cannot make path \'[_1]\': [_2]' => 'No se puede crear la ruta \'[_1]\': [_2]',
 	'Invalid temp file name \'[_1]\'' => 'Nombre de fichero temporal no válido \'[_1]\'',
 	'Error opening \'[_1]\': [_2]' => 'Error abriendo \'[_1]\': [_2]',
 	'Error deleting \'[_1]\': [_2]' => 'Error borrando \'[_1]\': [_2]',
-	'File with name \'[_1]\' already exists. (Install File::Temp if you\'d like to be able to overwrite existing uploaded files.)' => 'Ya existe un fichero con el nombre \'[_1]\'. (Instale File::Temp si desea sobreescribir ficheros transferidos existentes).',
-	'Error creating temporary file; please check your TempDir setting in your coniguration file (currently \'[_1]\') this location should be writable.' => 'Error creando un fichero temporal; por favor, compruebe que se puede escribir en la ruta especificada en la opción TempDir en el fichero de configuración (actualmente \'[_1]\').',
+	'File with name \'[_1]\' already exists. (Install the File::Temp Perl module if you would like to be able to overwrite existing uploaded files.)' => 'Ya existe un fichero con el nombre \'[_1]\'. (Si desea escribir sobre ficheros transferidos anteriormente, instale el módulo de Perl File::Temp).',
+	'Error creating a temporary file; The webserver should be able to write to this folder.  Please check the TempDir setting in your configuration file, it is currently \'[_1]\'. ' => 'Error al crear un fichero temporal. El servidor web debe poder escribir en este directorio. Por favor, compruebe la directiva TempDir en el fichero de configuración, actualmente es \'[_1]\'.',
 	'unassigned' => 'no asignado',
-	'File with name \'[_1]\' already exists; Tried to write to tempfile, but open failed: [_2]' => 'Ya existe un fichero con el nombre \'[_1]\'; se intentó escribir en un fichero temporal, pero hubo un error al abrirlo: [_2]',
+	'File with name \'[_1]\' already exists; Tried to write to a tempfile, but the webserver could not open it: [_2]' => 'Ya existe un fichero con el nombre \'[_1]\'. Se intentó escribir en un fichero temporal, pero el servidor no pudo abrirlo: [_2]',
 	'Could not create upload path \'[_1]\': [_2]' => 'No se pudo crear la ruta de transferencias \'[_1]\': [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'Error escribiendo transferencia a \'[_1]\': [_2]',
 	'Uploaded file is not an image.' => 'El fichero transferido no es una imagen.',
-	'Can\'t overwrite with the file of different type. Original: [_1] Uploaded: [_2]' => 'No se puede sobreescribir con un fichero de distinto tipo. Original: [_1] Transferido: [_2]',
+	'Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]' => 'No se puede escribir sobre un fichero que ya existe con otro fichero de diferente tipo. Original: [_1] Transferido: [_2].',
 	'<' => '<',
 	'/' => '/',
 
@@ -1172,7 +1269,7 @@ que la dirección provista es correcta y le pertenece.',
 	'General Settings' => 'Configuración general',
 	'Plugin Settings' => 'Configuración de extensiones',
 	'New Blog' => 'Nuevo blog',
-	'Can\'t load template #[_1].' => 'No se pudo cargar la plantilla #[_1].',
+	'Cannot load template #[_1].' => 'No se pudo cargar la plantilla #[_1].',
 	'index template \'[_1]\'' => 'plantilla índice \'[_1]\'',
 	'[_1] \'[_2]\'' => '[_1] \'[_2]\'',
 	'Publish Site' => 'Publicar sitio',
@@ -1190,6 +1287,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Archive URL must be an absolute URL.' => 'La URL de archivo debe ser una URL absoluta.',
 	'You did not specify an Archive Root.' => 'No ha especificado un Archivo raíz.',
 	'The number of revisions to store must be a positive integer.' => 'El número de revisiones a guardar debe ser un número entero positivo.',
+	'Please choose a preferred archive type.' => 'Por favor, seleccione el tipo de archivo preferido.',
 	'Blog \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Blog \'[_1]\' (ID:[_2]) borrado por \'[_3]\'',
 	'Saving blog failed: [_1]' => 'Fallo guardando blog: [_1]',
 	'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.' => 'Error: Movable Type no puede escribir en el directorio de caché de las plantillas. Por favor, compruebe los permisos del directorio llamado <code>[_1]</code> dentro del directorio de su blog.',
@@ -1204,18 +1302,19 @@ que la dirección provista es correcta y le pertenece.',
 
 ## lib/MT/CMS/Category.pm
 	'The [_1] must be given a name!' => '¡Debe dar un nombre a [_1]!',
-	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => 'Falló al actualizar [_1]: alguno de los [_2] fueron modificados después de que abriera esta ventana.',
+	'Failed to update [_1]: Some of [_2] were changed after you opened this page.' => 'Falló la actualización de [_1]: Se modificaron algunos [_2] después de que abriera la página.',
 	'Tried to update [_1]([_2]), but the object was not found.' => 'Se intentó actualizar [_1]([_2]), pero el objeto no se encontró.',
 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => 'Se han realizado los cambios ([_1] añadido, [_2] editado y [_3] borrado). <a href="#" onclick="[_4]" class="mt-rebuild">Publique el sitio</a> para que los cambios tomen efecto.',
 	'Add a [_1]' => 'Añador un [_1]',
 	'No label' => 'Sin título',
-	'Category name cannot be blank.' => 'El nombre de la categoría no puede estar en blanco.',
+	'The category name cannot be blank.' => 'El nombre de la categoría debe tener algún valor.',
 	'Permission denied: [_1]' => 'Permiso denegado: [_1]',
-	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'El nombre de la categría \'[_1]\' tiene conflicto con otra categoría. Las categorías de primer nivel y las sub-categorías con el mismo padre deben tener nombres únicos.',
-	'The category basename \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique basenames.' => 'El nombre base de la categoría \'[_1]\' tiene conflictos con otra categoría. Las categorías de primer nivel y las sub-categorías con el mismo padre deben tener nombres base únicos.',
+	'The category name \'[_1]\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Hay un conflicto entre el nombre de la categoría \'[_1]\' y otra categoría. Las categorías de nivel superior y las subcategorías con una misma raíz deben tener nombres diferentes.',
+	'The category basename \'[_1]\' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.' => 'Hay un conflicto entre el nombre base de la categoría \'[_1]\' y el de otra categoría. Las categorías de nivel superior y las subcategorías con una misma raíz deben tener nombres diferentes.',
 	'Category \'[_1]\' created by \'[_2]\'' => 'Categoría \'[_1]\' creada por \'[_2]\'',
 	'The name \'[_1]\' is too long!' => 'El nombre \'[_1]\' es demasiado largo.',
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Categoría \'[_1]\' (ID:[_2]) borrada por \'[_3]\'',
+	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'El nombre de la categría \'[_1]\' tiene conflicto con otra categoría. Las categorías de primer nivel y las sub-categorías con el mismo padre deben tener nombres únicos.',
 
 ## lib/MT/CMS/Comment.pm
 	'Edit Comment' => 'Editar comentario',
@@ -1225,27 +1324,28 @@ que la dirección provista es correcta y le pertenece.',
 	'User \'[_1]\' banned commenter \'[_2]\'.' => 'Usuario \'[_1]\' bloqueó al comentarista \'[_2]\'.',
 	'User \'[_1]\' unbanned commenter \'[_2]\'.' => 'Usuario \'[_1]\' desbloqueó al comentarista \'[_2]\'.',
 	'User \'[_1]\' untrusted commenter \'[_2]\'.' => 'Usuario \'[_1]\' desconfió del comentarista \'[_2]\'.',
-	'Parent comment id was not specified.' => 'ID de comentario padre no se especificó.',
-	'Parent comment was not found.' => 'El comentario padre no se encontró.',
-	'You can\'t reply to unapproved comment.' => 'No puede responder a un comentario no aprobado.',
+	'The parent comment id was not specified.' => 'No se especificó el identificador del comentario raíz.',
+	'The parent comment was not found.' => 'No se encontró el comentario padre.',
+	'You cannot reply to unapproved comment.' => 'No puede responder a un comentario no aprobado.',
 	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Comentario (ID:[_1]) por \'[_2]\' borrado por \'[_3]\' de la entrada \'[_4]\'',
-	'You don\'t have permission to approve this trackback.' => 'No tiene permisos para aprobar este trackback.',
-	'Comment on missing entry!' => '¡Comentario en entrada inexistente!',
-	'You don\'t have permission to approve this comment.' => 'No tiene permiso para aprobar este comentario.',
-	'You can\'t reply to unpublished comment.' => 'No puede contestar a comentarios no publicados.',
+	'You do not have permission to approve this trackback.' => 'No tiene permiso para aprobar este trackback.',
+	'The entry corresponding to this comment is missing.' => 'No se encuentra la entrada correspondiente a este comentario.',
+	'You do not have permission to approve this comment.' => 'No tiene permisos para aprobar este comentario.',
+	'You cannot reply to unpublished comment.' => 'No puede contestar a comentarios no publicados.',
 	'Orphaned comment' => 'Comentario huérfano',
 
 ## lib/MT/CMS/Common.pm
-	'Permisison denied.' => 'Permiso denegado.',
 	'The Template Name and Output File fields are required.' => 'Los campos del nombre de la plantilla y el fichero de salida son obligatorios.',
 	'Invalid type [_1]' => 'Tipo inválido [_1]',
 	'Invalid ID [_1]' => 'ID inválido [_1]',
+	'The website root directory must be within [_1]' => 'El directorio raíz del sitio web debe estar en [_1]',
 	'Save failed: [_1]' => 'Fallo al guardar: [_1]',
 	'Saving object failed: [_1]' => 'Fallo guardando objeto: [_1]',
 	'\'[_1]\' edited the template \'[_2]\' in the blog \'[_3]\'' => '\'[_1]\' editó la plantilla \'[_2]\' en el blog \'[_3]\'',
 	'\'[_1]\' edited the global template \'[_2]\'' => '\'[_1]\' editó la plantilla global \'[_2]\'',
 	'Load failed: [_1]' => 'Fallo carga: [_1]',
 	'(no reason given)' => '(ninguna razón ofrecida)',
+	'Invalid filter: [_1]' => 'Filtro no válido: [_1]',
 	'New Filter' => 'Nuevo filtro',
 	'__SELECT_FILTER_VERB' => 'es',
 	'All [_1]' => 'Todos los/las [_1]',
@@ -1255,31 +1355,30 @@ que la dirección provista es correcta y le pertenece.',
 	'An error occured while counting objects: [_1]' => 'Ocurrió un error durante la contabilización de objetos: [_1]',
 	'An error occured while loading objects: [_1]' => 'Ocurrió un error durante la carga de objetos: [_1]',
 	'Removing tag failed: [_1]' => 'Falló el borrado de la etiqueta: [_1]',
-	'Loading MT::LDAP failed: [_1].' => 'Falló la carga de MT::LDAP: [_1].',
 	'Removing [_1] failed: [_2]' => 'Falló el borrado de [_1]: [_2]',
-	'System templates can not be deleted.' => 'Las plantillas del sistema no se pueden borrar.',
+	'System templates cannot be deleted.' => 'No se pueden eliminar las plantillas del sistema.',
 	'The selected [_1] has been deleted from the database.' => 'El [_1] seleccionado fue borrado de la base de datos.',
-	'Can\'t load [_1] #[_1].' => 'No se pudo cargar [_1] #[_1].',
 	'Saving snapshot failed: [_1]' => 'Fallo al guardar instantánea: [_1]',
 
 ## lib/MT/CMS/Dashboard.pm
-	'Error: This blog doesn\'t have a parent website.' => 'Error: Este blog no tiene un sitio web padre.',
+	'Error: This blog does not have a parent website.' => 'Error: Este blog no tiene un sitio web padre.',
 
 ## lib/MT/CMS/Entry.pm
 	'New Entry' => 'Nueva entrada',
 	'New Page' => 'Nueva página',
 	'pages' => 'páginas',
+	'Category' => 'Categoría',
 	'Tag' => 'Etiqueta',
 	'Entry Status' => 'Estado de la entrada',
-	'Can\'t load template.' => 'No se pudo cargar la plantilla.',
+	'Cannot load template.' => 'No se pudo cargar la plantilla.',
 	'Publish error: [_1]' => 'Error de publicación: [_1]',
-	'Unable to create preview file in this location: [_1]' => 'Imposible crear vista previa del archivo en este lugar: [_1]',
+	'Unable to create preview files in this location: [_1]' => 'No fue posible crear los ficheros de previsualización en esta ruta: [_1]',
 	'New [_1]' => 'Nueva [_1]',
 	'No such [_1].' => 'No existe [_1].',
-	'Same Basename has already been used. You should use an unique basename.' => 'Ya se ha utilizado el mismo nombre base. Debe usar un nombre base único.',
+	'This basename has already been used. You should use an unique basename.' => 'Este nombre base está ya en uso. Debe indicar un nombre base único.',
 	'Your blog has not been configured with a site path and URL. You cannot publish entries until these are defined.' => 'Su blog no tiene configurados la URL y la raíz del sitio. No puede publicar entradas hasta que no estén definidos.',
-	'Invalid date \'[_1]\'; published on dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Fecha no válida \'[_1]\'; las fechas de publicación deben estar en el formato AAAA-MM-DD HH:MM:SS.',
-	'Invalid date \'[_1]\'; published on dates should be real dates.' => 'Fecha no válida \'[_1]\'; la fecha de publicación debe ser una fecha real.',
+	'Invalid date \'[_1]\'; \'Published on\' dates must be in the format YYYY-MM-DD HH:MM:SS.' => 'Fecha no válida \'[_1]\'. Las fechas de publicación debe tener el formato AAAA-MM-DD HH:MM:SS.',
+	'Invalid date \'[_1]\'; \'Published on\' dates should be real dates.' => 'Fecha no válida \'[_1]\'. Las fechas de publicación debe ser fechas reales.',
 	'[_1] \'[_2]\' (ID:[_3]) added by user \'[_4]\'' => '[_1] \'[_2]\' (ID:[_3]) added by user \'[_4]\'',
 	'[_1] \'[_2]\' (ID:[_3]) edited and its status changed from [_4] to [_5] by user \'[_6]\'' => '[_1] \'[_2]\' (ID:[_3]) editado y cambió su estado desde [_4] a [_5] al usuario \'[_6]\'',
 	'[_1] \'[_2]\' (ID:[_3]) edited by user \'[_4]\'' => '[_1] \'[_2]\' (ID:[_3]) editado por el usuario \'[_4]\'',
@@ -1292,23 +1391,23 @@ que la dirección provista es correcta y le pertenece.',
 	'Removing placement failed: [_1]' => 'Fallo eliminando lugar: [_1]',
 	'Ping \'[_1]\' failed: [_2]' => 'Falló ping \'[_1]\' : [_2]',
 	'(user deleted - ID:[_1])' => '(usuario borrado - ID:[_1])',
-	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.' => '<a href="[_1]">QuickPost en [_2]</a> - Arrastre este enlace a la barra de dirección de su navegador y haga clic en él cuando visite un sitio web sobre el que desee escribir en el blog.',
-	'Entry \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Entrada \'[_1]\' (ID:[_2]) borrada por \'[_3]\'',
+	'<a href="[_1]">QuickPost to [_2]</a> - Drag this bookmarklet to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.' => '<a href="[_1]">QuickPost - [_2]</a> - Arrastre este marcador a la barra de su navegador. Haga clic en él cuando visite un sitio web sobre el que quiera bloguear.',
+	'[_1] \'[_2]\' (ID:[_3]) deleted by \'[_4]\'' => '[_1] \'[_2]\' (ID:[_3]) borrada por \'[_4]\'',
 	'Need a status to update entries' => 'Necesita indicar un estado para actualizar las entradas',
 	'Need entries to update status' => 'Necesita entradas para actualizar su estado',
-	'One of the entries ([_1]) did not actually exist' => 'Una de las entradas ([_1]) no existe actualmente',
+	'One of the entries ([_1]) did not exist' => 'Una de las entradas ([_1]) no existe.',
 	'[_1] \'[_2]\' (ID:[_3]) status changed from [_4] to [_5]' => '[_1] \'[_2]\' (ID:[_3]) cambió de estado de [_4] a [_5]',
 
 ## lib/MT/CMS/Export.pm
-	'Load of blog \'[_1]\' failed: [_2]' => 'La carga del blog \'[_1]\' falló: [_2]',
+	'Loading blog \'[_1]\' failed: [_2]' => 'Falló al cargar el blog \'[_1]\': [_2]',
 	'You do not have export permissions' => 'No tiene permisos de exportación',
 
 ## lib/MT/CMS/Filter.pm
-	'Failed to save filter: label is required.' => 'Falló al guardar el filtro: la etiqueta es obligatoria.',
-	'Failed to save filter: label "[_1]" is duplicated.' => 'Falló al guardar el filtro: la etiqueta "[_1]" está duplicada.',
+	'Failed to save filter: Label is required.' => 'Falló al guardar el filtro: la etiqueta es obligatoria.',
+	'Failed to save filter:  Label "[_1]" is duplicated.' => 'Falló al guardar el filtro: La etiqueta "[_1]" está duplicada.',
 	'No such filter' => 'No existe dicho filtro',
-	'Failed to save filter: [_1]' => 'Falló al guardar el filtro: [_1]',
 	'Permission denied' => 'Permiso denegado',
+	'Failed to save filter: [_1]' => 'Falló al guardar el filtro: [_1]',
 	'Failed to delete filter(s): [_1]' => 'Falló al borrar los filtros: [_1]',
 	'Removed [_1] filters successfully.' => 'Se borraron con éxito los [_1] filtros.',
 	'[_1] ( created by [_2] )' => '[_1] ( creado por [_2] )',
@@ -1334,7 +1433,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Activity log reset by \'[_1]\'' => 'Registro de actividad reiniciado por \'[_1]\'',
 
 ## lib/MT/CMS/Plugin.pm
-	'Plugin Set: [_1]' => 'Conjuntos de extensiones: [_1]',
+	'Error saving plugin settings: [_1]' => 'Error guardando la configuración de las extensión: [_1]',
+	'Plugin Set: [_1]' => 'Conjunto de extensiones: [_1]',
 	'Individual Plugins' => 'Extensiones individuales',
 
 ## lib/MT/CMS/Search.pm
@@ -1342,6 +1442,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Entry Body' => 'Cuerpo de la entrada',
 	'Extended Entry' => 'Entrada extendida',
 	'Keywords' => 'Palabras clave',
+	'Basename' => 'Nombre base',
 	'Comment Text' => 'Comentario',
 	'IP Address' => 'Dirección IP',
 	'Source URL' => 'URL origen',
@@ -1356,14 +1457,13 @@ que la dirección provista es correcta y le pertenece.',
 	'Search & Replace' => 'Buscar & Reemplazar',
 	'Invalid date(s) specified for date range.' => 'Se especificaron fechas no válidas para el rango.',
 	'Error in search expression: [_1]' => 'Error en la expresión de búsqueda: [_1]',
-	'Saving object failed: [_2]' => 'Fallo al guardar objeto: [_2]',
 
 ## lib/MT/CMS/Tag.pm
-	'New name of the tag must be specified.' => 'El nuevo nombre de la etiqueta debe ser especificado',
+	'A new name for the tag must be specified.' => 'Debe especificar un nombre nuevo para la etiqueta.',
 	'No such tag' => 'No existe dicha etiqueta',
-	'Tag name was successfully renamed' => 'Se ha renombrado la etiqueta con éxito.',
+	'The tag was successfully renamed' => 'Se renombró con éxito a la etiqueta.',
 	'Error saving entry: [_1]' => 'Error guardando entrada: [_1]',
-	'Added [_1] tags for [_2] entries successfully!' => '¡Se ha añadido con éxito [_1] etiquetas a [_2] entradas!',
+	'Successfully added [_1] tags for [_2] entries.' => 'Se añadió con éxito [_1] etiquetas en [_2] entradas.',
 	'Error saving file: [_1]' => 'Error guardando fichero: [_1]',
 	'Tag \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Etiqueta \'[_1]\' (ID:[_2]) borrada por \'[_3]\'',
 
@@ -1377,11 +1477,11 @@ que la dirección provista es correcta y le pertenece.',
 	'system' => 'sistema',
 	'One or more errors were found in this template.' => 'Se encontraron uno o más errores en esta plantilla.',
 	'Unknown blog' => 'Blog desconocido',
-	'One or more errors were found in included template module ([_1]).' => 'Se encontraron uno o más errores en el módulo de plantilla incluído ([_1]).',
+	'One or more errors were found in the included template module ([_1]).' => 'Se encontraron uno o más errrores en el módulo de plantilla incluído ([_1])',
 	'Global Template' => 'Plantilla global',
 	'Invalid Blog' => 'Blog no válido',
 	'Global' => 'Global',
-	'Create template requires type' => 'Crear plantillas requiere el tipo',
+	'You must specify a template type when creating a template' => 'Debe especificar un tipo al crear una plantilla.',
 	'Archive' => 'Archivo',
 	'Entry or Page' => 'Entrada o página',
 	'New Template' => 'Nueva plantilla',
@@ -1391,16 +1491,18 @@ que la dirección provista es correcta y le pertenece.',
 	'System Templates' => 'Plantillas del sistema',
 	'Email Templates' => 'Plantillas de correo',
 	'Template Backups' => 'Copias de seguridad de las plantillas',
-	'Can\'t locate host template to preview module/widget.' => 'No se localizó la plantilla origen para mostrar el módulo/widget.',
+	'Cannot locate host template to preview module/widget.' => 'No se localizó la plantilla origen para mostrar el módulo/widget.',
 	'Cannot preview without a template map!' => '¡No se puede mostrar la vista previa sin un mapa de plantilla!',
+	'Unable to create preview file in this location: [_1]' => 'Imposible crear vista previa del archivo en este lugar: [_1]',
 	'Lorem ipsum' => 'Lorem ipsum',
 	'LOREM_IPSUM_TEXT' => 'LOREM_IPSUM_TEXT',
 	'LORE_IPSUM_TEXT_MORE' => 'LORE_IPSUM_TEXT_MORE',
 	'sample, entry, preview' => 'sample, entry, preview',
 	'Populating blog with default templates failed: [_1]' => 'Falló el guardando del blog con las plantillas por defecto: [_1]',
 	'Setting up mappings failed: [_1]' => 'Fallo la configuración de mapeos: [_1]',
+	'Cannot load templatemap' => 'No se pudo cargar el mapa de plantillas',
 	'Saving map failed: [_1]' => 'Fallo guardando mapa: [_1]',
-	'You should not be able to enter 0 as the time.' => 'No debería poder introducir 0 en estos momentos.',
+	'You should not be able to enter zero (0) as the time.' => 'No debería introducir cero (0) como hora.',
 	'You must select at least one event checkbox.' => 'Debe seleccionar al menos una casilla de eventos.',
 	'Template \'[_1]\' (ID:[_2]) created by \'[_3]\'' => 'Plantilla \'[_1]\' (ID:[_2]) creada por \'[_3]\'',
 	'Template \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Plantilla \'[_1]\' (ID:[_2]) borrada por \'[_3]\'',
@@ -1430,37 +1532,43 @@ que la dirección provista es correcta y le pertenece.',
 	'Download [_1] archive' => 'Descargar archivo de [_1]',
 	'Failed to load theme export template for [_1]: [_2]' => 'Falló la carga de la plantilla de exportación de temas para [_1]: [_2]',
 	'Failed to save theme export info: [_1]' => 'Fallo al guardar la información de exportación del tema: [_1]',
-	'Themes Directory [_1] is not writable.' => 'No se puede escribir en el directorio de los temas [_1].',
+	'Themes directory [_1] is not writable.' => 'No se puede escribir en el directorio de los temas [_1].',
+	'All themes directories are not writable.' => 'No se puede escribir en inguno de los directorios de los temas.',
 	'Error occurred during exporting [_1]: [_2]' => 'Ocurrió un error durante la exportación de [_1]: [_2]',
 	'Error occurred during finalizing [_1]: [_2]' => 'Ocurrió un error durante la finalización de [_1]: [_2]',
 	'Error occurred while publishing theme: [_1]' => 'Ocurrió un error durante la publicación del tema: [_1]',
+	'Themes Directory [_1] is not writable.' => 'No se puede escribir en el directorio de los temas [_1].',
 
 ## lib/MT/CMS/Tools.pm
 	'Password Recovery' => 'Recuperación de contraseña',
-	'User not found' => 'Usuario no encontrado',
-	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'Error enviando correo ([_1]); por favor, solvente el problema e inténte de nuevo la recuperación de la contraseña.',
+	'Email address is required for password reset.' => 'La dirección de correo es necesaria para el reinicio de contraseña.',
+	'Error sending e-mail ([_1]); Please fix the problem, then try again to recover your password.' => 'Error enviado un correo electrónico ([_1]). Por favor, solucione el problema y luego intente recuperar de nuevo la contraseña.',
 	'Password reset token not found' => 'Token para el reinicio de la contraseña no encontrado',
 	'Email address not found' => 'Dirección de correo no encontrada',
+	'User not found' => 'Usuario no encontrado',
 	'Your request to change your password has expired.' => 'Expiró su solicitud de cambio de contraseña.',
 	'Invalid password reset request' => 'Solicitud de reinicio de contraseña no válida',
 	'Please confirm your new password' => 'Por favor, confirme su nueva contraseña',
 	'Passwords do not match' => 'Las contraseñas no coinciden',
 	'That action ([_1]) is apparently not implemented!' => '¡La acción ([_1]) aparentemente no está implementada!',
-	'You don\'t have a system email address configured.  Please set this first, save it, then try the test email again.' => 'No tiene configurada una dirección de correo para el sistema. Por favor, configúrela primero, guárdela y luego intente enviar el correo de prueba.',
-	'Please enter a valid email address' => 'Por favor, introduzca una dirección de correo válida',
+	'Error occurred while attempting to [_1]: [_2]' => 'Ocurrió un error intentando [_1]: [_2]',
+	'You do not have a system email address configured.  Please set this first, save it, then try the test email again.' => 'No ha configurado la dirección de correo del sistema. Por favor, configúrela, guárdela y luego intente de nuevo enviar el correo de prueba.',
 	'Test email from Movable Type' => 'Correo de prueba de Movable Type',
 	'This is the test email sent by Movable Type.' => 'Este es un mensaje de prueba enviado por Movable Type',
-	'Mail was not properly sent' => 'El correo no se envió correctamente',
 	'Test e-mail was successfully sent to [_1]' => 'El correo de prueba fue enviado con éxito a [_1]',
-	'These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'Esta configuración está sobreescrita por un valor en el fichero de configuración de MT: [_1]. Elimine el valor del fichero de configuración para controlar el valor desde esta página.',
+	'E-mail was not properly sent. [_1]' => 'El correo no se envió correctamente. [_1]',
+	'These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'Un valor en el fichero de configuración de MT tiene prioridad sobre esta configuración: [_1]. Elimine el valor del fichero de configuración para poder co ntrolarlo desde esta página.',
 	'Email address is [_1]' => 'La dirección de correo es [_1]',
 	'Debug mode is [_1]' => 'El modo de depuración es [_1]',
 	'Performance logging is on' => 'El histórico de rendimiento está activado',
 	'Performance logging is off' => 'El histórico de rendimiento está desactivado',
 	'Performance log path is [_1]' => 'La ruta del histórico de rendimiento es [_1]',
 	'Performance log threshold is [_1]' => 'El umbral del histórico de rendimiento es [_1]',
+	'Invalid SitePath.  The SitePath should be valid and absolute, not relative' => 'SitePath no válido. Debe tener un valor absoluto, no relativo.',
+	'[_1] is [_2]' => '[_1] es [_2]',
+	'none' => 'ninguno',
 	'System Settings Changes Took Place' => 'Se realizaron los cambios en la configuración del sistema',
-	'Invalid password recovery attempt; can\'t recover password in this configuration' => 'Intento de recuperación de contraseña no válido; no se pudo recuperar la clave con esta configuración',
+	'Invalid password recovery attempt; Cannot recover the password in this configuration' => 'Intento de recuperación de contraseña no válido. No se pudo recuperar la contraseña con esta configuración',
 	'Invalid author_id' => 'author_id no válido',
 	'Backup & Restore' => 'Copias de seguridad',
 	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'Debe poderse escribir en el directorio temporal para que las copias de seguridad funcionen correctamente. Por favor, compruebe la opción de configuración TempDir.',
@@ -1487,10 +1595,11 @@ que la dirección provista es correcta y le pertenece.',
 	'Restoring a file failed: ' => 'Falló la restauración de un fichero:',
 	'Some of the files were not restored correctly.' => 'No se restauraron correctamente algunos de los ficheros.',
 	'Successfully restored objects to Movable Type system by user \'[_1]\'' => 'El usuario \'[_1]\' restauró objetos en el sistema Movable Type con éxito.',
-	'Can\'t recover password in this configuration' => 'No se pudo recuperar la clave con esta configuración',
+	'Invalid password recovery attempt; cannot recover password in this configuration' => 'Intento de recuperación de contraseña no válido; no se pudo recuperar la clave con esta configuración',
+	'Cannot recover password in this configuration' => 'No se pudo recuperar la clave con esta configuración',
 	'Invalid user name \'[_1]\' in password recovery attempt' => 'Nombre de usuario no válido \'[_1]\' en intento de recuperación de contraseña',
 	'User name or password hint is incorrect.' => 'El nombre del usuario o la contraseña es incorrecto.',
-	'User has not set pasword hint; cannot recover password' => 'El usuario no ha configurado una pista para la contraseña; no se pudo recuperar',
+	'User has not set pasword hint; Cannot recover password' => 'El usuario no ha configurado una pista para la contraseña; no se pudo recuperar',
 	'Invalid attempt to recover password (used hint \'[_1]\')' => 'Intento inválido de recuperación de la contraseña (pista usada \'[_1]\')',
 	'User \'[_1]\' (user #[_2]) does not have email address' => 'El usuario \'[_1]\' (usuario #[_2]) no tiene dirección de correo',
 	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'Se ha envíado el enlace del reinicio de la contraseña para el usuario \'[_1]\' a [_3] (usuario #[_2]).',
@@ -1498,10 +1607,17 @@ que la dirección provista es correcta y le pertenece.',
 	'[_1] is not a directory.' => '[_1] no es un directorio.',
 	'Error occured during restore process.' => 'Ocurrió un error durante el proceso de restauración.',
 	'Some of files could not be restored.' => 'Algunos ficheros no se restauraron.',
+	'Uploaded file was not a valid Movable Type backup manifest file.' => 'El fichero transferido no era un fichero no válido de manifiesto de copia de seguridad de Movable Type.',
 	'Manifest file \'[_1]\' is too large. Please use import direcotry for restore.' => 'El fichero de manifesto \'[_1]\' es demasiado grande. Por favor, utilice el directorio de importación para la restauración.',
 	'Blog(s) (ID:[_1]) was/were successfully backed up by user \'[_2]\'' => 'Las copias de seguridad de el/los blog(s) (ID:[_1]) se hizo/hicieron correctamente por el usuario  \'[_2]\'',
 	'Movable Type system was successfully backed up by user \'[_1]\'' => 'El usuario \'[_1]\' realizó con éxito una copia de seguridad del sistema de Movable Type',
 	'Some [_1] were not restored because their parent objects were not restored.' => 'Algunos [_1] no se restauraron porque sus objetos ascendentes no se restauraron.',
+	'Recipients for lockout notification' => 'Destinatarios de las notificaciones de bloqueos',
+	'User lockout limit' => 'Límite de bloqueo de usuarios',
+	'User lockout interval' => 'Intervalo de bloqueo de usuarios',
+	'IP address lockout limit' => 'Límite de bloqueo de direcciones IP',
+	'IP address lockout interval' => 'Intervalo de bloqueo de direcciones IP',
+	'Lockout IP address whitelist' => 'Lista blanca de bloqueo de direcciones IP',
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(Categoría sin título)',
@@ -1515,13 +1631,14 @@ que la dirección provista es correcta y le pertenece.',
 
 ## lib/MT/CMS/User.pm
 	'Create User' => 'Crear usuario',
-	'Can\'t load role #[_1].' => 'No se pudo cargar el rol #[_1].',
+	'Cannot load role #[_1].' => 'No se pudo cargar el rol #[_1].',
 	'Role name cannot be blank.' => 'El nombre del rol no puede estar vacío.',
 	'Another role already exists by that name.' => 'Ya existe otro rol con ese nombre.',
 	'You cannot define a role without permissions.' => 'No puede definir un rol sin permisos.',
 	'Invalid type' => 'Tipo no válido',
 	'Invalid ID given for personal blog theme.' => 'ID inválido para un tema de blog personal.',
 	'Invalid ID given for personal blog clone location ID.' => 'ID inválido para el ID de localización de clonación de blog personal.',
+	'Minimum password length must be an integer and greater than zero.' => 'La contraseña debe tener al menos un carácter.',
 	'If personal blog is set, the personal blog location are required.' => 'Si el blog personal está establecido, se necesita la localización del blog personal.',
 	'Select a entry author' => 'Seleccione un autor de entradas',
 	'Select a page author' => 'Seleccione un autor de páginas',
@@ -1542,6 +1659,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Roles Selected' => 'Roles seleccionados',
 	'Grant Permissions' => 'Otorgar permisos',
 	'You cannot delete your own association.' => 'No puede borrar sus propias asociaciones.',
+	'[_1]\'s Associations' => 'Asociaciones de [_1]',
 	'You cannot delete your own user record.' => 'No puede borrar el registro de su propio usuario.',
 	'You have no permission to delete the user [_1].' => 'No tiene permisos para borrar el usuario [_1].',
 	'User requires username' => 'El usuario necesita un nombre de usuario',
@@ -1556,25 +1674,33 @@ que la dirección provista es correcta y le pertenece.',
 	'Website \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Sitio web \'[_1]\' (ID:[_2]) borrado por \'[_3]\'',
 	'Selected Website' => 'Sitio web seleccionado',
 	'Type a website name to filter the choices below.' => 'Teclee el nombre de un sitio web para filtrar las opciones de abajo.',
-	'Can\'t load website #[_1].' => 'No se pudo cargar el sitio web #[_1].',
+	'Cannot load website #[_1].' => 'No se pudo cargar el sitio web #[_1].',
 	'Blog \'[_1]\' (ID:[_2]) moved from \'[_3]\' to \'[_4]\' by \'[_5]\'' => 'Blog \'[_1]\' (ID:[_2]) trasladado de \'[_3]\' a \'[_4]\' por \'[_5]\'',
+
+## lib/MT/Category.pm
+	'[quant,_1,entry,entries,No entries]' => '[quant,_1,entraday,entradas,Sin entradas]',
+	'[quant,_1,page,pages,No pages]' => '[quant,_1,página,páginas,Sin páginas]',
+	'Categories must exist within the same blog' => 'Las categorías deben existir en el mismo blog',
+	'Category loop detected' => 'Bucle de categorías detectado',
+	'string(100) not null' => 'cadena(100) no vacía',
+	'Parent' => 'Raíz',
 
 ## lib/MT/Comment.pm
 	'Comment' => 'Comentario',
-	'Search other comments from this anonymous commenter' => 'Buscar otros comentarios de este comentarista anónimo',
+	'Search for other comments from anonymous commenters' => 'Buscar otros comentarios anónimos',
 	'__ANONYMOUS_COMMENTER' => 'Anónimo',
-	'Search other comments from this deleted commenter' => 'Buscar otros comentarios de este comentarista eliminado',
+	'Search for other comments from this deleted commenter' => 'Buscar otros comentarios de este comentarista eliminado',
 	'(Deleted)' => '(Borrado)',
 	'Edit this [_1] commenter.' => 'Editar este comentarista [_1].',
 	'Comments on [_1]: [_2]' => 'Comentarios en [_1]: [_2]',
-	'All comments by [_1] \'[_2]\'' => 'Todos los comentarios de [_1] \'[_2]\'',
-	'Commenter' => 'Comentarista',
-	'Load of entry \'[_1]\' failed: [_2]' => 'Fallo al cargar la entrada \'[_1]\': [_2]',
-	'Entry/Page' => 'Entrada/Página',
 	'Approved' => 'Autorizado',
 	'Unapproved' => 'No aprobado',
 	'Not spam' => 'No es spam',
 	'Reported as spam' => 'Marcado como spam',
+	'All comments by [_1] \'[_2]\'' => 'Todos los comentarios de [_1] \'[_2]\'',
+	'Commenter' => 'Comentarista',
+	'Loading entry \'[_1]\' failed: [_2]' => 'Falló al cargar la entrada \'[_1]\': [_2]',
+	'Entry/Page' => 'Entrada/Página',
 	'Comments on My Entries/Pages' => 'Comentarios en mis entradas/páginas',
 	'Commenter Status' => 'Estado comentarista',
 	'Non-spam comments' => 'Comentarios que no son spam',
@@ -1594,20 +1720,22 @@ que la dirección provista es correcta y le pertenece.',
 ## lib/MT/Component.pm
 	'Loading template \'[_1]\' failed: [_2]' => 'Fallo cargando plantilla \'[_1]\': [_2]',
 
+## lib/MT/Config.pm
+	'Configuration' => 'Configuración',
+
 ## lib/MT/ConfigMgr.pm
 	'Alias for [_1] is looping in the configuration.' => 'Alias de [_1] está generando un bucle en la configuración.',
 	'Error opening file \'[_1]\': [_2]' => 'Error abriendo el fichero \'[_1]\': [_2]',
 	'Config directive [_1] without value at [_2] line [_3]' => 'Directiva de configuración [_1] sin valor en [_2] línea [_3]',
 	'No such config variable \'[_1]\'' => 'No existe tal variable de configuración \'[_1]\'',
 
-## lib/MT/Config.pm
-	'Configuration' => 'Configuración',
-
 ## lib/MT/Core.pm
-	'This is usually \'localhost\'.' => 'Generalmente es \'localhost\'.',
+	'This is often \'localhost\'.' => 'Generalmente esto es \'localhost\'.',
 	'The physical file path for your SQLite database. ' => 'La ruta física del fichero de la base de datos SQLite.',
 	'[_1] in [_2]: [_3]' => '[_1] en [_2]: [_3]',
 	'option is required' => 'opción es obligatoria',
+	'Days must be a number.' => 'Los días deben ser un número.',
+	'Invalid date.' => 'Fecha no válida.',
 	'[_1] [_2] between [_3] and [_4]' => '[_1] [_2] entre [_3] y [_4]',
 	'[_1] [_2] since [_3]' => '[_1] [_2] desde [_3]',
 	'[_1] [_2] or before [_3]' => '[_1] [_2] o antes de [_3]',
@@ -1620,14 +1748,13 @@ que la dirección provista es correcta y le pertenece.',
 	'No Label' => 'Sin etiqueta',
 	'*User deleted*' => '*Usuario borrado*',
 	'(system)' => '(sistema)',
-	'*Website/Blog deleted*' => '*Sitio/blog borrado*',
 	'My [_1]' => 'Mis [_1]',
 	'[_1] of this Website' => '[_1] de este sitio web',
 	'IP Banlist is disabled by system configuration.' => 'La lista de bloqueos por IP está desactivada por la configuración del sistema.',
 	'Address Book is disabled by system configuration.' => 'La agenda está desactivada por la configuración del sistema.',
-	'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]' => 'Error al crear el directorio de registros de rendimiento, [_1]. Por favor, cambie los permisos de escritura del directorio o especifique una ruta alternativa utilizando la directiva PerformanceLoggingPath en la configuración: [_2]',
-	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]' => 'Error creando los registros de rendimiento: la directiva PerformanceLoggingPath debe ser un directorio, no un fichero: [_1]',
-	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]' => 'Error creando los registros de rendimiento: el directorio PerformanceLoggingPath existe, pero no se puede escribir en él: [_1]',
+	'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive. [_2]' => 'Error al crear el directorio de los registros de rendimiento, [_1]. Por favor, cambie los permisos para que se pueda escribir en él o especifique un directorio alternativo utilizando la directiva de configuración PerformanceLoggingPath. [_2]',
+	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file. [_1]' => 'Error al crear los registros de rendimiento: la directiva PerformanceLoggingPath debe ser un directorio, no un fichero. [_1]',
+	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable. [_1]' => 'Error al crear los registros de rendimiento: El directorio PerformanceLoggingPath existe pero no se puede escribir en él. [_1]',
 	'MySQL Database (Recommended)' => 'Base de datos MySQL (recomendada)',
 	'PostgreSQL Database' => 'Base de datos PostgreSQL',
 	'SQLite Database' => 'Base de datos SQLite',
@@ -1688,6 +1815,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Junk Folder Expiration' => 'Caducidad de la carpeta basura',
 	'Remove Temporary Files' => 'Borrar ficheros temporales',
 	'Purge Stale Session Records' => 'Eliminar registros de sesión caducados',
+	'Remove expired lockout data' => 'Eliminar datos cacudados de bloqueos',
+	'Purge Unused FileInfo Records' => 'Purgar registros FileInfo no utilizados',
 	'Manage Website' => 'Administrar sitio web',
 	'Manage Blog' => 'Administrar blog',
 	'Manage Website with Blogs' => 'Administrar sitio web con blogs',
@@ -1728,7 +1857,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Comment Preview' => 'Vista previa de comentario',
 	'Displays preview of comment.' => 'Muestra una previsualización del comentario.',
 	'Dynamic Error' => 'Error dinámico',
-	'Displays errors for dynamically published templates.' => 'Muestra errores de las plantillas publicadas dinámicamente.',
+	'Displays errors for dynamically-published templates.' => 'Mostrar errores de las plantillas publicadas dinámicamente.',
 	'Popup Image' => 'Imagen emergente',
 	'Displays image when user clicks a popup-linked image.' => 'Muestra una imagen cuando el usuario hace clic en una imagen con enlace a una ventana emergente.',
 	'Displays results of a search.' => 'Muestra los resultados de una búsqueda.',
@@ -1753,14 +1882,20 @@ que la dirección provista es correcta y le pertenece.',
 	'New Ping' => 'Nuevo ping',
 	'Entry Notify' => 'Notificación de entradas',
 	'Subscribe Verify' => 'Verificación de suscripciones',
+	'User Lockout' => 'Bloqueo de usuarios',
+	'IP Address Lockout' => 'Bloqueo de direcciones IP',
 
 ## lib/MT/Entry.pm
-	'NONE' => 'ninguno',
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] ( id:[_2] ) no existe.',
 	'Entries from category: [_1]' => 'Entradas en la categoría: [_1]',
+	'NONE' => 'ninguno',
+	'Draft' => 'Borrador',
+	'Published' => 'Publicado',
+	'Reviewing' => 'En revisión',
+	'Scheduled' => 'Programado',
+	'Junk' => 'Basura',
 	'Entries by [_1]' => 'Entradas de [_1]',
 	'record does not exist.' => 'registro no existe.',
-	'Draft' => 'Borrador',
 	'Review' => 'Revisar',
 	'Future' => 'Futuro',
 	'Spam' => 'Spam',
@@ -1774,17 +1909,13 @@ que la dirección provista es correcta y le pertenece.',
 	'Primary Category' => 'Categoría principal',
 	'-' => '-',
 	'__PING_COUNT' => 'Trackbacks',
-	'Published' => 'Publicado',
-	'Reviewing' => 'En revisión',
-	'Scheduled' => 'Programado',
-	'Junk' => 'Basura',
 	'Date Commented' => 'Fecha comentario',
 	'Author ID' => 'ID Autor',
 	'My Entries' => 'Mis entradas',
 	'Published Entries' => 'Entradas publicadas',
 	'Unpublished Entries' => 'Entradas no publicadas',
 	'Scheduled Entries' => 'Entradas programadas',
-	'Entries Commented on in the Last 7 Days' => 'Entradas comentadas en los últimos 7 días',
+	'Entries with Comments Within the Last 7 Days' => 'Entradas con comentarios en los últimos 7 días',
 
 ## lib/MT/FileMgr/DAV.pm
 	'DAV connection failed: [_1]' => 'Falló la conexión DAV: [_1]',
@@ -1813,30 +1944,43 @@ que la dirección provista es correcta y le pertenece.',
 
 ## lib/MT/Folder.pm
 
-## lib/MT/Image/GD.pm
-	'Can\'t load GD: [_1]' => 'No se puede cargar GD: [_1]',
-	'Unsupported image file type: [_1]' => 'Tipo de imagen no soportada: [_1]',
-	'Reading file \'[_1]\' failed: [_2]' => 'Fallo leyendo archivo \'[_1]\': [_2]',
-	'Reading image failed: [_1]' => 'Fallo leyendo imagen: [_1]',
-
-## lib/MT/Image/ImageMagick.pm
-	'Can\'t load Image::Magick: [_1]' => 'No se pudo cargar Image::Magick: [_1]',
-	'Scaling to [_1]x[_2] failed: [_3]' => 'El escalado a [_1]x[_2] falló: [_3]',
-	'Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]' => 'Fallo recortando un cuadrado [_1]x[_1] en [_2],[_3]: [_4]',
-	'Converting image to [_1] failed: [_2]' => 'Fallo convirtiendo una imagen a [_1]: [_2]',
-
-## lib/MT/Image/Imager.pm
-	'Can\'t load Imager: [_1]' => 'No se pudo cargar Imager: [_1]',
-
-## lib/MT/Image/NetPBM.pm
-	'Can\'t load IPC::Run: [_1]' => 'No se pudo cargar IPC::Run: [_1]',
-	'Cropping to [_1]x[_1] failed: [_2]' => 'Fallo recortando a [_1]x[_1]: [_2]',
-	'You do not have a valid path to the NetPBM tools on your machine.' => 'No posee una ruta válida a las herramientas NetPBMYou en su máquina.',
+## lib/MT/IPBanList.pm
+	'IP Ban' => 'Bloqueo de IP',
+	'IP Bans' => 'Bloqueos de IP',
 
 ## lib/MT/Image.pm
 	'Invalid Image Driver [_1]' => 'Controlador de imágenes [_1] no válido',
 	'Saving [_1] failed: Invalid image file format.' => 'Falló guardando [_1]: Formato de fichero de imagen no válido.',
 	'File size exceeds maximum allowed: [_1] > [_2]' => 'El tamaño del fichero excede el máximo permitido: [_1] > [_2]',
+
+## lib/MT/Image/GD.pm
+	'Cannot load GD: [_1]' => 'No se puede cargar GD: [_1]',
+	'Unsupported image file type: [_1]' => 'Tipo de imagen no soportada: [_1]',
+	'Reading file \'[_1]\' failed: [_2]' => 'Fallo leyendo archivo \'[_1]\': [_2]',
+	'Reading image failed: [_1]' => 'Fallo leyendo imagen: [_1]',
+
+## lib/MT/Image/ImageMagick.pm
+	'Cannot load Image::Magick: [_1]' => 'No se pudo cargar Image::Magick: [_1]',
+	'Scaling to [_1]x[_2] failed: [_3]' => 'El escalado a [_1]x[_2] falló: [_3]',
+	'Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]' => 'Fallo recortando un cuadrado [_1]x[_1] en [_2],[_3]: [_4]',
+	'Converting image to [_1] failed: [_2]' => 'Fallo convirtiendo una imagen a [_1]: [_2]',
+
+## lib/MT/Image/Imager.pm
+	'Cannot load Imager: [_1]' => 'No se pudo cargar Imager: [_1]',
+
+## lib/MT/Image/NetPBM.pm
+	'Cannot load IPC::Run: [_1]' => 'No se pudo cargar IPC::Run: [_1]',
+	'Cropping to [_1]x[_1] failed: [_2]' => 'Fallo recortando a [_1]x[_1]: [_2]',
+	'You do not have a valid path to the NetPBM tools on your machine.' => 'No posee una ruta válida a las herramientas NetPBMYou en su máquina.',
+
+## lib/MT/Import.pm
+	'Cannot rewind' => 'No se pudo reiniciar',
+	'Cannot open \'[_1]\': [_2]' => 'No se pudo abrir \'[_1]\': [_2]',
+	'No readable files could be found in your import directory [_1].' => 'No se encontrón ningún fichero legible en su directorio de importación [_1].',
+	'Importing entries from file \'[_1]\'' => 'Importando entradas desde el fichero \'[_1]\'',
+	'Could not resolve import format [_1]' => 'No se pudo identificar el formato de importación [_1]',
+	'Movable Type' => 'Movable Type',
+	'Another system (Movable Type format)' => 'Otro sistema (formato Movable Type)',
 
 ## lib/MT/ImportExport.pm
 	'No Blog' => 'Sin Blog',
@@ -1847,7 +1991,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Saving category failed: [_1]' => 'Fallo guardando categoría: [_1]',
 	'Invalid status value \'[_1]\'' => 'Valor de estado no válido \'[_1]\'',
 	'Invalid allow pings value \'[_1]\'' => 'Valor no válido de permiso de pings \'[_1]\'',
-	'Can\'t find existing entry with timestamp \'[_1]\'... skipping comments, and moving on to next entry.' => 'No se encontró una entrada existente con la fecha \'[_1]\'... ignorando comentarios, y pasando a la siguiente entrada.',
+	'Cannot find existing entry with timestamp \'[_1]\'... skipping comments, and moving on to next entry.' => 'No se encontró una entrada existente con la fecha \'[_1]\'... ignorando comentarios, y pasando a la siguiente entrada.',
 	'Importing into existing entry [_1] (\'[_2]\')' => 'Importando en entrada existente [_1] (\'[_2]\')',
 	'Saving entry (\'[_1]\')...' => 'Guardando entrada (\'[_1]\')...',
 	'ok (ID [_1])' => 'ok (ID [_1])',
@@ -1859,19 +2003,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Export failed on entry \'[_1]\': [_2]' => 'Fallo de exportación en la entrada \'[_1]\': [_2]',
 	'Invalid date format \'[_1]\'; must be \'MM/DD/YYYY HH:MM:SS AM|PM\' (AM|PM is optional)' => 'Formato de fecha \'[_1]\' no válido; debe ser \'MM/DD/AAAA HH:MM:SS AM|PM\' (AM|PM es opcional)',
 
-## lib/MT/Import.pm
-	'Can\'t rewind' => 'No se pudo reiniciar',
-	'Can\'t open \'[_1]\': [_2]' => 'No se pudo abrir \'[_1]\': [_2]',
-	'No readable files could be found in your import directory [_1].' => 'No se encontrón ningún fichero legible en su directorio de importación [_1].',
-	'Importing entries from file \'[_1]\'' => 'Importando entradas desde el fichero \'[_1]\'',
-	'Couldn\'t resolve import format [_1]' => 'No se pudo resolver el formato de importación [_1]',
-	'Movable Type' => 'Movable Type',
-	'Another system (Movable Type format)' => 'Otro sistema (formato Movable Type)',
-
-## lib/MT/IPBanList.pm
-	'IP Ban' => 'Bloqueo de IP',
-	'IP Bans' => 'Bloqueos de IP',
-
 ## lib/MT/JunkFilter.pm
 	'Action: Junked (score below threshold)' => 'Acción: Basura (puntuación bajo nivel)',
 	'Action: Published (default action)' => 'Acción: Publicado (acción predefinida)',
@@ -1880,29 +2011,22 @@ que la dirección provista es correcta y le pertenece.',
 	'Composite score: [_1]' => 'Puntuación compuesta: [_1]',
 
 ## lib/MT/ListProperty.pm
-	'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Falló al iniciar la propiedad de auto lista [_1].[_2]: No se encontró la definición de la columna [_3].',
-	'Failed to init auto list property [_1].[_2]: unsupported column type.' => 'Falló al iniciar Failed la propiedad de auto lista [_1].[_2]: tipo de columna no soportado.',
+	'Cannot initialize list property [_1].[_2].' => 'No se pudo inicializar la propiedad de listas [_1].[_2].',
+	'Failed to initialize auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Falló al inicializar automáticamente la lista de propiedades [_1]. [_2] No se pudo encontrar la definición de la columna [_3].',
+	'Failed to initialize auto list property [_1].[_2]: unsupported column type.' => 'Falló al inicializar automáticamente la lista de propiedades [_1]. [_2]: Tipo de columna no soportada.',
+
+## lib/MT/Lockout.pm
+	'Cannot find author for id \'[_1]\'' => 'No se pudo encontrar al autor con el id \'[_1]\'',
+	'User was locked out. IP address: [_1], Username: [_2]' => 'Se desbloqueó al usuario. Dirección IP: [_1], Usuario: [_2]',
+	'User Was Locked Out' => 'Se desbloqueó al usuario.',
+	'Error sending mail: [_1]' => 'Error enviado correo: [_1]',
+	'IP address was locked out. IP address: [_1], Username: [_2]' => 'Se desbloqueó la dirección IP. Dirección IP: [_1], Usuario: [_2]',
+	'IP Address Was Locked Out' => 'Se desbloqueó la dirección IP.',
+	'User has been unlocked. Username: [_1]' => 'Se desbloqueó al usuario. Usuario: [_1]',
 
 ## lib/MT/Log.pm
 	'Log message' => 'Mensaje del registro',
 	'Log messages' => 'Mensajes del registro',
-	'Showing only ID: [_1]' => 'Mostrando solo ID: [_1]',
-	'Page # [_1] not found.' => 'Página nº [_1] no encontrada.',
-	'Entry # [_1] not found.' => 'Entrada nº [_1] no encontrada.',
-	'Comment # [_1] not found.' => 'Comentario nº [_1] no encontrado.',
-	'TrackBack # [_1] not found.' => 'TrackBack nº [_1] no encontrado.',
-	'blog' => 'Blog',
-	'website' => 'sitio web',
-	'search' => 'buscar', # Translate - Case
-	'author' => 'autor', # Translate - Case
-	'ping' => 'ping', # Translate - New
-	'theme' => 'tema', # Translate - Case
-	'folder' => 'carpeta', # Translate - Case
-	'plugin' => 'extensión', # Translate - New
-	'Message' => 'Mensaje',
-	'By' => 'Por',
-	'Class' => 'Clase',
-	'Level' => 'Nivel',
 	'Security' => 'Seguridad',
 	'Warning' => 'Alerta',
 	'Information' => 'Información',
@@ -1911,16 +2035,35 @@ que la dirección provista es correcta y le pertenece.',
 	'Security/error/warning' => 'Seguridad/error/alarma',
 	'Not debug' => 'No depuración',
 	'Debug/error' => 'Depuración/error',
+	'Showing only ID: [_1]' => 'Mostrando solo ID: [_1]',
+	'Page # [_1] not found.' => 'Página nº [_1] no encontrada.',
+	'Entry # [_1] not found.' => 'Entrada nº [_1] no encontrada.',
+	'Comment # [_1] not found.' => 'Comentario nº [_1] no encontrado.',
+	'TrackBack # [_1] not found.' => 'TrackBack nº [_1] no encontrado.',
+	'blog' => 'Blog',
+	'website' => 'sitio web',
+	'search' => 'buscar',
+	'author' => 'autor',
+	'ping' => 'ping',
+	'theme' => 'tema',
+	'folder' => 'carpeta',
+	'plugin' => 'extensión',
+	'Message' => 'Mensaje',
+	'By' => 'Por',
+	'Class' => 'Clase',
+	'Level' => 'Nivel',
 	'Metadata' => 'Metadatos',
 	'Logs on This Website' => 'Históricos de este sitio',
 	'Show only errors' => 'Mostrar solo los errores',
 
 ## lib/MT/Mail.pm
 	'Unknown MailTransfer method \'[_1]\'' => 'MailTransfer método desconocido \'[_1]\'',
-	'Sending mail via SMTP requires that your server have Mail::Sendmail installed: [_1]' => 'El envío de mensajes a través de SMTP necesita que su servidor tenga Mail::Sendmail instalado: [_1]',
-	'Error sending mail: [_1]' => 'Error enviado correo: [_1]',
+	'Username and password is required for SMTP authentication.' => 'El nombre de usuario y la contraseña son necesarios para la autentificación SMTP.',
+	'Error connecting to SMTP server [_1]:[_2]' => 'Error conectado con el servidor SMTP [_1]:[_2]',
+	'Authentication failure: [_1]' => 'Fallo de autentificación: [_1]',
 	'You do not have a valid path to sendmail on your machine. Perhaps you should try using SMTP?' => 'No tiene configurada una ruta válida a sendmail en su máquina. ¿Quizás está intentando usar SMTP?',
 	'Exec of sendmail failed: [_1]' => 'Fallo la ejecución de sendmail: [_1]',
+	'Following required module(s) were not found: ([_1])' => 'No se encontraron los siguientes módulos requeridos: ([_1])',
 
 ## lib/MT/Notification.pm
 	'Contacts' => 'Contactos',
@@ -1943,7 +2086,7 @@ que la dirección provista es correcta y le pertenece.',
 
 ## lib/MT/Page.pm
 	'Pages in folder: [_1]' => 'Páginas en carpeta: [_1]',
-	'Load of blog failed: [_1]' => 'Fallo en la carga del blog: [_1]',
+	'Loading blog failed: [_1]' => 'Falló al cargar el blog: [_1]',
 	'(root)' => '(raíz)',
 	'My Pages' => 'Mis páginas',
 	'Pages in This Website' => 'Páginas de esta sitio',
@@ -1957,62 +2100,29 @@ que la dirección provista es correcta y le pertenece.',
 ## lib/MT/Placement.pm
 	'Category Placement' => 'Gestión de Categorías',
 
-## lib/MT/PluginData.pm
-	'Plugin Data' => 'Datos de la extensión',
+## lib/MT/Plugin.pm
+	'My Text Format' => 'Mi formato de texto',
 
 ## lib/MT/Plugin/JunkFilter.pm
 	'[_1]: [_2][_3] from rule [_4][_5]' => '[_1]: [_2][_3] de la regla [_4][_5]',
 	'[_1]: [_2][_3] from test [_4]' => '[_1]: [_2][_3] de la prueba [_4]',
 
-## lib/MT/Plugin.pm
-	'My Text Format' => 'Mi formato de texto',
-
-## lib/MT.pm
-	'Powered by [_1]' => 'Powered by [_1]',
-	'Version [_1]' => 'Versión [_1]',
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype/',
-	'Hello, world' => 'Hola, mundo',
-	'Hello, [_1]' => 'Hola, [_1]',
-	'Message: [_1]' => 'Mensaje: [_1]',
-	'If present, 3rd argument to add_callback must be an object of type MT::Component or MT::Plugin' => 'Si está presente, el tercer argumento de add_callback debe ser un objeto de tipo MT::Component o MT::Plugin',
-	'4th argument to add_callback must be a CODE reference.' => 'El cuarto argumento de add_callback debe ser una referencia de código.',
-	'Two plugins are in conflict' => 'Dos extensiones están en conflicto',
-	'Invalid priority level [_1] at add_callback' => 'Nivel de prioridad [_1] no válido en add_callback',
-	'Internal callback' => 'Retrollamada interna',
-	'Unnamed plugin' => 'Extensión sin nombre',
-	'[_1] died with: [_2]' => '[_1] murió: [_2]',
-	'Bad LocalLib config ([_1]): ' => 'Configuración de LocalLib incorrecta ([_1]): ',
-	'Bad ObjectDriver config' => 'Configuración de ObjectDriver incorrecta',
-	'Bad CGIPath config' => 'Configuración de CGIPath incorrecta',
-	'Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?' => 'Archivo de configuración no encontrado. ¿Quizás olvidó renombrar mt-config.cgi-original a mt-config.cgi?',
-	'Plugin error: [_1] [_2]' => 'Error en la extensión: [_1] [_2]',
-	'Loading template \'[_1]\' failed.' => 'Fallo cargando la plantilla \'[_1]\'.',
-	'Error during building email: [_1]' => 'Error construyendo el correo: [_1]',
-	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.org/documentation/',
-	'OpenID' => 'OpenID',
-	'LiveJournal' => 'LiveJournal',
-	'Vox' => 'Vox',
-	'Google' => 'Google',
-	'Yahoo!' => 'Yahoo!',
-	'AIM' => 'AIM',
-	'WordPress.com' => 'WordPress.com',
-	'TypePad' => 'TypePad',
-	'Yahoo! JAPAN' => 'Yahoo! JAPAN',
-	'livedoor' => 'livedoor',
-	'Hatena' => 'Hatena',
-	'Movable Type default' => 'Predefinido de Movable Type',
-
-## lib/MT/Revisable/Local.pm
+## lib/MT/PluginData.pm
+	'Plugin Data' => 'Datos de la extensión',
 
 ## lib/MT/Revisable.pm
 	'Bad RevisioningDriver config \'[_1]\': [_2]' => 'Configuración de RevisioningDriver errónea \'[_1]\': [_2]',
 	'Revision not found: [_1]' => 'Revisión no encontrada: [_1]',
-	'There aren\'t the same types of objects, expecting two [_1]' => 'No son el mismo tipo de objetos, se esperaban dos [_1]',
+	'There are not the same types of objects, expecting two [_1]' => 'No son el mismo tipo de objetos, se esperaban dos [_1]',
 	'Did not get two [_1]' => 'No se obtuvieron dos [_1]',
 	'Unknown method [_1]' => 'Método desconocido [_1]',
 	'Revision Number' => 'Revisión número',
 
+## lib/MT/Revisable/Local.pm
+
 ## lib/MT/Role.pm
+	'__ROLE_ACTIVE' => 'Activo',
+	'__ROLE_INACTIVE' => 'Inactivo',
 	'Website Administrator' => 'Administrador del sitio web',
 	'Can administer the website.' => 'Puede administrar el sitio web',
 	'Blog Administrator' => 'Administrador del blog',
@@ -2030,8 +2140,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Can comment and manage feedback.' => 'Puede comentar y administrar las respuestas.',
 	'Can comment.' => 'Puede comentar.',
 	'__ROLE_STATUS' => 'Estado',
-	'__ROLE_ACTIVE' => 'Activo',
-	'__ROLE_INACTIVE' => 'Inactivo',
 
 ## lib/MT/Scorable.pm
 	'Object must be saved first.' => 'Primero debe guardarse el objeto.',
@@ -2040,21 +2148,6 @@ que la dirección provista es correcta y le pertenece.',
 
 ## lib/MT/Session.pm
 	'Session' => 'Sección',
-
-## lib/MT/Tag.pm
-	'Tag must have a valid name' => 'La etiqueta debe tener un nombre válido',
-	'This tag is referenced by others.' => 'Esta etiqueta está referenciada por otros.',
-	'Tags with Entries' => 'Etiquetas con entradas',
-	'Private' => 'Privado',
-	'Not Private' => 'No privado',
-	'Tags with Pages' => 'Etiquetas con páginas',
-	'Tags with Assets' => 'Etiquetas con ficheros multimedia',
-
-## lib/MT/TaskMgr.pm
-	'Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.' => 'No fue posible asegurar el bloqueo para la ejecución de tareas del sistema. Asegúrese de que se puede escribir en el directorio TempDir ([_1]).',
-	'Error during task \'[_1]\': [_2]' => 'Error durante la tarea \'[_1]\': [_2]',
-	'Scheduled Tasks Update' => 'Actualización de tareas programadas',
-	'The following tasks were run:' => 'Se ejecutaron las siguientes tareas:',
 
 ## lib/MT/TBPing.pm
 	'TrackBack' => 'TrackBack',
@@ -2074,52 +2167,27 @@ que la dirección provista es correcta y le pertenece.',
 	'Trackbacks in the last 7 days' => 'TrackBacks en los últimos 7 días',
 	'Spam trackbacks' => 'TrackBacks spam',
 
-## lib/MT/Template/ContextHandlers.pm
-	'All About Me' => 'Todo sobre mi',
-	'Remove this widget' => 'Eliminar el widget',
-	'[_1]Publish[_2] your site to see these changes take effect.' => '[_1]Publique[_2] el sitio para que los cambios tomen efecto.',
-	'Actions' => 'Acciones',
-	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.org/documentation/appendices/tags/%t.html',
-	'You used an [_1] tag without a date context set up.' => 'Usó una etiqueta [_1] sin un contexto de fecha configurado.',
-	'Division by zero.' => 'División por cero.',
-	'[_1] is not a hash.' => '[_1] no es un hash.',
-	'No [_1] could be found.' => 'No se encontraron [_1].',
-	'records' => 'registros',
-	'No template to include was specified' => 'No se especificó plantilla a incluir',
-	'Recursion attempt on [_1]: [_2]' => 'Intento de recursión en [_1]: [_2]',
-	'Can\'t find included template [_1] \'[_2]\'' => 'No se encontró la plantilla incluída [_1] \'[_2]\'',
-	'Error in [_1] [_2]: [_3]' => 'Error en [_1] [_2]: [_3]',
-	'Writing to \'[_1]\' failed: [_2]' => 'Fallo escribiendo en \'[_1]\': [_2]',
-	'Can\'t find blog for id \'[_1]' => 'No se pudo encontrar un blog con el id \'[_1]',
-	'Can\'t find included file \'[_1]\'' => 'No se encontró el fichero incluido \'[_1]\'',
-	'Error opening included file \'[_1]\': [_2]' => 'Error abriendo el fichero incluido \'[_1]\': [_2]',
-	'Recursion attempt on file: [_1]' => 'Intento de recursión en fichero: [_1]',
-	'Can\'t load user.' => 'No se pudo cargar el usuario.',
-	'Can\'t find template \'[_1]\'' => 'No se encontró la plantilla \'[_1]\'',
-	'Can\'t find entry \'[_1]\'' => 'No se encontró la entrada \'[_1]\'',
-	'Unspecified archive template' => 'Archivo de plantilla no especificado',
-	'Error in file template: [_1]' => 'Error en fichero de plantilla: [_1]',
+## lib/MT/Tag.pm
+	'Private' => 'Privado',
+	'Not Private' => 'No privado',
+	'Tag must have a valid name' => 'La etiqueta debe tener un nombre válido',
+	'This tag is referenced by others.' => 'Esta etiqueta está referenciada por otros.',
+	'Tags with Entries' => 'Etiquetas con entradas',
+	'Tags with Pages' => 'Etiquetas con páginas',
+	'Tags with Assets' => 'Etiquetas con ficheros multimedia',
 
-## lib/MT/Template/Context.pm
-	'The attribute exclude_blogs cannot take \'[_1]\' for a value.' => 'El atributo exclude_blogs no puede tener el valor \'[_1]\'.',
-	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'Si hay identificadores de blogs listados a la vez en los atributos de include_blogs y exclude_blogs, se excluirá a dichos blogs.',
-	'You used an \'[_1]\' tag outside of the context of a author; perhaps you mistakenly placed it outside of an \'MTAuthors\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un autor; ¿quizás la situó por error fuera de un contenedor \'MTAuthors\'?',
-	'You used an \'[_1]\' tag outside of the context of an entry; perhaps you mistakenly placed it outside of an \'MTEntries\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de una entrada; ¿quizás la puso por error fuera de un contenedor \'MTEntries\'?',
-	'You used an \'[_1]\' tag outside of the context of the website; perhaps you mistakenly placed it outside of an \'MTWebsites\' container?' => '¿Ha utilizado una etiqueta \'[_1]\' fuera del contexto de un sitio web; quizás la situó incorrectamente fuera de un contenedor \'MTWebsites\'?',
-	'You used an \'[_1]\' tag outside of the context of the blog; perhaps you mistakenly placed it outside of an \'MTBlogs\' container?' => '¿Ha utilizado una etiqueta \'[_1]\' fuera del contexto del blog; quizás la situó incorrectamente fuera de un contenedor \'MTBlogs\'?',
-	'You used an \'[_1]\' tag outside of the context of a comment; perhaps you mistakenly placed it outside of an \'MTComments\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un comentario; ¿quizás la puso por error fuera de un contenedor \'MTComments\'?',
-	'You used an \'[_1]\' tag outside of the context of a ping; perhaps you mistakenly placed it outside of an \'MTPings\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un ping; ¿quizás la situó por error fuera de un contenedor \'MTPings\'?',
-	'You used an \'[_1]\' tag outside of the context of an asset; perhaps you mistakenly placed it outside of an \'MTAssets\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un fichero multimedia, ¿quizás la situó fuera de un contenedor \'MTAssets\'?',
-	'You used an \'[_1]\' tag outside of the context of a page; perhaps you mistakenly placed it outside of a \'MTPages\' container?' => 'Ha usado una etiqueta \'[_1]\' fuera del contexto de una página; ¿quizás la situó fuera de un contenedor \'MTPages\'?',
-
-## lib/MT/TemplateMap.pm
-	'Archive Mapping' => 'Mapeado de archivos',
-	'Archive Mappings' => 'Mapeados de archivos',
+## lib/MT/TaskMgr.pm
+	'Unable to secure a lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.' => 'No fue posible asegurar el bloqueo para la ejecución de tareas del sistema. Asegúrese de que se puede escribir en el directorio TempDir ([_1]).',
+	'Error during task \'[_1]\': [_2]' => 'Error durante la tarea \'[_1]\': [_2]',
+	'Scheduled Tasks Update' => 'Actualización de tareas programadas',
+	'The following tasks were run:' => 'Se ejecutaron las siguientes tareas:',
 
 ## lib/MT/Template.pm
 	'Template' => 'Plantilla',
-	'File not found: [_1]' => 'Fichero no encontrado: [_1]',
+	'Template load error: [_1]' => 'Error al cargar plantilla: [_1]',
+	'Tried to load the template file from outside of the include path \'[_1]\'' => 'Tried to load the template file from outside of the include path \'[_1]\'',
 	'Error reading file \'[_1]\': [_2]' => 'Error leyendo fichero \'[_1]\': [_2]',
+	'Load of blog \'[_1]\' failed: [_2]' => 'La carga del blog \'[_1]\' falló: [_2]',
 	'Publish error in template \'[_1]\': [_2]' => 'Error de publicación en la plantilla \'[_1]\': [_2]',
 	'Template name must be unique within this [_1].' => 'El nombre de la plantilla debe ser único en este [_1].',
 	'You cannot use a [_1] extension for a linked file.' => 'No puede usar una extensión [_1] para un fichero enlazado.',
@@ -2139,6 +2207,45 @@ que la dirección provista es correcta y le pertenece.',
 	'Build Type' => 'Tipo de reconstrucción',
 	'Interval' => 'Intervalo',
 
+## lib/MT/Template/Context.pm
+	'The attribute exclude_blogs cannot take \'[_1]\' for a value.' => 'El atributo exclude_blogs no puede tener el valor \'[_1]\'.',
+	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'Si hay identificadores de blogs listados a la vez en los atributos de include_blogs y exclude_blogs, se excluirá a dichos blogs.',
+	'You used an \'[_1]\' tag outside of the context of a author; Perhaps you mistakenly placed it outside of an \'MTAuthors\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un autor. ¿Quizás la situó por error fuera de la etiqueta contenedora \'MTAuthors\'?',
+	'You used an \'[_1]\' tag outside of the context of an entry; Perhaps you mistakenly placed it outside of an \'MTEntries\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de una entrada. ¿Quizás la situó por error fuera de la etiqueta contenedor \'MTEntries\'?',
+	'You used an \'[_1]\' tag outside of the context of the website; Perhaps you mistakenly placed it outside of an \'MTWebsites\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de una sitio web. ¿Quizás la situó por error fuera de la etiqueta contenedor \'MTWebsites\'?',
+	'You used an \'[_1]\' tag outside of the context of the blog; Perhaps you mistakenly placed it outside of an \'MTBlogs\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un blog. ¿Quizás la situó por error fuera de la etiqueta contenedor \'MTBlogs\'?',
+	'You used an \'[_1]\' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an \'MTComments\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un comentario. ¿Quizás la situó por error fuera de la etiqueta contenedor \'MTComments\'?',
+	'You used an \'[_1]\' tag outside of the context of a ping; Perhaps you mistakenly placed it outside of an \'MTPings\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un ping. ¿Quizás la situó por error fuera de la etiqueta contenedor \'MTPings\'?',
+	'You used an \'[_1]\' tag outside of the context of an asset; Perhaps you mistakenly placed it outside of an \'MTAssets\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un recurso multimedia. ¿Quizás la situó por error fuera de la etiqueta contenedor \'MTAssets\'?',
+	'You used an \'[_1]\' tag outside of the context of a page; Perhaps you mistakenly placed it outside of a \'MTPages\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de una página. ¿Quizás la situó por error fuera de la etiqueta contenedor \'MTPages\'?',
+
+## lib/MT/Template/ContextHandlers.pm
+	'All About Me' => 'Todo sobre mi',
+	'Remove this widget' => 'Eliminar el widget',
+	'[_1]Publish[_2] your site to see these changes take effect.' => '[_1]Publique[_2] el sitio para que los cambios tomen efecto.',
+	'Actions' => 'Acciones',
+	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.org/documentation/appendices/tags/%t.html',
+	'You used an [_1] tag without a date context set up.' => 'Usó una etiqueta [_1] sin un contexto de fecha configurado.',
+	'Division by zero.' => 'División por cero.',
+	'[_1] is not a hash.' => '[_1] no es un hash.',
+	'No [_1] could be found.' => 'No se encontraron [_1].',
+	'records' => 'registros',
+	'No template to include was specified' => 'No se especificó plantilla a incluir',
+	'Recursion attempt on [_1]: [_2]' => 'Intento de recursión en [_1]: [_2]',
+	'Cannot find included template [_1] \'[_2]\'' => 'No se encontró la plantilla incluída [_1] \'[_2]\'',
+	'Error in [_1] [_2]: [_3]' => 'Error en [_1] [_2]: [_3]',
+	'Writing to \'[_1]\' failed: [_2]' => 'Fallo escribiendo en \'[_1]\': [_2]',
+	'File inclusion is disabled by "AllowFileInclude" config directive.' => 'La inclusión de ficheros está deshabilitada por la directiva de configuración "AllowFileInclude".',
+	'Cannot find blog for id \'[_1]' => 'No se pudo encontrar un blog con el id \'[_1]',
+	'Cannot find included file \'[_1]\'' => 'No se encontró el fichero incluido \'[_1]\'',
+	'Error opening included file \'[_1]\': [_2]' => 'Error abriendo el fichero incluido \'[_1]\': [_2]',
+	'Recursion attempt on file: [_1]' => 'Intento de recursión en fichero: [_1]',
+	'Cannot load user.' => 'No se pudo cargar el usuario.',
+	'Cannot find template \'[_1]\'' => 'No se encontró la plantilla \'[_1]\'',
+	'Cannot find entry \'[_1]\'' => 'No se encontró la entrada \'[_1]\'',
+	'Unspecified archive template' => 'Archivo de plantilla no especificado',
+	'Error in file template: [_1]' => 'Error en fichero de plantilla: [_1]',
+
 ## lib/MT/Template/Tags/Archive.pm
 	'Group iterator failed.' => 'Fallo en iterador de grupo.',
 	'[_1] can be used only with Daily, Weekly, or Monthly archives.' => '[_1] sólo se puede usar con los archivos diarios, semanales o mensuales.',
@@ -2147,6 +2254,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Could not determine entry' => 'No se pudo determinar la entrada',
 
 ## lib/MT/Template/Tags/Asset.pm
+	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" debe usarse en combinación con el espacio de nombres.',
 	'No such user \'[_1]\'' => 'No existe el usuario \'[_1]\'',
 	'You have an error in your \'[_2]\' attribute: [_1]' => 'Tiene un error en el atributo \'[_2]\': [_1]',
 
@@ -2155,6 +2263,7 @@ que la dirección provista es correcta y le pertenece.',
 	'You used an [_1] without a author context set up.' => 'Utilizó un [_1] sin establecer un contexto de autor.',
 
 ## lib/MT/Template/Tags/Calendar.pm
+	'Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat' => 'Formato de weeks_start_with no válido: debe ser Sun|Mon|Tue|Wed|Thu|Fri|Sat',
 	'Invalid month format: must be YYYYMM' => 'Formato de mes no válido: debe ser YYYYMM',
 	'No such category \'[_1]\'' => 'No existe la categoría \'[_1]\'',
 
@@ -2162,16 +2271,18 @@ que la dirección provista es correcta y le pertenece.',
 	'MT[_1] must be used in a [_2] context' => 'MT[_1] debe utilizarse en el contexto de [_2]',
 	'Cannot find package [_1]: [_2]' => 'No se encontró el paquete [_1]: [_2]',
 	'Error sorting [_2]: [_1]' => 'Error ordenando [_2]: [_1]',
-	'Can\'t use sort_by and sort_method together in [_1]' => 'No pueden usarse juntos sort_by y sort_method en [_1]',
+	'Cannot use sort_by and sort_method together in [_1]' => 'No pueden usarse juntos sort_by y sort_method en [_1]',
 	'[_1] cannot be used without publishing Category archive.' => '[_1] No se puede usar sin publicar archivos por categorías.',
 	'[_1] used outside of [_2]' => '[_1] utilizado fuera de [_2]',
 
-## lib/MT/Template/Tags/Commenter.pm
-
 ## lib/MT/Template/Tags/Comment.pm
-	'The MTCommentFields tag is no longer available; please include the [_1] template module instead.' => 'La etiqueta MTCommentFields no está más disponible; por favor incluya el módulo de platilla [_1] que lo remplaza',
+	'The MTCommentFields tag is no longer available.  Please include the [_1] template module instead.' => 'La etiqueta MTCommentFields ya no está disponible. Por favor, en su lugar, incluya el módulo de plantilla [_1].',
 	'Comment Form' => 'Formulario de comentarios',
+	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can not be used.' => 'La autentificación de TypePad no está habilitada en este blog. No se puede usar MTRemoteSignInLink.',
 	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'Para activar el registro de comentarios, debe añadir un token de TypePad a la configuración del weblog o al perfil de usuario.',
+
+## lib/MT/Template/Tags/Commenter.pm
+	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'Esta etiqueta \'[_1]\' está obsoleta. Por favor, en su lugar use \'[_2]\'.',
 
 ## lib/MT/Template/Tags/Entry.pm
 	'You used <$MTEntryFlag$> without a flag.' => 'Usó <$MTEntryFlag$> sin \'flag\'.',
@@ -2188,21 +2299,21 @@ que la dirección provista es correcta y le pertenece.',
 
 ## lib/MT/Template/Tags/Tag.pm
 
-## lib/MT/Theme/Category.pm
-	'[_1] top level and [_2] sub categories.' => '[_1] primer nivel y [_2] sub-categorías.',
-	'[_1] top level and [_2] sub folders.' => '[_1] primer nivel y [_2] sub-carpetas.',
+## lib/MT/TemplateMap.pm
+	'Archive Mapping' => 'Mapeado de archivos',
+	'Archive Mappings' => 'Mapeados de archivos',
 
-## lib/MT/Theme/Element.pm
-	'Component \'[_1]\' is not found.' => 'No se encontró el componente \'[_1]\'.',
-	'Internal error: the importer is not found.' => 'Error interno: no se encontró el importador.',
-	'Compatibility error occured while applying \'[_1]\': [_2].' => 'Ocurrió un error de compatibilidad cuando se aplicaba \'[_1]\': [_2].',
-	'An Error occured while applying \'[_1]\': [_2].' => 'Ocurrió un error cuando se aplicaba \'[_1]\': [_2].',
-	'Fatal error occured while applying \'[_1]\': [_2].' => 'Ocurrió un error fatal cuando se aplicaba \'[_1]\': [_2].',
-	'Importer for \'[_1]\' is too old.' => 'El importador de \'[_1]\' es demasiado antiguo.',
-	'Theme element \'[_1]\' is too old for this environment.' => 'El elemento \'[_1]\' del tema es demasiado antiguo para este sistema.',
+## lib/MT/TheSchwartz/Error.pm
+	'Job Error' => 'Error en la Tarea',
 
-## lib/MT/Theme/Entry.pm
-	'[_1] pages' => '[_1] páginas',
+## lib/MT/TheSchwartz/ExitStatus.pm
+	'Job Exit Status' => 'Status Fin de Tarea',
+
+## lib/MT/TheSchwartz/FuncMap.pm
+	'Job Function' => 'Funciones de la Tarea',
+
+## lib/MT/TheSchwartz/Job.pm
+	'Job' => 'Tarea',
 
 ## lib/MT/Theme.pm
 	'Failed to load theme [_1].' => 'Fallo al cargar tema [_1].',
@@ -2220,6 +2331,22 @@ que la dirección provista es correcta y le pertenece.',
 	'Static Files' => 'Ficheros estáticos',
 	'Default Pages' => 'Páginas predefinidas',
 
+## lib/MT/Theme/Category.pm
+	'[_1] top level and [_2] sub categories.' => '[_1] primer nivel y [_2] sub-categorías.',
+	'[_1] top level and [_2] sub folders.' => '[_1] primer nivel y [_2] sub-carpetas.',
+
+## lib/MT/Theme/Element.pm
+	'Component \'[_1]\' is not found.' => 'No se encontró el componente \'[_1]\'.',
+	'Internal error: the importer is not found.' => 'Error interno: no se encontró el importador.',
+	'Compatibility error occured while applying \'[_1]\': [_2].' => 'Ocurrió un error de compatibilidad cuando se aplicaba \'[_1]\': [_2].',
+	'An Error occured while applying \'[_1]\': [_2].' => 'Ocurrió un error cuando se aplicaba \'[_1]\': [_2].',
+	'Fatal error occured while applying \'[_1]\': [_2].' => 'Ocurrió un error fatal cuando se aplicaba \'[_1]\': [_2].',
+	'Importer for \'[_1]\' is too old.' => 'El importador de \'[_1]\' es demasiado antiguo.',
+	'Theme element \'[_1]\' is too old for this environment.' => 'El elemento \'[_1]\' del tema es demasiado antiguo para este sistema.',
+
+## lib/MT/Theme/Entry.pm
+	'[_1] pages' => '[_1] páginas',
+
 ## lib/MT/Theme/Pref.pm
 	'this element cannot apply for non blog object.' => 'este elemento no puede aplicarse a objetos que no sean blogs.',
 	'Failed to save blog object: [_1]' => 'Falló al guardar el objeto de blog: [_1]',
@@ -2227,40 +2354,13 @@ que la dirección provista es correcta y le pertenece.',
 	'default settings' => 'configuración predefinida',
 
 ## lib/MT/Theme/TemplateSet.pm
-	'A template set containing [_1] templates, [_2] widgets, and [_3] widget sets.' => 'Un conjunto de plantillas que contiene  [_1] plantillas, [_2] widgets y [_3] conjuntos de widgets.',
+	'A template set containing [quant,_1,template,templates], [quant,_2,widget,widgets], and [quant,_3,widget set,widget sets].' => 'Un conjunto de plantillas que contiene [quant,_1,template,templates], [quant,_2,widget,widgets], y [quant,_3,conjunto de widgets,conjuntos de widgets].',
 	'Widget Sets' => 'Conjuntos de widgets',
 	'Failed to make templates directory: [_1]' => 'Fallo al crear el directorio de plantillas: [_1]',
 	'Failed to publish template file: [_1]' => 'Fallo al publicar el fichero de plantilla: [_1]',
 	'exported_template set' => 'exported_template configurado',
 
-## lib/MT/TheSchwartz/Error.pm
-	'Job Error' => 'Error en la Tarea',
-
-## lib/MT/TheSchwartz/ExitStatus.pm
-	'Job Exit Status' => 'Status Fin de Tarea',
-
-## lib/MT/TheSchwartz/FuncMap.pm
-	'Job Function' => 'Funciones de la Tarea',
-
-## lib/MT/TheSchwartz/Job.pm
-	'Job' => 'Tarea',
-
 ## lib/MT/Trackback.pm
-
-## lib/MT/Upgrade/Core.pm
-	'Upgrading Asset path informations...' => 'Actualizando la información de las rutas de los ficheros multimedia...',
-	'Creating initial website and user records...' => 'Creando registros iniciales de los sitios web y usuarios...',
-	'Error saving record: [_1].' => 'Error guardando el registro: [_1].',
-	'Error creating role record: [_1].' => 'Error creado el registro de roles: [_1].',
-	'First Website' => 'Primer sitio web',
-	'Creating new template: \'[_1]\'.' => 'Creando nueva plantilla: \'[_1]\'.',
-	'Mapping templates to blog archive types...' => 'Mapeando plantillas con tipos de archivo de blogs...',
-	'Assigning custom dynamic template settings...' => 'Asignando opciones de plantillas dinámicas personalizadas...',
-	'Assigning user types...' => 'Asignando tipos de usuario...',
-	'Assigning category parent fields...' => 'Asignando campos de ancentros en las categorías...',
-	'Assigning template build dynamic settings...' => 'Asignando opciones de construcción de plantillas dinámicas...',
-	'Assigning visible status for comments...' => 'Asignando estado de visibilidad a los comentarios...',
-	'Assigning visible status for TrackBacks...' => 'Asignando estado de visiblidad para los TrackBacks...',
 
 ## lib/MT/Upgrade.pm
 	'Invalid upgrade function: [_1].' => 'Función de actualización no válida: [_1].',
@@ -2276,6 +2376,21 @@ que la dirección provista es correcta y le pertenece.',
 	'Error loading class: [_1].' => 'Error cargando la clase: [_1].',
 	'Assigning entry comment and TrackBack counts...' => 'Asignando totales de comentarios y trackbacks de las entradas...',
 	'Error saving [_1] record # [_3]: [_2]...' => 'Error guardando registro [_1] # [_3]: [_2]...',
+
+## lib/MT/Upgrade/Core.pm
+	'Upgrading asset path information...' => 'Actualizando la información de la ruta de los ficheros multimedia...',
+	'Creating initial website and user records...' => 'Creando registros iniciales de los sitios web y usuarios...',
+	'Error saving record: [_1].' => 'Error guardando el registro: [_1].',
+	'Error creating role record: [_1].' => 'Error creado el registro de roles: [_1].',
+	'First Website' => 'Primer sitio web',
+	'Creating new template: \'[_1]\'.' => 'Creando nueva plantilla: \'[_1]\'.',
+	'Mapping templates to blog archive types...' => 'Mapeando plantillas con tipos de archivo de blogs...',
+	'Assigning custom dynamic template settings...' => 'Asignando opciones de plantillas dinámicas personalizadas...',
+	'Assigning user types...' => 'Asignando tipos de usuario...',
+	'Assigning category parent fields...' => 'Asignando campos de ancentros en las categorías...',
+	'Assigning template build dynamic settings...' => 'Asignando opciones de construcción de plantillas dinámicas...',
+	'Assigning visible status for comments...' => 'Asignando estado de visibilidad a los comentarios...',
+	'Assigning visible status for TrackBacks...' => 'Asignando estado de visiblidad para los TrackBacks...',
 
 ## lib/MT/Upgrade/v1.pm
 	'Creating template maps...' => 'Creando mapas de plantillas...',
@@ -2365,7 +2480,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Migrating mtview.php to MT5 style...' => 'Migrando mtview.php al estilo MT5...',
 	'Migrating DefaultSiteURL/DefaultSiteRoot to website...' => 'Migrando DefaultSiteURL/DefaultSiteRoot al sitio web...',
 	'New user\'s website' => 'Sitio web del nuevo usuario',
-	'Migrating existing [quant,_1,blog,blogs] into websites and its children...' => 'Migrando [quant,_1,blog existente,blogs existentes] a sitios web y sus descendientes...',
+	'Migrating existing [quant,_1,blog,blogs] into websites and their children...' => 'Migrando [quant,_1,el blog existente,los blogs existentes] a sitios webs con hijos...',
 	'Error loading role: [_1].' => 'Error cargando rol: [_1].',
 	'New WebSite [_1]' => 'Nuevo sitio web [_1]',
 	'An error occured during generating a website upon upgrade: [_1]' => 'Ocurrió un error generando un un sitio web durante la actualización: [_1]',
@@ -2382,29 +2497,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Removing widget from dashboard...' => 'Borrando widget del Removing widget from dashboard...',
 	'Ordering Categories and Folders of Blogs...' => 'Ordenando las categorías y las carpetas de los blogs...',
 	'Ordering Folders of Websites...' => 'Ordenando las carpetas de los sitios...',
-
-## lib/MT/Util/Archive.pm
-	'Type must be specified' => 'Debe especificar el tipo',
-	'Registry could not be loaded' => 'El registro no pudo cargarse',
-
-## lib/MT/Util/Archive/Tgz.pm
-	'Type must be tgz.' => 'El tipo debe ser tgz.',
-	'Could not read from filehandle.' => 'No se pudo leer desde el manejador de ficheros',
-	'File [_1] is not a tgz file.' => 'El fichero [_1] no es un tgz.',
-	'File [_1] exists; could not overwrite.' => 'El fichero [_1] existe: no puede sobreescribirse.',
-	'Can\'t extract from the object' => 'No se pudo extraer usando el objeto',
-	'Can\'t write to the object' => 'No se pudo escribir en el objeto',
-	'Both data and file name must be specified.' => 'Se deben especificar tanto los datos como el nombre del fichero.',
-
-## lib/MT/Util/Archive/Zip.pm
-	'Type must be zip' => 'El tipo debe ser zip',
-	'File [_1] is not a zip file.' => 'El fichero [_1] no es un fichero zip.',
-
-## lib/MT/Util/Captcha.pm
-	'Movable Type default CAPTCHA provider requires Image::Magick.' => 'El proveedor predefinido de CAPTCHA de Movable Type necesita Image::Magick',
-	'You need to configure CaptchaSourceImageBase.' => 'Debe configurar CaptchaSourceImageBase.',
-	'Image creation failed.' => 'Falló la creación de la imagen.',
-	'Image error: [_1]' => 'Error de imagen: [_1]',
 
 ## lib/MT/Util.pm
 	'moments from now' => 'dentro de unos momentos',
@@ -2427,6 +2519,30 @@ que la dirección provista es correcta y le pertenece.',
 	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,día,días], [quant,_2,hora,horas]',
 	'[quant,_1,day,days]' => '[quant,_1,día,días]',
 	'Invalid domain: \'[_1]\'' => 'Dominio no válido: \'[_1]\'',
+
+## lib/MT/Util/Archive.pm
+	'Type must be specified' => 'Debe especificar el tipo',
+	'Registry could not be loaded' => 'El registro no pudo cargarse',
+
+## lib/MT/Util/Archive/Tgz.pm
+	'Type must be tgz.' => 'El tipo debe ser tgz.',
+	'Could not read from filehandle.' => 'No se pudo leer desde el manejador de ficheros',
+	'File [_1] is not a tgz file.' => 'El fichero [_1] no es un tgz.',
+	'File [_1] exists; could not overwrite.' => 'El fichero [_1] existe: no puede sobreescribirse.',
+	'Cannot extract from the object' => 'No se pudo extraer usando el objeto',
+	'Cannot write to the object' => 'No se pudo escribir en el objeto',
+	'Both data and file name must be specified.' => 'Se deben especificar tanto los datos como el nombre del fichero.',
+
+## lib/MT/Util/Archive/Zip.pm
+	'Type must be zip' => 'El tipo debe ser zip',
+	'File [_1] is not a zip file.' => 'El fichero [_1] no es un fichero zip.',
+
+## lib/MT/Util/Captcha.pm
+	'Movable Type default CAPTCHA provider requires Image::Magick.' => 'El proveedor predefinido de CAPTCHA de Movable Type necesita Image::Magick',
+	'You need to configure CaptchaSourceImageBase.' => 'Debe configurar CaptchaSourceImageBase.',
+	'Type the characters you see in the picture above.' => 'Introduzca los caracteres que ve en la imagen de arriba.',
+	'Image creation failed.' => 'Falló la creación de la imagen.',
+	'Image error: [_1]' => 'Error de imagen: [_1]',
 
 ## lib/MT/Util/YAML/Syck.pm
 
@@ -2454,7 +2570,7 @@ que la dirección provista es correcta y le pertenece.',
 ## lib/MT/Worker/Sync.pm
 	"Error during rsync of files in [_1]:\n" => "Error en la sincronización de ficheros rsync in [_1]:
 ",
-	'Synchrnizing Files Done' => 'Sincronización de ficheros realizada',
+	'Done Synchornizing Files' => 'Sincronización de ficheros realizada',
 	'Done syncing files to [_1] ([_2])' => 'Ficheros sincronizados en [_1] ([_2])',
 
 ## lib/MT/XMLRPC.pm
@@ -2470,23 +2586,25 @@ que la dirección provista es correcta y le pertenece.',
 	'Saving folder failed: [_1]' => 'Fallo al guardar la carpeta: [_1]',
 	'No blog_id' => 'Sin blog_id',
 	'Value for \'mt_[_1]\' must be either 0 or 1 (was \'[_2]\')' => 'El valor de \'mt_[_1]\' debe ser 0 ó 1 (era \'[_2]\')',
-	'Not privileged to edit entry' => 'No tiene permisos para editar la entrada',
+	'Not allowed to edit entry' => 'No tiene permiso para editar la entrada',
 	'Entry \'[_1]\' ([lc,_5] #[_2]) deleted by \'[_3]\' (user #[_4]) from xml-rpc' => 'Entrada \'[_1]\' ([lc,_5] #[_2]) borrada por \'[_3]\' (usuario #[_4]) para xml-rpc',
-	'Not privileged to get entry' => 'No tiene permisos para obtener la entrada',
-	'Not privileged to set entry categories' => 'No tiene permisos para establecer categorías en las entradas',
-	'Not privileged to upload files' => 'No tiene privilegios para transferir ficheros',
+	'Not allowed to get entry' => 'No tiene permiso para obtener la entrada',
+	'Not allowed to set entry categories' => 'No tiene permiso para modificar las categorías de la entrada',
+	'Not allowed to upload files' => 'No tiene permiso para transferir ficheros',
 	'No filename provided' => 'No se especificó el nombre del fichero ',
 	'Error writing uploaded file: [_1]' => 'Error escribiendo el fichero transferido: [_1]',
+	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'El módulo de Perl Image::Size es necesario para obtener las dimensiones de las imágenes transferidas.',
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Los métodos de las plantillas no están implementados, debido a las diferencias entre Blogger API y Movable Type API.',
 
 ## mt-static/jquery/jquery.mt.js
 	'Invalid value' => 'Valor no válido',
-	'Invalid date format' => 'Formato de fecha no válido Invalid date format',
-	'Invalid mail address' => 'Dirección de fecha no válida',
+	'You have an error in your input.' => 'Hay un error en lo que introdujo.',
+	'Invalid date format' => 'Formato de fecha no válido',
+	'Invalid email address' => 'Dirección de correo no válida',
 	'Invalid URL' => 'URL no válida',
 	'This field is required' => 'Este campo es obligatorio',
-	'This field must be integer' => 'Este campo debe ser un entero',
-	'This field must be number' => 'Este campo debe ser un número',
+	'This field must be an integer' => 'Este campo debe ser un número entero',
+	'This field must be a number' => 'Este campo debe ser un número',
 
 ## mt-static/jquery/jquery.mt.min.js
 
@@ -2511,6 +2629,7 @@ que la dirección provista es correcta y le pertenece.',
 	'enable' => 'habilitar',
 	'disable' => 'deshabilitar',
 	'publish' => 'Publicar',
+	'unlock' => 'desbloquear',
 	'You did not select any [_1] to [_2].' => 'No seleccionó ninguna [_1] sobre la que [_2].',
 	'Are you sure you want to [_2] this [_1]?' => '¿Está seguro de que desea [_2] esta [_1]?',
 	'Are you sure you want to [_3] the [_1] selected [_2]?' => '¿Está seguro de que desea [_3] el/los [_1] seleccionado/s [_2]?',
@@ -2533,7 +2652,64 @@ que la dirección provista es correcta y le pertenece.',
 	'[_1] &ndash; [_2]' => '[_1] &ndash; [_2]',
 	'Last' => 'Último',
 
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
+	'Bold (Ctrl+B)' => 'Negrita (Ctrl+B)',
+	'Italic (Ctrl+I)' => 'Itálica (Ctrl+I)',
+	'Underline (Ctrl+U)' => 'Subrayado (Ctrl+U)',
+	'Strikethrough' => 'Tachado',
+	'Block Quotation' => 'Cita',
+	'Unordered List' => 'Lista no ordenada',
+	'Ordered List' => 'Lista ordenada',
+	'Horizontal Line' => 'Línea horizontal',
+	'Insert/Edit Link' => 'Insertar/Editar enlace',
+	'Unlink' => 'Borrar enlace',
+	'Undo (Ctrl+Z)' => 'Deshacer (Ctrl+Z)',
+	'Redo (Ctrl+Y)' => 'Rehacer (Ctrl+Y)',
+	'Select Text Color' => 'Color de texto',
+	'Select Background Color' => 'Color de fondo',
+	'Remove Formatting' => 'Borrar formato',
+	'Align Left' => 'Alinear izquierda',
+	'Align Center' => 'Alinear derecha',
+	'Align Right' => 'Alinear centro',
+	'Indent' => 'Indentar',
+	'Outdent' => 'Desindentar',
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/insert_html.js
+	'Insert HTML' => 'Insertar HTML',
+	'Source' => 'Fuente',
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/plugin.js
+	'Insert Link' => 'Insertar enlace',
+	'Insert Image Asset' => 'Insertar imagen',
+	'Insert Asset Link' => 'Insertar enlace',
+	'Toggle Fullscreen Mode' => 'Des/Activar modo pantalla completa',
+	'Toggle HTML Edit Mode' => 'Des/Activar modo edición HTML',
+	'Strong Emphasis' => 'Énfasis negrita',
+	'Emphasis' => 'Énfasis',
+	'List Item' => 'Elemento lista',
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
+	'Fullscreen' => 'Pantalla completa',
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/paste/editor_plugin.js
+	'paste.plaintext_mode_sticky' => 'paste.plaintext_mode_sticky',
+	'paste.plaintext_mode' => 'paste.plaintext_mode',
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/paste/editor_plugin_src.js
+
+## mt-static/plugins/TinyMCE/tiny_mce/themes/advanced/editor_template.js
+	'advanced.path' => 'advanced.path',
+
+## mt-static/plugins/TinyMCE/tiny_mce/themes/advanced/editor_template_src.js
+
+## mt-static/plugins/TinyMCE/tiny_mce/themes/advanced/js/charmap.js
+	'advanced_dlg.charmap_usage' => 'advanced_dlg.charmap_usage',
+
+## mt-static/plugins/TinyMCE/tiny_mce/utils/editable_selects.js
+	'value' => 'valor',
+
 ## themes/classic_blog/templates/about_this_page.mtml
+	'This page contains links to all the archived content.' => 'Esta página contiene enlaces a todos los contenidos archivados.',
 
 ## themes/classic_blog/templates/archive_index.mtml
 
@@ -2542,6 +2718,7 @@ que la dirección provista es correcta y le pertenece.',
 ## themes/classic_blog/templates/author_archive_list.mtml
 
 ## themes/classic_blog/templates/banner_footer.mtml
+	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Este blog tiene una <a href="[_1]">Licencia Creative Commons</a>.',
 
 ## themes/classic_blog/templates/calendar.mtml
 
@@ -2618,7 +2795,7 @@ que la dirección provista es correcta y le pertenece.',
 ## themes/classic_blog/templates/trackbacks.mtml
 
 ## themes/classic_blog/theme.yaml
-	'Typical and authentic blogging design comes with plenty of styles and the selection of 2 column / 3 column layout. Best for all the bloggers.' => 'El diseño de blogs típico y auténtico viene en muchos estilos diferentes y en distribución de 2 y tres columnas. Lo mejor para todos los blogueros.',
+	'A traditional blogging design that comes with plenty of styles and a selection of 2 column / 3 column layouts. Best for use in standard blog publishing applications.' => 'Un diseño de blogs tradicional con múltiples estilos y posibilidad de seleccionar una disposición a 2 o 3 columnas. Recomendado para instalaciones de blogs estándares.',
 
 ## themes/classic_website/templates/about_this_page.mtml
 
@@ -2645,6 +2822,7 @@ que la dirección provista es correcta y le pertenece.',
 ## themes/classic_website/templates/entry_summary.mtml
 
 ## themes/classic_website/templates/javascript.mtml
+	'The sign-in attempt was not successful; please try again.' => 'El intento de registro no tuvo éxito; por favor, inténtelo de nuevo.',
 
 ## themes/classic_website/templates/main_index.mtml
 
@@ -2682,7 +2860,7 @@ que la dirección provista es correcta y le pertenece.',
 ## themes/classic_website/templates/trackbacks.mtml
 
 ## themes/classic_website/theme.yaml
-	'Create a blog portal that aggregates contents from blogs under the website.' => 'Crear un portal blog que agregue los contenidos de los blogs publicados en este sitio web.',
+	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Crear un portal que agrega contenidos de otros blogs en un sitio web.',
 	'Classic Website' => 'Sitio web clásico',
 
 ## themes/pico/templates/about_this_page.mtml
@@ -2773,7 +2951,7 @@ que la dirección provista es correcta y le pertenece.',
 ## themes/pico/templates/trackbacks.mtml
 
 ## themes/pico/theme.yaml
-	q{Pico is the microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico es el tema para microblogging. Dispone de un diseño sencillo para gestionar una frecuencia alta de actualizaciones. Hemos trasladado las barras laterales al final de la lista de entradas para centrar la atención en el contenido.},
+	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico es un tema para microblogs, diseñado con la simplicidad en mente, para mostrar actualizaciones frecuentes. Hemos movido las barras laterales debajo de la lista de entradas para destacar el contenido.},
 	'Pico' => 'Pico',
 	'Pico Styles' => 'Estilos Pico',
 	'A collection of styles compatible with Pico themes.' => 'Colección de estilos compatible con los temas Pico.',
@@ -2781,15 +2959,15 @@ que la dirección provista es correcta y le pertenece.',
 ## search_templates/comments.tmpl
 	'Search for new comments from:' => 'Buscar nuevos comentarios desde:',
 	'the beginning' => 'el principio',
-	'one week back' => 'hace una semana',
-	'two weeks back' => 'hace dos semanas',
-	'one month back' => 'hace un mes',
-	'two months back' => 'hace dos meses',
-	'three months back' => 'hace tres meses',
-	'four months back' => 'hace cuatro meses',
-	'five months back' => 'hace cinco meses',
-	'six months back' => 'hace seis meses',
-	'one year back' => 'hace un año',
+	'one week ago' => 'hace una semana',
+	'two weeks ago' => 'hace dos semanas',
+	'one month ago' => 'hace un mes',
+	'two months ago' => 'hace dos meses',
+	'three months ago' => 'hace tres meses',
+	'four months ago' => 'hace cuatro meses',
+	'five months ago' => 'hace cinco meses',
+	'six months ago' => 'hace seis meses',
+	'one year ago' => 'hace un año',
 	'Find new comments' => 'Encontrar nuevos comentarios',
 	'Posted in [_1] on [_2]' => 'Publicado en [_1] el [_2]',
 	'No results found' => 'No se encontraron resultados',
@@ -2797,7 +2975,7 @@ que la dirección provista es correcta y le pertenece.',
 	q{Select the time interval that you'd like to search in, then click 'Find new comments'} => q{Seleccione el intervalo temporal en el que desea buscar, y luego haga clic en 'Buscar nuevos comentarios'},
 
 ## search_templates/default.tmpl
-	'SEARCH FEED AUTODISCOVERY LINK PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED' => 'EL ENLACE DE AUTODESCUBRIMIENTO DE LA FUENTE DE SINDICACIÓN DE BÚSQUEDAS SOLO SE PUBLICA CUANDO SE HA REALIZADO UNA BÚSQUEDA',
+	'SEARCH FEED AUTODISCOVERY LINK IS PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED' => 'El enlace de autodescubrimiento a la fuente de búsquedas sólo se publicará cuando se halla ejecutado una búsqueda.',
 	'Blog Search Results' => 'Resultados de la búsqueda en el blog',
 	'Blog search' => 'Buscar en el blog',
 	'STRAIGHT SEARCHES GET THE SEARCH QUERY FORM' => 'STRAIGHT SEARCHES GET THE SEARCH QUERY FORM',
@@ -2812,8 +2990,7 @@ que la dirección provista es correcta y le pertenece.',
 	q{Entries matching '[_1]'} => q{Entradas coincidentes con '[_1]'},
 	q{Entries tagged with '[_1]'} => q{Entradas etiquetadas en '[_1]'},
 	q{No pages were found containing '[_1]'.} => q{No se encontraron páginas que contuvieran '[_1]'.},
-	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes' => 'Por defecto, este motor de búsquedas, trata de encontrar todas las palabras en cualquier orden. Para buscar una frase exacta, acote la frase con comillas dobles',
-	'The search engine also supports AND, OR, and NOT keywords to specify boolean expressions' => 'El motor de búsqueda también soporta las palabras claves AND, OR y NOT para especificar expresiones lógicas (booleanas)',
+	'The search engine also supports AND, OR, and NOT keywords to specify boolean expressions:' => 'El motor de búsqueda también soporta los operadores AND, OR y NOT para especificar expresiones lógicas:',
 	'END OF ALPHA SEARCH RESULTS DIV' => 'FIN DE LOS RESULTADOS DE BÚSQUEDA - ALPHA DIV',
 	'BEGINNING OF BETA SIDEBAR FOR DISPLAY OF SEARCH INFORMATION' => 'COMIENZO DE LA BARRA LATERAL BETA PARA MOSTRAR LA INFORMACIÓN DE BÚSQUEDA',
 	'SET VARIABLES FOR SEARCH vs TAG information' => 'ESPECIFICAR VARIABLES PARA LA BÚSQUEDA vs información de etiqueta',
@@ -2828,10 +3005,10 @@ que la dirección provista es correcta y le pertenece.',
 	'END OF PAGE BODY' => 'FIN DEL CUERPO DE LA PÁGINA',
 	'END OF CONTAINER' => 'FIN DEL CONTENEDOR',
 
-## search_templates/results_feed_rss2.tmpl
+## search_templates/results_feed.tmpl
 	'Search Results for [_1]' => 'Resultados de la búsqueda sobre [_1]',
 
-## search_templates/results_feed.tmpl
+## search_templates/results_feed_rss2.tmpl
 
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Transferir nuevo fichero multimedia',
@@ -2905,6 +3082,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Entry Fields' => 'Campos de las entradas',
 	'_USAGE_ENTRYPREFS' => 'Seleccione el conjunto de campos que se mostrarán en el editor de entradas.',
 	'Page Fields' => 'Campos de las páginas',
+	'WYSIWYG Editor Setting' => 'Configuración del editor con estilos',
+	'Content CSS' => 'Contenido de la hoja de estilo (CSS)',
+	'Content CSS will be applied when WYSIWYG editor does support. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'El contenido de la hoja de estilo se aplicará cuando el editor visual lo soporte. Puede especificar un fichero CSS mediante la URL o el marcador {{theme_static}}. Ejemplo: {{theme_static}}ruta/a/fichero.css',
 	'Punctuation Replacement Setting' => 'Configuración de reemplazo de puntuación',
 	'Replace UTF-8 characters frequently used by word processors with their more common web equivalents.' => 'Reemplace los carácteres UTF-8 más usados por los procesadores de texto por sus equivalentes más comunes en el web.',
 	'Punctuation Replacement' => 'Reemplazo de puntuación',
@@ -2930,7 +3110,7 @@ que la dirección provista es correcta y le pertenece.',
 	'More Aggressive' => 'Más agresivo',
 	q{Apply 'nofollow' to URLs} => q{Aplicar 'nofollow' a las URLs},
 	q{If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation.} => q{Si está activado, se asignará un atributo 'nofollow' a los enlaces de todas las URLs en los comentarios y en los Trackbacks.},
-	q{'nofollow' exception for trusted commenters} => q{Excepción 'nofollow' para los comentaristas de confianza.}, # Translate - New
+	q{'nofollow' exception for trusted commenters} => q{Excepción 'nofollow' para los comentaristas de confianza.},
 	q{Do not add the 'nofollow' attribute when a comment is submitted by a trusted commenter.} => q{No añade el atributo 'nofollow' cuando la respuesta es enviada por un comentarista de confianza.},
 	'Comment Settings' => 'Configuración de comentarios',
 	'Note: Commenting is currently disabled at the system level.' => 'Nota: Los comentarios están actualmente desactivados a nivel de sistema.',
@@ -2963,7 +3143,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Transform URLs in comment text into HTML links.' => 'Transformar las URLs en enlaces HTML.',
 	'Specifies the Text Formatting option to use for formatting visitor comments.' => 'Opción que especifica el formato de texto a utilizar para formatear los comentarios de los visitantes.',
 	'CAPTCHA Provider' => 'Proveedor de CAPTCHA',
-	'none' => 'ninguno',
 	'No CAPTCHA provider available' => 'No hay disponible ningún proveedor de CAPTCHA.',
 	q{No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed and if the CaptchaSourceImageBase configuration directive points to a valid captcha-source directory within the 'mt-static/images' directory.} => q{No existe ningún proveedor CAPTCHA en este sistema. Por favor, compruebe que Image::Magick esté instalado y que la directiva de configuración CaptchaSourceImageBase apunta a un directorio válido de captcha dentro del directorio 'mt-static/images'.},
 	'Use Comment Confirmation Page' => 'Usar página de confirmación de comentarios',
@@ -3095,6 +3274,7 @@ que la dirección provista es correcta y le pertenece.',
 	q{Enter the archive file extension. This can take the form of 'html', 'shtml', 'php', etc. Note: Do not enter the leading period ('.').} => q{Introduzca la extensión de los archivos. Puede ser 'html', 'shtml', 'php', etc. Nota: No introduzca el punto separador de la extensión ('.').},
 	'Preferred Archive' => 'Archivo preferido',
 	q{Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive type used in this blog's archive templates.} => q{Utilizado para generar las URLs (enlaces permanentes) de las entradas archivadas del blog. Seleccione uno de los tipos de archivos utilizandos en las plantillas de archivos del blog.},
+	'Choose archive type' => 'Seleccione un tipo de archivo',
 	'No archives are active' => 'No hay archivos activos',
 	'Module Settings' => 'Configuración de módulos',
 	'Server Side Includes' => 'Server Side Includes',
@@ -3117,6 +3297,7 @@ que la dirección provista es correcta y le pertenece.',
 	'You must set a valid URL.' => 'Debe indicar una URL válida.',
 	'You must set your Local file Path.' => 'Debe indicar la ruta local de ficheros.',
 	'You must set a valid Local file Path.' => 'Debe indicar una ruta local de ficheros válida.',
+	'Website root must be under [_1]' => 'La raíz del sitio web debe estar bajo [_1]',
 	'You must set a valid Archive URL.' => 'Debe indicar una URL de archivos válida.',
 	'You must set your Local Archive Path.' => 'Debe introducir la Ruta Local de Archivos.',
 	'You must set a valid Local Archive Path.' => 'Debe indicar una ruta local de archivos válida.',
@@ -3142,11 +3323,12 @@ que la dirección provista es correcta y le pertenece.',
 	'Setup TypePad token' => 'Configuración del token de TypePad',
 
 ## tmpl/cms/cfg_system_general.tmpl
-	'A test email was sent.' => 'Se ha enviado un correo de prueba.',
 	'Your settings have been saved.' => 'Configuración guardada.',
-	'System Email' => 'Correo del sistema',
-	q{This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, and a few other minor events.} => q{Esta dirección de correo se usa en la cabecera 'De:' en los mensajes enviados por Movable Type. Se pueden enviar correos para la recuperación de contraseñas, el registro de comentaristas, notificaciones de comentarios y trackbacks y otros eventos menores.},
-	'Send Test Email' => 'Enviar mensaje de comprobación',
+	'A test mail was sent.' => 'Se envió un correo de prueba.',
+	'(None selected)' => '(Ninguno seleccionado)',
+	'System Email Address' => 'Dirección de correo del sistema',
+	'Send Test Mail' => 'Enviar correo de prueba',
+	q{This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.} => q{Esta dirección de correo se utiliza en la cabecera 'From:' de los correos enviados por Movable Type. Se puede enviar correo por recuperación de contraseña, registro de comentaristas, notificación de nuevos comentarios y TrackBacks, bloqueo de usuarios o IPs, y por otros eventos menores.},
 	'Debug Mode' => 'Modo de depuración',
 	'Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.' => 'Valores distintos a cero proveen información adicional de diagnóstico para la resolución de problemas en la instalación de Movable Type. Dispone de más información en la <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentación del modo de depuración</a>.',
 	'Performance Logging' => 'Histórico de rendimiento',
@@ -3158,6 +3340,9 @@ que la dirección provista es correcta y le pertenece.',
 	'The time limit for unlogged events in seconds. Any event that takes this amount of time or longer will be reported.' => 'El tiempo límite para los eventos no registrados, en segundos. Se informará de cualquier evento que tome esta cantidad de tiempo o mayor.',
 	'Enable this setting to have Movable Type track revisions made by users to entries, pages and templates.' => 'Activar esta configuración para seguir las revisiones realizadas por los usuarios en las entradas, páginas y plantillas.',
 	'Track revision history' => 'Seguir histórico de revisiones',
+	'Site Path Limitation' => 'Limitación de la ruta del sitio',
+	'Base Site Path' => 'Ruta base del sitio',
+	'Allow sites to be placed only under this directory' => 'Permite poner a los sitios sólo bajo este directorio',
 	'System-wide Feedback Controls' => 'Controles de las respuestas a nivel del sistema',
 	'Prohibit Comments' => 'Prohibir comentarios',
 	'This will override all individual blog settings.' => 'Esto va borrar los parámetros de todos los blogs individuales',
@@ -3174,22 +3359,38 @@ que la dirección provista es correcta y le pertenece.',
 	'(No Outbound TrackBacks)' => '(Ningún Trackback saliente)',
 	'Only to blogs within this system' => 'Solo a los blogs en este sistema',
 	'Only to websites on the following domains:' => 'Solo a los sitios web en los siguientes dominios:',
-	'Send Email To' => 'Enviar correo a',
+	'Lockout Settings' => 'Configuración de bloqueos',
+	q{The system administrators whom you wish to notify if a user or an IP address is locked out.  If no administrators are selected, notifications will be sent to the 'System Email' address.} => q{Los administradores del sistema a quienes desee notificar los bloqueos de usuarios y direcciones IP. Si no hay administradores seleccionados, se enviarán las notificaciones a la dirección del 'Correo del sistema'.},
+	'Clear' => 'Limpiar',
+	'Select' => 'Seleccionar',
+	'User lockout policy' => 'Política de bloqueo de usuarios',
+	'A Movable Type user will be locked out if he or she submits an incorrect password [_1] or more times within [_2] seconds.' => 'Si el usuario envía una clave incorrecta [_1] o más veces en menos de [_2] segundos, se bloqueará al usuario de Movable Type.',
+	'IP address lockout policy' => 'Política de bloqueo de direcciones IP.',
+	'An IP address will be locked out if [_1] or more incorrect login attempts are made within [_2] seconds from the same IP address.' => 'Si se realizzan [_1] o más intentos de inicio de sesión en menos de [_2] segundos desde la misma dirección IP, se bloqueará la dirección IP.',
+	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{Sin embargo, las siguientes direcciones IP están en una 'lista blanca' y nunca serán bloqueadas:},
+	'The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.' => 'La lista de direcciones IP. El inicio de sesión no será registrado si la dirección IP remota está incluída en esta lista. Puede especificar múltiples direcciones IP separadas por comas o saltos de línea.',
+	'Send Mail To' => 'Enviar correo a',
 	'The email address that should receive a test email from Movable Type.' => 'La direción de correo que debe recibir el correo de prueba de Movable Type.',
 	'Send' => 'Enviar',
+	'You must set a valid absolute Path.' => 'Debe indicar una ruta absoluta válida.',
 
 ## tmpl/cms/cfg_system_users.tmpl
 	'User Settings' => 'Configuración de usuarios',
 	'(No website selected)' => '(Ningún sitio web seleccionado)',
 	'Select website' => 'Seleccione un sitio web',
-	'(None selected)' => '(Ninguno seleccionado)',
 	'Allow Registration' => 'Permitir registro',
 	'Select a system administrator you wish to notify when commenters successfully registered themselves.' => 'Seleccione un administrar del sistema a quien desee que se le remitan notificaciones cuando los comentaristas se registren.',
 	'Allow commenters to register with blogs on this system.' => 'Permitir a los comentaristas registrarse con blogs en el sistema.',
 	'Notify the following system administrators when a commenter registers:' => 'Notificar a los siguientes administradores del sistema el registro de comentaristas:',
-	'Clear' => 'Limpiar',
 	'Select system administrators' => 'Seleccione los administradores de sistemas',
 	'Note: System Email Address is not set in System > General Settings. Emails will not be sent.' => 'Nota: La dirección de correo del sistema no está configurada en Sistema > Configuración general. Los mensajes no se enviarán.',
+	'Password Validation' => 'Comprobación de clave',
+	'Options' => 'Opciones',
+	'Should contain uppercase and lowercase letters.' => 'Debe contener letras en mayúsculas y minúsculas.',
+	'Should contain letters and numbers.' => 'Debe contener letras y números.',
+	'Should contain special characters.' => 'Debe contener caracteres especiales.',
+	'Minimun Length' => 'Longitud mínima',
+	'This field must be a positive integer.' => 'Este campo debe ser un positivo entero.',
 	'New User Defaults' => 'Valores predefinidos para los nuevos usuarios',
 	'Personal Blog' => 'Blog Personal',
 	'Have the system automatically create a new personal blog when a user is created. The user will be granted the blog administrator role on this blog.' => 'Hace que el sistema cree automáticamente un blog personal al crear un nuevo usuario. El usuario obtendrá el rol de administrador en ese blog.',
@@ -3254,11 +3455,10 @@ que la dirección provista es correcta y le pertenece.',
 	'Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'Introduzca la nueva URL de la sección de archivos del blog. Ejemplo: http://www.ejemplo.com/blog/archivos/',
 	q{Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Introduzca la ruta de localización de los ficheros índice de la sección de archivos. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog/ o C:\www\public_html\blog},
 	q{Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Introduzca la ruta de localización de los ficheros índice de la sección de archivos. Se recomienda una ruta absoluta (que en Linux comienza con '\' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog/ o C:\www\public_html\blog},
-	'Continue' => 'Continuar',
 	'Continue (s)' => 'Continuar (s)',
 	'Back (b)' => 'Volver (b)',
 	'You must set a valid Site URL.' => 'Debe establecer una URL de sitio válida.',
-	'You must set a valid Local Site Path.' => 'Debe establecer una ruta local de sitio válida.',
+	'You must set a valid local site path.' => 'Debe establecer una ruta local de sitio válida.',
 	'You must select a parent website.' => 'Debe indicar un sitio web padre.',
 
 ## tmpl/cms/dialog/asset_insert.tmpl
@@ -3277,6 +3477,13 @@ que la dirección provista es correcta y le pertenece.',
 	'Cancel (x)' => 'Cancelar (x)',
 	'No assets could be found.' => 'No se encontraron ficheros multimedia.',
 
+## tmpl/cms/dialog/asset_options.tmpl
+	'File Options' => 'Opciones de ficheros',
+	'Create entry using this uploaded file' => 'Crear entrada utilizando el fichero transferido',
+	'Create a new entry using this uploaded file.' => 'Crear una nueva entrada usando el fichero transferido.',
+	'Finish (s)' => 'Finalizar (s)',
+	'Finish' => 'Finalizar',
+
 ## tmpl/cms/dialog/asset_options_image.tmpl
 	'Display image in entry/page' => 'Mostrar una imagen en la entrada/página',
 	'Use thumbnail' => 'Usar miniatura',
@@ -3288,13 +3495,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Right' => 'Derecha',
 	'Link image to full-size version in a popup window.' => 'Enlazar la versión original de la imagen en un popup.',
 	'Remember these settings' => 'Recordar estas opciones',
-
-## tmpl/cms/dialog/asset_options.tmpl
-	'File Options' => 'Opciones de ficheros',
-	'Create entry using this uploaded file' => 'Crear entrada utilizando el fichero transferido',
-	'Create a new entry using this uploaded file.' => 'Crear una nueva entrada usando el fichero transferido.',
-	'Finish (s)' => 'Finalizar (s)',
-	'Finish' => 'Finalizar',
 
 ## tmpl/cms/dialog/asset_replace.tmpl
 
@@ -3349,6 +3549,7 @@ que la dirección provista es correcta y le pertenece.',
 
 ## tmpl/cms/dialog/new_password.tmpl
 	'Change Password' => 'Cambiar Contraseña',
+	'Enter the new password.' => 'Introduzca la nueva contraseña.',
 	'New Password' => 'Nueva contraseña',
 	'Confirm New Password' => 'Confirmar nueva contraseña',
 	'Change' => 'cambiar',
@@ -3419,14 +3620,13 @@ que la dirección provista es correcta y le pertenece.',
 	'Please upload the file [_1]' => 'Por favor, suba el fichero [_1]',
 
 ## tmpl/cms/dialog/select_association_type.tmpl
-	'Grant website permission to a user' => 'Conceder permiso de sitio web a un usuario',
-	'Grant blog permission to a user' => 'Conceder permiso de blog a un usuario',
-	'Grant website permission to a group' => 'Conceder permiso de sitio web a un grupo',
-	'Grant blog permission to a group' => 'Conceder permiso de blog a un grupo',
+	'Grant website permission to user' => 'Conceder permiso de sitio web al usuario',
+	'Grant blog permission to user' => 'Conceder permiso de blog al usuario',
+	'Grant website permission to group' => 'Conceder permiso de grupo al usuario',
+	'Grant blog permission to group' => 'Conceder permiso de blog al grupo',
 
 ## tmpl/cms/dialog/select_theme.tmpl
 	'Select Personal blog theme' => 'Seleccione un tema para el blog personal',
-	'Select' => 'Seleccionar',
 
 ## tmpl/cms/dialog/theme_element_detail.tmpl
 
@@ -3441,8 +3641,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Related Assets' => 'Ficheros multimedia relacionados',
 	'[_1] is missing' => '[_1] no existe',
 	'Embed Asset' => 'Embeber fichero multimedia',
-	'View this asset.' => 'Ver este fichero multimedia.',
-	'View' => 'Ver',
 	'Save changes to this asset (s)' => 'Guardar cambios de este fichero multimedia (s)',
 	'You must specify a name for the asset.' => 'Debe especificar un nombre para el fichero multimedia.',
 
@@ -3450,8 +3648,11 @@ que la dirección provista es correcta y le pertenece.',
 	'Edit Profile' => 'Editar Perfil',
 	'This profile has been updated.' => 'Este perfil ha sido actualizado.',
 	'A new password has been generated and sent to the email address [_1].' => 'Se ha generado y enviado a la dirección de correo electrónico [_1] una nueva contraseña.',
+	'This profile has been unlocked.' => 'Este perfil ha sido desbloqueado.',
 	'This user was classified as pending.' => 'Este usuario está clasificado como pendiente.',
 	'This user was classified as disabled.' => 'Este usuario está clasificado como deshabilitado.',
+	'This user was locked out.' => 'Este usuario ha sido bloqueado.',
+	q{If you want to unlock this user click the 'Unlock' link. <a href="[_1]">Unlock</a>} => q{Si desea desbloquear a este usuario, haga clic en el enlace 'Desbloquear'. <a href="[_1]">Desbloquear</a>},
 	'User properties' => 'Propiedades del usuario',
 	'Your web services password is currently' => 'Actualmente la contraseña de los servicios web es',
 	'_WARNING_PASSWORD_RESET_SINGLE' => 'Va a reiniciar la contraseña de "[_1]". Se enviará una nueva contraseña aleatoria que se enviará directamente a su dirección de correo electrónico ([_2]). ¿Desea continuar?',
@@ -3473,7 +3674,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Existing password required to create a new password.' => 'La contraseña actual es necesaria para crear una nueva.',
 	'Initial Password' => 'Contraseña inicial',
 	'Enter preferred password.' => 'Introduzca la contraseña elegida.',
-	'Enter the new password.' => 'Introduzca la nueva contraseña.',
 	'Confirm Password' => 'Confirmar contraseña',
 	'Repeat the password for confirmation.' => 'Repita la contraseña para confirmación.',
 	'Password recovery word/phrase' => 'Palabra/frase para la recuperación de contraseña',
@@ -3494,7 +3694,6 @@ que la dirección provista es correcta y le pertenece.',
 	'For use by Activity feeds and with XML-RPC and Atom-enabled clients.' => 'Utilizada por las fuentes de sindicación de actividad y los clientes XML-RPC y Atom.',
 	'Reveal' => 'Mostrar',
 	'System Permissions' => 'Permisos del sistema',
-	'Options' => 'Opciones',
 	'Create personal blog for user' => 'Crear blog personal para el usuario',
 	'Create User (s)' => 'Crear usuario (s)',
 	'Save changes to this author (s)' => 'Guardar cambios de este autor (s)',
@@ -3508,8 +3707,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Select the theme you wish to use for this blog.' => 'Seleccione el tema que desea usar en este blog.',
 	'Name your blog. The blog name can be changed at any time.' => 'Nombre del blog. Se puede modificar en cualquier momento.',
 	'Enter the URL of your Blog. Exclude the filename (i.e. index.html). Example: http://www.example.com/blog/' => 'Introduzca la URL del blog. No incluya el nombre del fichero (p.e. index.html) Ejemplo: http://www.ejemplo.com/blog/',
-	q{The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{La ruta de localización de los ficheros índice. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog},
 	q{The path where your index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{La ruta de localización de los ficheros índice. Se recomienda una ruta absolut (que en Linux comienza con '/' y en Windows con 'C:\'). No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog},
+	q{The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{La ruta de localización de los ficheros índice. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog},
 	'Select your timezone from the pulldown menu.' => 'Seleccione su zona horaria en el menú desplegable.',
 	'If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.' => 'Si desea un idioma diferente del idioma predefinido a nivel de sistema, deberá cambiar los nombres de los módulos en ciertas plantillas para incluir otros módulos globales.',
 	'Create Blog (s)' => 'Crear blog (s)',
@@ -3536,34 +3735,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Enter the URL(s) of the websites that you would like to send a TrackBack to each time you create an entry in this category. (Separate URLs with a carriage return.)' => 'Introduzca las URLs de los webs  a los que quiere enviar un TrackBack cada vez que cree una entrada en esta categoría. (Separe las URLs con un retorno de carro).',
 	'Save changes to this category (s)' => 'Guardar cambios de esta categoría (s)',
 
-## tmpl/cms/edit_commenter.tmpl
-	'Commenter Details' => 'Detalles del comentarista',
-	'The commenter has been trusted.' => 'El comentarista ahora es de confianza.',
-	'The commenter has been banned.' => 'Se bloqueó al comentarista.',
-	'Comments from [_1]' => 'Comentarios de [_1]',
-	'commenter' => 'comentarista',
-	'commenters' => 'comentaristas',
-	'to act upon' => 'actuar cuando',
-	'Trust user (t)' => 'Confiar en usuario (t)',
-	'Trust' => 'Confianza',
-	'Untrust user (t)' => 'Desconfiar del usuario (t)',
-	'Untrust' => 'Desconfiar',
-	'Ban user (b)' => 'Bloquear usuario (b)',
-	'Ban' => 'Bloquear',
-	'Unban user (b)' => 'Desbloquear usuario (b)',
-	'Unban' => 'Desbloquear',
-	'The Name of the commenter' => 'El nombre del comentarista',
-	'View all comments with this name' => 'Mostrar todos los comentarios con este nombre',
-	'Identity' => 'Identidad',
-	'The Identity of the commenter' => 'La identidad del comentarista',
-	'The Email Address of the commenter' => 'La dirección de correo del comentarista',
-	'Withheld' => 'Retener',
-	'View all comments with this email address' => 'Ver todos los comentarios de esta dirección de correo-e',
-	'The Website URL of the commenter' => 'URL del sitio del comentarista',
-	'The trusted status of the commenter' => 'El estado de la confianza en el comentarista',
-	'Trusted' => 'De confianza',
-	'Authenticated' => 'Autentificado',
-
 ## tmpl/cms/edit_comment.tmpl
 	'The comment has been approved.' => 'Se ha aprobado el comentario.',
 	'This comment was classified as spam.' => 'Se ha clasificado el comentario como basura.',
@@ -3585,6 +3756,7 @@ que la dirección provista es correcta y le pertenece.',
 	'The name of the person who posted the comment' => 'El nombre de la persona que publicó el comentario',
 	'View all comments by this commenter' => 'Ver todos los comentarios de este comentarista',
 	'View this commenter detail' => 'Ver detalles de este comentarista',
+	'Trusted' => 'De confianza',
 	'(Trusted)' => '(De confianza)',
 	'Untrust Commenter' => 'Comentarista no fiable',
 	'Ban Commenter' => 'Bloquear Comentarista',
@@ -3595,6 +3767,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Email address of commenter' => 'Dirección de correo del comentarista',
 	'Unavailable for OpenID user' => 'No disponible para los usuarios de OpenID',
 	'Email' => 'Correo electrónico',
+	'View all comments with this email address' => 'Ver todos los comentarios de esta dirección de correo-e',
 	'URL of commenter' => 'URL del comentarista',
 	'No url in profile' => 'Sin URL en el perfil',
 	'View all comments with this URL' => 'Ver todos los comentarios con esta URL',
@@ -3609,11 +3782,32 @@ que la dirección provista es correcta y le pertenece.',
 	'Fulltext of the comment entry' => 'Texto completo de la entrada del comentario',
 	'Responses to this comment' => 'Respuestas al comentario',
 
-## tmpl/cms/edit_entry_batch.tmpl
-	'Save these [_1] (s)' => 'Guardar este [_1] (s)',
-	'Published Date' => 'Fecha de publicación',
-	'Unpublished (Draft)' => 'No publicado (Borrador)',
-	'Unpublished (Review)' => 'No publicado (Revisión)',
+## tmpl/cms/edit_commenter.tmpl
+	'Commenter Details' => 'Detalles del comentarista',
+	'The commenter has been trusted.' => 'El comentarista ahora es de confianza.',
+	'The commenter has been banned.' => 'Se bloqueó al comentarista.',
+	'Comments from [_1]' => 'Comentarios de [_1]',
+	'commenter' => 'comentarista',
+	'commenters' => 'comentaristas',
+	'to act upon' => 'actuar cuando',
+	'Trust user (t)' => 'Confiar en usuario (t)',
+	'Trust' => 'Confianza',
+	'Untrust user (t)' => 'Desconfiar del usuario (t)',
+	'Untrust' => 'Desconfiar',
+	'Ban user (b)' => 'Bloquear usuario (b)',
+	'Ban' => 'Bloquear',
+	'Unban user (b)' => 'Desbloquear usuario (b)',
+	'Unban' => 'Desbloquear',
+	'The Name of the commenter' => 'El nombre del comentarista',
+	'View all comments with this name' => 'Mostrar todos los comentarios con este nombre',
+	'Identity' => 'Identidad',
+	'The Identity of the commenter' => 'La identidad del comentarista',
+	'View' => 'Ver',
+	'The Email Address of the commenter' => 'La dirección de correo del comentarista',
+	'Withheld' => 'Retener',
+	'The Website URL of the commenter' => 'URL del sitio del comentarista',
+	'The trusted status of the commenter' => 'El estado de la confianza en el comentarista',
+	'Authenticated' => 'Autentificado',
 
 ## tmpl/cms/edit_entry.tmpl
 	'Edit Page' => 'Editar página',
@@ -3654,6 +3848,8 @@ que la dirección provista es correcta y le pertenece.',
 	'This post was held for review, due to spam filtering.' => 'Esta entrada está retenida para su aprobación, debido al filtro antispam.',
 	'This post was classified as spam.' => 'Esta entrada fue clasificada como spam.',
 	'Change Folder' => 'Cambiar carpeta',
+	'Unpublished (Draft)' => 'No publicado (Borrador)',
+	'Unpublished (Review)' => 'No publicado (Revisión)',
 	'Unpublished (Spam)' => 'No publicado (Spam)',
 	'Revision: <strong>[_1]</strong>' => 'Revisión: <strong>[_1]</strong>',
 	'View revisions of this [_1]' => 'Ver revisiones de este [_1]',
@@ -3684,10 +3880,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Remove this asset.' => 'Eliminar este fichero multimedia.',
 	'No assets' => 'Ningún fichero multimedia.',
 	'You have unsaved changes to this entry that will be lost.' => 'Posee cambios no guardados en esta entrada que se perderán.',
-	'You have unsaved changes to this page that will be lost.' => 'Posee cambios no guardados en esta página que se perderán.',
 	'Enter the link address:' => 'Introduzca la dirección del enlace:',
 	'Enter the text to link to:' => 'Introduzca el texto del enlace:',
-	'Are you sure you want to use the Rich Text editor?' => '¿Está seguro de que desea usar el editor con formato?',
+	'Converting to rich text may result in changes to your current document.' => 'La conversión a texto con formato puede modificar el documento actual.',
 	'Make primary' => 'Hacer primario',
 	'Fields' => 'Campos',
 	'Reset display options to blog defaults' => 'Reiniciar opciones de visualización con los valores predefinidos del blog',
@@ -3701,6 +3896,10 @@ que la dirección provista es correcta y le pertenece.',
 	'None selected' => 'Ninguna seleccionada',
 	'Auto-saving...' => 'Auto-guardando...',
 	'Last auto-save at [_1]:[_2]:[_3]' => 'Último guardado automático a las [_1]:[_2]:[_3]',
+
+## tmpl/cms/edit_entry_batch.tmpl
+	'Save these [_1] (s)' => 'Guardar este [_1] (s)',
+	'Published Date' => 'Fecha de publicación',
 
 ## tmpl/cms/edit_folder.tmpl
 	'Edit Folder' => 'Editar carpeta',
@@ -3785,6 +3984,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Are you sure you want to remove this template map?' => '¿Está seguro que desea borrar este mapa de plantilla?',
 	'Module Body' => 'Cuerpo del módulo',
 	'Template Body' => 'Cuerpo de la plantilla',
+	'Syntax highlighting On' => 'Coloreado de sintaxis activado',
+	'Syntax highlighting Off' => 'Coloreado de sintaxis desactivado',
 	'Template Options' => 'Opciones de plantillas',
 	'Output file: <strong>[_1]</strong>' => 'Fichero de salida: <strong>[_1]</strong>',
 	'Enabled Mappings: [_1]' => 'Habilitar mapas: [_1]',
@@ -3837,6 +4038,17 @@ que la dirección provista es correcta y le pertenece.',
 ## tmpl/cms/error.tmpl
 	'An error occurred' => 'Ocurrió un error',
 
+## tmpl/cms/export.tmpl
+	'Export Blog Entries' => 'Exportar entradas del blog',
+	'You must select a blog to export.' => 'Debe seleccionar un blog para la exportación.',
+	'_USAGE_EXPORT_1' => 'Exporta las entradas, comentarios y TrackBacks de un blog. La exportación no puede considerarse como una copia de seguridad <em>completa</em> del blog.',
+	'Blog to Export' => 'Blog a exportar',
+	'Select a blog for exporting.' => 'Seleccionar un blog para la exportación.',
+	'Change blog' => 'Cambiar blog',
+	'Select blog' => 'Seleccione blog',
+	'Export Blog (s)' => 'Exportar blog (s)',
+	'Export Blog' => 'Exportar blog',
+
 ## tmpl/cms/export_theme.tmpl
 	'Export [_1] Themes' => 'Exportar temas de [_1]',
 	'Theme package have been saved.' => 'El paquete del tema se ha guardado.',
@@ -3857,25 +4069,6 @@ que la dirección provista es correcta y le pertenece.',
 	q{Cannot install new theme with existing (and protected) theme's basename.} => q{No se pudo instalar el nuevo tema con el nombre base existeinte (y protegido) del tema.},
 	'You must set Theme Name.' => 'Debe indicar el nombre del tema.',
 	'Theme version may only contain letters, numbers, and the dash or underscore character.' => 'La versión del tema solo puede contener letras, números y el guión o guión bajo.',
-
-## tmpl/cms/export.tmpl
-	'Export Blog Entries' => 'Exportar entradas del blog',
-	'You must select a blog to export.' => 'Debe seleccionar un blog para la exportación.',
-	'_USAGE_EXPORT_1' => 'Exporta las entradas, comentarios y TrackBacks de un blog. La exportación no puede considerarse como una copia de seguridad <em>completa</em> del blog.',
-	'Blog to Export' => 'Blog a exportar',
-	'Select a blog for exporting.' => 'Seleccionar un blog para la exportación.',
-	'Change blog' => 'Cambiar blog',
-	'Select blog' => 'Seleccione blog',
-	'Export Blog (s)' => 'Exportar blog (s)',
-	'Export Blog' => 'Exportar blog',
-
-## tmpl/cms/import_others.tmpl
-	'Start title HTML (optional)' => 'HTML de comienzo de título (opcional)',
-	'End title HTML (optional)' => 'HTML de final de título (opcional)',
-	'If the software you are importing from does not have title field, you can use this setting to identify a title inside the body of the entry.' => 'Si el software desde el que va a importar no tiene un campo de título, puede usar esta opción para identificar un título dentro del cuerpo de la entrada.',
-	'Default entry status (optional)' => 'Estado predefinido de las entradas (opcional)',
-	'If the software you are importing from does not specify an entry status in its export file, you can set this as the status to use when importing entries.' => 'Si el software desde el que va a importar no especifica un estado para la entrada en su fichero de exportación, puede establecer éste como el estado a utilizar al importar las entradas.',
-	'Select an entry status' => 'Seleccione un estado para las entradas',
 
 ## tmpl/cms/import.tmpl
 	'Import Blog Entries' => 'Importar entradas del blog',
@@ -3900,6 +4093,14 @@ que la dirección provista es correcta y le pertenece.',
 	'Select a category' => 'Seleccione una categoría',
 	'Import Entries (s)' => 'Importar entradas (s)',
 
+## tmpl/cms/import_others.tmpl
+	'Start title HTML (optional)' => 'HTML de comienzo de título (opcional)',
+	'End title HTML (optional)' => 'HTML de final de título (opcional)',
+	'If the software you are importing from does not have title field, you can use this setting to identify a title inside the body of the entry.' => 'Si el software desde el que va a importar no tiene un campo de título, puede usar esta opción para identificar un título dentro del cuerpo de la entrada.',
+	'Default entry status (optional)' => 'Estado predefinido de las entradas (opcional)',
+	'If the software you are importing from does not specify an entry status in its export file, you can set this as the status to use when importing entries.' => 'Si el software desde el que va a importar no especifica un estado para la entrada en su fichero de exportación, puede establecer éste como el estado a utilizar al importar las entradas.',
+	'Select an entry status' => 'Seleccione un estado para las entradas',
+
 ## tmpl/cms/include/anonymous_comment.tmpl
 	'Allow comments from anonymous or unauthenticated users.' => 'Permitir comentarios de usuarios anónimos o no autentificados.',
 	'Require name and E-mail Address for Anonymous Comments' => 'Requerir dirección de correo en los comentarios anónimos',
@@ -3911,7 +4112,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Bold' => 'Negrita',
 	'Italic' => 'Cursiva',
 	'Underline' => 'Subrayado',
-	'Strikethrough' => 'Tachado',
 	'Text Color' => 'Color de texto',
 	'Email Link' => 'Enlace de correo',
 	'Begin Blockquote' => 'Comenzar cita',
@@ -4001,7 +4201,6 @@ que la dirección provista es correcta y le pertenece.',
 	'__FILTER_DATE_ORIGIN' => '[_1]',
 	'[_1] and [_2]' => '[_1] y [_2]',
 	'_FILTER_DATE_DAYS' => '[_1] días',
-	'<mt:var name="label">' => '<mt:var name="label">',
 
 ## tmpl/cms/include/blog_table.tmpl
 	'Some templates were not refreshed.' => 'No se refrescaron algunas plantillas.',
@@ -4013,11 +4212,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Add sub folder' => 'Añadir sub carpeta',
 
 ## tmpl/cms/include/comment_detail.tmpl
-
-## tmpl/cms/include/commenter_table.tmpl
-	'Last Commented' => 'Últimos comentados',
-	'Edit this commenter' => 'Editar este comentarista',
-	'View this commenter&rsquo;s profile' => 'Ver el perfil de este comentarista',
 
 ## tmpl/cms/include/comment_table.tmpl
 	'Publish selected comments (a)' => 'Publicar comentarios seleccionados (a)',
@@ -4031,6 +4225,11 @@ que la dirección provista es correcta y le pertenece.',
 	'View this page' => 'Ver esta página',
 	'Search for all comments from this IP address' => 'Buscar todos los comentarios enviados desde esta dirección IP',
 	'to republish' => 'para reconstruir',
+
+## tmpl/cms/include/commenter_table.tmpl
+	'Last Commented' => 'Últimos comentados',
+	'Edit this commenter' => 'Editar este comentarista',
+	'View this commenter&rsquo;s profile' => 'Ver el perfil de este comentarista',
 
 ## tmpl/cms/include/copyright.tmpl
 	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.',
@@ -4082,11 +4281,9 @@ que la dirección provista es correcta y le pertenece.',
 	'http://plugins.movabletype.org/' => 'http://plugins.movabletype.org/',
 	'http://wiki.movabletype.org/' => 'http://wiki.movabletype.org/',
 	'Wiki' => 'Wiki',
-	'http://www.movabletype.com/support/' => 'http://www.movabletype.com/support/',
 	'Support' => 'Soporte',
 	'http://forums.movabletype.org/' => 'http://forums.movabletype.org/',
 	'Forums' => 'Foros',
-	'http://www.movabletype.org/feedback.html' => 'http://www.movabletype.org/feedback.html',
 	'Send Us Feedback' => 'Envíenos su opinión',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> versión [_2]',
 	'with' => 'con',
@@ -4132,13 +4329,13 @@ que la dirección provista es correcta y le pertenece.',
 	'OK (s)' => 'Aceptar (s)',
 	'OK' => 'Aceptar',
 
-## tmpl/cms/include/login_mt.tmpl
-	'Remember me?' => '¿Recordarme?',
-
 ## tmpl/cms/include/log_table.tmpl
 	'No log records could be found.' => 'No se encontraron registros.',
 	'_LOG_TABLE_BY' => 'Por',
 	'IP: [_1]' => 'IP: [_1]',
+
+## tmpl/cms/include/login_mt.tmpl
+	'Remember me?' => '¿Recordarme?',
 
 ## tmpl/cms/include/member_table.tmpl
 	'Are you sure you want to remove the selected user from this [_1]?' => '¿Está seguro de que desea borrar al usuario seleccionado de este [_1]?',
@@ -4161,6 +4358,7 @@ que la dirección provista es correcta y le pertenece.',
 
 ## tmpl/cms/include/revision_table.tmpl
 	'No revisions could be found.' => 'No se encontraron revisiones.',
+	'_REVISION_DATE_' => 'Fecha',
 	'Note' => 'Nota',
 	'Saved By' => 'Guardado por',
 
@@ -4220,7 +4418,7 @@ que la dirección provista es correcta y le pertenece.',
 	'The name used by this user to login.' => 'El nombre utilizado por este usuario para iniciar su sesión.',
 	'The name used when published.' => 'El nombre utilizado al publicar.',
 	'The user&rsquo;s email address.' => 'La dirección de correo electrónico del usuario',
-	'The email address used in the From: header of each email sent from the system.' => 'La dirección de correo usada en la cabecera De: de los correos enviados por el sistema.',
+	'System Email' => 'Correo del sistema',
 	'Use this as system email address' => 'Usar esta dirección de correo para el sistema',
 	'The user&rsquo;s preferred language.' => 'El idioma preferido del usuario.',
 	'Select a password for your account.' => 'Seleccione una contraseña para su cuenta.',
@@ -4249,7 +4447,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Alert' => 'Alerta',
 
 ## tmpl/cms/list_common.tmpl
-	'Show' => 'Mostrar',
 	'25 rows' => '25 filas',
 	'50 rows' => '50 filas',
 	'100 rows' => '100 filas',
@@ -4308,80 +4505,13 @@ que la dirección provista es correcta y le pertenece.',
 	'Recent Users...' => 'Usuarios recientes...',
 	'Select...' => 'Seleccionar...',
 
-## tmpl/cms/listing/asset_list_header.tmpl
-	'You have successfully deleted the asset(s).' => 'Se borraron con éxito los ficheros multimedia seleccionados.',
-
-## tmpl/cms/listing/association_list_header.tmpl
-	'You have successfully revoked the given permission(s).' => 'Otorgó los permisos con éxito.',
-	'You have successfully granted the given permission(s).' => 'Revocó los permisos con éxito.',
-
-## tmpl/cms/listing/author_list_header.tmpl
-	'You have successfully disabled the selected user(s).' => 'Ha deshabilitado con éxito el/los usuario/s seleccionado/s.',
-	'You have successfully enabled the selected user(s).' => 'Ha habilitado con éxito el/los usuario/s seleccionado/s.',
-	'You have successfully deleted the user(s) from the Movable Type system.' => 'Ha borrado con éxito el/los usuario/s seleccionado/s del sistema de Movable Type.',
-	'The deleted user(s) still exist in the external directory. As such, they will still be able to login to Movable Type Advanced.' => 'Este usuario borrado aún existe en el directorio externo. Como tal, aún podrán acceder a Movable Type Advanced.',
-	q{You have successfully synchronized users' information with the external directory.} => q{Sincronizó con éxito la información de los usuarios con el directorio externo.},
-	'Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory.' => 'Algunos ([_1]) de los usuarios seleccionados no pudieron rehabilitarse porque ya no se encuentra en el directorio externo.',
-	q{An error occured during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information.} => q{Ocurrió un error durante la sincronización. Para información más detallada, consulte el <a href='[_1]'>registro de actividad</a>.},
-
-## tmpl/cms/listing/banlist_list_header.tmpl
-	'You have added [_1] to your list of banned IP addresses.' => 'Agregó [_1] a su lista de direcciones IP bloqueadas.',
-	'You have successfully deleted the selected IP addresses from the list.' => 'Eliminó correctamente las direcciones IP seleccionadas.',
-	'Invalid IP address.' => 'Dirección IP no válida.',
-
-## tmpl/cms/listing/blog_list_header.tmpl
-	'You have successfully deleted the website from the Movable Type system.' => 'Ha borrado con éxito el sitio web del sistema Movable Type.',
-	'You have successfully deleted the blog from the website.' => 'Ha borrado con éxito el blog del sitio web.',
-	'You have successfully refreshed your templates.' => 'Ha refrescado con éxito las plantillas.',
-	'You have successfully moved selected blogs to another website.' => 'Ha trasladado con éxito los blogs seleccionados a otro sitio web.',
-	'Warning: You need to copy uploaded assets to new locations manually. You should consider maintaining copies of uploaded assets in their original locations to avoid broken links.' => 'Aviso: Debe copiar manualmente los ficheros multimedia asociados a nueva ruta. Estudie mantener una copia de los ficheros en su lugar original para evitar romper enlaces.',
-
-## tmpl/cms/listing/comment_list_header.tmpl
-	'The selected comment(s) has been approved.' => 'Se ha aprobado los comentarios seleccionados.',
-	'All comments reported as spam have been removed.' => 'Se ha borrado los comentarios marcados como spam.',
-	'The selected comment(s) has been unapproved.' => 'Se ha desaprobado los comentarios seleccionados.',
-	'The selected comment(s) has been reported as spam.' => 'Se ha marcado como spam los comentarios seleccionados.',
-	'The selected comment(s) has been recovered from spam.' => 'Se ha recuperado del spam los comentarios seleccionados.',
-	'The selected comment(s) has been deleted from the database.' => 'Los comentarios seleccionados fueron eliminados de la base de datos.',
-	'One or more comments you selected were submitted by an unauthenticated commenter. These commenters cannot be banned or trusted.' => 'Uno o más comentarios de los que seleccionó fueron enviados por un comentarista no autentificado. No se puede bloquear o dar confianza a estos comentaristas.',
-	'No comments appear to be spam.' => 'Ningún comentario parece que sea basura.',
-
-## tmpl/cms/listing/entry_list_header.tmpl
-
-## tmpl/cms/listing/log_list_header.tmpl
-	'All times are displayed in GMT[_1].' => 'Todas las horas se muestran en GMT[_1].',
-	'All times are displayed in GMT.' => 'Todas las fechas se muestran en GMT.',
-
-## tmpl/cms/listing/member_list_header.tmpl
-
-## tmpl/cms/listing/notification_list_header.tmpl
-	'You have added [_1] to your address book.' => 'Ha añadido [_1] a su agenda de direcciones.',
-	'You have successfully deleted the selected contacts from your address book.' => 'Ha borrado con éxito los contactos seleccionados de su agenda.',
-
-## tmpl/cms/listing/ping_list_header.tmpl
-	'The selected TrackBack(s) has been approved.' => 'Se han aprobado los TrackBacks seleccionados.',
-	'All TrackBacks reported as spam have been removed.' => 'Se han elimitado todos los TrackBacks marcadoscomo spam.',
-	'The selected TrackBack(s) has been unapproved.' => 'Se han desaprobado los TrackBacks seleccionados.',
-	'The selected TrackBack(s) has been reported as spam.' => 'Se han marcado como spam los TrackBacks seleccionados.',
-	'The selected TrackBack(s) has been recovered from spam.' => 'Se han recuperado del spam los TrackBacks seleccionados.',
-	'The selected TrackBack(s) has been deleted from the database.' => 'Se eliminaron de la base de datos los TrackBacks seleccionados.',
-	'No TrackBacks appeared to be spam.' => 'Ningún TrackBacks parece ser spam.',
-
-## tmpl/cms/listing/role_list_header.tmpl
-	'You have successfully deleted the role(s).' => 'Ha borrado con éxito el/los rol/es.',
-
-## tmpl/cms/listing/tag_list_header.tmpl
-	'Your tag changes and additions have been made.' => 'Se han realizado los cambios y añadidos a las etiquetas especificados.',
-	'You have successfully deleted the selected tags.' => 'Se borraron con éxito las etiquetas especificadas.',
-	'Specify new name of the tag.' => 'Nuevo nombre especifíco de la etiqueta',
-	'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\' across all blogs?' => 'La etiqueta \'[_2]\' ya existe.  ¿Está seguro de querer combinar \'[_1]\' con \'[_2]\' en todos los blogs?',
-
 ## tmpl/cms/list_template.tmpl
 	'Manage [_1] Templates' => 'Administrar plantillas de [_1]',
 	'Manage Global Templates' => 'Administrar plantillas globales',
 	'Show All Templates' => 'Mostrar todas las plantillas',
 	'Publishing Settings' => 'Configuración de publicación',
 	'You have successfully deleted the checked template(s).' => 'Se eliminaron correctamente las plantillas marcadas.',
+	'You have successfully refreshed your templates.' => 'Ha refrescado con éxito las plantillas.',
 	'Your templates have been published.' => 'Se han publicado las plantillas.',
 	'Selected template(s) has been copied.' => 'Se han publicado las plantillas seleccionadas.',
 
@@ -4424,6 +4554,76 @@ que la dirección provista es correcta y le pertenece.',
 	'You have successfully deleted the selected widget set(s) from your blog.' => 'Borró con éxito los conjuntos de widgets seleccionados del blog.',
 	'No widget sets could be found.' => 'No se ha encontrado ningún grupo de widgets.',
 	'Create widget template' => 'Crear plantilla de widget',
+
+## tmpl/cms/listing/asset_list_header.tmpl
+	'You have successfully deleted the asset(s).' => 'Se borraron con éxito los ficheros multimedia seleccionados.',
+
+## tmpl/cms/listing/association_list_header.tmpl
+	'You have successfully revoked the given permission(s).' => 'Otorgó los permisos con éxito.',
+	'You have successfully granted the given permission(s).' => 'Revocó los permisos con éxito.',
+
+## tmpl/cms/listing/author_list_header.tmpl
+	'You have successfully disabled the selected user(s).' => 'Ha deshabilitado con éxito el/los usuario/s seleccionado/s.',
+	'You have successfully enabled the selected user(s).' => 'Ha habilitado con éxito el/los usuario/s seleccionado/s.',
+	'You have successfully unlocked the selected user(s).' => 'Ha desbloqueado con éxito el/los usuario/s seleccionado/s.',
+	'You have successfully deleted the user(s) from the Movable Type system.' => 'Ha borrado con éxito el/los usuario/s seleccionado/s del sistema de Movable Type.',
+	'The deleted user(s) still exist in the external directory. As such, they will still be able to login to Movable Type Advanced.' => 'Este usuario borrado aún existe en el directorio externo. Como tal, aún podrán acceder a Movable Type Advanced.',
+	q{You have successfully synchronized users' information with the external directory.} => q{Sincronizó con éxito la información de los usuarios con el directorio externo.},
+	'Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory.' => 'Algunos ([_1]) de los usuarios seleccionados no pudieron rehabilitarse porque ya no se encuentra en el directorio externo.',
+	q{An error occured during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information.} => q{Ocurrió un error durante la sincronización. Para información más detallada, consulte el <a href='[_1]'>registro de actividad</a>.},
+
+## tmpl/cms/listing/banlist_list_header.tmpl
+	'You have added [_1] to your list of banned IP addresses.' => 'Agregó [_1] a su lista de direcciones IP bloqueadas.',
+	'You have successfully deleted the selected IP addresses from the list.' => 'Eliminó correctamente las direcciones IP seleccionadas.',
+	'Invalid IP address.' => 'Dirección IP no válida.',
+
+## tmpl/cms/listing/blog_list_header.tmpl
+	'You have successfully deleted the website from the Movable Type system.' => 'Ha borrado con éxito el sitio web del sistema Movable Type.',
+	'You have successfully deleted the blog from the website.' => 'Ha borrado con éxito el blog del sitio web.',
+	'You have successfully moved selected blogs to another website.' => 'Ha trasladado con éxito los blogs seleccionados a otro sitio web.',
+	'Warning: You need to copy uploaded assets to new locations manually. You should consider maintaining copies of uploaded assets in their original locations to avoid broken links.' => 'Aviso: Debe copiar manualmente los ficheros multimedia asociados a nueva ruta. Estudie mantener una copia de los ficheros en su lugar original para evitar romper enlaces.',
+
+## tmpl/cms/listing/comment_list_header.tmpl
+	'The selected comment(s) has been approved.' => 'Se ha aprobado los comentarios seleccionados.',
+	'All comments reported as spam have been removed.' => 'Se ha borrado los comentarios marcados como spam.',
+	'The selected comment(s) has been unapproved.' => 'Se ha desaprobado los comentarios seleccionados.',
+	'The selected comment(s) has been reported as spam.' => 'Se ha marcado como spam los comentarios seleccionados.',
+	'The selected comment(s) has been recovered from spam.' => 'Se ha recuperado del spam los comentarios seleccionados.',
+	'The selected comment(s) has been deleted from the database.' => 'Los comentarios seleccionados fueron eliminados de la base de datos.',
+	'One or more comments you selected were submitted by an unauthenticated commenter. These commenters cannot be banned or trusted.' => 'Uno o más comentarios de los que seleccionó fueron enviados por un comentarista no autentificado. No se puede bloquear o dar confianza a estos comentaristas.',
+	'No comments appear to be spam.' => 'Ningún comentario parece que sea basura.',
+
+## tmpl/cms/listing/entry_list_header.tmpl
+
+## tmpl/cms/listing/filter_list_header.tmpl
+
+## tmpl/cms/listing/log_list_header.tmpl
+	'All times are displayed in GMT[_1].' => 'Todas las horas se muestran en GMT[_1].',
+	'All times are displayed in GMT.' => 'Todas las fechas se muestran en GMT.',
+
+## tmpl/cms/listing/member_list_header.tmpl
+
+## tmpl/cms/listing/notification_list_header.tmpl
+	'You have added [_1] to your address book.' => 'Ha añadido [_1] a su agenda de direcciones.',
+	'You have successfully deleted the selected contacts from your address book.' => 'Ha borrado con éxito los contactos seleccionados de su agenda.',
+
+## tmpl/cms/listing/ping_list_header.tmpl
+	'The selected TrackBack(s) has been approved.' => 'Se han aprobado los TrackBacks seleccionados.',
+	'All TrackBacks reported as spam have been removed.' => 'Se han elimitado todos los TrackBacks marcadoscomo spam.',
+	'The selected TrackBack(s) has been unapproved.' => 'Se han desaprobado los TrackBacks seleccionados.',
+	'The selected TrackBack(s) has been reported as spam.' => 'Se han marcado como spam los TrackBacks seleccionados.',
+	'The selected TrackBack(s) has been recovered from spam.' => 'Se han recuperado del spam los TrackBacks seleccionados.',
+	'The selected TrackBack(s) has been deleted from the database.' => 'Se eliminaron de la base de datos los TrackBacks seleccionados.',
+	'No TrackBacks appeared to be spam.' => 'Ningún TrackBacks parece ser spam.',
+
+## tmpl/cms/listing/role_list_header.tmpl
+	'You have successfully deleted the role(s).' => 'Ha borrado con éxito el/los rol/es.',
+
+## tmpl/cms/listing/tag_list_header.tmpl
+	'Your tag changes and additions have been made.' => 'Se han realizado los cambios y añadidos a las etiquetas especificados.',
+	'You have successfully deleted the selected tags.' => 'Se borraron con éxito las etiquetas especificadas.',
+	'Specify new name of the tag.' => 'Nuevo nombre especifíco de la etiqueta',
+	'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\' across all blogs?' => 'La etiqueta \'[_2]\' ya existe.  ¿Está seguro de querer combinar \'[_1]\' con \'[_2]\' en todos los blogs?',
 
 ## tmpl/cms/login.tmpl
 	'Sign in' => 'Registrarse',
@@ -4502,6 +4702,10 @@ que la dirección provista es correcta y le pertenece.',
 	'Publishing [_1] templates...' => 'Publicando plantillas [_1]...',
 	'Complete [_1]%' => '[_1]% completado',
 
+## tmpl/cms/recover_lockout.tmpl
+	'Recovered from lockout' => 'Recuperado del bloqueo.',
+	q{User '[_1]' has been unlocked.} => q{El usuario '[_1]' ha sido desbloqueado.},
+
 ## tmpl/cms/recover_password_result.tmpl
 	'Recover Passwords' => 'Recuperar contraseñas',
 	'No users were selected to process.' => 'No se seleccionaron usuarios a procesar.',
@@ -4511,13 +4715,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Template Refresh' => 'Refrescar plantilla',
 	'No templates were selected to process.' => 'No se han seleccionado plantillas para procesar.',
 	'Return to templates' => 'Volver a las plantillas',
-
-## tmpl/cms/restore_end.tmpl
-	q{Make sure that you remove the files that you restored from the 'import' folder, so that if/when you run the restore process again, those files will not be re-restored.} => q{Asegúrese de que elimina los ficheros que ha restaurado de la carpeta 'importar', por si ejecuta el proceso en otra ocasión que éstos no vuelvan a restaurar.},
-	'An error occurred during the restore process: [_1] Please check activity log for more details.' => 'Ocurrió un error durante el proceso de restauración: [_1] Por favor, compruebe el registro de actividad para más detalles.',
-
-## tmpl/cms/restore_start.tmpl
-	'Restoring Movable Type' => 'Restaurando Movable Type',
 
 ## tmpl/cms/restore.tmpl
 	'Restore from a Backup' => 'Resturar una copia de seguridad',
@@ -4529,6 +4726,13 @@ que la dirección provista es correcta y le pertenece.',
 	'Allow existing global templates to be overwritten by global templates in the backup file.' => 'Permitir la sobreescritura de las plantillas globales existentes por las de la copia de seguridad.',
 	'Overwrite global templates.' => 'Sobreescribir las plantillas globales.',
 	'Restore (r)' => 'Restaurar (r)',
+
+## tmpl/cms/restore_end.tmpl
+	q{Make sure that you remove the files that you restored from the 'import' folder, so that if/when you run the restore process again, those files will not be re-restored.} => q{Asegúrese de que elimina los ficheros que ha restaurado de la carpeta 'importar', por si ejecuta el proceso en otra ocasión que éstos no vuelvan a restaurar.},
+	'An error occurred during the restore process: [_1] Please check activity log for more details.' => 'Ocurrió un error durante el proceso de restauración: [_1] Por favor, compruebe el registro de actividad para más detalles.',
+
+## tmpl/cms/restore_start.tmpl
+	'Restoring Movable Type' => 'Restaurando Movable Type',
 
 ## tmpl/cms/search_replace.tmpl
 	'You must select one or more item to replace.' => 'Debe seleccionar uno o más elementos a reemplazar.',
@@ -4566,7 +4770,11 @@ que la dirección provista es correcta y le pertenece.',
 ## tmpl/cms/system_check.tmpl
 	'Total Users' => 'Usuarios Totales',
 	'Memcache Status' => 'Estado de memcache',
+	'configured' => 'configurado',
+	'disabled' => 'desactivado',
 	'Memcache is [_1].' => 'Memcache es [_1].',
+	'available' => 'disponible',
+	'unavailable' => 'no disponible',
 	'Memcache Server is [_1].' => 'El servidor de memcache es [_1].',
 	'Server Model' => 'Modelo de servidor',
 	q{Movable Type could not find the script named 'mt-check.cgi'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly.} => q{Movable Type no pudo encontrar el script llamado 'mt-check.cgi'. Para solucionar este problema, asegúrese de que el script mt-check.cgi existe y que el parámetro de configuración CheckScript (si fuera necesario) lo referencia correctamente.},
@@ -4574,17 +4782,6 @@ que la dirección provista es correcta y le pertenece.',
 ## tmpl/cms/theme_export_replace.tmpl
 	q{Export theme folder already exists '[_1]'. You can overwrite a existing theme, or cancel to change the Basename?} => q{La carpeta para la exportación del tema ya existe '[_1]'. Puede sobreescribir un tema existente, cancelar o cambiar el nombre de la carpeta.},
 	'Overwrite' => 'Sobreescribir',
-
-## tmpl/cms/upgrade_runner.tmpl
-	'Initializing database...' => 'Inicializando base la de datos...',
-	'Upgrading database...' => 'Actualizando la base de datos...',
-	'Error during installation:' => 'Error durante la instalación:',
-	'Error during upgrade:' => 'Error durante la actualización:',
-	'Return to Movable Type (s)' => 'Volver a Movable Type (s)',
-	'Return to Movable Type' => 'Volver a Movable Type',
-	'Your database is already current.' => 'Su base de datos está al día.',
-	'Installation complete!' => '¡Instalación finalizada!',
-	'Upgrade complete!' => '¡Actualización finalizada!',
 
 ## tmpl/cms/upgrade.tmpl
 	'Time to Upgrade!' => '¡Hora de actualizar!',
@@ -4596,7 +4793,18 @@ que la dirección provista es correcta y le pertenece.',
 	'The following Movable Type components require upgrading or installation:' => 'Los siguientes componentes de Movable Type necesitan actualización o instalación:',
 	'Begin Upgrade' => 'Comenzar actualización',
 	'Congratulations, you have successfully upgraded to Movable Type [_1].' => 'Felicidades, actualizó con éxito a Movable Type [_1].',
+	'Return to Movable Type' => 'Volver a Movable Type',
 	'Your Movable Type installation is already up to date.' => 'Su instalación de Movable Type ya está actualizada.',
+
+## tmpl/cms/upgrade_runner.tmpl
+	'Initializing database...' => 'Inicializando base la de datos...',
+	'Upgrading database...' => 'Actualizando la base de datos...',
+	'Error during installation:' => 'Error durante la instalación:',
+	'Error during upgrade:' => 'Error durante la actualización:',
+	'Return to Movable Type (s)' => 'Volver a Movable Type (s)',
+	'Your database is already current.' => 'Su base de datos está al día.',
+	'Installation complete!' => '¡Instalación finalizada!',
+	'Upgrade complete!' => '¡Actualización finalizada!',
 
 ## tmpl/cms/view_log.tmpl
 	'The activity log has been reset.' => 'Se reinició el registro de actividad.',
@@ -4613,6 +4821,25 @@ que la dirección provista es correcta y le pertenece.',
 ## tmpl/cms/view_rpt_log.tmpl
 	'Schwartz Error Log' => 'Histórico de errores de Schwartz',
 	'Showing all Schwartz errors' => 'Mostrando todos los errores de Schwartz',
+
+## tmpl/cms/widget/blog_stats.tmpl
+	'Error retrieving recent entries.' => 'Error obteniendo entradas recientes.',
+	'Loading recent entries...' => 'Cargando entradas recientes',
+	'Jan.' => 'Ene.',
+	'Feb.' => 'Feb.',
+	'March' => 'Marzo',
+	'April' => 'Abril',
+	'May' => 'Mayo',
+	'June' => 'Junio',
+	'July.' => 'Jul.',
+	'Aug.' => 'Ago.',
+	'Sept.' => 'Sep.',
+	'Oct.' => 'Oct.',
+	'Nov.' => 'Nov.',
+	'Dec.' => 'Dic.',
+	'[_1] [_2] - [_3] [_4]' => '[_1] [_2] - [_3] [_4]',
+	'You have <a href=\'[_3]\'>[quant,_1,comment,comments] from [_2]</a>' => 'Tiene <a href=\'[_3]\'>[quant,_1,comentario,comentarios] de [_2]</a>',
+	'You have <a href=\'[_3]\'>[quant,_1,entry,entries] from [_2]</a>' => 'Tiene <a href=\'[_3]\'>[quant,_1,entrada] de [_2]</a>',
 
 ## tmpl/cms/widget/blog_stats_comment.tmpl
 	'Most Recent Comments' => 'Últimos comentarios',
@@ -4633,25 +4860,6 @@ que la dirección provista es correcta y le pertenece.',
 	'No entries available.' => 'Sin entradas disponibles.',
 
 ## tmpl/cms/widget/blog_stats_tag_cloud.tmpl
-
-## tmpl/cms/widget/blog_stats.tmpl
-	'Error retrieving recent entries.' => 'Error obteniendo entradas recientes.',
-	'Loading recent entries...' => 'Cargando entradas recientes',
-	'Jan.' => 'Ene.',
-	'Feb.' => 'Feb.',
-	'March' => 'Marzo',
-	'April' => 'Abril',
-	'May' => 'Mayo',
-	'June' => 'Junio',
-	'July.' => 'Jul.',
-	'Aug.' => 'Ago.',
-	'Sept.' => 'Sep.',
-	'Oct.' => 'Oct.',
-	'Nov.' => 'Nov.',
-	'Dec.' => 'Dic.',
-	'[_1] [_2] - [_3] [_4]' => '[_1] [_2] - [_3] [_4]',
-	'You have <a href=\'[_3]\'>[quant,_1,comment,comments] from [_2]</a>' => 'Tiene <a href=\'[_3]\'>[quant,_1,comentario,comentarios] de [_2]</a>',
-	'You have <a href=\'[_3]\'>[quant,_1,entry,entries] from [_2]</a>' => 'Tiene <a href=\'[_3]\'>[quant,_1,entrada] de [_2]</a>',
 
 ## tmpl/cms/widget/custom_message.tmpl
 	'This is you' => 'Este es usted',
@@ -4767,11 +4975,11 @@ que la dirección provista es correcta y le pertenece.',
 	'Your Wordpress.com Username' => 'Su usuario de Wordpress.com',
 	'Sign in using your WordPress.com username.' => 'Identifíquese usando su usuario de WordPress.com.',
 
-## tmpl/comment/auth_yahoojapan.tmpl
-	'Turn on OpenID for your Yahoo! Japan account now' => 'Active OpenID en su cuenta de Yahoo! Japan ahora',
-
 ## tmpl/comment/auth_yahoo.tmpl
 	'Turn on OpenID for your Yahoo! account now' => 'Active ahora OpenID para su cuenta de Yahoo',
+
+## tmpl/comment/auth_yahoojapan.tmpl
+	'Turn on OpenID for your Yahoo! Japan account now' => 'Active OpenID en su cuenta de Yahoo! Japan ahora',
 
 ## tmpl/comment/error.tmpl
 	'Back (s)' => 'Regresar (s)',
@@ -4794,6 +5002,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Create an account' => 'Crear una cuenta',
 	'Register' => 'Registrarse',
 
+## tmpl/comment/signup.tmpl
+	'Password Confirm' => 'Confirmar contraseña',
+
 ## tmpl/comment/signup_thanks.tmpl
 	'Thanks for signing up' => 'Gracias por inscribirse',
 	'Before you can leave a comment you must first complete the registration process by confirming your account. An email has been sent to [_1].' => 'Antes de poder comentar, debe completar el proceso de registro confirmando su cuenta. Se le ha enviado un correo a [_1].',
@@ -4801,9 +5012,6 @@ que la dirección provista es correcta y le pertenece.',
 	'To confirm and activate your account please check your inbox and click on the link found in the email we just sent you.' => 'Para confirmar y activar su cuenta, por favor, compruebe su correo y haga clic en el correo que le acabamos de enviar.',
 	'Return to the original entry.' => 'Volver a la entrada original.',
 	'Return to the original page.' => 'Volver a la página original.',
-
-## tmpl/comment/signup.tmpl
-	'Password Confirm' => 'Confirmar contraseña',
 
 ## tmpl/error.tmpl
 	'Missing Configuration File' => 'Fichero de configuración no encontrado',
@@ -4841,8 +5049,6 @@ que la dirección provista es correcta y le pertenece.',
 ## tmpl/feeds/login.tmpl
 	'This link is invalid. Please resubscribe to your activity feed.' => 'Este enlace no es válido. Por favor, resuscríbase a la fuente de sindicación de actividades.',
 
-## tmpl/include/chromeless_header.tmpl
-
 ## tmpl/wizard/blog.tmpl
 	'Setup Your First Blog' => 'Configure su primer blog',
 	q{In order to properly publish your blog, you must provide Movable Type with your blog's URL and the path on the filesystem where its files should be published.} => q{Para publicar correctamente el blog, debe proveer a Movable Type la URL del blog y la ruta en el sistema donde se publicarán sus ficheros.},
@@ -4861,12 +5067,11 @@ que la dirección provista es correcta y le pertenece.',
 
 ## tmpl/wizard/complete.tmpl
 	'Configuration File' => 'Archivo de configuración',
-	q{The [_1] configuration file can't be located.} => q{El archivo de configuración [_1] no puede ser localizado},
+	'The [_1] configuration file cannot be located.' => 'El archivo de configuración [_1] no puede ser localizado',
 	q{Please use the configuration text below to create a file named 'mt-config.cgi' in the root directory of [_1] (the same directory in which mt.cgi is found).} => q{Utilice por favor el texto de la configuración abajo para crear un archivo llamado 'mt-config.cgi' en la raíz del directorio de [_1] (el mismo directorio en el cual se encuentra mt.cgi).},
 	'The wizard was unable to save the [_1] configuration file.' => 'El asistente de instalación no ha podido guardar el [_1] archivo de configuración.',
 	q{Confirm that your [_1] home directory (the directory that contains mt.cgi) is writable by your web server and then click 'Retry'.} => q{Confirme que el servidor web puede escribir en su directorio de inicio [_1] (el directorio que contiene mt.cgi) y luego haga clic en 'Reintentar'.},
 	q{Congratulations! You've successfully configured [_1].} => q{¡Felicidades! Ha configurado con éxito [_1].},
-	'Your configuration settings have been written to the following file:' => 'Sus parámetros de configuración han sido escritos en los siguientes archivos:',
 	'Show the mt-config.cgi file generated by the wizard' => 'Mostrar el archivo mt-config.cgi generado por el asistente de instalación',
 	'The mt-config.cgi file has been created manually.' => 'El fichero mt-config.cgi fue creado manualmente.',
 	'Retry' => 'Reintentar',
@@ -4879,7 +5084,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Please enter the parameters necessary for connecting to your database.' => 'Por favor, introduzca los parámetros necesarios para la conexión con la base de datos.',
 	'Database Type' => 'Tipo de base de datos',
 	'Select One...' => 'Seleccione uno...',
-	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
 	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => '¿Su base de datos preferida no está en la lista? Consulte la <a href="[_1]" target="_blank">Comprobación del Sistema de Movable Type</a> para ver si se necesitan otros módulos.',
 	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => 'Una vez instalado, haga <a href="javascript:void(0)" onclick="[_1]">clic aquí para recargar esta pantalla</a>.',
 	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => 'Más información: <a href="[_1]" target="_blank">Configuración de la base de datos</a>',
@@ -4896,13 +5100,33 @@ que la dirección provista es correcta y le pertenece.',
 	'Show current mail settings' => 'Mostrar configuración actual del correo',
 	'Periodically Movable Type will send email for password recovery, to inform authors of new comments, and other events. If not using Sendmail (default on unix servers), an SMTP Server must be specified.' => 'Periódicamente, Movable Type enviará un correo para informar a los usuarios sobre los nuevos comentarios y otros eventos. Para que estos correos se envíen correctamente, debe decirle a Movable Type cómo enviarlos.',
 	'An error occurred while attempting to send mail: ' => 'Ocurrió un error intentando enviar un mensaje de correo electrónico: ',
-	'Send email via:' => 'Enviar correo vía:',
-	'sendmail Path' => 'Ruta de sendmail',
-	'The physical file path for your sendmail binary.' => 'Ruta física del fichero binario de sendmail.',
+	'Send mail via:' => 'Enviar correo vía:',
+	'Sendmail Path' => 'Ruta de sendmail',
+	'The physical file path for your Sendmail binary.' => 'Ruta física del fichero binario de sendmail.',
 	'Outbound Mail Server (SMTP)' => 'Servidor de correo saliente (SMTP)',
 	'Address of your SMTP Server.' => 'Dirección del servidor SMTP.',
+	'Port number for Outbound Mail Server' => 'Número de puerto para el servidor de correo saliente',
+	'Port number of your SMTP Server.' => 'Número de puerto para el servidor SMTP.',
+	'Use SMTP Auth' => 'Usar autentificación SMTP',
+	'SMTP Auth Username' => 'Usuario para autentificación SMTP',
+	'Username for your SMTP Server.' => 'Usuario para el servidor SMTP.',
+	'SMTP Auth Password' => 'Contraseña de autentificación SMTP',
+	'Password for your SMTP Server.' => 'Contraseña para el servidor SMTP.',
+	'SSL Connection' => 'Conexión SSL',
+	'Cannot use [_1].' => 'No se puede usar [_1].',
+	'Do not use SSL' => 'No usar SSL',
+	'Use SSL' => 'Usar SSL',
+	'Use STARTTLS' => 'Usar STARTTLS',
+	'Send Test Email' => 'Enviar mensaje de comprobación',
 	'Mail address to which test email should be sent' => 'La dirección de correo a la que debe enviarse el correo de prueba',
-	'From mail address' => 'Dirección de correo',
+	'Skip' => 'Ignorar',
+	'You must set the SMTP server port number.' => 'Debe indicar el puerto del servidor SMTP.',
+	'This field must be an integer.' => 'Este campo debe ser un número entero.',
+	'You must set the system email address.' => 'Debe indicar la dirección de correo del sistema.',
+	'You must set the Sendmail path.' => 'Debe indicar la ruta a sendmail.',
+	'You must set the SMTP server address.' => 'Debe indicar la dirección del servidor SMTP.',
+	'You must set a username for the SMTP server.' => 'Debe indicar el usuario del servidor SMTP.',
+	'You must set a password for the SMTP server.' => 'Debe indicar la contraseña del servidor SMTP.',
 
 ## tmpl/wizard/packages.tmpl
 	'Requirements Check' => 'Comprobación de requerimientos',
@@ -4941,9 +5165,44 @@ que la dirección provista es correcta y le pertenece.',
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Para crear una nueva configuración del archivo usando Wizard, borre la configuración actual del archivo y actualice la página',
 
 ## addons/Commercial.pack/config.yaml
+	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype/',
 	'Professional designed, well structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'Sitio web con diseños profesionales, bien estructurados y fácilmente adaptables. Puede personalizar de forma sencilla las páginas predefinidas, los pies y la navegación.',
+	q{_PWT_ABOUT_BODY} => q{
+<p><strong>Vuelva a colocar el texto de ejemplo con su propia información.</strong></p>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque pellentesque nulla. Maecenas condimentum quam. Vestibulum pretium fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae, vulputate et, dignissim at, pede. Integer pellentesque orci at nibh. Morbi ante.</p>
+
+<p>Maecenas convallis mattis justo. Ut mauris sapien, consequat a, bibendum vitae, sagittis ac, nisi. Nulla et sapien. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Ut condimentum turpis ut elit. Quisque ultricies sollicitudin justo. Duis vitae magna nec risus pulvinar ultricies.</p>
+<!-- remove this link after editing -->
+<p class="admin-edit-link">
+<a href="#" onclick="location.href=adminurl + '?__mode=view&_type=page&id=' + page_id + '&blog_id=' + blog_id; return false">Editar este contenido</a>
+</p>
+	 },
+	q{_PWT_CONTACT_BODY} => q{
+<p><strong>Vuelva a colocar el texto de ejemplo con su propia información.</strong></p>
+
+<p>Nos encantaría saber de usted. Enviar correo electrónico a email (at) domainname.com</p>
+
+<!-- remove this link after editing -->
+<p class="admin-edit-link">
+<a href="#" onclick="location.href=adminurl + '?__mode=view&_type=page&id=' + page_id + '&blog_id=' + blog_id; return false">Editar este contenido</a>
+</p>
+	 },
 	'Welcome to our new website!' => '¡Bienvenido a nuestro nuevo sitio!',
+	q{_PWT_HOME_BODY} => q{
+<p><strong>Vuelva a colocar el texto de ejemplo con su propia información.</strong></p>
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque pellentesque nulla. Maecenas condimentum quam. Aliquam erat volutpat. Ut placerat porta nibh. Donec vitae nulla. Pellentesque nisi leo, pretium a, gravida quis, sollicitudin non, eros. Vestibulum pretium fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae, vulputate et, dignissim at, pede. Integer pellentesque orci at nibh. Morbi ante.</p>
+
+<p>Maecenas convallis mattis justo. Ut mauris sapien, consequat a, bibendum vitae, sagittis ac, nisi. Nulla et sapien. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Ut condimentum turpis ut elit. Quisque ultricies sollicitudin justo. Duis vitae magna nec risus pulvinar ultricies. Aliquam sagittis volutpat metus.</p>
+
+<p>Sed enim. Integer hendrerit, arcu ac pretium nonummy, velit turpis faucibus risus, pulvinar egestas enim elit sed ante. Curabitur orci diam, placerat a, faucibus id, condimentum vitae, magna. Etiam enim massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
+<!-- remove this link after editing -->
+<p class="admin-edit-link">
+<a href="#" onclick="location.href=adminurl + '?__mode=view&_type=page&id=' + page_id + '&blog_id=' + blog_id; return false">Editar este contenido</a>
+</p>
+	 },
 	'Create a blog as a part of structured website. This works best with Professional Website theme.' => 'Crear un blog como parte de la estructura de un sitio web. Funciona mejor con el tema Sitio Web Profesional.',
+	'Unknown Type' => 'Tipo de desconocido',
+	'Unknown Object' => 'Objeto de desconocido',
 	'Not Required' => 'No obligatorio',
 	'Are you sure you want to delete the selected CustomFields?' => '¿Está seguro de que desea borrar los campos personalizados seleccionados?',
 	'Photo' => 'Foto',
@@ -4953,6 +5212,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Template tag' => 'Etiqueta de plantilla',
 	'Updating Universal Template Set to Professional Website set...' => 'Actualizar el conjuntto de plantillas Universal al conjunto Sitio Web Profesional...',
 	'Migrating CustomFields type...' => 'Migrando tipo de Campos Personalizados...',
+	'Converting CustomField type...' => 'Convirtiendo el tipo de Campos Personalizados...',
 	'Professional Styles' => 'Estilos Profesionales',
 	'A collection of styles compatible with Professional themes.' => 'Colección de estilos compatible con los temas Profesionales.',
 	'Professional Website' => 'Web Profesional',
@@ -4971,6 +5231,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Blog Archives' => 'Archivos del blog',
 
 ## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
+	'Show' => 'Mostrar',
 	'Date & Time' => 'Fecha & Hora',
 	'Date Only' => 'Fecha solo',
 	'Time Only' => 'Hora solo',
@@ -4985,8 +5246,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Please ensure all required fields have been filled in.' => 'Por favor, asegúrese de que todos los campos se han introducido.',
 	'The template tag \'[_1]\' is an invalid tag name.' => 'La etiqueta de plantilla \'[_1]\' es un nombre de etiqueta inválido.',
 	'The template tag \'[_1]\' is already in use.' => 'La etiqueta de plantilla \'[_1]\' ya está en uso.',
-	'blog and the system' => 'blog y el sistema', # Translate - New
-	'website and the system' => 'sitio y el sistema', # Translate - New
+	'blog and the system' => 'blog y el sistema',
+	'website and the system' => 'sitio y el sistema',
 	'The basename \'[_1]\' is already in use. It must be unique within this [_2].' => 'El nombre base \'[_1]\' ya está en uso. Debe ser único en este [_2].',
 	'You must select other type if object is the comment.' => 'Debe seleccionar otro tipo si el objeto es un comentario.',
 	'type' => 'tipo',
@@ -5037,6 +5298,7 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/templates/professional/blog/archive_index.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/archive_widgets_group.mtml
+	'This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]' => 'Conjunto personalizado de widgets creado para mostrar contenidos diferentes según el tipo de archivo que incluye. Más información: [_1]',
 
 ## addons/Commercial.pack/templates/professional/blog/author_archive_list.mtml
 
@@ -5070,6 +5332,8 @@ que la dirección provista es correcta y le pertenece.',
 
 ## addons/Commercial.pack/templates/professional/blog/dynamic_error.mtml
 
+## addons/Commercial.pack/templates/professional/blog/entry.mtml
+
 ## addons/Commercial.pack/templates/professional/blog/entry_detail.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/entry_listing.mtml
@@ -5077,14 +5341,12 @@ que la dirección provista es correcta y le pertenece.',
 
 ## addons/Commercial.pack/templates/professional/blog/entry_metadata.mtml
 
-## addons/Commercial.pack/templates/professional/blog/entry.mtml
-
 ## addons/Commercial.pack/templates/professional/blog/entry_summary.mtml
+
+## addons/Commercial.pack/templates/professional/blog/footer.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/footer_links.mtml
 	'Links' => 'Enlaces',
-
-## addons/Commercial.pack/templates/professional/blog/footer.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/header.mtml
 
@@ -5093,6 +5355,7 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/templates/professional/blog/main_index.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/main_index_widgets_group.mtml
+	'This is a custom set of widgets that are conditioned to only appear on the homepage (or "main_index"). More info: [_1]' => 'Este es un conjunto personalizado de widgets creados para aparecer solo en la página de inicio (o "main_index"). Más información: [_1]',
 
 ## addons/Commercial.pack/templates/professional/blog/monthly_archive_dropdown.mtml
 
@@ -5118,6 +5381,7 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/templates/professional/blog/search.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/search_results.mtml
+	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'Por defecto, este motor de búsqueda comprueba todas las palabras sin tener en cuenta el orden. Para buscar una frase exacta, encierre la frase entre comillas:',
 
 ## addons/Commercial.pack/templates/professional/blog/sidebar.mtml
 
@@ -5154,9 +5418,9 @@ que la dirección provista es correcta y le pertenece.',
 
 ## addons/Commercial.pack/templates/professional/website/entry_summary.mtml
 
-## addons/Commercial.pack/templates/professional/website/footer_links.mtml
-
 ## addons/Commercial.pack/templates/professional/website/footer.mtml
+
+## addons/Commercial.pack/templates/professional/website/footer_links.mtml
 
 ## addons/Commercial.pack/templates/professional/website/header.mtml
 
@@ -5208,13 +5472,13 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/tmpl/edit_field.tmpl
 	'Edit Custom Field' => 'Editar campo personalizado',
 	'Create Custom Field' => 'Crear campo personalizado',
-	'The selected fields(s) has been deleted from the database.' => 'Los campos seleccionados han sido borrados de la base de datos.',
-	'You must enter information into the required fields highlighted below before the custom field can be created.' => 'Antes de que pueda crear el campo personalizado debe introducir la información en los campos obligatorios resaltados abajo.', # Translate - Case
-	'You must save this custom field before setting a default value.' => 'Debe guardar este campo personalizado antes de indicar un valor predefinido.', # Translate - Case
-	'Choose the system object where this custom field should appear.' => 'Seleccione el objeto del sistema donde aparecerá el campo personalizado.', # Translate - Case
+	'The selected field(s) has been deleted from the database.' => 'Los campos seleccionados han sido borrados de la base de datos.',
+	'You must enter information into the required fields highlighted below before the custom field can be created.' => 'Antes de que pueda crear el campo personalizado debe introducir la información en los campos obligatorios resaltados abajo.',
+	'You must save this custom field before setting a default value.' => 'Debe guardar este campo personalizado antes de indicar un valor predefinido.',
+	'Choose the system object where this custom field should appear.' => 'Seleccione el objeto del sistema donde aparecerá el campo personalizado.',
 	'Required?' => '¿Obligatorio?',
-	'Is data entry required in this custom field?' => '¿Se necesita la introducción de datos en este campo personalizado?', # Translate - Case
-	'Must the user enter data into this custom field before the object may be saved?' => '¿El usuario debe introducir datos en este campo personalizado antes de que el objeto se guarde?', # Translate - Case
+	'Is data entry required in this custom field?' => '¿Se necesita la introducción de datos en este campo personalizado?',
+	'Must the user enter data into this custom field before the object may be saved?' => '¿El usuario debe introducir datos en este campo personalizado antes de que el objeto se guarde?',
 	'Default' => 'Predefinido',
 	'The basename must be unique within this [_1].' => 'El nombre base debe ser único en este [_1].',
 	q{Warning: Changing this field's basename may require changes to existing templates.} => q{Atención: Si cambia el nombre base de este campo, quizás se necesiten cambios en las plantillas existentes.},
@@ -5228,6 +5492,8 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Commercial.pack/tmpl/export_field.tmpl
 	'Object' => 'Objeto',
 
+## addons/Commercial.pack/tmpl/listing/field_list_header.tmpl
+
 ## addons/Commercial.pack/tmpl/reorder_fields.tmpl
 	'open' => 'abrir',
 	'click-down and drag to move this field' => 'haga clic y arrastre el campo para moverlo',
@@ -5236,6 +5502,7 @@ que la dirección provista es correcta y le pertenece.',
 	', or press the enter key to %toggle% it' => ', o presione la tecla enter para %toggle%',
 
 ## addons/Community.pack/config.yaml
+	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype/',
 	'Increase reader engagement - deploy features to your website that make it easier for your readers to engage with your content and your company.' => 'Incremente la satisfacción de los lectores - muestre nuevas características en el sitio web para facilitar que los lectores disfruten de sus contenidos y su compañía.',
 	'Create forums where users can post topics and responses to topics.' => 'Cree foros donde los usuarios pueden publicar temas y respuestas a esos temas.',
 	'Users followed by [_1]' => 'Seguidos por [_1]',
@@ -5295,22 +5562,26 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/lib/MT/App/Community.pm
 	'No login form template defined' => 'No hay ninguna plantilla de formulario definida',
 	'Before you can sign in, you must authenticate your email address. <a href="[_1]">Click here</a> to resend the verification email.' => 'Antes de que pueda iniciar una sesión, debe autentificar su dirección de correo. <a href="[_1]">Haga clic aquí</a> para reenviar el correo de verificación.',
+	'You are trying to redirect to external resources: [_1]' => 'Está intentando redireccionar a recursos externos: [_1]',
+	'Successfully authenticated but signing up is not allowed.  Please contact system administrator.' => 'La identificación se ha producido con suceso pero la conexión ha sido rechazada.  Por favor contacte el administrador del sistema.',
 	'(No email address)' => '(Sin dirección de correo)',
-	'Your confirmation have expired. Please register again.' => 'Su confirmación ha caducado. Por favor, regístrese de nuevo.',
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'El usuario \'[_1]\' (ID:[_2]) se registró con éxito.',
 	'Thanks for the confirmation.  Please sign in.' => 'Gracias por la confirmación. Por favor, inicie la sesión.',
 	'[_1] registered to Movable Type.' => '[_1] se registró en Movable Type.',
 	'Login required' => 'Requerido inicio de sesión',
 	'Title or Content is required.' => 'El título o contenido es obligatorio.',
+	'Publish failed: [_1]' => 'Falló la publicación: [_1]',
 	'System template entry_response not found in blog: [_1]' => 'La plantilla del sistema entry_response no se encontró en el blog: [_1]',
 	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'Añadida una nueva entrada \'[_1]\' al blog \'[_2]\'',
 	'Id or Username is required' => 'Se necesita el Id o el nombre del usuario',
 	'Unknown user' => 'Usuario desconocido',
+	'All required fields must have valid values.' => 'Todos los campos obligatorios deben tener valores válidos.',
 	'Recent Entries from [_1]' => 'Entradas recientes de [_1]',
 	'Responses to Comments from [_1]' => 'Respuestas a los comentarios de [_1]',
 	'Actions from [_1]' => 'Acciones de [_1]',
 
 ## addons/Community.pack/lib/MT/Community/CMS.pm
+	'Movable Type was unable to write on the "Upload Destination". Please make sure that the folder is writable from the web server.' => 'Movable Type no pudo escribir en el "Destino de las transferencias". Por favor, asegúrese de que el servidor web puede escribir en el directorio.',
 
 ## addons/Community.pack/lib/MT/Community/Tags.pm
 	'You used an \'[_1]\' tag outside of the block of MTIfEntryRecommended; perhaps you mistakenly placed it outside of an \'MTIfEntryRecommended\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del bloque MTIfEntryRecommended; ¿quizás la situó por error fuera de un contenedor \'MTIfEntryRecommended\'?',
@@ -5326,6 +5597,7 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/templates/blog/archive_index.mtml
 
 ## addons/Community.pack/templates/blog/archive_widgets_group.mtml
+	'This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]' => 'Conjunto personalizado de widgets creado para mostrar contenidos diferentes según el tipo de archivo que incluye. Más información: [_1]',
 
 ## addons/Community.pack/templates/blog/categories.mtml
 
@@ -5352,6 +5624,8 @@ que la dirección provista es correcta y le pertenece.',
 
 ## addons/Community.pack/templates/blog/dynamic_error.mtml
 
+## addons/Community.pack/templates/blog/entry.mtml
+
 ## addons/Community.pack/templates/blog/entry_create.mtml
 
 ## addons/Community.pack/templates/blog/entry_detail.mtml
@@ -5369,8 +5643,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Vote' => 'Voto',
 	'Votes' => 'Votos',
 
-## addons/Community.pack/templates/blog/entry.mtml
-
 ## addons/Community.pack/templates/blog/entry_response.mtml
 	'Thank you for posting an entry.' => 'Gracias por publicar una entrada.',
 	'Entry Pending' => 'Entrada pendiente',
@@ -5387,6 +5659,7 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/templates/blog/main_index.mtml
 
 ## addons/Community.pack/templates/blog/main_index_widgets_group.mtml
+	'This is a custom set of widgets that are conditioned to only appear on the homepage (or "main_index"). More info: [_1]' => 'Este es un conjunto personalizado de widgets creados para aparecer solo en la página de inicio (o "main_index"). Más información: [_1]',
 
 ## addons/Community.pack/templates/blog/monthly_archive_list.mtml
 
@@ -5459,6 +5732,8 @@ que la dirección provista es correcta y le pertenece.',
 
 ## addons/Community.pack/templates/forum/dynamic_error.mtml
 
+## addons/Community.pack/templates/forum/entry.mtml
+
 ## addons/Community.pack/templates/forum/entry_create.mtml
 	'Start a Topic' => 'Comenzar un tema',
 
@@ -5472,8 +5747,6 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/templates/forum/entry_listing.mtml
 
 ## addons/Community.pack/templates/forum/entry_metadata.mtml
-
-## addons/Community.pack/templates/forum/entry.mtml
 
 ## addons/Community.pack/templates/forum/entry_popular.mtml
 	'Popular topics' => 'Temas populares',
@@ -5517,6 +5790,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Topics matching &ldquo;[_1]&rdquo;' => 'Temas que coinciden con &ldquo;[_1]&rdquo;',
 	'Topics tagged &ldquo;[_1]&rdquo;' => 'Temas etiquetados con &ldquo;[_1]&rdquo;',
 	'Topics' => 'Temas',
+	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'Por defecto, este motor de búsqueda comprueba todas las palabras sin tener en cuenta el orden. Para buscar una frase exacta, encierre la frase entre comillas:',
 
 ## addons/Community.pack/templates/forum/sidebar.mtml
 
@@ -5527,7 +5801,9 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/templates/global/email_verification_email.mtml
 	'Thank you registering for an account to [_1].' => 'Gracias por registrar una cuenta en [_1].',
 	'For your own security and to prevent fraud, we ask that you please confirm your account and email address before continuing. Once confirmed you will immediately be allowed to sign in to [_1].' => 'Por su propia seguridad y para prevenir fraudes, le solicitamos que confirme su cuenta y dirección de correo antes de continuar. Una vez confirmados, ya podrá iniciar una sesión en [_1].',
+	'To confirm your account, please click on or cut and paste the following URL into a web browser:' => 'Para confirmar su cuenta, haga clic en (o copie y pegue) la URL en un navegador web:',
 	q{If you did not make this request, or you don't want to register for an account to [_1], then no further action is required.} => q{Si no realizó esta petición, o no quiere registrar una cuenta en [_1], no se requiere ninguna otra acción.},
+	'Thank you very much for your understanding.' => 'Gracias por su comprensión.',
 
 ## addons/Community.pack/templates/global/footer.mtml
 
@@ -5536,15 +5812,15 @@ que la dirección provista es correcta y le pertenece.',
 
 ## addons/Community.pack/templates/global/javascript.mtml
 
+## addons/Community.pack/templates/global/login_form.mtml
+	'Not a member?&nbsp;&nbsp;<a href="[_1]">Sign Up</a>!' => '¿No es usuario?&nbsp;&nbsp;¡<a href="[_1]">Inscríbase</a>!',
+
 ## addons/Community.pack/templates/global/login_form_module.mtml
 	'Logged in as <a href="[_1]">[_2]</a>' => 'Identificado como <a href="[_1]">[_2]</a>',
 	'Logout' => 'Cerrar sesión',
 	'Hello [_1]' => 'Hola [_1]',
 	'Forgot Password' => 'Recuperar la contraseña',
 	'Sign up' => 'Registro',
-
-## addons/Community.pack/templates/global/login_form.mtml
-	'Not a member?&nbsp;&nbsp;<a href="[_1]">Sign Up</a>!' => '¿No es usuario?&nbsp;&nbsp;¡<a href="[_1]">Inscríbase</a>!',
 
 ## addons/Community.pack/templates/global/navigation.mtml
 
@@ -5595,11 +5871,11 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/templates/global/register_confirmation.mtml
 	'Authentication Email Sent' => 'Correo de autentificación enviado.',
 	'Profile Created' => 'Perfil creado',
-	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Regresar a la página original.</a>',
 
 ## addons/Community.pack/templates/global/register_form.mtml
 
 ## addons/Community.pack/templates/global/register_notification_email.mtml
+	q{This email is to notify you that a new user has successfully registered on the blog '[_1]'. Listed below you will find some useful information about this new user.} => q{Este correo electrónico es una notificaión  para informarle que un nuevo usuario ha sido enregistrado con succeso en el blog '[_1]'. Abajo usted encontratá enumeradas algunas informaciones útiles sobre este nuevo usuario.},
 
 ## addons/Community.pack/templates/global/search.mtml
 
@@ -5626,15 +5902,16 @@ que la dirección provista es correcta y le pertenece.',
 ## addons/Community.pack/tmpl/widget/most_popular_entries.mtml
 	'There are no popular entries.' => 'No hay entradas populares.',
 
+## addons/Community.pack/tmpl/widget/recent_submissions.mtml
+
 ## addons/Community.pack/tmpl/widget/recently_scored.mtml
 	'There are no recently favorited entries.' => 'No hay recomendaciones recientes de entradas.',
-
-## addons/Community.pack/tmpl/widget/recent_submissions.mtml
 
 ## addons/Enterprise.pack/app-cms.yaml
 	'Groups ([_1])' => 'Grupos ([_1])',
 	'Are you sure you want to delete the selected group(s)?' => '¿Está seguro de querer borrar el(los) grupo(s) seleccionados?',
 	'Are you sure you want to remove the selected member(s) from the group?' => '¿Está seguro de querer borrar los miembros seleccionados del grupo?',
+	'[_1]\'s Group' => 'Grupo de [_1]',
 	'Groups' => 'Grupos',
 	'Manage Member' => 'Administrar miembros',
 	'Bulk Author Export' => 'Exportación masiva de autores',
@@ -5649,6 +5926,7 @@ que la dirección provista es correcta y le pertenece.',
 	'This module and its dependencies are required in order to use CRAM-MD5, DIGEST-MD5 or LOGIN as a SASL mechanism.' => 'Este módulo y sus dependencias son necesarios para usar CRAM-MD5, DIGEST-MD5 o LOGIN como mecanismo SASL.',
 
 ## addons/Enterprise.pack/config.yaml
+	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype/',
 	'Permissions of group: [_1]' => 'Permisos del grupo: [_1]',
 	'Group' => 'Grupo',
 	'Groups associated with author: [_1]' => 'Grupos asociados con autor: [_1]',
@@ -5661,7 +5939,7 @@ que la dirección provista es correcta y le pertenece.',
 	'My Groups' => 'Mis grupos',
 	'Group Name' => 'Nombre del grupo',
 	'Manage Group Members' => 'Administrar miembros del grupo',
-	'Group Members' => 'Miembros del grupo', # Translate - New
+	'Group Members' => 'Miembros del grupo',
 	'Group Member' => 'Miembro del grupo',
 	'Permissions for Users' => 'Permisos para usuarios',
 	'Permissions for Groups' => 'Permisos para grupos',
@@ -5706,6 +5984,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Members added: ' => 'Miembros añadidos:',
 	'Memberships in the group \'[_2]\' (#[_3]) were changed as a result of synchronizing with the external directory.' => 'Se modificó la pertenencia en el grupo \'[_2]\' (#[_3]) por la sincronización con el directorio externo.',
 	'LDAPUserGroupMemberAttribute must be set to enable synchronizing of members of groups.' => 'Debe configurar LDAPUserGroupMemberAttribute para permitir la sincronización de los miembros de los grupos.',
+
+## addons/Enterprise.pack/lib/MT/Enterprise/Author.pm
+	'Loading MT::LDAP failed: [_1].' => 'Falló la carga de MT::LDAP: [_1].',
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/BulkCreation.pm
 	'Formatting error at line [_1]: [_2]' => 'Error de formato en la línea [_1]: [_2]',
@@ -5759,7 +6040,7 @@ que la dirección provista es correcta y le pertenece.',
 	'No records were found in the file.  Make sure the file uses CRLF as the line-ending characters.' => 'No se encontraron registros en el fichero. Asegúrese de que el fichero usa CRLF como caracteres de final de línea.',
 	'Registered [quant,_1,user,users], updated [quant,_2,user,users], deleted [quant,_3,user,users].' => '[quant,_1,Usuario registro,Usuariosregistrados], [quant,_2,usuario actualizado,usuarios actualizados], [quant,_3,usuario eliminado,usuarios eliminados].',
 	'Bulk author export cannot be used under external user management.' => 'No se puede usar la exportación en lote de autores bajo la administración externa de usuario.',
-	'A user can\'t change his/her own username in this environment.' => 'Un usuario no puede cambiar su propio nombre en este contexto.',
+	'A user cannot change his/her own username in this environment.' => 'Un usuario no puede cambiar su propio nombre en este contexto.',
 	'An error occurred when enabling this user.' => 'Ocurrió un error cuando se habilitaba este usuario.',
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/Upgrade.pm
@@ -5821,7 +6102,7 @@ que la dirección provista es correcta y le pertenece.',
 	q{Click 'Continue' below to configure your LDAP attribute mappings.} => q{Haga clic en continuar debajo para configurar el mapeado de los atributos LDAP.},
 	'Your LDAP configuration is complete.' => 'Su configuración LDAP ha sido completada.',
 	q{To finish with the configuration wizard, press 'Continue' below.} => q{Para terminar con la configuración, haga clic en el botón continuar debajo.},
-	q{Can't locate Net::LDAP. Net::LDAP module is required to use LDAP authentication.} => q{No se encontró Net::LDAP. El módulo Net::LDAP es necesario para utilizar la autentificación LDAP.},
+	'Cannot locate Net::LDAP. Net::LDAP module is required to use LDAP authentication.' => 'No se encontró Net::LDAP. El módulo Net::LDAP es necesario para utilizar la autentificación LDAP.',
 	'Use LDAP' => 'Utilizar LDAP',
 	'Authentication URL' => 'URL de Identificación',
 	'The URL to access for LDAP authentication.' => 'La URL para acceder a la identificación LDAP',
@@ -5919,15 +6200,16 @@ que la dirección provista es correcta y le pertenece.',
 	'Some ([_1]) of the selected users could not be re-enabled because they are no longer found in LDAP.' => 'No se pudo rehabilitar alguno ([_1]) de los usuarios seleccionados porque ya no se encuentran en LDAP.',
 	'You successfully removed the users from this group.' => 'Ha borrado con éxito a los usuarios del grupo.',
 
-## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
-
-## plugins/FacebookCommenters/plugin.pl
+## plugins/FacebookCommenters/config.yaml
 	'Provides commenter registration through Facebook Connect.' => 'Provee registro de comentaristas a través de Facebook Connect.',
-	'Set up Facebook Commenters plugin' => 'Configurar la extesión de comentaristas de Facebook',
-	'{*actor*} commented on the blog post <a href="{*post_url*}">{*post_title*}</a>.' => '{*actor*} comentó en la entrada <a href="{*post_url*}">{*post_title*}</a>.',
-	'Could not register story template with Facebook: [_1]. Did you enter the correct application secret?' => 'No se pudo registrar la plantilla de historias con Facebook: [_1]. ¿No introdujo el secreto correcto de la aplicación?',
-	'Could not register story template with Facebook: [_1]' => 'No pudo registrar la plantilla de historias con Facebook: [_1]',
 	'Facebook' => 'Facebook',
+
+## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
+	'Set up Facebook Commenters plugin' => 'Configurar la extesión de comentaristas de Facebook',
+	'Authentication failure: [_1], reason:[_2]' => 'Fallo de autentificación: [_1], razón: [_2]',
+	'Failed to created commenter.' => 'Falló al crear comentarista.',
+	'Failed to create a session.' => 'Falló al crear una sesión.',
+	'Could not verify this app with Facebook.' => 'No se pudo verificar esta aplicación con Facebook.',
 
 ## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
 	'Facebook Application Key' => 'Clave de la aplicación de Facebook',
@@ -5937,48 +6219,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Facebook Application Secret' => 'Secreto de la aplicación de Facebook',
 	'The secret for the Facebook application associated with your blog.' => 'El secreto de la aplicación de Facebook asociada con su blog.',
 
-## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. Se utilizó la versión previa de la fuente. Se devolvió el estado HTTP [_2].',
-	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. La versión anterior de la fuente no estaba disponible. Se devolvió el estado HTTP [_2].',
-
-## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
-	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' es un argumento necesario de [_2]',
-	'MT[_1] was not used in the proper context.' => 'MT[_1] no se está utilizando en el contexto adecuado.',
-
-## plugins/feeds-app-lite/mt-feeds.pl
-	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Lite le ayuda a republicar fuentes de sindicación en los blogs. ¿Quiere hacer más cosas con la sindicación en Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Actualícese a Feeds.App</a>.',
-	'Create a Feed Widget' => 'Crear un widget de fuente',
-
-## plugins/feeds-app-lite/tmpl/config.tmpl
-	'Feeds.App Lite Widget Creator' => 'Creador de widgets de Feeds.App Lite',
-	'Configure feed widget settings' => 'Configurar widgets de sindicación',
-	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Teclee un título para su widget. Esto también se mostrará como título de la fuente en el blog.',
-	'[_1] Feed Widget' => 'Widget de sindicación [_1]',
-	'Select the maximum number of entries to display.' => 'Seleccione el máximo número de entradas a mostrar.',
-	'3' => '3',
-	'5' => '5',
-	'10' => '10',
-	'All' => 'Todos',
-
-## plugins/feeds-app-lite/tmpl/msg.tmpl
-	'No feeds could be discovered using [_1]' => 'No se descubrieron fuentes usando [_1]',
-	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{Ocurrió un error procesando [_1]. Compruebe <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">aquí</a> los detalles e inténtelo de nuevo.},
-	'A widget named <strong>[_1]</strong> has been created.' => 'Se creó un widget titulado <strong>[_1]</strong>.',
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{Ahora puede <a href="javascript:void(0)" onclick="closeDialog('[_2]')">editar &ldquo;[_1]&rdquo;</a> o incluir el widget su blog utilizando <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> o la siguiente etiqueta MTInclude:},
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{Ahora puede <a href="javascript:void(0)" onclick="closeDialog('[_2]')">editar &ldquo;[_1]&rdquo;</a> o incluir el widget en su blog utilizando la siguiente etiqueta MTInclude:},
-	'Create Another' => 'Crear otro',
-
-## plugins/feeds-app-lite/tmpl/select.tmpl
-	'Multiple feeds were found' => 'Se encontraron múltiples fuentes',
-	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => 'Seleccione la fuente que desea usar. <em>Feeds.App Lite soporta las fuentes con solo texto RSS 1.0, 2.0 y Atom.',
-	'URI' => 'URI',
-
-## plugins/feeds-app-lite/tmpl/start.tmpl
-	'You must enter a feed or site URL to proceed' => 'Debe introducir una fuente o una URL de un sitio para proceder.',
-	'Create a widget from a feed' => 'Crear un widget de una fuente',
-	'Feed or Site URL' => 'URL del sitio o fuente',
-	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'Introduzca la URL de una fuente de sindicación, o la URL de un sitio que tenga una fuente.',
-
 ## plugins/Markdown/Markdown.pl
 	'A plain-text-to-HTML formatting plugin.' => 'Un plugin de formateo plain-text hacia HTML',
 	'Markdown' => 'Markdown',
@@ -5986,283 +6226,6 @@ que la dirección provista es correcta y le pertenece.',
 
 ## plugins/Markdown/SmartyPants.pl
 	q{Easily translates plain punctuation characters into 'smart' typographic punctuation.} => q{Traduce fácilmente los carácteres de puntuación clásicos dentro de 'inteligente' tipografía de puntuación.},
-
-## plugins/mixiComment/lib/mixiComment/App.pm
-	'mixi reported that you failed to login.  Try again.' => 'mixi informó que falló la identificación. Inténtelo de nuevo.',
-
-## plugins/mixiComment/mixiComment.pl
-	'Allows commenters to sign in to Movable Type using their own mixi username and password via OpenID.' => 'Permite a los comentaristas identificarse en Movable Type usando su propio usuario y contraseña de mixi vía OpenID.',
-	'mixi' => 'mixi',
-
-## plugins/mixiComment/tmpl/config.tmpl
-	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'Ya se ha registrado un ID de mixi en este blog. Si desea modificar el ID de mixi del blog, <a href="[_1]">haga clic aquí</a> para identificarse en su cuenta de mixi. Si desea que todos los usuarios de mixi puedan comentar en el blog (no solo sus usuarios de my mixi), haga clic en el botón de reiniciar para eliminar la configuración.',
-	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'Si desea restringir los comentarios a sus usuarios de my mixi, <a href="[_1]">haga clic aquí</a> para identificarse en su cuenta de mixi.',
-
-## plugins/Motion/config.yaml
-	'A Movable Type theme with structured entries and action streams.' => 'Tema de Movable Type con entradas estructuradas y torrentes de acciones.',
-	'Adjusting field types for embed custom fields...' => 'Ajustando los tipos de campos para campos personalizados embebidos...',
-	'Updating favoriting namespace for Motion...' => 'Actualizando el espacio de nombres de los favoritos para Motion...',
-	'Motion Themes' => 'Temas de Motion',
-	'Themes for Motion template set' => 'Temas para el conjunto de plantillas Motion',
-	'Motion' => 'Motion',
-	'Post Type' => 'Tipo de entrada',
-	'Photo' => 'Foto',
-	'Embed Object' => 'Embeber objeto',
-	'MT JavaScript' => 'MT JavaScript',
-	'Motion MT JavaScript' => 'Motion MT JavaScript',
-	'Motion JavaScript' => 'Motion JavaScript',
-	'Entry Listing: Monthly' => 'Lista de entradas: Mensual',
-	'Entry Listing: Category' => 'Lista de entradas: Categorías',
-	'|' => '|',
-	'Entry Response' => 'Respuesta a la entrada',
-	'Profile View' => 'Ver perfil',
-	'Profile Edit Form' => 'Formulario de edición del perfil',
-	'Profile Error' => 'Error del perfil',
-	'Profile Feed' => 'Sindicación del perfil',
-	'Login Form' => 'Formulario de inicio de sesión',
-	'Register Confirmation' => 'Confirmación de registro',
-	'New Password Reset Form' => 'Formulario de reinicio de contraseña',
-	'New Password Form' => 'Formulario de nueva contraseña',
-	'User Profile' => 'Perfil del usuario',
-	'Actions (Local)' => 'Acciones (local)',
-	'Single Entry' => 'Entrada sencilla',
-	'Messaging' => 'Mensajería',
-	'Form Field' => 'Campo del formulario',
-	'About Pages' => 'Páginas Acerca de',
-	'About Site' => 'Sobre el sitio',
-	'Gallery' => 'Galería',
-	'Main Column Actions' => 'Acciones de la columna principal',
-	'Main Column Posting Form (All Media)' => 'Formulario de publicación de la columna principal (Todos los medios)',
-	'Main Column Posting Form (Text Only, Like Twitter)' => 'Formulario de publicación de la columna principal (Solo texto, como Twitter)',
-	'Main Column Registration' => 'Registro de la columna principal',
-	'Fans' => 'Fans',
-	'Popular Entries' => 'Entradas populares',
-	'Elsewhere' => 'En otros sitios',
-	'Following' => 'Siguiendo',
-	'Followers' => 'Seguidores',
-	'User Archives' => 'Archivos de usuario',
-	'Blogroll' => 'Enlaces',
-	'Feeds' => 'Sindicación',
-	'Main Column Content' => 'Contenido de la columna principal',
-	'Main Index Widgets' => 'Widgets del índice principal',
-	'Archive Widgets' => 'Widgets de los archivos',
-	'Entry Widgets' => 'Widgets de la entrada',
-	'Footer Widgets' => 'Widgets del pie',
-	'Default Widgets' => 'Widgets predefinidos',
-	'Profile Widgets' => 'Widgets del perfil',
-
-## plugins/Motion/lib/Motion/Search.pm
-	'This module works with MT::App::Search.' => 'Este módulo funciona con MT::App::Search.',
-	'Specify the blog_id of a blog that has Motion template set.' => 'Especifique el blog_id de un blog que tenga el conjunto de plantillas de Motion.',
-	'Error loading template: [_1]' => 'Error cargando plantilla: [_1]',
-
-## plugins/Motion/templates/Motion/actions_local.mtml
-	'[_1] commented on [_2]' => '[_1] comentó en [_2]',
-	'[_1] favorited [_2]' => '[_1] marcó como favorito [_2]',
-	'No recent actions.' => 'Ninguna acción reciente',
-
-## plugins/Motion/templates/Motion/actions.mtml
-	'[_1] is now following [_2]' => '[_1] ahora sigue a [_2]',
-	'[_1] favorited [_2] on [_3]' => '[_1] recomendó [_2] en [_3]',
-
-## plugins/Motion/templates/Motion/archive_index.mtml
-
-## plugins/Motion/templates/Motion/banner_footer.mtml
-
-## plugins/Motion/templates/Motion/banner_header.mtml
-
-## plugins/Motion/templates/Motion/comment_detail.mtml
-
-## plugins/Motion/templates/Motion/comment_listing.mtml
-
-## plugins/Motion/templates/Motion/comment_preview.mtml
-
-## plugins/Motion/templates/Motion/comment_response.mtml
-	'<strong>Bummer....</strong> [_1]' => '<strong>Qué mala suerte....</strong> [_1]',
-
-## plugins/Motion/templates/Motion/comments.mtml
-	'what will you say?' => '¿Qué va a decir?',
-	'[_1] [_2]in reply to comment from [_3][_4]' => '[_1] [_2]en respuesta al comentario de [_3][_4]',
-	'Write a comment...' => 'Escriba un comentario...',
-
-## plugins/Motion/templates/Motion/dynamic_error.mtml
-
-## plugins/Motion/templates/Motion/entry_listing_author.mtml
-	'Archived Entries from [_1]' => 'Entradas archivadas de [_1]',
-	'Recent Entries from [_1]' => 'Entradas recientes de [_1]',
-
-## plugins/Motion/templates/Motion/entry_listing_category.mtml
-
-## plugins/Motion/templates/Motion/entry_listing_monthly.mtml
-
-## plugins/Motion/templates/Motion/entry.mtml
-
-## plugins/Motion/templates/Motion/entry_response.mtml
-
-## plugins/Motion/templates/Motion/entry_summary.mtml
-	'By [_1] <span class="date">on [_2]</span>' => 'Por [_1] <span class="date">el [_2]</span>',
-	'Unpublish this post' => 'Despublicar esta entrada',
-	'1 <span>Comment</span>' => '1 <span>Comentario</span>',
-	'# <span>Comments</span>' => '# <span>Comentarios</span>',
-	'0 <span>Comments</span>' => '0 <span>Comentarios</span>',
-	'1 <span>TrackBack</span>' => '1 <span>TrackBack</span>',
-	'# <span>TrackBacks</span>' => '# <span>TrackBacks</span>',
-	'0 <span>TrackBacks</span>' => '0 <span>TrackBacks</span>',
-	'Posted to [_1]' => 'Publicado en [_1]',
-
-## plugins/Motion/templates/Motion/form_field.mtml
-	'(Optional)' => '(Opcional)',
-
-## plugins/Motion/templates/Motion/javascript.mtml
-	'Please select a file to post.' => 'Por favor, seleccione un fichero para publicar.',
-	'You selected an unsupported file type.' => 'Ha seleccionado un tipo de fichero no soportado.',
-
-## plugins/Motion/templates/Motion/login_form.mtml
-	'Not a member?&nbsp;&nbsp;<a href="[_1]">Sign Up</a>!' => '¿No es usuario?&nbsp;&nbsp;¡<a href="[_1]">Inscríbase</a>!',
-	'Forgot?' => '¿Recordar?',
-
-## plugins/Motion/templates/Motion/main_index.mtml
-
-## plugins/Motion/templates/Motion/member_index.mtml
-
-## plugins/Motion/templates/Motion/motion_js.mtml
-	'Add userpic' => 'Añadir avatar',
-
-## plugins/Motion/templates/Motion/new_password.mtml
-	'Choose New Password' => 'Seleccione la nueva contraseña',
-
-## plugins/Motion/templates/Motion/page.mtml
-
-## plugins/Motion/templates/Motion/password_reset.mtml
-	'Recover (s)' => 'Recuperar (s)',
-
-## plugins/Motion/templates/Motion/profile_feed.mtml
-	'Posted [_1] to [_2]' => '[_1] publicado en [_2]',
-	'Commented on [_1] in [_2]' => 'Comentó en [_1] en [_2]',
-	'followed [_1]' => 'sigue a [_1]',
-
-## plugins/Motion/templates/Motion/register_confirmation.mtml
-	'Authentication Email Sent' => 'Correo de autentificación enviado.',
-	'Profile Created' => 'Perfil creado',
-	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Regresar a la página original.</a>',
-
-## plugins/Motion/templates/Motion/register.mtml
-	'Enter a password for yourself.' => 'Introduzca su contraseña.',
-	'The URL of your website.' => 'La URL de su sitio web.',
-
-## plugins/Motion/templates/Motion/search_results.mtml
-
-## plugins/Motion/templates/Motion/sidebar.mtml
-
-## plugins/Motion/templates/Motion/single_entry.mtml
-	'Note: This post is being held for approval by the site owner.' => 'Nota: Esta entrada está retenida hasta que el administrador del sitio la apruebe.',
-	'<a href="[_1]">Most recent comment by <strong>[_2]</strong> on [_3]</a>' => '<a href="[_1]">Últimos comentarios de <strong>[_2]</strong> en [_3]</a>',
-	'[_1] posted [_2] on [_3]' => '[_1] publicó [_2] en [_3]',
-
-## plugins/Motion/templates/Motion/trackbacks.mtml
-
-## plugins/Motion/templates/Motion/user_profile_edit.mtml
-	'Go <a href="[_1]">back to the previous page</a> or <a href="[_2]">view your profile</a>.' => '<a href="[_1]">Regresar a la página anterior</a> o <a href="[_2]">vea su perfil</a>.',
-
-## plugins/Motion/templates/Motion/user_profile.mtml
-	'Recent Actions from [_1]' => 'Acciones recientes de [_1]',
-	'Responses to Comments from [_1]' => 'Respuestas a los comentarios de [_1]',
-	'You are following [_1].' => 'Estás siguiendo a [_1]',
-	'Unfollow' => 'Dejar de seguir',
-	'Follow' => 'Seguir',
-	'Profile Data' => 'Datos del perfil',
-	'More Entries by [_1]' => 'Más entradas de [_1]',
-	'Recent Actions' => 'Acciones recientes',
-	'_PROFILE_COMMENT_LENGTH' => '10',
-	'Comment Threads' => 'Hilos de comentarios',
-	'[_1] commented on ' => '[_1] comentó en',
-	'No responses to comments.' => 'Sin respuestas a comentarios.',
-
-## plugins/Motion/templates/Motion/widget_about_ssite.mtml
-	'About' => 'Sobre mi',
-	'The Motion Template Set is a great example of the type of site you can build with Movable Type.' => 'El conjunto de plantillas de Motion es un buen ejemplo del tipo de sitio que puede hacer con Movable Type.',
-
-## plugins/Motion/templates/Motion/widget_categories.mtml
-
-## plugins/Motion/templates/Motion/widget_elsewhere.mtml
-	'Are you sure you want to remove the [_1] from your profile?' => '¿Está seguro de que desea eliminar el [_1] del perfil?',
-	'Your user name or ID is required.' => 'El usuario o el ID es obligatorio.',
-	'Add a Service' => 'Añadir un servicio',
-	'Service' => 'Servicio',
-	'Select a service...' => 'Seleccionar un servicio...',
-	'Your Other Profiles' => 'Sus otros perfiles',
-	'Find [_1] Elsewhere' => 'Buscar [_1] en otro sitio',
-	'Remove service' => 'Eliminar servicio',
-
-## plugins/Motion/templates/Motion/widget_fans.mtml
-
-## plugins/Motion/templates/Motion/widget_followers.mtml
-	'Not being followed' => 'Sin seguidores',
-
-## plugins/Motion/templates/Motion/widget_following.mtml
-	'Not following anyone' => 'No sigue a nadie',
-
-## plugins/Motion/templates/Motion/widget_gallery.mtml
-	'Recent Photos' => 'Fotos recientes',
-
-## plugins/Motion/templates/Motion/widget_main_column_actions.mtml
-
-## plugins/Motion/templates/Motion/widget_main_column_posting_form.mtml
-	'QuickPost' => 'QuickPost',
-	'Text post' => 'Texto',
-	'Photo post' => 'Foto',
-	'Link post' => 'Enlace',
-	'Embed post' => 'Embebido',
-	'Audio post' => 'Audio',
-	'URL of web page' => 'URL de página web',
-	'Select photo file' => 'Selccione una imagen',
-	'Only GIF, JPEG and PNG image files are supported.' => 'Solo están soportados los formatos GIF, JPEG y PNG.',
-	'Select audio file' => 'Seleccione un fichero de audio',
-	'Only MP3 audio files are supported.' => 'Solo está soportado el formato MP3.',
-	'Paste embed code' => 'Pegar código embebido',
-	'Content' => 'Contenido',
-	'more options' => 'más opciones',
-	'Post' => 'Publicar',
-
-## plugins/Motion/templates/Motion/widget_main_column_posting_form_text.mtml
-
-## plugins/Motion/templates/Motion/widget_main_column_registration.mtml
-	'<a href="javascript:void(0)" onclick="[_1]">Sign In</a>' => '<a href="javascript:void(0)" onclick="[_1]">Identifíquese</a>',
-	'Not a member? <a href="[_1]">Register</a>' => '¿No es miembro? <a href="[_1]">Registrarse</a>',
-	'(or <a href="javascript:void(0)" onclick="[_1]">Sign In</a>)' => '(o <a href="javascript:void(0)" onclick="[_1]">identifíquese</a>)',
-	'No posting privileges.' => 'Sin privilegios de publicación.',
-
-## plugins/Motion/templates/Motion/widget_members.mtml
-
-## plugins/Motion/templates/Motion/widget_monthly_archives.mtml
-
-## plugins/Motion/templates/Motion/widget_popular_entries.mtml
-	'posted by <a href="[_1]">[_2]</a> on [_3]' => 'publicado por <a href="[_1]">[_2]</a> en [_3]',
-
-## plugins/Motion/templates/Motion/widget_powered_by.mtml
-
-## plugins/Motion/templates/Motion/widget_recent_comments.mtml
-	'<p>[_3]...</p><div class="comment-attribution">[_4]<br /><a href="[_1]">[_2]</a></div>' => '<p>[_3]...</p><div class="comment-attribution">[_4]<br /><a href="[_1]">[_2]</a></div>',
-
-## plugins/Motion/templates/Motion/widget_recent_entries.mtml
-	'posted by [_1] on [_2]' => 'publicada por [_1] en [_2]',
-
-## plugins/Motion/templates/Motion/widget_search.mtml
-
-## plugins/Motion/templates/Motion/widget_signin.mtml
-	'You are signed in as <a href="[_1]">[_2]</a>' => 'Está identificado como <a href="[_1]">[_2]</a>',
-	'You are signed in as [_1]' => 'Está identificado como [_1]',
-	'Edit profile' => 'Editar Perfil',
-
-## plugins/Motion/templates/Motion/widget_tag_cloud.mtml
-
-## plugins/Motion/templates/Motion/widget_user_archives.mtml
-	'Recenty entries from [_1]' => 'Entradas recientes de [_1]',
-
-## plugins/Motion/tmpl/edit_linkpost.tmpl
-
-## plugins/Motion/tmpl/edit_videopost.tmpl
-	'Embed code' => 'Embeber código',
 
 ## plugins/MultiBlog/lib/MultiBlog.pm
 	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'Restaurando MultiBlog el inductor de reconstrucción en el blog #[_1]...',
@@ -6313,6 +6276,181 @@ que la dirección provista es correcta y le pertenece.',
 	'Default system aggregation policy' => 'Política predefinida de agregación del sistema',
 	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'La agregación cruzada de blogs estará permitida por defecto. Los blogs individuales se podrán configurar a través de sus ajustes de MultiBlog para restringir a otros blogs el acceso a sus contenidos.',
 	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'La agregación cruzada de blogs no estará permitida por defecto. Individualmente se podrá configurar a los blogs a través de sus ajustes de MultiBlog para permitir a otros blogs el acceso a sus contenidos.',
+
+## plugins/StyleCatcher/config.yaml
+	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcher le permite navegar fácilmente por los estilos y aplicarlos en el blog con un par de clics.',
+	'MT 4 Style Library' => 'Librería de estilos de MT 4',
+	'A collection of styles compatible with Movable Type 4 default templates.' => 'Una colección de estilos compatible con las plantillas predefinidas de Movable Type.',
+	'Styles' => 'Estilos',
+
+## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
+	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'No se encontró el directorio mt-static. Por favor, configure el \'StaticFilePath\' para continuar.',
+	'Permission Denied.' => 'Permiso denegado.',
+	'Successfully applied new theme selection.' => 'Se aplicó con éxito la nueva selección de estilo.',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Library/Default.pm
+	'Invalid URL: [_1]' => 'URL no válida: [_1]',
+	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'No se pudo crear el directorio [_1] - Compruebe que el servidor web puede escribir en la carpeta \'themes\'.',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Library/Local.pm
+	'Failed to load StyleCatcher Library: [_1]' => 'Fallí al cargar la librería de StyleCatcher: [_1]',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Util.pm
+	'(Untitled)' => '(sin título)',
+
+## plugins/StyleCatcher/tmpl/view.tmpl
+	'Select a [_1] Style' => 'Seleccionar un estilo de [_1]',
+	'3-Columns, Wide, Thin, Thin' => '3 columnas, ancha, delgada, delgada',
+	'3-Columns, Thin, Wide, Thin' => '3 columnas, delgada, ancha, delgada',
+	'3-Columns, Thin, Thin, Wide' => '3 columnas, delgada, delgada, ancha',
+	'2-Columns, Thin, Wide' => '2 columnas, delgada, ancha',
+	'2-Columns, Wide, Thin' => '2 columnas, ancha, delgada',
+	'2-Columns, Wide, Medium' => '2 columnas, ancha, media',
+	'2-Columns, Medium, Wide' => '2 columnas, media, ancha',
+	'1-Column, Wide, Bottom' => '1 columna, ancha, abajo',
+	'None available' => 'Ninguno disponible',
+	'Applying...' => 'Aplicando...',
+	'Apply Design' => 'Aplicar diseño',
+	'Error applying theme: ' => 'Error aplicando tema:',
+	'The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.' => 'Se ha aplicado el tema seleccionado, pero como la disposición ha cambiado, deberá republicar el blog para que se aplique la disposición.',
+	'The selected theme has been applied!' => '¡Se ha aplicado el tema seleccionado!',
+	'Error loading themes! -- [_1]' => '¡Error cargando temas! -- [_1]',
+	'Stylesheet or Repository URL' => 'URL de la hoja de estilo o repositorio:',
+	'Stylesheet or Repository URL:' => 'URL de la hoja de estilo o repositorio:',
+	'Download Styles' => 'Descargar estilos',
+	'Current theme for your weblog' => 'Estilo actual de su weblog',
+	'Current Style' => 'Estilo actual',
+	'Locally saved themes' => 'Estilos guardados localmente',
+	'Saved Styles' => 'Estilos guardados',
+	'Default Styles' => 'Estilos predefinidos',
+	'Single themes from the web' => 'Estilos individuales del web',
+	'More Styles' => 'Más estilos',
+	'Selected Design' => 'Diseño seleccionado',
+	'Layout' => 'Disposición',
+
+## plugins/Textile/textile2.pl
+	'A humane web text generator.' => 'Un generador de texto web humano',
+	'Textile 2' => 'Textile 2',
+
+## plugins/TinyMCE/config.yaml
+	'Default WYSIWYG editor.' => 'Editor con formato predefinido',
+	'TinyMCE' => 'TinyMCE',
+
+## plugins/TypePadAntiSpam/config.yaml
+	'TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."' => 'TypePad AntiSpam es un servicio gratuito de Six Apart. Le ayuda a proteger su blog del spam en los comentarios y en el TrackBack. La extensión de TypePad AntiSpam enviará al servicio todos los comentarios y TrackBacks que reciba su blog para analizarlos. Movable Type filtrará los elementos que TypePad AntiSpam identifique como spam. Si descubre que TypePad AntiSpam clasifica incorrectamente algún elemento, solo tiene que modificar la clasificación marcando al elemento como "Spam" o "No es spam" en la pantalla de administración de comentarios. TypePad AntiSpam aprenderá de sus decisiones. El servicio mejorará con el tiempo gracias a los informes remitidos por los usuarios, así que tenga cuidado al marcar lso elementos como "Spam" o como "No es spam".',
+	'"TypePad AntiSpam"' => '"TypePad AntiSpam"',
+
+## plugins/TypePadAntiSpam/lib/MT/TypePadAntiSpam.pm
+	'API key is a required parameter.' => 'La clave del API es un parámetro necesario.',
+
+## plugins/TypePadAntiSpam/lib/TypePadAntiSpam.pm
+	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.' => 'Hasta ahora, TypePad AntiSpam ha bloqueado [quant,_1,mensaje,mensajes] en este blog y [quant,_2,mensaje,mensajes] en todo el sistema.',
+	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.' => 'Hasta ahora, TypePad AntiSpam ha bloqueado [quant,_1,mensaje,mensajes] en todo el sistema.',
+	'Failed to verify your TypePad AntiSpam API key: [_1]' => 'Fallo al verificar la clave API de TypePad AntiSpam: [_1]',
+	'The TypePad AntiSpam API key provided is invalid.' => 'La clave API de TypePad AntiSpam no es válida.',
+
+## plugins/TypePadAntiSpam/tmpl/config.tmpl
+	'Junk Score Weight' => 'Peso de la puntuación',
+	'Least Weight' => 'Peso mínimo',
+	'Most Weight' => 'Peso máximo',
+	'Comments and TrackBacks receive a junk score between -10 (definitely spam) and +10 (definitely not spam). This setting allows you to control the weight of the TypePad AntiSpam rating relative to other filters you may have installed to help you filter comments and TrackBacks.' => 'Los comentarios y los TrackBacks reciben una puntuación de basura entre -10 (realmente spam) y +10 (no es spam). Esta opción le permite controlar el peso de la puntuación de TypePad AntiSpam relativo a otros filtros que pudiera tener instalados para ayudarle a filtrar los comentarios y TrackBacks.',
+
+## plugins/TypePadAntiSpam/tmpl/stats_widget.tmpl
+	'TypePad AntiSpam' => 'TypePad AntiSpam',
+	'Spam Blocked' => 'Spam bloqueado',
+	'on this blog' => 'en este blog',
+	'on this system' => 'en este sistema',
+
+## plugins/TypePadAntiSpam/tmpl/system.tmpl
+	'API Key' => 'Clave del API',
+	q{To enable this plugin, you'll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below.} => q{Para habilitar esta extensión, necesita una clave gratuita del API de TypePad AntiSpam. Puede <strong>obtener su clave, gratis, en [_1]antispam.typepad.com[_2]</strong>. Tras obtenerla, regrese a esta página para introducir la clave en el campo de abajo.},
+	'Service Host' => 'Servidor',
+	'The default service host for TypePad AntiSpam is api.antispam.typepad.com. You should only change this if you are using a different service that is compatible with the TypePad AntiSpam API.' => 'El servidor predefinido para TypePad AntiSpam es api.antispam.typepad.com. Modifíquelo solo en el caso de utilizar otro servicio compatible con el API de TypePad AntiSpam.',
+
+## plugins/WXRImporter/config.yaml
+	'Import WordPress exported RSS into MT.' => 'Importar WordPress exported RSS hacia MT.',
+	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"',
+	'"Download WP attachments via HTTP."' => '"Descargar los adjuntos de WP vía HTTP."',
+
+## plugins/WXRImporter/lib/WXRImporter/Import.pm
+
+## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
+	'File is not in WXR format.' => 'El fichero no está en el formato WXR.',
+	'Creating new tag (\'[_1]\')...' => 'Creando nueva etiqueta (\'[_1]\')...',
+	'Saving tag failed: [_1]' => 'Fallo al guardar la etiqueta: [_1]',
+	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'Se encontró un duplicado del fichero multimedia (\'[_1]\'). Ignorado.',
+	'Saving asset (\'[_1]\')...' => 'Guardando elemento (\'[_1]\')...',
+	' and asset will be tagged (\'[_1]\')...' => ' y el elemento será etiquetado (\'[_1]\')...',
+	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'Se encontró un duplicado de la entrada (\'[_1]\'). Ignorada.',
+	'Saving page (\'[_1]\')...' => 'Guardando página (\'[_1]\')...',
+	'Entry has no MT::Trackback object!' => '¡La entrada no tiene objeto MT::Trackback!',
+	'Assigning permissions for new user...' => 'Asignar permisos al nuevo usuario...',
+	'Saving permission failed: [_1]' => 'Fallo guardando permisos: [_1]',
+
+## plugins/WXRImporter/tmpl/options.tmpl
+	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{Antes de importar las entradas de WordPress a Movable Type, le recomendamos que primero <a href='[_1]'>configure las rutas de publicación del blog</a>.},
+	'Upload path for this WordPress blog' => 'Ruta de transferencia para este blog de WordPress',
+	'Replace with' => 'Reemplazar con',
+	'Download attachments' => 'Descargar adjuntos',
+	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Necesita el uso de una tarea del cron para descargar los adjuntos de un blog de WordPress en segundo plano.',
+	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Descargar adjuntos (imágenes y ficheros) de un blog importado de WordPress.',
+
+## plugins/WidgetManager/WidgetManager.pl
+	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Administrador de Widgets versión 1.1; Esta versión de la extensión actualiza los datos de la versiones antiguas del Adminstrador de Widgets que venía con Movable Type al esquema interno de Movable Type. No se han incluído otras características. Puede borrar esta extensión sin problemas después de instalar o actualizar Movable Type.',
+	'Moving storage of Widget Manager [_2]...' => 'Trasladando los datos del Administrador de Widgets [_2]...',
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
+	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. Se utilizó la versión previa de la fuente. Se devolvió el estado HTTP [_2].',
+	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. La versión anterior de la fuente no estaba disponible. Se devolvió el estado HTTP [_2].',
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
+	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' es un argumento necesario de [_2]',
+	'MT[_1] was not used in the proper context.' => 'MT[_1] no se está utilizando en el contexto adecuado.',
+
+## plugins/feeds-app-lite/mt-feeds.pl
+	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Lite le ayuda a republicar fuentes de sindicación en los blogs. ¿Quiere hacer más cosas con la sindicación en Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Actualícese a Feeds.App</a>.',
+	'Create a Feed Widget' => 'Crear un widget de fuente',
+
+## plugins/feeds-app-lite/tmpl/config.tmpl
+	'Feeds.App Lite Widget Creator' => 'Creador de widgets de Feeds.App Lite',
+	'Configure feed widget settings' => 'Configurar widgets de sindicación',
+	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Teclee un título para su widget. Esto también se mostrará como título de la fuente en el blog.',
+	'[_1] Feed Widget' => 'Widget de sindicación [_1]',
+	'Select the maximum number of entries to display.' => 'Seleccione el máximo número de entradas a mostrar.',
+	'3' => '3',
+	'5' => '5',
+	'10' => '10',
+	'All' => 'Todos',
+
+## plugins/feeds-app-lite/tmpl/msg.tmpl
+	'No feeds could be discovered using [_1]' => 'No se descubrieron fuentes usando [_1]',
+	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{Ocurrió un error procesando [_1]. Compruebe <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">aquí</a> los detalles e inténtelo de nuevo.},
+	'A widget named <strong>[_1]</strong> has been created.' => 'Se creó un widget titulado <strong>[_1]</strong>.',
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{Ahora puede <a href="javascript:void(0)" onclick="closeDialog('[_2]')">editar &ldquo;[_1]&rdquo;</a> o incluir el widget su blog utilizando <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> o la siguiente etiqueta MTInclude:},
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{Ahora puede <a href="javascript:void(0)" onclick="closeDialog('[_2]')">editar &ldquo;[_1]&rdquo;</a> o incluir el widget en su blog utilizando la siguiente etiqueta MTInclude:},
+	'Create Another' => 'Crear otro',
+
+## plugins/feeds-app-lite/tmpl/select.tmpl
+	'Multiple feeds were found' => 'Se encontraron múltiples fuentes',
+	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => 'Seleccione la fuente que desea usar. <em>Feeds.App Lite soporta las fuentes con solo texto RSS 1.0, 2.0 y Atom.',
+	'URI' => 'URI',
+
+## plugins/feeds-app-lite/tmpl/start.tmpl
+	'You must enter a feed or site URL to proceed' => 'Debe introducir una fuente o una URL de un sitio para proceder.',
+	'Create a widget from a feed' => 'Crear un widget de una fuente',
+	'Feed or Site URL' => 'URL del sitio o fuente',
+	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'Introduzca la URL de una fuente de sindicación, o la URL de un sitio que tenga una fuente.',
+
+## plugins/mixiComment/lib/mixiComment/App.pm
+	'mixi reported that you failed to login.  Try again.' => 'mixi informó que falló la identificación. Inténtelo de nuevo.',
+
+## plugins/mixiComment/mixiComment.pl
+	'Allows commenters to sign in to Movable Type using their own mixi username and password via OpenID.' => 'Permite a los comentaristas identificarse en Movable Type usando su propio usuario y contraseña de mixi vía OpenID.',
+	'mixi' => 'mixi',
+
+## plugins/mixiComment/tmpl/config.tmpl
+	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'Ya se ha registrado un ID de mixi en este blog. Si desea modificar el ID de mixi del blog, <a href="[_1]">haga clic aquí</a> para identificarse en su cuenta de mixi. Si desea que todos los usuarios de mixi puedan comentar en el blog (no solo sus usuarios de my mixi), haga clic en el botón de reiniciar para eliminar la configuración.',
+	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'Si desea restringir los comentarios a sus usuarios de my mixi, <a href="[_1]">haga clic aquí</a> para identificarse en su cuenta de mixi.',
 
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Failed to resolve IP address for source URL [_1]' => 'Fallo al resolver la dirección IP de origen de la URL [_1]',
@@ -6389,120 +6527,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Keywords to Moderate' => 'Palabras clave para moderar',
 	'Keywords to Junk' => 'Palabras clave para marcar como basura',
 
-## plugins/StyleCatcher/config.yaml
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcher le permite navegar fácilmente por los estilos y aplicarlos en el blog con un par de clics.',
-	'MT 4 Style Library' => 'Librería de estilos de MT 4',
-	'A collection of styles compatible with Movable Type 4 default templates.' => 'Una colección de estilos compatible con las plantillas predefinidas de Movable Type.',
-	'Styles' => 'Estilos',
-
-## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
-	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'No se encontró el directorio mt-static. Por favor, configure el \'StaticFilePath\' para continuar.',
-	'Permission Denied.' => 'Permiso denegado.',
-	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'No se pudo crear el directorio [_1] - Compruebe que el servidor web puede escribir en la carpeta \'themes\'.',
-	'Successfully applied new theme selection.' => 'Se aplicó con éxito la nueva selección de estilo.',
-	'Invalid URL: [_1]' => 'URL no válida: [_1]',
-	'(Untitled)' => '(sin título)',
-
-## plugins/StyleCatcher/tmpl/view.tmpl
-	'Select a [_1] Style' => 'Seleccionar un estilo de [_1]',
-	'3-Columns, Wide, Thin, Thin' => '3 columnas, ancha, delgada, delgada',
-	'3-Columns, Thin, Wide, Thin' => '3 columnas, delgada, ancha, delgada',
-	'3-Columns, Thin, Thin, Wide' => '3 columnas, delgada, delgada, ancha',
-	'2-Columns, Thin, Wide' => '2 columnas, delgada, ancha',
-	'2-Columns, Wide, Thin' => '2 columnas, ancha, delgada',
-	'2-Columns, Wide, Medium' => '2 columnas, ancha, media',
-	'2-Columns, Medium, Wide' => '2 columnas, media, ancha',
-	'1-Column, Wide, Bottom' => '1 columna, ancha, abajo',
-	'None available' => 'Ninguno disponible',
-	'Applying...' => 'Aplicando...',
-	'Apply Design' => 'Aplicar diseño',
-	'Error applying theme: ' => 'Error aplicando tema:',
-	'The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.' => 'Se ha aplicado el tema seleccionado, pero como la disposición ha cambiado, deberá republicar el blog para que se aplique la disposición.',
-	'The selected theme has been applied!' => '¡Se ha aplicado el tema seleccionado!',
-	'Error loading themes! -- [_1]' => '¡Error cargando temas! -- [_1]',
-	'Stylesheet or Repository URL' => 'URL de la hoja de estilo o repositorio:',
-	'Stylesheet or Repository URL:' => 'URL de la hoja de estilo o repositorio:',
-	'Download Styles' => 'Descargar estilos',
-	'Current theme for your weblog' => 'Estilo actual de su weblog',
-	'Current Style' => 'Estilo actual',
-	'Locally saved themes' => 'Estilos guardados localmente',
-	'Saved Styles' => 'Estilos guardados',
-	'Default Styles' => 'Estilos predefinidos',
-	'Single themes from the web' => 'Estilos individuales del web',
-	'More Styles' => 'Más estilos',
-	'Selected Design' => 'Diseño seleccionado',
-	'Layout' => 'Disposición',
-
-## plugins/Textile/textile2.pl
-	'A humane web text generator.' => 'Un generador de texto web humano',
-	'Textile 2' => 'Textile 2',
-
-## plugins/TypePadAntiSpam/config.yaml
-	'TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."' => 'TypePad AntiSpam es un servicio gratuito de Six Apart. Le ayuda a proteger su blog del spam en los comentarios y en el TrackBack. La extensión de TypePad AntiSpam enviará al servicio todos los comentarios y TrackBacks que reciba su blog para analizarlos. Movable Type filtrará los elementos que TypePad AntiSpam identifique como spam. Si descubre que TypePad AntiSpam clasifica incorrectamente algún elemento, solo tiene que modificar la clasificación marcando al elemento como "Spam" o "No es spam" en la pantalla de administración de comentarios. TypePad AntiSpam aprenderá de sus decisiones. El servicio mejorará con el tiempo gracias a los informes remitidos por los usuarios, así que tenga cuidado al marcar lso elementos como "Spam" o como "No es spam".',
-	'"TypePad AntiSpam"' => '"TypePad AntiSpam"',
-
-## plugins/TypePadAntiSpam/lib/MT/TypePadAntiSpam.pm
-	'API key is a required parameter.' => 'La clave del API es un parámetro necesario.',
-
-## plugins/TypePadAntiSpam/lib/TypePadAntiSpam.pm
-	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.' => 'Hasta ahora, TypePad AntiSpam ha bloqueado [quant,_1,mensaje,mensajes] en este blog y [quant,_2,mensaje,mensajes] en todo el sistema.',
-	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.' => 'Hasta ahora, TypePad AntiSpam ha bloqueado [quant,_1,mensaje,mensajes] en todo el sistema.',
-	'Failed to verify your TypePad AntiSpam API key: [_1]' => 'Fallo al verificar la clave API de TypePad AntiSpam: [_1]',
-	'The TypePad AntiSpam API key provided is invalid.' => 'La clave API de TypePad AntiSpam no es válida.',
-
-## plugins/TypePadAntiSpam/tmpl/config.tmpl
-	'Junk Score Weight' => 'Peso de la puntuación',
-	'Least Weight' => 'Peso mínimo',
-	'Most Weight' => 'Peso máximo',
-	'Comments and TrackBacks receive a junk score between -10 (definitely spam) and +10 (definitely not spam). This setting allows you to control the weight of the TypePad AntiSpam rating relative to other filters you may have installed to help you filter comments and TrackBacks.' => 'Los comentarios y los TrackBacks reciben una puntuación de basura entre -10 (realmente spam) y +10 (no es spam). Esta opción le permite controlar el peso de la puntuación de TypePad AntiSpam relativo a otros filtros que pudiera tener instalados para ayudarle a filtrar los comentarios y TrackBacks.',
-
-## plugins/TypePadAntiSpam/tmpl/stats_widget.tmpl
-	'TypePad AntiSpam' => 'TypePad AntiSpam',
-	'Spam Blocked' => 'Spam bloqueado',
-	'on this blog' => 'en este blog',
-	'on this system' => 'en este sistema',
-
-## plugins/TypePadAntiSpam/tmpl/system.tmpl
-	'API Key' => 'Clave del API',
-	q{To enable this plugin, you'll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below.} => q{Para habilitar esta extensión, necesita una clave gratuita del API de TypePad AntiSpam. Puede <strong>obtener su clave, gratis, en [_1]antispam.typepad.com[_2]</strong>. Tras obtenerla, regrese a esta página para introducir la clave en el campo de abajo.},
-	'Service Host' => 'Servidor',
-	'The default service host for TypePad AntiSpam is api.antispam.typepad.com. You should only change this if you are using a different service that is compatible with the TypePad AntiSpam API.' => 'El servidor predefinido para TypePad AntiSpam es api.antispam.typepad.com. Modifíquelo solo en el caso de utilizar otro servicio compatible con el API de TypePad AntiSpam.',
-
-## plugins/WidgetManager/WidgetManager.pl
-	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Administrador de Widgets versión 1.1; Esta versión de la extensión actualiza los datos de la versiones antiguas del Adminstrador de Widgets que venía con Movable Type al esquema interno de Movable Type. No se han incluído otras características. Puede borrar esta extensión sin problemas después de instalar o actualizar Movable Type.',
-	'Moving storage of Widget Manager [_2]...' => 'Trasladando los datos del Administrador de Widgets [_2]...',
-
-## plugins/WXRImporter/config.yaml
-	'Import WordPress exported RSS into MT.' => 'Importar WordPress exported RSS hacia MT.',
-	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"',
-	'"Download WP attachments via HTTP."' => '"Descargar los adjuntos de WP vía HTTP."',
-
-## plugins/WXRImporter/lib/WXRImporter/Import.pm
-
-## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
-	'File is not in WXR format.' => 'El fichero no está en el formato WXR.',
-	'Creating new tag (\'[_1]\')...' => 'Creando nueva etiqueta (\'[_1]\')...',
-	'Saving tag failed: [_1]' => 'Fallo al guardar la etiqueta: [_1]',
-	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'Se encontró un duplicado del fichero multimedia (\'[_1]\'). Ignorado.',
-	'Saving asset (\'[_1]\')...' => 'Guardando elemento (\'[_1]\')...',
-	' and asset will be tagged (\'[_1]\')...' => ' y el elemento será etiquetado (\'[_1]\')...',
-	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'Se encontró un duplicado de la entrada (\'[_1]\'). Ignorada.',
-	'Saving page (\'[_1]\')...' => 'Guardando página (\'[_1]\')...',
-	'Entry has no MT::Trackback object!' => '¡La entrada no tiene objeto MT::Trackback!',
-	'Assigning permissions for new user...' => 'Asignar permisos al nuevo usuario...',
-	'Saving permission failed: [_1]' => 'Fallo guardando permisos: [_1]',
-
-## plugins/WXRImporter/tmpl/options.tmpl
-	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{Antes de importar las entradas de WordPress a Movable Type, le recomendamos que primero <a href='[_1]'>configure las rutas de publicación del blog</a>.},
-	'Upload path for this WordPress blog' => 'Ruta de transferencia para este blog de WordPress',
-	'Replace with' => 'Reemplazar con',
-	'Download attachments' => 'Descargar adjuntos',
-	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Necesita el uso de una tarea del cron para descargar los adjuntos de un blog de WordPress en segundo plano.',
-	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Descargar adjuntos (imágenes y ficheros) de un blog importado de WordPress.',
-
-
 );
 
-## New words: 12
+## New words: 358
 
 1;

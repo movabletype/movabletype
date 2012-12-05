@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -54,7 +54,7 @@ function smarty_function_mtsetvar($args, &$ctx) {
         $name = $vars[$name];
         if (!isset($name))
             return $ctx->error($ctx->mt->translate(
-                "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ));
+                "You used an [_1] tag without a valid name attribute.", "<MT$tag>" ));
     }
 
     $existing = $vars[$name];
@@ -91,7 +91,7 @@ function smarty_function_mtsetvar($args, &$ctx) {
         $op = $args['op'];
         $value = _math_operation($op, $existing, $value);
         if (!isset($value))
-            return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", $existing, $op, $value));
+            return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", array($existing, $op, $value)));
     }
 
     $data = $vars[$name];
@@ -105,6 +105,7 @@ function smarty_function_mtsetvar($args, &$ctx) {
         }
     }
     elseif ( isset($index) ) {
+        $data = array_pad((isset($data) ? $data : array()), $index, NULL);
         $data[$index] = $value;
     }
     elseif ( isset($func) ) {

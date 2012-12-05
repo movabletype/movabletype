@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -849,6 +849,26 @@ $_encode_xml_Map = array('&' => '&amp;', '"' => '&quot;',
                          '<' => '&lt;', '>' => '&gt;',
                          '\'' => '&apos;');
 
+function __check_xml_char($matches) {
+    $val = $matches[2];
+    $is_hex = $matches[1];
+    if ($is_hex)
+        $val = hexdec($val);
+    $val = 0 + $val;
+    if (   ($val == 9) 
+        || ($val == 0xA) 
+        || ($val == 0xD) 
+        || (($val >= 0x20) and ($val <= 0xD7FF)) 
+        || (($val >= 0xE000) and ($val <= 0xFFFD)) 
+        || (($val >= 0x10000) and ($val <= 0x10FFFF))) 
+    {
+        return "&#" . $is_hex . $matches[2] . ";";
+    }
+    else {
+        return "&amp;#"  . $is_hex . $matches[2] . ";";
+    }
+}
+
 function encode_xml($str, $nocdata = 0) {
     $mt = MT::get_instance();
     global $_encode_xml_Map;
@@ -865,7 +885,7 @@ function encode_xml($str, $nocdata = 0) {
         $str = '<![CDATA[' . $str . ']]>';
     } else {
         $str = strtr($str, $_encode_xml_Map);
-        $str = preg_replace('/&amp;((\#([0-9]+)|\#x([0-9a-fA-F]+)).*?);/', "&$1;", $str);
+        $str = preg_replace_callback('/&amp;#(x?)((?:[0-9]+|[0-9a-fA-F]+).*?);/', __check_xml_char, $str);
     }
     return $str;
 }
@@ -1155,7 +1175,7 @@ function create_cat_expr_function($expr, &$cats, $param) {
     $expr = preg_replace('/\bAND\b/i', '&&', $expr);
     $expr = preg_replace('/\bOR\b/i', '||', $expr);
     $expr = preg_replace('/\bNOT\b/i', '!', $expr);
-    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/', 'create_expr_exception', $expr);
+    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^()]+)/', 'create_expr_exception', $expr);
 
     # strip out all the 'ok' stuff. if anything is left, we have
     # some invalid data in our expression:
@@ -1234,61 +1254,48 @@ function tagarray_name_sort($a, $b) {
     return strcmp(strtolower($a->tag_name), strtolower($b->tag_name));
 }
 
-function tagarray_length_sort($a, $b) {
-	$al = strlen($a->tag_name);
-	$bl = strlen($b->tag_name);
-	return $al == $bl ? 0 : $al < $bl ? 1 : -1;
-}
-
 function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     $tags_used = array();
     $orig_expr = $expr;
-    
-    # Sort in descending order by length
-	usort($tags, 'tagarray_length_sort');
 
-    # Modify the tag argument, replacing the tag name with '#TagID'
-    # Create a ID-based hash of the tags that are used in the arg
+    $tags_dict = array();
     foreach ($tags as $tag) {
-        $tagn = str_replace('/', '\/', $tag->tag_name);
-        $tagid = $tag->tag_id;
-        $oldexpr = $expr;
-	    $expr = preg_replace("/(\sAND\s|\sOR\s|\s?NOT\s|\(|\A)\s*?\Q$tagn\E\s*?(\Z|\)|\sAND\s|\sOR\s|\sNOT\s)/", "#$tagid",
-	        $expr);
-	    if ($oldexpr != $expr)
-	        $tags_used[$tagid] = $tag;
-	}
-
-    # Replace logical constructs with their PHP equivalents
-    $expr = preg_replace('/\bAND\b/i', '&&', $expr);
-    $expr = preg_replace('/\bOR\b/i', '||', $expr);
-    $expr = preg_replace('/\bNOT\b/i', '!', $expr);
-
-    # The following is no more readable in PHP than it is in Perl
-    $expr = preg_replace_callback('/( |\#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/', 'create_expr_exception', $expr);
-
-    # Syntax check on 'tag' argument
-    # Strip out all the valid stuff. if anything is left, we have
-    # some invalid data in our expression
-    $test_expr = preg_replace('/!|&&|\|\||\(0\)|\(|\)|\s|#\d+/', '', $expr);
-    if ($test_expr != '') {
-        echo "Invalid tag filter: $orig_expr";
-        return;
+        $tags_dict[$tag->tag_name] = $tag;
+    }
+    $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/i', $expr, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $result = '';
+    foreach ($tokens as $t) {
+        $upperToken = strtoupper( $t );
+        if ( ($t === ')') || ($t === '(') || preg_match('/^\s+$/', $t) ) {
+            $result .= $t; continue;
+        }
+        if ($upperToken === 'AND') {
+            $result .= '&&'; continue;
+        }
+        if ($upperToken === 'OR') {
+            $result .= '||'; continue;
+        }
+        if ($upperToken === 'NOT') {
+            $result .= '!'; continue;
+        }
+        $t = trim($t);
+        if (!array_key_exists($t, $tags_dict)) {
+            # a tag that does not exists - is always false
+            $result .= ' (0) ';
+            continue;
+        }
+        $tag = $tags_dict[$t];
+        $result .= ' array_key_exists(' . $tag->tag_id . ', $tm) ';
+        $tags_used[$tag->tag_id] = $tag;
     }
 
     # Populate array (passed in by reference) of used tags
     $tags = array_values($tags_used);
 
-    # Replace '#TagID' with a hash lookup function.
-    # Function confirms/denies use of tag on entry (by IDs)
-    $column_name = $datasource . '_id';
-    $expr = preg_replace('/#(\d+)/', "array_key_exists('\\1', \$tm)", $expr);
-
     # Create a PHP-blessed function of that code and return it
     # if all is well.  This function will be used later to 
     # test for existence of specified tags in entries.
-    $expr = '$tm = array_key_exists($e->'.$datasource.'_id, $c["t"]) ? $c["t"][$e->'.$datasource.'_id] : array(); return ' . $expr .
-        ';';
+    $expr = '$tm = array_key_exists($e->'.$datasource.'_id, $c["t"]) ? $c["t"][$e->'.$datasource.'_id] : array(); return (' . $result . ');';
     $fn = create_function('&$e,&$c', $expr);
     if ($fn === FALSE) {
         echo "Invalid tag filter: $orig_expr";
@@ -1691,6 +1698,18 @@ function _strip_index($url, $blog) {
     $index = preg_quote($index . $ext);
     $url = preg_replace("/\/$index(#.*)?$/", '/$1', $url);
     return $url;
+}
+
+function common_loop_vars() {
+    return array(
+        '__counter__',
+        '__odd__',
+        '__even__',
+        '__first__',
+        '__last__',
+        '__key__',
+        '__value__',
+    );
 }
 
 ?>

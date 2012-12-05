@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -100,6 +100,14 @@ sub work {
             else {
                 $job->completed();
             }
+            $mt->log({
+                ($fi->blog_id ? ( blog_id => $fi->blog_id ) : () ),
+                message => $mt->translate('Background Publishing Done'),
+                metadata => log_time() . ' '
+                    . $mt->translate('Published: [_1]', $fi->file_path),
+                category => "publish",
+                level => MT::Log::INFO(),
+            });
             $rebuilt++;
         }
         else {

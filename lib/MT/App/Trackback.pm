@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -30,6 +30,12 @@ sub init {
     );
     $app->{default_mode} = 'ping';
     $app;
+}
+
+sub init_callbacks {
+    my $app = shift;
+    MT->add_callback( 'TBPingThrottleFilter', 1, undef,
+        \&MT::App::Trackback::_builtin_throttle );
 }
 
 sub validate_request_params {
@@ -190,7 +196,7 @@ sub ping {
 
     my ( $tb_id, $pass ) = $app->_get_params;
     return $app->_response(
-        Error => $app->translate("Need a TrackBack ID (tb_id).") )
+        Error => $app->translate("TrackBack ID (tb_id) is required.") )
         unless $tb_id;
 
     require MT::Trackback;
@@ -230,15 +236,12 @@ sub ping {
     }
     $blog_id = $tb->blog_id;
 
-    MT->add_callback( 'TBPingThrottleFilter', 1, undef,
-        \&MT::App::Trackback::_builtin_throttle );
-
     my $passed_filter
         = MT->run_callbacks( 'TBPingThrottleFilter', $app, $tb );
     if ( !$passed_filter ) {
         return $app->_response(
             Error => $app->translate(
-                "You are pinging trackbacks too quickly. Please try again later."
+                "You are sending TrackBack pings too quickly. Please try again later."
             ),
             Code => "403 Throttled"
         );
@@ -251,7 +254,7 @@ sub ping {
     #no_utf8( $tb_id, $title, $excerpt, $url, $blog_name );
 
     return $app->_response(
-        Error => $app->translate("Need a Source URL (url).") )
+        Error => $app->translate("You need to provide a Source URL (url).") )
         unless $url;
 
     if ( my $fixed = MT::Util::is_valid_url( $url || "" ) ) {
@@ -284,11 +287,8 @@ sub ping {
     my $ping;
 
     # Check for duplicates...
-    my @pings = MT::TBPing->load( { tb_id => $tb->id } );
-    foreach (@pings) {
-        if ( $_->source_url eq $url ) {
-            return $app->_response();
-        }
+    if ( 0 < MT::TBPing->count( { tb_id => $tb->id, source_url => $url } ) ) {
+        return $app->_response();
     }
 
     if ( !$ping ) {
@@ -372,7 +372,7 @@ sub ping {
                     $app->rebuild_indexes( Blog => $blog )
                         or return $app->_response(
                         Error => $app->translate(
-                            "Publish failed: [_1]",
+                            "Publishing failed: [_1]",
                             $app->errstr
                         )
                         );
@@ -403,7 +403,7 @@ sub ping {
                         $fmgr->put_data( $rss, $feed )
                             or return $app->_response(
                             Error => $app->translate(
-                                "Can't create RSS feed '[_1]': ", $feed,
+                                "Cannot create RSS feed '[_1]': ", $feed,
                                 $fmgr->errstr
                             )
                             );
@@ -448,12 +448,12 @@ sub _send_ping_notification {
 
     if ( $author && $author->email ) {
         if ($entry) {
-            $subj = $app->translate( 'New TrackBack Ping to \'[_1]\'',
+            $subj = $app->translate( 'New TrackBack ping to \'[_1]\'',
                 $entry->title );
         }
         elsif ($cat) {
             $subj
-                = $app->translate( 'New TrackBack Ping to Category \'[_1]\'',
+                = $app->translate( 'New TrackBack ping to category \'[_1]\'',
                 $cat->label );
         }
         my %head = (

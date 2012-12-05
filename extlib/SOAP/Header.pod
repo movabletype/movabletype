@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Header.pod 98 2007-10-09 09:41:55Z kutterma $
+# $Id: Header.pod 381 2011-08-15 19:28:43Z kutterma $
 #
 # ======================================================================
 
@@ -16,11 +16,11 @@ SOAP::Header - similar to SOAP::Data elements, a SOAP::Header object simply is e
 
 =head1 DESCRIPTION
 
-Objects instantiated from the SOAP::Header class are functionally the same as SOAP::Data objects, and as such share all the methods from that class. The distinction may be cosmetic, but it is present so that applications may more easily distinguish header blocks from more generic data elements. 
+Objects instantiated from the SOAP::Header class are functionally the same as SOAP::Data objects, and as such share all the methods from that class. The distinction may be cosmetic, but it is present so that applications may more easily distinguish header blocks from more generic data elements.
 
 =head1 SEE ALSO
 
-L<SOAP::Data> 
+L<SOAP::Data>
 
 =head1 ACKNOWLEDGEMENTS
 

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -8,10 +8,11 @@
 function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
     // status: incomplete
     // parameters: show_empty
-    $localvars = array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', '_categories_glue', 'blog_id', 'blog', '__out');
+    $localvars = array(array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', '_categories_glue', 'blog_id', 'blog', '__out'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
-        $args['blog_id'] = $ctx->stash('blog_id');
+        $args['sort_by'] = 'label';
+        $args['sort_order'] = 'ascend';
         $categories = $ctx->mt->db()->fetch_categories($args);
         $glue = $args['glue'];
         $ctx->stash('_categories_glue', $glue);

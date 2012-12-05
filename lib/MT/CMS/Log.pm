@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -371,7 +371,7 @@ PERMCHECK: {
     }
 
     $app->validate_magic() or return;
-    $| = 1;
+    local $| = 1;
     my $enc = $app->config('ExportEncoding');
     $enc = $app->config('LogExportEncoding') if ( !$enc );
     $enc = $app->charset || $app->config->PublishCharset unless $enc;
@@ -446,7 +446,7 @@ PERMCHECK: {
             push @col,
                 format_ts(
                 "%Y-%m-%d %H:%M:%S",
-                epoch2ts( $blog, ts2epoch( undef, $ts ) ),
+                epoch2ts( $blog, ts2epoch( undef, $ts, 1 ) ),
                 $blog,
                 $app->user ? $app->user->preferred_language : undef
                 );

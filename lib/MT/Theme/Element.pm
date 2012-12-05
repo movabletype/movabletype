@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -70,8 +70,7 @@ sub apply {
 sub validate_version {
     my $element = shift;
     my $importer = $_[0] || $element->importer
-        or die sprintf 'Theme element importer not found: %s',
-        $element->errstr;
+        or return undef;
     my $v     = $element->{schema_version}       || 1.0;
     my $e_min = $element->{min_importer_version} || 0.0;
     my $i_max = $importer->{max_schema_version}  || 1.0;
@@ -117,8 +116,7 @@ sub information_string {
     my $element  = shift;
     my ($blog)   = @_;
     my $importer = $_[0] || $element->importer
-        or die sprintf 'Theme element importer not found: %s',
-        $element->errstr;
+        or return;
     $info = $importer->{info} or return;
     my $str;
     if ( defined $info ) {

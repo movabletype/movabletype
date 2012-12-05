@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -16,7 +16,7 @@ __PACKAGE__->install_properties(
             'id'                   => 'integer not null auto_increment',
             'name'                 => 'string(255) not null',
             'nickname'             => 'string(255)',
-            'password'             => 'string(60) not null',
+            'password'             => 'string(124) not null',
             'type'                 => 'smallint not null',
             'email'                => 'string(127)',
             'url'                  => 'string(255)',
@@ -30,6 +30,7 @@ __PACKAGE__->install_properties(
             'date_format'          => 'string(30)',
             'status'               => 'integer',
             'external_id'          => 'string(255)',
+            'locked_out_time'      => 'integer not null',
 
             #'last_login' => 'datetime',
 
@@ -52,28 +53,32 @@ __PACKAGE__->install_properties(
             'password_reset_expires'   => 'string meta',
             'password_reset_return_to' => 'string meta',
             'list_prefs'               => 'hash meta',
+            'lockout_recover_salt'     => 'string meta',
         },
         defaults => {
-            type        => 1,
-            status      => 1,
-            date_format => 'relative',
+            type            => 1,
+            status          => 1,
+            date_format     => 'relative',
+            locked_out_time => 0,
         },
         indexes => {
-            created_on     => 1,
-            name           => 1,
-            email          => 1,
-            type           => 1,
-            status         => 1,
-            external_id    => 1,
+            created_on      => 1,
+            name            => 1,
+            email           => 1,
+            type            => 1,
+            status          => 1,
+            external_id     => 1,
+            locked_out_time => 1,
             auth_type_name => { columns => [ 'auth_type', 'name', 'type' ], },
             basename       => 1,
         },
-        meta          => 1,
-        summary       => 1,
-        child_classes => [ 'MT::Permission', 'MT::Association', 'MT::Filter' ],
-        datasource    => 'author',
-        primary_key   => 'id',
-        audit         => 1,
+        meta    => 1,
+        summary => 1,
+        child_classes =>
+            [ 'MT::Permission', 'MT::Association', 'MT::Filter' ],
+        datasource  => 'author',
+        primary_key => 'id',
+        audit       => 1,
     }
 );
 
@@ -241,6 +246,34 @@ sub list_props {
             label   => 'Email Address',
             display => 'none',
         },
+        lockout => {
+            base    => '__virtual.single_select',
+            display => 'none',
+            label   => 'Lockout',
+            col     => 'lockout',
+            terms   => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $val = $args->{value};
+                require MT::Lockout;
+                my %statuses = (
+                    not_locked_out =>
+                        { '<' => MT::Lockout::locked_out_user_threshold(), },
+                    locked_out =>
+                        { '>=' => MT::Lockout::locked_out_user_threshold(), },
+                );
+                $val = exists $statuses{$val} ? $statuses{$val} : $val;
+                return { locked_out_time => $val };
+            },
+            single_select_options => [
+                {   label => MT->translate('Not Locked Out'),
+                    value => 'not_locked_out',
+                },
+                {   label => MT->translate('Locked Out'),
+                    value => 'locked_out',
+                },
+            ],
+        },
         id => { view => [] },
     };
 }
@@ -264,6 +297,13 @@ sub system_filters {
             items =>
                 [ { type => 'status', args => { value => 'pending' }, }, ],
             order => 300,
+        },
+        lockedout => {
+            label => 'Locked out Users',
+            items => [
+                { type => 'lockout', args => { value => 'locked_out' }, },
+            ],
+            order => 400,
         },
     };
 }
@@ -344,9 +384,9 @@ sub commenter_list_props {
                     push @{ $db_args->{joins} },
                         MT->model('permission')->join_on(
                         undef,
-                        {   permissions  => \'IS NULL', # baka editors',
-                            restrictions => \'IS NULL', # baka editors',
-                            author_id    => \'= author_id', # baka editors',
+                        {   permissions  => \'IS NULL',       # baka editors',
+                            restrictions => \'IS NULL',       # baka editors',
+                            author_id    => \'= author_id',   # baka editors',
                             blog_id      => $blog_id,
                         }
                         );
@@ -355,9 +395,11 @@ sub commenter_list_props {
 
             },
             single_select_options => [
-                { label => MT->translate('__COMMENTER_APPROVED'), value => 'enabled', },
-                { label => MT->translate('Banned'),   value => 'disabled', },
-                { label => MT->translate('Pending'),  value => 'pending', },
+                {   label => MT->translate('__COMMENTER_APPROVED'),
+                    value => 'enabled',
+                },
+                { label => MT->translate('Banned'),  value => 'disabled', },
+                { label => MT->translate('Pending'), value => 'pending', },
             ],
         },
     };
@@ -434,16 +476,17 @@ sub member_list_props {
                 return '' unless scalar @roles;
                 return '<ul>'
                     . join( '',
-                    map      {qq(<li class="role-item">$_</li>)}
-                    sort map { MT::Util::encode_html($_->name) } @roles )
+                    map          {qq(<li class="role-item">$_</li>)}
+                        sort map { MT::Util::encode_html( $_->name ) }
+                        @roles )
                     . '</ul>';
             },
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $terms = {};
-                $terms->{blog_id}   = MT->app->param('blog_id');
-                $terms->{role_id}   = $args->{value} if $args->{value};
-                $terms->{author_id} = \"= author_id";  # baka editors";
+                $terms->{blog_id} = MT->app->param('blog_id');
+                $terms->{role_id} = $args->{value} if $args->{value};
+                $terms->{author_id} = \"= author_id";    # baka editors";
                 $db_args->{joins} ||= [];
                 push @{ $db_args->{joins} },
                     MT->model('association')
@@ -497,8 +540,10 @@ sub member_list_props {
                 MT->config->SingleCommunity ? 0 : 1;
             },
             single_select_options => [
-                { label => MT->translate('MT Users'),   value => AUTHOR(), },
-                { label => MT->translate('Commenters'), value => COMMENTER(), },
+                { label => MT->translate('MT Users'), value => AUTHOR(), },
+                {   label => MT->translate('Commenters'),
+                    value => COMMENTER(),
+                },
             ],
         },
         status     => { base => 'author.status', },
@@ -618,7 +663,8 @@ sub _bulk_author_name_html {
         }
         my $lc_auth_label = lc $auth_label;
 
-        my $name  = MT::Util::encode_html( $obj->name ) || '(' . MT->translate('Registered User') . ')';
+        my $name = MT::Util::encode_html( $obj->name )
+            || '(' . MT->translate('Registered User') . ')';
         my $email = MT::Util::encode_html( $obj->email );
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
@@ -627,7 +673,7 @@ sub _bulk_author_name_html {
                 <img alt="$auth_label" src="$auth_img" width="12" height="12" class="icon auth-type" />
             </div>
             <span class="icon status $status_label">
-                <img alt="$status_label" src="$status_img" class="icon status $lc_status_label" />
+                <img alt="$status_label" src="$status_img" class="status $lc_status_label" />
             </span>
         };
 
@@ -693,20 +739,37 @@ sub remove_sessions {
     return 1;
 }
 
+sub remove_failedlogin {
+    my $auth = shift;
+    return if ( !$auth or !$auth->id );
+    require MT::Lockout;
+    MT::Lockout->clear_failedlogin($auth);
+    return 1;
+}
+
 sub set_password {
     my $auth   = shift;
     my ($pass) = @_;
     my @alpha  = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-    my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 2;
+    my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 16;
+    my $crypt_sha;
 
-    # FIXME: use something besides 'crypt'
-    $auth->column( 'password', crypt $pass, $salt );
+    if ( eval { require Digest::SHA } ) {
+        # Can use SHA512
+        $crypt_sha = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . $pass );
+    }
+    else {
+        # Use SHA-1 algorism
+        $crypt_sha = '{SHA}' . $salt . '$' . MT::Util::perl_sha1_digest_hex( $salt . $pass );
+    }
+
+    $auth->column( 'password', $crypt_sha );
 }
 
 sub is_valid_password {
     my $author = shift;
     my ( $pass, $crypted, $error_ref ) = @_;
-    $pass ||= '';
+    $pass = '' unless length($pass);
     require MT::Auth;
     return MT::Auth->is_valid_password( $author, $pass, $crypted,
         $error_ref );
@@ -836,15 +899,17 @@ sub save {
     }
 
     my $privs;
+    my $privs_found;
     if ( exists $auth->permissions(0)->{changed_cols}->{permissions} ) {
         $privs = $auth->permissions(0)->permissions;
+        $privs_found = 1;
     }
 
     # delete new user's privilege from cache
     delete MT::Request->instance->{__stash}->{'__perm_author_'}
         unless $auth->id;
     $auth->SUPER::save(@_) or return $auth->error( $auth->errstr );
-    if ( defined $privs ) {
+    if ( $privs_found ) {
         my $perm = $auth->permissions(0);
         $perm->permissions($privs);
         $perm->save
@@ -856,7 +921,8 @@ sub save {
 
 sub remove {
     my $auth = shift;
-    $auth->remove_sessions if ref $auth;
+    $auth->remove_sessions    if ref $auth;
+    $auth->remove_failedlogin if ref $auth;
     $auth->remove_children( { key => 'author_id' } ) or return;
     $auth->SUPER::remove(@_);
 }
@@ -1419,6 +1485,9 @@ sub userpic_html {
 sub can_do {
     my $author = shift;
     my ( $action, %opts ) = @_;
+
+    return 1 if $author->is_superuser;
+
     my $sys_perm = MT->model('permission')
         ->load( { blog_id => 0, author_id => $author->id } );
     my $sys_priv;
@@ -1438,6 +1507,14 @@ sub can_do {
         }
     }
     return;
+}
+
+sub locked_out {
+    my $author = shift;
+    require MT::Lockout;
+    $author->locked_out_time
+        && $author->locked_out_time
+        >= MT::Lockout::locked_out_user_threshold();
 }
 
 1;
@@ -1496,6 +1573,10 @@ two encrypted strings for equality.
 =head2 $author->remove_sessions()
 
 Remove all sessions that belong to this user
+
+=head2 $author->remove_failedlogin()
+
+Remove all failed-login histories that belong to this user
 
 =head2 $author->is_email_hidden()
 

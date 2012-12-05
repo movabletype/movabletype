@@ -18,6 +18,15 @@ use MT;
 use MT::Test qw(:db :data);
 my $app = MT->instance;
 
+{
+    my $tmpl = $app->model('template')->new;
+    $tmpl->blog_id(2);
+    $tmpl->name('template-module');
+    $tmpl->text('template-module:2');
+    $tmpl->type('custom');
+    $tmpl->save or die "Couldn't save template record 1: " . $tmpl->errstr;
+}
+
 my $blog_id = 2;
 
 my $plugin = $app->component('MultiBlog');
@@ -245,6 +254,31 @@ none
 --- access_overrides
 { 1 => 2 }
 
+
+=== mt:Include after Multiblog with mode="context"
+--- template
+<mt:Entries blog_ids="1" lastn="1">
+<mt:MultiBlog mode="context" include_blogs="1">
+</mt:MultiBlog>
+<mt:Include module="template-module" />
+</mt:Entries>
+--- expected
+template-module:2
+--- access_overrides
+{ 1 => 2 }
+
+
+=== mt:Include after Multiblog with mode="loop"
+--- template
+<mt:Entries blog_ids="1">
+<mt:MultiBlog mode="loop">
+</mt:MultiBlog>
+</mt:Entries>
+<mt:Include module="template-module" />
+--- expected
+template-module:2
+--- access_overrides
+{ 1 => 2 }
 
 
 === mt:BlogCategoryCount

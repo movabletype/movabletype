@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -174,7 +174,7 @@ sub list_props {
                 my $lists = MT->registry('listing_screens');
                 my @lists;
                 for my $key ( keys %$lists ) {
-                    my $list = $lists->{$key};
+                    my $list = MT->registry( 'listing_screens', $key );
                     my $cond = $list->{condition};
                     if ($cond) {
                         $cond = MT->handler_to_coderef($cond)

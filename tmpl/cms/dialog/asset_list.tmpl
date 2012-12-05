@@ -93,6 +93,9 @@
     <mt:if name="edit_blog_id">
       <input type="hidden" name="blog_id" value="<mt:var name="edit_blog_id">" />
       <input type="hidden" name="direct_asset_insert" value="1" />
+      <mt:unless name="is_image">
+      <input type="hidden" name="force_insert" value="1" />
+      </mt:unless>
       <mt:unless name="asset_select">
       <input type="hidden" name="entry_insert" value="1" />
       </mt:unless>
@@ -134,7 +137,7 @@
               </td>
               <td class="col asset-label primary">
                 <mt:if name="has_thumbnail">
-                  <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name"$>"><$mt:var name="label" escape="html"$></a>
+                  <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name" escape="html"$>"><$mt:var name="label" escape="html"$></a>
                   <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview"></div>
                 <mt:else>
                   <mt:var name="label" escape="html">

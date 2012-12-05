@@ -167,7 +167,7 @@
        hint="<__trans phrase="_USAGE_ENTRYPREFS">">
       <ul class="fixed-width multiple-selection">
         <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-title"><__trans phrase="Title"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-body"><__trans phrase="Body"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-body" value="text" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-body"><__trans phrase="Body"></label></li>
         <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-category" value="category" <mt:if name="entry_disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-category"><__trans phrase="Categories"></label></li>
         <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-excerpt" value="excerpt" <mt:if name="entry_disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-excerpt"><__trans phrase="Excerpt"></label></li>
         <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-keywords" value="keywords" <mt:if name="entry_disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-keywords"><__trans phrase="Keywords"></label></li>
@@ -186,7 +186,7 @@
      hint="<__trans phrase="_USAGE_ENTRYPREFS">">
     <ul class="fixed-width multiple-selection">
       <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <label for="page-prefs-title"><__trans phrase="Title"></label></li>
-      <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <label for="page-prefs-body"><__trans phrase="Body"></label></li>
+      <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-body" value="text" checked="checked" disabled="disabled" class="cb" /> <label for="page-prefs-body"><__trans phrase="Body"></label></li>
       <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-excerpt" value="excerpt" <mt:if name="page_disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-excerpt"><__trans phrase="Excerpt"></label></li>
       <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-keywords" value="keywords" <mt:if name="page_disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-keywords"><__trans phrase="Keywords"></label></li>
       <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-tags" value="tags" <mt:if name="page_disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-tags"><__trans phrase="Tags"></label></li>
@@ -194,6 +194,23 @@
       <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-assets" value="assets" <mt:if name="page_disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-assets"><__trans phrase="Assets"></label></li>
       <mt:var name="page_fields">
     </ul>
+    </mtapp:setting>
+  </mtapp:settinggroup>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('#cfg_entry').submit(function(eventObject) {
+    jQuery('input[name="page_custom_prefs"], input[name="entry_custom_prefs"]').removeAttr("disabled");
+});
+</mt:setvarblock>
+
+  <h2><__trans phrase="WYSIWYG Editor Setting"></h2>
+  <mtapp:settinggroup id="wysiwyg-editor-setting">
+    <mtapp:setting
+       id="content_css"
+       label="<__trans phrase="Content CSS">"
+       hint="<__trans phrase="Content CSS will be applied when WYSIWYG editor does support. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css">"
+       show_hint="1">
+       <input type="text" name="content_css" value="<mt:var name="content_css" escape="html">" placeholder="http://www.example.com/path/to/cssfile.css" />
     </mtapp:setting>
   </mtapp:settinggroup>
 

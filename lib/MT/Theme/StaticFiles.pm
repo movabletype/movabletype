@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -7,26 +7,15 @@ package MT::Theme::StaticFiles;
 use strict;
 use MT;
 
-sub _default_allowed_extensions {
-    return [
-        qw(
-            jpg jpeg gif png js css ico flv swf
-            )
-    ];
-}
-
 sub apply {
     my ( $element, $theme, $blog ) = @_;
     my $dirs = $element->{data} or return 1;
-    my $exts = MT->config->ThemeStaticFileExtensions
-        || _default_allowed_extensions();
-    $exts = [ split /[\s,]+/, $exts ] if !ref $exts;
     for my $dir (@$dirs) {
         next if $dir =~ /[^\w\-\.]/;
         my $src = File::Spec->catdir( $theme->path, 'blog_static', $dir );
         my $dst = File::Spec->catdir( $blog->site_path, $dir );
         my $result
-            = $theme->install_static_files( $src, $dst, allow => $exts, );
+            = $theme->install_static_files( $src, $dst );
     }
     return 1;
 }
@@ -39,10 +28,8 @@ sub export_template {
         = defined $saved
         ? $saved->{static_directories}
         : $default;
-    my $exts = MT->config->ThemeStaticFileExtensions
-        || _default_allowed_extensions();
-    $exts = [ split /[\s,]+/, $exts ] if !ref $exts;
-    my $extlist = join( ', ', @$exts );
+    my $extlist = MT->config->ThemeStaticFileExtensions;
+    $extlist =~ s/[\s,]+/, /g;
     return $app->load_tmpl(
         'include/theme_exporters/static_files.tmpl',
         {   static_directories => $dirs,
@@ -69,9 +56,6 @@ sub finalize {
     my ( $blog, $theme_hash, $tmpdir, $setting ) = @_;
     my $sf_hash = $theme_hash->{elements}{blog_static_files}
         or return 1;
-    my $exts = MT->config->ThemeStaticFileExtensions
-        || _default_allowed_extensions();
-    $exts = [ split /[\s,]+/, $exts ] if !ref $exts;
     my $dirs = $sf_hash->{data};
     for my $dir (@$dirs) {
         next if $dir =~ /[^\w\-\.]/;
@@ -79,7 +63,7 @@ sub finalize {
         my $dst = File::Spec->catdir( $tmpdir, 'blog_static', $dir );
         require MT::Theme;
         my $result
-            = MT::Theme->install_static_files( $src, $dst, allow => $exts, );
+            = MT::Theme->install_static_files( $src, $dst );
     }
     return 1;
 }

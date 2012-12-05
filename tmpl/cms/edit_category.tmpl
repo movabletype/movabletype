@@ -93,7 +93,7 @@ TC.attachLoadEvent( init );
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-  <input type="hidden" name="category_parent" value="<mt:var name="parent">" />
+  <input type="hidden" name="category_parent" value="<mt:var name="parent" escape="html">" />
 
   <mtapp:settinggroup id="category-meta">
 
@@ -154,7 +154,7 @@ TC.attachLoadEvent( init );
          id="trackback_url"
          label="<__trans phrase="TrackBack URL for this category">"
          hint="<__trans phrase="_USAGE_CATEGORY_PING_URL">">
-        <input type="text" name="trackback_url" id="trackback_url" readonly="readonly" value="<mt:var name="tb_url" escape="html">" class="full-width" />
+        <input type="text" name="trackback_url" id="trackback_url" readonly="readonly" value="<mt:var name="tb_url" escape="html">" class="text readonly" />
       </mtapp:setting>
 
       <mtapp:setting

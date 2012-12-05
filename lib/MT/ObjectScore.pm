@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -80,51 +80,42 @@ __END__
 
 =head1 NAME
 
-MT::Scorable - An interface for any MT::Object that wishes to be rated.
+MT::ObjectScore - A backend for MT::Scorable, An interface for any MT::Object that wishes to be rated.
 
-=head1 SYNOPSIS
+=head1 USAGE
 
-    use MT::Entry;
-    my $entry = MT::Entry->load($id);
-    $entry->set_score('key', $app->user, 100, $overwrite);
+This class is used by L<MT::Scorable>, and not to be used directly
 
 =head1 METHODS
 
-=head2 get_score($namespace, $user)
+=head2 MT::ObjectScore->scored_by($namespace, $user)
 
-Return the score of the object, scored by the user specified.
-This is not for total score of an object.  This is to get a score
-specified by a user to an object.
+returns an iterator for all the scores made by $user. $user should be a MT::Author object,
+and $namespace is a string describing the category of the scores, which can be undef 
+for everything.
 
-=head2 set_score($namespace, $user, $score, $overwrite)
+=head1 Fields
 
-Set specified score to the object by the user.  If $overwrite argument
-is false and the user has already scored the object before, error results.
+The following data fields are included in an ObjectScore object. access as any other 
+MT::Object object
 
-=head2 score_for($namespace)
+=over 4
 
-Return the total score of the object.
+=item * id
 
-=head2 vote_for($namespace)
+=item * author_id - who made this score
 
-Return how many users scored to the object.
+=item * namespace - a category of the score
 
-=head2 score_high($namespace)
+=item * object_ds - which object type this score was made for?
 
-Return the highest score to the object.
+=item * object_id - the ID of the said object
 
-=head2 score_low($namespace)
+=item * score
 
-Return the lowest score to the object.
+=item * ip 
 
-=head2 score_avg($namespace)
-
-Return the average score of the object.
-
-=head2 rank_for($namespace, $max)
-
-Return the rank of the object based on its score among other objects
-of the same type.  The smaller the number is, the higher the object's rank is.
+=back
 
 =head1 AUTHOR & COPYRIGHT
 

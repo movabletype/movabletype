@@ -7,7 +7,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-use Test::More tests => 64;
+use Test::More tests => 70;
 
 use MT;
 use MT::Author;
@@ -122,4 +122,20 @@ ok( ! $perm->can_administer_blog, 'can_administer_blog' );
 ok( ! $perm->can_edit_assets, 'can_edit_assets');
 ok( ! $perm->can_save_image_defaults, 'can_save_image_defaults');
 ok( ! $perm->can_manage_feedback, 'can_manage_feedback');
+}
+
+{
+# checking that the system verifies the old password, (that is DES or MD5)
+# convert them to the new hashing (SHA512), and still verifies them afterwards
+my $author = MT::Author->new();
+$author->name('dummy');
+$author->column('password', '6En93Q4gNHIu6');
+ok(!$author->is_valid_password('wrong'), 'wrong is invalid');
+ok($author->is_valid_password('xxxxx'), 'recognize valid password');
+ok($author->column('password') !~ m/^\$6\$/, 'password is now stored as SHA-512');
+$author->set_password('xxxxx');
+ok($author->column('password') =~ m/^\$6\$/, 'password is now stored as SHA-512');
+ok(!$author->is_valid_password('wrong'), 'wrong is still invalid');
+ok($author->is_valid_password('xxxxx'), 'still recognize valid password');
+$author->remove();
 }

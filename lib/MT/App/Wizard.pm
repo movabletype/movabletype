@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -127,8 +127,10 @@ sub init_core_registry {
                 handler => \&optional,
                 params  => [
                     qw(mail_transfer sendmail_path smtp_server
-                        test_mail_address email_address_main)
-                ]
+                        test_mail_address email_address_main
+                        smtp_port smtp_auth smtp_auth_username
+                        smtp_auth_password smtp_ssl )
+                ],
             },
             cfg_dir => {
                 order     => 300,
@@ -142,15 +144,65 @@ sub init_core_registry {
             },
         },
         optional_packages => {
+            'Digest::SHA' => {
+                link => 'http://search.cpan.org/dist/Digest-SHA/',
+                label =>
+                    'Digest::SHA is required in order to provide enhanced protection of user passwords.',
+            },
+            'Plack' => {
+                link => 'http://search.cpan.org/dist/Plack/',
+                label =>
+                    'This module and its dependencies are required to run Movable Type under psgi.',
+            },
+            'CGI::PSGI' => {
+                link => 'http://search.cpan.org/dist/CGI-PSGI/',
+                label =>
+                    'This module and its dependencies are required to run Movable Type under psgi.',
+            },
+            'CGI::Parse::PSGI' => {
+                link => 'http://search.cpan.org/dist/CGI-Emulate-PSGI/',
+                label =>
+                    'This module and its dependencies are required to run Movable Type under psgi.',
+            },
+            'XMLRPC::Transport::HTTP::Plack' => {
+                link =>
+                    'http://search.cpan.org/dist/SOAP-Transport-HTTP-Plack/',
+                label =>
+                    'This module and its dependencies are required to run Movable Type under psgi.',
+            },
+            'Net::SMTP' => {
+                link => 'http://search.cpan.org/dist/libnet/',
+                label =>
+                    'Net::SMTP is required in order to send mail using an SMTP server.',
+            },
+            'Authen::SASL' => {
+                link  => 'http://search.cpan.org/dist/Authen-SASL/',
+                label => 'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.',
+            },
+            'Net::SMTP::SSL' => {
+                link => 'http://search.cpan.org/dist/Net-SMTP-SSL/',
+                label =>
+                    'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.',
+            },
+            'Net::SMTP::TLS' => {
+                link => 'http://search.cpan.org/dist/Net-SMTP-TLS/',
+                label =>
+                    'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.',
+            },
+            'IO::Socket::SSL' => {
+                link => 'http://search.cpan.org/dist/IO-Socket-SSL/',
+                label =>
+                    'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.',
+            },
+            'Net::SSLeay' => {
+                link => 'http://search.cpan.org/dist/Net-SSLeay/',
+                label =>
+                    'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.',
+            },
             'HTML::Entities' => {
                 link => 'http://search.cpan.org/dist/HTML-Entities',
                 label =>
                     'This module is needed to encode special characters, but this feature can be turned off using the NoHTMLEntities option in mt-config.cgi.',
-            },
-            'LWP::UserAgent' => {
-                link => 'http://search.cpan.org/dist/LWP',
-                label =>
-                    'This module is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.',
             },
             'HTML::Parser' => {
                 link => 'http://search.cpan.org/dist/HTML-Parser',
@@ -221,16 +273,17 @@ sub init_core_registry {
             'MIME::Base64' => {
                 link => 'http://search.cpan.org/dist/MIME-Base64',
                 label =>
-                    'This module is needed to enable comment registration.',
+                    'This module is needed to enable comment registration. Also, required in order to send mail via an SMTP Server.',
             },
             'XML::Atom' => {
                 link  => 'http://search.cpan.org/dist/XML-Atom',
                 label => 'This module enables the use of the Atom API.',
             },
-    		'Cache::Memcached' => {
-                link  => 'http://search.cpan.org/dist/Cache-Memcached',
-                label => 'This module is required in order to use memcached as caching mechanism used by Movable Type.',
-    		},
+            'Cache::Memcached' => {
+                link => 'http://search.cpan.org/dist/Cache-Memcached',
+                label =>
+                    'This module is required in order to use memcached as caching mechanism used by Movable Type.',
+            },
             'Archive::Tar' => {
                 link => 'http://search.cpan.org/dist/Archive-Tar',
                 label =>
@@ -260,11 +313,6 @@ sub init_core_registry {
                 link => 'http://search.cpan.org/dist/Digest-SHA1',
                 label =>
                     'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.',
-            },
-            'Mail::Sendmail' => {
-                link => 'http://search.cpan.org/dist/Mail-Sendmail',
-                label =>
-                    'This module is required for sending mail via SMTP Server.',
             },
             'Safe' => {
                 link => 'http://search.cpan.org/dist/Safe',
@@ -298,7 +346,7 @@ sub init_core_registry {
             },
             'DBI' => {
                 link    => 'http://search.cpan.org/dist/DBI',
-                label   => 'DBI is required to store data in database.',
+                label   => 'DBI is required to work with most supported databases.',
                 version => 1.21,
             },
             'CGI' => {
@@ -310,8 +358,13 @@ sub init_core_registry {
                 link    => 'http://search.cpan.org/dist/File-Spec',
                 version => 0.8,
                 label =>
-                    'File::Spec is required for path manipulation across operating systems.',
-            }
+                    'File::Spec is required to work with file system path information on all supported operating systems.',
+            },
+            'LWP::UserAgent' => {
+                link => 'http://search.cpan.org/dist/libwww-perl/',
+                label =>
+                    'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.',
+            },
         },
         database_options => {
             'mysql' => {
@@ -360,8 +413,13 @@ sub run_step {
     my $keys  = $app->config_keys;
     if ($curr_step) {
         foreach ( @{ $keys->{$curr_step} } ) {
-            $param{$_} = $app->param($_)
-                if defined $app->param($_);
+            if ( defined $app->param($_) ) {
+                $param{$_} = $app->param($_);
+            }
+            else {
+                delete $param{$_}
+                    if exists $param{$_};
+            }
         }
 
         if ( $app->param('save') ) {
@@ -757,7 +815,7 @@ sub configure {
             if ( my $err = $@ ) {
                 $err_msg
                     = $app->translate(
-                    'An error occurred while attempting to connect to the database.  Check the settings and try again.'
+                    'An error occurred while trying to connect to the database.  Check the settings and try again.'
                     );
                 my $enc;
                 if (   exists( $param{publish_charset} )
@@ -796,7 +854,7 @@ sub configure {
                     $param{one_database} = @dbs == 0;
                     $err_msg
                         = $app->translate(
-                        'Please select database from the list of database and try again.'
+                        'Please select a database from the list of available databases and try again.'
                         );
                 }
                 else {
@@ -815,9 +873,6 @@ sub configure {
 
     $app->build_page( "configure.tmpl", \%param );
 }
-
-my @Sendmail
-    = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
 
 sub cfg_dir_conditions {
     my $app = shift;
@@ -885,6 +940,9 @@ sub cfg_dir {
     $app->build_page( "cfg_dir.tmpl", \%param );
 }
 
+my @Sendmail
+    = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
+
 sub optional {
     my $app   = shift;
     my %param = @_;
@@ -902,6 +960,10 @@ sub optional {
         $sm_loc = $loc, last if -x $loc && !-d $loc;
     }
     $param{sendmail_path} = $sm_loc || '';
+    $param{smtp_server} = $mgr->default('SMTPServer')
+        unless $param{smtp_server};
+    $param{smtp_port} = 25
+        unless $param{smtp_port};
 
     my $transfer;
     push @$transfer, { id => 'smtp', name => $app->translate('SMTP Server') };
@@ -918,6 +980,15 @@ sub optional {
     $param{mail_loop}                        = $transfer;
     $param{config}                           = $app->serialize_config(%param);
 
+    require MT::Mail;
+    $param{has_net_smtp}         = MT::Mail->can_use_smtp         ? 1 : 0;
+    $param{has_net_smtp_auth}    = MT::Mail->can_use_smtpauth     ? 1 : 0;
+    $param{has_net_smtp_ssl}     = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
+    $param{has_net_smtp_ssl_msg} = MT::Mail->errstr;
+    $param{has_net_smtp_tls}     = MT::Mail->can_use_smtpauth_tls ? 1 : 0;
+    $param{has_net_smtp_tls_msg} = MT::Mail->errstr;
+    $param{can_use_ssl}          = $param{has_net_smtp_ssl} || $param{has_net_smtp_tls};
+
     my $ok = 1;
     my $err_msg;
     if ( $app->param('test') ) {
@@ -926,16 +997,32 @@ sub optional {
             my $cfg = $app->config;
             $cfg->MailTransfer( $param{mail_transfer} )
                 if $param{mail_transfer};
-            $cfg->SMTPServer( $param{smtp_server} )
-                if $param{mail_transfer}
-                    && ( $param{mail_transfer} eq 'smtp' )
-                    && $param{smtp_server};
             $cfg->SendMailPath( $param{sendmail_path} )
                 if $param{mail_transfer}
                     && ( $param{mail_transfer} eq 'sendmail' )
                     && $param{sendmail_path};
             $cfg->EmailAddressMain( $param{email_address_main} )
                 if $param{email_address_main};
+
+            if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' ) {
+                $cfg->SMTPServer( $param{smtp_server} )
+                    if $param{smtp_server};
+                $cfg->SMTPPort( $param{smtp_port} )
+                    if $param{smtp_port};
+                $cfg->SMTPAuth(1)
+                    if $param{smtp_auth};
+                if ( $cfg->SMTPAuth ) {
+                    $cfg->SMTPUser( $param{smtp_auth_username} )
+                        if $param{smtp_auth_username};
+                    $cfg->SMTPpassword( $param{smtp_auth_password} )
+                        if $param{smtp_auth_password};
+                    $cfg->SMTPAuth('ssl')
+                        if $param{smtp_ssl} eq 'ssl';
+                    $cfg->SMTPAuth('starttls')
+                        if $param{smtp_ssl} eq 'tls';
+                }
+            }
+
             my %head = (
                 id => 'wizard_test',
                 To => $param{test_mail_address},
@@ -1101,6 +1188,18 @@ sub seed {
 
     $param{tmpl_loop} = \@tmpl_loop;
 
+    # If TLS is enabled, SMTPAuth should be 'starttls'
+    $param{smtp_auth} = 'starttls'
+        if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' )
+        && $param{smtp_auth}
+        && $param{smtp_ssl} eq 'tls';
+
+    # If SSL is enabled, SMTPAuth should be 'ssl'
+    $param{smtp_auth} = 'ssl'
+        if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' )
+        && $param{smtp_auth}
+        && $param{smtp_ssl} eq 'ssl';
+
     my $data = $app->build_page( "mt-config.tmpl", \%param );
 
     my $cfg_file = File::Spec->catfile( $app->{mt_dir}, 'mt-config.cgi' );
@@ -1112,7 +1211,6 @@ sub seed {
             close OUT;
         }
         $param{config_created} = 1 if -f $cfg_file;
-        $param{config_file} = $cfg_file;
         if ( ( !-f $cfg_file ) && $app->param->param('manually') ) {
             $param{file_not_found} = 1;
             $param{manually}       = 1;
@@ -1120,7 +1218,6 @@ sub seed {
     }
     elsif ( $app->param->param('manually') ) {
         $param{config_created} = 1 if -f $cfg_file;
-        $param{config_file} = $cfg_file;
     }
 
     # back to the complete screen

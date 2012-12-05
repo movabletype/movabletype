@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -24,7 +24,8 @@ __PACKAGE__->install_properties(
             'allow_pings' => 'boolean',
             'basename'    => 'string(255)',
 
-            'show_fields' => 'string meta',
+            # META
+            'show_fields' => 'text meta',
         },
         indexes => {
             blog_id       => 1,
@@ -77,11 +78,14 @@ sub list_props {
                     my $obj_class = $obj->class;
                     my $contents_type
                         = $obj_class eq 'category' ? 'entry' : 'page';
-                    my $action   = 'access_to_' . $contents_type . '_list';
-                    my $count    = $count{ $obj->id } || 0;
-                    my $phrase = $obj_class eq 'category'
-                        ? MT->translate('[quant,_1,entry,entries,No entries]', $count )
-                        : MT->translate('[quant,_1,page,pages,No pages]', $count );
+                    my $action = 'access_to_' . $contents_type . '_list';
+                    my $count = $count{ $obj->id } || 0;
+                    my $phrase
+                        = $obj_class eq 'category'
+                        ? MT->translate(
+                        '[quant,_1,entry,entries,No entries]', $count )
+                        : MT->translate( '[quant,_1,page,pages,No pages]',
+                        $count );
 
                     if ( $app->can_do($action) ) {
                         my $uri = $app->uri(
@@ -97,9 +101,7 @@ sub list_props {
                                 blog_id    => $obj->blog_id,
                             },
                         );
-                        push @out, "<a href=\"$uri\">"
-                            . $phrase
-                            . "</a>";
+                        push @out, "<a href=\"$uri\">" . $phrase . "</a>";
                     }
                     else {
                         push @out, $phrase;
@@ -107,7 +109,7 @@ sub list_props {
                 }
                 return @out;
             },
-            },
+        },
         custom_sort => {
             class     => 'category',
             bulk_sort => sub {
@@ -597,7 +599,9 @@ sub entry_count {
                 },
                 {   'join' => [
                         'MT::Placement', 'entry_id',
-                        { category_id => $cat->id }
+                        { category_id => $cat->id,
+                          blog_id => $cat->blog_id,
+                        }
                     ]
                 }
             );

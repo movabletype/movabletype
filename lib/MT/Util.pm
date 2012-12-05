@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -28,7 +28,8 @@ our @EXPORT_OK
     epoch2ts ts2epoch escape_unicode unescape_unicode
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
-    extract_url_path break_up_text dir_separator deep_do deep_copy );
+    extract_url_path break_up_text dir_separator deep_do deep_copy
+    realpath canonicalize_path );
 
 {
     my $Has_Weaken;
@@ -611,7 +612,7 @@ sub offset_time_list { gmtime offset_time(@_) }
 sub offset_time {
     my ( $ts, $blog, $dir ) = @_;
     my $offset;
-    if ( defined $blog ) {
+    if ($blog) {
         if ( !ref($blog) ) {
             require MT::Blog;
             $blog = MT::Blog->load($blog);
@@ -802,8 +803,26 @@ sub decode_url {
     my $RE         = join '|', keys %Map;
     my $RE_D       = join '|', keys %Map_Decode;
 
+    sub __check_xml_char {
+        my ($val, $is_hex) = @_;
+        $val = hex($val) if $is_hex;
+        if (grep $_ == $val, 9, 0xA, 0xD) {
+            return 1;
+        }
+        if (($val >= 0x20) and ($val <= 0xD7FF)) {  # [#x20-#xD7FF]
+            return 1;
+        }
+        if (($val >= 0xE000) and ($val <= 0xFFFD)) {  # [#xE000-#xFFFD]
+            return 1;
+        }
+        if (($val >= 0x10000) and ($val <= 0x10FFFF)) {  # [#x10000-#x10FFFF]
+            return 1;
+        }
+        return 0;
+    }
+
     sub encode_xml {
-        my ( $str, $nocdata ) = @_;
+        my ( $str, $nocdata, $no_re_replace ) = @_;
         return '' unless defined $str;
         $nocdata ||= MT->config->NoCDATA;
         if (  !$nocdata
@@ -823,8 +842,10 @@ sub decode_url {
             $str =~ s!($RE)!$Map{$1}!g;
 
             # re-replace &amp;#nnnn => &#nnnn
-            $str =~ s/&amp;((\#([0-9]+)|\#x([0-9a-fA-F]+)).*?);/&$1;/g;
+            $str =~ s/&amp;#(x?)((?:[0-9]+|[0-9a-fA-F]+).*?);/__check_xml_char($2, $1) ? "&#$1$2;" : "&amp;#$1$2;"/ge
+                unless $no_re_replace;
         }
+        $str =~ tr/\0-\x08\x0B\x0C\x0E-\x1F\x7F/     /;
         $str;
     }
 
@@ -1513,6 +1534,12 @@ sub discover_tb {
             requires => [qw( Attribution Notice )],
             permits  => [qw( Reproduction Distribution )],
         },
+        'by-nc-nd' => {
+            name      => 'Attribution-NoDerivs-NonCommercial',
+            requires  => [qw( Attribution Notice )],
+            permits   => [qw( Reproduction Distribution )],
+            prohibits => [qw( CommercialUse)],
+        },
         'by-nd-nc' => {
             name      => 'Attribution-NoDerivs-NonCommercial',
             requires  => [qw( Attribution Notice )],
@@ -1566,6 +1593,10 @@ sub discover_tb {
         },
         'pd' => {
             name    => 'PublicDomain',
+            permits => [qw( Reproduction Distribution DerivativeWorks )],
+        },
+        'pdd' => {
+            name    => 'PublicDomainDedication',
             permits => [qw( Reproduction Distribution DerivativeWorks )],
         },
     );
@@ -1942,6 +1973,7 @@ sub browser_language {
 sub launch_background_tasks {
     return !( $ENV{MOD_PERL}
         || $ENV{FAST_CGI}
+        || $ENV{'psgi.input'}
         || !MT->config->LaunchBackgroundTasks );
 }
 
@@ -2298,7 +2330,7 @@ sub unescape_unicode {
                 'XML::LibXML::SAX         1.70',
                 'XML::SAX::Expat          0.37',
             );
-            for my $parser ( @parsers ) {
+            for my $parser (@parsers) {
                 eval "use $parser";
                 next if $@;
                 my ($module) = split /\s+/, $parser;
@@ -2313,17 +2345,15 @@ sub unescape_unicode {
         init_sax() unless $initialized_sax;
         require XML::SAX::ParserFactory;
         my $f = XML::SAX::ParserFactory->new;
-        $f->parser(
-            LexicalHandler => 'MT::Util::XML::SAX::LexicalHandler',
-        );
+        $f->parser( LexicalHandler => 'MT::Util::XML::SAX::LexicalHandler', );
     }
 }
 
 sub expat_parser {
     my $parser = XML::Parser->new(
         Handlers => {
-            ExternEnt    => sub { die "External entities disabled."; '' },
-            ExternEntFin => sub {},
+            ExternEnt => sub { die "External entities disabled."; '' },
+            ExternEntFin => sub { },
         },
     );
     return $parser;
@@ -2712,8 +2742,7 @@ sub deep_copy {
     }
     elsif ( $ref eq 'HASH' ) {
         my $hash = $_[0];
-        +{
-            map( ( $_ => deep_copy( $hash->{$_}, $limit, $depth + 1 ) ),
+        +{  map( ( $_ => deep_copy( $hash->{$_}, $limit, $depth + 1 ) ),
                 keys(%$hash) )
         };
     }
@@ -2726,6 +2755,64 @@ sub deep_copy {
     else {
         $_[0];
     }
+}
+
+sub realpath {
+    my ($abs) = @_;
+    return '' unless $abs;
+
+    require File::Spec;
+    return $abs unless File::Spec->file_name_is_absolute($abs);
+
+    require Cwd;
+    my $abs_path;
+    eval { $abs_path = Cwd::realpath($abs); };
+    return $abs unless $abs_path;
+
+    my ( $vol, $dirs, $filename ) = File::Spec->splitpath($abs_path);
+    my @paths     = File::Spec->splitdir($dirs);
+    my $real_path = File::Spec->catdir(@paths);
+    $abs_path = File::Spec->catpath( $vol, $real_path, $filename );
+
+    return $abs_path;
+}
+
+sub canonicalize_path {
+    my $path  = shift;
+    my @parts = ();
+
+    require File::Spec;
+    my $is_abs = File::Spec->file_name_is_absolute($path) ? 1 : 0;
+
+    my ( $vol, $dirs, $filename ) = File::Spec->splitpath($path);
+    my @paths = File::Spec->splitdir($dirs);
+    @parts = ('') if $is_abs;
+
+    foreach my $path (@paths) {
+        if ( $path eq File::Spec->updir ) {
+            if ( @parts == 0 ) {
+                @parts = ( File::Spec->updir );
+            }
+            elsif ( @parts == 1 and '' eq $parts[0] ) {
+                return undef;
+            }
+            elsif ( $parts[$#parts] eq File::Spec->updir ) {
+                push @parts, File::Spec->updir;
+            }
+            else {
+                pop @parts;
+            }
+        }
+        elsif ( defined $path and $path ne File::Spec->curdir ) {
+            push @parts, $path;
+        }
+    }
+    my $sep = dir_separator();
+    $path = (@parts) ? join( $sep, @parts ) : undef;
+    if ($path) {
+        $path =~ s/^\Q$sep\E// unless $is_abs;
+    }
+    return $path ? File::Spec->catpath( $vol, $path, $filename ) : $filename;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;
@@ -2811,6 +2898,22 @@ If I<$format> is C<undef>, and I<$blog> is specified, I<format_ts> will
 use a language-specific default format; if a language-specific format is not
 defined, or if I<$blog> is unspecified, the default format used is
 C<%B %e, %Y %I:%M %p>.
+
+Formating rules:
+%Y - Year, 4 digits. %y - year, 2 digits.
+%m - Month, 2 digits. %B - month name, translated. %b - month name, translated and shortend to 3 letters
+%d - month day, 2 digits. %e - month day, 1 or 2 digits
+%H - hour, 24 hours style, 2 digits. %k - hour, 24 hours style, 1 or 2 digits.
+%I - hour, 12 hours style, 2 digits. %l - hour, 12 hours style, 1 or 2 digits.
+%p - AM or PM
+%M - minutes, 2 digits. %S - seconds, 2 digits.
+%w - Day of the week, 1 digit. %A - day of the week, translated. %a - day of the week, translated and shortened
+%j - Day in the year, 3 digits
+%Z - empty string. %x - localized date. %X - localized time
+
+Special handling: the following combination is localized:
+For Japanese: /%B %Y/, /%B %E,? %Y/i, /%b. %e, %Y/i, /%B %E/i
+For Italian: s/%b %e/%e %b/
 
 =head2 days_in($month, $year)
 
@@ -2932,6 +3035,16 @@ Returns the character of directory separator.
 
 Returns the value recursively copied from I<value>.
 If I<limit> is specified, this subroutine is not recursively copied from it.
+
+=head2 realpath
+
+Wrapper method to Cwd::realpath which returns true real path.
+Why? Because on Windows, Cwd::realpath returns wrong value.
+(died, or change path separator from backslash to slash)
+
+=head2 canonicalize_path
+
+Returns canonical path
 
 =head1 AUTHOR & COPYRIGHTS
 

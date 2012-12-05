@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -61,7 +61,7 @@ sub _init_core {
         $prop = $common_props->{$id};
 
         # Property is undefined
-        die MT->translate( q{Can't initialize list property [_1].[_2].},
+        die MT->translate( q{Cannot initialize list property [_1].[_2].},
             $cls, $id )
             if !$prop;
     }
@@ -193,7 +193,7 @@ sub base {
         require MT::Meta;
         if ( !$class->has_column($id) ) {
             die MT->translate(
-                'Failed to init auto list property [_1].[_2]: Cannot find definition of column [_3].',
+                'Failed to initialize auto list property [_1].[_2]: Cannot find definition of column [_3].',
                 $prop_class, $id, $id, );
         }
         my $def;
@@ -208,7 +208,7 @@ sub base {
         my $column_type = $def->{type};
         my $auto_type   = $AUTO{$column_type}
             or die MT->translate(
-            'Failed to init auto list property [_1].[_2]: unsupported column type.',
+            'Failed to initialize auto list property [_1].[_2]: unsupported column type.',
             $prop_class, $id
             );
         $orig_obj->{col} = $id;
@@ -345,7 +345,7 @@ sub make_common_label_html {
     );
     if ($label) {
         my $can_double_encode = 1;
-        $label = MT::Util::encode_html($label, $can_double_encode);
+        $label = MT::Util::encode_html( $label, $can_double_encode );
         return qq{<a href="$edit_link">$label</a>};
     }
     else {

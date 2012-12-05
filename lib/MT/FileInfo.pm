@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -131,6 +131,24 @@ sub parent_names {
         author      => 'MT::Author',
     };
     $parents;
+}
+
+sub cleanup {
+    my $class = shift;
+    require MT::Template;
+    my $iter  = $class->load_iter(
+        undef,
+        {   'join' => MT::Template->join_on(
+                undef,
+                {   'type' => 'backup',
+                    'id'   => \'= fileinfo_template_id',
+                }
+            )
+        }
+    );
+    while ( my $obj = $iter->() ) {
+        $obj->remove;
+    }
 }
 
 1;

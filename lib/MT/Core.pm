@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -63,7 +63,7 @@ BEGIN {
                 label   => 'Database Server',
                 default => 'localhost',
                 hint    => sub {
-                    MT->translate("This is usually 'localhost'.");
+                    MT->translate("This is often 'localhost'.");
                 },
                 show_hint => 1,
                 order     => 10,
@@ -164,6 +164,7 @@ BEGIN {
             'objectasset'     => 'MT::ObjectAsset',
             'filter'          => 'MT::Filter',
             'touch'           => 'MT::Touch',
+            'failedlogin'     => 'MT::FailedLogin',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
@@ -351,7 +352,7 @@ BEGIN {
                                 if ( $key eq 'days' ) {
                                     return $prop->error(
                                         MT->translate(
-                                            q{Days can't include non numeriacal characters.}
+                                            q{Days must be a number.}
                                         )
                                     ) if $args->{days} =~ /\D/;
                                 }
@@ -960,13 +961,13 @@ BEGIN {
                     grep  => \&MT::Filter::pack_grep,
                 },
                 blog_name => {
-                    label     => 'Website/Blog Name',
+                    label        => 'Website/Blog Name',
                     filter_label => '__WEBSITE_BLOG_NAME',
-                    order     => 10000,
-                    display   => 'default',
-                    site_name => 1,
-                    view      => [ 'system', 'website' ],
-                    bulk_html => sub {
+                    order        => 10000,
+                    display      => 'default',
+                    site_name    => 1,
+                    view         => [ 'system', 'website' ],
+                    bulk_html    => sub {
                         my $prop     = shift;
                         my ($objs)   = @_;
                         my %blog_ids = map { $_->blog_id => 1 } @$objs;
@@ -1580,6 +1581,7 @@ BEGIN {
             },
             'SchemaVersion'         => undef,
             'MTVersion'             => undef,
+            'MTReleaseNumber'       => undef,
             'RequiredCompatibility' => { default => 0 },
             'NotifyUpgrade'         => { default => 1 },
             'Database'              => undef,
@@ -1588,6 +1590,7 @@ BEGIN {
             'DBPort'                => undef,
             'DBUser'                => undef,
             'DBPassword'            => undef,
+            'PIDFilePath'           => undef,
             'DefaultLanguage'       => { default => 'en_US', },
             'LocalPreviews'         => { default => 0 },
             'DefaultCommenterAuth' =>
@@ -1603,6 +1606,7 @@ BEGIN {
             'AltTemplatePath' => {
                 default => 'alt-tmpl',
                 path    => 1,
+                type    => 'ARRAY',
             },
             'CSSPath'    => { default => 'css', },
             'ImportPath' => {
@@ -1623,10 +1627,12 @@ BEGIN {
             'SearchTemplatePath' => {
                 default => 'search_templates',
                 path    => 1,
+                type    => 'ARRAY',
             },
             'ThemesDirectory' => {
                 default => 'themes',
                 path    => 1,
+                type    => 'ARRAY',
             },
             'SupportDirectoryPath' => { default => '', },
             'SupportDirectoryURL'  => { default => '' },
@@ -1643,12 +1649,19 @@ BEGIN {
             'StaticWebPath'        => { default => '', },
             'StaticFilePath'       => undef,
             'CGIPath'              => { default => '/cgi-bin/', },
-            'AdminCGIPath'         => undef,
+            'AdminCGIPath'         => { default => sub { $_[0]->CGIPath } },
+            'BaseSitePath'         => undef,
+            'HideBaseSitePath'     => { default => 0, },
+            'HidePaformanceLoggingSettings' => { default => 0, },
             'CookieDomain'         => undef,
             'CookiePath'           => undef,
             'MailEncoding'         => { default => 'ISO-8859-1', },
             'MailTransfer'         => { default => 'sendmail' },
             'SMTPServer'           => { default => 'localhost', },
+            'SMTPAuth'             => { default => 0, },
+            'SMTPUser'             => undef,
+            'SMTPPassword'         => undef,
+            'SMTPPort'             => undef,
             'DebugEmailAddress'    => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
@@ -1663,6 +1676,10 @@ BEGIN {
             'NoTempFiles'           => { default => 0, },
             'TempDir'               => { default => '/tmp', },
             'RichTextEditor'        => { default => 'archetype', },
+            'WYSIWYGEditor'         => undef,
+            'SourceEditor'          => undef,
+            'Editor'                => { default => 'tinymce', },
+            'EditorStrategy'        => { default => 'Multi', },
             'EntriesPerRebuild'     => { default => 40, },
             'UseNFSSafeLocking'     => { default => 0, },
             'NoLocking'             => { default => 0, },
@@ -1680,6 +1697,7 @@ BEGIN {
             'HTTPSProxy'            => undef,
             'PingNoProxy'           => { default => 'localhost', },
             'HTTPNoProxy'           => { default => 'localhost', },
+            'HeaderCacheControl'    => undef,
             'ImageDriver'           => { default => 'ImageMagick', },
             'NetPBMPath'            => undef,
             'AdminScript'           => { default => 'mt.cgi', },
@@ -1696,6 +1714,7 @@ BEGIN {
             'NotifyScript'          => { default => 'mt-add-notify.cgi', },
             'PublishCharset'        => { default => 'utf-8', },
             'SafeMode'              => { default => 1, },
+            'AllowFileInclude'      => { default => 0, },
             'GlobalSanitizeSpec'    => {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
@@ -1723,16 +1742,18 @@ BEGIN {
                 type    => 'ARRAY',
                 default => 'feed results_feed.tmpl',
             },
-            'SearchSortBy'           => undef,
-            'SearchSortOrder'        => { default => 'ascend', },
-            'SearchNoOverride'       => { default => 'SearchMaxResults', },
-            'SearchResultDisplay'    => { alias => 'ResultDisplay', },
-            'SearchExcerptWords'     => { alias => 'ExcerptWords', },
-            'SearchDefaultTemplate'  => { alias => 'DefaultTemplate', },
-            'SearchMaxResults'       => { alias => 'MaxResults', },
-            'SearchAltTemplate'      => { alias => 'AltTemplate' },
-            'SearchPrivateTags'      => { default => 0 },
-            'DeepCopyRecursiveLimit' => { default => 2 },
+            'SearchSortBy'             => undef,
+            'SearchSortOrder'          => { default => 'ascend', },
+            'SearchNoOverride'         => { default => 'SearchMaxResults', },
+            'SearchResultDisplay'      => { alias   => 'ResultDisplay', },
+            'SearchExcerptWords'       => { alias   => 'ExcerptWords', },
+            'SearchDefaultTemplate'    => { alias   => 'DefaultTemplate', },
+            'SearchMaxResults'         => { alias   => 'MaxResults', },
+            'SearchAltTemplate'        => { alias   => 'AltTemplate' },
+            'SearchPrivateTags'        => { default => 0 },
+            'DeepCopyRecursiveLimit'   => { default => 2 },
+            'BulkLoadMetaObjectsLimit' => { default => 100 },
+            'DisableMetaObjectCache'   => { default => 1, },
             'RegKeyURL' =>
                 { default => 'http://www.typekey.com/extras/regkeys.txt', },
             'IdentitySystem' =>
@@ -1759,6 +1780,10 @@ BEGIN {
                 default =>
                     'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
             },
+            'FeedbackURL' => {
+                default =>
+                    'http://www.movabletype.org/feedback.html',
+            },
 
 # 'MTNewsURL' => {
 #     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
@@ -1775,10 +1800,10 @@ BEGIN {
             'EmailNotificationBcc'  => { default => 1, },
             'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
             'UserSessionTimeout'    => { default => 60 * 60 * 4, },
-            'UserSessionCookieName' => { handler => \&UserSessionCookieName },
+            'UserSessionCookieName' => { default => \&UserSessionCookieName },
             'UserSessionCookieDomain' =>
                 { default => '<$MTBlogHost exclude_port="1"$>' },
-            'UserSessionCookiePath' => { handler => \&UserSessionCookiePath },
+            'UserSessionCookiePath' => { default => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
             'LaunchBackgroundTasks'    => { default => 0 },
             'TypeKeyVersion'           => { default => '1.1' },
@@ -1818,10 +1843,10 @@ BEGIN {
             },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
-            'MaxTagAutoCompletionItems' => { default => 1000, },
+            'MaxTagAutoCompletionItems' => { default => 1000, },    ## DEPRECATED
             'NewUserAutoProvisioning' =>
                 { handler => \&NewUserAutoProvisioning, },
-            'NewUserBlogTheme'        => { default => 'classic_blog' },
+            'NewUserBlogTheme'        => { default => 'rainier' },
             'NewUserDefaultWebsiteId' => undef,
             'DefaultSiteURL'          => undef,    ## DEPRECATED
             'DefaultSiteRoot'         => undef,    ## DEPRECATED
@@ -1830,18 +1855,20 @@ BEGIN {
                 handler => \&DefaultUserTagDelimiter,
                 default => 'comma',
             },
-            'AuthenticationModule'  => { default => 'MT', },
-            'AuthLoginURL'          => undef,
-            'AuthLogoutURL'         => undef,
-            'DefaultAssignments'    => { default => '' },
-            'AutoSaveFrequency'     => { default => 5 },
-            'FuturePostFrequency'   => { default => 1 },
-            'AssetCacheDir'         => { default => 'assets_c', },
-            'IncludesDir'           => { default => 'includes_c', },
-            'MemcachedServers'      => { type    => 'ARRAY', },
-            'MemcachedNamespace'    => undef,
-            'MemcachedDriver'       => { default => 'Cache::Memcached' },
-            'CommenterRegistration' => {
+            'UserPasswordValidation' => { type    => 'ARRAY', },
+            'UserPasswordMinLength'  => { default => 8, },
+            'AuthenticationModule'   => { default => 'MT', },
+            'AuthLoginURL'           => undef,
+            'AuthLogoutURL'          => undef,
+            'DefaultAssignments'     => { default => '' },
+            'AutoSaveFrequency'      => { default => 5 },
+            'FuturePostFrequency'    => { default => 1 },
+            'AssetCacheDir'          => { default => 'assets_c', },
+            'IncludesDir'            => { default => 'includes_c', },
+            'MemcachedServers'       => { type    => 'ARRAY', },
+            'MemcachedNamespace'     => undef,
+            'MemcachedDriver'        => { default => 'Cache::Memcached' },
+            'CommenterRegistration'  => {
                 type    => 'HASH',
                 default => {
                     Allow  => '1',
@@ -1849,7 +1876,7 @@ BEGIN {
                 },
             },
             'CaptchaSourceImageBase' => undef,
-            'SecretToken'            => { handler => \&SecretToken, },
+            'SecretToken'            => { default => \&SecretToken, },
             ## NaughtyWordChars settings
             'NwcSmartReplace' => { default => 0, },
             'NwcReplaceField' =>
@@ -1871,17 +1898,21 @@ BEGIN {
             'PerformanceLoggingPath' =>
                 { handler => \&PerformanceLoggingPath },
             'PerformanceLoggingThreshold' => { default => 0.1 },
-            'ProcessMemoryCommand' => { handler => \&ProcessMemoryCommand },
+            'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
             'DefaultWebsiteTheme'  => { default => 'classic_website' },
-            'DefaultBlogTheme'     => { default => 'classic_blog' },
-            'ThemeStaticFileExtensions' => undef,
+            'DefaultBlogTheme'     => { default => 'rainier' },
+            'ThemeStaticFileExtensions' => 
+                { default => 'html jpg jpeg gif png js css ico flv swf otf ttf' },
 
-            'AssetFileTypes'              => { type => 'HASH' },
-            'AssetFileExtensions'         => { default => undef },
-            'DeniedAssetFileExtensions'   => { default => q{ascx,asis,asp,aspx,bat,cfc,cfm,cgi,cmd,com,cpl,dll,exe,htaccess,htm,html,inc,jhtml,js,jsb,jsp,mht,mhtml,msi,php\d?,phps,phtm,phtml,pif,pl,pwml,py,reg,scr,sh,shtm,shtml,vbs,vxd} },
+            'AssetFileTypes'            => { type    => 'HASH' },
+            'AssetFileExtensions'       => { default => undef },
+            'DeniedAssetFileExtensions' => {
+                default =>
+                    q{ascx,asis,asp,aspx,bat,cfc,cfm,cgi,cmd,com,cpl,dll,exe,htaccess,htm,html,inc,jhtml,js,jsb,jsp,mht,mhtml,msi,php\d?,phps,phtm,phtml,pif,pl,pwml,py,reg,scr,sh,shtm,shtml,vbs,vxd,pm,so,rb,htc}
+            },
 
             'FastCGIMaxTime'     => { default => 60 * 60 },    # 1 hour
             'FastCGIMaxRequests' => { default => 1000 },       # 1000 requests
@@ -1896,27 +1927,65 @@ BEGIN {
             # Revision History
             'TrackRevisions'    => { default => 1 },
             'RevisioningDriver' => { default => 'Local' },
+
+            # User Lockout
+            'UserLockoutLimit'               => { default => 6 },
+            'UserLockoutInterval'            => { default => 1800 },
+            'IPLockoutLimit'                 => { default => 10 },
+            'IPLockoutInterval'              => { default => 1800 },
+            'FailedLoginExpirationFrequency' => { default => 86400 },
+            'LockoutIPWhitelist'             => undef,
+            'LockoutNotifyTo'                => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
-        applications      => {
-            'xmlrpc'   => { handler => 'MT::XMLRPCServer', },
-            'atom'     => { handler => 'MT::AtomServer', },
-            'feeds'    => { handler => 'MT::App::ActivityFeeds', },
-            'view'     => { handler => 'MT::App::Viewer', },
-            'notify'   => { handler => 'MT::App::NotifyList', },
-            'tb'       => { handler => 'MT::App::Trackback', },
-            'upgrade'  => { handler => 'MT::App::Upgrade', },
-            'wizard'   => { handler => 'MT::App::Wizard', },
+        applications => {
+            'xmlrpc' => {
+                handler => 'MT::XMLRPCServer',
+                script  => sub { MT->config->XMLRPCScript },
+                type    => 'xmlrpc',
+            },
+            'atom' => {
+                handler => 'MT::AtomServer',
+                script  => sub { MT->config->AtomScript },
+            },
+            'feeds' => {
+                handler => 'MT::App::ActivityFeeds',
+                script  => sub { MT->config->ActivityFeedScript },
+            },
+            'view' => {
+                handler => 'MT::App::Viewer',
+                script  => sub { MT->config->ViewScript },
+            },
+            'notify' => {
+                handler => 'MT::App::NotifyList',
+                script  => sub { MT->config->NotifyScript },
+            },
+            'tb' => {
+                handler => 'MT::App::Trackback',
+                script  => sub { MT->config->TrackbackScript },
+            },
+            'wizard' => {
+                handler => 'MT::App::Wizard',
+                script  => sub { 'mt-wizard.cgi' },
+                type    => 'run_once',
+            },
+            'check' => {
+                script => sub { MT->config->CheckScript },
+                type   => 'run_once',
+            },
             'comments' => {
                 handler => 'MT::App::Comments',
+                script  => sub { MT->config->CommentScript },
                 tags    => sub { MT->app->load_core_tags },
             },
             'search' => {
                 handler => 'MT::App::Search::Legacy',
+                script  => sub { MT->config->SearchScript },
                 tags    => sub { MT->app->load_core_tags },
             },
             'new_search' => {
                 handler => 'MT::App::Search',
+                script  => sub { MT->config->SearchScript },
                 tags    => sub {
                     require MT::Template::Context::Search;
                     return MT::Template::Context::Search->load_core_tags();
@@ -1926,6 +1995,8 @@ BEGIN {
             },
             'cms' => {
                 handler         => 'MT::App::CMS',
+                script          => sub { MT->config->AdminScript },
+                cgi_path        => sub { MT->config->AdminCGIPath },
                 cgi_base        => 'mt',
                 page_actions    => sub { MT->app->core_page_actions(@_) },
                 content_actions => sub { MT->app->core_content_actions(@_) },
@@ -1944,10 +2015,14 @@ BEGIN {
                 },
                 compose_menus => sub { MT->app->core_compose_menus() },
                 user_menus    => sub { MT->app->core_user_menus() },
+                disable_object_methods =>
+                    sub { MT->app->core_disable_object_methods() },
             },
             upgrade => {
                 handler => 'MT::App::Upgrader',
                 methods => '$Core::MT::App::Upgrader::core_methods',
+                script  => sub { MT->config->UpgradeScript },
+                type    => 'run_once',
             },
         },
         archive_types => \&load_archive_types,
@@ -2179,6 +2254,22 @@ sub load_core_tasks {
                 MT::Core->purge_session_records;
                 }
         },
+        'CleanExpiredFailedLogin' => {
+            label     => 'Remove expired lockout data',
+            frequency => $cfg->FailedLoginExpirationFrequency,
+            code      => sub {
+                my $app = MT->instance;
+                $app->model('failedlogin')->cleanup($app);
+                }
+        },
+        'CleanFileInfoRecords' => {
+            label     => 'Purge Unused FileInfo Records',
+            frequency => 60 * 60 * 24,   # once a day
+            code      => sub {
+                my $app = MT->instance;
+                $app->model('fileinfo')->cleanup;
+                }
+        },
     };
 }
 
@@ -2369,7 +2460,6 @@ sub load_core_permissions {
                 'open_new_entry_screen'                   => 1,
                 'open_own_entry_comment_edit_screen'      => 1,
                 'open_own_entry_trackback_edit_screen'    => 1,
-                'save_multiple_entries'                   => 1,
                 'view_feedback'                           => 1,
                 'use_entry:manage_menu'                   => 1,
                 'use_tools:search'                        => 1,
@@ -2410,6 +2500,10 @@ sub load_core_permissions {
                 'use_tools:search'                 => 1,
                 'get_entry_feed'                   => 1,
                 'save_multiple_entries'            => 1,
+                'open_select_author_dialog'        => 1,
+                'send_update_pings_entry'          => 1,
+                'insert_asset'                     => 1,
+                'access_to_insert_asset_list'      => 1,
             }
         },
         'blog.edit_assets' => {
@@ -2461,12 +2555,11 @@ sub load_core_permissions {
                 'edit_config'                  => 1,
                 'edit_junk_auto_delete'        => 1,
                 'export_blog'                  => 1,
+                'import_blog'                  => 1,
                 'import_blog_as_me'            => 1,
                 'load_next_scheduled_entry'    => 1,
                 'open_blog_config_screen'      => 1,
                 'open_start_import_screen'     => 1,
-                'save_banlist'                 => 1,
-                'delete_banlist'               => 1,
                 'save_blog_config'             => 1,
                 'update_welcome_message'       => 1,
             }
@@ -2594,6 +2687,11 @@ sub load_core_permissions {
                 'open_blog_listing_screen'        => 1,
                 'publish_page_via_list'           => 1,
                 'view_all_comments'               => 1,
+                'open_select_author_dialog'       => 1,
+                'send_update_pings_page'          => 1,
+                'insert_asset'                    => 1,
+                'edit_page_basename'              => 1,
+                'edit_page_authored_on'           => 1,
             }
         },
         'blog.manage_users' => {
@@ -2663,6 +2761,8 @@ sub load_core_permissions {
                 'use_tools:search'                      => 1,
                 'reply_comment_from_cms'                => 1,
                 'edit_comment_status_of_own_entry'      => 1,
+                'send_update_pings_entry'               => 1,
+                'edit_own_entry_comment'                => 1,
             }
         },
         'blog.rebuild' => {
@@ -2761,6 +2861,8 @@ sub load_core_permissions {
                 'open_system_check_screen'       => 1,
                 'use_tools:system_info_menu'     => 1,
                 'edit_commenter_status'          => 1,
+                'delete_any_filters'             => 1,
+                'open_dialog_select_theme'       => 1,
             }
         },
         'system.create_blog' => {
@@ -2805,7 +2907,8 @@ sub load_core_permissions {
                 'use_tools:search'             => 1,
                 'open_blog_listing_screen'     => 1,
                 'open_all_blog_listing_screen' => 1,
-                'refresh_templates'            => 1.
+                'refresh_templates'            => 1,
+                'refresh_template_via_list'    => 1,
             },
         },
         'system.manage_plugins' => {
@@ -2815,6 +2918,7 @@ sub load_core_permissions {
             'permitted_action' => {
                 'config_plugins'             => 1,
                 'manage_plugins'             => 1,
+                'reset_plugin_setting'       => 1,
                 'save_plugin_setting'        => 1,
                 'toggle_plugin_switch'       => 1,
                 'access_to_system_dashboard' => 1,
@@ -2858,8 +2962,8 @@ sub PerformanceLoggingPath {
     return $cfg->set_internal( 'PerformanceLoggingPath', @_ ) if @_;
 
     unless ( $path = $cfg->get_internal('PerformanceLoggingPath') ) {
-        $path = $default = File::Spec->catdir( MT->instance->static_file_path,
-            'support', 'logs' );
+        $path = $default = File::Spec->catdir( 
+            MT->instance->support_directory_path, 'logs' );
     }
 
     # If the $path is not a writeable directory, we need to
@@ -2889,20 +2993,20 @@ sub PerformanceLoggingPath {
                 eval { File::Path::mkpath( [$dir], 0, 0777 ); $path = $dir; };
                 if ($@) {
                     $msg = MT->translate(
-                        'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]',
+                        'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive. [_2]',
                         $dir, $@
                     );
                 }
             }
             elsif ( -e $dir and !-d $dir ) {
                 $msg = MT->translate(
-                    'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]',
+                    'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file. [_1]',
                     $dir
                 );
             }
             elsif ( -e $dir and !-w $dir ) {
                 $msg = MT->translate(
-                    'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]',
+                    'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable. [_1]',
                     $dir
                 );
             }
@@ -2929,36 +3033,29 @@ sub PerformanceLoggingPath {
 
 sub ProcessMemoryCommand {
     my $cfg = shift;
-    $cfg->set_internal( 'ProcessMemoryCommand', @_ ) if @_;
-    my $cmd = $cfg->get_internal('ProcessMemoryCommand');
-    unless ($cmd) {
-        my $os = $^O;
-        if ( $os eq 'darwin' ) {
-            $cmd = 'ps $$ -o rss=';
-        }
-        elsif ( $os eq 'linux' ) {
-            $cmd = 'ps -p $$ -o rss=';
-        }
-        elsif ( $os eq 'MSWin32' ) {
-            $cmd = {
-                command => q{tasklist /FI "PID eq $$" /FO TABLE /NH},
-                regex   => qr/([\d,]+) K/
-            };
-        }
+    my $os = $^O;
+    my $cmd;
+    if ( $os eq 'darwin' ) {
+        $cmd = 'ps $$ -o rss=';
+    }
+    elsif ( $os eq 'linux' ) {
+        $cmd = 'ps -p $$ -o rss=';
+    }
+    elsif ( $os eq 'MSWin32' ) {
+        $cmd = {
+            command => q{tasklist /FI "PID eq $$" /FO TABLE /NH},
+            regex   => qr/([\d,]+) K/
+        };
     }
     return $cmd;
 }
 
 sub SecretToken {
     my $cfg = shift;
-    $cfg->set_internal( 'SecretToken', @_ ) if @_;
-    my $secret = $cfg->get_internal('SecretToken');
-    unless ($secret) {
-        my @alpha = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-        $secret = join '', map $alpha[ rand @alpha ], 1 .. 40;
-        $secret = $cfg->set_internal( 'SecretToken', $secret, 1 );
-        $cfg->save_config();
-    }
+    my @alpha = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
+    my $secret = join '', map $alpha[ rand @alpha ], 1 .. 40;
+    $secret = $cfg->set_internal( 'SecretToken', $secret, 1 );
+    $cfg->save_config();
     return $secret;
 }
 
@@ -2986,9 +3083,6 @@ sub NewUserAutoProvisioning {
 
 sub UserSessionCookieName {
     my $mgr = shift;
-    return $mgr->set_internal( 'UserSessionCookieName', @_ ) if @_;
-    my $name = $mgr->get_internal('UserSessionCookieName');
-    return $name if defined $name;
     if ( $mgr->get_internal('SingleCommunity') ) {
         return 'mt_blog_user';
     }
@@ -2999,9 +3093,6 @@ sub UserSessionCookieName {
 
 sub UserSessionCookiePath {
     my $mgr = shift;
-    return $mgr->set_internal( 'UserSessionCookiePath', @_ ) if @_;
-    my $path = $mgr->get_internal('UserSessionCookiePath');
-    return $path if defined $path;
     if ( $mgr->get_internal('SingleCommunity') ) {
         return '/';
     }

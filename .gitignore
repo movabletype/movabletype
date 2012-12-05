@@ -6,6 +6,7 @@ lib/MT/L10N/nl-iso-8859-1.pm
 mt-static/css/main.css
 mt-static/css/simple.css
 mt-static/js/mt_core_compact.js
+mt-static/js/editor.js
 mt-static/mt_de.js
 mt-static/mt_es.js
 mt-static/mt_fr.js

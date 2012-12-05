@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -78,6 +78,9 @@ function countMarked (f, nameRestrict) {
 //trans('enable');
 //trans('disable');
 //trans('publish');
+//trans('unlock');
+
+
 function doRemoveItems (f, singular, plural, nameRestrict, args, params) {
     if (params && (typeof(params) == 'string')) {
         params = { 'mode': params };
@@ -110,6 +113,8 @@ function doRemoveItems (f, singular, plural, nameRestrict, args, params) {
     }
     if (confirm(count == 1 ? trans(singularMessage, singular, verb) : trans(pluralMessage, count, plural, verb))) {
         return doForMarkedInThisWindow(f, singular, plural, nameRestrict, mode, args);
+    } else {
+        return false;
     }
 }
 
@@ -1420,6 +1425,14 @@ Pager = new Class(Object, {
                 txt.innerHTML = trans('Last') + ' &raquo;';
                 this.element.appendChild(txt);
             }
+            
+            if ( window.top.innerHeight < window.innerHeight ) {
+                window.top.scrollTo(
+                    window.top.document.getElementById('mt-dialog-iframe').parentNode.offsetLeft,
+                    window.top.document.getElementById('mt-dialog-iframe').parentNode.offsetTop
+                );
+            }
+            window.scrollTo( 0, 0 );
         } else {
             this.element.innerHTML = '';
         }
@@ -1582,6 +1595,7 @@ MT.App = new Class( App, {
             this.cpeList.forEach( function( cpe ) { cpe.onSubmit() } );
 
         form.submitted = true;
+        this.stopAutoSave();
     },
 
 
@@ -1871,6 +1885,11 @@ MT.App = new Class( App, {
                     areas[ i ].innerHTML = ''
     },
 
+    stopAutoSave: function() {
+        if ( defined( this.autoSaveTimer ) ) {
+            this.autoSaveTimer.stop();
+        }
+    },
 
     setDirtyKeyDown: function( event ) {
         if ( this.dirtyKeyDownTimer )
@@ -1900,7 +1919,9 @@ MT.App = new Class( App, {
 
         if ( defined( this.autoSaveTimer ) )
             return this.autoSaveTimer.reset();
-        this.autoSaveTimer = new Timer( this.getIndirectMethod( "autoSave" ), autoSaveDelay, 1 );
+        if ( !this.form.submitted ) {
+            this.autoSaveTimer = new Timer( this.getIndirectMethod( "autoSave" ), autoSaveDelay, 1 );
+        }
     },
 
 
@@ -2863,7 +2884,7 @@ MT.App.CategorySelector = new Class( Component, {
                     break;
                 }
             if ( !defined( idx ) )
-                return log.error( "can't find parent id "+parent.id+" in category list");
+                return log.error( "cannot find parent id "+parent.id+" in category list");
             /* get the parents path for our own, and add the parent */
             /* use fromPseudo to copy this array, not take a ref to it */
             cat.path = Array.fromPseudo( parent.path || [] );

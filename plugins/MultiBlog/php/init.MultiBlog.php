@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -145,7 +145,7 @@ function multiblog_function_wrapper($tag, $args, &$ctx) {
 }
 
 # MultiBlog plugin wrapper for block tags (i.e. container/conditional)
-function multiblog_block_wrapper($args, $content, &$ctx, &$repeat) {
+function multiblog_block_wrapper(&$args, $content, &$ctx, &$repeat) {
     $tag = $ctx->this_tag();
     $localvars = array('local_blog_id');
     if (!isset($content)) {
@@ -161,19 +161,19 @@ function multiblog_block_wrapper($args, $content, &$ctx, &$repeat) {
             if (isset($excl))
                 $args['exclude_blogs'] = $excl;
         }
+
+        # Load multiblog access control list
+        $acl = multiblog_load_acl($ctx);
+        if ( !empty($acl) && !empty($acl['allow']) )
+            $args['allows'] = $acl['allow'];
+        elseif ( !empty($acl) && !empty($acl['deny']) )
+            $args['denies'] = $acl['deny'];
+
+        # Fix for MTMultiBlogIfLocalBlog which should never return
+        # true with MTTags block because tags are cross-blog
+        if ($ctx->this_tag() == 'mttags')
+            $ctx->stash('local_blog_id', 0);
     }
-
-    # Load multiblog access control list
-    $acl = multiblog_load_acl($ctx);
-    if ( !empty($acl) && !empty($acl['allow']) )
-        $args['allows'] = $acl['allow'];
-    elseif ( !empty($acl) && !empty($acl['deny']) )
-        $args['denies'] = $acl['deny'];
-
-    # Fix for MTMultiBlogIfLocalBlog which should never return
-    # true with MTTags block because tags are cross-blog
-    if ($ctx->this_tag() == 'mttags')
-        $ctx->stash('local_blog_id', 0);
 
     # Call original tag handler with new multiblog args
     global $multiblog_orig_handlers;
@@ -186,14 +186,25 @@ function multiblog_block_wrapper($args, $content, &$ctx, &$repeat) {
     return $result;
 }
 
+function multiblog_fetch_system_config() {
+    static $multiblog_system_config;
+    if (! isset($multiblog_system_config)) {
+        $mt = MT::get_instance();
+        $multiblog_system_config = $mt->db()->fetch_plugin_config('MultiBlog', 'system');
+        if (empty($multiblog_system_config)) {
+            $multiblog_system_config = array();
+        }
+    }
+
+    return $multiblog_system_config;
+}
+
 function multiblog_load_acl($ctx) {
     # Set local blog
-    $mt = MT::get_instance();
     $this_blog = $ctx->stash('blog_id');
 
-
     # Get the MultiBlog system config for default access and overrides
-    $multiblog_system_config = $mt->db()->fetch_plugin_config('MultiBlog', 'system');
+    $multiblog_system_config = multiblog_fetch_system_config();
 
     $default_access_allowed = 1;
     if (isset($multiblog_system_config['default_access_allowed']))
@@ -234,10 +245,7 @@ function multiblog_filter_blogs(&$ctx, $is_include, $blogs) {
     # Set local blog
     $this_blog = $ctx->stash('blog_id');
 
-    global $multiblog_system_config;
-    $mt = MT::get_instance();
-    if (!$multiblog_system_config)
-        $multiblog_system_config = $mt->db()->fetch_plugin_config('MultiBlog', 'system');
+    $multiblog_system_config = multiblog_fetch_system_config();
 
     # Get the MultiBlog system config for default access and overrides
     if (isset($multiblog_system_config['default_access_allowed']))

@@ -21,7 +21,7 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
                  sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
                  weaken log_time make_string_csv browser_language sanitize_embed
                  extract_url_path break_up_text dir_separator deep_do
-                 deep_copy );
+                 deep_copy canonicalize_path );
 use MT::I18N qw( encode_text );
 use strict;
 
@@ -115,6 +115,8 @@ my %xml_tests = (
     'foob&aacute;r' => #77 #78 #79
         [ '<![CDATA[foob&aacute;r]]>',
           'foob&amp;aacute;r', ],
+    '&#0; &#2; &#67; &#x2; &#x67; &#x19; &#25' =>
+        '&amp;#0; &amp;#2; &#67; &amp;#x2; &#x67; &amp;#x19; &amp;#25',
 );
  
 for my $test (keys %xml_tests) {
@@ -534,6 +536,20 @@ ok(dir_separator(), 'dir_separator()');
     is_deeply($data, $copied, 'shallow copied complex data');
     $data->[0]  += 1;
     ok($data->[0] = $copied->[0], 'not deep copied');
+}
+
+{
+    my $path;
+    $path= '/foo/bar/baz';
+    is( canonicalize_path( $path ), '/foo/bar/baz', 'Already canonicalized(abs)' );
+    $path= 't/../t/08-util.t';
+    is( canonicalize_path( $path ), File::Spec->catdir( 't', '08-util.t' ), 'canonicalize relative path' );
+    $path= '/foo/../bar/baz';
+    is( canonicalize_path( $path ), '/bar/baz', 'canonicalize absolute path' );
+    $path= 'baz';
+    is( canonicalize_path( $path ), 'baz', 'only filename supplied' );
+    $path= '../../baz';
+    is( canonicalize_path( $path ), '../../baz', 'relative parent path' );
 }
 
 done_testing();

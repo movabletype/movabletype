@@ -1,12 +1,12 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
 # $Id$
 
 function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
-    $localvars = array('authors', 'author', 'authors_counter', 'blog_id');
+    $localvars = array(array('authors', 'author', 'authors_counter', 'blog_id'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
         $args['blog_id'] = $ctx->stash('blog_id');

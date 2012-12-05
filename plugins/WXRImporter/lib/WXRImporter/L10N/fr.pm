@@ -13,8 +13,8 @@ use vars qw( %Lexicon );
 %Lexicon = (
 ## plugins/WXRImporter/config.yaml
 	'Import WordPress exported RSS into MT.' => 'Importer depuis un export RSS WordPress vers MT',
-	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"', # Translate - New
-	'"Download WP attachments via HTTP."' => '"Télécharger les pièces jointes WP via HTTP."', # Translate - New
+	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"',
+	'"Download WP attachments via HTTP."' => '"Télécharger les pièces jointes WP via HTTP."',
 
 ## plugins/WXRImporter/lib/WXRImporter/Import.pm
 
@@ -27,14 +27,18 @@ use vars qw( %Lexicon );
 	' and asset will be tagged (\'[_1]\')...' => ' et l\'élément sera taggué (\'[_1]\')...',
 	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'La note  (\'[_1]\') a été trouvée en double. Ignorée.',
 	'Saving page (\'[_1]\')...' => 'Enregistrement de la page (\'[_1]\')...',
+	'Entry has no MT::Trackback object!' => 'La note n\'a pas d\'objet MT::Trackback !',
+	'Assigning permissions for new user...' => 'Mise en place des autorisations pour le nouvel utilisateur...',
+	'Saving permission failed: [_1]' => 'Échec de la sauvegarde des droits des utilisateurs : [_1]',
 
 ## plugins/WXRImporter/tmpl/options.tmpl
-	'Before you import WordPress posts to Movable Type, we recommend that you <a href=\'[_1]\'>configure your blog\'s publishing paths</a> first.' => 'Avant d\'importer des notes Wordpress dans Movable Type, nous vous recommandons d\'abord de <a href=\'[_1]\'>configurer les chemins de publication de votre blog</a>.',
-	'Upload path for this WordPress blog' => 'Chemin d\'envoi pour ce blog WordPress',
+	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{Avant d'importer des notes Wordpress dans Movable Type, nous vous recommandons d'abord de <a href='[_1]'>configurer les chemins de publication de votre blog</a>.},
+	q{Upload path for this WordPress blog} => q{Chemin d'envoi pour ce blog WordPress},
 	'Replace with' => 'Remplacer par',
 	'Download attachments' => 'Télécharger les fichiers attachés',
-	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'L\'utilisation d\'un cron job est requis pour télécharger en arrière plan les fichiers attachés à un blog WordPress.',
-	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Télécharger les fichiers attachés d\'un blog WordPress (images et autres documents).',
+	q{Requires the use of a cron job to download attachments from WordPress powered blog in the background.} => q{L'utilisation d'un cron job est requis pour télécharger en arrière plan les fichiers attachés à un blog WordPress.},
+	q{Download attachments (images and files) from the imported WordPress powered blog.} => q{Télécharger les fichiers attachés d'un blog WordPress (images et autres documents).},
+
 );
 
 1;

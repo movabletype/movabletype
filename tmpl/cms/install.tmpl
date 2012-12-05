@@ -60,7 +60,7 @@ div.warning#version-warning {
        id="generic-error"
        class="error"
        can_close="0">
-      <mt:var name="error">
+      <mt:var name="error" escape="html">
     </mtapp:statusmsg>
   </mt:if>
   
@@ -93,16 +93,18 @@ div.warning#version-warning {
          hint="<__trans phrase="The user&rsquo;s email address.">">
         <input type="text" id="admin_email" class="text full required email" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
       </mtapp:setting>
-    
-      <mtapp:setting
-         id="use_system_email"
-         lebel="<__trans phrase="System Email">"
-         label_class="no-header"
-         hint="<__trans phrase="The email address used in the From: header of each email sent from the system.">"
-         show_hint="1">
-        <input type="checkbox" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" />
-        <label for="use_system_email"><__trans phrase="Use this as system email address"></label>
-      </mtapp:setting>
+
+      <mt:unless name="config.emailaddressmain">
+          <mtapp:setting
+             id="use_system_email"
+             lebel="<__trans phrase="System Email">"
+             label_class="no-header"
+             hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
+             show_hint="1">
+            <input type="checkbox" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" />
+            <label for="use_system_email"><__trans phrase="Use this as system email address"></label>
+          </mtapp:setting>
+      </mt:unless>
 
       <mtapp:setting
          id="preferred_language"
@@ -118,7 +120,8 @@ div.warning#version-warning {
          id="admin_password"
          label="<__trans phrase="Password">"
          label_class="top-label"
-         hint="<__trans phrase="Select a password for your account.">">
+         hint="<__trans phrase="Select a password for your account."> (<$mt:PasswordValidationRule$>)"
+         show_hint="1">
         <input type="password" id="admin_password" class="text password required" name="admin_password" />
       </mtapp:setting>
     
@@ -129,6 +132,11 @@ div.warning#version-warning {
          hint="<__trans phrase="Repeat the password for confirmation.">">
         <input type="password" id="admin_password_confirm" class="text password" name="admin_password_confirm" />
       </mtapp:setting>
+      <script type="text/javascript">
+      /* <![CDATA[ */
+        <$mt:PasswordValidation form="install_form" password="admin_password" username="admin_username"$>
+      /* ]]> */
+      </script>
     </mt:if>
     
     <mt:if name="auth_mode_ldap">

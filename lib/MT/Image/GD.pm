@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -8,13 +8,13 @@ package MT::Image::GD;
 use strict;
 use warnings;
 
-@MT::Image::GD::ISA = qw( MT::Image );
+use base qw( MT::Image );
 
 sub load_driver {
     my $image = shift;
     eval { require GD };
     if ( my $err = $@ ) {
-        return $image->error( MT->translate( "Can't load GD: [_1]", $err ) );
+        return $image->error( MT->translate( "Cannot load GD: [_1]", $err ) );
     }
     1;
 }

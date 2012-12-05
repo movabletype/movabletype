@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -11,17 +11,31 @@ class MTDatabasemysql extends MTDatabase {
 
     protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '') {
         if (extension_loaded('pdo') && extension_loaded('pdo_mysql')) {
-            $prefix = 'pdo_mysql';
             $this->pdo_enabled = true;
+            $this->conn = &ADONewConnection('pdo');
+            if ( !empty($sock) ) {
+                // Connection by unix socket
+                $dsn = "unix_socket=$sock";
+            } else {
+                $dsn = "host=$host";
+                if (!empty($port))
+                    $host .= ";port=$port";
+            }
+            $dsn = "mysql:$dsn";
+            $this->conn->Connect($dsn, $user, $password, $dbname);
         } else {
-            $prefix = 'mysql';
+            $this->conn = &ADONewConnection('mysql');
+            if ( !empty($sock) ) {
+                // Connection by unix socket
+                $dsn = ":$sock";
+            } else {
+                $dsn = "$host";
+                if (!empty($port))
+                    $host .= ":$port";
+            }
+            $this->conn->Connect($dsn, $user, $password, $dbname);
         }
 
-        if (!empty($port))
-            $host .= ":$port";
-
-        $dsn = "$prefix://$user:$password@$host/$dbname?persist";
-        $this->conn = NewADOConnection($dsn);
         return true;
     }
 

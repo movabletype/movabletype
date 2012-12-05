@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -15,7 +15,7 @@ __PACKAGE__->install_properties(
     {   column_defs => {
             'id'       => 'integer not null auto_increment',
             'name'     => 'string(50) not null',
-            'password' => 'string(60) not null',
+            'password' => 'string(124) not null',
             'email'    => 'string(75)',
             'hint'     => 'string(75)',
         },
@@ -47,8 +47,19 @@ sub set_password {
     my $auth   = shift;
     my ($pass) = @_;
     my @alpha  = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-    my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 2;
-    $auth->column( 'password', crypt $pass, $salt );
+    my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 16;
+    my $crypt_sha;
+
+    if ( eval { require Digest::SHA } ) {
+        # Can use SHA512
+        $crypt_sha = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . $pass );
+    }
+    else {
+        # Use SHA-1 algorism
+        $crypt_sha = '{SHA}' . $salt . '$' . MT::Util::perl_sha1_digest_hex( $salt . $pass );
+    }
+
+    $auth->column( 'password', $crypt_sha );
 }
 
 sub magic_token {

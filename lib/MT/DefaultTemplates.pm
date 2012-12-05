@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -102,7 +102,7 @@ BEGIN {
             'dynamic_error' => {
                 label => 'Dynamic Error',
                 description_label =>
-                    'Displays errors for dynamically published templates.',
+                    'Displays errors for dynamically-published templates.',
             },
             'popup_image' => {
                 label => 'Popup Image',
@@ -202,6 +202,8 @@ BEGIN {
             'notify-entry'      => { label => 'Entry Notify', },
             'recover-password'  => { label => 'Password Recovery', },
             'verify-subscribe'  => { label => 'Subscribe Verify', },
+            'lockout-user'      => { label => 'User Lockout', },
+            'lockout-ip'        => { label => 'IP Address Lockout', },
         },
     };
 }
@@ -219,7 +221,25 @@ sub load {
             @$tmpls = grep { $_->{$key} eq $terms->{$key} } @$tmpls;
         }
     }
-    return wantarray ? @$tmpls : ( @$tmpls ? $tmpls->[0] : undef );
+
+    # Make a new template object.
+    my $convert = sub {
+        my $tmpl = shift;
+        return unless $tmpl;
+
+        my $tmpl_class = MT->model('template');
+        my $tmpl_cols  = $tmpl_class->column_defs();
+        my $tmpl_obj   = $tmpl_class->new;
+        foreach my $col ( keys %$tmpl_cols ) {
+            $tmpl_obj->$col( $tmpl->{$col} )
+                if exists $tmpl->{$col};
+        }
+        return $tmpl_obj;
+    };
+
+    return wantarray
+        ? ( map { $convert->($_) } @$tmpls )
+        : ( @$tmpls ? ( $convert->( $tmpls->[0] ) ) : undef );
 }
 
 sub templates {
@@ -291,7 +311,16 @@ sub templates {
                 if ( ref $name eq 'CODE' ) {
                     $name = $name->();
                 }
+                else {
+                    if ($plugin) {
+                        $name = $plugin->translate($name);
+                    }
+                    else {
+                        $name = MT->translate($name);
+                    }
+                }
                 $tmpl->{name}       = $name;
+                $tmpl->{label}      = $name;
                 $tmpl->{type}       = $type;
                 $tmpl->{key}        = $tmpl_id;
                 $tmpl->{identifier} = $tmpl_id;

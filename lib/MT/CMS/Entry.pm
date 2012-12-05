@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -161,9 +161,9 @@ sub edit {
         $param->{has_any_pinged_urls} = ( $obj->pinged_urls || '' ) =~ m/\S/;
         $param->{ping_errors}         = $q->param('ping_errors');
         $param->{can_view_log}        = $app->can_do('view_log');
-        $param->{entry_permalink}     = MT::Util::encode_html( $obj->permalink );
-        $param->{'mode_view_entry'}   = 1;
-        $param->{'basename'}          = $obj->basename;
+        $param->{entry_permalink} = MT::Util::encode_html( $obj->permalink );
+        $param->{'mode_view_entry'} = 1;
+        $param->{'basename'}        = $obj->basename;
 
         if ( my $ts = $obj->authored_on ) {
             $param->{authored_on_ts} = $ts;
@@ -216,7 +216,7 @@ sub edit {
         if ($blog_id) {
             my $blog = $blog_class->load($blog_id)
                 or return $app->error(
-                $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+                $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
             $blog_timezone = $blog->server_offset();
 
             # new entry defaults used for new entries AND new pages.
@@ -294,7 +294,8 @@ sub edit {
                 { class => '*' },
                 {   join => MT::ObjectAsset->join_on(
                         undef,
-                        {   asset_id  => \'= asset_id', # coloring editors hack'
+                        {   asset_id => \
+                                '= asset_id',    # coloring editors hack'
                             object_ds => 'entry',
                             object_id => $id
                         }
@@ -513,44 +514,26 @@ sub edit {
         $param->{blog_file_extension} = $ext;
     }
 
-    my $rte;
-    if ( $param->{convert_breaks} =~ m/richtext/ ) {
-        ## Rich Text editor
-        $rte = lc( $app->config('RichTextEditor') );
-    }
-    else {
-        $rte = 'archetype';
-    }
-    my $editors = $app->registry("richtext_editors");
-    my $edit_reg = $editors->{$rte} || $editors->{archetype};
-    my $rich_editor_tmpl;
-    if ( $rich_editor_tmpl
-        = $edit_reg->{plugin}->load_tmpl( $edit_reg->{template} ) )
-    {
-        $param->{rich_editor}      = $rte;
-        $param->{rich_editor_tmpl} = $rich_editor_tmpl;
-    }
+    $app->setup_editor_param($param);
 
     $param->{object_type}  = $type;
     $param->{object_label} = $class->class_label;
 
     my @ordered = qw( title text tags excerpt keywords );
-    if ( $pref_param ) {
+    if ($pref_param) {
         if ( my $disp_field = $pref_param->{disp_prefs_custom_fields} ) {
             my %order;
             my $i = 1;
-            foreach ( @$disp_field ) {
-                $order{$_->{name}} = $i++;
+            foreach (@$disp_field) {
+                $order{ $_->{name} } = $i++;
             }
-            foreach ( @ordered ) {
-                $order{$_} = $i++ if !$order{$_}
+            foreach (@ordered) {
+                $order{$_} = $i++ if !$order{$_};
             }
-            @ordered = sort {
-                $order{$a} <=> $order{$b}
-            } @ordered;
+            @ordered = sort { $order{$a} <=> $order{$b} } @ordered;
         }
     }
-
+    
     $param->{field_loop} ||= [
         map {
             {   field_name => $_,
@@ -1023,7 +1006,10 @@ PERMCHECK: {
 }
 
 sub preview {
-    my $app   = shift;
+    my $app = shift;
+
+    $app->validate_magic or return;
+
     my $entry = _create_temp_entry($app);
 
     return _build_entry_preview( $app, $entry );
@@ -1051,7 +1037,7 @@ sub _create_temp_entry {
         $entry->blog_id($blog_id);
     }
 
-    return $app->return_to_dashboard( redirect => 1 )
+    return $app->return_to_dashboard( permission => 1 )
         unless $app->permissions->can_edit_entry( $entry, $app->user );
 
     my $names = $entry->column_names;
@@ -1106,9 +1092,9 @@ sub _build_entry_preview {
     if (@tag_names) {
         my @tags;
         foreach my $tag_name (@tag_names) {
-            next if $tag_name =~ m/^@/;
             my $tag = MT::Tag->new;
             $tag->name($tag_name);
+            $tag->is_private($tag_name =~ m/^@/ ? 1 : 0);
             push @tags, $tag;
         }
         $entry->{__tags}        = \@tag_names;
@@ -1123,6 +1109,14 @@ sub _build_entry_preview {
 
     my $preview_basename = $app->preview_object_basename;
     $entry->basename( $q->param('basename') || $preview_basename );
+
+    # translates naughty words when PublishCharset is NOT UTF-8
+    MT::Util::translate_naughty_words($entry);
+
+    $entry->convert_breaks( scalar $q->param('convert_breaks') );
+
+    my @data = ( { data_name => 'author_id', data_value => $user_id } );
+    $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
 
     require MT::TemplateMap;
     require MT::Template;
@@ -1160,16 +1154,8 @@ sub _build_entry_preview {
         $tmpl       = $app->load_tmpl('preview_entry_content.tmpl');
         $fullscreen = 1;
     }
-    return $app->error( $app->translate('Can\'t load template.') )
+    return $app->error( $app->translate('Cannot load template.') )
         unless $tmpl;
-
-    # translates naughty words when PublishCharset is NOT UTF-8
-    MT::Util::translate_naughty_words($entry);
-
-    $entry->convert_breaks( scalar $q->param('convert_breaks') );
-
-    my @data = ( { data_name => 'author_id', data_value => $user_id } );
-    $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
 
     my $ctx = $tmpl->context;
     $ctx->stash( 'entry',    $entry );
@@ -1258,7 +1244,7 @@ sub _build_entry_preview {
             $fullscreen = 1;
             $param{preview_error}
                 = $app->translate(
-                "Unable to create preview file in this location: [_1]",
+                "Unable to create preview files in this location: [_1]",
                 $path );
             my $tmpl_plain = $app->load_tmpl('preview_entry_content.tmpl');
             $tmpl->text( $tmpl_plain->text );
@@ -1419,6 +1405,9 @@ sub save {
             return $app->permission_denied()
                 unless $perms->can_do('create_new_entry');
         }
+        else {
+            return $app->errtrans("Invalid request.");
+        }
     }
     else {
         if ( $type eq 'page' ) {
@@ -1436,7 +1425,7 @@ sub save {
     my $blog_id = $app->param('blog_id');
     my $blog    = MT::Blog->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
     my $archive_type;
 
@@ -1458,14 +1447,21 @@ sub save {
         elsif ( $type eq 'page' ) {
             $archive_type = 'Page';
         }
+        else {
+            return $app->errtrans("Invalid request.");
+        }
         $orig_obj = $obj->clone;
         $orig_file = archive_file_for( $orig_obj, $blog, $archive_type );
     }
     else {
-        $obj = $class->new;
+        $obj      = $class->new;
+        $orig_obj = $obj->clone;
     }
-    my $status_old = $id ? $obj->status : 0;
-    my $names = $obj->column_names;
+
+    my $primary_category_old = $orig_obj->category;
+    my $categories_old       = $orig_obj->categories;
+    my $status_old           = $id ? $obj->status : 0;
+    my $names                = $obj->column_names;
 
     ## Get rid of category_id param, because we don't want to just set it
     ## in the Entry record; save it for later when we will set the Placement.
@@ -1490,7 +1486,7 @@ sub save {
     delete $values{week_number}
         if ( $app->param('week_number') || '' ) eq '';
     delete $values{basename}
-        unless $perms->can_do('edit_entry_basename');
+        unless $perms->can_do("edit_${type}_basename");
     require MT::Entry;
     $values{status} = MT::Entry::FUTURE() if $app->param('scheduled');
     $obj->set_values( \%values );
@@ -1540,7 +1536,7 @@ sub save {
             my $folder_path = defined $folder ? $folder->publish_path() : '';
             return $app->error(
                 $app->translate(
-                    "Same Basename has already been used. You should use an unique basename."
+                    "This basename has already been used. You should use an unique basename."
                 )
             ) if ( $dup_folder_path eq $folder_path );
         }
@@ -1549,7 +1545,9 @@ sub save {
 
     if ( $type eq 'entry' ) {
         $obj->status( MT::Entry::HOLD() )
-            if !$id && !$perms->can_do('publish_own_entry');
+            if !$id
+                && !$perms->can_do('publish_own_entry')
+                && !$perms->can_do('publish_all_entry');
     }
 
     my $filter_result
@@ -1559,7 +1557,7 @@ sub save {
         my %param = ();
         $param{error}       = $app->errstr;
         $param{return_args} = $app->param('return_args');
-        $app->param('reedit', 1);
+        $app->param( 'reedit', 1 );
         return $app->forward( "view", \%param );
     }
 
@@ -1576,7 +1574,7 @@ sub save {
     }
 
     my ( $previous_old, $next_old );
-    if ( $perms->can_do('edit_entry_authored_on') && ($ao_d) ) {
+    if ( $perms->can_do("edit_${type}_authored_on") && ($ao_d) ) {
         my %param = ();
         my $ao    = $ao_d . ' ' . $ao_t;
         unless ( $ao
@@ -1584,16 +1582,16 @@ sub save {
             )
         {
             $param{error} = $app->translate(
-                "Invalid date '[_1]'; published on dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                "Invalid date '[_1]'; 'Published on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
                 $ao
             );
         }
         unless ( $param{error} ) {
             my $s = $6 || 0;
-            $param{error}
-                = $app->translate(
-                "Invalid date '[_1]'; published on dates should be real dates.",
-                $ao )
+            $param{error} = $app->translate(
+                "Invalid date '[_1]'; 'Published on' dates should be real dates.",
+                $ao
+                )
                 if (
                    $s > 59
                 || $s < 0
@@ -1614,7 +1612,8 @@ sub save {
             $previous_old = $obj->previous(1);
             $next_old     = $obj->next(1);
         }
-        my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5, ( $6 || 0 );
+        my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
+            ( $6 || 0 );
         $obj->authored_on($ts);
     }
     my $is_new = $obj->id ? 0 : 1;
@@ -1797,7 +1796,8 @@ sub save {
             {
                 $app->publisher->remove_entry_archive_file(
                     Entry       => $orig_obj,
-                    ArchiveType => $archive_type
+                    ArchiveType => $archive_type,
+                    Category    => $primary_category_old,
                 );
             }
         }
@@ -1810,13 +1810,24 @@ sub save {
                 sub {
                     $app->run_callbacks('pre_build');
                     $app->rebuild_entry(
-                        Entry             => $obj,
-                        BuildDependencies => 1,
-                        OldEntry          => $orig_obj,
-                        OldPrevious       => ($previous_old)
-                        ? $previous_old->id
-                        : undef,
-                        OldNext => ($next_old) ? $next_old->id : undef
+                        Entry => $obj,
+                        (   $obj->is_entry
+                            ? ( BuildDependencies => 1 )
+                            : ( BuildIndexes => 1 )
+                        ),
+                        ( $obj->is_entry ? ( OldEntry => $orig_obj ) : () ),
+                        (   $obj->is_entry
+                            ? ( OldPrevious => ($previous_old)
+                                ? $previous_old->id
+                                : undef )
+                            : ()
+                        ),
+                        (   $obj->is_entry
+                            ? ( OldNext => ($next_old)
+                                ? $next_old->id
+                                : undef )
+                            : ()
+                        ),
                     ) or return $app->publish_error();
                     $app->run_callbacks( 'rebuild', $blog );
                     $app->run_callbacks('post_build');
@@ -1842,6 +1853,8 @@ sub save {
                         entry_id   => $obj->id,
                         is_new     => $is_new,
                         old_status => $status_old,
+                        old_categories =>
+                            join( ',', map { $_->id } @$categories_old ),
                         (   $previous_old
                             ? ( old_previous => $previous_old->id )
                             : ()
@@ -1920,10 +1933,14 @@ PERMCHECK: {
             or next;
         my $old_status = $entry->status;
         my $orig_obj   = $entry->clone;
+        $perms = $app->user->permissions( $entry->blog_id );
         if ( $perms->can_edit_entry( $entry, $this_author ) ) {
             my $author_id = $q->param( 'author_id_' . $id );
             $entry->author_id( $author_id ? $author_id : 0 );
-            $entry->title( scalar $q->param( 'title_' . $id ) );
+            $entry->title( scalar $q->param( 'title_' . $id ) || scalar $q->param( 'no_title_' . $id ) );
+        }
+        else {
+            return $app->permission_denied();
         }
         if ( $perms->can_edit_entry( $entry, $this_author, 1 ) )
         {    ## can he/she change status?
@@ -1931,11 +1948,15 @@ PERMCHECK: {
 
             my $date_closure = sub {
                 my ( $val, $col, $name ) = @_;
-                unless ( $val =~ m!(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?! ) {
+                unless ( $val
+                    =~ m!(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})(?::(\d{2}))?!
+                    )
+                {
                     return $app->error(
                         $app->translate(
                             "Invalid date '[_1]'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.",
-                            $val, $name
+                            $val,
+                            $name
                         )
                     );
                 }
@@ -1945,29 +1966,36 @@ PERMCHECK: {
                 return $app->error(
                     $app->translate(
                         "Invalid date '[_1]'; [_2] dates should be real dates.",
-                        $val, $name
+                        $val,
+                        $name
                     )
-                ) if $s > 59
-                    || $s < 0
-                    || $5 > 59
-                    || $5 < 0
-                    || $4 > 23
-                    || $4 < 0
-                    || $2 > 12
-                    || $2 < 1
-                    || $3 < 1
-                    || ( MT::Util::days_in( $2, $1 ) < $3
-                        && !MT::Util::leap_day( $0, $1, $2 ) );
+                    )
+                    if $s > 59
+                        || $s < 0
+                        || $5 > 59
+                        || $5 < 0
+                        || $4 > 23
+                        || $4 < 0
+                        || $2 > 12
+                        || $2 < 1
+                        || $3 < 1
+                        || ( MT::Util::days_in( $2, $1 ) < $3
+                            && !MT::Util::leap_day( $0, $1, $2 ) );
 
                 # FIXME: Should be assigning the publish_date field here
-                my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5, $s;
+                my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4,
+                    $5, $s;
                 $entry->$col($ts);
             };
 
             my $co = $q->param( 'created_on_' . $id );
-            $date_closure->( $co, 'authored_on', MT->translate('authored on') ) or return;
+            $date_closure->(
+                $co, 'authored_on', MT->translate('authored on')
+            ) or return;
             $co = $q->param( 'modified_on_' . $id );
-            $date_closure->( $co, 'modified_on', MT->translate('modified on') ) or return;
+            $date_closure->(
+                $co, 'modified_on', MT->translate('modified on')
+            ) or return;
         }
         $app->run_callbacks( 'cms_pre_save.' . $type,
             $app, $entry, $orig_obj )
@@ -2076,8 +2104,15 @@ sub send_pings {
     $app->validate_magic() or return;
     require MT::Entry;
     require MT::Blog;
-    my $blog  = MT::Blog->load( scalar $q->param('blog_id') );
-    my $entry = MT::Entry->load( scalar $q->param('entry_id') );
+    my $blog = MT::Blog->load( scalar $q->param('blog_id') )
+        or return $app->errtrans('Invalid request');
+    my $entry = MT::Entry->load( scalar $q->param('entry_id') )
+        or return $app->errtrans('Invalid request');
+
+    return $app->permission_denied()
+        unless $app->user->permissions( $entry->blog->id )
+            ->can_do( 'send_update_pings_' . $entry->class );
+
     ## MT::ping_and_save pings each of the necessary URLs, then processes
     ## the return value from MT::ping to update the list of URLs pinged
     ## and not successfully pinged. It returns the return value from
@@ -2116,7 +2151,9 @@ sub pinged_urls {
     require MT::Entry;
     my $entry = MT::Entry->load($entry_id)
         or return $app->error(
-        $app->translate( 'Can\'t load entry #[_1].', $entry_id ) );
+        $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
+    return $app->errtrans("Invalid request.")
+        unless $entry->blog_id == $app->blog->id;
     my $author = $app->user;
     return $app->permission_denied()
         if $entry->class eq 'entry'
@@ -2132,13 +2169,33 @@ sub pinged_urls {
 }
 
 sub save_entry_prefs {
-    my $app   = shift;
+    my $app = shift;
+
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     $app->validate_magic() or return;
     my $q          = $app->param;
     my $prefs      = $app->_entry_prefs_from_params;
+    my $disp       = $q->param('entry_prefs');
+    my $sort_only  = $q->param('sort_only');
     my $prefs_type = $q->param('_type') . '_prefs';
+
+    if ( $disp && lc $disp eq 'custom' && lc $sort_only eq 'true' ) {
+        my $current = $perms->$prefs_type;
+        $prefs =~ s/\|.*$//;
+        my $pos;
+        ($current, $pos) = split '\\|', $current;
+        my %current = map { $_ => 1 } split ',', $current;
+        my @new     = split ',', $prefs;
+        $prefs = '';
+        foreach my $p (@new) {
+            $prefs .= ',' if $prefs;
+            $prefs .= $p;
+            $prefs .= ':s' unless $current{$p};
+        }
+        $prefs .= "|$pos" if defined $pos;
+    }
+
     $perms->$prefs_type($prefs);
     $perms->save
         or return $app->error(
@@ -2166,9 +2223,17 @@ sub open_batch_editor {
     $param ||= {};
     my @ids = $app->param('id')
         or return "Invalid request.";
+    my %dupe;
+    @ids = grep {!$dupe{$_}++} @ids;
 
     require MT::Entry;
     my $type = $app->param('_type') || MT::Entry->class_type;
+    my %type_allowed = (
+        entry => 1,
+        page  => 1,
+    );
+    return $app->errtrans("Invalid request.")
+        unless $type_allowed{$type};
     my $pkg = $app->model($type) or return "Invalid request.";
 
     my $q       = $app->param;
@@ -2179,45 +2244,60 @@ sub open_batch_editor {
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog;
 
-PERMCHECK: {
-        my $action
-            = $type eq 'page'
-            ? 'open_batch_page_editor_via_list'
-            : 'open_batch_entry_editor_via_list';
-        if ($blog_id) {
-            if ( $blog->is_blog ) {
-                last PERMCHECK if $app->can_do($action);
-            }
-            else {
-                my $blogs = $blog->blogs;
-                my $blog_ids;
-                my @map = map { $_->id } @$blogs;
-                push @$blog_ids, map { $_->id } @{ $blog->blogs };
+    my @blog_ids;
+    my $action
+        = $type eq 'page'
+        ? 'open_batch_page_editor_via_list'
+        : 'open_batch_entry_editor_via_list';
+    if ( $blog->is_blog ) {
+        return $app->permission_denied()
+            unless $app->can_do($action);
+        push @blog_ids, $blog_id;
+    }
+    else {
+        my $blogs = $blog->blogs;
+        @blog_ids = map { $_->id } @$blogs;
+        push @blog_ids, $blog->id
+            if $type eq 'page';
+    }
 
-                my $terms = {
-                    author_id => $app->user->id,
-                    ( $blog_ids ? ( blog_id => $blog_ids ) : () ),
-                };
-                my $iter = MT->model('permission')->load_iter($terms);
-                if ($iter) {
-                    my $cond = 1;
-                    while ( my $p = $iter->() ) {
-                        last if !$p->can_do($action);
-                    }
-                    last PERMCHECK if $cond;
-                }
+    if ( !$app->user->is_superuser ) {
+        my $terms = {
+            author_id => $app->user->id,
+            blog_id   => \' = entry_blog_id',
+        };
+        my $perms = MT::Permission->load_permissions_from_action($action);
+        if ($perms) {
+            my @perms_term;
+            foreach my $perm (@$perms) {
+                $perm =~ m/\.(.*)/;
+                push @perms_term, '-or' if @perms_term;
+                push @perms_term, { permissions => { like => "%'$1'%" } };
             }
+            $terms = [ $terms, '-and', \@perms_term, ];
         }
-        else {
-            last PERMCHECK
-                if $app->user->can_do( $action, at_least_one => 1 );
-        }
-        return $app->permission_denied();
+
+        my $cnt = $pkg->count(
+            {   class   => $type,
+                id      => \@ids,
+                blog_id => \@blog_ids
+            },
+            {   join => MT::Permission->join_on(
+                    undef, $terms, { unique => 1, }
+                ),
+                unique => 1,
+            }
+        );
+
+        return $app->permission_denied()
+            if scalar @ids != $cnt;
     }
 
     # Loading objects
-    my $iter = $pkg->load_iter( { id => \@ids },
-        { sort => 'authored_on', direction => 'descend' } );
+    my $iter = $pkg->load_iter(
+        { class => $type, id => \@ids, blog_id => \@blog_ids },
+        { sort => 'authored_on', direction => 'descend' }
+    );
 
     my $list_pref = $app->list_pref($type);
     my %param     = %$list_pref;
@@ -2249,7 +2329,7 @@ PERMCHECK: {
 
     $param->{return_args} ||= $app->make_return_args;
     my @return_args
-        = grep { $_ !~ /offset=\d/ && $_ !~ /__mode=.*/ } split /&/,
+        = grep { $_ !~ /^(?:offset|__mode|id)=/ } split /&/,
         $param->{return_args};
     push @return_args, '__mode=open_batch_editor';
     push @return_args, "id=$_" foreach (@ids);
@@ -2466,7 +2546,8 @@ sub build_entry_table {
             $row->{weblog_name} = $blog->name;
         }
         if ( $obj->status == MT::Entry::RELEASE() ) {
-            $row->{entry_permalink} = MT::Util::encode_html( $obj->permalink );
+            $row->{entry_permalink}
+                = MT::Util::encode_html( $obj->permalink );
         }
         $row->{object} = $obj;
         push @data, $row;
@@ -2486,7 +2567,7 @@ sub quickpost_js {
     my $blog_id = $app->blog->id;
     my $blog    = $app->model('blog')->load($blog_id)
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my %args = ( '_type' => $type, blog_id => $blog_id, qp => 1 );
     my $uri = $app->base . $app->uri( 'mode' => 'view', args => \%args );
     my $script
@@ -2494,7 +2575,7 @@ sub quickpost_js {
 
     # Translate the phrase here to avoid ActivePerl DLL bug.
     $app->translate(
-        '<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.',
+        '<a href="[_1]">QuickPost to [_2]</a> - Drag this bookmarklet to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.',
         encode_html($script),
         encode_html( $blog->name )
     );
@@ -2510,7 +2591,10 @@ sub can_view {
     }
     if ($id) {
         my $obj = $objp->force();
-        if ( !$perms->can_edit_entry( $obj, $app->user ) ) {
+        return 0 unless $obj->is_entry;
+        if ( !$app->user->permissions( $obj->blog_id )
+            ->can_edit_entry( $obj, $app->user ) )
+        {
             return 0;
         }
     }
@@ -2591,8 +2675,9 @@ sub post_delete {
 
     $app->log(
         {   message => $app->translate(
-                "Entry '[_1]' (ID:[_2]) deleted by '[_3]'",
-                $obj->title, $obj->id, $app->user->name
+                "[_1] '[_2]' (ID:[_3]) deleted by '[_4]'",
+                $obj->class_label, $obj->title,
+                $obj->id,          $app->user->name
             ),
             level    => MT::Log::INFO(),
             class    => $obj->class,
@@ -2619,7 +2704,7 @@ sub update_entry_status {
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
             or return $app->errtrans(
-            "One of the entries ([_1]) did not actually exist", $id );
+            "One of the entries ([_1]) did not exist", $id );
 
         return $app->permission_denied()
             unless $app_author->is_superuser
@@ -2733,7 +2818,7 @@ sub delete {
     if ( my $blog_id = $q->param('blog_id') ) {
         $blog = MT::Blog->load($blog_id)
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
     }
 
     my $can_background
@@ -2755,7 +2840,7 @@ sub delete {
         my %recipe = $app->publisher->rebuild_deleted_entry(
             Entry => $obj,
             Blog  => $obj->blog
-        );
+        ) if $obj->status eq MT::Entry::RELEASE();
 
         # Remove object from database
         $obj->remove()
@@ -2779,41 +2864,31 @@ sub delete {
     if ( $app->config('RebuildAtDelete') ) {
         $app->run_callbacks('pre_build');
 
-        if ($can_background) {
-            my $res = MT::Util::start_background_task(
-                sub {
-                    foreach my $b_id ( keys %rebuild_recipe ) {
-                        my $b   = MT::Blog->load($b_id);
-                        my $res = $app->rebuild_archives(
-                            Blog   => $b,
-                            Recipe => $rebuild_recipe{$b_id},
-                        ) or return $app->publish_error();
-                        $app->rebuild_indexes( Blog => $b )
-                            or return $app->publish_error();
-                        $app->run_callbacks( 'rebuild', $b );
-                        1;
-                    }
-                }
-            );
-        }
-        else {
+        my $rebuild_func = sub {
             foreach my $b_id ( keys %rebuild_recipe ) {
-                my $b = MT::Blog->load($b_id);
-                $app->rebuild_archives(
+                my $b   = MT::Blog->load($b_id);
+                my $res = $app->rebuild_archives(
                     Blog   => $b,
                     Recipe => $rebuild_recipe{$b_id},
                 ) or return $app->publish_error();
                 $app->rebuild_indexes( Blog => $b )
                     or return $app->publish_error();
-
                 $app->run_callbacks( 'rebuild', $b );
             }
+        };
+
+        if ($can_background) {
+            MT::Util::start_background_task($rebuild_func);
+        }
+        else {
+            $rebuild_func->();
         }
 
         $app->add_return_arg( no_rebuild => 1 );
         my %params = (
             is_full_screen  => 1,
-            redirect_target => $app->app_path
+            redirect_target => $app->base
+                . $app->path
                 . $app->script . '?'
                 . $app->return_args,
         );

@@ -155,6 +155,7 @@ Editor.Iframe = new Class( Component, {
      * @param event  <code>Event</code> A prepared event object.
      */
     eventKeyUp: function( event ) {
+        this.saveSelection();
         this.monitorSelection( event );
     },
 
@@ -175,6 +176,7 @@ Editor.Iframe = new Class( Component, {
      * @param event  <code>Event</code> A prepared event object.
      */
     eventMouseUp: function( event ) {
+        this.saveSelection();
         this.eventClick( event );
     },
    
@@ -494,6 +496,27 @@ Editor.Iframe = new Class( Component, {
         return html;
     },
 
+    /**
+     * class: <code>Editor.Iframe</code><br/>
+     * The IE8 replace a link "#foo" to "editor-content.html#foo".
+     * Therefore, add the dummy page to that link, and remove it later.
+     * @param html <code>string</code> The html to replace.
+     */
+    saveFragmentLink: function(html) {
+        this.dummyPage = 'ztqhsdg';
+        while (html.indexOf(this.dummyPage) != -1) {
+            this.dummyPage += '_ztqhsdg';
+        }
+        return html.replace(/("|')#/, '$1' + this.dummyPage + '#');
+    },
+
+    /**
+     * class: <code>Editor.Iframe</code><br/>
+     * @param html <code>string</code> The html to replace.
+     */
+    restoreFragmentLink: function(html) {
+        return html.replace(this.dummyPage + '#', '#');
+    },
 
     /**
      * class: <code>Editor.Iframe</code><br/>
@@ -502,7 +525,23 @@ Editor.Iframe = new Class( Component, {
      */
     setHTML: function( html ) {
         this.formatBlock(); // bugid: 39059
+
+        var needToSaveFragmentLink = false;
+        if(
+            navigator.appVersion.indexOf('MSIE 8.0')    // IE8 Standard Mode
+            || navigator.appVersion.indexOf('MSIE 7.0') // IE8 Quirks Mode
+        ) {
+            needToSaveFragmentLink = true;
+        }
+
+        if (needToSaveFragmentLink) {
+            html = this.saveFragmentLink(html);
+        }
         this.document.body.innerHTML = html;
+        if (needToSaveFragmentLink) {
+            this.document.body.innerHTML =
+                this.restoreFragmentLink(this.document.body.innerHTML);
+        }
     },
 
 
@@ -526,7 +565,13 @@ Editor.Iframe = new Class( Component, {
         var inserted = null;
         if( selection.createRange ) { // Internet Explorer (IE)
             var range = selection.createRange();
-            if( selection.type == "None" || selection.type == "Text" ) {
+            if (range.parentElement().document !== this.document) {
+                this.document.body.innerHTML =
+                    html + this.document.body.innerHTML;
+            }
+            else if( selection.type == "None" || selection.type == "Text" ) {
+                html = this.saveFragmentLink(html);
+
                 try {
                     range.pasteHTML( html );
                 } catch ( err ) {
@@ -542,6 +587,22 @@ Editor.Iframe = new Class( Component, {
                         inserted = range.parentElement();
                     }
                 }
+
+                if (inserted) {
+                    var props = ['innerHTML', 'href', 'src'];
+                    for (var i = 0; i < props.length; i++) {
+                        if (inserted[props[i]]) {
+                            try {
+                                inserted[props[i]] =
+                                    this.restoreFragmentLink(inserted[props[i]]);
+                            }
+                            catch (e) {
+                                // Ignore
+                            }
+                        }
+                    }
+                }
+
                 if( select ) 
                     range.select();
             } else { // IE 'Control' selection    
@@ -677,7 +738,7 @@ Editor.Iframe = new Class( Component, {
         }    
         
         if( focusNode.nodeType == Node.TEXT_NODE ) { 
-            if( range.endOffSet < focusNode.nodeValue.length )
+            if( range.endOffset < focusNode.nodeValue.length )
                 return false; // 'false' if text node and not at end of text.
         }
 
@@ -701,17 +762,84 @@ Editor.Iframe = new Class( Component, {
         var selection = this.getSelection();
         if( !selection )
             return;
-        if( (selection.type && selection.type == "Text") ||     // IE 6
-            (selection.toString && (selection + '').length) )   // w3c 
-            return true;
+
+
+        if (navigator.userAgent.indexOf('MSIE') != -1) {
+            return selection.type == 'Text';
+        }
+        else {
+            if ((selection + '').length > 0) {
+                return true;
+            }
+
+            var asTextElement = {
+                "img": 1
+            };
+            for (var i = 0; i < selection.rangeCount; i++) {
+                var range = selection.getRangeAt(0);
+                var j, j_limit;
+
+                if (range.startContainer != range.endContainer) {
+                    j_limit = range.startContainer.childNodes.length;
+                }
+                else {
+                    j_limit = range.endOffset+1;
+                }
+
+                for (
+                    j = range.startOffset;
+                    j < j_limit;
+                    j++
+                ) {
+                    if (asTextElement[range.startContainer.childNodes[j].nodeName.toLowerCase()]) {
+                        return true;
+                    }
+                }
+
+                if (range.startContainer != range.endContainer) {
+                    for (
+                        j = range.endOffset;
+                        j >= 0;
+                        j--
+                    ) {
+                        if (asTextElement[range.endContainer.childNodes[j].nodeName.toLowerCase()]) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
     },
     
     
     getSelectedLink: function() {
         var selection = this.getSelection();
         var selectionRange = new SelectionRange( selection );
-        return DOM.getFirstAncestorByTagName( selectionRange.getCommonAncestorContainer(), "a" ) ||
+        var link = DOM.getFirstAncestorByTagName( selectionRange.getCommonAncestorContainer(), "a" ) ||
             DOM.filterElementsByTagName( selectionRange.getNodes(), "a" )[ 0 ];
+
+        if (link && link.href) {
+            var bases = [
+                this.window.location.href,
+                this.window.location.href.replace(/\/[^\/]*$/, '/'),
+                this.window.location.href.replace(/.*\//, ''),
+                this.window.location.href.replace(/.*\/\/[^\/]+/, '')
+            ]
+            for (var i = 0; i < bases.length; i++) {
+                var base = bases[i];
+                if (
+                    (link.href.indexOf(base) != -1)
+                    && (this.getHTML().indexOf(link.href) == -1)
+                ) {
+                    link.setAttribute('href', link.href.substring(base.length));
+                    break;
+                }
+            }
+        }
+
+        return link;
     },
 
 

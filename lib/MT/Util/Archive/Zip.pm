@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -97,7 +97,7 @@ sub files {
 sub extract {
     my $obj = shift;
     my ($path) = @_;
-    return $obj->error( MT->translate('Can\'t extract from the object') )
+    return $obj->error( MT->translate('Cannot extract from the object') )
         if 'w' eq $obj->{_mode};
 
     $path ||= MT->config->TempDir;
@@ -112,7 +112,7 @@ sub extract {
 sub add_file {
     my $obj = shift;
     my ( $path, $file_path ) = @_;
-    return $obj->error( MT->translate('Can\'t write to the object') )
+    return $obj->error( MT->translate('Cannot write to the object') )
         if 'r' eq $obj->{_mode};
     my $filename = File::Spec->catfile( $path, $file_path );
     $file_path = Encode::encode( 'Shift_JIS', $file_path )
@@ -123,7 +123,7 @@ sub add_file {
 sub add_string {
     my $obj = shift;
     my ( $string, $file_name ) = @_;
-    return $obj->error( MT->translate('Can\'t write to the object') )
+    return $obj->error( MT->translate('Cannot write to the object') )
         if 'r' eq $obj->{_mode};
     return $obj->error(
         MT->translate('Both data and file name must be specified.') )
@@ -136,7 +136,7 @@ sub add_string {
 sub add_tree {
     my $obj = shift;
     my ($dir_path) = @_;
-    return $obj->error( MT->translate('Can\'t write to the object') )
+    return $obj->error( MT->translate('Cannot write to the object') )
         if 'r' eq $obj->{_mode};
     $obj->{_arc}->addTree( $dir_path, '' );
 }

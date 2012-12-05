@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -21,10 +21,17 @@ use vars qw( %Lexicon );
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Ihr mt-static-Ordner konnte nicht gefunden werden. Bitte konfigurieren Sie \'StaticFilePath\' um fortzufahren.',
-	'Permission Denied.' => 'Zugriff verweigert.', # Translate - Case
-	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Konnte den Ordner [_1] nicht anlegen. Stellen Sie sicher, daß der Webserver Schreibrechte auf dem \'themes\'-Ordner hat.',
+	'Permission Denied.' => 'Zugriff verweigert.',
 	'Successfully applied new theme selection.' => 'Neue Themenauswahl erfolgreich angewendet.',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Library/Default.pm
 	'Invalid URL: [_1]' => 'Ungültige URL: [_1]',
+	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Konnte den Ordner [_1] nicht anlegen. Stellen Sie sicher, daß der Webserver Schreibrechte auf dem \'themes\'-Ordner hat.',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Library/Local.pm
+	'Failed to load StyleCatcher Library: [_1]' => 'Konnte StyleCatcher-Bibliothek nicht laden: [_1]',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Util.pm
 	'(Untitled)' => '(ohne Überschrift)',
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
@@ -56,7 +63,8 @@ use vars qw( %Lexicon );
 	'More Styles' => 'Weitere Designs',
 	'Selected Design' => 'Gewähltes Design',
 	'Layout' => 'Layout',
-	);
+
+);
 
 1;
 

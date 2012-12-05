@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -21,10 +21,17 @@ use vars qw( %Lexicon );
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Le répertoire mt-static n\'a pas pu être trouvé. Veuillez configurer le \'StaticFilePath\' pour continuer.',
-	'Permission Denied.' => 'Autorisation refusée.', # Translate - Case
-	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Impossible de créer le dossier [_1] - Vérifiez que votre dossier \'themes\' et en mode webserveur/écriture.',
+	'Permission Denied.' => 'Autorisation refusée.',
 	'Successfully applied new theme selection.' => 'Le nouveau thème sélectionné a été appliqué avec succès.',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Library/Default.pm
 	'Invalid URL: [_1]' => 'URL invalide : [_1]',
+	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Impossible de créer le dossier [_1] - Vérifiez que votre dossier \'themes\' et en mode webserveur/écriture.',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Library/Local.pm
+	'Failed to load StyleCatcher Library: [_1]' => 'Impossible de charger la bibliothèque : [_1]',
+
+## plugins/StyleCatcher/lib/StyleCatcher/Util.pm
 	'(Untitled)' => '(Sans titre)',
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
@@ -39,10 +46,10 @@ use vars qw( %Lexicon );
 	'1-Column, Wide, Bottom' => '1 colonne (large, pied)',
 	'None available' => 'Aucun disponible',
 	'Applying...' => 'Appliquer...',
-	'Apply Design' => 'Appliquer l\'habillage',
-	'Error applying theme: ' => 'Erreur en appliquant l\'habillage:',
-	'The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.' => 'L\'habillage sélectionné a été appliqué. Vous devez republier votre blog afin d\'appliquer la nouvelle mise en page.',
-	'The selected theme has been applied!' => 'L\'habillage sélectionné a été appliqué !',
+	q{Apply Design} => q{Appliquer l'habillage},
+	q{Error applying theme: } => q{Erreur en appliquant l'habillage :},
+	q{The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.} => q{L'habillage sélectionné a été appliqué. Vous devez republier votre blog afin d'appliquer la nouvelle mise en page.},
+	q{The selected theme has been applied!} => q{L'habillage sélectionné a été appliqué !},
 	'Error loading themes! -- [_1]' => 'Erreur lors du chargement des habillages ! -- [_1]',
 	'Stylesheet or Repository URL' => 'URL de la feuille de style ou du répertoire',
 	'Stylesheet or Repository URL:' => 'URL de la feuille de style ou du répertoire :',
@@ -53,10 +60,11 @@ use vars qw( %Lexicon );
 	'Saved Styles' => 'Habillages enregistrés',
 	'Default Styles' => 'Habillages par défaut',
 	'Single themes from the web' => 'Thèmes uniques venant du web',
-	'More Styles' => 'Plus d\'habillages',
+	q{More Styles} => q{Plus d'habillages},
 	'Selected Design' => 'Habillage sélectionné',
 	'Layout' => 'Mise en page',
-	);
+
+);
 
 1;
 

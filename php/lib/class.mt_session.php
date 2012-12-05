@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -18,11 +18,13 @@ class Session extends BaseObject
     public function data( $val = null ) {
         $mt = MT::get_instance();
         if ( is_null( $val ) ) {
-           $this->_data = $mt->db()->unserialize($this->data);
+            $this->_data = $mt->db()->unserialize($this->data);
             return $this->_data;
-       } else {
-           $this->data = $mt->db()->serialize($val);
-       }
+        } elseif ( is_array( $val ) || is_object( $val ) ) {
+            $this->data = $mt->db()->serialize($val);
+        } else {
+            $this->session_data = $val;
+        }
     }
 
     public function Save() {

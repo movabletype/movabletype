@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -8,7 +8,7 @@ package MT::Image::Imager;
 use strict;
 use warnings;
 
-@MT::Image::Imager::ISA = qw(MT::Image);
+use base qw( MT::Image );
 
 sub load_driver {
     my $image = shift;
@@ -16,7 +16,7 @@ sub load_driver {
     eval { require Imager };
     if ( my $err = $@ ) {
         return $image->error(
-            MT->translate( "Can't load Imager: [_1]", $err ) );
+            MT->translate( "Cannot load Imager: [_1]", $err ) );
     }
     1;
 }

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -148,6 +148,10 @@ sub init {
         %functions = ( %functions, %$fn_set )
             if $fn_set && ( ref($fn_set) eq 'HASH' );
     }
+
+    # Clear RAM cache
+    require MT::ObjectDriver::Driver::Cache::RAM;
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
 }
 
 # Step execution...
@@ -970,6 +974,10 @@ sub core_finish {
     my $cur_version = MT->version_number;
     if ( !defined( $cfg->MTVersion ) || ( $cur_version > $cfg->MTVersion ) ) {
         $cfg->MTVersion( $cur_version, 1 );
+    }
+    my $cur_rel = MT->release_number;
+    if ( !defined( $cfg->MTReleaseNumber ) || ( $cur_rel > $cfg->MTReleaseNumber ) ) {
+        $cfg->MTReleaseNumber( $cur_rel, 1 );
     }
     $cfg->save_config unless $DryRun;
 

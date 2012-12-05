@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -63,7 +63,7 @@ sub _get_stream_iterator {
     my $iter;
     if ( ref($stream) eq 'Fh' ) {
         seek( $stream, 0, 0 )
-            or return $class->error( MT->translate("Can't rewind") );
+            or return $class->error( MT->translate("Cannot rewind") );
         $iter = sub {
             my $str = $stream;
             my $eof = eof($stream);
@@ -81,7 +81,7 @@ sub _get_stream_iterator {
     }
     elsif ( ref $stream ) {
         seek( $stream, 0, 0 )
-            or return $class->error( MT->translate("Can't rewind") );
+            or return $class->error( MT->translate("Cannot rewind") );
         $iter = sub {
             my $str = $stream;
             $stream = undef;
@@ -93,7 +93,7 @@ sub _get_stream_iterator {
             my $fh = gensym();
             open $fh, $stream
                 or return $class->error(
-                MT->translate( "Can't open '[_1]': [_2]", $stream, $! ) );
+                MT->translate( "Cannot open '[_1]': [_2]", $stream, $! ) );
             $stream = $fh;
             $iter   = sub {
                 my $str = $stream;
@@ -108,7 +108,7 @@ sub _get_stream_iterator {
             opendir DH, $dir
                 or return $class->error(
                 MT->translate(
-                    "Can't open directory '[_1]': [_2]",
+                    "Cannot open directory '[_1]': [_2]",
                     $dir, "$!"
                 )
                 );
@@ -138,7 +138,7 @@ sub _get_stream_iterator {
                 );
                 open $fh, "<$file"
                     or return $class->error(
-                    MT->translate( "Can't open '[_1]': [_2]", $file, $! ) );
+                    MT->translate( "Cannot open '[_1]': [_2]", $file, $! ) );
                 $stream = $fh;
             };
         }
@@ -166,7 +166,7 @@ sub import_contents {
     else {
         return $self->error(
             MT->translate(
-                "Couldn't resolve import format [_1]",
+                "Could not resolve import format [_1]",
                 $param{Key}
             )
         );

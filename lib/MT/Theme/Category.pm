@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -26,6 +26,42 @@ sub import_folders {
 sub _add_categories {
     my ( $theme, $blog, $cat_data, $class, $parent ) = @_;
 
+    my $author_id;
+    if ( my $app = MT->instance ) {
+        if ( $app->isa('MT::App') ) {
+            my $author = $app->user;
+            $author_id = $author->id if defined $author;
+        }
+    }
+    unless ( defined $author_id ) {
+        # Fallback 1: created_by from this blog.
+        $author_id = $blog->created_by if defined $blog->created_by;
+    }
+    unless ( defined $author_id ) {
+        # Fallback 2: One of this blog's administrator
+        my $search_string
+            = $blog->is_blog
+            ? '%\'administer_blog\'%'
+            : '%\'administer_website\'%'
+            ;
+        my $perm = MT->model('permission')->load(
+            {   blog_id     => $blog->id,
+                permissions => { like => $search_string },
+            }
+        );
+        $author_id = $perm->author_id if $perm;
+    }
+    unless ( defined $author_id ) {
+        # Fallback 3: One of system administrator
+        my $perm = MT->model('permission')->load({
+            blog_id     => 0,
+            permissions => { like => '%administer%' },
+        });
+        $author_id = $perm->author_id if $perm;
+    }
+    die "Failed to create theme default pages"
+        unless defined $author_id;
+
     for my $basename ( keys %$cat_data ) {
         my $datum = $cat_data->{$basename};
         my $cat   = MT->model($class)->load(
@@ -48,6 +84,7 @@ sub _add_categories {
                 $cat->$key($val);
             }
             $cat->allow_pings( $datum->{allow_pings} || 0 );
+            $cat->author_id( $author_id );
             $cat->parent( $parent->id )
                 if defined $parent;
             $cat->save;

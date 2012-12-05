@@ -12,7 +12,7 @@ use MT::Test;
 use Cwd;
 use File::Spec;
 use File::Temp qw( tempfile );
-use Test::More tests => 16;
+use Test::More tests => 32;
 
 use MT;
 use MT::ConfigMgr;
@@ -61,6 +61,20 @@ is(($cfg->AltTemplate)[1], 'baz quux', 'baz quux');
 ## stripped from the ends of values
 is($cfg->ObjectDriver, 'DBI::SQLite', 'ObjectDriver=SQLite');
 
+is($cfg->AdminCGIPath, $cfg->CGIPath, 'By default, AdminCGIPath is CGIPath');
+$cfg->set('AdminCGIPath', '/cgi-bin/mt/');
+isnt($cfg->AdminCGIPath, $cfg->CGIPath, 'after change, AdminCGIPath is not CGIPath');
+is($cfg->AdminCGIPath, '/cgi-bin/mt/', 'AdminCGIPath is now set');
+
+
+# Read / Write settings
+ok($cfg->is_readonly('ObjectDriver'), 'The key specified by file is readonly by default');
+ok(! $cfg->is_readonly('UserSessionCookiePath'), 'The key specified by program or database is not readonly');
+is_deeply($cfg->overwritable_keys('ObjectDriver'), [lc 'ObjectDriver'], 'Update overwritable_keys by list');
+is_deeply($cfg->overwritable_keys(['ObjectDriver']), [lc 'ObjectDriver'], 'Update overwritable_keys by reference');
+ok(! $cfg->is_readonly('ObjectDriver'), 'Now, the "ObjectDriver" is writable');
+
+
 mkdir $db_dir;
 
 undef $MT::ConfigMgr::cfg;
@@ -71,5 +85,16 @@ if (!$mt) { print "# MT constructor returned error: ", MT->errstr(); }
 isa_ok($mt, 'MT');
 isa_ok($mt->{cfg}, 'MT::ConfigMgr');
 is($mt->{cfg}->Database, $db_dir . '/mt.db', "DataSource=$db_dir");
+
+foreach my $key (qw{ UserSessionCookiePath UserSessionCookieName ProcessMemoryCommand SecretToken }) {
+	my $value = $cfg->get($key);
+	ok(length($value), "Config $key is not empty");
+	is($cfg->get($key), $value, "Config $key returns the same value twice");
+	if ($key eq 'SecretToken') {
+		like($value, qr/^[a-zA-Z0-9]{40}$/, 'Secret Token Generated');
+	}
+	$cfg->set($key, 'Avocado');
+	is($cfg->get($key), 'Avocado', "Config $key is set-able");
+}
 
 unlink $cfg_file or die "Can't unlink '$cfg_file': $!";

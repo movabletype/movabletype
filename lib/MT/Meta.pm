@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -128,6 +128,10 @@ sub install {
     for (@$fields) {
         $params->{fields}{ $_->{name} } = 1;
         $params->{blob_zip_cfg}{ $_->{name} } = $_->{zip} if $_->{zip};
+    }
+
+    if (MT->config->DisableMetaObjectCache) {
+        $params->{cacheable} = 0;
     }
 
     ## build subclass

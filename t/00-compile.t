@@ -9,7 +9,7 @@ use FindBin;
 use File::Spec;
 use MT::Test;
 
-use Test::More tests => 251;
+use Test::More;
 
 use_ok('MT::Bootstrap');
 use_ok('MT::ErrorHandler');
@@ -160,6 +160,7 @@ use_ok('MT::Request');
 use_ok('MT::Sanitize');
 use_ok('MT::Serialize');
 use_ok('MT::Memcached');
+use_ok('MT::Memcached::ExpirableProxy');
 use_ok('MT::PublishOption');
 use_ok('MT::Scorable');
 use_ok('MT::Template::Node');
@@ -268,6 +269,7 @@ use_ok('MT::AtomServer');
 use_ok('MT::BackupRestore');
 use_ok('MT::BackupRestore::BackupFileHandler');
 use_ok('MT::BackupRestore::ManifestFileHandler');
+use_ok('MT::BackupRestore::BackupFileScanner');
 
 # Cache support
 use_ok('MT::Cache::Negotiate');
@@ -338,7 +340,14 @@ use_ok('MT::Theme::Pref');
 use_ok('MT::Theme::StaticFiles');
 use_ok('MT::Theme::TemplateSet');
 
+# Lockout
+use_ok('MT::FailedLogin');
+use_ok('MT::Lockout');
+use_ok('MT::PSGI');
+
 test_all_modules_are_checked();
+
+done_testing();
 
 # compares the list of modules that this test checks with 
 # the actual modules that are on the file system

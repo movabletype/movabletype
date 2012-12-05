@@ -1,12 +1,12 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
 # $Id$
 
 function smarty_function_mtcommentrepliesrecurse($args, &$ctx) {
-    $localvars = array('comments', 'comment_order_num', 'comment','current_timestamp', 'commenter', 'blog', 'blog_id');
+    $localvars = array(array('comments', 'comment_order_num', 'comment','current_timestamp', 'commenter', 'blog', 'blog_id'), common_loop_vars());
     $token_fn = $ctx->stash('_comment_replies_tokens');
 
     $comment = $ctx->stash('comment');

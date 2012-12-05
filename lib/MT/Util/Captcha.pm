@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -64,7 +64,7 @@ sub form_fields {
 <div class="field">
 <input type="hidden" name="token" value="$token" />
 <img src="$cgipath$commentscript/captcha/$blog_id/$token" width="150" height="35" /><br />
-<input name="captcha_code" id="captcha_code" value="" autocomplete="off" />
+<input type="text" name="captcha_code" id="captcha_code" class="text" value="" autocomplete="off" />
 <p>$description</p>
 </div>
 FORM_FIELDS

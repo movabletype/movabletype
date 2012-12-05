@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -36,6 +36,7 @@ sub new {
     my $Is_Available;
 
     sub is_available {
+        return if MT->instance->{disable_memcached};
         return $Is_Available if defined $Is_Available;
         my $class        = shift;
         my @servers      = MT->config->MemcachedServers;

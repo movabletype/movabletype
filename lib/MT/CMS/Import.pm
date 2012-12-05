@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -85,7 +85,7 @@ sub start_import {
         $param{blog_id} = $blog_id;
         my $blog = $app->model('blog')->load($blog_id)
             or return $app->error(
-            $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         $param{text_filters}
             = $app->load_text_filters( $blog->convert_paras );
     }
@@ -105,7 +105,7 @@ sub do_import {
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate(
-            "Load of blog '[_1]' failed: [_2]", $blog_id,
+            "Loading blog '[_1]' failed: [_2]", $blog_id,
             MT::Blog->errstr
         )
         );
@@ -122,6 +122,9 @@ sub do_import {
         );
     }
 
+    return $app->permission_denied()
+        unless $app->user->permissions($blog_id)->can_do('import_blog');
+
     my $import_as_me = $q->param('import_as_me');
 
     ## Determine the user as whom we will import the entries.
@@ -129,11 +132,11 @@ sub do_import {
     my $author_id = $author->id;
 
     $app->can_do('import_blog_as_me')
-        or
-        $app->error( $app->translate('You do not have import permission') );
+        or return $app->error(
+        $app->translate('You do not have import permission') );
     if ( !$import_as_me ) {
         $app->can_do('import_blog_with_authors')
-            or $app->error(
+            or return $app->error(
             $app->translate('You do not have permission to create users') );
     }
 

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -96,16 +96,18 @@ sub load_all_themes {
 
 sub _theme_packages {
     my $pkg      = shift;
-    my $base_dir = MT->config('ThemesDirectory');
-    require DirHandle;
-    my $d = DirHandle->new($base_dir);
-    die "Can't open theme directory" unless $d;
+    my @dir_list = MT->config('ThemesDirectory');
     my @ids;
-    while ( defined( my $id = $d->read ) ) {
-        next if $id =~ /^\./;
-        die "Bad theme filename $id"
-            if $id !~ /^([-\\\/\@\:\w\.\s~]+)$/;
-        push @ids, $id;
+    foreach my $base_dir (@dir_list) {
+        require DirHandle;
+        my $d = DirHandle->new($base_dir);
+        die "Cannot open theme directory" unless $d;
+        while ( defined( my $id = $d->read ) ) {
+            next if $id =~ /^\./;
+            die "Bad theme filename $id"
+                if $id !~ /^([-\\\/\@\:\w\.\s~]+)$/;
+            push @ids, $id;
+        }
     }
     return @ids;
 }
@@ -150,11 +152,15 @@ sub _load_from_registry {
 sub _load_from_themes_directory {
     my $pkg        = shift;
     my ($theme_id) = @_;
-    my $base_dir   = MT->config('ThemesDirectory');
+    my @dir_list   = MT->config('ThemesDirectory');
 
     require File::Spec;
-    my $dir = File::Spec->catdir( $base_dir, $theme_id );
-    my $path = File::Spec->catfile( $dir, 'theme.yaml' );
+    my ($dir, $path);
+    foreach my $base_dir (@dir_list) {
+        $dir = File::Spec->catdir( $base_dir, $theme_id );
+        $path = File::Spec->catfile( $dir, 'theme.yaml' );
+        last if -f $path;
+    }
 
     return unless -f $path;
     require MT::Util::YAML;
@@ -258,6 +264,9 @@ sub elements {
     my $elements = $theme->{elements};
     delete $elements->{plugin} if exists $elements->{plugin};
 
+    my $eh = MT->registry('theme_element_handlers');
+    $eh->{$_}->{order} ||= 9999 foreach keys %$elements;
+
     require MT::Theme::Element;
     map {
         MT::Theme::Element->new(
@@ -265,7 +274,26 @@ sub elements {
             id    => $_,
             %{ $elements->{$_} },
             )
-    } keys %{$elements};
+        }
+        sort { $eh->{$a}->{order} <=> $eh->{$b}->{order} }
+        keys %$elements;
+}
+
+sub static_file_path_from_id {
+    File::Spec->catdir( MT->app->support_directory_path,
+        'theme_static', $_[0] )
+        . '/';
+}
+
+sub static_file_url_from_id {
+    File::Spec->catdir( MT->app->support_directory_url,
+        'theme_static', $_[0] )
+        . '/';
+}
+
+sub static_file_url {
+    my $theme = shift;
+    static_file_url_from_id( $theme->id );
 }
 
 sub apply {
@@ -279,6 +307,8 @@ sub apply {
     MT->run_callbacks( 'pre_apply_theme', $theme, $blog );
     my $importer_filter = $opts{importer_filter};
     $theme->{warning_on_apply} = 0;
+    my $curr_lang = MT->current_language;
+    MT->set_language( $blog->language );
 
     ## run all element handlers.
     my @elements = $theme->elements;
@@ -320,6 +350,7 @@ sub apply {
             }
         }
     }
+    MT->set_language($curr_lang);
 
     ## also do copy static files to mt-static directory.
     my $src_dir = $theme->{static_path} || 'static';
@@ -329,7 +360,10 @@ sub apply {
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
-    if ( !$fmgr->exists($dest_path) && $fmgr->exists($src_path) ) {
+    if ( $fmgr->exists($dest_path) ) {
+        $fmgr->delete($dest_path);
+    }
+    if ( $fmgr->exists($src_path) ) {
         __PACKAGE__->install_static_files( $src_path, $dest_path );
     }
     MT->run_callbacks( 'post_apply_theme', $theme, $blog );
@@ -338,18 +372,12 @@ sub apply {
 
 sub install_static_files {
     my $pkg = shift;
-    my ( $src, $dst, %opts ) = @_;
-    my $default_allowed_extentions = [
-        qw(
-            html    css    js
-            png     jpeg   jpg   gif
-            )
-    ];
-    my $allowed
-        = 'ARRAY' eq ref $opts{allow}
-        ? $opts{allow}
-        : $default_allowed_extentions;
-    my %allowed = map { ( lc $_ ) => 1 } @$allowed;
+    my ( $src, $dst ) = @_;
+    my %allowed = 
+        map { ( lc $_ ) => 1 }
+        grep { defined $_ and $_ ne ''}
+        split /[\s,]+/, 
+        MT->config->ThemeStaticFileExtensions;
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     require File::Find;
@@ -460,8 +488,8 @@ sub thumbnail {
         return ( $theme->default_theme_thumbnail(%param) );
     }
     my $file = $theme->_thumbnail_filename(%param);
-    my $url = join '/', MT->support_directory_url, _thumbnail_dir(),
-        $theme->{id}, $file;
+    my $url  = MT->support_directory_url
+        . join( '/', _thumbnail_dir(), $theme->{id}, $file );
     return ( $url, $theme->_thumbnail_size(%param) );
 }
 
@@ -605,6 +633,7 @@ sub core_theme_element_handlers {
     return {
         default_prefs => {
             label    => 'Default Prefs',
+            order    => 100,
             importer => {
                 import => '$Core::MT::Theme::Pref::apply',
                 info   => '$Core::MT::Theme::Pref::info',
@@ -612,6 +641,7 @@ sub core_theme_element_handlers {
         },
         default_categories => {
             label    => 'Categories',
+            order    => 400,
             importer => {
                 import => '$Core::MT::Theme::Category::import_categories',
                 info   => '$Core::MT::Theme::Category::info_categories',
@@ -626,6 +656,7 @@ sub core_theme_element_handlers {
         },
         default_folders => {
             label    => 'Folders',
+            order    => 200,
             importer => {
                 import => '$Core::MT::Theme::Category::import_folders',
                 info   => '$Core::MT::Theme::Category::info_folders',
@@ -640,6 +671,7 @@ sub core_theme_element_handlers {
         },
         template_set => {
             label    => 'Template Set',
+            order    => 500,
             importer => {
                 import => '$Core::MT::Theme::TemplateSet::apply',
                 info   => '$Core::MT::Theme::TemplateSet::info',
@@ -654,6 +686,7 @@ sub core_theme_element_handlers {
         },
         blog_static_files => {
             label    => 'Static Files',
+            order    => 600,
             importer => {
                 import => '$Core::MT::Theme::StaticFiles::apply',
 
@@ -668,6 +701,7 @@ sub core_theme_element_handlers {
         },
         default_pages => {
             label    => 'Default Pages',
+            order    => 300,
             importer => {
                 import => '$Core::MT::Theme::Entry::import_pages',
                 info   => '$Core::MT::Theme::Entry::info_pages',

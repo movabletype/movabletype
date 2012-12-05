@@ -1,12 +1,12 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
 # $Id$
 
 function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
-  $localvars = array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count', 'all_tag_count', 'include_blogs', 'exclude_blogs', 'blog_ids', '__out');
+  $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count', 'all_tag_count', 'include_blogs', 'exclude_blogs', 'blog_ids', '__out'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
         $ctx->stash('include_blogs', $args['include_blogs']);

@@ -1,27 +1,14 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
 # $Id$
 
 function smarty_function_mtcommenternamethunk($args, &$ctx) {
-    $blog = $ctx->stash('blog');
-    $archive_url = $ctx->tag('BlogArchiveURL');
-    if (preg_match('|://([^/]*)|', $archive_url, $matches)) {
-        $blog_domain = $matches[1];
-    }
-    require_once "function.mtcgipath.php";
-    $cgi_path = smarty_function_mtcgipath($args, $ctx);
-    $mt_domain = $cgi_path;
-    if (preg_match('|://([^/]*)|', $mt_domain, $matches)) {
-        $mt_domain = $matches[1];
-    }
-    if ($blog_domain != $mt_domain) {
-        $cmt_script = $ctx->mt->config('CommentScript');
-        return "<script type='text/javascript' src='$cgi_path$cmt_script?__mode=cmtr_name_js'></script>";
-    } else {
-        return "<script type='text/javascript'>var commenter_name = getCookie('commenter_name')</script>";
-    }
+    return $ctx->error(
+        $ctx->mt->translate("The '[_1]' tag has been deprecated. Please use the '[_2]' tag in its place.",
+            array( 'MTCommenterNameThunk', 'MTUserSessionState' )
+    ));
 }
 ?>

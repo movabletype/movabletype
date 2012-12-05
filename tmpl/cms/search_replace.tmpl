@@ -103,7 +103,7 @@ function blurDateFields(s) {
   <form id="search_form" name="search_form" method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="search_replace" />
     <input type="hidden" name="_type" value="<mt:var name="object_type">" />
-    <input type="hidden" name="limit" value="<mt:unless name="limit_all"><mt:var name="limit" escape="html"></mt:unless>" />
+    <input type="hidden" name="limit" value="<mt:if name="limit_all">all<mt:else><mt:var name="limit" escape="html"></mt:if>" />
   <mt:if name="blog_id">
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
   </mt:if>
@@ -171,10 +171,10 @@ function blurDateFields(s) {
           </div>
         </mt:if>
         </div>
-        <div id="date-range" class="mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>
+        <div id="date-range" class="mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
           <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="from">0<mt:else>1</mt:if>" />
-          <label for="datefrom"><__trans phrase="_DATE_FROM">:</label> <input type="text" name="from" id="from" class="text-date text date" value="<mt:if name="from"><mt:var name="from"></mt:if>">
-          <label for="dateto"><__trans phrase="_DATE_TO">:</label> <input type="text" name="to" id="to" class="text-date text date" value="<mt:if name="to"><mt:var name="to"></mt:if>">
+          <label for="datefrom"><__trans phrase="_DATE_FROM">:</label> <input type="text" name="from" id="from" class="text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
+          <label for="dateto"><__trans phrase="_DATE_TO">:</label> <input type="text" name="to" id="to" class="text-date text date" value="<mt:if name="to"><mt:var name="to" escape="html"></mt:if>">
         </div>
         <div class="actions-bar">
           <button

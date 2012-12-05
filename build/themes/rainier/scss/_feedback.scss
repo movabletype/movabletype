@@ -1,0 +1,161 @@
+@import 'function';
+
+@import 'variable';
+@import 'component';
+
+.feedback {
+  margin-top: $indent;
+
+  @media (min-width: 700px) {
+    margin-top: $indent;
+  }
+
+  h2 {
+    margin: 1em 0 $indent;
+  }
+}
+
+.comment {
+  margin-bottom: $harf-indent;
+  border-bottom: 1px solid;
+
+  header {
+    @extend %clearfix;
+
+    h3 {
+      display: inline;
+      margin: 0;
+      font-size: 110%;
+    }
+  }
+  time {
+    margin-left: $harf-indent;
+    font-size: 90%;
+  }
+
+  p {
+    margin: $harf-indent 0;
+  }
+
+  .reply {
+    text-align: right;
+  }
+}
+
+.message {
+  padding: $harf-indent;
+  background-color: $light-gray;
+  color: $fg;
+}
+
+#comment-greeting {
+  margin-top: ($indent * 2);
+
+  + #comments-form {
+    margin-top: $indent;
+  }
+}
+
+#comments-form {
+  margin-top: ($indent * 2);
+
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    legend {
+      display: none;
+    }
+  }
+}
+
+#comments-open-text {
+  textarea {
+    width: 100%;
+    height: ($indent * 8);
+  }
+}
+
+#comments-open-data {
+  ul {
+    margin: $indent 0;
+    padding: 0;
+  }
+
+  li {
+    list-style-type: none;
+    margin-bottom: $harf-indent;
+
+    label {
+      display: block;
+      text-align: left;
+    }
+
+    input[type="text"] {
+      width: 100%;
+
+      @media (min-width: 700px) {
+        width: 75%;
+      }
+    }
+  }
+}
+
+#comments-open-footer {
+  margin-top: $indent;
+  text-align: center;
+
+  @media (min-width: 930px) {
+    text-align: left;
+  }
+
+  input[type="submit"],
+  input[type="button"] {
+    width: 100%;
+    margin-bottom: $harf-indent;
+
+    @media (min-width: 700px) {
+      width: auto;
+      margin-right: $harf-indent;
+    }
+  }
+}
+
+#comments-open-captcha {
+  margin: $indent 0;
+
+  .label {
+    display: none;
+  }
+
+  #captcha_code {
+    width: 150px;
+    margin: $harf-indent 0;
+    @extend %border-box;
+  }
+
+  #comments-open-captcha p {
+    margin: 0;
+    font-size: 90%;
+  }
+}
+
+#trackback-url {
+  margin-bottom: ($indent * 2);
+}
+
+.trackback {
+  margin-bottom: $indent;
+  padding-bottom: $indent;
+  border-bottom: 1px dotted $gray;
+
+  time {
+    color: $gray;
+    font-size: 90%;
+  }
+
+  p {
+    margin: $harf-indent 0 0;
+  }
+}

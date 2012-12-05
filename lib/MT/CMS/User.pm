@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -35,7 +35,7 @@ sub edit {
 
         # General permissions...
         my $sys_perms = $obj->permissions(0);
-        if ($sys_perms) {
+        if ( $sys_perms && $sys_perms->permissions ) {
             my @sys_perms = split( ',', $sys_perms->permissions );
             foreach my $perm (@sys_perms) {
                 $perm =~ s/'(.+)'/$1/;
@@ -54,9 +54,18 @@ sub edit {
             $param->{search_label} = $app->translate('Entry');
             $param->{object_type}  = 'entry';
         }
+
         $param->{status_enabled} = $obj->is_active ? 1 : 0;
         $param->{status_pending}
             = $obj->status == MT::Author::PENDING() ? 1 : 0;
+        $param->{locked_out} = $obj->locked_out ? 1 : 0;
+        if ( $app->user->is_superuser ) {
+            $param->{recover_lockout_link}
+                = MT::Lockout->recover_lockout_uri( $app, $obj,
+                { return_args => $app->make_return_args } );
+        }
+        $param->{unlocked} = $app->param('unlocked') ? 1 : 0;
+
         $param->{can_modify_password}
             = ( $param->{editing_other_profile} || $param->{is_me} )
             && MT::Auth->password_exists;
@@ -67,6 +76,15 @@ sub edit {
         eval { require MT::Image; MT::Image->new or die; };
         $param->{can_use_userpic} = $@ ? 0 : 1;
         $param->{date_format} = $obj->date_format || 'relative';
+
+        if (    $param->{is_me}
+            and ( $obj->column('password') !~ /^\$6\$|{SHA}/ )
+            and ( not $param->{error} )
+            and lc $app->config->AuthenticationModule eq 'mt' )
+        {
+            $param->{error} = $app->translate(
+                "For improved security, please change your password");
+        }
     }
     else {
         if ( $app->config->ExternalUserManagement ) {
@@ -138,7 +156,7 @@ sub edit {
             unless ( exists $param->{'auth_pref_tag_delim'} );
     }
     $param->{text_filters} = $app->load_text_filters(
-        $obj ? $obj->text_format : $param->{'text_format'}, 'comment' );
+        $obj ? $obj->text_format : $param->{'text_format'}, 'entry' );
     unless ( exists $param->{'auth_pref_tag_delim'} ) {
         my $delim = chr( $auth_prefs->{tag_delim} );
         if ( $delim eq ',' ) {
@@ -186,7 +204,7 @@ sub edit_role {
     if ($id) {
         $role = MT::Role->load($id)
             or return $app->error(
-            $app->translate( 'Can\'t load role #[_1].', $id ) );
+            $app->translate( 'Cannot load role #[_1].', $id ) );
 
         # $param{is_enabled} = $role->is_active;
         $param{is_enabled}  = 1;
@@ -440,12 +458,96 @@ sub set_object_status {
     $app->call_return;
 }
 
+sub unlock {
+    my ($app) = @_;
+
+    require MT::Lockout;
+
+    $app->validate_magic() or return;
+    return $app->permission_denied()
+        unless $app->user->is_superuser;
+    return $app->error( $app->translate("Invalid request.") )
+        if $app->request_method ne 'POST';
+
+    my $class = $app->model('author');
+    $app->setup_filtered_ids
+        if $app->param('all_selected');
+
+    my @sync;
+    my $saved = 0;
+    for my $id ( $app->param('id') ) {
+        next unless $id;    # avoid 'empty' ids
+        my $obj = $class->load($id);
+        next unless $obj;
+
+        MT::Lockout->unlock($obj);
+        $obj->save;
+    }
+    $app->add_return_arg( saved_status => 'unlocked', );
+
+    $app->add_return_arg( is_power_edit => 1 )
+        if $app->param('is_power_edit');
+
+    $app->call_return;
+}
+
+sub recover_lockout {
+    my $app     = shift;
+    my $user_id = $app->param('user_id');
+    my $token   = $app->param('token');
+
+    my $user = $app->model('author')->load($user_id)
+        or return $app->errtrans("Invalid request");
+
+    require MT::Lockout;
+    if ( !MT::Lockout->validate_recover_token( $app, $user, $token ) ) {
+        return $app->errtrans("Invalid request");
+    }
+
+    MT::Lockout->unlock($user);
+    $user->save
+        or die $user->errstr;
+
+    if ( $app->param('return_args') ) {
+        $app->add_return_arg( unlocked => 1 );
+        return $app->call_return;
+    }
+
+    my $params = {
+        author_nickname => $user->nickname,
+        author_name     => $user->name,
+    };
+
+    if ( $app->isa('MT::App::CMS') ) {
+        $params->{author_edit_link} = $app->base
+            . $app->uri(
+            mode => 'view',
+            args => {
+                '_type' => 'author',
+                'id'    => $user->id,
+            },
+            );
+    }
+
+    $app->{template_dir} = 'cms';
+    $app->load_tmpl( 'recover_lockout.tmpl', $params );
+}
+
 sub upload_userpic {
     my $app = shift;
 
     $app->validate_magic() or return;
     return $app->errtrans("Invalid request.")
         if $app->param('blog_id');
+
+    my $user_id = $app->param('user_id');
+    my $user    = MT->model('author')->load($user_id)
+        or return $app->errtrans("Invalid request.");
+
+    my $appuser = $app->user;
+    if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+        return $app->permission_denied();
+    }
 
     require MT::CMS::Asset;
     my ( $asset, $bytes )
@@ -455,8 +557,6 @@ sub upload_userpic {
 
     ## TODO: should this be layered into _upload_file somehow, so we don't
     ## save the asset twice?
-    my $user_id = $app->param('user_id');
-
     $asset->tags('@userpic');
     $asset->created_by($user_id);
     $asset->save;
@@ -493,6 +593,15 @@ sub cfg_system_users {
     }
     $param{"tag_delim_$tag_delim"} = 1;
 
+    my @constrains = $app->config('UserPasswordValidation');
+    $param{"combo_upper_lower"}
+        = grep( { $_ eq 'upperlower' } @constrains ) ? 1 : 0;
+    $param{"combo_letter_number"}
+        = grep( { $_ eq 'letternumber' } @constrains ) ? 1 : 0;
+    $param{"require_special_characters"}
+        = grep( { $_ eq 'symbol' } @constrains ) ? 1 : 0;
+    $param{"minimum_length"} = $app->config('UserPasswordMinLength');
+
     ( my $tz = $app->config('DefaultTimezone') ) =~ s![-\.]!_!g;
     $tz =~ s!_00$!!;
     $param{ 'server_offset_' . $tz } = 1;
@@ -501,7 +610,7 @@ sub cfg_system_users {
         = $app->config->is_readonly('NewUserAutoProvisioning');
     $param{personal_weblog} = $app->config->NewUserAutoProvisioning ? 1 : 0;
     if ( my $id = $param{new_user_theme_id} = $app->config('NewUserBlogTheme')
-        || 'classic_blog' )
+        || 'rainier' )
     {
         require MT::Theme;
         my $theme = MT::Theme->load($id);
@@ -533,6 +642,7 @@ sub cfg_system_users {
         }
     }
     $param{system_email_address} = $cfg->EmailAddressMain;
+    $param{system_no_email}      = 1 unless $cfg->EmailAddressMain;
     $param{saved}                = $app->param('saved');
     $param{error}                = $app->param('error');
     $param{screen_class}         = "settings-screen system-general-settings";
@@ -562,6 +672,21 @@ sub cfg_system_users {
             $param{notify_user_name} = join ',', @names;
         }
     }
+
+    my @config_warnings;
+    for my $config_directive (
+        qw( UserPasswordValidation UserPasswordMinLength ))
+    {
+        push( @config_warnings, $config_directive )
+            if $app->config->is_readonly($config_directive);
+    }
+    my $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
+
+    $param{config_warning} = $app->translate(
+        "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
+        $config_warning
+    ) if $config_warning;
+
     $app->load_tmpl( 'cfg_system_users.tmpl', \%param );
 }
 
@@ -619,6 +744,27 @@ sub save_cfg_system_users {
         $registration->{Allow} = 0;
         $cfg->CommenterRegistration( $registration, 1 );
     }
+
+    my @constrains;
+    $app->config(
+        'UserPasswordValidation',
+        [   ( $app->param('combo_upper_lower')   ? 'upperlower'   : () ),
+            ( $app->param('combo_letter_number') ? 'letternumber' : () ),
+            ( $app->param('require_special_characters') ? 'symbol' : () ),
+        ],
+        1
+    );
+
+    if ( 'MT' eq uc $app->config('AuthenticationModule') ) {
+        my $pass_min_len = $app->param('minimum_length');
+        if ( ( $pass_min_len =~ m/\D/ ) or ( $pass_min_len < 1 ) ) {
+            return $app->errtrans(
+                'Minimum password length must be an integer and greater than zero.'
+            );
+        }
+        $app->config( 'UserPasswordMinLength', int $pass_min_len, 1 );
+    }
+
     $cfg->save_config();
 
     my $args = ();
@@ -737,58 +883,45 @@ sub grant_role {
     require MT::Blog;
     require MT::Role;
 
+    push @blogs, $blog_id if $blog_id;
     foreach (@blogs) {
         my $id = $_;
         $id =~ s/\D//g;
         $_ = MT::Blog->load($id);
     }
-    push @blogs, MT::Blog->load($blog_id) if $blog_id;
+    @blogs = grep { defined $_ } @blogs;
 
-    my $can_grant_administer = 1;
+    my @can_grant_administer = map 1, 1 .. @blogs;
     if ( !$user->is_superuser ) {
-        if ( ( scalar @blogs != 1 )
-            || !$user->permissions( $blogs[0] )
-            ->can_do('grant_administer_role') )
-        {
-            $can_grant_administer = 0;
-            if ( !$user->permissions( $blogs[0] )
-                ->can_do('grant_role_for_blog') )
-            {
-                return $app->permission_denied();
+        for ( my $i = 0; $i < scalar(@blogs); $i++ ) {
+            my $perm = $user->permissions( $blogs[$i] );
+            if ( !$perm->can_do('grant_administer_role') ) {
+                $can_grant_administer[$i] = 0;
+                if ( !$perm->can_do('grant_role_for_blog') ) {
+                    return $app->permission_denied();
+                }
             }
         }
     }
 
-    my @roles;
-    foreach my $id (@role_ids) {
-        $id =~ s/\D//g;
-        my $role = MT::Role->load($id);
-        if ( $can_grant_administer || !$role->has('administer_blog') ) {
-            push @roles, $role;
-        }
-    }
-    push @roles, MT::Role->load($role_id) if $role_id;
+    push @role_ids, $role_id if $role_id;
+    my @roles = grep { defined $_ }
+        map { MT::Role->load($_) }
+        map { my $id = $_; $id =~ s/\D//g; $id } @role_ids;
 
+    push @authors, $author_id if $author_id;
     my $add_pseudo_new_user = 0;
     foreach (@authors) {
         my $id = $_;
-        if ( 'author-PSEUDO' eq $id ) {
+        if ( $id =~ /PSEUDO/ ) {
             $add_pseudo_new_user = 1;
             next;
         }
         $id =~ s/\D//g;
         $_ = MT::Author->load($id);
     }
+    @authors = grep { ref $_ } @authors;
     $app->error(undef);
-
-    if ($author_id) {
-        if ( $author_id eq 'PSEUDO' ) {
-            $add_pseudo_new_user = 1;
-        }
-        else {
-            push @authors, MT::Author->load($author_id);
-        }
-    }
 
     my @default_assignments;
 
@@ -805,9 +938,11 @@ sub grant_role {
 
     # TBD: handle case for associating system roles to users/groups
     foreach my $blog (@blogs) {
-        next unless ref $blog;
+        my $can_grant_administer = shift @can_grant_administer;
         foreach my $role (@roles) {
-            next unless ref $role;
+            next
+                if ( ( !$can_grant_administer )
+                && ( $role->has('administer_blog') ) );
             if ($add_pseudo_new_user) {
                 push @default_assignments, $role->id . ',' . $blog->id;
             }
@@ -849,6 +984,10 @@ sub grant_role {
 sub dialog_select_author {
     my $app = shift;
 
+    my $blog = $app->blog;
+    return $app->errtrans('Invalid request')
+        unless $blog;
+
     my $hasher = sub {
         my ( $obj, $row ) = @_;
         $row->{label}       = $row->{name};
@@ -860,7 +999,6 @@ sub dialog_select_author {
     my $entry_type = $app->param('entry_type') if $app->param('entry_type');
     $entry_type ||= 'entry';
 
-    my $blog = $app->blog;
     my @blog_ids;
     if ( !$blog->is_blog && $app->param('include_child') ) {
         my $blogs = $blog->blogs;
@@ -870,6 +1008,20 @@ sub dialog_select_author {
     }
     push @blog_ids, $blog->id
         if ( !$blog->is_blog && $entry_type eq 'page' ) || ( $blog->is_blog );
+
+    if ( !$app->user->is_superuser ) {
+        my @ids = map { $_->id } @{ $blog->blogs }
+            if !$blog->is_blog;
+        push @ids, $blog->id;
+        my $ok;
+        foreach (@ids) {
+            $ok = 1
+                if $app->user->permissions($_)
+                    ->can_do('open_select_author_dialog');
+        }
+        return $app->permission_denied
+            unless $ok;
+    }
 
     $app->listing(
         {   type  => 'author',
@@ -912,8 +1064,8 @@ sub dialog_select_author {
                 panel_first      => 1,
                 panel_last       => 1,
                 list_noncron     => 1,
-                idfield          => $app->param('idfield'),
-                namefield        => $app->param('namefield'),
+                idfield          => scalar( $app->param('idfield') ),
+                namefield        => scalar( $app->param('namefield') ),
             },
         }
     );
@@ -965,8 +1117,8 @@ sub dialog_select_sysadmin {
                 panel_first      => 1,
                 panel_last       => 1,
                 list_noncron     => 1,
-                idfield          => $app->param('idfield'),
-                namefield        => $app->param('namefield'),
+                idfield          => scalar( $app->param('idfield') ),
+                namefield        => scalar( $app->param('namefield') ),
             },
         }
     );
@@ -1233,8 +1385,13 @@ sub remove_userpic {
     $app->validate_magic() or return;
     my $q       = $app->param;
     my $user_id = $q->param('user_id');
-    my $user    = $app->model('author')->load( { id => $user_id } )
+    my $user    = $app->model('author')->load($user_id)
         or return;
+
+    my $appuser = $app->user;
+    if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+        return $app->permission_denied();
+    }
     if ( $user->userpic_asset_id ) {
         my $old_file = $user->userpic_file();
         my $fmgr     = MT::FileMgr->new('Local');
@@ -1289,7 +1446,7 @@ sub template_param_list {
     $param->{use_actions}      = 0;
     $param->{has_list_actions} = 0;
     my $author_name = $app->user->name;
-    $param->{page_title} = MT->translate( q{[_1]'s Assciations},
+    $param->{page_title} = MT->translate( q{[_1]'s Associations},
         MT::Util::encode_html($author_name) );
 }
 
@@ -1407,7 +1564,7 @@ sub save_filter {
     return 1 if ( $pref ne 'MT' );
     if ( !$app->param('id') ) {    # it's a new object
         return $eh->error( $app->translate("User requires password") )
-            if ( !$app->param('pass') );
+            if ( 0 == length( scalar $app->param('pass') ) );
     }
     my $email = $app->param('email');
     return $eh->error(
@@ -1444,7 +1601,7 @@ sub pre_save {
     $obj->type( MT::Author::AUTHOR() );
 
     my $pass = $app->param('pass');
-    if ($pass) {
+    if ( length($pass) ) {
         $obj->set_password($pass);
     }
     elsif ( !$obj->id ) {

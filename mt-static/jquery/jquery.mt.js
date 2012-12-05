@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+ * Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
  * This program is distributed under the terms of the
  * GNU General Public License, version 2.
  *
@@ -464,7 +464,7 @@ function open_dialog(href, opts) {
     });
     $('.mt-dialog-overlay').show();
     if (opts.esckeyclose) {
-        $(document).keyup(function(event){
+        $(document).bind('keyup.mt-dialog', function(event){
             if (event.keyCode == 27) {
                 close_dialog();
             }
@@ -483,9 +483,19 @@ function close_dialog(url, fn) {
     if (fn) {
         $('.mt-dialog').trigger('close', fn);
     }
+    $(document).unbind('keyup.mt-dialog');
     $('.mt-dialog').unbind('close');
     $('.mt-dialog').hide();
-    $('#mt-dialog-iframe').remove();
+
+    // Removing "iframe" in delay.
+    // Because IE9 will continue to run the script after closing,
+    // and raise error if removing "iframe".
+    var iframe = $('#mt-dialog-iframe').
+        attr('id', 'mt-dialog-iframe-removed');
+    setTimeout(function() {
+        iframe.remove();
+    }, 2000);
+
     if (url) {
         window.location = url;
     }
@@ -503,6 +513,7 @@ $.fn.mtDialog.open = function(url, options) {
 
 $.fn.mtDialog.close = function(url, fn) {
     close_dialog(url, fn);
+    $(window).trigger('dialogDisposed');
 };
 
 $.event.special.dialogReady = {
@@ -869,9 +880,10 @@ $.mtValidator = function ( ns, options ) {
 
 $.extend( $.mtValidator.prototype, {
     options: {},
-    validateElement: function ( $elem, val ) {
+    validateElement: function ( $elem, additionalRules ) {
         var validator  = this;
-        var rules = $.mtValidateRules;
+        if ( undefined === additionalRules ) additionalRules = {};
+        var rules = $.extend( {}, $.mtValidateRules, additionalRules );
         validator.error  = false;
         validator.errstr = undefined;
         $.each ( rules, function( selector, fn ) {
@@ -919,6 +931,35 @@ $.extend( $.mtValidator.prototype, {
 });
 
 // Install default validators.
+$.mtValidator('top', {
+    wrapError: function ( $target, msg ) {
+        return $('<li />').append(
+            $('<label/>')
+                .attr('for', $target.attr('id') )
+                .text(msg)
+            );
+    },
+    showError: function( $target, $error_block ) {
+        if ( $('div#msg-block').text() == 0 ) {
+            var $block = $('<div/>')
+                .addClass('msg msg-error')
+                .append( $('<p>').text( trans('You have an error in your input.') ) )
+                .append( $('<ul />') );
+
+            $('div#msg-block').append( $block );
+        }
+        $('div#msg-block ul').append($error_block);
+    },
+    removeError: function( $target, $error_block ) {
+        $error_block.remove();
+        if ( $('div#msg-block ul li').length == 0 ) {
+            $('div#msg-block').text('');
+        }
+    },
+    updateError: function( $target, $error_block, msg ) {
+        $error_block.find('label').text(msg);
+    }
+});
 $.mtValidator('simple', {
     wrapError: function ( $target, msg ) {
         return $('<div />').append(
@@ -935,7 +976,7 @@ $.mtValidator('simple', {
 $.mtValidator('default', {
     wrapError: function ( $target, msg ) {
         return $('<label style="position: absolute;" />')
-            .attr('for', $target.attr('id') )
+            .attr('for', $target.attr('id') || '')
             .addClass('msg-error msg-balloon validate-error')
             .text(msg);
     },
@@ -951,9 +992,15 @@ $.mtValidator('default', {
             $error_block.show();
         else
             $error_block.hide();
-        if ( !$target.parent('.validate-error-wrapper').length ) {
-            $target
-                .wrap('<span class="validate-error-wrapper" style="position: relative; white-space: nowrap;"></span>');
+        try {
+            if ( !$target.parent('.validate-error-wrapper').length ) {
+                $target
+                    .wrap('<span class="validate-error-wrapper" style="position: relative; white-space: nowrap;"></span>');
+            }
+        }
+        catch (e) {
+            // Sometimes, we get error by "$.fn.wrap" in webkit.
+            // But in that error, $target is already wrapped probably.
         }
         $target.after($error_block);
         $error_block
@@ -1003,10 +1050,10 @@ $.mtValidateRules = {
         return $e.val().length > 0;
     },
     '.digit, .num': function ($e) {
-        return /^\d+$/.test($e.val());
+        return !$e.val() || /^\d+$/.test($e.val());
     },
     '.number': function ($e) {
-        return /\d/.test($e.val()) && /^\d*\.?\d*$/.test($e.val());
+        return !$e.val() || /\d/.test($e.val()) && /^\d*\.?\d*$/.test($e.val());
     }
 };
 
@@ -1020,17 +1067,19 @@ $.mtValidateAddMessages = function ( rules ) {
 
 $.mtValidateMessages = {
     '.date':        trans('Invalid date format'),
-    '.email':       trans('Invalid mail address'),
+    '.email':       trans('Invalid email address'),
     '.url':         trans('Invalid URL'),
     '.required':    trans('This field is required'),
-    '.digit, .num': trans('This field must be integer'),
-    '.number':      trans('This field must be number')
+    '.digit, .num': trans('This field must be an integer'),
+    '.number':      trans('This field must be a number')
 };
 
 $.fn.extend({
-    mtValidate: function( ns ) {
+    mtValidate: function( ns, rules ) {
+        if ( undefined === rules ) rules = {};
         this.each( function () {
             $.data( this, 'mtValidator', ns || 'default' );
+            $.data( this, 'mtValidateRules', rules );
         });
         return this.mtValid();
     },
@@ -1048,8 +1097,11 @@ $.fn.extend({
             var $this = $(this);
             var validator = $this.mtValidator();
             if ( !validator ) return true;
+            if ( typeof $this.attr('data-showing-placeholder') !== 'undefined' )
+                $this.val('');
             var $current_error = $.data( this, 'mtValidateError' );
-            var res = validator.validateElement($this);
+            var rules = $.data( this, 'mtValidateRules' );
+            var res = validator.validateElement($this, rules);
             if ( res ) {
                 successes++;
                 if ( $current_error ) {
@@ -1088,7 +1140,7 @@ $.fn.extend({
         return errors == 0;
     },
     mtUnvalidate: function() {
-        this.each( function () { 
+        this.each( function () {
             var validator = $(this).mtValidator();
             if ( validator ) {
                 var $current_error = $.data( this, 'mtValidateError' );
@@ -1132,7 +1184,6 @@ $.fn.mtPlaceholder = function() {
         var that = this;
         var $that = $(that);
         var placeholder_text = $that.attr('placeholder');
-        var original_color = $that.css('color');
         if ( 1 > $that.val().length ) {
             $that
                 .val(placeholder_text)
@@ -1144,7 +1195,7 @@ $.fn.mtPlaceholder = function() {
                 if ( $that.attr('data-showing-placeholder') ) {
                     $that
                         .val('')
-                        .css('color', original_color)
+                        .css('color', '#2b2b2b')
                         .removeAttr('data-showing-placeholder');
                 }
             })

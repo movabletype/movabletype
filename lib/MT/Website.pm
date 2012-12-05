@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -38,14 +38,14 @@ sub list_props {
         blog_count => {
             label        => 'Blogs',
             filter_label => '__BLOG_COUNT',
-            order       => 200,
-            base        => '__virtual.object_count',
-            display     => 'default',
-            count_class => 'blog',
-            count_col   => 'parent_id',
-            filter_type => 'blog_id',
-            list_screen => 'blog',
-            count_terms => sub {
+            order        => 200,
+            base         => '__virtual.object_count',
+            display      => 'default',
+            count_class  => 'blog',
+            count_col    => 'parent_id',
+            filter_type  => 'blog_id',
+            list_screen  => 'blog',
+            count_terms  => sub {
                 my $prop = shift;
                 my ($opts) = @_;
                 return {}
@@ -124,8 +124,13 @@ sub list_props {
 
 sub create_default_website {
     my $class = shift;
-    my ( $site_name, $site_theme ) = @_;
+    my ( $site_name, %params ) = @_;
     $site_name ||= MT->translate("First Website");
+    my $site_theme = $params{site_theme};
+    my $site_url   = $params{site_url} || '';
+    my $site_path  = $params{site_path}|| '';
+    my $timezone   = $params{site_timezone} || 0;
+
     $class = ref $class if ref $class;
 
     my $website = new $class;
@@ -143,6 +148,9 @@ sub create_default_website {
 
     $website->page_layout('layout-wtt');
     $website->theme_id($site_theme) if $site_theme;
+    $website->site_path($site_path);
+    $website->site_url($site_url);
+    $website->server_offset($timezone);
 
     $website->save or return $class->error( $website->errstr );
 

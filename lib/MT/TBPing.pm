@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -43,6 +43,8 @@ __PACKAGE__->install_properties(
                 { columns => [ 'blog_id', 'visible', 'created_on', 'id' ], },
             visible_date => { columns => [ 'visible',     'created_on' ], },
             junk_date    => { columns => [ 'junk_status', 'created_on' ], },
+            blog_junk_stat =>
+                { columns => [ 'blog_id', 'junk_status', 'last_moved_on' ], },
         },
         defaults => {
             junk_status   => NOT_JUNK,
@@ -103,9 +105,10 @@ sub list_props {
                     : $status eq 'Published' ? 'success.gif'
                     :                          'draft.gif';
 
-                my $blog_name = MT::Util::encode_html( $obj->blog_name  || '' );
-                my $title     = MT::Util::encode_html( $obj->title      || '' );
-                my $url       = MT::Util::encode_html( $obj->source_url || '' );
+                my $blog_name
+                    = MT::Util::encode_html( $obj->blog_name || '' );
+                my $title = MT::Util::encode_html( $obj->title      || '' );
+                my $url   = MT::Util::encode_html( $obj->source_url || '' );
                 my $view_img
                     = MT->static_path . 'images/status_icons/view.gif';
                 my $ping_from
@@ -164,6 +167,8 @@ sub list_props {
                     if scalar keys %categories;
                 my %category_map = map { $_->id => $_ } @categories;
                 my ( $title_col, $alt_label );
+                require MT::Promise;
+                my $user = $app->user;
                 my @res;
 
                 for my $obj (@$objs) {
@@ -179,10 +184,24 @@ sub list_props {
                         $title_col = 'label';
                         $alt_label = 'No label';
                     }
-                    my $title_html
-                        = MT::ListProperty::make_common_label_html( $obj,
-                        $app, $title_col, $alt_label );
+                    my $title_html;
                     my $type = $obj->class_type;
+                    my $obj_promise
+                        = MT::Promise::delay( sub { return $obj; } );
+                    if ($user->is_superuser
+                        or $app->run_callbacks(
+                            'cms_view_permission_filter.' . $type,
+                            $app, $obj->id, $obj_promise
+                        )
+                        )
+                    {
+                        $title_html
+                            = MT::ListProperty::make_common_label_html( $obj,
+                            $app, $title_col, $alt_label );
+                    }
+                    else {
+                        $title_html = $obj->$title_col || $alt_label;
+                    }
                     $type = 'categories' if $type eq 'category';
                     my $img
                         = MT->static_path
@@ -445,7 +464,7 @@ sub blog {
         $blog = $blog_class->load($blog_id)
             or return $ping->error(
             MT->translate(
-                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                "Loading blog '[_1]' failed: [_2]", $blog_id,
                 $blog_class->errstr
             )
             );

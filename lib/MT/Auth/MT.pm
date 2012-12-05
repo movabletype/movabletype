@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -19,11 +19,13 @@ sub sanity_check {
     if ( $q->param('pass') ne $q->param('pass_verify') ) {
         return $app->translate('Passwords do not match.');
     }
-    if ( $q->param('pass') && ( $id && $app->user->id == $id ) ) {
+    if ( length( scalar $q->param('pass') )
+        && ( $id && $app->user->id == $id ) )
+    {
         my $author = MT::Author->load($id)
-            or return $app->translate('Failed to verify current password.');
+            or return $app->translate('Failed to verify the current password.');
         if ( !$auth->is_valid_password( $author, $q->param('old_pass') ) ) {
-            return $app->translate('Failed to verify current password.');
+            return $app->translate('Failed to verify the current password.');
         }
     }
     return '';
@@ -32,15 +34,35 @@ sub sanity_check {
 sub is_valid_password {
     my $auth = shift;
     my ( $author, $pass, $crypted, $error_ref ) = @_;
-    $pass ||= '';
+    $pass = '' unless length($pass);
 
     my $real_pass = $author->column('password');
     if ( ( !$real_pass ) || ( $real_pass eq '(none)' ) ) {
         return 0;
     }
-    return $crypted
-        ? $real_pass eq $pass
-        : crypt( $pass, $real_pass ) eq $real_pass;
+
+    if ($crypted) {
+        return $real_pass eq $pass;
+    }
+
+    if ( $real_pass =~ m/^\$6\$(.*)\$(.*)/ ) {
+        my ( $salt, $value ) = ( $1, $2 );
+        if ( eval { require Digest::SHA } ) {
+            return $value eq Digest::SHA::sha512_base64( $salt . $pass );
+        }
+        else {
+            die MT->translate('Missing required module') . ' Digest::SHA';
+        }
+    }
+    elsif ( $real_pass =~ m/^{SHA}(.*)\$(.*)/ ) {
+        my ( $salt, $value ) = ( $1, $2 );
+        return $value eq MT::Util::perl_sha1_digest_hex( $salt . $pass )
+    }
+    else {
+
+        # the password is stored using the old hashing method
+        return crypt( $pass, $real_pass ) eq $real_pass;
+    }
 }
 
 sub can_recover_password {1}
@@ -55,7 +77,8 @@ sub login_credentials {
     my ($ctx) = @_;
 
     my $app = $ctx->{app} or return;
-    if ( $app->param('username') && $app->param('password') ) {
+    if ( $app->param('username') && length( scalar $app->param('password') ) )
+    {
         my ( $user, $pass, $remember );
         $user     = $app->param('username');
         $pass     = $app->param('password');
@@ -126,8 +149,20 @@ sub validate_credentials {
 
             # password validation
             if ( $ctx->{session_id} ) {
-                $app->user($author);
-                $result = MT::Auth::SUCCESS();
+                my $sess = $app->model('session')->load( $ctx->{session_id} );
+                my $sess_author_id = $sess->get('author_id')
+                    if $sess;
+                if (   $sess
+                    && $sess_author_id
+                    && ( $sess_author_id == $author->id ) )
+                {
+                    $app->user($author);
+                    $result = MT::Auth::SUCCESS();
+                }
+                else {
+                    $app->errtrans("Invalid request.");
+                    $result = MT::Auth::SESSION_EXPIRED();
+                }
             }
             else {
                 my $error;

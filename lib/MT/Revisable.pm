@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -272,7 +272,7 @@ sub diff_object {
 
     return $obj_a->error(
         MT->translate(
-            "There aren't the same types of objects, expecting two [_1]",
+            "There are not the same types of objects, expecting two [_1]",
             lc $obj_a->class_label_plural
         )
     ) if ref $obj_a ne ref $obj_b;

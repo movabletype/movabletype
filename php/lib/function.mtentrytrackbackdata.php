@@ -1,10 +1,11 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
 # $Id$
 
+require_once("archive_lib.php");
 function smarty_function_mtentrytrackbackdata($args, &$ctx) {
     $e = $ctx->stash('entry');
     $tb = $e->trackback();
@@ -27,13 +28,15 @@ function smarty_function_mtentrytrackbackdata($args, &$ctx) {
     require_once "function.mtcgipath.php";
     $path = smarty_function_mtcgipath($args, $ctx);
     $path .= $ctx->mt->config('TrackbackScript') . '/' . $tb->trackback_id;
-    if ($at = $ctx->stash('current_archive_type')) {
+
+    $at = $ctx->stash('current_archive_type');
+    if ($at)
+        $at = ArchiverFactory::get_archiver($at);
+    if ($at && !( $at instanceof IndividualArchiver )) {
         $url = $ctx->tag('ArchiveLink');
-        if ($at != 'Individual') {
-            $url .= '#entry-' . sprintf("%06d", $e->entry_id);
-        }
+        $url .= '#entry-' . sprintf("%06d", $e->entry_id);
     } else {
-        $url = $ctx->tag('EntryPermalink');
+        $url = $ctx->tag($e->entry_class.'Permalink', array('archive_type' => 'Individual'));
     }
     $rdf = '';
     $comment_wrap = isset($args['comment_wrap']) ?

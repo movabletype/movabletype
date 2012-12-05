@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -84,7 +84,10 @@ sub save_config {
             $blog_id ? 'blog:' . $blog_id : 'system' );
         if ( $plugin->errstr ) {
             return $app->error(
-                "Error saving plugin settings: " . $plugin->errstr );
+                $app->translate(
+                    "Error saving plugin settings: [_1]", $plugin->errstr
+                )
+            );
         }
     }
 
@@ -117,7 +120,8 @@ sub plugin_control {
     my $app = shift;
 
     $app->validate_magic or return;
-    return unless $app->can_do('toggle_plugin_switch');
+    return $app->permission_denied()
+        unless $app->can_do('toggle_plugin_switch');
 
     my $plugin_sig = $app->param('plugin_sig') || '';
     my $state      = $app->param('state')      || '';

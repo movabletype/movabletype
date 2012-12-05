@@ -5,7 +5,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Client.pod 98 2007-10-09 09:41:55Z kutterma $
+# $Id: Client.pod 381 2011-08-15 19:28:43Z kutterma $
 #
 # ======================================================================
 
@@ -17,7 +17,11 @@ SOAP::Client - exists purely as a superclass for client classes declared by the 
 
 =head1 DESCRIPTION
 
-The SOAP::Client class exists purely as a superclass for client classes declared by the various SOAP::Lite transport modules. The methods it provides are all simple accessors; they return the current value when called with no arguments or set the attribute value and return the object reference when called with an argument. These attributes include: 
+The SOAP::Client class exists purely as a superclass for client classes
+declared by the various SOAP::Lite transport modules. The methods it
+provides are all simple accessors; they return the current value when
+called with no arguments or set the attribute value and return the object
+reference when called with an argument. These attributes include:
 
 =head1 METHODS
 
@@ -39,7 +43,7 @@ The success or failure of the most-recent transmission is noted here as a boolea
 
 The options attribute keeps a hash-table reference of additional  options and their values. At present, only one option is used by any of the transport modules:
 
-=over 
+=over
 
 =item compress_threshold
 
@@ -53,7 +57,7 @@ Other options may be defined using this mechanism. Note that setting the options
 
 =head1 SEE ALSO
 
-L<SOAP::Server> 
+L<SOAP::Server>
 
 =head1 ACKNOWLEDGEMENTS
 

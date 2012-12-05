@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -281,8 +281,9 @@ B<Example:>
 =cut
 
 sub _hdlr_result_count {
-    my $results = $_[0]->stash('count');
-    $results ? $results : 0;
+    my ( $ctx, $args, $cond ) = @_;
+    my $results = $ctx->stash('count') || 0;
+    return $ctx->count_format( $results, $args );
 }
 
 ###########################################################################
@@ -330,6 +331,8 @@ sub _hdlr_results {
         local $ctx->{__stash}{$stash_key} = $this_object;
         local $ctx->{__stash}{blog} = $this_object->blog
             if $this_object->can('blog');
+        local $ctx->{__stash}{blog_id} = $this_object->blog->id
+            if $this_object->can('blog') && $this_object->blog;
         my $ts;
         if ( $this_object->isa('MT::Entry') ) {
             $ts = $this_object->authored_on;

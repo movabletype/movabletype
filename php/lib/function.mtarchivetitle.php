@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -14,7 +14,13 @@ function smarty_function_mtarchivetitle($args, &$ctx) {
         $at = $args['archive_type'];
     }
     if ($at == 'Category') {
-        return $ctx->tag('CategoryLabel', $args);
+         $title = $ctx->tag('CategoryLabel', $args);
+         if ( !empty( $title )) {
+             $title = encode_html( strip_tags( $title ));
+         } else {
+             $title = '';
+         }
+         return $title;
     } else {
         $ar = ArchiverFactory::get_archiver($at);
         return $ar->get_title($args, $ctx);

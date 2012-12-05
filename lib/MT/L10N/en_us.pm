@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -34,6 +34,7 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
     '_BLOG_CONFIG_MODE_BASIC' => 'Basic Mode',
     '_BLOG_CONFIG_MODE_DETAIL' => 'Detailed Mode',
     '_SEARCH_SIDEBAR' => 'Search',
+    '_REVISION_DATE_' => 'Date',
 
     '_ERROR_CONFIG_FILE' => 'Your Movable Type configuration file is missing or cannot be read properly. Please see the <a href="javascript:void(0)">Installation and Configuration</a> section of the Movable Type manual for more information.',
     '_ERROR_DATABASE_CONNECTION' => 'Your database settings are either invalid or not present in your Movable Type configuration file. Please see the <a href="javascript:void(0)">Installation and Configuration</a> section of the Movable Type manual for more information.',
@@ -136,7 +137,6 @@ the address you provided is correct and belongs to you.',
     '_REBUILD_PUBLISH' => 'Publish',
     '_DATE_FROM' => 'From',
     '_DATE_TO' => 'To',
-    '_LOCALE_WEEK_START' => '0',
     '_SHORT_MAY' => 'May',
     '_MTCOM_URL' => 'http://www.movabletype.com/',
     '_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
@@ -164,7 +164,7 @@ the address you provided is correct and belongs to you.',
     'UTC+11' => 'UTC+11 (East Australian Daylight Savings Time)',
     'UTC+10' => 'UTC+10 (East Australian Standard Time)',
 
-    '_POWERED_BY' => 'Powered by <a href="http://www.movabletype.com/" rel="generator"><$MTProductName$></a>',
+    '_POWERED_BY' => 'Powered by <a href="http://www.movabletype.org/"><$MTProductName$></a>',
     '_DISPLAY_OPTIONS_SHOW' => 'Show',
      '_WARNING_DELETE_USER_EUM' => 'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)? They will be able to re-create themselves if selected user(s) still exist in your external directory.',
      '_WARNING_DELETE_USER' => 'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)?',
@@ -187,6 +187,10 @@ the address you provided is correct and belongs to you.',
     '__COMMENTER_APPROVED' => 'Approved',
     '__ANONYMOUS_COMMENTER' => 'Anonymous',
     '__WEBSITE_BLOG_NAME' => 'Website/Blog Name',
+    '__SSL_CERT_UPDATE' => 'update',
+    '__SSL_CERT_INSTALL' => 'install',
+    '_ABOUT_PAGE_BODY' => '<p>This is an example "about" page. (Typically, an "about" page features information on the individual or corporation.)</p><p>If the <code>@ABOUT_PAGE</code> tag is used on a web page, the “about” page will be added to the navigation list in both the header and footer.</p>',
+    '_SAMPLE_PAGE_BODY' => '<p>This is an example web page.</p><p>If the <code>@ADD_TO_SITE_NAV</code> tag is used on a web page, that page will be added to the navigation list in both the header and footer.</p>',
 );
 
 1;

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -40,7 +40,7 @@ sub work {
         $obj = $model->load($object_id);
         if ( !$obj ) {
             MT::TheSchwartz->debug(
-                qq{Bad MT::Worker::Summarize key (can't load object $object_id): }
+                qq{Bad MT::Worker::Summarize key (cannot load object $object_id): }
                     . $job->uniqkey );
             $good = 0;
         }

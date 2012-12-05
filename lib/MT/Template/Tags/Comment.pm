@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -201,7 +201,7 @@ sub _hdlr_comments {
         }
         else {
             for my $f
-                qw( min_score max_score min_rate max_rate min_count max_count scored_by )
+                (qw{ min_score max_score min_rate max_rate min_count max_count scored_by })
             {
                 if ( $args->{$f} ) {
                     $need_join = 1;
@@ -278,7 +278,7 @@ sub _hdlr_comments {
             ? sort { $a->created_on cmp $b->created_on } @$comments
             : sort { $b->created_on cmp $a->created_on } @$comments;
         $no_resort = 1
-            unless $args->{sort_order} || $args->{sort_by};
+            if $col eq 'created_on';
         if (@filters) {
             my $offset = $args->{offset} || 0;
             my $j = 0;
@@ -491,6 +491,7 @@ sub _hdlr_comments {
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
     my $glue = $args->{glue};
+    MT::Meta::Proxy->bulk_load_meta_objects(\@comments);
     for my $c (@comments) {
         local $vars->{__first__}        = $i == 1;
         local $vars->{__last__}         = ( $i == scalar @comments );
@@ -692,6 +693,7 @@ sub _hdlr_comment_replies {
 
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
+    MT::Meta::Proxy->bulk_load_meta_objects(\@comments);
     for my $c (@comments) {
         local $vars->{__first__}        = $i == 1;
         local $vars->{__last__}         = ( $i == scalar @comments );
@@ -1586,6 +1588,11 @@ B<Attributes:>
 
 =over 4
 
+=item * default_name (optional; default "Anonymous")
+
+Used in the event that the commenter did not provide a value for their
+name.
+
 =item * label or text (optional)
 
 A custom phrase for the link (default is "Reply").
@@ -1608,11 +1615,15 @@ sub _hdlr_comment_reply_link {
         or return $ctx->_no_comment_error();
 
     my $label = $args->{label} || $args->{text} || MT->translate('Reply');
-    my $comment_author = MT::Util::encode_html(
-        MT::Util::encode_html( MT::Util::encode_js( $comment->author ) ), 1 );
+    my $name = $comment->author;
+    $name = '' unless defined $name;
+    $name ||= $args->{default_name};
+    $name ||= MT->translate("Anonymous");
+    $name = MT::Util::encode_html(
+        MT::Util::encode_html( MT::Util::encode_js( $name ) ), 1 );
     my $onclick
         = sprintf( $args->{onclick} || "mtReplyCommentOnClick(%d, '%s')",
-        $comment->id, $comment_author );
+        $comment->id, $name );
 
     return
         sprintf(
@@ -1790,6 +1801,7 @@ sub _hdlr_comment_replies_recurse {
 
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
+    MT::Meta::Proxy->bulk_load_meta_objects(\@comments);
     for my $c (@comments) {
         local $vars->{__first__}        = $i == 1;
         local $vars->{__last__}         = ( $i == scalar @comments );
@@ -1854,12 +1866,12 @@ sub _hdlr_blog_comment_count {
         or return $ctx->error( $ctx->errstr );
     $terms{visible} = 1;
     require MT::Entry;
-    $args{join} =  MT::Entry->join_on(
+    $args{join} = MT::Entry->join_on(
         undef,
-        {
-            id      => \'= comment_entry_id',
-            status  => MT::Entry::RELEASE(),
-        }, {}
+        {   id     => \'= comment_entry_id',
+            status => MT::Entry::RELEASE(),
+        },
+        {}
     );
 
     require MT::Comment;
@@ -1949,7 +1961,7 @@ sub _hdlr_typekey_token {
     my $blog_id = $ctx->stash('blog_id');
     my $blog    = MT::Blog->load($blog_id)
         or return $ctx->error(
-        MT->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+        MT->translate( 'Cannot load blog #[_1].', $blog_id ) );
     my $tp_token = $blog->effective_remote_auth_token();
     return $tp_token;
 }
@@ -1968,7 +1980,7 @@ sub _hdlr_comment_fields {
     my ( $ctx, $args, $cond ) = @_;
     return $ctx->error(
         MT->translate(
-            "The MTCommentFields tag is no longer available; please include the [_1] template module instead.",
+            "The MTCommentFields tag is no longer available.  Please include the [_1] template module instead.",
             MT->translate("Comment Form")
         )
     );
@@ -1992,7 +2004,7 @@ sub _hdlr_remote_sign_in_link {
     $blog = MT::Blog->load($blog)
         if defined $blog && !( ref $blog );
     return $ctx->error(
-        MT->translate( 'Can\'t load blog #[_1].', $ctx->stash('blog_id') ) )
+        MT->translate( 'Cannot load blog #[_1].', $ctx->stash('blog_id') ) )
         unless $blog;
     my $auths = $blog->commenter_authenticators;
     return $ctx->error(
@@ -2099,6 +2111,7 @@ sign out from the blog.
 sub _hdlr_sign_out_link {
     my ( $ctx, $args ) = @_;
     my $cfg  = $ctx->{config};
+    my $blog = $ctx->stash('blog');
     my $path = $ctx->cgi_path;
     $path .= '/' unless $path =~ m!/$!;
     my $comment_script = $cfg->CommentScript;
@@ -2120,6 +2133,7 @@ sub _hdlr_sign_out_link {
     }
     my $e = $ctx->stash('entry');
     return "$path$comment_script?__mode=handle_sign_in$static_arg&logout=1"
+        . ( $blog ? '&blog_id=' . $blog->id : '' )
         . ( $e ? "&amp;entry_id=" . $e->id : '' );
 }
 

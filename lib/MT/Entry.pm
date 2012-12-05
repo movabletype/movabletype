@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -313,17 +313,17 @@ sub list_props {
             order     => 400,
         },
         category_id => {
-            label            => 'Primary Category',
-            filter_label     => 'Category',
-            filter_tmpl        => '<mt:Var name="filter_form_hidden">',
-            order            => 500,
-            display          => 'default',
-            base             => '__virtual.integer',
-            filter_editable    => 0,
-            col_class        => 'string',
-            view_filter      => 'blog',
-            category_class   => 'category',
-            terms => sub {
+            label           => 'Primary Category',
+            filter_label    => 'Category',
+            filter_tmpl     => '<mt:Var name="filter_form_hidden">',
+            order           => 500,
+            display         => 'default',
+            base            => '__virtual.integer',
+            filter_editable => 0,
+            col_class       => 'string',
+            view_filter     => 'blog',
+            category_class  => 'category',
+            terms           => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $blog_id = MT->app->blog->id;
                 my $cat_id  = $args->{value};
@@ -349,8 +349,8 @@ sub list_props {
             args_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $id    = MT->app->param('filter_val');
-                my $cat   = MT->model('category')->load($id)
+                my $id  = MT->app->param('filter_val');
+                my $cat = MT->model('category')->load($id)
                     or return $prop->error(
                     MT->translate(
                         '[_1] ( id:[_2] ) does not exists.',
@@ -373,10 +373,12 @@ sub list_props {
                     )
                     );
                 return if !$app->blog || $app->blog->id != $cat->blog_id;
-                my $label = MT->translate( 'Entries from category: [_1]',
-                    $cat->label." (ID:".$cat->id.")", );
+                my $label = MT->translate(
+                    'Entries from category: [_1]',
+                    $cat->label . " (ID:" . $cat->id . ")",
+                );
                 $prop->{filter_label} = MT::Util::encode_html($label);
-                $label
+                $label;
             },
         },
         category => {
@@ -432,7 +434,7 @@ sub list_props {
                 my ( $cats, $placs ) = $prop->bulk_cats(@_);
                 return map {
                     MT::Util::encode_html(
-                        $cats->{ $placs->{ $_->id } || 0 } )
+                        $cats->{ $placs->{ $_->id } || 0 }, 1 )
                         || $prop->zero_state_label
                 } @$objs;
             },
@@ -479,9 +481,9 @@ sub list_props {
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $blog_id = MT->app->blog->id;
-                my $app = MT->instance;
-                my $option = $args->{option};
-                my $query  = $args->{string};
+                my $app     = MT->instance;
+                my $option  = $args->{option};
+                my $query   = $args->{string};
                 if ( 'contains' eq $option ) {
                     $query = { like => "%$query%" };
                 }
@@ -494,14 +496,13 @@ sub list_props {
                 elsif ( 'end' eq $option ) {
                     $query = { like => "%$query" };
                 }
-                push @{ $db_args->{joins} },
-                    MT->model('placement')->join_on(
+                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
                     undef,
                     {   entry_id => \'= entry_id',
                         blog_id  => $blog_id,
                     },
                     {   unique => 1,
-                        join   => MT->model($prop->category_class)->join_on(
+                        join   => MT->model( $prop->category_class )->join_on(
                             undef,
                             {   label   => $query,
                                 id      => \'= placement_category_id',
@@ -510,7 +511,7 @@ sub list_props {
                             { unique => 1, }
                         ),
                     },
-                    );
+                );
                 return;
             },
         },
@@ -520,6 +521,18 @@ sub list_props {
             label      => 'Publish Date',
             use_future => 1,
             order      => 600,
+            sort       => 
+                sub {
+                    my $prop = shift;
+                    my ( $terms, $args ) = @_;
+                    my $dir = delete $args->{direction};
+                    $dir = ('descend' eq $dir) ? "DESC" : "ASC";
+                    $args->{sort} = [ 
+                        { column => $prop->col, desc => $dir }, 
+                        { column => "id", desc => $dir }, 
+                    ];
+                    return;
+                },
         },
         modified_on => {
             base  => '__virtual.modified_on',
@@ -751,7 +764,7 @@ sub system_filters {
             order => 1000,
         },
         commented_in_last_7_days => {
-            label => 'Entries Commented on in the Last 7 Days',
+            label => 'Entries with Comments Within the Last 7 Days',
             items => [
                 {   type => 'commented_on',
                     args => { option => 'days', days => 7 }
@@ -1461,7 +1474,7 @@ sub blog {
             MT::Blog->load($blog_id)
                 or $entry->error(
                 MT->translate(
-                    "Load of blog '[_1]' failed: [_2]",
+                    "Loading blog '[_1]' failed: [_2]",
                     $blog_id,
                     MT::Blog->errstr
                         || MT->translate("record does not exist.")
@@ -1678,7 +1691,11 @@ sub unpack_revision {
 
 sub is_entry {
     my $class = shift;
-    return $class->class eq 'entry' ? 1: 0;
+    return $class->class eq 'entry' ? 1 : 0;
+}
+
+sub terms_for_tags {
+    return { status => MT::Entry::RELEASE() };
 }
 
 #trans('Draft')

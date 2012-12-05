@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -13,14 +13,17 @@ sub save {
     my $app       = shift;
     my $q         = $app->param;
     my $fid       = $q->param('fid');
-    my $author_id = $q->param('author_id') || $app->user->id;
+    my $author_id = $app->user->id;
     my $blog_id   = $q->param('blog_id') || 0;
     my $label     = $q->param('label');
     my $ds        = $q->param('datasource');
 
+    $app->validate_magic
+        or return $app->json_error( $app->translate('Invalid request') );
+
     if ( !$label ) {
         return $app->json_error(
-            $app->translate('Failed to save filter: label is required.') );
+            $app->translate('Failed to save filter: Label is required.') );
     }
     my $items;
     if ( my $items_json = $q->param('items') ) {
@@ -53,26 +56,28 @@ sub save {
 
     # Search duplicate.
     if (my $dupe = $filter_class->load(
-            {   author_id => $app->user->id,
+            {   author_id => $author_id,
                 object_ds => $ds,
                 label     => $label,
                 ( $fid ? ( id => { not => $fid } ) : () ),
             },
             {   limit      => 1,
-                fetch_only => { id => 1 },
+                fetchonly => { id => 1 },
             }
         )
         )
     {
         return $app->json_error(
             $app->translate(
-                'Failed to save filter: label "[_1]" is duplicated.', $label
+                'Failed to save filter:  Label "[_1]" is duplicated.', $label
             )
         );
     }
     if ($fid) {
         $filter = $filter_class->load($fid)
             or return $app->json_error( $app->translate('No such filter') );
+        return $app->json_error( $app->translate('Permission denied') )
+            unless $filter->author_id == $author_id;
     }
     else {
         $filter = $filter_class->new;
@@ -113,7 +118,9 @@ sub save {
 }
 
 sub delete {
-    my $app          = shift;
+    my $app = shift;
+    $app->validate_magic
+        or return $app->json_error( $app->translate('Invalid request') );
     my $q            = $app->param;
     my $id           = $q->param('id');
     my $filter_class = MT->model('filter');
@@ -122,12 +129,16 @@ sub delete {
     my $blog_id = $q->param('blog_id') || 0;
     my $ds      = $q->param('datasource');
     my $user    = $app->user;
+
     if ( $filter->author_id != $user->id && !$user->is_superuser ) {
         return $app->json_error( $app->translate('Permission denied') );
     }
     $filter->remove
         or return $app->json_error(
-        $app->translate( 'Failed to delete filter(s): [_1]', $filter->errstr ) );
+        $app->translate(
+            'Failed to delete filter(s): [_1]', $filter->errstr
+        )
+        );
 
     my %res;
     my $list = $app->param('list');
@@ -147,18 +158,23 @@ sub delete {
 
 sub delete_filters {
     my $app = shift;
-    my $id  = $app->param('id');
-    my @ids = split ',', $id;
+    return $app->permission_denied
+        unless $app->can_do('delete_any_filters');
+    return $app->errtrans('Invalid request')
+        unless $app->validate_magic;
+
+    my @ids  = $app->param('id');
+    # handling either AJAX request and normal request
+    @ids = split ',', join ',', @ids;
+
     my $res = MT->model('filter')->remove( { id => \@ids } )
-        or return $app->json_error(
-        MT->translate(
+        or return $app->errtrans(
             'Failed to delete filter(s): [_1]',
             MT->model('filter')->errstr,
-        )
         );
     unless ( $res > 0 ) {
         ## if $res is 0E0 ( zero but true )
-        return $app->json_error( MT->translate( 'No such filter', ) );
+        return $app->errtrans( 'No such filter' );
     }
 
     if ( $app->param('xhr') ) {

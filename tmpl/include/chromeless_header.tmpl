@@ -46,12 +46,11 @@
   <mt:if name="local_lang_id" ne="en-us">
   <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
   </mt:if>
-</mt:unless>
-
-<mt:unless name="optimize_ui">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<mt:else>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mt:unless name="optimize_ui">
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mt:else>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  </mt:unless>
 </mt:unless>
 
 <$mt:var name="js_include"$>
@@ -61,7 +60,7 @@
 <body <mt:if name="screen_id">id="<$mt:var name="screen_id"$>" </mt:if>class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"> chromeless-wide</mt:if><mt:if name="screen_type" eq="popup-screen"> chromeless-wide</mt:if><mt:if name="screen_class"> <mt:var name="screen_class"></mt:if>">
   <div id="container">
     <div id="brand">
-      <span><__trans phrase="Movable Type"></span>
+      <img alt="Movable Type" src="<mt:var name="static_uri">images/chromeless/mt_logo.png" />
     </div>
     <div id="nav">
   <mt:if name="wizard_steps">

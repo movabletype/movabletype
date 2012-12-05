@@ -23,8 +23,8 @@
     var repo_urls = {};
     var repos = [];
     var libraries = <mt:var name="style_library" to_json="1">;
-    var current_theme = '<mt:var name="current_theme">';
-    var current_layout = '<mt:var name="current_layout">';
+    var current_theme = '<mt:var name="current_theme" escape="js">';
+    var current_layout = '<mt:var name="current_layout" escape="js">';
     var layout_names = {
         "layout-wtt": "<__trans phrase="3-Columns, Wide, Thin, Thin" escape="js">",
         "layout-twt": "<__trans phrase="3-Columns, Thin, Wide, Thin" escape="js">",
@@ -80,6 +80,8 @@
         var display = mixer.addSelectedDisplay( "display-details-content" );
         display.entryProperties['template_set'] = 'Template Set';
         mixer.onselect = selectDesign;
+        mixer.imageFallbackSmall  = '<mt:var name="static_uri">plugins/StyleCatcher/images/thumbnail.gif';
+        mixer.imageFallbackBig    = '<mt:var name="static_uri">plugins/StyleCatcher/images/thumbnail-large.gif';
     }
 
     function initCategories() {
@@ -497,6 +499,7 @@
                 '__mode': 'stylecatcher_js',
                 'magic_token': '<mt:var name="magic_token">',
                 'url': url,
+                'key': repo_id,
                 'blog_id': blog_id
             }
         });

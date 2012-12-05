@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -659,8 +659,11 @@ sub _hdlr_entry_tb_data {
     my $path = $ctx->cgi_path;
     $path .= $cfg->TrackbackScript . '/' . $tb->id;
     my $url;
+    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $archiver;
+    $archiver = MT->publisher->archiver($at) if $at;
 
-    if ( my $at = $ctx->{current_archive_type} || $ctx->{archive_type} ) {
+    if ( $at and $archiver and not $archiver->entry_based() ) {
         $url = $e->archive_url($at);
         $url .= '#entry-' . sprintf( "%06d", $e->id )
             unless $at eq 'Individual';

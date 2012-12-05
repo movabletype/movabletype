@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -197,7 +197,7 @@ sub edit {
         }
 
         # Populate list of included templates
-        foreach my $tag qw( Include IncludeBlock ) {
+        foreach my $tag (qw( Include IncludeBlock )) {
             my $includes = $obj->getElementsByTagName($tag);
             if ($includes) {
                 my @includes;
@@ -229,12 +229,13 @@ sub edit {
                                 : 0
                             : [ $obj->blog_id, 0 ];
 
-                        my $mod_id
+                        my $mod_id 
                             = $mod . "::"
                             . (
                             ref $inc_blog_id
                             ? $inc_blog_id->[0]
-                            : $inc_blog_id );
+                            : $inc_blog_id
+                            );
                         next if exists $seen{$type}{$mod_id};
                         $seen{$type}{$mod_id} = 1;
 
@@ -278,7 +279,7 @@ sub edit {
                             $other->compile;
                             if ( $other->{errors} && @{ $other->{errors} } ) {
                                 $param->{error} = $app->translate(
-                                    "One or more errors were found in included template module ([_1]).",
+                                    "One or more errors were found in the included template module ([_1]).",
                                     $other->name
                                 );
                                 $param->{error} .= "<ul>\n";
@@ -558,7 +559,7 @@ sub edit {
             $template_type = 'custom' if 'module' eq $template_type;
             $param->{type} = $template_type;
         }
-        return $app->errtrans("Create template requires type")
+        return $app->errtrans("You must specify a template type when creating a template")
             unless $template_type;
         $param->{nav_templates} = 1;
         my $tab;
@@ -1043,7 +1044,7 @@ sub preview {
 
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->return_to_dashboard( redirect => 1 )
-      unless $perms || $app->user->is_superuser;
+        unless $perms || $app->user->is_superuser;
     if ( $perms && !$perms->can_edit_templates ) {
         return $app->return_to_dashboard( permission => 1 );
     }
@@ -1080,8 +1081,8 @@ sub preview {
     my $archive_file;
     my $archive_url;
     my %param;
-    my $blog_path = $blog->site_path;
-    my $blog_url  = $blog->site_url;
+    my $blog_path       = $blog->site_path;
+    my $blog_url        = $blog->site_url;
     my $use_virtual_cat = 0;
 
     if ( ( $type eq 'custom' ) || ( $type eq 'widget' ) ) {
@@ -1091,7 +1092,7 @@ sub preview {
             { blog_id => $blog_id, identifier => 'main_index' } );
         if ( !$preview_tmpl ) {
             return $app->errtrans(
-                "Can't locate host template to preview module/widget.");
+                "Cannot locate host template to preview module/widget.");
         }
         my $req = $app->request;
 
@@ -1150,9 +1151,9 @@ sub preview {
                     direction => 'ascend',
                 }
             );
-            unless ( $cat ) {
+            unless ($cat) {
                 $use_virtual_cat = 1;
-                $cat = new MT::Category;
+                $cat             = new MT::Category;
                 $cat->label( $app->translate("Preview") );
                 $cat->basename("preview");
                 $cat->parent(0);
@@ -1391,7 +1392,7 @@ sub reset_blog_templates {
     $app->validate_magic() or return;
     my $blog = MT::Blog->load( $perms->blog_id )
         or return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $perms->blog_id ) );
+        $app->translate( 'Cannot load blog #[_1].', $perms->blog_id ) );
     require MT::Template;
     my @tmpl = MT::Template->load( { blog_id => $blog->id } );
 
@@ -1582,18 +1583,30 @@ sub _populate_archive_loop {
 
 sub delete_map {
     my $app = shift;
+
     $app->validate_magic() or return;
-    my $perms = $app->{perms}
-        or return $app->error( $app->translate("No permissions") );
-    my $q  = $app->param;
-    my $id = $q->param('id');
+    return $app->error( $app->translate('No permissions') )
+        unless $app->can_do('edit_templates');
+
+    my $q           = $app->param;
+    my $id          = $q->param('id');
+    my $blog_id     = $q->param('blog_id');
+    my $template_id = $q->param('template_id');
+
+    $app->model('template')
+        ->load( { id => $template_id, blog_id => $blog_id } )
+        or
+        return $app->errtrans( 'Cannot load template #[_1].', $template_id );
 
     require MT::TemplateMap;
-    my $map = MT::TemplateMap->load( { id => $id } )
-        or return $app->error( $app->translate('Can\'t load templatemap') );
+    my $map = MT::TemplateMap->load( { id => $id, blog_id => $blog_id } )
+        or return $app->errtrans('Cannot load templatemap');
     $map->remove;
-    my $html = _generate_map_table( $app, $q->param('blog_id'),
-        $q->param('template_id') );
+
+    my $blog = MT->model('blog')->load( $blog_id );
+    $blog->flush_has_archive_type_cache();
+
+    my $html = _generate_map_table( $app, $blog_id, $template_id );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
     $app->print_encode($html);
@@ -1601,40 +1614,62 @@ sub delete_map {
 
 sub add_map {
     my $app = shift;
+
     $app->validate_magic() or return;
-    my $perms = $app->{perms}
-        or return $app->error( $app->translate("No permissions") );
+    return $app->error( $app->translate('No permissions') )
+        unless $app->can_do('edit_templates');
 
     my $q = $app->param;
 
     require MT::TemplateMap;
-    my $blog_id = $q->param('blog_id');
-    my $at      = $q->param('new_archive_type');
-    my $exist   = MT::TemplateMap->exist(
+    my $blog_id     = $q->param('blog_id');
+    my $template_id = $q->param('template_id');
+    my $at          = $q->param('new_archive_type');
+    my $exist       = MT::TemplateMap->exist(
         {   blog_id      => $blog_id,
             archive_type => $at
         }
     );
+
+    $app->model('template')
+        ->load( { id => $template_id, blog_id => $blog_id } )
+        or
+        return $app->errtrans( 'Cannot load template #[_1].', $template_id );
+
     my $map = MT::TemplateMap->new;
     $map->is_preferred( $exist ? 0 : 1 );
-    $map->template_id( scalar $q->param('template_id') );
+    $map->template_id($template_id);
     $map->blog_id($blog_id);
     $map->archive_type($at);
     $map->save
         or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
-    my $html = _generate_map_table( $app, $blog_id,
-        scalar $q->param('template_id') );
+
+    my $blog = MT->model('blog')->load( $blog_id );
+    $blog->flush_has_archive_type_cache();
+
+    my $html = _generate_map_table( $app, $blog_id, $template_id );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
     $app->print_encode($html);
 }
 
 sub can_view {
-    my ( $eh, $app, $id ) = @_;
-    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return ( $perms && $perms->can_edit_templates )
-        || ( !$app->blog && $app->user->can_edit_templates );
+    my ( $eh, $app, $id, $objp ) = @_;
+    return 1 if $app->user->can_edit_templates;
+    return 0 unless $app->blog;
+    if ($id) {
+        my $obj = $objp->force();
+        return 0
+            unless $app->user->permissions( $obj->blog_id )
+                ->can_do('edit_templates');
+    }
+    else {
+        my $perms = $app->permissions;
+        return 0
+            unless $perms->can_do('edit_templates');
+    }
+    return 1;
 }
 
 sub can_save {
@@ -1643,7 +1678,7 @@ sub can_save {
     return 1 if $author->is_superuser();
 
     if ( $obj && !ref $obj ) {
-        $obj = MT->model('template')->load( $obj );
+        $obj = MT->model('template')->load($obj);
     }
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
 
@@ -1719,7 +1754,7 @@ sub pre_save {
     $obj->cache_expire_event( join ',', @events ) if $#events >= 0;
     if ( $cache_expire_type == 1 ) {
         return $eh->error(
-            $app->translate("You should not be able to enter 0 as the time.")
+            $app->translate("You should not be able to enter zero (0) as the time.")
         ) if $interval == 0;
     }
     elsif ( $cache_expire_type == 2 ) {
@@ -2073,7 +2108,10 @@ sub refresh_all_templates {
     my $user = $app->user;
     my @blogs_not_refreshed;
     my $refreshed;
-    my $can_refresh_system = $user->is_superuser() ? 1 : 0;
+    my $can_refresh_system = (
+               $user->is_superuser()
+            or $user->permissions(0)->can_do('refresh_templates')
+    ) ? 1 : 0;
     my $default_language = MT->config->DefaultLanguage;
 BLOG: for my $blog_id (@id) {
         my $blog;
@@ -2118,7 +2156,9 @@ BLOG: for my $blog_id (@id) {
                     type    => { not => 'backup' },
                 }
             );
+            my @removed_tids;
             while ( my $tmpl = $tmpl_iter->() ) {
+                push @removed_tids, $tmpl->id;
                 if ($backup) {
 
                     # zap all template maps
@@ -2138,6 +2178,9 @@ BLOG: for my $blog_id (@id) {
                 else {
                     $tmpl->remove;
                 }
+            }
+            if (@removed_tids) {
+                $app->model('fileinfo')->remove({ template_id => \@removed_tids });
             }
 
             if ($blog_id) {
@@ -2179,6 +2222,8 @@ BLOG: for my $blog_id (@id) {
         $tmpl_list ||= MT::DefaultTemplates->templates();
         MT->set_language($current_lang);
 
+        my $current_component = MT->app->{component};
+
     TEMPLATE: for my $val (@$tmpl_list) {
             if ($blog_id) {
 
@@ -2195,8 +2240,11 @@ BLOG: for my $blog_id (@id) {
                 $val->{orig_name} = $val->{name};
                 my $current_lang = MT->current_language;
                 MT->set_language($tmpl_lang);
+                MT->app->{component} = $blog->theme->id
+                    if $blog && $blog->theme;
                 $val->{text} = $app->translate_templatized( $val->{text} );
                 MT->set_language($current_lang);
+                MT->app->{component} = $current_component;
             }
 
             my $orig_name = $val->{orig_name};
@@ -2376,12 +2424,16 @@ sub refresh_individual_templates {
     }
     $tmpl_list ||= MT::DefaultTemplates->templates();
 
-    my $tmpl_types = {};
-    my $tmpl_ids   = {};
-    my $tmpls      = {};
+    my $tmpl_types        = {};
+    my $tmpl_ids          = {};
+    my $tmpls             = {};
+    my $current_component = MT->app->{component};
+
     foreach my $tmpl (@$tmpl_list) {
+        MT->app->{component} = $blog->theme->id if $blog && $blog->theme;
         $tmpl->{text} = $app->translate_templatized( $tmpl->{text} )
             if ( $tmpl->{type} !~ m/^widgetset$/ );
+        MT->app->{component} = $current_component;
         $tmpl_ids->{ $tmpl->{identifier} } = $tmpl
             if $tmpl->{identifier};
         if ( $tmpl->{type}
@@ -2965,7 +3017,7 @@ sub list_widget {
     $app->load_list_actions( 'template', $widget_actions );
     $param->{ 'widget_' . $_ } = $widget_actions->{$_}
         for keys %$widget_actions;
-    $param->{page_actions}  = $app->page_actions('list_widget');
+    $param->{page_actions} = $app->page_actions('list_widget');
     $app->load_tmpl( 'list_widget.tmpl', $param );
 }
 
@@ -3077,7 +3129,7 @@ sub restore_widgetmanagers {
 sub save_template_prefs {
     my $app     = shift;
     my $blog_id = $app->param('blog_id');
-    my $perms = $app->user->permissions( $blog_id )
+    my $perms   = $app->user->permissions($blog_id)
         or return $app->error( $app->translate("No permissions") );
     $app->validate_magic() or return;
 

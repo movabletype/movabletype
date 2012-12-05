@@ -1,16 +1,16 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
 # $Id$
 
 function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
-    $localvars = array('_assets', 'asset', 'asset_first_in_row', 'asset_last_in_row', 'conditional', 'else_content');
+    $localvars = array(array('_assets', 'asset', 'asset_first_in_row', 'asset_last_in_row', 'conditional', 'else_content'), common_loop_vars());
     $counter = 0;
 
     if (isset($args['sort_by']) && $args['sort_by'] == 'score' && !isset($args['namespace'])) {
-        return $ctx->error($ctx->mt->translate('sort_by="score" must be used in combination with namespace.'));
+        return $ctx->error($ctx->mt->translate('sort_by="score" must be used together with a namespace.'));
     }
 
     if (!isset($content)) {

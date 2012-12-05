@@ -1,12 +1,12 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
 # $Id$
 
 function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
-    $localvars = array('comments', 'comment_order_num','comment','current_timestamp', 'commenter', 'blog', 'blog_id', 'conditional', 'else_content', '_comments_glue', '_comments_out');
+    $localvars = array(array('comments', 'comment_order_num','comment','current_timestamp', 'commenter', 'blog', 'blog_id', 'conditional', 'else_content', '_comments_glue', '_comments_out'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');

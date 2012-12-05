@@ -3,14 +3,12 @@
     border: solid #c0c6c9;
     border-width: 1px;
     background-color: #dcdddd;
-    border-top-right-radius: 5px;
-    border-top-left-radius: 5px;
-    -moz-border-radius: 5px 5px 0 0;
+    border-radius: 3px 3px 0 0;
 }
 
 #itemlist {
     width: 200px;
-}    
+}
 
 #root {
     min-height: 250px;
@@ -18,9 +16,7 @@
     border: solid #c0c6c9;
     border-width: 0 1px 1px;
     background-color: #f3f3f3;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-    -moz-border-radius: 0 0 5px 5px;
+    border-radius: 0 0 3px 3px;
 }
 
 .sortable-item,
@@ -30,12 +26,6 @@
     border-top-color: #cfd0d0;
     border-left-color: #cfd0d0;
     background-color: #fff;
-}
-.sortable-item:after,
-.add-form:after {
-    content:'';
-    display:block;
-    clear:both;
 }
 .sortable-item {
    padding: 10px;
@@ -57,13 +47,21 @@
 .sortable-item .item-basename {
     margin-left: 3px;
 }
+.sortable-item .item-label, 
 .sortable-item .item-label a, 
 .sortable-item .item-basename-text {
-    max-width: 12em;
+    display: inline-block;
+    max-width: 18em;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     word-wrap: normal;
+}
+.sortable-item .item-basename-text::before {
+    content: "\0028";
+}
+.sortable-item .item-basename-text::after {
+    content: "\0029";
 }
 .sortable-item .item-ctrl {
     display: none;
@@ -117,4 +115,23 @@
     width: 20px;
     height: 10px;
     background: transparent url(../images/arrow-target-mark.png) center bottom no-repeat;
+}
+
+/* - Clearfix */
+.sortable-item,
+.add-form:after {
+    zoom: 1;
+}
+.sortable-item:before,
+.sortable-item:after,
+.add-form:before,
+.add-form:after {
+    display: block;
+    height: 0;
+    visibility: hidden;
+    content: "\0020";
+}
+.sortable-item:after,
+.add-form:after {
+    clear: both;
 }

@@ -5,7 +5,8 @@
 use strict;
 use warnings;
 
-use lib 'extlib', 'lib';
+use FindBin;
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 use Data::Dumper;
 use Getopt::Long;
 use MT;

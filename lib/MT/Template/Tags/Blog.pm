@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -64,19 +64,17 @@ sub _hdlr_blogs {
     $terms{class} = 'blog' unless $terms{class};
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
-    my $iter  = MT::Blog->load_iter( \%terms, \%args );
+    my @blogs = MT::Blog->load( \%terms, \%args );
     my $res   = '';
     my $count = 0;
-    my $next  = $iter->();
     my $vars  = $ctx->{__stash}{vars} ||= {};
-    while ($next) {
-        my $blog = $next;
-        $next = $iter->();
+    MT::Meta::Proxy->bulk_load_meta_objects(\@blogs);
+    for my $blog (@blogs) {
         $count++;
         local $ctx->{__stash}{blog}    = $blog;
         local $ctx->{__stash}{blog_id} = $blog->id;
         local $vars->{__first__}       = $count == 1;
-        local $vars->{__last__}        = !$next;
+        local $vars->{__last__}        = $count == scalar(@blogs);
         local $vars->{__odd__}         = ( $count % 2 ) == 1;
         local $vars->{__even__}        = ( $count % 2 ) == 0;
         local $vars->{__counter__}     = $count;
@@ -587,12 +585,7 @@ sub _hdlr_blog_template_set_id {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
-    my $set = $blog->template_set || 'classic_blog';
-    if ( ref $set ) {
-        ## nameless template set by theme.
-        ## should return theme id.
-        $set = $blog->theme_id || '';
-    }
+    my $set = $blog->raw_template_set;
     $set =~ s/_/-/g;
     return $set;
 }

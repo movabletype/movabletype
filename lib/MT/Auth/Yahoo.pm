@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -9,10 +9,30 @@ package MT::Auth::Yahoo;
 use strict;
 use base qw( MT::Auth::OpenID );
 
+sub set_extension_args {
+    my $class = shift;
+    my ($claimed_identity) = @_;
+
+    $claimed_identity->set_extension_args(
+        MT::Auth::OpenID::NS_OPENID_AX(),
+        {   'mode'          => 'fetch_request',
+            'required'      => 'nickname',
+            'type.nickname' => 'http://axschema.org/namePerson/friendly',
+        }
+    );
+}
+
 sub get_nickname {
     my $class = shift;
     my ($vident) = @_;
 
+    # If AX data found, use that as nickname.
+    my $fields
+        = $vident->extension_fields( MT::Auth::OpenID::NS_OPENID_AX() );
+    my $nick = $fields->{'value.nickname'};
+    return $nick if $nick;
+
+    # No, Profile URL as nickname
     my $url = $vident->url;
     if ( $url =~ m(^https?://me.yahoo.com/([^/]+)/?$) ) {
         return $1;

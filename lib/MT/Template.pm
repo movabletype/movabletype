@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -119,6 +119,9 @@ sub new {
         elsif ( $type eq 'scalarref' ) {
             return $pkg->new_string( $param{source}, %param );
         }
+        else {
+            delete $param{source} if exists $param{source};
+        }
     }
     my $tmpl = $pkg->SUPER::new(@_);
     $tmpl->{include_path}   = $param{path};
@@ -164,16 +167,55 @@ sub new_string {
 sub load_file {
     my $tmpl = shift;
     my ($file) = @_;
-    unless ( File::Spec->file_name_is_absolute($file) ) {
+
+    # Canonicalize
+    my $real_file = MT::Util::canonicalize_path($file);
+    $real_file = MT::Util::realpath($file);
+
+    # Find template via include_path
+    unless ( File::Spec->file_name_is_absolute($real_file) ) {
         my @paths = @{ $tmpl->{include_path} || [] };
+        my $ok = 0;
         foreach my $path (@paths) {
-            my $test_file = File::Spec->catfile( $path, $file );
-            $file = $test_file, last if -f $test_file;
+            my $test_file = File::Spec->catfile( $path, $real_file );
+            $test_file = MT::Util::canonicalize_path($test_file);
+            $test_file = MT::Util::realpath($test_file);
+            $real_file = $test_file, $ok = 1, last if -f $test_file;
         }
+        return $tmpl->trans_error( "File not found: [_1]", $file )
+            unless -e $real_file;
     }
+
+    my $ok = 0;
+    my @paths = @{ $tmpl->{include_path} || [] };
+
+    # Add plugin's load path for check
+    foreach my $sig ( keys %MT::Plugins ) {
+        my $obj = $MT::Plugins{$sig}{object};
+        next if !$obj || ( $obj && !$obj->isa('MT::Plugin') );
+
+        my $full_path = $obj->{full_path};
+        push @paths, File::Spec->catdir( $full_path, 'tmpl' )
+            if -d $full_path;
+    }
+
+    foreach my $path (@paths) {
+        my $real_path = MT::Util::realpath($path);
+        next unless -d $real_path;
+        $ok = 1, last if $real_file =~ /^\Q$real_path\E/;
+    }
+
+    die MT->translate(
+        "Template load error: [_1]",
+        MT->translate(
+            "Tried to load the template file from outside of the include path '[_1]'",
+            $file
+        )
+    ) unless $ok;
+
     return $tmpl->trans_error( "File not found: [_1]", $file )
-        unless -e $file;
-    open my $fh, '<', $file
+        unless -e $real_file;
+    open my $fh, '<', $real_file
         or
         return $tmpl->trans_error( "Error reading file '[_1]': [_2]", $file,
         $! );
@@ -425,12 +467,14 @@ sub save {
         if ( $tmpl->blog_id ) {
             my $blog = $tmpl->blog;
             $scope = lc $blog->class_label;
-        } else {
+        }
+        else {
             $scope = MT->translate('system');
         }
         return $tmpl->error(
             MT->translate(
-                'Template name must be unique within this [_1].', $scope)
+                'Template name must be unique within this [_1].', $scope
+            )
         );
     }
 
@@ -584,6 +628,19 @@ sub _sync_from_disk {
         }
         return;
     }
+    if ( MT->config->SafeMode ) {
+        ## Check for a set of extensions that aren't allowed.
+        for my $ext (qw( pl pm cgi cfg )) {
+            if ( $lfile =~ /\.$ext$/i ) {
+                return $tmpl->error(
+                    MT->translate(
+                        "You cannot use a [_1] extension for a linked file.",
+                        ".$ext"
+                    )
+                );
+            }
+        }
+    }
     unless ( File::Spec->file_name_is_absolute($lfile) ) {
         if ( $tmpl->blog_id ) {
             my $blog = MT::Blog->load( $tmpl->blog_id )
@@ -596,16 +653,18 @@ sub _sync_from_disk {
             $lfile = File::Spec->catfile( MT->instance->server_path, $lfile );
         }
     }
-    return unless -e $lfile;
+    return unless -e $lfile && -w _;
     my ( $size, $mtime ) = ( stat _ )[ 7, 9 ];
     return
         if $size == $tmpl->linked_file_size
             && $mtime == $tmpl->linked_file_mtime;
-    local *FH;
-    open FH, $lfile or return;
+
+# Use rw handle due to avoid that anyone do open unwritable file.
+# ( -w file test operator can't detect windows ACL condition, so just try to open. )
+    open my $fh, '+<', $lfile or return;
     my $c;
-    do { local $/; $c = <FH> };
-    close FH;
+    do { local $/; $c = <$fh> };
+    close $fh;
     $tmpl->linked_file_size($size);
     $tmpl->linked_file_mtime($mtime);
     return $c;
@@ -640,16 +699,15 @@ sub _sync_to_disk {
             $lfile = File::Spec->catfile( MT->instance->server_path, $lfile );
         }
     }
-    local *FH;
     ## If the linked file already exists, and there is no template text
     ## (empty textarea, etc.), then we read the template text from the
     ## linked file, assuming that it should not be overwritten. If the
     ## file does not already exist, or if there is template text, assume
     ## that we should update the linked file.
     if ( -e $lfile && !$tmpl->SUPER::text ) {
-        open FH, $lfile or return;
-        do { local $/; $tmpl->SUPER::text(<FH>) };
-        close FH;
+        open my $fh, '+<', $lfile or return;
+        do { local $/; $tmpl->SUPER::text(<$fh>) };
+        close $fh;
     }
     else {
         my $umask = oct $cfg->HTMLUmask;
@@ -657,15 +715,15 @@ sub _sync_to_disk {
         ## Untaint. We assume that the user knows what he/she is doing,
         ## and allow anything.
         ($lfile) = $lfile =~ /(.+)/s;
-        open FH, ">$lfile"
+        open my $fh, '>', $lfile
             or return $tmpl->error(
             MT->translate(
                 "Opening linked file '[_1]' failed: [_2]",
                 $lfile, "$!"
             )
             );
-        print FH $text;
-        close FH;
+        print $fh $text;
+        close $fh;
         umask($old);
     }
     my ( $size, $mtime ) = ( stat $lfile )[ 7, 9 ];
@@ -939,6 +997,25 @@ sub appendChild {
     push @$nodes, $new_node;
     $tmpl->{reflow_flag} = 1;
 }
+
+# compute a cache-key based on the template fields
+sub get_cache_key {
+    my $self = shift;
+    require Digest::MD5;
+    require Encode;
+    my $cache_key = Digest::MD5::md5_hex(
+        Encode::encode_utf8(
+              'blog::' 
+            . $self->blog_id
+            . '::template_'
+            . $self->type 
+            . '::'
+            . $self->name
+        )
+    );
+    return $cache_key;
+}
+
 
 # Alias to perl_function_names for those that may prefer that.
 # *get_elements_by_tag_name = \&getElementsByTagName;

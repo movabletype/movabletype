@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -72,10 +72,12 @@ sub list_props {
                 my ($app) = @_;
                 my $id    = $app->param('filter_val');
                 my $cat   = MT->model('folder')->load($id);
-                my $label = MT->translate( 'Pages in folder: [_1]',
-                    $cat->label." (ID:".$cat->id.")", );
+                my $label = MT->translate(
+                    'Pages in folder: [_1]',
+                    $cat->label . " (ID:" . $cat->id . ")",
+                );
                 $prop->{filter_label} = MT::Util::encode_html($label);
-                $label
+                $label;
             },
         },
         created_on  => { base => 'entry.created_on', order => 600, },
@@ -190,7 +192,7 @@ sub archive_file {
     my $page = shift;
     my $blog = $page->blog()
         || return $page->error(
-        MT->translate( "Load of blog failed: [_1]", MT::Blog->errstr ) );
+        MT->translate( "Loading blog failed: [_1]", MT::Blog->errstr ) );
     return archive_file_for( $page, $blog, 'Page' );
 }
 
@@ -198,7 +200,7 @@ sub archive_url {
     my $page = shift;
     my $blog = $page->blog()
         || return $page->error(
-        MT->translate( "Load of blog failed: [_1]", MT::Blog->errstr ) );
+        MT->translate( "Loading blog failed: [_1]", MT::Blog->errstr ) );
     my $url = $blog->site_url || "";
     $url .= '/' unless $url =~ m!/$!;
     return $url . $page->archive_file(@_);

@@ -1,31 +1,31 @@
-.hidden { 
+.hidden {
     display: none !important;
 }
-.visible { 
+.visible {
     display: block;
 }
-.invisible { 
+.invisible {
     visibility: hidden;
 }
-.clickable { 
+.clickable {
     cursor: pointer;
 }
-.overflow-auto { 
+.overflow-auto {
     overflow: auto;
 }
-.overflow-hidden { 
+.overflow-hidden {
     overflow: hidden;
 }
-.inline { 
+.inline {
     display: inline;
 }
 .nowrap {
     white-space: nowrap;
 }
-.fl { 
+.fl {
     float: left;
 }
-.fr { 
+.fr {
     float: right;
 }
 .rall {
@@ -53,10 +53,10 @@
     -moz-border-radius: 0 0 5px 5px;
 }
 .odd {
-    background-color: #f9f9f9;
+    background-color: #fbfbfb;
 }
 .selected {
-    background-color: #dcdddd;
+    background-color: #e7e7eb;
 }
 .highlight {
     background-color: #f8f4e6;

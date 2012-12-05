@@ -11,6 +11,7 @@
     <mt:if name="request.saved_deleted">
         <mtapp:statusmsg
             id="saved-deleted"
+            rebuild="all"
             class="success">
             <__trans phrase="You have successfully deleted the selected tags.">
         </mtapp:statusmsg>
@@ -51,6 +52,7 @@ function submitEdit( id, newname, oldname ) {
   else {
     jQuery.ajax({
       type: 'POST',
+      contentType: 'application/x-www-form-urlencoded; charset=utf-8',
       async: false,
       url: '<mt:var name="script_url">',
       dataType: 'json',

@@ -7,6 +7,7 @@
    can_close="0">
   <mt:var name="error">
 </mtapp:statusmsg>
+<mt:unless var="hide_goback_button">
 <div class="actions-bar actions-bar-login">
   <button
      onclick="<mt:var name="goback">"
@@ -16,4 +17,5 @@
     <__trans phrase="Back">
   </button>
 </div>
+</mt:unless>
 <mt:include name="include/chromeless_footer.tmpl">

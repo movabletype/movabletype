@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -18,12 +18,15 @@ function smarty_function_mtentryexcerpt($args, &$ctx) {
     } elseif ($args['no_generate']) {
         return '';
     }
-    $blog = $ctx->stash('blog');
-    $words = $blog->blog_words_in_excerpt;
-    if (!isset($words) or empty($words)) {
-        $words = 40;
+    if (!isset($args['words'])) {
+        $blog = $ctx->stash('blog');
+        $words = $blog->blog_words_in_excerpt;
+        if (!isset($words) or empty($words)) {
+            $words = 40;
+        }
+        $args['words'] = $words;
     }
-    $args['words'] = $words;
+    
     $excerpt = $ctx->tag('MTEntryBody', $args);
     if (!$excerpt) {
         return '';

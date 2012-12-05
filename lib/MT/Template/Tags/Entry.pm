@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -304,7 +304,9 @@ sub _hdlr_entries {
 
     # for the case that we want to use mt:Entries with mt-search
     # send to MT::Template::Search if searh results are found
-    if ( $ctx->stash('results') && $args->{search_results} == 1 ) {
+    if ( $ctx->stash('results')
+        && ( ( $args->{search_results} || 0 ) == 1 ) )
+    {
         require MT::Template::Context::Search;
         return MT::Template::Context::Search::_hdlr_results( $ctx, $args,
             $cond );
@@ -507,6 +509,7 @@ sub _hdlr_entries {
             };
             if ( !$entries ) {
                 if ( $category_arg !~ m/\bNOT\b/i ) {
+                    return '' unless @cat_ids;
                     $args{join} = MT::Placement->join_on(
                         'entry_id',
                         {   category_id => \@cat_ids,
@@ -654,8 +657,9 @@ sub _hdlr_entries {
         my $namespace = $args->{namespace};
 
         my $need_join = 0;
-        for my $f
-            qw( min_score max_score min_rate max_rate min_count max_count scored_by )
+        for my $f (
+            qw{ min_score max_score min_rate max_rate min_count max_count scored_by }
+            )
         {
             if ( $args->{$f} ) {
                 $need_join = 1;
@@ -843,14 +847,25 @@ sub _hdlr_entries {
         if ( !@filters ) {
             if ( ( my $last = $args->{lastn} ) && ( !exists $args->{limit} ) )
             {
-                $args{direction} = 'descend';
-                $args{sort}      = 'authored_on';
+                $args{sort} = [ 
+                    { column => 'authored_on', desc => 'DESC' }, 
+                    { column => 'id', desc => 'DESC' }, 
+                ];
                 $args{limit}     = $last;
                 $no_resort = 0 if $args->{sort_by};
             }
             else {
-                $args{direction} = $args->{sort_order} || 'descend'
-                    if exists( $args{sort} );
+                if ($args{sort} eq 'authored_on') {
+                    my $dir = $args->{sort_order} || 'descend';
+                    $dir = ('descend' eq $dir) ? "DESC" : "ASC";
+                    $args{sort} = [ 
+                        { column => 'authored_on', desc => $dir }, 
+                        { column => 'id', desc => $dir }, 
+                    ];
+                }
+                else {
+                    $args{direction} = $args->{sort_order} || 'descend';
+                }
                 $no_resort = 1 unless $args->{sort_by};
                 if (   ( my $last = $args->{lastn} )
                     && ( exists $args->{limit} ) )
@@ -1113,7 +1128,8 @@ sub _hdlr_entries {
                         : sort { $b->$col() cmp $a->$col() } @entries;
                 }
             }
-            if ($post_sort_limit) {
+            if ( $post_sort_limit && ( scalar @entries ) > $post_sort_limit )
+            {
                 @entries
                     = @entries[ $post_sort_offset .. $post_sort_offset
                     + $post_sort_limit 
@@ -1125,35 +1141,29 @@ sub _hdlr_entries {
                 = $args->{sort_order}
                 || ( $blog ? $blog->sort_order_posts : 'descend' )
                 || '';
+            $so = $so eq 'ascend' ? 1 : -1;
+            my $type;
             if ( my $def = $class->column_def($col) ) {
-                if ( $def->{type} =~ m/^integer|float$/ ) {
-                    @entries
-                        = $so eq 'ascend'
-                        ? sort { $a->$col() <=> $b->$col() } @entries
-                        : sort { $b->$col() <=> $a->$col() } @entries;
-                }
-                else {
-                    @entries
-                        = $so eq 'ascend'
-                        ? sort { $a->$col() cmp $b->$col() } @entries
-                        : sort { $b->$col() cmp $a->$col() } @entries;
-                }
+                $type = $def->{type};
             }
             elsif ( $class->is_meta_column($col) ) {
-                my $type = MT::Meta->metadata_by_name( $class, $col );
-                no warnings;
-                if ( $type->{type} =~ m/integer|float/ ) {
-                    @entries
-                        = $so eq 'ascend'
-                        ? sort { $a->$col() <=> $b->$col() } @entries
-                        : sort { $b->$col() <=> $a->$col() } @entries;
-                }
-                else {
-                    @entries
-                        = $so eq 'ascend'
-                        ? sort { $a->$col() cmp $b->$col() } @entries
-                        : sort { $b->$col() cmp $a->$col() } @entries;
-                }
+                $type = MT::Meta->metadata_by_name( $class, $col );
+            }
+            my $func;
+            no warnings;
+            if ($type and $type =~ m/^integer|float$/) {
+                $func = sub { $so * ( $a->$col() <=> $b->$col() ) };
+            }
+            elsif ($col eq 'authored_on') {
+                $func = sub { 
+                    $so * ( ( $a->$col() cmp $b->$col() ) || 
+                            ( $a->id() cmp $b->id() ) ) };
+            }
+            else {
+                $func = sub { $so * ( $a->$col() cmp $b->$col() ) };
+            }
+            if ($func) {
+                @entries = sort $func @entries;
             }
         }
     }
@@ -1163,6 +1173,7 @@ sub _hdlr_entries {
         = ( @entries && defined $entries[0] ) ? \@entries : undef;
     my $glue = $args->{glue};
     my $vars = $ctx->{__stash}{vars} ||= {};
+    MT::Meta::Proxy->bulk_load_meta_objects( \@entries );
     for my $e (@entries) {
         local $vars->{__first__}    = !$i;
         local $vars->{__last__}     = !defined $entries[ $i + 1 ];
@@ -1689,8 +1700,12 @@ sub _hdlr_entry_excerpt {
     elsif ( $args->{no_generate} ) {
         return '';
     }
-    my $blog    = $ctx->stash('blog');
-    my $words   = $args->{words} || $blog ? $blog->words_in_excerpt : 40;
+    my $blog = $ctx->stash('blog');
+    my $words
+        = $ctx->var('search_results') ? MT->config->SearchExcerptWords
+        : $args->{words}              ? $args->{words}
+        : $blog                       ? $blog->words_in_excerpt
+        :                               40;
     my $excerpt = _hdlr_entry_body( $ctx, { words => $words, %$args } );
     return '' unless $excerpt;
     return $excerpt . '...';
@@ -2354,7 +2369,7 @@ sub _hdlr_entry_blog_name {
         or return $ctx->_no_entry_error();
     my $b = MT::Blog->load( $e->blog_id )
         or return $ctx->error(
-        MT->translate( 'Can\'t load blog #[_1].', $e->blog_id ) );
+        MT->translate( 'Cannot load blog #[_1].', $e->blog_id ) );
     return $b->name;
 }
 
@@ -2379,7 +2394,7 @@ sub _hdlr_entry_blog_description {
         or return $ctx->_no_entry_error();
     my $b = MT::Blog->load( $e->blog_id )
         or return $ctx->error(
-        MT->translate( 'Can\'t load blog #[_1].', $e->blog_id ) );
+        MT->translate( 'Cannot load blog #[_1].', $e->blog_id ) );
     my $d = $b->description;
     return defined $d ? $d : '';
 }
@@ -2404,7 +2419,7 @@ sub _hdlr_entry_blog_url {
         or return $ctx->_no_entry_error();
     my $b = MT::Blog->load( $e->blog_id )
         or return $ctx->error(
-        MT->translate( 'Can\'t load blog #[_1].', $e->blog_id ) );
+        MT->translate( 'Cannot load blog #[_1].', $e->blog_id ) );
     return $b->site_url;
 }
 

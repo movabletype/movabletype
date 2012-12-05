@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -44,7 +44,8 @@ sub edit {
                 = substr( $param->{entry_title}, 0, $title_max_len ) . '...'
                 if $param->{entry_title}
                     && length( $param->{entry_title} ) > $title_max_len;
-            $param->{entry_permalink} = MT::Util::encode_html( $entry->permalink );
+            $param->{entry_permalink}
+                = MT::Util::encode_html( $entry->permalink );
             unless ( $param->{has_publish_access} ) {
                 $param->{has_publish_access}
                     = $app->can_do('edit_comment_status_of_own_entry') ? 1 : 0
@@ -194,14 +195,15 @@ sub save_commenter_perm {
     foreach my $id (@ids) {
         ( $id, $blog_id ) = @$id if ref $id eq 'ARRAY';
         my $perm_blog_id = MT->config->SingleCommunity ? 0 : $blog_id;
-        if ( $perm_blog_id ) {
-            my $perm = $permissions{ $perm_blog_id } ||= $author->permissions($perm_blog_id);
+        if ($perm_blog_id) {
+            my $perm = $permissions{$perm_blog_id}
+                ||= $author->permissions($perm_blog_id);
             if ( !$perm->can_do('edit_commenter_status') ) {
-                return $app->errtrans( "Permission denied." );
+                return $app->errtrans("Permission denied.");
             }
         }
         else {
-            return $app->errtrans( "Permission denied." )
+            return $app->errtrans("Permission denied.")
                 unless $app->can_do('edit_global_commenter_status');
         }
 
@@ -371,28 +373,38 @@ sub unapprove_item {
 }
 
 sub empty_junk {
-    my $app     = shift;
-    my $perms   = $app->permissions;
-    my $user    = $app->user;
-    my $blog_id = $app->param('blog_id');
-    if ($blog_id) {
-        $app->can_do('delete_junk_comments')
-            or return $app->permission_denied();
+    my $app      = shift;
+    my $perms    = $app->permissions;
+    my $user     = $app->user;
+    my $blog     = $app->blog;
+    my $blog_ids = [];
+
+    $app->validate_magic() or return;
+
+    if ($blog) {
+        push @$blog_ids, $blog->id
+            if $user->permissions( $blog->id )
+                ->can_do('delete_junk_comments');
+        if ( !$blog->is_blog ) {
+            foreach my $b ( @{ $blog->blogs } ) {
+                push @$blog_ids, $b->id
+                    if $user->permissions( $b->id )
+                        ->can_do('delete_junk_comments');
+            }
+        }
+        return $app->permission_denied() unless @$blog_ids;
     }
     else {
         $app->can_do('delete_all_junk_comments')
             or return $app->permission_denied();
     }
 
-    my $blog_ids = $app->_load_child_blog_ids($blog_id);
-    push @$blog_ids, $blog_id if $blog_id;
-
     my $type  = $app->param('_type');
     my $class = $app->model($type);
     my $arg   = {};
     require MT::Comment;
     $arg->{junk_status} = MT::Comment::JUNK();
-    $arg->{blog_id} = $blog_ids if $blog_id;
+    $arg->{blog_id} = $blog_ids if @$blog_ids;
     $class->remove($arg);
     $app->add_return_arg( 'emptied' => 1 );
     $app->call_return;
@@ -408,10 +420,9 @@ sub handle_junk {
     my $blog_id = $app->param('blog_id');
     my ( %rebuild_entries, %rebuild_categories );
 
-    my @obj_ids = $app->param('id');
     if ( my $req_nonce = $app->param('nonce') ) {
-        if ( scalar @obj_ids == 1 ) {
-            my $cmt_id = $obj_ids[0];
+        if ( scalar @ids == 1 ) {
+            my $cmt_id = $ids[0];
             if ( my $obj = $class->load($cmt_id) ) {
                 my $nonce
                     = MT::Util::perl_sha1_digest_hex( $obj->id
@@ -443,22 +454,32 @@ sub handle_junk {
         $app->validate_magic() or return;
     }
 
-    my $perm_checked = $app->can_do('handle_junk');
-
     foreach my $id (@ids) {
         next unless $id;
 
         my $obj = $class->load($id) or die "No $class $id";
-        my $perms = $app->user->permissions($obj->blog_id);
+        my $perms = $app->user->permissions( $obj->blog_id )
+            or return $app->permission_denied();
+        my $perm_checked = $perms->can_do('handle_junk');
         my $old_visible = $obj->visible || 0;
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
-                next if $obj->parent->author_id != $app->user->id;
+                return $app->permission_denied()
+                    if $obj->parent->author_id != $app->user->id;
+            }
+            elsif ($obj->isa('MT::TBPing')
+                && $obj->parent->isa('MT::Category') )
+            {
+                return $app->permission_denied()
+                    unless $perms->can_do(
+                            'handle_junk_for_category_trackback');
             }
             elsif ( $obj->isa('MT::Comment') ) {
-                next if $obj->entry->author_id != $app->user->id;
+                return $app->permission_denied()
+                    if $obj->entry->author_id != $app->user->id;
             }
-            next unless $perms->can_do('handle_junk_for_own_entry');
+            return $app->permission_denied()
+                unless $perms->can_do('handle_junk_for_own_entry');
         }
         $obj->junk;
         $app->run_callbacks( 'handle_spam', $app, $obj )
@@ -501,21 +522,32 @@ sub not_junk {
     my $class = $app->model($type);
     my %rebuild_set;
 
-    my $perm_checked = $app->can_do('handle_not_junk');
-
     foreach my $id (@ids) {
         next unless $id;
         my $obj = $class->load($id)
             or next;
-        my $perms = $app->user->permissions( $obj->blog_id );
+        my $perms = $app->user->permissions( $obj->blog_id )
+            or return $app->permission_denied();
+        my $perm_checked = $perms->can_do('handle_not_junk');
+
         unless ($perm_checked) {
             if ( $obj->isa('MT::TBPing') && $obj->parent->isa('MT::Entry') ) {
-                next if $obj->parent->author_id != $app->user->id;
+                return $app->permission_denied()
+                    if $obj->parent->author_id != $app->user->id;
+            }
+            elsif ($obj->isa('MT::TBPing')
+                && $obj->parent->isa('MT::Category') )
+            {
+                return $app->permission_denied()
+                    unless $perms->can_do(
+                            'handle_junk_for_category_trackback');
             }
             elsif ( $obj->isa('MT::Comment') ) {
-                next if $obj->entry->author_id != $app->user->id;
+                return $app->permission_denied()
+                    if $obj->entry->author_id != $app->user->id;
             }
-            next unless $perms->can_do('handle_not_junk_for_own_entry');
+            return $app->permission_denied()
+                unless $perms->can_do('handle_not_junk_for_own_entry');
         }
         $obj->approve;
         $app->run_callbacks( 'handle_ham', $app, $obj );
@@ -595,7 +627,7 @@ sub do_reply {
     my $blog = $parent->blog
         || $app->model('blog')->load( $q->param('blog_id') );
     return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $q->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
         unless $blog;
 
     unless ( $app->can_do('reply_comment_from_cms') ) {
@@ -635,14 +667,14 @@ sub do_reply {
                 Entry             => $parent->entry_id,
                 BuildDependencies => 1
                 )
-                or return $app->publish_error( "Publish failed: [_1]",
+                or return $app->publish_error( "Publishing failed. [_1]",
                 $app->errstr );
             $app->_send_comment_notification( $comment, q(), $entry,
                 $app->model('blog')->load( $param->{blog_id} ), $app->user );
         }
     );
     return $app->build_page( 'dialog/comment_reply.tmpl',
-        { closing => 1, return_url => $q->param('return_url') } );
+        { closing => 1, return_url => scalar( $q->param('return_url') ) } );
 }
 
 sub reply_preview {
@@ -661,7 +693,7 @@ sub reply_preview {
         reply_to    => $q->param('reply_to'),
         magic_token => $app->current_magic,
         blog_id     => $q->param('blog_id'),
-        return_url  => $q->param('return_url'),
+        return_url  => scalar( $q->param('return_url') ),
     };
     my ( $comment, $parent, $entry ) = _prepare_reply($app);
     return unless $comment;
@@ -669,7 +701,7 @@ sub reply_preview {
     my $blog = $parent->blog
         || $app->model('blog')->load( $q->param('blog_id') );
     return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $q->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
         unless $blog;
 
     require MT::Sanitize;
@@ -713,13 +745,13 @@ sub dialog_post_comment {
     my $user      = $app->user;
     my $parent_id = $app->param('reply_to');
 
-    return $app->errtrans('Parent comment id was not specified.')
+    return $app->errtrans('The parent comment id was not specified.')
         unless $parent_id;
 
     my $comment_class = $app->model('comment');
     my $parent        = $comment_class->load($parent_id)
-        or return $app->errtrans('Parent comment was not found.');
-    return $app->errtrans("You can't reply to unapproved comment.")
+        or return $app->errtrans('The parent comment was not found.');
+    return $app->errtrans("You cannot reply to unapproved comment.")
         unless $parent->is_published;
 
     my $perms = $app->{perms};
@@ -737,12 +769,14 @@ sub dialog_post_comment {
     my $blog = $parent->blog
         || $app->model('blog')->load( $app->param('blog_id') );
     return $app->error(
-        $app->translate( 'Can\'t load blog #[_1].', $app->param('blog_id') ) )
+        $app->translate( 'Cannot load blog #[_1].', $app->param('blog_id') ) )
         unless $blog;
 
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec
         || $app->config->GlobalSanitizeSpec;
+    my $return_args = $app->param('return_args');
+    $return_args =~ s!^\?!! if $return_args;
     my $param = {
         reply_to       => $parent_id,
         commenter_name => MT::Sanitize->sanitize( $parent->author, $spec ),
@@ -755,8 +789,8 @@ sub dialog_post_comment {
         comment_text       => MT::Sanitize->sanitize( $parent->text, $spec ),
         comment_script_url => $app->config('CGIPath')
             . $app->config('CommentScript'),
-        return_url => ( $app->param('return_args')
-            ? $app->base . $app->uri . '?' . $app->param('return_args')
+        return_url => ( $return_args
+            ? $app->base . $app->uri . '?' . $return_args
             : $app->base
                 . $app->uri(
                 mode => 'list',
@@ -886,7 +920,7 @@ sub post_save {
                 {
                     $app->publish_error();    # logs error as well.
                     return $eh->error(
-                        MT->translate( "Publish failed: [_1]", $app->errstr )
+                        MT->translate( "Publishing failed: [_1]", $app->errstr )
                     );
                 }
                 1;
@@ -984,7 +1018,10 @@ sub set_item_visible {
     my $perms  = $app->permissions;
     my $author = $app->user;
 
-    my $type  = $app->param('_type');
+    my $type = $app->param('_type');
+    return $app->errtrans("Invalid request.")
+        unless grep { $_ eq $type } qw{comment ping tbping ping_cat};
+
     my $class = $app->model($type);
     $app->setup_filtered_ids
         if $app->param('all_selected');
@@ -1062,12 +1099,12 @@ sub set_item_visible {
                             )
                         {
                             return $app->errtrans(
-                                "You don't have permission to approve this trackback."
+                                "You do not have permission to approve this trackback."
                             ) if $obj_parent->author_id != $author->id;
                         }
                         else {
                             return $app->errtrans(
-                                "You don't have permission to approve this trackback."
+                                "You do not have permission to approve this trackback."
                             );
                         }
                     }
@@ -1079,26 +1116,26 @@ sub set_item_visible {
                 # TODO: Factor out permissions checking
                 my $entry = MT::Entry->load( $obj->entry_id )
                     || return $app->error(
-                    $app->translate("Comment on missing entry!") );
+                    $app->translate("The entry corresponding to this comment is missing.") );
 
                 if ( !$perms || $perms->blog_id != $obj->blog_id ) {
                     $perms = $author->permissions( $obj->blog_id );
                 }
                 unless ($perms) {
                     return $app->errtrans(
-                        "You don't have permission to approve this comment."
+                        "You do not have permission to approve this comment."
                     );
                 }
                 if ( !$app->can_do( 'approve_all_comment', $perms ) ) {
                     if ( $app->can_do( 'approve_own_entry_comment', $perms ) )
                     {
                         return $app->errtrans(
-                            "You don't have permission to approve this comment."
+                            "You do not have permission to approve this comment."
                         ) if $entry->author_id != $author->id;
                     }
                     else {
                         return $app->errtrans(
-                            "You don't have permission to approve this comment."
+                            "You do not have permission to approve this comment."
                         );
                     }
                 }
@@ -1147,7 +1184,7 @@ sub _prepare_reply {
 
     if ( !$parent || !$parent->is_published ) {
         $app->error(
-            $app->translate("You can't reply to unpublished comment.") );
+            $app->translate("You cannot reply to unpublished comment.") );
         return ( undef, $parent, $entry );
     }
 

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -8,8 +8,10 @@ package MT::Summary::Triggers;
 use strict;
 use warnings;
 
+{
+my $triggers_added;
 sub post_init_add_triggers {
-
+    return if $triggers_added;
     # post_save triggers for summary expiration
     my $summaries = MT->registry('summaries');
     my %class_triggers;
@@ -52,17 +54,17 @@ sub post_init_add_triggers {
         eval "require $class";
         $class->add_trigger(
             pre_save => sub {
-                \&pre_save_trigger( $class_triggers{$class}, @_ );
+                &pre_save_trigger( $class_triggers{$class}, @_ );
             }
         );
         $class->add_trigger(
             post_save => sub {
-                \&post_trigger( 'save', $class_triggers{$class}, @_ );
+                &post_trigger( 'save', $class_triggers{$class}, @_ );
             }
         );
         $class->add_trigger(
             post_remove => sub {
-                \&post_trigger( 'remove', $class_triggers{$class}, @_ );
+                &post_trigger( 'remove', $class_triggers{$class}, @_ );
             }
         );
         $class->add_callback(
@@ -78,6 +80,8 @@ sub post_init_add_triggers {
             }
         );
     }
+    $triggers_added = 1;
+}
 }
 
 sub pre_save_trigger {
@@ -92,7 +96,7 @@ sub post_trigger {
     for my $trigger (@$triggers) {
         next unless $trigger->{expires}->{id_column};
         my $parent_class = MT->model( $trigger->{class_type} );
-        die "Can't find a class for '", $trigger->{class_type}, "'"
+        die "Cannot find a class for '", $trigger->{class_type}, "'"
             if !defined $parent_class;
         my $code   = $trigger->{expires}->{code};
         my $id_col = $trigger->{expires}->{id_column};

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -16,7 +16,7 @@ function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
             $repeat = false;
             return '';
         }
-        $at = explode(',', $at);
+        $at = preg_split("/\s*,\s*/", $at);
 
         $ctx->localize($localvars);
         $ctx->stash('archive_types', $at);

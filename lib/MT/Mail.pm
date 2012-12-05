@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -11,6 +11,16 @@ use strict;
 use MT;
 use base qw( MT::ErrorHandler );
 use Encode;
+use Sys::Hostname;
+
+our $MAX_LINE_OCTET = 998;
+
+my %SMTPModules = (
+    Core => [ 'Net::SMTP', 'MIME::Base64' ],
+    Auth => ['Authen::SASL'],
+    SSL => [ 'Net::SMTP::SSL', 'IO::Socket::SSL', 'Net::SSLeay' ],
+    TLS => [ 'Net::SMTP::TLS', 'IO::Socket::SSL', 'Net::SSLeay' ],
+);
 
 sub send {
     my $class = shift;
@@ -47,7 +57,7 @@ sub send {
                 foreach (@$val) {
                     if ( ( $mail_enc ne 'iso-8859-1' ) || (m/[^[:print:]]/) )
                     {
-                        if ( $header =~ m/^(From|To|Reply|B?cc)/i ) {
+                        if ( $header =~ m/^(From|To|Reply-To|B?cc)/i ) {
                             if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
                                 $_ = MIME::EncWords::encode_mimeword(
                                     MT::I18N::default->encode_text_encode(
@@ -123,6 +133,13 @@ sub send {
 
     $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
 
+    if ( $body =~ /^.{@{[$MAX_LINE_OCTET+1]},}/m
+        && eval { require MIME::Base64 } )
+    {
+        $body = MIME::Base64::encode_base64($body);
+        $hdrs{'Content-Transfer-Encoding'} = 'base64';
+    }
+
     return 1
         unless MT->run_callbacks(
         'mail_filter',
@@ -170,27 +187,140 @@ sub _send_mt_debug {
 sub _send_mt_smtp {
     my $class = shift;
     my ( $hdrs, $body, $mgr ) = @_;
-    eval { require Mail::Sendmail; };
-    return $class->error(
-        MT->translate(
-            "Sending mail via SMTP requires that your server "
-                . "have Mail::Sendmail installed: [_1]",
-            $@
-        )
-    ) if $@;
-    my %hdrs = %$hdrs;
-    $hdrs{Message} = $body;
-    $hdrs{Smtp}    = $mgr->SMTPServer;
-    for my $h (qw( Cc Bcc )) {
+    $hdrs->{To} = $mgr->DebugEmailAddress
+        if ( is_valid_email( $mgr->DebugEmailAddress || '' ) );
 
-        if ( $hdrs{$h} ) {
-            $hdrs{$h} = join ', ', @{ $hdrs{$h} };
+    # SMTP Configuration
+    my $host      = $mgr->SMTPServer;
+    my $user      = $mgr->SMTPUser;
+    my $pass      = $mgr->SMTPPassword;
+    my $localhost = hostname() || 'localhost';
+    my $port
+        = $mgr->SMTPPort          ? $mgr->SMTPPort
+        : $mgr->SMTPAuth eq 'ssl' ? 465
+        :                           25;
+    my ( $auth, $tls, $ssl );
+    if ( $mgr->SMTPAuth ) {
+        if ( 'starttls' eq $mgr->SMTPAuth ) {
+            $tls = 1;
+        }
+        elsif ( 'ssl' eq $mgr->SMTPAuth ) {
+            $ssl = 1;
+            $auth = 1;
+        }
+        else {
+            $auth = 1;
         }
     }
-    my $ret = Mail::Sendmail::sendmail(%hdrs);
-    $ret
-        or return $class->error(
-        MT->translate( "Error sending mail: [_1]", $Mail::Sendmail::error ) );
+
+    return $class->error(
+        MT->translate(
+            "Username and password is required for SMTP authentication."
+        )
+        )
+        if ( $tls or $auth )
+        and ( !$user or !$pass );
+
+    # Check required modules;
+    my $mod_reqd;
+    my @modules = ();
+    push @modules, @{ $SMTPModules{Core} };
+    push @modules, @{ $SMTPModules{Auth} } if $auth;
+    push @modules, @{ $SMTPModules{SSL} } if $ssl;
+    push @modules, @{ $SMTPModules{TLS} } if $tls;
+
+    $class->can_use( \@modules ) or return;
+
+    # Make a smtp object
+    my $smtp;
+
+    if ($tls) {
+        $smtp = Net::SMTP::TLS->new(
+            $host,
+            Port     => $port,
+            User     => $user,
+            Password => $pass,
+            Timeout  => 60,
+            Hello    => $localhost,
+            ( $MT::DebugMode ? ( Debug => 1 ) : () ),
+            )
+            or return $class->error(
+            MT->translate(
+                'Error connecting to SMTP server [_1]:[_2]',
+                $host, $port
+            )
+            );
+    }
+    elsif ($ssl) {
+        $smtp = Net::SMTP::SSL->new(
+            $host,
+            Port    => $port,
+            Timeout => 60,
+            Hello   => $localhost,
+            ( $MT::DebugMode ? ( Debug => 1 ) : () ),
+            )
+            or return $class->error(
+            MT->translate(
+                'Error connecting to SMTP server [_1]:[_2]',
+                $host, $port
+            )
+            );
+    }
+    else {
+        $smtp = Net::SMTP->new(
+            $host,
+            Port    => $port,
+            Timeout => 60,
+            Hello   => $localhost,
+            ( $MT::DebugMode ? ( Debug => 1 ) : () ),
+            )
+            or return $class->error(
+            MT->translate(
+                'Error connecting to SMTP server [_1]:[_2]',
+                $host, $port
+            )
+            );
+    }
+
+    if ($auth) {
+        if ( !$smtp->auth( $user, $pass ) ) {
+            return $class->error(
+                MT->translate(
+                    "Authentication failure: [_1]",
+                    $smtp->message
+                )
+            );
+        }
+    }
+
+    # Set sender header if smtp user id is valid email
+    $hdrs->{Sender} = $user if MT::Util::is_valid_email($user);
+
+    # Setup headers
+    my $hdr;
+    foreach my $k ( keys %$hdrs ) {
+        $hdr .= "$k: " . $hdrs->{$k} . "\r\n";
+    }
+
+    # Sending mail
+    $smtp->mail( $hdrs->{From} );
+
+    foreach my $h ( qw( To Bcc Cc ) ) {
+        if ( defined $hdrs->{$h} ) {
+            my $addr = $hdrs->{$h};
+            $addr = [ $addr ] unless 'ARRAY' eq ref $addr;
+            foreach my $a ( @$addr ) {
+                $smtp->recipient( $a );
+            }
+        }
+    }
+
+    $smtp->data();
+    $smtp->datasend($hdr);
+    $smtp->datasend("\n");
+    $smtp->datasend($body);
+    $smtp->dataend();
+    $smtp->quit;
     1;
 }
 
@@ -233,6 +363,79 @@ sub _send_mt_sendmail {
     print MAIL $body;
     close MAIL;
     1;
+}
+
+sub can_use {
+    my $class = shift;
+    my ($mods) = @_;
+    return unless $mods;
+
+    my @err;
+    for my $module ( @{$mods} ) {
+        eval "use $module;";
+        push @err, $module
+            if $@;
+    }
+
+    if (@err) {
+        $class->error(
+            MT->translate(
+                "Following required module(s) were not found: ([_1])",
+                ( join ', ', @err )
+            )
+        );
+        return;
+    }
+
+    return 1;
+}
+
+sub can_use_smtp {
+    my $class = shift;
+    my @mods;
+    push @mods, @{ $SMTPModules{Core} };
+
+    return $class->can_use( \@mods );
+}
+
+sub can_use_smtpauth {
+    my $class = shift;
+
+    # return if we cannot use smtp modules
+    return unless $class->can_use_smtp;
+
+    my @mods;
+    push @mods, @{ $SMTPModules{Auth} };
+    return $class->can_use( \@mods );
+}
+
+sub can_use_smtpauth_ssl {
+    my $class = shift;
+
+    # return if we cannot use smtp modules
+    return unless $class->can_use_smtp;
+
+    # return if we cannot use smtpauth modules
+    return unless $class->can_use_smtpauth;
+
+    my @mods;
+    push @mods, @{ $SMTPModules{SSL} };
+    return $class->can_use( \@mods );
+}
+
+sub can_use_smtpauth_tls {
+    my $class = shift;
+
+    # return if we cannot use smtp modules
+    return unless $class->can_use_smtp;
+
+    # return if we cannot use smtpauth modules
+    return unless $class->can_use_smtpauth;
+
+    my @mods;
+    push @mods, @{ $SMTPModules{TLS} };
+
+    return $class->can_use( \@mods );
 }
 
 1;

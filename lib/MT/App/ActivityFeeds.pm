@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -285,7 +285,7 @@ sub process_log_feed {
             . encode_url( $app->param($key) );
     }
     $str =~ s/^&amp;(.+)$/?$1/;
-    $param->{feed_self} = $app->base . $app->app_path . $app->script . $str;
+    $param->{feed_self} = $app->base . $app->path . $app->script . $str;
     $param->{feed_atom_id} = $app->base . $app->uri;
     $param->{feed_updated_iso} = time2isoz( ts2epoch( undef, $last_ts ) );
     $param->{feed_updated_iso} =~ s/ /T/;
@@ -615,6 +615,43 @@ sub _feed_blog {
     $$feed = $app->process_log_feed( $terms, $param );
 }
 
+sub _feed_system_check_permission {
+    my ($cb, $app, $blog_id_ref) = @_;
+    # verify user has permission to view logs for given weblog
+    my $blog_id = $$blog_id_ref;
+    my $user = $app->user;
+
+    return 1 if $user->is_superuser;
+    return 1 if $app->can_do('get_all_system_feed');
+
+    if ($blog_id) {
+        my @blog_ids = ($blog_id);
+        my $blog = MT->model('blog')->load($blog_id)
+            or return $cb->error( $app->translate("Invalid request.") );
+        if ( !$blog->is_blog ) {
+            push @blog_ids, map { $_->id } @{ $blog->blogs };
+        }
+
+        my $iter = MT->model('permission')
+            ->load_iter( { author_id => $user->id, blog_id => \@blog_ids } );
+
+        my @allowed_blog_ids;
+        while ( my $p = $iter->() ) {
+            push @allowed_blog_ids, $p->blog_id
+                if $p->can_do('get_system_feed');
+        }
+
+        return $cb->error( $app->translate("No permissions.") )
+            unless @allowed_blog_ids;
+
+        $$blog_id_ref = join ',', @allowed_blog_ids;
+    }
+    elsif ( ! $user->can_do( 'export_blog_log', at_least_one => 1 ) ) {
+        return $cb->error( $app->translate("No permissions.") );
+    }
+    return 1;
+}
+
 sub _feed_system {
     my ( $cb, $app, $view, $feed ) = @_;
 
@@ -623,37 +660,7 @@ sub _feed_system {
     my $filter     = $app->param('filter');
     my $filter_val = $app->param('filter_val');
 
-    # verify user has permission to view logs for given weblog
-    if ($blog_id) {
-        my $blog_ids;
-        my $blog = MT->model('blog')->load($blog_id)
-            or return $cb->error( $app->translate("Invalid request.") );
-        if ( !$blog->is_blog ) {
-            push @$blog_ids, map { $_->id } @{ $blog->blogs };
-        }
-        push @$blog_ids, $blog_id;
-
-        my $iter = MT->model('permission')
-            ->load_iter( { author_id => $user->id, blog_id => $blog_ids } );
-
-        $blog_ids = ();
-        while ( my $p = $iter->() ) {
-            push @$blog_ids, $p->blog_id
-                if $p->can_do('get_system_feed');
-        }
-
-        return $cb->error( $app->translate("No permissions.") )
-            unless $blog_ids;
-
-        $blog_id = join ',', @$blog_ids;
-    }
-    else {
-        unless ( $app->can_do('get_all_system_feed') ) {
-            unless ( $user->can_do( 'export_blog_log', at_least_one => 1 ) ) {
-                return $cb->error( $app->translate("No permissions.") );
-            }
-        }
-    }
+    return unless _feed_system_check_permission($cb, $app, \$blog_id);
 
     my $args = {};
     unless ( $filter && $filter_val ) {

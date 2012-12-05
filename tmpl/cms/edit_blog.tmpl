@@ -38,13 +38,7 @@ function dirify_blog_name(fld) {
 }
 function init() {
 <mt:if name="new_object">
-    getByID("name").focus();
-    var tz = getByID("server_offset");
-    if (tz) {
-        // The options ignore DST, so check at a specific time when no one was on DST.
-        var offset = (new Date(2008, 0, 1, 0, 0, 0, 0)).getTimezoneOffset();
-        tz.value = 0 - offset / 60;
-    }
+    jQuery('#name').focus();
 </mt:if>
 }
 
@@ -75,7 +69,9 @@ function init() {
         help_section="blog_theme">
         <select name="blog_theme">
         <mt:loop name="theme_loop">
+        <mt:unless name="errors">
           <option value="<mt:var name="key" escape="html">"<mt:if name="key" eq='$config.DefaultBlogTheme'> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+        </mt:unless>
         </mt:loop>
         </select>
     </mtapp:setting>
@@ -116,14 +112,16 @@ function init() {
         <div class="relative-site_path content-path">
           <span class="website-path"><mt:var name="website_path" encode_html="1"></span><input type="text" name="site_path" id="site_path" class="blog-path-text text path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" />
         </div>
+        <mt:unless name="sitepath_limited">
         <div class="absolute-site_path content-path">
           <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text text hide-input required" />
         </div>
         <div class="use-absolute option">
             <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
         </div>
-        <div class="hint relative-site_path-hint"><__trans phrase="The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
         <div class="hint absolute-site_path-hint"><__trans phrase="The path where your index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
+        </mt:unless>
+        <div class="hint relative-site_path-hint"><__trans phrase="The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
     </mtapp:setting>
 </mt:if>
 <mt:if name="can_edit_config">
@@ -205,10 +203,10 @@ function init() {
         if (url_.indexOf(' ') != -1) {
             return false;
         }
-        return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+        return url_.match(/^https?:\/\/[a-z0-9-\.]+\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/);
     }
     function is_valid_path(path_){
-        var str = path_.replace(/["%<>\[\\\]\^`{\|}~]/g, ""); //"
+        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, ""); //"
         str = encodeURI(str);
         if (str.indexOf('%') != -1) {
             return false;
@@ -257,9 +255,9 @@ function init() {
       '#server_offset': '<__trans phrase="You did not select a time zone." escape="singlequotes">',
       '#site_url_path': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
       '#site_path.required': '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
-      '#site_path': '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
+      '#site_path': '<__trans phrase="You must set a valid local site path." escape="singlequotes">',
       '#site_path_absolute.required': '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
-      '#site_path_absolute': '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+      '#site_path_absolute': '<__trans phrase="You must set a valid local site path." escape="singlequotes">'
     });
 
     jQuery('#cfg_form').submit( function () {

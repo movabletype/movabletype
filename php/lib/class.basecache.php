@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -33,7 +33,7 @@ abstract class CacheProviderFactory {
 
         if (!array_key_exists($type, self::$_provider)) {
             require_once('class.exception.php');
-            throw new MTException("Can't load cache provider. (" . $type . ")");
+            throw new MTException("Cannot load cache provider. (" . $type . ")");
         }
 
         $name = CacheProviderFactory::$_provider[$type];

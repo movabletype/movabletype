@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -26,6 +26,8 @@ sub do_import {
 sub import_contents {
     my $class = shift;
     my %param = @_;
+    ## Init error buffer.
+    __PACKAGE__->error();
     my $iter  = $param{Iter};
     my $blog  = $param{Blog}
         or return __PACKAGE__->error( MT->translate("No Blog") );
@@ -162,7 +164,7 @@ sub import_contents {
                                 $authors{$val} = $author;
                             }
                             $author_id = $author->id;
-                            $entry->author_id( $author_id );
+                            $entry->author_id($author_id);
                         }
                         elsif ($key eq 'CATEGORY'
                             || $key eq 'PRIMARY CATEGORY' )
@@ -282,7 +284,7 @@ sub import_contents {
                         if ( !$entry ) {
                             $cb->(
                                 MT->translate(
-                                    "Can't find existing entry with timestamp '[_1]'... skipping comments, and moving on to next entry.",
+                                    "Cannot find existing entry with timestamp '[_1]'... skipping comments, and moving on to next entry.",
                                     $ts
                                     )
                                     . "\n"
@@ -559,7 +561,7 @@ sub import_contents {
                             $tb = MT->model('trackback')->new;
                             $tb->blog_id( $entry->blog_id );
                             $tb->entry_id( $entry->id );
-                            $tb->category_id(0);    ## category_id can't be NULL
+                            $tb->category_id(0);  ## category_id can't be NULL
                             $tb->title( $entry->title );
                             $tb->description( $entry->get_excerpt );
                             $tb->url( $entry->permalink );

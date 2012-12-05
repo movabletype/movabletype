@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -400,6 +400,7 @@ sub split {
 
         #$tag =~ s/(^[\s,]+|[\s,]+$)//gs;
         $tag =~ s/(^\s+|\s+$)//gs;
+
         #$tag =~ s/\s+/ /gs;
         my $n8d_tag = MT::Tag->normalize($tag);
         next if $n8d_tag eq '';
@@ -525,6 +526,7 @@ sub clear_cache {
     $tag_cache->remove if $tag_cache;
 }
 
+### DEPRECATED
 sub cache {
     my $pkg     = shift;
     my (%param) = @_;
@@ -880,6 +882,10 @@ sub tagged_count {
         join => [ 'MT::ObjectTag', 'object_id', $jterms, { unique => 1 } ] };
     require MT::ObjectTag;
     $pkg->count( $terms, $args );
+}
+
+sub terms_for_tags {
+    return undef;
 }
 
 1;

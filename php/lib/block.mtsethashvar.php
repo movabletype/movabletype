@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -16,7 +16,7 @@ function smarty_block_mtsethashvar($args, $content, &$ctx, &$repeat) {
             $name = $vars[$name];
             if (!isset($name))
                 return $ctx->error($ctx->mt->translate(
-                    "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ));
+                    "You used an [_1] tag without a valid name attribute.", "<MT$tag>" ));
         }
 
         $hash = $vars[$name];
@@ -36,6 +36,9 @@ function smarty_block_mtsethashvar($args, $content, &$ctx, &$repeat) {
             $ctx->stash('__inside_set_hashvar', $parent_hash);
         }
         else {
+            if (array_key_exists('__inside_set_hashvar', $ctx->__stash))
+                unset($ctx->__stash['__inside_set_hashvar']);
+
             if (is_array($vars)) {
                 $vars[$name] = $hash;
             } else {

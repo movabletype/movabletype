@@ -114,7 +114,7 @@
     <div class="revision-info">
     <mt:if name="rev_date">
       <p><__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">"></p>
-      <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog" title="<__trans phrase="View revisions of this template">"><__trans phrase="View revisions"></a>
+      <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="html"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog" title="<__trans phrase="View revisions of this template">"><__trans phrase="View revisions"></a>
     <mt:else>
       <p class="zero-state"><__trans phrase="No revision(s) associated with this template"></p>
     </mt:if>
@@ -248,7 +248,7 @@
      type="submit"
      accesskey="v"
      tabindex="13"
-     title="Preview"
+     title="<__trans phrase="Preview">"
      class="preview action button"
      onclick="return validate(this.form);">
     <__trans phrase="Preview"></button>
@@ -403,14 +403,22 @@ function validate (f, rebuild) {
         alert('<__trans phrase="You must set the Template Name." escape="js">');
         return false;
     }
-    else if (f.outfile && !f.outfile.value) {
+    if (f.outfile && !f.outfile.value) {
         alert('<__trans phrase="You must set the template Output File." escape="js">');
         return false;
     }
-    else {
-        app.clearDirty();
-        if (rebuild) setRebuild(f);
-    }
+
+    app.clearDirty();
+    var area = DOM.getElement('text');
+    var str = area.value;
+    if ( !defined( str ) ) str = '';
+    str = str.replace(/[\0-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+    area.value = str;
+    str = editor.getValue();
+    if ( !defined( str ) ) str = '';
+    str = str.replace(/[\0-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+    editor.setValue(str);
+    if (rebuild) setRebuild(f);
     return true;
 }
 function saveArchiveMapChange(param) {
@@ -577,7 +585,7 @@ function toggleCache(id) {
      help_page="templates"
      help_section="template_name">
     <div id="template-editor-toolbar" class="template editor-toolbar toolbar">
-      <button type="button" id="syntaxon" class="command-highlight-on toolbar button active" title="Syntax Hightlight On"><span class="button-label">Syntax Hightlight On</span></button><button type="button" id="syntaxoff" class="command-highlight-off toolbar button" title="Syntax Hightlight Off"><span class="button-label">Syntax Hightlight Off</span></button>
+      <button type="button" id="syntaxon" class="command-highlight-on toolbar button active" title="<__trans phrase="Syntax highlighting On">"><span class="button-label"><__trans phrase="Syntax highlighting On"></span></button><button type="button" id="syntaxoff" class="command-highlight-off toolbar button" title="<__trans phrase="Syntax highlighting Off">"><span class="button-label"><__trans phrase="Syntax highlighting Off"></span></button>
     </div>
     <div id="textarea-enclosure" class="editor">
       <textarea name="text" id="text" class="monospace text full" tabindex="3" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" /><mt:var name="text" escape="html"></textarea>
@@ -798,7 +806,16 @@ function toggleCache(id) {
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 </form>
 
-<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/js/codemirror.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/lib/codemirror.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>codemirror/lib/codemirror.css">
+
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/xml.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/javascript.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/css.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/htmlmixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>codemirror/mt/mt.css">
+
+
 <script type="text/javascript">
 /* <![CDATA[ */
 App.singletonConstructor =
@@ -817,51 +834,35 @@ MT.App = new Class( MT.App, {
 } );
 
 var options = jQuery('#text').attr('mt:editor-options');
-var parsers;
-if (options.match('lang:css')) {
-    parsers = ["parsecss.js"];
-} else if (options.match('lang:javascript')) {
-    parsers = ["tokenizejavascript.js", "parsejavascript.js"];
-} else {
-    parsers = ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js", "parsehtmlmixed.js"];
-}
-
-var editor = CodeMirror.fromTextArea('text', {
-    parserfile: parsers,
-    stylesheet: ["<$mt:var name="static_uri"$>codemirror/css/xmlcolors.css", "<$mt:var name="static_uri"$>codemirror/css/jscolors.css", "<$mt:var name="static_uri"$>codemirror/css/csscolors.css"],
-    path: "<mt:var name="static_uri">codemirror/js/",
+var editor_params = {
     lineNumbers: true,
-    textWrapping: false,
+    lineWrapping: false,
     tabMode: "default",
     indentUnit: 0,
-    passDelay: 20,
-    height: "550px",
-    lang: "<mt:var name="language_tag">"
-});
-
-var timer = setTimeout( 'editor_onload()', 500 );
-
-function editor_onload() {
-    window.clearTimeout(timer);
-    if ( editor.editor ) {
-        jQuery('#syntax<mt:var name="disp_prefs_syntax" default="on">').click();
-    } else {
-        timer = setTimeout( 'editor_onload()', 500 );
-    }
+    pollForIME: true,
+    mode: "text/html"
+};
+if (options.match('lang:css')) {
+    editor_params['mode'] = 'text/javascript';
+} else if (options.match('lang:javascript')) {
+    editor_params['mode'] = 'text/css';
 }
 
+var editor = CodeMirror.fromTextArea(jQuery('#text').get(0), editor_params);
+
 function syncEditor() {
-    var wrapper = editor.wrapping;
+    var wrapper = editor.getWrapperElement();
     if ( jQuery(wrapper).css('display') == 'none') {
-        editor.setCode(jQuery('#text').val());
+        editor.setValue(jQuery('#text').val());
     } else {
-        jQuery('#text').val(editor.getCode());
+        jQuery('#text').val(editor.getValue());
     }
 }
 
 function saveTemplatePrefs( sync ) {
   jQuery.ajax({
     type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
     async: false,
     url: '<mt:var name="script_url">',
     dataType: 'json',
@@ -894,7 +895,7 @@ function saveTemplatePrefs( sync ) {
     });
     jQuery('#syntaxon, #syntaxoff').click(function() {
         syncEditor();
-        var wrapper = editor.wrapping;
+        var wrapper = editor.getWrapperElement();
         jQuery('#syntaxon, #syntaxoff').removeClass('active');
         var id = jQuery(this).addClass('active').attr('id');
         var syntax;
@@ -910,6 +911,7 @@ function saveTemplatePrefs( sync ) {
         saveTemplatePrefs( syntax );
         return false;
     });
+    jQuery('#syntax<mt:var name="disp_prefs_syntax" default="on">').click();
     jQuery(window).bind('pre_autosave', function(){
         syncEditor();
     });

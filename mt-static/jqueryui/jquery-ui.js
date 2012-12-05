@@ -1,82 +1,24 @@
 /*!
- * jQuery UI 1.8.2
+ * jQuery UI 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI
  */
-
-(function($) {
+(function( $, undefined ) {
 
 // prevent duplicate loading
 // this is only a problem because we proxy existing functions
 // and we don't want to double proxy them
 $.ui = $.ui || {};
-if ($.ui.version) {
+if ( $.ui.version ) {
 	return;
 }
 
-//Helper functions and ui object
-$.extend($.ui, {
-	version: "1.8.2",
-
-	// $.ui.plugin is deprecated.  Use the proxy pattern instead.
-	plugin: {
-		add: function(module, option, set) {
-			var proto = $.ui[module].prototype;
-			for(var i in set) {
-				proto.plugins[i] = proto.plugins[i] || [];
-				proto.plugins[i].push([option, set[i]]);
-			}
-		},
-		call: function(instance, name, args) {
-			var set = instance.plugins[name];
-			if(!set || !instance.element[0].parentNode) { return; }
-
-			for (var i = 0; i < set.length; i++) {
-				if (instance.options[set[i][0]]) {
-					set[i][1].apply(instance.element, args);
-				}
-			}
-		}
-	},
-
-	contains: function(a, b) {
-		return document.compareDocumentPosition
-			? a.compareDocumentPosition(b) & 16
-			: a !== b && a.contains(b);
-	},
-
-	hasScroll: function(el, a) {
-
-		//If overflow is hidden, the element might have extra content, but the user wants to hide it
-		if ($(el).css('overflow') == 'hidden') { return false; }
-
-		var scroll = (a && a == 'left') ? 'scrollLeft' : 'scrollTop',
-			has = false;
-
-		if (el[scroll] > 0) { return true; }
-
-		// TODO: determine which cases actually cause this to happen
-		// if the element doesn't have the scroll set, see if it's possible to
-		// set the scroll
-		el[scroll] = 1;
-		has = (el[scroll] > 0);
-		el[scroll] = 0;
-		return has;
-	},
-
-	isOverAxis: function(x, reference, size) {
-		//Determines when x coordinate is over "b" element axis
-		return (x > reference) && (x < (reference + size));
-	},
-
-	isOver: function(y, x, top, left, height, width) {
-		//Determines when x, y coordinates is over "b" element
-		return $.ui.isOverAxis(y, top, height) && $.ui.isOverAxis(x, left, width);
-	},
+$.extend( $.ui, {
+	version: "1.8.21",
 
 	keyCode: {
 		ALT: 18,
@@ -114,36 +56,28 @@ $.extend($.ui, {
 	}
 });
 
-//jQuery plugins
+// plugins
 $.fn.extend({
+	propAttr: $.fn.prop || $.fn.attr,
+
 	_focus: $.fn.focus,
-	focus: function(delay, fn) {
-		return typeof delay === 'number'
-			? this.each(function() {
+	focus: function( delay, fn ) {
+		return typeof delay === "number" ?
+			this.each(function() {
 				var elem = this;
 				setTimeout(function() {
-					$(elem).focus();
-					(fn && fn.call(elem));
-				}, delay);
-			})
-			: this._focus.apply(this, arguments);
-	},
-	
-	enableSelection: function() {
-		return this
-			.attr('unselectable', 'off')
-			.css('MozUserSelect', '');
-	},
-
-	disableSelection: function() {
-		return this
-			.attr('unselectable', 'on')
-			.css('MozUserSelect', 'none');
+					$( elem ).focus();
+					if ( fn ) {
+						fn.call( elem );
+					}
+				}, delay );
+			}) :
+			this._focus.apply( this, arguments );
 	},
 
 	scrollParent: function() {
 		var scrollParent;
-		if(($.browser.msie && (/(static|relative)/).test(this.css('position'))) || (/absolute/).test(this.css('position'))) {
+		if (($.browser.msie && (/(static|relative)/).test(this.css('position'))) || (/absolute/).test(this.css('position'))) {
 			scrollParent = this.parents().filter(function() {
 				return (/(relative|absolute|fixed)/).test($.curCSS(this,'position',1)) && (/(auto|scroll)/).test($.curCSS(this,'overflow',1)+$.curCSS(this,'overflow-y',1)+$.curCSS(this,'overflow-x',1));
 			}).eq(0);
@@ -156,26 +90,25 @@ $.fn.extend({
 		return (/fixed/).test(this.css('position')) || !scrollParent.length ? $(document) : scrollParent;
 	},
 
-	zIndex: function(zIndex) {
-		if (zIndex !== undefined) {
-			return this.css('zIndex', zIndex);
+	zIndex: function( zIndex ) {
+		if ( zIndex !== undefined ) {
+			return this.css( "zIndex", zIndex );
 		}
-		
-		if (this.length) {
-			var elem = $(this[0]), position, value;
-			while (elem.length && elem[0] !== document) {
+
+		if ( this.length ) {
+			var elem = $( this[ 0 ] ), position, value;
+			while ( elem.length && elem[ 0 ] !== document ) {
 				// Ignore z-index if position is set to a value where z-index is ignored by the browser
 				// This makes behavior of this function consistent across browsers
 				// WebKit always returns auto if the element is positioned
-				position = elem.css('position');
-				if (position == 'absolute' || position == 'relative' || position == 'fixed')
-				{
+				position = elem.css( "position" );
+				if ( position === "absolute" || position === "relative" || position === "fixed" ) {
 					// IE returns 0 when zIndex is not specified
 					// other browsers return a string
 					// we ignore the case of nested elements with an explicit value of 0
 					// <div style="z-index: -10;"><div style="z-index: 0;"></div></div>
-					value = parseInt(elem.css('zIndex'));
-					if (!isNaN(value) && value != 0) {
+					value = parseInt( elem.css( "zIndex" ), 10 );
+					if ( !isNaN( value ) && value !== 0 ) {
 						return value;
 					}
 				}
@@ -184,61 +117,247 @@ $.fn.extend({
 		}
 
 		return 0;
+	},
+
+	disableSelection: function() {
+		return this.bind( ( $.support.selectstart ? "selectstart" : "mousedown" ) +
+			".ui-disableSelection", function( event ) {
+				event.preventDefault();
+			});
+	},
+
+	enableSelection: function() {
+		return this.unbind( ".ui-disableSelection" );
 	}
 });
 
+$.each( [ "Width", "Height" ], function( i, name ) {
+	var side = name === "Width" ? [ "Left", "Right" ] : [ "Top", "Bottom" ],
+		type = name.toLowerCase(),
+		orig = {
+			innerWidth: $.fn.innerWidth,
+			innerHeight: $.fn.innerHeight,
+			outerWidth: $.fn.outerWidth,
+			outerHeight: $.fn.outerHeight
+		};
 
-//Additional selectors
-$.extend($.expr[':'], {
-	data: function(elem, i, match) {
-		return !!$.data(elem, match[3]);
+	function reduce( elem, size, border, margin ) {
+		$.each( side, function() {
+			size -= parseFloat( $.curCSS( elem, "padding" + this, true) ) || 0;
+			if ( border ) {
+				size -= parseFloat( $.curCSS( elem, "border" + this + "Width", true) ) || 0;
+			}
+			if ( margin ) {
+				size -= parseFloat( $.curCSS( elem, "margin" + this, true) ) || 0;
+			}
+		});
+		return size;
+	}
+
+	$.fn[ "inner" + name ] = function( size ) {
+		if ( size === undefined ) {
+			return orig[ "inner" + name ].call( this );
+		}
+
+		return this.each(function() {
+			$( this ).css( type, reduce( this, size ) + "px" );
+		});
+	};
+
+	$.fn[ "outer" + name] = function( size, margin ) {
+		if ( typeof size !== "number" ) {
+			return orig[ "outer" + name ].call( this, size );
+		}
+
+		return this.each(function() {
+			$( this).css( type, reduce( this, size, true, margin ) + "px" );
+		});
+	};
+});
+
+// selectors
+function focusable( element, isTabIndexNotNaN ) {
+	var nodeName = element.nodeName.toLowerCase();
+	if ( "area" === nodeName ) {
+		var map = element.parentNode,
+			mapName = map.name,
+			img;
+		if ( !element.href || !mapName || map.nodeName.toLowerCase() !== "map" ) {
+			return false;
+		}
+		img = $( "img[usemap=#" + mapName + "]" )[0];
+		return !!img && visible( img );
+	}
+	return ( /input|select|textarea|button|object/.test( nodeName )
+		? !element.disabled
+		: "a" == nodeName
+			? element.href || isTabIndexNotNaN
+			: isTabIndexNotNaN)
+		// the element and all of its ancestors must be visible
+		&& visible( element );
+}
+
+function visible( element ) {
+	return !$( element ).parents().andSelf().filter(function() {
+		return $.curCSS( this, "visibility" ) === "hidden" ||
+			$.expr.filters.hidden( this );
+	}).length;
+}
+
+$.extend( $.expr[ ":" ], {
+	data: function( elem, i, match ) {
+		return !!$.data( elem, match[ 3 ] );
 	},
 
-	focusable: function(element) {
-		var nodeName = element.nodeName.toLowerCase(),
-			tabIndex = $.attr(element, 'tabindex');
-		return (/input|select|textarea|button|object/.test(nodeName)
-			? !element.disabled
-			: 'a' == nodeName || 'area' == nodeName
-				? element.href || !isNaN(tabIndex)
-				: !isNaN(tabIndex))
-			// the element and all of its ancestors must be visible
-			// the browser may report that the area is hidden
-			&& !$(element)['area' == nodeName ? 'parents' : 'closest'](':hidden').length;
+	focusable: function( element ) {
+		return focusable( element, !isNaN( $.attr( element, "tabindex" ) ) );
 	},
 
-	tabbable: function(element) {
-		var tabIndex = $.attr(element, 'tabindex');
-		return (isNaN(tabIndex) || tabIndex >= 0) && $(element).is(':focusable');
+	tabbable: function( element ) {
+		var tabIndex = $.attr( element, "tabindex" ),
+			isTabIndexNaN = isNaN( tabIndex );
+		return ( isTabIndexNaN || tabIndex >= 0 ) && focusable( element, !isTabIndexNaN );
 	}
 });
 
-})(jQuery);
+// support
+$(function() {
+	var body = document.body,
+		div = body.appendChild( div = document.createElement( "div" ) );
+
+	// access offsetHeight before setting the style to prevent a layout bug
+	// in IE 9 which causes the elemnt to continue to take up space even
+	// after it is removed from the DOM (#8026)
+	div.offsetHeight;
+
+	$.extend( div.style, {
+		minHeight: "100px",
+		height: "auto",
+		padding: 0,
+		borderWidth: 0
+	});
+
+	$.support.minHeight = div.offsetHeight === 100;
+	$.support.selectstart = "onselectstart" in div;
+
+	// set display to none to avoid a layout bug in IE
+	// http://dev.jquery.com/ticket/4014
+	body.removeChild( div ).style.display = "none";
+});
+
+
+
+
+
+// deprecated
+$.extend( $.ui, {
+	// $.ui.plugin is deprecated.  Use the proxy pattern instead.
+	plugin: {
+		add: function( module, option, set ) {
+			var proto = $.ui[ module ].prototype;
+			for ( var i in set ) {
+				proto.plugins[ i ] = proto.plugins[ i ] || [];
+				proto.plugins[ i ].push( [ option, set[ i ] ] );
+			}
+		},
+		call: function( instance, name, args ) {
+			var set = instance.plugins[ name ];
+			if ( !set || !instance.element[ 0 ].parentNode ) {
+				return;
+			}
+	
+			for ( var i = 0; i < set.length; i++ ) {
+				if ( instance.options[ set[ i ][ 0 ] ] ) {
+					set[ i ][ 1 ].apply( instance.element, args );
+				}
+			}
+		}
+	},
+	
+	// will be deprecated when we switch to jQuery 1.4 - use jQuery.contains()
+	contains: function( a, b ) {
+		return document.compareDocumentPosition ?
+			a.compareDocumentPosition( b ) & 16 :
+			a !== b && a.contains( b );
+	},
+	
+	// only used by resizable
+	hasScroll: function( el, a ) {
+	
+		//If overflow is hidden, the element might have extra content, but the user wants to hide it
+		if ( $( el ).css( "overflow" ) === "hidden") {
+			return false;
+		}
+	
+		var scroll = ( a && a === "left" ) ? "scrollLeft" : "scrollTop",
+			has = false;
+	
+		if ( el[ scroll ] > 0 ) {
+			return true;
+		}
+	
+		// TODO: determine which cases actually cause this to happen
+		// if the element doesn't have the scroll set, see if it's possible to
+		// set the scroll
+		el[ scroll ] = 1;
+		has = ( el[ scroll ] > 0 );
+		el[ scroll ] = 0;
+		return has;
+	},
+	
+	// these are odd functions, fix the API or move into individual plugins
+	isOverAxis: function( x, reference, size ) {
+		//Determines when x coordinate is over "b" element axis
+		return ( x > reference ) && ( x < ( reference + size ) );
+	},
+	isOver: function( y, x, top, left, height, width ) {
+		//Determines when x, y coordinates is over "b" element
+		return $.ui.isOverAxis( y, top, height ) && $.ui.isOverAxis( x, left, width );
+	}
+});
+
+})( jQuery );
 /*!
- * jQuery UI Widget 1.8.2
+ * jQuery UI Widget 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Widget
  */
-(function( $ ) {
+(function( $, undefined ) {
 
-var _remove = $.fn.remove;
-
-$.fn.remove = function( selector, keepData ) {
-	return this.each(function() {
-		if ( !keepData ) {
-			if ( !selector || $.filter( selector, [ this ] ).length ) {
-				$( "*", this ).add( this ).each(function() {
-					$( this ).triggerHandler( "remove" );
-				});
-			}
+// jQuery 1.4+
+if ( $.cleanData ) {
+	var _cleanData = $.cleanData;
+	$.cleanData = function( elems ) {
+		for ( var i = 0, elem; (elem = elems[i]) != null; i++ ) {
+			try {
+				$( elem ).triggerHandler( "remove" );
+			// http://bugs.jquery.com/ticket/8235
+			} catch( e ) {}
 		}
-		return _remove.call( $(this), selector, keepData );
-	});
-};
+		_cleanData( elems );
+	};
+} else {
+	var _remove = $.fn.remove;
+	$.fn.remove = function( selector, keepData ) {
+		return this.each(function() {
+			if ( !keepData ) {
+				if ( !selector || $.filter( selector, [ this ] ).length ) {
+					$( "*", this ).add( [ this ] ).each(function() {
+						try {
+							$( this ).triggerHandler( "remove" );
+						// http://bugs.jquery.com/ticket/8235
+						} catch( e ) {}
+					});
+				}
+			}
+			return _remove.call( $(this), selector, keepData );
+		});
+	};
+}
 
 $.widget = function( name, base, prototype ) {
 	var namespace = name.split( "." )[ 0 ],
@@ -273,7 +392,7 @@ $.widget = function( name, base, prototype ) {
 //			basePrototype[ key ] = $.extend( {}, val );
 //		}
 //	});
-	basePrototype.options = $.extend( {}, basePrototype.options );
+	basePrototype.options = $.extend( true, {}, basePrototype.options );
 	$[ namespace ][ name ].prototype = $.extend( true, basePrototype, {
 		namespace: namespace,
 		widgetName: name,
@@ -296,7 +415,7 @@ $.widget.bridge = function( name, object ) {
 			options;
 
 		// prevent calls to internal methods
-		if ( isMethodCall && options.substring( 0, 1 ) === "_" ) {
+		if ( isMethodCall && options.charAt( 0 ) === "_" ) {
 			return returnValue;
 		}
 
@@ -306,6 +425,15 @@ $.widget.bridge = function( name, object ) {
 					methodValue = instance && $.isFunction( instance[options] ) ?
 						instance[ options ].apply( instance, args ) :
 						instance;
+				// TODO: add this back in 1.9 and use $.error() (see #5972)
+//				if ( !instance ) {
+//					throw "cannot call methods on " + name + " prior to initialization; " +
+//						"attempted to call method '" + options + "'";
+//				}
+//				if ( !$.isFunction( instance[options] ) ) {
+//					throw "no such method '" + options + "' for " + name + " widget instance";
+//				}
+//				var methodValue = instance[ options ].apply( instance, args );
 				if ( methodValue !== instance && methodValue !== undefined ) {
 					returnValue = methodValue;
 					return false;
@@ -315,10 +443,7 @@ $.widget.bridge = function( name, object ) {
 			this.each(function() {
 				var instance = $.data( this, name );
 				if ( instance ) {
-					if ( options ) {
-						instance.option( options );
-					}
-					instance._init();
+					instance.option( options || {} )._init();
 				} else {
 					$.data( this, name, new object( options, this ) );
 				}
@@ -345,10 +470,11 @@ $.Widget.prototype = {
 	_createWidget: function( options, element ) {
 		// $.widget.bridge stores the plugin instance, but we do it anyway
 		// so that it's stored even before the _create function runs
-		this.element = $( element ).data( this.widgetName, this );
+		$.data( element, this.widgetName, this );
+		this.element = $( element );
 		this.options = $.extend( true, {},
 			this.options,
-			$.metadata && $.metadata.get( element )[ this.widgetName ],
+			this._getCreateOptions(),
 			options );
 
 		var self = this;
@@ -357,7 +483,11 @@ $.Widget.prototype = {
 		});
 
 		this._create();
+		this._trigger( "create" );
 		this._init();
+	},
+	_getCreateOptions: function() {
+		return $.metadata && $.metadata.get( this.element[0] )[ this.widgetName ];
 	},
 	_create: function() {},
 	_init: function() {},
@@ -379,12 +509,11 @@ $.Widget.prototype = {
 	},
 
 	option: function( key, value ) {
-		var options = key,
-			self = this;
+		var options = key;
 
 		if ( arguments.length === 0 ) {
 			// don't return a reference to the internal hash
-			return $.extend( {}, self.options );
+			return $.extend( {}, this.options );
 		}
 
 		if  (typeof key === "string" ) {
@@ -395,11 +524,17 @@ $.Widget.prototype = {
 			options[ key ] = value;
 		}
 
+		this._setOptions( options );
+
+		return this;
+	},
+	_setOptions: function( options ) {
+		var self = this;
 		$.each( options, function( key, value ) {
 			self._setOption( key, value );
 		});
 
-		return self;
+		return this;
 	},
 	_setOption: function( key, value ) {
 		this.options[ key ] = value;
@@ -423,21 +558,25 @@ $.Widget.prototype = {
 	},
 
 	_trigger: function( type, event, data ) {
-		var callback = this.options[ type ];
+		var prop, orig,
+			callback = this.options[ type ];
 
+		data = data || {};
 		event = $.Event( event );
 		event.type = ( type === this.widgetEventPrefix ?
 			type :
 			this.widgetEventPrefix + type ).toLowerCase();
-		data = data || {};
+		// the original event may come from any element
+		// so we need to reset the target on the new event
+		event.target = this.element[ 0 ];
 
 		// copy original event properties over to the new event
-		// this would happen if we could call $.event.fix instead of $.Event
-		// but we don't have a way to force an event to be fixed multiple times
-		if ( event.originalEvent ) {
-			for ( var i = $.event.props.length, prop; i; ) {
-				prop = $.event.props[ --i ];
-				event[ prop ] = event.originalEvent[ prop ];
+		orig = event.originalEvent;
+		if ( orig ) {
+			for ( prop in orig ) {
+				if ( !( prop in event ) ) {
+					event[ prop ] = orig[ prop ];
+				}
 			}
 		}
 
@@ -451,18 +590,23 @@ $.Widget.prototype = {
 
 })( jQuery );
 /*!
- * jQuery UI Mouse 1.8.2
+ * jQuery UI Mouse 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Mouse
  *
  * Depends:
  *	jquery.ui.widget.js
  */
-(function($) {
+(function( $, undefined ) {
+
+var mouseHandled = false;
+$( document ).mouseup( function( e ) {
+	mouseHandled = false;
+});
 
 $.widget("ui.mouse", {
 	options: {
@@ -478,8 +622,8 @@ $.widget("ui.mouse", {
 				return self._mouseDown(event);
 			})
 			.bind('click.'+this.widgetName, function(event) {
-				if(self._preventClickEvent) {
-					self._preventClickEvent = false;
+				if (true === $.data(event.target, self.widgetName + '.preventClickEvent')) {
+				    $.removeData(event.target, self.widgetName + '.preventClickEvent');
 					event.stopImmediatePropagation();
 					return false;
 				}
@@ -492,13 +636,14 @@ $.widget("ui.mouse", {
 	// other instances of mouse
 	_mouseDestroy: function() {
 		this.element.unbind('.'+this.widgetName);
+		$(document)
+			.unbind('mousemove.'+this.widgetName, this._mouseMoveDelegate)
+			.unbind('mouseup.'+this.widgetName, this._mouseUpDelegate);
 	},
 
 	_mouseDown: function(event) {
 		// don't let more than one widget handle mouseStart
-		// TODO: figure out why we have to use originalEvent
-		event.originalEvent = event.originalEvent || {};
-		if (event.originalEvent.mouseHandled) { return; }
+		if( mouseHandled ) { return };
 
 		// we may have missed mouseup (out of window)
 		(this._mouseStarted && this._mouseUp(event));
@@ -507,7 +652,9 @@ $.widget("ui.mouse", {
 
 		var self = this,
 			btnIsLeft = (event.which == 1),
-			elIsCancel = (typeof this.options.cancel == "string" ? $(event.target).parents().add(event.target).filter(this.options.cancel).length : false);
+			// event.target.nodeName works around a bug in IE 8 with
+			// disabled inputs (#7620)
+			elIsCancel = (typeof this.options.cancel == "string" && event.target.nodeName ? $(event.target).closest(this.options.cancel).length : false);
 		if (!btnIsLeft || elIsCancel || !this._mouseCapture(event)) {
 			return true;
 		}
@@ -527,6 +674,11 @@ $.widget("ui.mouse", {
 			}
 		}
 
+		// Click event may never have fired (Gecko & Opera)
+		if (true === $.data(event.target, this.widgetName + '.preventClickEvent')) {
+			$.removeData(event.target, this.widgetName + '.preventClickEvent');
+		}
+
 		// these delegates are required to keep context
 		this._mouseMoveDelegate = function(event) {
 			return self._mouseMove(event);
@@ -538,18 +690,15 @@ $.widget("ui.mouse", {
 			.bind('mousemove.'+this.widgetName, this._mouseMoveDelegate)
 			.bind('mouseup.'+this.widgetName, this._mouseUpDelegate);
 
-		// preventDefault() is used to prevent the selection of text here -
-		// however, in Safari, this causes select boxes not to be selectable
-		// anymore, so this fix is needed
-		($.browser.safari || event.preventDefault());
-
-		event.originalEvent.mouseHandled = true;
+		event.preventDefault();
+		
+		mouseHandled = true;
 		return true;
 	},
 
 	_mouseMove: function(event) {
 		// IE mouseup check - mouseup happened when mouse was out of window
-		if ($.browser.msie && !event.button) {
+		if ($.browser.msie && !(document.documentMode >= 9) && !event.button) {
 			return this._mouseUp(event);
 		}
 
@@ -574,7 +723,11 @@ $.widget("ui.mouse", {
 
 		if (this._mouseStarted) {
 			this._mouseStarted = false;
-			this._preventClickEvent = (event.target == this._mouseDownEvent.target);
+
+			if (event.target == this._mouseDownEvent.target) {
+			    $.data(event.target, this.widgetName + '.preventClickEvent', true);
+			}
+
 			this._mouseStop(event);
 		}
 
@@ -601,23 +754,23 @@ $.widget("ui.mouse", {
 });
 
 })(jQuery);
-/*
- * jQuery UI Position 1.8.2
+/*!
+ * jQuery UI Position 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Position
  */
-(function( $ ) {
+(function( $, undefined ) {
 
 $.ui = $.ui || {};
 
 var horizontalPositions = /left|center|right/,
-	horizontalDefault = "center",
 	verticalPositions = /top|center|bottom/,
-	verticalDefault = "center",
+	center = "center",
+	support = {},
 	_position = $.fn.position,
 	_offset = $.fn.offset;
 
@@ -630,21 +783,23 @@ $.fn.position = function( options ) {
 	options = $.extend( {}, options );
 
 	var target = $( options.of ),
+		targetElem = target[0],
 		collision = ( options.collision || "flip" ).split( " " ),
 		offset = options.offset ? options.offset.split( " " ) : [ 0, 0 ],
 		targetWidth,
 		targetHeight,
 		basePosition;
 
-	if ( options.of.nodeType === 9 ) {
+	if ( targetElem.nodeType === 9 ) {
 		targetWidth = target.width();
 		targetHeight = target.height();
 		basePosition = { top: 0, left: 0 };
-	} else if ( options.of.scrollTo && options.of.document ) {
+	// TODO: use $.isWindow() in 1.9
+	} else if ( targetElem.setTimeout ) {
 		targetWidth = target.width();
 		targetHeight = target.height();
 		basePosition = { top: target.scrollTop(), left: target.scrollLeft() };
-	} else if ( options.of.preventDefault ) {
+	} else if ( targetElem.preventDefault ) {
 		// force left top to allow flipping
 		options.at = "left top";
 		targetWidth = targetHeight = 0;
@@ -661,13 +816,13 @@ $.fn.position = function( options ) {
 		var pos = ( options[this] || "" ).split( " " );
 		if ( pos.length === 1) {
 			pos = horizontalPositions.test( pos[0] ) ?
-				pos.concat( [verticalDefault] ) :
+				pos.concat( [center] ) :
 				verticalPositions.test( pos[0] ) ?
-					[ horizontalDefault ].concat( pos ) :
-					[ horizontalDefault, verticalDefault ];
+					[ center ].concat( pos ) :
+					[ center, center ];
 		}
-		pos[ 0 ] = horizontalPositions.test( pos[0] ) ? pos[ 0 ] : horizontalDefault;
-		pos[ 1 ] = verticalPositions.test( pos[1] ) ? pos[ 1 ] : verticalDefault;
+		pos[ 0 ] = horizontalPositions.test( pos[0] ) ? pos[ 0 ] : center;
+		pos[ 1 ] = verticalPositions.test( pos[1] ) ? pos[ 1 ] : center;
 		options[ this ] = pos;
 	});
 
@@ -685,13 +840,13 @@ $.fn.position = function( options ) {
 
 	if ( options.at[0] === "right" ) {
 		basePosition.left += targetWidth;
-	} else if (options.at[0] === horizontalDefault ) {
+	} else if ( options.at[0] === center ) {
 		basePosition.left += targetWidth / 2;
 	}
 
 	if ( options.at[1] === "bottom" ) {
 		basePosition.top += targetHeight;
-	} else if ( options.at[1] === verticalDefault ) {
+	} else if ( options.at[1] === center ) {
 		basePosition.top += targetHeight / 2;
 	}
 
@@ -702,23 +857,37 @@ $.fn.position = function( options ) {
 		var elem = $( this ),
 			elemWidth = elem.outerWidth(),
 			elemHeight = elem.outerHeight(),
-			position = $.extend( {}, basePosition );
+			marginLeft = parseInt( $.curCSS( this, "marginLeft", true ) ) || 0,
+			marginTop = parseInt( $.curCSS( this, "marginTop", true ) ) || 0,
+			collisionWidth = elemWidth + marginLeft +
+				( parseInt( $.curCSS( this, "marginRight", true ) ) || 0 ),
+			collisionHeight = elemHeight + marginTop +
+				( parseInt( $.curCSS( this, "marginBottom", true ) ) || 0 ),
+			position = $.extend( {}, basePosition ),
+			collisionPosition;
 
 		if ( options.my[0] === "right" ) {
 			position.left -= elemWidth;
-		} else if ( options.my[0] === horizontalDefault ) {
+		} else if ( options.my[0] === center ) {
 			position.left -= elemWidth / 2;
 		}
 
 		if ( options.my[1] === "bottom" ) {
 			position.top -= elemHeight;
-		} else if ( options.my[1] === verticalDefault ) {
+		} else if ( options.my[1] === center ) {
 			position.top -= elemHeight / 2;
 		}
 
-		// prevent fractions (see #5280)
-		position.left = parseInt( position.left );
-		position.top = parseInt( position.top );
+		// prevent fractions if jQuery version doesn't support them (see #5280)
+		if ( !support.fractions ) {
+			position.left = Math.round( position.left );
+			position.top = Math.round( position.top );
+		}
+
+		collisionPosition = {
+			left: position.left - marginLeft,
+			top: position.top - marginTop
+		};
 
 		$.each( [ "left", "top" ], function( i, dir ) {
 			if ( $.ui.position[ collision[i] ] ) {
@@ -727,6 +896,9 @@ $.fn.position = function( options ) {
 					targetHeight: targetHeight,
 					elemWidth: elemWidth,
 					elemHeight: elemHeight,
+					collisionPosition: collisionPosition,
+					collisionWidth: collisionWidth,
+					collisionHeight: collisionHeight,
 					offset: offset,
 					my: options.my,
 					at: options.at
@@ -745,41 +917,44 @@ $.ui.position = {
 	fit: {
 		left: function( position, data ) {
 			var win = $( window ),
-				over = position.left + data.elemWidth - win.width() - win.scrollLeft();
-			position.left = over > 0 ? position.left - over : Math.max( 0, position.left );
+				over = data.collisionPosition.left + data.collisionWidth - win.width() - win.scrollLeft();
+			position.left = over > 0 ? position.left - over : Math.max( position.left - data.collisionPosition.left, position.left );
 		},
 		top: function( position, data ) {
 			var win = $( window ),
-				over = position.top + data.elemHeight - win.height() - win.scrollTop();
-			position.top = over > 0 ? position.top - over : Math.max( 0, position.top );
+				over = data.collisionPosition.top + data.collisionHeight - win.height() - win.scrollTop();
+			position.top = over > 0 ? position.top - over : Math.max( position.top - data.collisionPosition.top, position.top );
 		}
 	},
 
 	flip: {
 		left: function( position, data ) {
-			if ( data.at[0] === "center" ) {
+			if ( data.at[0] === center ) {
 				return;
 			}
 			var win = $( window ),
-				over = position.left + data.elemWidth - win.width() - win.scrollLeft(),
+				over = data.collisionPosition.left + data.collisionWidth - win.width() - win.scrollLeft(),
 				myOffset = data.my[ 0 ] === "left" ?
 					-data.elemWidth :
 					data.my[ 0 ] === "right" ?
 						data.elemWidth :
 						0,
+				atOffset = data.at[ 0 ] === "left" ?
+					data.targetWidth :
+					-data.targetWidth,
 				offset = -2 * data.offset[ 0 ];
-			position.left += position.left < 0 ?
-				myOffset + data.targetWidth + offset :
+			position.left += data.collisionPosition.left < 0 ?
+				myOffset + atOffset + offset :
 				over > 0 ?
-					myOffset - data.targetWidth + offset :
+					myOffset + atOffset + offset :
 					0;
 		},
 		top: function( position, data ) {
-			if ( data.at[1] === "center" ) {
+			if ( data.at[1] === center ) {
 				return;
 			}
 			var win = $( window ),
-				over = position.top + data.elemHeight - win.height() - win.scrollTop(),
+				over = data.collisionPosition.top + data.collisionHeight - win.height() - win.scrollTop(),
 				myOffset = data.my[ 1 ] === "top" ?
 					-data.elemHeight :
 					data.my[ 1 ] === "bottom" ?
@@ -789,8 +964,8 @@ $.ui.position = {
 					data.targetHeight :
 					-data.targetHeight,
 				offset = -2 * data.offset[ 1 ];
-			position.top += position.top < 0 ?
-				myOffset + data.targetHeight + offset :
+			position.top += data.collisionPosition.top < 0 ?
+				myOffset + atOffset + offset :
 				over > 0 ?
 					myOffset + atOffset + offset :
 					0;
@@ -824,7 +999,12 @@ if ( !$.offset.setOffset ) {
 	$.fn.offset = function( options ) {
 		var elem = this[ 0 ];
 		if ( !elem || !elem.ownerDocument ) { return null; }
-		if ( options ) { 
+		if ( options ) {
+			if ( $.isFunction( options ) ) {
+				return this.each(function( i ) {
+					$( this ).offset( options.call( this, i, $( this ).offset() ) );
+				});
+			}
 			return this.each(function() {
 				$.offset.setOffset( this, options );
 			});
@@ -833,13 +1013,56 @@ if ( !$.offset.setOffset ) {
 	};
 }
 
+// fraction support test (older versions of jQuery don't support fractions)
+(function () {
+	var body = document.getElementsByTagName( "body" )[ 0 ], 
+		div = document.createElement( "div" ),
+		testElement, testElementParent, testElementStyle, offset, offsetTotal;
+
+	//Create a "fake body" for testing based on method used in jQuery.support
+	testElement = document.createElement( body ? "div" : "body" );
+	testElementStyle = {
+		visibility: "hidden",
+		width: 0,
+		height: 0,
+		border: 0,
+		margin: 0,
+		background: "none"
+	};
+	if ( body ) {
+		$.extend( testElementStyle, {
+			position: "absolute",
+			left: "-1000px",
+			top: "-1000px"
+		});
+	}
+	for ( var i in testElementStyle ) {
+		testElement.style[ i ] = testElementStyle[ i ];
+	}
+	testElement.appendChild( div );
+	testElementParent = body || document.documentElement;
+	testElementParent.insertBefore( testElement, testElementParent.firstChild );
+
+	div.style.cssText = "position: absolute; left: 10.7432222px; top: 10.432325px; height: 30px; width: 201px;";
+
+	offset = $( div ).offset( function( _, offset ) {
+		return offset;
+	}).offset();
+
+	testElement.innerHTML = "";
+	testElementParent.removeChild( testElement );
+
+	offsetTotal = offset.top + offset.left + ( body ? 2000 : 0 );
+	support.fractions = offsetTotal > 21 && offsetTotal < 22;
+})();
+
 }( jQuery ));
-/*
- * jQuery UI Draggable 1.8.2
+/*!
+ * jQuery UI Draggable 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Draggables
  *
@@ -848,7 +1071,7 @@ if ( !$.offset.setOffset ) {
  *	jquery.ui.mouse.js
  *	jquery.ui.widget.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.widget("ui.draggable", $.ui.mouse, {
 	widgetEventPrefix: "drag",
@@ -915,6 +1138,18 @@ $.widget("ui.draggable", $.ui.mouse, {
 		this.handle = this._getHandle(event);
 		if (!this.handle)
 			return false;
+		
+		if ( o.iframeFix ) {
+			$(o.iframeFix === true ? "iframe" : o.iframeFix).each(function() {
+				$('<div class="ui-draggable-iframeFix" style="background: #fff;"></div>')
+				.css({
+					width: this.offsetWidth+"px", height: this.offsetHeight+"px",
+					position: "absolute", opacity: "0.001", zIndex: 1000
+				})
+				.css($(this).offset())
+				.appendTo("body");
+			});
+		}
 
 		return true;
 
@@ -926,6 +1161,8 @@ $.widget("ui.draggable", $.ui.mouse, {
 
 		//Create and append the visible helper
 		this.helper = this._createHelper(event);
+
+		this.helper.addClass("ui-draggable-dragging");
 
 		//Cache the helper size
 		this._cacheHelperProportions();
@@ -987,8 +1224,12 @@ $.widget("ui.draggable", $.ui.mouse, {
 		if ($.ui.ddmanager && !o.dropBehaviour)
 			$.ui.ddmanager.prepareOffsets(this, event);
 
-		this.helper.addClass("ui-draggable-dragging");
+		
 		this._mouseDrag(event, true); //Execute the drag once - this causes the helper not to be visible before getting its correct position
+		
+		//If the ddmanager is used for droppables, inform the manager that dragging has started (see #5003)
+		if ( $.ui.ddmanager ) $.ui.ddmanager.dragStart(this, event);
+		
 		return true;
 	},
 
@@ -1028,8 +1269,14 @@ $.widget("ui.draggable", $.ui.mouse, {
 			this.dropped = false;
 		}
 		
-		//if the original element is removed, don't bother to continue
-		if(!this.element[0] || !this.element[0].parentNode)
+		//if the original element is no longer in the DOM don't bother to continue (see #8269)
+		var element = this.element[0], elementInDom = false;
+		while ( element && (element = element.parentNode) ) {
+			if (element == document ) {
+				elementInDom = true;
+			}
+		}
+		if ( !elementInDom && this.options.helper === "original" )
 			return false;
 
 		if((this.options.revert == "invalid" && !dropped) || (this.options.revert == "valid" && dropped) || this.options.revert === true || ($.isFunction(this.options.revert) && this.options.revert.call(this.element, dropped))) {
@@ -1046,6 +1293,19 @@ $.widget("ui.draggable", $.ui.mouse, {
 		}
 
 		return false;
+	},
+	
+	_mouseUp: function(event) {
+		if (this.options.iframeFix === true) {
+			$("div.ui-draggable-iframeFix").each(function() { 
+				this.parentNode.removeChild(this); 
+			}); //Remove frame helpers
+		}
+		
+		//If the ddmanager is used for droppables, inform the manager that dragging has stopped (see #5003)
+		if( $.ui.ddmanager ) $.ui.ddmanager.dragStop(this, event);
+		
+		return $.ui.mouse.prototype._mouseUp.call(this, event);
 	},
 	
 	cancel: function() {
@@ -1077,7 +1337,7 @@ $.widget("ui.draggable", $.ui.mouse, {
 	_createHelper: function(event) {
 
 		var o = this.options;
-		var helper = $.isFunction(o.helper) ? $(o.helper.apply(this.element[0], [event])) : (o.helper == 'clone' ? this.element.clone() : this.element);
+		var helper = $.isFunction(o.helper) ? $(o.helper.apply(this.element[0], [event])) : (o.helper == 'clone' ? this.element.clone().removeAttr('id') : this.element);
 
 		if(!helper.parents('body').length)
 			helper.appendTo((o.appendTo == 'parent' ? this.element[0].parentNode : o.appendTo));
@@ -1153,7 +1413,9 @@ $.widget("ui.draggable", $.ui.mouse, {
 	_cacheMargins: function() {
 		this.margins = {
 			left: (parseInt(this.element.css("marginLeft"),10) || 0),
-			top: (parseInt(this.element.css("marginTop"),10) || 0)
+			top: (parseInt(this.element.css("marginTop"),10) || 0),
+			right: (parseInt(this.element.css("marginRight"),10) || 0),
+			bottom: (parseInt(this.element.css("marginBottom"),10) || 0)
 		};
 	},
 
@@ -1169,23 +1431,26 @@ $.widget("ui.draggable", $.ui.mouse, {
 		var o = this.options;
 		if(o.containment == 'parent') o.containment = this.helper[0].parentNode;
 		if(o.containment == 'document' || o.containment == 'window') this.containment = [
-			0 - this.offset.relative.left - this.offset.parent.left,
-			0 - this.offset.relative.top - this.offset.parent.top,
-			$(o.containment == 'document' ? document : window).width() - this.helperProportions.width - this.margins.left,
-			($(o.containment == 'document' ? document : window).height() || document.body.parentNode.scrollHeight) - this.helperProportions.height - this.margins.top
+			o.containment == 'document' ? 0 : $(window).scrollLeft() - this.offset.relative.left - this.offset.parent.left,
+			o.containment == 'document' ? 0 : $(window).scrollTop() - this.offset.relative.top - this.offset.parent.top,
+			(o.containment == 'document' ? 0 : $(window).scrollLeft()) + $(o.containment == 'document' ? document : window).width() - this.helperProportions.width - this.margins.left,
+			(o.containment == 'document' ? 0 : $(window).scrollTop()) + ($(o.containment == 'document' ? document : window).height() || document.body.parentNode.scrollHeight) - this.helperProportions.height - this.margins.top
 		];
 
 		if(!(/^(document|window|parent)$/).test(o.containment) && o.containment.constructor != Array) {
-			var ce = $(o.containment)[0]; if(!ce) return;
-			var co = $(o.containment).offset();
+		        var c = $(o.containment);
+			var ce = c[0]; if(!ce) return;
+			var co = c.offset();
 			var over = ($(ce).css("overflow") != 'hidden');
 
 			this.containment = [
-				co.left + (parseInt($(ce).css("borderLeftWidth"),10) || 0) + (parseInt($(ce).css("paddingLeft"),10) || 0) - this.margins.left,
-				co.top + (parseInt($(ce).css("borderTopWidth"),10) || 0) + (parseInt($(ce).css("paddingTop"),10) || 0) - this.margins.top,
-				co.left+(over ? Math.max(ce.scrollWidth,ce.offsetWidth) : ce.offsetWidth) - (parseInt($(ce).css("borderLeftWidth"),10) || 0) - (parseInt($(ce).css("paddingRight"),10) || 0) - this.helperProportions.width - this.margins.left,
-				co.top+(over ? Math.max(ce.scrollHeight,ce.offsetHeight) : ce.offsetHeight) - (parseInt($(ce).css("borderTopWidth"),10) || 0) - (parseInt($(ce).css("paddingBottom"),10) || 0) - this.helperProportions.height - this.margins.top
+				(parseInt($(ce).css("borderLeftWidth"),10) || 0) + (parseInt($(ce).css("paddingLeft"),10) || 0),
+				(parseInt($(ce).css("borderTopWidth"),10) || 0) + (parseInt($(ce).css("paddingTop"),10) || 0),
+				(over ? Math.max(ce.scrollWidth,ce.offsetWidth) : ce.offsetWidth) - (parseInt($(ce).css("borderLeftWidth"),10) || 0) - (parseInt($(ce).css("paddingRight"),10) || 0) - this.helperProportions.width - this.margins.left - this.margins.right,
+				(over ? Math.max(ce.scrollHeight,ce.offsetHeight) : ce.offsetHeight) - (parseInt($(ce).css("borderTopWidth"),10) || 0) - (parseInt($(ce).css("paddingBottom"),10) || 0) - this.helperProportions.height - this.margins.top  - this.margins.bottom
 			];
+			this.relative_container = c;
+
 		} else if(o.containment.constructor == Array) {
 			this.containment = o.containment;
 		}
@@ -1227,20 +1492,32 @@ $.widget("ui.draggable", $.ui.mouse, {
 		 */
 
 		if(this.originalPosition) { //If we are not dragging yet, we won't check for options
+		         var containment;
+		         if(this.containment) {
+				 if (this.relative_container){
+				     var co = this.relative_container.offset();
+				     containment = [ this.containment[0] + co.left,
+						     this.containment[1] + co.top,
+						     this.containment[2] + co.left,
+						     this.containment[3] + co.top ];
+				 }
+				 else {
+				     containment = this.containment;
+				 }
 
-			if(this.containment) {
-				if(event.pageX - this.offset.click.left < this.containment[0]) pageX = this.containment[0] + this.offset.click.left;
-				if(event.pageY - this.offset.click.top < this.containment[1]) pageY = this.containment[1] + this.offset.click.top;
-				if(event.pageX - this.offset.click.left > this.containment[2]) pageX = this.containment[2] + this.offset.click.left;
-				if(event.pageY - this.offset.click.top > this.containment[3]) pageY = this.containment[3] + this.offset.click.top;
+				if(event.pageX - this.offset.click.left < containment[0]) pageX = containment[0] + this.offset.click.left;
+				if(event.pageY - this.offset.click.top < containment[1]) pageY = containment[1] + this.offset.click.top;
+				if(event.pageX - this.offset.click.left > containment[2]) pageX = containment[2] + this.offset.click.left;
+				if(event.pageY - this.offset.click.top > containment[3]) pageY = containment[3] + this.offset.click.top;
 			}
 
 			if(o.grid) {
-				var top = this.originalPageY + Math.round((pageY - this.originalPageY) / o.grid[1]) * o.grid[1];
-				pageY = this.containment ? (!(top - this.offset.click.top < this.containment[1] || top - this.offset.click.top > this.containment[3]) ? top : (!(top - this.offset.click.top < this.containment[1]) ? top - o.grid[1] : top + o.grid[1])) : top;
+				//Check for grid elements set to 0 to prevent divide by 0 error causing invalid argument errors in IE (see ticket #6950)
+				var top = o.grid[1] ? this.originalPageY + Math.round((pageY - this.originalPageY) / o.grid[1]) * o.grid[1] : this.originalPageY;
+				pageY = containment ? (!(top - this.offset.click.top < containment[1] || top - this.offset.click.top > containment[3]) ? top : (!(top - this.offset.click.top < containment[1]) ? top - o.grid[1] : top + o.grid[1])) : top;
 
-				var left = this.originalPageX + Math.round((pageX - this.originalPageX) / o.grid[0]) * o.grid[0];
-				pageX = this.containment ? (!(left - this.offset.click.left < this.containment[0] || left - this.offset.click.left > this.containment[2]) ? left : (!(left - this.offset.click.left < this.containment[0]) ? left - o.grid[0] : left + o.grid[0])) : left;
+				var left = o.grid[0] ? this.originalPageX + Math.round((pageX - this.originalPageX) / o.grid[0]) * o.grid[0] : this.originalPageX;
+				pageX = containment ? (!(left - this.offset.click.left < containment[0] || left - this.offset.click.left > containment[2]) ? left : (!(left - this.offset.click.left < containment[0]) ? left - o.grid[0] : left + o.grid[0])) : left;
 			}
 
 		}
@@ -1295,7 +1572,7 @@ $.widget("ui.draggable", $.ui.mouse, {
 });
 
 $.extend($.ui.draggable, {
-	version: "1.8.2"
+	version: "1.8.21"
 });
 
 $.ui.plugin.add("draggable", "connectToSortable", {
@@ -1311,7 +1588,7 @@ $.ui.plugin.add("draggable", "connectToSortable", {
 					instance: sortable,
 					shouldRevert: sortable.options.revert
 				});
-				sortable._refreshItems();	//Do a one-time refresh at start to refresh the containerCache
+				sortable.refreshPositions();	// Call the sortable's refreshPositions at drag start to refresh the containerCache since the sortable container cache is used in drag and needs to be up to date (this will ensure it's initialised as well as being kept in step with any changes that might have happened on the page).
 				sortable._trigger("activate", event, uiSortable);
 			}
 		});
@@ -1380,7 +1657,7 @@ $.ui.plugin.add("draggable", "connectToSortable", {
 					//Now we fake the start of dragging for the sortable instance,
 					//by cloning the list group item, appending it to the sortable and using it as inst.currentItem
 					//We can then fire the start event of the sortable with our passed browser event, and our own helper (so it doesn't create a new one)
-					this.instance.currentItem = $(self).clone().appendTo(this.instance.element).data("sortable-item", true);
+					this.instance.currentItem = $(self).clone().removeAttr('id').appendTo(this.instance.element).data("sortable-item", true);
 					this.instance.options._helper = this.instance.options.helper; //Store helper option to later restore it
 					this.instance.options.helper = function() { return ui.helper[0]; };
 
@@ -1447,24 +1724,6 @@ $.ui.plugin.add("draggable", "cursor", {
 	stop: function(event, ui) {
 		var o = $(this).data('draggable').options;
 		if (o._cursor) $('body').css("cursor", o._cursor);
-	}
-});
-
-$.ui.plugin.add("draggable", "iframeFix", {
-	start: function(event, ui) {
-		var o = $(this).data('draggable').options;
-		$(o.iframeFix === true ? "iframe" : o.iframeFix).each(function() {
-			$('<div class="ui-draggable-iframeFix" style="background: #fff;"></div>')
-			.css({
-				width: this.offsetWidth+"px", height: this.offsetHeight+"px",
-				position: "absolute", opacity: "0.001", zIndex: 1000
-			})
-			.css($(this).offset())
-			.appendTo("body");
-		});
-	},
-	stop: function(event, ui) {
-		$("div.ui-draggable-iframeFix").each(function() { this.parentNode.removeChild(this); }); //Remove frame helpers
 	}
 });
 
@@ -1631,12 +1890,12 @@ $.ui.plugin.add("draggable", "zIndex", {
 });
 
 })(jQuery);
-/*
- * jQuery UI Droppable 1.8.2
+/*!
+ * jQuery UI Droppable 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Droppables
  *
@@ -1646,7 +1905,7 @@ $.ui.plugin.add("draggable", "zIndex", {
  *	jquery.ui.mouse.js
  *	jquery.ui.draggable.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.widget("ui.droppable", {
 	widgetEventPrefix: "drop",
@@ -1780,7 +2039,7 @@ $.widget("ui.droppable", {
 });
 
 $.extend($.ui.droppable, {
-	version: "1.8.2"
+	version: "1.8.21"
 });
 
 $.ui.intersect = function(draggable, droppable, toleranceMode) {
@@ -1794,8 +2053,8 @@ $.ui.intersect = function(draggable, droppable, toleranceMode) {
 
 	switch (toleranceMode) {
 		case 'fit':
-			return (l < x1 && x2 < r
-				&& t < y1 && y2 < b);
+			return (l <= x1 && x2 <= r
+				&& t <= y1 && y2 <= b);
 			break;
 		case 'intersect':
 			return (l < x1 + (draggable.helperProportions.width / 2) // Right Half
@@ -1845,10 +2104,10 @@ $.ui.ddmanager = {
 			for (var j=0; j < list.length; j++) { if(list[j] == m[i].element[0]) { m[i].proportions.height = 0; continue droppablesLoop; } }; //Filter out elements in the current dragged item
 			m[i].visible = m[i].element.css("display") != "none"; if(!m[i].visible) continue; 									//If the element is not visible, continue
 
+			if(type == "mousedown") m[i]._activate.call(m[i], event); //Activate the droppable if used directly from draggables
+
 			m[i].offset = m[i].element.offset();
 			m[i].proportions = { width: m[i].element[0].offsetWidth, height: m[i].element[0].offsetHeight };
-
-			if(type == "mousedown") m[i]._activate.call(m[i], event); //Activate the droppable if used directly from draggables
 
 		}
 
@@ -1860,7 +2119,7 @@ $.ui.ddmanager = {
 
 			if(!this.options) return;
 			if (!this.options.disabled && this.visible && $.ui.intersect(draggable, this, this.options.tolerance))
-				dropped = dropped || this._drop.call(this, event);
+				dropped = this._drop.call(this, event) || dropped;
 
 			if (!this.options.disabled && this.visible && this.accept.call(this.element[0],(draggable.currentItem || draggable.element))) {
 				this.isout = 1; this.isover = 0;
@@ -1870,6 +2129,12 @@ $.ui.ddmanager = {
 		});
 		return dropped;
 
+	},
+	dragStart: function( draggable, event ) {
+		//Listen for scrolling so that if the dragging causes scrolling the position of the droppables can be recalculated (see #5003)
+		draggable.element.parents( ":not(body,html)" ).bind( "scroll.droppable", function() {
+			if( !draggable.options.refreshPositions ) $.ui.ddmanager.prepareOffsets( draggable, event );
+		});
 	},
 	drag: function(draggable, event) {
 
@@ -1912,16 +2177,21 @@ $.ui.ddmanager = {
 			}
 		});
 
+	},
+	dragStop: function( draggable, event ) {
+		draggable.element.parents( ":not(body,html)" ).unbind( "scroll.droppable" );
+		//Call prepareOffsets one final time since IE does not fire return scroll events when overflow was caused by drag (see #5003)
+		if( !draggable.options.refreshPositions ) $.ui.ddmanager.prepareOffsets( draggable, event );
 	}
 };
 
 })(jQuery);
-/*
- * jQuery UI Resizable 1.8.2
+/*!
+ * jQuery UI Resizable 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Resizables
  *
@@ -1930,7 +2200,7 @@ $.ui.ddmanager = {
  *	jquery.ui.mouse.js
  *	jquery.ui.widget.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.widget("ui.resizable", $.ui.mouse, {
 	widgetEventPrefix: "resize",
@@ -1967,10 +2237,6 @@ $.widget("ui.resizable", $.ui.mouse, {
 
 		//Wrap the element if it cannot hold child nodes
 		if(this.element[0].nodeName.match(/canvas|textarea|input|select|button|img/i)) {
-
-			//Opera fix for relative positioning
-			if (/relative/.test(this.element.css('position')) && $.browser.opera)
-				this.element.css({ position: 'relative', top: 'auto', left: 'auto' });
 
 			//Create a wrapper element and set the wrapper to the new current internal element
 			this.element.wrap(
@@ -2020,9 +2286,8 @@ $.widget("ui.resizable", $.ui.mouse, {
 				var handle = $.trim(n[i]), hname = 'ui-resizable-'+handle;
 				var axis = $('<div class="ui-resizable-handle ' + hname + '"></div>');
 
-				// increase zIndex of sw, se, ne, nw axis
-				//TODO : this modifies original option
-				if(/sw|se|ne|nw/.test(handle)) axis.css({ zIndex: ++o.zIndex });
+				// Apply zIndex to all handles - see #7960
+				axis.css({ zIndex: o.zIndex });
 
 				//TODO : What's going on here?
 				if ('se' == handle) {
@@ -2094,10 +2359,12 @@ $.widget("ui.resizable", $.ui.mouse, {
 			$(this.element)
 				.addClass("ui-resizable-autohide")
 				.hover(function() {
+					if (o.disabled) return;
 					$(this).removeClass("ui-resizable-autohide");
 					self._handles.show();
 				},
 				function(){
+					if (o.disabled) return;
 					if (!self.resizing) {
 						$(this).addClass("ui-resizable-autohide");
 						self._handles.hide();
@@ -2163,10 +2430,6 @@ $.widget("ui.resizable", $.ui.mouse, {
 			el.css({ position: 'absolute', top: iniPos.top, left: iniPos.left });
 		}
 
-		//Opera fixing relative position
-		if ($.browser.opera && (/relative/).test(el.css('position')))
-			el.css({ position: 'relative', top: 'auto', left: 'auto' });
-
 		this._renderProxy();
 
 		var curleft = num(this.helper.css('left')), curtop = num(this.helper.css('top'));
@@ -2209,6 +2472,8 @@ $.widget("ui.resizable", $.ui.mouse, {
 		// Calculate the attrs that will be change
 		var data = trigger.apply(this, [event, dx, dy]), ie6 = $.browser.msie && $.browser.version < 7, csdif = this.sizeDiff;
 
+		// Put this in the mouseDrag handler since the user can start pressing shift while resizing
+		this._updateVirtualBoundaries(event.shiftKey);
 		if (this._aspectRatio || event.shiftKey)
 			data = this._updateRatio(data, event);
 
@@ -2240,10 +2505,10 @@ $.widget("ui.resizable", $.ui.mouse, {
 
 		if(this._helper) {
 			var pr = this._proportionallyResizeElements, ista = pr.length && (/textarea/i).test(pr[0].nodeName),
-						soffseth = ista && $.ui.hasScroll(pr[0], 'left') /* TODO - jump height */ ? 0 : self.sizeDiff.height,
-							soffsetw = ista ? 0 : self.sizeDiff.width;
+				soffseth = ista && $.ui.hasScroll(pr[0], 'left') /* TODO - jump height */ ? 0 : self.sizeDiff.height,
+				soffsetw = ista ? 0 : self.sizeDiff.width;
 
-			var s = { width: (self.size.width - soffsetw), height: (self.size.height - soffseth) },
+			var s = { width: (self.helper.width()  - soffsetw), height: (self.helper.height() - soffseth) },
 				left = (parseInt(self.element.css('left'), 10) + (self.position.left - self.originalPosition.left)) || null,
 				top = (parseInt(self.element.css('top'), 10) + (self.position.top - self.originalPosition.top)) || null;
 
@@ -2267,6 +2532,32 @@ $.widget("ui.resizable", $.ui.mouse, {
 
 	},
 
+    _updateVirtualBoundaries: function(forceAspectRatio) {
+        var o = this.options, pMinWidth, pMaxWidth, pMinHeight, pMaxHeight, b;
+
+        b = {
+            minWidth: isNumber(o.minWidth) ? o.minWidth : 0,
+            maxWidth: isNumber(o.maxWidth) ? o.maxWidth : Infinity,
+            minHeight: isNumber(o.minHeight) ? o.minHeight : 0,
+            maxHeight: isNumber(o.maxHeight) ? o.maxHeight : Infinity
+        };
+
+        if(this._aspectRatio || forceAspectRatio) {
+            // We want to create an enclosing box whose aspect ration is the requested one
+            // First, compute the "projected" size for each dimension based on the aspect ratio and other dimension
+            pMinWidth = b.minHeight * this.aspectRatio;
+            pMinHeight = b.minWidth / this.aspectRatio;
+            pMaxWidth = b.maxHeight * this.aspectRatio;
+            pMaxHeight = b.maxWidth / this.aspectRatio;
+
+            if(pMinWidth > b.minWidth) b.minWidth = pMinWidth;
+            if(pMinHeight > b.minHeight) b.minHeight = pMinHeight;
+            if(pMaxWidth < b.maxWidth) b.maxWidth = pMaxWidth;
+            if(pMaxHeight < b.maxHeight) b.maxHeight = pMaxHeight;
+        }
+        this._vBoundaries = b;
+    },
+
 	_updateCache: function(data) {
 		var o = this.options;
 		this.offset = this.helper.offset();
@@ -2280,8 +2571,8 @@ $.widget("ui.resizable", $.ui.mouse, {
 
 		var o = this.options, cpos = this.position, csize = this.size, a = this.axis;
 
-		if (data.height) data.width = (csize.height * this.aspectRatio);
-		else if (data.width) data.height = (csize.width / this.aspectRatio);
+		if (isNumber(data.height)) data.width = (data.height * this.aspectRatio);
+		else if (isNumber(data.width)) data.height = (data.width / this.aspectRatio);
 
 		if (a == 'sw') {
 			data.left = cpos.left + (csize.width - data.width);
@@ -2297,7 +2588,7 @@ $.widget("ui.resizable", $.ui.mouse, {
 
 	_respectSize: function(data, event) {
 
-		var el = this.helper, o = this.options, pRatio = this._aspectRatio || event.shiftKey, a = this.axis,
+		var el = this.helper, o = this._vBoundaries, pRatio = this._aspectRatio || event.shiftKey, a = this.axis,
 				ismaxw = isNumber(data.width) && o.maxWidth && (o.maxWidth < data.width), ismaxh = isNumber(data.height) && o.maxHeight && (o.maxHeight < data.height),
 					isminw = isNumber(data.width) && o.minWidth && (o.minWidth > data.width), isminh = isNumber(data.height) && o.minHeight && (o.minHeight > data.height);
 
@@ -2437,7 +2728,7 @@ $.widget("ui.resizable", $.ui.mouse, {
 });
 
 $.extend($.ui.resizable, {
-	version: "1.8.2"
+	version: "1.8.21"
 });
 
 /*
@@ -2446,28 +2737,28 @@ $.extend($.ui.resizable, {
 
 $.ui.plugin.add("resizable", "alsoResize", {
 
-	start: function(event, ui) {
-
+	start: function (event, ui) {
 		var self = $(this).data("resizable"), o = self.options;
 
-		var _store = function(exp) {
+		var _store = function (exp) {
 			$(exp).each(function() {
-				$(this).data("resizable-alsoresize", {
-					width: parseInt($(this).width(), 10), height: parseInt($(this).height(), 10),
-					left: parseInt($(this).css('left'), 10), top: parseInt($(this).css('top'), 10)
+				var el = $(this);
+				el.data("resizable-alsoresize", {
+					width: parseInt(el.width(), 10), height: parseInt(el.height(), 10),
+					left: parseInt(el.css('left'), 10), top: parseInt(el.css('top'), 10)
 				});
 			});
 		};
 
 		if (typeof(o.alsoResize) == 'object' && !o.alsoResize.parentNode) {
-			if (o.alsoResize.length) { o.alsoResize = o.alsoResize[0];	_store(o.alsoResize); }
-			else { $.each(o.alsoResize, function(exp, c) { _store(exp); }); }
+			if (o.alsoResize.length) { o.alsoResize = o.alsoResize[0]; _store(o.alsoResize); }
+			else { $.each(o.alsoResize, function (exp) { _store(exp); }); }
 		}else{
 			_store(o.alsoResize);
 		}
 	},
 
-	resize: function(event, ui){
+	resize: function (event, ui) {
 		var self = $(this).data("resizable"), o = self.options, os = self.originalSize, op = self.originalPosition;
 
 		var delta = {
@@ -2475,43 +2766,30 @@ $.ui.plugin.add("resizable", "alsoResize", {
 			top: (self.position.top - op.top) || 0, left: (self.position.left - op.left) || 0
 		},
 
-		_alsoResize = function(exp, c) {
+		_alsoResize = function (exp, c) {
 			$(exp).each(function() {
-				var el = $(this), start = $(this).data("resizable-alsoresize"), style = {}, css = c && c.length ? c : ['width', 'height', 'top', 'left'];
+				var el = $(this), start = $(this).data("resizable-alsoresize"), style = {}, 
+					css = c && c.length ? c : el.parents(ui.originalElement[0]).length ? ['width', 'height'] : ['width', 'height', 'top', 'left'];
 
-				$.each(css || ['width', 'height', 'top', 'left'], function(i, prop) {
+				$.each(css, function (i, prop) {
 					var sum = (start[prop]||0) + (delta[prop]||0);
 					if (sum && sum >= 0)
 						style[prop] = sum || null;
 				});
-
-				//Opera fixing relative position
-				if (/relative/.test(el.css('position')) && $.browser.opera) {
-					self._revertToRelativePosition = true;
-					el.css({ position: 'absolute', top: 'auto', left: 'auto' });
-				}
 
 				el.css(style);
 			});
 		};
 
 		if (typeof(o.alsoResize) == 'object' && !o.alsoResize.nodeType) {
-			$.each(o.alsoResize, function(exp, c) { _alsoResize(exp, c); });
+			$.each(o.alsoResize, function (exp, c) { _alsoResize(exp, c); });
 		}else{
 			_alsoResize(o.alsoResize);
 		}
 	},
 
-	stop: function(event, ui){
-		var self = $(this).data("resizable");
-
-		//Opera fixing relative position
-		if (self._revertToRelativePosition && $.browser.opera) {
-			self._revertToRelativePosition = false;
-			el.css({ position: 'relative' });
-		}
-
-		$(this).removeData("resizable-alsoresize-start");
+	stop: function (event, ui) {
+		$(this).removeData("resizable-alsoresize");
 	}
 });
 
@@ -2600,13 +2878,13 @@ $.ui.plugin.add("resizable", "containment", {
 
 		if (cp.left < (self._helper ? co.left : 0)) {
 			self.size.width = self.size.width + (self._helper ? (self.position.left - co.left) : (self.position.left - cop.left));
-			if (pRatio) self.size.height = self.size.width / o.aspectRatio;
+			if (pRatio) self.size.height = self.size.width / self.aspectRatio;
 			self.position.left = o.helper ? co.left : 0;
 		}
 
 		if (cp.top < (self._helper ? co.top : 0)) {
 			self.size.height = self.size.height + (self._helper ? (self.position.top - co.top) : self.position.top);
-			if (pRatio) self.size.width = self.size.height * o.aspectRatio;
+			if (pRatio) self.size.width = self.size.height * self.aspectRatio;
 			self.position.top = self._helper ? co.top : 0;
 		}
 
@@ -2715,13 +2993,12 @@ var isNumber = function(value) {
 };
 
 })(jQuery);
-
-/*
- * jQuery UI Selectable 1.8.2
+/*!
+ * jQuery UI Selectable 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Selectables
  *
@@ -2730,7 +3007,7 @@ var isNumber = function(value) {
  *	jquery.ui.mouse.js
  *	jquery.ui.widget.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.widget("ui.selectable", $.ui.mouse, {
 	options: {
@@ -2751,6 +3028,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 		var selectees;
 		this.refresh = function() {
 			selectees = $(self.options.filter, self.element[0]);
+			selectees.addClass("ui-selectee");
 			selectees.each(function() {
 				var $this = $(this);
 				var pos = $this.offset();
@@ -2807,8 +3085,6 @@ $.widget("ui.selectable", $.ui.mouse, {
 		$(options.appendTo).append(this.helper);
 		// position helper (lasso)
 		this.helper.css({
-			"z-index": 100,
-			"position": "absolute",
 			"left": event.clientX,
 			"top": event.clientY,
 			"width": 0,
@@ -2822,7 +3098,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 		this.selectees.filter('.ui-selected').each(function() {
 			var selectee = $.data(this, "selectable-item");
 			selectee.startselected = true;
-			if (!event.metaKey) {
+			if (!event.metaKey && !event.ctrlKey) {
 				selectee.$element.removeClass('ui-selected');
 				selectee.selected = false;
 				selectee.$element.addClass('ui-unselecting');
@@ -2837,7 +3113,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 		$(event.target).parents().andSelf().each(function() {
 			var selectee = $.data(this, "selectable-item");
 			if (selectee) {
-				var doSelect = !event.metaKey || !selectee.$element.hasClass('ui-selected');
+				var doSelect = (!event.metaKey && !event.ctrlKey) || !selectee.$element.hasClass('ui-selected');
 				selectee.$element
 					.removeClass(doSelect ? "ui-unselecting" : "ui-selected")
 					.addClass(doSelect ? "ui-selecting" : "ui-unselecting");
@@ -2907,7 +3183,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 			} else {
 				// UNSELECT
 				if (selectee.selecting) {
-					if (event.metaKey && selectee.startselected) {
+					if ((event.metaKey || event.ctrlKey) && selectee.startselected) {
 						selectee.$element.removeClass('ui-selecting');
 						selectee.selecting = false;
 						selectee.$element.addClass('ui-selected');
@@ -2926,7 +3202,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 					}
 				}
 				if (selectee.selected) {
-					if (!event.metaKey && !selectee.startselected) {
+					if (!event.metaKey && !event.ctrlKey && !selectee.startselected) {
 						selectee.$element.removeClass('ui-selected');
 						selectee.selected = false;
 
@@ -2980,16 +3256,16 @@ $.widget("ui.selectable", $.ui.mouse, {
 });
 
 $.extend($.ui.selectable, {
-	version: "1.8.2"
+	version: "1.8.21"
 });
 
 })(jQuery);
-/*
- * jQuery UI Sortable 1.8.2
+/*!
+ * jQuery UI Sortable 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Sortables
  *
@@ -2998,10 +3274,11 @@ $.extend($.ui.selectable, {
  *	jquery.ui.mouse.js
  *	jquery.ui.widget.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.widget("ui.sortable", $.ui.mouse, {
 	widgetEventPrefix: "sort",
+	ready: false,
 	options: {
 		appendTo: "parent",
 		axis: false,
@@ -3035,26 +3312,28 @@ $.widget("ui.sortable", $.ui.mouse, {
 		//Get the items
 		this.refresh();
 
-		//Let's determine if the items are floating
-		this.floating = this.items.length ? (/left|right/).test(this.items[0].item.css('float')) : false;
+		//Let's determine if the items are being displayed horizontally
+		this.floating = this.items.length ? o.axis === 'x' || (/left|right/).test(this.items[0].item.css('float')) || (/inline|table-cell/).test(this.items[0].item.css('display')) : false;
 
 		//Let's determine the parent's offset
 		this.offset = this.element.offset();
 
 		//Initialize mouse events for interaction
 		this._mouseInit();
+		
+		//We're ready to go
+		this.ready = true
 
 	},
 
 	destroy: function() {
+		$.Widget.prototype.destroy.call( this );
 		this.element
-			.removeClass("ui-sortable ui-sortable-disabled")
-			.removeData("sortable")
-			.unbind(".sortable");
+			.removeClass("ui-sortable ui-sortable-disabled");
 		this._mouseDestroy();
 
 		for ( var i = this.items.length - 1; i >= 0; i-- )
-			this.items[i].item.removeData("sortable-item");
+			this.items[i].item.removeData(this.widgetName + "-item");
 
 		return this;
 	},
@@ -3072,6 +3351,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 	},
 
 	_mouseCapture: function(event, overrideHandle) {
+		var that = this;
 
 		if (this.reverting) {
 			return false;
@@ -3084,12 +3364,12 @@ $.widget("ui.sortable", $.ui.mouse, {
 
 		//Find out if the clicked node (or one of its parents) is a actual item in this.items
 		var currentItem = null, self = this, nodes = $(event.target).parents().each(function() {
-			if($.data(this, 'sortable-item') == self) {
+			if($.data(this, that.widgetName + '-item') == self) {
 				currentItem = $(this);
 				return false;
 			}
 		});
-		if($.data(event.target, 'sortable-item') == self) currentItem = $(event.target);
+		if($.data(event.target, that.widgetName + '-item') == self) currentItem = $(event.target);
 
 		if(!currentItem) return false;
 		if(this.options.handle && !overrideHandle) {
@@ -3137,11 +3417,6 @@ $.widget("ui.sortable", $.ui.mouse, {
 			left: this.offset.left - this.margins.left
 		};
 
-		// Only after we got the offset, we can change the helper's position to absolute
-		// TODO: Still need to figure out a way to make relative sorting possible
-		this.helper.css("position", "absolute");
-		this.cssPosition = this.helper.css("position");
-
 		$.extend(this.offset, {
 			click: { //Where the click happened, relative to the element
 				left: event.pageX - this.offset.left,
@@ -3151,6 +3426,11 @@ $.widget("ui.sortable", $.ui.mouse, {
 			relative: this._getRelativeOffset() //This is a relative to absolute position minus the actual position calculation - only used for relative positioned helper
 		});
 
+		// Only after we got the offset, we can change the helper's position to absolute
+		// TODO: Still need to figure out a way to make relative sorting possible
+		this.helper.css("position", "absolute");
+		this.cssPosition = this.helper.css("position");
+		
 		//Generate the original position
 		this.originalPosition = this._generatePosition(event);
 		this.originalPageX = event.pageX;
@@ -3346,7 +3626,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 
 		if(this.dragging) {
 
-			this._mouseUp();
+			this._mouseUp({ target: null });
 
 			if(this.options.helper == "original")
 				this.currentItem.css(this._storedCSS).removeClass("ui-sortable-helper");
@@ -3364,21 +3644,23 @@ $.widget("ui.sortable", $.ui.mouse, {
 
 		}
 
-		//$(this.placeholder[0]).remove(); would have been the jQuery way - unfortunately, it unbinds ALL events from the original node!
-		if(this.placeholder[0].parentNode) this.placeholder[0].parentNode.removeChild(this.placeholder[0]);
-		if(this.options.helper != "original" && this.helper && this.helper[0].parentNode) this.helper.remove();
+		if (this.placeholder) {
+			//$(this.placeholder[0]).remove(); would have been the jQuery way - unfortunately, it unbinds ALL events from the original node!
+			if(this.placeholder[0].parentNode) this.placeholder[0].parentNode.removeChild(this.placeholder[0]);
+			if(this.options.helper != "original" && this.helper && this.helper[0].parentNode) this.helper.remove();
 
-		$.extend(this, {
-			helper: null,
-			dragging: false,
-			reverting: false,
-			_noFinalSort: null
-		});
+			$.extend(this, {
+				helper: null,
+				dragging: false,
+				reverting: false,
+				_noFinalSort: null
+			});
 
-		if(this.domPosition.prev) {
-			$(this.domPosition.prev).after(this.currentItem);
-		} else {
-			$(this.domPosition.parent).prepend(this.currentItem);
+			if(this.domPosition.prev) {
+				$(this.domPosition.prev).after(this.currentItem);
+			} else {
+				$(this.domPosition.parent).prepend(this.currentItem);
+			}
 		}
 
 		return this;
@@ -3394,6 +3676,10 @@ $.widget("ui.sortable", $.ui.mouse, {
 			var res = ($(o.item || this).attr(o.attribute || 'id') || '').match(o.expression || (/(.+)[-=_](.+)/));
 			if(res) str.push((o.key || res[1]+'[]')+'='+(o.key && o.expression ? res[1] : res[2]));
 		});
+
+		if(!str.length && o.key) {
+			str.push(o.key + '=');
+		}
 
 		return str.join('&');
 
@@ -3444,8 +3730,8 @@ $.widget("ui.sortable", $.ui.mouse, {
 
 	_intersectsWithPointer: function(item) {
 
-		var isOverElementHeight = $.ui.isOverAxis(this.positionAbs.top + this.offset.click.top, item.top, item.height),
-			isOverElementWidth = $.ui.isOverAxis(this.positionAbs.left + this.offset.click.left, item.left, item.width),
+		var isOverElementHeight = (this.options.axis === 'x') || $.ui.isOverAxis(this.positionAbs.top + this.offset.click.top, item.top, item.height),
+			isOverElementWidth = (this.options.axis === 'y') || $.ui.isOverAxis(this.positionAbs.left + this.offset.click.left, item.left, item.width),
 			isOverElement = isOverElementHeight && isOverElementWidth,
 			verticalDirection = this._getDragVerticalDirection(),
 			horizontalDirection = this._getDragHorizontalDirection();
@@ -3508,7 +3794,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 			for (var i = connectWith.length - 1; i >= 0; i--){
 				var cur = $(connectWith[i]);
 				for (var j = cur.length - 1; j >= 0; j--){
-					var inst = $.data(cur[j], 'sortable');
+					var inst = $.data(cur[j], this.widgetName);
 					if(inst && inst != this && !inst.options.disabled) {
 						queries.push([$.isFunction(inst.options.items) ? inst.options.items.call(inst.element) : $(inst.options.items, inst.element).not(".ui-sortable-helper").not('.ui-sortable-placeholder'), inst]);
 					}
@@ -3530,7 +3816,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 
 	_removeCurrentsFromItems: function() {
 
-		var list = this.currentItem.find(":data(sortable-item)");
+		var list = this.currentItem.find(":data(" + this.widgetName + "-item)");
 
 		for (var i=0; i < this.items.length; i++) {
 
@@ -3552,11 +3838,11 @@ $.widget("ui.sortable", $.ui.mouse, {
 		var queries = [[$.isFunction(this.options.items) ? this.options.items.call(this.element[0], event, { item: this.currentItem }) : $(this.options.items, this.element), this]];
 		var connectWith = this._connectWith();
 
-		if(connectWith) {
+		if(connectWith && this.ready) { //Shouldn't be run the first time through due to massive slow-down
 			for (var i = connectWith.length - 1; i >= 0; i--){
 				var cur = $(connectWith[i]);
 				for (var j = cur.length - 1; j >= 0; j--){
-					var inst = $.data(cur[j], 'sortable');
+					var inst = $.data(cur[j], this.widgetName);
 					if(inst && inst != this && !inst.options.disabled) {
 						queries.push([$.isFunction(inst.options.items) ? inst.options.items.call(inst.element[0], event, { item: this.currentItem }) : $(inst.options.items, inst.element), inst]);
 						this.containers.push(inst);
@@ -3572,7 +3858,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 			for (var j=0, queriesLength = _queries.length; j < queriesLength; j++) {
 				var item = $(_queries[j]);
 
-				item.data('sortable-item', targetData); // Data for target checking (mouse manager)
+				item.data(this.widgetName + '-item', targetData); // Data for target checking (mouse manager)
 
 				items.push({
 					item: item,
@@ -3594,6 +3880,10 @@ $.widget("ui.sortable", $.ui.mouse, {
 
 		for (var i = this.items.length - 1; i >= 0; i--){
 			var item = this.items[i];
+
+			//We ignore calculating positions of all connected containers when we're not over them
+			if(item.instance != this.currentContainer && this.currentContainer && item.item[0] != this.currentItem[0])
+				continue;
 
 			var t = this.options.toleranceElement ? $(this.options.toleranceElement, item.item) : item.item;
 
@@ -3702,30 +3992,31 @@ $.widget("ui.sortable", $.ui.mouse, {
 		if(this.containers.length === 1) {
 			this.containers[innermostIndex]._trigger("over", event, this._uiHash(this));
 			this.containers[innermostIndex].containerCache.over = 1;
-		} else if(this.currentContainer != this.containers[innermostIndex]) { 
+		} else if(this.currentContainer != this.containers[innermostIndex]) {
 
-			//When entering a new container, we will find the item with the least distance and append our item near it 
-			var dist = 10000; var itemWithLeastDistance = null; var base = this.positionAbs[this.containers[innermostIndex].floating ? 'left' : 'top']; 
-			for (var j = this.items.length - 1; j >= 0; j--) { 
-				if(!$.ui.contains(this.containers[innermostIndex].element[0], this.items[j].item[0])) continue; 
-				var cur = this.items[j][this.containers[innermostIndex].floating ? 'left' : 'top']; 
-				if(Math.abs(cur - base) < dist) { 
-					dist = Math.abs(cur - base); itemWithLeastDistance = this.items[j]; 
-				} 
-			} 
+			//When entering a new container, we will find the item with the least distance and append our item near it
+			var dist = 10000; var itemWithLeastDistance = null; var base = this.positionAbs[this.containers[innermostIndex].floating ? 'left' : 'top'];
+			for (var j = this.items.length - 1; j >= 0; j--) {
+				if(!$.ui.contains(this.containers[innermostIndex].element[0], this.items[j].item[0])) continue;
+				var cur = this.containers[innermostIndex].floating ? this.items[j].item.offset().left : this.items[j].item.offset().top;
+				if(Math.abs(cur - base) < dist) {
+					dist = Math.abs(cur - base); itemWithLeastDistance = this.items[j];
+					this.direction = (cur - base > 0) ? 'down' : 'up';
+				}
+			}
 
-			if(!itemWithLeastDistance && !this.options.dropOnEmpty) //Check if dropOnEmpty is enabled 
-				return; 
+			if(!itemWithLeastDistance && !this.options.dropOnEmpty) //Check if dropOnEmpty is enabled
+				return;
 
-			this.currentContainer = this.containers[innermostIndex]; 
-			itemWithLeastDistance ? this._rearrange(event, itemWithLeastDistance, null, true) : this._rearrange(event, null, this.containers[innermostIndex].element, true); 
-			this._trigger("change", event, this._uiHash()); 
-			this.containers[innermostIndex]._trigger("change", event, this._uiHash(this)); 
+			this.currentContainer = this.containers[innermostIndex];
+			itemWithLeastDistance ? this._rearrange(event, itemWithLeastDistance, null, true) : this._rearrange(event, null, this.containers[innermostIndex].element, true);
+			this._trigger("change", event, this._uiHash());
+			this.containers[innermostIndex]._trigger("change", event, this._uiHash(this));
 
-			//Update the placeholder 
-			this.options.placeholder.update(this.currentContainer, this.placeholder); 
-		
-			this.containers[innermostIndex]._trigger("over", event, this._uiHash(this)); 
+			//Update the placeholder
+			this.options.placeholder.update(this.currentContainer, this.placeholder);
+
+			this.containers[innermostIndex]._trigger("over", event, this._uiHash(this));
 			this.containers[innermostIndex].containerCache.over = 1;
 		} 
 	
@@ -3960,7 +4251,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 
 		// We first have to update the dom position of the actual currentItem
 		// Note: don't do it if the current item is already removed (by a user), or it gets reappended (see #4088)
-		if(!this._noFinalSort && this.currentItem[0].parentNode) this.placeholder.before(this.currentItem);
+		if(!this._noFinalSort && this.currentItem.parent().length) this.placeholder.before(this.currentItem);
 		this._noFinalSort = null;
 
 		if(this.helper[0] == this.currentItem[0]) {
@@ -4047,16 +4338,16 @@ $.widget("ui.sortable", $.ui.mouse, {
 });
 
 $.extend($.ui.sortable, {
-	version: "1.8.2"
+	version: "1.8.21"
 });
 
 })(jQuery);
-/*
- * jQuery UI Accordion 1.8.2
+/*!
+ * jQuery UI Accordion 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Accordion
  *
@@ -4064,12 +4355,12 @@ $.extend($.ui.sortable, {
  *	jquery.ui.core.js
  *	jquery.ui.widget.js
  */
-(function($) {
+(function( $, undefined ) {
 
-$.widget("ui.accordion", {
+$.widget( "ui.accordion", {
 	options: {
 		active: 0,
-		animated: 'slide',
+		animated: "slide",
 		autoHeight: true,
 		clearStyle: false,
 		collapsible: false,
@@ -4082,322 +4373,398 @@ $.widget("ui.accordion", {
 		},
 		navigation: false,
 		navigationFilter: function() {
-			return this.href.toLowerCase() == location.href.toLowerCase();
+			return this.href.toLowerCase() === location.href.toLowerCase();
 		}
 	},
+
 	_create: function() {
+		var self = this,
+			options = self.options;
 
-		var o = this.options, self = this;
-		this.running = 0;
+		self.running = 0;
 
-		this.element.addClass("ui-accordion ui-widget ui-helper-reset");
-		
-		// in lack of child-selectors in CSS we need to mark top-LIs in a UL-accordion for some IE-fix
-		this.element.children("li").addClass("ui-accordion-li-fix");
+		self.element
+			.addClass( "ui-accordion ui-widget ui-helper-reset" )
+			// in lack of child-selectors in CSS
+			// we need to mark top-LIs in a UL-accordion for some IE-fix
+			.children( "li" )
+				.addClass( "ui-accordion-li-fix" );
 
-		this.headers = this.element.find(o.header).addClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-all")
-			.bind("mouseenter.accordion", function(){ $(this).addClass('ui-state-hover'); })
-			.bind("mouseleave.accordion", function(){ $(this).removeClass('ui-state-hover'); })
-			.bind("focus.accordion", function(){ $(this).addClass('ui-state-focus'); })
-			.bind("blur.accordion", function(){ $(this).removeClass('ui-state-focus'); });
+		self.headers = self.element.find( options.header )
+			.addClass( "ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" )
+			.bind( "mouseenter.accordion", function() {
+				if ( options.disabled ) {
+					return;
+				}
+				$( this ).addClass( "ui-state-hover" );
+			})
+			.bind( "mouseleave.accordion", function() {
+				if ( options.disabled ) {
+					return;
+				}
+				$( this ).removeClass( "ui-state-hover" );
+			})
+			.bind( "focus.accordion", function() {
+				if ( options.disabled ) {
+					return;
+				}
+				$( this ).addClass( "ui-state-focus" );
+			})
+			.bind( "blur.accordion", function() {
+				if ( options.disabled ) {
+					return;
+				}
+				$( this ).removeClass( "ui-state-focus" );
+			});
 
-		this.headers
-			.next()
-				.addClass("ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom");
+		self.headers.next()
+			.addClass( "ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom" );
 
-		if ( o.navigation ) {
-			var current = this.element.find("a").filter(o.navigationFilter);
+		if ( options.navigation ) {
+			var current = self.element.find( "a" ).filter( options.navigationFilter ).eq( 0 );
 			if ( current.length ) {
-				var header = current.closest(".ui-accordion-header");
+				var header = current.closest( ".ui-accordion-header" );
 				if ( header.length ) {
 					// anchor within header
-					this.active = header;
+					self.active = header;
 				} else {
 					// anchor within content
-					this.active = current.closest(".ui-accordion-content").prev();
+					self.active = current.closest( ".ui-accordion-content" ).prev();
 				}
 			}
 		}
 
-		this.active = this._findActive(this.active || o.active).toggleClass("ui-state-default").toggleClass("ui-state-active").toggleClass("ui-corner-all").toggleClass("ui-corner-top");
-		this.active.next().addClass('ui-accordion-content-active');
+		self.active = self._findActive( self.active || options.active )
+			.addClass( "ui-state-default ui-state-active" )
+			.toggleClass( "ui-corner-all" )
+			.toggleClass( "ui-corner-top" );
+		self.active.next().addClass( "ui-accordion-content-active" );
 
-		//Append icon elements
-		this._createIcons();
+		self._createIcons();
+		self.resize();
+		
+		// ARIA
+		self.element.attr( "role", "tablist" );
 
-		this.resize();
-
-		//ARIA
-		this.element.attr('role','tablist');
-
-		this.headers
-			.attr('role','tab')
-			.bind('keydown', function(event) { return self._keydown(event); })
+		self.headers
+			.attr( "role", "tab" )
+			.bind( "keydown.accordion", function( event ) {
+				return self._keydown( event );
+			})
 			.next()
-			.attr('role','tabpanel');
+				.attr( "role", "tabpanel" );
 
-		this.headers
-			.not(this.active || "")
-			.attr('aria-expanded','false')
-			.attr("tabIndex", "-1")
+		self.headers
+			.not( self.active || "" )
+			.attr({
+				"aria-expanded": "false",
+				"aria-selected": "false",
+				tabIndex: -1
+			})
 			.next()
-			.hide();
+				.hide();
 
 		// make sure at least one header is in the tab order
-		if (!this.active.length) {
-			this.headers.eq(0).attr('tabIndex','0');
+		if ( !self.active.length ) {
+			self.headers.eq( 0 ).attr( "tabIndex", 0 );
 		} else {
-			this.active
-				.attr('aria-expanded','true')
-				.attr('tabIndex', '0');
+			self.active
+				.attr({
+					"aria-expanded": "true",
+					"aria-selected": "true",
+					tabIndex: 0
+				});
 		}
 
-		// only need links in taborder for Safari
-		if (!$.browser.safari)
-			this.headers.find('a').attr('tabIndex','-1');
+		// only need links in tab order for Safari
+		if ( !$.browser.safari ) {
+			self.headers.find( "a" ).attr( "tabIndex", -1 );
+		}
 
-		if (o.event) {
-			this.headers.bind((o.event) + ".accordion", function(event) {
-				self._clickHandler.call(self, event, this);
+		if ( options.event ) {
+			self.headers.bind( options.event.split(" ").join(".accordion ") + ".accordion", function(event) {
+				self._clickHandler.call( self, event, this );
 				event.preventDefault();
 			});
 		}
-
 	},
-	
+
 	_createIcons: function() {
-		var o = this.options;
-		if (o.icons) {
-			$("<span/>").addClass("ui-icon " + o.icons.header).prependTo(this.headers);
-			this.active.find(".ui-icon").toggleClass(o.icons.header).toggleClass(o.icons.headerSelected);
-			this.element.addClass("ui-accordion-icons");
+		var options = this.options;
+		if ( options.icons ) {
+			$( "<span></span>" )
+				.addClass( "ui-icon " + options.icons.header )
+				.prependTo( this.headers );
+			this.active.children( ".ui-icon" )
+				.toggleClass(options.icons.header)
+				.toggleClass(options.icons.headerSelected);
+			this.element.addClass( "ui-accordion-icons" );
 		}
 	},
-	
+
 	_destroyIcons: function() {
-		this.headers.children(".ui-icon").remove();
-		this.element.removeClass("ui-accordion-icons");
+		this.headers.children( ".ui-icon" ).remove();
+		this.element.removeClass( "ui-accordion-icons" );
 	},
 
 	destroy: function() {
-		var o = this.options;
+		var options = this.options;
 
 		this.element
-			.removeClass("ui-accordion ui-widget ui-helper-reset")
-			.removeAttr("role")
-			.unbind('.accordion')
-			.removeData('accordion');
+			.removeClass( "ui-accordion ui-widget ui-helper-reset" )
+			.removeAttr( "role" );
 
 		this.headers
-			.unbind(".accordion")
-			.removeClass("ui-accordion-header ui-helper-reset ui-state-default ui-corner-all ui-state-active ui-corner-top")
-			.removeAttr("role").removeAttr("aria-expanded").removeAttr("tabIndex");
+			.unbind( ".accordion" )
+			.removeClass( "ui-accordion-header ui-accordion-disabled ui-helper-reset ui-state-default ui-corner-all ui-state-active ui-state-disabled ui-corner-top" )
+			.removeAttr( "role" )
+			.removeAttr( "aria-expanded" )
+			.removeAttr( "aria-selected" )
+			.removeAttr( "tabIndex" );
 
-		this.headers.find("a").removeAttr("tabIndex");
+		this.headers.find( "a" ).removeAttr( "tabIndex" );
 		this._destroyIcons();
-		var contents = this.headers.next().css("display", "").removeAttr("role").removeClass("ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content ui-accordion-content-active");
-		if (o.autoHeight || o.fillHeight) {
-			contents.css("height", "");
+		var contents = this.headers.next()
+			.css( "display", "" )
+			.removeAttr( "role" )
+			.removeClass( "ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content ui-accordion-content-active ui-accordion-disabled ui-state-disabled" );
+		if ( options.autoHeight || options.fillHeight ) {
+			contents.css( "height", "" );
 		}
 
-		return this;
+		return $.Widget.prototype.destroy.call( this );
 	},
-	
-	_setOption: function(key, value) {
-		$.Widget.prototype._setOption.apply(this, arguments);
+
+	_setOption: function( key, value ) {
+		$.Widget.prototype._setOption.apply( this, arguments );
 			
-		if (key == "active") {
-			this.activate(value);
+		if ( key == "active" ) {
+			this.activate( value );
 		}
-		if (key == "icons") {
+		if ( key == "icons" ) {
 			this._destroyIcons();
-			if (value) {
+			if ( value ) {
 				this._createIcons();
 			}
 		}
-		
+		// #5332 - opacity doesn't cascade to positioned elements in IE
+		// so we need to add the disabled class to the headers and panels
+		if ( key == "disabled" ) {
+			this.headers.add(this.headers.next())
+				[ value ? "addClass" : "removeClass" ](
+					"ui-accordion-disabled ui-state-disabled" );
+		}
 	},
 
-	_keydown: function(event) {
-
-		var o = this.options, keyCode = $.ui.keyCode;
-
-		if (o.disabled || event.altKey || event.ctrlKey)
+	_keydown: function( event ) {
+		if ( this.options.disabled || event.altKey || event.ctrlKey ) {
 			return;
+		}
 
-		var length = this.headers.length;
-		var currentIndex = this.headers.index(event.target);
-		var toFocus = false;
+		var keyCode = $.ui.keyCode,
+			length = this.headers.length,
+			currentIndex = this.headers.index( event.target ),
+			toFocus = false;
 
-		switch(event.keyCode) {
+		switch ( event.keyCode ) {
 			case keyCode.RIGHT:
 			case keyCode.DOWN:
-				toFocus = this.headers[(currentIndex + 1) % length];
+				toFocus = this.headers[ ( currentIndex + 1 ) % length ];
 				break;
 			case keyCode.LEFT:
 			case keyCode.UP:
-				toFocus = this.headers[(currentIndex - 1 + length) % length];
+				toFocus = this.headers[ ( currentIndex - 1 + length ) % length ];
 				break;
 			case keyCode.SPACE:
 			case keyCode.ENTER:
-				this._clickHandler({ target: event.target }, event.target);
+				this._clickHandler( { target: event.target }, event.target );
 				event.preventDefault();
 		}
 
-		if (toFocus) {
-			$(event.target).attr('tabIndex','-1');
-			$(toFocus).attr('tabIndex','0');
+		if ( toFocus ) {
+			$( event.target ).attr( "tabIndex", -1 );
+			$( toFocus ).attr( "tabIndex", 0 );
 			toFocus.focus();
 			return false;
 		}
 
 		return true;
-
 	},
 
 	resize: function() {
+		var options = this.options,
+			maxHeight;
 
-		var o = this.options, maxHeight;
-
-		if (o.fillSpace) {
-			
-			if($.browser.msie) { var defOverflow = this.element.parent().css('overflow'); this.element.parent().css('overflow', 'hidden'); }
+		if ( options.fillSpace ) {
+			if ( $.browser.msie ) {
+				var defOverflow = this.element.parent().css( "overflow" );
+				this.element.parent().css( "overflow", "hidden");
+			}
 			maxHeight = this.element.parent().height();
-			if($.browser.msie) { this.element.parent().css('overflow', defOverflow); }
-	
+			if ($.browser.msie) {
+				this.element.parent().css( "overflow", defOverflow );
+			}
+
 			this.headers.each(function() {
-				maxHeight -= $(this).outerHeight(true);
+				maxHeight -= $( this ).outerHeight( true );
 			});
 
-			this.headers.next().each(function() {
-    		   $(this).height(Math.max(0, maxHeight - $(this).innerHeight() + $(this).height()));
-			}).css('overflow', 'auto');
-
-		} else if ( o.autoHeight ) {
+			this.headers.next()
+				.each(function() {
+					$( this ).height( Math.max( 0, maxHeight -
+						$( this ).innerHeight() + $( this ).height() ) );
+				})
+				.css( "overflow", "auto" );
+		} else if ( options.autoHeight ) {
 			maxHeight = 0;
-			this.headers.next().each(function() {
-				maxHeight = Math.max(maxHeight, $(this).height());
-			}).height(maxHeight);
+			this.headers.next()
+				.each(function() {
+					maxHeight = Math.max( maxHeight, $( this ).height( "" ).height() );
+				})
+				.height( maxHeight );
 		}
 
 		return this;
 	},
 
-	activate: function(index) {
+	activate: function( index ) {
 		// TODO this gets called on init, changing the option without an explicit call for that
 		this.options.active = index;
 		// call clickHandler with custom event
-		var active = this._findActive(index)[0];
-		this._clickHandler({ target: active }, active);
+		var active = this._findActive( index )[ 0 ];
+		this._clickHandler( { target: active }, active );
 
 		return this;
 	},
 
-	_findActive: function(selector) {
+	_findActive: function( selector ) {
 		return selector
-			? typeof selector == "number"
-				? this.headers.filter(":eq(" + selector + ")")
-				: this.headers.not(this.headers.not(selector))
+			? typeof selector === "number"
+				? this.headers.filter( ":eq(" + selector + ")" )
+				: this.headers.not( this.headers.not( selector ) )
 			: selector === false
-				? $([])
-				: this.headers.filter(":eq(0)");
+				? $( [] )
+				: this.headers.filter( ":eq(0)" );
 	},
 
-	// TODO isn't event.target enough? why the seperate target argument?
-	_clickHandler: function(event, target) {
-
-		var o = this.options;
-		if (o.disabled)
+	// TODO isn't event.target enough? why the separate target argument?
+	_clickHandler: function( event, target ) {
+		var options = this.options;
+		if ( options.disabled ) {
 			return;
+		}
 
 		// called only when using activate(false) to close all parts programmatically
-		if (!event.target) {
-			if (!o.collapsible)
+		if ( !event.target ) {
+			if ( !options.collapsible ) {
 				return;
-			this.active.removeClass("ui-state-active ui-corner-top").addClass("ui-state-default ui-corner-all")
-				.find(".ui-icon").removeClass(o.icons.headerSelected).addClass(o.icons.header);
-			this.active.next().addClass('ui-accordion-content-active');
+			}
+			this.active
+				.removeClass( "ui-state-active ui-corner-top" )
+				.addClass( "ui-state-default ui-corner-all" )
+				.children( ".ui-icon" )
+					.removeClass( options.icons.headerSelected )
+					.addClass( options.icons.header );
+			this.active.next().addClass( "ui-accordion-content-active" );
 			var toHide = this.active.next(),
 				data = {
-					options: o,
-					newHeader: $([]),
-					oldHeader: o.active,
-					newContent: $([]),
+					options: options,
+					newHeader: $( [] ),
+					oldHeader: options.active,
+					newContent: $( [] ),
 					oldContent: toHide
 				},
-				toShow = (this.active = $([]));
-			this._toggle(toShow, toHide, data);
+				toShow = ( this.active = $( [] ) );
+			this._toggle( toShow, toHide, data );
 			return;
 		}
 
 		// get the click target
-		var clicked = $(event.currentTarget || target);
-		var clickedIsActive = clicked[0] == this.active[0];
-		
+		var clicked = $( event.currentTarget || target ),
+			clickedIsActive = clicked[0] === this.active[0];
+
 		// TODO the option is changed, is that correct?
 		// TODO if it is correct, shouldn't that happen after determining that the click is valid?
-		o.active = o.collapsible && clickedIsActive ? false : $('.ui-accordion-header', this.element).index(clicked);
+		options.active = options.collapsible && clickedIsActive ?
+			false :
+			this.headers.index( clicked );
 
 		// if animations are still active, or the active header is the target, ignore click
-		if (this.running || (!o.collapsible && clickedIsActive)) {
+		if ( this.running || ( !options.collapsible && clickedIsActive ) ) {
 			return;
 		}
 
-		// switch classes
-		this.active.removeClass("ui-state-active ui-corner-top").addClass("ui-state-default ui-corner-all")
-			.find(".ui-icon").removeClass(o.icons.headerSelected).addClass(o.icons.header);
-		if (!clickedIsActive) {
-			clicked.removeClass("ui-state-default ui-corner-all").addClass("ui-state-active ui-corner-top")
-				.find(".ui-icon").removeClass(o.icons.header).addClass(o.icons.headerSelected);
-			clicked.next().addClass('ui-accordion-content-active');
-		}
-
 		// find elements to show and hide
-		var toShow = clicked.next(),
+		var active = this.active,
+			toShow = clicked.next(),
 			toHide = this.active.next(),
 			data = {
-				options: o,
-				newHeader: clickedIsActive && o.collapsible ? $([]) : clicked,
+				options: options,
+				newHeader: clickedIsActive && options.collapsible ? $([]) : clicked,
 				oldHeader: this.active,
-				newContent: clickedIsActive && o.collapsible ? $([]) : toShow,
+				newContent: clickedIsActive && options.collapsible ? $([]) : toShow,
 				oldContent: toHide
 			},
 			down = this.headers.index( this.active[0] ) > this.headers.index( clicked[0] );
 
+		// when the call to ._toggle() comes after the class changes
+		// it causes a very odd bug in IE 8 (see #6720)
 		this.active = clickedIsActive ? $([]) : clicked;
-		this._toggle(toShow, toHide, data, clickedIsActive, down);
+		this._toggle( toShow, toHide, data, clickedIsActive, down );
+
+		// switch classes
+		active
+			.removeClass( "ui-state-active ui-corner-top" )
+			.addClass( "ui-state-default ui-corner-all" )
+			.children( ".ui-icon" )
+				.removeClass( options.icons.headerSelected )
+				.addClass( options.icons.header );
+		if ( !clickedIsActive ) {
+			clicked
+				.removeClass( "ui-state-default ui-corner-all" )
+				.addClass( "ui-state-active ui-corner-top" )
+				.children( ".ui-icon" )
+					.removeClass( options.icons.header )
+					.addClass( options.icons.headerSelected );
+			clicked
+				.next()
+				.addClass( "ui-accordion-content-active" );
+		}
 
 		return;
-
 	},
 
-	_toggle: function(toShow, toHide, data, clickedIsActive, down) {
+	_toggle: function( toShow, toHide, data, clickedIsActive, down ) {
+		var self = this,
+			options = self.options;
 
-		var o = this.options, self = this;
+		self.toShow = toShow;
+		self.toHide = toHide;
+		self.data = data;
 
-		this.toShow = toShow;
-		this.toHide = toHide;
-		this.data = data;
-
-		var complete = function() { if(!self) return; return self._completed.apply(self, arguments); };
+		var complete = function() {
+			if ( !self ) {
+				return;
+			}
+			return self._completed.apply( self, arguments );
+		};
 
 		// trigger changestart event
-		this._trigger("changestart", null, this.data);
+		self._trigger( "changestart", null, self.data );
 
 		// count elements to animate
-		this.running = toHide.size() === 0 ? toShow.size() : toHide.size();
+		self.running = toHide.size() === 0 ? toShow.size() : toHide.size();
 
-		if (o.animated) {
-
+		if ( options.animated ) {
 			var animOptions = {};
 
-			if ( o.collapsible && clickedIsActive ) {
+			if ( options.collapsible && clickedIsActive ) {
 				animOptions = {
-					toShow: $([]),
+					toShow: $( [] ),
 					toHide: toHide,
 					complete: complete,
 					down: down,
-					autoHeight: o.autoHeight || o.fillSpace
+					autoHeight: options.autoHeight || options.fillSpace
 				};
 			} else {
 				animOptions = {
@@ -4405,101 +4772,120 @@ $.widget("ui.accordion", {
 					toHide: toHide,
 					complete: complete,
 					down: down,
-					autoHeight: o.autoHeight || o.fillSpace
+					autoHeight: options.autoHeight || options.fillSpace
 				};
 			}
 
-			if (!o.proxied) {
-				o.proxied = o.animated;
+			if ( !options.proxied ) {
+				options.proxied = options.animated;
 			}
 
-			if (!o.proxiedDuration) {
-				o.proxiedDuration = o.duration;
+			if ( !options.proxiedDuration ) {
+				options.proxiedDuration = options.duration;
 			}
 
-			o.animated = $.isFunction(o.proxied) ?
-				o.proxied(animOptions) : o.proxied;
+			options.animated = $.isFunction( options.proxied ) ?
+				options.proxied( animOptions ) :
+				options.proxied;
 
-			o.duration = $.isFunction(o.proxiedDuration) ?
-				o.proxiedDuration(animOptions) : o.proxiedDuration;
+			options.duration = $.isFunction( options.proxiedDuration ) ?
+				options.proxiedDuration( animOptions ) :
+				options.proxiedDuration;
 
 			var animations = $.ui.accordion.animations,
-				duration = o.duration,
-				easing = o.animated;
+				duration = options.duration,
+				easing = options.animated;
 
-			if (easing && !animations[easing] && !$.easing[easing]) {
-				easing = 'slide';
+			if ( easing && !animations[ easing ] && !$.easing[ easing ] ) {
+				easing = "slide";
 			}
-			if (!animations[easing]) {
-				animations[easing] = function(options) {
-					this.slide(options, {
+			if ( !animations[ easing ] ) {
+				animations[ easing ] = function( options ) {
+					this.slide( options, {
 						easing: easing,
 						duration: duration || 700
 					});
 				};
 			}
 
-			animations[easing](animOptions);
-
+			animations[ easing ]( animOptions );
 		} else {
-
-			if (o.collapsible && clickedIsActive) {
+			if ( options.collapsible && clickedIsActive ) {
 				toShow.toggle();
 			} else {
 				toHide.hide();
 				toShow.show();
 			}
 
-			complete(true);
-
+			complete( true );
 		}
 
 		// TODO assert that the blur and focus triggers are really necessary, remove otherwise
-		toHide.prev().attr('aria-expanded','false').attr("tabIndex", "-1").blur();
-		toShow.prev().attr('aria-expanded','true').attr("tabIndex", "0").focus();
-
+		toHide.prev()
+			.attr({
+				"aria-expanded": "false",
+				"aria-selected": "false",
+				tabIndex: -1
+			})
+			.blur();
+		toShow.prev()
+			.attr({
+				"aria-expanded": "true",
+				"aria-selected": "true",
+				tabIndex: 0
+			})
+			.focus();
 	},
 
-	_completed: function(cancel) {
-
-		var o = this.options;
-
+	_completed: function( cancel ) {
 		this.running = cancel ? 0 : --this.running;
-		if (this.running) return;
+		if ( this.running ) {
+			return;
+		}
 
-		if (o.clearStyle) {
-			this.toShow.add(this.toHide).css({
+		if ( this.options.clearStyle ) {
+			this.toShow.add( this.toHide ).css({
 				height: "",
 				overflow: ""
 			});
 		}
-		
+
 		// other classes are removed before the animation; this one needs to stay until completed
-		this.toHide.removeClass("ui-accordion-content-active");
+		this.toHide.removeClass( "ui-accordion-content-active" );
+		// Work around for rendering bug in IE (#5421)
+		if ( this.toHide.length ) {
+			this.toHide.parent()[0].className = this.toHide.parent()[0].className;
+		}
 
-		this._trigger('change', null, this.data);
+		this._trigger( "change", null, this.data );
 	}
-
 });
 
-
-$.extend($.ui.accordion, {
-	version: "1.8.2",
+$.extend( $.ui.accordion, {
+	version: "1.8.21",
 	animations: {
-		slide: function(options, additions) {
+		slide: function( options, additions ) {
 			options = $.extend({
 				easing: "swing",
 				duration: 300
-			}, options, additions);
+			}, options, additions );
 			if ( !options.toHide.size() ) {
-				options.toShow.animate({height: "show"}, options);
+				options.toShow.animate({
+					height: "show",
+					paddingTop: "show",
+					paddingBottom: "show"
+				}, options );
 				return;
 			}
 			if ( !options.toShow.size() ) {
-				options.toHide.animate({height: "hide"}, options);
+				options.toHide.animate({
+					height: "hide",
+					paddingTop: "hide",
+					paddingBottom: "hide"
+				}, options );
 				return;
 			}
-			var overflow = options.toShow.css('overflow'),
+			var overflow = options.toShow.css( "overflow" ),
 				percentDone = 0,
 				showProps = {},
 				hideProps = {},
@@ -4508,45 +4894,57 @@ $.extend($.ui.accordion, {
 			// fix width before calculating height of hidden element
 			var s = options.toShow;
 			originalWidth = s[0].style.width;
-			s.width( parseInt(s.parent().width(),10) - parseInt(s.css("paddingLeft"),10) - parseInt(s.css("paddingRight"),10) - (parseInt(s.css("borderLeftWidth"),10) || 0) - (parseInt(s.css("borderRightWidth"),10) || 0) );
-			
-			$.each(fxAttrs, function(i, prop) {
-				hideProps[prop] = 'hide';
-				
-				var parts = ('' + $.css(options.toShow[0], prop)).match(/^([\d+-.]+)(.*)$/);
-				showProps[prop] = {
-					value: parts[1],
-					unit: parts[2] || 'px'
+			s.width( s.parent().width()
+				- parseFloat( s.css( "paddingLeft" ) )
+				- parseFloat( s.css( "paddingRight" ) )
+				- ( parseFloat( s.css( "borderLeftWidth" ) ) || 0 )
+				- ( parseFloat( s.css( "borderRightWidth" ) ) || 0 ) );
+
+			$.each( fxAttrs, function( i, prop ) {
+				hideProps[ prop ] = "hide";
+
+				var parts = ( "" + $.css( options.toShow[0], prop ) ).match( /^([\d+-.]+)(.*)$/ );
+				showProps[ prop ] = {
+					value: parts[ 1 ],
+					unit: parts[ 2 ] || "px"
 				};
 			});
-			options.toShow.css({ height: 0, overflow: 'hidden' }).show();
-			options.toHide.filter(":hidden").each(options.complete).end().filter(":visible").animate(hideProps,{
-				step: function(now, settings) {
+			options.toShow.css({ height: 0, overflow: "hidden" }).show();
+			options.toHide
+				.filter( ":hidden" )
+					.each( options.complete )
+				.end()
+				.filter( ":visible" )
+				.animate( hideProps, {
+				step: function( now, settings ) {
 					// only calculate the percent when animating height
 					// IE gets very inconsistent results when animating elements
 					// with small values, which is common for padding
-					if (settings.prop == 'height') {
+					if ( settings.prop == "height" ) {
 						percentDone = ( settings.end - settings.start === 0 ) ? 0 :
-							(settings.now - settings.start) / (settings.end - settings.start);
+							( settings.now - settings.start ) / ( settings.end - settings.start );
 					}
-					
-					options.toShow[0].style[settings.prop] =
-						(percentDone * showProps[settings.prop].value) + showProps[settings.prop].unit;
+
+					options.toShow[ 0 ].style[ settings.prop ] =
+						( percentDone * showProps[ settings.prop ].value )
+						+ showProps[ settings.prop ].unit;
 				},
 				duration: options.duration,
 				easing: options.easing,
 				complete: function() {
 					if ( !options.autoHeight ) {
-						options.toShow.css("height", "");
+						options.toShow.css( "height", "" );
 					}
-					options.toShow.css("width", originalWidth);
-					options.toShow.css({overflow: overflow});
+					options.toShow.css({
+						width: originalWidth,
+						overflow: overflow
+					});
 					options.complete();
 				}
 			});
 		},
-		bounceslide: function(options) {
-			this.slide(options, {
+		bounceslide: function( options ) {
+			this.slide( options, {
 				easing: options.down ? "easeOutBounce" : "swing",
 				duration: options.down ? 1000 : 200
 			});
@@ -4554,13 +4952,13 @@ $.extend($.ui.accordion, {
 	}
 });
 
-})(jQuery);
-/*
- * jQuery UI Autocomplete 1.8.2
+})( jQuery );
+/*!
+ * jQuery UI Autocomplete 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Autocomplete
  *
@@ -4569,16 +4967,33 @@ $.extend($.ui.accordion, {
  *	jquery.ui.widget.js
  *	jquery.ui.position.js
  */
-(function( $ ) {
+(function( $, undefined ) {
+
+// used to prevent race conditions with remote data sources
+var requestIndex = 0;
 
 $.widget( "ui.autocomplete", {
 	options: {
+		appendTo: "body",
+		autoFocus: false,
+		delay: 300,
 		minLength: 1,
-		delay: 300
+		position: {
+			my: "left top",
+			at: "left bottom",
+			collision: "none"
+		},
+		source: null
 	},
+
+	pending: 0,
+
 	_create: function() {
 		var self = this,
-			doc = this.element[ 0 ].ownerDocument;
+			doc = this.element[ 0 ].ownerDocument,
+			suppressKeyPress;
+		this.isMultiLine = this.element.is( "textarea" );
+
 		this.element
 			.addClass( "ui-autocomplete-input" )
 			.attr( "autocomplete", "off" )
@@ -4589,6 +5004,11 @@ $.widget( "ui.autocomplete", {
 				"aria-haspopup": "true"
 			})
 			.bind( "keydown.autocomplete", function( event ) {
+				if ( self.options.disabled || self.element.propAttr( "readOnly" ) ) {
+					return;
+				}
+
+				suppressKeyPress = false;
 				var keyCode = $.ui.keyCode;
 				switch( event.keyCode ) {
 				case keyCode.PAGE_UP:
@@ -4598,19 +5018,18 @@ $.widget( "ui.autocomplete", {
 					self._move( "nextPage", event );
 					break;
 				case keyCode.UP:
-					self._move( "previous", event );
-					// prevent moving cursor to beginning of text field in some browsers
-					event.preventDefault();
+					self._keyEvent( "previous", event );
 					break;
 				case keyCode.DOWN:
-					self._move( "next", event );
-					// prevent moving cursor to end of text field in some browsers
-					event.preventDefault();
+					self._keyEvent( "next", event );
 					break;
 				case keyCode.ENTER:
 				case keyCode.NUMPAD_ENTER:
-					// when menu is open or has focus
+					// when menu is open and has focus
 					if ( self.menu.active ) {
+						// #6055 - Opera still allows the keypress to occur
+						// which causes forms to submit
+						suppressKeyPress = true;
 						event.preventDefault();
 					}
 					//passthrough - ENTER and TAB both select the current element
@@ -4624,33 +5043,38 @@ $.widget( "ui.autocomplete", {
 					self.element.val( self.term );
 					self.close( event );
 					break;
-				case keyCode.LEFT:
-				case keyCode.RIGHT:
-				case keyCode.SHIFT:
-				case keyCode.CONTROL:
-				case keyCode.ALT:
-				case keyCode.COMMAND:
-				case keyCode.COMMAND_RIGHT:
-				case keyCode.INSERT:
-				case keyCode.CAPS_LOCK:
-				case keyCode.END:
-				case keyCode.HOME:
-					// ignore metakeys (shift, ctrl, alt)
-					break;
 				default:
 					// keypress is triggered before the input value is changed
 					clearTimeout( self.searching );
 					self.searching = setTimeout(function() {
-						self.search( null, event );
+						// only search if the value has changed
+						if ( self.term != self.element.val() ) {
+							self.selectedItem = null;
+							self.search( null, event );
+						}
 					}, self.options.delay );
 					break;
 				}
 			})
+			.bind( "keypress.autocomplete", function( event ) {
+				if ( suppressKeyPress ) {
+					suppressKeyPress = false;
+					event.preventDefault();
+				}
+			})
 			.bind( "focus.autocomplete", function() {
+				if ( self.options.disabled ) {
+					return;
+				}
+
 				self.selectedItem = null;
 				self.previous = self.element.val();
 			})
 			.bind( "blur.autocomplete", function( event ) {
+				if ( self.options.disabled ) {
+					return;
+				}
+
 				clearTimeout( self.searching );
 				// clicks on the menu (or a button to trigger a search) will cause a blur event
 				self.closing = setTimeout(function() {
@@ -4659,14 +5083,28 @@ $.widget( "ui.autocomplete", {
 				}, 150 );
 			});
 		this._initSource();
-		this.response = function() {
-			return self._response.apply( self, arguments );
-		};
 		this.menu = $( "<ul></ul>" )
 			.addClass( "ui-autocomplete" )
-			.appendTo( "body", doc )
+			.appendTo( $( this.options.appendTo || "body", doc )[0] )
 			// prevent the close-on-blur in case of a "slow" click on the menu (long mousedown)
-			.mousedown(function() {
+			.mousedown(function( event ) {
+				// clicking on the scrollbar causes focus to shift to the body
+				// but we can't detect a mouseup or a click immediately afterward
+				// so we have to track the next mousedown and close the menu if
+				// the user clicks somewhere outside of the autocomplete
+				var menuElement = self.menu.element[ 0 ];
+				if ( !$( event.target ).closest( ".ui-menu-item" ).length ) {
+					setTimeout(function() {
+						$( document ).one( 'mousedown', function( event ) {
+							if ( event.target !== self.element[ 0 ] &&
+								event.target !== menuElement &&
+								!$.ui.contains( menuElement, event.target ) ) {
+								self.close();
+							}
+						});
+					}, 1 );
+				}
+
 				// use another timeout to make sure the blur-event-handler on the input was already triggered
 				setTimeout(function() {
 					clearTimeout( self.closing );
@@ -4675,7 +5113,7 @@ $.widget( "ui.autocomplete", {
 			.menu({
 				focus: function( event, ui ) {
 					var item = ui.item.data( "item.autocomplete" );
-					if ( false !== self._trigger( "focus", null, { item: item } ) ) {
+					if ( false !== self._trigger( "focus", event, { item: item } ) ) {
 						// use value to match what will end up in the input, if it was a key event
 						if ( /^key/.test(event.originalEvent.type) ) {
 							self.element.val( item.value );
@@ -4683,21 +5121,37 @@ $.widget( "ui.autocomplete", {
 					}
 				},
 				selected: function( event, ui ) {
-					var item = ui.item.data( "item.autocomplete" );
-					if ( false !== self._trigger( "select", event, { item: item } ) ) {
-						self.element.val( item.value );
-					}
-					self.close( event );
+					var item = ui.item.data( "item.autocomplete" ),
+						previous = self.previous;
+
 					// only trigger when focus was lost (click on menu)
-					var previous = self.previous;
 					if ( self.element[0] !== doc.activeElement ) {
 						self.element.focus();
 						self.previous = previous;
+						// #6109 - IE triggers two focus events and the second
+						// is asynchronous, so we need to reset the previous
+						// term synchronously and asynchronously :-(
+						setTimeout(function() {
+							self.previous = previous;
+							self.selectedItem = item;
+						}, 1);
 					}
+
+					if ( false !== self._trigger( "select", event, { item: item } ) ) {
+						self.element.val( item.value );
+					}
+					// reset the term after the select event
+					// this allows custom select handling to work properly
+					self.term = self.element.val();
+
+					self.close( event );
 					self.selectedItem = item;
 				},
 				blur: function( event, ui ) {
-					if ( self.menu.element.is(":visible") ) {
+					// don't set the value of the text field if it's already correct
+					// this prevents moving the cursor unnecessarily
+					if ( self.menu.element.is(":visible") &&
+						( self.element.val() !== self.term ) ) {
 						self.element.val( self.term );
 					}
 				}
@@ -4710,6 +5164,13 @@ $.widget( "ui.autocomplete", {
 		if ( $.fn.bgiframe ) {
 			 this.menu.element.bgiframe();
 		}
+		// turning off autocomplete prevents the browser from remembering the
+		// value when navigating through history, so we re-enable autocomplete
+		// if the page is unloaded before the widget is destroyed. #7790
+		self.beforeunloadHandler = function() {
+			self.element.removeAttr( "autocomplete" );
+		};
+		$( window ).bind( "beforeunload", self.beforeunloadHandler );
 	},
 
 	destroy: function() {
@@ -4720,18 +5181,26 @@ $.widget( "ui.autocomplete", {
 			.removeAttr( "aria-autocomplete" )
 			.removeAttr( "aria-haspopup" );
 		this.menu.element.remove();
+		$( window ).unbind( "beforeunload", this.beforeunloadHandler );
 		$.Widget.prototype.destroy.call( this );
 	},
 
-	_setOption: function( key ) {
+	_setOption: function( key, value ) {
 		$.Widget.prototype._setOption.apply( this, arguments );
 		if ( key === "source" ) {
 			this._initSource();
 		}
+		if ( key === "appendTo" ) {
+			this.menu.element.appendTo( $( value || "body", this.element[0].ownerDocument )[0] )
+		}
+		if ( key === "disabled" && value && this.xhr ) {
+			this.xhr.abort();
+		}
 	},
 
 	_initSource: function() {
-		var array,
+		var self = this,
+			array,
 			url;
 		if ( $.isArray(this.options.source) ) {
 			array = this.options.source;
@@ -4741,7 +5210,20 @@ $.widget( "ui.autocomplete", {
 		} else if ( typeof this.options.source === "string" ) {
 			url = this.options.source;
 			this.source = function( request, response ) {
-				$.getJSON( url, request, response );
+				if ( self.xhr ) {
+					self.xhr.abort();
+				}
+				self.xhr = $.ajax({
+					url: url,
+					data: request,
+					dataType: "json",
+					success: function( data, status ) {
+						response( data );
+					},
+					error: function() {
+						response( [] );
+					}
+				});
 			};
 		} else {
 			this.source = this.options.source;
@@ -4750,12 +5232,16 @@ $.widget( "ui.autocomplete", {
 
 	search: function( value, event ) {
 		value = value != null ? value : this.element.val();
+
+		// always save the actual value, not the one passed as an argument
+		this.term = this.element.val();
+
 		if ( value.length < this.options.minLength ) {
 			return this.close( event );
 		}
 
 		clearTimeout( this.closing );
-		if ( this._trigger("search") === false ) {
+		if ( this._trigger( "search", event ) === false ) {
 			return;
 		}
 
@@ -4763,31 +5249,44 @@ $.widget( "ui.autocomplete", {
 	},
 
 	_search: function( value ) {
-		this.term = this.element
-			.addClass( "ui-autocomplete-loading" )
-			// always save the actual value, not the one passed as an argument
-			.val();
+		this.pending++;
+		this.element.addClass( "ui-autocomplete-loading" );
 
-		this.source( { term: value }, this.response );
+		this.source( { term: value }, this._response() );
 	},
 
-	_response: function( content ) {
-		if ( content.length ) {
+	_response: function() {
+		var that = this,
+			index = ++requestIndex;
+
+		return function( content ) {
+			if ( index === requestIndex ) {
+				that.__response( content );
+			}
+
+			that.pending--;
+			if ( !that.pending ) {
+				that.element.removeClass( "ui-autocomplete-loading" );
+			}
+		};
+	},
+
+	__response: function( content ) {
+		if ( !this.options.disabled && content && content.length ) {
 			content = this._normalize( content );
 			this._suggest( content );
 			this._trigger( "open" );
 		} else {
 			this.close();
 		}
-		this.element.removeClass( "ui-autocomplete-loading" );
 	},
 
 	close: function( event ) {
 		clearTimeout( this.closing );
 		if ( this.menu.element.is(":visible") ) {
-			this._trigger( "close", event );
 			this.menu.element.hide();
 			this.menu.deactivate();
+			this._trigger( "close", event );
 		}
 	},
 	
@@ -4818,26 +5317,35 @@ $.widget( "ui.autocomplete", {
 
 	_suggest: function( items ) {
 		var ul = this.menu.element
-				.empty()
-				.zIndex( this.element.zIndex() + 1 ),
-			menuWidth,
-			textWidth;
+			.empty()
+			.zIndex( this.element.zIndex() + 1 );
 		this._renderMenu( ul, items );
 		// TODO refresh should check if the active item is still in the dom, removing the need for a manual deactivate
 		this.menu.deactivate();
 		this.menu.refresh();
-		this.menu.element.show().position({
-			my: "left top",
-			at: "left bottom",
-			of: this.element,
-			collision: "none"
-		});
 
-		menuWidth = ul.width( "" ).width();
-		textWidth = this.element.width();
-		ul.width( Math.max( menuWidth, textWidth ) );
+		// size and position menu
+		ul.show();
+		this._resizeMenu();
+		ul.position( $.extend({
+			of: this.element
+		}, this.options.position ));
+
+		if ( this.options.autoFocus ) {
+			this.menu.next( new $.Event("mouseover") );
+		}
 	},
-	
+
+	_resizeMenu: function() {
+		var ul = this.menu.element;
+		ul.outerWidth( Math.max(
+			// Firefox wraps long text (possibly a rounding bug)
+			// so we add 1px to avoid the wrapping (#7513)
+			ul.width( "" ).outerWidth() + 1,
+			this.element.outerWidth()
+		) );
+	},
+
 	_renderMenu: function( ul, items ) {
 		var self = this;
 		$.each( items, function( index, item ) {
@@ -4848,7 +5356,7 @@ $.widget( "ui.autocomplete", {
 	_renderItem: function( ul, item) {
 		return $( "<li></li>" )
 			.data( "item.autocomplete", item )
-			.append( "<a>" + item.label + "</a>" )
+			.append( $( "<a></a>" ).text( item.label ) )
 			.appendTo( ul );
 	},
 
@@ -4868,12 +5376,20 @@ $.widget( "ui.autocomplete", {
 
 	widget: function() {
 		return this.menu.element;
+	},
+	_keyEvent: function( keyEvent, event ) {
+		if ( !this.isMultiLine || this.menu.element.is( ":visible" ) ) {
+			this._move( keyEvent, event );
+
+			// prevents moving cursor to beginning/end of the text field in some browsers
+			event.preventDefault();
+		}
 	}
 });
 
 $.extend( $.ui.autocomplete, {
 	escapeRegex: function( value ) {
-		return value.replace( /([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\\$1" );
+		return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 	},
 	filter: function(array, term) {
 		var matcher = new RegExp( $.ui.autocomplete.escapeRegex(term), "i" );
@@ -4892,9 +5408,9 @@ $.extend( $.ui.autocomplete, {
  * it for the next release. You're welcome to give it a try anyway and give us feedback,
  * as long as you're okay with migrating your code later on. We can help with that, too.
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Menu
  *
@@ -4948,12 +5464,12 @@ $.widget("ui.menu", {
 		this.deactivate();
 		if (this.hasScroll()) {
 			var offset = item.offset().top - this.element.offset().top,
-				scroll = this.element.attr("scrollTop"),
+				scroll = this.element.scrollTop(),
 				elementHeight = this.element.height();
 			if (offset < 0) {
-				this.element.attr("scrollTop", scroll + offset);
-			} else if (offset > elementHeight) {
-				this.element.attr("scrollTop", scroll + offset - elementHeight + item.height());
+				this.element.scrollTop( scroll + offset);
+			} else if (offset >= elementHeight) {
+				this.element.scrollTop( scroll + offset - elementHeight + item.height());
 			}
 		}
 		this.active = item.eq(0)
@@ -4983,11 +5499,11 @@ $.widget("ui.menu", {
 	},
 
 	first: function() {
-		return this.active && !this.active.prev().length;
+		return this.active && !this.active.prevAll(".ui-menu-item").length;
 	},
 
 	last: function() {
-		return this.active && !this.active.next().length;
+		return this.active && !this.active.nextAll(".ui-menu-item").length;
 	},
 
 	move: function(direction, edge, event) {
@@ -5008,12 +5524,12 @@ $.widget("ui.menu", {
 		if (this.hasScroll()) {
 			// TODO merge with no-scroll-else
 			if (!this.active || this.last()) {
-				this.activate(event, this.element.children(":first"));
+				this.activate(event, this.element.children(".ui-menu-item:first"));
 				return;
 			}
 			var base = this.active.offset().top,
 				height = this.element.height(),
-				result = this.element.children("li").filter(function() {
+				result = this.element.children(".ui-menu-item").filter(function() {
 					var close = $(this).offset().top - base - height + $(this).height();
 					// TODO improve approximation
 					return close < 10 && close > -10;
@@ -5021,11 +5537,12 @@ $.widget("ui.menu", {
 
 			// TODO try to catch this earlier when scrollTop indicates the last page anyway
 			if (!result.length) {
-				result = this.element.children(":last");
+				result = this.element.children(".ui-menu-item:last");
 			}
 			this.activate(event, result);
 		} else {
-			this.activate(event, this.element.children(!this.active || this.last() ? ":first" : ":last"));
+			this.activate(event, this.element.children(".ui-menu-item")
+				.filter(!this.active || this.last() ? ":first" : ":last"));
 		}
 	},
 
@@ -5034,13 +5551,13 @@ $.widget("ui.menu", {
 		if (this.hasScroll()) {
 			// TODO merge with no-scroll-else
 			if (!this.active || this.first()) {
-				this.activate(event, this.element.children(":last"));
+				this.activate(event, this.element.children(".ui-menu-item:last"));
 				return;
 			}
 
 			var base = this.active.offset().top,
-				height = this.element.height();
-				result = this.element.children("li").filter(function() {
+				height = this.element.height(),
+				result = this.element.children(".ui-menu-item").filter(function() {
 					var close = $(this).offset().top - base + height - $(this).height();
 					// TODO improve approximation
 					return close < 10 && close > -10;
@@ -5048,16 +5565,17 @@ $.widget("ui.menu", {
 
 			// TODO try to catch this earlier when scrollTop indicates the last page anyway
 			if (!result.length) {
-				result = this.element.children(":first");
+				result = this.element.children(".ui-menu-item:first");
 			}
 			this.activate(event, result);
 		} else {
-			this.activate(event, this.element.children(!this.active || this.first() ? ":last" : ":first"));
+			this.activate(event, this.element.children(".ui-menu-item")
+				.filter(!this.active || this.first() ? ":last" : ":first"));
 		}
 	},
 
 	hasScroll: function() {
-		return this.element.height() < this.element.attr("scrollHeight");
+		return this.element.height() < this.element[ $.fn.prop ? "prop" : "attr" ]("scrollHeight");
 	},
 
 	select: function( event ) {
@@ -5066,12 +5584,12 @@ $.widget("ui.menu", {
 });
 
 }(jQuery));
-/*
- * jQuery UI Button 1.8.2
+/*!
+ * jQuery UI Button 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Button
  *
@@ -5079,19 +5597,17 @@ $.widget("ui.menu", {
  *	jquery.ui.core.js
  *	jquery.ui.widget.js
  */
-(function( $ ) {
+(function( $, undefined ) {
 
-var lastActive,
+var lastActive, startXPos, startYPos, clickDragged,
 	baseClasses = "ui-button ui-widget ui-state-default ui-corner-all",
 	stateClasses = "ui-state-hover ui-state-active ",
-	typeClasses = "ui-button-icons-only ui-button-icon-only ui-button-text-icons ui-button-text-icon ui-button-text-only",
-	formResetHandler = function( event ) {
-		$( ":ui-button", event.target.form ).each(function() {
-			var inst = $( this ).data( "button" );
-			setTimeout(function() {
-				inst.refresh();
-			}, 1 );
-		});
+	typeClasses = "ui-button-icons-only ui-button-icon-only ui-button-text-icons ui-button-text-icon-primary ui-button-text-icon-secondary ui-button-text-only",
+	formResetHandler = function() {
+		var buttons = $( this ).find( ":ui-button" );
+		setTimeout(function() {
+			buttons.button( "refresh" );
+		}, 1 );
 	},
 	radioGroup = function( radio ) {
 		var name = radio.name,
@@ -5112,6 +5628,7 @@ var lastActive,
 
 $.widget( "ui.button", {
 	options: {
+		disabled: null,
 		text: true,
 		label: null,
 		icons: {
@@ -5124,6 +5641,12 @@ $.widget( "ui.button", {
 			.unbind( "reset.button" )
 			.bind( "reset.button", formResetHandler );
 
+		if ( typeof this.options.disabled !== "boolean" ) {
+			this.options.disabled = !!this.element.propAttr( "disabled" );
+		} else {
+			this.element.propAttr( "disabled", this.options.disabled );
+		}
+
 		this._determineButtonType();
 		this.hasTitle = !!this.buttonElement.attr( "title" );
 
@@ -5135,10 +5658,6 @@ $.widget( "ui.button", {
 
 		if ( options.label === null ) {
 			options.label = this.buttonElement.html();
-		}
-
-		if ( this.element.is( ":disabled" ) ) {
-			options.disabled = true;
 		}
 
 		this.buttonElement
@@ -5159,23 +5678,54 @@ $.widget( "ui.button", {
 				}
 				$( this ).removeClass( hoverClass );
 			})
+			.bind( "click.button", function( event ) {
+				if ( options.disabled ) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+				}
+			});
+
+		this.element
 			.bind( "focus.button", function() {
 				// no need to check disabled, focus won't be triggered anyway
-				$( this ).addClass( focusClass );
+				self.buttonElement.addClass( focusClass );
 			})
 			.bind( "blur.button", function() {
-				$( this ).removeClass( focusClass );
+				self.buttonElement.removeClass( focusClass );
 			});
 
 		if ( toggleButton ) {
 			this.element.bind( "change.button", function() {
+				if ( clickDragged ) {
+					return;
+				}
 				self.refresh();
+			});
+			// if mouse moves between mousedown and mouseup (drag) set clickDragged flag
+			// prevents issue where button state changes but checkbox/radio checked state
+			// does not in Firefox (see ticket #6970)
+			this.buttonElement
+				.bind( "mousedown.button", function( event ) {
+					if ( options.disabled ) {
+						return;
+					}
+					clickDragged = false;
+					startXPos = event.pageX;
+					startYPos = event.pageY;
+				})
+				.bind( "mouseup.button", function( event ) {
+					if ( options.disabled ) {
+						return;
+					}
+					if ( startXPos !== event.pageX || startYPos !== event.pageY ) {
+						clickDragged = true;
+					}
 			});
 		}
 
 		if ( this.type === "checkbox" ) {
 			this.buttonElement.bind( "click.button", function() {
-				if ( options.disabled ) {
+				if ( options.disabled || clickDragged ) {
 					return false;
 				}
 				$( this ).toggleClass( "ui-state-active" );
@@ -5183,11 +5733,11 @@ $.widget( "ui.button", {
 			});
 		} else if ( this.type === "radio" ) {
 			this.buttonElement.bind( "click.button", function() {
-				if ( options.disabled ) {
+				if ( options.disabled || clickDragged ) {
 					return false;
 				}
 				$( this ).addClass( "ui-state-active" );
-				self.buttonElement.attr( "aria-pressed", true );
+				self.buttonElement.attr( "aria-pressed", "true" );
 
 				var radio = self.element[ 0 ];
 				radioGroup( radio )
@@ -5196,7 +5746,7 @@ $.widget( "ui.button", {
 						return $( this ).button( "widget" )[ 0 ];
 					})
 					.removeClass( "ui-state-active" )
-					.attr( "aria-pressed", false );
+					.attr( "aria-pressed", "false" );
 			});
 		} else {
 			this.buttonElement
@@ -5242,29 +5792,34 @@ $.widget( "ui.button", {
 		// $.Widget.prototype._setOptionDisabled so it's easy to proxy and can
 		// be overridden by individual plugins
 		this._setOption( "disabled", options.disabled );
+		this._resetButton();
 	},
 
 	_determineButtonType: function() {
-		
+
 		if ( this.element.is(":checkbox") ) {
 			this.type = "checkbox";
+		} else if ( this.element.is(":radio") ) {
+			this.type = "radio";
+		} else if ( this.element.is("input") ) {
+			this.type = "input";
 		} else {
-			if ( this.element.is(":radio") ) {
-				this.type = "radio";
-			} else {
-				if ( this.element.is("input") ) {
-					this.type = "input";
-				} else {
-					this.type = "button";
-				}
-			}
+			this.type = "button";
 		}
-		
+
 		if ( this.type === "checkbox" || this.type === "radio" ) {
 			// we don't search against the document in case the element
 			// is disconnected from the DOM
-			this.buttonElement = this.element.parents().last()
-				.find( "[for=" + this.element.attr("id") + "]" );
+			var ancestor = this.element.parents().filter(":last"),
+				labelSelector = "label[for='" + this.element.attr("id") + "']";
+			this.buttonElement = ancestor.find( labelSelector );
+			if ( !this.buttonElement.length ) {
+				ancestor = ancestor.length ? ancestor.siblings() : this.element.siblings();
+				this.buttonElement = ancestor.filter( labelSelector );
+				if ( !this.buttonElement.length ) {
+					this.buttonElement = ancestor.find( labelSelector );
+				}
+			}
 			this.element.addClass( "ui-helper-hidden-accessible" );
 
 			var checked = this.element.is( ":checked" );
@@ -5301,10 +5856,11 @@ $.widget( "ui.button", {
 		$.Widget.prototype._setOption.apply( this, arguments );
 		if ( key === "disabled" ) {
 			if ( value ) {
-				this.element.attr( "disabled", true );
+				this.element.propAttr( "disabled", true );
 			} else {
-				this.element.removeAttr( "disabled" );
+				this.element.propAttr( "disabled", false );
 			}
+			return;
 		}
 		this._resetButton();
 	},
@@ -5319,22 +5875,22 @@ $.widget( "ui.button", {
 				if ( $( this ).is( ":checked" ) ) {
 					$( this ).button( "widget" )
 						.addClass( "ui-state-active" )
-						.attr( "aria-pressed", true );
+						.attr( "aria-pressed", "true" );
 				} else {
 					$( this ).button( "widget" )
 						.removeClass( "ui-state-active" )
-						.attr( "aria-pressed", false );
+						.attr( "aria-pressed", "false" );
 				}
 			});
 		} else if ( this.type === "checkbox" ) {
 			if ( this.element.is( ":checked" ) ) {
 				this.buttonElement
 					.addClass( "ui-state-active" )
-					.attr( "aria-pressed", true );
+					.attr( "aria-pressed", "true" );
 			} else {
 				this.buttonElement
 					.removeClass( "ui-state-active" )
-					.attr( "aria-pressed", false );
+					.attr( "aria-pressed", "false" );
 			}
 		}
 	},
@@ -5347,40 +5903,49 @@ $.widget( "ui.button", {
 			return;
 		}
 		var buttonElement = this.buttonElement.removeClass( typeClasses ),
-			buttonText = $( "<span></span>" )
+			buttonText = $( "<span></span>", this.element[0].ownerDocument )
 				.addClass( "ui-button-text" )
 				.html( this.options.label )
 				.appendTo( buttonElement.empty() )
 				.text(),
 			icons = this.options.icons,
-			multipleIcons = icons.primary && icons.secondary;
+			multipleIcons = icons.primary && icons.secondary,
+			buttonClasses = [];  
+
 		if ( icons.primary || icons.secondary ) {
-			buttonElement.addClass( "ui-button-text-icon" +
-				( multipleIcons ? "s" : "" ) );
+			if ( this.options.text ) {
+				buttonClasses.push( "ui-button-text-icon" + ( multipleIcons ? "s" : ( icons.primary ? "-primary" : "-secondary" ) ) );
+			}
+
 			if ( icons.primary ) {
 				buttonElement.prepend( "<span class='ui-button-icon-primary ui-icon " + icons.primary + "'></span>" );
 			}
+
 			if ( icons.secondary ) {
 				buttonElement.append( "<span class='ui-button-icon-secondary ui-icon " + icons.secondary + "'></span>" );
 			}
+
 			if ( !this.options.text ) {
-				buttonElement
-					.addClass( multipleIcons ? "ui-button-icons-only" : "ui-button-icon-only" )
-					.removeClass( "ui-button-text-icons ui-button-text-icon" );
+				buttonClasses.push( multipleIcons ? "ui-button-icons-only" : "ui-button-icon-only" );
+
 				if ( !this.hasTitle ) {
 					buttonElement.attr( "title", buttonText );
 				}
 			}
 		} else {
-			buttonElement.addClass( "ui-button-text-only" );
+			buttonClasses.push( "ui-button-text-only" );
 		}
+		buttonElement.addClass( buttonClasses.join( " " ) );
 	}
 });
 
 $.widget( "ui.buttonset", {
+	options: {
+		items: ":button, :submit, :reset, :checkbox, :radio, a, :data(button)"
+	},
+
 	_create: function() {
 		this.element.addClass( "ui-buttonset" );
-		this._init();
 	},
 	
 	_init: function() {
@@ -5396,7 +5961,9 @@ $.widget( "ui.buttonset", {
 	},
 	
 	refresh: function() {
-		this.buttons = this.element.find( ":button, :submit, :reset, :checkbox, :radio, a, :data(button)" )
+		var rtl = this.element.css( "direction" ) === "rtl";
+		
+		this.buttons = this.element.find( this.options.items )
 			.filter( ":ui-button" )
 				.button( "refresh" )
 			.end()
@@ -5408,10 +5975,10 @@ $.widget( "ui.buttonset", {
 			})
 				.removeClass( "ui-corner-all ui-corner-left ui-corner-right" )
 				.filter( ":first" )
-					.addClass( "ui-corner-left" )
+					.addClass( rtl ? "ui-corner-right" : "ui-corner-left" )
 				.end()
 				.filter( ":last" )
-					.addClass( "ui-corner-right" )
+					.addClass( rtl ? "ui-corner-left" : "ui-corner-right" )
 				.end()
 			.end();
 	},
@@ -5431,12 +5998,12 @@ $.widget( "ui.buttonset", {
 });
 
 }( jQuery ) );
-/*
- * jQuery UI Dialog 1.8.2
+/*!
+ * jQuery UI Dialog 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Dialog
  *
@@ -5449,13 +6016,40 @@ $.widget( "ui.buttonset", {
  *	jquery.ui.position.js
  *	jquery.ui.resizable.js
  */
-(function($) {
+(function( $, undefined ) {
 
 var uiDialogClasses =
-	'ui-dialog ' +
-	'ui-widget ' +
-	'ui-widget-content ' +
-	'ui-corner-all ';
+		'ui-dialog ' +
+		'ui-widget ' +
+		'ui-widget-content ' +
+		'ui-corner-all ',
+	sizeRelatedOptions = {
+		buttons: true,
+		height: true,
+		maxHeight: true,
+		maxWidth: true,
+		minHeight: true,
+		minWidth: true,
+		width: true
+	},
+	resizableRelatedOptions = {
+		maxHeight: true,
+		maxWidth: true,
+		minHeight: true,
+		minWidth: true
+	},
+	// support for jQuery 1.3.2 - handle common attrFn methods for dialog
+	attrFn = $.attrFn || {
+		val: true,
+		css: true,
+		html: true,
+		text: true,
+		data: true,
+		width: true,
+		height: true,
+		offset: true,
+		click: true
+	};
 
 $.widget("ui.dialog", {
 	options: {
@@ -5472,7 +6066,18 @@ $.widget("ui.dialog", {
 		minHeight: 150,
 		minWidth: 150,
 		modal: false,
-		position: 'center',
+		position: {
+			my: 'center',
+			at: 'center',
+			collision: 'fit',
+			// ensure that the titlebar is never outside the document
+			using: function(pos) {
+				var topOffset = $(this).css(pos).offset().top;
+				if (topOffset < 0) {
+					$(this).css('top', pos.top - topOffset);
+				}
+			}
+		},
 		resizable: true,
 		show: null,
 		stack: true,
@@ -5480,13 +6085,19 @@ $.widget("ui.dialog", {
 		width: 300,
 		zIndex: 1000
 	},
+
 	_create: function() {
 		this.originalTitle = this.element.attr('title');
+		// #5742 - .attr() might return a DOMElement
+		if ( typeof this.originalTitle !== "string" ) {
+			this.originalTitle = "";
+		}
 
+		this.options.title = this.options.title || this.originalTitle;
 		var self = this,
 			options = self.options,
 
-			title = options.title || self.originalTitle || '&#160;',
+			title = options.title || '&#160;',
 			titleId = $.ui.dialog.getTitleId(self.element),
 
 			uiDialog = (self.uiDialog = $('<div></div>'))
@@ -5499,7 +6110,7 @@ $.widget("ui.dialog", {
 				// setting tabIndex makes the div focusable
 				// setting outline to 0 prevents a border on focus in Mozilla
 				.attr('tabIndex', -1).css('outline', 0).keydown(function(event) {
-					if (options.closeOnEscape && event.keyCode &&
+					if (options.closeOnEscape && !event.isDefaultPrevented() && event.keyCode &&
 						event.keyCode === $.ui.keyCode.ESCAPE) {
 						
 						self.close(event);
@@ -5594,6 +6205,7 @@ $.widget("ui.dialog", {
 			uiDialog.bgiframe();
 		}
 	},
+
 	_init: function() {
 		if ( this.options.autoOpen ) {
 			this.open();
@@ -5620,14 +6232,14 @@ $.widget("ui.dialog", {
 
 		return self;
 	},
-	
+
 	widget: function() {
 		return this.uiDialog;
 	},
 
 	close: function(event) {
 		var self = this,
-			maxZ;
+			maxZ, thisZ;
 		
 		if (false === self._trigger('beforeClose', event)) {
 			return;
@@ -5656,7 +6268,10 @@ $.widget("ui.dialog", {
 			maxZ = 0;
 			$('.ui-dialog').each(function() {
 				if (this !== self.uiDialog[0]) {
-					maxZ = Math.max(maxZ, $(this).css('z-index'));
+					thisZ = $(this).css('z-index');
+					if(!isNaN(thisZ)) {
+						maxZ = Math.max(maxZ, thisZ);
+					}
 				}
 			});
 			$.ui.dialog.maxZ = maxZ;
@@ -5675,12 +6290,12 @@ $.widget("ui.dialog", {
 		var self = this,
 			options = self.options,
 			saveScroll;
-		
+
 		if ((options.modal && !force) ||
 			(!options.stack && !options.modal)) {
 			return self._trigger('focus', event);
 		}
-		
+
 		if (options.zIndex > $.ui.dialog.maxZ) {
 			$.ui.dialog.maxZ = options.zIndex;
 		}
@@ -5691,7 +6306,7 @@ $.widget("ui.dialog", {
 
 		//Save and then restore scroll since Opera 9.5+ resets when parent z-Index is changed.
 		//  http://ui.jquery.com/bugs/ticket/3193
-		saveScroll = { scrollTop: self.element.attr('scrollTop'), scrollLeft: self.element.attr('scrollLeft') };
+		saveScroll = { scrollTop: self.element.scrollTop(), scrollLeft: self.element.scrollLeft() };
 		$.ui.dialog.maxZ += 1;
 		self.uiDialog.css('z-index', $.ui.dialog.maxZ);
 		self.element.attr(saveScroll);
@@ -5708,25 +6323,22 @@ $.widget("ui.dialog", {
 			uiDialog = self.uiDialog;
 
 		self.overlay = options.modal ? new $.ui.dialog.overlay(self) : null;
-		if (uiDialog.next().length) {
-			uiDialog.appendTo('body');
-		}
 		self._size();
 		self._position(options.position);
 		uiDialog.show(options.show);
 		self.moveToTop(true);
 
 		// prevent tabbing out of modal dialogs
-		if (options.modal) {
-			uiDialog.bind('keypress.ui-dialog', function(event) {
-				if (event.keyCode !== $.ui.keyCode.TAB) {
+		if ( options.modal ) {
+			uiDialog.bind( "keydown.ui-dialog", function( event ) {
+				if ( event.keyCode !== $.ui.keyCode.TAB ) {
 					return;
 				}
-	
+
 				var tabbables = $(':tabbable', this),
 					first = tabbables.filter(':first'),
 					last  = tabbables.filter(':last');
-	
+
 				if (event.target === last[0] && !event.shiftKey) {
 					first.focus(1);
 					return false;
@@ -5739,15 +6351,12 @@ $.widget("ui.dialog", {
 
 		// set focus to the first tabbable element in the content area or the first button
 		// if there are no tabbable elements, set focus on the dialog itself
-		$([])
-			.add(uiDialog.find('.ui-dialog-content :tabbable:first'))
-			.add(uiDialog.find('.ui-dialog-buttonpane :tabbable:first'))
-			.add(uiDialog)
-			.filter(':first')
-			.focus();
+		$(self.element.find(':tabbable').get().concat(
+			uiDialog.find('.ui-dialog-buttonpane :tabbable').get().concat(
+				uiDialog.get()))).eq(0).focus();
 
-		self._trigger('open');
 		self._isOpen = true;
+		self._trigger('open');
 
 		return self;
 	},
@@ -5760,7 +6369,10 @@ $.widget("ui.dialog", {
 					'ui-dialog-buttonpane ' +
 					'ui-widget-content ' +
 					'ui-helper-clearfix'
-				);
+				),
+			uiButtonSet = $( "<div></div>" )
+				.addClass( "ui-dialog-buttonset" )
+				.appendTo( uiDialogButtonPane );
 
 		// if we already have a button pane, remove it
 		self.uiDialog.find('.ui-dialog-buttonpane').remove();
@@ -5771,11 +6383,26 @@ $.widget("ui.dialog", {
 			});
 		}
 		if (hasButtons) {
-			$.each(buttons, function(name, fn) {
+			$.each(buttons, function(name, props) {
+				props = $.isFunction( props ) ?
+					{ click: props, text: name } :
+					props;
 				var button = $('<button type="button"></button>')
-					.text(name)
-					.click(function() { fn.apply(self.element[0], arguments); })
-					.appendTo(uiDialogButtonPane);
+					.click(function() {
+						props.click.apply(self.element[0], arguments);
+					})
+					.appendTo(uiButtonSet);
+				// can't use .attr( props, true ) with jQuery 1.3.2.
+				$.each( props, function( key, value ) {
+					if ( key === "click" ) {
+						return;
+					}
+					if ( key in attrFn ) {
+						button[ key ]( value );
+					} else {
+						button.attr( key, value );
+					}
+				});
 				if ($.fn.button) {
 					button.button();
 				}
@@ -5883,40 +6510,34 @@ $.widget("ui.dialog", {
 			offset = [0, 0],
 			isVisible;
 
-		position = position || $.ui.dialog.prototype.options.position;
+		if (position) {
+			// deep extending converts arrays to objects in jQuery <= 1.3.2 :-(
+	//		if (typeof position == 'string' || $.isArray(position)) {
+	//			myAt = $.isArray(position) ? position : position.split(' ');
 
-		// deep extending converts arrays to objects in jQuery <= 1.3.2 :-(
-//		if (typeof position == 'string' || $.isArray(position)) {
-//			myAt = $.isArray(position) ? position : position.split(' ');
-
-		if (typeof position === 'string' || (typeof position === 'object' && '0' in position)) {
-			myAt = position.split ? position.split(' ') : [position[0], position[1]];
-			if (myAt.length === 1) {
-				myAt[1] = myAt[0];
-			}
-
-			$.each(['left', 'top'], function(i, offsetPosition) {
-				if (+myAt[i] === myAt[i]) {
-					offset[i] = myAt[i];
-					myAt[i] = offsetPosition;
+			if (typeof position === 'string' || (typeof position === 'object' && '0' in position)) {
+				myAt = position.split ? position.split(' ') : [position[0], position[1]];
+				if (myAt.length === 1) {
+					myAt[1] = myAt[0];
 				}
-			});
-		} else if (typeof position === 'object') {
-			if ('left' in position) {
-				myAt[0] = 'left';
-				offset[0] = position.left;
-			} else if ('right' in position) {
-				myAt[0] = 'right';
-				offset[0] = -position.right;
-			}
 
-			if ('top' in position) {
-				myAt[1] = 'top';
-				offset[1] = position.top;
-			} else if ('bottom' in position) {
-				myAt[1] = 'bottom';
-				offset[1] = -position.bottom;
-			}
+				$.each(['left', 'top'], function(i, offsetPosition) {
+					if (+myAt[i] === myAt[i]) {
+						offset[i] = myAt[i];
+						myAt[i] = offsetPosition;
+					}
+				});
+
+				position = {
+					my: myAt.join(" "),
+					at: myAt.join(" "),
+					offset: offset.join(" ")
+				};
+			} 
+
+			position = $.extend({}, $.ui.dialog.prototype.options.position, position);
+		} else {
+			position = $.ui.dialog.prototype.options.position;
 		}
 
 		// need to show the dialog to get the actual offset in the position plugin
@@ -5927,31 +6548,40 @@ $.widget("ui.dialog", {
 		this.uiDialog
 			// workaround for jQuery bug #5781 http://dev.jquery.com/ticket/5781
 			.css({ top: 0, left: 0 })
-			.position({
-				my: myAt.join(' '),
-				at: myAt.join(' '),
-				offset: offset.join(' '),
-				of: window,
-				collision: 'fit',
-				// ensure that the titlebar is never outside the document
-				using: function(pos) {
-					var topOffset = $(this).css(pos).offset().top;
-					if (topOffset < 0) {
-						$(this).css('top', pos.top - topOffset);
-					}
-				}
-			});
+			.position($.extend({ of: window }, position));
 		if (!isVisible) {
 			this.uiDialog.hide();
 		}
 	},
 
+	_setOptions: function( options ) {
+		var self = this,
+			resizableOptions = {},
+			resize = false;
+
+		$.each( options, function( key, value ) {
+			self._setOption( key, value );
+			
+			if ( key in sizeRelatedOptions ) {
+				resize = true;
+			}
+			if ( key in resizableRelatedOptions ) {
+				resizableOptions[ key ] = value;
+			}
+		});
+
+		if ( resize ) {
+			this._size();
+		}
+		if ( this.uiDialog.is( ":data(resizable)" ) ) {
+			this.uiDialog.resizable( "option", resizableOptions );
+		}
+	},
+
 	_setOption: function(key, value){
 		var self = this,
-			uiDialog = self.uiDialog,
-			isResizable = uiDialog.is(':data(resizable)'),
-			resize = false;
-		
+			uiDialog = self.uiDialog;
+
 		switch (key) {
 			//handling of deprecated beforeclose (vs beforeClose) option
 			//Ticket #4669 http://dev.jqueryui.com/ticket/4669
@@ -5963,7 +6593,7 @@ $.widget("ui.dialog", {
 				self._createButtons(value);
 				break;
 			case "closeText":
-				// convert whatever was passed in to a string, for text() to not throw up
+				// ensure that we always pass a string
 				self.uiDialogTitlebarCloseText.text("" + value);
 				break;
 			case "dialogClass":
@@ -5979,44 +6609,21 @@ $.widget("ui.dialog", {
 				}
 				break;
 			case "draggable":
-				if (value) {
+				var isDraggable = uiDialog.is( ":data(draggable)" );
+				if ( isDraggable && !value ) {
+					uiDialog.draggable( "destroy" );
+				}
+				
+				if ( !isDraggable && value ) {
 					self._makeDraggable();
-				} else {
-					uiDialog.draggable('destroy');
 				}
-				break;
-			case "height":
-				resize = true;
-				break;
-			case "maxHeight":
-				if (isResizable) {
-					uiDialog.resizable('option', 'maxHeight', value);
-				}
-				resize = true;
-				break;
-			case "maxWidth":
-				if (isResizable) {
-					uiDialog.resizable('option', 'maxWidth', value);
-				}
-				resize = true;
-				break;
-			case "minHeight":
-				if (isResizable) {
-					uiDialog.resizable('option', 'minHeight', value);
-				}
-				resize = true;
-				break;
-			case "minWidth":
-				if (isResizable) {
-					uiDialog.resizable('option', 'minWidth', value);
-				}
-				resize = true;
 				break;
 			case "position":
 				self._position(value);
 				break;
 			case "resizable":
 				// currently resizable, becoming non-resizable
+				var isResizable = uiDialog.is( ":data(resizable)" );
 				if (isResizable && !value) {
 					uiDialog.resizable('destroy');
 				}
@@ -6035,15 +6642,9 @@ $.widget("ui.dialog", {
 				// convert whatever was passed in o a string, for html() to not throw up
 				$(".ui-dialog-title", self.uiDialogTitlebar).html("" + (value || '&#160;'));
 				break;
-			case "width":
-				resize = true;
-				break;
 		}
 
 		$.Widget.prototype._setOption.apply(self, arguments);
-		if (resize) {
-			self._size();
-		}
 	},
 
 	_size: function() {
@@ -6051,15 +6652,20 @@ $.widget("ui.dialog", {
 		 * divs will both have width and height set, so we need to reset them
 		 */
 		var options = this.options,
-			nonContentHeight;
+			nonContentHeight,
+			minContentHeight,
+			isVisible = this.uiDialog.is( ":visible" );
 
 		// reset content sizing
-		// hide for non content measurement because height: 0 doesn't work in IE quirks mode (see #4350)
-		this.element.css({
+		this.element.show().css({
 			width: 'auto',
 			minHeight: 0,
 			height: 0
 		});
+
+		if (options.minWidth > options.width) {
+			options.width = options.minWidth;
+		}
 
 		// reset wrapper sizing
 		// determine the height of all the non-content elements
@@ -6068,16 +6674,26 @@ $.widget("ui.dialog", {
 				width: options.width
 			})
 			.height();
-
-		this.element
-			.css(options.height === 'auto' ? {
-					minHeight: Math.max(options.minHeight - nonContentHeight, 0),
-					height: 'auto'
-				} : {
-					minHeight: 0,
-					height: Math.max(options.height - nonContentHeight, 0)				
-			})
-			.show();
+		minContentHeight = Math.max( 0, options.minHeight - nonContentHeight );
+		
+		if ( options.height === "auto" ) {
+			// only needed for IE6 support
+			if ( $.support.minHeight ) {
+				this.element.css({
+					minHeight: minContentHeight,
+					height: "auto"
+				});
+			} else {
+				this.uiDialog.show();
+				var autoHeight = this.element.css( "height", "auto" ).height();
+				if ( !isVisible ) {
+					this.uiDialog.hide();
+				}
+				this.element.height( Math.max( autoHeight, minContentHeight ) );
+			}
+		} else {
+			this.element.height( Math.max( options.height - nonContentHeight, 0 ) );
+		}
 
 		if (this.uiDialog.is(':data(resizable)')) {
 			this.uiDialog.resizable('option', 'minHeight', this._minHeight());
@@ -6086,7 +6702,7 @@ $.widget("ui.dialog", {
 });
 
 $.extend($.ui.dialog, {
-	version: "1.8.2",
+	version: "1.8.21",
 
 	uuid: 0,
 	maxZ: 0,
@@ -6122,14 +6738,17 @@ $.extend($.ui.dialog.overlay, {
 				if ($.ui.dialog.overlay.instances.length) {
 					$(document).bind($.ui.dialog.overlay.events, function(event) {
 						// stop events if the z-index of the target is < the z-index of the overlay
-						return ($(event.target).zIndex() >= $.ui.dialog.overlay.maxZ);
+						// we cannot return true when we don't want to cancel the event (#3523)
+						if ($(event.target).zIndex() < $.ui.dialog.overlay.maxZ) {
+							return false;
+						}
 					});
 				}
 			}, 1);
 
 			// allow closing by pressing the escape key
 			$(document).bind('keydown.dialog-overlay', function(event) {
-				if (dialog.options.closeOnEscape && event.keyCode &&
+				if (dialog.options.closeOnEscape && !event.isDefaultPrevented() && event.keyCode &&
 					event.keyCode === $.ui.keyCode.ESCAPE) {
 					
 					dialog.close(event);
@@ -6157,7 +6776,10 @@ $.extend($.ui.dialog.overlay, {
 	},
 
 	destroy: function($el) {
-		this.oldInstances.push(this.instances.splice($.inArray($el, this.instances), 1)[0]);
+		var indexOf = $.inArray($el, this.instances);
+		if (indexOf != -1){
+			this.oldInstances.push(this.instances.splice(indexOf, 1)[0]);
+		}
 
 		if (this.instances.length === 0) {
 			$([document, window]).unbind('.dialog-overlay');
@@ -6201,8 +6823,8 @@ $.extend($.ui.dialog.overlay, {
 	width: function() {
 		var scrollWidth,
 			offsetWidth;
-		// handle IE 6
-		if ($.browser.msie && $.browser.version < 7) {
+		// handle IE
+		if ( $.browser.msie ) {
 			scrollWidth = Math.max(
 				document.documentElement.scrollWidth,
 				document.body.scrollWidth
@@ -6254,12 +6876,12 @@ $.extend($.ui.dialog.overlay.prototype, {
 });
 
 }(jQuery));
-/*
- * jQuery UI Slider 1.8.2
+/*!
+ * jQuery UI Slider 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Slider
  *
@@ -6268,8 +6890,7 @@ $.extend($.ui.dialog.overlay.prototype, {
  *	jquery.ui.mouse.js
  *	jquery.ui.widget.js
  */
-
-(function( $ ) {
+(function( $, undefined ) {
 
 // number of pages in a slider
 // (how many times can you page up/down to go through the whole range)
@@ -6293,7 +6914,11 @@ $.widget( "ui.slider", $.ui.mouse, {
 
 	_create: function() {
 		var self = this,
-			o = this.options;
+			o = this.options,
+			existingHandles = this.element.find( ".ui-slider-handle" ).addClass( "ui-state-default ui-corner-all" ),
+			handle = "<a class='ui-slider-handle ui-state-default ui-corner-all' href='#'></a>",
+			handleCount = ( o.values && o.values.length ) || 1,
+			handles = [];
 
 		this._keySliding = false;
 		this._mouseSliding = false;
@@ -6307,57 +6932,35 @@ $.widget( "ui.slider", $.ui.mouse, {
 				" ui-slider-" + this.orientation +
 				" ui-widget" +
 				" ui-widget-content" +
-				" ui-corner-all" );
-		
-		if ( o.disabled ) {
-			this.element.addClass( "ui-slider-disabled ui-disabled" );
-		}
+				" ui-corner-all" +
+				( o.disabled ? " ui-slider-disabled ui-disabled" : "" ) );
 
 		this.range = $([]);
 
 		if ( o.range ) {
 			if ( o.range === true ) {
-				this.range = $( "<div></div>" );
 				if ( !o.values ) {
 					o.values = [ this._valueMin(), this._valueMin() ];
 				}
 				if ( o.values.length && o.values.length !== 2 ) {
 					o.values = [ o.values[0], o.values[0] ];
 				}
-			} else {
-				this.range = $( "<div></div>" );
 			}
 
-			this.range
+			this.range = $( "<div></div>" )
 				.appendTo( this.element )
-				.addClass( "ui-slider-range" );
-
-			if ( o.range === "min" || o.range === "max" ) {
-				this.range.addClass( "ui-slider-range-" + o.range );
-			}
-
-			// note: this isn't the most fittingly semantic framework class for this element,
-			// but worked best visually with a variety of themes
-			this.range.addClass( "ui-widget-header" );
+				.addClass( "ui-slider-range" +
+				// note: this isn't the most fittingly semantic framework class for this element,
+				// but worked best visually with a variety of themes
+				" ui-widget-header" + 
+				( ( o.range === "min" || o.range === "max" ) ? " ui-slider-range-" + o.range : "" ) );
 		}
 
-		if ( $( ".ui-slider-handle", this.element ).length === 0 ) {
-			$( "<a href='#'></a>" )
-				.appendTo( this.element )
-				.addClass( "ui-slider-handle" );
+		for ( var i = existingHandles.length; i < handleCount; i += 1 ) {
+			handles.push( handle );
 		}
 
-		if ( o.values && o.values.length ) {
-			while ( $(".ui-slider-handle", this.element).length < o.values.length ) {
-				$( "<a href='#'></a>" )
-					.appendTo( this.element )
-					.addClass( "ui-slider-handle" );
-			}
-		}
-
-		this.handles = $( ".ui-slider-handle", this.element )
-			.addClass( "ui-state-default" +
-				" ui-corner-all" );
+		this.handles = existingHandles.add( $( handles.join( "" ) ).appendTo( self.element ) );
 
 		this.handle = this.handles.eq( 0 );
 
@@ -6390,8 +6993,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 
 		this.handles
 			.keydown(function( event ) {
-				var ret = true,
-					index = $( this ).data( "index.ui-slider-handle" ),
+				var index = $( this ).data( "index.ui-slider-handle" ),
 					allowed,
 					curVal,
 					newVal,
@@ -6410,7 +7012,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 					case $.ui.keyCode.RIGHT:
 					case $.ui.keyCode.DOWN:
 					case $.ui.keyCode.LEFT:
-						ret = false;
+						event.preventDefault();
 						if ( !self._keySliding ) {
 							self._keySliding = true;
 							$( this ).addClass( "ui-state-active" );
@@ -6459,9 +7061,6 @@ $.widget( "ui.slider", $.ui.mouse, {
 				}
 	
 				self._slide( event, index, newVal );
-	
-				return ret;
-	
 			})
 			.keyup(function( event ) {
 				var index = $( this ).data( "index.ui-slider-handle" );
@@ -6566,8 +7165,9 @@ $.widget( "ui.slider", $.ui.mouse, {
 				( parseInt( closestHandle.css("marginTop"), 10 ) || 0)
 		};
 
-		normValue = this._normValueFromMouse( position );
-		this._slide( event, index, normValue );
+		if ( !this.handles.hasClass( "ui-state-hover" ) ) {
+			this._slide( event, index, normValue );
+		}
 		this._animateOff = true;
 		return true;
 	},
@@ -6722,6 +7322,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 			this.options.value = this._trimAlignValue( newValue );
 			this._refreshValue();
 			this._change( null, 0 );
+			return;
 		}
 
 		return this._value();
@@ -6736,6 +7337,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 			this.options.values[ index ] = this._trimAlignValue( newValue );
 			this._refreshValue();
 			this._change( null, index );
+			return;
 		}
 
 		if ( arguments.length ) {
@@ -6774,10 +7376,10 @@ $.widget( "ui.slider", $.ui.mouse, {
 				if ( value ) {
 					this.handles.filter( ".ui-state-focus" ).blur();
 					this.handles.removeClass( "ui-state-hover" );
-					this.handles.attr( "disabled", "disabled" );
+					this.handles.propAttr( "disabled", true );
 					this.element.addClass( "ui-disabled" );
 				} else {
-					this.handles.removeAttr( "disabled" );
+					this.handles.propAttr( "disabled", false );
 					this.element.removeClass( "ui-disabled" );
 				}
 				break;
@@ -6841,14 +7443,14 @@ $.widget( "ui.slider", $.ui.mouse, {
 	
 	// returns the step-aligned value that val is closest to, between (inclusive) min and max
 	_trimAlignValue: function( val ) {
-		if ( val < this._valueMin() ) {
+		if ( val <= this._valueMin() ) {
 			return this._valueMin();
 		}
-		if ( val > this._valueMax() ) {
+		if ( val >= this._valueMax() ) {
 			return this._valueMax();
 		}
 		var step = ( this.options.step > 0 ) ? this.options.step : 1,
-			valModStep = val % step,
+			valModStep = (val - this._valueMin()) % step,
 			alignValue = val - valModStep;
 
 		if ( Math.abs(valModStep) * 2 >= step ) {
@@ -6932,16 +7534,16 @@ $.widget( "ui.slider", $.ui.mouse, {
 });
 
 $.extend( $.ui.slider, {
-	version: "1.8.2"
+	version: "1.8.21"
 });
 
 }(jQuery));
-/*
- * jQuery UI Tabs 1.8.2
+/*!
+ * jQuery UI Tabs 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Tabs
  *
@@ -6949,7 +7551,7 @@ $.extend( $.ui.slider, {
  *	jquery.ui.core.js
  *	jquery.ui.widget.js
  */
-(function($) {
+(function( $, undefined ) {
 
 var tabId = 0,
 	listId = 0;
@@ -6962,7 +7564,7 @@ function getNextListId() {
 	return ++listId;
 }
 
-$.widget("ui.tabs", {
+$.widget( "ui.tabs", {
 	options: {
 		add: null,
 		ajaxOptions: null,
@@ -6972,619 +7574,650 @@ $.widget("ui.tabs", {
 		disable: null,
 		disabled: [],
 		enable: null,
-		event: 'click',
+		event: "click",
 		fx: null, // e.g. { height: 'toggle', opacity: 'toggle', duration: 200 }
-		idPrefix: 'ui-tabs-',
+		idPrefix: "ui-tabs-",
 		load: null,
-		panelTemplate: '<div></div>',
+		panelTemplate: "<div></div>",
 		remove: null,
 		select: null,
 		show: null,
-		spinner: '<em>Loading&#8230;</em>',
-		tabTemplate: '<li><a href="#{href}"><span>#{label}</span></a></li>'
-	},
-	_create: function() {
-		this._tabify(true);
+		spinner: "<em>Loading&#8230;</em>",
+		tabTemplate: "<li><a href='#{href}'><span>#{label}</span></a></li>"
 	},
 
-	_setOption: function(key, value) {
-		if (key == 'selected') {
-			if (this.options.collapsible && value == this.options.selected) {
+	_create: function() {
+		this._tabify( true );
+	},
+
+	_setOption: function( key, value ) {
+		if ( key == "selected" ) {
+			if (this.options.collapsible && value == this.options.selected ) {
 				return;
 			}
-			this.select(value);
-		}
-		else {
-			this.options[key] = value;
+			this.select( value );
+		} else {
+			this.options[ key ] = value;
 			this._tabify();
 		}
 	},
 
-	_tabId: function(a) {
-		return a.title && a.title.replace(/\s/g, '_').replace(/[^A-Za-z0-9\-_:\.]/g, '') ||
+	_tabId: function( a ) {
+		return a.title && a.title.replace( /\s/g, "_" ).replace( /[^\w\u00c0-\uFFFF-]/g, "" ) ||
 			this.options.idPrefix + getNextTabId();
 	},
 
-	_sanitizeSelector: function(hash) {
-		return hash.replace(/:/g, '\\:'); // we need this because an id may contain a ":"
+	_sanitizeSelector: function( hash ) {
+		// we need this because an id may contain a ":"
+		return hash.replace( /:/g, "\\:" );
 	},
 
 	_cookie: function() {
-		var cookie = this.cookie || (this.cookie = this.options.cookie.name || 'ui-tabs-' + getNextListId());
-		return $.cookie.apply(null, [cookie].concat($.makeArray(arguments)));
+		var cookie = this.cookie ||
+			( this.cookie = this.options.cookie.name || "ui-tabs-" + getNextListId() );
+		return $.cookie.apply( null, [ cookie ].concat( $.makeArray( arguments ) ) );
 	},
 
-	_ui: function(tab, panel) {
+	_ui: function( tab, panel ) {
 		return {
 			tab: tab,
 			panel: panel,
-			index: this.anchors.index(tab)
+			index: this.anchors.index( tab )
 		};
 	},
 
 	_cleanup: function() {
 		// restore all former loading tabs labels
-		this.lis.filter('.ui-state-processing').removeClass('ui-state-processing')
-				.find('span:data(label.tabs)')
+		this.lis.filter( ".ui-state-processing" )
+			.removeClass( "ui-state-processing" )
+			.find( "span:data(label.tabs)" )
 				.each(function() {
-					var el = $(this);
-					el.html(el.data('label.tabs')).removeData('label.tabs');
+					var el = $( this );
+					el.html( el.data( "label.tabs" ) ).removeData( "label.tabs" );
 				});
 	},
 
-	_tabify: function(init) {
+	_tabify: function( init ) {
+		var self = this,
+			o = this.options,
+			fragmentId = /^#.+/; // Safari 2 reports '#' for an empty hash
 
-		this.list = this.element.find('ol,ul').eq(0);
-		this.lis = $('li:has(a[href])', this.list);
-		this.anchors = this.lis.map(function() { return $('a', this)[0]; });
-		this.panels = $([]);
+		this.list = this.element.find( "ol,ul" ).eq( 0 );
+		this.lis = $( " > li:has(a[href])", this.list );
+		this.anchors = this.lis.map(function() {
+			return $( "a", this )[ 0 ];
+		});
+		this.panels = $( [] );
 
-		var self = this, o = this.options;
-
-		var fragmentId = /^#.+/; // Safari 2 reports '#' for an empty hash
-		this.anchors.each(function(i, a) {
-			var href = $(a).attr('href');
-
+		this.anchors.each(function( i, a ) {
+			var href = $( a ).attr( "href" );
 			// For dynamically created HTML that contains a hash as href IE < 8 expands
 			// such href to the full page url with hash and then misinterprets tab as ajax.
 			// Same consideration applies for an added tab with a fragment identifier
 			// since a[href=#fragment-identifier] does unexpectedly not match.
 			// Thus normalize href attribute...
-			var hrefBase = href.split('#')[0], baseEl;
-			if (hrefBase && (hrefBase === location.toString().split('#')[0] ||
-					(baseEl = $('base')[0]) && hrefBase === baseEl.href)) {
+			var hrefBase = href.split( "#" )[ 0 ],
+				baseEl;
+			if ( hrefBase && ( hrefBase === location.toString().split( "#" )[ 0 ] ||
+					( baseEl = $( "base" )[ 0 ]) && hrefBase === baseEl.href ) ) {
 				href = a.hash;
 				a.href = href;
 			}
 
 			// inline tab
-			if (fragmentId.test(href)) {
-				self.panels = self.panels.add(self._sanitizeSelector(href));
-			}
-
+			if ( fragmentId.test( href ) ) {
+				self.panels = self.panels.add( self.element.find( self._sanitizeSelector( href ) ) );
 			// remote tab
-			else if (href != '#') { // prevent loading the page itself if href is just "#"
-				$.data(a, 'href.tabs', href); // required for restore on destroy
+			// prevent loading the page itself if href is just "#"
+			} else if ( href && href !== "#" ) {
+				// required for restore on destroy
+				$.data( a, "href.tabs", href );
 
 				// TODO until #3808 is fixed strip fragment identifier from url
 				// (IE fails to load from such url)
-				$.data(a, 'load.tabs', href.replace(/#.*$/, '')); // mutable data
+				$.data( a, "load.tabs", href.replace( /#.*$/, "" ) );
 
-				var id = self._tabId(a);
-				a.href = '#' + id;
-				var $panel = $('#' + id);
-				if (!$panel.length) {
-					$panel = $(o.panelTemplate).attr('id', id).addClass('ui-tabs-panel ui-widget-content ui-corner-bottom')
-						.insertAfter(self.panels[i - 1] || self.list);
-					$panel.data('destroy.tabs', true);
+				var id = self._tabId( a );
+				a.href = "#" + id;
+				var $panel = self.element.find( "#" + id );
+				if ( !$panel.length ) {
+					$panel = $( o.panelTemplate )
+						.attr( "id", id )
+						.addClass( "ui-tabs-panel ui-widget-content ui-corner-bottom" )
+						.insertAfter( self.panels[ i - 1 ] || self.list );
+					$panel.data( "destroy.tabs", true );
 				}
-				self.panels = self.panels.add($panel);
-			}
-
+				self.panels = self.panels.add( $panel );
 			// invalid tab href
-			else {
-				o.disabled.push(i);
+			} else {
+				o.disabled.push( i );
 			}
 		});
 
 		// initialization from scratch
-		if (init) {
-
+		if ( init ) {
 			// attach necessary classes for styling
-			this.element.addClass('ui-tabs ui-widget ui-widget-content ui-corner-all');
-			this.list.addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all');
-			this.lis.addClass('ui-state-default ui-corner-top');
-			this.panels.addClass('ui-tabs-panel ui-widget-content ui-corner-bottom');
+			this.element.addClass( "ui-tabs ui-widget ui-widget-content ui-corner-all" );
+			this.list.addClass( "ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" );
+			this.lis.addClass( "ui-state-default ui-corner-top" );
+			this.panels.addClass( "ui-tabs-panel ui-widget-content ui-corner-bottom" );
 
 			// Selected tab
 			// use "selected" option or try to retrieve:
 			// 1. from fragment identifier in url
 			// 2. from cookie
 			// 3. from selected class attribute on <li>
-			if (o.selected === undefined) {
-				if (location.hash) {
-					this.anchors.each(function(i, a) {
-						if (a.hash == location.hash) {
+			if ( o.selected === undefined ) {
+				if ( location.hash ) {
+					this.anchors.each(function( i, a ) {
+						if ( a.hash == location.hash ) {
 							o.selected = i;
-							return false; // break
+							return false;
 						}
 					});
 				}
-				if (typeof o.selected != 'number' && o.cookie) {
-					o.selected = parseInt(self._cookie(), 10);
+				if ( typeof o.selected !== "number" && o.cookie ) {
+					o.selected = parseInt( self._cookie(), 10 );
 				}
-				if (typeof o.selected != 'number' && this.lis.filter('.ui-tabs-selected').length) {
-					o.selected = this.lis.index(this.lis.filter('.ui-tabs-selected'));
+				if ( typeof o.selected !== "number" && this.lis.filter( ".ui-tabs-selected" ).length ) {
+					o.selected = this.lis.index( this.lis.filter( ".ui-tabs-selected" ) );
 				}
-				o.selected = o.selected || (this.lis.length ? 0 : -1);
-			}
-			else if (o.selected === null) { // usage of null is deprecated, TODO remove in next release
+				o.selected = o.selected || ( this.lis.length ? 0 : -1 );
+			} else if ( o.selected === null ) { // usage of null is deprecated, TODO remove in next release
 				o.selected = -1;
 			}
 
 			// sanity check - default to first tab...
-			o.selected = ((o.selected >= 0 && this.anchors[o.selected]) || o.selected < 0) ? o.selected : 0;
+			o.selected = ( ( o.selected >= 0 && this.anchors[ o.selected ] ) || o.selected < 0 )
+				? o.selected
+				: 0;
 
 			// Take disabling tabs via class attribute from HTML
 			// into account and update option properly.
 			// A selected tab cannot become disabled.
-			o.disabled = $.unique(o.disabled.concat(
-				$.map(this.lis.filter('.ui-state-disabled'),
-					function(n, i) { return self.lis.index(n); } )
-			)).sort();
+			o.disabled = $.unique( o.disabled.concat(
+				$.map( this.lis.filter( ".ui-state-disabled" ), function( n, i ) {
+					return self.lis.index( n );
+				})
+			) ).sort();
 
-			if ($.inArray(o.selected, o.disabled) != -1) {
-				o.disabled.splice($.inArray(o.selected, o.disabled), 1);
+			if ( $.inArray( o.selected, o.disabled ) != -1 ) {
+				o.disabled.splice( $.inArray( o.selected, o.disabled ), 1 );
 			}
 
 			// highlight selected tab
-			this.panels.addClass('ui-tabs-hide');
-			this.lis.removeClass('ui-tabs-selected ui-state-active');
-			if (o.selected >= 0 && this.anchors.length) { // check for length avoids error when initializing empty list
-				this.panels.eq(o.selected).removeClass('ui-tabs-hide');
-				this.lis.eq(o.selected).addClass('ui-tabs-selected ui-state-active');
+			this.panels.addClass( "ui-tabs-hide" );
+			this.lis.removeClass( "ui-tabs-selected ui-state-active" );
+			// check for length avoids error when initializing empty list
+			if ( o.selected >= 0 && this.anchors.length ) {
+				self.element.find( self._sanitizeSelector( self.anchors[ o.selected ].hash ) ).removeClass( "ui-tabs-hide" );
+				this.lis.eq( o.selected ).addClass( "ui-tabs-selected ui-state-active" );
 
 				// seems to be expected behavior that the show callback is fired
-				self.element.queue("tabs", function() {
-					self._trigger('show', null, self._ui(self.anchors[o.selected], self.panels[o.selected]));
+				self.element.queue( "tabs", function() {
+					self._trigger( "show", null,
+						self._ui( self.anchors[ o.selected ], self.element.find( self._sanitizeSelector( self.anchors[ o.selected ].hash ) )[ 0 ] ) );
 				});
-				
-				this.load(o.selected);
+
+				this.load( o.selected );
 			}
 
 			// clean up to avoid memory leaks in certain versions of IE 6
-			$(window).bind('unload', function() {
-				self.lis.add(self.anchors).unbind('.tabs');
+			// TODO: namespace this event
+			$( window ).bind( "unload", function() {
+				self.lis.add( self.anchors ).unbind( ".tabs" );
 				self.lis = self.anchors = self.panels = null;
 			});
-
-		}
 		// update selected after add/remove
-		else {
-			o.selected = this.lis.index(this.lis.filter('.ui-tabs-selected'));
+		} else {
+			o.selected = this.lis.index( this.lis.filter( ".ui-tabs-selected" ) );
 		}
 
 		// update collapsible
-		this.element[o.collapsible ? 'addClass' : 'removeClass']('ui-tabs-collapsible');
+		// TODO: use .toggleClass()
+		this.element[ o.collapsible ? "addClass" : "removeClass" ]( "ui-tabs-collapsible" );
 
 		// set or update cookie after init and add/remove respectively
-		if (o.cookie) {
-			this._cookie(o.selected, o.cookie);
+		if ( o.cookie ) {
+			this._cookie( o.selected, o.cookie );
 		}
 
 		// disable tabs
-		for (var i = 0, li; (li = this.lis[i]); i++) {
-			$(li)[$.inArray(i, o.disabled) != -1 &&
-				!$(li).hasClass('ui-tabs-selected') ? 'addClass' : 'removeClass']('ui-state-disabled');
+		for ( var i = 0, li; ( li = this.lis[ i ] ); i++ ) {
+			$( li )[ $.inArray( i, o.disabled ) != -1 &&
+				// TODO: use .toggleClass()
+				!$( li ).hasClass( "ui-tabs-selected" ) ? "addClass" : "removeClass" ]( "ui-state-disabled" );
 		}
 
 		// reset cache if switching from cached to not cached
-		if (o.cache === false) {
-			this.anchors.removeData('cache.tabs');
+		if ( o.cache === false ) {
+			this.anchors.removeData( "cache.tabs" );
 		}
 
 		// remove all handlers before, tabify may run on existing tabs after add or option change
-		this.lis.add(this.anchors).unbind('.tabs');
+		this.lis.add( this.anchors ).unbind( ".tabs" );
 
-		if (o.event != 'mouseover') {
-			var addState = function(state, el) {
-				if (el.is(':not(.ui-state-disabled)')) {
-					el.addClass('ui-state-' + state);
+		if ( o.event !== "mouseover" ) {
+			var addState = function( state, el ) {
+				if ( el.is( ":not(.ui-state-disabled)" ) ) {
+					el.addClass( "ui-state-" + state );
 				}
 			};
-			var removeState = function(state, el) {
-				el.removeClass('ui-state-' + state);
+			var removeState = function( state, el ) {
+				el.removeClass( "ui-state-" + state );
 			};
-			this.lis.bind('mouseover.tabs', function() {
-				addState('hover', $(this));
+			this.lis.bind( "mouseover.tabs" , function() {
+				addState( "hover", $( this ) );
 			});
-			this.lis.bind('mouseout.tabs', function() {
-				removeState('hover', $(this));
+			this.lis.bind( "mouseout.tabs", function() {
+				removeState( "hover", $( this ) );
 			});
-			this.anchors.bind('focus.tabs', function() {
-				addState('focus', $(this).closest('li'));
+			this.anchors.bind( "focus.tabs", function() {
+				addState( "focus", $( this ).closest( "li" ) );
 			});
-			this.anchors.bind('blur.tabs', function() {
-				removeState('focus', $(this).closest('li'));
+			this.anchors.bind( "blur.tabs", function() {
+				removeState( "focus", $( this ).closest( "li" ) );
 			});
 		}
 
 		// set up animations
 		var hideFx, showFx;
-		if (o.fx) {
-			if ($.isArray(o.fx)) {
-				hideFx = o.fx[0];
-				showFx = o.fx[1];
-			}
-			else {
+		if ( o.fx ) {
+			if ( $.isArray( o.fx ) ) {
+				hideFx = o.fx[ 0 ];
+				showFx = o.fx[ 1 ];
+			} else {
 				hideFx = showFx = o.fx;
 			}
 		}
 
 		// Reset certain styles left over from animation
 		// and prevent IE's ClearType bug...
-		function resetStyle($el, fx) {
-			$el.css({ display: '' });
-			if (!$.support.opacity && fx.opacity) {
-				$el[0].style.removeAttribute('filter');
+		function resetStyle( $el, fx ) {
+			$el.css( "display", "" );
+			if ( !$.support.opacity && fx.opacity ) {
+				$el[ 0 ].style.removeAttribute( "filter" );
 			}
 		}
 
 		// Show a tab...
-		var showTab = showFx ?
-			function(clicked, $show) {
-				$(clicked).closest('li').addClass('ui-tabs-selected ui-state-active');
-				$show.hide().removeClass('ui-tabs-hide') // avoid flicker that way
-					.animate(showFx, showFx.duration || 'normal', function() {
-						resetStyle($show, showFx);
-						self._trigger('show', null, self._ui(clicked, $show[0]));
+		var showTab = showFx
+			? function( clicked, $show ) {
+				$( clicked ).closest( "li" ).addClass( "ui-tabs-selected ui-state-active" );
+				$show.hide().removeClass( "ui-tabs-hide" ) // avoid flicker that way
+					.animate( showFx, showFx.duration || "normal", function() {
+						resetStyle( $show, showFx );
+						self._trigger( "show", null, self._ui( clicked, $show[ 0 ] ) );
 					});
-			} :
-			function(clicked, $show) {
-				$(clicked).closest('li').addClass('ui-tabs-selected ui-state-active');
-				$show.removeClass('ui-tabs-hide');
-				self._trigger('show', null, self._ui(clicked, $show[0]));
+			}
+			: function( clicked, $show ) {
+				$( clicked ).closest( "li" ).addClass( "ui-tabs-selected ui-state-active" );
+				$show.removeClass( "ui-tabs-hide" );
+				self._trigger( "show", null, self._ui( clicked, $show[ 0 ] ) );
 			};
 
 		// Hide a tab, $show is optional...
-		var hideTab = hideFx ?
-			function(clicked, $hide) {
-				$hide.animate(hideFx, hideFx.duration || 'normal', function() {
-					self.lis.removeClass('ui-tabs-selected ui-state-active');
-					$hide.addClass('ui-tabs-hide');
-					resetStyle($hide, hideFx);
-					self.element.dequeue("tabs");
+		var hideTab = hideFx
+			? function( clicked, $hide ) {
+				$hide.animate( hideFx, hideFx.duration || "normal", function() {
+					self.lis.removeClass( "ui-tabs-selected ui-state-active" );
+					$hide.addClass( "ui-tabs-hide" );
+					resetStyle( $hide, hideFx );
+					self.element.dequeue( "tabs" );
 				});
-			} :
-			function(clicked, $hide, $show) {
-				self.lis.removeClass('ui-tabs-selected ui-state-active');
-				$hide.addClass('ui-tabs-hide');
-				self.element.dequeue("tabs");
+			}
+			: function( clicked, $hide, $show ) {
+				self.lis.removeClass( "ui-tabs-selected ui-state-active" );
+				$hide.addClass( "ui-tabs-hide" );
+				self.element.dequeue( "tabs" );
 			};
 
 		// attach tab event handler, unbind to avoid duplicates from former tabifying...
-		this.anchors.bind(o.event + '.tabs', function() {
-			var el = this, $li = $(this).closest('li'), $hide = self.panels.filter(':not(.ui-tabs-hide)'),
-					$show = $(self._sanitizeSelector(this.hash));
+		this.anchors.bind( o.event + ".tabs", function() {
+			var el = this,
+				$li = $(el).closest( "li" ),
+				$hide = self.panels.filter( ":not(.ui-tabs-hide)" ),
+				$show = self.element.find( self._sanitizeSelector( el.hash ) );
 
 			// If tab is already selected and not collapsible or tab disabled or
 			// or is already loading or click callback returns false stop here.
 			// Check if click handler returns false last so that it is not executed
 			// for a disabled or loading tab!
-			if (($li.hasClass('ui-tabs-selected') && !o.collapsible) ||
-				$li.hasClass('ui-state-disabled') ||
-				$li.hasClass('ui-state-processing') ||
-				self._trigger('select', null, self._ui(this, $show[0])) === false) {
+			if ( ( $li.hasClass( "ui-tabs-selected" ) && !o.collapsible) ||
+				$li.hasClass( "ui-state-disabled" ) ||
+				$li.hasClass( "ui-state-processing" ) ||
+				self.panels.filter( ":animated" ).length ||
+				self._trigger( "select", null, self._ui( this, $show[ 0 ] ) ) === false ) {
 				this.blur();
 				return false;
 			}
 
-			o.selected = self.anchors.index(this);
+			o.selected = self.anchors.index( this );
 
 			self.abort();
 
 			// if tab may be closed
-			if (o.collapsible) {
-				if ($li.hasClass('ui-tabs-selected')) {
+			if ( o.collapsible ) {
+				if ( $li.hasClass( "ui-tabs-selected" ) ) {
 					o.selected = -1;
 
-					if (o.cookie) {
-						self._cookie(o.selected, o.cookie);
+					if ( o.cookie ) {
+						self._cookie( o.selected, o.cookie );
 					}
 
-					self.element.queue("tabs", function() {
-						hideTab(el, $hide);
-					}).dequeue("tabs");
-					
+					self.element.queue( "tabs", function() {
+						hideTab( el, $hide );
+					}).dequeue( "tabs" );
+
 					this.blur();
 					return false;
-				}
-				else if (!$hide.length) {
-					if (o.cookie) {
-						self._cookie(o.selected, o.cookie);
+				} else if ( !$hide.length ) {
+					if ( o.cookie ) {
+						self._cookie( o.selected, o.cookie );
 					}
-					
-					self.element.queue("tabs", function() {
-						showTab(el, $show);
+
+					self.element.queue( "tabs", function() {
+						showTab( el, $show );
 					});
 
-					self.load(self.anchors.index(this)); // TODO make passing in node possible, see also http://dev.jqueryui.com/ticket/3171
-					
+					// TODO make passing in node possible, see also http://dev.jqueryui.com/ticket/3171
+					self.load( self.anchors.index( this ) );
+
 					this.blur();
 					return false;
 				}
 			}
 
-			if (o.cookie) {
-				self._cookie(o.selected, o.cookie);
+			if ( o.cookie ) {
+				self._cookie( o.selected, o.cookie );
 			}
 
 			// show new tab
-			if ($show.length) {
-				if ($hide.length) {
-					self.element.queue("tabs", function() {
-						hideTab(el, $hide);
+			if ( $show.length ) {
+				if ( $hide.length ) {
+					self.element.queue( "tabs", function() {
+						hideTab( el, $hide );
 					});
 				}
-				self.element.queue("tabs", function() {
-					showTab(el, $show);
+				self.element.queue( "tabs", function() {
+					showTab( el, $show );
 				});
-				
-				self.load(self.anchors.index(this));
-			}
-			else {
-				throw 'jQuery UI Tabs: Mismatching fragment identifier.';
+
+				self.load( self.anchors.index( this ) );
+			} else {
+				throw "jQuery UI Tabs: Mismatching fragment identifier.";
 			}
 
 			// Prevent IE from keeping other link focussed when using the back button
 			// and remove dotted border from clicked link. This is controlled via CSS
 			// in modern browsers; blur() removes focus from address bar in Firefox
 			// which can become a usability and annoying problem with tabs('rotate').
-			if ($.browser.msie) {
+			if ( $.browser.msie ) {
 				this.blur();
 			}
-
 		});
 
 		// disable click in any case
-		this.anchors.bind('click.tabs', function(){return false;});
+		this.anchors.bind( "click.tabs", function(){
+			return false;
+		});
+	},
 
+    _getIndex: function( index ) {
+		// meta-function to give users option to provide a href string instead of a numerical index.
+		// also sanitizes numerical indexes to valid values.
+		if ( typeof index == "string" ) {
+			index = this.anchors.index( this.anchors.filter( "[href$='" + index + "']" ) );
+		}
+
+		return index;
 	},
 
 	destroy: function() {
 		var o = this.options;
 
 		this.abort();
-		
-		this.element.unbind('.tabs')
-			.removeClass('ui-tabs ui-widget ui-widget-content ui-corner-all ui-tabs-collapsible')
-			.removeData('tabs');
 
-		this.list.removeClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all');
+		this.element
+			.unbind( ".tabs" )
+			.removeClass( "ui-tabs ui-widget ui-widget-content ui-corner-all ui-tabs-collapsible" )
+			.removeData( "tabs" );
+
+		this.list.removeClass( "ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" );
 
 		this.anchors.each(function() {
-			var href = $.data(this, 'href.tabs');
-			if (href) {
+			var href = $.data( this, "href.tabs" );
+			if ( href ) {
 				this.href = href;
 			}
-			var $this = $(this).unbind('.tabs');
-			$.each(['href', 'load', 'cache'], function(i, prefix) {
-				$this.removeData(prefix + '.tabs');
+			var $this = $( this ).unbind( ".tabs" );
+			$.each( [ "href", "load", "cache" ], function( i, prefix ) {
+				$this.removeData( prefix + ".tabs" );
 			});
 		});
 
-		this.lis.unbind('.tabs').add(this.panels).each(function() {
-			if ($.data(this, 'destroy.tabs')) {
-				$(this).remove();
-			}
-			else {
-				$(this).removeClass([
-					'ui-state-default',
-					'ui-corner-top',
-					'ui-tabs-selected',
-					'ui-state-active',
-					'ui-state-hover',
-					'ui-state-focus',
-					'ui-state-disabled',
-					'ui-tabs-panel',
-					'ui-widget-content',
-					'ui-corner-bottom',
-					'ui-tabs-hide'
-				].join(' '));
+		this.lis.unbind( ".tabs" ).add( this.panels ).each(function() {
+			if ( $.data( this, "destroy.tabs" ) ) {
+				$( this ).remove();
+			} else {
+				$( this ).removeClass([
+					"ui-state-default",
+					"ui-corner-top",
+					"ui-tabs-selected",
+					"ui-state-active",
+					"ui-state-hover",
+					"ui-state-focus",
+					"ui-state-disabled",
+					"ui-tabs-panel",
+					"ui-widget-content",
+					"ui-corner-bottom",
+					"ui-tabs-hide"
+				].join( " " ) );
 			}
 		});
 
-		if (o.cookie) {
-			this._cookie(null, o.cookie);
+		if ( o.cookie ) {
+			this._cookie( null, o.cookie );
 		}
 
 		return this;
 	},
 
-	add: function(url, label, index) {
-		if (index === undefined) {
-			index = this.anchors.length; // append by default
+	add: function( url, label, index ) {
+		if ( index === undefined ) {
+			index = this.anchors.length;
 		}
 
-		var self = this, o = this.options,
-			$li = $(o.tabTemplate.replace(/#\{href\}/g, url).replace(/#\{label\}/g, label)),
-			id = !url.indexOf('#') ? url.replace('#', '') : this._tabId($('a', $li)[0]);
+		var self = this,
+			o = this.options,
+			$li = $( o.tabTemplate.replace( /#\{href\}/g, url ).replace( /#\{label\}/g, label ) ),
+			id = !url.indexOf( "#" ) ? url.replace( "#", "" ) : this._tabId( $( "a", $li )[ 0 ] );
 
-		$li.addClass('ui-state-default ui-corner-top').data('destroy.tabs', true);
+		$li.addClass( "ui-state-default ui-corner-top" ).data( "destroy.tabs", true );
 
 		// try to find an existing element before creating a new one
-		var $panel = $('#' + id);
-		if (!$panel.length) {
-			$panel = $(o.panelTemplate).attr('id', id).data('destroy.tabs', true);
+		var $panel = self.element.find( "#" + id );
+		if ( !$panel.length ) {
+			$panel = $( o.panelTemplate )
+				.attr( "id", id )
+				.data( "destroy.tabs", true );
 		}
-		$panel.addClass('ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide');
+		$panel.addClass( "ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" );
 
-		if (index >= this.lis.length) {
-			$li.appendTo(this.list);
-			$panel.appendTo(this.list[0].parentNode);
-		}
-		else {
-			$li.insertBefore(this.lis[index]);
-			$panel.insertBefore(this.panels[index]);
+		if ( index >= this.lis.length ) {
+			$li.appendTo( this.list );
+			$panel.appendTo( this.list[ 0 ].parentNode );
+		} else {
+			$li.insertBefore( this.lis[ index ] );
+			$panel.insertBefore( this.panels[ index ] );
 		}
 
-		o.disabled = $.map(o.disabled,
-			function(n, i) { return n >= index ? ++n : n; });
+		o.disabled = $.map( o.disabled, function( n, i ) {
+			return n >= index ? ++n : n;
+		});
 
 		this._tabify();
 
-		if (this.anchors.length == 1) { // after tabify
+		if ( this.anchors.length == 1 ) {
 			o.selected = 0;
-			$li.addClass('ui-tabs-selected ui-state-active');
-			$panel.removeClass('ui-tabs-hide');
-			this.element.queue("tabs", function() {
-				self._trigger('show', null, self._ui(self.anchors[0], self.panels[0]));
+			$li.addClass( "ui-tabs-selected ui-state-active" );
+			$panel.removeClass( "ui-tabs-hide" );
+			this.element.queue( "tabs", function() {
+				self._trigger( "show", null, self._ui( self.anchors[ 0 ], self.panels[ 0 ] ) );
 			});
-				
-			this.load(0);
+
+			this.load( 0 );
 		}
 
-		// callback
-		this._trigger('add', null, this._ui(this.anchors[index], this.panels[index]));
+		this._trigger( "add", null, this._ui( this.anchors[ index ], this.panels[ index ] ) );
 		return this;
 	},
 
-	remove: function(index) {
-		var o = this.options, $li = this.lis.eq(index).remove(),
-			$panel = this.panels.eq(index).remove();
+	remove: function( index ) {
+		index = this._getIndex( index );
+		var o = this.options,
+			$li = this.lis.eq( index ).remove(),
+			$panel = this.panels.eq( index ).remove();
 
 		// If selected tab was removed focus tab to the right or
 		// in case the last tab was removed the tab to the left.
-		if ($li.hasClass('ui-tabs-selected') && this.anchors.length > 1) {
-			this.select(index + (index + 1 < this.anchors.length ? 1 : -1));
+		if ( $li.hasClass( "ui-tabs-selected" ) && this.anchors.length > 1) {
+			this.select( index + ( index + 1 < this.anchors.length ? 1 : -1 ) );
 		}
 
-		o.disabled = $.map($.grep(o.disabled, function(n, i) { return n != index; }),
-			function(n, i) { return n >= index ? --n : n; });
+		o.disabled = $.map(
+			$.grep( o.disabled, function(n, i) {
+				return n != index;
+			}),
+			function( n, i ) {
+				return n >= index ? --n : n;
+			});
 
 		this._tabify();
 
-		// callback
-		this._trigger('remove', null, this._ui($li.find('a')[0], $panel[0]));
+		this._trigger( "remove", null, this._ui( $li.find( "a" )[ 0 ], $panel[ 0 ] ) );
 		return this;
 	},
 
-	enable: function(index) {
+	enable: function( index ) {
+		index = this._getIndex( index );
 		var o = this.options;
-		if ($.inArray(index, o.disabled) == -1) {
+		if ( $.inArray( index, o.disabled ) == -1 ) {
 			return;
 		}
 
-		this.lis.eq(index).removeClass('ui-state-disabled');
-		o.disabled = $.grep(o.disabled, function(n, i) { return n != index; });
+		this.lis.eq( index ).removeClass( "ui-state-disabled" );
+		o.disabled = $.grep( o.disabled, function( n, i ) {
+			return n != index;
+		});
 
-		// callback
-		this._trigger('enable', null, this._ui(this.anchors[index], this.panels[index]));
+		this._trigger( "enable", null, this._ui( this.anchors[ index ], this.panels[ index ] ) );
 		return this;
 	},
 
-	disable: function(index) {
+	disable: function( index ) {
+		index = this._getIndex( index );
 		var self = this, o = this.options;
-		if (index != o.selected) { // cannot disable already selected tab
-			this.lis.eq(index).addClass('ui-state-disabled');
+		// cannot disable already selected tab
+		if ( index != o.selected ) {
+			this.lis.eq( index ).addClass( "ui-state-disabled" );
 
-			o.disabled.push(index);
+			o.disabled.push( index );
 			o.disabled.sort();
 
-			// callback
-			this._trigger('disable', null, this._ui(this.anchors[index], this.panels[index]));
+			this._trigger( "disable", null, this._ui( this.anchors[ index ], this.panels[ index ] ) );
 		}
 
 		return this;
 	},
 
-	select: function(index) {
-		if (typeof index == 'string') {
-			index = this.anchors.index(this.anchors.filter('[href$=' + index + ']'));
+	select: function( index ) {
+		index = this._getIndex( index );
+		if ( index == -1 ) {
+			if ( this.options.collapsible && this.options.selected != -1 ) {
+				index = this.options.selected;
+			} else {
+				return this;
+			}
 		}
-		else if (index === null) { // usage of null is deprecated, TODO remove in next release
-			index = -1;
-		}
-		if (index == -1 && this.options.collapsible) {
-			index = this.options.selected;
-		}
-
-		this.anchors.eq(index).trigger(this.options.event + '.tabs');
+		this.anchors.eq( index ).trigger( this.options.event + ".tabs" );
 		return this;
 	},
 
-	load: function(index) {
-		var self = this, o = this.options, a = this.anchors.eq(index)[0], url = $.data(a, 'load.tabs');
+	load: function( index ) {
+		index = this._getIndex( index );
+		var self = this,
+			o = this.options,
+			a = this.anchors.eq( index )[ 0 ],
+			url = $.data( a, "load.tabs" );
 
 		this.abort();
 
 		// not remote or from cache
-		if (!url || this.element.queue("tabs").length !== 0 && $.data(a, 'cache.tabs')) {
-			this.element.dequeue("tabs");
+		if ( !url || this.element.queue( "tabs" ).length !== 0 && $.data( a, "cache.tabs" ) ) {
+			this.element.dequeue( "tabs" );
 			return;
 		}
 
 		// load remote from here on
-		this.lis.eq(index).addClass('ui-state-processing');
+		this.lis.eq( index ).addClass( "ui-state-processing" );
 
-		if (o.spinner) {
-			var span = $('span', a);
-			span.data('label.tabs', span.html()).html(o.spinner);
+		if ( o.spinner ) {
+			var span = $( "span", a );
+			span.data( "label.tabs", span.html() ).html( o.spinner );
 		}
 
-		this.xhr = $.ajax($.extend({}, o.ajaxOptions, {
+		this.xhr = $.ajax( $.extend( {}, o.ajaxOptions, {
 			url: url,
-			success: function(r, s) {
-				$(self._sanitizeSelector(a.hash)).html(r);
+			success: function( r, s ) {
+				self.element.find( self._sanitizeSelector( a.hash ) ).html( r );
 
 				// take care of tab labels
 				self._cleanup();
 
-				if (o.cache) {
-					$.data(a, 'cache.tabs', true); // if loaded once do not load them again
+				if ( o.cache ) {
+					$.data( a, "cache.tabs", true );
 				}
 
-				// callbacks
-				self._trigger('load', null, self._ui(self.anchors[index], self.panels[index]));
+				self._trigger( "load", null, self._ui( self.anchors[ index ], self.panels[ index ] ) );
 				try {
-					o.ajaxOptions.success(r, s);
+					o.ajaxOptions.success( r, s );
 				}
-				catch (e) {}
+				catch ( e ) {}
 			},
-			error: function(xhr, s, e) {
+			error: function( xhr, s, e ) {
 				// take care of tab labels
 				self._cleanup();
 
-				// callbacks
-				self._trigger('load', null, self._ui(self.anchors[index], self.panels[index]));
+				self._trigger( "load", null, self._ui( self.anchors[ index ], self.panels[ index ] ) );
 				try {
 					// Passing index avoid a race condition when this method is
 					// called after the user has selected another tab.
 					// Pass the anchor that initiated this request allows
 					// loadError to manipulate the tab content panel via $(a.hash)
-					o.ajaxOptions.error(xhr, s, index, a);
+					o.ajaxOptions.error( xhr, s, index, a );
 				}
-				catch (e) {}
+				catch ( e ) {}
 			}
-		}));
+		} ) );
 
 		// last, so that load event is fired before show...
-		self.element.dequeue("tabs");
+		self.element.dequeue( "tabs" );
 
 		return this;
 	},
 
 	abort: function() {
 		// stop possibly running animations
-		this.element.queue([]);
-		this.panels.stop(false, true);
+		this.element.queue( [] );
+		this.panels.stop( false, true );
 
 		// "tabs" queue must not contain more than two elements,
 		// which are the callbacks for the latest clicked tab...
-		this.element.queue("tabs", this.element.queue("tabs").splice(-2, 2));
+		this.element.queue( "tabs", this.element.queue( "tabs" ).splice( -2, 2 ) );
 
 		// terminate pending requests from other tabs
-		if (this.xhr) {
+		if ( this.xhr ) {
 			this.xhr.abort();
 			delete this.xhr;
 		}
@@ -7594,19 +8227,18 @@ $.widget("ui.tabs", {
 		return this;
 	},
 
-	url: function(index, url) {
-		this.anchors.eq(index).removeData('cache.tabs').data('load.tabs', url);
+	url: function( index, url ) {
+		this.anchors.eq( index ).removeData( "cache.tabs" ).data( "load.tabs", url );
 		return this;
 	},
 
 	length: function() {
 		return this.anchors.length;
 	}
-
 });
 
-$.extend($.ui.tabs, {
-	version: '1.8.2'
+$.extend( $.ui.tabs, {
+	version: "1.8.21"
 });
 
 /*
@@ -7616,46 +8248,44 @@ $.extend($.ui.tabs, {
 /*
  * Rotate
  */
-$.extend($.ui.tabs.prototype, {
+$.extend( $.ui.tabs.prototype, {
 	rotation: null,
-	rotate: function(ms, continuing) {
+	rotate: function( ms, continuing ) {
+		var self = this,
+			o = this.options;
 
-		var self = this, o = this.options;
-		
-		var rotate = self._rotate || (self._rotate = function(e) {
-			clearTimeout(self.rotation);
+		var rotate = self._rotate || ( self._rotate = function( e ) {
+			clearTimeout( self.rotation );
 			self.rotation = setTimeout(function() {
 				var t = o.selected;
 				self.select( ++t < self.anchors.length ? t : 0 );
-			}, ms);
+			}, ms );
 			
-			if (e) {
+			if ( e ) {
 				e.stopPropagation();
 			}
 		});
-		
-		var stop = self._unrotate || (self._unrotate = !continuing ?
-			function(e) {
+
+		var stop = self._unrotate || ( self._unrotate = !continuing
+			? function(e) {
 				if (e.clientX) { // in case of a true click
 					self.rotate(null);
 				}
-			} :
-			function(e) {
-				t = o.selected;
+			}
+			: function( e ) {
 				rotate();
 			});
 
 		// start rotation
-		if (ms) {
-			this.element.bind('tabsshow', rotate);
-			this.anchors.bind(o.event + '.tabs', stop);
+		if ( ms ) {
+			this.element.bind( "tabsshow", rotate );
+			this.anchors.bind( o.event + ".tabs", stop );
 			rotate();
-		}
 		// stop rotation
-		else {
-			clearTimeout(self.rotation);
-			this.element.unbind('tabsshow', rotate);
-			this.anchors.unbind(o.event + '.tabs', stop);
+		} else {
+			clearTimeout( self.rotation );
+			this.element.unbind( "tabsshow", rotate );
+			this.anchors.unbind( o.event + ".tabs", stop );
 			delete this._rotate;
 			delete this._unrotate;
 		}
@@ -7664,26 +8294,26 @@ $.extend($.ui.tabs.prototype, {
 	}
 });
 
-})(jQuery);
-/*
- * jQuery UI Datepicker 1.8.2
+})( jQuery );
+/*!
+ * jQuery UI Datepicker 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Datepicker
  *
  * Depends:
  *	jquery.ui.core.js
  */
+(function( $, undefined ) {
 
-(function($) { // hide the namespace
-
-$.extend($.ui, { datepicker: { version: "1.8.2" } });
+$.extend($.ui, { datepicker: { version: "1.8.21" } });
 
 var PROP_NAME = 'datepicker';
 var dpuuid = new Date().getTime();
+var instActive;
 
 /* Date picker manager.
    Use the singleton instance of this class, $.datepicker, to interact with the date picker.
@@ -7772,15 +8402,19 @@ function Datepicker() {
 		altFormat: '', // The date format to use for the alternate field
 		constrainInput: true, // The input is constrained by the current date format
 		showButtonPanel: false, // True to show button panel, false to not show it
-		autoSize: false // True to size the input for the date format, false to leave as is
+		autoSize: false, // True to size the input for the date format, false to leave as is
+		disabled: false // The initial disabled state
 	};
 	$.extend(this._defaults, this.regional['']);
-	this.dpDiv = $('<div id="' + this._mainDivId + '" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-helper-hidden-accessible"></div>');
+	this.dpDiv = bindHover($('<div id="' + this._mainDivId + '" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"></div>'));
 }
 
 $.extend(Datepicker.prototype, {
 	/* Class name added to elements to indicate already configured with a date picker. */
 	markerClassName: 'hasDatepicker',
+	
+	//Keep track of the maximum number of rows displayed (see #7043)
+	maxRows: 4,
 
 	/* Debug logging (if enabled). */
 	log: function () {
@@ -7835,13 +8469,13 @@ $.extend(Datepicker.prototype, {
 
 	/* Create a new instance object. */
 	_newInst: function(target, inline) {
-		var id = target[0].id.replace(/([^A-Za-z0-9_])/g, '\\\\$1'); // escape jQuery meta chars
+		var id = target[0].id.replace(/([^A-Za-z0-9_-])/g, '\\\\$1'); // escape jQuery meta chars
 		return {id: id, input: target, // associated target
 			selectedDay: 0, selectedMonth: 0, selectedYear: 0, // current selection
 			drawMonth: 0, drawYear: 0, // month being drawn
 			inline: inline, // is datepicker inline or not
 			dpDiv: (!inline ? this.dpDiv : // presentation div
-			$('<div class="' + this._inlineClass + ' ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"></div>'))};
+			bindHover($('<div class="' + this._inlineClass + ' ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"></div>')))};
 	},
 
 	/* Attach the date picker to an input field. */
@@ -7861,6 +8495,10 @@ $.extend(Datepicker.prototype, {
 			});
 		this._autoSize(inst);
 		$.data(target, PROP_NAME, inst);
+		//If disabled option is true, disable the datepicker once it has been attached to the input (see ticket #5665)
+		if( inst.settings.disabled ) {
+			this._disableDatepicker( target );
+		}
 	},
 
 	/* Make attachments based on settings. */
@@ -7892,7 +8530,10 @@ $.extend(Datepicker.prototype, {
 			inst.trigger.click(function() {
 				if ($.datepicker._datepickerShowing && $.datepicker._lastInput == input[0])
 					$.datepicker._hideDatepicker();
-				else
+				else if ($.datepicker._datepickerShowing && $.datepicker._lastInput != input[0]) {
+					$.datepicker._hideDatepicker(); 
+					$.datepicker._showDatepicker(input[0]);
+				} else
 					$.datepicker._showDatepicker(input[0]);
 				return false;
 			});
@@ -7940,6 +8581,13 @@ $.extend(Datepicker.prototype, {
 		this._setDate(inst, this._getDefaultDate(inst), true);
 		this._updateDatepicker(inst);
 		this._updateAlternate(inst);
+		//If disabled option is true, disable the datepicker before showing it (see ticket #5665)
+		if( inst.settings.disabled ) {
+			this._disableDatepicker( target );
+		}
+		// Set display:block in place of inst.dpDiv.show() which won't work on disconnected elements
+		// http://bugs.jqueryui.com/ticket/7552 - A Datepicker created on a detached div has zero height
+		inst.dpDiv.css( "display", "block" );
 	},
 
 	/* Pop-up the date picker in a "dialog" box.
@@ -8030,6 +8678,8 @@ $.extend(Datepicker.prototype, {
 		else if (nodeName == 'div' || nodeName == 'span') {
 			var inline = $target.children('.' + this._inlineClass);
 			inline.children().removeClass('ui-state-disabled');
+			inline.find("select.ui-datepicker-month, select.ui-datepicker-year").
+				removeAttr("disabled");
 		}
 		this._disabledInputs = $.map(this._disabledInputs,
 			function(value) { return (value == target ? null : value); }); // delete entry
@@ -8053,6 +8703,8 @@ $.extend(Datepicker.prototype, {
 		else if (nodeName == 'div' || nodeName == 'span') {
 			var inline = $target.children('.' + this._inlineClass);
 			inline.children().addClass('ui-state-disabled');
+			inline.find("select.ui-datepicker-month, select.ui-datepicker-year").
+				attr("disabled", "disabled");
 		}
 		this._disabledInputs = $.map(this._disabledInputs,
 			function(value) { return (value == target ? null : value); }); // delete entry
@@ -8111,10 +8763,18 @@ $.extend(Datepicker.prototype, {
 				this._hideDatepicker();
 			}
 			var date = this._getDateDatepicker(target, true);
+			var minDate = this._getMinMaxDate(inst, 'min');
+			var maxDate = this._getMinMaxDate(inst, 'max');
 			extendRemove(inst.settings, settings);
+			// reformat the old minDate/maxDate values if dateFormat changes and a new minDate/maxDate isn't provided
+			if (minDate !== null && settings['dateFormat'] !== undefined && settings['minDate'] === undefined)
+				inst.settings.minDate = this._formatDate(inst, minDate);
+			if (maxDate !== null && settings['dateFormat'] !== undefined && settings['maxDate'] === undefined)
+				inst.settings.maxDate = this._formatDate(inst, maxDate);
 			this._attachments($(target), inst);
 			this._autoSize(inst);
-			this._setDateDatepicker(target, date);
+			this._setDate(inst, date);
+			this._updateAlternate(inst);
 			this._updateDatepicker(inst);
 		}
 	},
@@ -8167,10 +8827,17 @@ $.extend(Datepicker.prototype, {
 				case 9: $.datepicker._hideDatepicker();
 						handled = false;
 						break; // hide on tab out
-				case 13: var sel = $('td.' + $.datepicker._dayOverClass, inst.dpDiv).
-							add($('td.' + $.datepicker._currentClass, inst.dpDiv));
+				case 13: var sel = $('td.' + $.datepicker._dayOverClass + ':not(.' + 
+									$.datepicker._currentClass + ')', inst.dpDiv);
 						if (sel[0])
 							$.datepicker._selectDay(event.target, inst.selectedMonth, inst.selectedYear, sel[0]);
+							var onSelect = $.datepicker._get(inst, 'onSelect');
+							if (onSelect) {
+								var dateStr = $.datepicker._formatDate(inst);
+
+								// trigger custom callback
+								onSelect.apply((inst.input ? inst.input[0] : null), [dateStr, inst]);
+							}
 						else
 							$.datepicker._hideDatepicker();
 						return false; // don't submit the form
@@ -8232,7 +8899,7 @@ $.extend(Datepicker.prototype, {
 		if ($.datepicker._get(inst, 'constrainInput')) {
 			var chars = $.datepicker._possibleChars($.datepicker._get(inst, 'dateFormat'));
 			var chr = String.fromCharCode(event.charCode == undefined ? event.keyCode : event.charCode);
-			return event.ctrlKey || (chr < ' ' || !chars || chars.indexOf(chr) > -1);
+			return event.ctrlKey || event.metaKey || (chr < ' ' || !chars || chars.indexOf(chr) > -1);
 		}
 	},
 
@@ -8250,14 +8917,15 @@ $.extend(Datepicker.prototype, {
 					$.datepicker._updateDatepicker(inst);
 				}
 			}
-			catch (event) {
-				$.datepicker.log(event);
+			catch (err) {
+				$.datepicker.log(err);
 			}
 		}
 		return true;
 	},
 
 	/* Pop-up the date picker for a given input field.
+       If false returned from beforeShow event handler do not show. 
 	   @param  input  element - the input field attached to the date picker or
 	                  event - if triggered by focus */
 	_showDatepicker: function(input) {
@@ -8269,9 +8937,17 @@ $.extend(Datepicker.prototype, {
 		var inst = $.datepicker._getInst(input);
 		if ($.datepicker._curInst && $.datepicker._curInst != inst) {
 			$.datepicker._curInst.dpDiv.stop(true, true);
+			if ( inst && $.datepicker._datepickerShowing ) {
+				$.datepicker._hideDatepicker( $.datepicker._curInst.input[0] );
+			}
 		}
 		var beforeShow = $.datepicker._get(inst, 'beforeShow');
-		extendRemove(inst.settings, (beforeShow ? beforeShow.apply(input, [input, inst]) : {}));
+		var beforeShowSettings = beforeShow ? beforeShow.apply(input, [input, inst]) : {};
+		if(beforeShowSettings === false){
+            //false
+			return;
+		}
+		extendRemove(inst.settings, beforeShowSettings);
 		inst.lastVal = null;
 		$.datepicker._lastInput = input;
 		$.datepicker._setDateFromField(inst);
@@ -8292,6 +8968,8 @@ $.extend(Datepicker.prototype, {
 		}
 		var offset = {left: $.datepicker._pos[0], top: $.datepicker._pos[1]};
 		$.datepicker._pos = null;
+		//to avoid flashes on Firefox
+		inst.dpDiv.empty();
 		// determine sizing offscreen
 		inst.dpDiv.css({position: 'absolute', display: 'block', top: '-1000px'});
 		$.datepicker._updateDatepicker(inst);
@@ -8305,13 +8983,15 @@ $.extend(Datepicker.prototype, {
 			var showAnim = $.datepicker._get(inst, 'showAnim');
 			var duration = $.datepicker._get(inst, 'duration');
 			var postProcess = function() {
-				$.datepicker._datepickerShowing = true;
-				var borders = $.datepicker._getBorders(inst.dpDiv);
-				inst.dpDiv.find('iframe.ui-datepicker-cover'). // IE6- only
-					css({left: -borders[0], top: -borders[1],
+				var cover = inst.dpDiv.find('iframe.ui-datepicker-cover'); // IE6- only
+				if( !! cover.length ){
+					var borders = $.datepicker._getBorders(inst.dpDiv);
+					cover.css({left: -borders[0], top: -borders[1],
 						width: inst.dpDiv.outerWidth(), height: inst.dpDiv.outerHeight()});
+				}
 			};
 			inst.dpDiv.zIndex($(input).zIndex()+1);
+			$.datepicker._datepickerShowing = true;
 			if ($.effects && $.effects[showAnim])
 				inst.dpDiv.show(showAnim, $.datepicker._get(inst, 'showOptions'), duration, postProcess);
 			else
@@ -8327,44 +9007,41 @@ $.extend(Datepicker.prototype, {
 	/* Generate the date picker content. */
 	_updateDatepicker: function(inst) {
 		var self = this;
+		self.maxRows = 4; //Reset the max number of rows being displayed (see #7043)
 		var borders = $.datepicker._getBorders(inst.dpDiv);
-		inst.dpDiv.empty().append(this._generateHTML(inst))
-			.find('iframe.ui-datepicker-cover') // IE6- only
-				.css({left: -borders[0], top: -borders[1],
-					width: inst.dpDiv.outerWidth(), height: inst.dpDiv.outerHeight()})
-			.end()
-			.find('button, .ui-datepicker-prev, .ui-datepicker-next, .ui-datepicker-calendar td a')
-				.bind('mouseout', function(){
-					$(this).removeClass('ui-state-hover');
-					if(this.className.indexOf('ui-datepicker-prev') != -1) $(this).removeClass('ui-datepicker-prev-hover');
-					if(this.className.indexOf('ui-datepicker-next') != -1) $(this).removeClass('ui-datepicker-next-hover');
-				})
-				.bind('mouseover', function(){
-					if (!self._isDisabledDatepicker( inst.inline ? inst.dpDiv.parent()[0] : inst.input[0])) {
-						$(this).parents('.ui-datepicker-calendar').find('a').removeClass('ui-state-hover');
-						$(this).addClass('ui-state-hover');
-						if(this.className.indexOf('ui-datepicker-prev') != -1) $(this).addClass('ui-datepicker-prev-hover');
-						if(this.className.indexOf('ui-datepicker-next') != -1) $(this).addClass('ui-datepicker-next-hover');
-					}
-				})
-			.end()
-			.find('.' + this._dayOverClass + ' a')
-				.trigger('mouseover')
-			.end();
+		instActive = inst; // for delegate hover events
+		inst.dpDiv.empty().append(this._generateHTML(inst));
+		var cover = inst.dpDiv.find('iframe.ui-datepicker-cover'); // IE6- only
+		if( !!cover.length ){ //avoid call to outerXXXX() when not in IE6
+			cover.css({left: -borders[0], top: -borders[1], width: inst.dpDiv.outerWidth(), height: inst.dpDiv.outerHeight()})
+		}
+		inst.dpDiv.find('.' + this._dayOverClass + ' a').mouseover();
 		var numMonths = this._getNumberOfMonths(inst);
 		var cols = numMonths[1];
 		var width = 17;
+		inst.dpDiv.removeClass('ui-datepicker-multi-2 ui-datepicker-multi-3 ui-datepicker-multi-4').width('');
 		if (cols > 1)
 			inst.dpDiv.addClass('ui-datepicker-multi-' + cols).css('width', (width * cols) + 'em');
-		else
-			inst.dpDiv.removeClass('ui-datepicker-multi-2 ui-datepicker-multi-3 ui-datepicker-multi-4').width('');
 		inst.dpDiv[(numMonths[0] != 1 || numMonths[1] != 1 ? 'add' : 'remove') +
 			'Class']('ui-datepicker-multi');
 		inst.dpDiv[(this._get(inst, 'isRTL') ? 'add' : 'remove') +
 			'Class']('ui-datepicker-rtl');
 		if (inst == $.datepicker._curInst && $.datepicker._datepickerShowing && inst.input &&
-				inst.input.is(':visible') && !inst.input.is(':disabled'))
+				// #6694 - don't focus the input if it's already focused
+				// this breaks the change event in IE
+				inst.input.is(':visible') && !inst.input.is(':disabled') && inst.input[0] != document.activeElement)
 			inst.input.focus();
+		// deffered render of the years select (to avoid flashes on Firefox) 
+		if( inst.yearshtml ){
+			var origyearshtml = inst.yearshtml;
+			setTimeout(function(){
+				//assure that inst.yearshtml didn't change.
+				if( origyearshtml === inst.yearshtml && inst.yearshtml ){
+					inst.dpDiv.find('select.ui-datepicker-year:first').replaceWith(inst.yearshtml);
+				}
+				origyearshtml = inst.yearshtml = null;
+			}, 0);
+		}
 	},
 
 	/* Retrieve the size of left and top borders for an element.
@@ -8404,7 +9081,7 @@ $.extend(Datepicker.prototype, {
 	_findPos: function(obj) {
 		var inst = this._getInst(obj);
 		var isRTL = this._get(inst, 'isRTL');
-        while (obj && (obj.type == 'hidden' || obj.nodeType != 1)) {
+        while (obj && (obj.type == 'hidden' || obj.nodeType != 1 || $.expr.filters.hidden(obj))) {
             obj = obj[isRTL ? 'previousSibling' : 'nextSibling'];
         }
         var position = $(obj).offset();
@@ -8422,7 +9099,6 @@ $.extend(Datepicker.prototype, {
 			var duration = this._get(inst, 'duration');
 			var postProcess = function() {
 				$.datepicker._tidyDialog(inst);
-				this._curInst = null;
 			};
 			if ($.effects && $.effects[showAnim])
 				inst.dpDiv.hide(showAnim, $.datepicker._get(inst, 'showOptions'), duration, postProcess);
@@ -8431,11 +9107,11 @@ $.extend(Datepicker.prototype, {
 					(showAnim == 'fadeIn' ? 'fadeOut' : 'hide'))]((showAnim ? duration : null), postProcess);
 			if (!showAnim)
 				postProcess();
+			this._datepickerShowing = false;
 			var onClose = this._get(inst, 'onClose');
 			if (onClose)
 				onClose.apply((inst.input ? inst.input[0] : null),
-					[(inst.input ? inst.input.val() : ''), inst]);  // trigger custom callback
-			this._datepickerShowing = false;
+					[(inst.input ? inst.input.val() : ''), inst]);
 			this._lastInput = null;
 			if (this._inDialog) {
 				this._dialogInput.css({ position: 'absolute', left: '0', top: '-100px' });
@@ -8457,12 +9133,16 @@ $.extend(Datepicker.prototype, {
 	_checkExternalClick: function(event) {
 		if (!$.datepicker._curInst)
 			return;
-		var $target = $(event.target);
-		if ($target[0].id != $.datepicker._mainDivId &&
+
+		var $target = $(event.target),
+			inst = $.datepicker._getInst($target[0]);
+
+		if ( ( ( $target[0].id != $.datepicker._mainDivId &&
 				$target.parents('#' + $.datepicker._mainDivId).length == 0 &&
 				!$target.hasClass($.datepicker.markerClassName) &&
-				!$target.hasClass($.datepicker._triggerClass) &&
-				$.datepicker._datepickerShowing && !($.datepicker._inDialog && $.blockUI))
+				!$target.closest("." + $.datepicker._triggerClass).length &&
+				$.datepicker._datepickerShowing && !($.datepicker._inDialog && $.blockUI) ) ) ||
+			( $target.hasClass($.datepicker.markerClassName) && $.datepicker._curInst != inst ) )
 			$.datepicker._hideDatepicker();
 	},
 
@@ -8502,21 +9182,11 @@ $.extend(Datepicker.prototype, {
 	_selectMonthYear: function(id, select, period) {
 		var target = $(id);
 		var inst = this._getInst(target[0]);
-		inst._selectingMonthYear = false;
 		inst['selected' + (period == 'M' ? 'Month' : 'Year')] =
 		inst['draw' + (period == 'M' ? 'Month' : 'Year')] =
 			parseInt(select.options[select.selectedIndex].value,10);
 		this._notifyChange(inst);
 		this._adjustDate(target);
-	},
-
-	/* Restore input focus after not changing month/year. */
-	_clickMonthYear: function(id) {
-		var target = $(id);
-		var inst = this._getInst(target[0]);
-		if (inst.input && inst._selectingMonthYear && !$.browser.msie)
-			inst.input.focus();
-		inst._selectingMonthYear = !inst._selectingMonthYear;
 	},
 
 	/* Action for selecting a day. */
@@ -8615,6 +9285,8 @@ $.extend(Datepicker.prototype, {
 		if (value == '')
 			return null;
 		var shortYearCutoff = (settings ? settings.shortYearCutoff : null) || this._defaults.shortYearCutoff;
+		shortYearCutoff = (typeof shortYearCutoff != 'string' ? shortYearCutoff :
+				new Date().getFullYear() % 100 + parseInt(shortYearCutoff, 10));
 		var dayNamesShort = (settings ? settings.dayNamesShort : null) || this._defaults.dayNamesShort;
 		var dayNames = (settings ? settings.dayNames : null) || this._defaults.dayNames;
 		var monthNamesShort = (settings ? settings.monthNamesShort : null) || this._defaults.monthNamesShort;
@@ -8633,9 +9305,9 @@ $.extend(Datepicker.prototype, {
 		};
 		// Extract a number from the string value
 		var getNumber = function(match) {
-			lookAhead(match);
+			var isDoubled = lookAhead(match);
 			var size = (match == '@' ? 14 : (match == '!' ? 20 :
-				(match == 'y' ? 4 : (match == 'o' ? 3 : 2))));
+				(match == 'y' && isDoubled ? 4 : (match == 'o' ? 3 : 2))));
 			var digits = new RegExp('^\\d{1,' + size + '}');
 			var num = value.substring(iValue).match(digits);
 			if (!num)
@@ -8645,14 +9317,24 @@ $.extend(Datepicker.prototype, {
 		};
 		// Extract a name from the string value and convert to an index
 		var getName = function(match, shortNames, longNames) {
-			var names = (lookAhead(match) ? longNames : shortNames);
-			for (var i = 0; i < names.length; i++) {
-				if (value.substr(iValue, names[i].length) == names[i]) {
-					iValue += names[i].length;
-					return i + 1;
+			var names = $.map(lookAhead(match) ? longNames : shortNames, function (v, k) {
+				return [ [k, v] ];
+			}).sort(function (a, b) {
+				return -(a[1].length - b[1].length);
+			});
+			var index = -1;
+			$.each(names, function (i, pair) {
+				var name = pair[1];
+				if (value.substr(iValue, name.length).toLowerCase() == name.toLowerCase()) {
+					index = pair[0];
+					iValue += name.length;
+					return false;
 				}
-			}
-			throw 'Unknown name at position ' + iValue;
+			});
+			if (index != -1)
+				return index + 1;
+			else
+				throw 'Unknown name at position ' + iValue;
 		};
 		// Confirm that a literal character matches the string value
 		var checkLiteral = function() {
@@ -8709,6 +9391,9 @@ $.extend(Datepicker.prototype, {
 						checkLiteral();
 				}
 		}
+		if (iValue < value.length){
+			throw "Extra/unparsed characters found in date: " + value.substring(iValue);
+		}
 		if (year == -1)
 			year = new Date().getFullYear();
 		else if (year < 100)
@@ -8727,7 +9412,7 @@ $.extend(Datepicker.prototype, {
 		}
 		var date = this._daylightSavingAdjust(new Date(year, month - 1, day));
 		if (date.getFullYear() != year || date.getMonth() + 1 != month || date.getDate() != day)
-			throw 'Invalid date'; // E.g. 31/02/*
+			throw 'Invalid date'; // E.g. 31/02/00
 		return date;
 	},
 
@@ -8820,7 +9505,7 @@ $.extend(Datepicker.prototype, {
 							break;
 						case 'o':
 							output += formatNumber('o',
-								(date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / 86400000, 3);
+								Math.round((new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / 86400000), 3);
 							break;
 						case 'm':
 							output += formatNumber('m', date.getMonth() + 1, 2);
@@ -8965,16 +9650,16 @@ $.extend(Datepicker.prototype, {
 			}
 			return new Date(year, month, day);
 		};
-		date = (date == null ? defaultDate : (typeof date == 'string' ? offsetString(date) :
-			(typeof date == 'number' ? (isNaN(date) ? defaultDate : offsetNumeric(date)) : date)));
-		date = (date && date.toString() == 'Invalid Date' ? defaultDate : date);
-		if (date) {
-			date.setHours(0);
-			date.setMinutes(0);
-			date.setSeconds(0);
-			date.setMilliseconds(0);
+		var newDate = (date == null || date === '' ? defaultDate : (typeof date == 'string' ? offsetString(date) :
+			(typeof date == 'number' ? (isNaN(date) ? defaultDate : offsetNumeric(date)) : new Date(date.getTime()))));
+		newDate = (newDate && newDate.toString() == 'Invalid Date' ? defaultDate : newDate);
+		if (newDate) {
+			newDate.setHours(0);
+			newDate.setMinutes(0);
+			newDate.setSeconds(0);
+			newDate.setMilliseconds(0);
 		}
-		return this._daylightSavingAdjust(date);
+		return this._daylightSavingAdjust(newDate);
 	},
 
 	/* Handle switch to/from daylight saving.
@@ -8991,13 +9676,13 @@ $.extend(Datepicker.prototype, {
 
 	/* Set the date(s) directly. */
 	_setDate: function(inst, date, noChange) {
-		var clear = !(date);
+		var clear = !date;
 		var origMonth = inst.selectedMonth;
 		var origYear = inst.selectedYear;
-		date = this._restrictMinMax(inst, this._determineDate(inst, date, new Date()));
-		inst.selectedDay = inst.currentDay = date.getDate();
-		inst.drawMonth = inst.selectedMonth = inst.currentMonth = date.getMonth();
-		inst.drawYear = inst.selectedYear = inst.currentYear = date.getFullYear();
+		var newDate = this._restrictMinMax(inst, this._determineDate(inst, date, new Date()));
+		inst.selectedDay = inst.currentDay = newDate.getDate();
+		inst.drawMonth = inst.selectedMonth = inst.currentMonth = newDate.getMonth();
+		inst.drawYear = inst.selectedYear = inst.currentYear = newDate.getFullYear();
 		if ((origMonth != inst.selectedMonth || origYear != inst.selectedYear) && !noChange)
 			this._notifyChange(inst);
 		this._adjustInstDate(inst);
@@ -9095,6 +9780,7 @@ $.extend(Datepicker.prototype, {
 		var html = '';
 		for (var row = 0; row < numMonths[0]; row++) {
 			var group = '';
+			this.maxRows = 4;
 			for (var col = 0; col < numMonths[1]; col++) {
 				var selectedDate = this._daylightSavingAdjust(new Date(drawYear, drawMonth, inst.selectedDay));
 				var cornerClass = ' ui-corner-all';
@@ -9129,7 +9815,9 @@ $.extend(Datepicker.prototype, {
 				if (drawYear == inst.selectedYear && drawMonth == inst.selectedMonth)
 					inst.selectedDay = Math.min(inst.selectedDay, daysInMonth);
 				var leadDays = (this._getFirstDayOfMonth(drawYear, drawMonth) - firstDay + 7) % 7;
-				var numRows = (isMultiMonth ? 6 : Math.ceil((leadDays + daysInMonth) / 7)); // calculate the number of rows to generate
+				var curRows = Math.ceil((leadDays + daysInMonth) / 7); // calculate the number of rows to generate
+				var numRows = (isMultiMonth ? this.maxRows > curRows ? this.maxRows : curRows : curRows); //If multiple months, use the higher number of rows (see #7043)
+				this.maxRows = numRows;
 				var printDate = this._daylightSavingAdjust(new Date(drawYear, drawMonth, 1 - leadDays));
 				for (var dRow = 0; dRow < numRows; dRow++) { // create date picker rows
 					calender += '<tr>';
@@ -9199,7 +9887,6 @@ $.extend(Datepicker.prototype, {
 			var inMaxYear = (maxDate && maxDate.getFullYear() == drawYear);
 			monthHtml += '<select class="ui-datepicker-month" ' +
 				'onchange="DP_jQuery_' + dpuuid + '.datepicker._selectMonthYear(\'#' + inst.id + '\', this, \'M\');" ' +
-				'onclick="DP_jQuery_' + dpuuid + '.datepicker._clickMonthYear(\'#' + inst.id + '\');"' +
 			 	'>';
 			for (var month = 0; month < 12; month++) {
 				if ((!inMinYear || month >= minDate.getMonth()) &&
@@ -9213,32 +9900,37 @@ $.extend(Datepicker.prototype, {
 		if (!showMonthAfterYear)
 			html += monthHtml + (secondary || !(changeMonth && changeYear) ? '&#xa0;' : '');
 		// year selection
-		if (secondary || !changeYear)
-			html += '<span class="ui-datepicker-year">' + drawYear + '</span>';
-		else {
-			// determine range of years to display
-			var years = this._get(inst, 'yearRange').split(':');
-			var thisYear = new Date().getFullYear();
-			var determineYear = function(value) {
-				var year = (value.match(/c[+-].*/) ? drawYear + parseInt(value.substring(1), 10) :
-					(value.match(/[+-].*/) ? thisYear + parseInt(value, 10) :
-					parseInt(value, 10)));
-				return (isNaN(year) ? thisYear : year);
-			};
-			var year = determineYear(years[0]);
-			var endYear = Math.max(year, determineYear(years[1] || ''));
-			year = (minDate ? Math.max(year, minDate.getFullYear()) : year);
-			endYear = (maxDate ? Math.min(endYear, maxDate.getFullYear()) : endYear);
-			html += '<select class="ui-datepicker-year" ' +
-				'onchange="DP_jQuery_' + dpuuid + '.datepicker._selectMonthYear(\'#' + inst.id + '\', this, \'Y\');" ' +
-				'onclick="DP_jQuery_' + dpuuid + '.datepicker._clickMonthYear(\'#' + inst.id + '\');"' +
-				'>';
-			for (; year <= endYear; year++) {
-				html += '<option value="' + year + '"' +
-					(year == drawYear ? ' selected="selected"' : '') +
-					'>' + year + '</option>';
+		if ( !inst.yearshtml ) {
+			inst.yearshtml = '';
+			if (secondary || !changeYear)
+				html += '<span class="ui-datepicker-year">' + drawYear + '</span>';
+			else {
+				// determine range of years to display
+				var years = this._get(inst, 'yearRange').split(':');
+				var thisYear = new Date().getFullYear();
+				var determineYear = function(value) {
+					var year = (value.match(/c[+-].*/) ? drawYear + parseInt(value.substring(1), 10) :
+						(value.match(/[+-].*/) ? thisYear + parseInt(value, 10) :
+						parseInt(value, 10)));
+					return (isNaN(year) ? thisYear : year);
+				};
+				var year = determineYear(years[0]);
+				var endYear = Math.max(year, determineYear(years[1] || ''));
+				year = (minDate ? Math.max(year, minDate.getFullYear()) : year);
+				endYear = (maxDate ? Math.min(endYear, maxDate.getFullYear()) : endYear);
+				inst.yearshtml += '<select class="ui-datepicker-year" ' +
+					'onchange="DP_jQuery_' + dpuuid + '.datepicker._selectMonthYear(\'#' + inst.id + '\', this, \'Y\');" ' +
+					'>';
+				for (; year <= endYear; year++) {
+					inst.yearshtml += '<option value="' + year + '"' +
+						(year == drawYear ? ' selected="selected"' : '') +
+						'>' + year + '</option>';
+				}
+				inst.yearshtml += '</select>';
+				
+				html += inst.yearshtml;
+				inst.yearshtml = null;
 			}
-			html += '</select>';
 		}
 		html += this._get(inst, 'yearSuffix');
 		if (showMonthAfterYear)
@@ -9266,9 +9958,9 @@ $.extend(Datepicker.prototype, {
 	_restrictMinMax: function(inst, date) {
 		var minDate = this._getMinMaxDate(inst, 'min');
 		var maxDate = this._getMinMaxDate(inst, 'max');
-		date = (minDate && date < minDate ? minDate : date);
-		date = (maxDate && date > maxDate ? maxDate : date);
-		return date;
+		var newDate = (minDate && date < minDate ? minDate : date);
+		newDate = (maxDate && newDate > maxDate ? maxDate : newDate);
+		return newDate;
 	},
 
 	/* Notify change of month/year. */
@@ -9292,7 +9984,7 @@ $.extend(Datepicker.prototype, {
 
 	/* Find the number of days in a given month. */
 	_getDaysInMonth: function(year, month) {
-		return 32 - new Date(year, month, 32).getDate();
+		return 32 - this._daylightSavingAdjust(new Date(year, month, 32)).getDate();
 	},
 
 	/* Find the day of the week of the first of a month. */
@@ -9342,6 +10034,33 @@ $.extend(Datepicker.prototype, {
 	}
 });
 
+/*
+ * Bind hover events for datepicker elements.
+ * Done via delegate so the binding only occurs once in the lifetime of the parent div.
+ * Global instActive, set by _updateDatepicker allows the handlers to find their way back to the active picker.
+ */ 
+function bindHover(dpDiv) {
+	var selector = 'button, .ui-datepicker-prev, .ui-datepicker-next, .ui-datepicker-calendar td a';
+	return dpDiv.bind('mouseout', function(event) {
+			var elem = $( event.target ).closest( selector );
+			if ( !elem.length ) {
+				return;
+			}
+			elem.removeClass( "ui-state-hover ui-datepicker-prev-hover ui-datepicker-next-hover" );
+		})
+		.bind('mouseover', function(event) {
+			var elem = $( event.target ).closest( selector );
+			if ($.datepicker._isDisabledDatepicker( instActive.inline ? dpDiv.parent()[0] : instActive.input[0]) ||
+					!elem.length ) {
+				return;
+			}
+			elem.parents('.ui-datepicker-calendar').find('a').removeClass('ui-state-hover');
+			elem.addClass('ui-state-hover');
+			if (elem.hasClass('ui-datepicker-prev')) elem.addClass('ui-datepicker-prev-hover');
+			if (elem.hasClass('ui-datepicker-next')) elem.addClass('ui-datepicker-next-hover');
+		});
+}
+
 /* jQuery extend now ignores nulls! */
 function extendRemove(target, props) {
 	$.extend(target, props);
@@ -9362,7 +10081,12 @@ function isArray(a) {
                     Object - settings for attaching new datepicker functionality
    @return  jQuery object */
 $.fn.datepicker = function(options){
-
+	
+	/* Verify an empty collection wasn't passed - Fixes #6976 */
+	if ( !this.length ) {
+		return this;
+	}
+	
 	/* Initialise the date picker. */
 	if (!$.datepicker.initialized) {
 		$(document).mousedown($.datepicker._checkExternalClick).
@@ -9388,19 +10112,19 @@ $.fn.datepicker = function(options){
 $.datepicker = new Datepicker(); // singleton instance
 $.datepicker.initialized = false;
 $.datepicker.uuid = new Date().getTime();
-$.datepicker.version = "1.8.2";
+$.datepicker.version = "1.8.21";
 
 // Workaround for #4055
 // Add another global to avoid noConflict issues with inline event handlers
 window['DP_jQuery_' + dpuuid] = $;
 
 })(jQuery);
-/*
- * jQuery UI Progressbar 1.8.2
+/*!
+ * jQuery UI Progressbar 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Progressbar
  *
@@ -9408,25 +10132,30 @@ window['DP_jQuery_' + dpuuid] = $;
  *   jquery.ui.core.js
  *   jquery.ui.widget.js
  */
-(function( $ ) {
+(function( $, undefined ) {
 
 $.widget( "ui.progressbar", {
 	options: {
-		value: 0
+		value: 0,
+		max: 100
 	},
+
+	min: 0,
+
 	_create: function() {
 		this.element
 			.addClass( "ui-progressbar ui-widget ui-widget-content ui-corner-all" )
 			.attr({
 				role: "progressbar",
-				"aria-valuemin": this._valueMin(),
-				"aria-valuemax": this._valueMax(),
+				"aria-valuemin": this.min,
+				"aria-valuemax": this.options.max,
 				"aria-valuenow": this._value()
 			});
 
 		this.valueDiv = $( "<div class='ui-progressbar-value ui-widget-header ui-corner-left'></div>" )
 			.appendTo( this.element );
 
+		this.oldValue = this._value();
 		this._refreshValue();
 	},
 
@@ -9453,12 +10182,12 @@ $.widget( "ui.progressbar", {
 	},
 
 	_setOption: function( key, value ) {
-		switch ( key ) {
-			case "value":
-				this.options.value = value;
-				this._refreshValue();
-				this._trigger( "change" );
-				break;
+		if ( key === "value" ) {
+			this.options.value = value;
+			this._refreshValue();
+			if ( this._value() === this.options.max ) {
+				this._trigger( "complete" );
+			}
 		}
 
 		$.Widget.prototype._setOption.apply( this, arguments );
@@ -9470,48 +10199,45 @@ $.widget( "ui.progressbar", {
 		if ( typeof val !== "number" ) {
 			val = 0;
 		}
-		if ( val < this._valueMin() ) {
-			val = this._valueMin();
-		}
-		if ( val > this._valueMax() ) {
-			val = this._valueMax();
-		}
-
-		return val;
+		return Math.min( this.options.max, Math.max( this.min, val ) );
 	},
 
-	_valueMin: function() {
-		return 0;
-	},
-
-	_valueMax: function() {
-		return 100;
+	_percentage: function() {
+		return 100 * this._value() / this.options.max;
 	},
 
 	_refreshValue: function() {
 		var value = this.value();
+		var percentage = this._percentage();
+
+		if ( this.oldValue !== value ) {
+			this.oldValue = value;
+			this._trigger( "change" );
+		}
+
 		this.valueDiv
-			[ value === this._valueMax() ? "addClass" : "removeClass"]( "ui-corner-right" )
-			.width( value + "%" );
+			.toggle( value > this.min )
+			.toggleClass( "ui-corner-right", value === this.options.max )
+			.width( percentage.toFixed(0) + "%" );
 		this.element.attr( "aria-valuenow", value );
 	}
 });
 
 $.extend( $.ui.progressbar, {
-	version: "1.8.2"
+	version: "1.8.21"
 });
 
 })( jQuery );
-/*
- * jQuery UI Effects 1.8.2
+/*!
+ * jQuery UI Effects 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/
  */
-;jQuery.effects || (function($) {
+;jQuery.effects || (function($, undefined) {
 
 $.effects = {};
 
@@ -9523,7 +10249,7 @@ $.effects = {};
 
 // override the animation for color styles
 $.each(['backgroundColor', 'borderBottomColor', 'borderLeftColor',
-	'borderRightColor', 'borderTopColor', 'color', 'outlineColor'],
+	'borderRightColor', 'borderTopColor', 'borderColor', 'color', 'outlineColor'],
 function(i, attr) {
 	$.fx.step[attr] = function(fx) {
 		if (!fx.colorInit) {
@@ -9735,13 +10461,12 @@ $.effects.animateClass = function(value, duration, easing, callback) {
 		easing = null;
 	}
 
-	return this.each(function() {
-
+	return this.queue(function() {
 		var that = $(this),
 			originalStyleAttr = that.attr('style') || ' ',
 			originalStyle = filterStyles(getElementStyles.call(this)),
 			newStyle,
-			className = that.attr('className');
+			className = that.attr('class') || "";
 
 		$.each(classAnimationActions, function(i, action) {
 			if (value[action]) {
@@ -9749,20 +10474,26 @@ $.effects.animateClass = function(value, duration, easing, callback) {
 			}
 		});
 		newStyle = filterStyles(getElementStyles.call(this));
-		that.attr('className', className);
+		that.attr('class', className);
 
-		that.animate(styleDifference(originalStyle, newStyle), duration, easing, function() {
-			$.each(classAnimationActions, function(i, action) {
-				if (value[action]) { that[action + 'Class'](value[action]); }
-			});
-			// work around bug in IE by clearing the cssText before setting it
-			if (typeof that.attr('style') == 'object') {
-				that.attr('style').cssText = '';
-				that.attr('style').cssText = originalStyleAttr;
-			} else {
-				that.attr('style', originalStyleAttr);
+		that.animate(styleDifference(originalStyle, newStyle), {
+			queue: false,
+			duration: duration,
+			easing: easing,
+			complete: function() {
+				$.each(classAnimationActions, function(i, action) {
+					if (value[action]) { that[action + 'Class'](value[action]); }
+				});
+				// work around bug in IE by clearing the cssText before setting it
+				if (typeof that.attr('style') == 'object') {
+					that.attr('style').cssText = '';
+					that.attr('style').cssText = originalStyleAttr;
+				} else {
+					that.attr('style', originalStyleAttr);
+				}
+				if (callback) { callback.apply(this, arguments); }
+				$.dequeue( this );
 			}
-			if (callback) { callback.apply(this, arguments); }
 		});
 	});
 };
@@ -9805,7 +10536,7 @@ $.fn.extend({
 /******************************************************************************/
 
 $.extend($.effects, {
-	version: "1.8.2",
+	version: "1.8.21",
 
 	// Saves a set of properties in a data storage
 	save: function(element, set) {
@@ -9866,9 +10597,25 @@ $.extend($.effects, {
 					border: 'none',
 					margin: 0,
 					padding: 0
-				});
+				}),
+			active = document.activeElement;
 
-		element.wrap(wrapper);
+		// support: Firefox
+		// Firefox incorrectly exposes anonymous content
+		// https://bugzilla.mozilla.org/show_bug.cgi?id=561664
+		try {
+			active.id;
+		} catch( e ) {
+			active = document.body;
+		}
+
+		element.wrap( wrapper );
+
+		// Fixes #7595 - Elements lose focus when wrapped.
+		if ( element[ 0 ] === active || $.contains( element[ 0 ], active ) ) {
+			$( active ).focus();
+		}
+		
 		wrapper = element.parent(); //Hotfix for jQuery 1.4 since some change in wrap() seems to actually loose the reference to the wrapped element
 
 		// transfer positioning properties to the wrapper
@@ -9886,22 +10633,32 @@ $.extend($.effects, {
 					props[pos] = 'auto';
 				}
 			});
-			element.css({position: 'relative', top: 0, left: 0 });
+			element.css({position: 'relative', top: 0, left: 0, right: 'auto', bottom: 'auto' });
 		}
 
 		return wrapper.css(props).show();
 	},
 
 	removeWrapper: function(element) {
-		if (element.parent().is('.ui-effects-wrapper'))
-			return element.parent().replaceWith(element);
+		var parent,
+			active = document.activeElement;
+		
+		if (element.parent().is('.ui-effects-wrapper')) {
+			parent = element.parent().replaceWith(element);
+			// Fixes #7595 - Elements lose focus when wrapped.
+			if ( element[ 0 ] === active || $.contains( element[ 0 ], active ) ) {
+				$( active ).focus();
+			}
+			return parent;
+		}
+			
 		return element;
 	},
 
 	setTransition: function(element, list, factor, value) {
 		value = value || {};
 		$.each(list, function(i, x){
-			unit = element.cssUnit(x);
+			var unit = element.cssUnit(x);
 			if (unit[0] > 0) value[x] = unit[0] * factor + unit[1];
 		});
 		return value;
@@ -9922,44 +10679,72 @@ function _normalizeArguments(effect, options, speed, callback) {
 		speed = null;
 		options = {};
 	}
-	if ($.isFunction(speed)) {
-		callback = speed;
-		speed = null;
-	}
-	if (typeof options == 'number' || $.fx.speeds[options]) {
+        if (typeof options == 'number' || $.fx.speeds[options]) {
 		callback = speed;
 		speed = options;
 		options = {};
+	}
+	if ($.isFunction(speed)) {
+		callback = speed;
+		speed = null;
 	}
 
 	options = options || {};
 
 	speed = speed || options.duration;
 	speed = $.fx.off ? 0 : typeof speed == 'number'
-		? speed : $.fx.speeds[speed] || $.fx.speeds._default;
+		? speed : speed in $.fx.speeds ? $.fx.speeds[speed] : $.fx.speeds._default;
 
 	callback = callback || options.complete;
 
 	return [effect, options, speed, callback];
 }
 
+function standardSpeed( speed ) {
+	// valid standard speeds
+	if ( !speed || typeof speed === "number" || $.fx.speeds[ speed ] ) {
+		return true;
+	}
+	
+	// invalid strings - treat as "normal" speed
+	if ( typeof speed === "string" && !$.effects[ speed ] ) {
+		return true;
+	}
+	
+	return false;
+}
+
 $.fn.extend({
 	effect: function(effect, options, speed, callback) {
 		var args = _normalizeArguments.apply(this, arguments),
-			// TODO: make effects takes actual parameters instead of a hash
+			// TODO: make effects take actual parameters instead of a hash
 			args2 = {
 				options: args[1],
 				duration: args[2],
 				callback: args[3]
 			},
+			mode = args2.options.mode,
 			effectMethod = $.effects[effect];
 		
-		return effectMethod && !$.fx.off ? effectMethod.call(this, args2) : this;
+		if ( $.fx.off || !effectMethod ) {
+			// delegate to the original method (e.g., .show()) if possible
+			if ( mode ) {
+				return this[ mode ]( args2.duration, args2.callback );
+			} else {
+				return this.each(function() {
+					if ( args2.callback ) {
+						args2.callback.call( this );
+					}
+				});
+			}
+		}
+		
+		return effectMethod.call(this, args2);
 	},
 
 	_show: $.fn.show,
 	show: function(speed) {
-		if (!speed || typeof speed == 'number' || $.fx.speeds[speed]) {
+		if ( standardSpeed( speed ) ) {
 			return this._show.apply(this, arguments);
 		} else {
 			var args = _normalizeArguments.apply(this, arguments);
@@ -9970,7 +10755,7 @@ $.fn.extend({
 
 	_hide: $.fn.hide,
 	hide: function(speed) {
-		if (!speed || typeof speed == 'number' || $.fx.speeds[speed]) {
+		if ( standardSpeed( speed ) ) {
 			return this._hide.apply(this, arguments);
 		} else {
 			var args = _normalizeArguments.apply(this, arguments);
@@ -9979,11 +10764,10 @@ $.fn.extend({
 		}
 	},
 
-	// jQuery core overloads toggle and create _toggle
+	// jQuery core overloads toggle and creates _toggle
 	__toggle: $.fn.toggle,
 	toggle: function(speed) {
-		if (!speed || typeof speed == 'number' || $.fx.speeds[speed] ||
-			typeof speed == 'boolean' || $.isFunction(speed)) {
+		if ( standardSpeed( speed ) || typeof speed === "boolean" || $.isFunction( speed ) ) {
 			return this.__toggle.apply(this, arguments);
 		} else {
 			var args = _normalizeArguments.apply(this, arguments);
@@ -10216,26 +11000,26 @@ $.extend($.easing,
  */
 
 })(jQuery);
-/*
- * jQuery UI Effects Blind 1.8.2
+/*!
+ * jQuery UI Effects Blind 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/Blind
  *
  * Depends:
  *	jquery.effects.core.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.effects.blind = function(o) {
 
 	return this.queue(function() {
 
 		// Create element
-		var el = $(this), props = ['position','top','left'];
+		var el = $(this), props = ['position','top','bottom','left','right'];
 
 		// Set options
 		var mode = $.effects.setMode(el, o.options.mode || 'hide'); // Set Mode
@@ -10265,26 +11049,26 @@ $.effects.blind = function(o) {
 };
 
 })(jQuery);
-/*
- * jQuery UI Effects Bounce 1.8.2
+/*!
+ * jQuery UI Effects Bounce 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/Bounce
  *
  * Depends:
  *	jquery.effects.core.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.effects.bounce = function(o) {
 
 	return this.queue(function() {
 
 		// Create element
-		var el = $(this), props = ['position','top','left'];
+		var el = $(this), props = ['position','top','bottom','left','right'];
 
 		// Set options
 		var mode = $.effects.setMode(el, o.options.mode || 'effect'); // Set Mode
@@ -10343,26 +11127,26 @@ $.effects.bounce = function(o) {
 };
 
 })(jQuery);
-/*
- * jQuery UI Effects Clip 1.8.2
+/*!
+ * jQuery UI Effects Clip 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/Clip
  *
  * Depends:
  *	jquery.effects.core.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.effects.clip = function(o) {
 
 	return this.queue(function() {
 
 		// Create element
-		var el = $(this), props = ['position','top','left','height','width'];
+		var el = $(this), props = ['position','top','bottom','left','right','height','width'];
 
 		// Set options
 		var mode = $.effects.setMode(el, o.options.mode || 'hide'); // Set Mode
@@ -10397,26 +11181,26 @@ $.effects.clip = function(o) {
 };
 
 })(jQuery);
-/*
- * jQuery UI Effects Drop 1.8.2
+/*!
+ * jQuery UI Effects Drop 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/Drop
  *
  * Depends:
  *	jquery.effects.core.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.effects.drop = function(o) {
 
 	return this.queue(function() {
 
 		// Create element
-		var el = $(this), props = ['position','top','left','opacity'];
+		var el = $(this), props = ['position','top','bottom','left','right','opacity'];
 
 		// Set options
 		var mode = $.effects.setMode(el, o.options.mode || 'hide'); // Set Mode
@@ -10447,19 +11231,19 @@ $.effects.drop = function(o) {
 };
 
 })(jQuery);
-/*
- * jQuery UI Effects Explode 1.8.2
+/*!
+ * jQuery UI Effects Explode 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/Explode
  *
  * Depends:
  *	jquery.effects.core.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.effects.explode = function(o) {
 
@@ -10526,26 +11310,58 @@ $.effects.explode = function(o) {
 };
 
 })(jQuery);
-/*
- * jQuery UI Effects Fold 1.8.2
+/*!
+ * jQuery UI Effects Fade 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Effects/Fade
+ *
+ * Depends:
+ *	jquery.effects.core.js
+ */
+(function( $, undefined ) {
+
+$.effects.fade = function(o) {
+	return this.queue(function() {
+		var elem = $(this),
+			mode = $.effects.setMode(elem, o.options.mode || 'hide');
+
+		elem.animate({ opacity: mode }, {
+			queue: false,
+			duration: o.duration,
+			easing: o.options.easing,
+			complete: function() {
+				(o.callback && o.callback.apply(this, arguments));
+				elem.dequeue();
+			}
+		});
+	});
+};
+
+})(jQuery);
+/*!
+ * jQuery UI Effects Fold 1.8.21
+ *
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/Fold
  *
  * Depends:
  *	jquery.effects.core.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.effects.fold = function(o) {
 
 	return this.queue(function() {
 
 		// Create element
-		var el = $(this), props = ['position','top','left'];
+		var el = $(this), props = ['position','top','bottom','left','right'];
 
 		// Set options
 		var mode = $.effects.setMode(el, o.options.mode || 'hide'); // Set Mode
@@ -10582,19 +11398,19 @@ $.effects.fold = function(o) {
 };
 
 })(jQuery);
-/*
- * jQuery UI Effects Highlight 1.8.2
+/*!
+ * jQuery UI Effects Highlight 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/Highlight
  *
  * Depends:
  *	jquery.effects.core.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.effects.highlight = function(o) {
 	return this.queue(function() {
@@ -10632,25 +11448,25 @@ $.effects.highlight = function(o) {
 };
 
 })(jQuery);
-/*
- * jQuery UI Effects Pulsate 1.8.2
+/*!
+ * jQuery UI Effects Pulsate 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/Pulsate
  *
  * Depends:
  *	jquery.effects.core.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.effects.pulsate = function(o) {
 	return this.queue(function() {
 		var elem = $(this),
-			mode = $.effects.setMode(elem, o.options.mode || 'show');
-			times = ((o.options.times || 5) * 2) - 1;
+			mode = $.effects.setMode(elem, o.options.mode || 'show'),
+			times = ((o.options.times || 5) * 2) - 1,
 			duration = o.duration ? o.duration / 2 : $.fx.speeds._default / 2,
 			isVisible = elem.is(':visible'),
 			animateTo = 0;
@@ -10683,19 +11499,19 @@ $.effects.pulsate = function(o) {
 };
 
 })(jQuery);
-/*
- * jQuery UI Effects Scale 1.8.2
+/*!
+ * jQuery UI Effects Scale 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/Scale
  *
  * Depends:
  *	jquery.effects.core.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.effects.puff = function(o) {
 	return this.queue(function() {
@@ -10769,8 +11585,8 @@ $.effects.size = function(o) {
 	return this.queue(function() {
 
 		// Create element
-		var el = $(this), props = ['position','top','left','width','height','overflow','opacity'];
-		var props1 = ['position','top','left','overflow','opacity']; // Always restore
+		var el = $(this), props = ['position','top','bottom','left','right','width','height','overflow','opacity'];
+		var props1 = ['position','top','bottom','left','right','overflow','opacity']; // Always restore
 		var props2 = ['width','height','overflow']; // Copy for children
 		var cProps = ['fontSize'];
 		var vProps = ['borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom'];
@@ -10825,7 +11641,7 @@ $.effects.size = function(o) {
 			hProps = hProps.concat(['marginLeft','marginRight']); // Add margins
 			props2 = props.concat(vProps).concat(hProps); // Concat
 			el.find("*[width]").each(function(){
-				child = $(this);
+				var child = $(this);
 				if (restore) $.effects.save(child, props2);
 				var c_original = {height: child.height(), width: child.width()}; // Save original
 				child.from = {height: c_original.height * factor.from.y, width: c_original.width * factor.from.x};
@@ -10861,26 +11677,26 @@ $.effects.size = function(o) {
 };
 
 })(jQuery);
-/*
- * jQuery UI Effects Shake 1.8.2
+/*!
+ * jQuery UI Effects Shake 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/Shake
  *
  * Depends:
  *	jquery.effects.core.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.effects.shake = function(o) {
 
 	return this.queue(function() {
 
 		// Create element
-		var el = $(this), props = ['position','top','left'];
+		var el = $(this), props = ['position','top','bottom','left','right'];
 
 		// Set options
 		var mode = $.effects.setMode(el, o.options.mode || 'effect'); // Set Mode
@@ -10918,26 +11734,26 @@ $.effects.shake = function(o) {
 };
 
 })(jQuery);
-/*
- * jQuery UI Effects Slide 1.8.2
+/*!
+ * jQuery UI Effects Slide 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/Slide
  *
  * Depends:
  *	jquery.effects.core.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.effects.slide = function(o) {
 
 	return this.queue(function() {
 
 		// Create element
-		var el = $(this), props = ['position','top','left'];
+		var el = $(this), props = ['position','top','bottom','left','right'];
 
 		// Set options
 		var mode = $.effects.setMode(el, o.options.mode || 'show'); // Set Mode
@@ -10949,7 +11765,7 @@ $.effects.slide = function(o) {
 		var ref = (direction == 'up' || direction == 'down') ? 'top' : 'left';
 		var motion = (direction == 'up' || direction == 'left') ? 'pos' : 'neg';
 		var distance = o.options.distance || (ref == 'top' ? el.outerHeight({margin:true}) : el.outerWidth({margin:true}));
-		if (mode == 'show') el.css(ref, motion == 'pos' ? -distance : distance); // Shift
+		if (mode == 'show') el.css(ref, motion == 'pos' ? (isNaN(distance) ? "-" + distance : -distance) : distance); // Shift
 
 		// Animation
 		var animation = {};
@@ -10968,19 +11784,19 @@ $.effects.slide = function(o) {
 };
 
 })(jQuery);
-/*
- * jQuery UI Effects Transfer 1.8.2
+/*!
+ * jQuery UI Effects Transfer 1.8.21
  *
- * Copyright (c) 2010 AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  *
  * http://docs.jquery.com/UI/Effects/Transfer
  *
  * Depends:
  *	jquery.effects.core.js
  */
-(function($) {
+(function( $, undefined ) {
 
 $.effects.transfer = function(o) {
 	return this.queue(function() {

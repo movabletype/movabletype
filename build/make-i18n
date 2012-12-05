@@ -1,0 +1,44 @@
+#!/usr/bin/perl -w
+
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
+use strict;
+use warnings;
+
+use lib 'lib', 'extlib', '../lib', '../extlib';
+
+eval { use PHP::Var; 1 }
+    or die 'PHP::Var is required';
+
+use File::Spec;
+use File::Basename qw(dirname);
+use PHP::Var qw(export);
+
+my @langs = grep { $_ ne 'default' } map { m{I18N/([\w_-]+)\.pm$}; $1 } glob(
+    File::Spec->catfile(
+        dirname( dirname(__FILE__) ),
+        'lib', 'MT', 'I18N', '*.pm'
+    )
+);
+
+use MT;
+my $app = MT->instance;
+
+for my $l (@langs) {
+    $app->set_language($l);
+    my $original_settings = $app->i18n_default_settings;
+    my $settings          = {};
+    $settings->{ lc $_ } = $original_settings->{$_}
+        for keys %$original_settings;
+
+    my $outfile = File::Spec->catfile( dirname( dirname(__FILE__) ),
+        'php', 'lib', 'i18n_' . $l . '.php' );
+    open( my $out, '>', $outfile );
+    print( $out '<?php $GLOBALS[\'i18n_default_settings\'] = '
+            . export($settings) );
+    close($out);
+}

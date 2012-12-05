@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -57,7 +57,7 @@ sub handle {
         if ( my $class = $apps->{$subapp} ) {
             eval "require $class;";
             bless $app, $class;
-           $app->init_app;
+            $app->init_app;
         }
         my $out = $app->handle_request;
         return unless defined $out;
@@ -227,19 +227,23 @@ sub xml_body {
         if (LIBXML) {
             my $parser = MT::Util->libxml_parser;
             eval {
-                $app->{xml_body} = $parser->parse_string($app->request_content);
+                $app->{xml_body}
+                    = $parser->parse_string( $app->request_content );
             };
             if ($@) {
                 die "Error Parsing XML Input $@ ";
             }
         }
         else {
-           my $parser = MT::Util->expat_parser;
-           my $xp;
-           eval {
-               $xp = XML::XPath->new( xml => $app->request_content, parser => $parser );
-               $app->{xml_body} = ( $xp->find('/')->get_nodelist )[0];
-           };
+            my $parser = MT::Util->expat_parser;
+            my $xp;
+            eval {
+                $xp = XML::XPath->new(
+                    xml    => $app->request_content,
+                    parser => $parser
+                );
+                $app->{xml_body} = ( $xp->find('/')->get_nodelist )[0];
+            };
             if ($@) {
                 die "Error Parsing XML Input $@ ";
             }
@@ -253,19 +257,24 @@ sub atom_body {
     my $atom;
     my $xml = $app->xml_body;
     if ( $app->{is_soap} ) {
-        $atom = MT::Atom::Entry->new( Elem => first( $xml, NS_SOAP, 'Body' ), _prefix => $xml->getFirstChild->getPrefix)
-            or return $app->error( 500, MT::Atom::Entry->errstr );
+        $atom = MT::Atom::Entry->new(
+            Elem    => first( $xml, NS_SOAP, 'Body' ),
+            _prefix => $xml->getFirstChild->getPrefix
+        ) or return $app->error( 500, MT::Atom::Entry->errstr );
     }
     else {
-       my $parser;
+        my $parser;
         if (LIBXML) {
             $parser = MT::Util->libxml_parser;
         }
         else {
-           $parser = MT::Util->expat_parser;
+            $parser = MT::Util->expat_parser;
         }
-        $atom = MT::Atom::Entry->new(Stream => \$app->request_content, Parser => $parser, _prefix => $xml->getFirstChild->getPrefix)
-            or return $app->error( 500, MT::Atom::Entry->errstr );
+        $atom = MT::Atom::Entry->new(
+            Stream  => \$app->request_content,
+            Parser  => $parser,
+            _prefix => $xml->getFirstChild->getPrefix
+        ) or return $app->error( 500, MT::Atom::Entry->errstr );
     }
     $atom;
 }
@@ -337,6 +346,7 @@ sub NS_DC      { 'http://purl.org/dc/elements/1.1/'; }
 sub NS_TYPEPAD { 'http://sixapart.com/atom/typepad#'; }
 
 sub script { $_[0]->{cfg}->AtomScript . '/1.0' }
+sub uri    { $_[0]->mt_path . $_[0]->script }
 
 sub atom_content_type   {'application/atom+xml'}
 sub atom_x_content_type {'application/atom+xml'}
@@ -387,7 +397,7 @@ sub apply_basename {
 }
 
 sub init_app {
-    $XML::Atom::ForceUnicode = 1;
+    $XML::Atom::ForceUnicode   = 1;
     $XML::Atom::DefaultVersion = 1.0;
 }
 
@@ -596,14 +606,14 @@ sub new_post {
     my $type    = $content->type;
     my $body    = $content->body;
     my $asset;
-    if ($type && $type eq 'text/plain') {
+    if ( $type && $type eq 'text/plain' ) {
         ## Check for LifeBlog Note & SMS records.
-        my $format = $atom->get(NS_DC, 'format');
-        if ($format && ($format eq 'Note' || $format eq 'SMS')) {
+        my $format = $atom->get( NS_DC, 'format' );
+        if ( $format && ( $format eq 'Note' || $format eq 'SMS' ) ) {
             $asset = $app->_upload_to_asset or return;
         }
     }
-    elsif ($type && $type !~ m!^(application/.*xml|text/.*|html)$! ) {
+    elsif ( $type && $type !~ m!^(application/.*xml|text/.*|html)$! ) {
         $asset = $app->_upload_to_asset or return;
     }
     if ( $atom->get( NS_TYPEPAD, 'standalone' ) && $asset ) {
@@ -863,7 +873,7 @@ sub get_posts {
             {   rel  => 'replies',
                 type => $app->atom_x_content_type,
                 href => $app->base
-                    . $app->app_path
+                    . $app->path
                     . $app->config->AtomScript
                     . '/comments/blog_id='
                     . $blog->id
@@ -914,7 +924,7 @@ sub get_post {
         {   rel  => 'replies',
             type => $app->atom_x_content_type,
             href => $app->base
-                . $app->app_path
+                . $app->path
                 . $app->config->AtomScript
                 . '/comments/blog_id='
                 . $blog->id
@@ -945,7 +955,7 @@ sub delete_post {
     my %recipe = $app->publisher->rebuild_deleted_entry(
         Entry => $entry,
         Blog  => $blog
-    );
+    ) if $entry->status eq MT::Entry::RELEASE();
 
     # Remove object
     $entry->remove
@@ -1012,10 +1022,17 @@ sub _upload_to_asset {
         if $fname =~ m!/|\.\.|\0|\|!;
 
     if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
-        my @deny_exts = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $deny_exts;
+        my @deny_exts = map {
+            if   ( $_ =~ m/^\./ ) {qr/$_/i}
+            else                  {qr/\.$_/i}
+        } split '\s?,\s?', $deny_exts;
         my @ret = File::Basename::fileparse( $fname, @deny_exts );
-        return $app->error(500, MT->translate('The file([_1]) you uploaded is not allowed.', $fname))
-            if $ret[2];
+        return $app->error(
+            500,
+            MT->translate(
+                'The file ([_1]) that you uploaded is not allowed.', $fname
+            )
+        ) if $ret[2];
     }
 
     if ( my $allow_exts = MT->config('AssetFileExtensions') ) {
@@ -1027,7 +1044,7 @@ sub _upload_to_asset {
         return $app->error(
             500,
             MT->translate(
-                'The file([_1]) you uploaded is not allowed.', $fname
+                'The file ([_1]) that you uploaded is not allowed.', $fname
             )
         ) unless $ret[2];
     }
@@ -1050,7 +1067,7 @@ sub _upload_to_asset {
             MT->translate(
                 "Saving [_1] failed: [_2]",
                 $base,
-                "Invalid image file format."
+                MT->translate( "Invalid image file format." )
             )
         ) unless MT::Image::is_valid_image($fh);
         close($fh);
@@ -1072,7 +1089,7 @@ sub _upload_to_asset {
     return $app->error(
         500,
         MT->translate(
-            "Perl module Image::Size is required to determine width and height of uploaded images."
+            "Perl module Image::Size is required to determine the width and height of uploaded images."
         )
     ) if $@;
     my ( $w, $h, $id ) = Image::Size::imgsize($local);
@@ -1201,7 +1218,7 @@ sub edit_link_rel         {'service.edit'}
 sub get_posts_order_field {'authored_on'}
 
 sub init_app {
-    $XML::Atom::ForceUnicode = 1;
+    $XML::Atom::ForceUnicode   = 1;
     $XML::Atom::DefaultVersion = 0.3;
 }
 
@@ -1559,27 +1576,39 @@ __END__
 
 =head1 NAME
 
-MT::AtomServer
+MT::AtomServer - An Atom Publishing API interface for communicating with Movable Type.
 
 =head1 SYNOPSIS
 
-An Atom Publishing API interface for communicating with Movable Type.
+    use MT::Bootstrap App => 'MT::AtomServer';
+
+=head1 DESCRIPTION
+
+A MT::App that handles incoming Atom Publishing API requests, decide
+which of his subclasses should answer it and call it. subclasses are:
+MT::AtomServer::Weblog, MT::AtomServer::Weblog::Legacy and 
+MT::AtomServer::Comments
+
+This app can also handle SOAP requests
 
 =head1 METHODS
 
-=head2 $app->xml_body()
+=head2 $app->init()
 
-Takes the content posted to the server and parses it into an XML document.
-Uses either XML::LibXML or XML::XPath depending on which is available.
+Initializes the application. Called by the MT framework
 
-=head2 $app->iso2epoch($iso_ts)
+=head2 $app->handle()
 
-Converts C<$iso_ts> in the format of an ISO timestamp into a unix timestamp
-(seconds since the epoch).
+Wrapper method that determines the proper AtomServer subclass package 
+to pass the request to, and calls handle_request on it. The list of 
+subclasses is listed in the AtomApp configuration.
 
-=head2 $app->init
+=head2 $app->handle_request()
 
-Initializes the application.
+Subclasses should override this method to answer a request. By default
+does nothing.
+
+=head1 INTERNAL METHODS
 
 =head2 $app->get_auth_info
 
@@ -1597,42 +1626,150 @@ Processes the request for WSSE authentication and returns a hash containing:
 
 =back
 
-=head2 $app->handle_request
-
-The implementation of this in I<MT::AtomServer::Weblog> passes the request
-to the proper method.
-
-=head2 $app->handle
-
-Wrapper method that determines the proper AtomServer package to pass the
-request to.
-
-=head2 $app->iso2ts($iso_ts, $target_zone)
-
-Converts C<$iso_ts> in the format of an ISO timestamp into a MT-compatible
-timestamp (YYYYMMDDHHMMSS) for the specified timezone C<$target_zone>.
-
-=head2 $app->atom_body
-
-Processes the request as Atom content and returns an XML::Atom object.
-
-=head2 $app->error($code, $message)
-
-Sends the HTTP headers necessary to relay an error.
-
 =head2 $app->authenticate()
 
 Checks the WSSE authentication with the local MT user database and
 confirms the user is authorized to access the resources required by
 the request.
 
-=head2 $app->show_error($message)
-
-Returns an XML wrapper for the error response.
-
 =head2 $app->auth_failure($code, $message)
 
-Handles the response in the event of an authentication failure.
+Handles the response in the event of an authentication failure. 
+equivalent to $app->error, but add an authentication header to
+the response
+
+=head2 $app->xml_body()
+
+Takes the content posted to the server and parses it into an XML document.
+Uses either XML::LibXML or XML::XPath depending on which is available.
+
+xml_body should be called only when the request is SOAP, and not Atom.
+It is better to call $app->atom_body(), that abstract this away
+
+=head2 $app->atom_body
+
+Processes the request and returns an XML::Atom object
+
+=head2 $app->iso2epoch($iso_ts)
+
+Converts C<$iso_ts> in the format of an ISO timestamp into a unix timestamp
+(seconds since the epoch).
+
+=head2 $app->iso2ts($iso_ts, $target_zone)
+
+Converts C<$iso_ts> in the format of an ISO timestamp into a MT-compatible
+timestamp (YYYYMMDDHHMMSS) for the specified timezone C<$target_zone>.
+
+=head1 MT::AtomServer::Weblog
+
+Providing Atom access to creating, editing, posting and reading blog
+posts. Subclass of MT::AtomServer
+
+=head2 METHODS
+
+=head3 $app->handle_request()
+
+Main switchboard for blog posts, based on the HTML verb and params 
+used in the request. calls handle_upload, get_categories, new_post, 
+edit_post, delete_post, get_post, get_posts or get_weblogs to supply 
+the information itself
+
+=head3 $app->handle_upload()
+
+Will be called if the request contains a 'svc' (for service) parameter
+equal to 'upload'. This command will upload an asset to a blog, 
+specified by blog_id param. returns a link to the newly uploaded
+asset
+
+=head3 $app->get_categories()
+
+Will be called if the request contains a 'svc' (for service) parameter
+equal to 'categories'. the request should also contain a blog_id param,
+for which the categories are read of. Answer with a list of categories 
+for this blog.
+
+=head3 $app->new_post()
+
+Will be called on API POST request, and create a new entry or asset.
+Answers with the newly created object
+
+=head3 $app->edit_post()
+
+Will be called on API PUT request. Answers with the edited entry
+
+=head3 $app->delete_post()
+
+Will be called on API DELETE request. Removes the entry specified
+by blog_id and entry_id
+
+=head3 $app->get_post()
+
+Will be called on API GET request, If an entry_id and blog_id parameters 
+are supplied. Answers with the requested entry
+
+=head3 $app->get_posts()
+
+Will be called on API GET request, If an blog_id parameter is supplied,
+but not entry_id. Answers with the last %limit% entries, starting from 
+the %offset% -th entry. if not specified, limit is 21 and offset is 0
+
+=head3 $app->get_weblogs()
+
+Answer with a list of weblogs that the user have permission to. 
+will be called on API GET request with no blog_id or entry_id
+
+=head3 $app->authenticate()
+
+extends the original authenticate function, by trying to load a MT::Blog
+object and permission object if blog_id param is supplied
+
+=head3 $app->apply_basename( $entry, $atom )
+
+While posting an entry using the API, it is possible to ask for a specific
+basename for this entry using a 'Slug'. this function apply the request,
+but only if such name is not in use yet
+
+=head3 $app->new_with_entry( $entry )
+
+Create a new Atom entry out of a blog entry
+
+=head1 MT::AtomServer::Weblog::Legacy
+
+Subclass of MT::AtomServer::Weblog, compatible to legacy Atom API
+
+=head1 MT::AtomServer::Comments
+
+A subclass of MT::AtomServer, that inherent only the handle_upload and 
+get_categories operations, and add three operations: get_comment,
+get_comments and get_blog_comments
+
+=head2 METHODS
+
+=head3 $app->get_comment()
+
+Answer with a single comment. will be called on API GET request with 
+comment_id and entry_id. Also need blog_id
+
+=head3 $app->get_comments()
+
+will be called on API GET request with entry_id but not comment_id.
+Also need blog_id. Answers with the last %limit% comments of entry 
+%entry_id%, starting from the %offset% -th comment. if not specified, 
+limit is 21 and offset is 0
+
+=head3 $app->get_blog_comments()
+
+will be called on API GET request with no comment_id or entry_id
+Answers with the last %limit% comments of blog %blog_id%, (from all
+the entries) starting from the %offset% -th comment. if not specified, 
+limit is 21 and offset is 0
+
+=head2 INTERNAL METHODS
+
+=head3 $app->_comments_in_atom( $feed, $terms, $args )
+
+loads all the comments specified by $terms and $args (that will be
+passed to the load function) into an Atom feed $feed
 
 =head1 CALLBACKS
 

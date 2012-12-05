@@ -3,14 +3,14 @@ use strict;
 
 sub anyTypeValue { 'ur-type' }
 
-sub as_boolean { 
-    shift; 
-    my $value = shift; 
-    $value eq '1' || $value eq 'true' 
-        ? 1 
-        : $value eq '0' || $value eq 'false' 
-            ? 0 
-            : die "Wrong boolean value '$value'\n" 
+sub as_boolean {
+    shift;
+    my $value = shift;
+    $value eq '1' || $value eq 'true'
+        ? 1
+        : $value eq '0' || $value eq 'false'
+            ? 0
+            : die "Wrong boolean value '$value'\n"
 }
 
 sub as_base64 { shift; require MIME::Base64; MIME::Base64::decode_base64(shift) }
@@ -25,7 +25,7 @@ BEGIN {
         string float double decimal timeDuration recurringDuration uriReference
         integer nonPositiveInteger negativeInteger long int short byte
         nonNegativeInteger unsignedLong unsignedInt unsignedShort unsignedByte
-        positiveInteger timeInstant time timePeriod date month year century 
+        positiveInteger timeInstant time timePeriod date month year century
         recurringDate recurringDay language
     )) { my $name = 'as_' . $method; *$name = sub { $_[1] } }
 }

@@ -394,10 +394,14 @@ App.bootstrap = function() {
 
 
 App.bootstrapInline = function( defer ) {
-    /* deferred bootstrap onload by default */
-    DOM.addEventListener( window, "load", this.bootstrap );
     this.deferBootstrap = defer;
-    this.bootstrapApp();
+    if (defer) {
+        /* deferred bootstrap onload */
+        DOM.addEventListener( window, "load", this.bootstrap );
+    }
+    else {
+        this.bootstrapApp();
+    }
 };
 
 

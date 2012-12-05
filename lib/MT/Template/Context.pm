@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -165,6 +165,7 @@ sub var {
         elsif ( lc($1) eq 'config' ) {
             my $setting = $2;
             return '' if $setting =~ m/password/i;
+            return '' if $setting =~ m/secret/i;
             return MT->config($setting);
         }
         return '';
@@ -506,46 +507,59 @@ sub compile_category_filter {
     my $children = $param->{'children'} ? 1 : 0;
 
     if ($cat_expr) {
-        my @cols
-            = $cat_expr =~ m!/! ? qw(category_label_path label) : qw(label);
-        my %cats_used;
-        foreach my $col (@cols) {
-            my %cats_replaced;
-            @$cats
-                = sort { length( $b->$col ) <=> length( $a->$col ) } @$cats;
-
-            foreach my $cat (@$cats) {
-                next unless $cat;
-                my $catl  = $cat->$col;
-                my $catid = $cat->id;
-                my @cats  = ($cat);
-                my $repl;
-                if ($children) {
-                    my @kids = ($cat);
-                    while ( my $c = shift @kids ) {
-                        push @cats, $c;
-                        push @kids, ( $c->children_categories );
-                    }
-                    $repl = '';
-                    $repl .= '||' . '#' . $_->id for @cats;
-                    $repl = '(' . substr( $repl, 2 ) . ')';
+        # we got an expression, and a list of categories to try to fit in
+        my $use_ex_names = $cat_expr =~ m!/! ? 1 : 0;
+        my %cats_dir;
+        foreach my $cat (@$cats) {
+            my @ex_cat;
+            if ($children) {
+                my @kids = ($cat);
+                while ( my $c = shift @kids ) {
+                    push @ex_cat, $c;
+                    push @kids, ( $c->children_categories );
                 }
-                else {
-                    $repl = "#$catid";
-                }
-                if ( $cat_expr =~ s/(?<![#\d])(?:\Q$catl\E)/$repl/g ) {
-                    $cats_used{ $_->id } = $_ for @cats;
-                }
-
-                # for multi blog case
-                if ( $cats_replaced{$catl} ) {
-                    my $last_catid = $cats_replaced{$catl};
-                    $cat_expr =~ s/(#$last_catid\b)/($1 OR #$catid)/g;
-                    $cats_used{$catid} = $cat;
-                }
-                $cats_replaced{$catl} = $catid;
+            } 
+            else {
+                @ex_cat = ($cat);
             }
+            push @{ $cats_dir{ $cat->label } ||= [] }, @ex_cat;
+            next unless $use_ex_names;
+            next if $cat->label eq $cat->category_label_path;
+            push @{ $cats_dir{ $cat->category_label_path } ||= [] }, @ex_cat;
         }
+        my $new_expr = '';
+        my %cats_used;
+        my @split_expr = split /(\bOR\b|\bAND\b|\bNOT\b|\(|\))/i, $cat_expr;
+        foreach my $token (@split_expr) {
+            if (grep {lc $token eq $_} qw{OR AND NOT ( )}) {
+                $new_expr .= $token;
+                next;
+            }
+            if ($token =~ m/^\s*$/) {
+                $new_expr .= $token;
+                next;
+            }
+            my ($b_space) = $token =~ m/^(\s*)/;
+            my ($e_space) = $token =~ m/(\s*)$/;
+            substr($token, 0, length($b_space), '');
+            substr($token, -length($e_space), length($e_space), '') 
+                if length($e_space);
+            $new_expr .= $b_space;
+            if (not exists $cats_dir{$token}) {
+                $new_expr .= $token . $e_space;
+                next;
+            }
+            $cats_used{$_->id} = $_ foreach @{ $cats_dir{$token} };
+            if (1 == @{ $cats_dir{$token} }) {
+                $new_expr .= "#" . $cats_dir{$token}->[0]->id;
+            }
+            else {
+                my $str = join('||', map "#".$_->id, @{ $cats_dir{$token} });
+                $new_expr .= "($str)"
+            }
+            $new_expr .= $e_space;
+        }
+        $cat_expr = $new_expr;
         @$cats = values %cats_used;
 
         $cat_expr =~ s/\bAND\b/&&/gi;
@@ -768,8 +782,8 @@ sub _no_author_error {
     return $ctx->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of a author; "
-                . "perhaps you mistakenly placed it outside of an 'MTAuthors' "
-                . "container?",
+                . "Perhaps you mistakenly placed it outside of an 'MTAuthors' "
+                . "container tag?",
             $tag_name
         )
     );
@@ -782,7 +796,7 @@ sub _no_entry_error {
     return $_[0]->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of an entry; "
-                . "perhaps you mistakenly placed it outside of an 'MTEntries' container?",
+                . "Perhaps you mistakenly placed it outside of an 'MTEntries' container tag?",
             $tag_name
         )
     );
@@ -795,7 +809,7 @@ sub _no_website_error {
     return $_[0]->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of the website; "
-                . "perhaps you mistakenly placed it outside of an 'MTWebsites' container?",
+                . "Perhaps you mistakenly placed it outside of an 'MTWebsites' container tag?",
             $tag_name
         )
     );
@@ -808,7 +822,7 @@ sub _no_blog_error {
     return $_[0]->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of the blog; "
-                . "perhaps you mistakenly placed it outside of an 'MTBlogs' container?",
+                . "Perhaps you mistakenly placed it outside of an 'MTBlogs' container tag?",
             $tag_name
         )
     );
@@ -821,8 +835,8 @@ sub _no_comment_error {
     return $ctx->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of a comment; "
-                . "perhaps you mistakenly placed it outside of an 'MTComments' "
-                . "container?",
+                . "Perhaps you mistakenly placed it outside of an 'MTComments' "
+                . "container tag?",
             $tag_name
         )
     );
@@ -835,8 +849,8 @@ sub _no_ping_error {
     return $ctx->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of "
-                . "a ping; perhaps you mistakenly placed it outside "
-                . "of an 'MTPings' container?",
+                . "a ping; Perhaps you mistakenly placed it outside "
+                . "of an 'MTPings' container tag?",
             $tag_name
         )
     );
@@ -849,7 +863,7 @@ sub _no_asset_error {
     return $ctx->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of an asset; "
-                . "perhaps you mistakenly placed it outside of an 'MTAssets' container?",
+                . "Perhaps you mistakenly placed it outside of an 'MTAssets' container tag?",
             $tag_name
         )
     );
@@ -863,7 +877,7 @@ sub _no_page_error {
     return $ctx->error(
         MT->translate(
             "You used an '[_1]' tag outside of the context of a page; "
-                . "perhaps you mistakenly placed it outside of a 'MTPages' container?",
+                . "Perhaps you mistakenly placed it outside of a 'MTPages' container tag?",
             $tag_name
         )
     );

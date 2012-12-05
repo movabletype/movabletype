@@ -187,7 +187,7 @@ TC.attachLoadEvent( init );
     </mt:if>
     <div class="asset-metadata">
       <ul class="metadata">
-        <li class="metadata-item asset-name"><strong><__trans phrase="File Name">:</strong><mt:var name="file_name"></li>
+        <li class="metadata-item asset-name"><strong><__trans phrase="File Name">:</strong><mt:var name="file_name" escape="html"></li>
         <li class="metadata-item asset-type"><strong><__trans phrase="Type">:</strong><mt:var name="asset_class_label" escape="html"></li>
         <li class="metadata-item asset-size">
           <strong><__trans phrase="Dimensions">:</strong>
@@ -234,7 +234,7 @@ TC.attachLoadEvent( init );
            id="asset-url"
            label_class="top-label"
            label="<__trans phrase="Embed Asset">">
-          <input type="text" readonly="readonly" name="asset-url" id="asset-url" class="text full" value="<mt:var name="url" escape="html">" />
+          <input type="text" readonly="readonly" name="asset-url" id="asset-url" class="text full readonly" value="<mt:var name="url" escape="html">" />
         </mtapp:setting>
       </mt:unless>
     </div>

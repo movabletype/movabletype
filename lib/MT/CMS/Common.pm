@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -25,6 +25,9 @@ sub save {
     if ( my $hdlrs = $app->handlers_for_mode($save_mode) ) {
         return $app->forward($save_mode);
     }
+
+    return $app->errtrans("Invalid request.")
+        if is_disabled_mode( $app, 'save', $type );
 
     my $id = $q->param('id');
     $q->param( 'allow_pings', 0 )
@@ -131,6 +134,12 @@ sub save {
         )
         )
     {
+        if ($values{site_path} and 
+            $values{site_path} =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)!)
+        {
+            return $app->errtrans("Invalid request.");
+        }
+
         unless ( $obj->id ) {
             my $subdomain = $q->param('site_url_subdomain');
             $subdomain = '' if !$q->param('use_subdomain');
@@ -140,7 +149,8 @@ sub save {
             $values{site_url} = "$subdomain/::/$path";
 
             $values{site_path} = $app->param('site_path_absolute')
-                if $app->param('use_absolute')
+                if ! $app->config->BaseSitePath
+                    && $app->param('use_absolute')
                     && $app->param('site_path_absolute');
         }
 
@@ -152,8 +162,7 @@ sub save {
                 delete $values{site_path};
                 delete $values{archive_url};
                 delete $values{archive_path};
-                delete $values{site_path_absolute}
-                    if $values{site_path_absolute};
+                delete $values{site_path_absolute};
             }
             if ( $id && !( $perms->can_do('save_blog_config') ) ) {
                 delete $values{$_} foreach grep {
@@ -181,6 +190,24 @@ sub save {
                     foreach grep { $_ ne 'site_path' && $_ ne 'site_url' }
                     @$names;
             }
+        }
+        if ($values{site_path} and $app->config->BaseSitePath) {
+            my $l_path = $app->config->BaseSitePath;
+            my $s_path = $values{site_path};
+            # making sure that we have a '/' in the end of the paths
+            $l_path = File::Spec->catdir($l_path, "PATH");
+            $l_path =~ s/PATH$//;
+            $s_path = File::Spec->catdir($s_path, "PATH");
+            $s_path =~ s/PATH$//;
+
+            if ( 0 != index( $s_path, $l_path ) ) {
+                return $app->errtrans("The website root directory must be within [_1]", $l_path);
+            }
+        }
+        if ($values{site_path} 
+            and not File::Spec->file_name_is_absolute($values{site_path}) )
+        {
+            return $app->errtrans("Invalid request.");
         }
     }
 
@@ -379,6 +406,11 @@ sub save {
                 }
             );
         }
+        if ($id) {
+            my $cache_key = $original->get_cache_key();
+            require MT::Cache::Negotiate;
+            MT::Cache::Negotiate->new()->delete( $cache_key );
+         }
     }
 
     # TODO: convert this to use $app->call_return();
@@ -495,11 +527,13 @@ sub save {
 
     $app->add_return_arg( 'id' => $obj->id ) if !$original->id;
     $app->add_return_arg( 'saved' => 1 );
+    $app->add_return_arg(
+        ( $original->id ? 'saved_changes' : 'saved_added' ) => 1 );
     $app->call_return;
 }
 
 sub edit {
-    my $app  = shift;
+    my $app = shift;
 
     my $q    = $app->param;
     my $type = $q->param('_type');
@@ -515,6 +549,9 @@ sub edit {
     if ( my $hdlrs = $app->handlers_for_mode($edit_mode) ) {
         return $app->forward( $edit_mode, @_ );
     }
+
+    return $app->errtrans("Invalid request.")
+        if is_disabled_mode( $app, 'edit', $type );
 
     my %param = eval { $_[0] ? %{ $_[0] } : (); };
     die Carp::longmess if $@;
@@ -586,6 +623,9 @@ sub edit {
             return $class->load($id) || undef;
         }
     );
+
+    $app->run_callbacks( 'cms_object_scope_filter.' . $type, $app, $id )
+        || return $app->return_to_dashboard( redirect => 1 );
 
     if ( !$author->is_superuser ) {
         $app->run_callbacks( 'cms_view_permission_filter.' . $type,
@@ -687,7 +727,14 @@ sub edit {
         require MT::Theme;
         my $themes = MT::Theme->load_all_themes;
         $param{theme_loop} = [
-            map { { key => $_->{id}, label => $_->label, } }
+            map {
+                my ( $errors, $warnings ) = $_->validate_versions;
+                {   key      => $_->{id},
+                    label    => $_->label,
+                    errors   => @$errors ? $errors : undef,
+                    warnings => @$warnings ? $warnings : undef,
+                }
+                }
                 grep {
                        !defined $_->{class}
                     || $_->{class} eq 'both'
@@ -695,6 +742,10 @@ sub edit {
                 } values %$themes
         ];
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
+        my $limit = File::Spec->catdir($cfg->BaseSitePath, 'PATH');
+        $limit =~ s/PATH$//;
+        $param{'sitepath_limited_trail'} = $limit;
+        $param{'sitepath_limited'} = $cfg->BaseSitePath;
     }
 
     my $res = $app->run_callbacks( 'cms_edit.' . $type, $app, $id, $obj,
@@ -735,6 +786,19 @@ sub edit {
     $param{search_label} ||= $class->class_label;
     $param{screen_id}    ||= "edit-$type";
     $param{screen_class} .= " edit-$type";
+
+    # If this object came from non core component,
+    # set component for template loading
+    my @compo = MT::Component->select;
+    my $component;
+    foreach my $c (@compo) {
+        my $r = $c->registry( 'object_types' => $type );
+        if ($r) {
+            $component = $c->id;
+            last;
+        }
+    }
+    local $app->{component} = $component if $component;
     return $app->load_tmpl( $tmpl_file, \%param );
 }
 
@@ -767,13 +831,20 @@ sub list {
     } MT::Component->select;
 
     my @list_headers;
-    push @list_headers,
-        File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
+    my $core_include
+        = File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
         'listing', $type . '_list_header.tmpl' );
+    push @list_headers,
+        {
+        filename  => $core_include,
+        component => 'Core'
+        }
+        if -e $core_include;
+
     for my $c (@list_components) {
         my $f = File::Spec->catfile( $c->path, 'tmpl', 'listing',
             $type . '_list_header.tmpl' );
-        push @list_headers, $f if -e $f;
+        push @list_headers, { filename => $f, component => $c->id } if -e $f;
     }
 
     my $screen_settings = MT->registry( listing_screens => $type )
@@ -964,7 +1035,6 @@ sub list {
     my @list_columns;
     for my $prop ( values %$list_props ) {
         next if !$prop->can_display($scope);
-        my $col;
         my $id = $prop->id;
         my $disp = $prop->display || 'optional';
         my $show
@@ -973,19 +1043,24 @@ sub list {
             : scalar %cols ? $cols{$id}
             : $disp eq 'default' ? 1
             :                      0;
+
         my $force   = $disp eq 'force'   ? 1 : 0;
         my $default = $disp eq 'default' ? 1 : 0;
         my @subfields;
 
         if ( my $subfields = $prop->sub_fields ) {
             for my $sub (@$subfields) {
+                my $sdisp = $sub->{display} || 'optional';
                 push @subfields,
                     {
-                    display => $cols{ $id . '.' . $sub->{class} }
-                        || $sub->{display} eq 'default',
+                      display => $sdisp eq 'force' ? 1
+                    : $sdisp eq 'none' ? 0
+                    : scalar %cols ? $cols{ $id . '.' . $sub->{class} }
+                    : $sdisp eq 'default' ? 1
+                    : 0,
                     class      => $sub->{class},
                     label      => $app->translate( $sub->{label} ),
-                    is_default => $sub->{display} eq 'default' ? 1 : 0,
+                    is_default => $sdisp eq 'default' ? 1 : 0,
                     };
             }
         }
@@ -1144,7 +1219,24 @@ sub list {
         $param{search_label} = MT->translate('Entries');
     }
 
-    my $template = $screen_settings->{template} || 'list_common.tmpl';
+    my $template = $screen_settings->{template};
+    my $component;
+    if ($template) {
+
+        # If this object came from non core component,
+        # set component for template loading
+        my @compo = MT::Component->select;
+        foreach my $c (@compo) {
+            my $r = $c->registry( 'object_types' => $type );
+            if ($r) {
+                $component = $c->id;
+                last;
+            }
+        }
+    }
+    else {
+        $template = 'list_common.tmpl';
+    }
 
     my $feed_link = $screen_settings->{feed_link};
     $feed_link = $feed_link->($app)
@@ -1173,6 +1265,7 @@ sub list {
         }
         if $MT::DebugMode;
 
+    local $app->{component} = $component if $component;
     my $tmpl = $app->load_tmpl( $template, \%param )
         or return;
     $app->run_callbacks( 'list_template_param.' . $type,
@@ -1239,6 +1332,47 @@ sub filtered_list {
             }
             return $app->json_error( $app->translate('Invalid request') );
         }
+    }
+
+    # Validate scope
+    if ( my $view = $setting->{view} ) {
+        $view = [$view] unless ref $view;
+        my %view = map { $_ => 1 } @$view;
+        if ( !$view{$scope} ) {
+            return $app->return_to_dashboard( redirect => 1, );
+        }
+    }
+
+    # Permission check
+    if ( defined $setting->{permission}
+        && !$app->user->is_superuser() )
+    {
+        my $list_permission = $setting->{permission};
+        my $inherit_blogs   = 1;
+        if ( 'HASH' eq ref $list_permission ) {
+            $inherit_blogs = $list_permission->{inherit}
+                if defined $list_permission->{inherit};
+            $list_permission = $list_permission->{permit_action};
+        }
+        my $allowed  = 0;
+        my @act      = split /\s*,\s*/, $list_permission;
+        my $blog_ids = undef;
+        if ($blog_id) {
+            push @$blog_ids, $blog_id;
+            if ( $scope eq 'website' && $inherit_blogs ) {
+                push @$blog_ids, $_->id foreach @{ $app->blog->blogs() };
+            }
+        }
+        foreach my $p (@act) {
+            $allowed = 1, last
+                if $app->user->can_do(
+                $p,
+                at_least_one => 1,
+                ( $blog_ids ? ( blog_id => $blog_ids ) : () )
+                );
+        }
+        return $app->permission_denied()
+            unless $allowed;
     }
 
     my $class = $setting->{datasource} || MT->model($ds);
@@ -1404,7 +1538,8 @@ sub filtered_list {
             elsif ( $prop->has('html_link') ) {
                 for my $obj (@$objs) {
                     my $link = $prop->html_link( $obj, $app, \%load_options );
-                    my $raw = MT::Util::encode_html($prop->raw( $obj, $app, \%load_options ));
+                    my $raw = MT::Util::encode_html(
+                        $prop->raw( $obj, $app, \%load_options ) );
                     push @result,
                         ( $link ? qq{<a href="$link">$raw</a>} : $raw );
                 }
@@ -1521,6 +1656,9 @@ sub delete {
         return $app->forward($delete_mode);
     }
 
+    return $app->errtrans("Invalid request.")
+        if is_disabled_mode( $app, 'delete', $type );
+
     my $parent  = $q->param('parent');
     my $blog_id = $q->param('blog_id');
     my $class   = $app->model($type) or return;
@@ -1614,7 +1752,7 @@ sub delete {
                 require MT::Placement;
                 my $blog = MT::Blog->load($blog_id)
                     or return $app->error(
-                    $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+                    $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
                 my $at = $blog->archive_type;
                 if ( $at && $at ne 'None' ) {
                     my @at = split /,/, $at;
@@ -1661,20 +1799,9 @@ sub delete {
             }
         }
         elsif ( $type eq 'author' ) {
-            if ( $app->config->ExternalUserManagement ) {
-                require MT::LDAP;
-                my $ldap = MT::LDAP->new
-                    or return $app->error(
-                    MT->translate(
-                        "Loading MT::LDAP failed: [_1].",
-                        MT::LDAP->errstr
-                    )
-                    );
-                my $dn = $ldap->get_dn( $obj->name );
-                if ($dn) {
-                    $return_arg{author_ldap_found} = 1;
-                }
-            }
+            $app->run_callbacks( 'cms_delete_ext_author_filter',
+                $app, $obj, \%return_arg )
+                || return;
         }
         elsif ( $type eq 'website' ) {
             my $blog_class = $app->model('blog');
@@ -1684,24 +1811,26 @@ sub delete {
                 next;
             }
         }
+        elsif ( $type eq 'template' ) {
+            my $cache_key = $obj->get_cache_key();
+            require MT::Cache::Negotiate;
+            MT::Cache::Negotiate->new()->delete( $cache_key );
+            # FIXME: enumeration of types
+            if ($obj->type
+                !~ /(custom|index|archive|page|individual|category|widget|backup)/)
+            {
+                $required_items++;
+                next;
+            }
+        }
 
-        # FIXME: enumeration of types
-        if (   $type eq 'template'
-            && $obj->type
-            !~ /(custom|index|archive|page|individual|category|widget|backup)/o
-            )
-        {
-            $required_items++;
-        }
-        else {
-            $obj->remove
-                or return $app->errtrans(
-                'Removing [_1] failed: [_2]',
-                $app->translate($type),
-                $obj->errstr
-                );
-            $app->run_callbacks( 'cms_post_delete.' . $type, $app, $obj );
-        }
+        $obj->remove
+            or return $app->errtrans(
+            'Removing [_1] failed: [_2]',
+            $app->translate($type),
+            $obj->errstr
+            );
+        $app->run_callbacks( 'cms_post_delete.' . $type, $app, $obj );
         $delete_count++;
     }
 
@@ -1742,7 +1871,7 @@ sub delete {
     }
     if ($required_items) {
         $return_arg{error}
-            = $app->translate("System templates can not be deleted.");
+            = $app->translate("System templates cannot be deleted.");
     }
 
     if ( $app->param('xhr') ) {
@@ -1858,25 +1987,23 @@ sub list_revision {
     my $id    = $q->param('id');
     my $rn    = $q->param('r');
 
-    $id =~ s/\D//g;
-    my $obj = $class->load($id)
-        or return $app->error(
-        $app->translate(
-            'Can\'t load [_1] #[_1].', $class->class_label, $id
-        )
-        );
-    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
-    my $author = $app->user;
-    return $app->permission_denied()
-        if $type eq 'entry'
-        ? (     $obj->author_id == $author->id
-                ? !$app->can_do('edit_own_entry')
-                : !$app->can_do('edit_all_entries')
-            )
-        : $type eq 'page'     ? !$app->can_do('edit_all_pages')
-        : $type eq 'template' ? !$app->can_do('edit_templates')
-        : 0;
+    return $app->errtrans('Invalid request')
+        unless $class->isa('MT::Revisable');
 
+    $id =~ s/\D//g;
+    require MT::Promise;
+    my $obj_promise = MT::Promise::delay(
+        sub {
+            return $class->load($id) || undef;
+        }
+    );
+
+    $app->run_callbacks( 'cms_view_permission_filter.' . $type,
+        $app, $id, $obj_promise )
+        || return $app->permission_denied();
+
+    my $obj = $obj_promise->force();
+    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
     my $js
         = "parent.location.href='"
         . $app->uri
@@ -1909,6 +2036,7 @@ sub list_revision {
     );
 }
 
+# Currently, not in use.
 sub save_snapshot {
     my $app   = shift;
     my $q     = $app->param;
@@ -2018,6 +2146,26 @@ sub save_snapshot {
 sub empty_dialog {
     my $app = shift;
     $app->build_page('dialog/empty_dialog.tmpl');
+}
+
+sub is_disabled_mode {
+    my $app = shift;
+    my ( $mode, $type ) = @_;
+
+    my $res;
+    if ( my $reg = $app->registry( 'disable_object_methods', $type ) ) {
+        if ( defined $reg->{$mode} ) {
+            if ( 'CODE' eq ref $reg->{$mode} ) {
+                my $code = $reg->{$mode};
+                $code = MT->handler_to_coderef($code);
+                $res  = $code->();
+            }
+            else {
+                $res = $reg->{$mode};
+            }
+        }
+    }
+    return $res;
 }
 
 1;

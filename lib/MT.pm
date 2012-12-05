@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -8,6 +8,7 @@ package MT;
 
 use strict;
 use base qw( MT::ErrorHandler );
+use filetest 'access';
 use File::Spec;
 use File::Basename;
 use MT::Util qw( weaken );
@@ -15,8 +16,8 @@ use MT::I18N qw( const );
 
 our ( $VERSION, $SCHEMA_VERSION );
 our (
-    $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION,
-    $VERSION_ID,   $PORTAL_URL
+    $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
+    $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL
 );
 our ( $MT_DIR, $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX );
 our (
@@ -32,14 +33,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '5.12', '5.0024' );
-    (   $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION,
-        $VERSION_ID,   $PORTAL_URL
+    ( $VERSION, $SCHEMA_VERSION ) = ( '5.2', '5.0034' );
+    (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
+        $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
-        '__PRODUCT_NAME__', 'MT',
-        '5.12',              '__PRODUCT_VERSION_ID__',
-        '__PORTAL_URL__'
+        '__PRODUCT_NAME__',   'MT',
+        '5.2.1',                '__PRODUCT_VERSION_ID__',
+        '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
   # To allow MT to run straight from svn, if no build process (pre-processing)
@@ -52,6 +53,10 @@ BEGIN {
     }
     if ( $VERSION_ID eq '__PRODUCT_VERSION' . '_ID__' ) {
         $VERSION_ID = $PRODUCT_VERSION;
+    }
+
+    if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
+        $RELEASE_NUMBER = 1;
     }
 
     $DebugMode = 0;
@@ -90,6 +95,7 @@ sub product_code    {$PRODUCT_CODE}
 sub product_name    {$PRODUCT_NAME}
 sub product_version {$PRODUCT_VERSION}
 sub schema_version  {$SCHEMA_VERSION}
+sub release_number  {$RELEASE_NUMBER}
 
 sub portal_url {
     if ( my $url = const('PORTAL_URL') ) {
@@ -113,7 +119,7 @@ sub version_slug {
     return MT->translate_templatized(<<"SLUG");
 <__trans phrase="Powered by [_1]" params="$PRODUCT_NAME">
 <__trans phrase="Version [_1]" params="$VERSION_ID">
-<__trans phrase="http://www.sixapart.com/movabletype/">
+<__trans phrase="http://www.movabletype.com/">
 SLUG
 }
 
@@ -323,6 +329,7 @@ sub construct {
     sub model {
         my $pkg = shift;
         my ($k) = @_;
+
         $object_types{$k} = $_[1] if scalar @_ > 1;
         return $object_types{$k} if exists $object_types{$k};
 
@@ -563,14 +570,14 @@ sub add_callback {
         }
         elsif ( !UNIVERSAL::isa( $plugin, "MT::Component" ) ) {
             return $class->trans_error(
-                "If present, 3rd argument to add_callback must be an object of type MT::Component or MT::Plugin"
+                "If it is present, the third argument to add_callback must be an object of type MT::Component or MT::Plugin"
             );
         }
     }
     if ( ( ref $code ) ne 'CODE' ) {
         if ( ref $code ) {
             return $class->trans_error(
-                '4th argument to add_callback must be a CODE reference.');
+                'Fourth argument to add_callback must be a CODE reference.');
         }
         else {
 
@@ -649,9 +656,7 @@ sub run_callback {
     my ( $cb, @args ) = @_;
 
     $cb->error();    # reset the error string
-    my $result = eval {
-        $cb->invoke(@args);
-    };
+    my $result = eval { $cb->invoke(@args); };
     if ( my $err = $@ ) {
         $cb->error($err);
         my $plugin = $cb->{plugin};
@@ -822,7 +827,7 @@ sub init_config {
         my $cfg_file = $mt->find_config($param);
 
         return $mt->error(
-            "Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?"
+            "Missing configuration file. Did you forgot to move mt-config.cgi-original to mt-config.cgi?"
         ) unless $cfg_file;
         $cfg_file = File::Spec->rel2abs($cfg_file);
         $mt->{cfg_file} = $cfg_file;
@@ -971,8 +976,8 @@ sub init_config {
 
         my $first_write = !-f $log_file;
 
-        open my $PERFLOG, ">>", $log_file 
-            or (warn("Failed to open preflog $log_file"), return);
+        open my $PERFLOG, ">>", $log_file
+            or ( warn("Failed to open preflog $log_file"), return );
         require Fcntl;
         flock( $PERFLOG, Fcntl::LOCK_EX() );
 
@@ -1003,7 +1008,9 @@ sub init_config {
             }
             my ( $drname, $drh ) = each %DBI::installed_drh;
             print $PERFLOG "# Database Library: DBI/"
-                . $DBI::VERSION . "; DBD/" . $drh->{Version} . "\n";
+                . $DBI::VERSION
+                . "; DBD/"
+                . $drh->{Version} . "\n";
             if ( $ENV{MOD_PERL} ) {
                 print $PERFLOG "# App Mode: mod_perl\n";
             }
@@ -1167,13 +1174,8 @@ sub init_core {
     return 1;
 }
 
-sub init_lang_defaults {
-    my $mt        = shift;
-    my $cfg       = $mt->config;
-    my $was_dirty = $cfg->is_dirty;
-    $cfg->DefaultLanguage('en_US') unless $cfg->DefaultLanguage;
-
-    my %lang_settings = (
+sub i18n_default_settings {
+    my %settings = (
         'NewsboxURL'         => 'NEWSBOX_URL',
         'SupportURL'         => 'SUPPORT_URL',
         'NewsURL'            => 'NEWS_URL',
@@ -1184,22 +1186,26 @@ sub init_lang_defaults {
         'LogExportEncoding'  => 'LOG_EXPORT_ENCODING',
         'CategoryNameNodash' => 'CATEGORY_NAME_NODASH',
         'PublishCharset'     => 'PUBLISH_CHARSET',
+        'FeedbackURL'        => 'FEEDBACK_URL',
     );
 
-    foreach my $setting ( keys %lang_settings ) {
-        my $const    = $lang_settings{$setting};
-        my $value    = $cfg->$setting;
-        my $i18n_val = const($const);
-        if ( !$value ) {
-            $cfg->$setting( $i18n_val, 1 );
-        }
-        elsif (( $value eq $cfg->default($setting) )
-            && ( $value ne $i18n_val ) )
-        {
-            $cfg->$setting( $i18n_val, 1 );
-        }
+    foreach my $key ( keys %settings ) {
+        $settings{$key} = const( $settings{$key} );
     }
-    $cfg->clear_dirty unless $was_dirty;
+
+    \%settings;
+}
+
+sub init_lang_defaults {
+    my $mt  = shift;
+    my $cfg = $mt->config;
+    $cfg->DefaultLanguage('en_US') unless $cfg->DefaultLanguage;
+
+    my $settings = $mt->i18n_default_settings;
+    foreach my $key ( keys %$settings ) {
+        $cfg->default( $key, $settings->{$key} );
+    }
+
     return 1;
 }
 
@@ -1248,17 +1254,23 @@ sub init_debug_mode {
     }
 }
 
-sub init_callbacks {
-    my $mt = shift;
-    MT->_register_core_callbacks(
-        {   'build_file_filter' =>
-                sub { MT->publisher->queue_build_file_filter(@_) },
-            'cms_upload_file' => \&core_upload_file_to_sync,
-            'api_upload_file' => \&core_upload_file_to_sync,
-            'post_init' =>
-                '$Core::MT::Summary::Triggers::post_init_add_triggers',
-        }
-    );
+{
+    my $callbacks_added;
+
+    sub init_callbacks {
+        my $mt = shift;
+        return if $callbacks_added;
+        MT->_register_core_callbacks(
+            {   'build_file_filter' =>
+                    sub { MT->publisher->queue_build_file_filter(@_) },
+                'cms_upload_file' => \&core_upload_file_to_sync,
+                'api_upload_file' => \&core_upload_file_to_sync,
+                'post_init' =>
+                    '$Core::MT::Summary::Triggers::post_init_add_triggers',
+            }
+        );
+        $callbacks_added = 1;
+    }
 }
 
 sub core_upload_file_to_sync {
@@ -1385,16 +1397,14 @@ sub init_plugins {
                 && !$PluginSwitch->{$plugin_sig} )
             )
         {
-            $Plugins{$plugin_sig}{full_path}
-                = $plugin_full_path;
-            $Plugins{$plugin_sig}{enabled} = 0;
+            $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
+            $Plugins{$plugin_sig}{enabled}   = 0;
             return 0;
         }
         return 0 if exists $Plugins{$plugin_sig};
         $Plugins{$plugin_sig}{full_path} = $plugin_full_path;
         $timer->pause_partial if $timer;
-        eval "# line " . __LINE__ . " " . __FILE__
-            . "\nrequire '$plugin';";
+        eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin';";
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
         if ($@) {
             $Plugins{$plugin_sig}{error} = $@;
@@ -1406,8 +1416,7 @@ sub init_plugins {
                 require MT::Log;
                 $mt->log(
                     {   message => $mt->translate(
-                            "Plugin error: [_1] [_2]",
-                            $plugin,
+                            "Plugin error: [_1] [_2]", $plugin,
                             $Plugins{$plugin_sig}{error}
                         ),
                         class    => 'system',
@@ -1433,15 +1442,15 @@ sub init_plugins {
         }
         $Plugins{$plugin_sig}{enabled} = 1;
         return 1;
-    };
-    
+    }
+
     sub __load_plugin_with_yaml {
-        my ($use_plugins, $PluginSwitch, $plugin_dir) = @_;
+        my ( $use_plugins, $PluginSwitch, $plugin_dir ) = @_;
         my $pclass
             = $plugin_dir =~ m/\.pack$/
             ? 'MT::Component'
             : 'MT::Plugin';
-        
+
         # Don't process disabled plugin config.yaml files.
         if ($pclass eq 'MT::Plugin'
             && (!$use_plugins
@@ -1451,7 +1460,7 @@ sub init_plugins {
             )
         {
             $Plugins{$plugin_dir}{full_path} = $plugin_full_path;
-            $Plugins{$plugin_dir}{enabled} = 0;
+            $Plugins{$plugin_dir}{enabled}   = 0;
             return;
         }
         return if exists $Plugins{$plugin_dir};
@@ -1463,13 +1472,13 @@ sub init_plugins {
                 envelope => $plugin_envelope
             }
         );
-        
+
         # rebless? based on config?
         local $plugin_sig = $plugin_dir;
         MT->add_plugin($p);
         $p->init_callbacks();
     }
-    
+
     sub _init_plugins_core {
         my $mt = shift;
         my ( $PluginSwitch, $use_plugins, $PluginPaths ) = @_;
@@ -1494,26 +1503,28 @@ sub init_plugins {
                         = File::Spec->catfile( $PluginPath, $plugin );
                     if ( -f $plugin_full_path ) {
                         $plugin_envelope = $plugin_lastdir;
-                        __load_plugin($mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin )
+                        __load_plugin( $mt, $timer, $PluginSwitch,
+                            $use_plugins, $plugin_full_path, $plugin )
                             if $plugin_full_path =~ /\.pl$/;
                         next;
                     }
-                    
+
                     my $plugin_dir = $plugin;
                     $plugin_envelope = "$plugin_lastdir/" . $plugin;
 
-
                     foreach my $lib (qw(lib extlib)) {
-                        my $plib = File::Spec->catdir( $plugin_full_path,
-                            $lib );
+                        my $plib
+                            = File::Spec->catdir( $plugin_full_path, $lib );
                         unshift @INC, $plib if -d $plib;
                     }
 
                     # handle config.yaml
-                    my $yaml = File::Spec->catdir( $plugin_full_path, 'config.yaml' );
+                    my $yaml = File::Spec->catdir( $plugin_full_path,
+                        'config.yaml' );
 
                     if ( -f $yaml ) {
-                        __load_plugin_with_yaml($use_plugins, $PluginSwitch, $plugin_dir);
+                        __load_plugin_with_yaml( $use_plugins, $PluginSwitch,
+                            $plugin_dir );
                         next;
                     }
 
@@ -1528,11 +1539,12 @@ sub init_plugins {
                     for my $plugin (@plugins) {
                         next if $plugin !~ /\.pl$/;
                         my $plugin_file
-                            = File::Spec->catfile( $plugin_full_path, $plugin );
+                            = File::Spec->catfile( $plugin_full_path,
+                            $plugin );
                         if ( -f $plugin_file ) {
-                            __load_plugin(
-                                $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $plugin_dir . '/' . $plugin
-                            );
+                            __load_plugin( $mt, $timer, $PluginSwitch,
+                                $use_plugins, $plugin_file,
+                                $plugin_dir . '/' . $plugin );
                         }
                     }
                 }
@@ -1651,7 +1663,7 @@ sub ping {
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
         $blog = MT::Blog->load($blog_id)
-            or return $mt->trans_error( "Load of blog '[_1]' failed: [_2]",
+            or return $mt->trans_error( "Loading of blog '[_1]' failed: [_2]",
             $blog_id, MT::Blog->errstr );
     }
 
@@ -1729,21 +1741,8 @@ sub ping {
             push @tb_domains, MT::Util::extract_domains( $b->site_url );
         }
     }
-    my $tb_domains;
-    if (@tb_domains) {
-        $tb_domains = '';
-        my %seen;
-        local $_;
-        foreach (@tb_domains) {
-            next unless $_;
-            $_ = lc($_);
-            next if $seen{$_};
-            $tb_domains .= '|' if $tb_domains ne '';
-            $tb_domains .= quotemeta($_);
-            $seen{$_} = 1;
-        }
-        $tb_domains = '(' . $tb_domains . ')' if $tb_domains;
-    }
+    my $tb_domains = join '|', map { lc quotemeta $_ } @tb_domains;
+    $tb_domains = qr/(?:^|\.)$tb_domains$/ if $tb_domains;
 
     ## Send TrackBack pings.
     if ( my $entry = $param{Entry} ) {
@@ -1773,7 +1772,7 @@ sub ping {
             $url =~ s/\s*$//;
             my $url_domain;
             ($url_domain) = MT::Util::extract_domains($url);
-            next if $tb_domains && lc($url_domain) !~ m/$tb_domains$/;
+            next if $tb_domains && ( lc($url_domain) !~ $tb_domains );
 
             my $req = HTTP::Request->new( POST => $url );
             $req->content_type(
@@ -2143,7 +2142,7 @@ sub support_directory_path {
     my $app  = shift;
     my $path = $app->config('SupportDirectoryPath');
     if ($path) {
-        if ( $path !~ m{^/} ) {
+        if ( $path !~ m{^/|^[a-zA-Z]:\\|^\\\\[a-zA-Z0-9\.]+} ) {
             return File::Spec->catdir( $app->path, $path );
         }
         return $path;
@@ -2156,7 +2155,6 @@ sub support_directory_path {
 sub template_paths {
     my $mt = shift;
     my @paths;
-    my $path = $mt->config->TemplatePath;
     if ( $mt->{plugin_template_path} ) {
         if (File::Spec->file_name_is_absolute( $mt->{plugin_template_path} ) )
         {
@@ -2176,7 +2174,8 @@ sub template_paths {
             }
         }
     }
-    if ( my $alt_path = $mt->config->AltTemplatePath ) {
+    my @alt_paths = $mt->config('AltTemplatePath');
+    foreach my $alt_path (@alt_paths ) {
         if ( -d $alt_path ) {    # AltTemplatePath is absolute
             push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} )
                 if $mt->{template_dir};
@@ -2191,6 +2190,7 @@ sub template_paths {
         push @paths, File::Spec->catdir( $addon->{path}, 'tmpl' );
     }
 
+    my $path = $mt->config->TemplatePath;
     push @paths, File::Spec->catdir( $path, $mt->{template_dir} )
         if $mt->{template_dir};
     push @paths, $path;
@@ -2243,7 +2243,7 @@ sub load_global_tmpl {
 
 sub load_tmpl {
     my $mt = shift;
-    if ( exists( $mt->{component} ) && ( $mt->{component} ne 'Core' ) ) {
+    if ( exists( $mt->{component} ) && ( lc($mt->{component}) ne 'core' ) ) {
         if ( my $c = $mt->component( $mt->{component} ) ) {
             return $c->load_tmpl(@_);
         }
@@ -2289,16 +2289,18 @@ sub load_tmpl {
 }
 
 sub _svn_revision {
-    my $mt = shift;
+    my $mt      = shift;
     my $wc_base = $mt->mt_dir;
     return unless -d File::Spec->catdir( $wc_base, '.git' );
 
     # Currently, we are on the Github.
-    return 
-        unless (-e $wc_base && open my $fh, '-|', "git status");
+    return
+        unless ( -e $wc_base && open my $fh, '-|', "git status" );
 
     my $revision = '';
-    if (-e $wc_base && open my $fh, '-|', "git log --pretty=format:'' | wc -l") {
+    if ( -e $wc_base && open my $fh,
+        '-|', "git log --pretty=format:'' | wc -l" )
+    {
         $revision = do { local $/ = undef; <$fh> };
         chomp $revision;
         $revision =~ s/\s*(.*)/r$1/;
@@ -2306,17 +2308,17 @@ sub _svn_revision {
     }
 
     my $hash = '';
-    if (-e $wc_base && open my $fh, '-|', "git log -1 | grep commit") {
+    if ( -e $wc_base && open my $fh, '-|', "git log -1 | grep commit" ) {
         $hash = do { local $/ = undef; <$fh> };
         chomp $hash;
         if ( $hash =~ s/commit (.*)/$1/ ) {
-            $hash = substr($hash, 0, 8 );
+            $hash = substr( $hash, 0, 8 );
         }
         close $fh;
     }
 
     my $branch = '';
-    if (-e $wc_base && open my $fh, '-|', "git branch") {
+    if ( -e $wc_base && open my $fh, '-|', "git branch" ) {
         $branch = do { local $/ = undef; <$fh> };
         chomp $branch;
         if ( $branch =~ m/\*\s(.*)/ ) {
@@ -2342,16 +2344,21 @@ sub set_default_tmpl_params {
             $param->{mt_headers} = \%ENV;
         }
         unless ( $mt->{cookies} ) {
-            my $class = $ENV{MOD_PERL} ? 'Apache::Cookie' : 'CGI::Cookie';
-            eval "use $class;";
-            $mt->{cookies} = $class->fetch;
+            if ( $ENV{MOD_PERL} ) {
+                eval { require Apache::Cookie };
+                $mt->{cookies} = Apache::Cookie->fetch;
+            }
+            else {
+                eval { require CGI::Cookie };
+                $mt->{cookies} = CGI::Cookie->fetch;
+            }
         }
         if ( $mt->{cookies} ) {
             $param->{mt_cookies} = $mt->{cookies};
         }
         my %params = $mt->param_hash;
         $param->{mt_queries} = \%params;
-        if ( $param->{mt_debug} && 4 ) {
+        if ( $param->{mt_debug} & 4 ) {
             if ( my $profiler = Data::ObjectDriver->profiler ) {
                 my $stats = $profiler->statistics;
                 $param->{mt_sql_profile}{statistics} = $stats;
@@ -2424,7 +2431,7 @@ sub process_mt_template {
     @geis;
 
     # Strip out placeholder wrappers to facilitate tmpl_* callbacks
-    $body =~ s/<\/?MT_(\w+):(\w+)>//g;
+    $body =~ s/<\/?MT_\w+:\w+>//g;
     $body;
 }
 
@@ -2458,11 +2465,18 @@ sub build_page {
                 # if the component did not declare a label,
                 # it isn't wanting to be visible on the app footer.
                 next if $label eq $c->{plugin_sig};
+
+                my $pack_link
+                    = $c->pack_link ? $c->pack_link
+                    : $c->author_link       ? $c->author_link
+                    :                         '';
+
                 push @packs_installed,
                     {
                     label   => $label,
                     version => $c->version,
                     id      => $c->id,
+                    link    => $pack_link,
                     };
             }
         }
@@ -2583,6 +2597,8 @@ sub new_ua {
     $ua->max_size($max_size) if ( defined $max_size ) && $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
+    eval { require HTML::HeadParser; };
+    $ua->parse_head(0) if $@;
     if ( defined $proxy ) {
         $ua->proxy( http => $proxy );
         my @domains = split( /,\s*/, $no_proxy ) if $no_proxy;
@@ -2628,22 +2644,9 @@ sub build_email {
     return unless $tmpl;
 
     my $ctx = $tmpl->context;
-    $ctx->stash( 'blog_id', $blog->id )                 if $blog;
-    $ctx->stash( 'blog',    delete $param->{'blog'} )   if $param->{'blog'};
-    $ctx->stash( 'entry',   delete $param->{'entry'} )  if $param->{'entry'};
-    $ctx->stash( 'author',  delete $param->{'author'} ) if $param->{'author'};
-    $ctx->stash( 'commenter', delete $param->{'commenter'} )
-        if $param->{'commenter'};
-    $ctx->stash( 'comment', delete $param->{'comment'} )
-        if $param->{'comment'};
-    $ctx->stash( 'category', delete $param->{'category'} )
-        if $param->{'category'};
-    $ctx->stash( 'ping', delete $param->{'ping'} ) if $param->{'ping'};
-
-    foreach my $p (%$param) {
-        if ( ref($p) ) {
-            $tmpl->param( $p, $param->{$p} );
-        }
+    $ctx->stash( 'blog_id', $blog->id ) if $blog;
+    foreach my $name (qw{blog entry author commenter comment category ping}) {
+        $ctx->stash( $name, delete $param->{$name} ) if $param->{$name};
     }
 
     my $out = $mt->build_page_in_mem( $tmpl, $param );
@@ -2651,7 +2654,7 @@ sub build_email {
     require MT::Log;
     $mt->log(
         {   message => $mt->translate(
-                "Error during building email: [_1]",
+                "Error while creating email: [_1]",
                 $mt->errstr
             ),
             class    => 'system',
@@ -2749,8 +2752,12 @@ sub _commenter_auth_params {
 }
 
 sub _openid_commenter_condition {
-    eval "require Digest::SHA1;";
-    return $@ ? 0 : 1;
+    my ( $blog, $reason ) = @_;
+    eval { require Digest::SHA1; };
+    return 1 unless $@;
+    $$reason = MT->translate(
+        'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.');
+    return 0;
 }
 
 sub core_commenter_authenticators {
@@ -2791,11 +2798,18 @@ sub core_commenter_authenticators {
             class      => 'MT::Auth::GoogleOpenId',
             login_form => 'comment/auth_googleopenid.tmpl',
             condition  => sub {
-                eval "require Digest::SHA1;";
-                return 0 if $@;
-                eval "require Crypt::SSLeay;";
-                return 0 if $@;
-                return 1;
+                my ( $blog, $reason ) = @_;
+                my @missing;
+                eval { require Digest::SHA1; };
+                push @missing, 'Digest::SHA1' if $@;
+                eval { require Crypt::SSLeay; };
+                push @missing, 'Crypt::SSLeay' if $@;
+                return 1 unless @missing;
+                $$reason = MT->translate(
+                    'missing required Perl modules: [_1]',
+                    join(',', @missing)
+                    );
+                return 0;
             },
             login_form_params => \&_commenter_auth_params,
             logo              => 'images/comment/google.png',
@@ -4193,7 +4207,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2011 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2012 Six Apart.
 All rights reserved.
 
 =cut

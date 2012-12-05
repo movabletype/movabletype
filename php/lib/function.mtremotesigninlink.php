@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,7 +12,7 @@ function smarty_function_mtremotesigninlink($args, &$ctx) {
     $blog = $ctx->stash('blog');
     $auths = $blog->blog_commenter_authenticators;
     if (!preg_match('/TypeKey/', $auths)) {
-        return $ctx->error($ctx->mt->translate("TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can not be used."));
+        return $ctx->error($ctx->mt->translate("TypePad authentication is not enabled for this blog.  MTRemoteSignInLink cannot be used."));
     }
     $blog_id = $blog->blog_id;
     $token = 0;

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -32,7 +32,7 @@ sub mt_ping {
         require MT::Blog;
         $blog = MT::Blog->load($blog)
             or return $class->error(
-            MT->translate( 'Can\'t load blog #[_1].', $blog ) );
+            MT->translate( 'Cannot load blog #[_1].', $blog ) );
     }
     $class->ping_update( 'mtUpdates.ping', $blog, $url,
         $blog->mt_update_key );
@@ -45,9 +45,9 @@ sub ping_update {
         require MT::Blog;
         $blog = MT::Blog->load($blog)
             or return $class->error(
-            MT->translate( 'Can\'t load blog #[_1].', $blog ) );
+            MT->translate( 'Cannot load blog #[_1].', $blog ) );
     }
-    my $ua = MT->new_ua( { timeout => MT->config->PingTimeout } );
+    my $ua = MT->new_ua();
     my $req = HTTP::Request->new( 'POST', $url );
     $req->header( 'Content-Type' => 'text/xml' );
     my $blog_name = encode_xml( Encode::encode_utf8( $blog->name ) );

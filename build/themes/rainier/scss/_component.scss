@@ -1,0 +1,66 @@
+@import "clearfix";
+
+@mixin border-radius($params) {
+  @each $vendor in null {
+    #{$vendor}border-radius: $params;
+  }
+}
+
+@mixin box-shadow($params, $inset_params:null) {
+  @each $vendor in null {
+    #{$vendor}box-shadow: $params, $inset_params;
+  }
+}
+
+@mixin box-sizing($model:border-box) {
+  @each $vendor in -moz-, null {
+    #{$vendor}box-sizing: $model;
+  }
+}
+
+@mixin opacity($degree) {
+  $degree_num: ($degree * 100);
+  opacity: $degree;
+  -ms-filter: 'alpha(opacity = #{$degree_num})';
+  filter: alpha(opacity = $degree_num);
+}
+
+@mixin linear-gradient($start, $last) {
+  @each $vendor in -ms-, -moz-, -webkit-, null {
+    background-image: #{$vendor}linear-gradient($start, $last);
+  }
+}
+
+@mixin tag-cloud($base: 1em) {
+  font-size: $base;
+  line-height: 1.2 * $base;
+  &.rank-1 {
+    font-size: ($base * 1.8);
+  }
+  &.rank-2 {
+    font-size: ($base * 1.5);
+  }
+  &.rank-3 {
+    font-size: ($base * 1.3);
+  }
+  &.rank-4 {
+    font-size: $base;
+  }
+  &.rank-5 {
+    font-size: ($base * 0.9);
+  }
+  &.rank-6 {
+    font-size: ($base * 0.85);
+  }
+  &.rank-7 {
+    font-size: ($base * 0.7);
+  }
+}
+
+%border-box {
+  @include box-sizing(border-box);
+}
+
+%clearfix {
+  @include clearfix;
+}

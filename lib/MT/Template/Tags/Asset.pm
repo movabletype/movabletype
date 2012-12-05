@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -264,7 +264,7 @@ sub _hdlr_assets {
 
         my $need_join = 0;
         for my $f
-            qw( min_score max_score min_rate max_rate min_count max_count scored_by )
+            (qw{ min_score max_score min_rate max_rate min_count max_count scored_by })
         {
             if ( $args->{$f} ) {
                 $need_join = 1;
@@ -526,6 +526,7 @@ sub _hdlr_assets {
     my $total_count = @assets;
     my $vars        = $ctx->{__stash}{vars} ||= {};
 
+    MT::Meta::Proxy->bulk_load_meta_objects(\@assets);
     for my $a (@assets) {
         local $ctx->{__stash}{asset} = $a;
         local $vars->{__first__}     = !$i;

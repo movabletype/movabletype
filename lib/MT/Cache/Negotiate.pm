@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -16,6 +16,12 @@ sub new {
     require MT::Memcached;
     if ( MT::Memcached->is_available ) {
         $param{'__cache_driver'} = MT::Memcached->instance;
+        if ( $param{'expirable'} ) {
+            require MT::Memcached::ExpirableProxy;
+            $param{'__cache_driver'}
+                = MT::Memcached::ExpirableProxy->new( %param,
+                'memcached' => $param{'__cache_driver'} );
+        }
     }
     else {
         require MT::Cache::Session;

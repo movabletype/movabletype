@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -157,6 +157,10 @@ sub archive_entries_count {
         }
     );
     return $count;
+}
+
+sub does_publish_file {
+    return 1;
 }
 
 # For user-defined date-based archive types

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -82,7 +82,7 @@ sub init_revisioning {
         package $subclass;
         our \$VERSION = 1.0;
         use base qw($base_class);
-        
+
         1;
     ";
 
@@ -148,7 +148,7 @@ sub load_revision {
 
     # Only specified a rev_number
     if ( defined $terms && ref $terms ne 'HASH' ) {
-        $terms = { rev_number => $_[0] };
+        $terms = { rev_number => $terms };
     }
     $terms->{ $datasource . '_id' } ||= $obj->id;
 

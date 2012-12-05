@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -65,19 +65,19 @@ class MTCache_memcached extends MTCacheBase {
     function _connect($server) {
         list ($host, $port) = split(":", $server);
         if ($host == '')
-            die("Can't connect to memcached server.");
+            die("Cannot connect to memcached server.");
         if ($port == '')
             $port = 11211; # Assigns default port.
         else {
             if (!is_numeric($port))
-                die("Can't connect to memcached server.");
+                die("Cannot connect to memcached server.");
             else
                 $port = intval($port);
         }
 
         # Connect to memcached server
         $this->_server->connect($host, $port)
-            or die("Can't connect to memcached server.");
+            or die("Cannot connect to memcached server.");
     }
 }
 ?>

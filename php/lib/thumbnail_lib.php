@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -323,10 +323,14 @@ class Thumbnail {
 
             $output = $this->src_type;
             if ($this->dest_type != 'auto') {
-                $output = strtolower($this->dest_type) == 'gif' ? 1
-                  : strtolower($this->dest_type) == 'jpeg' ? 2
-                  : strtolower($this->dest_type) == 'png' ? 3
-                  : $this->src_type;
+                if ( strtolower($this->dest_type) == 'gif' )
+                    $output = 1;
+                elseif ( strtolower($this->dest_type) == 'jpeg' )
+                    $output = 2;
+                elseif ( strtolower($this->dest_type) == 'png' )
+                    $output = 3;
+                else
+                    $output = $this->src_type;
             }
             switch($output) {
             case 1: #GIF

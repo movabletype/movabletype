@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -38,7 +38,7 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
         }
         else {
             _clear_vars($ctx, $ext_args);
-            return $ctx->error($ctx->mt->translate('Error compiling widgetset [_1]', $widgetmanager));
+            return $ctx->error($ctx->mt->translate('Error compiling widget set [_1]', $widgetmanager));
         }
     }
     return '';

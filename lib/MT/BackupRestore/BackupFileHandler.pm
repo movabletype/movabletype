@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -9,6 +9,8 @@ package MT::BackupRestore::BackupFileHandler;
 use strict;
 use XML::SAX::Base;
 use MIME::Base64;
+use File::Basename;
+use File::Spec;
 
 @MT::BackupRestore::BackupFileHandler::ISA = qw(XML::SAX::Base);
 
@@ -42,11 +44,13 @@ sub start_element {
 
     if ( $self->{start} ) {
         die MT->translate(
-            'Uploaded file was not a valid Movable Type backup manifest file.'
+            'The uploaded file was not a valid Movable Type backup manifest file.'
             )
             if !(      ( 'movabletype' eq $name )
                     && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns )
             );
+
+        $self->{backup_what} = $attrs->{'{}backup_what'}->{Value};
 
         #unless ($self->{ignore_schema_conflicts}) {
         my $schema = $attrs->{'{}schema_version'}->{Value};
@@ -55,7 +59,7 @@ sub start_element {
         if ( $schema != $self->{schema_version} ) {
             $self->{critical} = 1;
             my $message = MT->translate(
-                'Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.',
+                'The uploaded backup manifest file was created with Movable Type, but the schema version ([_1]) differs from the one used by this system ([_2]).  You should not restore this backup to this version of Movable Type.',
                 $schema, $self->{schema_version}
             );
             MT->log(
@@ -123,12 +127,12 @@ sub start_element {
                         {
                             MT->log(
                                 {   message => MT->translate(
-                                        "User with the same name as the name of the currently logged in ([_1]) found.  Skipped the record.",
+                                        "A user with the same name as the current user ([_1]) was found in the backup.  Skipping this user record.",
                                         $obj->name
                                     ),
                                     level => MT::Log::INFO(),
                                     metadata =>
-                                        'Permissions and Associations have been restored.',
+                                        'Permissions and associations have been restored.',
                                     class    => 'system',
                                     category => 'restore',
                                 }
@@ -143,13 +147,13 @@ sub start_element {
                         else {
                             MT->log(
                                 {   message => MT->translate(
-                                        "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
+                                        "A user with the same name '[_1]' was found in the backup (ID:[_2]).  Restore replaced this user with the data from the backup.",
                                         $obj->name,
                                         $obj->id
                                     ),
                                     level => MT::Log::INFO(),
                                     metadata =>
-                                        'Permissions and Associations have been restored as well.',
+                                        'Permissions and associations have been restored as well.',
                                     class    => 'system',
                                     category => 'restore',
                                 }
@@ -160,13 +164,17 @@ sub start_element {
                             delete $column_data{userpic_asset_id}
                                 if exists $column_data{userpic_asset_id};
 
-                            my $child_classes
-                                = $obj->properties->{child_classes} || {};
-                            for my $class ( keys %$child_classes ) {
-                                eval "use $class;";
-                                $class->remove(
-                                    { author_id => $obj->id, blog_id => '0' }
-                                );
+                            if ( !$self->{backup_what} ) {
+                                my $child_classes
+                                    = $obj->properties->{child_classes} || {};
+                                for my $class ( keys %$child_classes ) {
+                                    eval "use $class;";
+                                    $class->remove(
+                                        {   author_id => $obj->id,
+                                            blog_id   => '0'
+                                        }
+                                    );
+                                }
                             }
                             my $success
                                 = $obj->restore_parent_ids( \%column_data,
@@ -244,6 +252,62 @@ sub start_element {
                             $self->{loaded}              = 1;
 
                             $self->{skip} += 1;
+                        }
+                    }
+                }
+                elsif ( 'image' eq $name ) {
+                    if ( !$column_data{blog_id} ) {
+                        $obj = $class->load(
+                            {   file_path => $column_data{file_path},
+                                blog_id   => 0,
+                            }
+                        );
+                        if ($obj) {
+                            if ($obj->created_on == $column_data{created_on} )
+                            {
+
+                                # The same file is already registered
+
+                                my $old_id = $column_data{id};
+
+                                my %realcolumns = map {
+                                    $_ =>
+                                        _decode( delete( $column_data{$_} ) )
+                                } @{ $obj->column_names };
+                                $obj->set_values( \%realcolumns );
+                                $obj->$_( $column_data{$_} )
+                                    foreach keys(%column_data);
+
+                                $objects->{ "$class#" . $old_id } = $obj;
+                                $self->{current}                  = $obj;
+                                $self->{loaded}                   = 1;
+                            }
+                            else {
+
+                                # The different file that has the same name is
+                                # registered
+
+                                $obj = undef;
+
+                                my $middle_path = $column_data{created_on};
+
+                                {
+                                    my ( $name, $path )
+                                        = fileparse(
+                                        $column_data{file_path} );
+                                    $column_data{file_path}
+                                        = File::Spec->catfile( $path,
+                                        $middle_path, $name );
+                                }
+
+                                {
+                                    my ( $path, $name )
+                                        = (
+                                        $column_data{url} =~ m{(.*/)(.*)}s );
+                                    $column_data{url}
+                                        = $path . $middle_path . '/' . $name;
+                                }
+                            }
                         }
                     }
                 }
@@ -341,8 +405,11 @@ sub end_element {
                     $text = MIME::Base64::decode_base64($text);
                     if ( substr( $text, 0, 4 ) eq 'SERG' ) {
                         $text = MT::Serialize->unserialize($text);
+                        $obj->$column_name($$text);
                     }
-                    $obj->$column_name($$text);
+                    else {
+                        $obj->column( $column_name, $text );
+                    }
                 }
                 else {
                     $obj->column( $column_name, _decode($text) );
@@ -367,6 +434,7 @@ sub end_element {
                 (      ( 'author' eq $name )
                     || ( 'template'   eq $name )
                     || ( 'filter'     eq $name )
+                    || ( 'image'      eq $name )
                     || ( 'plugindata' eq $name )
                 )
                 && ( exists $self->{loaded} )
@@ -375,9 +443,8 @@ sub end_element {
                 delete $obj->{column_values}->{id};
                 delete $obj->{changed_cols}->{id};
             }
-            else {
-                delete $self->{loaded};
-            }
+            delete $self->{loaded};
+
             my $exists = 0;
             if ( 'tag' eq $name ) {
                 if (my $tag = MT::Tag->load(

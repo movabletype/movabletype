@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -34,7 +34,7 @@ sub export {
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate(
-            "Load of blog '[_1]' failed: [_2]", $blog_id,
+            "Loading blog '[_1]' failed: [_2]", $blog_id,
             MT::Blog->errstr
         )
         );

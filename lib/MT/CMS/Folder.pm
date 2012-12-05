@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -13,8 +13,17 @@ sub edit {
 }
 
 sub can_view {
-    my ( $eh, $app, $id ) = @_;
-    $app->can_do('open_folder_edit_screen');
+    my ( $eh, $app, $id, $objp ) = @_;
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+    return unless $id;
+
+    my $obj = $objp->force();
+    return unless $obj;
+    return if $obj->is_category;
+
+    my $blog_id = $obj->blog_id;
+    return $author->permissions($blog_id)->can_do('open_folder_edit_screen');
 }
 
 sub can_save {
@@ -28,8 +37,7 @@ sub can_save {
     }
     return unless $obj->isa('MT::Folder');
 
-    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
-
+    my $blog_id = $obj->blog_id;
     return $author->permissions($blog_id)->can_do('save_folder');
 }
 
@@ -46,7 +54,6 @@ sub can_delete {
     return unless $obj->isa('MT::Folder');
 
     my $blog_id = $obj->blog_id;
-
     return $author->permissions($blog_id)->can_do('delete_folder');
 }
 

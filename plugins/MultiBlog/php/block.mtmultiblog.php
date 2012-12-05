@@ -1,16 +1,12 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
 # $Id$
 
 if (MULTIBLOG_ENABLED) {
-function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
-
-    # Set default mode for backwards compatibility
-    $mode = $args['mode'];
-    $mode or $mode = 'loop';
+function smarty_block_mtmultiblog(&$args, $content, &$ctx, &$repeat) {
 
     if (!isset($content)) {
 
@@ -46,10 +42,14 @@ function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
             # No blog-level config set
             # Set mode to context as this will mimic no MTMultiBlog tag
             else {
-                $mode = 'context';  # Override 'loop' mode
+                $args['mode'] = 'context';  # Override 'loop' mode
             }
         }
     }
+
+    # Set default mode for backwards compatibility
+    $mode = $args['mode'];
+    $mode or $mode = 'loop';
 
     # Run MultiBlog in specified mode
     if ($mode == 'loop') {
@@ -64,7 +64,7 @@ function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
 # Multiblog's "context" mode:
 # The container's contents are evaluated once with a multi-blog context
 function multiblog_context($args, $content, &$ctx, &$repeat) {
-    $localvars = array('multiblog_context', 'multiblog_blog_ids');
+    $localvars = array('multiblog_context', 'multiblog_blog_ids', 'local_blog_id');
 
     if (!isset($content)) {
         $ctx->localize($localvars);

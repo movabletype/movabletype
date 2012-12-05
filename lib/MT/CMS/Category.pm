@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -91,6 +91,9 @@ sub save {
     elsif ( $type eq 'folder' ) {
         return $app->permission_denied()
             unless $app->can_do('save_folder');
+    }
+    else {
+        return $app->errtrans("Invalid request.");
     }
 
     $app->validate_magic() or return;
@@ -201,7 +204,7 @@ sub bulk_update {
     if ( $app->param('checksum') ne Digest::MD5::md5_hex($text) ) {
         return $app->json_error(
             $app->translate(
-                'Failed to update [_1]: some of [_2] were changed after you opened this screen.',
+                'Failed to update [_1]: Some of [_2] were changed after you opened this page.',
                 $class->class_label_plural,
                 $class->class_label_plural,
             )
@@ -332,6 +335,15 @@ sub bulk_update {
         $deletes++;
     }
 
+    $app->touch_blogs;
+
+    my @ordered_ids = map { $_->id } @objects;
+    my $order = join ',', @ordered_ids;
+    $blog->$meta($order);
+    $blog->save;
+
+    $app->run_callbacks( 'cms_post_bulk_save.' . $model, $app, \@objects );
+
     my $rebuild_url = $app->uri(
         mode => 'rebuild_confirm',
         args => { blog_id => $blog_id, }
@@ -348,16 +360,10 @@ sub bulk_update {
         ),
         };
 
-    my @ordered_ids = map { $_->id } @objects;
-    my $order = join ',', @ordered_ids;
-    $blog->$meta($order);
-    $blog->save;
-
-    $app->run_callbacks( 'cms_post_bulk_save.' . $model, $app, \@objects );
-
     $app->forward( 'filtered_list', messages => \@messages );
 }
 
+# DEPRECATED: will be removed.
 sub category_add {
     my $app  = shift;
     my $q    = $app->param;
@@ -377,16 +383,19 @@ sub category_add {
 }
 
 sub category_do_add {
-    my $app    = shift;
-    my $q      = $app->param;
-    my $type   = $q->param('_type') || 'category';
+    my $app  = shift;
+    my $q    = $app->param;
+    my $type = $q->param('_type') || 'category';
+    return $app->errtrans("Invalid request.")
+        unless ( $type eq 'category' )
+        or ( $type eq 'folder' );
     my $author = $app->user;
     my $pkg    = $app->model($type);
     $app->validate_magic() or return;
     my $name = $q->param('label')
         or return $app->error( $app->translate("No label") );
     $name =~ s/(^\s+|\s+$)//g;
-    return $app->errtrans("Category name cannot be blank.")
+    return $app->errtrans("The category name cannot be blank.")
         if $name eq '';
     my $parent   = $q->param('parent') || '0';
     my $cat      = $pkg->new;
@@ -433,7 +442,10 @@ sub js_add_category {
     my $blog_id = $app->param('blog_id');
     my $perms   = $app->permissions;
     my $type    = $app->param('_type') || 'category';
-    my $class   = $app->model($type);
+    return $app->json_error( $app->translate("Invalid request.") )
+        unless ( $type eq 'category' )
+        or ( $type eq 'folder' );
+    my $class = $app->model($type);
     if ( !$class ) {
         return $app->json_error( $app->translate("Invalid request.") );
     }
@@ -464,21 +476,21 @@ sub js_add_category {
     my $obj      = $class->new;
     my $original = $obj->clone;
 
-    if (!$app->run_callbacks(
-            'cms_save_permission.' . $type,
-            $app, $obj, $original
-        )
-        )
-    {
-        return $app->json_error( $app->translate("Permission denied.") );
-    }
-
     $obj->label($label);
     $obj->basename($basename)   if $basename;
     $obj->parent( $parent->id ) if $parent;
     $obj->blog_id($blog_id);
     $obj->author_id( $user->id );
     $obj->created_by( $user->id );
+
+    if (!$app->run_callbacks(
+            'cms_save_permission_filter.' . $type,
+            $app, $obj
+        )
+        )
+    {
+        return $app->json_error( $app->translate("Permission denied.") );
+    }
 
     if (!$app->run_callbacks(
             'cms_pre_save.' . $type, $app, $obj, $original
@@ -500,8 +512,19 @@ sub js_add_category {
 }
 
 sub can_view {
-    my ( $eh, $app, $id ) = @_;
-    return $app->can_do('open_category_edit_screen');
+    my ( $eh, $app, $obj ) = @_;
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
+    unless ( ref $obj ) {
+        $obj = MT->model('category')->load($obj)
+            or return;
+    }
+    return unless $obj->is_category;
+
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
+    return $author->permissions($blog_id)
+        ->can_do('open_category_edit_screen');
 }
 
 sub can_save {
@@ -516,7 +539,6 @@ sub can_save {
     return unless $obj->is_category;
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
-
     return $author->permissions($blog_id)->can_do('save_category');
 }
 
@@ -551,13 +573,13 @@ sub pre_save {
         next if $obj->id && ( $_->id == $obj->id );
         return $eh->error(
             $app->translate(
-                "The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.",
+                "The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.",
                 $_->label
             )
         ) if $_->label eq $obj->label;
         return $eh->error(
             $app->translate(
-                "The category basename '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique basenames.",
+                "The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.",
                 $_->label
             )
         ) if $_->basename eq $obj->basename;

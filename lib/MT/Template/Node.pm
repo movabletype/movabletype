@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2011 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -77,6 +77,7 @@ sub childNodes {
 
 sub attributes {
     my $node = shift;
+    return {} if $node->[0] eq 'TEXT';
     return $node->[EL_NODE_ATTR] = shift if @_;
     return $node->[EL_NODE_ATTR] ||= {};
 }
