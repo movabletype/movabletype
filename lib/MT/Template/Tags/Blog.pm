@@ -68,7 +68,8 @@ sub _hdlr_blogs {
     my $res   = '';
     my $count = 0;
     my $vars  = $ctx->{__stash}{vars} ||= {};
-    MT::Meta::Proxy->bulk_load_meta_objects(\@blogs);
+    MT::Meta::Proxy->bulk_load_meta_objects( \@blogs );
+
     for my $blog (@blogs) {
         $count++;
         local $ctx->{__stash}{blog}    = $blog;

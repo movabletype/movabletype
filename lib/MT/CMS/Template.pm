@@ -559,7 +559,8 @@ sub edit {
             $template_type = 'custom' if 'module' eq $template_type;
             $param->{type} = $template_type;
         }
-        return $app->errtrans("You must specify a template type when creating a template")
+        return $app->errtrans(
+            "You must specify a template type when creating a template")
             unless $template_type;
         $param->{nav_templates} = 1;
         my $tab;
@@ -743,7 +744,10 @@ sub edit {
             $param->{cache_expire_type}     = 0;
             $param->{cache_expire_period}   = '';
             $param->{cache_expire_interval} = 0;
-            $param->{ssi_type}              = uc $blog->include_system;
+            $param->{ssi_type}
+                = defined $blog->include_system
+                ? uc $blog->include_system
+                : '';
         }
         if ($obj) {
             $param->{include_with_ssi} = $obj->include_with_ssi
@@ -1603,7 +1607,7 @@ sub delete_map {
         or return $app->errtrans('Cannot load templatemap');
     $map->remove;
 
-    my $blog = MT->model('blog')->load( $blog_id );
+    my $blog = MT->model('blog')->load($blog_id);
     $blog->flush_has_archive_type_cache();
 
     my $html = _generate_map_table( $app, $blog_id, $template_id );
@@ -1645,7 +1649,7 @@ sub add_map {
         or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
 
-    my $blog = MT->model('blog')->load( $blog_id );
+    my $blog = MT->model('blog')->load($blog_id);
     $blog->flush_has_archive_type_cache();
 
     my $html = _generate_map_table( $app, $blog_id, $template_id );
@@ -1754,7 +1758,8 @@ sub pre_save {
     $obj->cache_expire_event( join ',', @events ) if $#events >= 0;
     if ( $cache_expire_type == 1 ) {
         return $eh->error(
-            $app->translate("You should not be able to enter zero (0) as the time.")
+            $app->translate(
+                "You should not be able to enter zero (0) as the time.")
         ) if $interval == 0;
     }
     elsif ( $cache_expire_type == 2 ) {
@@ -2180,7 +2185,8 @@ BLOG: for my $blog_id (@id) {
                 }
             }
             if (@removed_tids) {
-                $app->model('fileinfo')->remove({ template_id => \@removed_tids });
+                $app->model('fileinfo')
+                    ->remove( { template_id => \@removed_tids } );
             }
 
             if ($blog_id) {
@@ -2865,7 +2871,8 @@ sub edit_widget {
         $param->{cache_expire_type}     = 0;
         $param->{cache_expire_period}   = '';
         $param->{cache_expire_interval} = 0;
-        $param->{ssi_type}              = uc $blog->include_system;
+        $param->{ssi_type}
+            = defined $blog->include_system ? uc $blog->include_system : '';
     }
 
     my $iter

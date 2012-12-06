@@ -51,12 +51,20 @@ sub set_password {
     my $crypt_sha;
 
     if ( eval { require Digest::SHA } ) {
+
         # Can use SHA512
-        $crypt_sha = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . $pass );
+        $crypt_sha
+            = '$6$' 
+            . $salt . '$'
+            . Digest::SHA::sha512_base64( $salt . $pass );
     }
     else {
+
         # Use SHA-1 algorism
-        $crypt_sha = '{SHA}' . $salt . '$' . MT::Util::perl_sha1_digest_hex( $salt . $pass );
+        $crypt_sha
+            = '{SHA}' 
+            . $salt . '$'
+            . MT::Util::perl_sha1_digest_hex( $salt . $pass );
     }
 
     $auth->column( 'password', $crypt_sha );

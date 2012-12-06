@@ -105,6 +105,31 @@ sub crop {
     wantarray ? ( $image->blob, $size, $size ) : $image->blob;
 }
 
+sub flipHorizontal {
+    my $image = shift;
+    $image->{imager} = $image->{imager}->flip( dir => 'h' );
+
+    wantarray ? ( $image->blob, @$image{qw(width height)} ) : $image->blob;
+}
+
+sub flipVertical {
+    my $image = shift;
+    $image->{imager} = $image->{imager}->flip( dir => 'v' );
+
+    wantarray ? ( $image->blob, @$image{qw(width height)} ) : $image->blob;
+}
+
+sub rotate {
+    my $image = shift;
+    my ( $degrees, $w, $h ) = $image->get_degrees(@_);
+
+    $image->{imager} = $image->{imager}->rotate( right => $degrees );
+
+    wantarray
+        ? ( $image->blob, $w, $h )
+        : $image->blob;
+}
+
 sub convert {
     my $image = shift;
     my %param = @_;

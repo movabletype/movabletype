@@ -163,7 +163,7 @@ sub does_publish_file {
     }
     return 0 unless $params{Category};
 
-    MT::ArchiveType::archive_entries_count($obj, \%params );
+    MT::ArchiveType::archive_entries_count( $obj, \%params );
 }
 
 sub display_name {

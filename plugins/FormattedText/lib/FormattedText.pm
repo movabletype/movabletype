@@ -7,7 +7,7 @@ our @EXPORT = qw( plugin translate );
 use base qw(Exporter);
 
 sub translate {
-    MT->component('FormattedText')->translate( $_[0] );
+    MT->component('FormattedText')->translate(@_);
 }
 
 sub plugin {

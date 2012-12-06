@@ -4,7 +4,7 @@
 <button
    accesskey="p"
    title="<__trans phrase="Publish selected [_1] (p)" params="<$mt:var name="object_label_plural"$>">"
-   class="button mt-pubish-trachbacks">
+   class="button mt-publish-trachbacks">
   <__trans phrase="Publish">
 </button>
     </mt:if>
@@ -91,11 +91,12 @@
 </mtapp:listing>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('button.mt-pubish-trachbacks').mtPublishItems({
+    jQuery('button.mt-publish-trachbacks').mtPublishItems({
         id: '<$mt:var name="object_type"$>-listing-form',
         singular: '<__trans phrase="TrackBack" escape="js">',
         plural: '<__trans phrase="TrackBacks" escape="js">',
         mode: 'approve_item',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
         phrase: '<__trans phrase="to republish" escape="js">'
     });
     jQuery('button.mt-delete-trachbacks').mtDeleteItems({

@@ -27,9 +27,8 @@ sub new {
         my $set  = $blog->template_set or return;
         $set     = MT->registry( template_sets => $set )
             if !ref $set;
-        my $lib = $set->{stylecatcher_libraries} 
+        $reg = $set->{stylecatcher_libraries}{$id}
             or return $pkg->new_default();
-        $reg = $lib->{$id} or return;
     }
     my $class = $reg && $reg->{class} ? $reg->{class} : 'Default';
     my $inst_class = 'StyleCatcher::Library::' . $class;

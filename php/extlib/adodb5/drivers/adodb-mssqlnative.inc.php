@@ -130,6 +130,8 @@ class ADODB_mssqlnative extends ADOConnection {
 	var $uniqueOrderBy = true;
 	var $_bindInputArray = true;
 	var $_dropSeqSQL = "drop table %s";
+
+    var $is_utf = false;
 	
 	function ADODB_mssqlnative() 
 	{		
@@ -382,6 +384,9 @@ class ADODB_mssqlnative extends ADOConnection {
             $connectionInfo['UID'] = $argUsername;
         if (!empty($argPassword))
             $connectionInfo['PWD'] = $argPassword;
+        if ( $this->is_utf )
+            $connectionInfo['CharacterSet'] = 'UTF-8';
+
         if ($this->debug) error_log("<hr>connecting... hostname: $argHostname params: ".var_export($connectionInfo,true));
         //if ($this->debug) error_log("<hr>_connectionID before: ".serialize($this->_connectionID));
         if(!($this->_connectionID = sqlsrv_connect($argHostname,$connectionInfo))) { 
@@ -635,6 +640,12 @@ class ADODB_mssqlnative extends ADOConnection {
 		}
 		return $ret;
 	}
+
+	function Execute($sql,$inputarr=false) {
+        if ( $this->is_utf )
+            $sql = preg_replace( '/(\'.*\')/', 'N$1', $sql);
+	    return parent::Execute( $sql, $inputarr );
+    }
 }
 	
 /*--------------------------------------------------------------------------------------

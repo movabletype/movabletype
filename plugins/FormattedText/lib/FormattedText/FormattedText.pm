@@ -45,11 +45,23 @@ sub class_type {
 }
 
 sub class_label {
-    translate('Formatted Text');
+    translate('Boilerplate');
 }
 
 sub class_label_plural {
-    translate('Formatted Texts');
+    translate('Boilerplates');
+}
+
+sub search_apis {
+    +{  label       => 'Boilerplates',
+        view        => 'none',
+        order       => 1100,
+        search_cols => {
+            label       => sub { translate('Name') },
+            text        => sub { translate('Text') },
+            description => sub { translate('Description') },
+        }
+    };
 }
 
 sub list_props {
@@ -228,7 +240,8 @@ sub save_filter {
     my ( $cb, $app ) = @_;
 
     my %values = ();
-    $values{$_} = $app->param($_) for ( 'id', @{ required_fields() } );
+    $values{$_} = $app->param($_)
+        for ( 'blog_id', 'id', 'label', @{ required_fields() } );
     if ( my $user = $app->user ) {
         $values{created_by} = $user->id;
     }
@@ -242,6 +255,21 @@ sub validate {
         if ( !trim( $values->{$f} ) ) {
             return $cb->error( translate( ucfirst($f) . ' is required.' ) );
         }
+    }
+
+    my $already_exists = FormattedText::FormattedText->load(
+        {   blog_id => $values->{blog_id},
+            ( $values->{id} ? ( id => { not => $values->{id} } ) : () ),
+            label => $values->{label},
+        }
+    );
+    if ($already_exists) {
+        return $cb->error(
+            translate(
+                'The boilerplate \'[_1]\' is already in use in this blog.',
+                $values->{label}
+            )
+        );
     }
 
     return 1;

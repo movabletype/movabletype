@@ -32,7 +32,7 @@ sub init {
     $app;
 }
 
-sub uri    { $_[0]->mt_path . MT->config->UpgradeScript }
+sub uri { $_[0]->mt_path . MT->config->UpgradeScript }
 
 sub core_methods {
     return {
@@ -376,12 +376,13 @@ sub init_website {
                ( $_->{class} || '' ) eq 'both'
             || ( $_->{class} || '' ) eq 'website'
         } values %$themes;
-    $param{'theme_loop'}      = \@theme_loop;
-    $param{'theme_index'}     = scalar @theme_loop;
-    if (my $b_path = $app->config->BaseSitePath) {
+    $param{'theme_loop'}  = \@theme_loop;
+    $param{'theme_index'} = scalar @theme_loop;
+    if ( my $b_path = $app->config->BaseSitePath ) {
         $param{'sitepath_limited'} = $b_path;
+
         # making sure that we have a '/' in the end of the path
-        $b_path = File::Spec->catdir($b_path, "PATH");
+        $b_path = File::Spec->catdir( $b_path, "PATH" );
         $b_path =~ s/PATH$//;
         $param{'sitepath_limited_trail'} = $b_path;
     }
@@ -414,12 +415,16 @@ sub init_website {
         $site_path = File::Spec->catdir(@dirs);
     }
     if ( $param{'sitepath_limited'} ) {
+
         # making sure that we have a '/' or '\' in the end of the path
-        my $s_path = File::Spec->catdir($site_path, "PATH");
+        my $s_path = File::Spec->catdir( $site_path, "PATH" );
         $s_path =~ s/PATH$//;
-        if ( 0 != index( $s_path, $param{'sitepath_limited'} ) ) {
+        my $l_path = File::Spec->catdir( $param{'sitepath_limited'}, "PATH" );
+        $l_path =~ s/PATH$//;
+        $l_path = quotemeta($l_path);
+        if ( $s_path !~ m/^$l_path/i ) {
             $param{error} = $app->translate(
-                "The 'Website Root' provided below is not allowed" );
+                "The 'Website Root' provided below is not allowed");
             return $app->build_page( 'setup_initial_website.tmpl', \%param );
         }
     }

@@ -200,8 +200,9 @@ sub _hdlr_comments {
             $need_join = 1;
         }
         else {
-            for my $f
-                (qw{ min_score max_score min_rate max_rate min_count max_count scored_by })
+            for my $f (
+                qw{ min_score max_score min_rate max_rate min_count max_count scored_by }
+                )
             {
                 if ( $args->{$f} ) {
                     $need_join = 1;
@@ -373,7 +374,10 @@ sub _hdlr_comments {
 
         # else look for most recent comments in the entire blog
         else {
-            $args{'sort'} = lc $args->{sort_by} || 'created_on';
+            $args{'sort'}
+                = defined $args->{sort_by} && $args->{sort_by}
+                ? lc $args->{sort_by}
+                : 'created_on';
             if ( $args->{lastn} || $args->{offset} ) {
                 $args{'direction'} = 'descend';
             }
@@ -491,7 +495,7 @@ sub _hdlr_comments {
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
     my $glue = $args->{glue};
-    MT::Meta::Proxy->bulk_load_meta_objects(\@comments);
+    MT::Meta::Proxy->bulk_load_meta_objects( \@comments );
     for my $c (@comments) {
         local $vars->{__first__}        = $i == 1;
         local $vars->{__last__}         = ( $i == scalar @comments );
@@ -693,7 +697,7 @@ sub _hdlr_comment_replies {
 
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
-    MT::Meta::Proxy->bulk_load_meta_objects(\@comments);
+    MT::Meta::Proxy->bulk_load_meta_objects( \@comments );
     for my $c (@comments) {
         local $vars->{__first__}        = $i == 1;
         local $vars->{__last__}         = ( $i == scalar @comments );
@@ -1620,7 +1624,7 @@ sub _hdlr_comment_reply_link {
     $name ||= $args->{default_name};
     $name ||= MT->translate("Anonymous");
     $name = MT::Util::encode_html(
-        MT::Util::encode_html( MT::Util::encode_js( $name ) ), 1 );
+        MT::Util::encode_html( MT::Util::encode_js($name) ), 1 );
     my $onclick
         = sprintf( $args->{onclick} || "mtReplyCommentOnClick(%d, '%s')",
         $comment->id, $name );
@@ -1801,7 +1805,7 @@ sub _hdlr_comment_replies_recurse {
 
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
-    MT::Meta::Proxy->bulk_load_meta_objects(\@comments);
+    MT::Meta::Proxy->bulk_load_meta_objects( \@comments );
     for my $c (@comments) {
         local $vars->{__first__}        = $i == 1;
         local $vars->{__last__}         = ( $i == scalar @comments );
@@ -2132,9 +2136,10 @@ sub _hdlr_sign_out_link {
         }
     }
     my $e = $ctx->stash('entry');
-    return "$path$comment_script?__mode=handle_sign_in$static_arg&logout=1"
-        . ( $blog ? '&blog_id=' . $blog->id : '' )
-        . ( $e ? "&amp;entry_id=" . $e->id : '' );
+    return
+          "$path$comment_script?__mode=handle_sign_in$static_arg&logout=1"
+        . ( $blog ? '&blog_id=' . $blog->id   : '' )
+        . ( $e    ? "&amp;entry_id=" . $e->id : '' );
 }
 
 ###########################################################################

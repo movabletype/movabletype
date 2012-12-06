@@ -171,9 +171,9 @@ sub can_save {
             if $tbitem->author_id != $app->user->id;
 
         my $status_is_changed
-            = $p->is_junk      ? ( 'junk'      ne $app->param('status') )
+            = $p->is_junk      ? ( 'junk'     ne $app->param('status') )
             : $p->is_moderated ? ( 'moderate' ne $app->param('status') )
-            : $p->is_published ? ( 'publish'   ne $app->param('status') )
+            : $p->is_published ? ( 'publish'  ne $app->param('status') )
             :                    1;
 
         return $status_is_changed

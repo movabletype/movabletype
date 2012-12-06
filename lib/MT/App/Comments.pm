@@ -1663,10 +1663,13 @@ TRY: {
 }
 
 sub comment_listing {
-    my ($app) = shift;
+    my $app = shift;
+
+    my $jsonp = $app->param('jsonp');
+    if ( defined($jsonp) && $jsonp !~ m/^\w+$/ ) {
+        return $app->error("Invalid request.");
+    }
     $app->{no_print_body} = 1;
-    $app->response_code(200);
-    $app->response_message('OK');
     $app->send_http_header('text/javascript');
 
     require MT::Entry;
@@ -1712,7 +1715,16 @@ sub comment_listing {
     $ctx->var( 'commentLimit',     $limit );
     $ctx->var( 'commentOffset',    $offset );
     $ctx->var( 'commentDirection', $direction );
-    $app->print_encode( $tmpl->build($ctx) );
+    $ctx->var( 'cacheKey',         scalar $app->param('cacheKey') );
+
+    my $json = $tmpl->build($ctx);
+    if ($jsonp) {
+        $app->print_encode("$jsonp($json);\n");
+    }
+    else {
+        $app->print_encode($json);
+    }
+
     return 1;
 }
 
@@ -1982,8 +1994,8 @@ sub save_commenter_profile {
     if ( 'MT' eq $cmntr->auth_type ) {
         my $nickname = $param{nickname};
         unless ( $nickname && $param{email} ) {
-            $param{error} = $app->translate(
-                'All required fields must be populated.');
+            $param{error}
+                = $app->translate('All required fields must be populated.');
             return $app->build_page( 'profile.tmpl', \%param );
         }
         if ( $nickname =~ m/([<>])/ ) {

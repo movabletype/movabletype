@@ -1065,9 +1065,8 @@ sub _upload_to_asset {
         close($fh), return $app->error(
             500,
             MT->translate(
-                "Saving [_1] failed: [_2]",
-                $base,
-                MT->translate( "Invalid image file format." )
+                "Saving [_1] failed: [_2]", $base,
+                MT->translate("Invalid image file format.")
             )
         ) unless MT::Image::is_valid_image($fh);
         close($fh);

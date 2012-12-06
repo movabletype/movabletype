@@ -975,7 +975,7 @@ sub _translate_numeric_fields {
 
     for my $field (
         @{  $obj->columns_of_type(
-                'integer',  'boolean', 'smallint', 'float'
+                'integer', 'boolean', 'smallint', 'float'
             )
         }
         )

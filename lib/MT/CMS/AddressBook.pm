@@ -102,10 +102,12 @@ sub send_notify {
         );
     my $address;
     if ($author) {
-        $address = defined $author->nickname 
+        $address
+            = defined $author->nickname
             ? $author->nickname . ' <' . $author->email . '>'
             : $author->email;
-    } else {
+    }
+    else {
         $address = $app->config('EmailAddressMain');
         $params{from_address} = $address;
     }
@@ -129,27 +131,26 @@ sub send_notify {
     $head{'Content-Type'} = qq(text/plain; charset="$charset");
     my $i = 1;
     require MT::Mail;
-    unless (exists $params{from_address}) {
+    unless ( exists $params{from_address} ) {
         MT::Mail->send( \%head, $body )
             or return $app->errtrans(
-                "Error sending mail ([_1]): Try another MailTransfer setting?",
-                MT::Mail->errstr );
+            "Error sending mail ([_1]): Try another MailTransfer setting?",
+            MT::Mail->errstr );
     }
     delete $head{To};
 
     my @email_to_send;
     my @addresses_to_send = grep $_, keys %$addrs;
     if ( $app->config('EmailNotificationBcc') ) {
-        while ( @addresses_to_send ) {
-            push @email_to_send, 
-                {
-                    %head,
-                    Bcc => [ splice( @addresses_to_send, 0, 20 ) ],
-                };
+        while (@addresses_to_send) {
+            push @email_to_send,
+                { %head, Bcc => [ splice( @addresses_to_send, 0, 20 ) ], };
         }
     }
     else {
-        @email_to_send = map { { %head, To => $_ } } @addresses_to_send;
+        @email_to_send = map {
+            { %head, To => $_ }
+        } @addresses_to_send;
     }
     foreach my $info (@email_to_send) {
         MT::Mail->send( $info, $body )

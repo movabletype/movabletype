@@ -441,32 +441,32 @@ sub do_export {
     my $output = $q->param('output') || 'themedir';
 
     ## Abort if theme directory is not okey for output.
-    my ($theme_dir, $output_path);
-    if ($output eq 'themedir') {
+    my ( $theme_dir, $output_path );
+    if ( $output eq 'themedir' ) {
 
-        my @dir_list      = $cfg->ThemesDirectory;
+        my @dir_list = $cfg->ThemesDirectory;
         my ($default_dir) = $cfg->default('ThemesDirectory');
-        if (grep $_ eq $default_dir, @dir_list) {
-            @dir_list = ($default_dir, grep($_ ne $default_dir, @dir_list));
+        if ( grep $_ eq $default_dir, @dir_list ) {
+            @dir_list
+                = ( $default_dir, grep( $_ ne $default_dir, @dir_list ) );
         }
 
         foreach my $dir (@dir_list) {
             my $path = File::Spec->catdir( $dir, $theme_id );
-            if ($fmgr->can_write($dir)) {
+            if ( $fmgr->can_write($dir) ) {
                 $theme_dir = $dir;
                 last;
             }
         }
-        if (not defined $theme_dir) {
-            if (scalar(@dir_list) == 1) {
+        if ( not defined $theme_dir ) {
+            if ( scalar(@dir_list) == 1 ) {
                 return $app->errtrans(
-                    'Themes directory [_1] is not writable.', $dir_list[0],
-                );
+                    'Themes directory [_1] is not writable.',
+                    $dir_list[0], );
             }
             else {
                 return $app->errtrans(
-                    'All themes directories are not writable.'
-                );
+                    'All themes directories are not writable.');
             }
         }
         $output_path = File::Spec->catdir( $theme_dir, $theme_id );
@@ -493,13 +493,14 @@ sub do_export {
                 my @include = $q->param('include');
                 $params{include}      = \@include;
                 $params{theme_folder} = $output_path;
-                return $app->load_tmpl( 'theme_export_replace.tmpl', \%params );
+                return $app->load_tmpl( 'theme_export_replace.tmpl',
+                    \%params );
             }
         }
     }
 
     ## Pick up settings.
-    my $hdlrs    = MT->registry('theme_element_handlers');
+    my $hdlrs = MT->registry('theme_element_handlers');
     my %includes = map { $_ => 1 } ( $q->param('include') );
     my %exporter;
     my $settings = $blog->theme_export_settings || {};

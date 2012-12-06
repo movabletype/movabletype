@@ -54,6 +54,10 @@ $.extend(ES.Multi.prototype, ES.prototype, {
                 app.editors[this].hide();
             }
         });
+    },
+
+    save: function() {
+       app.editor.save();
     }
 });
 

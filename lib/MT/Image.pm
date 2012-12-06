@@ -51,6 +51,19 @@ sub get_dimensions {
     ( $w, $h );
 }
 
+sub get_degrees {
+    my $image = shift;
+    my %param = @_;
+    my ( $w, $h ) = ( $image->{width}, $image->{height} );
+    my $degrees = $param{Degrees};
+
+    if ( int( $degrees / 90 ) % 2 == 1 ) {
+        ( $w, $h ) = ( $h, $w );
+    }
+
+    ( $degrees, $w, $h );
+}
+
 sub inscribe_square {
     my $class  = shift;
     my %params = @_;
@@ -105,11 +118,10 @@ sub is_valid_image {
     return 1;
 }
 
-sub check_upload {
+sub get_image_info {
     my $class  = shift;
     my %params = @_;
-
-    my $fh = $params{Fh};
+    my $fh     = $params{Fh};
 
     ## Use Image::Size to check if the uploaded file is an image, and if so,
     ## record additional image info (width, height). We first rewind the
@@ -122,7 +134,26 @@ sub check_upload {
                 . "the width and height of uploaded images."
         )
     ) if $@;
-    my ( $w, $h, $id ) = Image::Size::imgsize($fh);
+
+    Image::Size::imgsize($fh);
+}
+
+sub get_image_type {
+    my $class = shift;
+    my @image_size = $class->get_image_info( Fh => @_ );
+
+    ( $image_size[0] && $image_size[1] && $image_size[2] )
+        ? $image_size[2]
+        : ();
+}
+
+sub check_upload {
+    my $class  = shift;
+    my %params = @_;
+
+    my $fh = $params{Fh};
+
+    my ( $w, $h, $id ) = $class->get_image_info(@_);
 
     my $write_file = sub {
         $params{Fmgr}->put( $fh, $params{Local}, 'upload' );
@@ -329,6 +360,21 @@ If 'Width' is given, a proportionate height will be calculated. If a
 'Height' is given, the width will be calculated. If 'Scale' is given
 the height and width will be calculated based on that scale (a value
 between 1 to 100).
+
+=head2 $img->get_degrees(%arg)
+
+This utility method returns a degrees and width and height values after
+applying the given arguments.
+
+I<%arg> can contain:
+
+=over 4
+
+=item * Degrees
+
+The degrees of the final rotated image.
+
+=back
 
 =head2 MT::Image->check_upload( %arg )
 

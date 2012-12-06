@@ -99,7 +99,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '5.2.1';
+    $version = '5.2.2';
 }
 
 my ( $mt, $LH );
@@ -180,12 +180,7 @@ sub merge_params {
 
 sub print_encode {
     my ($text) = @_;
-    if ($mt) {
-        print Encode::encode( $mt->config->PublishCharset, $text );
-    }
-    else {
-        print Encode::encode_utf8($text);
-    }
+    print Encode::encode_utf8($text);
 }
 
 sub print_http_header {

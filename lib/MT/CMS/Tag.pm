@@ -331,7 +331,7 @@ sub add_tags_to_assets {
     my $app = shift;
     $app->validate_magic or return;
 
-    my @id = $app->param('id');
+    my @id      = $app->param('id');
     my $blog_id = $app->param('blog_id');
     return $app->call_return
         if $blog_id and !$app->can_do('add_tags_to_assets');
@@ -348,16 +348,19 @@ sub add_tags_to_assets {
         my $asset = MT::Asset->load($id) or next;
         if ($blog_id) {
             next unless $asset->blog_id == $blog_id;
-        } elsif ($asset->blog_id) {
-            if (not $approved_blogs{$asset->blog_id}) {
-                next unless 
-                    $app->user->can_do(
-                        'add_tags_to_assets', 
-                        blog_id => $asset->blog_id, 
-                        at_least_one => 1);
-                $approved_blogs{$asset->blog_id} = 1;
+        }
+        elsif ( $asset->blog_id ) {
+            if ( not $approved_blogs{ $asset->blog_id } ) {
+                next
+                    unless $app->user->can_do(
+                    'add_tags_to_assets',
+                    blog_id      => $asset->blog_id,
+                    at_least_one => 1
+                    );
+                $approved_blogs{ $asset->blog_id } = 1;
             }
-        } else {
+        }
+        else {
             next unless $app->user->is_superuser;
         }
         $asset->add_tags(@tags);
@@ -374,7 +377,7 @@ sub remove_tags_from_assets {
     my $app = shift;
     $app->validate_magic or return;
 
-    my @id = $app->param('id');
+    my @id      = $app->param('id');
     my $blog_id = $app->param('blog_id');
     return $app->call_return
         if $blog_id and !$app->can_do('remove_tags_from_assets');
@@ -392,16 +395,19 @@ sub remove_tags_from_assets {
         my $asset = MT::Asset->load($id) or next;
         if ($blog_id) {
             next unless $asset->blog_id == $blog_id;
-        } elsif ($asset->blog_id) {
-            if (not $approved_blogs{$asset->blog_id}) {
-                next unless 
-                    $app->user->can_do(
-                        'remove_tags_from_assets', 
-                        blog_id => $asset->blog_id, 
-                        at_least_one => 1);
-                $approved_blogs{$asset->blog_id} = 1;
+        }
+        elsif ( $asset->blog_id ) {
+            if ( not $approved_blogs{ $asset->blog_id } ) {
+                next
+                    unless $app->user->can_do(
+                    'remove_tags_from_assets',
+                    blog_id      => $asset->blog_id,
+                    at_least_one => 1
+                    );
+                $approved_blogs{ $asset->blog_id } = 1;
             }
-        } else {
+        }
+        else {
             next unless $app->user->is_superuser;
         }
         $asset->remove_tags(@tags);

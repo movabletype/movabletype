@@ -47,7 +47,7 @@ sub sanitize {
     $s = '' unless defined $s;
     $s =~ tr/\x00//d;
     $arg = '1' unless defined $arg;
-    return $s if $arg eq '0';
+    return $s if $arg eq '0' || $arg eq '';
     unless ( !$arg || ref($arg) ) {
         $arg = $class->parse_spec($arg);
     }

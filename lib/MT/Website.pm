@@ -128,7 +128,7 @@ sub create_default_website {
     $site_name ||= MT->translate("First Website");
     my $site_theme = $params{site_theme};
     my $site_url   = $params{site_url} || '';
-    my $site_path  = $params{site_path}|| '';
+    my $site_path  = $params{site_path} || '';
     my $timezone   = $params{site_timezone} || 0;
 
     $class = ref $class if ref $class;

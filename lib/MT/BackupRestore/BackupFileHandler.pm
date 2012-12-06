@@ -164,18 +164,6 @@ sub start_element {
                             delete $column_data{userpic_asset_id}
                                 if exists $column_data{userpic_asset_id};
 
-                            if ( !$self->{backup_what} ) {
-                                my $child_classes
-                                    = $obj->properties->{child_classes} || {};
-                                for my $class ( keys %$child_classes ) {
-                                    eval "use $class;";
-                                    $class->remove(
-                                        {   author_id => $obj->id,
-                                            blog_id   => '0'
-                                        }
-                                    );
-                                }
-                            }
                             my $success
                                 = $obj->restore_parent_ids( \%column_data,
                                 $objects );

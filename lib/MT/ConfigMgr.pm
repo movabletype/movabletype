@@ -128,8 +128,8 @@ sub default {
     $mgr->{__settings}{$var}{default} = shift if @_;
     my $def = $mgr->{__settings}{$var}{default};
     return wantarray ? () : undef unless defined $def;
-    if (ref($def) eq 'CODE') {
-        $def = $def->($mgr, $var, $mgr->{__settings}{$var}) 
+    if ( ref($def) eq 'CODE' ) {
+        $def = $def->( $mgr, $var, $mgr->{__settings}{$var} );
     }
     if ( my $type = $mgr->{__settings}{$var}{type} ) {
         if ( $type eq 'ARRAY' ) {

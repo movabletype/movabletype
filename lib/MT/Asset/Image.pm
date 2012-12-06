@@ -156,7 +156,14 @@ sub thumbnail_file {
             >= $fmgr->file_mod_time($file_path) )
         )
     {
-        return ( $thumbnail, $n_w, $n_h );
+        require MT::Image;
+        my $img = new MT::Image( Filename => $thumbnail );
+        my ( $t_w, $t_h ) = ( $img->{width}, $img->{height} );
+        if (   ( $param{Square} && $t_h == $t_w )
+            or ( !$param{Square} && $t_h != $t_w ) )
+        {
+            return ( $thumbnail, $n_w, $n_h );
+        }
     }
 
     # stale or non-existent thumbnail. let's create one!
@@ -534,9 +541,10 @@ sub on_upload {
         my $thumbnail_url   = $asset_thumb->url;
         my $thumb_file_size = $fmgr->file_size($thumbnail);
 
-        $app->run_callbacks( 'cms_pre_save.asset', $app, $asset_thumb, $original )
-            || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
-            $app->errstr );
+        $app->run_callbacks( 'cms_pre_save.asset', $app, $asset_thumb,
+            $original )
+            || return $app->errtrans( "Saving [_1] failed: [_2]",
+            'asset', $app->errstr );
 
         $asset_thumb->save unless $asset_thumb->id;
 
@@ -664,9 +672,10 @@ sub on_upload {
             # Select back the real URL for callbacks
             $url = $asset_html->url;
 
-            $app->run_callbacks( 'cms_pre_save.asset', $app, $asset_html, $original )
-                || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
-                $app->errstr );
+            $app->run_callbacks( 'cms_pre_save.asset', $app, $asset_html,
+                $original )
+                || return $app->errtrans( "Saving [_1] failed: [_2]",
+                'asset', $app->errstr );
 
             $asset_html->save unless $asset_html->id;
 

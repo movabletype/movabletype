@@ -263,8 +263,9 @@ sub _hdlr_assets {
         my $namespace = $args->{namespace};
 
         my $need_join = 0;
-        for my $f
-            (qw{ min_score max_score min_rate max_rate min_count max_count scored_by })
+        for my $f (
+            qw{ min_score max_score min_rate max_rate min_count max_count scored_by }
+            )
         {
             if ( $args->{$f} ) {
                 $need_join = 1;
@@ -526,7 +527,7 @@ sub _hdlr_assets {
     my $total_count = @assets;
     my $vars        = $ctx->{__stash}{vars} ||= {};
 
-    MT::Meta::Proxy->bulk_load_meta_objects(\@assets);
+    MT::Meta::Proxy->bulk_load_meta_objects( \@assets );
     for my $a (@assets) {
         local $ctx->{__stash}{asset} = $a;
         local $vars->{__first__}     = !$i;

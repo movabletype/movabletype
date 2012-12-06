@@ -849,8 +849,9 @@ sub rebuild_archives {
                             ArchiveType => $at,
                             Start =>
                                 $recipe->{$at}->{$cat_id}->{$key}->{Start},
-                            End  => $recipe->{$at}->{$cat_id}->{$key}->{End},
-                            Timestamp   => $recipe->{$at}->{$cat_id}->{$key}->{Timestamp},
+                            End => $recipe->{$at}->{$cat_id}->{$key}->{End},
+                            Timestamp => $recipe->{$at}->{$cat_id}->{$key}
+                                ->{Timestamp},
                         ) or return;
                     }
                 }
@@ -880,8 +881,9 @@ sub rebuild_archives {
                             ArchiveType => $at,
                             Start =>
                                 $recipe->{$at}->{$auth_id}->{$key}->{Start},
-                            End  => $recipe->{$at}->{$auth_id}->{$key}->{End},
-                            Timestamp   => $recipe->{$at}->{$auth_id}->{$key}->{Timestamp},
+                            End => $recipe->{$at}->{$auth_id}->{$key}->{End},
+                            Timestamp => $recipe->{$at}->{$auth_id}->{$key}
+                                ->{Timestamp},
                         ) or return;
                     }
                 }

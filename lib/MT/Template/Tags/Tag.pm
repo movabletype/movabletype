@@ -937,8 +937,7 @@ sub _hdlr_tag_rank {
     }
 
     my $terms = $class->terms_for_tags() || {};
-    my $count = $class->tagged_count( $tag->id,
-        { %$terms, %blog_terms } );
+    my $count = $class->tagged_count( $tag->id, { %$terms, %blog_terms } );
 
     if ( $count - $min + 1 == 0 ) {
         return 0;

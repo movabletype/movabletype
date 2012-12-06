@@ -497,27 +497,51 @@
       return false;
   }
 
+  jQuery('.blog-subdomain-text').bind('keyup focusin focusout', function($e) {
+      var $orig = jQuery(this).parents('.url-field:first').find('.blog-url-text');
+      var ns = jQuery.data( $orig.get(0), 'mtValidator' );
+      if ( ns ) {
+          $orig.mtValid({ focus: false });
+      }
+      $e.stopPropagation();
+      return false;
+  });
+
   jQuery.mtValidateAddRules({
       "#site_url_path": function($e) {
           var base = '<mt:var name="website_scheme">://<mt:var name="website_domain" escape="html">';
-          var chk = jQuery($e).parents().find('.url-field:first').find(':checkbox:checked');
-          var subdomain = jQuery($e).parents().find('.url-field:first').find('.blog-subdomain-text');
+          var chk = jQuery($e).parents('.url-field:first').find(':checkbox:checked');
+          var subdomain = jQuery($e).parents('.url-field:first').find('.blog-subdomain-text');
           if ( chk.length && subdomain.val().length) {
               base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain" escape="html">';
           }
-          return is_valid_url(base + $e.val());
+          var ret = is_valid_url(base + $e.val());
+          if (ret) {
+              subdomain.addClass('valid').removeClass('error');
+          }
+          else {
+              subdomain.removeClass('valid').addClass('error');
+          }
+          return ret;
       },
       "#site_path_absolute": function($e) {
           return is_valid_absolute_path($e.val());
       },
       "#archive_url_path": function($e) {
           var base = '<mt:var name="website_scheme">://<mt:var name="website_domain" escape="html">';
-          var chk = jQuery($e).parents().find('.url-field:first').find(':checkbox:checked');
-          var subdomain = jQuery($e).parents().find('.url-field:first').find('.blog-subdomain-text');
+          var chk = jQuery($e).parents('.url-field:first').find(':checkbox:checked');
+          var subdomain = jQuery($e).parents('.url-field:first').find('.blog-subdomain-text');
           if ( chk.length && subdomain.val().length) {
               base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain" escape="html">';
           }
-          return is_valid_url(base + $e.val());
+          var ret = is_valid_url(base + $e.val());
+          if (ret) {
+              subdomain.addClass('valid').removeClass('error');
+          }
+          else {
+              subdomain.removeClass('valid').addClass('error');
+          }
+          return ret;
       },
       "#site_url": function($e) {
           return is_valid_url('<mt:var name="website_url">' + $e.val());

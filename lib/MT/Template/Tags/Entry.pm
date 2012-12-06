@@ -382,6 +382,11 @@ sub _hdlr_entries {
             # class types do not match; we can't use stashed entries
             undef $entries;
         }
+        elsif ( $blog_id != $entry->blog_id ) {
+
+            # Blog ID do not match; we can't use stashed entries
+            undef $entries;
+        }
     }
     $entries = undef unless defined $entries && scalar @$entries;
 
@@ -847,20 +852,20 @@ sub _hdlr_entries {
         if ( !@filters ) {
             if ( ( my $last = $args->{lastn} ) && ( !exists $args->{limit} ) )
             {
-                $args{sort} = [ 
-                    { column => 'authored_on', desc => 'DESC' }, 
-                    { column => 'id', desc => 'DESC' }, 
+                $args{sort} = [
+                    { column => 'authored_on', desc => 'DESC' },
+                    { column => 'id',          desc => 'DESC' },
                 ];
-                $args{limit}     = $last;
+                $args{limit} = $last;
                 $no_resort = 0 if $args->{sort_by};
             }
             else {
-                if ($args{sort} eq 'authored_on') {
+                if ( $args{sort} eq 'authored_on' ) {
                     my $dir = $args->{sort_order} || 'descend';
-                    $dir = ('descend' eq $dir) ? "DESC" : "ASC";
-                    $args{sort} = [ 
-                        { column => 'authored_on', desc => $dir }, 
-                        { column => 'id', desc => $dir }, 
+                    $dir = ( 'descend' eq $dir ) ? "DESC" : "ASC";
+                    $args{sort} = [
+                        { column => 'authored_on', desc => $dir },
+                        { column => 'id',          desc => $dir },
                     ];
                 }
                 else {
@@ -1151,13 +1156,15 @@ sub _hdlr_entries {
             }
             my $func;
             no warnings;
-            if ($type and $type =~ m/^integer|float$/) {
+            if ( $type and $type =~ m/^integer|float$/ ) {
                 $func = sub { $so * ( $a->$col() <=> $b->$col() ) };
             }
-            elsif ($col eq 'authored_on') {
-                $func = sub { 
-                    $so * ( ( $a->$col() cmp $b->$col() ) || 
-                            ( $a->id() cmp $b->id() ) ) };
+            elsif ( $col eq 'authored_on' ) {
+                $func = sub {
+                    $so
+                        * (    ( $a->$col() cmp $b->$col() )
+                            || ( $a->id() cmp $b->id() ) );
+                };
             }
             else {
                 $func = sub { $so * ( $a->$col() cmp $b->$col() ) };

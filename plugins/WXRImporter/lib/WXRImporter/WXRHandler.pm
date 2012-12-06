@@ -289,7 +289,9 @@ sub _create_category {
             # skip
         }
         elsif ( 'wp_cat_name' eq $key ) {
-            return if ( MT::Category->load( { label => $value } ) );
+            my $exist = MT::Category->load(
+                { label => $value, blog_id => $self->{blog}->id } );
+            return if $exist;
             $cat->label($value);
         }
         elsif ( 'wp_category_description' eq $key ) {
@@ -523,9 +525,14 @@ sub _create_asset {
         $asset_values->{'file_path'} = $asset_values->{'url'};
         $asset_values->{'file_path'} =~ s!^https?://[^/]*/!!;
     }
-    my $path    = $asset_values->{'file_path'};
+    my $path = $asset_values->{'file_path'};
     if ( $wp_path && $mt_path ) {
-        $path =~ s/^.*$wp_path(.+)$/$mt_path$1/i;
+        if ( $path =~ /$wp_path/ ) {
+            $path =~ s/^.*$wp_path(.+)$/$mt_path$1/i;
+        }
+        else {
+            $path = File::Spec->catdir( $mt_path, $path );
+        }
         $path = File::Spec->canonpath($path);
     }
     $asset_values->{'file_path'} = $path;
@@ -641,10 +648,26 @@ sub _create_post {
         }
         elsif ( '_category' eq $key ) {
             if ( $hash->{_a} ) {
-                if ( $hash->{_a}->{domain} eq 'tag' ) {
+                if (   $hash->{_a}->{domain} eq 'tag'
+                    || $hash->{_a}->{domain} eq 'post_tag' )
+                {
                     $value = MT::Util::decode_url( $hash->{_a}->{nicename} )
                         if !$value;
                     push @tags, $value if $value;
+                }
+                elsif ( $hash->{_a}->{domain} eq 'category' ) {
+                    my $cat_class = MT->model('category');
+                    $value = MT::Util::decode_url( $hash->{_a}->{nicename} )
+                        if !$value;
+                    my $cat = $cat_class->load(
+                        {   label   => $value,
+                            blog_id => $self->{blog}->id
+                        }
+                    );
+                    if ( defined $cat ) {
+                        $cat_ids{ $cat->id } = 1;
+                        $primary_cat_id = $cat->id unless $primary_cat_id;
+                    }
                 }
             }
             else {

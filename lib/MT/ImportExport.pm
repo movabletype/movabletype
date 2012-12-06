@@ -28,8 +28,8 @@ sub import_contents {
     my %param = @_;
     ## Init error buffer.
     __PACKAGE__->error();
-    my $iter  = $param{Iter};
-    my $blog  = $param{Blog}
+    my $iter = $param{Iter};
+    my $blog = $param{Blog}
         or return __PACKAGE__->error( MT->translate("No Blog") );
     my $cb = $param{Callback} || sub { };
     my $encoding = $param{Encoding};
@@ -275,10 +275,10 @@ sub import_contents {
                     ## import comments, for example), we need to load the relevant
                     ## entry using the timestamp.
                     if ($no_save) {
-                        my $ts = $entry->created_on;
+                        my $ts = $entry->authored_on;
                         $entry = MT::Entry->load(
-                            {   created_on => $ts,
-                                blog_id    => $blog_id
+                            {   authored_on => $ts,
+                                blog_id     => $blog_id
                             }
                         );
                         if ( !$entry ) {

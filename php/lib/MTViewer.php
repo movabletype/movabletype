@@ -193,13 +193,15 @@ class MTViewer extends Smarty {
         }
     }
 
-    function stash($name,$value=null) {
+    function &stash($name,$value=null) {
         if(isset($this->__stash[$name]))
-            $old_val = $this->__stash[$name];
+            $old_val =& $this->__stash[$name];
         else
             $old_val = null;
-        if(func_num_args() > 1)
-            $this->__stash[$name] = $value;
+        if(func_num_args() > 1) {
+            $copy = $value;
+            $this->__stash[$name] =& $copy;
+        }
         return $old_val;
     }
 
@@ -690,7 +692,8 @@ EOT;
                 $hdlr($args, NULL, $this, $repeat);
                 if ($repeat) {
                     $content = 'true';
-                    $content = $hdlr($args, $content, $this, $repeat = false);
+                    $repeat = false;
+                    $content = $hdlr($args, $content, $this, $repeat);
                     $result = isset($content) && ($content === 'true');
                 } else {
                     $result = false;

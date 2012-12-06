@@ -128,9 +128,6 @@ use vars qw( @ISA %Lexicon );
 	'\'[_1]\' is not a valid function for a hash.' => '[_1]はハッシュで利用できる関数ではありません。',
 	'\'[_1]\' is not a valid function for an array.' => '[_1]は配列で利用できる関数ではありません。',
 
-## php/lib/function.mtwidgetmanager.php
-	'Error compiling widget set [_1]' => 'ウィジェットセット[_1]をコンパイルできませんでした。',
-
 ## php/lib/mtdb.base.php
 	'When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them.' => 'include_blogs属性で指定されたブログがexclude_blogs属性で全て除外されています。',
 
@@ -395,6 +392,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Sign in[_2] to comment.' => 'コメントするにはまず[_1]サインイン[_2]してください。',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => 'コメントする前に[_1]サインイン[_2]することもできます。',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => '<a href="[_1]" onclick="[_2]">[_3]からのコメント</a>に返信',
+	'The sign-in attempt was not successful; Please try again.' => 'サインインできませんでした。',
 
 ## default_templates/lockout-ip.mtml
 	'This email is to notify you that an IP address has been locked out.' => 'これは以下のIPアドレスからのアクセスがロックされたことを通知するメールです。',
@@ -468,7 +466,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/openid.mtml
 	'[_1] accepted here' => '[_1]対応しています',
-	'http://www.sixapart.com/labs/openid/' => 'http://www.movabletype.jp/openid/',
+	'http://www.sixapart.com/labs/openid/' => 'https://www.sixapart.jp/about/openid.html',
 	'Learn more about OpenID' => 'OpenIDについて',
 
 ## default_templates/page.mtml
@@ -1163,7 +1161,8 @@ use vars qw( @ISA %Lexicon );
 	'The system level settings for plugin \'[_1]\' already exist.  Skipping this record.' => '[_1]のシステムのプラグイン設定はすでに存在しています。このレコードはスキップします。',
 
 ## lib/MT/BackupRestore/BackupFileScanner.pm
-	'Can not restore this file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.' => 'Digest::SHAがインストールされていないため、このファイルを復元することが出来ません。システム管理者問い合わせてください。',
+	'Cannot restore requested file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.' => 'Digest::SHAがインストールされていないため、このファイルを復元することが出来ません。システム管理者問い合わせてください。',
+	'Cannot restore requested file because a website was not found in either the system or backup data. A website must be created first.' => 'ウェブサイトのデータが含まれていないため、このファイルを復元することが出来ません。ウェブサイトを先に作成してください。',
 
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
 
@@ -1536,6 +1535,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Tools.pm
 	'Password Recovery' => 'パスワードの再設定',
 	'Email address is required for password reset.' => 'メールアドレスはパスワードをリセットするために必要です。',
+	'Invalid email address' => 'メールアドレスのフォーマットが正しくありません',
 	'Error sending e-mail ([_1]); Please fix the problem, then try again to recover your password.' => 'メールを送信できませんでした。問題を解決してから再度パスワードの再設定を行ってください: [_1]',
 	'Password reset token not found' => 'パスワードをリセットするためのトークンが見つかりませんでした。',
 	'Email address not found' => 'メールアドレスが見つかりませんでした。',
@@ -1951,11 +1951,15 @@ use vars qw( @ISA %Lexicon );
 	'Unsupported image file type: [_1]' => '[_1]は画像タイプとしてサポートされていません。',
 	'Reading file \'[_1]\' failed: [_2]' => 'ファイル \'[_1]\' を読み取れませんでした: [_2]',
 	'Reading image failed: [_1]' => '画像を読み取れませんでした。',
+	'Rotate (degrees: [_1]) is not supported' => '画像を回転([_1]度)させる事が出来ません。',
 
 ## lib/MT/Image/ImageMagick.pm
 	'Cannot load Image::Magick: [_1]' => 'Image::Magickをロードできません: [_1]',
 	'Scaling to [_1]x[_2] failed: [_3]' => 'サイズを[_1]x[_2]に変更できませんでした。',
 	'Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]' => '[_2],[_3]の位置から[_1]x[_1]をトリミングできませんでした: [_4]',
+	'Flip horizontal failed: [_1]' => '画像を水平反転させることができませんでした: [_1]',
+	'Flip vertical failed: [_1]' => '画像を垂直反転させることができませんでした: [_1]',
+	'Rotate (degrees: [_1]) failed: [_2]' => '画像を回転([_1]度)させることができませんでした: [_2]',
 	'Converting image to [_1] failed: [_2]' => '画像を[_1]に変換できませんでした: [_2]',
 
 ## lib/MT/Image/Imager.pm
@@ -2215,12 +2219,15 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Template/ContextHandlers.pm
 	'All About Me' => 'All About Me',
 	'Remove this widget' => 'このウィジェットを削除',
+	'[_1]Publish[_2] your [_3] to see these changes take effect.' => '変更を反映するために、対象の[_3]を[_1]再構築[_2]してください。',
 	'[_1]Publish[_2] your site to see these changes take effect.' => '設定を有効にするために[_1]再構築[_2]してください。',
 	'Actions' => 'アクション',
 	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.jp/documentation/appendices/tags/%t.html',
 	'You used an [_1] tag without a date context set up.' => '[_1]を日付コンテキストの外部で利用しようとしました。',
 	'Division by zero.' => 'ゼロ除算エラー',
 	'[_1] is not a hash.' => '[_1]はハッシュではありません。',
+	'blog(s)' => 'ブログ',
+	'website(s)' => 'ウェブサイト',
 	'No [_1] could be found.' => '[_1]が見つかりません。',
 	'records' => 'オブジェクト',
 	'No template to include was specified' => 'インクルードするテンプレートが見つかりませんでした。',
@@ -2610,7 +2617,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid value' => '入力された値が正しくありません',
 	'You have an error in your input.' => '入力内容に誤りがあります。',
 	'Invalid date format' => '日付の入力フォーマットが正しくありません',
-	'Invalid email address' => 'メールアドレスのフォーマットが正しくありません',
 	'Invalid URL' => 'URLのフォーマットが正しくありません',
 	'This field is required' => 'このフィールドは必須です。',
 	'This field must be an integer' => 'このフィールドには整数の値を入力して下さい',
@@ -2663,11 +2669,11 @@ use vars qw( @ISA %Lexicon );
 	'Last' => '最後',
 
 ## mt-static/plugins/FormattedTextForTinyMCE/extension.js
-	'Insert Formatted Text' => '定型文の挿入',
+	'Insert Boilerplate' => '定型文の挿入',
 
 ## mt-static/plugins/FormattedTextForTinyMCE/langs/template.js
-	'Formatted Text' => '定型文',
-	'Select a Formatted Text' => '定型文を選択...',
+	'Boilerplate' => '定型文',
+	'Select Boilerplate' => '定型文を選択...',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
 	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
@@ -2837,7 +2843,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/templates/entry_summary.mtml
 
 ## themes/classic_website/templates/javascript.mtml
-	'The sign-in attempt was not successful; Please try again.' => 'サインインできませんでした。',
 
 ## themes/classic_website/templates/main_index.mtml
 
@@ -3047,7 +3052,7 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]">[_2]</a> - [_3]</a>' => '<a href="[_1]">[_2]</a> - [_3]</a>',
 
 ## themes/rainier/templates/zenback.mtml
-	'Please paste the Zenback script code here.' => 'ここに Zenback の Script コードは貼り付けてください。',
+	'Please paste Zenback script code here.' => 'ここに Zenback の Script コードは貼り付けてください。',
 
 ## themes/rainier/theme.yaml
 	'"Rainier" is a customizable Responsive Web Design theme, designed for blogs. In addition to multi-device viewing support, provided via Media Query (CSS), Movable Type functions make customizing navigational contents as well as image elements, such as logos, headers, very simple.' => 'Rainier はレスポンシブ Web デザインを採用したブログテーマです。Media Query (CSS) を利用したマルチデバイス対応に加え、Movable Type の機能を使ってロゴやナビゲーションの内容を簡単にカスタマイズできます。',
@@ -3056,6 +3061,8 @@ use vars qw( @ISA %Lexicon );
 	'Example page' => 'ウェブページの例',
 	'_SAMPLE_PAGE_BODY' => '<p>このページはウェブページの例です。</p><p>作成したウェブページに <code>@ADD_TO_SITE_NAV</code> というタグを設定すると、ページのヘッダ、フッタにあるナビゲーションにリンクが追加されます。</p>',
 	'Rainier' => 'Rainier',
+	'Styles for Rainier' => 'Rainier スタイル ライブラリ',
+	'A collection of styles compatible with Rainier themes.' => 'Rainier のデフォルトテンプレートと互換性のあるスタイルです。',
 	'Stylesheet for IE (8 or lower)' => 'スタイルシート (IE8 以下用)',
 	'JavaScript - Theme' => 'JavaScript - テーマ',
 
@@ -3100,7 +3107,7 @@ use vars qw( @ISA %Lexicon );
 	q{If you use an RSS reader, you can subscribe to a feed of all future entries matching '[_1]'.} => q{RSSリーダーを使うと、'[_1]'を含むすべてのブログ記事のフィードを購読することができます。},
 	'SEARCH/TAG FEED SUBSCRIPTION INFORMATION' => '検索/タグのフィード購読情報',
 	'Feed Subscription' => '購読',
-	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.jp/about/feeds',
+	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.jp/about/feeds.html',
 	'What is this?' => 'フィードとは',
 	'TAG LISTING FOR TAG SEARCH ONLY' => 'タグ一覧はタグ検索でのみ表示',
 	'Other Tags' => 'その他のタグ',
@@ -3967,6 +3974,7 @@ use vars qw( @ISA %Lexicon );
 	'You must configure this blog before you can publish this entry.' => 'ブログ記事を公開する前にブログの設定を行ってください。',
 	'You must configure this blog before you can publish this page.' => 'ページを公開する前にブログの設定を行ってください。',
 	'Publish On' => '公開する',
+	'@' => '@',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => '警告: 出力ファイル名を手動で設定すると、他のブログ記事と衝突を起こす可能性があります。',
 	q{Warning: Changing this entry's basename may break inbound links.} => q{警告: このブログ記事の出力ファイル名の変更は、内部のリンク切れの原因となります。},
 	'Change note' => '変更メモ',
@@ -5060,7 +5068,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/comment/auth_openid.tmpl
 	'OpenID URL' => 'あなたのOpenID URL',
 	'Sign in with one of your existing third party OpenID accounts.' => 'すでに登録済みの、OpenIDに対応した別サービスのアカウントでサインインします。',
-	'http://www.openid.net/' => 'http://www.sixapart.jp/about/openid/',
+	'http://www.openid.net/' => 'http://www.sixapart.jp/about/openid.html',
 	'Learn more about OpenID.' => 'OpenIDについて詳しくはこちら',
 
 ## tmpl/comment/auth_typepad.tmpl
@@ -5293,6 +5301,7 @@ use vars qw( @ISA %Lexicon );
 	'Unable to update SSL certification.' => 'サーバー証明書の更新をする事が出来ませんでした。',
 	'Config Directive' => '環境変数',
 	'Restoring Backup Data' => 'バックアップデータの復元',
+	'backup data' => 'バックアップデータ',
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
 	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
 	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
@@ -5468,7 +5477,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/blog/archive_index.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/archive_widgets_group.mtml
-	'This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]' => 'アーカイブの種類に応じて異なる内容を表示するように設定されたウィジェットです。詳細: [_1]',
 
 ## addons/Commercial.pack/templates/professional/blog/author_archive_list.mtml
 
@@ -5525,7 +5533,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/blog/main_index.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/main_index_widgets_group.mtml
-	'This is a custom set of widgets that are conditioned to only appear on the homepage (or "main_index"). More info: [_1]' => 'main_indexのテンプレートだけに表示されるように設定されているウィジェットのセットです。詳細: [_1]',
 
 ## addons/Commercial.pack/templates/professional/blog/monthly_archive_dropdown.mtml
 
@@ -5551,7 +5558,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/blog/search.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/search_results.mtml
-	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'すべての単語が順序に関係なく検索されます。フレーズで検索したいときは引用符で囲んでください。',
 
 ## addons/Commercial.pack/templates/professional/blog/sidebar.mtml
 
@@ -5615,6 +5621,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/website/search.mtml
 
 ## addons/Commercial.pack/templates/professional/website/search_results.mtml
+	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'すべての単語が順序に関係なく検索されます。フレーズで検索したいときは引用符で囲んでください。',
 
 ## addons/Commercial.pack/templates/professional/website/sidebar.mtml
 
@@ -5960,7 +5967,6 @@ use vars qw( @ISA %Lexicon );
 	'Topics matching &ldquo;[_1]&rdquo;' => '「[_1]」と一致するトピック',
 	'Topics tagged &ldquo;[_1]&rdquo;' => 'タグ「[_1]」のトピック',
 	'Topics' => 'トピック',
-	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'すべての単語が順序に関係なく検索されます。フレーズで検索したいときは引用符で囲んでください。',
 
 ## addons/Community.pack/templates/forum/sidebar.mtml
 
@@ -6092,8 +6098,6 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Enterprise.pack/app-wizard.yaml
 	'This module is required in order to use the LDAP Authentication.' => 'LDAP認証を利用する場合に必要です。',
-	'This module is required in order to use SSL/TLS connection with the LDAP Authentication.' => 'LDAP認証でSSLまたはTLS接続を利用する場合に必要です。',
-	'This module and its dependencies are required in order to use CRAM-MD5, DIGEST-MD5 or LOGIN as a SASL mechanism.' => 'Authen::SASLはCRAM-MD5、DIGEST-MD5又はLOGINをSASLメカニズムとして利用する場合に必要となります。',
 
 ## addons/Enterprise.pack/config.yaml
 	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
@@ -6110,7 +6114,7 @@ use vars qw( @ISA %Lexicon );
 	'Group Name' => 'グループ名',
 	'Manage Group Members' => 'グループメンバーの管理',
 	'Group Members' => 'グループメンバー',
-	'Group Member' => 'メンバー',
+	'Group Member' => 'グループメンバー',
 	'Permissions for Users' => 'ユーザーの権限',
 	'Permissions for Groups' => 'グループの権限',
 	'Active Groups' => '有効なグループ',
@@ -6173,6 +6177,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid site root: [_1]' => 'サイトパスの設定に誤りがあります: [_1]',
 	'Invalid timezone: [_1]' => '時間帯 (タイムゾーン) の設定に誤りがあります: [_1]',
 	'Invalid theme ID: [_1]' => 'テーマIDの設定に誤りがあります: [_1]',
+	'A theme \'[_1]\' was not found.' => '\'[_1]\'というテーマが見つかりません。',
 	'A user with the same name was found.  The registration was not processed: [_1]' => '同名のユーザーが登録されているため、登録できません: [_1]',
 	'Blog for user \'[_1]\' can not be created.' => 'ブログ「[_1]」へユーザーを登録できませんでした。',
 	'Blog \'[_1]\' for user \'[_2]\' has been created.' => 'ユーザー[_2]のブログ「[_1]」を作成しました。',
@@ -6392,32 +6397,34 @@ use vars qw( @ISA %Lexicon );
 	'The secret for the Facebook application associated with your blog.' => 'ブログ関連付用Facebookアプリケーションシークレット',
 
 ## plugins/FormattedText/config.yaml
-	'Manage formatted text.' => '定型文を管理します。',
+	'Manage boilerplate.' => '定型文を管理します。',
 
 ## plugins/FormattedText/lib/FormattedText/App.pm
-	'Are you sure you want to delete the selected FormattedTexts?' => '定型文を削除してもよろしいですか？',
-	'FormattedText' => '定型文',
-	'My Formatted Text' => '自分の定型文',
+	'Are you sure you want to delete the selected boilerplates?' => '定型文を削除してもよろしいですか？',
+	'My Boilerplate' => '自分の定型文',
 
 ## plugins/FormattedText/lib/FormattedText/FormattedText.pm
-	'FormattedTexts' => '定型文',
+	'Boilerplates' => '定型文',
+	'The boilerplate \'[_1]\' is already in use in this blog.' => '[_1]という定型文は既にこのブログに存在しています。',
 
 ## plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl
-	'Edit FormattedText' => '定型文の編集',
-	'Create FormattedText' => '定型文の作成',
-	'This formatted text has been saved.' => '定型文を保存しました。',
-	'Save changes to this formatted text (s)' => '定型文への変更を保存 (s)',
+	'Edit Boilerplate' => '定型文の編集',
+	'Create Boilerplate' => '定型文の作成',
+	'This boilerplate has been saved.' => '定型文を保存しました。',
+	'Save changes to this boilerplate (s)' => '定型文への変更を保存 (s)',
+	q{The boilerplate '[_1]' is already in use in this blog.} => q{[_1]という定型文は既にこのブログに存在しています。},
 
 ## plugins/FormattedText/tmpl/cms/list_formatted_text.tmpl
-	'The formatted text has been deleted from the database.' => '定型文を削除しました',
+	'The boilerplate has been deleted from the database.' => '定型文を削除しました',
 
 ## plugins/FormattedTextForTinyMCE/config.yaml
-	'Add the "Insert Formatted Text" button to the TinyMCE.' => 'TinyMCE に「定型文の挿入」ボタンを追加します。',
+	'Add the "Insert Boilerplate" button to the TinyMCE.' => 'TinyMCE に「定型文の挿入」ボタンを追加します。',
 
 ## plugins/FormattedTextForTinyMCE/lib/FormattedTextForTinyMCE/App.pm
-	'Cannot load formatted text.' => '記事テンプレートをロードできませんでした。',
+	'Cannot load boilerplate.' => '定型文をロードできませんでした。',
 
 ## plugins/FormattedTextForTinyMCE/tmpl/extension.tmpl
+	'Select a Boilerplate' => '定型文を選択...',
 
 ## plugins/Markdown/Markdown.pl
 	'A plain-text-to-HTML formatting plugin.' => 'テキストをHTMLに整形するプラグインです。',
@@ -6476,6 +6483,43 @@ use vars qw( @ISA %Lexicon );
 	'Default system aggregation policy' => '既定のアグリゲーションポリシー',
 	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で許可されます。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを制限できます。',
 	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で不許可になります。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを許可することもできます。',
+
+## plugins/SmartphoneOption/config.yaml
+	'Provides an iPhone, iPad and Android touch-friendly UI for Movable Type. Once enabled, navigate to your MT installation from your mobile to use this interface.' => 'iPhone, iPad, Android などのタッチ操作に適したMovable Typeのユーザーインターフェースを提供します。プラグインを有効にして、端末からアクセスしてください。',
+	'iPhone' => 'iPhone',
+	'iPad' => 'iPad',
+	'Android' => 'Android',
+	'PC' => 'PC',
+
+## plugins/SmartphoneOption/extlib/Image/ExifTool/MIFF.pm
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS.pm
+	'This function is not supported by [_1].' => 'この機能は、[_1]に対応していません。',
+	'This function is not supported by your browser.' => 'この機能は、お使いのブラウザに対応していません。',
+	'Mobile Dashboard' => 'モバイルダッシュボード',
+	'Rich text editor is not supported by your browser. Continue with  HTML editor ?' => 'この機能は、お使いのブラウザに対応していません。',
+	'Syntax highlight is not supported by your browser. Disable to continue ?' => 'お使いのブラウザは、コードのハイライト表示に対応していません。無効にして編集しますか？',
+	'[_1] View' => '[_1]表示',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Entry.pm
+	'Re-Edit' => '再編集する',
+	'Re-Edit (e)' => '再編集する (e)',
+	'Rich Text(HTML mode)' => 'リッチテキスト(HTMLモード)',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Listing.pm
+	'All' => '全て',
+	'Filters which you created from PC.' => 'PCで作成したフィルタが表示されます',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Search.pm
+	'Search [_1]' => '[_1]の検索',
+
+## plugins/SmartphoneOption/smartphone.yaml
+	'to [_1]' => 'to [_1]',
+	'Smartphone Main' => 'Smartphone Main',
+	'Smartphone Sub' => 'Smartphone Sub',
+
+## plugins/SmartphoneOption/tmpl/cms/dialog/select_formatted_text.tmpl
+	'No boilerplate could be found.' => '定型文が見つかりません。',
 
 ## plugins/StyleCatcher/config.yaml
 	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcherを使うと、ウェブサイトやブログのスタイルを探して、数クリックで変更することができます。',
@@ -6729,6 +6773,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 75
+## New words: 11
 
 1;

@@ -199,6 +199,17 @@ function init() {
     jQuery.mtUseSubdomain();
     jQuery.mtUseAbsolute();
 
+    jQuery('.blog-subdomain-text').bind('keyup focusin focusout', function($e) {
+        var $orig = jQuery(this).parents('.url-field:first').find('.blog-url-text');
+        var ns = jQuery.data( $orig.get(0), 'mtValidator' );
+        if ( ns ) {
+            $orig.mtValid({ focus: false });
+        }
+        $e.stopPropagation();
+        return false;
+    });
+
+
     function is_valid_url(url_){
         if (url_.indexOf(' ') != -1) {
             return false;
@@ -234,7 +245,14 @@ function init() {
         if ( $chk.length && $subdomain.val().length) {
             base = '<mt:var name="website_scheme">://' + $subdomain.val() + '.<mt:var name="website_domain" encode_html="1">';
         }
-        return is_valid_url(base + $e.val());
+        var ret = is_valid_url(base + $e.val());
+        if (ret) {
+            $subdomain.addClass('valid').removeClass('error');
+        }
+        else {
+            $subdomain.removeClass('valid').addClass('error');
+        }
+        return ret;
       },
       '#site_path': function ($e) {
         return is_valid_path($e.val());
