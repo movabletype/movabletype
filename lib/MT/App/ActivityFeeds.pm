@@ -285,7 +285,7 @@ sub process_log_feed {
             . encode_url( $app->param($key) );
     }
     $str =~ s/^&amp;(.+)$/?$1/;
-    $param->{feed_self} = $app->base . $app->path . $app->script . $str;
+    $param->{feed_self}    = $app->base . $app->path . $app->script . $str;
     $param->{feed_atom_id} = $app->base . $app->uri;
     $param->{feed_updated_iso} = time2isoz( ts2epoch( undef, $last_ts ) );
     $param->{feed_updated_iso} =~ s/ /T/;
@@ -616,17 +616,18 @@ sub _feed_blog {
 }
 
 sub _feed_system_check_permission {
-    my ($cb, $app, $blog_id_ref) = @_;
+    my ( $cb, $app, $blog_id_ref ) = @_;
+
     # verify user has permission to view logs for given weblog
     my $blog_id = $$blog_id_ref;
-    my $user = $app->user;
+    my $user    = $app->user;
 
     return 1 if $user->is_superuser;
     return 1 if $app->can_do('get_all_system_feed');
 
     if ($blog_id) {
         my @blog_ids = ($blog_id);
-        my $blog = MT->model('blog')->load($blog_id)
+        my $blog     = MT->model('blog')->load($blog_id)
             or return $cb->error( $app->translate("Invalid request.") );
         if ( !$blog->is_blog ) {
             push @blog_ids, map { $_->id } @{ $blog->blogs };
@@ -646,7 +647,7 @@ sub _feed_system_check_permission {
 
         $$blog_id_ref = join ',', @allowed_blog_ids;
     }
-    elsif ( ! $user->can_do( 'export_blog_log', at_least_one => 1 ) ) {
+    elsif ( !$user->can_do( 'export_blog_log', at_least_one => 1 ) ) {
         return $cb->error( $app->translate("No permissions.") );
     }
     return 1;
@@ -660,7 +661,7 @@ sub _feed_system {
     my $filter     = $app->param('filter');
     my $filter_val = $app->param('filter_val');
 
-    return unless _feed_system_check_permission($cb, $app, \$blog_id);
+    return unless _feed_system_check_permission( $cb, $app, \$blog_id );
 
     my $args = {};
     unless ( $filter && $filter_val ) {

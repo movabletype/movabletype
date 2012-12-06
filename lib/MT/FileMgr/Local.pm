@@ -158,6 +158,11 @@ sub mkpath {
 sub rename {
     my $fmgr = shift;
     my ( $from, $to ) = @_;
+
+    #First, remove existing file
+    if ( $fmgr->exists( $to ) ) {
+        $fmgr->delete( $to ) or return;
+    }
     rename $from, $to
         or return $fmgr->error(
         MT->translate(

@@ -1245,7 +1245,8 @@ sub publishPost {
         if !$author->is_superuser
             && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     $mt->rebuild_entry( Entry => $entry, BuildDependencies => 1 )
-        or die _fault( MT->translate( "Publishing failed: [_1]", $mt->errstr ) );
+        or
+        die _fault( MT->translate( "Publishing failed: [_1]", $mt->errstr ) );
     SOAP::Data->type( boolean => 1 );
 }
 
@@ -1424,6 +1425,8 @@ sub newMediaObject {
     my ( $vol, $path, $name ) = File::Spec->splitpath($local_file);
     $path =~ s!/$!!
         unless $path eq '/';    ## OS X doesn't like / at the end in mkdir().
+    $path = File::Spec->catpath( $vol, $path )
+        if $vol;
     unless ( $fmgr->exists($path) ) {
         $fmgr->mkpath($path)
             or die _fault(

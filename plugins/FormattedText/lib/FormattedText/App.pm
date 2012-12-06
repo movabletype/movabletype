@@ -17,17 +17,16 @@ sub is_enabled {
     my $current_editor
         = lc( $app->config('WYSIWYGEditor') || $app->config('Editor') );
     my $settings = $app->registry( 'editors', $current_editor );
-    $status = $settings->{formatted_text}{enabled} ? 1 : 0;
+    $status = $settings->{template}
+        && $settings->{formatted_text}{enabled} ? 1 : 0;
 
     $app->request( $key, $status );
 
     $status;
 }
 
-sub param_edit_entry {
-    my ( $cb, $app, $param, $tmpl ) = @_;
-
-    return if $param->{object_type} ne 'entry';
+sub _load_formatted_text_to_param {
+    my ( $key, $cb, $app, $param, $tmpl ) = @_;
 
     my $perms = $app->permissions;
     my $user  = $app->user;
@@ -35,9 +34,22 @@ sub param_edit_entry {
     my @formatted_texts
         = $app->model('formatted_text')->load( { blog_id => $app->blog->id },
         { sort => 'id', direction => 'descend' } );
-    $param->{formatted_texts}
-        = [ grep { can_view_formatted_text( $perms, $_, $user ) }
+    $param->{$key} = [ grep { can_view_formatted_text( $perms, $_, $user ) }
             @formatted_texts ];
+}
+
+sub param_edit_entry {
+    my ( $cb, $app, $param, $tmpl ) = @_;
+
+    return if $param->{object_type} ne 'entry';
+
+    _load_formatted_text_to_param( 'formatted_texts', @_ );
+}
+
+sub param_edit_formatted_text {
+    my ( $cb, $app, $param, $tmpl ) = @_;
+
+    _load_formatted_text_to_param( 'blog_formatted_texts', @_ );
 }
 
 sub can_edit_formatted_text {
@@ -55,7 +67,7 @@ sub can_edit_formatted_text {
     return 1 if $perms->can_do('edit_all_formatted_texts');
     return 0 if !$perms->can_do('edit_own_formatted_texts');
 
-    # This $author can only edit own formatted text.
+    # This $author can only edit own boilerplate.
     if ( !ref $formatted_text ) {
         $formatted_text = MT->model('formatted_text')->load($formatted_text)
             or return 0;
@@ -191,7 +203,7 @@ sub filtered_list_param {
 
 sub listing_screens {
     return {
-        object_label       => 'Formatted Text',
+        object_label       => 'Boilerplate',
         primary            => 'label',
         default_sort_key   => 'created_on',
         default_sort_order => 'descend',
@@ -211,7 +223,7 @@ sub listing_screens {
 sub system_filters {
     return {
         my_formatted_text => {
-            label => 'My Formatted Text',
+            label => 'My Boilerplate',
             items => sub {
                 [ { type => 'current_user' } ],;
             },
@@ -227,7 +239,7 @@ sub list_actions {
             order                   => 100,
             continue_prompt_handler => sub {
                 translate(
-                    'Are you sure you want to delete the selected Formatted Texts?'
+                    'Are you sure you want to delete the selected boilerplates?'
                 );
             },
             mode       => 'delete',

@@ -12,7 +12,6 @@ use MT;
 use base qw( MT::ErrorHandler );
 use Encode;
 use Sys::Hostname;
-
 our $MAX_LINE_OCTET = 998;
 
 my %SMTPModules = (
@@ -196,16 +195,17 @@ sub _send_mt_smtp {
     my $pass      = $mgr->SMTPPassword;
     my $localhost = hostname() || 'localhost';
     my $port
-        = $mgr->SMTPPort          ? $mgr->SMTPPort
+        = $mgr->SMTPPort ? $mgr->SMTPPort
         : $mgr->SMTPAuth eq 'ssl' ? 465
         :                           25;
     my ( $auth, $tls, $ssl );
     if ( $mgr->SMTPAuth ) {
+
         if ( 'starttls' eq $mgr->SMTPAuth ) {
             $tls = 1;
         }
         elsif ( 'ssl' eq $mgr->SMTPAuth ) {
-            $ssl = 1;
+            $ssl  = 1;
             $auth = 1;
         }
         else {
@@ -299,19 +299,21 @@ sub _send_mt_smtp {
     # Setup headers
     my $hdr;
     foreach my $k ( keys %$hdrs ) {
+        next if ($k =~ /^(To|Bcc|Cc)$/);
         $hdr .= "$k: " . $hdrs->{$k} . "\r\n";
     }
 
     # Sending mail
     $smtp->mail( $hdrs->{From} );
 
-    foreach my $h ( qw( To Bcc Cc ) ) {
+    foreach my $h (qw( To Bcc Cc )) {
         if ( defined $hdrs->{$h} ) {
             my $addr = $hdrs->{$h};
-            $addr = [ $addr ] unless 'ARRAY' eq ref $addr;
-            foreach my $a ( @$addr ) {
-                $smtp->recipient( $a );
+            $addr = [$addr] unless 'ARRAY' eq ref $addr;
+            foreach my $a (@$addr) {
+                $smtp->recipient($a);
             }
+            $hdr .= "$h: " . join(",\r\n ", @$addr) . "\r\n";
         }
     }
 

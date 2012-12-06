@@ -224,10 +224,18 @@ function blurDateFields(s) {
 </div>
 
 <mt:if name="replace_count">
+    <mt:if name="object_type" like="website|blog">
+      <mt:setvar name="rebuild_type" value="$object_type">
+      <mt:setvar name="no_link" value="1">
+    <mt:else>
+      <mt:setvar name="rebuild_type" value="all">
+      <mt:setvar name="no_link" value="0">
+    </mt:if>
   <mtapp:statusmsg
      id="replace-count"
      class="success"
-     rebuild="all"
+     rebuild="$rebuild_type"
+     no_link="$no_link"
      can_close="0">
     <__trans phrase="Successfully replaced [quant,_1,record,records]." params="<mt:var name="replace_count">">
   </mtapp:statusmsg>

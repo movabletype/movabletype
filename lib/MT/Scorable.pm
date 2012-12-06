@@ -322,22 +322,22 @@ sub _load_rank_data {
 }
 
 sub _flush_score_cache {
-    my $obj    = shift;
+    my $obj = shift;
     my ($term) = @_;
 
     # Clear elements in request cache
-    my $req = MT::Request->instance();
+    my $req       = MT::Request->instance();
     my $object_ds = $term->{object_ds};
     my $namespace = $term->{namespace};
     my $object_id = $term->{object_id};
     $req->cache( "${object_ds}_scores_${object_id}_$namespace", undef );
-    $req->cache( "${object_ds}_score_total_$namespace", undef );
-    $req->cache( "${object_ds}_score_high_$namespace", undef );
-    $req->cache( "${object_ds}_score_low_$namespace", undef );
+    $req->cache( "${object_ds}_score_total_$namespace",         undef );
+    $req->cache( "${object_ds}_score_high_$namespace",          undef );
+    $req->cache( "${object_ds}_score_low_$namespace",           undef );
 
-    if (MT::Memcached->is_available()) {
+    if ( MT::Memcached->is_available() ) {
         my $instance = MT::Memcached->instance();
-        my $memkey = $obj->_cache_key($term);
+        my $memkey   = $obj->_cache_key($term);
         $instance->delete($memkey);
         delete $term->{author_id};
         $memkey = $obj->_cache_key($term);

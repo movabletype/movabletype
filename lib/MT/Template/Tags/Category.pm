@@ -248,16 +248,16 @@ sub _hdlr_categories {
     ## <MTArchiveList archive_type="Category">, it needs to support
     ## the <$MTArchiveLink$> and <$MTArchiveTitle$> tags
     local $ctx->{inside_mt_categories} = 1;
-    my $n = $args->{lastn};
-    my $i   = 0;
+    my $n          = $args->{lastn};
+    my $i          = 0;
     my @categories = ();
     while ( my $cat = $iter->() ) {
         next if ( ( !$args->{show_empty} ) && ( !$entry_count_of->($cat) ) );
-        last if (defined($n) && scalar(@categories) >= $n);
+        last if ( defined($n) && scalar(@categories) >= $n );
         push @categories, $cat;
     }
     my $vars = $ctx->{__stash}{vars} ||= {};
-    MT::Meta::Proxy->bulk_load_meta_objects(\@categories);
+    MT::Meta::Proxy->bulk_load_meta_objects( \@categories );
     foreach my $cat (@categories) {
         $i++;
         my $last = $i == scalar(@categories);
@@ -800,7 +800,7 @@ sub _hdlr_parent_categories {
     my @cats = $cat->parent_categories;
     @cats = ( $cat, @cats ) unless ($exclude_current);
 
-    MT::Meta::Proxy->bulk_load_meta_objects(\@cats);
+    MT::Meta::Proxy->bulk_load_meta_objects( \@cats );
 
     # Start from the top and work our way down
     while ( my $c = pop @cats ) {

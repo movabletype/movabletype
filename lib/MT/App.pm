@@ -363,6 +363,8 @@ sub search_apis {
     my $apis = $app->registry("search_apis") or return;
     my @apis;
     foreach my $a ( keys %$apis ) {
+        $apis->{$a} = $app->registry( "search_apis", $a )
+            unless ref $apis->{$a};
         next if $apis->{$a}->{view} && $apis->{$a}->{view} ne $view;
         $apis->{$a}{key}  = $a;
         $apis->{$a}{core} = 1
@@ -1650,6 +1652,7 @@ sub bake_commenter_cookie {
         die $ctx->error( $builder->errstr ) unless defined $tokens;
         $tag = $builder->build( $ctx, $tokens );
         die $ctx->error( $builder->errstr ) unless defined $tag;
+        return $tag;
     };
 
     my $cookie_path = MT->config->UserSessionCookiePath;
@@ -1758,6 +1761,7 @@ sub _invalidate_commenter_session {
         die $ctx->error( $builder->errstr ) unless defined $tokens;
         $tag = $builder->build( $ctx, $tokens );
         die $ctx->error( $builder->errstr ) unless defined $tag;
+        return $tag;
     };
 
     my $cookie_path = MT->config->UserSessionCookiePath;

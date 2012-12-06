@@ -598,9 +598,10 @@ sub entry_count {
                     status  => $class->RELEASE()
                 },
                 {   'join' => [
-                        'MT::Placement', 'entry_id',
-                        { category_id => $cat->id,
-                          blog_id => $cat->blog_id,
+                        'MT::Placement',
+                        'entry_id',
+                        {   category_id => $cat->id,
+                            blog_id     => $cat->blog_id,
                         }
                     ]
                 }

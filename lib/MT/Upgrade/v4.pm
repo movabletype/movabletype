@@ -525,10 +525,10 @@ sub _process_masks {
             elsif ( 256 eq $key ) {    #send_notifications
                 push @perms, 'create_post', 'send_notifications';
             }
-            elsif ( 4096 eq $key ) {                 #adminsiter_blog
+            elsif ( 4096 eq $key ) {    #adminsiter_blog
                 push @perms, 'administer_blog';
             }
-            elsif ( 2048 eq $key ) {                 #not_comment
+            elsif ( 2048 eq $key ) {    #not_comment
                 $perm->restrictions("'comment'");
             }
             else {
@@ -538,7 +538,7 @@ sub _process_masks {
     }
     my $perm_str = scalar(@perms) ? "'" . join( "','", @perms ) . "'" : q();
     $perm->permissions($perm_str);
-    $perm->role_mask(0);    ## remove legacy permissions
+    $perm->role_mask(0);                ## remove legacy permissions
     $perm;
 }
 

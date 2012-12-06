@@ -174,11 +174,9 @@ sub init_request {
 }
 
 sub throttle_response {
-    my $app = shift;
+    my $app  = shift;
     my $tmpl = $app->param('Template') || '';
-    my $msg
-        = $app->translate(
-              "A search is in progress. Please wait "
+    my $msg  = $app->translate( "A search is in progress. Please wait "
             . "until it is completed and try again." );
     if ( $tmpl eq 'feed' ) {
         $app->response_code(503);
@@ -391,13 +389,13 @@ sub execute {
             )
             );
         my $tmpl;
-        foreach my $path (@{$app->{searchparam}{SearchTemplatePath}}) {
+        foreach my $path ( @{ $app->{searchparam}{SearchTemplatePath} } ) {
             if ( -r File::Spec->catfile( $path, $tmpl_file ) ) {
                 $tmpl = File::Spec->catfile( $path, $tmpl_file );
                 last;
             }
         }
-        return $app->errtrans("File not found: [_1]", $tmpl_file)
+        return $app->errtrans( "File not found: [_1]", $tmpl_file )
             unless $tmpl;
         open my $fh, "<", $tmpl
             or return $app->error(

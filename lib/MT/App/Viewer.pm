@@ -80,7 +80,7 @@ sub view {
                 undef,
                 {   type       => { not => 'backup' },
                     build_type => { not => MT::PublishOption->DISABLED() },
-                    id         => \' = fileinfo_template_id',
+                    id => \' = fileinfo_template_id',
                 }
             ],
         }
@@ -234,6 +234,7 @@ sub _view_entry {
         EntryIfExtended      => $entry->text_more ? 1 : 0,
     );
     require MT::TemplateMap;
+
     unless ($tmpl) {
         $tmpl = MT->model('template')->load( $fi->template_id )
             or return $app->errtrans( "Cannot load template [_1]",

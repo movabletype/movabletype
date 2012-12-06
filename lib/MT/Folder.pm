@@ -81,6 +81,12 @@ sub remove {
         }
     }
 
+    if ( ref $folder ) {
+
+        # Cache of the children folder is cleared.
+        $folder->{__children} = undef;
+    }
+
     $folder->SUPER::remove(@_)
         or return $folder->errstr;
 

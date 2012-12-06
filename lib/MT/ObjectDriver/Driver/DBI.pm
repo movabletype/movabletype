@@ -127,7 +127,8 @@ sub count {
                 $col = $class->properties->{primary_key};
             }
             my $dbcol
-                = $driver->dbd->db_column_name( $class->datasource, $col, $args->{alias} );
+                = $driver->dbd->db_column_name( $class->datasource, $col,
+                $args->{alias} );
             $select = "COUNT(DISTINCT $dbcol)";
         }
     }
@@ -374,7 +375,8 @@ sub _decorate_column_names_in {
 
     my $dbd = $driver->dbd;
     for my $col ( keys %$hash ) {
-        my $new_col = $dbd->db_column_name( $class->datasource, $col, $alias );
+        my $new_col
+            = $dbd->db_column_name( $class->datasource, $col, $alias );
         $hash->{$new_col} = delete $hash->{$col};
     }
 
@@ -384,7 +386,8 @@ sub _decorate_column_names_in {
 sub _decorate_column_name {
     my $driver = shift;
     my ( $class, $col, $alias ) = @_;
-    my $name = $driver->dbd->db_column_name( $class->datasource, $col, $alias );
+    my $name
+        = $driver->dbd->db_column_name( $class->datasource, $col, $alias );
     $name;
 }
 
@@ -419,7 +422,8 @@ sub prepare_statement {
     if ( my $date_columns = $class->columns_of_type('datetime') ) {
         my %date_columns_hash;
         @date_columns_hash{@$date_columns} = (1) x scalar @$date_columns;
-        $driver->_decorate_column_names_in( \%date_columns_hash, $class, $alias );
+        $driver->_decorate_column_names_in( \%date_columns_hash, $class,
+            $alias );
         $stmt_args{date_columns} = \%date_columns_hash;
     }
 
@@ -427,7 +431,8 @@ sub prepare_statement {
     if ( my $lob_columns = $class->columns_of_type( 'text', 'blob' ) ) {
         my %lob_columns_hash;
         @lob_columns_hash{@$lob_columns} = (1) x scalar @$lob_columns;
-        $driver->_decorate_column_names_in( \%lob_columns_hash, $class, $alias );
+        $driver->_decorate_column_names_in( \%lob_columns_hash, $class,
+            $alias );
         $stmt_args{lob_columns} = \%lob_columns_hash;
     }
 
@@ -490,7 +495,7 @@ sub prepare_statement {
             my $dbcol = $dbd->db_column_name( $tbl, $col, $alias );
             $stmt->add_select( $dbcol => $col );
         }
-        if ( $alias ) {
+        if ($alias) {
             $stmt->from( ["$tbl $alias"] );
         }
         else {
@@ -528,8 +533,9 @@ sub prepare_statement {
                 my $dir = $args->{direction}
                     && $args->{direction} eq 'descend' ? 'DESC' : 'ASC';
                 $stmt->order(
-                    {   column => $dbd->db_column_name( $tbl, $order, $alias ),
-                        desc   => $dir,
+                    {   column =>
+                            $dbd->db_column_name( $tbl, $order, $alias ),
+                        desc => $dir,
                     }
                 );
             }
@@ -538,8 +544,10 @@ sub prepare_statement {
                 foreach my $ord (@$order) {
                     push @order,
                         {
-                        column => $dbd->db_column_name( $tbl, $ord->{column}, $alias ),
-                        desc   => $ord->{desc},
+                        column => $dbd->db_column_name(
+                            $tbl, $ord->{column}, $alias
+                        ),
+                        desc => $ord->{desc},
                         };
                 }
                 $stmt->order( \@order );
@@ -652,7 +660,7 @@ sub prepare_statement {
             }
             else {
                 $cond = [$cond] unless ref $cond;
-                my $tuple = $to_class->primary_key_tuple;
+                my $tuple   = $to_class->primary_key_tuple;
                 my $j_alias = $j_args->{alias};
             COLUMN: foreach my $i ( 0 .. $#$cond ) {
                     next unless defined $cond->[$i];
@@ -660,9 +668,11 @@ sub prepare_statement {
                     my $c = $cond->[$i];
 
                     my $where_col
-                        = $driver->_decorate_column_name( $to_class, $t, $j_alias );
+                        = $driver->_decorate_column_name( $to_class, $t,
+                        $j_alias );
                     my $dec_j_col
-                        = $driver->_decorate_column_name( $j_class, $c, $j_alias );
+                        = $driver->_decorate_column_name( $j_class, $c,
+                        $j_alias );
                     my $where_val = "$dec_j_col";
                     $cond_query .= ' AND ' if $cond_query;
                     $cond_query .= "$where_col = $where_val";
@@ -689,17 +699,17 @@ sub prepare_statement {
                 = $j_args->{to}
                 ? MT->model( $j_args->{to} )
                 : $class;
-            my $tuple = $to_class->primary_key_tuple;
+            my $tuple   = $to_class->primary_key_tuple;
             my $j_alias = $j_args->{alias};
         COLUMN: foreach my $i ( 0 .. $#$j_col ) {
                 next unless defined $j_col->[$i];
                 my $t = $tuple->[$i];
                 my $c = $j_col->[$i];
 
-                my $where_col
-                    = $driver->_decorate_column_name( $to_class, $t, $j_alias );
-                my $dec_j_col
-                    = $driver->_decorate_column_name( $j_class, $c, $j_alias );
+                my $where_col = $driver->_decorate_column_name( $to_class, $t,
+                    $j_alias );
+                my $dec_j_col = $driver->_decorate_column_name( $j_class, $c,
+                    $j_alias );
                 my $where_val = "= $dec_j_col";
                 $stmt->add_where( $where_col, \$where_val );
             }

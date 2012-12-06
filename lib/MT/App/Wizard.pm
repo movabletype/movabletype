@@ -176,8 +176,9 @@ sub init_core_registry {
                     'Net::SMTP is required in order to send mail using an SMTP server.',
             },
             'Authen::SASL' => {
-                link  => 'http://search.cpan.org/dist/Authen-SASL/',
-                label => 'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.',
+                link => 'http://search.cpan.org/dist/Authen-SASL/',
+                label =>
+                    'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.',
             },
             'Net::SMTP::SSL' => {
                 link => 'http://search.cpan.org/dist/Net-SMTP-SSL/',
@@ -345,8 +346,9 @@ sub init_core_registry {
                 label => 'This module is required for cookie authentication.',
             },
             'DBI' => {
-                link    => 'http://search.cpan.org/dist/DBI',
-                label   => 'DBI is required to work with most supported databases.',
+                link => 'http://search.cpan.org/dist/DBI',
+                label =>
+                    'DBI is required to work with most supported databases.',
                 version => 1.21,
             },
             'CGI' => {
@@ -981,13 +983,14 @@ sub optional {
     $param{config}                           = $app->serialize_config(%param);
 
     require MT::Mail;
-    $param{has_net_smtp}         = MT::Mail->can_use_smtp         ? 1 : 0;
-    $param{has_net_smtp_auth}    = MT::Mail->can_use_smtpauth     ? 1 : 0;
-    $param{has_net_smtp_ssl}     = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
+    $param{has_net_smtp}      = MT::Mail->can_use_smtp         ? 1 : 0;
+    $param{has_net_smtp_auth} = MT::Mail->can_use_smtpauth     ? 1 : 0;
+    $param{has_net_smtp_ssl}  = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
     $param{has_net_smtp_ssl_msg} = MT::Mail->errstr;
     $param{has_net_smtp_tls}     = MT::Mail->can_use_smtpauth_tls ? 1 : 0;
     $param{has_net_smtp_tls_msg} = MT::Mail->errstr;
-    $param{can_use_ssl}          = $param{has_net_smtp_ssl} || $param{has_net_smtp_tls};
+    $param{can_use_ssl}          = $param{has_net_smtp_ssl}
+        || $param{has_net_smtp_tls};
 
     my $ok = 1;
     my $err_msg;

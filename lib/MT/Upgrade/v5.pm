@@ -467,7 +467,7 @@ sub _v5_migrate_default_site {
         my $website = $class->create_default_website(
             MT->translate("New user's website"),
             site_url  => $site_url,
-            site_path => $site_path, 
+            site_path => $site_path,
         );
         $website->save
             or return $self->error(
@@ -647,8 +647,7 @@ sub _v5_generate_websites_place_blogs {
             require File::Spec;
 
             # lets try to figure out a common directory to all the blogs
-            my @blogs_dirs
-                = sort { scalar(@$a) <=> scalar(@$b) }
+            my @blogs_dirs = sort { scalar(@$a) <=> scalar(@$b) }
                 map { [ $_->[0], File::Spec->splitdir( $_->[1] ) ] }
                 map { [ File::Spec->splitpath( $_->{blog}->site_path, 1 ) ] }
                 @$blogs;
@@ -665,8 +664,7 @@ sub _v5_generate_websites_place_blogs {
                 # could not find anything in common -
                 # try figure out a path from one of the blogs
                 my $blog_rec = $blogs->[0];
-                my $dir_depth
-                    = grep { defined($_) and length($_) }
+                my $dir_depth = grep { defined($_) and length($_) }
                     split '/', $blog_rec->{url_path};
                 my ( $volume, $dirs, undef )
                     = File::Spec->splitpath( $blog_rec->{blog}->site_path,
@@ -688,7 +686,7 @@ sub _v5_generate_websites_place_blogs {
                 MT->translate( 'New WebSite [_1]', $website_site_url ),
                 site_theme => MT->config->DefaultWebsiteTheme,
                 site_url   => $website_site_url,
-                site_path  => $website_site_path, 
+                site_path  => $website_site_path,
             );
             $website->save
                 or return $self->error(

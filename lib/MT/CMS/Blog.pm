@@ -260,6 +260,7 @@ sub edit {
                 = ( $cfg->OutboundTrackbackLimit eq 'local' )
                 || ( $cfg->OutboundTrackbackLimit eq 'any' );
             my $threshold = $obj->junk_score_threshold || 0;
+            $threshold = $threshold + 0;
             $threshold = '+' . $threshold if $threshold > 0;
             $param->{junk_score_threshold} = $threshold;
             $param->{junk_folder_expiry}   = $obj->junk_folder_expiry || 60;
@@ -410,7 +411,7 @@ sub cfg_prefs {
                 };
         }
         @data = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @data;
-        unless (grep $_->{archive_type_is_preferred}, @data) {
+        unless ( grep $_->{archive_type_is_preferred}, @data ) {
             $param{no_preferred_archive_type} = 1;
         }
         $param{entry_archive_types} = \@data;
@@ -1140,7 +1141,9 @@ sub start_rebuild_pages {
             MT::Util::encode_html( $entry->title ) );
         $param{is_entry} = 1;
         $param{entry_id} = $entry_id;
-        for my $col (qw( is_new old_status old_next old_previous old_categories )) {
+        for my $col (
+            qw( is_new old_status old_next old_previous old_categories ))
+        {
             $param{$col} = $q->param($col);
         }
     }
@@ -1252,7 +1255,7 @@ sub cc_return {
     my $code;
     if ( $url =~ m!^http://creativecommons\.org/licenses/([a-z\-]+)!i ) {
         $code = $1;
-    } 
+    }
     elsif ( $url =~ m!^http://creativecommons.org/publicdomain/mark/!i ) {
         $code = 'pd';
     }
@@ -1260,11 +1263,11 @@ sub cc_return {
         $code = 'pdd';
     }
     else {
-        return $app->error("MT is not aware of this license: " .
-            MT::Util::encode_html($name, 1));
+        return $app->error( "MT is not aware of this license: "
+                . MT::Util::encode_html( $name, 1 ) );
     }
 
-    my %param = ( 
+    my %param = (
         license_name => MT::Util::cc_name($code),
         license_code => "$code $url $image",
     );
@@ -1657,13 +1660,16 @@ sub post_save {
 
     # check to see what changed and add a flag to meta_messages
     my @meta_messages = ();
-    my %blog_fields = ( %{ $obj->column_defs }, %{ $obj->properties()->{fields} } );
-    foreach my $key (qw{ created_on created_by modified_on modified_by id class children_modified_on }) {
+    my %blog_fields
+        = ( %{ $obj->column_defs }, %{ $obj->properties()->{fields} } );
+    foreach my $key (
+        qw{ created_on created_by modified_on modified_by id class children_modified_on }
+        )
+    {
         delete $blog_fields{$key};
     }
 
-    for my $blog_field (keys %blog_fields)
-    {
+    for my $blog_field ( keys %blog_fields ) {
 
         if ( $obj->$blog_field() ne $original->$blog_field() ) {
             my $old
@@ -1961,11 +1967,9 @@ sub save_filter {
             )
             unless 0 < sprintf( '%d', $app->param('max_revisions_template') );
         return $eh->error(
-            MT->translate(
-                "Please choose a preferred archive type."
-            )
-            )
-            unless !$app->blog->is_blog || $app->param('preferred_archive_type');
+            MT->translate("Please choose a preferred archive type.") )
+            unless !$app->blog->is_blog
+                || $app->param('preferred_archive_type');
     }
     return 1;
 }
@@ -2204,11 +2208,11 @@ sub cfg_prefs_save {
             $blog->archive_url("$subdomain/::/$path");
         }
         $blog->site_path( $app->param('site_path_absolute') )
-            if ! $app->config->BaseSitePath
+            if !$app->config->BaseSitePath
                 && $app->param('use_absolute')
                 && $app->param('site_path_absolute');
         $blog->archive_path( $app->param('archive_path_absolute') )
-            if ! $app->config->BaseSitePath
+            if !$app->config->BaseSitePath
                 && $app->param('enable_archive_paths')
                 && $app->param('use_absolute_archive')
                 && $app->param('archive_path_absolute');
@@ -2366,6 +2370,77 @@ sub update_publishing_profile {
                 $tmpl->build_type( MT::PublishOption::ONDEMAND() );
             }
             $tmpl->save();
+        }
+        if ( $dcty eq 'none' ) {
+            if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/
+                && MT->config->EnableAutoRewriteOnIIS )
+            {
+
+                # Remove IIS redirect settings
+                my $remove_setting = sub {
+                    my ($web_config_path) = @_;
+                    require XML::Simple;
+                    my $web_config;
+                    my $parser = XML::Simple->new;
+                    if ( -f $web_config_path ) {
+                        $web_config = $parser->XMLin( $web_config_path,
+                            keyattr => [] );
+
+                        my $rules;
+                        my $new_rules;
+                        if (defined $web_config->{'system.webServer'}
+                            ->{'rewrite'} )
+                        {
+                            $rules = $web_config->{'system.webServer'}
+                                ->{'rewrite'}->{'rules'}->{'rule'};
+                            $rules = [$rules] unless ref $rules eq 'ARRAY';
+                            foreach my $rule (@$rules) {
+                                if ( defined $rule->{name}
+                                    && $rule->{name}
+                                    !~ m/^Rewrite rule for '/ )
+                                {
+                                    unshift @$new_rules, $rule;
+                                }
+                            }
+                        }
+                        if ($new_rules) {
+                            $web_config->{'system.webServer'}->{'rewrite'}
+                                ->{'rules'}->{'rule'} = $new_rules;
+                        }
+                        elsif (
+                            defined $web_config->{'system.webServer'}
+                            ->{'rewrite'} )
+                        {
+                            delete $web_config->{'system.webServer'}
+                                ->{'rewrite'};
+                        }
+
+                        my $out = $parser->XMLout(
+                            $web_config,
+                            RootName => undef,
+                            keyattr  => []
+                        );
+                        $out
+                            = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
+                            . "<configuration>\n"
+                            . $out
+                            . "</configuration>\n";
+
+                        my $fh;
+                        open( $fh, ">$web_config_path" )
+                            || die
+                            "Couldn't open $web_config_path for appending";
+                        print $fh $out;
+                        close $fh;
+                    }
+                };
+
+                $remove_setting->(
+                    File::Spec->catfile( $blog->site_path, "web.config" ) );
+                $remove_setting->(
+                    File::Spec->catfile( $blog->archive_path, "web.config" )
+                );
+            }
         }
     }
     elsif ( $dcty eq 'archives' ) {
@@ -2604,16 +2679,98 @@ sub prepare_dynamic_publishing {
             && ( -f $htaccess_path )
             && ( -f $mtview_path );
 
+    require URI;
+    my $mtview_server_url = new URI($site_url);
+    $mtview_server_url = $mtview_server_url->path();
+    $mtview_server_url
+        .= ( $mtview_server_url =~ m|/$| ? "" : "/" ) . "mtview.php";
+
     # IIS itself does not handle .htaccess,
     # but IISPassword (3rd party) does and dies with this.
-    if ( $ENV{SERVER_SOFTWARE} !~ /Microsoft-IIS/ ) {
-        eval {
-            require URI;
-            my $mtview_server_url = new URI($site_url);
-            $mtview_server_url = $mtview_server_url->path();
-            $mtview_server_url
-                .= ( $mtview_server_url =~ m|/$| ? "" : "/" ) . "mtview.php";
+    if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/
+        && MT->config->EnableAutoRewriteOnIIS )
+    {
 
+    # On the IIS environment, will make/modify the web.config with URL Rewrite
+        my $rule;
+        $rule->{'stopProcessing'} = 'false';
+        $rule->{'action'}         = {
+            'url'               => $mtview_server_url . '{R:2}',
+            'appendQueryString' => 'true',
+            'type'              => 'Rewrite',
+        };
+        $rule->{'match'} = {
+            'ignoreCase' => 'false',
+            'url'        => '^(.*)(\\?.*)?$',
+        };
+        $rule->{'name'}       = "Rewrite rule for '$site_url'";
+        $rule->{'conditions'} = {
+            'add' => [
+                {   'input'      => '{REQUEST_FILENAME}',
+                    'ignoreCase' => 'false',
+                    'negate'     => 'true',
+                    'matchType'  => 'IsFile'
+                }
+            ],
+            'logicalGrouping' => 'MatchAll',
+        };
+
+        require XML::Simple;
+        my $web_config_path = File::Spec->catfile( $site_path, "web.config" );
+        my $web_config;
+        my $parser = XML::Simple->new;
+        if ( -f $web_config_path ) {
+            $web_config = $parser->XMLin( $web_config_path, keyattr => [] );
+            my $ins = 1;
+            my $rules;
+            if ( exists $web_config->{'system.webServer'}->{'rewrite'} ) {
+                $rules = $web_config->{'system.webServer'}->{'rewrite'}
+                    ->{'rules'}->{'rule'};
+                $rules = [$rules] unless ref $rules eq 'ARRAY';
+                foreach my $rule (@$rules) {
+                    my $rule_url = $rule->{action}->{url};
+                    if ( $rule_url =~ /^$mtview_server_url/i ) {
+                        $ins = 0;
+                        last;
+                    }
+                }
+            }
+            if ($ins) {
+                $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}
+                    ->{'clear'} = {};
+                unshift @$rules, $rule;
+            }
+            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}
+                ->{'rule'} = $rules;
+        }
+        else {
+            $web_config->{'system.webServer'}
+                = { 'rewrite' => { 'rules' => undef } };
+            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}
+                ->{'clear'} = {};
+            $web_config->{'system.webServer'}->{'rewrite'}->{'rules'}
+                ->{'rule'} = $rule;
+        }
+
+        my $out = $parser->XMLout(
+            $web_config,
+            RootName => undef,
+            keyattr  => []
+        );
+        $out
+            = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
+            . "<configuration>\n"
+            . $out
+            . "</configuration>\n";
+
+        my $fh;
+        open( $fh, ">$web_config_path" )
+            || die "Couldn't open $web_config_path for appending";
+        print $fh $out;
+        close $fh;
+    }
+    else {
+        eval {
             my $contents = "";
             if ( open( HT, $htaccess_path ) ) {
                 local $/ = undef;
@@ -2898,13 +3055,13 @@ sub clone {
             }
         }
     }
-    if (my $limit = $app->config->BaseSitePath) {
+    if ( my $limit = $app->config->BaseSitePath ) {
         $param->{'sitepath_limited'} = $limit;
-        $limit = File::Spec->catdir($limit, "PATH");
+        $limit = File::Spec->catdir( $limit, "PATH" );
         $limit =~ s/PATH$//;
         $param->{'sitepath_limited_trail'} = $limit;
-        $param->{'use_absolute'}         = 0;
-        $param->{'use_absolute_archive'} = 0;
+        $param->{'use_absolute'}           = 0;
+        $param->{'use_absolute_archive'}   = 0;
     }
     $param = _has_valid_form( $app, $blog, $param );
 
@@ -3052,7 +3209,8 @@ HTML
 
         if ( $param->{enable_archive_paths} ) {
             $new_blog->archive_path(
-                  $param->{'use_absolute_archive'} && !$app->config->BaseSitePath
+                $param->{'use_absolute_archive'}
+                    && !$app->config->BaseSitePath
                 ? $param->{'archive_path_absolute'}
                 : $param->{'archive_path'}
             );

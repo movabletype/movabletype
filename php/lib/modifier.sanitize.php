@@ -6,7 +6,10 @@
 # $Id$
 
 function smarty_modifier_sanitize($text, $spec = '1') {
-    if ($spec == '1') {
+    if (! $spec) {
+        return $text;
+    }
+    else if ($spec == '1') {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $blog = $ctx->stash('blog');

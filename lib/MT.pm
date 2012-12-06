@@ -39,7 +39,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '5.2.1',                '__PRODUCT_VERSION_ID__',
+        '5.2.2',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -397,6 +397,11 @@ sub construct {
         }
         return @matches;
     }
+}
+
+sub all_models {
+    my $pkg = shift;
+    map { $pkg->model($_) } keys %{ $pkg->registry('object_types') };
 }
 
 sub registry {
@@ -2175,7 +2180,7 @@ sub template_paths {
         }
     }
     my @alt_paths = $mt->config('AltTemplatePath');
-    foreach my $alt_path (@alt_paths ) {
+    foreach my $alt_path (@alt_paths) {
         if ( -d $alt_path ) {    # AltTemplatePath is absolute
             push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} )
                 if $mt->{template_dir};
@@ -2243,7 +2248,8 @@ sub load_global_tmpl {
 
 sub load_tmpl {
     my $mt = shift;
-    if ( exists( $mt->{component} ) && ( lc($mt->{component}) ne 'core' ) ) {
+    if ( exists( $mt->{component} ) && ( lc( $mt->{component} ) ne 'core' ) )
+    {
         if ( my $c = $mt->component( $mt->{component} ) ) {
             return $c->load_tmpl(@_);
         }
@@ -2440,6 +2446,7 @@ sub build_page {
     my ( $file, $param ) = @_;
     my $tmpl;
     my $mode = $mt->mode;
+    $param->{'app_page_template'} = 1;
     $param->{"mode_$mode"} ||= 1;
     $param->{breadcrumbs} = $mt->{breadcrumbs};
     if ( $param->{breadcrumbs}[-1] ) {
@@ -2467,9 +2474,9 @@ sub build_page {
                 next if $label eq $c->{plugin_sig};
 
                 my $pack_link
-                    = $c->pack_link ? $c->pack_link
-                    : $c->author_link       ? $c->author_link
-                    :                         '';
+                    = $c->pack_link   ? $c->pack_link
+                    : $c->author_link ? $c->author_link
+                    :                   '';
 
                 push @packs_installed,
                     {
@@ -2755,8 +2762,10 @@ sub _openid_commenter_condition {
     my ( $blog, $reason ) = @_;
     eval { require Digest::SHA1; };
     return 1 unless $@;
-    $$reason = MT->translate(
-        'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.');
+    $$reason
+        = MT->translate(
+        'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.'
+        );
     return 0;
 }
 
@@ -2805,10 +2814,9 @@ sub core_commenter_authenticators {
                 eval { require Crypt::SSLeay; };
                 push @missing, 'Crypt::SSLeay' if $@;
                 return 1 unless @missing;
-                $$reason = MT->translate(
-                    'missing required Perl modules: [_1]',
-                    join(',', @missing)
-                    );
+                $$reason
+                    = MT->translate( 'missing required Perl modules: [_1]',
+                    join( ',', @missing ) );
                 return 0;
             },
             login_form_params => \&_commenter_auth_params,
@@ -3772,6 +3780,14 @@ implementation package name, instead of hardcoding Perl package names.
 
 A list of names to be used with this function can be found in the 
 MT::Core module, but also plugins can add more names.
+
+=head2 MT->all_models( $id )
+
+Returns a list of package names for all the database-backed MT object
+type. For example:
+
+    my @models = MT->all_models;
+    # @models now contains ('MT::Blog', 'MT::Entry', 'MT::Asset', etc.)
 
 =head2 MT->models( $id )
 

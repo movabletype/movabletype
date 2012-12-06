@@ -324,10 +324,8 @@ sub bulk_load_meta_objects {
     my $pkg      = $first->{pkg};
     my $meta_pkg = $first->meta_pkg;
 
-
     # Supported only for single primary key.
     return if scalar keys %{ $first->{__pkeys} } > 1;
-
 
     my ($primary_key_col) = %{ $first->{__pkeys} };
     my @primary_keys      = ();
@@ -343,7 +341,6 @@ sub bulk_load_meta_objects {
     }
 
     return if !@primary_keys;
-
 
     my $limit = MT->config->BulkLoadMetaObjectsLimit;
 
@@ -392,7 +389,6 @@ sub bulk_load_meta_objects {
             }
         }
     }
-
 
     foreach my $proxy ( values(%proxies) ) {
         if ( $proxy->{__loaded} ) {

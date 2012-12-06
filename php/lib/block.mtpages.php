@@ -18,7 +18,7 @@ function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
     }
 
     if(isset($args['no_folder']) && $args['no_folder']) {
-        $folders =& $ctx->mt->db()->fetch_folders(array("blog_id" => $ctx->stash('blog_id')));
+        $folders = $ctx->mt->db()->fetch_folders(array("blog_id" => $ctx->stash('blog_id')));
         $not_folder = '';
         if (isset($folders)) {
             foreach ($folders as $folder) {

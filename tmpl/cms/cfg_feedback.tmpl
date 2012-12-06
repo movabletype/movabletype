@@ -62,7 +62,21 @@
         var fld = getByID('junk_score_threshold');
         score = fld.value;
         score.replace(/\+/, '');
-        score = parseFloat(score) + amount;
+
+        // If score is decimal,
+        // it is calculated as integer.
+        var idx = score.lastIndexOf(".");
+        if (idx > 0) {
+          var decimalPart = score.substring(idx);
+          var length = decimalPart.length - 1;
+          var carry = Math.pow(10, length);
+          var carried_score = parseFloat((score * carry).toFixed(0));
+          var carried_amount = amount * carry;
+          score = parseFloat((carried_score + carried_amount) / carry);
+        } else {
+          score = parseFloat(score) + amount;
+        }
+
         if (isNaN(score)) score = amount;
         if (score > 10) score = 10;
         if (score < -10) score = -10;

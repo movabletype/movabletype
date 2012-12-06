@@ -83,6 +83,45 @@ sub crop {
     wantarray ? ( $image->blob, $size, $size ) : $image->blob;
 }
 
+sub flipHorizontal {
+    my $image = shift;
+    $image->{gd}->flipHorizontal;
+
+    wantarray ? ( $image->blob, @$image{qw(width height)} ) : $image->blob;
+}
+
+sub flipVertical {
+    my $image = shift;
+    $image->{gd}->flipVertical;
+
+    wantarray ? ( $image->blob, @$image{qw(width height)} ) : $image->blob;
+}
+
+sub rotate {
+    my $image = shift;
+    my ( $degrees, $w, $h ) = $image->get_degrees(@_);
+
+    my $method      = "rotate$degrees";
+    my $copy_method = "copyRotate$degrees";
+    if ( $image->{gd}->can($method) ) {
+        $image->{gd}->$method;
+    }
+    elsif ( $image->{gd}->can($copy_method) ) {
+        $image->{gd} = $image->{gd}->$copy_method;
+    }
+    else {
+        return $image->error(
+            MT->translate(
+                "Rotate (degrees: [_1]) is not supported", $degrees
+            )
+        );
+    }
+
+    wantarray
+        ? ( $image->blob, $w, $h )
+        : $image->blob;
+}
+
 sub convert {
     my $image = shift;
     my %param = @_;

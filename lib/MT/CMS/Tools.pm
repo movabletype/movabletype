@@ -10,7 +10,7 @@ use Symbol;
 
 use MT::I18N qw( wrap_text );
 use MT::Util
-    qw( encode_url encode_html decode_html encode_js trim dir_separator );
+    qw( encode_url encode_html decode_html encode_js trim dir_separator is_valid_email );
 
 sub system_check {
     my $app = shift;
@@ -46,7 +46,7 @@ sub system_check {
     $param{server_modperl} = 1 if $ENV{MOD_PERL};
     $param{server_fastcgi} = 1 if $ENV{FAST_CGI};
 
-    $param{server_psgi}   = $ENV{'psgi.version'} ? 1 : 0;
+    $param{server_psgi} = $ENV{'psgi.version'} ? 1 : 0;
     $param{syscheck_html} = get_syscheck_content($app) || '';
 
     $app->load_tmpl( 'system_check.tmpl', \%param );
@@ -80,7 +80,10 @@ sub get_syscheck_content {
         # allowed html
         my $spec
             = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p,textarea';
-        $result = Encode::decode_utf8($result) if !Encode::is_utf8($result);
+        $result = Encode::decode_utf8($result)
+            if !Encode::is_utf8($result)
+        ;    # mt-check.cgi always returns by utf-8
+
         $result = MT::Sanitize->sanitize( $result, $spec );
     }
     return $result;
@@ -129,6 +132,10 @@ sub recover_password {
                     'Email address is required for password reset.'),
             }
         );
+    }
+    if ( !is_valid_email($email) ) {
+        return $app->start_recover(
+            { error => $app->translate('Invalid email address') } );
     }
 
     # Searching user by email (and username)
@@ -417,7 +424,7 @@ sub test_system_mail {
         unless (
         MT::Util::is_valid_email( $app->param('to_email_address') ) );
 
-    my $cfg       = $app->config;
+    my $cfg = $app->config;
     return $app->json_error(
         $app->errtrans(
             "You do not have a system email address configured.  Please set this first, save it, then try the test email again."
@@ -519,7 +526,7 @@ sub cfg_system_general {
             $config_warning
         );
     }
-    $param{system_email_address} = $cfg->EmailAddressMain;
+    $param{system_email_address}            = $cfg->EmailAddressMain;
     $param{system_debug_mode}               = $cfg->DebugMode;
     $param{system_performance_logging}      = $cfg->PerformanceLogging;
     $param{system_performance_logging_path} = $cfg->PerformanceLoggingPath;
@@ -608,8 +615,7 @@ sub save_cfg_system_general {
         )
         )
         unless (
-        $app->param('system_email_address') eq $cfg->EmailAddressMain
-    );
+        $app->param('system_email_address') eq $cfg->EmailAddressMain );
     push(
         @meta_messages,
         $app->translate(
@@ -680,7 +686,8 @@ sub save_cfg_system_general {
         }
         else {
             return $app->errtrans(
-                "Invalid SitePath.  The SitePath should be valid and absolute, not relative");
+                "Invalid SitePath.  The SitePath should be valid and absolute, not relative"
+            );
         }
     }
 
@@ -846,7 +853,8 @@ sub recover_profile_password {
                 category => 'recover_profile_password',
             }
         );
-        return $app->error("Cannot recover the password in this configuration");
+        return $app->error(
+            "Cannot recover the password in this configuration");
     }
 
     my $author_id = $q->param('author_id');
@@ -1128,8 +1136,8 @@ sub backup {
         $printer = sub {
             require bytes;
             my ($data) = @_;
-            $data = Encode::encode_utf8( $data )
-                if Encode::is_utf8( $data );
+            $data = Encode::encode_utf8($data)
+                if Encode::is_utf8($data);
             print $fh $data;
             return bytes::length($data);
         };
@@ -1278,7 +1286,8 @@ sub backup {
             $progress, $size * 1024,
             $enc, $metadata );
     };
-    if ( $@ ) {
+    if ($@) {
+
         # Abnormal end
         $param->{error} = $@;
         close $fh;
@@ -1665,7 +1674,10 @@ sub adjust_sitepath {
     my %error_assets;
     my %blogs_meta;
     my $path_limit = $app->config->BaseSitePath;
-    my @p          = $q->param;
+    $path_limit = File::Spec->catdir( $path_limit, "PATH" );
+    $path_limit =~ s/PATH$//;
+    my $path_limit_quote = quotemeta($path_limit);
+    my @p                = $q->param;
     foreach my $p (@p) {
         next unless $p =~ /^site_path_(\d+)/;
         my $id   = $1;
@@ -1688,13 +1700,13 @@ sub adjust_sitepath {
 
         if ($use_absolute) {
             $site_path = scalar $q->param("site_path_absolute_$id") || q();
-            if ( $path_limit and ( 0 != index( $site_path, $path_limit ) ) ) {
+            if ( $path_limit and ( $site_path !~ m/^$path_limit_quote/i ) ) {
                 $site_path = $path_limit;
             }
         }
         elsif ( $path_limit
             and !$blog->is_blog
-            and ( 0 != index( $site_path, $path_limit ) ) )
+            and ( $site_path !~ m/^$path_limit_quote/i ) )
         {
             $site_path = $path_limit;
         }
@@ -1743,7 +1755,7 @@ sub adjust_sitepath {
         if ($use_absolute_archive) {
             $archive_path = $archive_path_absolute;
             if ( $path_limit
-                and ( 0 != index( $archive_path, $path_limit ) ) )
+                and ( $archive_path !~ m/^$path_limit_quote/i ) )
             {
                 $archive_path = $path_limit;
             }
@@ -2205,9 +2217,13 @@ sub dialog_adjust_sitepath {
         }
         else {
             my $sitepath = $blog->column('site_path');
-            my $limited  = $app->config->BaseSitePath;
-            if ( $limited and ( 0 != index( $sitepath, $limited ) ) ) {
-                $sitepath = $limited;
+            if ( my $limited = $app->config->BaseSitePath ) {
+                $limited = File::Spec->catdir( $limited, "PATH" );
+                $limited =~ s/PATH$//;
+                my $limited_quote = quotemeta($limited);
+                if ( $sitepath !~ m/^$limited_quote/i ) {
+                    $sitepath = $limited;
+                }
             }
             push @website_loop,
                 {
@@ -2239,9 +2255,9 @@ sub dialog_adjust_sitepath {
     $param->{website_loop}   = \@website_loop if @website_loop;
     $param->{all_websites}   = \@all_websites if @all_websites;
     $param->{path_separator} = MT::Util->dir_separator;
-    if (my $limit = $app->config->BaseSitePath) {
+    if ( my $limit = $app->config->BaseSitePath ) {
         $param->{sitepath_limited} = $limit;
-        $limit = File::Spec->catdir($limit, "PATH");
+        $limit = File::Spec->catdir( $limit, "PATH" );
         $limit =~ s/PATH$//;
         $param->{sitepath_limited_trail} = $limit;
     }
@@ -2328,7 +2344,8 @@ sub reset_password {
             }
         );
         return ( 0,
-            $app->translate("Cannot recover password in this configuration") );
+            $app->translate("Cannot recover password in this configuration")
+        );
     }
 
     $app->log(

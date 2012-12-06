@@ -472,7 +472,7 @@ sub handle_junk {
             {
                 return $app->permission_denied()
                     unless $perms->can_do(
-                            'handle_junk_for_category_trackback');
+                    'handle_junk_for_category_trackback');
             }
             elsif ( $obj->isa('MT::Comment') ) {
                 return $app->permission_denied()
@@ -540,7 +540,7 @@ sub not_junk {
             {
                 return $app->permission_denied()
                     unless $perms->can_do(
-                            'handle_junk_for_category_trackback');
+                    'handle_junk_for_category_trackback');
             }
             elsif ( $obj->isa('MT::Comment') ) {
                 return $app->permission_denied()
@@ -789,7 +789,8 @@ sub dialog_post_comment {
         comment_text       => MT::Sanitize->sanitize( $parent->text, $spec ),
         comment_script_url => $app->config('CGIPath')
             . $app->config('CommentScript'),
-        return_url => ( $return_args
+        return_url => (
+              $return_args
             ? $app->base . $app->uri . '?' . $return_args
             : $app->base
                 . $app->uri(
@@ -920,7 +921,10 @@ sub post_save {
                 {
                     $app->publish_error();    # logs error as well.
                     return $eh->error(
-                        MT->translate( "Publishing failed: [_1]", $app->errstr )
+                        MT->translate(
+                            "Publishing failed: [_1]",
+                            $app->errstr
+                        )
                     );
                 }
                 1;
@@ -1116,7 +1120,9 @@ sub set_item_visible {
                 # TODO: Factor out permissions checking
                 my $entry = MT::Entry->load( $obj->entry_id )
                     || return $app->error(
-                    $app->translate("The entry corresponding to this comment is missing.") );
+                    $app->translate(
+                        "The entry corresponding to this comment is missing.")
+                    );
 
                 if ( !$perms || $perms->blog_id != $obj->blog_id ) {
                     $perms = $author->permissions( $obj->blog_id );

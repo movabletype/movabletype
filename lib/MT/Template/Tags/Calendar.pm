@@ -80,7 +80,7 @@ sub _hdlr_calendar {
         if ( !defined($start_with_offset) ) {
             return $ctx->error(
                 MT->translate(
-"Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+                    "Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat"
                 )
             );
         }
@@ -88,14 +88,16 @@ sub _hdlr_calendar {
     if ( $prefix = lc( $args->{month} || '' ) ) {
         if ( $prefix eq 'this' ) {
             my $ts = $ctx->{current_timestamp};
-            if (not $ts and ( my $entry = $ctx->stash('entry') )) {
+            if ( not $ts and ( my $entry = $ctx->stash('entry') ) ) {
                 $ts = $entry->authored_on();
             }
-            if (not $ts) {
-                return $ctx->error( MT->translate(
-                    "You used an [_1] tag without a date context set up.",
-                    qq(<MTCalendar month="this">)
-                ));
+            if ( not $ts ) {
+                return $ctx->error(
+                    MT->translate(
+                        "You used an [_1] tag without a date context set up.",
+                        qq(<MTCalendar month="this">)
+                    )
+                );
             }
             $prefix = substr $ts, 0, 6;
         }
@@ -146,8 +148,11 @@ sub _hdlr_calendar {
     my ( $start, $end ) = start_end_month($prefix);
     my ( $y, $m ) = unpack 'A4A2', $prefix;
     my $days_in_month = days_in( $m, $y );
-    my $pad_start = (wday_from_ts($y, $m, 1) + $start_with_offset) % 7;
-    my $pad_end = 6 - ((wday_from_ts($y, $m, $days_in_month) + $start_with_offset) % 7);
+    my $pad_start = ( wday_from_ts( $y, $m, 1 ) + $start_with_offset ) % 7;
+    my $pad_end
+        = 6
+        - (
+        ( wday_from_ts( $y, $m, $days_in_month ) + $start_with_offset ) % 7 );
     my $iter = MT::Entry->load_iter(
         {   blog_id     => $blog_id,
             authored_on => [ $start, $end ],

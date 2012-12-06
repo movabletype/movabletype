@@ -14,8 +14,7 @@ sub apply {
         next if $dir =~ /[^\w\-\.]/;
         my $src = File::Spec->catdir( $theme->path, 'blog_static', $dir );
         my $dst = File::Spec->catdir( $blog->site_path, $dir );
-        my $result
-            = $theme->install_static_files( $src, $dst );
+        my $result = $theme->install_static_files( $src, $dst );
     }
     return 1;
 }
@@ -62,8 +61,7 @@ sub finalize {
         my $src = File::Spec->catdir( $blog->site_path, $dir );
         my $dst = File::Spec->catdir( $tmpdir, 'blog_static', $dir );
         require MT::Theme;
-        my $result
-            = MT::Theme->install_static_files( $src, $dst );
+        my $result = MT::Theme->install_static_files( $src, $dst );
     }
     return 1;
 }

@@ -1,9 +1,9 @@
 id: FormattedText
 name: FormattedText
-version: 1.00
+version: 1.01
 author_link: http://www.movabletype.org/
 author_name: Six Apart, Ltd.
-description: <MT_TRANS phrase="Manage formatted text.">
+description: <MT_TRANS phrase="Manage boilerplate.">
 l10n_class: FormattedText::L10N
 
 schema_version: 1.00
@@ -14,7 +14,7 @@ applications:
     cms:
         menus:
             entry:manage_formatted_text:
-                label: Formatted Text
+                label: Boilerplate
                 order: 250
                 mode: list
                 args:
@@ -76,6 +76,7 @@ permissions:
 
 callbacks:
     MT::App::CMS::template_param.edit_entry: $FormattedText::FormattedText::App::param_edit_entry
+    MT::App::CMS::template_param.edit_formatted_text: $FormattedText::FormattedText::App::param_edit_formatted_text
     MT::App::CMS::cms_edit.formatted_text: $FormattedText::FormattedText::App::cms_edit_formatted_text
     MT::App::CMS::list_template_param.formatted_text: $FormattedText::FormattedText::App::list_template_param
     api_save_filter.formatted_text: $FormattedText::FormattedText::FormattedText::save_filter
@@ -103,3 +104,6 @@ list_actions:
 
 content_actions:
     formatted_text: $FormattedText::FormattedText::App::content_actions
+
+search_apis:
+    formatted_text: $FormattedText::FormattedText::FormattedText::search_apis

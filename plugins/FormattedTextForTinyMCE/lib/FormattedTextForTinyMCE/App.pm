@@ -12,7 +12,7 @@ sub view_text {
     my $formatted_text
         = MT->model('formatted_text')->load( $app->param('id') )
         or
-        return $app->error( $app->translate('Cannot load formatted text.') );
+        return $app->error( $app->translate('Cannot load boilerplate.') );
 
     return $app->permission_denied()
         if ( !$user->is_superuser )

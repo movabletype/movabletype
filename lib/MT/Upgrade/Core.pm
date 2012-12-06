@@ -209,17 +209,20 @@ sub seed_database {
         );
 
     require MT::Website;
-    $param{website_name} = exists $param{website_name}
+    $param{website_name}
+        = exists $param{website_name}
         ? _uri_unescape_utf8( $param{website_name} )
         : MT->translate('First Website');
-    $param{website_path} = exists $param{website_path}
+    $param{website_path}
+        = exists $param{website_path}
         ? _uri_unescape_utf8( $param{website_path} )
         : '';
-    $param{website_url} = exists $param{website_url}
+    $param{website_url}
+        = exists $param{website_url}
         ? _uri_unescape_utf8( $param{website_url} )
         : '';
     my $website = MT::Website->create_default_website(
-        $param{website_name}, 
+        $param{website_name},
         site_theme    => $param{website_theme},
         site_url      => $param{website_url},
         site_path     => $param{website_path},
@@ -387,7 +390,7 @@ sub upgrade_templates {
 
 sub _uri_unescape_utf8 {
     my ($text) = @_;
-    unless ( $MT::Upgrade::CLI ) {
+    unless ($MT::Upgrade::CLI) {
         use URI::Escape;
         $text = uri_unescape($text);
     }

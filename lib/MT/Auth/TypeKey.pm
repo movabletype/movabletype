@@ -224,10 +224,11 @@ sub _validate_signature {
     $app->log(
         {   message => $app->translate(
                 "TypePad signature verification returned [_1] in [_2] seconds verifying [_3] with [_4]",
-                ( $valid ? $app->translate("VALID") : $app->translate("INVALID") ),
-                $timer,
-                $msg,
-                $sig_str
+                (     $valid
+                    ? $app->translate("VALID")
+                    : $app->translate("INVALID")
+                ),
+                $timer, $msg, $sig_str
             ),
             class    => 'system',
             category => 'commenter_authentication',

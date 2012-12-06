@@ -28,18 +28,21 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
                 $ext_args[] = $key;
             }
         }
-        if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-            ob_start();
-            $ctx->_eval('?>' . $_var_compiled);
-            $_contents = ob_get_contents();
-            ob_end_clean();
-            _clear_vars($ctx, $ext_args);
-            return $_contents;
+
+        $contents = '';
+
+        if (preg_match_all('/widget\=\"([^"]+)\"/', $tmpl, $matches)) {
+            foreach ($matches[1] as $widget) {
+                $contents .= $ctx->tag('include', array(
+                    'widget' => $widget,
+                    'blog_id' => $blog_id,
+                ));
+            }
         }
-        else {
-            _clear_vars($ctx, $ext_args);
-            return $ctx->error($ctx->mt->translate('Error compiling widget set [_1]', $widgetmanager));
-        }
+
+        _clear_vars($ctx, $ext_args);
+
+        return $contents;
     }
     return '';
 }

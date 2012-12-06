@@ -100,11 +100,12 @@ sub global_perms {
 
 {
     my %perms;
+
     sub perms_from_registry {
         return \%perms if %perms;
 
-        my $regs  = MT::Component->registry('permissions');
-        my %keys  = map { $_ => 1 } map { keys %$_ } @$regs;
+        my $regs = MT::Component->registry('permissions');
+        my %keys = map { $_ => 1 } map { keys %$_ } @$regs;
         %perms = map { $_ => MT->registry( 'permissions' => $_ ) } keys %keys;
 
         \%perms;
@@ -242,7 +243,7 @@ sub global_perms {
         for my $perm_name (@perms) {
             $cur_rest =~ s/'$perm_name',?//i;
         }
-        $perms->restrictions($cur_rest || undef);
+        $perms->restrictions( $cur_rest || undef );
     }
 
     # Clears all permissions or those in a particular set
@@ -327,7 +328,7 @@ sub global_perms {
                     # arg == 0 - remove it
                     $cur_perm =~ s/'$perm',?// if defined $cur_perm;
 
-                    # the "has no permission" status is NULL, not empty string.
+                   # the "has no permission" status is NULL, not empty string.
                     if ( $cur_perm eq '' ) {
                         $cur_perm = undef;
                     }

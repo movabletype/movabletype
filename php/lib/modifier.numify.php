@@ -7,6 +7,7 @@
 
 function smarty_modifier_numify($text, $attr = ',') {
     if ($attr == "1") $attr = ',';
-    return preg_replace('/(^[-+]?\d+?(?=(?>(?:\d{3})+)(?!\d))|\G\d{3}(?=\d))/', '\\1' . $attr, $text);
+    $attr = str_replace(array('\\', '$'), array('\\\\', '\$'), $attr);
+    return preg_replace('/(^[-+]?\d+?(?=(?>(?:\d{3})+)(?!\d))|\G\d{3}(?=\d))/', '${1}' . $attr, $text);
 }
 ?>

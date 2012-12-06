@@ -68,7 +68,8 @@ sub _hdlr_websites {
     my $res   = '';
     my $count = 0;
     my $vars  = $ctx->{__stash}{vars} ||= {};
-    MT::Meta::Proxy->bulk_load_meta_objects(\@sites);
+    MT::Meta::Proxy->bulk_load_meta_objects( \@sites );
+
     for my $site (@sites) {
         $count++;
         local $ctx->{__stash}{blog}    = $site;
@@ -530,8 +531,8 @@ sub _hdlr_blog_parent_website {
     my $website = $blog->website();
 
     my $res = '';
-    local $ctx->{__stash}{blog}    = $website;
-    local $ctx->{__stash}{blog_id} = $website->id;
+    local $ctx->{__stash}{blog}         = $website;
+    local $ctx->{__stash}{blog_id}      = $website->id;
     local $ctx->{__stash}{inside_blogs} = 1;
     defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
         or return $ctx->error( $builder->errstr );

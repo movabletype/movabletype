@@ -45,6 +45,10 @@ $.extend(ES.Single.prototype, ES.prototype, {
         });
         app.editor.resetUndo();
         this.dummy_textarea.data(key, target);
+    },
+
+    save: function() {
+       app.editor.save();
     }
 });
 
