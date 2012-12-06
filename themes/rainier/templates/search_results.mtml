@@ -7,6 +7,7 @@
     <meta charset="<$mt:PublishCharset$>">
     <title><$mt:BlogName encode_html="1"$> - <__trans phrase="Search Results"></title>
     <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <script src="<$mt:Link template="javascript"$>"></script>
     <script>
 <mt:IfMoreResults>
       function getResults(page) {
@@ -132,6 +133,20 @@
                 <pre><code><__trans phrase="publishing NOT personal"></code></pre>
               </section>
 </mt:NoSearch>
+
+<mt:Ignore><!-- Used with the ajax search capability of the new search class --></mt:Ignore>
+<mt:IfMoreResults>
+              <script type="text/javascript">
+                var div = document.getElementById('search-results');
+                var results = {
+                  '<$mt:CurrentPage$>': {
+                    'content': div.innerHTML,
+                    'next_url': '<$mt:NextLink$>'
+                  }
+                };
+                var timer = window.setTimeout("getResults(" + <$mt:CurrentPage$> + ")", 1*1000);
+              </script>
+</mt:IfMoreResults>
             </div>
             <aside class="widgets related" role="complementary">
               <$mt:WidgetSet name="<__trans phrase="Related Contents">"$>
