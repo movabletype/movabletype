@@ -2371,6 +2371,39 @@ BLOG: for my $blog_id (@id) {
                     or return $app->error(
                           $app->translate("Error creating new template: ")
                         . $tmpl->errstr );
+
+                # Create template map
+                if (   $tmpl->type eq 'archive'
+                    || $tmpl->type eq 'page'
+                    || $tmpl->type eq 'individual' )
+                {
+                    my $mappings = $val->{mappings};
+                    foreach my $map_key ( keys %$mappings ) {
+                        my $m  = $mappings->{$map_key};
+                        my $at = $m->{archive_type};
+
+                        require MT::TemplateMap;
+                        my $map = MT::TemplateMap->new;
+                        $map->archive_type($at);
+                        if ( exists $m->{preferred} ) {
+                            $map->is_preferred( $m->{preferred} );
+                        }
+                        else {
+                            $map->is_preferred(1);
+                        }
+                        $map->template_id( $tmpl->id );
+                        $map->blog_id( $tmpl->blog_id );
+                        $map->build_type( $m->{build_type} )
+                            if defined $m->{build_type};
+                        $map->save
+                            or return $app->error(
+                            $app->translate(
+                                "Setting up mappings failed: [_1]",
+                                $map->errstr
+                            )
+                            );
+                    }
+                }
             }
         }
         $refreshed = 1;
