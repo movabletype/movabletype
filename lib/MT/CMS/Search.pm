@@ -1132,7 +1132,7 @@ sub do_search_replace {
                 ($obj) = grep { $_->id == $quicksearch_id } @data;
             }
 
-            if ($obj) {
+            if ( $obj && $type ne 'log' ) {
                 my %args = (
                     _type         => $type,
                     id            => $obj->id,
