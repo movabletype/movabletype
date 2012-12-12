@@ -332,6 +332,15 @@ a:hover {
     font-size: 11px;
 }
 
+/* Search Widget */
+.widget-search .ti {
+    width: 108px;
+}
+
+.layout-mw .widget-search .ti,
+.layout-wm .widget-search .ti {
+    width: 248px;
+}
 
 /* "Powered By" Widget */
 
