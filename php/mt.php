@@ -641,6 +641,8 @@ class MT {
             }
         }
 
+        $this->set_canonical_url($ctx, $blog, $data);
+
         $output = $ctx->fetch('mt:'.$tpl_id, $cache_id);
 
         $this->http_error = 200;
@@ -680,6 +682,22 @@ class MT {
 #            $this->log_dump();
 #        }
         restore_error_handler();
+    }
+
+    function set_canonical_url($ctx, $blog, $fileinfo) {
+        if (preg_match('#(\A[^:]*://[^/]*)#', $blog->site_url(), $m)) {
+            $url = $m[1] . $fileinfo->url;
+        }
+        else {
+            $url = $fileinfo->url;
+        }
+        $ctx->stash('current_mapping_url', $url);
+
+        $templatemap = $fileinfo->templatemap();
+        if ($templatemap && ! $templatemap->is_preferred) {
+            $url = $ctx->tag('archivelink', array());
+            $ctx->stash('preferred_mapping_url', $url);
+        }
     }
 
     function resolve_url($path, $build_type = 3) {
