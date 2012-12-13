@@ -1324,6 +1324,19 @@ sub preview {
             data_value => scalar $q->param($col)
             };
     }
+
+    # Set selected archive mapping
+    my @p = $q->param;
+    for my $p (@p) {
+        if ( $p =~ /^archive_file_tmpl_(\d+)$/ ) {
+            push @data,
+                {
+                data_name  => 'archive_file_tmpl_' . $1,
+                data_value => scalar $q->param($p)
+                };
+        }
+    }
+
     $param{template_loop}   = \@data;
     $param{object_type}     = $type;
     $param{use_virtual_cat} = $use_virtual_cat;
@@ -1500,6 +1513,7 @@ sub _generate_map_table {
 
 sub _populate_archive_loop {
     my $app = shift;
+    my $q   = $app->param;
     my ( $blog, $obj ) = @_;
 
     my $index = $app->config('IndexBasename');
@@ -1529,8 +1543,12 @@ sub _populate_archive_loop {
         $map->{ 'archive_type_preferred_' . $blog->archive_type_preferred }
             = 1
             if $blog->archive_type_preferred;
-        $map->{file_template} = $map_obj->file_template
-            if $map_obj->file_template;
+        my $selected_file_template
+            = $q->param( 'archive_file_tmpl_' . $map->{map_id} );
+        $map->{file_template}
+            = $selected_file_template ? $selected_file_template
+            : $map_obj->file_template ? $map_obj->file_template
+            :                           '';
 
         my $archiver = $app->publisher->archiver($at);
         next unless $archiver;
