@@ -331,8 +331,46 @@ class Thumbnail {
                 }
             }
 
-            # Create thumbnail
+            # Create dest image
             $this->dest_img = imagecreatetruecolor ( $thumb_w, $thumb_h );
+
+            # Check transparent color support
+            # Code from https://github.com/maxim/smart_resize_image/blob/master/smart_resize_image.function.php
+            if ( ( $this->src_type == 1) || ( $this->src_type == 3 ) ) {
+                $trnprt_indx = imagecolortransparent( $this->src_img );
+
+                // If we have a specific transparent color
+                if ($trnprt_indx >= 0) {
+
+                    // Get the original image's transparent color's RGB values
+                    $trnprt_color = imagecolorsforindex( $this->src_img, $trnprt_indx );
+
+                    // Allocate the same color in the new image resource
+                    $trnprt_indx = imagecolorallocate( $this->dest_img, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
+
+                    // Completely fill the background of the new image with allocated color.
+                    imagefill( $this->dest_img, 0, 0, $trnprt_indx );
+
+                    // Set the background color for new image to transparent
+                    imagecolortransparent( $this->dest_img, $trnprt_indx );
+                } elseif ( $this->src_type == 3 ) {
+                    // Always make a transparent background color for PNGs that don't have one allocated already
+
+                    // Turn off transparency blending (temporarily)
+                    imagealphablending( $this->dest_img, false );
+
+                    // Create a new transparent color for image
+                    $color = imagecolorallocatealpha( $this->dest_img, 0, 0, 0, 127 );
+
+                    // Completely fill the background of the new image with allocated color.
+                    imagefill( $this->dest_img, 0, 0, $color );
+
+                    // Restore transparency blending
+                    imagesavealpha( $this->dest_img, true );
+                }
+            }
+
+            # Create thumbnail
             $result = imagecopyresampled ( $this->dest_img, $this->src_img, 0, 0, $src_x, $src_y,
                     $thumb_w, $thumb_h, $target_w, $target_h);
 
