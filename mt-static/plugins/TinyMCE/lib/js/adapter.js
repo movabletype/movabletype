@@ -329,6 +329,17 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
         ed.execCommand('mtSetProxies', adapter.proxies, null, {skip_focus: true});
 
+        // Stop adding root blocks on key up for IE.
+        // Because if used with IME, this function will not work well.
+        if (tinyMCE.isIE) {
+            $.each(ed.onKeyUp.listeners, function(i, listener) {
+                var f = listener.cb;
+                if (f.toString().match(/^function addRootBlocks\(\)/)) {
+                    ed.onKeyUp.remove(f);
+                }
+            });
+        }
+
         if (ed.getContent() == '') {
             // Browser compatibility
             // Set the "formatselect" to default value for empty content.
