@@ -1669,7 +1669,10 @@ BEGIN {
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
                 { default => 'http://www.movabletype.org/update/', },
-            'CGIMaxUpload'          => { default => 20_480_000 },
+            'CGIMaxUpload' => {
+                handler => \&CGIMaxUpload,
+                default => 20_480_000,
+            },
             'DBUmask'               => { default => '0111', },
             'HTMLUmask'             => { default => '0111', },
             'UploadUmask'           => { default => '0111', },
@@ -3113,6 +3116,19 @@ sub UserSessionCookiePath {
     }
 }
 
+sub CGIMaxUpload {
+    my $mgr = shift;
+    $mgr->set_internal( 'CGIMaxUpload', @_ ) if @_;
+
+    my $val = $mgr->get_internal('CGIMaxUpload');
+    return $mgr->default('CGIMaxUpload') unless $val;
+
+    require Scalar::Util;
+    return $mgr->default('CGIMaxUpload')
+        unless Scalar::Util::looks_like_number($val);
+    return $val;
+}
+
 1;
 __END__
 
@@ -3247,6 +3263,13 @@ C<SingleCommunity> setting. If C<SingleCommunity> is enabled, it
 returns a path that is the same for all blogs ('/'). If it is
 off, it returns a value that will yield the blog's relative
 URL path.
+
+=head2 CGIMaxUpload
+
+A L<MT::ConfigMgr> get/set method for the C<CGIMaxUpload>
+configuration setting. If the user sets invalid value for
+this directive, the system will be use a default value.
+
 
 =head1 LICENSE
 
