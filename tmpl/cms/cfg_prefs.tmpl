@@ -405,6 +405,7 @@ function setLicense() {
     </mt:loop>
     <mt:unless name="entry_archive_types">
       <p><span class="alert-warning-inline"><__trans phrase="No archives are active"></span></p>
+      <input type="hidden" name="no_archives_are_active" id="no_archives_are_active" value="1" />
     </mt:unless>
     </mtapp:setting>
   </mt:if>
