@@ -46,12 +46,16 @@ class FileInfo extends BaseObject
     public function templatemap () {
         $col_name = $this->_prefix . "templatemap_id";
         $templatemap = null;
-        if (isset($this->$col_name) && is_numeric($this->$col_name)) {
+        if (isset($this->$col_name) && is_numeric($this->$col_name) && $this->$col_name > 0) {
             $templatemap_id = $this->$col_name;
 
-            require_once('class.mt_templatemap.php');
-            $templatemap = new TemplateMap;
-            $templatemap->Load("templatemap_id = $templatemap_id");
+            $templatemap = $this->load_cache($this->_prefix . ":" . $this->id . ":templatemap:" . $templatemap_id);
+            if (empty($templatemap)) {
+                require_once('class.mt_templatemap.php');
+                $templatemap = new TemplateMap;
+                $templatemap->Load("templatemap_id = $templatemap_id");
+                $this->cache($this->_prefix . ":" . $this->id . ":templatemap:" . $templatemap->id, $templatemap);
+            }
         }
 
         return $templatemap;

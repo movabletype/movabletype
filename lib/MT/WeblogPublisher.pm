@@ -1170,11 +1170,12 @@ sub rebuild_file {
 #     die MT->translate('The same archive file exists. You should change the basename or the archive path. ([_1])', $file) if $fcount > 0;
 # }
 
-    my $url = $blog->archive_url;
-    $url = $blog->site_url
+    my $base_url = $blog->archive_url;
+    $base_url = $blog->site_url
         if $archiver->entry_based && $archiver->entry_class eq 'page';
-    $url .= '/' unless $url =~ m|/$|;
-    $url .= $map->{__saved_output_file};
+    $base_url .= '/' unless $base_url =~ m|/$|;
+    my $url = $base_url . $map->{__saved_output_file};
+    $url =~ s{(?<!:)//+}{/}g;
 
     my $tmpl_id = $map->template_id;
 
@@ -1200,7 +1201,6 @@ sub rebuild_file {
     }
 
     my ($rel_url) = ( $url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)| );
-    $rel_url =~ s|//+|/|g;
 
     # Clear out all the FileInfo records that might point at the page
     # we're about to create
@@ -1367,6 +1367,22 @@ sub rebuild_file {
         $ctx->stash( 'entry', $entry ) if $entry;
         $ctx->stash( '_basename',
             fileparse( $map->{__saved_output_file}, qr/\.[^.]*/ ) );
+        $ctx->stash( 'current_mapping_url', $url );
+
+        if ( !$map->is_preferred ) {
+            my $category = $ctx->{__stash}{archive_category};
+            my $author   = $ctx->{__stash}{author};
+            $ctx->stash(
+                'preferred_mapping_url',
+                sub {
+                    my $file = $mt->archive_file_for( $entry, $blog, $at,
+                        $category, undef, $start, $author );
+                    my $url = $base_url . $file;
+                    $url =~ s{(?<!:)//+}{/}g;
+                    $url;
+                }
+            );
+        }
 
         require MT::Request;
         MT::Request->instance->cache( 'build_template', $tmpl );
@@ -1584,13 +1600,13 @@ sub rebuild_indexes {
             )
         ) unless $file ne '';
         my $url = join( '/', $blog->site_url, $file );
+        $url =~ s{(?<!:)//+}{/}g;
         unless ( File::Spec->file_name_is_absolute($file) ) {
             $file = File::Spec->catfile( $site_root, $file );
         }
 
         # Everything from here out is identical with rebuild_file
         my ($rel_url) = ( $url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)| );
-        $rel_url =~ s|//+|/|g;
         ## Untaint. We have to assume that we can trust the user's setting of
         ## the site_path and the template outfile.
         ($file) = $file =~ /(.+)/s;
@@ -1683,7 +1699,8 @@ sub rebuild_indexes {
                 force        => $force,
             )
             );
-        $ctx->stash( 'blog', $blog );
+        $ctx->stash( 'blog',                $blog );
+        $ctx->stash( 'current_mapping_url', $url );
 
         require MT::Request;
         MT::Request->instance->cache( 'build_template', $tmpl );
