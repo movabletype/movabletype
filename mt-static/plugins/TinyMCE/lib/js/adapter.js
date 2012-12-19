@@ -333,9 +333,13 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         // Because if used with IME, this function will not work well.
         if (tinyMCE.isIE) {
             $.each(ed.onKeyUp.listeners, function(i, listener) {
+                if (! listener) {
+                    return;
+                }
                 var f = listener.cb;
                 if (f.toString().match(/^function addRootBlocks\(\)/)) {
                     ed.onKeyUp.remove(f);
+                    return false;
                 }
             });
         }
