@@ -2645,6 +2645,7 @@ sub load_core_permissions {
                 'handle_junk_for_all_trackbacks'        => 1,
                 'handle_not_junk'                       => 1,
                 'open_all_trackback_edit_screen'        => 1,
+                'open_all_comment_edit_screen'          => 1,
                 'open_blog_config_screen'               => 1,
                 'open_comment_edit_screen'              => 1,
                 'open_commenter_edit_screen'            => 1,
