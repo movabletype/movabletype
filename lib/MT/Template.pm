@@ -134,20 +134,24 @@ sub new_string {
 sub load_file {
     my $tmpl = shift;
     my ($file) = @_;
-    die 'Template load error'
-        if $file =~ /\.\./;
+    unless ( MT->config->AllowFileInclude ) {
+        die 'Template load error'
+            if $file =~ /\.\./;
+    }
 
     if ( File::Spec->file_name_is_absolute($file) ) {
-        require Cwd;
-        my $ok            = 0;
-        my @paths         = @{ $tmpl->{include_path} || [] };
-        my $abs_file_path = MT::Util::realpath($file);
-        foreach my $path (@paths) {
-            next unless -d $path;
-            my $abs_path = MT::Util::realpath($path);
-            $ok = 1, last if $abs_file_path =~ /^\Q$abs_path\E/;
+        unless ( MT->config->AllowFileInclude ) {
+            require Cwd;
+            my $ok            = 0;
+            my @paths         = @{ $tmpl->{include_path} || [] };
+            my $abs_file_path = MT::Util::realpath($file);
+            foreach my $path (@paths) {
+                next unless -d $path;
+                my $abs_path = MT::Util::realpath($path);
+                $ok = 1, last if $abs_file_path =~ /^\Q$abs_path\E/;
+            }
+            die "Template load error" unless $ok;
         }
-        die "Template load error" unless $ok;
     }
     else {
         my @paths = @{ $tmpl->{include_path} || [] };
