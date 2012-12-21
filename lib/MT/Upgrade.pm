@@ -736,9 +736,8 @@ sub core_upgrade_functions {
                     );
                     $_[0]->file_template(
                         $default_template{ $_[0]->archive_type } )
-                        if !defined $_[0]->file_template && exists(
-                                $default_template{ $_[0]->archive_type }
-                        );
+                        if !defined $_[0]->file_template
+                        && exists( $default_template{ $_[0]->archive_type } );
                 },
             },
         },
@@ -1348,8 +1347,8 @@ sub core_upgrade_meta_for_table {
             $sql = $dbd->ddl_class->drop_column_sql( $class, $meta_col );
             $self->add_step(
                 'core_drop_meta_for_table',
-                class => $db_class,
-                sql   => $sql
+                class    => $db_class,
+                meta_col => $meta_col
             );
         }
         $self->progress( $msg . ' (100%)', $pid );
@@ -1359,15 +1358,24 @@ sub core_upgrade_meta_for_table {
 }
 
 sub core_drop_meta_for_table {
-    my $self    = shift;
-    my (%param) = @_;
-    my $class   = $param{class};
-    my $sql     = $param{sql};
+    my $self     = shift;
+    my (%param)  = @_;
+    my $class    = $param{class};
+    my $meta_col = $param{meta_col};
+
+    my $types = MT->registry('object_types');
+    my %classes = map { $types->{$_} => $_ } keys %$types;
+
+    return $self->error( $self->translate_escape("Invalid request.") )
+        unless $classes{$class};
 
     eval "require $class;";
     my $driver = $class->dbi_driver;
     my $dbh    = $driver->rw_handle;
+    my $dbd    = $driver->dbd;
     my $err;
+
+    my $sql = $dbd->ddl_class->drop_column_sql( $class, $meta_col );
     eval { $dbh->do($sql) or $err = $dbh->errstr; };
 
     # ignore drop errors; the column has probably been
@@ -2141,18 +2149,21 @@ sub seed_database {
     $author->name(
         exists $param{user_name}
         ? uri_unescape( $param{user_name} )
-        : 'Melody' );
+        : 'Melody'
+    );
     $author->type( MT::Author::AUTHOR() );
     $author->set_password(
         exists $param{user_password}
         ? uri_unescape( $param{user_password} )
-        : 'Nelson' );
+        : 'Nelson'
+    );
     $author->email(
         exists $param{user_email} ? uri_unescape( $param{user_email} ) : '' );
     $author->nickname(
         exists $param{user_nickname}
         ? uri_unescape( $param{user_nickname} )
-        : '' );
+        : ''
+    );
     $author->is_superuser(1);
     $author->can_create_blog(1);
     $author->can_view_log(1);
@@ -2234,7 +2245,8 @@ sub seed_database {
     $comment->author(
         exists $param{user_nickname}
         ? uri_unescape( $param{user_nickname} )
-        : undef );
+        : undef
+    );
     $comment->save
         or return $self->error(
         $self->translate_escape(
