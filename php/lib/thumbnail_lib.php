@@ -199,13 +199,13 @@ class Thumbnail {
         } elseif ($this->dest_w > 0 || $this->dest_h > 0) {
             $thumb_w_name = 'auto';
             $thumb_h_name = 'auto';
-            $x = $this->dest_w; if ($this->dest_w > 0) $thumb_w;
-            $y = $this->dest_h; if ($this->dest_h > 0) $thumb_h;
+            $x = $this->dest_w;
+            $y = $this->dest_h;
             $pct = $this->dest_w > 0 ? ($x / $thumb_w) : ($y / $thumb_h);
             $thumb_w = (int)($thumb_w * $pct);
             $thumb_h = (int)($thumb_h * $pct);
-            if ($this->dest_w > 0) $thumb_w_name = $this->dest_w;
-            if ($this->dest_h > 0) $thumb_h_name = $this->dest_h;
+            if ($this->dest_w > 0 && $thumb_w == $this->dest_w ) $thumb_w_name = $this->dest_w;
+            if ($this->dest_h > 0 && $thumb_h == $this->dest_h ) $thumb_h_name = $this->dest_h;
         }
 
         return array($thumb_w, $thumb_h, $thumb_w_name, $thumb_h_name);
