@@ -178,14 +178,17 @@ sub run_cgi_without_buffering {
 
 sub prepare_app {
     my $self = shift;
+    my $app;
     if ( $self->application ) {
-        my $app = $self->make_app( $self->application );
-        return $self->_app($app);
+        $app = $self->make_app( $self->application );
     }
     else {
-        my $app = $self->mount_applications( $self->application_list );
-        return $self->_app($app);
+        $app = $self->mount_applications( $self->application_list );
     }
+
+    $app = $self->apply_plack_middlewares($app);
+
+    return $self->_app($app);
 }
 
 sub application_list {
@@ -279,6 +282,32 @@ sub mount_applications {
         '/favicon.ico' => Plack::App::File->new( { file => $favicon } ) );
 
     $self->_app( $urlmap->to_app );
+}
+
+sub apply_plack_middlewares {
+    my ( $self, $app ) = @_;
+
+    my $middlewares = MT::Component->registry('plack_middlewares');
+    my @middlewares = map { ref $_ eq 'ARRAY' ? @$_ : $_ } @$middlewares;
+
+    my $builder = Plack::Builder->new();
+    foreach my $middleware (@middlewares) {
+        my $name = $middleware->{name};
+        my %options;
+        foreach my $opt ( @{ $middleware->{options} } ) {
+            $options{ $opt->{key} } = MT->handler_to_coderef( $opt->{value} );
+        }
+        if ( $middleware->{condition} ) {
+            my $condition
+                = MT->handler_to_coderef( $middleware->{condition} );
+            $builder->add_middleware_if( $condition, $name, %options );
+        }
+        else {
+            $builder->add_middleware( $name, %options );
+        }
+    }
+
+    return $builder->to_app($app);
 }
 
 sub call {
