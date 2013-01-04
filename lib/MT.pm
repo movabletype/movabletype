@@ -1628,11 +1628,9 @@ sub component {
 sub publisher {
     my $mt = shift;
     $mt = $mt->instance unless ref $mt;
-    unless ( $mt->{WeblogPublisher} ) {
-        require MT::WeblogPublisher;
-        $mt->{WeblogPublisher} = new MT::WeblogPublisher();
-    }
-    $mt->{WeblogPublisher};
+    require MT::WeblogPublisher;
+    $mt->request('WeblogPublisher')
+        || $mt->request( 'WeblogPublisher', new MT::WeblogPublisher() );
 }
 
 sub rebuild {

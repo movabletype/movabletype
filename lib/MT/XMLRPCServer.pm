@@ -18,6 +18,9 @@ sub mt_new {
     my $mt = MT->new( Config => $cfg )
         or die MT::XMLRPCServer::_fault( MT->errstr );
 
+    ## Initialize the MT::Request singleton for this particular request.
+    $mt->request->reset();
+
     # we need to be UTF-8 here no matter which PublishCharset
     $mt->run_callbacks( 'init_app', $mt, { App => 'xmlrpc' } );
     $mt;
