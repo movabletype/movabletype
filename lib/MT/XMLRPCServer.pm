@@ -154,15 +154,22 @@ sub _login {
 
 sub _publish {
     my $class = shift;
-    my ( $mt, $entry, $no_ping ) = @_;
+    my ( $mt, $entry, $no_ping, $old_categories ) = @_;
     require MT::Blog;
     my $blog = MT::Blog->load( $entry->blog_id );
     $mt->rebuild_entry(
-        Entry             => $entry,
-        Blog              => $blog,
+        Entry => $entry,
+        Blog  => $blog,
+        (   $old_categories
+            ? ( OldCategories => join(
+                    ',', map { ref $_ ? $_->id : $_ } @$old_categories
+                )
+                )
+            : ()
+        ),
         BuildDependencies => 1
     ) or return $class->error( "Publish error: " . $mt->errstr );
-    unless ($no_ping) {
+    if ( $entry->status == MT::Entry::RELEASE() && !$no_ping ) {
         $mt->ping_and_save( Blog => $blog, Entry => $entry )
             or return $class->error( "Ping error: " . $mt->errstr );
     }
@@ -597,8 +604,10 @@ sub _edit_entry {
 
     $entry->save;
 
-    my $changed = $class->_save_placements( $entry, $item, \%param );
-    my @types = ($obj_type);
+    my $old_categories = $entry->categories;
+    $entry->clear_cache('categories');
+    my $changed        = $class->_save_placements( $entry, $item, \%param );
+    my @types          = ($obj_type);
     if ($changed) {
         push @types, 'folder';    # folders are the only type that can be
                                   # created in _save_placements
@@ -622,7 +631,8 @@ sub _edit_entry {
     );
 
     if ($publish) {
-        $class->_publish( $mt, $entry ) or die _fault( $class->errstr );
+        $class->_publish( $mt, $entry, undef, $old_categories )
+            or die _fault( $class->errstr );
     }
     SOAP::Data->type( boolean => 1 );
 }
@@ -1209,6 +1219,8 @@ sub setPostCategories {
             MT->translate( "Saving placement failed: [_1]", $place->errstr )
             );
     }
+    $class->_publish( $mt, $entry, undef, [ map { $_->category_id } @place ] )
+        or die _fault( $class->errstr );
     SOAP::Data->type( boolean => 1 );
 }
 

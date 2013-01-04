@@ -7,6 +7,8 @@ BEGIN {
 
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test qw(:db :data);
+use MT::Util qw(archive_file_for);
+use File::Basename qw(dirname);
 use Test::More;
 use MIME::Base64;
 
@@ -241,6 +243,74 @@ my @apis = (
         },
     },
     {
+        api    => 'metaWeblog.editPost',
+        params => [ 1, $username, $password, {
+            categories => [ map {
+                $mt->model('category')->load($_)->label
+                } qw(1 2) ],
+        }, 1],
+        pre    => sub {
+            my $blog     = $mt->model('blog')->load(1);
+            my $file_mgr = $blog->file_mgr;
+
+            my @cats = $mt->model('category')->load( { id => [qw(1 2)] } );
+            my $files_to_publish = [ map {
+                File::Spec->catfile( $blog->archive_path,
+                    archive_file_for( undef, $blog, 'Category', $_ ) );
+            } @cats ];
+            foreach my $f (@$files_to_publish) {
+                $file_mgr->delete($f);
+            }
+            return $files_to_publish;
+        },
+        result => sub {
+            my ( $som, $files_to_publish ) = @_;
+            my $file_mgr = $mt->model('blog')->load(1)->file_mgr;
+
+            foreach my $f (@$files_to_publish) {
+                ok($file_mgr->exists($f), 'Published:' . $f);
+            }
+        },
+    },
+    {
+        api    => 'metaWeblog.editPost',
+        params => [ 1, $username, $password, {
+            categories => [ map {
+                $mt->model('category')->load($_)->label
+                } qw(1) ],
+        }, 1],
+        pre    => sub {
+            my $blog     = $mt->model('blog')->load(1);
+            my $file_mgr = $blog->file_mgr;
+            my $entry = $mt->model('entry')->load(1);
+            $entry->clear_cache('categories');
+
+            my @cats = grep {
+                MT::Object::clear_cache($_, 'entry_count');
+                $_->entry_count == 1;
+            } @{ $entry->categories };
+
+            my $files_to_delete = [ map {
+                File::Spec->catfile( $blog->archive_path,
+                    archive_file_for( undef, $blog, 'Category', $_ ) );
+            } @cats ];
+            foreach my $f (@$files_to_delete) {
+                $file_mgr->mkpath(dirname($f));
+                $file_mgr->put_data( 1, $f );
+            }
+            CORE::sleep(1);
+            return $files_to_delete;
+        },
+        result => sub {
+            my ( $som, $files_to_delete ) = @_;
+            my $file_mgr = $mt->model('blog')->load(1)->file_mgr;
+
+            foreach my $f (@$files_to_delete) {
+                ok(! $file_mgr->exists($f), 'Deleted:' . $f);
+            }
+        },
+    },
+    {
         api    => 'mt.getCategoryList',
         params => [ 1, $username, $password ],
         result => sub {
@@ -350,6 +420,70 @@ my @apis = (
             my $cats = $entry->categories;
             is(scalar @$cats, 0);
             ok(!$entry->category);
+        },
+    },
+    {
+        api    => 'mt.setPostCategories',
+        params => [ 1, $username, $password, [
+            { categoryId => 1, isPrimary => 0 },
+            { categoryId => 2, isPrimary => 1 },
+        ] ],
+        pre    => sub {
+            my $blog     = $mt->model('blog')->load(1);
+            my $file_mgr = $blog->file_mgr;
+
+            my @cats = $mt->model('category')->load( { id => [qw(1 2)] } );
+            my $files_to_publish = [ map {
+                File::Spec->catfile( $blog->archive_path,
+                    archive_file_for( undef, $blog, 'Category', $_ ) );
+            } @cats ];
+            foreach my $f (@$files_to_publish) {
+                $file_mgr->delete($f);
+            }
+            return $files_to_publish;
+        },
+        result => sub {
+            my ( $som, $files_to_publish ) = @_;
+            my $file_mgr = $mt->model('blog')->load(1)->file_mgr;
+
+            foreach my $f (@$files_to_publish) {
+                ok($file_mgr->exists($f), 'Published:' . $f);
+            }
+        },
+    },
+    {
+        api    => 'mt.setPostCategories',
+        params => [ 1, $username, $password, [
+        ] ],
+        pre    => sub {
+            my $blog     = $mt->model('blog')->load(1);
+            my $file_mgr = $blog->file_mgr;
+            my $entry = $mt->model('entry')->load(1);
+            $entry->clear_cache('categories');
+
+            my @cats = grep {
+                MT::Object::clear_cache($_, 'entry_count');
+                $_->entry_count == 1;
+            } @{ $entry->categories };
+
+            my $files_to_delete = [ map {
+                File::Spec->catfile( $blog->archive_path,
+                    archive_file_for( undef, $blog, 'Category', $_ ) );
+            } @cats ];
+            foreach my $f (@$files_to_delete) {
+                $file_mgr->mkpath(dirname($f));
+                $file_mgr->put_data( 1, $f );
+            }
+            CORE::sleep(1);
+            return $files_to_delete;
+        },
+        result => sub {
+            my ( $som, $files_to_delete ) = @_;
+            my $file_mgr = $mt->model('blog')->load(1)->file_mgr;
+
+            foreach my $f (@$files_to_delete) {
+                ok(! $file_mgr->exists($f), 'Deleted:' . $f);
+            }
         },
     },
     {
