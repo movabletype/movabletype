@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -299,7 +299,7 @@ sub _send_mt_smtp {
     # Setup headers
     my $hdr;
     foreach my $k ( keys %$hdrs ) {
-        next if ($k =~ /^(To|Bcc|Cc)$/);
+        next if ( $k =~ /^(To|Bcc|Cc)$/ );
         $hdr .= "$k: " . $hdrs->{$k} . "\r\n";
     }
 
@@ -313,7 +313,7 @@ sub _send_mt_smtp {
             foreach my $a (@$addr) {
                 $smtp->recipient($a);
             }
-            $hdr .= "$h: " . join(",\r\n ", @$addr) . "\r\n";
+            $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n";
         }
     }
 

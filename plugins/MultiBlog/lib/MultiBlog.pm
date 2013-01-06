@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2006-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2006-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -252,7 +252,7 @@ sub perform_mb_action {
 }
 
 sub filter_blogs_from_args {
-    my ($plugin, $ctx, $args) = @_;
+    my ( $plugin, $ctx, $args ) = @_;
     my %acl = load_multiblog_acl( $plugin, $ctx );
     $args->{ $acl{mode} } = $acl{acl};
 }

@@ -63,8 +63,8 @@ sub end_document {
             { author_id => $user->id, permissions => { not => "'comment'" } }
             )
             if !$user->is_superuser
-            && !$user->permissions(0)->can_do('edit_templates')
-            && !$user->permissions(0)->can_do('create_blog');
+                && !$user->permissions(0)->can_do('edit_templates')
+                && !$user->permissions(0)->can_do('create_blog');
         $terms{class} = 'website';
         my $count = MT::Website->count( \%terms, \%args );
 

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -643,7 +643,7 @@ sub site_path {
 }
 
 sub raw_archive_url {
-    my $blog        = shift;
+    my $blog = shift;
     my $archive_url = $blog->SUPER::archive_url || '';
     if ( my ( $subdomain, $path ) = split( '/::/', $archive_url ) ) {
         return ( $subdomain, $path );

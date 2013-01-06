@@ -785,24 +785,24 @@ sub _DoLists {
 }
 
 sub _MakeList {
-  my ( $list_type, $content, $marker ) = @_;
+    my ( $list_type, $content, $marker ) = @_;
 
-  if ($list_type eq 'ol') {
-    my ($num) = $marker =~ /^(\d+)[.]/;
-    return "<ol start='$num'>\n" . $content . "</ol>\n";
-  }
+    if ( $list_type eq 'ol' ) {
+        my ($num) = $marker =~ /^(\d+)[.]/;
+        return "<ol start='$num'>\n" . $content . "</ol>\n";
+    }
 
-  return "<$list_type>\n" . $content . "</$list_type>\n";
+    return "<$list_type>\n" . $content . "</$list_type>\n";
 }
 
 sub _ProcessListItemsOL {
-#
-#   Process the contents of a single ordered list, splitting it
-#   into individual list items.
-#
+
+    #
+    #   Process the contents of a single ordered list, splitting it
+    #   into individual list items.
+    #
 
     my ( $list_str, $marker_any ) = @_;
-
 
     # $g_list_level global keeps track of when we're inside a list.
     # Each time we enter a list, we increment it; when we leave a list,
@@ -829,7 +829,6 @@ sub _ProcessListItemsOL {
 
     # trim trailing blank lines:
     $list_str =~ s/\n{2,}\z/\n/;
-
 
     $list_str =~ s{
         (\n)?                           # leading line = $1
@@ -861,13 +860,13 @@ sub _ProcessListItemsOL {
 }
 
 sub _ProcessListItemsUL {
-#
-#   Process the contents of a single unordered list, splitting it
-#   into individual list items.
-#
 
-    my ( $list_str, $marker_any) = @_;
+    #
+    #   Process the contents of a single unordered list, splitting it
+    #   into individual list items.
+    #
 
+    my ( $list_str, $marker_any ) = @_;
 
     # The $g_list_level global keeps track of when we're inside a list.
     # Each time we enter a list, we increment it; when we leave a list,
@@ -894,7 +893,6 @@ sub _ProcessListItemsUL {
 
     # trim trailing blank lines:
     $list_str =~ s/\n{2,}\z/\n/;
-
 
     $list_str =~ s{
         (\n)?                           # leading line = $1

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1969,8 +1969,8 @@ sub save_filter {
         return $eh->error(
             MT->translate("Please choose a preferred archive type.") )
             if $app->blog->is_blog
-            && ( !$app->param('no_archives_are_active')
-            && !$app->param('preferred_archive_type') );
+                && (   !$app->param('no_archives_are_active')
+                    && !$app->param('preferred_archive_type') );
     }
     return 1;
 }
