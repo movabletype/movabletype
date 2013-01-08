@@ -295,7 +295,17 @@ sub apply_plack_middlewares {
         my $name = $middleware->{name};
         my %options;
         foreach my $opt ( @{ $middleware->{options} } ) {
-            $options{ $opt->{key} } = MT->handler_to_coderef( $opt->{value} );
+            if ( $opt->{value} ) {
+                $options{ $opt->{key} } = $opt->{value};
+            }
+            elsif ( $opt->{code} ) {
+                my $code = MT->handler_to_coderef( $opt->{code} );
+                $options{ $opt->{key} } = $code->() if $code;
+            }
+            elsif ( $opt->{handler} ) {
+                $options{ $opt->{key} }
+                    = MT->handler_to_coderef( $opt->{handler} );
+            }
         }
         if ( $middleware->{condition} ) {
             my $condition
