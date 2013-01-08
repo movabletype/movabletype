@@ -81,10 +81,16 @@ sub dbh_handle {
             $dbh->{private_last_ping} = time if $dbh;
         }
         else {
-            my $orig_reuse = $driver->reuse_dbh;
-            $driver->reuse_dbh(0);
             $dbh = $driver->init_db() or die $driver->last_error;
-            $driver->reuse_dbh($orig_reuse);
+            my $orig_reuse = $driver->reuse_dbh;
+            if ( $orig_reuse && !$dbh->ping ) {
+
+                # A database connection has been reused,
+                # but this is probably already expired.
+                $driver->reuse_dbh(0);
+                $dbh = $driver->init_db() or die $driver->last_error;
+                $driver->reuse_dbh($orig_reuse);
+            }
             $dbh->{private_last_ping} = time;
             $driver->dbh($dbh);
         }
