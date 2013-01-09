@@ -5,7 +5,7 @@
 # $Id$
 
 # Original Copyright 2001-2002 Jay Allen.
-# Modifications and integration Copyright 2001-2012 Six Apart.
+# Modifications and integration Copyright 2001-2013 Six Apart.
 
 package MT::App::Search::Legacy;
 
