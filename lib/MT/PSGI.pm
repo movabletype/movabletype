@@ -186,8 +186,6 @@ sub prepare_app {
         $app = $self->mount_applications( $self->application_list );
     }
 
-    $app = $self->apply_plack_middlewares($app);
-
     return $self->_app($app);
 }
 
@@ -238,8 +236,8 @@ sub mount_applications {
     my $self           = shift;
     my (@applications) = @_;
     my $urlmap         = Plack::App::URLMap->new;
-    for my $app (@applications) {
-        $app = MT->registry( applications => $app ) unless ref $app;
+    for my $app_id (@applications) {
+        my $app = MT->registry( applications => $app_id ) unless ref $app_id;
         Carp::croak('No application is specified') unless $app;
         my $base = $app->{cgi_path};
         if ($base) {
@@ -257,6 +255,7 @@ sub mount_applications {
         $script =~ s!^/!!;
         my $url      = $base . '/' . $script;
         my $psgi_app = $self->make_app($app);
+        $psgi_app = $self->apply_plack_middlewares($app_id, $psgi_app);
         $urlmap->map( $url, $psgi_app );
     }
 
@@ -285,13 +284,16 @@ sub mount_applications {
 }
 
 sub apply_plack_middlewares {
-    my ( $self, $app ) = @_;
+    my ( $self, $app_id, $app ) = @_;
 
     my $middlewares = MT::Component->registry('plack_middlewares');
     my @middlewares = map { ref $_ eq 'ARRAY' ? @$_ : $_ } @$middlewares;
 
     my $builder = Plack::Builder->new();
     foreach my $middleware (@middlewares) {
+        my @apply_to = @{ $middleware->{apply_to} };
+        next if ( $app_id && !( grep { $_ eq 'all' || $_ eq $app_id } @apply_to ) );
+
         my $name = $middleware->{name};
         my %options;
         foreach my $opt ( @{ $middleware->{options} } ) {
