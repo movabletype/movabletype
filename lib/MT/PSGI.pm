@@ -419,6 +419,70 @@ using XMLRPC::Transport::HTTP::Plack.
 
 =back
 
+=item plack_middlewares
+
+You can use Plack::Middleware. The following options can be specified. 
+
+=over 8
+
+=item name
+
+The part after "Plack::Middleware::" of the name of Plack::Middleware to apply is specified.
+
+=item options
+
+Arrangement of middleware's options.
+
+=over 12
+
+=item key
+
+Option's name.
+
+=item parameters
+
+The parameter which can be specified to options is the following three kinds.
+
+=over 16
+
+=item value
+
+The simple value of option.
+
+=item code
+
+Subroutine reference.
+
+=item handler
+
+Handler to subroutine reference.
+
+=back
+
+=back
+
+=item condition
+
+The conditions of middleware application are specified with a code reference or a handler.
+
+=item apply_to
+
+Arrangement of application ID which applies middleware.
+
+=back
+
+for example:
+
+    plack_middlewares:
+        - name: Auth::Basic
+          options:
+              - key: authenticator
+                handler: Cloud::Auth::Basic::authenticator
+          condition: Cloud::Auth::Basic::condition
+          apply_to:
+              - cms
+              - upgrade
+
 =back
 
 =head1 AUTHOR & COPYRIGHT
