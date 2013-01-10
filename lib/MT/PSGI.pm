@@ -255,7 +255,7 @@ sub mount_applications {
         $script =~ s!^/!!;
         my $url      = $base . '/' . $script;
         my $psgi_app = $self->make_app($app);
-        $psgi_app = $self->apply_plack_middlewares($app_id, $psgi_app);
+        $psgi_app = $self->apply_plack_middlewares( $app_id, $psgi_app );
         $urlmap->map( $url, $psgi_app );
     }
 
@@ -292,7 +292,9 @@ sub apply_plack_middlewares {
     my $builder = Plack::Builder->new();
     foreach my $middleware (@middlewares) {
         my @apply_to = @{ $middleware->{apply_to} };
-        next if ( $app_id && !( grep { $_ eq 'all' || $_ eq $app_id } @apply_to ) );
+        next
+            if ( $app_id
+            && !( grep { $_ eq 'all' || $_ eq $app_id } @apply_to ) );
 
         my $name = $middleware->{name};
         my %options;
