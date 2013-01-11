@@ -4885,11 +4885,11 @@ C<param> method works identically with this one.
 
 =head2 $app->param_hash
 
-Returns a hash reference containing all of the query parameter names
-and their values. Example:
+Returns a hash (not a reference) containing all of the query parameter 
+names and their values. Example:
 
-    my $data = $app->param_hash;
-    my $title = $data->{entry_title};
+    my %data = $app->param_hash;
+    my $title = $data{entry_title};
 
 =head2 $app->post_run
 
