@@ -337,7 +337,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                     return;
                 }
                 var f = listener.cb;
-                if (f.toString().match(/^function addRootBlocks\(\)/)) {
+                if (f.toString().match(/^function addRootBlocks\(\)|^function\s+\w+\(\).*forced_root_block/)) {
                     ed.onKeyUp.remove(f);
                     return false;
                 }
