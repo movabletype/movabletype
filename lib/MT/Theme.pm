@@ -286,7 +286,7 @@ sub static_file_path_from_id {
 }
 
 sub static_file_url_from_id {
-    File::Spec->catdir( MT->app->support_directory_url,
+    MT::Util::caturl( MT->app->support_directory_url,
         'theme_static', $_[0] )
         . '/';
 }
