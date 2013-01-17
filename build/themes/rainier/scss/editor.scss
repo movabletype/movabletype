@@ -4,8 +4,7 @@
 @import 'basics';
 
 body {
-  max-width: 640px;
-  margin: 0 auto;
+  margin: $indent auto 0;
 //  border-width: 0 1px;
 //  border-style: dotted;
 //  border-color: #f3f3f3;
