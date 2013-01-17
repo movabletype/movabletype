@@ -1650,6 +1650,30 @@ sub left_join_multi_joins : Tests(2) {
         'Multiple left join with complex conditions' );
 }
 
+sub left_join_inner_join : Tests(1) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $nextstep = Foo->load(1);
+
+    my @data = Foo->load(
+        {},
+        {   joins => [
+                [   'Bar', undef,
+                    { id => \'is not null', },
+                    {   type      => 'left',
+                        condition => 'foo_id',
+                    },
+                ],
+                [   'Bar', undef,
+                    { foo_id => \'= foo_id', name => 'Snow Leopard' }
+                ],
+            ],
+        }
+    );
+    are_objects( \@data, [$nextstep], 'Left join with inner join' );
+}
+
 sub clean_db : Test(teardown) {
     MT::Test->reset_table_for(qw( Foo Bar Baz ));
 }
