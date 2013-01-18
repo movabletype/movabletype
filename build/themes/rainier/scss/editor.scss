@@ -4,9 +4,13 @@
 @import 'basics';
 
 body {
-  margin: $indent auto 0;
+  margin: 0 auto;
 //  border-width: 0 1px;
 //  border-style: dotted;
 //  border-color: #f3f3f3;
 //  padding: 0 $gap;
+}
+
+body > p:first-child {
+  margin-top: 0;
 }
