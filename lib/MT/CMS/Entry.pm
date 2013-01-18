@@ -673,21 +673,57 @@ PERMCHECK: {
 
     my %terms;
     my $blog_ids = $app->_load_child_blog_ids($blog_id);
-    push @$blog_ids, $blog_id;
+    push @$blog_ids, $blog_id if $blog_id;
+    my $terms_ref = \%terms;
 
-    $terms{blog_id} = $blog_ids;
+    if ($app->user->is_superuser) {
+        $terms{blog_id} = $blog_ids;
+    }
+    elsif ($blog_id) {
+        $terms{blog_id} = $blog_ids;
+        $terms{author_id} = $app->user->id
+            unless $app->can_do('edit_all_entries');       
+    }
+    else {
+        my @permissions = 
+            grep { $_->can_do('access_to_entry_list') }
+            $app->model('permission')->load( 
+                { author_id => $app->user->id } );
+        my @full_perms = 
+            grep { $_->can_do('edit_all_entries') } 
+            @permissions;
+        my @self_perms = 
+            grep { not $_->can_do('edit_all_entries') } 
+            @permissions;
+        if (0 == @self_perms) {
+            $terms{blog_id} = [ map { $_->blog_id } @full_perms ];
+        }
+        elsif (0 == @full_perms) {
+            $terms{blog_id} = [ map { $_->blog_id } @self_perms ];
+            $terms{author_id} = $app->user->id;
+        }
+        else {
+            $terms_ref = 
+                [ 
+                    \%terms, 
+                    '-and',
+                    [
+                        { 
+                            blog_id => [ map { $_->blog_id } @full_perms ],
+                        },
+                        '-or',
+                        {
+                            blog_id => [ map { $_->blog_id } @self_perms ],
+                            author_id => $app->user->id,
+                        }
+                    ],  
+                ];
+        }
+    }
+
     $terms{class}   = $type;
     my $limit = $list_pref->{rows};
     my $offset = $app->param('offset') || 0;
-
-    if ( !$blog_id && !$app->user->is_superuser ) {
-        require MT::Permission;
-        $terms{blog_id} = [
-            map      { $_->blog_id }
-                grep { $_->can_do('access_to_entry_list') }
-                MT::Permission->load( { author_id => $app->user->id } )
-        ];
-    }
 
     my %arg;
     $arg{'sort'} = $type eq 'page' ? 'modified_on' : 'authored_on';
@@ -871,7 +907,7 @@ PERMCHECK: {
     require MT::Category;
     require MT::Placement;
 
-    $total = $pkg->count( \%terms, \%arg ) || 0
+    $total = $pkg->count( $terms_ref, \%arg ) || 0
         unless defined $total;
     $arg{limit} = $limit + 1;
     if ( $total <= $limit ) {
@@ -882,7 +918,7 @@ PERMCHECK: {
         $arg{offset} = $offset if $offset;
     }
 
-    my $iter = $iter_method || $pkg->load_iter( \%terms, \%arg );
+    my $iter = $iter_method || $pkg->load_iter( $terms_ref, \%arg );
 
     my $is_power_edit = $q->param('is_power_edit');
     if ($is_power_edit) {
