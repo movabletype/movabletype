@@ -291,10 +291,13 @@ sub apply_plack_middlewares {
 
     my $builder = Plack::Builder->new();
     foreach my $middleware (@middlewares) {
-        my @apply_to = @{ $middleware->{apply_to} };
-        next
-            if ( $app_id
-            && !( grep { $_ eq 'all' || $_ eq $app_id } @apply_to ) );
+        if ( $middleware->{apply_to} ) {
+            my $apply_to = $middleware->{apply_to};
+            $apply_to = [$apply_to] unless 'ARRAY' eq ref $apply_to;
+            next
+                if ( $app_id
+                && !( grep { $_ eq 'all' || $_ eq $app_id } @apply_to ) );
+        }
 
         my $name = $middleware->{name};
         my %options;
@@ -467,7 +470,8 @@ The conditions of middleware application are specified with a code reference or 
 
 =item apply_to
 
-Arrangement of application ID which applies middleware.
+Application ID which applies middleware. You can specify a single ID or multiple ID with array.
+If does not specified, just as 'all' is specified.
 
 =back
 
