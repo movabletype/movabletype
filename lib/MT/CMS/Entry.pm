@@ -656,44 +656,49 @@ sub list {
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog;
 
+    my $perm_action
+        = $type eq 'page'
+        ? 'access_to_page_list'
+        : 'access_to_entry_list';
+    my $perm_action_all
+        = $type eq 'page'
+        ? 'edit_all_pages'
+        : 'edit_all_entries';
 PERMCHECK: {
-        my $action
-            = $type eq 'page'
-            ? 'access_to_page_list'
-            : 'access_to_entry_list';
         if ($blog_id) {
-            last PERMCHECK if $app->can_do($action);
+            last PERMCHECK if $app->can_do($perm_action);
         }
         else {
             last PERMCHECK
-                if $app->user->can_do( $action, at_least_one => 1 );
+                if $app->user->can_do( $perm_action, at_least_one => 1 );
         }
         return $app->permission_denied();
     }
 
     my %terms;
-    my $blog_ids = $app->_load_child_blog_ids($blog_id);
-    push @$blog_ids, $blog_id if $blog_id;
+    my $blog_ids;
+    if ($blog_id) {
+        $blog_ids = $app->_load_child_blog_ids($blog_id);
+        push @$blog_ids, $blog_id;
+    }
     my $terms_ref = \%terms;
 
     if ($app->user->is_superuser) {
         $terms{blog_id} = $blog_ids;
     }
-    elsif ($blog_id) {
-        $terms{blog_id} = $blog_ids;
-        $terms{author_id} = $app->user->id
-            unless $app->can_do('edit_all_entries');       
-    }
     else {
         my @permissions = 
-            grep { $_->can_do('access_to_entry_list') }
+            grep { $_->can_do($perm_action) }
             $app->model('permission')->load( 
-                { author_id => $app->user->id } );
+                { 
+                    author_id => $app->user->id, 
+                    ( $blog_id ? ( blog_id => $blog_ids ) : () ),
+                } );
         my @full_perms = 
-            grep { $_->can_do('edit_all_entries') } 
+            grep { $_->can_do($perm_action_all) } 
             @permissions;
         my @self_perms = 
-            grep { not $_->can_do('edit_all_entries') } 
+            grep { not $_->can_do($perm_action_all) } 
             @permissions;
         if (0 == @self_perms) {
             $terms{blog_id} = [ map { $_->blog_id } @full_perms ];
