@@ -296,7 +296,7 @@ sub apply_plack_middlewares {
             $apply_to = [$apply_to] unless 'ARRAY' eq ref $apply_to;
             next
                 if ( $app_id
-                && !( grep { $_ eq 'all' || $_ eq $app_id } @apply_to ) );
+                && !( grep { $_ eq 'all' || $_ eq $app_id } @$apply_to ) );
         }
 
         my $name = $middleware->{name};
