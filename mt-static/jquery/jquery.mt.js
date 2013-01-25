@@ -1158,13 +1158,13 @@ $.fn.extend({
     }
 });
 
-$('input, textarea').live('keyup focusin focusout', function () {
+$(document).on('keyup focusin focusout','input, textarea',function () {
     var ns = $.data( this, 'mtValidator' );
     if ( !ns ) return true;
     $(this).mtValid({ focus: false });
 });
 
-$('select').live('change', function () {
+$(document).on('change','select',function () {
     var ns = $.data( this, 'mtValidator' );
     if ( !ns ) return true;
     $(this).mtValid({ focus: false });
