@@ -196,6 +196,15 @@ sub seed_database {
         )
         );
 
+    $author->created_by( $author->id );
+    $author->save
+        or return $self->error(
+        $self->translate_escape(
+            "Error saving record: [_1].",
+            $author->errstr
+        )
+        );
+
     my $App = $MT::Upgrade::App;
     $App->{author} = $author if ref $App;
 

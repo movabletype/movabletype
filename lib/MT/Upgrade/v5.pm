@@ -193,6 +193,20 @@ sub upgrade_functions {
                 },
             },
         },
+        'v5_assign_initial_user_ceated_by' => {
+            version_limit => 5.0035,
+            priority      => 3.0,
+            updater       => {
+                type  => 'author',
+                label => 'Assigning ID of user who created for initial user...',
+                code  => sub {
+                    $_[0]->created_by( $_[0]->id )
+                        if !defined $_[0]->created_by;
+                },
+                sql => 'update mt_author set author_created_by = author_id
+                         where author_created_by is null',
+            },
+        },
     };
 }
 
