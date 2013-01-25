@@ -1633,7 +1633,7 @@ jQuery('.actions-bar a.button').click(function() {
   return false;
 });
 
-jQuery('.filtertype .minus').live('click', function() {
+jQuery('#filter-detail').on('click','.filtertype .minus',function(){
   var $item = jQuery(this).parents('.filteritem');
   jQuery(this).parents('.filtertype').find('input').mtUnvalidate().end().remove();
   if ( $item.find('.filtertype').length == 1 ) {
@@ -1641,7 +1641,7 @@ jQuery('.filtertype .minus').live('click', function() {
   }
 });
 
-jQuery('.filtertype .plus').live('click', function() {
+jQuery('#filter-detail').on('click','.filtertype .plus',function(){
   var op = 'and';
   jQuery(this).parents('.filteritem').addClass(op);
   var $filtertype = jQuery(this).parents('.filtertype');
