@@ -85,14 +85,10 @@
 </div>
 
 <mt:setvarblock name="jq_js_include" append="1">
-jQuery('div.indicator')
-  .hide()
-  .bind('ajaxStart', function() {
-    jQuery(this).show();
-  })
-  .bind('ajaxStop', function() {
-    jQuery(this).hide();
-  });
+var indicator = jQuery('div.indicator').hide();
+jQuery(document)
+  .ajaxStart(function(){ indicator.show(); })
+  .ajaxStop(function(){ indicator.hide(); });
 
 var dummy = 1;
 var checksum = '';

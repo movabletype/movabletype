@@ -241,9 +241,9 @@ jQuery.event.special.listReady = {
     }
 };
 
-jQuery(window).bind( 'ajaxStart', function() {
-    jQuery('#msg-block .msg-error').remove();
-  });
+jQuery(document).ajaxStart(function(){
+  jQuery('#msg-block .msg-error').remove();
+})
 
 var line = '<th class="col head cb"<mt:unless name="has_list_actions"> style="display: none;"</mt:unless>><input type="checkbox" /></th>';
 var table = jQuery('table.listing-table')[0];
