@@ -12,13 +12,14 @@ function smarty_block_mtentrytags($args, $content, &$ctx, &$repeat) {
         if (isset($args['class'])) {
             $class = $args['class'];
         }
+        $include_private = empty($args['include_private']) ? 0 : 1;
         $ctx->localize($localvars);
         require_once("MTUtil.php");
         $entry = $ctx->stash('entry');
         $blog_id = $entry->entry_blog_id;
 
         $entry = $ctx->stash('entry');
-        $tags = $ctx->mt->db()->fetch_entry_tags(array('entry_id' => $entry->entry_id, 'blog_id' => $blog_id, 'class' => $class));
+        $tags = $ctx->mt->db()->fetch_entry_tags(array('entry_id' => $entry->entry_id, 'blog_id' => $blog_id, 'class' => $class, 'include_private' => $include_private));
         if (!is_array($tags)) $tags = array();
         $ctx->stash('_tags', $tags);
         $ctx->stash('__out', false);

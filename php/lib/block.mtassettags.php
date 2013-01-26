@@ -12,8 +12,9 @@ function smarty_block_mtassettags($args, $content, &$ctx, &$repeat) {
         require_once("MTUtil.php");
         $asset = $ctx->stash('asset');
         $blog_id = $asset->asset_blog_id;
+        $include_private = empty($args['include_private']) ? 0 : 1;
 
-        $tags = $ctx->mt->db()->fetch_asset_tags(array('asset_id' => $asset->asset_id, 'blog_id' => $blog_id));
+        $tags = $ctx->mt->db()->fetch_asset_tags(array('asset_id' => $asset->asset_id, 'blog_id' => $blog_id, 'include_private' => $include_private));
         if (!is_array($tags)) $tags = array();
         $ctx->stash('_tags', $tags);
         $ctx->stash('__out', false);

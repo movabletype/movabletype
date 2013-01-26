@@ -1444,9 +1444,13 @@ abstract class MTDatabase {
         # load tags
 
         $class = isset($args['class']) ? $args['class'] : 'entry';
+        $cacheable 
+            = empty( $args['tags'] )
+            && empty( $args['tag'] )
+            && empty( $args['include_private'] );
 
         if (isset($args['entry_id'])) {
-            if (!isset($args['tags']) && !isset($args['tag'])) {
+            if ($cacheable) {
                 if (isset($this->_entry_tag_cache[$args['entry_id']])) {
                     return $this->_entry_tag_cache[$args['entry_id']];
                 }
@@ -1456,7 +1460,7 @@ abstract class MTDatabase {
 
         $blog_filter = $this->include_exclude_blogs($args);
         if ($blog_filter == '' and isset($args['blog_id'])) {
-            if (!isset($args['tags']) && !isset($args['tag'])) {
+            if ($cacheable) {
                 if (!isset($args['entry_id'])) {
                     if (isset($this->_blog_tag_cache[$args['blog_id'].":$class"])) {
                         return $this->_blog_tag_cache[$args['blog_id'].":$class"];
@@ -1468,10 +1472,10 @@ abstract class MTDatabase {
         if ($blog_filter != '') 
             $blog_filter = 'and objecttag_blog_id ' . $blog_filter;
 
-        if (!isset($args['include_private'])) {
+        if (empty($args['include_private'])) {
             $private_filter = 'and (tag_is_private = 0 or tag_is_private is null)';
         }
-        if (isset($args['tags']) && ($args['tags'] != '')) {
+        if (! empty($args['tags'])) {
             $tag_list = '';
             require_once("MTUtil.php");
             $tag_array = tag_split($args['tags']);
@@ -1524,7 +1528,7 @@ abstract class MTDatabase {
             $tags[] = $tag;
             $rs->MoveNext();
         }
-        if (!isset($args['tag'])) {
+        if ($cacheable) {
             if ($args['entry_id'])
                 $this->_entry_tag_cache[$args['entry_id']] = $tags;
             elseif ($args['blog_id'])
@@ -1536,12 +1540,15 @@ abstract class MTDatabase {
     public function fetch_asset_tags($args) {
 
         # load tags by asset
-        if (!isset($args['include_private'])) {
+        $cacheable = empty( $args['tags'] )
+            && empty( $args['include_private'] );
+
+        if (empty($args['include_private'])) {
             $private_filter = 'and (tag_is_private = 0 or tag_is_private is null)';
         }
 
         if (isset($args['asset_id'])) {
-            if (isset($args['tags'])) {
+            if ($cacheable) {
                 if (isset($this->_asset_tag_cache[$args['asset_id']]))
                     return $this->_asset_tag_cache[$args['asset_id']];
             }
@@ -1549,14 +1556,14 @@ abstract class MTDatabase {
         }
         
         if (isset($args['blog_id'])) {
-            if (!isset($args['tags'])) {
+            if ($cacheable) {
                 if (isset($this->_blog_asset_tag_cache[$args['blog_id']]))
                     return $this->_blog_asset_tag_cache[$args['blog_id']];
             }
             $blog_filter = 'and objecttag_blog_id = '.intval($args['blog_id']);
         }
 
-        if (isset($args['tags']) && ($args['tags'] != '')) {
+        if (! empty($args['tags'])) {
             $tag_list = '';
             require_once("MTUtil.php");
             $tag_array = tag_split($args['tags']);
@@ -1613,7 +1620,7 @@ abstract class MTDatabase {
             $rs->MoveNext();
         }
 
-        if (isset($args['tags'])) {
+        if ($cacheable) {
             if ($args['asset_id'])
                 $this->_asset_tag_cache[$args['asset_id']] = $tags;
             elseif ($args['blog_id'])
