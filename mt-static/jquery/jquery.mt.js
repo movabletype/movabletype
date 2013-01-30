@@ -94,9 +94,9 @@ $.mtUseSubdomain = function(options) {
     });
     $checkboxes.click(function() {
         if (this.checked) {
-            $(this).attr('checked', true).parents('.field-content').find('.subdomain').show();
+            $(this).prop('checked',true).parents('.field-content').find('.subdomain').show();
         } else {
-            $(this).removeAttr('checked').parents('.field-content').find('.subdomain').hide();
+            $(this).prop('checked',false).parents('.field-content').find('.subdomain').hide();
         }
     });
 };
@@ -193,7 +193,7 @@ $.mtUseAbsolute = function() {
     });
     $checkboxes.click(function() {
         if (this.checked) {
-            var $obj = $(this).attr('checked', true).parents('.field-content');
+            var $obj = $(this).prop('checked', true).parents('.field-content');
             $obj.find('.relative-site_path').hide();
             $obj.find('.absolute-site_path').show();
             $obj.find('.relative-site_path-hint').hide();
@@ -201,7 +201,7 @@ $.mtUseAbsolute = function() {
             $obj.find('.absolute-site_path').find(':input').removeClass('ignore-validate');
             $obj.find('.relative-site_path').find(':input').addClass('ignore-validate');
         } else {
-            var $obj = $(this).removeAttr('checked').parents('.field-content');
+            var $obj = $(this).prop('checked', false).parents('.field-content');
             $obj.find('.relative-site_path').show();
             $obj.find('.absolute-site_path').hide();
             $obj.find('.relative-site_path-hint').show();
@@ -289,18 +289,18 @@ $.mtCheckbox = function() {
     function verify_all_checked($table) {
         var n = $table.find('tbody input:checked').length;
         if ($table.find('tbody :checkbox').length === n) {
-            $table.find('thead :checkbox, tfoot :checkbox').attr('checked', true);
+            $table.find('thead :checkbox, tfoot :checkbox').prop('checked', true);
         } else {
-            $table.find('thead :checkbox, tfoot :checkbox').removeAttr('checked');
+            $table.find('thead :checkbox, tfoot :checkbox').prop('checked',false);
         }
     }
 
     $('thead :checkbox, tfoot :checkbox').click(function() {
         var $checkboxes = $(this).parents('table').find(':checkbox');
         if (this.checked) {
-            $checkboxes.attr('checked', true).parents('tr').addClass('selected').next('.slave').addClass('selected');
+            $checkboxes.prop('checked', true).parents('tr').addClass('selected').next('.slave').addClass('selected');
         } else {
-            $checkboxes.removeAttr('checked').parents('tr').removeClass('selected').next('.slave').removeClass('selected');
+            $checkboxes.prop('checked', false).parents('tr').removeClass('selected').next('.slave').removeClass('selected');
         }
     });
 
@@ -792,7 +792,7 @@ $.fn.mtCheckboxOption = function() {
     return this.each(function() {
         var $checkbox = $(this).find(':checkbox');
         var id = $checkbox.attr('id');
-        if (!$checkbox.attr('checked')) {
+        if (!$checkbox.prop('checked')) {
             $('div#'+id+'-option').hide();
         }
         $checkbox.click(function() {

@@ -869,7 +869,7 @@ function renderList(mode, columns, values, limit, page ) {
       }
 </mt:if>
       jQuery('table.listing-table tbody').empty();
-      jQuery('table.listing-table th :checkbox').removeAttr('checked');
+      jQuery('table.listing-table th :checkbox').prop('checked',false);
       var objs = data.result.objects;
       var count = objs.length;
       var last = data.result.page_max;
@@ -935,7 +935,7 @@ function renderList(mode, columns, values, limit, page ) {
       var $checked = jQuery('td :checked');
       $checked.parents('tr').addClass('selected');
       if ($checkboxes.length && $checkboxes.length == $checked.length) {
-        jQuery('table.listing-table th :checkbox').attr('checked', 'checked');
+        jQuery('table.listing-table th :checkbox').prop('checked', true);
         addSelectAll($checkboxes);
       }
       if (mode == 'save_filter' || mode == 'delete_filter') {
@@ -1034,10 +1034,10 @@ jQuery('ul#disp_cols .sub:checkbox').click(function() {
 jQuery('#reset-display-options').click(function() {
   jQuery('#disp_cols input[type=checkbox]').each(function() {
     if ( jQuery(this).is('.show-default') ) {
-      jQuery(this).attr('checked', 'checked');
+      jQuery(this).prop('checked', true);
     }
     else {
-      jQuery(this).removeAttr('checked');
+      jQuery(this).prop('checked', false);
     }
   });
   renderColumns();
@@ -1048,7 +1048,7 @@ jQuery('#reset-display-options').click(function() {
 });
 
 function toggleSubField (obj) {
-  if ( jQuery(obj).attr('checked') )
+  if ( jQuery(obj).prop('checked') )
     jQuery( '#listing-table .' + jQuery(obj).val() ).show();
   else
     jQuery( '#listing-table .' + jQuery(obj).val() ).hide();
@@ -1107,20 +1107,20 @@ jQuery('table.listing-table tbody').selectable({
   cancel: 'tr.no-action, a, .select-all, .text, .can-select, button, pre, :input:not([name=id])',
   selected: function(event, ui) {
     var $checkboxes = jQuery(ui.selected).find(':checkbox');
-    if ($checkboxes.attr('checked')) {
+    if ($checkboxes.prop('checked')) {
       jQuery(ui.selected).removeClass('selected');
-      $checkboxes.removeAttr('checked');
+      $checkboxes.prop('checked',false);
     } else {
       jQuery(ui.selected).addClass('selected');
-      $checkboxes.attr('checked', 'checked');
+      $checkboxes.prop('checked', true);
     }
     if (jQuery('table.listing-table td :checkbox').length == jQuery('table.listing-table td :checked').length) {
-      jQuery('table.listing-table th :checkbox').attr('checked', 'checked');
+      jQuery('table.listing-table th :checkbox').prop('checked', true);
       if (!jQuery('table.listing-table tr.select-all').length) {
         addSelectAll($checkboxes);
       }
     } else {
-      jQuery('table.listing-table th :checkbox').removeAttr('checked');
+      jQuery('table.listing-table th :checkbox').prop('checked', false);
       removeSelectAll($checkboxes);
     }
   }
@@ -1130,11 +1130,11 @@ jQuery('table.listing-table tbody').selectable({
 jQuery('table.listing-table th :checkbox').click(function() {
   var $checkboxes = jQuery('tr :checkbox');
   if (this.checked) {
-    $checkboxes.attr('checked', 'checked');
+    $checkboxes.prop('checked', true);
     addSelectAll($checkboxes);
     $checkboxes.parents('tr').addClass('selected');
   } else {
-    $checkboxes.removeAttr('checked');
+    $checkboxes.prop('checked', false);
     removeSelectAll($checkboxes);
     $checkboxes.parents('tr').removeClass('selected');
   }

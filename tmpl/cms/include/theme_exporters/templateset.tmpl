@@ -92,9 +92,9 @@ jQuery('input.template_set_id[type=checkbox]').click( function(){
     var includes = jQuery(this).attr('tmpl_includes');
     if (includes) {
         var ids = includes.toString().split(',');
-        if ( $(this).attr('checked') ) {
+        if ( jQuery(this).prop('checked') ) {
             jQuery.each(ids, function () {
-                jQuery("input.template_set_id[value="+this+"]").attr('checked','checked');
+                jQuery("input.template_set_id[value="+this+"]").prop('checked',true);
             });
         }
     }

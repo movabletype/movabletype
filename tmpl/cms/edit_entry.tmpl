@@ -861,11 +861,11 @@
           for (i = 0; i < customizable_fields.length; i++) {
               val = customizable_fields[i];
               if ( jQuery.inArray( val, default_fields ) > -1 ) {
-                  jQuery('#custom-prefs-'+val).attr('checked', true);
+                  jQuery('#custom-prefs-'+val).prop('checked', true);
                   jQuery('div#'+val+'-field').removeClass('hidden');
                   jQuery('div#'+val+'-field').show();
               } else {
-                  jQuery('#custom-prefs-'+val).attr('checked', false);
+                  jQuery('#custom-prefs-'+val).prop('checked', false);
                   jQuery('div#'+val+'-field').addClass('hidden');
                   jQuery('div#'+val+'-field').hide();
               }
