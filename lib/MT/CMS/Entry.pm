@@ -173,8 +173,11 @@ sub edit {
                 $app->user ? $app->user->preferred_language : undef );
         }
         if ( my $id = $obj->author_id ) {
-            $author = MT::Author->load($id);
-            $param->{authored_by} = $author->name;
+            my $obj_author = MT::Author->load($id);
+            $param->{authored_by}
+                = $obj_author
+                ? $obj_author->name
+                : MT->translate('*User deleted*');
         }
 
         $app->load_list_actions( $type, $param );
