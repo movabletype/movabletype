@@ -1386,7 +1386,7 @@ jQuery('#save-filter').click(function() {
 });
 
 jQuery('#cancel-save-filter').click(function() {
-  jQuery(this).parents().dialog('close');
+  jQuery(this).parents('#dialog_save_filter').dialog('close');
 });
 
 function validateFilterName (name) {
