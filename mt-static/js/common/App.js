@@ -439,9 +439,17 @@ if( defined( window.clipboardData ) ) {
     /* fix IE background image flash */
     try {
         document.execCommand( "BackgroundImageCache", false, true );
-    } catch( e ) { };
+    } catch( e ) { }
     var blankURI = window.__blankURI__ || "about:blank";
-    document.write( "<iframe id='__location' src='" + blankURI + "' width='0' height='0' frameborder='0'" +
-        "style='visibility:hidden;position:absolute;left:0;top:0;'></iframe>" );
+    var iframe = document.createElement('div');
+    iframe.innerHTML = "<iframe id='__location' src='" + blankURI +
+      "' width='0' height='0' frameborder='0' style='visibility:hidden;position:absolute;left:0;top:0;'></iframe>";
+    iframe = iframe.firstChild;
+    var insertIframe = function(){ document.body.appendChild(iframe);  };
+    if( document.addEventListener ) {
+      document.addEventListener("DOMContentLoaded", insertIframe, false);
+    } else {
+      document.attachEvent("onreadystatechange", insertIframe, false);
+    }
 }
 
