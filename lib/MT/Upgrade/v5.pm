@@ -207,6 +207,39 @@ sub upgrade_functions {
                          where author_created_by is null',
             },
         },
+        'v5_assign_blog_date_language' => {
+            version_limit => 5.0036,
+            priority      => 3.0,
+            updater => {
+                type  => 'blog',
+                terms => { class => '*' },
+                label =>
+                    'Assigning language of blog to use for formatting date...',
+                code => sub {
+                    my @supporteds
+                        = map { $_->{l_tag} } @{ MT::I18N::languages_list() };
+                    my $language = $_[0]->language;
+                    $_[0]->date_language($language);
+                    $_[0]->language( ( grep { $_ eq $language } @supporteds )
+                        ? $language
+                        : MT->config('DefaultLanguage') );
+                },
+                sql => <<__SQL__,
+UPDATE mt_blog SET
+    blog_date_language = blog_language,
+    blog_language = CASE
+        WHEN blog_language IN(
+            @{  [   join( ',',
+                        map { "'" . $_->{l_tag} . "'" }
+                            @{ MT::I18N::languages_list() } )
+                ]
+                }
+            )
+            THEN blog_language
+        ELSE '@{[ MT->config('DefaultLanguage') ]}' END;
+__SQL__
+            },
+        },
     };
 }
 
