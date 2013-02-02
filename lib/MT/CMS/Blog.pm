@@ -37,6 +37,12 @@ sub edit {
         $lang = 'ja' if lc($lang) eq 'jp';
         $param->{ 'language_' . $lang } = 1;
 
+        my $date_lang = $obj->date_language || 'en';
+        $date_lang = 'en'
+            if lc($date_lang) eq 'en-us' || lc($date_lang) eq 'en_us';
+        $date_lang = 'ja' if lc($date_lang) eq 'jp';
+        $param->{ 'date_language_' . $date_lang } = 1;
+
         $param->{system_allow_comments} = $cfg->AllowComments;
         $param->{system_allow_pings}    = $cfg->AllowPings;
         $param->{tk_available}          = eval { require MIME::Base64; 1; }
