@@ -6,7 +6,7 @@
 #
 # $Id$
 
-package MT::Tool::Upgrade;
+package MT::Tool::RemoveOldSessions;
 use strict;
 
 use FindBin;
