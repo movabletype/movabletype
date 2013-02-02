@@ -467,8 +467,11 @@ class MTViewer extends Smarty {
 
     function rd_trans($blog, $phrase, $params) {
         $mt = $this->mt;
-        $lang = ($blog && $blog->blog_language ? $blog->blog_language :
-            $mt->config('DefaultLanguage'));
+        $lang = (
+              $blog && $blog->blog_date_language
+            ? $blog->blog_date_language
+            : $mt->config('DefaultLanguage')
+        );
         $lang = substr(strtolower($lang), 0, 2);
         if ($lang === 'jp') {
             $lang = 'ja';
@@ -664,7 +667,7 @@ EOT;
                 $unix_ts = offset_time(gmmktime($h, $m, $s, $mo, $d, $y), $blog, '-');
                 $now_ts = time();
                 $relative = $this->relative_date($unix_ts, $now_ts, $args['relative'], $blog);
-                if (is_array($relate)) {
+                if (is_array($relative)) {
                     return format_ts($relate['format'], $ts, $blog, isset($args['language']) ? $args['language'] : null);
                 }
                 elseif ($relative) {

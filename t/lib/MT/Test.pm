@@ -438,6 +438,7 @@ sub init_data {
             server_offset        => '-3.5',
             children_modified_on => '20000101000000',
             language             => 'en_us',
+            date_language        => 'en_us',
             file_extension       => 'html',
             theme_id             => 'classic_website',
         }
@@ -479,6 +480,7 @@ sub init_data {
             server_offset        => '-3.5',
             children_modified_on => '20000101000000',
             language             => 'en_us',
+            date_language        => 'en_us',
             file_extension       => 'html',
             theme_id             => 'classic_blog',
         }

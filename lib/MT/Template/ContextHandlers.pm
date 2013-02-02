@@ -416,6 +416,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_description',
             BlogLanguage =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_language',
+            BlogDateLanguage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_date_language',
             BlogURL => '$Core::MT::Template::Tags::Blog::_hdlr_blog_url',
             BlogArchiveURL =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_archive_url',
@@ -448,6 +450,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Website::_hdlr_website_description',
             WebsiteLanguage =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_language',
+            WebsiteDateLanguage =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_date_language',
             WebsiteURL =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_url',
             WebsitePath =>
@@ -1115,7 +1119,7 @@ sub build_date {
     my $lang 
         = $args->{language}
         || $ctx->var('local_lang_id')
-        || ( $blog && $blog->language );
+        || ( $blog && $blog->date_language );
     if ( $args->{utc} ) {
         my ( $y, $mo, $d, $h, $m, $s )
             = $ts
@@ -1185,7 +1189,8 @@ EOT
         else {
             my $old_lang = MT->current_language;
             MT->set_language($lang) if $lang && ( $lang ne $old_lang );
-            my $date = relative_date( $ts, time, $blog, $args->{format}, $r );
+            my $date = relative_date( $ts, time, $blog, $args->{format}, $r,
+                $lang );
             MT->set_language($old_lang) if $lang && ( $lang ne $old_lang );
             if ($date) {
                 return $date;
