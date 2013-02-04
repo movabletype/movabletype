@@ -643,5 +643,6 @@
 { "r" : "1", "t" : "<mt:Unless numify='0'>-1234567</mt:Unless>", "e" : "-102340567"}, #627
 { "r" : "1", "t" : "<mt:SetVar name='hash' key='foo' value='bar'><mt:If name='hash'>exists</mt:If>", "e" : "exists"}, #628
 { "r" : "1", "t" : "<mt:SetVar name='array' index='0' value='foo'><mt:If name='array'>exists</mt:If>", "e" : "exists"}, #629
-{ "r" : "1", "t" : "<mt:SetVar name='array' index='0' value='foo'><mt:GetVar name='shift(array)' setvar='trash'><mt:If name='array'><mt:Else>empty</mt:If>", "e" : "empty"} #630
+{ "r" : "1", "t" : "<mt:SetVar name='array' index='0' value='foo'><mt:GetVar name='shift(array)' setvar='trash'><mt:If name='array'><mt:Else>empty</mt:If>", "e" : "empty"}, #630
+{ "r" : "1", "t" : "<mt:SetVar name='hash' key='foo' value='bar'><mt:SetVar name='delete(hash)' key='foo'><mt:If name='hash'><mt:Else>empty</mt:If>", "e" : "empty"} #631
 ]

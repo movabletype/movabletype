@@ -1668,6 +1668,9 @@ sub _hdlr_if {
         if ( ref($value) eq 'ARRAY' ) {
             return @$value ? 1 : 0;
         }
+        elsif ( ref($value) eq 'HASH' ) {
+            return %$value ? 1 : 0;
+        }
         return 1;
     }
     return 0;
