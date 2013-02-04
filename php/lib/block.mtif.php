@@ -45,6 +45,9 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
                             unset($value);
                         }
                     }
+                    else {
+                        $val = $value;
+                    }
                 }
                 elseif (is_array($value)) {
                     if ( isset($index) ) {
@@ -53,6 +56,9 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
                         } else {
                             unset($value); # fall through to any 'default'
                         }
+                    }
+                    else {
+                        $val = $value;
                     }
                 }
                 else {

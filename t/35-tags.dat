@@ -640,5 +640,8 @@
 { "r" : "1", "t" : "<mt:Unless sanitize='0'><a onclick='alert(1)'>foo</a></mt:Unless>", "e" : "<a onclick='alert(1)'>foo</a>"}, #624
 { "r" : "1", "t" : "<mt:Unless sanitize=''><a onclick='alert(1)'>foo</a></mt:Unless>", "e" : "<a onclick='alert(1)'>foo</a>"}, #625
 { "r" : "1", "t" : "<mt:Unless numify=''>-1234567</mt:Unless>", "e" : "-1234567"}, #626
-{ "r" : "1", "t" : "<mt:Unless numify='0'>-1234567</mt:Unless>", "e" : "-102340567"} #627
+{ "r" : "1", "t" : "<mt:Unless numify='0'>-1234567</mt:Unless>", "e" : "-102340567"}, #627
+{ "r" : "1", "t" : "<mt:SetVar name='hash' key='foo' value='bar'><mt:If name='hash'>exists</mt:If>", "e" : "exists"}, #628
+{ "r" : "1", "t" : "<mt:SetVar name='array' index='0' value='foo'><mt:If name='array'>exists</mt:If>", "e" : "exists"}, #629
+{ "r" : "1", "t" : "<mt:SetVar name='array' index='0' value='foo'><mt:GetVar name='shift(array)' setvar='trash'><mt:If name='array'><mt:Else>empty</mt:If>", "e" : "empty"} #630
 ]
