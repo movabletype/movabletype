@@ -1,13 +1,6 @@
-/**
- * jQuery Validation Plugin 1.11.0pre
- *
- * http://bassistance.de/jquery-plugins/jquery-plugin-validation/
- * http://docs.jquery.com/Plugins/Validation
- *
- * Copyright 2013 Jörn Zaefferer
- * Released under the MIT license:
- *   http://www.opensource.org/licenses/mit-license.php
- */
+/*! jQuery Validation Plugin - v1.11.0 - 2/4/2013
+* https://github.com/jzaefferer/jquery-validation
+* Copyright (c) 2013 Jörn Zaefferer; Licensed MIT */
 
 (function($) {
 
@@ -471,11 +464,8 @@ $.extend($.validator, {
       .not(":submit, :reset, :image, [disabled]")
       .not( this.settings.ignore )
       .filter(function() {
-        if ( !this.name ) {
-          if ( window.console ) {
-            console.error( "%o has no name assigned", this );
-          }
-          throw new Error( "Failed to validate, found an element with no name assigned. See console for element reference." );
+        if ( !this.name && validator.settings.debug && window.console ) {
+          console.error( "%o has no name assigned", this);
         }
 
         // select only the first element for each name, and only those with rules specified
@@ -922,12 +912,12 @@ $.extend($.validator, {
     });
 
     // clean number parameters
-    $.each(["minlength", "maxlength", "min", "max"], function() {
+    $.each(['minlength', 'maxlength'], function() {
       if ( rules[this] ) {
         rules[this] = Number(rules[this]);
       }
     });
-    $.each(["rangelength", "range"], function() {
+    $.each(['rangelength'], function() {
       var parts;
       if ( rules[this] ) {
         if ( $.isArray(rules[this]) ) {
