@@ -28,6 +28,12 @@ sub new {
         my $set  = $blog->template_set or return;
         $set = MT->registry( template_sets => $set )
             if !ref $set;
+
+        require MT::Theme;
+        if ( my $theme = MT::Theme->load($id) ) {
+            $theme->__deep_localize_labels($set);
+        }
+
         $reg = $set->{stylecatcher_libraries}{$id}
             or return $pkg->new_default();
     }
