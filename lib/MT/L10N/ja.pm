@@ -1357,6 +1357,7 @@ use vars qw( @ISA %Lexicon );
 	'Error: This blog does not have a parent website.' => 'エラー: このブログにはウェブサイトがありません。',
 
 ## lib/MT/CMS/Entry.pm
+	'*User deleted*' => '*削除されました*',
 	'New Entry' => '記事を作成',
 	'New Page' => 'ページを作成',
 	'pages' => 'ウェブページ',
@@ -1739,7 +1740,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid parameter.' => '不正なパラメータです。',
 	'[_1] [_3] [_2]' => '[_1] [_3] [_2]',
 	'No Label' => '名前がありません。',
-	'*User deleted*' => '*削除されました*',
 	'(system)' => 'システム',
 	'My [_1]' => '自分の[_1]',
 	'[_1] of this Website' => 'ウェブサイトの[_1]',
@@ -2497,6 +2497,7 @@ use vars qw( @ISA %Lexicon );
 	'Removing widget from dashboard...' => 'ダッシュボードからウィジェットを削除しています...',
 	'Ordering Categories and Folders of Blogs...' => 'ブログのカテゴリとフォルダの順番を設定しています...',
 	'Ordering Folders of Websites...' => 'ウェブサイトのフォルダの順番を設定しています...',
+	'Assigning ID of user who created for initial user...' => '初期作成ユーザーの作成者IDを設定しています...',
 
 ## lib/MT/Util.pm
 	'moments from now' => '今から',
@@ -3061,7 +3062,7 @@ use vars qw( @ISA %Lexicon );
 	'Example page' => 'ウェブページの例',
 	'_SAMPLE_PAGE_BODY' => '<p>このページはウェブページの例です。</p><p>作成したウェブページに <code>@ADD_TO_SITE_NAV</code> というタグを設定すると、ページのヘッダ、フッタにあるナビゲーションにリンクが追加されます。</p>',
 	'Rainier' => 'Rainier',
-	'Styles for Rainier' => 'Rainier スタイル ライブラリ',
+	'Styles for Rainier' => 'Rainier スタイル',
 	'A collection of styles compatible with Rainier themes.' => 'Rainier のデフォルトテンプレートと互換性のあるスタイルです。',
 	'Stylesheet for IE (8 or lower)' => 'スタイルシート (IE8 以下用)',
 	'JavaScript - Theme' => 'JavaScript - テーマ',
@@ -4260,7 +4261,7 @@ use vars qw( @ISA %Lexicon );
 	'Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator.' => 'ファイルアップロードができるように、システム、または[_1]管理者が[_1]を再構築する必要があります。システム、または[_1]管理者に連絡してください。',
 	q{Asset file('[_1]') has been uploaded.} => q{アイテム('[_1]')がアップロードされました。},
 	'Select File to Upload' => 'アップロードするファイルを選択',
-	'_USAGE_UPLOAD' => '下のオプションからアップロード先のパスを選択してください。サブディレクトリを指定することもできます。ディレクトリが存在しない場合は作成されます。',
+	'_USAGE_UPLOAD' => 'アップロード先には、サブディレクトリを指定することが出来ます。指定されたディレクトリが存在しない場合は、作成されます。',
 	'Choose Folder' => 'フォルダの選択',
 	'Upload (s)' => 'アップロード (s)',
 	'Upload' => 'アップロード',
@@ -4304,8 +4305,8 @@ use vars qw( @ISA %Lexicon );
 	'is within the last' => '日以内',
 	'is before' => 'より前',
 	'is after' => 'より後',
-	'is after now' => 'が今日より前',
-	'is before now' => 'が今日より後',
+	'is after now' => 'が今日より後',
+	'is before now' => 'が今日より前',
 	'__FILTER_DATE_ORIGIN' => 'が[_1]',
 	'[_1] and [_2]' => 'が[_1] から [_2]',
 	'_FILTER_DATE_DAYS' => 'が[_1]',
@@ -5290,6 +5291,12 @@ use vars qw( @ISA %Lexicon );
 	'Basic Authentication setting' => 'Basic認証の設定',
 	'Cannot access to this uri: [_1]' => '[_1]が存在しません。',
 	'Unable to update Basic Authentication settings.' => 'Basic認証の設定を保存する事が出来ませんでした。',
+	'Administration Screen Setting' => '管理画面の設定',
+	'Unable to update Admin Screen URL settings.' => '管理画面のURLを変更できませんでした。',
+	'Cannot delete basicauth_admin file.' => 'Basic認証の設定を削除する事が出来ませんでした。',
+	'User ID is required.' => 'ユーザー名は必須です。',
+	'Password is required.' => 'パスワードは必須です。',
+	'Unable to write temporary file.' => '一時保存ファイルの書き込みが出来ませんでした。',
 	'HTTP Redirect setting' => 'HTTPリダイレクトの設定',
 	'Unable to update HTTP Redirect settings.' => 'HTTPリダイレクトの設定を保存することが出来ませんでした。',
 	'Update SSL Certification' => 'サーバー証明書の更新',
@@ -5297,7 +5304,6 @@ use vars qw( @ISA %Lexicon );
 	'__SSL_CERT_INSTALL' => '導入',
 	'Cannot copy default cert file.' => '既定のサーバー証明書のコピーに失敗しました。',
 	'Cannot copy default secret file.' => '既定のサーバーキーのコピーに失敗しました。',
-	'Unable to write temporary file.' => '一時保存ファイルの書き込みが出来ませんでした。',
 	'Unable to update SSL certification.' => 'サーバー証明書の更新をする事が出来ませんでした。',
 	'Config Directive' => '環境変数',
 	'Restoring Backup Data' => 'バックアップデータの復元',
@@ -5313,9 +5319,7 @@ use vars qw( @ISA %Lexicon );
 	'Remove this setting' => '設定の削除',
 	'URI is required.' => 'URIは必須です。',
 	'Invalid URI.' => '不正なURIです。',
-	'User ID is required.' => 'ユーザー名は必須です。',
 	'User ID must be with alphabet, number or symbols (excludes back slash) only.' => 'ユーザー名は半角英数または記号のみ利用可能です。(バックスラッシュを除く)',
-	'Password is required.' => 'パスワードは必須です。',
 	'Password must be with alphabet, number or symbols (excludes back slash) only.' => 'パスワードは半角英数または記号のみ利用可能です。(バックスラッシュを除く)',
 	'basic authentication setting' => 'Basic認証の設定',
 	'basic authentication settings' => 'Basic認証の設定',
@@ -5343,6 +5347,13 @@ use vars qw( @ISA %Lexicon );
 	'Redirect url is same as URI' => 'リダイレクト先URLは、がリダイレクト元URIと違うURLを設定してください。',
 	'HTTP redirect setting' => 'HTTPリダイレクトの設定',
 	'HTTP redirect settings' => 'HTTPリダイレクトの設定',
+
+## addons/Cloud.pack/tmpl/cfg_security.tmpl
+	'The URL you specified is not available.' => '指定されたURLは利用できません。',
+	'Administration screen setting have been saved.' => '管理画面の設定を保存しました。',
+	'Administration screen url have been reset to default.' => '管理画面のURLが既定のURLにリセットされました。',
+	'Admin Screen URL' => '管理画面のURL',
+	'Protect administration screen by Basic Authentication' => '管理画面をBasic認証で保護する',
 
 ## addons/Cloud.pack/tmpl/cfg_ssl_certification.tmpl
 	'Install SSL Certification' => 'サーバー証明書の導入',
@@ -5858,6 +5869,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/blog/search.mtml
 
 ## addons/Community.pack/templates/blog/search_results.mtml
+	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'すべての単語が順序に関係なく検索されます。フレーズで検索したいときは引用符で囲んでください。',
 
 ## addons/Community.pack/templates/blog/sidebar.mtml
 
@@ -6772,7 +6784,5 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
-
-## New words: 11
 
 1;
