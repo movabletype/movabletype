@@ -48,6 +48,7 @@ themes/broken_blog_theme
 #?package=MT ^mt-static/addons/Enterprise.pack
 #?package=MT ^tools/migrate-mssql
 #?package=MT ^addons/Cloud.pack
+#?package=MT ^mt-hb.cgi
 #?package=MT ^mt-static/addons/Cloud.pack
 #?package=MT ^VERSIONS
 
@@ -71,6 +72,7 @@ themes/broken_blog_theme
 #?package=MTOS ^plugins/CustomFields
 #?package=MTOS ^tools/migrate-mssql
 #?package=MTOS ^addons/Cloud.pack
+#?package=MTOS ^mt-hb.cgi
 #?package=MTOS ^VERSIONS
 
 #?package=MTCOM ^COPYING
@@ -95,12 +97,14 @@ themes/broken_blog_theme
 #?package=MTCOM ^tools/migrate-mssql
 #?package=MTCOM ^addons/Cloud.pack
 #?package=MTCOM ^mt-static/addons/Cloud.pack
+#?package=MTCOM ^mt-hb.cgi
 #?package=MTCOM ^VERSIONS
 
 #?package=MTA ^COPYING
 #?package=MTA ^COPYRIGHT
 #?package=MTA ^addons/Cloud.pack
 #?package=MTA ^mt-static/addons/Cloud.pack
+#?package=MTA ^mt-hb.cgi
 #?package=MTA ^VERSIONS
 
 #?package=MTCLOUD ^COPYING
