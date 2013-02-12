@@ -1951,6 +1951,7 @@ BEGIN {
             'atom' => {
                 handler => 'MT::AtomServer',
                 script  => sub { MT->config->AtomScript },
+                type    => 'run_once',
             },
             'feeds' => {
                 handler => 'MT::App::ActivityFeeds',
