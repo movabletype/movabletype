@@ -5765,7 +5765,11 @@ B<Example:>
             'p' =>
                 "<mt:PagerBlock><mt:IfCurrentPage><mt:Var name='__value__'></mt:IfCurrentPage></mt:PagerBlock>"
             ,                                        # current page number
+            '_Z' => "<MTArchiveDate format='%Y/%m'>"
+            ,    # year/month, used as default archive map
+
         );
+        $format =~ s!%y/%m!%_Z!g if defined $format;
         $format =~ s!%([_-]?[A-Za-z])!$f{$1}!g if defined $format;
 
         # now build this template and return result
