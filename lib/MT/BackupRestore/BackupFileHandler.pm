@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -336,6 +336,23 @@ sub start_element {
                                 || ( 'vblob' eq $metacolumns{$metacol} );
                             $obj->$metacol( $column_data{$metacol} );
                         }
+
+                        # Restore modulesets
+                        if ( 'template' eq $name
+                            && $obj->type eq 'widgetset' )
+                        {
+                            my @old_ids = split ',', $obj->modulesets;
+                            my @new_ids;
+                            foreach my $old_id (@old_ids) {
+                                my $new_id
+                                    = $self->{objects}->{"$class#$old_id"}
+                                    ? $self->{objects}->{"$class#$old_id"}->id
+                                    : $old_id;
+                                push @new_ids, $new_id;
+                            }
+                            $obj->modulesets( join ',', @new_ids );
+                        }
+
                         $self->{current} = $obj;
                     }
                     else {

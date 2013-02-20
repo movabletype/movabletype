@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -349,8 +349,11 @@ sub core_tags {
             TemplateNote => sub {''},
 
             ## System
-            Include     => \&MT::Template::Tags::System::_hdlr_include,
-            Link        => \&MT::Template::Tags::System::_hdlr_link,
+            Include      => \&MT::Template::Tags::System::_hdlr_include,
+            Link         => \&MT::Template::Tags::System::_hdlr_link,
+            CanonicalURL => \&MT::Template::Tags::System::_hdlr_canonical_url,
+            CanonicalLink =>
+                \&MT::Template::Tags::System::_hdlr_canonical_link,
             Date        => \&MT::Template::Tags::System::_hdlr_sys_date,
             AdminScript => \&MT::Template::Tags::System::_hdlr_admin_script,
             CommentScript =>
@@ -1664,6 +1667,9 @@ sub _hdlr_if {
     if ( ( defined $value ) && $value ) {
         if ( ref($value) eq 'ARRAY' ) {
             return @$value ? 1 : 0;
+        }
+        elsif ( ref($value) eq 'HASH' ) {
+            return %$value ? 1 : 0;
         }
         return 1;
     }
@@ -3923,7 +3929,7 @@ package MT::Template::Tags::System;
 use strict;
 
 use MT;
-use MT::Util qw( offset_time_list );
+use MT::Util qw( offset_time_list encode_html );
 use MT::Request;
 
 {
@@ -4791,6 +4797,84 @@ sub _hdlr_link {
             unless $arg->{with_index};
         $link;
     }
+}
+
+###########################################################################
+
+=head2 CanonicalURL
+
+Generates the canonical URL to template built now.
+
+B<Attributes:>
+
+=over 4
+
+=item * current_mapping (optional; default "0")
+
+If not set to 1, use the URL of preferred mapping if current archive type
+has some mapping.
+
+=item * with_index (optional; default "0")
+
+If not set to 1, remove index filenames (by default, index.html)
+from resulting links.
+
+=back
+
+B<Examples:>
+    <link rel="canonical" href="<mt:CanonicalURL encode_html="1">" />
+
+=cut
+
+sub _hdlr_canonical_url {
+    my ( $ctx, $args ) = @_;
+
+    my $blog = $ctx->stash('blog')
+        or return '';
+    my $url
+        = (   !$args->{current_mapping}
+            && $ctx->stash('preferred_mapping_url') )
+        || $ctx->stash('current_mapping_url');
+    $url = $url->() if ref $url;
+
+    return '' unless $url;
+
+    $args->{with_index}
+        ? $url
+        : MT::Util::strip_index( $url, $blog );
+}
+
+###########################################################################
+
+=head2 CanonicalLink
+
+Generates a link tag of the canonical URL to template built now.
+
+B<Attributes:>
+
+=over 4
+
+=item * current_mapping (optional; default "0")
+
+If not set to 1, use the URL of preferred mapping if current archive type
+has some mapping.
+
+=item * with_index (optional; default "0")
+
+If not set to 1, remove index filenames (by default, index.html)
+from resulting links.
+
+=back
+
+=cut
+
+sub _hdlr_canonical_link {
+    my ( $ctx, $args ) = @_;
+
+    my $handler = $ctx->handler_for('canonicalurl');
+    my $url = $handler->invoke( $ctx, $args ) or return '';
+
+    '<link rel="canonical" href="' . encode_html($url) . '" />';
 }
 
 ###########################################################################

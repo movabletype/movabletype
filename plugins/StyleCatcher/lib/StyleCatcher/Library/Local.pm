@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -22,7 +22,7 @@ sub fetch_themes {
     my $path         = $self->url;
     my $static_path  = MT->app->static_file_path;
     my $support_path = MT->app->support_directory_path;
-    $static_path  .= '/' unless $static_path =~ m!/$!;
+    $static_path  .= '/' unless $static_path  =~ m!/$!;
     $support_path .= '/' unless $support_path =~ m!/$!;
     $path =~ s/{{static}}/$static_path/i;
     $path =~ s/{{support}}/$support_path/i;
@@ -32,7 +32,7 @@ sub fetch_themes {
     my $static_webpath = MT->app->static_path;
     my $support_url    = MT->app->support_directory_url;
     $static_webpath .= '/' unless $static_webpath =~ m!/$!;
-    $support_url    .= '/' unless $support_url =~ m!/$!;
+    $support_url    .= '/' unless $support_url    =~ m!/$!;
 
     my $url = $self->url;
     $url =~ s/{{static}}/$static_webpath/i;
@@ -44,13 +44,14 @@ sub fetch_themes {
     }
 
     my $basedir = dirname($path);
-    my $fmgr = file_mgr();
+    my $fmgr    = file_mgr();
     my $content = $fmgr->get_data($path)
-        or die MT->translate("Failed to load StyleCatcher Library: [_1]", $fmgr->errstr);
+        or die MT->translate( "Failed to load StyleCatcher Library: [_1]",
+        $fmgr->errstr );
     my $hp = HTML::HeadParser->new;
     $hp->parse($content);
     $hp->eof;
-    my $response = HTTP::Response->new(200,'OK',$hp->header, $content);
+    my $response = HTTP::Response->new( 200, 'OK', $hp->header, $content );
     my $type = $path =~ /\.css$/i ? 'css' : 'html';
 
     if ( $type eq 'css' ) {
@@ -83,7 +84,7 @@ sub fetch_themes {
             next unless lc $attr{type} eq 'text/x-theme';
 
             # Fix for relative theme locations
-            my $path = File::Spec->catfile($basedir, $css);
+            my $path = File::Spec->catfile( $basedir, $css );
 
             # Fix for relative theme locations
             if ( $css !~ m!^https?://! ) {
@@ -92,12 +93,15 @@ sub fetch_themes {
                 $new_css .= $css;
                 $css = $new_css;
             }
-            push @repo_themes, [$css, $path];
+            push @repo_themes, [ $css, $path ];
         }
 
         my $themes = [];
         for my $repo_theme (@repo_themes) {
-            my $theme = metadata_for_theme( url => $repo_theme->[0], path => $repo_theme->[1], );
+            my $theme = metadata_for_theme(
+                url  => $repo_theme->[0],
+                path => $repo_theme->[1],
+            );
             push @$themes, $theme if $theme;
         }
         $data->{themes} = $themes;
@@ -115,6 +119,7 @@ sub fetch_themes {
 }
 
 sub download_theme {
+
     # No task here. Just echo back the given URL.
     return $_[1];
 }

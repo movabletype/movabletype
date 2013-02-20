@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -160,8 +160,8 @@ sub rename {
     my ( $from, $to ) = @_;
 
     #First, remove existing file
-    if ( $fmgr->exists( $to ) ) {
-        $fmgr->delete( $to ) or return;
+    if ( $fmgr->exists($to) ) {
+        $fmgr->delete($to) or return;
     }
     rename $from, $to
         or return $fmgr->error(

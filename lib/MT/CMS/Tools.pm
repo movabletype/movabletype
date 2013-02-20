@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1201,9 +1201,9 @@ sub backup {
                     next;
                 }
                 my $xml_name = $asset_files->{$id}->[2];
-                $xml_name =~ s/'/&apos;/g;
+                require MT::Util;
                 print $fh "<file type='asset' name='"
-                    . $xml_name
+                    . MT::Util::encode_xml( $xml_name, 1, 1 )
                     . "' asset_id='"
                     . $id
                     . "' />\n";
@@ -1430,6 +1430,10 @@ sub restore {
     $app->send_http_header('text/html');
 
     $app->print_encode( $app->build_page( 'restore_start.tmpl', $param ) );
+    my $return_error = sub {
+        $app->print_encode( $app->build_page( "restore_end.tmpl", { error => $_[0] } ) );
+        return 1;
+    };
 
     require File::Path;
 
@@ -1438,8 +1442,11 @@ sub restore {
     if ( !$fh ) {
         $param->{restore_upload} = 0;
         my $dir = $app->config('ImportPath');
-        my ( $blog_ids, $asset_ids )
-            = restore_directory( $app, $dir, \$error );
+        my ( $blog_ids, $asset_ids );
+        eval {
+            ( $blog_ids, $asset_ids ) = restore_directory( $app, $dir, \$error );
+        };
+        return $return_error->($@) if $@;
         if ( defined $blog_ids ) {
             $param->{open_dialog} = 1;
             $param->{blog_ids}    = join( ',', @$blog_ids );
@@ -1450,7 +1457,10 @@ sub restore {
         elsif ( defined $asset_ids ) {
             my %asset_ids = @$asset_ids;
             my %error_assets;
-            _restore_non_blog_asset( $app, $dir, $asset_ids, \%error_assets );
+            eval {
+                _restore_non_blog_asset( $app, $dir, $asset_ids, \%error_assets );
+            };
+            return $return_error->($@) if $@;
             if (%error_assets) {
                 my $data;
                 while ( my ( $key, $value ) = each %error_assets ) {
@@ -1476,7 +1486,8 @@ sub restore {
     else {
         $param->{restore_upload} = 1;
         if ( $uploaded_filename =~ /^.+\.xml$/i ) {
-            my $blog_ids = restore_file( $app, $fh, \$error );
+            my $blog_ids = eval { restore_file( $app, $fh, \$error ) };
+            return $return_error->($@) if $@;
             if ( defined $blog_ids ) {
                 $param->{open_dialog} = 1;
                 $param->{blog_ids} = join( ',', @$blog_ids );
@@ -1527,8 +1538,11 @@ sub restore {
             $tmp = Encode::decode( MT->config->PublishCharset, $tmp );
             $arc->extract($tmp);
             $arc->close;
-            my ( $blog_ids, $asset_ids )
-                = restore_directory( $app, $tmp, \$error );
+            my ( $blog_ids, $asset_ids );
+            eval {
+                ( $blog_ids, $asset_ids ) = restore_directory( $app, $tmp, \$error );
+            };
+            return $return_error->($@) if $@;
 
             if ( defined $blog_ids ) {
                 $param->{open_dialog} = 1;
@@ -1541,8 +1555,9 @@ sub restore {
             elsif ( defined $asset_ids ) {
                 my %asset_ids = @$asset_ids;
                 my %error_assets;
-                _restore_non_blog_asset( $app, $tmp, \%asset_ids,
-                    \%error_assets );
+                eval { _restore_non_blog_asset( $app, $tmp, \%asset_ids,
+                    \%error_assets ) };
+                return $return_error->($@) if $@;
                 if (%error_assets) {
                     my $data;
                     while ( my ( $key, $value ) = each %error_assets ) {

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,7 +10,6 @@ use warnings;
 use base qw( StyleCatcher::Library );
 use StyleCatcher::Util;
 use MT::Util qw( caturl );
-
 
 # pulls a list of themes available from a particular url
 sub fetch_themes {
@@ -28,7 +27,7 @@ sub fetch_themes {
         $url = MT->app->base . $url;
     }
 
-    my $data    = {};
+    my $data = {};
 
 # If we have a url then we're specifying a specific theme (css) or repo (html)
 # Pick up the file (html with <link>s or a css file with metadata)
@@ -190,7 +189,8 @@ FILE: while ( my $rel_url = shift @files ) {
         }
     }
 
-    return caturl( MT->app->support_directory_url, 'themes', $basename, "$basename.css" );
+    return caturl( MT->app->support_directory_url,
+        'themes', $basename, "$basename.css" );
 }
 
 1;

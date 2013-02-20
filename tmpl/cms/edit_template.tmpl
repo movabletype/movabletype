@@ -69,7 +69,7 @@
       <mt:unless name="build_type_0">
         <mt:if name="has_rebuild">
           <mt:if name="can_rebuild">
-          <__trans phrase="<a href="[_1]" class="rebuild-link">Publish</a> this template." params="<mt:var name="script_url">?__mode=start_rebuild&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;next=0&amp;type=index-<mt:var name="id" escape="url">&amp;tmpl_id=<mt:var name="id" escape="url">&amp;single_template=1'"></a>
+          <__trans phrase="<a href="[_1]" class="rebuild-link">Publish</a> this template." params="<mt:var name="script_url">?__mode=start_rebuild&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;next=0&amp;type=index-<mt:var name="id" escape="url">&amp;tmpl_id=<mt:var name="id" escape="url">&amp;single_template=1'">
           </mt:if>
         </mt:if>
       </mt:unless>
@@ -588,7 +588,7 @@ function toggleCache(id) {
       <button type="button" id="syntaxon" class="command-highlight-on toolbar button active" title="<__trans phrase="Syntax highlighting On">"><span class="button-label"><__trans phrase="Syntax highlighting On"></span></button><button type="button" id="syntaxoff" class="command-highlight-off toolbar button" title="<__trans phrase="Syntax highlighting Off">"><span class="button-label"><__trans phrase="Syntax highlighting Off"></span></button>
     </div>
     <div id="textarea-enclosure" class="editor">
-      <textarea name="text" id="text" class="monospace text full" tabindex="3" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" /><mt:var name="text" escape="html"></textarea>
+      <textarea name="text" id="text" class="monospace text full" tabindex="3" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" ><mt:var name="text" escape="html"></textarea>
     </div>
   </mtapp:setting>
 

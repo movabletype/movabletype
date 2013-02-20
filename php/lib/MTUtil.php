@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1338,6 +1338,7 @@ function userpic_url($asset, $blog, $author) {
     $thumb->height($max_dim);
     $thumb->format($support_directory_path.DIRECTORY_SEPARATOR .$image_path.DIRECTORY_SEPARATOR.$format);
     $thumb->type('png');
+    $thumb->square( true );
     $thumb->id($asset->asset_id);
     if (!$thumb->get_thumbnail()) {
         return '';

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -82,14 +82,14 @@ my $cgi;
 my $is_cgi;
 $is_cgi ||= exists $ENV{$_}
     for qw( HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL );
-if ( $is_cgi || $ENV{PLACK_ENV}) {
+if ( $is_cgi || $ENV{PLACK_ENV} ) {
     $cgi = CGI->new;
 }
 else {
     require FCGI;
     $CGI::Fast::Ext_Request
         = FCGI::Request( \*STDIN, \*STDOUT, \*STDERR, \%ENV, 0,
-          FCGI::FAIL_ACCEPT_ON_INTR() );
+        FCGI::FAIL_ACCEPT_ON_INTR() );
     require CGI::Fast;
     $cgi = CGI::Fast->new;
 }
@@ -99,7 +99,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '5.2.3';
+    $version = '5.2.4';
 }
 
 my ( $mt, $LH );
@@ -573,19 +573,22 @@ my @CORE_OPT = (
     [   'Image::Magick',
         0, 0,
         translate(
-            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.', 'Image::Magick'
+            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.',
+            'Image::Magick'
         )
     ],
 
     [   'GD', 0, 0,
         translate(
-            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.', 'GD'
+            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.',
+            'GD'
         )
     ],
 
     [   'Imager', 0, 0,
         translate(
-            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.', 'Imager'
+            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.',
+            'Imager'
         )
     ],
 
@@ -691,8 +694,11 @@ my @CORE_OPT = (
         )
     ],
 
-    [   'Authen::SASL', 0, 0,
-        translate( 'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' )
+    [   'Authen::SASL',
+        0, 0,
+        translate(
+            'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.'
+        )
     ],
 
     [   'Net::SMTP::SSL',
@@ -1020,10 +1026,11 @@ print_encode("</body>\n\n</html>\n");
 
 if ( ref $cgi eq 'CGI::Fast' ) {
     $CGI::Fast::Ext_Request->LastCall();
+
     # closing FastCGI's listening socket, so the server won't
     # open new connections to us
     require POSIX;
-    POSIX::close( 0 );
+    POSIX::close(0);
     $CGI::Fast::Ext_Request->Finish();
-    exit( 1 );
+    exit(1);
 }

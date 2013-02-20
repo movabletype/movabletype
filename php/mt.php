@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2004-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2004-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -11,7 +11,7 @@
 require_once('lib/class.exception.php');
 
 define('VERSION', '5.2');
-define('PRODUCT_VERSION', '5.2.3');
+define('PRODUCT_VERSION', '5.2.4');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -20,7 +20,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 3;
+    $RELEASE_NUMBER = 4;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -641,6 +641,8 @@ class MT {
             }
         }
 
+        $this->set_canonical_url($ctx, $blog, $data);
+
         $output = $ctx->fetch('mt:'.$tpl_id, $cache_id);
 
         $this->http_error = 200;
@@ -680,6 +682,22 @@ class MT {
 #            $this->log_dump();
 #        }
         restore_error_handler();
+    }
+
+    function set_canonical_url($ctx, $blog, $fileinfo) {
+        if (preg_match('#(\A[^:]*://[^/]*)#', $blog->site_url(), $m)) {
+            $url = $m[1] . $fileinfo->url;
+        }
+        else {
+            $url = $fileinfo->url;
+        }
+        $ctx->stash('current_mapping_url', $url);
+
+        $templatemap = $fileinfo->templatemap();
+        if ($templatemap && ! $templatemap->is_preferred) {
+            $url = $ctx->tag('archivelink', array());
+            $ctx->stash('preferred_mapping_url', $url);
+        }
     }
 
     function resolve_url($path, $build_type = 3) {

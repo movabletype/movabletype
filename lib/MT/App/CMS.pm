@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -3255,6 +3255,7 @@ sub build_blog_selector {
 
         for my $ws (@websites) {
             next unless $ws;
+            next if $ws->is_blog;
 
             my $blog_ids;
             push @$blog_ids, $ws->id;
@@ -4418,6 +4419,10 @@ sub add_to_favorite_blogs {
     my $auth = $app->user;
     return unless $auth;
 
+    my $blog = MT->model('blog')->load($fav);
+    return unless $blog;
+    return unless $blog->is_blog;
+
     return
         unless $auth->has_perm($fav)
             || $auth->is_superuser
@@ -4441,6 +4446,10 @@ sub add_to_favorite_websites {
 
     my $auth = $app->user;
     return unless $auth;
+
+    my $website = MT->model('website')->load($fav);
+    return unless $website;
+    return if $website->is_blog;
 
     my $trust;
     my $blog_ids;

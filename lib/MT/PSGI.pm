@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -178,14 +178,15 @@ sub run_cgi_without_buffering {
 
 sub prepare_app {
     my $self = shift;
+    my $app;
     if ( $self->application ) {
-        my $app = $self->make_app( $self->application );
-        return $self->_app($app);
+        $app = $self->make_app( $self->application );
     }
     else {
-        my $app = $self->mount_applications( $self->application_list );
-        return $self->_app($app);
+        $app = $self->mount_applications( $self->application_list );
     }
+
+    return $self->_app($app);
 }
 
 sub application_list {
@@ -235,8 +236,8 @@ sub mount_applications {
     my $self           = shift;
     my (@applications) = @_;
     my $urlmap         = Plack::App::URLMap->new;
-    for my $app (@applications) {
-        $app = MT->registry( applications => $app ) unless ref $app;
+    for my $app_id (@applications) {
+        my $app = MT->registry( applications => $app_id ) unless ref $app_id;
         Carp::croak('No application is specified') unless $app;
         my $base = $app->{cgi_path};
         if ($base) {
@@ -254,6 +255,7 @@ sub mount_applications {
         $script =~ s!^/!!;
         my $url      = $base . '/' . $script;
         my $psgi_app = $self->make_app($app);
+        $psgi_app = $self->apply_plack_middlewares( $app_id, $psgi_app );
         $urlmap->map( $url, $psgi_app );
     }
 
@@ -279,6 +281,50 @@ sub mount_applications {
         '/favicon.ico' => Plack::App::File->new( { file => $favicon } ) );
 
     $self->_app( $urlmap->to_app );
+}
+
+sub apply_plack_middlewares {
+    my ( $self, $app_id, $app ) = @_;
+
+    my $middlewares = MT::Component->registry('plack_middlewares');
+    my @middlewares = map { ref $_ eq 'ARRAY' ? @$_ : $_ } @$middlewares;
+
+    my $builder = Plack::Builder->new();
+    foreach my $middleware (@middlewares) {
+        if ( $middleware->{apply_to} ) {
+            my $apply_to = $middleware->{apply_to};
+            $apply_to = [$apply_to] unless 'ARRAY' eq ref $apply_to;
+            next
+                if ( $app_id
+                && !( grep { $_ eq 'all' || $_ eq $app_id } @$apply_to ) );
+        }
+
+        my $name = $middleware->{name};
+        my %options;
+        foreach my $opt ( @{ $middleware->{options} } ) {
+            if ( $opt->{value} ) {
+                $options{ $opt->{key} } = $opt->{value};
+            }
+            elsif ( $opt->{code} ) {
+                my $code = MT->handler_to_coderef( $opt->{code} );
+                $options{ $opt->{key} } = $code->() if $code;
+            }
+            elsif ( $opt->{handler} ) {
+                $options{ $opt->{key} }
+                    = MT->handler_to_coderef( $opt->{handler} );
+            }
+        }
+        if ( $middleware->{condition} ) {
+            my $condition
+                = MT->handler_to_coderef( $middleware->{condition} );
+            $builder->add_middleware_if( $condition, $name, %options );
+        }
+        else {
+            $builder->add_middleware( $name, %options );
+        }
+    }
+
+    return $builder->to_app($app);
 }
 
 sub call {
@@ -375,6 +421,71 @@ Special mode for apps which constructed on XMLRPC::Lite. Make PSGI app with
 using XMLRPC::Transport::HTTP::Plack.
 
 =back
+
+=item plack_middlewares
+
+You can use Plack::Middleware. The following options can be specified. 
+
+=over 8
+
+=item name
+
+The part after "Plack::Middleware::" of the name of Plack::Middleware to apply is specified.
+
+=item options
+
+Arrangement of middleware's options.
+
+=over 12
+
+=item key
+
+Option's name.
+
+=item parameters
+
+The parameter which can be specified to options is the following three kinds.
+
+=over 16
+
+=item value
+
+The simple value of option.
+
+=item code
+
+Subroutine reference.
+
+=item handler
+
+Handler to subroutine reference.
+
+=back
+
+=back
+
+=item condition
+
+The conditions of middleware application are specified with a code reference or a handler.
+
+=item apply_to
+
+Application ID which applies middleware. You can specify a single ID or multiple ID with array.
+If does not specified, just as 'all' is specified.
+
+=back
+
+for example:
+
+    plack_middlewares:
+        - name: Auth::Basic
+          options:
+              - key: authenticator
+                handler: Cloud::Auth::Basic::authenticator
+          condition: Cloud::Auth::Basic::condition
+          apply_to:
+              - cms
+              - upgrade
 
 =back
 

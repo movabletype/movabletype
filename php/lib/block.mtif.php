@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -45,6 +45,9 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
                             unset($value);
                         }
                     }
+                    else {
+                        $val = $value;
+                    }
                 }
                 elseif (is_array($value)) {
                     if ( isset($index) ) {
@@ -53,6 +56,9 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
                         } else {
                             unset($value); # fall through to any 'default'
                         }
+                    }
+                    else {
+                        $val = $value;
                     }
                 }
                 else {

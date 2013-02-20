@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -23,7 +23,7 @@ sub listify {
     my ($data) = @_;
     my @list;
     foreach my $k ( keys %$data ) {
-        my $lib = StyleCatcher::Library->new($k);
+        my $lib       = StyleCatcher::Library->new($k);
         my $listified = $lib->listify;
         push @list, $listified if defined $listified;
     }
@@ -169,8 +169,8 @@ sub js {
         return $app->json_result($data);
     }
     else {
-        my $lib = StyleCatcher::Library->new();
-        my $data = $lib->fetch_themes($app->param('url'))
+        my $lib  = StyleCatcher::Library->new();
+        my $data = $lib->fetch_themes( $app->param('url') )
             or return $app->json_error( $lib->errstr );
         return $app->json_result($data);
     }
@@ -191,8 +191,9 @@ sub apply {
     return $app->json_error( $app->translate("Invalid request") )
         unless $blog_id && $url;
 
-    my ($repo_id, $theme_id) = $name =~ /^(?:repo-)?([^:]+).*:([^:]+)$/;
-    my $library = StyleCatcher::Library->new($repo_id) or die "Invalide repository: " . $repo_id;
+    my ( $repo_id, $theme_id ) = $name =~ /^(?:repo-)?([^:]+).*:([^:]+)$/;
+    my $library = StyleCatcher::Library->new($repo_id)
+        or die "Invalide repository: " . $repo_id;
 
     my $static_path = $app->static_file_path;
     if ( !-d $static_path ) {
@@ -203,8 +204,8 @@ sub apply {
         );
     }
 
-    $url = $library->download_theme( $url )
-        or return $app->json_error($library->errstr);
+    $url = $library->download_theme($url)
+        or return $app->json_error( $library->errstr );
 
     my $blog = MT->model('blog')->load($blog_id)
         or return $app->json_error(
@@ -465,7 +466,8 @@ sub make_themes {
         $themes->{$theme}{prefix} = 'default';
     }
 
-    my $themeroot = File::Spec->catfile( $app->support_directory_path(), 'themes' );
+    my $themeroot
+        = File::Spec->catfile( $app->support_directory_path(), 'themes' );
 
     # Generate our list of themes within the themeroot directory
     my @themeroot_list = glob( File::Spec->catfile( $themeroot, "*" ) );
@@ -476,7 +478,8 @@ sub make_themes {
         $theme =~ s/.*[\\\/]//;
         $themes->{$theme} = metadata_for_theme(
             path => $theme_dir,
-            url  => caturl( $app->support_directory_url(), 'themes', "$theme/" ),
+            url =>
+                caturl( $app->support_directory_url(), 'themes', "$theme/" ),
             tags => ['collection:my-designs'],
         );
         $themes->{$theme}{prefix} = 'local';

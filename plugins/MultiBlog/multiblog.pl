@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2006-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2006-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -23,9 +23,10 @@ my $plugin = MT::Plugin::MultiBlog->new(
         author_name            => 'Six Apart, Ltd.',
         author_link            => 'http://www.movabletype.org/',
         system_config_template => 'system_config.tmpl',
-        doc_link               => 'http://www.movabletype.org/documentation/appendices/tags/multiblog.html',
-        blog_config_template   => 'blog_config.tmpl',
-        settings               => new MT::PluginSettings(
+        doc_link =>
+            'http://www.movabletype.org/documentation/appendices/tags/multiblog.html',
+        blog_config_template => 'blog_config.tmpl',
+        settings             => new MT::PluginSettings(
             [   [   'default_access_allowed',
                     { Default => 1, Scope => 'system' }
                 ],
@@ -242,13 +243,11 @@ sub load_config {
         require MT::Blog;
 
         $args->{multiblog_trigger_loop} = trigger_loop();
-        my %triggers
-            = map { $_->{trigger_key} => $_->{trigger_name} }
+        my %triggers = map { $_->{trigger_key} => $_->{trigger_name} }
             @{ $args->{multiblog_trigger_loop} };
 
         $args->{multiblog_action_loop} = action_loop();
-        my %actions
-            = map { $_->{action_id} => $_->{action_name} }
+        my %actions = map { $_->{action_id} => $_->{action_name} }
             @{ $args->{multiblog_action_loop} };
 
         my $rebuild_triggers = $args->{rebuild_triggers};
