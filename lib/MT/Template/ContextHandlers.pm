@@ -2429,7 +2429,7 @@ sub _hdlr_set_var {
 
     my $existing = $ctx->var($name);
     $existing = '' unless defined $existing;
-    if ( 'HASH' eq ref($existing) ) {
+    if ( 'HASH' eq ref($existing) && defined $key ) {
         $existing = $existing->{$key};
     }
     elsif ( 'ARRAY' eq ref($existing) ) {
