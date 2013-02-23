@@ -50,6 +50,7 @@ __PACKAGE__->install_properties(
             'ping_weblogs'              => 'boolean',
             'mt_update_key'             => 'string(30)',
             'language'                  => 'string(5)',
+            'date_language'             => 'string(5)',
             'welcome_msg'               => 'text',
             'google_api_key'            => 'string(32)',
             'email_new_pings'           => 'boolean',

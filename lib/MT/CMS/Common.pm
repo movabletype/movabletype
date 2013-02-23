@@ -263,6 +263,7 @@ sub save {
         if ( !$obj->id ) {
             $obj->language( $q->param('blog_language')
                     || MT->config->DefaultLanguage );
+            $obj->date_language( $obj->language );
             $obj->nofollow_urls(1);
             $obj->follow_auth_links(1);
             $obj->page_layout('layout-wtt');
