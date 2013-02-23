@@ -20,6 +20,7 @@ my $plugin = MT::Plugin::MultiBlog->new(
         description =>
             '<MT_TRANS phrase="MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.">',
         version                => $VERSION,
+        schema_version         => $VERSION,
         author_name            => 'Six Apart, Ltd.',
         author_link            => 'http://www.movabletype.org/',
         system_config_template => 'system_config.tmpl',
@@ -94,6 +95,27 @@ my $plugin = MT::Plugin::MultiBlog->new(
     }
 );
 MT->add_plugin($plugin);
+
+sub init_registry {
+    my $plugin = shift;
+    $plugin->registry(
+        {   upgrade_functions => {
+                'fix_broken_trigger_cache' => {
+                    updater => {
+                        type  => 'blog',
+                        label => 'Updating trigger cache of MultiBlog...',
+                        code  => sub {
+                            my $scope = 'blog:' . $_[0]->id;
+                            my $hash  = $plugin->get_config_hash($scope);
+                            $plugin->update_trigger_cache( $hash, $scope );
+                        },
+                    },
+                },
+            },
+        }
+    );
+    return 1;
+}
 
 # Register entry post-save callback for rebuild triggers
 MT->add_callback( 'cms_post_save.entry', 10, $plugin,
@@ -294,18 +316,9 @@ sub load_config {
     }
 }
 
-sub save_config {
+sub update_trigger_cache {
     my $plugin = shift;
     my ( $args, $scope ) = @_;
-
-    my $saved_hash = $plugin->get_config_hash($scope);
-
-    $plugin->SUPER::save_config(@_);
-
-    for my $k (qw(all_triggers blogs_in_website_triggers other_triggers)) {
-        $plugin->set_config_value( $k, $saved_hash->{$k}, $scope )
-            if exists $saved_hash->{$k};
-    }
 
     my ($blog_id);
     if ( $scope =~ /blog:(\d+)/ ) {
@@ -392,6 +405,22 @@ sub save_config {
             $plugin->set_config_value( $name, $d, $scope );
         }
     }
+}
+
+sub save_config {
+    my $plugin = shift;
+    my ( $args, $scope ) = @_;
+
+    my $saved_hash = $plugin->get_config_hash($scope);
+
+    $plugin->SUPER::save_config(@_);
+
+    for my $k (qw(all_triggers blogs_in_website_triggers other_triggers)) {
+        $plugin->set_config_value( $k, $saved_hash->{$k}, $scope )
+            if exists $saved_hash->{$k};
+    }
+
+    $plugin->update_trigger_cache( $args, $scope );
 }
 
 sub reset_config {
