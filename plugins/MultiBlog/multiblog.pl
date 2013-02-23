@@ -298,7 +298,14 @@ sub save_config {
     my $plugin = shift;
     my ( $args, $scope ) = @_;
 
+    my $saved_hash = $plugin->get_config_hash($scope);
+
     $plugin->SUPER::save_config(@_);
+
+    for my $k (qw(all_triggers blogs_in_website_triggers other_triggers)) {
+        $plugin->set_config_value( $k, $saved_hash->{$k}, $scope )
+            if exists $saved_hash->{$k};
+    }
 
     my ($blog_id);
     if ( $scope =~ /blog:(\d+)/ ) {
@@ -389,7 +396,7 @@ sub save_config {
 
 sub reset_config {
     my $plugin = shift;
-    my ( $args, $scope ) = @_;
+    my ($scope) = @_;
 
     if ( $scope =~ /blog:(\d+)/ ) {
         my $blog_id = $1;
@@ -428,7 +435,8 @@ sub reset_config {
         }
         $plugin->SUPER::reset_config(@_);
         $plugin->set_config_value( 'other_triggers', $other_triggers,
-            "blog:$blog_id" );
+            "blog:$blog_id" )
+            if ref($other_triggers) eq 'HASH';
     }
     else {
 
