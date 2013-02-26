@@ -288,7 +288,9 @@ ul.tabs li.first-child {
     margin-left: 10px;
 }
 .ui-tabs-nav li.ui-tabs-selected,
-ul.tabs li.selected-tab {
+ul.tabs li.selected-tab,
+.ui-tabs-nav li.ui-tabs-active,
+ul.tabs li.active-tab {
     border-bottom-color: #fff;
     background-color: #fff;
     box-shadow: none;
@@ -2299,7 +2301,8 @@ input#system_performance_logging_threshold {
     margin: 0 0 2px;
     background-color: transparent;
 }
-#list-plugins .plugin-tabs-list li.ui-tabs-selected {
+#list-plugins .plugin-tabs-list li.ui-tabs-selected,
+#list-plugins .plugin-tabs-list li.ui-tabs-active {
     border-bottom: 3px solid #7b7c7d;
     background-color: transparent;
 }
@@ -2387,7 +2390,8 @@ input#system_performance_logging_threshold {
     margin: 0 0 2px;
     background-color: transparent;
 }
-#list-themes .theme-tabs-list li.ui-tabs-selected {
+#list-themes .theme-tabs-list li.ui-tabs-selected,
+#list-themes .theme-tabs-list li.ui-tabs-active {
     border-bottom: 3px solid #7b7c7d;
     background-color: transparent;
 }

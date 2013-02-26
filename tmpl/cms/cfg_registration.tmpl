@@ -118,7 +118,7 @@
 </form>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('span.remove').live('click', function() {
+    jQuery('#new_created_user_role-field').on('click','span.remove',function() {
         jQuery(this).parent().remove();
         if ( jQuery('span.items').children().length == 0 ) {
             jQuery('span.items').append('<__trans phrase="(No role selected)">');
