@@ -204,4 +204,16 @@ sub file_mgr {
     $filemgr;
 }
 
+sub load_meta_fields {
+
+    # Load blog_meta
+    my $blog = MT->model('blog');
+    $blog->install_meta(
+        {   column_defs => {
+                'current_style'  => 'string meta',
+            }
+        }
+    );
+}
+
 1;

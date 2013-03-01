@@ -590,7 +590,7 @@ sub post_schema_upgrade {
                 && ( UNIVERSAL::isa( $func->{plugin}, 'MT::Component' ) ) )
             {
                 my $id = $func->{plugin}->id;
-                $from = $plugin_ver->{$id};
+                $from = $plugin_ver->{$id} || 0;
             }
             if (   $func->{version_limit}
                 && ( defined $from )
