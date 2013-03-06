@@ -600,7 +600,7 @@ sub post_schema_upgrade {
             }
             elsif ($func
                 && !exists( $func->{version_limit} )
-                && !defined($from) )
+                && !$from )
             {
                 $self->add_step($fn);
             }
