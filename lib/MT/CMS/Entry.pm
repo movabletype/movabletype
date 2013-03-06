@@ -1211,12 +1211,13 @@ sub _build_entry_preview {
     $ctx->stash( 'category', $cat ) if $cat;
     $ctx->{current_timestamp}    = $ts;
     $ctx->{current_archive_type} = $at;
-    $ctx->var( 'entry_template',    1 );
-    $ctx->var( 'archive_template',  1 );
-    $ctx->var( 'entry_template',    1 );
-    $ctx->var( 'feedback_template', 1 );
-    $ctx->var( 'archive_class',     'entry-archive' );
-    $ctx->var( 'preview_template',  1 );
+    $ctx->var( 'preview_template', 1 );
+
+    my $archiver = MT->publisher->archiver($at);
+    if ( my $params = $archiver->template_params ) {
+        $ctx->var( $_, $params->{$_} ) for keys %$params;
+    }
+
     my $html = $tmpl->output;
 
     unless ( defined($html) ) {
