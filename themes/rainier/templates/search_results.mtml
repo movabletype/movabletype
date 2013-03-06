@@ -47,7 +47,7 @@
       if (!res) return true;
       var content = res['content'];
       if (!content) return true;
-      var div = document.getElementById('search-results');
+      var div = document.getElementById('search-results-main');
       if (!div) return true;
       div.innerHTML = content;
       timer = window.setTimeout("getResults(" + next_page + ")", 1*1000);
@@ -79,6 +79,7 @@
   <mt:SearchResults>
     <mt:SearchResultsHeader>
               <section id="search-results">
+                <span id="current-page" class="hidden"><$mt:CurrentPage$></span>
                 <h1 class="title">
       <mt:IfStraightSearch>
                   <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
