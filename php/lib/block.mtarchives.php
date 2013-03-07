@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
-    $localvars = array('current_archive_type', 'archive_types', 'archive_type_index', 'old_preferred_archive_type');
+    $localvars = array(array('current_archive_type', 'archive_types', 'archive_type_index', 'old_preferred_archive_type'), common_loop_vars());
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
         $at = $args['type'];
@@ -32,6 +32,12 @@ function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
         $curr_at = $at[$i];
         $ctx->stash('current_archive_type', $curr_at);
         $ctx->stash('archive_type_index', $i);
+        $counter = $i + 1;
+        $ctx->__stash['vars']['__counter__'] = $counter;
+        $ctx->__stash['vars']['__odd__'] = ($counter % 2) == 1;
+        $ctx->__stash['vars']['__even__'] = ($counter % 2) == 0;
+        $ctx->__stash['vars']['__first__'] = $counter == 1;
+        $ctx->__stash['vars']['__last__'] = count($at) == $counter;
         $blog->blog_archive_type_preferred = $curr_at;
         $ctx->stash('blog', $blog);
         $repeat = true;

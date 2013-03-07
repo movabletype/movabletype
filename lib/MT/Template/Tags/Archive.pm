@@ -55,9 +55,18 @@ sub _hdlr_archive_set {
     my $tokens  = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
     my $old_at  = $blog->archive_type_preferred();
+    my $i       = 1;
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+
     foreach my $type (@at) {
         $blog->archive_type_preferred($type);
         local $ctx->{current_archive_type} = $type;
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $i == scalar @at;
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
+        local $vars->{__counter__} = $i;
+        $i++;
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $out;
