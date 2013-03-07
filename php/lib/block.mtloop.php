@@ -89,7 +89,7 @@ function smarty_block_mtloop($args, $content, &$ctx, &$repeat) {
     $ctx->__stash['vars']['__odd__'] = ($counter % 2) == 1;
     $ctx->__stash['vars']['__even__'] = ($counter % 2) == 0;
     $ctx->__stash['vars']['__first__'] = $counter == 1;
-    $ctx->__stash['vars']['__last__'] = count($value) == 0;
+    $ctx->__stash['vars']['__last__'] = count($keys) == 0;
     $ctx->__stash['vars']['__key__'] = $key;
     $ctx->__stash['vars']['__value__'] = $this_value;
     if ( is_array($this_value) && (0 < count($this_value)) ) {
