@@ -381,6 +381,13 @@ sub _hdlr_results {
             $footer      = 1;
         }
 
+        my $vars = $ctx->{__stash}{vars} ||= {};
+        local $vars->{__first__}   = $i == 0;
+        local $vars->{__last__}    = ( $footer ? 1 : '' );
+        local $vars->{__odd__}     = ( $i % 2 ) == 0;
+        local $vars->{__even__}    = ( $i % 2 ) == 1;
+        local $vars->{__counter__} = $i + 1;
+
         defined(
             my $out = $build->build(
                 $ctx, $tokens,
