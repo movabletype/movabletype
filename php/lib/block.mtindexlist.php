@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtindexlist($args, $content, &$ctx, &$repeat) {
-    $localvars = array('index_templates', 'index_templates_counter');
+    $localvars = array(array('index_templates', 'index_templates_counter'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
         $tmpl = $ctx->mt->db()->fetch_templates(array(
@@ -20,6 +20,11 @@ function smarty_block_mtindexlist($args, $content, &$ctx, &$repeat) {
         $counter = $ctx->stash('index_templates_counter') + 1;
     }
     if ($counter < count($tmpl)) {
+        $ctx->__stash['vars']['__counter__'] = $counter + 1;
+        $ctx->__stash['vars']['__odd__'] = ($counter % 2) == 0;
+        $ctx->__stash['vars']['__even__'] = ($counter % 2) == 1;
+        $ctx->__stash['vars']['__first__'] = $counter == 0;
+        $ctx->__stash['vars']['__last__'] = count($tmpl) == $counter + 1;
         $ctx->stash('index_templates_counter', $counter);
         $repeat = true;
     } else {
