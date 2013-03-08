@@ -214,6 +214,15 @@ sub load_meta_fields {
             }
         }
     );
+
+    # Load website_meta
+    my $website = MT->model('website');
+    $website->install_meta(
+        {   column_defs => {
+                'current_style'  => 'string meta',
+            }
+        }
+    );
 }
 
 1;
