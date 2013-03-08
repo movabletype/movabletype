@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtassettags($args, $content, &$ctx, &$repeat) {
-    $localvars = array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count','all_tag_count', '__out', 'class_type');
+    $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count','all_tag_count', '__out', 'class_type'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
         require_once("MTUtil.php");
@@ -30,6 +30,11 @@ function smarty_block_mtassettags($args, $content, &$ctx, &$repeat) {
         $tag = $tags[$counter];
         $ctx->stash('Tag', $tag);
         $ctx->stash('_tags_counter', $counter + 1);
+        $ctx->__stash['vars']['__counter__'] = $counter + 1;
+        $ctx->__stash['vars']['__odd__'] = ($counter % 2) == 0;
+        $ctx->__stash['vars']['__even__'] = ($counter % 2) == 1;
+        $ctx->__stash['vars']['__first__'] = $counter == 0;
+        $ctx->__stash['vars']['__last__'] = count($tags) == $counter + 1;
         $repeat = true;
         if (isset($args['glue']) && !empty($content)) {
             if ($out)
