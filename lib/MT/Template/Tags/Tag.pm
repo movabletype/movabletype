@@ -426,9 +426,19 @@ sub _hdlr_entry_tags {
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
     my $res     = '';
+    my $i       = 1;
+    my $vars    = $ctx->{__stash}{vars} ||= {};
     my $tags    = $entry->get_tag_objects;
+    if (!$args->{include_private}) {
+        @$tags = grep { ! $_->is_private } @$tags;
+    }
     for my $tag (@$tags) {
-        next if $tag->is_private && !$args->{include_private};
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $i == scalar @$tags;
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
+        local $vars->{__counter__} = $i;
+        $i++;
         local $ctx->{__stash}{Tag}             = $tag;
         local $ctx->{__stash}{tag_count}       = undef;
         local $ctx->{__stash}{tag_entry_count} = undef;
