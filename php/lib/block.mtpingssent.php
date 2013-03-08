@@ -21,6 +21,11 @@ function smarty_block_mtpingssent($args, $content, &$ctx, &$repeat) {
     if ($counter < count($pings)) {
         $ping = $pings[$counter];
         $ctx->stash('ping_sent_url', $ping);
+        $ctx->__stash['vars']['__counter__'] = $counter + 1;
+        $ctx->__stash['vars']['__odd__'] = ($counter % 2) == 0;
+        $ctx->__stash['vars']['__even__'] = ($counter % 2) == 1;
+        $ctx->__stash['vars']['__first__'] = $counter == 0;
+        $ctx->__stash['vars']['__last__'] = count($pings) == $counter + 1;
         $ctx->stash('_ping_urls_counter', $counter + 1);
         $repeat = true;
     } else {
