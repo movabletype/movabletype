@@ -1200,8 +1200,12 @@ abstract class MTDatabase {
                     $class_filter
                     $max_comment_filter
                     $min_comment_filter";
-        if ($sort_field)
+        if ($sort_field) {
             $sql .= "order by $sort_field $base_order";
+            if ($sort_field == 'entry_authored_on') {
+                $sql .= ",entry_id $base_order";
+            }
+        }
 
         if (isset($args['recently_commented_on'])) {
             $rco = $args['recently_commented_on'];
@@ -1369,20 +1373,7 @@ abstract class MTDatabase {
                     }
                     $entries = $entries_sorted;
                 } elseif ($sort_field == 'entry_authored_on') {
-                    $sort_fn = "
-                        \$ret = strcmp(\$a->entry_authored_on, \$b->entry_authored_on); 
-                        if (\$ret==0) { 
-                            \$ret = \$a->entry_id - \$b->entry_id; 
-                        } 
-                        return \$ret;";
-                    $sorter = create_function(
-                        $order == 'asc' ? '$a,$b' : '$b,$a',
-                        $sort_fn);
-                    usort($entries, $sorter);
-
-                    if (isset($post_sort_offset)) {
-                        $entries = array_slice($entries, $post_sort_offset, $post_sort_limit);
-                    }
+                    // already double-sorted by the DB
                 } else {
                     if (($sort_field == 'entry_status') || ($sort_field == 'entry_author_id') || ($sort_field == 'entry_id')
                           || ($sort_field == 'entry_comment_count') || ($sort_field == 'entry_ping_count')) {
