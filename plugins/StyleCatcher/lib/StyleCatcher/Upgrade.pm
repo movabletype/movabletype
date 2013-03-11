@@ -15,7 +15,10 @@ sub move_current_style_to_meta {
     my $config = $plugin->get_config_hash();
 
     # Copy to meta
-    $blog->current_style( $config->{ "current_theme_" . $blog->id } || '' );
+    my $current_theme = $config->{ "current_theme_" . $blog->id };
+    $current_theme = 'default:' . $current_theme
+        if $current_theme && $current_theme !~ /:/;
+    $blog->current_style( $current_theme || '' );
     $blog->save();
 }
 
