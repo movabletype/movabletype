@@ -1477,6 +1477,8 @@ sub handle_sign_in {
         }
     }
 
+    $app->run_callbacks( 'post_signin.external', $app, $result );
+
     return $app->handle_error(
         $app->errstr() || $app->translate(
             "The sign-in attempt was not successful; Please try again."),
