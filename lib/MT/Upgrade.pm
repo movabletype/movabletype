@@ -590,7 +590,7 @@ sub post_schema_upgrade {
                 && ( UNIVERSAL::isa( $func->{plugin}, 'MT::Component' ) ) )
             {
                 my $id = $func->{plugin}->id;
-                $from = $plugin_ver->{$id} || 0;
+                $from = $plugin_ver->{$id};
             }
             if (   $func->{version_limit}
                 && ( defined $from )
@@ -600,7 +600,7 @@ sub post_schema_upgrade {
             }
             elsif ($func
                 && !exists( $func->{version_limit} )
-                && !$from )
+                && !defined($from) )
             {
                 $self->add_step($fn);
             }
