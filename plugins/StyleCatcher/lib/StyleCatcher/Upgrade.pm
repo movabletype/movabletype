@@ -14,10 +14,16 @@ sub move_current_style_to_meta {
     my $plugin = MT->component('StyleCatcher');
     my $config = $plugin->get_config_hash();
 
-    # Copy to meta
+    ## Copy to meta ##
     my $current_theme = $config->{ "current_theme_" . $blog->id };
+
+    # for bug of built-in StyleCatcher repo by MT4.x
+    $current_theme =~ s/^repo-\w+:/local:/;
+
+    # for external style by MT3.x
     $current_theme = 'default:' . $current_theme
         if $current_theme && $current_theme !~ /:/;
+
     $blog->current_style( $current_theme || '' );
     $blog->save();
 }
