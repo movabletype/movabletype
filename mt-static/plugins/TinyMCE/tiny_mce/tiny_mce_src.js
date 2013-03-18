@@ -13853,7 +13853,13 @@ tinymce.create('tinymce.ui.Toolbar:tinymce.ui.Container', {
 
 				// Focus the window iframe
 				if (!contentEditable) {
-					if (! (doc && doc.hasFocus && doc.hasFocus())) {
+					if (!(
+							tinymce.isIE
+						 && doc
+						 && doc.documentMode >= 10
+						 && doc.hasFocus
+						 && doc.hasFocus()
+					)) {
 						self.getWin().focus();
 					}
 				}
