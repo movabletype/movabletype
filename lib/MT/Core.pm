@@ -319,10 +319,11 @@ BEGIN {
                     base      => '__virtual.integer',
                     col_class => 'num',
                     filter_tmpl => '<mt:Var name="filter_form_float">',
+                    data_format => '%.1f',
                     html      => sub {
                         my ( $prop, $obj ) = @_;
                         my $col = $prop->col;
-                        return sprintf "%0.1f", $obj->$col;
+                        return sprintf $prop->data_format, $obj->$col;
                     },
                     base_type => 'float',
                 },
