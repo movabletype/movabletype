@@ -192,7 +192,7 @@ sub Markdown {
 
     $text = _UnescapeSpecialChars($text);
 
-    return $text . "\n";
+    return $text . "\n" if $text;
 }
 
 sub _StripLinkDefinitions {
