@@ -317,8 +317,8 @@ BEGIN {
                 },
                 float => {
                     base      => '__virtual.integer',
-                    condition => sub {0},
                     col_class => 'num',
+                    filter_tmpl => '<mt:Var name="filter_form_float">',
                     html      => sub {
                         my ( $prop, $obj ) = @_;
                         my $col = $prop->col;
