@@ -1435,8 +1435,16 @@ sub filtered_list {
 
     ## FIXME: take identifical column from column defs.
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
-    my @cols = ( '__id', grep {/^[^\.]+$/} split( ',', $cols ) );
-    my @subcols = ( '__id', grep {/\./} split( ',', $cols ) );
+    my @cols = grep {/^[^\.]+$/} split( ',', $cols );
+    my @subcols = grep {/\./} split( ',', $cols );
+    if ( $class->has_column('id') ) {
+        unshift @cols, '__id';
+        unshift @subcols, '__id';
+    } elsif ( $setting->{id_column} ) {
+        unshift @cols, $setting->{id_column};
+        unshift @subcols, $setting->{id_column};
+    }
+
     $MT::DebugMode && $debug->{print}->("COLUMNS: $cols");
 
     my $scope_mode = $setting->{scope_mode} || 'wide';

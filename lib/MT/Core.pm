@@ -955,6 +955,10 @@ BEGIN {
                     col         => 'id',
                     display     => 'none',
                     view_filter => [],
+                    condition => sub {
+                        my $prop = shift;
+                        return $prop->datasource->has_column('id') ? 1 : 0;
+                    },
                 },
                 pack => {
                     view  => [],
