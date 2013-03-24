@@ -178,11 +178,8 @@ abstract class MTDatabase {
         if ( !empty($incl) )
             $incl = $this->parse_blog_ids( $incl, $include_with_website );
         if ( isset( $args['allows'] ) ) {
-            if ( empty( $incl ) ) {
-                $incl = $args['allows'];
-            } else {
+            if ( !empty( $incl ) )
                 $incl = array_intersect($incl, $args['allows']);
-            }
         }
 
         // Compute exclude_blogs
