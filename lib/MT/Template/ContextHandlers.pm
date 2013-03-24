@@ -3991,7 +3991,7 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
         # the block (so any variables/context changes made in that template
         # affect the contained template code)
         my $tokens = $ctx->stash('tokens');
-        local $ctx->{__stash}{vars}{$name} = sub {
+        local $ctx->{__stash}{vars}{lc $name} = sub {
             my $builder = $ctx->stash('builder');
             my $html = $builder->build( $ctx, $tokens, $cond );
             return $ctx->error( $builder->errstr ) unless defined $html;
