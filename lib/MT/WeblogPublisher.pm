@@ -830,6 +830,10 @@ sub rebuild_archives {
         or return $mt->error(
         MT->translate( "Parameter '[_1]' is required", 'Recipe' ) );
 
+use Data::Dumper; print(Dumper(
+        $recipe
+));
+
     for my $at ( keys %$recipe ) {
         my $archiver = $mt->archiver($at);
         next unless $archiver;
