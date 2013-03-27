@@ -565,7 +565,7 @@ sub _convert_object {
 sub _encode_json {
     my ( $app, $res ) = @_;
     my $obj = $app->_convert_object($res);
-    MT::Util::to_json($obj);
+    MT::Util::to_json( $obj, { ascii => 1 } );
 }
 
 sub _request_header {
