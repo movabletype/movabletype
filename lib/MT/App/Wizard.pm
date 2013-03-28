@@ -185,10 +185,10 @@ sub init_core_registry {
                 label =>
                     'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.',
             },
-            'Net::SMTP::TLS' => {
-                link => 'http://search.cpan.org/dist/Net-SMTP-TLS/',
+            'Net::SMTP::TLS::ButMaintained' => {
+                link => 'http://search.cpan.org/dist/Net-SMTP-TLS-ButMaintained/',
                 label =>
-                    'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.',
+                    'Net::SMTP::TLS::ButMaintained is required to use SMTP Auth with STARTTLS command.',
             },
             'IO::Socket::SSL' => {
                 link => 'http://search.cpan.org/dist/IO-Socket-SSL/',

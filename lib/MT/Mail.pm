@@ -18,7 +18,7 @@ my %SMTPModules = (
     Core => [ 'Net::SMTP', 'MIME::Base64' ],
     Auth => ['Authen::SASL'],
     SSL => [ 'Net::SMTP::SSL', 'IO::Socket::SSL', 'Net::SSLeay' ],
-    TLS => [ 'Net::SMTP::TLS', 'IO::Socket::SSL', 'Net::SSLeay' ],
+    TLS => [ 'Net::SMTP::TLS::ButMaintained', 'IO::Socket::SSL', 'Net::SSLeay' ],
 );
 
 sub send {
@@ -235,7 +235,7 @@ sub _send_mt_smtp {
     my $smtp;
 
     if ($tls) {
-        $smtp = Net::SMTP::TLS->new(
+        $smtp = Net::SMTP::TLS::ButMaintained->new(
             $host,
             Port     => $port,
             User     => $user,
