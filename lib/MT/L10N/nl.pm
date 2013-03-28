@@ -198,7 +198,7 @@ use vars qw( @ISA %Lexicon );
 	'Net::SMTP is required in order to send mail via an SMTP Server.' => 'Net::SMTP is vereist om mail te kunnen versturen via een SMTP server.',
 	'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' => 'Deze modules en de modules waar deze van afhangt zijn vereist om CRM-MD5, DIGEST-MD5 of LOGIN SASL te ondersteunen.',
 	'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.' => 'Net::SMTP::SSL is vereist om SMTP Auth te kunnen gebruiken over een SSL verbinding.',
-	'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.' => 'Net::SMTP::TLS is vereist om SMTP Auth te kunnen gebruiken met het STARTTLS commando.',
+	'Net::SMTP::TLS::ButMaintained is required to use SMTP Auth with STARTTLS command.' => 'Net::SMTP::TLS::ButMaintained is vereist om SMTP Auth te kunnen gebruiken met het STARTTLS commando.',
 	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'IO::Socket::SSL is vereist om SMTP Auth te kunnen gebruiken over een SSL verbinding of om het te kunnen gebruiken met een STARTTLS commando.',
 	'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'Net::SSLeay is vereist om SMTP Auth te kunnen gebruiken over een SSL verbinding of om het te kunnen gebruiken met een STARTTLS commando.',
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'Deze module wordt gebruikt in een testattribuut voor de MTIf conditionele tag.',

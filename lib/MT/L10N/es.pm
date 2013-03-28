@@ -198,7 +198,7 @@ use vars qw( @ISA %Lexicon );
 	'Net::SMTP is required in order to send mail via an SMTP Server.' => 'Net::SMTP es necesario para enviar correos vía servidores SMTP.',
 	'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' => 'Este módulo y sus dependencias son necesarios para dar soporte a los mecanismos CRAM-MD5, DIGEST-MD5 o LOGIN SASL.',
 	'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.' => 'Net::SMTP::SSL es necesario para usar autentificación SMTP con una conexión SSL.',
-	'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.' => 'Net::SMTP::TLS es necesario para usar autentificación SMTP con
+	'Net::SMTP::TLS::ButMaintained is required to use SMTP Auth with STARTTLS command.' => 'Net::SMTP::TLS::ButMaintained es necesario para usar autentificación SMTP con
 el protocolo de comunicación STARTTLS.',
 	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'IO::Socket::SSL es necesario para usar autentificación SMTP con una conexión SSL o con el comando STARTTLS.',
 	'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'Net::SSLeay es necesario para usar autentificación SMTP con una conexión SSL o con el comando STARTTLS.',
@@ -854,7 +854,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Test email from Movable Type Configuration Wizard' => 'Mensaje de comprobación del asistente de configuración de Movable Type',
 	'This is the test email sent by your new installation of Movable Type.' => 'Este es el mensaje de comprobación enviado por su nueva instalación de Movable Type.',
 	'Net::SMTP is required in order to send mail using an SMTP server.' => 'Net::SMTP es necesario para enviar correo usando un servidor SMTP.',
-	'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.' => 'Net::SMTP::TLS es necesario para usar autentificación SMTP con
+	'Net::SMTP::TLS::ButMaintained is required to use SMTP Auth with STARTTLS command.' => 'Net::SMTP::TLS::ButMaintained es necesario para usar autentificación SMTP con
 el protocolo de comunicación STARTTLS.',
 	'This module is needed to encode special characters, but this feature can be turned off using the NoHTMLEntities option in mt-config.cgi.' => 'Este módulo es necesario para codificar caracteres especiales, pero se puede desactivar esta característica utilizando la opción NoHTMLEntities en mt-config.cgi.',
 	'This module is needed if you want to use the MT XML-RPC server implementation.' => 'Este módulo es necesario si desea usar la implementación del servidor XML-RCP de Movable Type.',

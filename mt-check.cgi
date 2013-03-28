@@ -708,10 +708,10 @@ my @CORE_OPT = (
         )
     ],
 
-    [   'Net::SMTP::TLS',
+    [   'Net::SMTP::TLS::ButMaintained',
         0, 0,
         translate(
-            'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.'
+            'Net::SMTP::TLS::ButMaintained is required to use SMTP Auth with STARTTLS command.'
         )
     ],
 
