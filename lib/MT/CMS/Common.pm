@@ -1370,7 +1370,8 @@ sub filtered_list {
             }
         }
         foreach my $p (@act) {
-            $allowed = 1, last
+            $allowed = 1,
+                last
                 if $app->user->can_do(
                 $p,
                 at_least_one => 1,
@@ -1381,7 +1382,6 @@ sub filtered_list {
             unless $allowed;
     }
 
-    my $class = $setting->{datasource} || MT->model($ds);
     my $filteritems;
     my $allpass = 0;
     if ( my $items = $q->param('items') ) {
@@ -1437,11 +1437,13 @@ sub filtered_list {
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
     my @cols = grep {/^[^\.]+$/} split( ',', $cols );
     my @subcols = grep {/\./} split( ',', $cols );
+    my $class = MT->model( $setting->{object_type} || MT->model($ds) );
     if ( $class->has_column('id') ) {
-        unshift @cols, '__id';
+        unshift @cols,    '__id';
         unshift @subcols, '__id';
-    } elsif ( $setting->{id_column} ) {
-        unshift @cols, $setting->{id_column};
+    }
+    elsif ( $setting->{id_column} ) {
+        unshift @cols,    $setting->{id_column};
         unshift @subcols, $setting->{id_column};
     }
 
@@ -1449,10 +1451,10 @@ sub filtered_list {
 
     my $scope_mode = $setting->{scope_mode} || 'wide';
     my @blog_id_term = (
-         !$blog_id ? ()
+         !$blog_id              ? ()
         : $scope_mode eq 'none' ? ()
         : $scope_mode eq 'this' ? ( blog_id => $blog_id )
-        : ( blog_id => $blog_ids )
+        :                         ( blog_id => $blog_ids )
     );
 
     my %load_options = (
