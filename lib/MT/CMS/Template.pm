@@ -1372,6 +1372,8 @@ sub create_preview_content {
         $obj->id(-1);
         $obj->author_id( $app->user->id );
         $obj->authored_on( $blog->current_timestamp );
+        $obj->created_on( $blog->current_timestamp );
+        $obj->modified_on( $blog->current_timestamp );
         $obj->status( MT::Entry::RELEASE() );
         $obj->title( $app->translate("Lorem ipsum") );
         my $preview_text = $app->translate('LOREM_IPSUM_TEXT');
