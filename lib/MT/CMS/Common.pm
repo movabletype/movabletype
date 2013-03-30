@@ -1437,7 +1437,7 @@ sub filtered_list {
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
     my @cols = grep {/^[^\.]+$/} split( ',', $cols );
     my @subcols = grep {/\./} split( ',', $cols );
-    my $class = MT->model( $setting->{object_type} || MT->model($ds) );
+    my $class = MT->model( $setting->{object_type}) || MT->model($ds);
     if ( $class->has_column('id') ) {
         unshift @cols,    '__id';
         unshift @subcols, '__id';
