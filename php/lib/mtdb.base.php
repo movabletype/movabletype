@@ -1762,7 +1762,6 @@ abstract class MTDatabase {
             $ids = array();
             $counts = array();
             while (!$categories->EOF) {
-                $counts[$categories->Fields('category_id')] = $categories->Fields('category_count');
                 $ids[] = $categories->Fields('category_id');
                 $categories->MoveNext();
             }
@@ -1811,7 +1810,6 @@ abstract class MTDatabase {
             for ($i = 0; $i < $record_count; $i++) {
                 $cat = $categories[$i];
                 $cat_id = $cat->category_id;
-                $categories[$i]->category_count = $counts[$cat_id];
                 if (isset($args['top_level_categories']) || !isset($this->_cat_id_cache['c'.$cat_id])) {
                     $id_list[] = $cat_id;
                     $this->_cat_id_cache['c'.$cat_id] = $categories[$i];
