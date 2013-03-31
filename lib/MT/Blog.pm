@@ -323,6 +323,7 @@ sub list_props {
                 words_in_excerpt         => 40,
                 sort_order_posts         => 'descend',
                 language                 => MT->config('DefaultLanguage'),
+                date_language            => MT->config('DefaultLanguage'),
                 sort_order_comments      => 'ascend',
                 file_extension           => 'html',
                 convert_paras            => $default_text_format,
