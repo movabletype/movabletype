@@ -1118,7 +1118,7 @@ sub core_update_records {
     my $offset = $param{offset};
     my $count  = $param{count};
     if ( !$count ) {
-        $count = $class->count;
+        $count = $class->count( $param{terms} || undef );
     }
     return unless $count;
     if ($offset) {
