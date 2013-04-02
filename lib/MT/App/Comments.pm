@@ -1803,6 +1803,10 @@ sub do_preview {
         $app->translate(
             "Somehow, the entry you tried to comment on does not exist")
         );
+    return $app->error(
+        $app->translate( "No such entry '[_1]'.", encode_html($entry_id) ) )
+        if $entry->status != RELEASE;
+
     my $ctx  = MT::Template::Context->new;
     my $blog = MT::Blog->load( $entry->blog_id );
 
