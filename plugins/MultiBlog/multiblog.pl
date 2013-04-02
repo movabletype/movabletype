@@ -14,7 +14,8 @@ use warnings;
 use base qw( MT::Plugin );
 
 our $VERSION = '2.2';
-my $plugin = MT::Plugin::MultiBlog->new(
+my $plugin;
+$plugin = MT::Plugin::MultiBlog->new(
     {   id   => 'multiblog',
         name => 'MultiBlog',
         description =>
@@ -91,19 +92,12 @@ my $plugin = MT::Plugin::MultiBlog->new(
                     'TagSearchLink'  => 'MultiBlog::preprocess_native_tags',
                 },
             },
-        },
-    }
-);
-MT->add_plugin($plugin);
-
-sub init_registry {
-    my $plugin = shift;
-    $plugin->registry(
-        {   upgrade_functions => {
+            upgrade_functions => {
                 'fix_broken_trigger_cache' => {
                     updater => {
                         type  => 'blog',
-                        label => 'Updating trigger cache of MultiBlog...',
+                        terms => { class => '*' },
+                        label => "Updating trigger cache of MultiBlog...",
                         code  => sub {
                             my $scope = 'blog:' . $_[0]->id;
                             my $hash  = $plugin->get_config_hash($scope);
@@ -112,10 +106,10 @@ sub init_registry {
                     },
                 },
             },
-        }
-    );
-    return 1;
-}
+        },
+    }
+);
+MT->add_plugin($plugin);
 
 # Register entry post-save callback for rebuild triggers
 MT->add_callback( 'cms_post_save.entry', 10, $plugin,
