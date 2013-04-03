@@ -6,49 +6,122 @@
 
 
 window.MT.API.prototype.authorization = function() {
+    var args = Array.prototype.slice.call(arguments, 0);
     return this.request.apply(this, [
         'GET',
         '/authorization'
-    ].concat(Array.prototype.slice.call(arguments, 0)));
+    ].concat(args));
 }
 
 window.MT.API.prototype.authentication = function() {
+    var args = Array.prototype.slice.call(arguments, 0);
     return this.request.apply(this, [
         'POST',
         '/authentication'
-    ].concat(Array.prototype.slice.call(arguments, 0)));
+    ].concat(args));
 }
 
 window.MT.API.prototype.token = function() {
+    var args = Array.prototype.slice.call(arguments, 0);
     return this.request.apply(this, [
-        'POST',
+        'GET',
         '/token'
-    ].concat(Array.prototype.slice.call(arguments, 0)));
+    ].concat(args));
 }
 
 window.MT.API.prototype.getUser = function(user_id) {
+    var args = Array.prototype.slice.call(arguments, 1);
     return this.request.apply(this, [
         'GET',
         this.bindEndpointParams('/users/:user_id', {
             user_id: user_id
         })
-    ].concat(Array.prototype.slice.call(arguments, 1)));
+    ].concat(args));
 }
 
-window.MT.API.prototype.listBlogs = function() {
+window.MT.API.prototype.updateUser = function(user_id, user) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    return this.request.apply(this, [
+        'PUT',
+        this.bindEndpointParams('/users/:user_id', {
+            user_id: user_id
+        })
+    ].concat(args).concat([
+        {
+            user: user
+        }
+    ]));
+}
+
+window.MT.API.prototype.listBlogs = function(user_id) {
+    var args = Array.prototype.slice.call(arguments, 1);
     return this.request.apply(this, [
         'GET',
-        '/users/{user_id}/sites'
-    ].concat(Array.prototype.slice.call(arguments, 0)));
+        this.bindEndpointParams('/users/:user_id/sites', {
+            user_id: user_id
+        })
+    ].concat(args));
 }
 
 window.MT.API.prototype.listEntries = function(site_id) {
+    var args = Array.prototype.slice.call(arguments, 1);
     return this.request.apply(this, [
         'GET',
         this.bindEndpointParams('/sites/:site_id/entries', {
             site_id: site_id
         })
-    ].concat(Array.prototype.slice.call(arguments, 1)));
+    ].concat(args));
+}
+
+window.MT.API.prototype.createEntry = function(site_id, entry) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    return this.request.apply(this, [
+        'POST',
+        this.bindEndpointParams('/sites/:site_id/entries', {
+            site_id: site_id
+        })
+    ].concat(args).concat([
+        {
+            entry: entry
+        }
+    ]));
+}
+
+window.MT.API.prototype.getEntry = function(site_id, entry_id) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/entries/:entry_id', {
+            site_id: site_id,
+            entry_id: entry_id
+        })
+    ].concat(args));
+}
+
+window.MT.API.prototype.updateEntry = function(site_id, entry_id, entry) {
+    var args = Array.prototype.slice.call(arguments, 3);
+    return this.request.apply(this, [
+        'PUT',
+        this.bindEndpointParams('/sites/:site_id/entries/:entry_id', {
+            site_id: site_id,
+            entry_id: entry_id
+        })
+    ].concat(args).concat([
+        {
+            entry: entry
+        }
+    ]));
+}
+
+window.MT.API.prototype.deleteEntry = function(site_id, entry_id) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    return this.request.apply(this, [
+        'DELETE',
+        this.bindEndpointParams('/sites/:site_id/entries/:entry_id', {
+            site_id: site_id,
+            entry_id: entry_id
+        })
+    ].concat(args));
 }
 
 

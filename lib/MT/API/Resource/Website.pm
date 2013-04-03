@@ -5,9 +5,4 @@ use warnings;
 
 use base qw(MT::API::Resource::Blog);
 
-sub model {
-    my ( $class, $app ) = @_;
-    $app->model('website');
-}
-
 1;

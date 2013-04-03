@@ -2,10 +2,11 @@ package MT::API::Endpoint::Auth;
 
 use strict;
 use warnings;
-  
-use base qw(MT::API::Endpoint);
+
+use MT::API::Endpoint::Common;
 
 use URI;
+use MT::Session;
 
 sub mt_api_login_magic_token_cookie_name {
     'mt_api_login_magic_token';
@@ -60,7 +61,7 @@ sub authentication {
 
     my ( $author, $new_login ) = $app->login;
     my $session = $app->{session}
-        or die;
+        or return $app->error(401);
 
     # TODO if not loggined
 
@@ -99,16 +100,28 @@ sub authentication {
 sub token {
     my ($app) = @_;
 
-    my ( $author, $new_login ) = $app->login;
-    my $session = $app->{session}
-        or die;
+    my $session;
+    $session = do {
+        my $header = $app->get_header('X-MT-Authorization') || '';
+        if ( $header =~ m/\A\s*MTAuth\s+session_id=(\w+)/ ) {
+            $session = MT::Session->load(
+                {   id   => $1,
+                    kind => $app->session_kind,
+                }
+            );
+        }
+        else {
+            my ( $author, $new_login ) = $app->login;
+            $session = $app->{session};
+        }
+    };
+    return $app->error(401) unless $session;
 
     # TODO if not loggined
 
     my $access_token = make_access_token( $app, $session );
 
-    +{  session_id   => $session->id,
-        access_token => $access_token->id,
+    +{  access_token => $access_token->id,
         expires_in   => MT::AccessToken::ttl(),
     };
 }

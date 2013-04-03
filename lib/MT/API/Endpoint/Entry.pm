@@ -8,16 +8,82 @@ package MT::API::Endpoint::Entry;
 use warnings;
 use strict;
 
-use base qw(MT::API::Endpoint);
+use MT::API::Endpoint::Common;
 
 sub list {
-    my ($app) = @_;
+    my ( $app, $endpoint ) = @_;
 
-    # TODO if offset ?
-    my $entries = __PACKAGE__->filtered_list( $app, 'entry' );
-    +{  totalResults => scalar @$entries,
-        items        => $entries,
+    my $res = filtered_list( $app, $endpoint, 'entry' );
+
+    +{  totalResults => $res->{count},
+        items        => $res->{objects},
     };
+}
+
+sub create {
+    my ( $app, $endpoint ) = @_;
+
+    my ($blog) = context_objects(@_)
+        or return;
+
+    my $new_entry = $app->resource_object('entry')
+        or return $app->error( resource_error('entry') );
+
+    run_permission_filter( $app,
+        'cms_save_permission_filter.entry', $new_entry )
+        or return;
+
+    save_object($app, $new_entry)
+        or return;
+
+    $new_entry;
+}
+
+sub get {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $entry ) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app,
+        'cms_view_permission_filter.entry', $entry )
+        or return;
+
+    $entry;
+}
+
+sub update {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $entry ) = context_objects(@_)
+        or return;
+    my $new_entry = $app->resource_object( 'entry', $entry )
+        or return $app->error( resource_error('entry') );
+
+    run_permission_filter( $app,
+        'cms_save_permission_filter.entry', $new_entry )
+        or return;
+
+    save_object($app, $new_entry)
+        or return;
+
+    $new_entry;
+}
+
+sub delete {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $entry ) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app,
+        'cms_delete_permission_filter.entry', $entry )
+        or return;
+
+    remove_object($app, $entry)
+        or return;
+
+    $entry;
 }
 
 1;

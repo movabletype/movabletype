@@ -1,11 +1,91 @@
-package MT::API::Endpoint;
+package MT::API::Endpoint::Common;
 
-use strict;
 use warnings;
+use strict;
+
+use base 'Exporter';
+our @EXPORT = qw(
+    save_object remove_object
+    context_objects resource_objects
+    resource_error run_permission_filter filtered_list
+);
+
+sub save_object {
+    my ( $app, $obj ) = @_;
+
+    # TODO should run callbacks
+    # TODO should return appropriate error
+    $obj->save
+        or return $app->error(
+        $app->translate( 'Saving object failed: [_1]', $obj->errstr ), 500 );
+}
+
+sub remove_object {
+    my ( $app, $obj ) = @_;
+
+    # TODO should run callbacks
+    # TODO should return appropriate error
+    $obj->remove
+        or return $app->error(
+        $app->translate(
+            'Removing [_1] failed: [_2]', $app->translate($type),
+            $obj->errstr
+        ),
+        500
+        );
+}
+
+sub context_objects {
+    my ( $app, $endpoint ) = @_;
+
+    my @objects = map {
+        my $name = $_;
+
+        return $app->blog if $name eq 'site_id';
+
+        my ($model_name) = ( $name =~ /([\w-]+)_id\z/ ) or return;
+        my $model = $app->model($model_name)
+            or return;
+
+        my $id = $app->param($name);
+        my $obj = $id ? $model->load($id) : undef;
+
+        if ( !$obj && !$app->errstr ) {
+            $app->error( ucfirst($model_name) . ' not found', 404 );
+        }
+
+        $obj;
+    } @{ $endpoint->{_vars} };
+
+    return ( grep { !defined($_) } @objects ) ? () : @objects;
+}
+
+sub resource_objects {
+    my ( $app, $endpoint ) = @_;
+
+    my @objects
+        = map { $app->resource_object($_) } @{ $endpoint->{resources} };
+
+    return ( grep { !defined($_) } @objects ) ? () : @objects;
+}
+
+sub resource_error {
+    qq{A resource "$_[0]" is required.}, 400;
+}
+
+sub run_permission_filter {
+    my $app    = shift;
+    my $filter = shift;
+
+    return 1 if $app->user->is_superuser;
+
+    $app->run_callbacks( $filter, $app, @_ ) || $app->json_error(403);
+}
 
 sub filtered_list {
-    my $package = shift;
-    my ( $app, $ds ) = @_;
+    my ( $app, $endpoint, $ds, $terms, $args ) = @_;
+    $terms ||= {};
+    $args  ||= {};
     my $q         = $app->param;
     my $blog_id   = $q->param('blog_id') || 0;
     my $filter_id = $q->param('fid') || 0;
@@ -92,6 +172,21 @@ sub filtered_list {
         $allpass     = 1;
         $filteritems = [];
     }
+
+    if ( my $search = $app->param('search') ) {
+        for my $f ( split( ',', $app->param('search_fields') || '' ) ) {
+            next unless $f;
+            push @$filteritems,
+                {
+                type => $f,
+                args => {
+                    string => $search,
+                    option => 'contains',
+                },
+                };
+        }
+    }
+
     require MT::ListProperty;
     my $props = MT::ListProperty->list_properties($ds);
 
@@ -103,10 +198,8 @@ sub filtered_list {
             blog_id   => $blog_id || 0,
         }
     );
-    my $limit = $q->param('limit') || 50;    # FIXME: hard coded.
-    my $page = $q->param('page');
-    $page = 1 if !$page || $page =~ /\D/;
-    my $offset = ( $page - 1 ) * $limit;
+    my $limit  = $q->param('limit')  || 50;
+    my $offset = $q->param('offset') || 0;
 
     ## FIXME: take identifical column from column defs.
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
@@ -122,9 +215,9 @@ sub filtered_list {
     );
 
     my %load_options = (
-        terms      => {@blog_id_term},
-        args       => {},
-        sort_by    => $q->param('sort_by') || '',
+        terms => { %$terms, @blog_id_term },
+        args  => {%$args},
+        sort_by    => $q->param('sort_by')    || '',
         sort_order => $q->param('sort_order') || '',
         limit      => $limit,
         offset     => $offset,
@@ -135,8 +228,8 @@ sub filtered_list {
     );
 
     my %count_options = (
-        terms    => {@blog_id_term},
-        args     => {},
+        terms    => { %$terms, @blog_id_term },
+        args     => {%$args},
         scope    => $scope,
         blog     => $blog,
         blog_id  => $blog_id,
@@ -175,7 +268,10 @@ sub filtered_list {
         }
     }
 
-    $objs;
+    +{  objects        => $objs,
+        count          => $count,
+        editable_count => $editable_count,
+    };
 }
 
 1;

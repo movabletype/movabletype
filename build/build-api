@@ -34,11 +34,16 @@ foreach my $endpoints (@$endpoints_list) {
             push @vars, $1;
         }
 
+        my @resources = ();
+        for my $name (@{ $e->{resources} || [] }) {
+            push @resources, $name;
+        }
+
         my $url;
         if (@vars) {
             $url = <<__JS__;
         this.bindEndpointParams('$e->{route}', {
-            @{[ join(",\n", map {"$_: $_"} @vars) ]}
+            @{[ join(",\n            ", map {"$_: $_"} @vars) ]}
         })
 __JS__
         }
@@ -49,12 +54,27 @@ __JS__
         }
         chomp($url);
 
+        my $resources_str = '';
+        if (@resources) {
+            $resources_str = <<__JS__;
+.concat([
+        {
+            @{[ join(",\n            ", map {"$_: $_"} @resources) ]}
+        }
+    ])
+__JS__
+        }
+        chomp($resources_str);
+
+        my $method = $e->{method} || 'GET';
+
         print <<__JS__;
-window.MT.API.prototype.$func = function(@{[ join(', ', @vars) ]}) {
+window.MT.API.prototype.$func = function(@{[ join(', ', @vars, @resources) ]}) {
+    var args = Array.prototype.slice.call(arguments, @{[ @vars + @resources ]});
     return this.request.apply(this, [
-        '$e->{method}',
+        '$method',
 $url
-    ].concat(Array.prototype.slice.call(arguments, @{[ scalar @vars ]})));
+    ].concat(args)$resources_str);
 }
 
 __JS__

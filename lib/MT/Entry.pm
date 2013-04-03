@@ -820,6 +820,7 @@ sub status_int {
         : $s eq 'review'  ? REVIEW
         : $s eq 'future'  ? FUTURE
         : $s eq 'junk'    ? JUNK
+        : $s eq 'spam'    ? JUNK
         :                   undef;
 }
 

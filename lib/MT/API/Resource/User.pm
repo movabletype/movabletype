@@ -3,15 +3,20 @@ package MT::API::Resource::User;
 use strict;
 use warnings;
 
-use base qw(MT::API::Resource);
-
-sub model {
-    my ( $class, $app ) = @_;
-    $app->model('author');
+sub updatable_fields {
+    [qw(displayName)];
 }
 
-sub columns {
-    [qw(id name nickname)];
+sub fields {
+    [
+        'id',
+        {   name  => 'displayName',
+            alias => 'nickname',
+        },
+        {   name  => 'userpicURL',
+            alias => 'userpic_url',
+        },
+    ];
 }
 
 1;

@@ -33,15 +33,18 @@ API.prototype = {
     version: function() {
         return 1;
     },
+    
     appKey: function() {
         return API.mtApiAccessTokenKey + '_' + this.o.appId;
     },
+    
     storeToken: function(tokenData) {
         var o = this.o;
         tokenData.start_time = new Date().getTime() / 1000;
         Cookie.bake(this.appKey(), JSON.stringify(tokenData), o.cookieDomain, o.cookiePath);
         this.tokenData = null;
     },
+    
     updateTokenFromDefault: function() {
         var defaultKey    = API.mtApiAccessTokenKey;
         var defaultCookie = Cookie.fetch(defaultKey);
@@ -60,6 +63,7 @@ API.prototype = {
         Cookie.bake(defaultKey, '', undefined, '/', new Date(0));
         return defaultToken;
     },
+    
     getToken: function() {
         if (! this.tokenData) {
             var token = null;
@@ -89,16 +93,79 @@ API.prototype = {
         
         return this.tokenData.access_token;
     },
+    
     bindEndpointParams: function(endpoint, params) {
         for (k in params) {
             endpoint = endpoint.replace(new RegExp(':' + k), params[k]);
         }
         return endpoint;
     },
+    
+    serialize: function(params) {
+        if (typeof(params) == 'string') {
+            return params;
+        }
+        
+        var str = '';
+        for (k in params) {
+            if (str) {
+                str += '&';
+            }
+            
+            var v;
+            if (typeof(params[k]) == 'object') {
+                v = JSON.stringify(params[k]);
+            }
+            else {
+                v = params[k];
+            }
+            str += encodeURIComponent(k) + '=' + encodeURIComponent(v);
+        }
+        return str;
+    },
+    
+    newXMLHttpRequest: function() {
+        var xmlhttp;
+
+        if (window.ActiveXObject){
+            try {
+                xmlhttp = new ActiveXObject('Msxml2.XMLHTTP');
+            } catch (e) {
+                try {
+                    xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
+                } catch (e) {
+                    return false;
+                }
+            }
+        }
+        else if (window.XMLHttpRequest) {
+            xmlhttp = new XMLHttpRequest();
+        }
+        else {
+            xmlhttp = false;
+        }
+        
+        return xmlhttp;
+    },
+    
+    buildXMLHttpRequest: function(method, url, params) {
+        var xhr  = this.newXMLHttpRequest();
+        xhr.open(method, url, this.o.async);
+        xhr.setRequestHeader(
+            'Content-Type', 'application/x-www-form-urlencoded'
+        );
+        xhr.setRequestHeader(
+            'X-MT-Authorization', 'MTAuth access_token=' + this.getToken()
+        );
+        
+        return xhr;
+    },
+    
     request: function(method, endpoint) {
-        var api      = this,
-            params   = {},
-            callback = function(){},
+        var api         = this,
+            params_list = [],
+            params      = null,
+            callback    = function(){},
             originalArguments = Array.prototype.slice.call(arguments);
         
         for (var i = 2; i < arguments.length; i++) {
@@ -107,22 +174,32 @@ API.prototype = {
                 callback = arguments[i];
                 break;
             case 'object':
-                params   = arguments[i];
+            case 'string':
+                params_list.push(this.serialize(arguments[i]));
                 break;
             }
         }
         
+        if (params_list.length && (method.toLowerCase() == 'get' || params_list.length >= 2)) {
+            if (endpoint.indexOf('?') == -1) {
+                endpoint += '?';
+            }
+            else {
+                endpoint += '&';
+            }
+            endpoint += params_list.shift();
+        }
+
+        if (params_list.length) {
+            params = params_list.shift();
+        }
+        
+        
         var base = this.o.baseUrl.replace(/\/*$/, '/') + 'v' + this.version();
         endpoint = endpoint.replace(/^\/*/, '/');
 
-        var xhr  = new XMLHttpRequest();
-        xhr.open(method, base + endpoint, this.o.async);
-        xhr.setRequestHeader(
-            'Content-Type', 'application/x-www-form-urlencoded'
-        );
-        xhr.setRequestHeader(
-            'X-MT-Authorization', 'MTAuth access_token=' + this.getToken()
-        );
+
+        var xhr = this.buildXMLHttpRequest(method, base + endpoint);
         xhr.onreadystatechange = function() {
             if (xhr.readyState != 4) {
                 return;
@@ -151,7 +228,7 @@ API.prototype = {
                 // TODO default error handling
                 if (response.error) {
                     if (response.error.code == 401) {
-                        api.request('POST', '/token', function(response) {
+                        api.request('GET', '/token', function(response) {
                             if (response.error) {
                                 api.o.on.sessionExpired(response);
                             }
@@ -167,9 +244,7 @@ API.prototype = {
             }
         };
         xhr.send(params);
-        
-        return xhr;
-    },
+    }
 };
 
 if (typeof(window.MT) == 'undefined') {

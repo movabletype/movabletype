@@ -2619,6 +2619,12 @@ sub to_json {
     return JSON::to_json( $value, $args );
 }
 
+sub from_json {
+    my ( $value, $args ) = @_;
+    require JSON;
+    return JSON::from_json( $value, $args );
+}
+
 sub break_up_text {
     my ( $text, $length ) = @_;
     return '' unless defined $text;
@@ -2949,6 +2955,10 @@ Wrapper method to JSON::to_json which decodes any string value
 in I<reference> to UTF-8 strings as JSON::to_json requires.
 It then encodes back to the charset specified in PublishCharset
 for MT to render json strings properly.
+
+=head2 from_json($json_text)
+
+Wrapper method to JSON::from_json.
 
 =head2 dir_separator
 

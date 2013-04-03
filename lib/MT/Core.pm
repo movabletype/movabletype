@@ -133,6 +133,7 @@ BEGIN {
             'user'            => 'MT::Author',
             'commenter'       => 'MT::Author',
             'blog'            => 'MT::Blog',
+            'site'            => 'MT::Blog',
             'blog.website'    => 'MT::Website',
             'website'         => 'MT::Website',
             'template'        => 'MT::Template',

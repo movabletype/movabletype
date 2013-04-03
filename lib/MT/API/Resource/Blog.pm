@@ -3,14 +3,11 @@ package MT::API::Resource::Blog;
 use strict;
 use warnings;
 
-use base qw(MT::API::Resource);
-
-sub model {
-    my ( $class, $app ) = @_;
-    $app->model('blog');
+sub updatable_fields {
+    [qw(name)];
 }
 
-sub columns {
+sub fields {
     [qw(id name)];
 }
 

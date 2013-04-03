@@ -8,16 +8,17 @@ package MT::API::Endpoint::Blog;
 use warnings;
 use strict;
 
-use base qw(MT::API::Endpoint);
+use MT::API::Endpoint::Common;
 
 sub list {
-    my ($app) = @_;
+    my ($app, $endpoint) = @_;
 
     # TODO if user_id ne "me"
-    # TODO if offset ?
-    my $blogs = __PACKAGE__->filtered_list($app, 'blog');
-    +{  totalResults => scalar @$blogs,
-        items        => $blogs,
+    my $res = filtered_list( $app, $endpoint, 'blog' );
+
+    +{
+        totalResults => $res->{count},
+        items        => $res->{objects},
     };
 }
 
