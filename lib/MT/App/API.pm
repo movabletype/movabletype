@@ -504,11 +504,18 @@ sub json_error {
 sub show_error {
     my $app = shift;
     my ($param) = @_;
-
     my $endpoint = $app->request('api_current_endpoint');
     my $error    = $app->request('api_error_detail');
 
-    return $app->SUPER::show_error(@_) if !$endpoint || !$error;
+    return $app->SUPER::show_error(@_)
+        if !$endpoint || ( !$error && $endpoint->{format} eq 'html' );
+
+    if ( !$error ) {
+        $error = {
+            code    => $param->{status} || 500,
+            message => $param->{error},
+        };
+    }
 
     return $app->json_error( $error->{message}
             || $endpoint->{error_codes}{ $error->{code} },
