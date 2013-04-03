@@ -35,27 +35,30 @@ sub remove_object {
         );
 }
 
+sub _load_object_by_name {
+    my ( $app, $name ) = @_;
+
+    return $app->blog if $name eq 'site_id';
+
+    my ($model_name) = ( $name =~ /([\w-]+)_id\z/ ) or return;
+    my $model = $app->model($model_name)
+        or return;
+
+    my $id = $app->param($name);
+    my $obj = $id ? $model->load($id) : undef;
+
+    if ( !$obj && !$app->errstr ) {
+        $app->error( ucfirst($model_name) . ' not found', 404 );
+    }
+
+    $obj;
+}
+
 sub context_objects {
     my ( $app, $endpoint ) = @_;
 
-    my @objects = map {
-        my $name = $_;
-
-        return $app->blog if $name eq 'site_id';
-
-        my ($model_name) = ( $name =~ /([\w-]+)_id\z/ ) or return;
-        my $model = $app->model($model_name)
-            or return;
-
-        my $id = $app->param($name);
-        my $obj = $id ? $model->load($id) : undef;
-
-        if ( !$obj && !$app->errstr ) {
-            $app->error( ucfirst($model_name) . ' not found', 404 );
-        }
-
-        $obj;
-    } @{ $endpoint->{_vars} };
+    my @objects
+        = map { _load_object_by_name( $app, $_ ) } @{ $endpoint->{_vars} };
 
     return ( grep { !defined($_) } @objects ) ? () : @objects;
 }
