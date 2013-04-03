@@ -918,15 +918,6 @@ sub post {
         "403 Throttled" );
 
     my $cfg = $app->config;
-    if ( my $state = $q->param('comment_state') ) {
-        require MT::Serialize;
-        my $ser = MT::Serialize->new( $cfg->Serializer );
-        $state = $ser->unserialize( pack 'H*', $state );
-        $state = $$state;
-        for my $f ( keys %$state ) {
-            $q->param( $f, $state->{$f} );
-        }
-    }
     unless ( $cfg->AllowComments && $entry->allow_comments eq '1' ) {
         return $app->handle_error(
             $app->translate("Comments are not allowed on this entry.") );
@@ -1822,16 +1813,6 @@ sub do_preview {
     $comment->commenter_id( $commenter->id ) if $commenter;
 
     $ctx->stash( 'comment', $comment );
-
-    unless ($err) {
-        ## Serialize comment state, then hex-encode it.
-        require MT::Serialize;
-        my $ser   = MT::Serialize->new( $cfg->Serializer );
-        my $state = $comment->get_values;
-        $state->{static} = $q->param('static');
-        $ctx->stash( 'comment_state', unpack 'H*',
-            $ser->serialize( \$state ) );
-    }
     $ctx->stash( 'comment_is_static', $q->param('static') );
     $ctx->stash( 'entry',             $entry );
     $ctx->{current_timestamp} = $ts;
