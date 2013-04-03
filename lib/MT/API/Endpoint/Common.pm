@@ -28,8 +28,8 @@ sub remove_object {
     $obj->remove
         or return $app->error(
         $app->translate(
-            'Removing [_1] failed: [_2]', $app->translate($type),
-            $obj->errstr
+            'Removing [_1] failed: [_2]',
+            $obj->class_label, $obj->errstr
         ),
         500
         );
