@@ -148,8 +148,14 @@ API.prototype = {
         return xmlhttp;
     },
     
-    buildXMLHttpRequest: function(method, url, params) {
-        var xhr  = this.newXMLHttpRequest();
+    sendXMLHttpRequest: function(xhr, method, url, params) {
+        if (params && method.match(/^(put|delete)$/i)) {
+            params
+                = this.serialize(params) 
+                + ( params == '' ? '' : '&' ) + '__method=' + method;
+            method = 'POST';
+        }
+        
         xhr.open(method, url, this.o.async);
         xhr.setRequestHeader(
             'Content-Type', 'application/x-www-form-urlencoded'
@@ -157,6 +163,8 @@ API.prototype = {
         xhr.setRequestHeader(
             'X-MT-Authorization', 'MTAuth access_token=' + this.getToken()
         );
+        
+        xhr.send(params);
         
         return xhr;
     },
@@ -199,7 +207,7 @@ API.prototype = {
         endpoint = endpoint.replace(/^\/*/, '/');
 
 
-        var xhr = this.buildXMLHttpRequest(method, base + endpoint);
+        var xhr = this.newXMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState != 4) {
                 return;
@@ -243,7 +251,7 @@ API.prototype = {
                 }
             }
         };
-        xhr.send(params);
+        return this.sendXMLHttpRequest(xhr, method, base + endpoint, params);
     }
 };
 
