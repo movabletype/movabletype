@@ -29,6 +29,12 @@ sub create {
     my $new_entry = $app->resource_object('entry')
         or return $app->error( resource_error('entry') );
 
+    $new_entry->set_values(
+        {   blog_id   => $blog->id,
+            author_id => $app->user->id,
+        }
+    );
+
     run_permission_filter( $app,
         'cms_save_permission_filter.entry', $new_entry )
         or return;
