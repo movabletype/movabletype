@@ -177,17 +177,15 @@ sub filtered_list {
     }
 
     if ( my $search = $app->param('search') ) {
-        for my $f ( split( ',', $app->param('search_fields') || '' ) ) {
-            next unless $f;
-            push @$filteritems,
-                {
-                type => $f,
-                args => {
-                    string => $search,
-                    option => 'contains',
-                },
-                };
-        }
+        push @$filteritems,
+            {
+            type => 'content',
+            args => {
+                string => $search,
+                option => 'contains',
+                fields => $app->param('search_fields') || '',
+            },
+            };
     }
 
     require MT::ListProperty;

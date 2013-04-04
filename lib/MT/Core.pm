@@ -1101,6 +1101,43 @@ BEGIN {
                     },
                     singleton => 1,
                 },
+                content => {
+                    base  => '__virtual.hidden',
+                    terms => sub {
+                        my ( $prop, $args, $db_terms, $db_args ) = @_;
+                        my $defaults = $prop->{fields};
+                        my $option   = $args->{option};
+                        my $query    = $args->{string};
+                        my $and_or;
+                        if ( 'contains' eq $option ) {
+                            $query = { like => "%$query%" };
+                            $and_or = '-or';
+                        }
+                        elsif ( 'not_contains' eq $option ) {
+                            $query = { not_like => "%$query%" };
+                            $and_or = '-and';
+                        }
+
+                        my @fields;
+                        if ( my $specifieds = $args->{fields} ) {
+                            @fields = grep {
+                                my $f = $_;
+                                grep { $_ eq $f } @$defaults
+                            } split ',', $specifieds;
+                        }
+                        else {
+                            @fields = @$defaults;
+                        }
+
+                        my @terms;
+                        for my $c (@fields) {
+                            push @terms, ( @terms ? $and_or : () ),
+                                { $c => $query, };
+                        }
+
+                        \@terms;
+                    },
+                },
             },
             website      => '$Core::MT::Website::list_props',
             blog         => '$Core::MT::Blog::list_props',
