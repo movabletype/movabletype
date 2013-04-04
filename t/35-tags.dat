@@ -651,5 +651,9 @@
 { "r" : "1", "t" : "<MTBlogDateLanguage ietf='1'>", "e" : "en-us"}, #635
 { "r" : "1", "t" : "<mt:Websites><mt:WebsiteDateLanguage></mt:Websites>", "e" : "en_us"}, #636
 { "r" : "1", "t" : "<mt:Websites><mt:WebsiteDateLanguage locale='1'></mt:Websites>", "e" : "en_US"}, #637
-{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteDateLanguage ietf='1'></mt:Websites>", "e" : "en-us"} #638
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteDateLanguage ietf='1'></mt:Websites>", "e" : "en-us"}, #638
+{ "r" : "1", "t" : "<MTSetVar name=\"foo\" value=\"0\"><MTSetVar name=\"bar\" value=\"0\"><MTIf name=\"foo\">1<MTElse><MTIf name=\"bar\">2<MTElse>3</MTIf></MTIf>", "e" : "3" }, #639
+{ "r" : "1", "t" : "<MTIf name='foo'>1<MTElse><MTIf name='bar'>2<MTElse>3</MTElse></MTIf></MTElse></MTIf>", "e" : "3" }, #640
+{ "r" : "1", "t" : "<MTIf name='foo'>1<MTElse><MTIf name='bar'>2<MTElse>3</MTIf></MTElse></MTIf>", "e" : "3" }, #641
+{ "r" : "1", "t" : "<MTIf name='foo'>1<MTElse><MTIf name='bar'>2<MTElse>3</MTElse></MTIf></MTIf>", "e" : "3" } #642
 ]
