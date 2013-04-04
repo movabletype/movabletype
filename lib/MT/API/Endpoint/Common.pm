@@ -269,7 +269,7 @@ sub filtered_list {
         }
     }
 
-    +{  objects        => $objs,
+    +{  objects        => $objs || [],
         count          => $count,
         editable_count => $editable_count,
     };
