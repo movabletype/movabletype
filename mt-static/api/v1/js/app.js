@@ -13,7 +13,7 @@ var API = function(options) {
     };
     for (k in this.o) {
         if (options[k]) {
-            if (typeof this.o[k] == 'object') {
+            if (typeof this.o[k] === 'object') {
                 for (l in this.o[k]) {
                    this.o[k][l] = options[k][l]; 
                 }
@@ -30,18 +30,18 @@ var API = function(options) {
 
 API.mtApiAccessTokenKey = 'mt_api_access_token';
 API.prototype = {
-    version: function() {
+    getVersion: function() {
         return 1;
     },
     
-    appKey: function() {
+    getAppKey: function() {
         return API.mtApiAccessTokenKey + '_' + this.o.appId;
     },
     
     storeToken: function(tokenData) {
         var o = this.o;
         tokenData.start_time = new Date().getTime() / 1000;
-        Cookie.bake(this.appKey(), JSON.stringify(tokenData), o.cookieDomain, o.cookiePath);
+        Cookie.bake(this.getAppKey(), JSON.stringify(tokenData), o.cookieDomain, o.cookiePath);
         this.tokenData = null;
     },
     
@@ -78,7 +78,7 @@ API.prototype = {
             
             if (! token) {
                 try {
-                    token = JSON.parse(Cookie.fetch(this.appKey()).value);
+                    token = JSON.parse(Cookie.fetch(this.getAppKey()).value);
                 }
                 catch (e) {
                 }
@@ -102,7 +102,10 @@ API.prototype = {
     },
     
     serialize: function(params) {
-        if (typeof(params) == 'string') {
+        if (! params) {
+            return params;
+        }
+        if (typeof params === 'string') {
             return params;
         }
         
@@ -113,7 +116,7 @@ API.prototype = {
             }
             
             var v;
-            if (typeof(params[k]) == 'object') {
+            if (typeof params[k] === 'object') {
                 v = JSON.stringify(params[k]);
             }
             else {
@@ -149,10 +152,9 @@ API.prototype = {
     },
     
     sendXMLHttpRequest: function(xhr, method, url, params) {
+        params = this.serialize(params);
         if (params && method.match(/^(put|delete)$/i)) {
-            params
-                = this.serialize(params) 
-                + ( params == '' ? '' : '&' ) + '__method=' + method;
+            params += ( params === '' ? '' : '&' ) + '__method=' + method;
             method = 'POST';
         }
         
@@ -188,8 +190,8 @@ API.prototype = {
             }
         }
         
-        if (params_list.length && (method.toLowerCase() == 'get' || params_list.length >= 2)) {
-            if (endpoint.indexOf('?') == -1) {
+        if (params_list.length && (method.toLowerCase() === 'get' || params_list.length >= 2)) {
+            if (endpoint.indexOf('?') === -1) {
                 endpoint += '?';
             }
             else {
@@ -203,13 +205,13 @@ API.prototype = {
         }
         
         
-        var base = this.o.baseUrl.replace(/\/*$/, '/') + 'v' + this.version();
+        var base = this.o.baseUrl.replace(/\/*$/, '/') + 'v' + this.getVersion();
         endpoint = endpoint.replace(/^\/*/, '/');
 
 
         var xhr = this.newXMLHttpRequest();
         xhr.onreadystatechange = function() {
-            if (xhr.readyState != 4) {
+            if (xhr.readyState !== 4) {
                 return;
             }
             
@@ -232,10 +234,10 @@ API.prototype = {
 
             var status = callback(response);
             
-            if (status !== 'false') {
+            if (status !== false) {
                 // TODO default error handling
                 if (response.error) {
-                    if (response.error.code == 401) {
+                    if (parseInt(response.error.code, 10) === 401) {
                         api.request('GET', '/token', function(response) {
                             if (response.error) {
                                 api.o.on.sessionExpired(response);
@@ -255,7 +257,7 @@ API.prototype = {
     }
 };
 
-if (typeof(window.MT) == 'undefined') {
+if (typeof(window.MT) === 'undefined') {
     window.MT = {};
 }
 window.MT.API = API;
