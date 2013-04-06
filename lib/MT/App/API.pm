@@ -276,7 +276,7 @@ sub _request_method {
 
 sub _path {
     my ($app) = @_;
-    my $path = $ENV{PATH_INFO};
+    my $path = $app->path_info;
     $path =~ s{.+(?=/v\d+/)}{};
     $path;
 }
