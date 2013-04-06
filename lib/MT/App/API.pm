@@ -247,7 +247,7 @@ sub _endpoint {
         }
     }
 
-    my $e      = $handler->{':e'}{ lc $method };
+    my $e      = $handler->{':e'}{$method};
     my %params = ();
     if ($e) {
         for ( my $i = 0; $i < scalar( @{ $e->{_vars} } ); $i++ ) {
@@ -260,9 +260,16 @@ sub _endpoint {
 
 sub _request_method {
     my ($app) = @_;
-    my $method = lc $ENV{REQUEST_METHOD};
-    if ( $method eq 'post' && ( my $m = $app->param('__method') ) ) {
-        $method = lc $m;
+    my $method = lc $app->request_method;
+    if ( my $m = $app->param('__method') ) {
+        if ( $method eq 'post' || $method eq lc $m ) {
+            $method = lc $m;
+        }
+        else {
+            return $app->json_error(
+                "Request method is not '$m' or 'POST' with '__method=$m'",
+                405 );
+        }
     }
     $method;
 }
@@ -541,8 +548,10 @@ sub api {
         unless defined($version);
     $app->api_version($version);
 
+    my $request_method = $app->_request_method
+        or return;
     my ( $endpoint, $params )
-        = $app->_endpoint( $app->_request_method, $version, $path )
+        = $app->_endpoint( $request_method, $version, $path )
         or return $app->json_error( 'Unknown endpoint', 404 );
     my $user = $app->authenticate;
 
