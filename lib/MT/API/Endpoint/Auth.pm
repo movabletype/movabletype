@@ -68,7 +68,7 @@ sub authentication {
     if ( $app->cookie_val( mt_api_login_magic_token_cookie_name() ) eq
         ( $app->param('mt_api_login_magic_token') || '' ) )
     {
-        my $remember = $session->get('remember');
+        my $remember = $session->get('remember') || '';
         my %arg      = (
             -name  => $app->user_cookie,
             -value => Encode::encode(
