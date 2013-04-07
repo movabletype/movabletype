@@ -264,21 +264,21 @@ sub mount_applications {
     $staticurl =~ s!^https?://[^/]*!!;
     my $staticpath = $mt->static_file_path();
     $urlmap->map( $staticurl,
-        Plack::App::Directory->new( { root => $staticpath } ) );
+        Plack::App::Directory->new( { root => $staticpath } )->to_app );
 
     ## Mount support directory
     my $supporturl = MT->config->SupportURL;
     $supporturl =~ s!^https?://[^/]*!!;
     my $supportpath = MT->config->SupportDirectoryPath;
     $urlmap->map( $supporturl,
-        Plack::App::Directory->new( { root => $supportpath } ) );
+        Plack::App::Directory->new( { root => $supportpath } )->to_app );
 
     ## Mount favicon.ico
     my $static = $staticpath;
     $static .= '/' unless $static =~ m!/$!;
     my $favicon = $static . 'images/favicon.ico';
     $urlmap->map(
-        '/favicon.ico' => Plack::App::File->new( { file => $favicon } ) );
+        '/favicon.ico' => Plack::App::File->new( { file => $favicon } )->to_app );
 
     $self->_app( $urlmap->to_app );
 }
