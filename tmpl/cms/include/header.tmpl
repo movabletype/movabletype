@@ -106,7 +106,7 @@
 
     <div id="utility-nav">
       <ul id="utility-nav-list">
-        <li id="user"><__trans phrase="Signed in as [_1]" params="<a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id" escape="url"$>"><img alt="<mt:var name="author_display_name" escape="html" escape="html">" src="<mt:if name="author_userpic_url"><mt:var name="author_userpic_url" escape="html"><mt:else><mt:var name="static_uri">images/default-userpic-36.jpg</mt:if>" width="18" height="18" class="userpic" /> <span class="username"><mt:var name="author_name" escape="html" escape="html"></span></a>"></li>
+        <li id="user"><__trans phrase="Signed in as [_1]" params="<a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id" escape="url"$>"><img alt="<mt:var name="author_display_name" escape="html" escape="html">" src="<mt:if name="author_userpic_url"><mt:var name="author_userpic_url" escape="html"><mt:else><mt:var name="static_uri">images/default-userpic-36.jpg</mt:if>" width="18" height="18" class="userpic" /> <span class="username"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html" escape="html"><mt:else><mt:var name="author_name" escape="html" escape="html"></mt:if></span></a>"></li>
         <li id="help" class="help"><a href="javascript:void(0)" onclick="openManual('<mt:var name="template_filename" escape="js">')"><__trans phrase="Help"></a></li>
     <mt:if name="can_logout">
         <li id="logout"><a href="<$mt:var name="mt_url"$>?__mode=logout"><__trans phrase="Sign out"></a></li>
