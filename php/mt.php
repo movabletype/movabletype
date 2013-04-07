@@ -357,6 +357,10 @@ class MT {
             }
             $mtdb->set_names($this);
         }
+
+        if ( !empty( $cfg['debugmode'] ) && intval($cfg['debugmode']) > 0 ) {
+            $this->debugging = true;
+        }
     }
 
     function config_defaults() {
