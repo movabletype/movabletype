@@ -11,6 +11,7 @@ use base qw( MT::App );
 
 use MT::API::Resource;
 use MT::App::CMS::Common;
+use MT::AccessToken;
 
 our ( %endpoints, %resources ) = ();
 
@@ -373,21 +374,44 @@ sub _encode_json {
     MT::Util::to_json( $obj, { ascii => 1 } );
 }
 
-sub authenticate {
+sub mt_authorization_header {
     my ($app) = @_;
 
     my $header = $app->get_header('X-MT-Authorization')
         or undef;
 
-    if ( $header =~ m/\A\s*MTAuth\s+access_token=(\w+)/ ) {
-        my $token = $1;
-        require MT::AccessToken;
-        my $session = MT::AccessToken->load_session($token)
-            or return undef;
-        return $app->model('author')->load( $session->get('author_id') );
+    my %values = ();
+
+    $header =~ s/\A\s+|\s+\z//g;
+
+    my ($type, $rest) = split /\s+/, $header, 2;
+    return undef unless $type;
+
+    $values{$type} = {};
+
+    while ($rest =~ m/(\w+)=(?:("|')([^\2]*)\2|([^\s,]*))/g) {
+        $values{$type}{$1} = defined($3) ? $3 : $4;
     }
 
-    undef;
+    \%values;
+}
+
+sub authenticate {
+    my ($app) = @_;
+
+    my $header = $app->mt_authorization_header
+        or undef;
+
+    my $session
+        = MT::AccessToken->load_session( $header->{MTAuth}{access_token}
+            || '' )
+        or return undef;
+    my $user = $app->model('author')->load( $session->get('author_id') )
+        or return undef;
+
+    return undef unless $user->is_active;
+
+    $user;
 }
 
 sub user_cookie {

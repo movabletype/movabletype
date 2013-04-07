@@ -100,19 +100,17 @@ sub authentication {
 sub token {
     my ($app) = @_;
 
-    my $session;
-    $session = do {
-        my $header = $app->get_header('X-MT-Authorization') || '';
-        if ( $header =~ m/\A\s*MTAuth\s+session_id=(\w+)/ ) {
-            $session = MT::Session->load(
-                {   id   => $1,
+    my $session = do {
+        if ( my $header = $app->mt_authorization_header ) {
+            MT::Session->load(
+                {   id => $header->{MTAuth}{session_id} || '',
                     kind => $app->session_kind,
                 }
             );
         }
         else {
             my ( $author, $new_login ) = $app->login;
-            $session = $app->{session};
+            $app->{session};
         }
     };
     return $app->error(401) unless $session;
