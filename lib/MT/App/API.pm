@@ -106,6 +106,7 @@ sub core_endpoints {
             method    => 'POST',
             version   => 1,
             handler   => "${pkg}Entry::create",
+            param     => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to create an entry.', },
         },
@@ -124,6 +125,7 @@ sub core_endpoints {
             method    => 'PUT',
             version   => 1,
             handler   => "${pkg}Entry::update",
+            param     => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to update an entry.', }
         },
