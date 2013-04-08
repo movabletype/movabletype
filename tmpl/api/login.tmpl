@@ -50,13 +50,12 @@
     </mt:if>
   </mt:if>
 </mt:if>
-<div id="login-error-container" style="display: none">
 <mtapp:statusmsg
    id="login-error"
-   class="error"
+   class="error hidden"
    can_close="0">
+     <__trans phrase="Invalid login.">
 </mtapp:statusmsg>
-</div>
 
 <mt:unless name="delegate_auth">
   <mt:var name="login_fields">
@@ -109,16 +108,16 @@ jQuery(function($) {
             type: 'POST',
             cache : false
         }).done(function(data) {
-            if (data.access_token) {
-                Cookie.bake(MT.API.mtApiAccessTokenKey, $.toJSON(data), undefined, '/');
-                var url = $('#redirect_uri').val() + '#_login';
-                location.href = url;
+            Cookie.bake(MT.API.mtApiAccessTokenKey, $.toJSON(data), undefined, '/');
+            var url = $('#redirect_uri').val() + '#_login';
+            location.href = url;
+        }).fail(function(data) {
+            if (data.status === 401) {
+                $('#login-error').removeClass('hidden');
             }
             else {
-                alert('login failed');
+                alert('Ajax error: ' + data.responseText);
             }
-        }).fail(function(data) {
-            alert('aa');
         });
         return false;
     });
