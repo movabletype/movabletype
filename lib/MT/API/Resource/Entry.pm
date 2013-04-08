@@ -3,7 +3,7 @@ package MT::API::Resource::Entry;
 use strict;
 use warnings;
 
-use JSON;
+use boolean ();
 
 sub updatable_fields {
     [   qw(
@@ -74,30 +74,26 @@ sub fields {
             alias       => 'allow_comments',
             from_object => sub {
                 my ( $app, $obj ) = @_;
+
                 # TODO ok?
-                $obj->allow_comments ? JSON::true() : JSON::false();
+                $obj->allow_comments ? boolean::true() : boolean::false();
             },
             to_object => sub {
                 my ( $app, $hash ) = @_;
-                # TODO ok?
-                UNIVERSAL::is_a( $hash->{allowComments}, JSON::true() )
-                    ? 1
-                    : 0;
+                $hash->{allowComments} ? 1 : 0;
             },
         },
         {   name        => 'allowTrackbacks',
             alias       => 'allow_pings',
             from_object => sub {
                 my ( $app, $obj ) = @_;
+
                 # TODO ok?
-                $obj->allow_pings ? JSON::true() : JSON::false();
+                $obj->allow_pings ? boolean::true() : boolean::false();
             },
             to_object => sub {
                 my ( $app, $hash ) = @_;
-                # TODO ok?
-                UNIVERSAL::is_a( $hash->{allowTrackbacks}, JSON::true() )
-                    ? 1
-                    : 0;
+                $hash->{allowTrackbacks} ? 1 : 0;
             },
         },
         'title',
