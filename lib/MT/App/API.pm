@@ -436,12 +436,12 @@ sub mt_authorization_header {
 
     $header =~ s/\A\s+|\s+\z//g;
 
-    my ($type, $rest) = split /\s+/, $header, 2;
+    my ( $type, $rest ) = split /\s+/, $header, 2;
     return undef unless $type;
 
     $values{$type} = {};
 
-    while ($rest =~ m/(\w+)=(?:("|')([^\2]*)\2|([^\s,]*))/g) {
+    while ( $rest =~ m/(\w+)=(?:("|')([^\2]*)\2|([^\s,]*))/g ) {
         $values{$type}{$1} = defined($3) ? $3 : $4;
     }
 
@@ -598,7 +598,7 @@ sub show_error {
 
     if ( !$error ) {
         $error = {
-            code    => $param->{status} || 500,
+            code => $param->{status} || 500,
             message => $param->{error},
         };
     }
