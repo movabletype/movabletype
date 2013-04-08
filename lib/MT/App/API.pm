@@ -13,7 +13,7 @@ use MT::API::Resource;
 use MT::App::CMS::Common;
 use MT::AccessToken;
 
-our ( %endpoints, %resources ) = ();
+our ( %endpoints, %resources, %formats ) = ();
 
 sub id {'api'}
 
@@ -166,6 +166,18 @@ sub core_resources {
     };
 }
 
+sub core_formats {
+    my $app = shift;
+    my $pkg = '$Core::MT::API::Format::';
+    return {
+        'json' => {
+            content_type => 'application/json',
+            serialize    => "${pkg}JSON::serialize",
+            unserialize  => "${pkg}JSON::unserialize"
+        }
+    };
+}
+
 sub init_plugins {
     my $app = shift;
 
@@ -181,14 +193,16 @@ sub _compile_endpoints {
     my ( $app, $version ) = @_;
 
     my %tree = ();
+    my $default_format
+        = $app->registry( 'applications', 'api' )->{default_format};
     my $endpoints_list = $app->registry( 'applications', 'api', 'endpoints' );
     foreach my $endpoints (@$endpoints_list) {
         foreach my $e (@$endpoints) {
-            $e->{id}          ||= $e->{route};
-            $e->{version}     ||= 1;
-            $e->{method}      ||= 'GET';
-            $e->{format}      ||= 'json';
-            $e->{error_codes} ||= {};
+            $e->{id}           ||= $e->{route};
+            $e->{version}      ||= 1;
+            $e->{method}       ||= 'GET';
+            $e->{error_codes}  ||= {};
+            $e->{error_format} ||= $e->{format} ||= $default_format;
 
             if ( !exists( $e->{requires_login} ) ) {
                 $e->{requires_login} = 1;
@@ -228,7 +242,12 @@ sub endpoints {
     $endpoints{$version} ||= $app->_compile_endpoints($version);
 }
 
-sub _endpoint {
+sub endpoint {
+    my $app = shift;
+    $app->request( 'api_current_endpoint', @_ ? $_[0] : () );
+}
+
+sub _find_endpoint {
     my ( $app, $method, $version, $path ) = @_;
 
     my $endpoints = $app->endpoints($version);
@@ -248,15 +267,54 @@ sub _endpoint {
         }
     }
 
-    my $e      = $handler->{':e'}{$method};
+    my $e = $handler->{':e'}{$method}
+        or return;
+
     my %params = ();
-    if ($e) {
-        for ( my $i = 0; $i < scalar( @{ $e->{_vars} } ); $i++ ) {
-            $params{ $e->{_vars}[$i] } = $vars[$i];
-        }
+    for ( my $i = 0; $i < scalar( @{ $e->{_vars} } ); $i++ ) {
+        $params{ $e->{_vars}[$i] } = $vars[$i];
     }
 
     $e, \%params;
+}
+
+sub current_format {
+    my ( $app, $type ) = @_;
+
+    if ( !%formats ) {
+        my $reg = $app->registry( 'applications', 'api', 'formats' );
+        %formats = map { $_ => 1 } keys %$reg;
+    }
+
+    my $format_key = do {
+        if ( my $e = $app->endpoint ) {
+            $e->{ ( $type ? "${type}_" : '' ) . 'format' };
+        }
+        else {
+            $app->registry( 'applications', 'api' )->{default_format};
+        }
+    };
+
+    my $format = $formats{$format_key};
+    if ( !defined $format ) {
+        $format_key = ( keys %formats )[0];
+        $format     = $formats{$format_key};
+    }
+
+    if ( !ref $format ) {
+        $format = $formats{$format_key}
+            = $app->registry( 'applications', 'api', 'formats', $format_key );
+        for my $k (qw(serialize unserialize)) {
+            $format->{$k} = $app->handler_to_coderef( $format->{$k} );
+        }
+    }
+
+    $format;
+}
+
+sub current_error_format {
+    my ($app) = @_;
+    $app->current_format('error');
 }
 
 sub _request_method {
@@ -267,7 +325,7 @@ sub _request_method {
             $method = lc $m;
         }
         else {
-            return $app->json_error(
+            return $app->print_error(
                 "Request method is not '$m' or 'POST' with '__method=$m'",
                 405 );
         }
@@ -324,7 +382,7 @@ sub resource {
                         'resources',    $resource_key,
                         $k
                     )
-                    }
+                }
             ];
         }
     }
@@ -335,16 +393,16 @@ sub resource {
 sub resource_object {
     my ( $app, $name, $original ) = @_;
 
-    my $json_text = $app->param($name)
+    my $data_text = $app->param($name)
         or return undef;
 
-    # TODO if error
-    my $data = MT::Util::from_json($json_text);
+    my $data = $app->current_format->{unserialize}->($data_text)
+        or return undef;
 
     MT::API::Resource->to_object( $app, $name, $data, $original );
 }
 
-sub convert_object {
+sub object_to_resource {
     my ( $app, $res, $fields ) = @_;
     my $ref = ref $res;
 
@@ -356,22 +414,16 @@ sub convert_object {
     elsif ( $ref eq 'HASH' ) {
         my %result = ();
         foreach my $k ( keys %$res ) {
-            $result{$k} = $app->convert_object( $res->{$k}, $fields );
+            $result{$k} = $app->object_to_resource( $res->{$k}, $fields );
         }
         \%result;
     }
     elsif ( $ref eq 'ARRAY' ) {
-        [ map { $app->convert_object( $_, $fields ) } @$res ];
+        [ map { $app->object_to_resource( $_, $fields ) } @$res ];
     }
     else {
         $res;
     }
-}
-
-sub _encode_json {
-    my ( $app, $res ) = @_;
-    my $obj = $app->convert_object( $res, $app->param('fields') || '' );
-    MT::Util::to_json( $obj, { ascii => 1 } );
 }
 
 sub mt_authorization_header {
@@ -505,7 +557,7 @@ sub error {
     return $app->SUPER::error(@args);
 }
 
-sub json_error {
+sub print_error {
     my ( $app, $message, $status ) = @_;
 
     if ( !$status && $message =~ m/\A\d{3}\z/ ) {
@@ -517,11 +569,13 @@ sub json_error {
         $message = HTTP::Status::status_message($status);
     }
 
+    my $format = $app->current_format;
+
     $app->response_code($status);
-    $app->send_http_header('application/json');
+    $app->send_http_header( $format->{content_type} );
     $app->{no_print_body} = 1;
     $app->print_encode(
-        MT::Util::to_json(
+        $format->{serialize}->(
             {   error => {
                     message => $message,
                     code    => $status,
@@ -529,13 +583,14 @@ sub json_error {
             }
         )
     );
+
     return undef;
 }
 
 sub show_error {
-    my $app = shift;
-    my ($param) = @_;
-    my $endpoint = $app->request('api_current_endpoint');
+    my $app      = shift;
+    my ($param)  = @_;
+    my $endpoint = $app->endpoint;
     my $error    = $app->request('api_error_detail');
 
     return $app->SUPER::show_error(@_)
@@ -548,7 +603,7 @@ sub show_error {
         };
     }
 
-    return $app->json_error( $error->{message}
+    return $app->print_error( $error->{message}
             || $endpoint->{error_codes}{ $error->{code} },
         $error->{code} );
 }
@@ -568,25 +623,25 @@ sub api {
     my $path = $app->_path;
 
     my ($version) = ( $path =~ s{\A/?v(\d+)}{} );
-    return $app->json_error( 'API Version is required', 400 )
+    return $app->print_error( 'API Version is required', 400 )
         unless defined($version);
     $app->api_version($version);
 
     my $request_method = $app->_request_method
         or return;
     my ( $endpoint, $params )
-        = $app->_endpoint( $request_method, $version, $path )
-        or return $app->json_error( 'Unknown endpoint', 404 );
+        = $app->_find_endpoint( $request_method, $version, $path )
+        or return $app->print_error( 'Unknown endpoint', 404 );
     my $user = $app->authenticate;
 
     if ( $endpoint->{requires_login} && !$user ) {
-        return $app->json_error( 'Unauthorized', 401 );
+        return $app->print_error( 'Unauthorized', 401 );
     }
     $app->user($user);
 
     if ( my $id = $params->{site_id} ) {
         $app->blog( scalar $app->model('blog')->load($id) )
-            or return $app->json_error( 'Site not found', 404 );
+            or return $app->print_error( 'Site not found', 404 );
         $app->param( 'blog_id', $id );
     }
 
@@ -618,8 +673,11 @@ sub api {
         || ref $response eq 'ARRAY'
         || UNIVERSAL::isa( $response, 'MT::Object' ) )
     {
-        my $data = $app->_encode_json($response);
-        $app->send_http_header('application/json');
+        my $format   = $app->current_format;
+        my $resource = $app->object_to_resource( $response,
+            $app->param('fields') || '' );
+        my $data = $format->{serialize}->($resource);
+        $app->send_http_header( $format->{content_type} );
         $app->{no_print_body} = 1;
         $app->print_encode($data);
         undef;

@@ -27,13 +27,13 @@ sub fields {
     [   {   name        => 'author',
             from_object => sub {
                 my ( $app, $obj ) = @_;
-                $app->convert_object( $obj->author );
+                $app->object_to_resource( $obj->author );
             },
         },
         {   name        => 'blog',
             from_object => sub {
                 my ( $app, $obj ) = @_;
-                $app->convert_object( $obj->blog );
+                $app->object_to_resource( $obj->blog );
             },
         },
         {   name        => 'categories',
@@ -48,12 +48,12 @@ sub fields {
 
                 my $cats = MT::Category->lookup_multi(
                     [ map { $_->[0] } @$rows ] );
-                $app->convert_object(
+                $app->object_to_resource(
                     [   sort {
                                   $a->id == $primary ? 1
                                 : $b->id == $primary ? -1
                                 : $a->label cmp $b->label
-                            } @$cats
+                        } @$cats
                     ]
                 );
             },
@@ -116,7 +116,7 @@ sub fields {
                 if ( defined( $app->param('maxComments') ) ) {
                     $args = { limit => int( $app->param('maxComments') ), };
                 }
-                $app->convert_object( $obj->comments( undef, $args ) );
+                $app->object_to_resource( $obj->comments( undef, $args ) );
             },
         },
         {   name        => 'trackbacks',
@@ -126,7 +126,7 @@ sub fields {
                 if ( defined( $app->param('maxTrackbacks') ) ) {
                     $args = { limit => int( $app->param('maxTrackbacks') ), };
                 }
-                $app->convert_object( $obj->pings( undef, $args ) );
+                $app->object_to_resource( $obj->pings( undef, $args ) );
             },
         },
     ];
