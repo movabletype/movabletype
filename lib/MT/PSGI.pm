@@ -122,7 +122,10 @@ sub run_cgi_without_buffering {
         {
             local %ENV
                 = ( %ENV, CGI::Emulate::PSGI->emulate_environment($env) );
-            $pid = open3( $child_in, $child_out, $child_err, $script );
+            eval {
+                $pid = open3( $child_in, $child_out, $child_err, $script );
+            };
+            die $@ if $@;
         }
         syswrite $child_in, do {
             local $/;
