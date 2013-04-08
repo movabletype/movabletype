@@ -657,12 +657,13 @@ sub api {
         }
     }
 
-    my $code = $app->handler_to_coderef( $endpoint->{handler} )
-        or return $app->json_error( 'Unknown endpoint', 404 );
+    $endpoint->{handler_ref}
+        ||= $app->handler_to_coderef( $endpoint->{handler} )
+        or return $app->print_error( 'Unknown endpoint', 404 );
 
-    $app->request( 'api_current_endpoint', $endpoint );
+    $app->endpoint($endpoint);
     $app->run_callbacks( 'pre_run_api.' . $endpoint->{id}, $app, $endpoint );
-    my $response = $code->( $app, $endpoint );
+    my $response = $endpoint->{handler_ref}->( $app, $endpoint );
     $app->run_callbacks( 'post_run_api.' . $endpoint->{id},
         $app, $endpoint, $response );
 
