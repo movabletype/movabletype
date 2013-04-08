@@ -11,20 +11,34 @@ our @EXPORT = qw(
 );
 
 sub save_object {
-    my ( $app, $obj ) = @_;
+    my ( $app, $type, $obj, $original ) = @_;
+    $original ||= $app->model($type)->new;
 
-    # TODO should run callbacks
-    # TODO should return appropriate error
+    run_permission_filter( $app, 'cms_save_permission_filter', $type, $obj )
+        or return;
+
+    $app->run_callbacks( 'cms_save_filter.' . $type, $app )
+        or return $app->error( $app->errstr, 409 );
+
+    $app->run_callbacks( 'cms_pre_save.' . $type, $app, $obj, $original )
+        or return $app->error(
+        $app->translate( "Save failed: [_1]", $app->errstr ), 409 );
+
     $obj->save
         or return $app->error(
         $app->translate( 'Saving object failed: [_1]', $obj->errstr ), 500 );
+
+    $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $original );
+
+    1;
 }
 
 sub remove_object {
-    my ( $app, $obj ) = @_;
+    my ( $app, $type, $obj ) = @_;
 
-    # TODO should run callbacks
-    # TODO should return appropriate error
+    run_permission_filter( $app, 'cms_delete_permission_filter', $type, $obj )
+        or return;
+
     $obj->remove
         or return $app->error(
         $app->translate(
@@ -33,6 +47,10 @@ sub remove_object {
         ),
         500
         );
+
+    $app->run_callbacks( 'cms_post_delete.' . $type, $app, $obj );
+
+    1;
 }
 
 sub _load_object_by_name {
@@ -77,12 +95,12 @@ sub resource_error {
 }
 
 sub run_permission_filter {
-    my $app    = shift;
-    my $filter = shift;
+    my $app = shift;
+    my ( $filter, $type ) = splice( @_, 0, 2 );
 
     return 1 if $app->user->is_superuser;
 
-    $app->run_callbacks( $filter, $app, @_ ) || $app->json_error(403);
+    $app->run_callbacks( "$filter.$type", $app, @_ ) || $app->json_error(403);
 }
 
 sub filtered_list {
@@ -147,7 +165,8 @@ sub filtered_list {
             }
         }
         foreach my $p (@act) {
-            $allowed = 1, last
+            $allowed = 1,
+                last
                 if $app->user->can_do(
                 $p,
                 at_least_one => 1,
@@ -209,10 +228,10 @@ sub filtered_list {
 
     my $scope_mode = $setting->{scope_mode} || 'wide';
     my @blog_id_term = (
-         !$blog_id ? ()
+         !$blog_id              ? ()
         : $scope_mode eq 'none' ? ()
         : $scope_mode eq 'this' ? ( blog_id => $blog_id )
-        : ( blog_id => $blog_ids )
+        :                         ( blog_id => $blog_ids )
     );
 
     my %load_options = (
@@ -269,8 +288,8 @@ sub filtered_list {
         }
     }
 
-    +{  objects        => $objs || [],
-        count          => $count,
+    +{  objects => $objs || [],
+        count => $count,
         editable_count => $editable_count,
     };
 }

@@ -23,13 +23,13 @@ sub _get_user {
 }
 
 sub get {
-    my ($app, $endpoint) = @_;
+    my ( $app, $endpoint ) = @_;
 
     my $user = _get_user($app)
         or return;
 
-    run_permission_filter( $app,
-        'cms_view_permission_filter.author', $user )
+    run_permission_filter( $app, 'cms_view_permission_filter', 'author',
+        $user )
         or return;
 
     $user;
@@ -43,19 +43,19 @@ sub update {
 
     # TODO should return appropriate error
     my $new_user = $app->resource_object( 'user', $user )
-        or return $app->error(resource_error('user'));
+        or return $app->error( resource_error('user') );
 
     my $perms = $app->permissions;
     if ( !$app->user->is_superuser ) {
         return $app->permission_denied()
-            if !$perms && $user->id != $app->user->id;
+            if !$perms && $new_user->id != $app->user->id;
 
         $app->run_callbacks( 'cms_save_permission_filter.author',
-            $app, $user )
+            $app, $new_user )
             || return $app->error(403);
     }
 
-    save_object($app, $user)
+    save_object( $app, $new_user, $user )
         or return;
 
     $user;

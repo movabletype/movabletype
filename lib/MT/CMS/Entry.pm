@@ -2713,8 +2713,10 @@ sub pre_save {
 sub post_save {
     my $eh = shift;
     my ( $app, $obj ) = @_;
-    my $sess_obj = $app->autosave_session_obj;
-    $sess_obj->remove if $sess_obj;
+    if ( $app->can('autosave_session_obj') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        $sess_obj->remove if $sess_obj;
+    }
     1;
 }
 

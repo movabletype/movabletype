@@ -35,11 +35,7 @@ sub create {
         }
     );
 
-    run_permission_filter( $app,
-        'cms_save_permission_filter.entry', $new_entry )
-        or return;
-
-    save_object($app, $new_entry)
+    save_object($app, 'entry', $new_entry)
         or return;
 
     $new_entry;
@@ -51,8 +47,7 @@ sub get {
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
-    run_permission_filter( $app,
-        'cms_view_permission_filter.entry', $entry )
+    run_permission_filter( $app, 'cms_view_permission_filter', 'entry', $entry )
         or return;
 
     $entry;
@@ -66,11 +61,7 @@ sub update {
     my $new_entry = $app->resource_object( 'entry', $entry )
         or return $app->error( resource_error('entry') );
 
-    run_permission_filter( $app,
-        'cms_save_permission_filter.entry', $new_entry )
-        or return;
-
-    save_object($app, $new_entry)
+    save_object($app, 'entry', $new_entry, $entry)
         or return;
 
     $new_entry;
@@ -82,11 +73,7 @@ sub delete {
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
-    run_permission_filter( $app,
-        'cms_delete_permission_filter.entry', $entry )
-        or return;
-
-    remove_object($app, $entry)
+    remove_object($app, 'entry', $entry)
         or return;
 
     $entry;
