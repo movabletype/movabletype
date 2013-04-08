@@ -34,6 +34,7 @@ sub can_write;
 sub mkpath;
 sub rename;
 sub delete;
+sub rmdir;
 sub content_is_updated {1}
 sub file_mod_time      {undef}
 sub file_size          {undef}
