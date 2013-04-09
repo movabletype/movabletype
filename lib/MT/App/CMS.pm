@@ -1783,7 +1783,7 @@ sub core_menus {
             mode       => 'list',
             args       => { _type => 'category' },
             permission => 'edit_categories',
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'entry:view_category' => {
             order   => 10000,

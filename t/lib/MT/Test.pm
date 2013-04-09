@@ -451,6 +451,7 @@ sub init_data {
     $classic_website->apply($website);
     $website->save() or die "Couldn't save blog 1: " . $website->errstr;
 
+    require MT::ObjectDriver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     require MT::Blog;

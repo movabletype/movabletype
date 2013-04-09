@@ -1336,7 +1336,7 @@ BEGIN {
                 contents_label        => 'Entry',
                 contents_label_plural => 'Entries',
                 permission            => 'access_to_category_list',
-                view                  => 'blog',
+                view                  => [ 'website', 'blog' ],
                 scope_mode            => 'this',
                 condition             => sub {
                     my $app = shift;
