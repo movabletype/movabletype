@@ -1595,7 +1595,7 @@ BEGIN {
             'LocalPreviews'          => { default => 0 },
             'EnableAutoRewriteOnIIS' => { default => 1 },
             'DefaultCommenterAuth' =>
-                { default => 'MovableType,LiveJournal' },
+                { default => 'MovableType' },
             'TemplatePath' => {
                 default => 'tmpl',
                 path    => 1,
