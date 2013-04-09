@@ -2853,6 +2853,7 @@ sub core_commenter_authenticators {
             order             => 16,
         },
         'TypeKey' => {
+            disable           => 1,
             class             => 'MT::Auth::TypeKey',
             label             => 'TypePad',
             login_form        => 'comment/auth_typepad.tmpl',
