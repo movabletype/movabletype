@@ -54,7 +54,7 @@ sub edit {
         }
     }
 
-    my $type 
+    my $type
         = $app->param('type')
         || $app->param('_type')
         || MT::Category->class_type;
@@ -516,11 +516,10 @@ sub can_view {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    unless ( ref $obj ) {
-        $obj = MT->model('category')->load($obj)
-            or return;
+    if ( $obj && !ref $obj ) {
+        $obj = MT->model('category')->load($obj);
+        return unless $obj && $obj->is_category;
     }
-    return unless $obj->is_category;
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)
@@ -532,11 +531,10 @@ sub can_save {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    unless ( ref $obj ) {
-        $obj = MT->model('category')->load($obj)
-            or return;
+    if ( $obj && !ref $obj ) {
+        $obj = MT->model('category')->load($obj);
+        return unless $obj && $obj->is_category;
     }
-    return unless $obj->is_category;
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)->can_do('save_category');
@@ -547,13 +545,12 @@ sub can_delete {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    unless ( ref $obj ) {
-        $obj = MT->model('category')->load($obj)
-            or return;
+    if ( $obj && !ref $obj ) {
+        $obj = MT->model('category')->load($obj);
+        return unless $obj && $obj->is_category;
     }
-    return unless $obj->is_category;
 
-    my $blog_id = $obj->blog_id;
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)->can_do('delete_category');
 }
 
