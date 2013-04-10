@@ -42,7 +42,7 @@ sub authorization {
 
     my %param = (
         redirect_uri             => $redirect_uri,
-        api_version              => $app->api_version,
+        api_version              => $app->current_api_version,
         mt_api_login_magic_token => $token,
     );
 

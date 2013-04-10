@@ -195,7 +195,8 @@ sub init_plugins {
 sub _compile_endpoints {
     my ( $app, $version ) = @_;
 
-    my %tree = ();
+    my %hash           = ();
+    my %tree           = ();
     my $endpoints_list = $app->registry( 'applications', 'api', 'endpoints' );
     foreach my $endpoints (@$endpoints_list) {
         foreach my $e (@$endpoints) {
@@ -229,10 +230,14 @@ sub _compile_endpoints {
             {
                 $cur->{':e'}{ lc $e->{method} } = $e;
             }
+
+            $hash{ $e->{id} } = $e;
         }
     }
 
-    \%tree;
+    +{  hash => \%hash,
+        tree => \%tree,
+    };
 }
 
 sub endpoints {
@@ -240,15 +245,47 @@ sub endpoints {
     $endpoints{$version} ||= $app->_compile_endpoints($version);
 }
 
-sub endpoint {
+sub current_endpoint {
     my $app = shift;
     $app->request( 'api_current_endpoint', @_ ? $_[0] : () );
 }
 
-sub _find_endpoint {
+sub current_api_version {
+    my $app = shift;
+    $app->request( 'api_current_version', @_ ? $_[0] : () );
+}
+
+sub find_endpoint_by_id {
+    my ( $app, $version, $id ) = @_;
+    $app->endpoints($version)->{hash}{$id};
+}
+
+sub endpoint_url {
+    my ( $app, $endpoint, $params ) = @_;
+    $endpoint = $app->find_endpoint_by_id($endpoint) unless ref $endpoint;
+    return '' unless $endpoint;
+
+    my $replace = sub {
+        my ( $whole, $key ) = @_;
+        if ( exists $params->{$key} ) {
+            my $v = delete $params->{$key};
+            UNIVERSAL::isa( $v, 'MT::Object' ) ? $v->id : $v;
+        }
+        else {
+            $whole;
+        }
+    };
+
+    my $url = $endpoint->{route};
+    $url =~ s{(?:(?<=^)|(?<=/|\.))(:([a-zA-Z_-]+))}{$replace->($1, $2)}ge;
+
+    $url . $app->uri_params( args => $params );
+}
+
+sub find_endpoint_by_path {
     my ( $app, $method, $version, $path ) = @_;
 
-    my $endpoints = $app->endpoints($version);
+    my $endpoints = $app->endpoints($version)->{tree};
 
     my $handler = $endpoints;
     my %params  = ();
@@ -289,7 +326,7 @@ sub find_format {
 
     my $format_key
         = $key
-        || ( $app->endpoint || {} )->{format}
+        || ( $app->current_endpoint || {} )->{format}
         || $app->param('format')
         || $app->registry( 'applications', 'api' )->{default_format};
 
@@ -604,7 +641,7 @@ sub print_error {
 sub show_error {
     my $app      = shift;
     my ($param)  = @_;
-    my $endpoint = $app->endpoint;
+    my $endpoint = $app->current_endpoint;
     my $error    = $app->request('api_error_detail');
 
     return $app->SUPER::show_error(@_)
@@ -622,16 +659,6 @@ sub show_error {
         $error->{code} );
 }
 
-sub api_version {
-    my ( $app, $version ) = @_;
-    if ( defined($version) ) {
-        $app->request( 'api_version', $version );
-    }
-    else {
-        $app->request('api_version');
-    }
-}
-
 sub api {
     my ($app) = @_;
     my $path = $app->_path;
@@ -639,12 +666,11 @@ sub api {
     my ($version) = ( $path =~ s{\A/?v(\d+)}{} );
     return $app->print_error( 'API Version is required', 400 )
         unless defined($version);
-    $app->api_version($version);
 
     my $request_method = $app->_request_method
         or return;
     my ( $endpoint, $params )
-        = $app->_find_endpoint( $request_method, $version, $path )
+        = $app->find_endpoint_by_path( $request_method, $version, $path )
         or return $app->print_error( 'Unknown endpoint', 404 );
     my $user = $app->authenticate;
 
@@ -675,7 +701,9 @@ sub api {
         ||= $app->handler_to_coderef( $endpoint->{handler} )
         or return $app->print_error( 'Unknown endpoint', 404 );
 
-    $app->endpoint($endpoint);
+    $app->current_endpoint($endpoint);
+    $app->current_api_version($version);
+
     $app->run_callbacks( 'pre_run_api.' . $endpoint->{id}, $app, $endpoint );
     my $response = $endpoint->{handler_ref}->( $app, $endpoint );
     $app->run_callbacks( 'post_run_api.' . $endpoint->{id},
