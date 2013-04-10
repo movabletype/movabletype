@@ -1335,7 +1335,10 @@ BEGIN {
                 template              => 'list_category.tmpl',
                 contents_label        => 'Entry',
                 contents_label_plural => 'Entries',
-                permission            => 'access_to_category_list',
+                permission            => {
+                    permit_action => 'access_to_category_list',
+                    inherit       => 0,
+                },
                 view                  => [ 'website', 'blog' ],
                 scope_mode            => 'this',
                 condition             => sub {
@@ -1350,7 +1353,10 @@ BEGIN {
                 search_type           => 'page',
                 contents_label        => 'Page',
                 contents_label_plural => 'Pages',
-                permission            => 'access_to_folder_list',
+                permission            => {
+                    permit_action => 'access_to_folder_list',
+                    inherit       => 0,
+                },
                 view                  => [ 'website', 'blog' ],
                 scope_mode            => 'this',
                 condition             => sub {
