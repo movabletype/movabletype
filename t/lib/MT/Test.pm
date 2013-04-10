@@ -75,7 +75,7 @@ our $CORE_TIME;
 BEGIN {
     *CORE::GLOBAL::time
         = sub { my ($a) = @_; $a ? CORE::time + $_[0] : CORE::time };
-    *CORE::GLOBAL::sleep = sub {CORE::sleep};
+    *CORE::GLOBAL::sleep = sub { CORE::sleep };
 }
 
 sub import {
@@ -342,8 +342,8 @@ sub init_newdb {
             next;    #TODO for now - it won't hurt when we do driver-tests.
         }
         elsif ( !defined *{ $class . '::__properties' } ) {
-            eval '# line ' 
-                . __LINE__ . ' ' 
+            eval '# line '
+                . __LINE__ . ' '
                 . __FILE__ . "\n"
                 . 'require '
                 . $class
@@ -451,7 +451,7 @@ sub init_data {
     $classic_website->apply($website);
     $website->save() or die "Couldn't save blog 1: " . $website->errstr;
 
-    require MT::ObjectDriver::Cache::RAM;
+    require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     require MT::Blog;

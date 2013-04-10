@@ -41,13 +41,16 @@ sub can_view {
 sub can_save {
     my ( $eh, $app, $id ) = @_;
     if ( $id && !ref $id ) {
-        $id = MT->model('page')->load($id);
-        return unless $id && $id->isa('MT::Page');
+        $id = MT->model('page')->load($id)
+            or return;
+    }
+    if ($id) {
+        return unless $id->isa('MT::Page');
     }
 
     my $author = $app->user;
     my $blog_id = $id ? $id->blog_id : ( $app->blog ? $app->blog->id : 0 );
-    return $author->permissions( $blog_id )->can_do('save_page');
+    return $author->permissions($blog_id)->can_do('save_page');
 
 }
 
@@ -57,14 +60,17 @@ sub can_delete {
     return 1 if $author->is_superuser();
 
     if ( $obj && !ref $obj ) {
-        $obj = MT->model('page')->load($obj);
-        return unless $obj && $obj->isa('MT::Page');
+        $obj = MT->model('page')->load($obj)
+            or return;
+    }
+    if ($obj) {
+        return unless $obj->isa('MT::Page');
     }
 
     my $perms = $app->permissions;
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     if ( !$perms || $perms->blog_id != $blog_id ) {
-        $perms = $author->permissions( $blog_id );
+        $perms = $author->permissions($blog_id);
     }
     return $perms && $perms->can_do('delete_page');
 }

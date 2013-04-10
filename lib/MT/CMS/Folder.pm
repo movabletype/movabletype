@@ -32,8 +32,11 @@ sub can_save {
     return 1 if $author->is_superuser();
 
     if ( $obj && !ref $obj ) {
-        $obj = MT->model('folder')->load($obj);
-        return unless $obj && $obj->isa('MT::Folder');
+        $obj = MT->model('folder')->load($obj)
+            or return;
+    }
+    if ($obj) {
+        return unless $obj->isa('MT::Folder');
     }
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
@@ -46,8 +49,11 @@ sub can_delete {
     return 1 if $author->is_superuser();
 
     if ( $obj && !ref $obj ) {
-        $obj = MT->model('folder')->load($obj);
-        return unless $obj && $obj->isa('MT::Folder');
+        $obj = MT->model('folder')->load($obj)
+            or return;
+    }
+    if ($obj) {
+        return unless $obj->isa('MT::Folder');
     }
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );

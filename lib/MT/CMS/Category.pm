@@ -517,8 +517,11 @@ sub can_view {
     return 1 if $author->is_superuser();
 
     if ( $obj && !ref $obj ) {
-        $obj = MT->model('category')->load($obj);
-        return unless $obj && $obj->is_category;
+        $obj = MT->model('category')->load($obj)
+            or return;
+    }
+    if ($obj) {
+        return unless $obj->is_category;
     }
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
@@ -532,8 +535,11 @@ sub can_save {
     return 1 if $author->is_superuser();
 
     if ( $obj && !ref $obj ) {
-        $obj = MT->model('category')->load($obj);
-        return unless $obj && $obj->is_category;
+        $obj = MT->model('category')->load($obj)
+            or return;
+    }
+    if ($obj) {
+        return unless $obj->is_category;
     }
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
@@ -546,8 +552,11 @@ sub can_delete {
     return 1 if $author->is_superuser();
 
     if ( $obj && !ref $obj ) {
-        $obj = MT->model('category')->load($obj);
-        return unless $obj && $obj->is_category;
+        $obj = MT->model('category')->load($obj)
+            or return;
+    }
+    if ($obj) {
+        return unless $obj->is_category;
     }
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
