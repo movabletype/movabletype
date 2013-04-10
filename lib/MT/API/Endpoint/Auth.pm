@@ -75,7 +75,6 @@ sub authentication {
                 $app->charset,
                 join( '::', $author->name, $session->id, $remember )
             ),
-            -path => $app->config->CookiePath || $app->mt_path,
             -httponly => 1,
         );
         $arg{-expires} = '+10y' if $remember;
@@ -84,7 +83,6 @@ sub authentication {
         $app->bake_cookie(
             -name    => mt_api_login_magic_token_cookie_name(),
             -value   => '',
-            -path    => $app->config->CookiePath || $app->mt_path,
             -expires => '-1y',
         );
     }
