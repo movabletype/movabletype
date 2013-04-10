@@ -5364,7 +5364,7 @@ use vars qw( @ISA %Lexicon );
 	'FTP Server' => 'FTPサーバ',
 	'Port' => 'FTPサーバのポート',
 	'SSL' => 'SSL',
-	'Enable SSL' => 'で接続する',
+	'Enable SSL' => 'SSLで接続する',
 	'Start Directory' => '開始ディレクトリ',
 	'The sync date must be in the future.' => 'サーバ配信日時は、未来の日時を指定してください。',
 	'Do you want to synchronize the contents just now?' => 'いますぐ配信を実行しますか？',
