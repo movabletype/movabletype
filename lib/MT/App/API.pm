@@ -106,7 +106,7 @@ sub core_endpoints {
             method    => 'POST',
             version   => 1,
             handler   => "${pkg}Entry::create",
-            param     => { save_revision => 1, },
+            param => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to create an entry.', },
         },
@@ -125,7 +125,7 @@ sub core_endpoints {
             method    => 'PUT',
             version   => 1,
             handler   => "${pkg}Entry::update",
-            param     => { save_revision => 1, },
+            param => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to update an entry.', }
         },
@@ -172,11 +172,12 @@ sub core_formats {
     my $app = shift;
     my $pkg = '$Core::MT::API::Format::';
     return {
+        'js'   => 'json',
         'json' => {
             content_type => 'application/json',
             serialize    => "${pkg}JSON::serialize",
-            unserialize  => "${pkg}JSON::unserialize"
-        }
+            unserialize  => "${pkg}JSON::unserialize",
+        },
     };
 }
 
@@ -195,16 +196,13 @@ sub _compile_endpoints {
     my ( $app, $version ) = @_;
 
     my %tree = ();
-    my $default_format
-        = $app->registry( 'applications', 'api' )->{default_format};
     my $endpoints_list = $app->registry( 'applications', 'api', 'endpoints' );
     foreach my $endpoints (@$endpoints_list) {
         foreach my $e (@$endpoints) {
-            $e->{id}           ||= $e->{route};
-            $e->{version}      ||= 1;
-            $e->{method}       ||= 'GET';
-            $e->{error_codes}  ||= {};
-            $e->{error_format} ||= $e->{format} ||= $default_format;
+            $e->{id}          ||= $e->{route};
+            $e->{version}     ||= 1;
+            $e->{method}      ||= 'GET';
+            $e->{error_codes} ||= {};
 
             if ( !exists( $e->{requires_login} ) ) {
                 $e->{requires_login} = 1;
@@ -214,16 +212,14 @@ sub _compile_endpoints {
             next if $e->{version} > $version;
 
             my $cur = \%tree;
-            foreach my $p ( split /\//o, $e->{route} ) {
-                next unless $p;
-                foreach my $s ( split /\./o, $p ) {
-                    if ( $s =~ /^:([a-zA-Z_-]+)/ ) {
-                        $cur = $cur->{':v'} ||= {};
-                        push @{ $e->{_vars} }, $1;
-                    }
-                    else {
-                        $cur = $cur->{$s} ||= {};
-                    }
+            ( my $route = $e->{route} ) =~ s#^/+##;
+            foreach my $p ( split m#(?=/|\.)|(?<=/|\.)#o, $route ) {
+                if ( $p =~ /^:([a-zA-Z_-]+)/ ) {
+                    $cur = $cur->{':v'} ||= {};
+                    push @{ $e->{_vars} }, $1;
+                }
+                else {
+                    $cur = $cur->{$p} ||= {};
                 }
             }
 
@@ -255,24 +251,27 @@ sub _find_endpoint {
     my $endpoints = $app->endpoints($version);
 
     my $handler = $endpoints;
+    my %params  = ();
     my @vars    = ();
-    foreach my $p ( split /\//, $path ) {
-        next unless $p;
-        foreach my $s ( split /\./, $p ) {
-            if ( $handler->{$s} ) {
-                $handler = $handler->{$s};
-            }
-            elsif ( $handler->{':v'} ) {
-                $handler = $handler->{':v'};
-                push @vars, $s;
-            }
+
+    $path =~ s#^/+##;
+    my @paths = split m#(?=/|\.)|(?<=/|\.)#o, $path;
+    while ( my $p = shift @paths ) {
+        if ( $handler->{$p} ) {
+            $handler = $handler->{$p};
+        }
+        elsif ( $handler->{':v'} ) {
+            $handler = $handler->{':v'};
+            push @vars, $p;
+        }
+        elsif ( $p eq '.' && scalar(@paths) == 1 ) {
+            $params{format} = $paths[0];
         }
     }
 
     my $e = $handler->{':e'}{$method}
         or return;
 
-    my %params = ();
     for ( my $i = 0; $i < scalar( @{ $e->{_vars} } ); $i++ ) {
         $params{ $e->{_vars}[$i] } = $vars[$i];
     }
@@ -280,22 +279,19 @@ sub _find_endpoint {
     $e, \%params;
 }
 
-sub current_format {
-    my ( $app, $type ) = @_;
+sub find_format {
+    my ( $app, $key ) = @_;
 
     if ( !%formats ) {
         my $reg = $app->registry( 'applications', 'api', 'formats' );
         %formats = map { $_ => 1 } keys %$reg;
     }
 
-    my $format_key = do {
-        if ( my $e = $app->endpoint ) {
-            $e->{ ( $type ? "${type}_" : '' ) . 'format' };
-        }
-        else {
-            $app->registry( 'applications', 'api' )->{default_format};
-        }
-    };
+    my $format_key
+        = $key
+        || ( $app->endpoint || {} )->{format}
+        || $app->param('format')
+        || $app->registry( 'applications', 'api' )->{default_format};
 
     my $format = $formats{$format_key};
     if ( !defined $format ) {
@@ -306,17 +302,33 @@ sub current_format {
     if ( !ref $format ) {
         $format = $formats{$format_key}
             = $app->registry( 'applications', 'api', 'formats', $format_key );
-        for my $k (qw(serialize unserialize)) {
-            $format->{$k} = $app->handler_to_coderef( $format->{$k} );
+
+        if ( ref $format ne 'HASH' ) {
+            $format = $formats{$format_key}
+                = $app->find_format( $format->[0] );
+        }
+        else {
+            for my $k (qw(serialize unserialize)) {
+                $format->{$k} = $app->handler_to_coderef( $format->{$k} );
+            }
         }
     }
 
     $format;
 }
 
+sub current_format {
+    my ($app) = @_;
+    $app->find_format;
+}
+
 sub current_error_format {
     my ($app) = @_;
-    $app->current_format('error');
+    my $format = $app->current_format;
+    if ( my $invoke = $format->{error_format} ) {
+        $format = $app->find_format($invoke);
+    }
+    $format;
 }
 
 sub _request_method {
@@ -571,7 +583,7 @@ sub print_error {
         $message = HTTP::Status::status_message($status);
     }
 
-    my $format = $app->current_format;
+    my $format = $app->current_error_format;
 
     $app->response_code($status);
     $app->send_http_header( $format->{content_type} );
