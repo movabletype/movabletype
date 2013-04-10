@@ -138,7 +138,7 @@ subtest 'Test on website' => sub {
             
         my $second_cat = MT::Test::Permission->make_category(
             label     => 'Baz',
-            blog_id   => $second_website,
+            blog_id   => $second_website->id,
             author_id => $admin->id,
         );
 
