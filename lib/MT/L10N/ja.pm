@@ -2498,6 +2498,7 @@ use vars qw( @ISA %Lexicon );
 	'Ordering Categories and Folders of Blogs...' => 'ブログのカテゴリとフォルダの順番を設定しています...',
 	'Ordering Folders of Websites...' => 'ウェブサイトのフォルダの順番を設定しています...',
 	'Assigning ID of user who created for initial user...' => '初期作成ユーザーの作成者IDを設定しています...',
+	'Assigning language of blog to use for formatting date...' => 'ブログに日付の言語を設定しています...',
 
 ## lib/MT/Util.pm
 	'moments from now' => '今から',
@@ -3351,6 +3352,8 @@ use vars qw( @ISA %Lexicon );
 	'UTC-9 (Alaskan Time)' => 'UTC-9 (アラスカ標準時)',
 	'UTC-10 (Aleutians-Hawaii Time)' => 'UTC-10 (ハワイ標準時)',
 	'UTC-11 (Nome Time)' => 'UTC-11 (サモア標準時)',
+	'Language' => '使用言語',
+	'If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.' => 'グローバルなDefaultLanguage設定と異なる言語を選んだ場合、グローバルテンプレートの名称が異なるため、テンプレート内で読み込むモジュール名の変更が必要な場合があります。',
 	'License' => 'ライセンス',
 	'Your blog is currently licensed under:' => 'このブログは、次のライセンスで保護されています:',
 	'Change license' => 'ライセンスの変更',
@@ -3787,7 +3790,6 @@ use vars qw( @ISA %Lexicon );
 	'Password recovery word/phrase' => 'パスワード再設定用のフレーズ',
 	'This word or phrase is not used in the password recovery.' => 'パスワード再設定用のフレーズは使用されていません。',
 	'Preferences' => '設定',
-	'Language' => '使用言語',
 	'Display language for the Movable Type interface.' => '管理画面で使用する言語です。',
 	'Text Format' => 'テキスト形式',
 	'Default text formatting filter when creating new entries and new pages.' => 'ブログ記事とウェブページを作成する際のテキスト形式を指定します。',
@@ -3818,7 +3820,6 @@ use vars qw( @ISA %Lexicon );
 	q{The path where your index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{インデックスファイルが公開されるパスを入力してください。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨します。末尾には'/'や'\'を含めません。例: /home/melody/public_html/blogやC:\www\public_html\blog},
 	q{The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{インデックスファイルを配置するパスを入力してください。例: /home/mt/public_html/blogやC:\www\public_html\blog},
 	'Select your timezone from the pulldown menu.' => 'プルダウンメニューからタイムゾーンを選択してください。',
-	'If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.' => 'グローバルなDefaultLanguage設定と異なる言語を選んだ場合、グローバルテンプレートの名称が異なるため、テンプレート内で読み込むモジュール名の変更が必要な場合があります。',
 	'Create Blog (s)' => 'ブログを作成 (s)',
 	'You must set your Local Site Path.' => 'サイトパスを指定する必要があります。',
 
@@ -5282,6 +5283,8 @@ use vars qw( @ISA %Lexicon );
 	'Full Restore' => '環境のリストア',
 	'SSL Certifications' => 'サーバー証明書',
 	'Config Directives' => 'MT環境変数',
+	'Sync' => 'サーバ配信',
+	'Contents Sync' => 'サーバ配信',
 
 ## addons/Cloud.pack/lib/Cloud/App/CMS.pm
 	'Owner' => 'ブログ管理者',
@@ -5306,11 +5309,28 @@ use vars qw( @ISA %Lexicon );
 	'Cannot copy default secret file.' => '既定のサーバーキーのコピーに失敗しました。',
 	'Unable to update SSL certification.' => 'サーバー証明書の更新をする事が出来ませんでした。',
 	'Config Directive' => '環境変数',
+	'Saving sync settings failed: [_1]' => 'サーバ配信の設定を保存できませんでした',
 	'Restoring Backup Data' => 'バックアップデータの復元',
 	'backup data' => 'バックアップデータ',
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
 	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
 	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
+	'The URL you specified is not available.' => '指定されたURLは利用できません。',
+
+## addons/Cloud.pack/lib/MT/FileSynchronizer.pm
+	'Synchronization with an external server has been successfully finished.' => 'サーバ配信が正常に処理されました',
+	'Failed to sync with an external server.' => 'サーバ配信に失敗しました',
+
+## addons/Cloud.pack/lib/MT/FileSynchronizer/FTPBase.pm
+	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
+	'Unable to write remote file ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
+
+## addons/Cloud.pack/lib/MT/SyncSetting.pm
+	'Sync settings' => 'サーバ配信の設定',
+
+## addons/Cloud.pack/lib/MT/Worker/ContentsSync.pm
+	'This email is to notify you that failed to sync with an external server.' => 'これはサーバ配信の処理に失敗したことを通知するメールです。',
+	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバ配信の処理に成功したことを通知するメールです。',
 
 ## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
 	'Manage Basic Authentication' => 'Basic認証の管理',
@@ -5331,6 +5351,24 @@ use vars qw( @ISA %Lexicon );
 	'Configuration value' => '設定値',
 	'Remove Config Directive' => '環境変数の削除',
 
+## addons/Cloud.pack/tmpl/cfg_contents_sync.tmpl
+	'Contents Sync Setting' => 'サーバ配信設定',
+	'Contents sync settings has been saved.' => 'サーバ配信の設定を保存しました。',
+	'An error occured while trying to connect to the FTP server. Check the settings and try again.' => 'FTPサーバに接続できませんでした。設定を見直してもう一度接続してください。',
+	'Enable contents synchronization' => 'サーバ配信を有効にする',
+	'Sync Date' => 'サーバ配信日時',
+	'Sync Now!' => '今すぐ配信',
+	'Recipient for Notification' => '配信結果の通知先メールアドレス',
+	'Receive only error notification' => '配信に失敗したときだけ受け取る',
+	'FTP Settings' => 'FTPの設定',
+	'FTP Server' => 'FTPサーバ',
+	'Port' => 'FTPサーバのポート',
+	'SSL' => 'SSL',
+	'Enable SSL' => 'で接続する',
+	'Start Directory' => '開始ディレクトリ',
+	'The sync date must be in the future.' => 'サーバ配信日時は、未来の日時を指定してください。',
+	'Do you want to synchronize the contents just now?' => 'いますぐ配信を実行しますか？',
+
 ## addons/Cloud.pack/tmpl/cfg_ftps_password.tmpl
 	'Reset FTPS Password' => 'FTPSパスワードのリセット',
 	'Please select the account for which you want to reset the password.' => 'FTPSパスワードのリセットを行うアカウントを選択してください。',
@@ -5349,7 +5387,6 @@ use vars qw( @ISA %Lexicon );
 	'HTTP redirect settings' => 'HTTPリダイレクトの設定',
 
 ## addons/Cloud.pack/tmpl/cfg_security.tmpl
-	'The URL you specified is not available.' => '指定されたURLは利用できません。',
 	'Administration screen setting have been saved.' => '管理画面の設定を保存しました。',
 	'Administration screen url have been reset to default.' => '管理画面のURLが既定のURLにリセットされました。',
 	'Admin Screen URL' => '管理画面のURL',
@@ -5364,6 +5401,11 @@ use vars qw( @ISA %Lexicon );
 	'Server Certification' => '証明書 (server.crt)',
 	'Secret Key' => '秘密鍵 (server.key)',
 	'Remove SSL Certification' => 'サーバー証明書の削除',
+
+## addons/Cloud.pack/tmpl/dialog/contents_sync_now.tmpl
+	'Preparing...' => 'サーバ配信の準備をしています...',
+	'Synchronizing...' => '配信中です...',
+	'Finish!' => 'ファイルが配信されました!',
 
 ## addons/Cloud.pack/tmpl/full_restore.tmpl
 	'Restoring Full Backup Data' => 'バックアップデータからの復元',
@@ -6469,6 +6511,7 @@ use vars qw( @ISA %Lexicon );
 	'publishes a TrackBack' => 'トラックバックの公開時',
 	'rebuild indexes.' => 'インデックスを再構築する',
 	'rebuild indexes and send pings.' => 'インデックスを再構築して更新pingを送信する',
+	'Updating trigger cache of MultiBlog...' => 'トリガーの設定を更新しています...',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => ' ',
@@ -6496,48 +6539,12 @@ use vars qw( @ISA %Lexicon );
 	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で許可されます。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを制限できます。',
 	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で不許可になります。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを許可することもできます。',
 
-## plugins/SmartphoneOption/config.yaml
-	'Provides an iPhone, iPad and Android touch-friendly UI for Movable Type. Once enabled, navigate to your MT installation from your mobile to use this interface.' => 'iPhone, iPad, Android などのタッチ操作に適したMovable Typeのユーザーインターフェースを提供します。プラグインを有効にして、端末からアクセスしてください。',
-	'iPhone' => 'iPhone',
-	'iPad' => 'iPad',
-	'Android' => 'Android',
-	'PC' => 'PC',
-
-## plugins/SmartphoneOption/extlib/Image/ExifTool/MIFF.pm
-
-## plugins/SmartphoneOption/lib/Smartphone/CMS.pm
-	'This function is not supported by [_1].' => 'この機能は、[_1]に対応していません。',
-	'This function is not supported by your browser.' => 'この機能は、お使いのブラウザに対応していません。',
-	'Mobile Dashboard' => 'モバイルダッシュボード',
-	'Rich text editor is not supported by your browser. Continue with  HTML editor ?' => 'この機能は、お使いのブラウザに対応していません。',
-	'Syntax highlight is not supported by your browser. Disable to continue ?' => 'お使いのブラウザは、コードのハイライト表示に対応していません。無効にして編集しますか？',
-	'[_1] View' => '[_1]表示',
-
-## plugins/SmartphoneOption/lib/Smartphone/CMS/Entry.pm
-	'Re-Edit' => '再編集する',
-	'Re-Edit (e)' => '再編集する (e)',
-	'Rich Text(HTML mode)' => 'リッチテキスト(HTMLモード)',
-
-## plugins/SmartphoneOption/lib/Smartphone/CMS/Listing.pm
-	'All' => '全て',
-	'Filters which you created from PC.' => 'PCで作成したフィルタが表示されます',
-
-## plugins/SmartphoneOption/lib/Smartphone/CMS/Search.pm
-	'Search [_1]' => '[_1]の検索',
-
-## plugins/SmartphoneOption/smartphone.yaml
-	'to [_1]' => 'to [_1]',
-	'Smartphone Main' => 'Smartphone Main',
-	'Smartphone Sub' => 'Smartphone Sub',
-
-## plugins/SmartphoneOption/tmpl/cms/dialog/select_formatted_text.tmpl
-	'No boilerplate could be found.' => '定型文が見つかりません。',
-
 ## plugins/StyleCatcher/config.yaml
 	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcherを使うと、ウェブサイトやブログのスタイルを探して、数クリックで変更することができます。',
 	'MT 4 Style Library' => 'MT 4 スタイルライブラリ',
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Movable Type 4のデフォルトテンプレートと互換性のあるスタイルです。',
 	'Styles' => 'スタイル',
+	'Moving current style to blog_meta...' => '現在のスタイルの保存先を変更しています...',
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'mt-staticディレクトリが見つかりませんでした。StaticFilePathを設定してください。',
@@ -6655,48 +6662,6 @@ use vars qw( @ISA %Lexicon );
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager version 1.1; このプラグインは、古いバージョンのWidget ManagerのデータをMovable Typeのコアへ統合してアップグレードするために提供されています。アップグレード以外の機能はありません。最新のMovable Typeへアップグレードし終わった後は、このプラグインを削除してください。',
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
 
-## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードが使用されます。[_2]のHTTPステータスが返されました。',
-	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードはありません。[_2]のHTTPステータスが返されました。',
-
-## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
-	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' は[_2]の引数を必要とします',
-	'MT[_1] was not used in the proper context.' => 'MT[_1]を適切なコンテキスト外で使用しています。',
-
-## plugins/feeds-app-lite/mt-feeds.pl
-	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Liteからブログ上のフィードを更新（再構築）できます。Movable Typeでフィードをさらに活用するには<a href="http://code.appnel.com/feeds-app" target="_blank">Feeds.App</a>にアップグレードします。',
-	'Create a Feed Widget' => 'フィードウィジェットを作成',
-
-## plugins/feeds-app-lite/tmpl/config.tmpl
-	'Feeds.App Lite Widget Creator' => 'Feeds.App Lite ウィジェット作成ツール',
-	'Configure feed widget settings' => 'フィードウィジェットを設定する',
-	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Widgetのタイトルを入力してください。このタイトルは、公開されているブログでWidgetが使用されたときにもフィードのタイトルとして表示されます。',
-	'[_1] Feed Widget' => '[_1]フィードウィジェット',
-	'Select the maximum number of entries to display.' => '表示するブログ記事の最大数を選択します。',
-	'3' => '3',
-	'5' => '5',
-	'10' => '10',
-	'All' => 'すべて',
-
-## plugins/feeds-app-lite/tmpl/msg.tmpl
-	'No feeds could be discovered using [_1]' => '[_1]でフィードが見つかりませんでした。',
-	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{[_1]の実行中にエラーが発生しました。<a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">ここ</a>をクリックし、詳細を確認のうえ、再度実行してください。},
-	'A widget named <strong>[_1]</strong> has been created.' => 'フィードウィジェット「[_1]」を作成しました。',
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{<a href="javascript:void(0)" onclick="closeDialog('[_2]')">[_1]を編集</a>できます。また、<a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a>か以下のMTIncludeタグを使ってブログに挿入できます。},
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{<a href="javascript:void(0)" onclick="closeDialog('[_2]')">[_1]を編集</a>できます。また、以下のMTIncludeタグを使ってブログに挿入できます。},
-	'Create Another' => '続けて作成する',
-
-## plugins/feeds-app-lite/tmpl/select.tmpl
-	'Multiple feeds were found' => 'フィードが複数見つかりました。',
-	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => '利用するフィードを選択してください。<strong>Feeds.App Liteはテキストで構成されたRSS 1.0、RSS 2.0、Atomの各形式をサポートしています</strong>。',
-	'URI' => 'URI',
-
-## plugins/feeds-app-lite/tmpl/start.tmpl
-	'You must enter a feed or site URL to proceed' => 'フィードまたはサイトのURLを入力してください。',
-	'Create a widget from a feed' => 'フィードからウィジェットを作成する',
-	'Feed or Site URL' => 'フィードまたはサイトのURL',
-	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'フィードのURLを入力するか、フィードを配信しているサイトのURLを入力してください。',
-
 ## plugins/mixiComment/lib/mixiComment/App.pm
 	'mixi reported that you failed to login.  Try again.' => 'ログインに失敗しました。',
 
@@ -6784,5 +6749,7 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
+
+## New words: 190
 
 1;
