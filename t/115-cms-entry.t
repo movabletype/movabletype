@@ -69,8 +69,6 @@ my ( $app, $out );
 
 subtest 'Test in website scope' => sub {
     subtest 'Menu visibility check' => sub {
-        plan tests => 12;
-
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user => $admin,
@@ -87,6 +85,8 @@ subtest 'Test in website scope' => sub {
         $link = quotemeta $link;
         like( $out, qr/$link/,
             '"Entries New" menu in website scope exists if admin' );
+        my $fav_action_entry = 'fav-action-entry';
+        like( $out, qr/$fav_action_entry/, '"Entry" in compose menus exists if admin'  );
 
         $app = _run_app(
             'MT::App::CMS',
@@ -99,6 +99,7 @@ subtest 'Test in website scope' => sub {
         ok( $out, "Request: website dashboard" );
         like( $out, qr/$link/,
             '"Entries New" menu in website scope exists if permitted user' );
+        like( $out, qr/$fav_action_entry/, '"Entry" in compose menus exists if permitted user' );
 
         $app = _run_app(
             'MT::App::CMS',
@@ -112,6 +113,7 @@ subtest 'Test in website scope' => sub {
         unlike( $out, qr/$link/,
             '"Entries New" menu in website scope does not exist if other website'
         );
+        unlike( $out, qr/$fav_action_entry/, '"Entry" in compose menus exists if other website' );
 
         $app = _run_app(
             'MT::App::CMS',
@@ -125,6 +127,7 @@ subtest 'Test in website scope' => sub {
         unlike( $out, qr/$link/,
             '"Entries New" menu in website scope does not exist if child blog'
         );
+        unlike( $out, qr/$fav_action_entry/, '"Entry" in compose menus exists if child blog' );
 
         $app = _run_app(
             'MT::App::CMS',
@@ -138,6 +141,7 @@ subtest 'Test in website scope' => sub {
         unlike( $out, qr/$link/,
             '"Entries New" menu in website scope does not exist if other blog'
         );
+        unlike( $out, qr/$fav_action_entry/, '"Entry" in compose menus exists if other blog' );
 
         $app = _run_app(
             'MT::App::CMS',
@@ -151,6 +155,7 @@ subtest 'Test in website scope' => sub {
         unlike( $out, qr/$link/,
             '"Entries New" menu in website scope does not exist if other permission'
         );
+        unlike( $out, qr/$fav_action_entry/, '"Entry" in compose menus exists if other permission' );
 
         done_testing();
     };
