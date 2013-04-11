@@ -328,7 +328,8 @@ sub core_methods {
 sub core_widgets {
     my $app = shift;
     my $pkg = '$Core::MT::CMS::';
-    return {
+
+    my $core_widgets = {
         this_is_you => {
             label    => 'This is You',
             template => 'widget/this_is_you.tmpl',
@@ -344,15 +345,6 @@ sub core_widgets {
             singular => 1,
             set      => 'sidebar',
             view     => 'user',
-        },
-        blog_stats => {
-            label    => 'Blog Stats',
-            template => 'widget/blog_stats.tmpl',
-            handler  => "${pkg}Dashboard::mt_blog_stats_widget",
-            singular => 1,
-            set      => 'main',
-            view     => 'blog',
-            param    => { tab => 'entry' },
         },
         recent_websites => {
             label    => 'Websites',
@@ -380,6 +372,20 @@ sub core_widgets {
             param    => { tab => 'website' },
         },
     };
+
+    if ( $app->config('EnableBlogStats') ) {
+        $core_widgets->{'blog_stats'} = {
+            label    => 'Blog Stats',
+            template => 'widget/blog_stats.tmpl',
+            handler  => "${pkg}Dashboard::mt_blog_stats_widget",
+            singular => 1,
+            set      => 'main',
+            view     => 'blog',
+            param    => { tab => 'entry' },
+        };
+    }
+
+    return $core_widgets;
 }
 
 sub core_blog_stats_tabs {
