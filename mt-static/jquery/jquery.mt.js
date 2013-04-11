@@ -973,6 +973,34 @@ $.mtValidator('simple', {
         $error_block.find('label.msg-error').text(msg);
     }
 });
+$.mtValidator('simple2', {
+    wrapError: function ( $target, msg ) {
+        return $('<div />').append(
+            $('<label/>')
+                .attr('for', $target.attr('id') )
+                .addClass('validate-error msg-error')
+                .text(msg)
+            );
+    },
+    updateError: function( $target, $error_block, msg ) {
+        var id = $target.attr('id');
+        var $container = $target.parents().find('div.field-content').first().find('div.bind-err-block-'+id);
+        $container.find('label').text(msg);
+    },
+    showError: function( $target, $error_block ) {
+        var id = $target.attr('id');
+        var $container = $target.parents().find('div.field-content').first().find('div.bind-err-block-'+id);
+        $container.append($error_block);
+        $container.show();
+    },
+    removeError: function( $target, $error_block ) {
+        $error_block.remove();
+        var id = $target.attr('id');
+        var $container = $target.parents().find('div.field-content').first().find('div.bind-err-block-'+id);
+        $container.empty();
+        $container.hide();
+    }
+});
 $.mtValidator('default', {
     wrapError: function ( $target, msg ) {
         return $('<label style="position: absolute;" />')
