@@ -817,6 +817,18 @@ sub _build_favorite_websites_data {
         $data{$parent_id}->{blog_count} = $count;
     }
 
+    require MT::Entry;
+    my $iter = MT::Entry->count_group_by(
+        {   class   => 'entry',
+            blog_id => \@website_ids,
+            $param->{my_posts} ? ( author_id => $user->id ) : (),
+        },
+        { group => ['blog_id'], }
+    );
+    while ( my ( $count, $blog_id ) = $iter->() ) {
+        $data{$blog_id}->{entry_count} = $count;
+    }
+
     require MT::Page;
     my $entry_iter = MT::Page->count_group_by(
         {   class   => 'page',
@@ -883,18 +895,23 @@ sub _build_favorite_websites_data {
             = $website->theme
             ? $website->theme->thumbnail( size => 'small' )
             : MT::Theme->default_theme_thumbnail( size => 'small' );
-        $row->{website_blog_count} = $data{ $website->id }->{blog_count};
-        $row->{website_page_count} = $data{ $website->id }->{page_count};
+        $row->{website_blog_count}  = $data{ $website->id }->{blog_count};
+        $row->{website_entry_count} = $data{ $website->id }->{entry_count};
+        $row->{website_page_count}  = $data{ $website->id }->{page_count};
         $row->{website_comment_count}
             = $data{ $website->id }->{comment_count};
 
         my $perms = $user->permissions( $website->id );
+        $row->{can_access_to_entry_list} = 1
+            if ( $perms && $perms->can_do('access_to_entry_list') );
         $row->{can_access_to_template_list} = 1
             if ( $perms && $perms->can_do('access_to_template_list') );
         $row->{can_access_to_page_list} = 1
             if ( $perms && $perms->can_do('access_to_page_list') );
         $row->{can_access_to_blog_setting_screen} = 1
             if ( $perms && $perms->can_do('access_to_blog_config_screen') );
+        $row->{can_create_new_entry} = 1
+            if ( $perms && $perms->can_do('create_new_entry') );
         $row->{can_create_new_page} = 1
             if ( $perms && $perms->can_do('create_new_page') );
         $row->{can_apply_theme} = 1
