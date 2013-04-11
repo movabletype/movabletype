@@ -53,14 +53,17 @@ sub dashboard {
                 set   => 'main',
             },
         },
-        'blog' => {
+    };
+
+    if ( $app->config('EnableBlogStats') ) {
+        $default_widgets->{'blog'} = {
             'blog_stats' => {
                 param => { tab => 'entry' },
                 order => 1,
                 set   => 'main'
             },
-        },
-    };
+        };
+    }
 
     my $blog  = $app->blog;
     my $scope = $app->view;
