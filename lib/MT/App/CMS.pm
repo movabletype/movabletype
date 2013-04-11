@@ -1775,7 +1775,7 @@ sub core_menus {
             mode       => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'entry:category' => {
             label      => "Categories",
