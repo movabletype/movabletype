@@ -5356,6 +5356,7 @@ use vars qw( @ISA %Lexicon );
 	'Contents sync settings has been saved.' => 'サーバ配信の設定を保存しました。',
 	'An error occured while trying to connect to the FTP server. Check the settings and try again.' => 'FTPサーバに接続できませんでした。設定を見直してもう一度接続してください。',
 	'Enable contents synchronization' => 'サーバ配信を有効にする',
+	'Sync Settings' => 'サーバ配信の設定',
 	'Sync Date' => 'サーバ配信日時',
 	'Sync Now!' => '今すぐ配信',
 	'Recipient for Notification' => '配信結果の通知先メールアドレス',
@@ -5367,6 +5368,7 @@ use vars qw( @ISA %Lexicon );
 	'Enable SSL' => 'SSLで接続する',
 	'Start Directory' => '開始ディレクトリ',
 	'The sync date must be in the future.' => 'サーバ配信日時は、未来の日時を指定してください。',
+	'Invalid time.' => '無効な時刻指定です。',
 	'Do you want to synchronize the contents just now?' => 'いますぐ配信を実行しますか？',
 
 ## addons/Cloud.pack/tmpl/cfg_ftps_password.tmpl
@@ -6662,6 +6664,48 @@ use vars qw( @ISA %Lexicon );
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager version 1.1; このプラグインは、古いバージョンのWidget ManagerのデータをMovable Typeのコアへ統合してアップグレードするために提供されています。アップグレード以外の機能はありません。最新のMovable Typeへアップグレードし終わった後は、このプラグインを削除してください。',
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
 
+## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
+	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードが使用されます。[_2]のHTTPステータスが返されました。',
+	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードはありません。[_2]のHTTPステータスが返されました。',
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
+	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' は[_2]の引数を必要とします',
+	'MT[_1] was not used in the proper context.' => 'MT[_1]を適切なコンテキスト外で使用しています。',
+
+## plugins/feeds-app-lite/mt-feeds.pl
+	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Liteからブログ上のフィードを更新（再構築）できます。Movable Typeでフィードをさらに活用するには<a href="http://code.appnel.com/feeds-app" target="_blank">Feeds.App</a>にアップグレードします。',
+	'Create a Feed Widget' => 'フィードウィジェットを作成',
+
+## plugins/feeds-app-lite/tmpl/config.tmpl
+	'Feeds.App Lite Widget Creator' => 'Feeds.App Lite ウィジェット作成ツール',
+	'Configure feed widget settings' => 'フィードウィジェットを設定する',
+	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Widgetのタイトルを入力してください。このタイトルは、公開されているブログでWidgetが使用されたときにもフィードのタイトルとして表示されます。',
+	'[_1] Feed Widget' => '[_1]フィードウィジェット',
+	'Select the maximum number of entries to display.' => '表示するブログ記事の最大数を選択します。',
+	'3' => '3',
+	'5' => '5',
+	'10' => '10',
+	'All' => 'すべて',
+
+## plugins/feeds-app-lite/tmpl/msg.tmpl
+	'No feeds could be discovered using [_1]' => '[_1]でフィードが見つかりませんでした。',
+	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{[_1]の実行中にエラーが発生しました。<a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">ここ</a>をクリックし、詳細を確認のうえ、再度実行してください。},
+	'A widget named <strong>[_1]</strong> has been created.' => 'フィードウィジェット「[_1]」を作成しました。',
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{<a href="javascript:void(0)" onclick="closeDialog('[_2]')">[_1]を編集</a>できます。また、<a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a>か以下のMTIncludeタグを使ってブログに挿入できます。},
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{<a href="javascript:void(0)" onclick="closeDialog('[_2]')">[_1]を編集</a>できます。また、以下のMTIncludeタグを使ってブログに挿入できます。},
+	'Create Another' => '続けて作成する',
+
+## plugins/feeds-app-lite/tmpl/select.tmpl
+	'Multiple feeds were found' => 'フィードが複数見つかりました。',
+	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => '利用するフィードを選択してください。<strong>Feeds.App Liteはテキストで構成されたRSS 1.0、RSS 2.0、Atomの各形式をサポートしています</strong>。',
+	'URI' => 'URI',
+
+## plugins/feeds-app-lite/tmpl/start.tmpl
+	'You must enter a feed or site URL to proceed' => 'フィードまたはサイトのURLを入力してください。',
+	'Create a widget from a feed' => 'フィードからウィジェットを作成する',
+	'Feed or Site URL' => 'フィードまたはサイトのURL',
+	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'フィードのURLを入力するか、フィードを配信しているサイトのURLを入力してください。',
+
 ## plugins/mixiComment/lib/mixiComment/App.pm
 	'mixi reported that you failed to login.  Try again.' => 'ログインに失敗しました。',
 
@@ -6750,6 +6794,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 190
+## New words: 15
 
 1;
