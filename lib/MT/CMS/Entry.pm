@@ -27,7 +27,7 @@ sub edit {
         my $blog_class = $app->model('blog');
         my $blog       = $blog_class->load($blog_id);
         return $app->return_to_dashboard( redirect => 1 )
-            if ( !$blog || ( !$blog->is_blog && $type eq 'entry' ) );
+            if ( !$blog );
     }
 
     # to trigger autosave logic in main edit routine
