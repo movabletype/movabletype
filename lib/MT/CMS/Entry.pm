@@ -2308,8 +2308,7 @@ sub open_batch_editor {
     else {
         my $blogs = $blog->blogs;
         @blog_ids = map { $_->id } @$blogs;
-        push @blog_ids, $blog->id
-            if $type eq 'page';
+        push @blog_ids, $blog->id;
     }
 
     if ( !$app->user->is_superuser ) {

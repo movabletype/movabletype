@@ -733,13 +733,18 @@ sub list_props {
         },
         current_context => {
             base      => '__common.current_context',
-            condition => sub {0},
         },
     };
 }
 
 sub system_filters {
     return {
+        current_website => {
+            label => 'Entries in This Website',
+            items => [ { type => 'current_context' } ],
+            order => 50,
+            view  => 'website',
+        }, 
         published => {
             label => 'Published Entries',
             items => [ { type => 'status', args => { value => '2' }, }, ],

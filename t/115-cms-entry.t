@@ -43,9 +43,14 @@ my $egawa = MT::Test::Permission->make_author(
     nickname => 'Shiro Egawa',
 );
 
-my $ogawaa = MT::Test::Permission->make_author(
+my $ogawa = MT::Test::Permission->make_author(
     name     => 'ogawa',
     nickname => 'Goro Ogawa',
+);
+
+my $kagawa = MT::Test::Permission->make_author(
+    name => 'kagawa',
+    nickname => 'Ichiro Kagawa',
 );
 
 my $admin = MT->model('author')->load(1);
@@ -55,19 +60,53 @@ my $create_post = MT::Test::Permission->make_role(
     name        => 'Create Post',
     permissions => "'create_post'",
 );
+my $manage_pages = MT::Test::Permission->make_role(
+    name => 'Manage Pages',
+    permissions => "'manage_pages'",
+);
 
 my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 MT::Association->link( $aikawa, $create_post, $website );
+MT::Association->link( $ogawa, $designer, $website );
+MT::Association->link( $kagawa, $manage_pages, $website );
 MT::Association->link( $ukawa,  $create_post, $blog );
 
 MT::Association->link( $ichikawa, $create_post, $second_website );
 MT::Association->link( $egawa,    $create_post, $second_blog );
 
+# Entry
+my $website_entry = MT::Test::Permission->make_entry(
+    blog_id => $website->id,
+    author_id => $aikawa->id,
+    title => 'Website Entry by Aikawa',
+);
+my $blog_entry = MT::Test::Permission->make_entry(
+    blog_id => $blog->id,
+    author_id => $ukawa->id,
+    title => 'Child Blog Entry by Ukawa',
+);
+
+my $second_website_entry = MT::Test::Permission->make_entry(
+    blog_id => $second_website->id,
+    author_id => $ichikawa->id,
+    title => 'Other Website Entry by ichikawa',
+);
+
+# Page
+my $website_page = MT::Test::Permission->make_page(
+    blog_id => $website->id,
+    author_id => $kagawa->id,
+    title => 'Website Page by Kagawa',
+);
+
 # Run tests
 my ( $app, $out );
 
+diag 'Test in website scope';
 subtest 'Test in website scope' => sub {
+
+    diag 'Menu visibility check';
     subtest 'Menu visibility check' => sub {
         $app = _run_app(
             'MT::App::CMS',
@@ -156,6 +195,104 @@ subtest 'Test in website scope' => sub {
             '"Entries New" menu in website scope does not exist if other permission'
         );
         unlike( $out, qr/$fav_action_entry/, '"Entry" in compose menus exists if other permission' );
+
+        done_testing();
+    };
+
+    diag 'Entry Feed check';
+    subtest 'Entry Feed check' => sub {
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user => $admin,
+                __mode => 'list',
+                _type => 'entry',
+                blog_id => $website->id,
+            },
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, "Request: list" );
+
+        like( $out, qr/Entry Feed/, 'Entry Feed in website scope exists' );
+
+        done_testing();
+    };
+
+    diag 'System filter check';
+    subtest 'Built in filter check' => sub {
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user => $admin,
+                __mode => 'list',
+                _type => 'entry',
+                blog_id => $website->id,
+            },
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, "Request: list" );
+
+        like( $out, qr/Entries in This Website/, 'System filter "Entries in This Website" exists' );
+
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user => $admin,
+                __request_method => 'POST',
+                __mode => 'filtered_list',
+                datasource => 'entry',
+                blog_id => $website->id,
+                columns => 'title',
+                fid => '_allpass',
+            },
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, "Request: filtered_list" );
+
+        like( $out, qr/Website Entry by Aikawa/, 'Got an entry in website' );
+        like( $out, qr/Child Blog Entry by Ukawa/, 'Got an entry in child blog' );
+        unlike( $out, qr/Other Website Entry by ichikawa/, 'Did not get an entry in other website' );
+        unlike( $out, qr/Website Page by Kagawa/, 'Did not get an page' );
+
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user => $admin,
+                __request_method => 'POST',
+                __mode => 'filtered_list',
+                datasource => 'entry',
+                blog_id => $website->id,
+                columns => 'title',
+                fid => 'current_website',
+                items => "[{\"type\":\"current_context\",\"args\":{\"value\":\"\",\"label\":\"\"}}]",
+            },
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, "Request: filtered_list" );
+
+        like( $out, qr/Website Entry by Aikawa/, 'Got an entry in website' );
+        unlike( $out, qr/Child Blog Entry by Ukawa/, 'Did not get an entry in child blog' );
+        unlike( $out, qr/Other Website Entry by ichikawa/, 'Did not get an entry in other website' );
+        unlike( $out, qr/Website Page by Kagawa/, 'Did not get an page' );
+
+        done_testing();
+    };
+
+    diag 'Batch edit entries check';
+    subtest 'Batch edit entries check' => sub {
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user => $admin,
+                __request_method => 'POST',
+                __mode => 'itemset_action',
+                _type => 'entry',
+                blog_id => $website->id,
+                action_name => 'open_batch_editor',
+                plugin_action_selector => 'open_batch_editor',
+                id => [ $website_entry->id, $blog_entry->id ],
+            },
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, "Request: open_batch_editor" );
+
+        like( $out, qr/Website Entry by Aikawa/, "Has an entry in website" );
+        like( $out, qr/Child Blog Entry by Ukawa/, "Has an entry in child blog" );
 
         done_testing();
     };

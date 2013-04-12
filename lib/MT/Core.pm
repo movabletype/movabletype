@@ -1163,7 +1163,6 @@ BEGIN {
                 permission       => "access_to_entry_list",
                 feed_link        => sub {
                     my ($app) = @_;
-                    return 0 if $app->blog && !$app->blog->is_blog;
                     return 1 if $app->user->is_superuser;
 
                     if ( $app->blog ) {
