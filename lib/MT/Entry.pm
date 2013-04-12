@@ -321,7 +321,7 @@ sub list_props {
             base            => '__virtual.integer',
             filter_editable => 0,
             col_class       => 'string',
-            view_filter     => 'blog',
+            view_filter     => [ 'website', 'blog' ],
             category_class  => 'category',
             terms           => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
@@ -336,14 +336,15 @@ sub list_props {
                 ) unless $cat_id;
 
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('placement')->join_on(
                     undef,
                     {   category_id => $cat_id,
                         entry_id    => \'= entry_id',
                         blog_id     => $blog_id,
                     },
                     { unique => 1, },
-                );
+                    );
                 return;
             },
             args_via_param => sub {
@@ -388,7 +389,7 @@ sub list_props {
             display          => 'default',
             base             => '__virtual.string',
             col_class        => 'string',
-            view_filter      => 'blog',
+            view_filter      => [ 'website', 'blog' ],
             category_class   => 'category',
             zero_state_label => '-',
             bulk_cats        => sub {
@@ -496,7 +497,8 @@ sub list_props {
                 elsif ( 'end' eq $option ) {
                     $query = { like => "%$query" };
                 }
-                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('placement')->join_on(
                     undef,
                     {   entry_id => \'= entry_id',
                         blog_id  => $blog_id,
@@ -511,7 +513,7 @@ sub list_props {
                             { unique => 1, }
                         ),
                     },
-                );
+                    );
                 return;
             },
         },
@@ -633,8 +635,8 @@ sub list_props {
                 my $from   = $args->{from}   || undef;
                 my $to     = $args->{to}     || undef;
                 my $origin = $args->{origin} || undef;
-                $from   =~ s/\D//g;
-                $to     =~ s/\D//g;
+                $from =~ s/\D//g;
+                $to =~ s/\D//g;
                 $origin =~ s/\D//g;
                 $from .= '000000' if $from;
                 $to   .= '235959' if $to;
@@ -722,18 +724,17 @@ sub list_props {
                         ? MT::Author::ACTIVE()
                         : MT::Author::INACTIVE();
                     $db_args->{joins} ||= [];
-                    push @{ $db_args->{joins} }, MT->model('author')->join_on(
+                    push @{ $db_args->{joins} },
+                        MT->model('author')->join_on(
                         undef,
                         {   id     => \'= entry_author_id',
                             status => $status,
                         },
-                    );
+                        );
                 }
             },
         },
-        current_context => {
-            base      => '__common.current_context',
-        },
+        current_context => { base => '__common.current_context', },
     };
 }
 
@@ -744,7 +745,7 @@ sub system_filters {
             items => [ { type => 'current_context' } ],
             order => 50,
             view  => 'website',
-        }, 
+        },
         published => {
             label => 'Published Entries',
             items => [ { type => 'status', args => { value => '2' }, }, ],
