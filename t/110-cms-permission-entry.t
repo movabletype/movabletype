@@ -2594,7 +2594,7 @@ subtest 'action = set_draft (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: set_draft" );
-    ok( $out =~ m!not implemented!i, "set_draft by child blog" );
+    ok( $out !~ m!not implemented!i, "set_draft by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2912,7 +2912,7 @@ subtest 'action = add_tags (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_tags" );
-    ok( $out =~ m!not implemented!i, "add_tags by child blog" );
+    ok( $out !~ m!not implemented!i, "add_tags by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3230,7 +3230,7 @@ subtest 'action = remove_tags (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: remove_tags" );
-    ok( $out =~ m!not implemented!i, "remove_tags by child blog" );
+    ok( $out !~ m!not implemented!i, "remove_tags by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3472,7 +3472,7 @@ subtest 'action = open_batch_editor (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: open_batch_editor" );
-    ok( $out =~ m!not implemented!i, "open_batch_editor by child blog" );
+    ok( $out !~ m!not implemented!i, "open_batch_editor by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',
