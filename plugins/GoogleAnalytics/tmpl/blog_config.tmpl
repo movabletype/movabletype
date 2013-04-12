@@ -1,0 +1,70 @@
+<mtapp:setting
+   id="ga_profile_name"
+   label="<__trans phrase="The name of the profile" />"
+   show_hint="0">
+   <input type="text" id="ga_profile_name" name="profile_name" readonly="readonly" value="<mt:Var name="profile_name" encode_html="1" />" />
+</mtapp:setting>
+
+<mtapp:setting
+   id="ga_profile_web_property_id"
+   label="<__trans phrase="The web property ID of the profile" />"
+   show_hint="0">
+    <input type="text" id="ga_profile_web_property_id" name="profile_web_property_id" readonly="readonly" value="<mt:Var name="profile_web_property_id" encode_html="1" />" />
+</mtapp:setting>
+
+<input type="hidden" id="ga_profile_id" name="profile_id" value="<mt:Var name="profile_id" encode_html="1" />" />
+
+<mtapp:setting
+   id="ga_select_profile"
+   label=""
+   show_hint="0">
+    <a href="#" id="ga_select_profile"><__trans phrase="Associate the profile" /></a>
+</mtapp:setting>
+<script type="text/javascript">
+jQuery(function($) {
+    $('#ga_select_profile').click(function() {
+        var url = '<mt:Var name="authorize_url" encode_js="1" />'
+            .replace('__client_id__', $('#ga_client_id').val());
+        window.open(
+            url, 'google_analytics_authorize',
+            'width=700, height=500, menubar=no, toolbar=no, scrollbars=yes'
+        );
+
+        $.fn.mtDialog.close();
+        $.fn.mtDialog.open(
+            '<mt:Var name="dialog_url" encode_js="1" />' +
+            '&client_id=' + $('#ga_client_id').val() +
+            '&client_secret=' + $('#ga_client_secret').val()
+        );
+
+        return false;
+    });
+});
+</script>
+
+
+<mtapp:setting
+   id="ga_show_oauth2"
+   label=""
+   show_hint="0">
+    <a href="#" onclick="return toggleAdvancedPrefs(event,'ga_oauth2')"><__trans phrase="Show Advanced Configuration Options" /></a>
+</mtapp:setting>
+
+<div id="ga_oauth2-advanced" class="setting-advanced">
+
+<mtapp:setting
+   id="ga_client_id"
+   label="<__trans phrase="The client ID of the OAuth2 application" />"
+   show_hint="0">
+    <input type="text" id="ga_client_id" name="client_id" value="<mt:Var name="client_id" encode_html="1" />" />
+</mtapp:setting>
+
+<mtapp:setting
+   id="client_secret"
+   label="<__trans phrase="The client secret of the OAuth2 application" />"
+   show_hint="0">
+    <input type="text" id="ga_client_secret" name="client_secret" value="<mt:Var name="client_secret" encode_html="1" />" />
+</mtapp:setting>
+
+</div>
+

@@ -1,0 +1,37 @@
+<mt:setvarblock name="page_title"><__trans phrase="Select profile" /></mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+
+<div class="modal_width" id="select-profile-dialog">
+
+<mt:include name="include/listing_panel.tmpl">
+
+</div>
+
+<script type="text/javascript">
+jQuery(function($) {
+    $('#profile-panel').removeClass('hidden');
+
+    dialog = new Dialog.MultiPanel('select-profile');
+    var blogPanel = new ListingPanel('profile', '');
+    dialog.setPanels([blogPanel]);
+    dialog.open({}, function() {
+        var $p = parent.jQuery;
+        var $radio = $('input[name="profile-cb"]:checked');
+        if ($radio.length) {
+            var $tr = $radio.closest('tr');
+            $p($p.find('#ga_profile_name')).val(
+                $.trim($tr.find('.panel-label').text())
+            );
+            $p($p.find('#ga_profile_web_property_id')).val(
+                $.trim($tr.find('.panel-description').text())
+            );
+            $p($p.find('#ga_profile_id')).val($radio.val());
+        }
+        $p.fn.mtDialog.close();
+    });
+});
+</script>
+<mt:include name="dialog/footer.tmpl">

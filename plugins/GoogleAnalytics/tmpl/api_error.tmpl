@@ -1,0 +1,37 @@
+<mt:setvarblock name="page_title"><__trans phrase="API error" /></mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+
+<mtapp:statusmsg
+   id="generic-error"
+   class="error"
+   can_close="0">
+  <mt:var name="error">
+</mtapp:statusmsg>
+
+<a href="#" id="retry_getting_code" class="hidden"><__trans phrase="Retry getting authorization code" /></a>
+
+<div class="actions-bar">
+  <button
+     type="submit"
+     accesskey="x"
+     class="action button mt-close-dialog"
+     title="<__trans phrase="Close (x)">">
+    <__trans phrase="Close">
+  </button>
+</div>
+
+<script type="text/javascript">
+jQuery(function($) {
+    var $select_profile = parent.jQuery.find('#ga_select_profile');
+    if ($select_profile.length) {
+        $select_profile = parent.jQuery($select_profile);
+        $('#retry_getting_code')
+            .removeClass('hidden')
+            .click(function() {
+                $select_profile.click();
+                return false;
+            });
+    }
+});
+</script>
+<mt:include name="dialog/footer.tmpl">

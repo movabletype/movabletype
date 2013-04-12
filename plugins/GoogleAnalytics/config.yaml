@@ -1,0 +1,35 @@
+id: GoogleAnalytics
+name: GoogleAnalytics
+version: 1.00
+author_link: http://www.movabletype.org/
+author_name: Six Apart, Ltd.
+description: <MT_TRANS phrase="Associate the account of Google Analytics to the blog">
+l10n_class: GoogleAnalytics::L10N
+
+blog_config_template:
+    code: $GoogleAnalytics::GoogleAnalytics::App::blog_config_tmpl
+
+settings:
+    client_id:
+        default: "276991769060.apps.googleusercontent.com"
+    client_secret:
+        default: "VD9jHSXXoyabXTOGWBEKj-e_"
+    profile_name:
+    profile_web_property_id:
+    profile_id:
+    token_data:
+
+applications:
+    cms:
+        methods:
+            ga_input_code: $GoogleAnalytics::GoogleAnalytics::App::input_code
+            ga_select_profile: $GoogleAnalytics::GoogleAnalytics::App::select_profile
+
+callbacks:
+    MT::PluginData::pre_save:
+        handler: $GoogleAnalytics::GoogleAnalytics::OAuth2::plugin_data_pre_save
+
+stats_provider:
+    GoogleAnalytics:
+        ready_to_provide: $GoogleAnalytics::GoogleAnalytics::ready_to_provide
+        provider: $GoogleAnalytics::GoogleAnalytics::Provider
