@@ -31,5 +31,4 @@ callbacks:
 
 stats_provider:
     GoogleAnalytics:
-        ready_to_provide: $GoogleAnalytics::GoogleAnalytics::ready_to_provide
-        provider: $GoogleAnalytics::GoogleAnalytics::Provider
+        provider: GoogleAnalytics::Provider

@@ -20,18 +20,19 @@ sub plugin {
     MT->component('GoogleAnalytics');
 }
 
-sub _find_current_config_hash {
+sub _find_current_plugindata {
     my ( $app, $blog ) = @_;
 
     my @keys = ( 'configuration:blog:' . $blog->id );
     if ( $blog->parent_id ) {
         push @keys, 'configuration:blog:' . $blog->parent_id;
     }
+
     my @objs = $app->model('plugindata')->load(
-        {   plugin => plugin()->key,
+        {   plugin => plugin()->{name},
             key    => \@keys,
         }
-    ) or return 0;
+    ) or return undef;
 
     # Blog's config has a priority higher than website's config.
     @objs = reverse @objs
@@ -40,27 +41,28 @@ sub _find_current_config_hash {
     for my $o (@objs) {
         my $data = $o->data();
         if ( $data && $data->{profile_id} ) {
-            return $data;
+            return $o;
         }
     }
 
-    return 0;
+    return undef;
 }
 
-sub current_config_hash {
+sub current_plugindata {
     my ( $app, $blog ) = @_;
 
-    my $hash = $app->request('ga_current_config_hash');
+    my $hash = $app->request('ga_current_plugindata');
     defined($hash)
         ? $hash
-        : $app->request( 'ga_current_config_hash',
-        _find_current_config_hash(@_) );
+        : $app->request( 'ga_current_plugindata',
+        _find_current_plugindata(@_) );
 }
 
-sub ready_to_provide {
-    my ( $app, $blog ) = @_;
-
-    current_config_hash(@_) ? 1 : 0;
+sub extract_response_error {
+    my ($res) = @_;
+    $res->status_line,
+        MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) )
+        ->{error}{message};
 }
 
 1;

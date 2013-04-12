@@ -39,8 +39,12 @@ sub get_token {
     );
 
     return $app->error(
-        translate( 'Error getting token: [_1]', $res->status_line ) )
-        unless $res->is_success;
+        translate(
+            'Error getting token: [_1]: [_2]',
+            GoogleAnalytics::extract_response_error($res)
+        ),
+        500
+    ) unless $res->is_success;
 
     my $token_data = {
         start => time(),
@@ -49,6 +53,37 @@ sub get_token {
     };
 
     $app->session->set( 'ga_token_data', $token_data );
+
+    $token_data;
+}
+
+sub refresh_access_token {
+    my ( $app, $ua, $refresh_token, $client_id, $client_secret ) = @_;
+
+    my $res = $ua->request(
+        POST(
+            'https://accounts.google.com/o/oauth2/token',
+            {   refresh_token => $refresh_token,
+                client_id     => $client_id,
+                client_secret => $client_secret,
+                grant_type    => 'refresh_token',
+            }
+        )
+    );
+
+    return $app->error(
+        translate(
+            'Error refreshing access token: [_1]: [_2]',
+            GoogleAnalytics::extract_response_error($res)
+        ),
+        500
+    ) unless $res->is_success;
+
+    my $token_data = {
+        start => time(),
+        data =>
+            MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) ),
+    };
 
     $token_data;
 }
@@ -74,8 +109,12 @@ sub get_profiles {
         my $res = $ua->request( GET($uri) );
 
         return $app->error(
-            translate( 'Error getting profiles: [_1]', $res->status_line ) )
-            unless $res->is_success;
+            translate(
+                'Error getting profiles: [_1]: [_2]',
+                GoogleAnalytics::extract_response_error($res)
+            ),
+            500
+        ) unless $res->is_success;
 
         my $data
             = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
@@ -90,6 +129,34 @@ sub get_profiles {
     }
 
     \@list;
+}
+
+sub effective_token {
+    my ( $app, $plugindata ) = @_;
+
+    return undef unless $plugindata;
+
+    my $data       = $plugindata->data;
+    my $token_data = $data->{token_data};
+
+    if ( time() - $token_data->{start} > $token_data->{data}{expires_in} ) {
+        my $new_token_data = refresh_access_token(
+            $app, $app->new_ua,
+            $token_data->{data}{refresh_token},
+            @$data{qw(client_id client_secret)}
+        ) or return undef;
+
+        for my $k (qw(start)) {
+            $token_data->{$k} = $new_token_data->{$k};
+        }
+        for my $k ( keys %{ $new_token_data->{data} } ) {
+            $token_data->{data}{$k} = $new_token_data->{data}{$k};
+        }
+        $plugindata->data($data);
+        $plugindata->save;
+    }
+
+    $token_data->{data};
 }
 
 sub plugin_data_pre_save {

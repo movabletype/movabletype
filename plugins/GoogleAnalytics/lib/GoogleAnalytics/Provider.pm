@@ -1,0 +1,174 @@
+package GoogleAnalytics::Provider;
+
+use strict;
+use warnings;
+
+use base qw(MT::Stats::Provider);
+
+use HTTP::Request::Common;
+use GoogleAnalytics;
+
+sub is_ready {
+    my $class = shift;
+    my ( $app, $blog ) = @_;
+    GoogleAnalytics::current_plugindata(@_) ? 1 : 0;
+}
+
+sub _name {
+    my %aliases = qw(
+        pagepath path
+        pagetitle title
+    );
+
+    ( my $n = lc( $_[0] ) ) =~ s/\Aga://;
+    $aliases{$n} || $n;
+}
+
+sub _normalize_date {
+    my ($str) = @_;
+    if ($str =~ m/(\d+)\D+(\d+)\D+(\d+)/) {
+        sprintf('%04d-%02d-%02d', $1, $2, $3);
+    }
+    else {
+        $str;
+    }
+}
+
+sub _extract_default_params {
+    my ($params) = @_;
+
+    (   'start-date' => _normalize_date($params->{start_date}),
+        'end-date' => _normalize_date($params->{end_date}),
+        'start-index' => ( $params->{offset} || 0 ) + 1,
+        (   defined( $params->{limit} )
+            ? ( 'max-results' => $params->{limit} )
+            : ()
+        ),
+        (   $params->{path}
+            ? ( filters => 'ga:pagePath=~' . $params->{path} )
+            : ()
+        ),
+    );
+}
+
+sub _request {
+    my $self = shift;
+    my ( $app, $params, $retry_count ) = @_;
+
+    require GoogleAnalytics::OAuth2;
+    my $plugindata = GoogleAnalytics::current_plugindata( $app, $self->blog );
+    my $token = GoogleAnalytics::OAuth2::effective_token( $app, $plugindata )
+        or return;
+
+    my $config = $plugindata->data;
+    $params->{ids} = 'ga:' . $config->{profile_id};
+
+    my $uri = URI->new('https://www.googleapis.com/analytics/v3/data/ga');
+    $uri->query_form($params);
+
+    my $ua  = $app->new_ua;
+    my $res = $ua->request(
+        GET($uri,
+            Authorization => "$token->{token_type} $token->{access_token}"
+        )
+    );
+
+    if ($res->code == 401 && ! $retry_count) {
+        return $self->_request(@_ ,1);
+    }
+
+    return $app->error(
+        translate(
+            'Error retrieving stats: [_1]: [_2]',
+            GoogleAnalytics::extract_response_error($res)
+        ),
+        500
+    ) unless $res->is_success;
+
+    my $data
+        = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+
+    my @headers = map { _name( $_->{name} ) } @{ $data->{columnHeaders} };
+    my $date_index = undef;
+    for ( my $i = 0; $i <= $#headers; $i++ ) {
+        if ( $headers[$i] eq 'date' ) {
+            $date_index = $i;
+            last;
+        }
+    }
+
+    +{  totalResults => $data->{totalResults},
+        totals       => {
+            map { _name($_) => $data->{totalsForAllResults}{$_} }
+                keys %{ $data->{totalsForAllResults} }
+        },
+        items => [
+            map {
+                my @row = @$_;
+                if ( defined($date_index) ) {
+                    $row[$date_index] =~ s/(\d{4})(\d{2})/$1-$2-/;
+                }
+                +{ map { $headers[$_] => $row[$_], } ( 0 .. $#headers ) }
+            } @{ $data->{rows} }
+        ],
+        ( $MT::DebugMode ? ( debug => { query => $params, rawData => $data }, ) : () )
+    };
+}
+
+sub pageviews_for_path {
+    my $self = shift;
+    my ( $app, $params ) = @_;
+
+    $self->_request(
+        $app,
+        {   dimensions => 'ga:pagePath,ga:pageTitle',
+            metrics    => 'ga:Pageviews',
+            sort       => '-ga:Pageviews',
+            _extract_default_params($params),
+        }
+    );
+}
+
+sub visits_for_path {
+    my $self = shift;
+    my ( $app, $params ) = @_;
+
+    $self->_request(
+        $app,
+        {   dimensions => 'ga:pagePath,ga:pageTitle',
+            metrics    => 'ga:visits',
+            sort       => '-ga:visits',
+            _extract_default_params($params),
+        }
+    );
+}
+
+sub pageviews_for_date {
+    my $self = shift;
+    my ( $app, $params ) = @_;
+
+    $self->_request(
+        $app,
+        {   dimensions => 'ga:date',
+            metrics    => 'ga:Pageviews',
+            sort       => 'ga:date',
+            _extract_default_params($params),
+        }
+    );
+}
+
+sub visits_for_date {
+    my $self = shift;
+    my ( $app, $params ) = @_;
+
+    $self->_request(
+        $app,
+        {   dimensions => 'ga:date',
+            metrics    => 'ga:visits',
+            sort       => 'ga:date',
+            _extract_default_params($params),
+        }
+    );
+}
+
+1;

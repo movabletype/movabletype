@@ -117,7 +117,7 @@ sub core_endpoints {
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested entry.',
-            }
+            },
         },
         {   id        => 'update_entry',
             route     => '/sites/:site_id/entries/:entry_id',
@@ -127,7 +127,7 @@ sub core_endpoints {
             handler   => "${pkg}Entry::update",
             param => { save_revision => 1, },
             error_codes =>
-                { 403 => 'Do not have permission to update an entry.', }
+                { 403 => 'Do not have permission to update an entry.', },
         },
         {   id      => 'delete_entry',
             route   => '/sites/:site_id/entries/:entry_id',
@@ -135,7 +135,27 @@ sub core_endpoints {
             version => 1,
             handler => "${pkg}Entry::delete",
             error_codes =>
-                { 403 => 'Do not have permission to delete an entry.', }
+                { 403 => 'Do not have permission to delete an entry.', },
+        },
+        {   id      => 'stats_pageviews_for_path',
+            route   => '/sites/:site_id/stats/path/pageviews',
+            version => 1,
+            handler => "${pkg}Stats::pageviews_for_path",
+        },
+        {   id      => 'stats_visits_for_path',
+            route   => '/sites/:site_id/stats/path/visits',
+            version => 1,
+            handler => "${pkg}Stats::visits_for_path",
+        },
+        {   id      => 'stats_pageviews_for_date',
+            route   => '/sites/:site_id/stats/date/pageviews',
+            version => 1,
+            handler => "${pkg}Stats::pageviews_for_date",
+        },
+        {   id      => 'stats_visits_for_date',
+            route   => '/sites/:site_id/stats/date/visits',
+            version => 1,
+            handler => "${pkg}Stats::visits_for_date",
         },
     ];
 }

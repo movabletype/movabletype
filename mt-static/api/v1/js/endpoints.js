@@ -124,5 +124,45 @@ window.MT.API.prototype.deleteEntry = function(site_id, entry_id) {
     ].concat(args));
 }
 
+window.MT.API.prototype.statsPageviewsForPath = function(site_id) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/stats/path/pageviews', {
+            site_id: site_id
+        })
+    ].concat(args));
+}
+
+window.MT.API.prototype.statsVisitsForPath = function(site_id) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/stats/path/visits', {
+            site_id: site_id
+        })
+    ].concat(args));
+}
+
+window.MT.API.prototype.statsPageviewsForDate = function(site_id) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/stats/date/pageviews', {
+            site_id: site_id
+        })
+    ].concat(args));
+}
+
+window.MT.API.prototype.statsVisitsForDate = function(site_id) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/stats/date/visits', {
+            site_id: site_id
+        })
+    ].concat(args));
+}
+
 
 })(window);

@@ -115,12 +115,15 @@ API.prototype = {
                 str += '&';
             }
             
-            var v;
-            if (typeof params[k] === 'object') {
-                v = JSON.stringify(params[k]);
+            var v = params[k];
+            if (v instanceof Date) {
+                v = v.getFullYear() + '-' + ( v.getMonth() + 1 ) + '-' + v.getDate() +
+                    (k.match(/date/i)
+                        ? ''
+                        : (' ' + v.getHours() + ':' + v.getMinutes() + ':' + v.getSeconds()));
             }
-            else {
-                v = params[k];
+            else if (typeof params[k] === 'object') {
+                v = JSON.stringify(params[k]);
             }
             str += encodeURIComponent(k) + '=' + encodeURIComponent(v);
         }
