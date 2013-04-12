@@ -225,8 +225,8 @@ subtest 'Test in website scope' => sub {
         done_testing();
     };
 
-    diag 'Entry Feed check';
-    subtest 'Entry Feed check' => sub {
+    diag 'Entry listing screen visibility check';
+    subtest 'Entry listing screen visibility check' => sub {
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user => $admin,
@@ -239,6 +239,10 @@ subtest 'Test in website scope' => sub {
         ok( $out, "Request: list" );
 
         like( $out, qr/Entry Feed/, 'Entry Feed in website scope exists' );
+        my $column
+            = quotemeta( '<span class="col-label">Website/Blog Name</span>' );
+        $column = qr/$column/;
+        like( $out, $column, '"Website/Blog Name" column exists' );
 
         done_testing();
     };
