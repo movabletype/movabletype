@@ -60,9 +60,14 @@ sub current_plugindata {
 
 sub extract_response_error {
     my ($res) = @_;
-    $res->status_line,
-        MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) )
-        ->{error}{message};
+
+    my $message
+        = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+    if ( ref $message ) {
+        $message = $message->{error}{message};
+    }
+
+    $res->status_line, $message;
 }
 
 1;

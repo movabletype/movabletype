@@ -99,7 +99,8 @@ sub token {
     my ($app) = @_;
 
     my $session = do {
-        if ( my $header = $app->mt_authorization_header ) {
+        my $header = $app->mt_authorization_header;
+        if ($header && $header->{MTAuth}{session_id}) {
             MT::Session->load(
                 {   id => $header->{MTAuth}{session_id} || '',
                     kind => $app->session_kind,
