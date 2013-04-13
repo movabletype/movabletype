@@ -655,5 +655,6 @@
 { "r" : "1", "t" : "<MTSetVar name=\"foo\" value=\"0\"><MTSetVar name=\"bar\" value=\"0\"><MTIf name=\"foo\">1<MTElse><MTIf name=\"bar\">2<MTElse>3</MTIf></MTIf>", "e" : "3" }, #639
 { "r" : "1", "t" : "<MTIf name='foo'>1<MTElse><MTIf name='bar'>2<MTElse>3</MTElse></MTIf></MTElse></MTIf>", "e" : "3" }, #640
 { "r" : "1", "t" : "<MTIf name='foo'>1<MTElse><MTIf name='bar'>2<MTElse>3</MTIf></MTElse></MTIf>", "e" : "3" }, #641
-{ "r" : "1", "t" : "<MTIf name='foo'>1<MTElse><MTIf name='bar'>2<MTElse>3</MTElse></MTIf></MTIf>", "e" : "3" } #642
+{ "r" : "1", "t" : "<MTIf name='foo'>1<MTElse><MTIf name='bar'>2<MTElse>3</MTElse></MTIf></MTIf>", "e" : "3" }, #642
+{ "r" : "1", "t" : "<MTEntries category=\"fooooooooo\"><MTEntryTitle></MTEntries>", "e" : ""} #643
 ]
