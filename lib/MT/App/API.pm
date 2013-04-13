@@ -308,9 +308,9 @@ sub find_endpoint_by_path {
 
     my $endpoints = $app->endpoints($version)->{tree};
 
-    my $handler = $endpoints;
-    my %params  = ();
-    my @vars    = ();
+    my $handler         = $endpoints;
+    my @vars            = ();
+    my $implicit_format = '';
 
     $path =~ s#^/+##;
     my @paths = split m#(?=/|\.)|(?<=/|\.)#o, $path;
@@ -323,16 +323,21 @@ sub find_endpoint_by_path {
             push @vars, $p;
         }
         elsif ( $p eq '.' && scalar(@paths) == 1 ) {
-            $params{format} = $paths[0];
+            $implicit_format = shift @paths;
+        }
+        else {
+            return;
         }
     }
 
     my $e = $handler->{':e'}{$method}
         or return;
 
+    my %params = ();
     for ( my $i = 0; $i < scalar( @{ $e->{_vars} } ); $i++ ) {
         $params{ $e->{_vars}[$i] } = $vars[$i];
     }
+    $params{format} = $implicit_format if $implicit_format && !$e->{format};
 
     $e, \%params;
 }
