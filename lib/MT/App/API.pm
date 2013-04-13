@@ -304,6 +304,7 @@ sub endpoint_url {
 
 sub find_endpoint_by_path {
     my ( $app, $method, $version, $path ) = @_;
+    $method = lc($method);
 
     my $endpoints = $app->endpoints($version)->{tree};
 
