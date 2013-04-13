@@ -4278,17 +4278,16 @@ B<Example:> Passing Parameters to a Template Module
         # Try to read from cache
         my $enc               = MT->config->PublishCharset;
         my $cache_expire_type = 0;
-        my $cache_enabled 
-            = $blog
-            && $blog->include_cache
-            && (
-               ( $arg->{cache} && $arg->{cache} > 0 )
+        my $cache_enabled     = 0;
+
+        if ( $blog && $blog->include_cache ) {
+            $cache_expire_type = $tmpl->cache_expire_type || 0;
+            $cache_enabled = ( ( $arg->{cache} && $arg->{cache} > 0 )
             || $arg->{cache_key}
             || $arg->{key}
             || ( exists $arg->{ttl} )
-            || ( ( $cache_expire_type = ( $tmpl->cache_expire_type || 0 ) )
-                != 0 )
-            ) ? 1 : 0;
+            || ( $cache_expire_type != 0 ) ) ? 1 : 0;
+        }
         my $cache_key 
             = $arg->{cache_key}
             || $arg->{key}
