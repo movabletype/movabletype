@@ -759,12 +759,13 @@ sub system_filters {
             items => [ { type => 'status', args => { value => '4' }, }, ],
             order => 500,
         },
-        my_posts => {
+        my_posts_on_this_context => {
             label => 'My Entries',
             items => sub {
-                [ { type => 'current_user' } ],;
+                [ { type => 'current_user' }, { type => 'current_context' } ]
+                ,;
             },
-            order => 1000,
+            order => 500,
         },
         commented_in_last_7_days => {
             label => 'Entries with Comments Within the Last 7 Days',
