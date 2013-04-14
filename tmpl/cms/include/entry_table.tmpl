@@ -30,15 +30,7 @@
         <img src="<$mt:var name="static_uri"$>images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" />
       </th>
       <th class="col head title primary"><span class="col-label"><__trans phrase="Title"></span></th>
-      <mt:unless name="blog_view">
-        <mt:unless name="scope_type" eq="blog">
-          <mt:if name="object_type" eq="entry">
-      <th class="col head blog"><span class="col-label"><__trans phrase="Blog"></span></th>
-          <mt:else>
       <th class="col head blog"><span class="col-label"><__trans phrase="Website/Blog"></span></th>
-          </mt:if>
-        </mt:unless>
-      </mt:unless>
       <th class="col head category"><span class="col-label"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></span></th>
       <th class="col head author"><span class="col-label"><__trans phrase="Author"></span></th>
       <th class="col head datetime"><span class="col-label"><mt:if name="object_type" eq="page"><__trans phrase="Last Modified"><mt:else><__trans phrase="Created"></mt:if></span></th>
