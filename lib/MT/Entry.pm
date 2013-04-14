@@ -387,7 +387,7 @@ sub list_props {
             display          => 'default',
             base             => '__virtual.string',
             col_class        => 'string',
-            view_filter      => [ 'website', 'blog' ],
+            view_filter      => [ 'website', 'blog', 'system' ],
             category_class   => 'category',
             zero_state_label => '-',
             bulk_cats        => sub {
@@ -479,10 +479,18 @@ sub list_props {
             # },
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
-                my $blog_id = MT->app->blog->id;
-                my $app     = MT->instance;
-                my $option  = $args->{option};
-                my $query   = $args->{string};
+                my $blog = MT->app->blog;
+                my $blog_id
+                    = $blog
+                    ? $blog->is_blog
+                        ? MT->app->blog->id
+                        : [ MT->app->blog->id,
+                            map { $_->id } @{ $blog->blogs }
+                        ]
+                    : 0;
+                my $app    = MT->instance;
+                my $option = $args->{option};
+                my $query  = $args->{string};
                 if ( 'contains' eq $option ) {
                     $query = { like => "%$query%" };
                 }
@@ -499,14 +507,14 @@ sub list_props {
                     MT->model('placement')->join_on(
                     undef,
                     {   entry_id => \'= entry_id',
-                        blog_id  => $blog_id,
+                        ( $blog_id ? ( blog_id => $blog_id ) : () ),
                     },
                     {   unique => 1,
                         join   => MT->model( $prop->category_class )->join_on(
                             undef,
-                            {   label   => $query,
-                                id      => \'= placement_category_id',
-                                blog_id => $blog_id,
+                            {   label => $query,
+                                id    => \'= placement_category_id',
+                                ( $blog_id ? ( blog_id => $blog_id ) : () ),
                             },
                             { unique => 1, }
                         ),
