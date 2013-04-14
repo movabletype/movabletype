@@ -110,9 +110,6 @@ sub do_import {
         )
         );
 
-    return $app->return_to_dashboard( redirect => 1 )
-        if !$blog->is_blog;
-
     if ( 'POST' ne $app->request_method ) {
         return $app->redirect(
             $app->uri(
