@@ -19,7 +19,7 @@ sub start_import {
 
     my $blog = $app->model('blog')->load($blog_id);
     return $app->return_to_dashboard( redirect => 1 )
-        if !$blog || ( $blog && !$blog->is_blog );
+        if !$blog;
 
     my %param;
 

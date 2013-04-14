@@ -2183,14 +2183,14 @@ sub core_menus {
             order      => 400,
             mode       => "start_import",
             permission => "administer_blog",
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'tools:export' => {
             label      => "Export Entries",
             order      => 500,
             mode       => "start_export",
             permission => "administer_blog",
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'tools:themeexport' => {
             label         => "Export Theme",
