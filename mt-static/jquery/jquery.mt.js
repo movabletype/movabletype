@@ -906,7 +906,6 @@ $.extend( $.mtValidator.prototype, {
         return !validator.error;
     },
     raise: function (msg) {
-console.debug(msg);
         this.error  = true;
         this.errstr = msg || trans('Invalid value');
         return false;
@@ -1018,8 +1017,10 @@ $.mtValidator('simple2', {
             var $this = $(this);
             if ( $this.text() === msg ) ins = false;
         });
-        if ( ins )
+        if ( ins ) {
             $error_block.find('label').text(msg);
+            this.showError( $target, $error_block );
+        }
     }
 });
 $.mtValidator('default', {
