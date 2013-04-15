@@ -1003,6 +1003,19 @@ sub all_text {
     $text;
 }
 
+sub permalink {
+    my $self = shift;
+
+    my $id    = $self->id;
+    my $entry = $self->entry;
+    if ( $id && $entry ) {
+        $entry->archive_url . '#comment-' . $id;
+    }
+    else {
+        '#';
+    }
+}
+
 sub is_published {
     return $_[0]->visible && !$_[0]->is_junk;
 }
