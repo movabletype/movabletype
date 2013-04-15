@@ -51,6 +51,8 @@ themes/broken_blog_theme
 #?package=MT ^mt-hb.cgi
 #?package=MT ^mt-static/addons/Cloud.pack
 #?package=MT ^VERSIONS
+#?package=MT ^lib/MT/FileMgr/FTP.pm
+#?package=MT ^lib/MT/FileMgr/FTPS.pm
 
 #?package=MTOS ^addons
 #?package=MTOS ^mt-cp.cgi
@@ -74,6 +76,8 @@ themes/broken_blog_theme
 #?package=MTOS ^addons/Cloud.pack
 #?package=MTOS ^mt-hb.cgi
 #?package=MTOS ^VERSIONS
+#?package=MTOS ^lib/MT/FileMgr/FTP.pm
+#?package=MTOS ^lib/MT/FileMgr/FTPS.pm
 
 #?package=MTCOM ^COPYING
 #?package=MTCOM ^COPYRIGHT
@@ -99,6 +103,8 @@ themes/broken_blog_theme
 #?package=MTCOM ^mt-static/addons/Cloud.pack
 #?package=MTCOM ^mt-hb.cgi
 #?package=MTCOM ^VERSIONS
+#?package=MTCOM ^lib/MT/FileMgr/FTP.pm
+#?package=MTCOM ^lib/MT/FileMgr/FTPS.pm
 
 #?package=MTA ^COPYING
 #?package=MTA ^COPYRIGHT
@@ -106,6 +112,8 @@ themes/broken_blog_theme
 #?package=MTA ^mt-static/addons/Cloud.pack
 #?package=MTA ^mt-hb.cgi
 #?package=MTA ^VERSIONS
+#?package=MTA ^lib/MT/FileMgr/FTP.pm
+#?package=MTA ^lib/MT/FileMgr/FTPS.pm
 
 #?package=MTCLOUD ^COPYING
 #?package=MTCLOUD ^COPYRIGHT
@@ -156,7 +164,6 @@ mt-add-notify.cgi
 
 # Packages
 ^lib/MT/FileMgr/SFTP.pm$
-^lib/MT/FileMgr/FTP.pm$
 ^lib/MT/FileMgr/DAV.pm$
 ^extlib/share
 ^extlib/pkg

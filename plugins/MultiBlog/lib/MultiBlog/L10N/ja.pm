@@ -40,6 +40,7 @@ use vars qw( %Lexicon );
 	'publishes a TrackBack' => 'トラックバックの公開時',
 	'rebuild indexes.' => 'インデックスを再構築する',
 	'rebuild indexes and send pings.' => 'インデックスを再構築して更新pingを送信する',
+	'Updating trigger cache of MultiBlog...' => 'トリガーの設定を更新しています...',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => ' ',

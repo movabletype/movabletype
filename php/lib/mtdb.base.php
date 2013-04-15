@@ -833,7 +833,9 @@ abstract class MTDatabase {
             if (!preg_match('/\b(AND|OR|NOT)\b|\(|\)/i', $category_arg)) {
                 $not_clause = false;
                 $cats = cat_path_to_category($category_arg, $blog_ctx_arg, $cat_class);
-                if (!empty($cats)) {
+                if (empty($cats)) {
+                    return null;
+                } else {
                     $category_arg = '';
                     foreach ($cats as $cat) {
                         if ($category_arg != '')

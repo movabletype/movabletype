@@ -210,6 +210,21 @@ sub _hdlr_assets {
             my @tags = MT::Tag->split( ',', $tag_arg );
             $terms = { name => \@tags };
             $tag_arg = join " or ", @tags;
+
+            my $count = MT::Tag->count(
+                $terms,
+                {   ( $terms ? ( binary => { name => 1 } ) : () ),
+                    join => MT::ObjectTag->join_on(
+                        'tag_id',
+                        {   object_datasource => MT::Asset->datasource,
+                            %blog_terms,
+                        },
+                        { %blog_args, unique => 1 }
+                    ),
+                }
+            );
+            return $ctx->_hdlr_pass_tokens_else(@_)
+                unless $count;
         }
         my $tags = [
             MT::Tag->load(
