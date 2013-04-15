@@ -1115,6 +1115,26 @@ sub parent {
     );
 }
 
+sub status_text {
+    my $s = $_[0];
+          $s->is_published ? 'Approved'
+        : $s->is_moderated ? 'Pending'
+        :                    'Spam';
+}
+
+sub set_status_by_text {
+    my $s = lc $_[0];
+    if ($s eq 'approved') {
+        $s->approve;
+    }
+    elsif ($s eq 'pending') {
+        $s->moderate;
+    }
+    else {
+        $s->junk;
+    }
+}
+
 1;
 __END__
 
