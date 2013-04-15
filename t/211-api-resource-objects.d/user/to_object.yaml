@@ -1,0 +1,15 @@
+- 
+  note: Create an user
+  from: 
+    displayName: Test
+  to: 
+    nickname: Test
+- 
+  note: Update an user
+  original: 
+    id: 1
+  from: 
+    displayName: Test
+  to: 
+    id: 1
+    nickname: Test

@@ -1,0 +1,18 @@
+- 
+  note: An user
+  from: 
+    id: 1
+    nickname: Test
+    userpic_asset_id: 1
+  to: 
+    displayName: Test
+    id: 1
+    userpicURL: http://narnia.na/nana/assets_c/userpics/userpic-1-100x100.png
+- 
+  note: An user without userpic
+  from: 
+    id: 1
+    nickname: Test
+  to: 
+    displayName: Test
+    id: 1
