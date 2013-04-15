@@ -6,9 +6,6 @@ author_name: Six Apart, Ltd.
 description: <MT_TRANS phrase="Associate the account of Google Analytics to the blog">
 l10n_class: GoogleAnalytics::L10N
 
-blog_config_template:
-    code: $GoogleAnalytics::GoogleAnalytics::App::blog_config_tmpl
-
 settings:
     client_id:
         default: "276991769060.apps.googleusercontent.com"
@@ -24,11 +21,15 @@ applications:
         methods:
             ga_input_code: $GoogleAnalytics::GoogleAnalytics::App::input_code
             ga_select_profile: $GoogleAnalytics::GoogleAnalytics::App::select_profile
+            ga_select_profile_complete: $GoogleAnalytics::GoogleAnalytics::App::select_profile_complete
+        callbacks:
+            cms_pre_save.blog: $GoogleAnalytics::GoogleAnalytics::App::pre_save_blog
 
-callbacks:
-    MT::PluginData::pre_save:
-        handler: $GoogleAnalytics::GoogleAnalytics::OAuth2::plugin_data_pre_save
+web_services:
+    GoogleAnalytics:
+        config_template:
+            code: $GoogleAnalytics::GoogleAnalytics::App::config_tmpl
 
-stats_provider:
+stats_providers:
     GoogleAnalytics:
         provider: GoogleAnalytics::Provider

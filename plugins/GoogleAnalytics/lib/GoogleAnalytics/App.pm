@@ -15,18 +15,62 @@ use MT::Util;
 use GoogleAnalytics;
 use GoogleAnalytics::OAuth2;
 
-sub blog_config_tmpl {
-    my $app = MT->instance;
+sub config_tmpl {
+    my $app    = MT->instance;
+    my $plugin = plugin();
+    my $blog   = $app->blog
+        or return;
+    my $config = $plugin->get_config_hash( 'blog:' . $blog->id );
 
-    plugin()->load_tmpl(
-        'blog_config.tmpl',
+    $plugin->load_tmpl(
+        'web_service_config.tmpl',
         {   authorize_url => authorize_url( $app, '__client_id__' ),
             dialog_url    => $app->uri(
                 mode => 'ga_input_code',
                 args => { blog_id => $app->blog->id, },
             ),
+            map { ( "ga_$_" => $config->{$_} ) } keys(%$config),
         }
-    );
+    )->build;
+}
+
+sub pre_save_blog {
+    my $eh = shift;
+    my ( $app, $obj ) = @_;
+    my $plugin = plugin();
+
+    if (   !$app->param('overlay')
+        && ( $app->param('cfg_screen') || '' ) eq 'cfg_web_services'
+        && $app->can_do('edit_blog_config') )
+    {
+        my $scope  = 'blog:' . $obj->id;
+        my $config = $plugin->get_config_hash($scope);
+
+        for my $k (
+            qw(
+            client_id client_secret
+            profile_name profile_web_property_id profile_id
+            )
+            )
+        {
+            $config->{$k} = $app->param( 'ga_' . $k );
+        }
+
+        if ( $config->{profile_id}
+            && ( my $token = $app->session->get('ga_token_data') ) )
+        {
+            $config->{token_data} = $token;
+        }
+        elsif ( !$config->{profile_id} ) {
+            delete $config->{token_data};
+        }
+
+        $plugin->save_config( $config, $scope );
+
+        $app->session->set( 'ga_token_data', undef );
+    }
+
+    1;
 }
 
 sub _render_input_code {
@@ -84,9 +128,25 @@ sub select_profile {
                         description => $_->{webPropertyId},
                         }
                 } @$list
-            ]
+            ],
+            complete_url => $app->uri(
+                mode => 'ga_select_profile_complete',
+                args => { blog_id => $app->blog->id, },
+            ),
         }
     );
+}
+
+sub select_profile_complete {
+    my $app     = shift;
+    my $session = $app->session;
+
+    if ( my $token = $session->get('ga_token_data_tmp') ) {
+        $session->set( 'ga_token_data',     $token );
+        $session->set( 'ga_token_data_tmp', undef );
+    }
+
+    plugin()->load_tmpl('select_profile_complete.tmpl');
 }
 
 1;

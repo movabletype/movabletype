@@ -64,7 +64,10 @@ sub extract_response_error {
     my $message
         = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
     if ( ref $message ) {
-        $message = $message->{error}{message};
+        $message = $message->{error};
+    }
+    if ( ref $message ) {
+        $message = $message->{message};
     }
 
     $res->status_line, $message;

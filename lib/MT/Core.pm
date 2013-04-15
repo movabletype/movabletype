@@ -2082,9 +2082,11 @@ BEGIN {
                 default_format => 'json',
             },
         },
-        archive_types => \&load_archive_types,
-        tags          => \&load_core_tags,
-        text_filters  => {
+        web_services    => undef,
+        stats_providers => undef,
+        archive_types   => \&load_archive_types,
+        tags            => \&load_core_tags,
+        text_filters    => {
             '__default__' => {
                 label   => 'Convert Line Breaks',
                 handler => 'MT::Util::html_text_transform',

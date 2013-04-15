@@ -52,7 +52,7 @@ sub get_token {
             MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) ),
     };
 
-    $app->session->set( 'ga_token_data', $token_data );
+    $app->session->set( 'ga_token_data_tmp', $token_data );
 
     $token_data;
 }
@@ -163,27 +163,10 @@ sub plugin_data_pre_save {
     my ( $cb, $obj, $original ) = @_;
     my $app = MT->instance;
 
-    return 1
-        if !( $app->can('session')
-        && ( my $session = $app->session )
-        && $app->can('param')
+    # Should not save GoogleAnalytics's plugindata object at cfg_plugins
+    return 0
+        if ( $app->can('param')
         && lc( $app->param('plugin_sig') || '' ) eq plugin()->id );
-    return 1 unless $app->blog;
-
-    my $data = $obj->data;
-
-    if ( $data->{profile_id}
-        && ( my $token = $session->get('ga_token_data') ) )
-    {
-        $data->{token_data} = $token;
-        $obj->data($data);
-    }
-    else {
-        delete $data->{$_} for qw(profile_id profile_name token_data);
-        $obj->data($data);
-    }
-
-    $session->set( 'ga_token_data', undef );
 
     1;
 }

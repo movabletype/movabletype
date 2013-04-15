@@ -12,8 +12,8 @@ sub readied_provider {
     my ( $app, $blog ) = @_;
 
     if ( !%providers ) {
-        for my $k ( keys %{ $app->registry('stats_provider') } ) {
-            $providers{$k} = $app->registry( 'stats_provider', $k );
+        for my $k ( keys %{ $app->registry('stats_providers') } ) {
+            $providers{$k} = $app->registry( 'stats_providers', $k );
             eval "require $providers{$k}{provider};";
         }
     }

@@ -576,12 +576,35 @@ sub cfg_web_services {
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
+
+    my @config_templates = ();
+    my $web_services     = $app->registry('web_services');
+    for my $k (%$web_services) {
+        my $plugin  = $web_services->{$k}{plugin};
+        my $tmpl    = $web_services->{$k}{config_template}
+            or next;
+
+        if ( ref $tmpl eq 'HASH' ) {
+            $tmpl = MT->handler_to_coderef( $tmpl->{code} );
+        }
+
+        push @config_templates,
+            {
+            tmpl => (
+                  ref $tmpl eq 'CODE' ? $tmpl->( $plugin, @_ )
+                : $plugin             ? $plugin->load_tmpl($tmpl)
+                :                       $app->load_tmpl($tmpl)
+            )
+            };
+    }
+
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward(
         "view",
-        {   output       => 'cfg_web_services.tmpl',
-            screen_class => 'settings-screen web-services-settings'
+        {   output           => 'cfg_web_services.tmpl',
+            screen_class     => 'settings-screen web-services-settings',
+            config_templates => \@config_templates,
         }
     );
 }

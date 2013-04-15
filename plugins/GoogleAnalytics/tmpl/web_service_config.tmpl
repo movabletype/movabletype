@@ -1,24 +1,28 @@
+<h2><__trans phrase="Google Analytics"></h2>
+<mtapp:settinggroup id="google-analytics-settings">
+
 <mtapp:setting
    id="ga_profile_name"
    label="<__trans phrase="The name of the profile" />"
    show_hint="0">
-   <input type="text" id="ga_profile_name" name="profile_name" readonly="readonly" value="<mt:Var name="profile_name" encode_html="1" />" />
+   <input type="text" id="ga_profile_name" name="ga_profile_name" readonly="readonly" value="<mt:Var name="ga_profile_name" encode_html="1" />" />
 </mtapp:setting>
 
 <mtapp:setting
    id="ga_profile_web_property_id"
    label="<__trans phrase="The web property ID of the profile" />"
    show_hint="0">
-    <input type="text" id="ga_profile_web_property_id" name="profile_web_property_id" readonly="readonly" value="<mt:Var name="profile_web_property_id" encode_html="1" />" />
+    <input type="text" id="ga_profile_web_property_id" name="ga_profile_web_property_id" readonly="readonly" value="<mt:Var name="ga_profile_web_property_id" encode_html="1" />" />
 </mtapp:setting>
 
-<input type="hidden" id="ga_profile_id" name="profile_id" value="<mt:Var name="profile_id" encode_html="1" />" />
+<input type="hidden" id="ga_profile_id" name="ga_profile_id" value="<mt:Var name="ga_profile_id" encode_html="1" />" />
 
 <mtapp:setting
    id="ga_select_profile"
    label=""
    show_hint="0">
-    <a href="#" id="ga_select_profile"><__trans phrase="Associate the profile" /></a>
+    <a href="#" id="ga_select_profile"><__trans phrase="Associate profile" /></a>
+    <a href="#" id="ga_clear_profile"><__trans phrase="Clear profile" /></a>
 </mtapp:setting>
 <script type="text/javascript">
 jQuery(function($) {
@@ -39,6 +43,25 @@ jQuery(function($) {
 
         return false;
     });
+
+    function updateClearProfileAnchor() {
+        if ($('#ga_profile_id').val()) {
+            $('#ga_clear_profile').show();
+        }
+        else {
+            $('#ga_clear_profile').hide();
+        }
+    }
+    updateClearProfileAnchor();
+    $(window).on('dialogDisposed', function() {
+        updateClearProfileAnchor();
+    });
+
+    $('#ga_clear_profile').click(function() {
+        $('#ga_profile_name, #ga_profile_web_property_id, #ga_profile_id').val('');
+        updateClearProfileAnchor();
+        return false;
+    });
 });
 </script>
 
@@ -50,21 +73,22 @@ jQuery(function($) {
     <a href="#" onclick="return toggleAdvancedPrefs(event,'ga_oauth2')"><__trans phrase="Show Advanced Configuration Options" /></a>
 </mtapp:setting>
 
-<div id="ga_oauth2-advanced" class="setting-advanced">
+<div id="ga_oauth2-advanced" style="display: none">
 
 <mtapp:setting
    id="ga_client_id"
    label="<__trans phrase="The client ID of the OAuth2 application" />"
    show_hint="0">
-    <input type="text" id="ga_client_id" name="client_id" value="<mt:Var name="client_id" encode_html="1" />" />
+    <input type="text" id="ga_client_id" name="ga_client_id" value="<mt:Var name="ga_client_id" encode_html="1" />" />
 </mtapp:setting>
 
 <mtapp:setting
    id="client_secret"
    label="<__trans phrase="The client secret of the OAuth2 application" />"
    show_hint="0">
-    <input type="text" id="ga_client_secret" name="client_secret" value="<mt:Var name="client_secret" encode_html="1" />" />
+    <input type="text" id="ga_client_secret" name="ga_client_secret" value="<mt:Var name="ga_client_secret" encode_html="1" />" />
 </mtapp:setting>
 
 </div>
 
+</mtapp:settinggroup>
