@@ -13,7 +13,7 @@ use MT::API::Resource;
 use MT::App::CMS::Common;
 use MT::AccessToken;
 
-our ( %endpoints, %resources, %formats ) = ();
+our ( %endpoints, %formats ) = ();
 
 sub id {'api'}
 
@@ -158,34 +158,6 @@ sub core_endpoints {
             handler => "${pkg}Stats::visits_for_date",
         },
     ];
-}
-
-sub core_resources {
-    my $app = shift;
-    my $pkg = '$Core::MT::API::Resource::';
-    return {
-        'entry' => {
-            fields           => "${pkg}Entry::fields",
-            updatable_fields => "${pkg}Entry::updatable_fields",
-        },
-        'comment' => {
-            fields           => "${pkg}Comment::fields",
-            updatable_fields => "${pkg}Comment::updatable_fields",
-        },
-        'user' => {
-            fields           => "${pkg}User::fields",
-            updatable_fields => "${pkg}User::updatable_fields",
-        },
-        'author' => 'user',
-        'blog'   => {
-            fields           => "${pkg}Blog::fields",
-            updatable_fields => "${pkg}Blog::updatable_fields",
-        },
-        'website' => {
-            fields           => "${pkg}Website::fields",
-            updatable_fields => "${pkg}Website::updatable_fields",
-        },
-    };
 }
 
 sub core_formats {
@@ -417,56 +389,6 @@ sub _path {
     $path;
 }
 
-sub resource {
-    my ( $app, $key ) = @_;
-
-    if ( !%resources ) {
-        my $reg = $app->registry( 'applications', 'api', 'resources' );
-        %resources
-            = map { $_ => ref( $reg->{$_} ) ? +{} : $reg->{$_} } keys %$reg;
-    }
-
-    my $res;
-    my $resource_key;
-    for my $k (
-        ref $key
-        ? ( $key->class_type || '',
-            $key->datasource . '.' . ( $key->class_type || '' ),
-            $key->datasource
-        )
-        : ($key)
-        )
-    {
-
-        $resource_key = $k;
-        $res = $resources{$k} and last;
-    }
-
-    return unless $res;
-
-    if ( !ref $res ) {
-        $resources{$resource_key} = $res = $app->resource($res);
-    }
-
-    return unless $res;
-
-    if ( !$res->{fields} ) {
-        for my $k (qw(fields updatable_fields)) {
-            $res->{$k} = [
-                map {@$_} @{
-                    $app->registry(
-                        'applications', 'api',
-                        'resources',    $resource_key,
-                        $k
-                    )
-                }
-            ];
-        }
-    }
-
-    $res;
-}
-
 sub resource_object {
     my ( $app, $name, $original ) = @_;
 
@@ -476,7 +398,7 @@ sub resource_object {
     my $data = $app->current_format->{unserialize}->($data_text)
         or return undef;
 
-    MT::API::Resource->to_object( $app, $name, $data, $original );
+    MT::API::Resource->to_object( $name, $data, $original );
 }
 
 sub object_to_resource {
@@ -484,9 +406,7 @@ sub object_to_resource {
     my $ref = ref $res;
 
     if ( UNIVERSAL::isa( $res, 'MT::Object' ) ) {
-
-        # TODO if resource class is not found
-        MT::API::Resource->from_object( $app, $res, $fields );
+        MT::API::Resource->from_object( $res, $fields );
     }
     elsif ( $ref eq 'HASH' ) {
         my %result = ();
@@ -761,12 +681,12 @@ __END__
 
 =head1 NAME
 
-MT::App::CMS
+MT::App::API
 
 =head1 SYNOPSIS
 
-The I<MT::App::CMS> module is the primary application module for
-Movable Type. It is the administrative interface that is used to
+The I<MT::App::API> module is the application module for providing DATA API.
+This module provide the REST interface that is used to
 manage blogs, entries, comments, trackbacks, templates, etc.
 
 =cut

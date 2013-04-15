@@ -26,19 +26,19 @@ sub updatable_fields {
 sub fields {
     [   {   name        => 'author',
             from_object => sub {
-                my ( $app, $obj ) = @_;
-                $app->object_to_resource( $obj->author );
+                my ($obj) = @_;
+                MT::API::Resource->from_object( $obj->author );
             },
         },
         {   name        => 'blog',
             from_object => sub {
-                my ( $app, $obj ) = @_;
-                $app->object_to_resource( $obj->blog );
+                my ($obj) = @_;
+                +{ id => $obj->blog_id, };
             },
         },
         {   name        => 'categories',
             from_object => sub {
-                my ( $app, $obj ) = @_;
+                my ($obj) = @_;
                 my $rows = $obj->__load_category_data or return;
 
                 my $primary = do {
@@ -48,51 +48,45 @@ sub fields {
 
                 my $cats = MT::Category->lookup_multi(
                     [ map { $_->[0] } @$rows ] );
-                $app->object_to_resource(
-                    [   sort {
-                                  $a->id == $primary ? 1
-                                : $b->id == $primary ? -1
-                                : $a->label cmp $b->label
-                        } @$cats
-                    ]
-                );
+                [   map { MT::API::Resource->from_object($_) } sort {
+                              $a->id == $primary ? 1
+                            : $b->id == $primary ? -1
+                            : $a->label cmp $b->label
+                    } @$cats
+                ];
             },
         },
         'id',
         'class',
         {   name        => 'status',
             from_object => sub {
-                my ( $app, $obj ) = @_;
+                my ($obj) = @_;
                 MT::Entry::status_text( $obj->status );
             },
             to_object => sub {
-                my ( $app, $hash ) = @_;
+                my ($hash) = @_;
                 MT::Entry::status_int( $hash->{status} );
             },
         },
         {   name        => 'allowComments',
             alias       => 'allow_comments',
             from_object => sub {
-                my ( $app, $obj ) = @_;
-
-                # TODO ok?
+                my ($obj) = @_;
                 $obj->allow_comments ? boolean::true() : boolean::false();
             },
             to_object => sub {
-                my ( $app, $hash ) = @_;
+                my ($hash) = @_;
                 $hash->{allowComments} ? 1 : 0;
             },
         },
         {   name        => 'allowTrackbacks',
             alias       => 'allow_pings',
             from_object => sub {
-                my ( $app, $obj ) = @_;
-
-                # TODO ok?
+                my ($obj) = @_;
                 $obj->allow_pings ? boolean::true() : boolean::false();
             },
             to_object => sub {
-                my ( $app, $hash ) = @_;
+                my ($hash) = @_;
                 $hash->{allowTrackbacks} ? 1 : 0;
             },
         },
@@ -111,9 +105,12 @@ sub fields {
         },
         {   name        => 'comments',
             from_object => sub {
-                my ( $app, $obj ) = @_;
-                my $args = undef;
-                if ( defined( $app->param('maxComments') ) ) {
+                my ($obj) = @_;
+                my $app   = MT->instance;
+                my $args  = undef;
+                if ( $app->can('param')
+                    && defined( $app->param('maxComments') ) )
+                {
                     $args = { limit => int( $app->param('maxComments') ), };
                 }
                 $app->object_to_resource( $obj->comments( undef, $args ) );
@@ -121,9 +118,12 @@ sub fields {
         },
         {   name        => 'trackbacks',
             from_object => sub {
-                my ( $app, $obj ) = @_;
-                my $args = undef;
-                if ( defined( $app->param('maxTrackbacks') ) ) {
+                my ($obj) = @_;
+                my $app   = MT->instance;
+                my $args  = undef;
+                if ( $app->can('param')
+                    && defined( $app->param('maxTrackbacks') ) )
+                {
                     $args = { limit => int( $app->param('maxTrackbacks') ), };
                 }
                 $app->object_to_resource( $obj->pings( undef, $args ) );

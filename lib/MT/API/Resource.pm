@@ -3,11 +3,101 @@ package MT::API::Resource;
 use strict;
 use warnings;
 
-sub from_object {
-    my ( $class, $app, $obj, $fields_specified ) = @_;
+our (%resources) = ();
 
-    # TODO if not found
-    my $resource_data = $app->resource($obj)
+sub core_resources {
+    my $pkg = '$Core::MT::API::Resource::';
+    return {
+        'entry' => {
+            fields           => "${pkg}Entry::fields",
+            updatable_fields => "${pkg}Entry::updatable_fields",
+        },
+        'category' => {
+            fields           => "${pkg}Category::fields",
+            updatable_fields => "${pkg}Category::updatable_fields",
+        },
+        'comment' => {
+            fields           => "${pkg}Comment::fields",
+            updatable_fields => "${pkg}Comment::updatable_fields",
+        },
+        'trackback' => {
+            fields           => "${pkg}Trackback::fields",
+            updatable_fields => "${pkg}Trackback::updatable_fields",
+        },
+        'tbping' => 'tbping',
+        'user'   => {
+            fields           => "${pkg}User::fields",
+            updatable_fields => "${pkg}User::updatable_fields",
+        },
+        'author' => 'user',
+        'blog'   => {
+            fields           => "${pkg}Blog::fields",
+            updatable_fields => "${pkg}Blog::updatable_fields",
+        },
+        'website' => {
+            fields           => "${pkg}Website::fields",
+            updatable_fields => "${pkg}Website::updatable_fields",
+        },
+    };
+}
+
+sub resource {
+    my $class = shift;
+    my ($key) = @_;
+    my $app   = MT->instance;
+
+    if ( !%resources ) {
+        my $reg = $app->registry( 'applications', 'api', 'resources' );
+        %resources
+            = map { $_ => ref( $reg->{$_} ) ? +{} : $reg->{$_} } keys %$reg;
+    }
+
+    my $res;
+    my $resource_key;
+    for my $k (
+        ref $key
+        ? ( $key->class_type || '',
+            $key->datasource . '.' . ( $key->class_type || '' ),
+            $key->datasource
+        )
+        : ($key)
+        )
+    {
+
+        $resource_key = $k;
+        $res = $resources{$k} and last;
+    }
+
+    return unless $res;
+
+    if ( !ref $res ) {
+        $resources{$resource_key} = $res = $class->resource($res);
+    }
+
+    return unless $res;
+
+    if ( !$res->{fields} ) {
+        for my $k (qw(fields updatable_fields)) {
+            $res->{$k} = [
+                map {@$_} @{
+                    $app->registry(
+                        'applications', 'api',
+                        'resources',    $resource_key,
+                        $k
+                    )
+                }
+            ];
+        }
+    }
+
+    $res;
+}
+
+sub from_object {
+    my $class = shift;
+    my ( $obj, $fields_specified ) = @_;
+
+    my $resource_data = $class->resource($obj)
         or return;
 
     my @fields = do {
@@ -35,7 +125,7 @@ sub from_object {
         elsif ( $ref eq 'HASH' ) {
             $name = $f->{name};
             if ( exists $f->{from_object} ) {
-                @vals = $f->{from_object}->( $app, $obj, \%hash, $f );
+                @vals = $f->{from_object}->( $obj, \%hash, $f );
             }
             elsif ( my $alias = $f->{alias} ) {
                 @vals = $obj->$alias;
@@ -50,10 +140,10 @@ sub from_object {
 }
 
 sub to_object {
-    my ( $class, $app, $name, $hash, $original ) = @_;
+    my $class = shift;
+    my ( $name, $hash, $original ) = @_;
 
-    # TODO if not found
-    my $resource_data = $app->resource($name)
+    my $resource_data = $class->resource($name)
         or return;
 
     my @fields = do {
@@ -64,7 +154,7 @@ sub to_object {
         } @{ $resource_data->{fields} };
     };
 
-    my $obj = $original ? $original->clone : $app->model($name)->new;
+    my $obj = $original ? $original->clone : MT->model($name)->new;
     my %values = ();
     for my $f (@fields) {
         my $ref = ref $f;
@@ -74,11 +164,12 @@ sub to_object {
             }
         }
         elsif ( $ref eq 'HASH' ) {
-            if (! exists($hash->{ $f->{name} })) {
+            if ( !exists( $hash->{ $f->{name} } ) ) {
+
                 # Do nothing
             }
             elsif ( exists $f->{to_object} ) {
-                my @vals = $f->{to_object}->( $app, $hash, $obj, $f );
+                my @vals = $f->{to_object}->( $hash, $obj, $f );
                 if (@vals) {
                     $values{ $f->{alias} || $f->{name} } = $vals[0];
                 }

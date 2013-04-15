@@ -8,8 +8,7 @@ sub updatable_fields {
 }
 
 sub fields {
-    [
-        'id',
+    [   'id',
         {   name  => 'displayName',
             alias => 'nickname',
         },
