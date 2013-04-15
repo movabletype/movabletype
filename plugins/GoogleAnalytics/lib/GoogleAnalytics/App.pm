@@ -20,7 +20,9 @@ sub config_tmpl {
     my $plugin = plugin();
     my $blog   = $app->blog
         or return;
-    my $config = $plugin->get_config_hash( 'blog:' . $blog->id );
+    my $scope    = 'blog:' . $blog->id;
+    my $config   = $plugin->get_config_hash($scope);
+    my $defaults = $plugin->settings->defaults($scope);
 
     $plugin->load_tmpl(
         'web_service_config.tmpl',
@@ -29,7 +31,10 @@ sub config_tmpl {
                 mode => 'ga_input_code',
                 args => { blog_id => $app->blog->id, },
             ),
-            map { ( "ga_$_" => $config->{$_} ) } keys(%$config),
+            ( map { ( "ga_$_" => $config->{$_} || '' ) } keys(%$config) ),
+            (   map { ( "default_$_" => $defaults->{$_} || '' ) }
+                    keys(%$defaults)
+            ),
         }
     )->build;
 }
