@@ -92,8 +92,14 @@ sub fill_in_archive_info {
         }
         next unless $i;
 
-        for my $k (qw(entry_id archive_type category_id author_id)) {
+        for my $k (qw(archive_type)) {
             $i->{$k} = $fi->$k if defined $fi->$k;
+        }
+        for my $k (qw(entry_id category_id author_id)) {
+            if ( defined $fi->$k ) {
+                ( my $hk = $k ) =~ s/_.*//g;
+                $i->{$hk} = { id => $fi->$k, };
+            }
         }
         ( $i->{start_date} = $fi->startdate )
             =~ s/(\d{4})(\d{2})(\d{2}).*/$1-$2-$3/
