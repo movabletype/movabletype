@@ -783,6 +783,12 @@ sub list_props {
 
 sub system_filters {
     return {
+        current_website => {
+            label => 'Comments in This Website',
+            items => [ { type => 'current_context' } ],
+            order => 50,
+            view  => 'website',
+        },
         not_spam => {
             label => 'Non-spam comments',
             items =>
