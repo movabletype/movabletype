@@ -383,11 +383,9 @@ function setLicense() {
       <input type="text" name="file_extension" id="file_extension" class="text min" value="<mt:var name="file_extension" escape="html">" />
     </mtapp:setting>
 
-  <mt:if name="is_blog">
     <mtapp:setting
        id="preferred_archive_type"
        label="<__trans phrase="Preferred Archive">"
-       hint="<__trans phrase="Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive type used in this blog's archive templates.">"
        show_hint="1"
        help_page="blog_settings_publishing"
        help_section="preferred_archive_type">
@@ -407,8 +405,12 @@ function setLicense() {
       <p><span class="alert-warning-inline"><__trans phrase="No archives are active"></span></p>
       <input type="hidden" name="no_archives_are_active" id="no_archives_are_active" value="1" />
     </mt:unless>
+    <mt:if name="is_blog">
+      <div class="hint"><__trans phrase="Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive type used in this blog's archive templates."></div>
+    <mt:else>
+      <div class="hint"><__trans phrase="Used to generate URLs (permalinks) for this website's archived entries. Choose one of the archive type used in this website's archive templates."></div>
+    </mt:if>
     </mtapp:setting>
-  </mt:if>
   </mtapp:settinggroup>
 
   <h2><__trans phrase="Module Settings"></h2>
@@ -456,7 +458,7 @@ function setLicense() {
     </mtapp:setting>
     
     <div id="use-revision-option" class="setting-option">
-      <mt:setvarblock name="revisions_entry_label"><mt:if name="is_blog"><__trans phrase="Number of revisions per entry/page"><mt:else><__trans phrase="Number of revisions per page"></mt:if></mt:setvarblock>
+      <mt:setvarblock name="revisions_entry_label"><__trans phrase="Number of revisions per entry/page"></mt:setvarblock>
       <mtapp:setting
          id="max_revisions_entry"
          label="<mt:var name="revisions_entry_label">">

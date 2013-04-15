@@ -1781,7 +1781,7 @@ sub core_menus {
             mode       => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'entry:category' => {
             label      => "Categories",
@@ -1789,7 +1789,7 @@ sub core_menus {
             mode       => 'list',
             args       => { _type => 'category' },
             permission => 'edit_categories',
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'entry:view_category' => {
             order   => 10000,
@@ -2183,14 +2183,14 @@ sub core_menus {
             order      => 400,
             mode       => "start_import",
             permission => "administer_blog",
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'tools:export' => {
             label      => "Export Entries",
             order      => 500,
             mode       => "start_export",
             permission => "administer_blog",
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'tools:themeexport' => {
             label         => "Export Theme",
@@ -2327,7 +2327,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',

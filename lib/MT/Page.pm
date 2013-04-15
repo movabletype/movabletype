@@ -35,8 +35,11 @@ MT->add_callback( 'api_post_save.' . 'page',
 MT->add_callback( 'cms_post_save.' . 'page',
     9, undef, \&MT::Revisable::mt_postsave_obj );
 
-__PACKAGE__->add_callback( 'post_remove', 0, MT->component('core'),
-    \&MT::Revisable::mt_postremove_obj );
+__PACKAGE__->add_callback(
+    'post_remove', 0,
+    MT->component('core'),
+    \&MT::Revisable::mt_postremove_obj
+);
 
 sub list_props {
     return {
@@ -53,50 +56,9 @@ sub list_props {
             label            => 'Folder',
             filter_label     => 'Folder',
             display          => 'default',
-            view_filter      => [ 'blog', 'website' ],
             order            => 500,
             category_class   => 'folder',
             zero_state_label => '(root)',
-            terms            => sub {
-                my ( $prop, $args, $db_terms, $db_args ) = @_;
-                my $blog = MT->app->blog;
-                my $blog_id
-                    = $blog->is_blog
-                    ? MT->app->blog->id
-                    : [ MT->app->blog->id, map { $_->id } @{ $blog->blogs } ];
-                my $app    = MT->instance;
-                my $option = $args->{option};
-                my $query  = $args->{string};
-                if ( 'contains' eq $option ) {
-                    $query = { like => "%$query%" };
-                }
-                elsif ( 'not_contains' eq $option ) {
-                    $query = { not_like => "%$query%" };
-                }
-                elsif ( 'beginning' eq $option ) {
-                    $query = { like => "$query%" };
-                }
-                elsif ( 'end' eq $option ) {
-                    $query = { like => "%$query" };
-                }
-                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
-                    undef,
-                    {   entry_id => \'= entry_id',
-                        ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                    },
-                    {   unique => 1,
-                        join   => MT->model( $prop->category_class )->join_on(
-                            undef,
-                            {   label => $query,
-                                id    => \'= placement_category_id',
-                                ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                            },
-                            { unique => 1, }
-                        ),
-                    },
-                );
-                return;
-            },
         },
         folder_id => {
             base             => 'entry.category_id',

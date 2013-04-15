@@ -1163,7 +1163,6 @@ BEGIN {
                 permission       => "access_to_entry_list",
                 feed_link        => sub {
                     my ($app) = @_;
-                    return 0 if $app->blog && !$app->blog->is_blog;
                     return 1 if $app->user->is_superuser;
 
                     if ( $app->blog ) {
@@ -1335,8 +1334,11 @@ BEGIN {
                 template              => 'list_category.tmpl',
                 contents_label        => 'Entry',
                 contents_label_plural => 'Entries',
-                permission            => 'access_to_category_list',
-                view                  => 'blog',
+                permission            => {
+                    permit_action => 'access_to_category_list',
+                    inherit       => 0,
+                },
+                view                  => [ 'website', 'blog' ],
                 scope_mode            => 'this',
                 condition             => sub {
                     my $app = shift;
@@ -1350,7 +1352,10 @@ BEGIN {
                 search_type           => 'page',
                 contents_label        => 'Page',
                 contents_label_plural => 'Pages',
-                permission            => 'access_to_folder_list',
+                permission            => {
+                    permit_action => 'access_to_folder_list',
+                    inherit       => 0,
+                },
                 view                  => [ 'website', 'blog' ],
                 scope_mode            => 'this',
                 condition             => sub {

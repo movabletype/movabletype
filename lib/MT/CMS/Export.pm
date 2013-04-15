@@ -19,7 +19,7 @@ sub start_export {
 
     my $blog = $app->model('blog')->load($blog_id);
     return $app->return_to_dashboard( redirect => 1 )
-        if !$blog || ( $blog && !$blog->is_blog );
+        if !$blog;
 
     $param{blog_id} = $blog_id;
     $app->load_tmpl( 'export.tmpl', \%param );

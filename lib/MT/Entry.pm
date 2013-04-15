@@ -304,9 +304,7 @@ sub list_props {
         blog_name => {
             base  => '__common.blog_name',
             label => sub {
-                MT->app->blog
-                    ? MT->translate('Blog Name')
-                    : MT->translate('Website/Blog Name');
+                MT->translate('Website/Blog Name');
             },
             display   => 'default',
             site_name => sub { MT->app->blog ? 0 : 1 },
@@ -321,7 +319,7 @@ sub list_props {
             base            => '__virtual.integer',
             filter_editable => 0,
             col_class       => 'string',
-            view_filter     => 'blog',
+            view_filter     => [ 'website', 'blog' ],
             category_class  => 'category',
             terms           => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
@@ -336,14 +334,15 @@ sub list_props {
                 ) unless $cat_id;
 
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('placement')->join_on(
                     undef,
                     {   category_id => $cat_id,
                         entry_id    => \'= entry_id',
                         blog_id     => $blog_id,
                     },
                     { unique => 1, },
-                );
+                    );
                 return;
             },
             args_via_param => sub {
@@ -388,7 +387,7 @@ sub list_props {
             display          => 'default',
             base             => '__virtual.string',
             col_class        => 'string',
-            view_filter      => 'blog',
+            view_filter      => [ 'website', 'blog', 'system' ],
             category_class   => 'category',
             zero_state_label => '-',
             bulk_cats        => sub {
@@ -480,10 +479,18 @@ sub list_props {
             # },
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
-                my $blog_id = MT->app->blog->id;
-                my $app     = MT->instance;
-                my $option  = $args->{option};
-                my $query   = $args->{string};
+                my $blog = MT->app->blog;
+                my $blog_id
+                    = $blog
+                    ? $blog->is_blog
+                        ? MT->app->blog->id
+                        : [ MT->app->blog->id,
+                            map { $_->id } @{ $blog->blogs }
+                        ]
+                    : 0;
+                my $app    = MT->instance;
+                my $option = $args->{option};
+                my $query  = $args->{string};
                 if ( 'contains' eq $option ) {
                     $query = { like => "%$query%" };
                 }
@@ -496,22 +503,23 @@ sub list_props {
                 elsif ( 'end' eq $option ) {
                     $query = { like => "%$query" };
                 }
-                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('placement')->join_on(
                     undef,
                     {   entry_id => \'= entry_id',
-                        blog_id  => $blog_id,
+                        ( $blog_id ? ( blog_id => $blog_id ) : () ),
                     },
                     {   unique => 1,
                         join   => MT->model( $prop->category_class )->join_on(
                             undef,
-                            {   label   => $query,
-                                id      => \'= placement_category_id',
-                                blog_id => $blog_id,
+                            {   label => $query,
+                                id    => \'= placement_category_id',
+                                ( $blog_id ? ( blog_id => $blog_id ) : () ),
                             },
                             { unique => 1, }
                         ),
                     },
-                );
+                    );
                 return;
             },
         },
@@ -633,8 +641,8 @@ sub list_props {
                 my $from   = $args->{from}   || undef;
                 my $to     = $args->{to}     || undef;
                 my $origin = $args->{origin} || undef;
-                $from   =~ s/\D//g;
-                $to     =~ s/\D//g;
+                $from =~ s/\D//g;
+                $to =~ s/\D//g;
                 $origin =~ s/\D//g;
                 $from .= '000000' if $from;
                 $to   .= '235959' if $to;
@@ -722,24 +730,28 @@ sub list_props {
                         ? MT::Author::ACTIVE()
                         : MT::Author::INACTIVE();
                     $db_args->{joins} ||= [];
-                    push @{ $db_args->{joins} }, MT->model('author')->join_on(
+                    push @{ $db_args->{joins} },
+                        MT->model('author')->join_on(
                         undef,
                         {   id     => \'= entry_author_id',
                             status => $status,
                         },
-                    );
+                        );
                 }
             },
         },
-        current_context => {
-            base      => '__common.current_context',
-            condition => sub {0},
-        },
+        current_context => { base => '__common.current_context', },
     };
 }
 
 sub system_filters {
     return {
+        current_website => {
+            label => 'Entries in This Website',
+            items => [ { type => 'current_context' } ],
+            order => 50,
+            view  => 'website',
+        },
         published => {
             label => 'Published Entries',
             items => [ { type => 'status', args => { value => '2' }, }, ],
@@ -755,12 +767,13 @@ sub system_filters {
             items => [ { type => 'status', args => { value => '4' }, }, ],
             order => 500,
         },
-        my_posts => {
+        my_posts_on_this_context => {
             label => 'My Entries',
             items => sub {
-                [ { type => 'current_user' } ],;
+                [ { type => 'current_user' }, { type => 'current_context' } ]
+                ,;
             },
-            order => 1000,
+            order => 500,
         },
         commented_in_last_7_days => {
             label => 'Entries with Comments Within the Last 7 Days',
