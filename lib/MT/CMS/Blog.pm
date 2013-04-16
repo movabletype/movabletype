@@ -37,6 +37,12 @@ sub edit {
         $lang = 'ja' if lc($lang) eq 'jp';
         $param->{ 'language_' . $lang } = 1;
 
+        my $date_lang = $obj->date_language || 'en';
+        $date_lang = 'en'
+            if lc($date_lang) eq 'en-us' || lc($date_lang) eq 'en_us';
+        $date_lang = 'ja' if lc($date_lang) eq 'jp';
+        $param->{ 'date_language_' . $date_lang } = 1;
+
         $param->{system_allow_comments} = $cfg->AllowComments;
         $param->{system_allow_pings}    = $cfg->AllowPings;
         $param->{tk_available}          = eval { require MIME::Base64; 1; }
@@ -152,8 +158,9 @@ sub edit {
             {
                 $param->{dynamic_enabled} = 1;
                 $param->{warning_include} = 1
-                    unless $blog->include_system eq 'php'
-                        || $blog->include_system eq '';
+                    unless defined $blog->include_system
+                    && ( $blog->include_system eq 'php'
+                    || $blog->include_system eq '' );
             }
             eval "require List::Util; require Scalar::Util;";
             unless ($@) {
@@ -308,10 +315,10 @@ sub edit {
         $param->{'can_edit_config'} = $app->can_do('edit_new_blog_config');
         $param->{'can_set_publish_paths'}
             = $app->can_do('set_new_blog_publish_paths');
-
-        $param->{languages}
-            = MT::I18N::languages_list( $app, MT->config->DefaultLanguage );
     }
+
+    $param->{languages} = MT::I18N::languages_list( $app,
+        $id ? $obj->language : MT->config->DefaultLanguage );
 
     if ( !$param->{site_path} ) {
         $param->{suggested_site_path} = 'BLOG-NAME';

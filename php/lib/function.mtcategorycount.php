@@ -7,7 +7,7 @@
 
 function smarty_function_mtcategorycount($args, &$ctx) {
     $category = $ctx->stash('category');
-    $count = $category->category_count;
+    $count = $category->entry_count();
     return $ctx->count_format($count, $args);
 }
 ?>

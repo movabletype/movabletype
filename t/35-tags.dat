@@ -644,5 +644,21 @@
 { "r" : "1", "t" : "<mt:SetVar name='hash' key='foo' value='bar'><mt:If name='hash'>exists</mt:If>", "e" : "exists"}, #628
 { "r" : "1", "t" : "<mt:SetVar name='array' index='0' value='foo'><mt:If name='array'>exists</mt:If>", "e" : "exists"}, #629
 { "r" : "1", "t" : "<mt:SetVar name='array' index='0' value='foo'><mt:GetVar name='shift(array)' setvar='trash'><mt:If name='array'><mt:Else>empty</mt:If>", "e" : "empty"}, #630
-{ "r" : "1", "t" : "<mt:SetVar name='hash' key='foo' value='bar'><mt:SetVar name='delete(hash)' key='foo'><mt:If name='hash'><mt:Else>empty</mt:If>", "e" : "empty"} #631
+{ "r" : "1", "t" : "<mt:SetVar name='hash' key='foo' value='bar'><mt:SetVar name='delete(hash)' key='foo'><mt:If name='hash'><mt:Else>empty</mt:If>", "e" : "empty"}, #631
+{ "r" : "1", "t" : "<MTBlogLanguage ietf=\"1\">", "e" : "en-us"}, #632
+{ "r" : "1", "t" : "<MTBlogDateLanguage>", "e" : "en_us"}, #633
+{ "r" : "1", "t" : "<MTBlogDateLanguage locale='1'>", "e" : "en_US"}, #634
+{ "r" : "1", "t" : "<MTBlogDateLanguage ietf='1'>", "e" : "en-us"}, #635
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteDateLanguage></mt:Websites>", "e" : "en_us"}, #636
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteDateLanguage locale='1'></mt:Websites>", "e" : "en_US"}, #637
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteDateLanguage ietf='1'></mt:Websites>", "e" : "en-us"}, #638
+{ "r" : "1", "t" : "<MTSetVar name=\"foo\" value=\"0\"><MTSetVar name=\"bar\" value=\"0\"><MTIf name=\"foo\">1<MTElse><MTIf name=\"bar\">2<MTElse>3</MTIf></MTIf>", "e" : "3" }, #639
+{ "r" : "1", "t" : "<MTIf name='foo'>1<MTElse><MTIf name='bar'>2<MTElse>3</MTElse></MTIf></MTElse></MTIf>", "e" : "3" }, #640
+{ "r" : "1", "t" : "<MTIf name='foo'>1<MTElse><MTIf name='bar'>2<MTElse>3</MTIf></MTElse></MTIf>", "e" : "3" }, #641
+{ "r" : "1", "t" : "<MTIf name='foo'>1<MTElse><MTIf name='bar'>2<MTElse>3</MTElse></MTIf></MTIf>", "e" : "3" }, #642
+{ "r" : "1", "t" : "<MTEntries category=\"fooooooooo\"><MTEntryTitle></MTEntries>", "e" : ""}, #643
+{ "r" : "1", "t" : "<MTAssets tag='alphabeta'><$MTAssetID$></MTAssets>", "e" : ""}, #644
+{ "r" : "1", "t" : "<MTAssets tag='alpha OR beta'><$MTAssetID$></MTAssets>", "e" : "12"}, #645
+{ "r" : "1", "t" : "<MTAssets tag='alpha AND beta'><$MTAssetID$></MTAssets>", "e" : "1"}, #646
+{ "r" : "1", "t" : "<MTAssets tag='NOT gamma'><$MTAssetID$></MTAssets>", "e" : "2"} #647
 ]

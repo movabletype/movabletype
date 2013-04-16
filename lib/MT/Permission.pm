@@ -329,7 +329,7 @@ sub global_perms {
                     $cur_perm =~ s/'$perm',?// if defined $cur_perm;
 
                    # the "has no permission" status is NULL, not empty string.
-                    if ( $cur_perm eq '' ) {
+                    if ( ( $cur_perm || '' ) eq '' ) {
                         $cur_perm = undef;
                     }
                 }

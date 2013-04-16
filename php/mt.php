@@ -11,7 +11,7 @@
 require_once('lib/class.exception.php');
 
 define('VERSION', '5.2');
-define('PRODUCT_VERSION', '5.2.4');
+define('PRODUCT_VERSION', '5.2.5');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -20,7 +20,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 4;
+    $RELEASE_NUMBER = 5;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -356,6 +356,10 @@ class MT {
                 $cfg[$key] = $value;
             }
             $mtdb->set_names($this);
+        }
+
+        if ( !empty( $cfg['debugmode'] ) && intval($cfg['debugmode']) > 0 ) {
+            $this->debugging = true;
         }
     }
 
