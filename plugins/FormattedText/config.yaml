@@ -49,6 +49,7 @@ applications:
                     }
                 view:
                     - system
+                    - website
                     - blog
             entry:view_formatted_text:
                 order: 10000

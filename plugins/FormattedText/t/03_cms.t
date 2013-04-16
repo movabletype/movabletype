@@ -35,4 +35,20 @@ subtest 'search_replace' => sub {
     done_testing();
 };
 
+subtest 'menu in website scope' => sub {
+    my $website = MT->model('website')->load();
+    my $app     = _run_app(
+        'MT::App::CMS',
+        {   __test_user => $admin,
+            __mode      => 'dashboard',
+            blog_id     => $website->id,
+        },
+    );
+    my $out = delete $app->{__test_output};
+    like( $out, qr/Boilerplate/,
+        '"Boilerplate" menu is displayed in website scope' );
+
+    done_testing();
+};
+
 done_testing();
