@@ -51,4 +51,30 @@ subtest 'menu in website scope' => sub {
     done_testing();
 };
 
+subtest 'boilerplate listing screen in system scope' => sub {
+    my $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user => $admin,
+            __mode      => 'list',
+            _type       => 'formatted_text',
+            blog_id     => 0,
+        },
+    );
+    my $out = delete $app->{__test_output};
+
+    my $option = quotemeta(
+        '<label for="custom-prefs-blog_name">Website/Blog Name</label>' );
+    like( $out, qr/$option/,
+        '"Website/Blog Name" option exists in boilerplate listing screen at system scope.'
+    );
+
+    my $column
+        = quotemeta( '<span class="col-label">Website/Blog Name</span>' );
+    like( $out, qr/$column/,
+        '"Website/Blog Name" column exists in boilerplate listing screen at system scope.'
+    );
+
+    done_testing();
+};
+
 done_testing();
