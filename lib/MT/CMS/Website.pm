@@ -252,10 +252,10 @@ sub edit {
         $param->{'can_edit_config'} = $app->can_do('edit_new_blog_config');
         $param->{'can_set_publish_paths'}
             = $app->can_do('set_new_blog_publish_paths');
-
-        $param->{languages}
-            = MT::I18N::languages_list( $app, MT->config->DefaultLanguage );
     }
+
+    $param->{languages} = MT::I18N::languages_list( $app,
+        $id ? $obj->language : MT->config->DefaultLanguage );
 
     if ( !$param->{id} ) {
         if ( !$param->{site_path} ) {

@@ -178,11 +178,8 @@ abstract class MTDatabase {
         if ( !empty($incl) )
             $incl = $this->parse_blog_ids( $incl, $include_with_website );
         if ( isset( $args['allows'] ) ) {
-            if ( empty( $incl ) ) {
-                $incl = $args['allows'];
-            } else {
+            if ( !empty( $incl ) )
                 $incl = array_intersect($incl, $args['allows']);
-            }
         }
 
         // Compute exclude_blogs
@@ -836,7 +833,9 @@ abstract class MTDatabase {
             if (!preg_match('/\b(AND|OR|NOT)\b|\(|\)/i', $category_arg)) {
                 $not_clause = false;
                 $cats = cat_path_to_category($category_arg, $blog_ctx_arg, $cat_class);
-                if (!empty($cats)) {
+                if (empty($cats)) {
+                    return null;
+                } else {
                     $category_arg = '';
                     foreach ($cats as $cat) {
                         if ($category_arg != '')
@@ -1200,8 +1199,12 @@ abstract class MTDatabase {
                     $class_filter
                     $max_comment_filter
                     $min_comment_filter";
-        if ($sort_field)
+        if ($sort_field) {
             $sql .= "order by $sort_field $base_order";
+            if ($sort_field == 'entry_authored_on') {
+                $sql .= ",entry_id $base_order";
+            }
+        }
 
         if (isset($args['recently_commented_on'])) {
             $rco = $args['recently_commented_on'];
@@ -1369,20 +1372,7 @@ abstract class MTDatabase {
                     }
                     $entries = $entries_sorted;
                 } elseif ($sort_field == 'entry_authored_on') {
-                    $sort_fn = "
-                        \$ret = strcmp(\$a->entry_authored_on, \$b->entry_authored_on); 
-                        if (\$ret==0) { 
-                            \$ret = \$a->entry_id - \$b->entry_id; 
-                        } 
-                        return \$ret;";
-                    $sorter = create_function(
-                        $order == 'asc' ? '$a,$b' : '$b,$a',
-                        $sort_fn);
-                    usort($entries, $sorter);
-
-                    if (isset($post_sort_offset)) {
-                        $entries = array_slice($entries, $post_sort_offset, $post_sort_limit);
-                    }
+                    // already double-sorted by the DB
                 } else {
                     if (($sort_field == 'entry_status') || ($sort_field == 'entry_author_id') || ($sort_field == 'entry_id')
                           || ($sort_field == 'entry_comment_count') || ($sort_field == 'entry_ping_count')) {
@@ -1774,7 +1764,6 @@ abstract class MTDatabase {
             $ids = array();
             $counts = array();
             while (!$categories->EOF) {
-                $counts[$categories->Fields('category_id')] = $categories->Fields('category_count');
                 $ids[] = $categories->Fields('category_id');
                 $categories->MoveNext();
             }
@@ -1823,7 +1812,6 @@ abstract class MTDatabase {
             for ($i = 0; $i < $record_count; $i++) {
                 $cat = $categories[$i];
                 $cat_id = $cat->category_id;
-                $categories[$i]->category_count = $counts[$cat_id];
                 if (isset($args['top_level_categories']) || !isset($this->_cat_id_cache['c'.$cat_id])) {
                     $id_list[] = $cat_id;
                     $this->_cat_id_cache['c'.$cat_id] = $categories[$i];

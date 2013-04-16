@@ -79,10 +79,9 @@ sub view {
     my %current_themes;
     my ( $blog_theme, $blog_layout );
     foreach my $blog (@$styled_blogs) {
-        my $curr_theme = $config->{ "current_theme_" . $blog->id } || '';
+        my $curr_theme = $blog->current_style || '';
         next unless $curr_theme;
-        my $curr_layout = $config->{ "current_layout_" . $blog->id }
-            || 'layout-wtt';
+        my $curr_layout = $blog->page_layout || 'layout-wtt';
         push @blog_loop,
             {
             blog_id   => $blog->id,
@@ -309,6 +308,12 @@ EOT
     # Putting the stylesheet back together again
     $tmpl->save or return $app->json_error( $tmpl->errstr );
 
+    # Custom theme and layout
+    my $p = plugin();
+    $name =~ s/^repo_\d+:/local:/;
+    $name =~ s/^repo-\w+:/local:/;
+    $name =~ s/\.css$//;
+    $blog->current_style($name);
     $blog->page_layout($layout);
     $blog->touch();
     $blog->save();
@@ -319,18 +324,6 @@ EOT
         Template => $tmpl,
         Force    => 1
     );
-
-    my $p = plugin();
-    $name =~ s/^repo_\d+:/local:/;
-    $name =~ s/^repo-\w+:/local:/;
-    $name =~ s/\.css$//;
-    $p->set_config_value( 'current_theme_' . $blog_id, $name );
-    if ($layout) {
-        $p->set_config_value( 'current_layout_' . $blog_id, $layout );
-    }
-    else {
-        $p->set_config_value( 'current_layout_' . $blog_id, undef );
-    }
 
     return $app->json_result(
         {   message =>

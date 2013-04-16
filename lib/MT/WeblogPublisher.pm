@@ -588,15 +588,16 @@ sub rebuild_entry {
     }
     return 1 if $blog->is_dynamic;
 
-    my $categories_for_rebuild = $entry->categories;
+    my $categories_for_rebuild;
     if ( my $ids = $param{OldCategories} ) {
-        my %new_ids = map { $_->id => 1 } @$categories_for_rebuild;
+        my %new_ids = map { $_->id => 1 } @{$entry->categories};
         my @old_ids = grep { !$new_ids{$_} } split( ',', $ids );
 
         if (@old_ids) {
             push( @$categories_for_rebuild,
                 MT::Category->load( { id => \@old_ids } ) );
         }
+        push @$categories_for_rebuild, ( map { $_ } @{$entry->categories} );
     }
 
     my $at
@@ -2089,17 +2090,35 @@ sub _delete_archive_file {
         return '' unless $archiver;
 
         my $file;
+        my $cache_file = MT::Request->instance->cache('file');
+        unless ($cache_file) {
+            MT::Request->instance->cache( 'file', $cache_file = {} );
+        }
+        my $cache_key = join ':',
+            (
+            $entry     ? $entry->id  : '0',
+            $blog      ? $blog->id   : '0',
+            $at        ? $at         : 'None',
+            $cat       ? $cat->id    : '0',
+            $map       ? $map->id    : '0',
+            $timestamp ? $timestamp  : '0',
+            $author    ? $author->id : '0'
+            );
+        if ( $file = $cache_file->{$cache_key} ) {
+            return $file;
+        }
+
         if ( $blog->is_dynamic ) {
             require MT::TemplateMap;
             $map = MT::TemplateMap->new;
             $map->file_template( $archiver->dynamic_template );
         }
         unless ($map) {
-            my $cache = MT::Request->instance->cache('maps');
-            unless ($cache) {
-                MT::Request->instance->cache( 'maps', $cache = {} );
+            my $cache_map = MT::Request->instance->cache('maps');
+            unless ($cache_map) {
+                MT::Request->instance->cache( 'maps', $cache_map = {} );
             }
-            unless ( $map = $cache->{ $blog->id . $at } ) {
+            unless ( $map = $cache_map->{ $blog->id . $at } ) {
                 require MT::TemplateMap;
                 $map = MT::TemplateMap->load(
                     {   blog_id      => $blog->id,
@@ -2107,7 +2126,7 @@ sub _delete_archive_file {
                         is_preferred => 1
                     }
                 );
-                $cache->{ $blog->id . $at } = $map if $map;
+                $cache_map->{ $blog->id . $at } = $map if $map;
             }
         }
         my $file_tmpl;
@@ -2163,6 +2182,7 @@ sub _delete_archive_file {
             my $ext = $blog->file_extension;
             $file .= '.' . $ext if $ext;
         }
+        $cache_file->{$cache_key} = $file;
         $file;
     }
 }

@@ -25,12 +25,12 @@ function smarty_block_mtauthornext($args, $content, &$ctx, &$repeat) {
                               'blog_id' => $blog_id,
                               'need_entry' => 1);
                 list($next_author) = $ctx->mt->db()->fetch_authors($args);
-                if ($next_author) {
-                    $_next_cache[$author_id] = $next_author;
-                    $ctx->stash('author', $next_author);
-                } else
-                    $repeat = false;
             }
+            if ($next_author) {
+              $_next_cache[$author_id] = $next_author;
+              $ctx->stash('author', $next_author);
+            } else
+              $repeat = false;
         } else {
             $repeat = false;
         }
