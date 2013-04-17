@@ -67,6 +67,11 @@ my $kumekawa = MT::Test::Permission->make_author(
     nickname => 'Saburo Kumekawa',
 );
 
+my $kemikawa = MT::Test::Permission->make_author(
+    name     => 'kemikawa',
+    nickname => 'Shiro Kemikawa',
+);
+
 my $admin = MT->model('author')->load(1);
 
 # Role
@@ -84,13 +89,18 @@ my $edit_all_posts = MT::Test::Permission->make_role(
 );
 
 my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+my $website_administrator
+    = MT::Role->load( { name => MT->translate('Website Administrator') } );
 
-MT::Association->link( $aikawa,   $create_post,    $website );
-MT::Association->link( $ogawa,    $designer,       $website );
-MT::Association->link( $kagawa,   $manage_pages,   $website );
-MT::Association->link( $kikkawa,  $create_post,    $website );
-MT::Association->link( $kumekawa, $edit_all_posts, $website );
-MT::Association->link( $ukawa,    $create_post,    $blog );
+MT::Association->link( $aikawa,   $create_post,           $website );
+MT::Association->link( $ogawa,    $designer,              $website );
+MT::Association->link( $kagawa,   $manage_pages,          $website );
+MT::Association->link( $kikkawa,  $create_post,           $website );
+MT::Association->link( $kumekawa, $edit_all_posts,        $website );
+MT::Association->link( $kemikawa, $website_administrator, $website );
+
+MT::Association->link( $ukawa,    $create_post,           $blog );
+MT::Association->link( $kemikawa, $website_administrator, $blog );
 
 MT::Association->link( $ichikawa, $create_post, $second_website );
 MT::Association->link( $egawa,    $create_post, $second_blog );
@@ -328,6 +338,31 @@ subtest 'Test in website scope' => sub {
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $website->id,
+                columns          => 'title',
+                fid              => '_allpass',
+            },
+        );
+        $out = delete $app->{__test_output};
+        like( $out, qr/Website Entry by Aikawa/, 'Got an entry in website' );
+        like(
+            $out,
+            qr/Website Category Entry by Aikawa/,
+            'Got a category entry in website'
+        );
+        like(
+            $out,
+            qr/Child Blog Entry by Ukawa/,
+            'Got an entry in child blog'
+        );
+
+        diag 'Get filtered list by website administrator';
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $kemikawa,
                 __request_method => 'POST',
                 __mode           => 'filtered_list',
                 datasource       => 'entry',
