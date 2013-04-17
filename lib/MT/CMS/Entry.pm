@@ -2949,7 +2949,7 @@ sub cms_pre_load_filtered_list {
     my $blog_ids
         = !$blog         ? undef
         : $blog->is_blog ? [$blog_id]
-        :                  [ map { $_->id } @{ $blog->blogs } ];
+        :                  [ $blog->id, map { $_->id } @{ $blog->blogs } ];
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(

@@ -192,8 +192,8 @@ BEGIN {
                                 return;
                                 }
                                 unless $prop->has('sort')
-                                    || $prop->has('bulk_sort')
-                                    || $prop->has('sort_method');
+                                || $prop->has('bulk_sort')
+                                || $prop->has('sort_method');
                         }
                     },
                 },
@@ -316,11 +316,11 @@ BEGIN {
                     default_sort_order => 'descend',
                 },
                 float => {
-                    base      => '__virtual.integer',
-                    col_class => 'num',
+                    base        => '__virtual.integer',
+                    col_class   => 'num',
                     filter_tmpl => '<mt:Var name="filter_form_float">',
                     data_format => '%.1f',
-                    html      => sub {
+                    html        => sub {
                         my ( $prop, $obj ) = @_;
                         my $col = $prop->col;
                         return sprintf $prop->data_format, $obj->$col;
@@ -362,7 +362,7 @@ BEGIN {
                                     return $prop->error(
                                         MT->translate(q{Invalid date.}) )
                                         unless $date
-                                            =~ m/^\d{4}\-\d{2}\-\d{2}$/;
+                                        =~ m/^\d{4}\-\d{2}\-\d{2}$/;
                                 }
                             }
                             else {
@@ -384,8 +384,8 @@ BEGIN {
                         my $from   = $args->{from}   || undef;
                         my $to     = $args->{to}     || undef;
                         my $origin = $args->{origin} || undef;
-                        $from   =~ s/\D//g;
-                        $to     =~ s/\D//g;
+                        $from =~ s/\D//g;
+                        $to =~ s/\D//g;
                         $origin =~ s/\D//g;
                         $from .= '000000' if $from;
                         $to   .= '235959' if $to;
@@ -440,9 +440,9 @@ BEGIN {
                         if ( $val =~ m/\-/ ) {
                             my ( $from, $to ) = split /-/, $val;
                             $from = undef unless $from =~ m/^\d{8}$/;
-                            $to   = undef unless $to   =~ m/^\d{8}$/;
+                            $to   = undef unless $to =~ m/^\d{8}$/;
                             $from =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
-                            $to   =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
+                            $to =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
                             $param
                                 = $from && $to
                                 ? {
@@ -473,7 +473,7 @@ BEGIN {
                         if ( $val =~ m/\-/ ) {
                             my ( $from, $to ) = split /-/, $val;
                             $from = undef unless $from =~ m/^\d{8}$/;
-                            $to   = undef unless $to   =~ m/^\d{8}$/;
+                            $to   = undef unless $to =~ m/^\d{8}$/;
                             my $format = '%x';
                             $from = MT::Util::format_ts(
                                 $format, $from . '000000',
@@ -860,7 +860,8 @@ BEGIN {
                             ? $prop->count_args($opts)
                             : {};
                         my $iter
-                            = MT->model( $prop->count_class )->count_group_by(
+                            = MT->model( $prop->count_class )
+                            ->count_group_by(
                             $count_terms,
                             {   %$count_args,
                                 sort      => 'cnt',
@@ -892,7 +893,8 @@ BEGIN {
                             ? $prop->count_args($opts)
                             : {};
                         my $iter
-                            = MT->model( $prop->count_class )->count_group_by(
+                            = MT->model( $prop->count_class )
+                            ->count_group_by(
                             $count_terms,
                             {   %$count_args,
                                 direction => 'descend',
@@ -955,7 +957,7 @@ BEGIN {
                     col         => 'id',
                     display     => 'none',
                     view_filter => [],
-                    condition => sub {
+                    condition   => sub {
                         my $prop = shift;
                         return $prop->datasource->has_column('id') ? 1 : 0;
                     },
@@ -1190,34 +1192,6 @@ BEGIN {
                     }
                     0;
                 },
-                condition => sub {
-                    my $app = MT->instance;
-                    return 1 if $app->user->is_superuser;
-
-                    my $blog = $app->blog;
-                    my $blog_ids
-                        = !$blog         ? undef
-                        : $blog->is_blog ? [ $blog->id ]
-                        :   [ map { $_->id } @{ $blog->blogs } ];
-
-                    require MT::Permission;
-                    my $iter = MT::Permission->load_iter(
-                        {   author_id => $app->user->id,
-                            (   $blog_ids
-                                ? ( blog_id => $blog_ids )
-                                : ( blog_id => { not => 0 } )
-                            ),
-                        }
-                    );
-
-                    my $cond;
-                    while ( my $p = $iter->() ) {
-                        $cond = 1, last
-                            if $p->can_do('access_to_entry_list')
-                                and $p->blog->is_blog;
-                    }
-                    return $cond ? 1 : 0;
-                },
             },
             page => {
                 object_label     => 'Page',
@@ -1343,9 +1317,9 @@ BEGIN {
                     permit_action => 'access_to_category_list',
                     inherit       => 0,
                 },
-                view                  => [ 'website', 'blog' ],
-                scope_mode            => 'this',
-                condition             => sub {
+                view       => [ 'website', 'blog' ],
+                scope_mode => 'this',
+                condition  => sub {
                     my $app = shift;
                     ( $app->param('_type') || '' ) ne 'filter';
                 },
@@ -1361,9 +1335,9 @@ BEGIN {
                     permit_action => 'access_to_folder_list',
                     inherit       => 0,
                 },
-                view                  => [ 'website', 'blog' ],
-                scope_mode            => 'this',
-                condition             => sub {
+                view       => [ 'website', 'blog' ],
+                scope_mode => 'this',
+                condition  => sub {
                     my $app = shift;
                     ( $app->param('_type') || '' ) ne 'filter';
                 },
@@ -1604,9 +1578,8 @@ BEGIN {
             'DefaultLanguage'        => { default => 'en_US', },
             'LocalPreviews'          => { default => 0 },
             'EnableAutoRewriteOnIIS' => { default => 1 },
-            'DefaultCommenterAuth' =>
-                { default => 'MovableType' },
-            'TemplatePath' => {
+            'DefaultCommenterAuth'   => { default => 'MovableType' },
+            'TemplatePath'           => {
                 default => 'tmpl',
                 path    => 1,
             },

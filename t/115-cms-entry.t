@@ -1,5 +1,8 @@
 #!/usr/bin/perl
 
+use strict;
+use warnings;
+
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
@@ -54,6 +57,16 @@ my $kagawa = MT::Test::Permission->make_author(
     nickname => 'Ichiro Kagawa',
 );
 
+my $kikkawa = MT::Test::Permission->make_author(
+    name     => 'kikkawa',
+    nickname => 'Jiro Kikkawa',
+);
+
+my $kumekawa = MT::Test::Permission->make_author(
+    name     => 'kumekawa',
+    nickname => 'Saburo Kumekawa',
+);
+
 my $admin = MT->model('author')->load(1);
 
 # Role
@@ -65,13 +78,19 @@ my $manage_pages = MT::Test::Permission->make_role(
     name        => 'Manage Pages',
     permissions => "'manage_pages'",
 );
+my $edit_all_posts = MT::Test::Permission->make_role(
+    name        => 'Edit All Posts',
+    permissions => "'edit_all_posts'",
+);
 
 my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
-MT::Association->link( $aikawa, $create_post,  $website );
-MT::Association->link( $ogawa,  $designer,     $website );
-MT::Association->link( $kagawa, $manage_pages, $website );
-MT::Association->link( $ukawa,  $create_post,  $blog );
+MT::Association->link( $aikawa,   $create_post,    $website );
+MT::Association->link( $ogawa,    $designer,       $website );
+MT::Association->link( $kagawa,   $manage_pages,   $website );
+MT::Association->link( $kikkawa,  $create_post,    $website );
+MT::Association->link( $kumekawa, $edit_all_posts, $website );
+MT::Association->link( $ukawa,    $create_post,    $blog );
 
 MT::Association->link( $ichikawa, $create_post, $second_website );
 MT::Association->link( $egawa,    $create_post, $second_blog );
@@ -137,13 +156,20 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        my $link
+        my $link_new
             = $app->uri
             . '?__mode=view&amp;_type=entry&amp;blog_id='
             . $website->id;
-        $link = quotemeta $link;
-        like( $out, qr/$link/,
+        $link_new = quotemeta $link_new;
+        like( $out, qr/$link_new/,
             '"Entries New" menu in website scope exists if admin' );
+        my $link_manage
+            = $app->uri
+            . '?__mode=list&amp;_type=entry&amp;blog_id='
+            . $website->id;
+        $link_manage = quotemeta $link_manage;
+        like( $out, qr/$link_manage/,
+            '"Entries Manage" menu in website scope exists if admin' );
         my $fav_action_entry = 'fav-action-entry';
         like( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if admin' );
@@ -157,8 +183,11 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        like( $out, qr/$link/,
+        like( $out, qr/$link_new/,
             '"Entries New" menu in website scope exists if permitted user' );
+        like( $out, qr/$link_manage/,
+            '"Entries Manage" menu in website scope exists if permitted user'
+        );
         like( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if permitted user' );
 
@@ -171,8 +200,11 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/$link/,
+        unlike( $out, qr/$link_new/,
             '"Entries New" menu in website scope does not exist if other website'
+        );
+        unlike( $out, qr/$link_manage/,
+            '"Entries Manage" menu in website scope does not exist if other'
         );
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if other website' );
@@ -186,23 +218,28 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/$link/,
+        unlike( $out, qr/$link_new/,
             '"Entries New" menu in website scope does not exist if child blog'
         );
+        like( $out, qr/$link_manage/,
+            '"Entries Manage" menu in website scope exists if child blog' );
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if child blog' );
 
         $app = _run_app(
             'MT::App::CMS',
-            {   __test_user => $ekawa,
+            {   __test_user => $egawa,
                 __mode      => 'dashboard',
                 blog_id     => $website->id
             }
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/$link/,
+        unlike( $out, qr/$link_new/,
             '"Entries New" menu in website scope does not exist if other blog'
+        );
+        unlike( $out, qr/$link_manage/,
+            '"Entries Manage" menu in website scope does not exist if other blog'
         );
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if other blog' );
@@ -216,8 +253,11 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/$link/,
+        unlike( $out, qr/$link_new/,
             '"Entries New" menu in website scope does not exist if other permission'
+        );
+        unlike( $out, qr/$link_manage/,
+            '"Entries Manage" menu in website scope does not exist if other permission'
         );
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if other permission' );
@@ -282,7 +322,236 @@ subtest 'Test in website scope' => sub {
         done_testing();
     };
 
-    diag 'System filter check';
+    diag 'Filtered list check';
+    subtest 'Filtered list check' => sub {
+        diag 'Get filtered list by admin';
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $admin,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $website->id,
+                columns          => 'title',
+                fid              => '_allpass',
+            },
+        );
+        $out = delete $app->{__test_output};
+        like( $out, qr/Website Entry by Aikawa/, 'Got an entry in website' );
+        like(
+            $out,
+            qr/Website Category Entry by Aikawa/,
+            'Got a category entry in website'
+        );
+        like(
+            $out,
+            qr/Child Blog Entry by Ukawa/,
+            'Got an entry in child blog'
+        );
+
+        diag 'Get filtered list by permitted user (create post) in website';
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $aikawa,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $website->id,
+                columns          => 'title',
+                fid              => '_allpass',
+            },
+        );
+        $out = delete $app->{__test_output};
+        like( $out, qr/Website Entry by Aikawa/, 'Got an entry in website' );
+        like(
+            $out,
+            qr/Website Category Entry by Aikawa/,
+            'Got a category entry in website'
+        );
+        unlike(
+            $out,
+            qr/Child Blog Entry by Ukawa/,
+            'Did not get an entry in child blog'
+        );
+
+        diag
+            'Get filtered list by other permitted user (create post) in website';
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $kikkawa,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $website->id,
+                columns          => 'title',
+                fid              => '_allpass',
+            },
+        );
+        $out = delete $app->{__test_output};
+        unlike(
+            $out,
+            qr/Website Entry by Aikawa/,
+            'Did not get an entry in website'
+        );
+        unlike(
+            $out,
+            qr/Website Category Entry by Aikawa/,
+            'Did not get a category entry in website'
+        );
+        unlike(
+            $out,
+            qr/Child Blog Entry by Ukawa/,
+            'Did not get an entry in child blog'
+        );
+
+        diag
+            'Get filtered list by other permitted user (edit all posts) in website';
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $kumekawa,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $website->id,
+                columns          => 'title',
+                fid              => '_allpass',
+            },
+        );
+        $out = delete $app->{__test_output};
+        like( $out, qr/Website Entry by Aikawa/, 'Got an entry in website' );
+        like(
+            $out,
+            qr/Website Category Entry by Aikawa/,
+            'Got a category entry in website'
+        );
+        unlike(
+            $out,
+            qr/Child Blog Entry by Ukawa/,
+            'Did not get an entry in child blog'
+        );
+
+        diag 'Get filtered list by permitted user in child blog';
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $ukawa,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $website->id,
+                columns          => 'title',
+                fid              => '_allpass',
+            },
+        );
+        $out = delete $app->{__test_output};
+        unlike(
+            $out,
+            qr/Website Entry by Aikawa/,
+            'Did not get an entry in website'
+        );
+        unlike(
+            $out,
+            qr/Website Category Entry by Aikawa/,
+            'Did not get a category entry in website'
+        );
+        like(
+            $out,
+            qr/Child Blog Entry by Ukawa/,
+            'Got an entry in child blog'
+        );
+
+        diag 'Get filtered list by other website';
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $ichikawa,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $website->id,
+                columns          => 'title',
+                fid              => '_allpass',
+            },
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, 'Request: filtered_list' );
+        unlike(
+            $out,
+            qr/Website Entry by Aikawa/,
+            'Did not get an entry in website'
+        );
+        unlike(
+            $out,
+            qr/Website Category Entry by Aikawa/,
+            'Did not get a category entry in website'
+        );
+        unlike(
+            $out,
+            qr/Child Blog Entry by Ukawa/,
+            'Did not get an entry in child blog'
+        );
+
+        diag 'Get filtered list by other blog';
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $egawa,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $website->id,
+                columns          => 'title',
+                fid              => '_allpass',
+            },
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, 'Request: filtered_list' );
+        unlike(
+            $out,
+            qr/Website Entry by Aikawa/,
+            'Did not get an entry in website'
+        );
+        unlike(
+            $out,
+            qr/Website Category Entry by Aikawa/,
+            'Did not get a category entry in website'
+        );
+        unlike(
+            $out,
+            qr/Child Blog Entry by Ukawa/,
+            'Did not get an entry in child blog'
+        );
+
+        diag 'Get filtered list by other permission';
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $ogawa,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $website->id,
+                columns          => 'title',
+                fid              => '_allpass',
+            },
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, 'Request: filtered_list' );
+        unlike(
+            $out,
+            qr/Website Entry by Aikawa/,
+            'Did not get an entry in website'
+        );
+        unlike(
+            $out,
+            qr/Website Category Entry by Aikawa/,
+            'Did not get a category entry in website'
+        );
+        unlike(
+            $out,
+            qr/Child Blog Entry by Ukawa/,
+            'Did not get an entry in child blog'
+        );
+
+    };
+
+    diag 'Built in filter check';
     subtest 'Built in filter check' => sub {
         $app = _run_app(
             'MT::App::CMS',
