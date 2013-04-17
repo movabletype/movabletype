@@ -240,9 +240,44 @@ subtest 'Test in website scope' => sub {
 
         like( $out, qr/Entry Feed/, 'Entry Feed in website scope exists' );
         my $column
-            = quotemeta( '<span class="col-label">Website/Blog Name</span>' );
+            = quotemeta('<span class="col-label">Website/Blog Name</span>');
         $column = qr/$column/;
         like( $out, $column, '"Website/Blog Name" column exists' );
+
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $admin,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => $website->id,
+                columns          => 'blog_name',
+                fid              => '_allpass',
+            },
+        );
+        $out = delete $app->{__test_output};
+
+        my $blog_name = quotemeta( $website->name . '/' . $blog->name );
+        like( $out, qr/$blog_name/,
+            '"Website/Blog Name" column\'s format in website scope is correct'
+        );
+
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $admin,
+                __request_method => 'POST',
+                __mode           => 'filtered_list',
+                datasource       => 'entry',
+                blog_id          => 0,
+                columns          => 'blog_name',
+                fid              => '_allpass',
+            },
+        );
+        $out = delete $app->{__test_output};
+
+        like( $out, qr/$blog_name/,
+            '"Website/Blog Name" column\'s format in system scope is correct'
+        );
 
         done_testing();
     };
