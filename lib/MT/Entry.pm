@@ -1247,7 +1247,7 @@ sub pinged_url_list {
             delete $urls{$_} if $exclude_successes;
         }
     }
-    [ keys %urls ];
+    [ sort keys %urls ];
 }
 
 sub to_ping_url_list {
