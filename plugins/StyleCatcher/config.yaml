@@ -44,11 +44,17 @@ applications:
 callbacks:
     post_init: $StyleCatcher::StyleCatcher::Util::load_meta_fields
 upgrade_functions:
-    move_current_style_to_meta:
+    move_current_style_to_meta_for_website:
+        priority: 3.0
+        updater:
+            type: website
+            label: Moving current style to blog_meta for website...
+            code: $StyleCatcher::StyleCatcher::Upgrade::move_current_style_to_meta
+    move_current_style_to_meta_for_blog:
         priority: 3.0
         updater:
             type: blog
-            label: Moving current style to blog_meta...
+            label: Moving current style to blog_meta for blog...
             code: $StyleCatcher::StyleCatcher::Upgrade::move_current_style_to_meta
     reset_config:
         priority: 3.1

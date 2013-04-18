@@ -2726,7 +2726,7 @@ sub canonicalize_path {
                 pop @parts;
             }
         }
-        elsif ( defined $path and $path ne File::Spec->curdir ) {
+        elsif ( $path ne '' and $path ne File::Spec->curdir ) {
             push @parts, $path;
         }
     }
