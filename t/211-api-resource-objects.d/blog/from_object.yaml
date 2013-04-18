@@ -1,0 +1,8 @@
+- 
+  note: A blog
+  from: 
+    id: 1
+    name: Test
+  to: 
+    id: 1
+    name: Test

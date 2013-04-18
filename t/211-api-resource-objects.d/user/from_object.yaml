@@ -5,8 +5,8 @@
     nickname: Test
     userpic_asset_id: 1
   to: 
-    displayName: Test
     id: 1
+    displayName: Test
     userpicURL: http://narnia.na/nana/assets_c/userpics/userpic-1-100x100.png
 - 
   note: An user without userpic
@@ -16,3 +16,4 @@
   to: 
     displayName: Test
     id: 1
+    userpicURL: ~

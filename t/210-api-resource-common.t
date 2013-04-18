@@ -67,6 +67,16 @@ subtest 'from_object with $fields_specified' => sub {
             ( defined( $d->{fields} ) ? $d->{fields} : () ) );
         is_deeply( $hash, $d->{to}, 'converted data' );
     }
+
+    {
+        my @users
+            = map { my $u = $user_class->new; $u->set_values( $_->{from} ); $u }
+            @suite;
+        my $hashs = MT::API::Resource->from_object( \@users );
+        my $expected = [ map { MT::API::Resource->from_object($_) } @users ];
+
+        is_deeply( $hashs, $expected, 'convert data in bulk' );
+    }
 };
 
 subtest 'to_object with column not allowed to overwrite' => sub {

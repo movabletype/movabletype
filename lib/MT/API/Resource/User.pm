@@ -12,8 +12,9 @@ sub fields {
         {   name  => 'displayName',
             alias => 'nickname',
         },
-        {   name  => 'userpicURL',
-            alias => 'userpic_url',
+        {   name    => 'userpicURL',
+            alias   => 'userpic_url',
+            default => undef,
         },
     ];
 }

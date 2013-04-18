@@ -5,6 +5,7 @@ use warnings;
 
 use URI;
 use MT::Stats;
+use MT::API::Resource;
 
 sub _invoke {
     my ( $app, $endpoint ) = @_;
@@ -33,20 +34,20 @@ sub _invoke {
 
 sub pageviews_for_path {
     my ( $app, $endpoint ) = @_;
-    fill_in_archive_info( _invoke(@_), $app->blog );
+    MT::API::Resource::Type::Raw->new(fill_in_archive_info( _invoke(@_), $app->blog ));
 }
 
 sub visits_for_path {
     my ( $app, $endpoint ) = @_;
-    fill_in_archive_info( _invoke(@_), $app->blog );
+    MT::API::Resource::Type::Raw->new(fill_in_archive_info( _invoke(@_), $app->blog ));
 }
 
 sub pageviews_for_date {
-    _invoke(@_);
+    MT::API::Resource::Type::Raw->new(_invoke(@_));
 }
 
 sub visits_for_date {
-    _invoke(@_);
+    MT::API::Resource::Type::Raw->new(_invoke(@_));
 }
 
 sub fill_in_archive_info {

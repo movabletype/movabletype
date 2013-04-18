@@ -13,10 +13,34 @@ sub updatable_fields {
 }
 
 sub fields {
-    [   {   name        => 'author',
-            from_object => sub {
-                my ($obj) = @_;
-                MT::API::Resource->from_object( $obj->author );
+    [   {   name             => 'author',
+            bulk_from_object => sub {
+                my ( $objs, $hashs ) = @_;
+                my @commenter_ids = map { $_->commenter_id } @$objs;
+                my %authors       = ();
+                my @authors       = MT->model('author')
+                    ->load( { id => [ grep {$_} @commenter_ids ], } );
+                $authors{ $_->id } = $_ for @authors;
+
+                my $size = scalar(@$objs);
+                for ( my $i = 0; $i < $size; $i++ ) {
+                    my $c = $objs->[$i];
+                    my $a
+                        = $commenter_ids[$i]
+                        ? $authors{ $commenter_ids[$i] }
+                        : undef;
+                    if ($a) {
+                        $hashs->[$i]{author}
+                            = MT::API::Resource->from_object($a);
+                    }
+                    else {
+                        $hashs->[$i]{author} = {
+                            id          => undef,
+                            displayName => $c->author,
+                            userpicURL  => undef,
+                        };
+                    }
+                }
             },
         },
         {   name        => 'entry',
@@ -34,6 +58,7 @@ sub fields {
         'id',
         {   name  => 'date',
             alias => 'created_on',
+            type  => 'MT::API::Resource::DataType::ISO8601',
         },
         {   name  => 'body',
             alias => 'text',
@@ -50,7 +75,7 @@ sub fields {
         {   name        => 'status',
             from_object => sub {
                 my ($obj) = @_;
-                $obj->status_text;
+                $obj->get_status_text;
             },
             to_object => sub {
                 my ( $hash, $obj ) = @_;

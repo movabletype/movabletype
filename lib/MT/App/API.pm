@@ -261,7 +261,7 @@ sub endpoint_url {
         my ( $whole, $key ) = @_;
         if ( exists $params->{$key} ) {
             my $v = delete $params->{$key};
-            UNIVERSAL::isa( $v, 'MT::Object' ) ? $v->id : $v;
+            $v->can('id') ? $v->id : $v;
         }
         else {
             $whole;
@@ -282,7 +282,7 @@ sub find_endpoint_by_path {
 
     my $handler         = $endpoints;
     my @vars            = ();
-    my $implicit_format = '';
+    my $auto_format = '';
 
     $path =~ s#^/+##;
     my @paths = split m#(?=/|\.)|(?<=/|\.)#o, $path;
@@ -295,7 +295,7 @@ sub find_endpoint_by_path {
             push @vars, $p;
         }
         elsif ( $p eq '.' && scalar(@paths) == 1 ) {
-            $implicit_format = shift @paths;
+            $auto_format = shift @paths;
         }
         else {
             return;
@@ -309,7 +309,7 @@ sub find_endpoint_by_path {
     for ( my $i = 0; $i < scalar( @{ $e->{_vars} } ); $i++ ) {
         $params{ $e->{_vars}[$i] } = $vars[$i];
     }
-    $params{format} = $implicit_format if $implicit_format && !$e->{format};
+    $params{format} = $auto_format if $auto_format && !$e->{format};
 
     $e, \%params;
 }
@@ -405,8 +405,13 @@ sub object_to_resource {
     my ( $app, $res, $fields ) = @_;
     my $ref = ref $res;
 
-    if ( UNIVERSAL::isa( $res, 'MT::Object' ) ) {
+    if ( UNIVERSAL::isa( $res, 'MT::Object' )
+        || $ref eq 'MT::API::Resource::Type::ObjectList' )
+    {
         MT::API::Resource->from_object( $res, $fields );
+    }
+    elsif ( $ref eq 'MT::API::Resource::Type::Raw' ) {
+        $res->content;
     }
     elsif ( $ref eq 'HASH' ) {
         my %result = ();
@@ -655,12 +660,10 @@ sub api {
     $app->run_callbacks( 'post_run_api.' . $endpoint->{id},
         $app, $endpoint, $response );
 
-    if ( UNIVERSAL::isa( $response, 'MT::Template' ) ) {
-        $response;
-    }
-    elsif (ref $response eq 'HASH'
-        || ref $response eq 'ARRAY'
-        || UNIVERSAL::isa( $response, 'MT::Object' ) )
+    my $response_ref = ref $response;
+
+    if ( UNIVERSAL::isa( $response, 'MT::Object' )
+        || $response_ref =~ m/\A(?:HASH|ARRAY|MT::API::Resource::Type::)/ )
     {
         my $format   = $app->current_format;
         my $resource = $app->object_to_resource( $response,
@@ -670,6 +673,9 @@ sub api {
         $app->{no_print_body} = 1;
         $app->print_encode($data);
         undef;
+    }
+    elsif ( $response_ref eq 'MT::Template' ) {
+        $response;
     }
     else {
         $response;

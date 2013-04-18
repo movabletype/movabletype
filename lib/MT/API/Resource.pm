@@ -3,7 +3,7 @@ package MT::API::Resource;
 use strict;
 use warnings;
 
-our (%resources) = ();
+our %resources = ();
 
 sub core_resources {
     my $pkg = '$Core::MT::API::Resource::';
@@ -24,7 +24,7 @@ sub core_resources {
             fields           => "${pkg}Trackback::fields",
             updatable_fields => "${pkg}Trackback::updatable_fields",
         },
-        'tbping' => 'tbping',
+        'tbping' => 'trackback',
         'user'   => {
             fields           => "${pkg}User::fields",
             updatable_fields => "${pkg}User::updatable_fields",
@@ -37,6 +37,10 @@ sub core_resources {
         'website' => {
             fields           => "${pkg}Website::fields",
             updatable_fields => "${pkg}Website::updatable_fields",
+        },
+        'asset' => {
+            fields           => "${pkg}Asset::fields",
+            updatable_fields => "${pkg}Asset::updatable_fields",
         },
     };
 }
@@ -88,6 +92,19 @@ sub resource {
                 }
             ];
         }
+
+        for my $f ( @{ $res->{fields} } ) {
+            if ( ref $f eq 'HASH' && ( my $type = $f->{type} ) ) {
+                $type = 'MT::API::Resource::DataType::' . $type
+                    unless $type =~ m/:/;
+                eval "require $type;";
+                for my $mtype (qw(from_object to_object)) {
+                    if ( my $method = $type->can($mtype) ) {
+                        $f->{ 'type_' . $mtype } = $method;
+                    }
+                }
+            }
+        }
     }
 
     $res;
@@ -95,9 +112,20 @@ sub resource {
 
 sub from_object {
     my $class = shift;
-    my ( $obj, $fields_specified ) = @_;
+    my ( $objs, $fields_specified ) = @_;
+    my $is_list = 1;
 
-    my $resource_data = $class->resource($obj)
+    if ( UNIVERSAL::isa( $objs, 'MT::Object' ) ) {
+        $is_list = 0;
+        $objs    = [$objs];
+    }
+    elsif ( UNIVERSAL::isa( $objs, 'MT::API::Resource::Type::ObjectList' ) ) {
+        $objs = $objs->content;
+    }
+
+    return [] unless @$objs;
+
+    my $resource_data = $class->resource( $objs->[0] )
         or return;
 
     my @fields = do {
@@ -113,35 +141,66 @@ sub from_object {
         }
     };
 
-    my %hash = ();
+    my $objs_count = scalar(@$objs);
+    my @hashs = map { +{} } 0 .. $#$objs;
+
     for my $f (@fields) {
-        my $ref  = ref $f;
-        my @vals = ();
-        my $name = $f;
-
-        if ( !$ref ) {
-            @vals = $obj->$f;
-        }
-        elsif ( $ref eq 'HASH' ) {
-            $name = $f->{name};
-            if ( exists $f->{from_object} ) {
-                @vals = $f->{from_object}->( $obj, \%hash, $f );
-            }
-            elsif ( my $alias = $f->{alias} ) {
-                @vals = $obj->$alias;
-            }
+        if ( !ref $f ) {
+            $f = { name => $f, };
         }
 
-        if (@vals) {
-            $hash{$name} = $vals[0];
+        if ( $f->{bulk_from_object} ) {
+            $f->{bulk_from_object}->( $objs, \@hashs, $f );
+        }
+        else {
+            my $i;
+            my $name        = $f->{name};
+            my $has_default = exists $f->{default};
+            my $default     = $has_default ? $f->{default} : undef;
+
+            # Prepare method to fetching value, outside of the loop
+            my $method = do {
+                if ( exists $f->{from_object} ) {
+                    sub {
+                        $f->{from_object}->( $_[0], $hashs[$i], $f );
+                    };
+                }
+                else {
+                    $objs->[0]->can( $f->{alias} || $name );
+                }
+                }
+                || sub { };
+
+            for ( $i = 0; $i < $objs_count; $i++ ) {
+                my @vals = $method->( $objs->[$i] );
+                if ( @vals || $has_default ) {
+                    $hashs[$i]{$name}
+                        = defined( $vals[0] ) ? $vals[0] : $default;
+                }
+            }
         }
     }
-    \%hash;
+
+    for my $f (@fields) {
+        if ( ref $f && $f->{type_from_object} ) {
+            $f->{type_from_object}->( $objs, \@hashs, $f );
+        }
+    }
+
+    $is_list ? \@hashs : $hashs[0];
 }
 
 sub to_object {
     my $class = shift;
-    my ( $name, $hash, $original ) = @_;
+    my ( $name, $hashs, $originals ) = @_;
+    my $is_list = 1;
+
+    if ( ref $hashs eq 'HASH' ) {
+        $is_list = 0;
+        $hashs   = [$hashs];
+    }
+
+    return [] unless @$hashs;
 
     my $resource_data = $class->resource($name)
         or return;
@@ -154,34 +213,132 @@ sub to_object {
         } @{ $resource_data->{fields} };
     };
 
-    my $obj = $original ? $original->clone : MT->model($name)->new;
-    my %values = ();
+    my $model_class = MT->model($name);
+    my @objs        = map {
+        my $obj
+            = $originals
+            ? ref $originals eq 'ARRAY'
+                ? $originals->[$_]->clone
+                : $originals->clone
+            : $model_class->new;
+
+    } 0 .. $#$hashs;
+    my $objs_count = scalar(@$hashs);
+
     for my $f (@fields) {
-        my $ref = ref $f;
-        if ( !$ref ) {
-            if ( exists( $hash->{$f} ) ) {
-                $values{$f} = $hash->{$f};
-            }
+        if ( !ref $f ) {
+            $f = { name => $f, };
         }
-        elsif ( $ref eq 'HASH' ) {
-            if ( !exists( $hash->{ $f->{name} } ) ) {
+        my $name = $f->{name};
+
+        for ( my $i = 0; $i < $objs_count; $i++ ) {
+            my $hash = $hashs->[$i];
+            my $obj  = $objs[$i];
+
+            my @vals = ();
+            if ( !exists( $hash->{$name} ) ) {
 
                 # Do nothing
             }
             elsif ( exists $f->{to_object} ) {
-                my @vals = $f->{to_object}->( $hash, $obj, $f );
-                if (@vals) {
-                    $values{ $f->{alias} || $f->{name} } = $vals[0];
-                }
+                @vals = $f->{to_object}->( $hash, $obj, $f );
             }
-            elsif ( my $alias = $f->{alias} ) {
-                $values{$alias} = $hash->{ $f->{name} };
+            else {
+                @vals = ( $hash->{$name} );
+            }
+
+            if (@vals) {
+                my $k = $f->{alias} || $name;
+                $obj->$k( $vals[0] );
             }
         }
     }
-    $obj->set_values( \%values );
 
-    $obj;
+    for my $f (@fields) {
+        if ( ref $f && $f->{type_to_object} ) {
+            $f->{type_to_object}->( $hashs, \@objs, $f );
+        }
+    }
+
+    $is_list ? \@objs : $objs[0];
+}
+
+# MT::API::Resource::Type
+package MT::API::Resource::Type::Raw;
+
+sub new {
+    my $self = [ $_[1] ];
+    bless $self, $_[0];
+    $self;
+}
+
+sub content {
+    $_[0]->[0];
+}
+
+package MT::API::Resource::Type::ObjectList;
+
+use base qw(MT::API::Resource::Type::Raw);
+
+# MT::API::Resource::DataType
+package MT::API::Resource::DataType::Object;
+
+sub from_object {
+    my ( $objs, $hashs, $f ) = @_;
+    my $name = $f->{name};
+    foreach my $h (@$hashs) {
+        $h->{$name} = MT::API::Resource->from_object( $h->{$name} )
+            if $h->{$name};
+    }
+}
+
+package MT::API::Resource::DataType::ISO8601;
+
+sub from_object {
+    my ( $objs, $hashs, $f ) = @_;
+    my %blogs    = ();
+    my @blog_ids = ();
+    if ( $objs->[0]->isa('MT::Blog') ) {
+        $blogs{ $_->id } = $_ for @$objs;
+        @blog_ids = map { $_->id } @$objs;
+    }
+    else {
+        @blog_ids = map { $_->blog_id } @$objs;
+        my @blogs = MT->model('blog')->load( { id => \@blog_ids, } );
+        $blogs{ $_->id } = $_ for @blogs;
+    }
+
+    my $size = scalar(@$objs);
+    my $name = $f->{name};
+    for ( my $i = 0; $i < $size; $i++ ) {
+        my $h = $hashs->[$i];
+        $h->{$name}
+            = MT::Util::ts2iso( $blogs{ $blog_ids[$i] }, $h->{$name}, 1 );
+    }
+}
+
+sub to_object {
+    my ( $hashs, $objs, $f ) = @_;
+    my %blogs    = ();
+    my @blog_ids = ();
+    if ( $objs->[0]->isa('MT::Blog') ) {
+        $blogs{ $_->id } = $_ for @$objs;
+        @blog_ids = map { $_->id } @$objs;
+    }
+    else {
+        @blog_ids = map { $_->blog_id || () } @$objs
+            or return;
+        my @blogs = MT->model('blog')->load( { id => \@blog_ids, } );
+        $blogs{ $_->id } = $_ for @blogs;
+    }
+
+    my $size = scalar(@$objs);
+    my $name = $f->{alias} || $f->{name};
+    for ( my $i = 0; $i < $size; $i++ ) {
+        my $o = $objs->[$i];
+        $o->$name( MT::Util::iso2ts( $blogs{ $blog_ids[$i] }, $o->$name ) )
+            if $o->$name;
+    }
 }
 
 1;

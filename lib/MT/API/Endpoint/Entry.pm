@@ -9,6 +9,7 @@ use warnings;
 use strict;
 
 use MT::API::Endpoint::Common;
+use MT::API::Resource;
 
 sub list {
     my ( $app, $endpoint ) = @_;
@@ -16,7 +17,7 @@ sub list {
     my $res = filtered_list( $app, $endpoint, 'entry' );
 
     +{  totalResults => $res->{count},
-        items        => $res->{objects},
+        items => MT::API::Resource::Type::ObjectList->new( $res->{objects} ),
     };
 }
 
@@ -26,16 +27,17 @@ sub create {
     my ($blog) = context_objects(@_)
         or return;
 
-    my $new_entry = $app->resource_object('entry')
-        or return $app->error( resource_error('entry') );
-
-    $new_entry->set_values(
+    my $orig_entry = $app->model('entry')->new;
+    $orig_entry->set_values(
         {   blog_id   => $blog->id,
             author_id => $app->user->id,
         }
     );
 
-    save_object($app, 'entry', $new_entry)
+    my $new_entry = $app->resource_object( 'entry', $orig_entry )
+        or return $app->error( resource_error('entry') );
+
+    save_object( $app, 'entry', $new_entry )
         or return;
 
     $new_entry;
@@ -47,7 +49,8 @@ sub get {
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
-    run_permission_filter( $app, 'cms_view_permission_filter', 'entry', $entry )
+    run_permission_filter( $app, 'cms_view_permission_filter', 'entry',
+        $entry )
         or return;
 
     $entry;
@@ -61,7 +64,7 @@ sub update {
     my $new_entry = $app->resource_object( 'entry', $entry )
         or return $app->error( resource_error('entry') );
 
-    save_object($app, 'entry', $new_entry, $entry)
+    save_object( $app, 'entry', $new_entry, $entry )
         or return;
 
     $new_entry;
@@ -73,7 +76,7 @@ sub delete {
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
-    remove_object($app, 'entry', $entry)
+    remove_object( $app, 'entry', $entry )
         or return;
 
     $entry;

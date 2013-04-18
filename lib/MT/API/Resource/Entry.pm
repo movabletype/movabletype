@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use boolean ();
+use MT::API::Resource::Common;
 
 sub updatable_fields {
     [   qw(
@@ -24,11 +25,8 @@ sub updatable_fields {
 }
 
 sub fields {
-    [   {   name        => 'author',
-            from_object => sub {
-                my ($obj) = @_;
-                MT::API::Resource->from_object( $obj->author );
-            },
+    [   {   name => 'author',
+            type => 'MT::API::Resource::DataType::Object',
         },
         {   name        => 'blog',
             from_object => sub {
@@ -48,12 +46,14 @@ sub fields {
 
                 my $cats = MT::Category->lookup_multi(
                     [ map { $_->[0] } @$rows ] );
-                [   map { MT::API::Resource->from_object($_) } sort {
-                              $a->id == $primary ? 1
-                            : $b->id == $primary ? -1
-                            : $a->label cmp $b->label
-                    } @$cats
-                ];
+                MT::API::Resource->from_object(
+                    [   sort {
+                                  $a->id == $primary ? 1
+                                : $b->id == $primary ? -1
+                                : $a->label cmp $b->label
+                        } @$cats
+                    ]
+                );
             },
         },
         'id',
@@ -90,12 +90,42 @@ sub fields {
                 $hash->{allowTrackbacks} ? 1 : 0;
             },
         },
-        'title',
-        {   name  => 'body',
-            alias => 'text',
+        {   name    => 'title',
+            default => '',
         },
-        {   name  => 'more',
-            alias => 'text_more',
+        {   name    => 'body',
+            alias   => 'text',
+            default => '',
+        },
+        {   name    => 'more',
+            alias   => 'text_more',
+            default => '',
+        },
+        {   name        => 'excerpt',
+            from_object => sub {
+                my ($obj) = @_;
+                $obj->get_excerpt;
+            },
+        },
+        {   name    => 'keywords',
+            default => '',
+        },
+        'basename',
+        'permalink',
+        {   name  => 'pingsSentURL',
+            alias => 'pinged_url_list',
+        },
+        {   name  => 'date',
+            alias => 'authored_on',
+            type  => 'MT::API::Resource::DataType::ISO8601',
+        },
+        {   name  => 'createdDate',
+            alias => 'created_on',
+            type  => 'MT::API::Resource::DataType::ISO8601',
+        },
+        {   name  => 'modifiedDate',
+            alias => 'modified_on',
+            type  => 'MT::API::Resource::DataType::ISO8601',
         },
         {   name  => 'commentCount',
             alias => 'comment_count',
@@ -113,7 +143,8 @@ sub fields {
                 {
                     $args = { limit => int( $app->param('maxComments') ), };
                 }
-                $app->object_to_resource( $obj->comments( undef, $args ) );
+                MT::API::Resource->from_object(
+                    $obj->comments( undef, $args ) );
             },
         },
         {   name        => 'trackbacks',
@@ -126,9 +157,17 @@ sub fields {
                 {
                     $args = { limit => int( $app->param('maxTrackbacks') ), };
                 }
-                $app->object_to_resource( $obj->pings( undef, $args ) );
+                MT::API::Resource->from_object( $obj->pings( undef, $args )
+                        || [] );
             },
         },
+        {   name        => 'assets',
+            from_object => sub {
+                my ($obj) = @_;
+                MT::API::Resource->from_object( $obj->assets );
+            },
+        },
+        $MT::API::Resource::Common::fields{tags},
     ];
 }
 

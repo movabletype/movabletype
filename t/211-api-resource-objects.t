@@ -56,8 +56,16 @@ sub from_object {
 
     for my $d (@$suite) {
         note( $d->{note} ) if $d->{note};
-        my $obj = $model_class->new;
-        $obj->set_values( $d->{from} );
+        my $obj = do {
+            if ( ref $d->{from} ) {
+                my $obj = $model_class->new;
+                $obj->set_values( $d->{from} );
+                $obj;
+            }
+            else {
+                $model_class->load( $d->{from} );
+            }
+        };
         my $hash = MT::API::Resource->from_object($obj);
         is_deeply( $hash, $d->{to}, 'converted data' );
     }
@@ -84,6 +92,19 @@ sub to_object {
         my $obj
             = MT::API::Resource->to_object( $model, $d->{from}, $original );
         my $values = $obj->column_values;
+
+        if ( $d->{not_to} ) {
+            foreach my $k ( keys %{ $d->{not_to} } ) {
+                delete $expected_values->{$k};
+                my $value = delete $values->{$k};
+                isnt( $value, $d->{not_to}{$k}, 'converted data:' . $k );
+            }
+        }
+
+        if ( my $tags = delete $d->{to}{tags} ) {
+            is_deeply( [ $obj->tags ], $tags, 'converted data: tags' );
+        }
+
         foreach my $k ( keys %{ $d->{to} } ) {
             $expected_values->{$k} = $d->{to}{$k};
         }
