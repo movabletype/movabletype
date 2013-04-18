@@ -1115,23 +1115,24 @@ sub parent {
     );
 }
 
-sub status_text {
-    my $s = $_[0];
-          $s->is_published ? 'Approved'
-        : $s->is_moderated ? 'Pending'
-        :                    'Spam';
+sub get_status_text {
+    my $self = shift;
+          $self->is_published ? 'Approved'
+        : $self->is_moderated ? 'Pending'
+        :                       'Spam';
 }
 
 sub set_status_by_text {
-    my $s = lc $_[0];
-    if ($s eq 'approved') {
-        $s->approve;
+    my $self   = shift;
+    my $status = lc $_[0];
+    if ( $status eq 'approved' ) {
+        $self->approve;
     }
-    elsif ($s eq 'pending') {
-        $s->moderate;
+    elsif ( $status eq 'pending' ) {
+        $self->moderate;
     }
     else {
-        $s->junk;
+        $self->junk;
     }
 }
 
