@@ -542,6 +542,8 @@ ok(dir_separator(), 'dir_separator()');
     my $path;
     $path= '/foo/bar/baz';
     is( canonicalize_path( $path ), '/foo/bar/baz', 'Already canonicalized(abs)' );
+    $path= '/foo/bar/0/baz';
+    is( canonicalize_path( $path ), '/foo/bar/0/baz', 'Contains a path named "0"' );
     $path= 't/../t/08-util.t';
     is( canonicalize_path( $path ), File::Spec->catdir( 't', '08-util.t' ), 'canonicalize relative path' );
     $path= '/foo/../bar/baz';

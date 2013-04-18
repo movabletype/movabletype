@@ -1341,7 +1341,7 @@ sub is_valid_date {
 
 sub is_valid_email {
     my ($addr) = @_;
-    return 0 if $addr =~ /[\n\r]/;
+    return 0 if !$addr || $addr =~ /[\n\r]/;
 
     # The case containing full-width character is error.
     return 0 if $addr =~ /[^\x01-\x7E]/;
@@ -2726,7 +2726,7 @@ sub canonicalize_path {
                 pop @parts;
             }
         }
-        elsif ( defined $path and $path ne File::Spec->curdir ) {
+        elsif ( $path ne '' and $path ne File::Spec->curdir ) {
             push @parts, $path;
         }
     }

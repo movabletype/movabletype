@@ -588,15 +588,16 @@ sub rebuild_entry {
     }
     return 1 if $blog->is_dynamic;
 
-    my $categories_for_rebuild = $entry->categories;
+    my $categories_for_rebuild;
     if ( my $ids = $param{OldCategories} ) {
-        my %new_ids = map { $_->id => 1 } @$categories_for_rebuild;
+        my %new_ids = map { $_->id => 1 } @{$entry->categories};
         my @old_ids = grep { !$new_ids{$_} } split( ',', $ids );
 
         if (@old_ids) {
             push( @$categories_for_rebuild,
                 MT::Category->load( { id => \@old_ids } ) );
         }
+        push @$categories_for_rebuild, ( map { $_ } @{$entry->categories} );
     }
 
     my $at
