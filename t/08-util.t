@@ -209,6 +209,7 @@ my $timestamp = '20021224103045';
 my $epoch = 1040725845;
 is(iso2ts($blog, '20021224T10:30:45'), '20021224103045', 'iso2ts()');
 is(ts2iso($blog, '20021224103045'), '2002-12-24T10:30:45Z', 'ts2iso() (server_offset is 0)');
+is(ts2iso($blog, '20021224103045', 1), '2002-12-24T10:30:45+00:00', 'ts2iso() with timezone (server_offset is 0)');
 is(epoch2ts($blog, $epoch), $timestamp, 'epoch2ts() (server_offset is 0)');
 is(ts2epoch($blog, $timestamp), $epoch, 'ts2epoch() (server_offset is 0)');
 is(offset_time($epoch, $blog), $epoch, 'offset_time() (server_offset is 0)');
@@ -218,6 +219,7 @@ is(offset_time_list($epoch, $blog, '-'), 'Tue Dec 24 10:30:45 2002', 'offset_tim
 
 $blog->server_offset(1);
 is(ts2iso($blog, $timestamp), '2002-12-24T09:30:45Z', 'ts2iso() (server_offset is 1)');
+is(ts2iso($blog, $timestamp, 1), '2002-12-24T10:30:45+01:00', 'ts2iso() with timezone (server_offset is 1)');
 is(epoch2ts($blog, $epoch), '20021224113045', 'epoch2ts() (server_offset is 1)');
 is(ts2epoch($blog, $timestamp), $epoch-60*60, 'ts2epoch() (server_offset is 1)');
 is(offset_time($epoch, $blog), $epoch+60*60, 'offset_time() (server_offset is 1)');
@@ -227,6 +229,7 @@ is(offset_time_list($epoch, $blog, '-'), 'Tue Dec 24 09:30:45 2002', 'offset_tim
 
 $blog->server_offset(-1);
 is(ts2iso($blog, $timestamp), '2002-12-24T11:30:45Z', 'ts2iso() (server_offset is -1)');
+is(ts2iso($blog, $timestamp, 1), '2002-12-24T10:30:45-01:00', 'ts2iso() with timezone (server_offset is -1)');
 is(epoch2ts($blog, $epoch), '20021224093045', 'epoch2ts() (server_offset is -1)');
 is(ts2epoch($blog, $timestamp), $epoch+60*60, 'ts2epoch() (server_offset is -1)');
 is(offset_time($epoch, $blog), $epoch-60*60, 'offset_time() (server_offset is -1)');

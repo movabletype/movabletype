@@ -110,13 +110,27 @@ sub iso2ts {
 }
 
 sub ts2iso {
-    my ( $blog, $ts ) = @_;
+    my ( $blog, $ts, $with_timezone ) = @_;
     my ( $yr, $mo, $dy, $hr, $mn, $sc ) = unpack( 'A4A2A2A2A2A2', $ts );
-    $ts = Time::Local::timegm_nocheck( $sc, $mn, $hr, $dy, $mo - 1, $yr );
-    ( $sc, $mn, $hr, $dy, $mo, $yr ) = offset_time_list( $ts, $blog, '-' );
-    $yr += 1900;
-    $mo += 1;
-    sprintf( "%04d-%02d-%02dT%02d:%02d:%02dZ", $yr, $mo, $dy, $hr, $mn, $sc );
+
+    if ($with_timezone) {
+        my ( $off_hour, $off_min ) = split( /\./, $blog->server_offset );
+        $off_min = int( 6 * ( $off_min || 0 ) );
+        sprintf(
+            '%04d-%02d-%02dT%02d:%02d:%02d%s%02d:%02d',
+            $yr, $mo, $dy, $hr, $mn, $sc, $off_hour >= 0 ? '+' : '-',
+            abs($off_hour), $off_min
+        );
+    }
+    else {
+        $ts = Time::Local::timegm_nocheck( $sc, $mn, $hr, $dy, $mo - 1, $yr );
+        ( $sc, $mn, $hr, $dy, $mo, $yr )
+            = offset_time_list( $ts, $blog, '-' );
+        $yr += 1900;
+        $mo += 1;
+        sprintf( "%04d-%02d-%02dT%02d:%02d:%02dZ",
+            $yr, $mo, $dy, $hr, $mn, $sc );
+    }
 }
 
 sub ts2epoch {
