@@ -10,10 +10,11 @@ use strict;
 use base qw( MT::App );
 
 use MT::API::Resource;
+use MT::API::Format;
 use MT::App::CMS::Common;
 use MT::AccessToken;
 
-our ( %endpoints, %formats ) = ();
+our %endpoints = ();
 
 sub id {'api'}
 
@@ -160,19 +161,6 @@ sub core_endpoints {
     ];
 }
 
-sub core_formats {
-    my $app = shift;
-    my $pkg = '$Core::MT::API::Format::';
-    return {
-        'js'   => 'json',
-        'json' => {
-            content_type => 'application/json',
-            serialize    => "${pkg}JSON::serialize",
-            unserialize  => "${pkg}JSON::unserialize",
-        },
-    };
-}
-
 sub init_plugins {
     my $app = shift;
 
@@ -314,54 +302,16 @@ sub find_endpoint_by_path {
     $e, \%params;
 }
 
-sub find_format {
-    my ( $app, $key ) = @_;
-
-    if ( !%formats ) {
-        my $reg = $app->registry( 'applications', 'api', 'formats' );
-        %formats = map { $_ => 1 } keys %$reg;
-    }
-
-    my $format_key
-        = $key
-        || ( $app->current_endpoint || {} )->{format}
-        || $app->param('format')
-        || $app->registry( 'applications', 'api' )->{default_format};
-
-    my $format = $formats{$format_key};
-    if ( !defined $format ) {
-        $format_key = ( keys %formats )[0];
-        $format     = $formats{$format_key};
-    }
-
-    if ( !ref $format ) {
-        $format = $formats{$format_key}
-            = $app->registry( 'applications', 'api', 'formats', $format_key );
-
-        if ( ref $format ne 'HASH' ) {
-            $format = $formats{$format_key}
-                = $app->find_format( $format->[0] );
-        }
-        else {
-            for my $k (qw(serialize unserialize)) {
-                $format->{$k} = $app->handler_to_coderef( $format->{$k} );
-            }
-        }
-    }
-
-    $format;
-}
-
 sub current_format {
     my ($app) = @_;
-    $app->find_format;
+    MT::API::Format->find_format;
 }
 
 sub current_error_format {
     my ($app) = @_;
     my $format = $app->current_format;
     if ( my $invoke = $format->{error_format} ) {
-        $format = $app->find_format($invoke);
+        $format = MT::API::Format->find_format($invoke);
     }
     $format;
 }

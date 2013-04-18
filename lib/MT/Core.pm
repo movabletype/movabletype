@@ -2078,7 +2078,7 @@ BEGIN {
                 methods        => sub { MT->app->core_methods() },
                 endpoints      => sub { MT->app->core_endpoints() },
                 resources      => sub { MT::API::Resource->core_resources() },
-                formats        => sub { MT->app->core_formats() },
+                formats        => sub { MT::API::Format->core_formats() },
                 default_format => 'json',
             },
         },
