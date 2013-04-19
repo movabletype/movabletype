@@ -667,25 +667,23 @@ sub archive_url {
     }
     else {
         my $url = $blog->site_url;
-        if ( $blog->is_blog() ) {
-            if ( my $website = $blog->website() ) {
-                $url = $website->SUPER::site_url;
+        if ( my $website = $blog->website() ) {
+            $url = $website->SUPER::site_url;
+        }
+        my $archive_url = $blog->SUPER::archive_url;
+        return $blog->site_url unless $archive_url;
+        return $archive_url if $archive_url =~ m!^https?://!;
+        my @paths = $blog->raw_archive_url;
+        if ( 2 == @paths ) {
+            if ( $paths[0] ) {
+                $url =~ s!^(https?)://(.+)/$!$1://$paths[0]$2/!;
             }
-            my $archive_url = $blog->SUPER::archive_url;
-            return $blog->site_url unless $archive_url;
-            return $archive_url if $archive_url =~ m!^https?://!;
-            my @paths = $blog->raw_archive_url;
-            if ( 2 == @paths ) {
-                if ( $paths[0] ) {
-                    $url =~ s!^(https?)://(.+)/$!$1://$paths[0]$2/!;
-                }
-                if ( $paths[1] ) {
-                    $url = MT::Util::caturl( $url, $paths[1] );
-                }
+            if ( $paths[1] ) {
+                $url = MT::Util::caturl( $url, $paths[1] );
             }
-            else {
-                $url = MT::Util::caturl( $url, $paths[0] );
-            }
+        }
+        else {
+            $url = MT::Util::caturl( $url, $paths[0] );
         }
         return $url;
     }
@@ -1534,8 +1532,8 @@ sub clone_with_children {
                     my $global_widget = MT::Template->load($_);
                     push @new_widgets, $_
                         if $global_widget
-                            && $global_widget->blog_id == 0
-                            && $global_widget->type eq 'widget';
+                        && $global_widget->blog_id == 0
+                        && $global_widget->type eq 'widget';
                 }
             }
             $new_tmpl->modulesets( join( ',', @new_widgets ) );

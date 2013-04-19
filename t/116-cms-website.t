@@ -16,6 +16,9 @@ use Test::More;
 # Website
 my $website = MT::Test::Permission->make_website();
 
+# Blog
+my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+
 # Author
 my $admin = MT->model('author')->load(1);
 
@@ -24,39 +27,134 @@ my ( $app, $out );
 
 diag 'Test cfg_prefs mode';
 subtest 'Test cfg_prefs mode' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user => $admin,
-            __mode      => 'cfg_prefs',
-            blog_id     => $website->id
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: website general settings" );
+    foreach my $type ( 'website', 'blog' ) {
+        my $type_ucfirst = ucfirst $type;
+        my $test_blog = $type eq 'website' ? $website : $blog;
 
-    # Modify description. bugid:109613
-    like(
-        $out,
-        qr/Number of revisions per entry\/page/,
-        'Has "Number of revisions per entry\/page" description.'
-    );
-    unlike(
-        $out,
-        qr/Number of revisions per page/,
-        'Has "Number of revisions per page" description.'
-    );
+        diag "$type_ucfirst scope";
+        subtest "$type_ucfirst scope" => sub {
+            $app = _run_app(
+                'MT::App::CMS',
+                {   __test_user => $admin,
+                    __mode      => 'cfg_prefs',
+                    blog_id     => $test_blog->id,
+                }
+            );
+            $out = delete $app->{__test_output};
+            ok( $out, "Request: $type general settings" );
 
-    like( $out, qr/Preferred Archive/, 'Has "Preferred Archive" setting.' );
+            # Modify description. bugid:109613
+            like(
+                $out,
+                qr/Number of revisions per entry\/page/,
+                'Has "Number of revisions per entry\/page" description.'
+            );
+            unlike(
+                $out,
+                qr/Number of revisions per page/,
+                'Has "Number of revisions per page" description.'
+            );
 
-    my $description
-        = quotemeta(
-        "Used to generate URLs (permalinks) for this website's archived entries. Choose one of the archive type used in this website's archive templates."
-        );
-    $description = qr/$description/;
-    like( $out, qr/$description/,
-        'Has a website scope description in Preferred Archive setting.' );
+            like(
+                $out,
+                qr/Preferred Archive/,
+                'Has "Preferred Archive" setting.'
+            );
 
-    done_testing();
+            my $description
+                = quotemeta(
+                "Used to generate URLs (permalinks) for this ${type}'s archived entries. Choose one of the archive type used in this ${type}'s archive templates."
+                );
+            $description = qr/$description/;
+            like( $out, qr/$description/,
+                "Has a $type scope description in Preferred Archive setting."
+            );
+
+            my $enable_archive_paths = quotemeta
+                "<label for=\"enable_archive_paths\">Publish archives outside of $type_ucfirst Root</label>";
+            like( $out, qr/$enable_archive_paths/,
+                'Has publish archives outside checkbox.' );
+
+            my $site_root_hint
+                = $type eq 'blog'
+                ? 'The path where your index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog'
+                : 'The path where your index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html or C:\www\public_html';
+            $site_root_hint = quotemeta $site_root_hint;
+            like( $out, qr/$site_root_hint/, 'Has Site Root hint.' );
+
+            my $archive_url = quotemeta
+                '<label id="archive_url-label" for="archive_url">Archive URL *</label>';
+            like( $out, qr/$archive_url/, 'Has "Archive URL" setting.' );
+
+            my $archive_url_hint
+                = $type eq 'blog'
+                ? "The URL of the archives section of your ${type}. Example: http://www.example.com/${type}/archives/"
+                : "The URL of the archives section of your ${type}. Example: http://www.example.com/archives/";
+            $archive_url_hint = quotemeta $archive_url_hint;
+            like( $out, qr/$archive_url_hint/, 'Has Archive URL hint.' );
+
+            my $archive_url_warning = quotemeta
+                "Warning: Changing the archive URL can result in breaking all the links in your ${type}.";
+            like( $out, qr/$archive_url_warning/,
+                'Has Archive URL warning.' );
+
+            my $archive_root = quotemeta
+                '<label id="archive_path-label" for="archive_path">Archive Root *</label>';
+            like( $out, qr/$archive_root/, 'Has "Archive Root" setting.' );
+
+            my $archive_root_hint
+                = $type eq 'blog'
+                ? 'The path where your archives section index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog'
+                : 'The path where your archives section index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html or C:\www\public_html';
+            $archive_root_hint = quotemeta $archive_root_hint;
+            like( $out, qr/$archive_root_hint/, 'Has Archive Root hint.' );
+
+            $test_blog->archive_url('http://localhost/');
+            $test_blog->update;
+
+            $app = _run_app(
+                'MT::App::CMS',
+                {   __test_user => $admin,
+                    __mode      => 'cfg_prefs',
+                    blog_id     => $test_blog->id,
+                }
+            );
+            $out = delete $app->{__test_output};
+
+            my $is_checked = quotemeta
+                '<input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1" checked="checked" class="cb" />';
+            like( $out, qr/$is_checked/,
+                'Parameter "enable_archive_paths" is checked.' );
+
+            if ( $type eq 'website' ) {
+                my $archive_url  = 'http://localhost/archive/path/';
+                my $archive_path = '/var/www/html/archive/path';
+
+                $app = _run_app(
+                    'MT::App::CMS',
+                    {   __test_user          => $admin,
+                        __request_method     => 'POST',
+                        __mode               => 'save',
+                        _type                => 'blog',
+                        blog_id              => $test_blog->id,
+                        id                   => $test_blog->id,
+                        enable_archive_paths => 1,
+                        archive_url          => $archive_url,
+                        archive_path         => $archive_path,
+                    },
+                );
+                $out = delete $app->{__test_output};
+                ok( $out =~ /Status: 302 Found/ && $out =~ /saved=1/,
+                    'Request: save blog' );
+
+                $test_blog = MT->model('website')->load( $test_blog->id );
+                is( $test_blog->column('archive_url'),
+                    $archive_url, 'Can save archive_url correctly.' );
+                is( $test_blog->column('archive_path'),
+                    $archive_path, 'Can save archive_path correctly.' );
+            }
+        };
+    }
 };
 
 diag 'Test cfg_entry mode';
