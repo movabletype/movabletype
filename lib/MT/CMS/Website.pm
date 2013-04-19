@@ -101,7 +101,7 @@ sub edit {
                 $param->{dynamic_enabled} = 1;
                 $param->{warning_include} = 1
                     unless $blog->include_system eq 'php'
-                        || $blog->include_system eq '';
+                    || $blog->include_system eq '';
             }
             eval "require List::Util; require Scalar::Util;";
             unless ($@) {
@@ -311,11 +311,11 @@ sub edit {
     }
     $param->{is_website} = 1;
 
-    if ( my $website = $blog->website() ) {
+    if ($blog) {
         $param->{website_path}
-            = File::Spec->catfile( $website->column('site_path'), '' )
-            if $website->column('site_path');
-        $param->{website_url} = $website->site_url;
+            = File::Spec->catfile( $blog->column('site_path'), '' )
+            if $blog->column('site_path');
+        $param->{website_url} = $blog->site_url;
     }
     if ( exists $param->{website_path} ) {
         my $sep = MT::Util::dir_separator;
@@ -329,7 +329,6 @@ sub edit {
         $param->{website_scheme} = $scheme;
         $param->{website_domain} = $domain;
     }
-
 
     1;
 }

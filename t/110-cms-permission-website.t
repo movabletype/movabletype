@@ -122,6 +122,15 @@ $p->save;
 # Run
 my ( $app, $out );
 
+sub _is_error {
+    my $out = shift or return;
+    $out =~ /(redirect|permission)=1|An error occurr?ed/i;
+}
+
+sub _is_not_error {
+    !_is_error(shift);
+}
+
 subtest 'mode = cfg_prefs' => sub {
     $app = _run_app(
         'MT::App::CMS',
@@ -132,8 +141,8 @@ subtest 'mode = cfg_prefs' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_prefs" );
-    ok( $out !~ m!permission=1!i, "cfg_prefs by admin" );
+    ok( $out,                "Request: cfg_prefs" );
+    ok( _is_not_error($out), "cfg_prefs by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -144,8 +153,8 @@ subtest 'mode = cfg_prefs' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_prefs" );
-    ok( $out !~ m!permission=1!i, "cfg_prefs by permitted user" );
+    ok( $out,                "Request: cfg_prefs" );
+    ok( _is_not_error($out), "cfg_prefs by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -156,8 +165,8 @@ subtest 'mode = cfg_prefs' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_prefs" );
-    ok( $out =~ m!permission=1!i, "cfg_prefs by other website" );
+    ok( $out,            "Request: cfg_prefs" );
+    ok( _is_error($out), "cfg_prefs by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -168,8 +177,8 @@ subtest 'mode = cfg_prefs' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_prefs" );
-    ok( $out =~ m!permission=1!i, "cfg_prefs by child blog" );
+    ok( $out,            "Request: cfg_prefs" );
+    ok( _is_error($out), "cfg_prefs by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -180,8 +189,8 @@ subtest 'mode = cfg_prefs' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_prefs" );
-    ok( $out =~ m!permission=1!i, "cfg_prefs by other blog" );
+    ok( $out,            "Request: cfg_prefs" );
+    ok( _is_error($out), "cfg_prefs by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -192,8 +201,8 @@ subtest 'mode = cfg_prefs' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_prefs" );
-    ok( $out =~ m!permission=1!i, "cfg_prefs by other permission" );
+    ok( $out,            "Request: cfg_prefs" );
+    ok( _is_error($out), "cfg_prefs by other permission" );
     done_testing();
 };
 
@@ -208,8 +217,8 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
-    ok( $out !~ m!permission=1!i, "list by admin" );
+    ok( $out,                "Request: list" );
+    ok( _is_not_error($out), "list by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -221,8 +230,8 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
-    ok( $out !~ m!permission=1!i, "list by permitted user" );
+    ok( $out,                "Request: list" );
+    ok( _is_not_error($out), "list by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -234,8 +243,8 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
-    ok( $out !~ m!permission=1!i, "list by child blog" );
+    ok( $out,                "Request: list" );
+    ok( _is_not_error($out), "list by child blog" );
 };
 
 subtest 'mode = save (new)' => sub {
@@ -249,8 +258,8 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out !~ m!permission=1!i, "save (new) by admin" );
+    ok( $out,                "Request: save" );
+    ok( _is_not_error($out), "save (new) by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -262,8 +271,8 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out !~ m!permission=1!i, "save (new) by permitted user" );
+    ok( $out,                "Request: save" );
+    ok( _is_not_error($out), "save (new) by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -275,8 +284,8 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save (new) by blog admin" );
+    ok( $out,            "Request: save" );
+    ok( _is_error($out), "save (new) by blog admin" );
     done_testing();
 };
 
@@ -293,8 +302,8 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out !~ m!Permission=1!i, "save (edit) by admin" );
+    ok( $out,                "Request: save" );
+    ok( _is_not_error($out), "save (edit) by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -309,7 +318,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out !~ m!Permission=1!i,
+    ok( _is_not_error($out),
         "save (edit) by permitted user (website admin)" );
 
     $app = _run_app(
@@ -324,9 +333,8 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out !~ m!Permission=1!i,
-        "save (edit) by permitted user (edit config)" );
+    ok( $out,                "Request: save" );
+    ok( _is_not_error($out), "save (edit) by permitted user (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -341,7 +349,7 @@ subtest 'mode = save (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
-    ok( $out =~ m!Permission=1!i,
+    ok( _is_error($out),
         "save (edit) by non permitted user (create website)" );
 
     $app = _run_app(
@@ -356,9 +364,8 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out =~ m!Permission=1!i,
-        "save (edit) by other blog (website admin)" );
+    ok( $out,            "Request: save" );
+    ok( _is_error($out), "save (edit) by other blog (website admin)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -372,8 +379,8 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Permission=1!i, "save (edit) by other blog (edit config)" );
+    ok( $out,            "Request: save" );
+    ok( _is_error($out), "save (edit) by other blog (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -387,8 +394,8 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Permission=1!i, "save (edit) by other permission" );
+    ok( $out,            "Request: save" );
+    ok( _is_error($out), "save (edit) by other permission" );
     done_testing();
 };
 
@@ -403,34 +410,34 @@ subtest 'mode = edit (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out !~ m!permission=1!i, "edit (new) by admin" );
+    ok( $out,                "Request: edit" );
+    ok( _is_not_error($out), "edit (new) by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
             __request_method => 'POST',
-            __mode           => 'save',
+            __mode           => 'edit',
             _type            => 'website',
             blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out !~ m!permission=1!i, "edit (new) by permitted user" );
+    ok( $out,                "Request: edit" );
+    ok( _is_not_error($out), "edit (new) by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'save',
+            __mode           => 'edit',
             _type            => 'website',
             blog_id          => 0,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "edit (new) by blog admin" );
+    ok( $out,            "Request: edit" );
+    ok( _is_error($out), "edit (new) by blog admin" );
     done_testing();
 };
 
@@ -447,8 +454,8 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
-    ok( $out !~ m!Permission=1!i, "edit (edit) by admin" );
+    ok( $out,                "Request: edit" );
+    ok( _is_not_error($out), "edit (edit) by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -463,7 +470,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission=1!i,
+    ok( _is_not_error($out),
         "edit (edit) by permitted user (website admin)" );
 
     $app = _run_app(
@@ -478,9 +485,8 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
-    ok( $out !~ m!Permission=1!i,
-        "edit (edit) by permitted user (edit config)" );
+    ok( $out,                "Request: edit" );
+    ok( _is_not_error($out), "edit (edit) by permitted user (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -495,7 +501,7 @@ subtest 'mode = edit (edit)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission=1!i,
+    ok( _is_error($out),
         "edit (edit) by non permitted user (create website)" );
 
     $app = _run_app(
@@ -510,9 +516,8 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
-    ok( $out =~ m!Permission=1!i,
-        "edit (edit) by other blog (website admin)" );
+    ok( $out,            "Request: edit" );
+    ok( _is_error($out), "edit (edit) by other blog (website admin)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -526,8 +531,8 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
-    ok( $out =~ m!Permission=1!i, "edit (edit) by other blog (edit config)" );
+    ok( $out,            "Request: edit" );
+    ok( _is_error($out), "edit (edit) by other blog (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -541,8 +546,8 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
-    ok( $out =~ m!Permission=1!i, "edit (edit) by other permission" );
+    ok( $out,            "Request: edit" );
+    ok( _is_error($out), "edit (edit) by other permission" );
     done_testing();
 };
 
@@ -696,8 +701,8 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
-    ok( $out !~ m!permission=1!i, "delete by admin" );
+    ok( $out,                "Request: delete" );
+    ok( _is_not_error($out), "delete by admin" );
 
     $website = MT::Test::Permission->make_website();
     MT::Association->link( $aikawa => $website_admin => $website );
@@ -711,9 +716,8 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
-    ok( $out !~ m!permission=1!i,
-        "delete by permitted user (website admin)" );
+    ok( $out,                "Request: delete" );
+    ok( _is_not_error($out), "delete by permitted user (website admin)" );
 
     $website = MT::Test::Permission->make_website();
     $app     = _run_app(
@@ -726,9 +730,8 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
-    ok( $out =~ m!permission=1!i,
-        "delete by non permitted user (create website)" );
+    ok( $out,            "Request: delete" );
+    ok( _is_error($out), "delete by non permitted user (create website)" );
 
     $website = MT::Test::Permission->make_website();
     $app     = _run_app(
@@ -741,8 +744,8 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
-    ok( $out =~ m!permission=1!i, "delete by other blog (website admin)" );
+    ok( $out,            "Request: delete" );
+    ok( _is_error($out), "delete by other blog (website admin)" );
 
     $website = MT::Test::Permission->make_website();
     $app     = _run_app(
@@ -755,8 +758,8 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
-    ok( $out =~ m!permission=1!i, "delete by other permission" );
+    ok( $out,            "Request: delete" );
+    ok( _is_error($out), "delete by other permission" );
     done_testing();
 };
 
