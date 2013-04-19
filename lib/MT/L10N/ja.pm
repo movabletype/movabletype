@@ -5295,6 +5295,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot access to this uri: [_1]' => '[_1]が存在しません。',
 	'Unable to update Basic Authentication settings.' => 'Basic認証の設定を保存する事が出来ませんでした。',
 	'Administration Screen Setting' => '管理画面の設定',
+	'The URL you specified is not available.' => '指定されたURLは利用できません。',
 	'Unable to update Admin Screen URL settings.' => '管理画面のURLを変更できませんでした。',
 	'Cannot delete basicauth_admin file.' => 'Basic認証の設定を削除する事が出来ませんでした。',
 	'User ID is required.' => 'ユーザー名は必須です。',
@@ -5315,13 +5316,15 @@ use vars qw( @ISA %Lexicon );
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
 	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
 	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
-	'The URL you specified is not available.' => '指定されたURLは利用できません。',
 
 ## addons/Cloud.pack/lib/MT/FileSynchronizer.pm
 	'Synchronization with an external server has been successfully finished.' => 'サーバ配信が正常に処理されました',
 	'Failed to sync with an external server.' => 'サーバ配信に失敗しました',
 
 ## addons/Cloud.pack/lib/MT/FileSynchronizer/FTPBase.pm
+	'Cannot access to remote directory \'[_1]\'' => 'リモートディレクトリ\'[_1]\'にアクセスできません。',
+	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
+	'Deleting file \'[_1]\' failed.' => 'ファイル\'[_1]\'を削除できませんでした。',
 	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
 	'Unable to write remote file ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
 
@@ -5355,6 +5358,7 @@ use vars qw( @ISA %Lexicon );
 	'Contents Sync Setting' => 'サーバ配信設定',
 	'Contents sync settings has been saved.' => 'サーバ配信の設定を保存しました。',
 	'An error occured while trying to connect to the FTP server. Check the settings and try again.' => 'FTPサーバに接続できませんでした。設定を見直してもう一度接続してください。',
+	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
 	'Enable contents synchronization' => 'サーバ配信を有効にする',
 	'Sync Settings' => 'サーバ配信の設定',
 	'Sync Date' => 'サーバ配信日時',
@@ -5408,6 +5412,7 @@ use vars qw( @ISA %Lexicon );
 	'Preparing...' => 'サーバ配信の準備をしています...',
 	'Synchronizing...' => '配信中です...',
 	'Finish!' => 'ファイルが配信されました!',
+	'The synchronization was interrupted. Unable to resume.' => 'サーバ配信が中断されました。再開できません。',
 
 ## addons/Cloud.pack/tmpl/full_restore.tmpl
 	'Restoring Full Backup Data' => 'バックアップデータからの復元',
@@ -6546,7 +6551,8 @@ use vars qw( @ISA %Lexicon );
 	'MT 4 Style Library' => 'MT 4 スタイルライブラリ',
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Movable Type 4のデフォルトテンプレートと互換性のあるスタイルです。',
 	'Styles' => 'スタイル',
-	'Moving current style to blog_meta...' => '現在のスタイルの保存先を変更しています...',
+	'Moving current style to blog_meta for website...' => 'ウェブサイトの現在のスタイルの格納場所を移動しています...',
+	'Moving current style to blog_meta for blog...' => 'ブログの現在のスタイルの格納場所を移動しています...',
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'mt-staticディレクトリが見つかりませんでした。StaticFilePathを設定してください。',
@@ -6793,7 +6799,5 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
-
-## New words: 15
 
 1;
