@@ -153,7 +153,7 @@ sub edit {
                 $param->{dynamic_enabled} = 1;
                 $param->{warning_include} = 1
                     unless $blog->include_system eq 'php'
-                        || $blog->include_system eq '';
+                    || $blog->include_system eq '';
             }
             eval "require List::Util; require Scalar::Util;";
             unless ($@) {
@@ -392,30 +392,28 @@ sub cfg_prefs {
         or return $app->error(
         $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
-    if ( $blog->is_blog() ) {
-        my @data;
-        for my $at ( split /\s*,\s*/, $blog->archive_type ) {
-            my $archiver = $app->publisher->archiver($at);
-            next unless $archiver;
-            next if 'entry' ne $archiver->entry_class;
-            my $archive_label = $archiver->archive_label;
-            $archive_label = $at unless $archive_label;
-            $archive_label = $archive_label->()
-                if ( ref $archive_label ) eq 'CODE';
-            push @data,
-                {
-                archive_type_translated => $archive_label,
-                archive_type            => $at,
-                archive_type_is_preferred =>
-                    ( $blog->archive_type_preferred eq $at ? 1 : 0 ),
-                };
-        }
-        @data = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @data;
-        unless ( grep $_->{archive_type_is_preferred}, @data ) {
-            $param{no_preferred_archive_type} = 1;
-        }
-        $param{entry_archive_types} = \@data;
+    my @data;
+    for my $at ( split /\s*,\s*/, $blog->archive_type ) {
+        my $archiver = $app->publisher->archiver($at);
+        next unless $archiver;
+        next if 'entry' ne $archiver->entry_class;
+        my $archive_label = $archiver->archive_label;
+        $archive_label = $at unless $archive_label;
+        $archive_label = $archive_label->()
+            if ( ref $archive_label ) eq 'CODE';
+        push @data,
+            {
+            archive_type_translated => $archive_label,
+            archive_type            => $at,
+            archive_type_is_preferred =>
+                ( $blog->archive_type_preferred eq $at ? 1 : 0 ),
+            };
     }
+    @data = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @data;
+    unless ( grep $_->{archive_type_is_preferred}, @data ) {
+        $param{no_preferred_archive_type} = 1;
+    }
+    $param{entry_archive_types} = \@data;
 
     $param{saved_deleted}    = 1 if $q->param('saved_deleted');
     $param{saved_added}      = 1 if $q->param('saved_added');
@@ -706,7 +704,7 @@ sub rebuild_pages {
             return $app->errtrans( 'Cannot load template #[_1].', $tmpl_id );
         return $app->permission_denied()
             unless $app->user->permissions( $tmpl_saved->blog_id )
-                ->can_do('rebuild');
+            ->can_do('rebuild');
 
         $app->rebuild_indexes(
             BlogID   => $blog_id,
@@ -721,7 +719,7 @@ sub rebuild_pages {
         my $entry = MT::Entry->load($entry_id);
         return $app->permission_denied()
             if !$perms->can_edit_entry( $entry, $app->user )
-                && !$perms->can_republish_entry( $entry, $app->user );
+            && !$perms->can_republish_entry( $entry, $app->user );
         $app->rebuild_entry(
             Entry             => $entry,
             BuildDependencies => 1,
@@ -740,7 +738,7 @@ sub rebuild_pages {
                 $template_id );
             return $app->permission_denied()
                 unless $app->user->permissions( $tmpl->blog_id )
-                    ->can_do('rebuild');
+                ->can_do('rebuild');
         }
         elsif ($map_id) {
             my $map = MT->model('templatemap')->load($map_id)
@@ -748,7 +746,7 @@ sub rebuild_pages {
                 $map_id );
             return $app->permission_denied()
                 unless $app->user->permissions( $map->blog_id )
-                    ->can_do('rebuild');
+                ->can_do('rebuild');
         }
 
         $offset = $q->param('offset') || 0;
@@ -810,7 +808,7 @@ sub rebuild_pages {
                     $template_id );
                 return $app->permission_denied()
                     unless $app->user->permissions( $tmpl->blog_id )
-                        ->can_do('rebuild');
+                    ->can_do('rebuild');
             }
             elsif ($map_id) {
                 my $map = MT->model('templatemap')->load($map_id)
@@ -818,7 +816,7 @@ sub rebuild_pages {
                     $map_id );
                 return $app->permission_denied()
                     unless $app->user->permissions( $map->blog_id )
-                        ->can_do('rebuild');
+                    ->can_do('rebuild');
             }
 
             $offset = $q->param('offset') || 0;
@@ -1571,7 +1569,7 @@ sub pre_save {
                 = 1;
             $param{words_in_excerpt} = 40
                 unless defined $param{words_in_excerpt}
-                    && $param{words_in_excerpt} ne '';
+                && $param{words_in_excerpt} ne '';
             if ( $app->param('days_or_posts') eq 'days' ) {
                 $obj->days_on_index( $app->param('list_on_index') );
                 $obj->entries_on_index(0);
@@ -1652,11 +1650,12 @@ sub post_save {
     my $perms = $app->permissions;
     return 1
         unless $app->user->is_superuser
-            || (  $obj->is_blog
-                ? $app->user->can_create_blog
-                : $app->user->can_create_website
-            )
-            || ( $perms && $perms->can_edit_config );
+        || (
+          $obj->is_blog
+        ? $app->user->can_create_blog
+        : $app->user->can_create_website
+        )
+        || ( $perms && $perms->can_edit_config );
 
     # check to see what changed and add a flag to meta_messages
     my @meta_messages = ();
@@ -1969,8 +1968,8 @@ sub save_filter {
         return $eh->error(
             MT->translate("Please choose a preferred archive type.") )
             if $app->blog->is_blog
-                && (   !$app->param('no_archives_are_active')
-                    && !$app->param('preferred_archive_type') );
+            && ( !$app->param('no_archives_are_active')
+            && !$app->param('preferred_archive_type') );
     }
     return 1;
 }
@@ -2110,8 +2109,8 @@ sub build_blog_table {
             $row->{website_id}            = $website->id;
             $row->{can_access_to_website} = 1
                 if $website
-                    && (   $author->is_superuser
-                        || $author->permissions( $website->id ) );
+                && ( $author->is_superuser
+                || $author->permissions( $website->id ) );
         }
 
         if ( $app->mode ne 'dialog_select_weblog' ) {
@@ -2210,13 +2209,13 @@ sub cfg_prefs_save {
         }
         $blog->site_path( $app->param('site_path_absolute') )
             if !$app->config->BaseSitePath
-                && $app->param('use_absolute')
-                && $app->param('site_path_absolute');
+            && $app->param('use_absolute')
+            && $app->param('site_path_absolute');
         $blog->archive_path( $app->param('archive_path_absolute') )
             if !$app->config->BaseSitePath
-                && $app->param('enable_archive_paths')
-                && $app->param('use_absolute_archive')
-                && $app->param('archive_path_absolute');
+            && $app->param('enable_archive_paths')
+            && $app->param('use_absolute_archive')
+            && $app->param('archive_path_absolute');
     }
 
     require MT::PublishOption;
@@ -2675,10 +2674,10 @@ sub prepare_dynamic_publishing {
     ## Don't re-create when files are there in callback.
     return 1
         if !defined($cache)
-            && !defined($conditional)
-            && ( 'MT::Callback' eq ref($cb) )
-            && ( -f $htaccess_path )
-            && ( -f $mtview_path );
+        && !defined($conditional)
+        && ( 'MT::Callback' eq ref($cb) )
+        && ( -f $htaccess_path )
+        && ( -f $mtview_path );
 
     require URI;
     my $mtview_server_url = new URI($site_url);
@@ -2875,7 +2874,7 @@ sub clone {
 
     return $app->permission_denied()
         unless $app->user->permissions( $blog->website->id )
-            ->can_do('clone_blog');
+        ->can_do('clone_blog');
 
     $param->{'id'}            = $blog->id;
     $param->{'new_blog_name'} = $app->param('new_blog_name')
@@ -3045,7 +3044,8 @@ sub clone {
     require File::Spec;
     $param->{parent_id} = $website->id;
     $param->{parent_path}
-        = File::Spec->catfile( $website->site_path ) . MT::Util->dir_separator
+        = File::Spec->catfile( $website->site_path )
+        . MT::Util->dir_separator
         if $website->site_path;
     $param->{blog_id} = $app->param('blog_id');
 
