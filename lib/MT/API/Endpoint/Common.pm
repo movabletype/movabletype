@@ -107,7 +107,7 @@ sub run_permission_filter {
 
     return 1 if $app->user->is_superuser;
 
-    $app->run_callbacks( "$filter.$type", $app, @_ ) || $app->json_error(403);
+    $app->run_callbacks( "$filter.$type", $app, @_ ) || $app->error(403);
 }
 
 sub filtered_list {
@@ -128,7 +128,7 @@ sub filtered_list {
         :                  [ $blog->id, map { $_->id } @{ $blog->blogs } ];
 
     my $setting = MT->registry( listing_screens => $ds )
-        or return $app->json_error( $app->translate('Unknown list type') );
+        or return $app->error( $app->translate('Unknown list type'), 400 );
 
     if ( my $cond = $setting->{condition} ) {
         $cond = MT->handler_to_coderef($cond)
@@ -136,9 +136,9 @@ sub filtered_list {
         $app->error();
         unless ( $cond->($app) ) {
             if ( $app->errstr ) {
-                return $app->json_error( $app->errstr );
+                return $app->error( $app->errstr, 500 );
             }
-            return $app->json_error( $app->translate('Invalid request') );
+            return $app->error( $app->translate('Invalid request'), 400 );
         }
     }
 
@@ -272,7 +272,8 @@ sub filtered_list {
             MT->translate(
                 "An error occured while counting objects: [_1]",
                 $filter->errstr
-            )
+            ),
+            500
         );
     }
     my ( $count, $editable_count ) = @$count_result;
@@ -290,7 +291,8 @@ sub filtered_list {
                 MT->translate(
                     "An error occured while loading objects: [_1]",
                     $filter->errstr
-                )
+                ),
+                500
             );
         }
     }
