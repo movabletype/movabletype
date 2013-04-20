@@ -7,14 +7,14 @@ use base 'Exporter';
 our @EXPORT = qw(
     save_object remove_object
     context_objects resource_objects
-    resource_error run_permission_filter filtered_list
+    resource_error run_permission_filter filtered_list obj_promise
 );
 
 sub save_object {
     my ( $app, $type, $obj, $original ) = @_;
     $original ||= $app->model($type)->new;
 
-    run_permission_filter( $app, 'cms_save_permission_filter', $type, $obj )
+    run_permission_filter( $app, 'cms_save_permission_filter', $type, $obj->id )
         or return;
 
     $app->run_callbacks( 'cms_save_filter.' . $type, $app )
@@ -31,6 +31,13 @@ sub save_object {
     $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $original );
 
     1;
+}
+
+sub obj_promise {
+    my ($obj) = @_;
+
+    require MT::Promise;
+    MT::Promise::delay( sub {$obj} );
 }
 
 sub remove_object {
