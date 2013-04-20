@@ -4342,7 +4342,7 @@ use vars qw( @ISA %Lexicon );
 	'View this commenter&rsquo;s profile' => 'このコメント投稿者のユーザー情報を見る',
 
 ## tmpl/cms/include/copyright.tmpl
-	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.',
+	'Copyright &copy; 2001 Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001 Six Apart. All Rights Reserved.',
 
 ## tmpl/cms/include/debug_hover.tmpl
 	'Hide Toolbar' => 'Hide Toolbar',

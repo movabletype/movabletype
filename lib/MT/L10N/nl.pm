@@ -4348,7 +4348,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'to republish' => 'om opnieuw te publiceren',
 
 ## tmpl/cms/include/copyright.tmpl
-	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.',
+	'Copyright &copy; 2001 Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001 Six Apart. All Rights Reserved.',
 
 ## tmpl/cms/include/debug_hover.tmpl
 	'Hide Toolbar' => 'Werkbalk verbergen',
