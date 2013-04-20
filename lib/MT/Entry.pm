@@ -272,11 +272,13 @@ sub list_props {
                     = MT->static_path . 'images/status_icons/' . $status_file;
                 my $view_img
                     = MT->static_path . 'images/status_icons/view.gif';
+                my $view_link_text
+                    = MT->translate( 'View [_1]', $class_label );
                 my $view_link = $obj->status == MT::Entry::RELEASE()
                     ? qq{
                     <span class="view-link">
                       <a href="$permalink" target="_blank">
-                        <img alt="View $class_label" src="$view_img" />
+                        <img alt="$view_link_text" src="$view_img" />
                       </a>
                     </span>
                 }
@@ -336,14 +338,15 @@ sub list_props {
                 ) unless $cat_id;
 
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('placement')->join_on(
                     undef,
                     {   category_id => $cat_id,
                         entry_id    => \'= entry_id',
                         blog_id     => $blog_id,
                     },
                     { unique => 1, },
-                );
+                    );
                 return;
             },
             args_via_param => sub {
@@ -496,7 +499,8 @@ sub list_props {
                 elsif ( 'end' eq $option ) {
                     $query = { like => "%$query" };
                 }
-                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('placement')->join_on(
                     undef,
                     {   entry_id => \'= entry_id',
                         blog_id  => $blog_id,
@@ -511,7 +515,7 @@ sub list_props {
                             { unique => 1, }
                         ),
                     },
-                );
+                    );
                 return;
             },
         },
@@ -633,8 +637,8 @@ sub list_props {
                 my $from   = $args->{from}   || undef;
                 my $to     = $args->{to}     || undef;
                 my $origin = $args->{origin} || undef;
-                $from   =~ s/\D//g;
-                $to     =~ s/\D//g;
+                $from =~ s/\D//g;
+                $to =~ s/\D//g;
                 $origin =~ s/\D//g;
                 $from .= '000000' if $from;
                 $to   .= '235959' if $to;
@@ -722,12 +726,13 @@ sub list_props {
                         ? MT::Author::ACTIVE()
                         : MT::Author::INACTIVE();
                     $db_args->{joins} ||= [];
-                    push @{ $db_args->{joins} }, MT->model('author')->join_on(
+                    push @{ $db_args->{joins} },
+                        MT->model('author')->join_on(
                         undef,
                         {   id     => \'= entry_author_id',
                             status => $status,
                         },
-                    );
+                        );
                 }
             },
         },
