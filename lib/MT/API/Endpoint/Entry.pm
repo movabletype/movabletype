@@ -50,7 +50,7 @@ sub get {
         or return;
 
     run_permission_filter( $app, 'cms_view_permission_filter', 'entry',
-        $entry )
+        $entry->id, obj_promise($entry) )
         or return;
 
     $entry;
