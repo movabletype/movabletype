@@ -44,9 +44,14 @@ sub list {
             );
         }
         else {
-            $param{theme_loop} = _build_theme_table(
+            $param{website_theme_loop} = _build_theme_table(
                 current => $current_theme,
                 classes => { website => 1, both => 1 },
+                blog    => $blog,
+            );
+            $param{blog_theme_loop} = _build_theme_table(
+                current => $current_theme,
+                classes => { blog => 1, both => 1 },
                 blog    => $blog,
             );
         }
@@ -156,7 +161,7 @@ sub dialog_select_theme {
                 thumb_w     => $_->{thumb_w},
                 thumb_h     => $_->{thumb_h},
                 }
-            } @$list
+        } @$list
     };
     $app->load_tmpl( 'dialog/select_theme.tmpl', \%param );
 }
@@ -284,7 +289,7 @@ sub export {
     );
 
     for my $param (@save_params) {
-        my $val 
+        my $val
             = $saved_core_values->{$param}
             || $param_default{$param}
             || '';
@@ -427,7 +432,7 @@ sub do_export {
     my $q    = $app->param;
     my $cfg  = $app->config;
     my $blog = $app->blog;
-    my $theme_id 
+    my $theme_id
         = dirify( $q->param('theme_id') )
         || dirify( $q->param('theme_name') )
         || 'theme_from_' . dirify( $blog->name )
