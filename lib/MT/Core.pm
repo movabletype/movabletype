@@ -192,8 +192,8 @@ BEGIN {
                                 return;
                                 }
                                 unless $prop->has('sort')
-                                    || $prop->has('bulk_sort')
-                                    || $prop->has('sort_method');
+                                || $prop->has('bulk_sort')
+                                || $prop->has('sort_method');
                         }
                     },
                 },
@@ -361,7 +361,7 @@ BEGIN {
                                     return $prop->error(
                                         MT->translate(q{Invalid date.}) )
                                         unless $date
-                                            =~ m/^\d{4}\-\d{2}\-\d{2}$/;
+                                        =~ m/^\d{4}\-\d{2}\-\d{2}$/;
                                 }
                             }
                             else {
@@ -383,8 +383,8 @@ BEGIN {
                         my $from   = $args->{from}   || undef;
                         my $to     = $args->{to}     || undef;
                         my $origin = $args->{origin} || undef;
-                        $from   =~ s/\D//g;
-                        $to     =~ s/\D//g;
+                        $from =~ s/\D//g;
+                        $to =~ s/\D//g;
                         $origin =~ s/\D//g;
                         $from .= '000000' if $from;
                         $to   .= '235959' if $to;
@@ -439,9 +439,9 @@ BEGIN {
                         if ( $val =~ m/\-/ ) {
                             my ( $from, $to ) = split /-/, $val;
                             $from = undef unless $from =~ m/^\d{8}$/;
-                            $to   = undef unless $to   =~ m/^\d{8}$/;
+                            $to   = undef unless $to =~ m/^\d{8}$/;
                             $from =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
-                            $to   =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
+                            $to =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
                             $param
                                 = $from && $to
                                 ? {
@@ -472,7 +472,7 @@ BEGIN {
                         if ( $val =~ m/\-/ ) {
                             my ( $from, $to ) = split /-/, $val;
                             $from = undef unless $from =~ m/^\d{8}$/;
-                            $to   = undef unless $to   =~ m/^\d{8}$/;
+                            $to   = undef unless $to =~ m/^\d{8}$/;
                             my $format = '%x';
                             $from = MT::Util::format_ts(
                                 $format, $from . '000000',
@@ -859,7 +859,8 @@ BEGIN {
                             ? $prop->count_args($opts)
                             : {};
                         my $iter
-                            = MT->model( $prop->count_class )->count_group_by(
+                            = MT->model( $prop->count_class )
+                            ->count_group_by(
                             $count_terms,
                             {   %$count_args,
                                 sort      => 'cnt',
@@ -891,7 +892,8 @@ BEGIN {
                             ? $prop->count_args($opts)
                             : {};
                         my $iter
-                            = MT->model( $prop->count_class )->count_group_by(
+                            = MT->model( $prop->count_class )
+                            ->count_group_by(
                             $count_terms,
                             {   %$count_args,
                                 direction => 'descend',
@@ -1209,7 +1211,7 @@ BEGIN {
                     while ( my $p = $iter->() ) {
                         $cond = 1, last
                             if $p->can_do('access_to_entry_list')
-                                and $p->blog->is_blog;
+                            and $p->blog->is_blog;
                     }
                     return $cond ? 1 : 0;
                 },
@@ -1338,9 +1340,9 @@ BEGIN {
                     permit_action => 'access_to_category_list',
                     inherit       => 0,
                 },
-                view                  => [ 'website', 'blog' ],
-                scope_mode            => 'this',
-                condition             => sub {
+                view       => [ 'website', 'blog' ],
+                scope_mode => 'this',
+                condition  => sub {
                     my $app = shift;
                     ( $app->param('_type') || '' ) ne 'filter';
                 },
@@ -1356,9 +1358,9 @@ BEGIN {
                     permit_action => 'access_to_folder_list',
                     inherit       => 0,
                 },
-                view                  => [ 'website', 'blog' ],
-                scope_mode            => 'this',
-                condition             => sub {
+                view       => [ 'website', 'blog' ],
+                scope_mode => 'this',
+                condition  => sub {
                     my $app = shift;
                     ( $app->param('_type') || '' ) ne 'filter';
                 },
@@ -1599,9 +1601,8 @@ BEGIN {
             'DefaultLanguage'        => { default => 'en_US', },
             'LocalPreviews'          => { default => 0 },
             'EnableAutoRewriteOnIIS' => { default => 1 },
-            'DefaultCommenterAuth' =>
-                { default => 'MovableType' },
-            'TemplatePath' => {
+            'DefaultCommenterAuth'   => { default => 'MovableType' },
+            'TemplatePath'           => {
                 default => 'tmpl',
                 path    => 1,
             },
@@ -1911,7 +1912,7 @@ BEGIN {
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
-            'DefaultWebsiteTheme'  => { default => 'classic_website' },
+            'DefaultWebsiteTheme'  => { default => 'rainier' },
             'DefaultBlogTheme'     => { default => 'rainier' },
             'ThemeStaticFileExtensions' => {
                 default => 'html jpg jpeg gif png js css ico flv swf otf ttf'
