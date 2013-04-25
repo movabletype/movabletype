@@ -1,0 +1,37 @@
+<mt:IfArchiveTypeEnabled archive_type="Individual">
+<div class="widget-calendar widget">
+    <h3 class="widget-header"><$mt:Date format="%B %Y"$></h3>
+    <div class="widget-content">
+        <table summary="<__trans phrase="Monthly calendar with links to daily posts">">
+            <tr>
+                <th abbr="<__trans phrase="Sunday">"><__trans phrase="Sun"></th>
+                <th abbr="<__trans phrase="Monday">"><__trans phrase="Mon"></th>
+                <th abbr="<__trans phrase="Tuesday">"><__trans phrase="Tue"></th>
+                <th abbr="<__trans phrase="Wednesday">"><__trans phrase="Wed"></th>
+                <th abbr="<__trans phrase="Thursday">"><__trans phrase="Thu"></th>
+                <th abbr="<__trans phrase="Friday">"><__trans phrase="Fri"></th>
+                <th abbr="<__trans phrase="Saturday">"><__trans phrase="Sat"></th>
+            </tr>
+    <mt:Calendar>
+        <mt:CalendarWeekHeader>
+            <tr>
+        </mt:CalendarWeekHeader>
+                <td>
+        <mt:CalendarIfEntries>
+            <mt:Entries lastn="1">
+                    <a href="<$mt:EntryPermalink$>"><$mt:CalendarDay$></a>
+            </mt:Entries>
+        </mt:CalendarIfEntries>
+        <mt:CalendarIfNoEntries>
+                    <$mt:CalendarDay$>
+        </mt:CalendarIfNoEntries>
+        <mt:CalendarIfBlank>&nbsp;</mt:CalendarIfBlank>
+                </td>
+        <mt:CalendarWeekFooter>
+            </tr>
+        </mt:CalendarWeekFooter>
+    </mt:Calendar>
+        </table>
+    </div>
+</div>
+</mt:IfArchiveTypeEnabled>
