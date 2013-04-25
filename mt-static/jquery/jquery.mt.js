@@ -1151,6 +1151,7 @@ $.fn.extend({
             if ( !validator ) return true;
             if ( typeof $this.attr('data-showing-placeholder') !== 'undefined' ) {
                 $this.val('');
+            }
             var rules = $.data( this, 'mtValidateRules' );
             var res = validator.validateElement($this, rules);
             if ( res ) {
