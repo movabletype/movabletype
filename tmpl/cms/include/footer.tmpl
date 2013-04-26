@@ -103,6 +103,11 @@ jQuery(function() {
         jQuery(this).addClass(jQuery(this).attr('type'));
     });
     jQuery('#quick-search').mtPlaceholder();
+
+    jQuery("#notification_dashboard li span.detail").css("display","none");
+    jQuery('#notification_dashboard li').click(function() {
+        jQuery(this).find("span.detail").toggle("fast");
+    });
 });
 /* ]]> */
 </script>

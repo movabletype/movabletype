@@ -33,17 +33,21 @@ sub dashboard {
             },
         },
         'user' => {
-            'this_is_you-1' => {
+            'notification_dashboard' => {
                 order => 1,
+                set   => 'main',
+            },
+            'this_is_you-1' => {
+                order => 2,
                 set   => 'main'
             },
             'mt_news' => {
-                order => 3,
+                order => 4,
                 set   => 'sidebar'
             },
             'favorite_blogs' => {
                 param => { tab => 'website' },
-                order => 2,
+                order => 3,
                 set   => 'main'
             },
         },
@@ -61,7 +65,7 @@ sub dashboard {
                 param => { tab => 'entry' },
                 order => 1,
                 set   => 'main'
-            },
+            }
         };
     }
 
@@ -119,25 +123,12 @@ sub dashboard {
         if ( !$fmgr->exists( $param->{support_path} ) ) {
             $fmgr->mkpath( $param->{support_path} );
         }
-        if (   $fmgr->exists( $param->{support_path} )
-            && $fmgr->can_write( $param->{support_path} ) )
-        {
-            $param->{has_uploads_path} = 1;
-        }
-        else {
-            $param->{has_uploads_path} = 0;
-            last;
-        }
     }
-    unless ( exists $param->{has_uploads_path} ) {
-        unless ( $fmgr->exists( $param->{support_path} ) ) {
+    unless ( $fmgr->exists( $param->{support_path} ) ) {
 
-            # the path didn't exist - change the warning a little
-            $param->{support_path} = $app->support_directory_path;
-        }
+        # the path didn't exist - change the warning a little
+        $param->{support_path} = $app->support_directory_path;
     }
-    eval { require MT::Image; MT::Image->new or die; };
-    $param->{can_use_userpic} = $@ ? 0 : 1;
 
     # We require that the determination of the 'single blog mode'
     # state be done PRIOR to the generation of the widgets
