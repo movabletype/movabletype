@@ -151,8 +151,8 @@ sub save {
 
             $values{site_path} = $app->param('site_path_absolute')
                 if !$app->config->BaseSitePath
-                    && $app->param('use_absolute')
-                    && $app->param('site_path_absolute');
+                && $app->param('use_absolute')
+                && $app->param('site_path_absolute');
         }
 
         unless ( $author->is_superuser
@@ -731,22 +731,35 @@ sub edit {
 
     if ( $type eq 'website' || $type eq 'blog' ) {
         require MT::Theme;
-        my $themes = MT::Theme->load_all_themes;
-        $param{theme_loop} = [
-            map {
-                my ( $errors, $warnings ) = $_->validate_versions;
-                {   key      => $_->{id},
-                    label    => $_->label,
-                    errors   => @$errors ? $errors : undef,
-                    warnings => @$warnings ? $warnings : undef,
-                }
-                }
-                grep {
-                       !defined $_->{class}
-                    || $_->{class} eq 'both'
-                    || $_->{class} eq $type
-                } values %$themes
-        ];
+        my $themes         = MT::Theme->load_all_themes;
+        my $get_theme_loop = sub {
+            my $type = shift;
+            [   sort { $a->{label}() cmp $b->{label}() }
+                    map {
+                    my ( $errors, $warnings ) = $_->validate_versions;
+                    {   key      => $_->{id},
+                        label    => $_->label,
+                        warnings => @$warnings ? $warnings : undef,
+                    };
+                    }
+                    grep {
+                    my ( $errors, $warnings ) = $_->validate_versions;
+                    (     $type eq 'blog' ? ( $_->{class} || '' ) ne 'website'
+                        : $type eq 'website'
+                        ? ( $_->{class} || '' ) eq 'website'
+                        : undef
+                        )
+                        && !@$errors;
+                    } values %$themes
+            ];
+        };
+        if ( $type eq 'blog' ) {
+            $param{theme_loop} = $get_theme_loop->('blog');
+        }
+        elsif ( $type eq 'website' ) {
+            $param{website_theme_loop} = $get_theme_loop->('website');
+            $param{blog_theme_loop}    = $get_theme_loop->('blog');
+        }
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
         my $limit = File::Spec->catdir( $cfg->BaseSitePath, 'PATH' );
         $limit =~ s/PATH$//;
@@ -837,9 +850,8 @@ sub list {
     } MT::Component->select;
 
     my @list_headers;
-    my $core_include
-        = File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
-        'listing', $type . '_list_header.tmpl' );
+    my $core_include = File::Spec->catfile( MT->config->TemplatePath,
+        $app->{template_dir}, 'listing', $type . '_list_header.tmpl' );
     push @list_headers,
         {
         filename  => $core_include,
@@ -900,7 +912,8 @@ sub list {
             }
         }
         foreach my $p (@act) {
-            $allowed = 1, last
+            $allowed = 1,
+                last
                 if $app->user->can_do(
                 $p,
                 at_least_one => 1,
@@ -1044,9 +1057,9 @@ sub list {
         my $id = $prop->id;
         my $disp = $prop->display || 'optional';
         my $show
-            = $disp eq 'force' ? 1
-            : $disp eq 'none'  ? 0
-            : scalar %cols ? $cols{$id}
+            = $disp eq 'force'   ? 1
+            : $disp eq 'none'    ? 0
+            : scalar %cols       ? $cols{$id}
             : $disp eq 'default' ? 1
             :                      0;
 
@@ -1060,8 +1073,8 @@ sub list {
                 push @subfields,
                     {
                       display => $sdisp eq 'force' ? 1
-                    : $sdisp eq 'none' ? 0
-                    : scalar %cols ? $cols{ $id . '.' . $sub->{class} }
+                    : $sdisp eq 'none'    ? 0
+                    : scalar %cols        ? $cols{ $id . '.' . $sub->{class} }
                     : $sdisp eq 'default' ? 1
                     : 0,
                     class      => $sub->{class},

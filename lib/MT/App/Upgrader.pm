@@ -370,14 +370,31 @@ sub init_website {
     $param{$param_name} = 1;
 
     require MT::Theme;
-    my $themes = MT::Theme->load_all_themes;
-    my @theme_loop = map { { key => $_->id, label => $_->label, } }
-        grep {
-               ( $_->{class} || '' ) eq 'both'
-            || ( $_->{class} || '' ) eq 'website'
-        } values %$themes;
-    $param{'theme_loop'}  = \@theme_loop;
-    $param{'theme_index'} = scalar @theme_loop;
+    my $themes         = MT::Theme->load_all_themes;
+    my $get_theme_loop = sub {
+        my $type = shift;
+        [   sort { $a->{label}() cmp $b->{label}() }
+                map {
+                my ( $errors, $warnings ) = $_->validate_versions;
+                {   key      => $_->{id},
+                    label    => $_->label,
+                    warnings => @$warnings ? $warnings : undef,
+                };
+                }
+                grep {
+                my ( $errors, $warnings ) = $_->validate_versions;
+                (     $type eq 'blog'    ? ( $_->{class} || '' ) ne 'website'
+                    : $type eq 'website' ? ( $_->{class} || '' ) eq 'website'
+                    :                      undef
+                    )
+                    && !@$errors;
+                } values %$themes
+        ];
+    };
+    $param{'website_theme_loop'} = $get_theme_loop->('website');
+    $param{'blog_theme_loop'}    = $get_theme_loop->('blog');
+    $param{'theme_index'}        = scalar $param{'website_theme_loop'}
+        + scalar $param{'blog_theme_loop'};
     if ( my $b_path = $app->config->BaseSitePath ) {
         $param{'sitepath_limited'} = $b_path;
 
@@ -573,8 +590,8 @@ sub run_actions {
             if (@$new_steps) {
                 push @steps, @$new_steps;
                 @steps = sort {
-                    $fn->{ $a->[0] }->{priority} <=> $fn->{ $b->[0] }
-                        ->{priority}
+                    $fn->{ $a->[0] }->{priority}
+                        <=> $fn->{ $b->[0] }->{priority}
                 } @steps;
                 $app->response->{steps} = [];
             }

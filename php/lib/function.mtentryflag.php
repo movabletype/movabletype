@@ -11,7 +11,7 @@ function smarty_function_mtentryflag($args, &$ctx) {
     if (isset($entry->$flag)) {
         $v = $entry->$flag;
     }
-    if ($flag == 'allow_pings') {
+    if ($args['flag'] == 'allow_pings' || $args['flag'] == 'allow_comments') {
        return isset($v) ? $v : 0; 
     } else {
        return isset($v) ? $v : 1;

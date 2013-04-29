@@ -294,5 +294,41 @@ subtest 'Test cfg_entry mode' => sub {
     done_testing();
 };
 
+diag 'Test applying a blog theme to a website';
+subtest 'Test applying a blog theme to a website' => sub {
+    is( MT->config->DefaultWebsiteTheme,
+        'rainier', '"DefaultWebsiteTheme" directive is "rainier."' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user => $admin,
+            __mode      => 'view',
+            _type       => 'website',
+            blog_id     => 0,
+        },
+    );
+    $out = delete $app->{__test_output};
+    my $optgrp_website = quotemeta '<optgroup label="Website">';
+    like( $out, qr/$optgrp_website/,
+        '"Create Website" view has website\'s optgroup tag.' );
+    my $optgrp_blog = quotemeta '<optgroup label="Blog">';
+    like( $out, qr/$optgrp_blog/,
+        '"Create Website" view has blog\'s optgroup tag.' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user => $admin,
+            __mode      => 'view',
+            _type       => 'blog',
+            blog_id     => $website->id,
+        },
+    );
+    $out = delete $app->{__test_output};
+    unlike( $out, qr/$optgrp_website/,
+        '"Create Blog" view does not have website\'s optgroup tag.' );
+    unlike( $out, qr/$optgrp_blog/,
+        '"Create Blog" view does not have blog\'s optgroup tag.' );
+};
+
 done_testing();
 
