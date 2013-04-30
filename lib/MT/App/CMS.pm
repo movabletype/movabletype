@@ -3063,80 +3063,16 @@ sub set_default_tmpl_params {
     $param->{show_ip_info} ||= $app->config('ShowIPInformation');
     my $type = $app->param('_type') || '';
 
-    require MT::FileMgr;
-    my $fmgr = MT::FileMgr->new('Local');
-    my $support_path;
-    my $has_uploads_path;
-    foreach my $subdir (qw( uploads userpics )) {
-        $support_path
-            = File::Spec->catdir( $app->support_directory_path, $subdir );
-        if ( !$fmgr->exists($support_path) ) {
-            $fmgr->mkpath($support_path);
-        }
-        if (   $fmgr->exists($support_path)
-            && $fmgr->can_write($support_path) )
-        {
-            $has_uploads_path = 1;
-        }
-    }
-    unless ( $has_uploads_path || $fmgr->exists( $support_path ) ) {
+    $param->{ "mode_$mode" . ( $type ? "_$type" : '' ) } = 1;
+    $param->{return_args} ||= $app->make_return_args;
 
-        # the path didn't exist - change the warning a little
-        $support_path = $app->support_directory_path;
-    }
-    unless ($has_uploads_path) {
-        my $messages = {
-            level => 'warning',
-            text => $app->translate('The support directory is not writable.'),
-            detail => $app->translate(
-                'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.',
-                $support_path
-            ),
-        };
-        push @{ $param->{loop_notification_dashboard} }, $messages;
-    }
-
-    eval { require MT::Image; MT::Image->new or die; };
-    if ($@) {
-        $param->{can_use_userpic} = 0;
-        my $messages = {
-            level  => 'warning',
-            text   => $app->translate('ImageDriver is not configured.'),
-            detail => $app->translate(
-                'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.'
-            ),
-        };
-        push @{ $param->{loop_notification_dashboard} }, $messages;
-    }
-    else {
-        $param->{can_use_userpic} = 1;
-    }
-
-    unless ( $app->config('EmailAddressMain') ) {
-        my $messages = {
-            level => 'warning',
-            text =>
-                $app->translate('System email address is not configured.'),
-            detail => $app->translate(
-                'You do not have a system email address configured.  Please set this. Unless this is configured, notification e-mail is not sent. <a href="[_1]">Configure</a>',
-                $app->uri(
-                    mode => 'cfg_system_general',
-                    args => { blog_id => 0 }
-                )
-            ),
-        };
-        push @{ $param->{loop_notification_dashboard} }, $messages;
-    }
-
-    $app->run_callbacks( 'set_notification_dashboard',
-        $param->{loop_notification_dashboard} );
-
+    # Message Center
+    $param->{loop_notification_dashboard}
+        = $app->param('loop_notification_dashboard');
     $param->{count_notification_dashboard}
         = @{ $param->{loop_notification_dashboard} }
         if $param->{loop_notification_dashboard};
 
-    $param->{ "mode_$mode" . ( $type ? "_$type" : '' ) } = 1;
-    $param->{return_args} ||= $app->make_return_args;
     $tmpl->param($param);
 }
 
