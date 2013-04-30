@@ -214,7 +214,7 @@ sub filtered_list {
             };
     }
 
-    for my $key ( split ',', $app->param('filterKeys') ) {
+    for my $key ( split ',', ( $app->param('filterKeys') || '' ) ) {
         if ( defined( $app->param($key) ) ) {
             push @$filteritems,
                 {
