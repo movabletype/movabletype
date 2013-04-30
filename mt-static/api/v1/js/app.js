@@ -241,17 +241,18 @@ API.prototype = {
                 // TODO default error handling
                 if (response.error) {
                     if (parseInt(response.error.code, 10) === 401) {
-                        api.request('GET', '/token', function(response) {
-                            if (response.error) {
-                                api.o.on.sessionExpired(response);
-                            }
-                            else {
-                            console.log(response);
-                                api.storeToken(response);
-                                api.request.apply(api, originalArguments);
-                            }
-                            return false;
-                        });
+                        if (endpoint !== '/token') {
+                            api.request('GET', '/token', function(response) {
+                                if (response.error) {
+                                    api.o.on.sessionExpired(response);
+                                }
+                                else {
+                                    api.storeToken(response);
+                                    api.request.apply(api, originalArguments);
+                                }
+                                return false;
+                            });
+                        }
                     }
                 }
             }
