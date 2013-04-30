@@ -227,7 +227,7 @@ API.prototype = {
             if (! response) {
                 response = {
                     error: {
-                        code: xhr.status,
+                        code:    parseInt(xhr.status, 10),
                         message: xhr.statusText
                     }
                 };
@@ -238,7 +238,7 @@ API.prototype = {
             if (status !== false) {
                 // TODO default error handling
                 if (response.error) {
-                    if (parseInt(response.error.code, 10) === 401) {
+                    if (response.error.code === 401) {
                         if (endpoint !== '/token') {
                             api.request('GET', '/token', function(response) {
                                 if (response.error) {

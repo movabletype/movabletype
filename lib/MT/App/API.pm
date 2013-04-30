@@ -530,8 +530,8 @@ sub print_error {
     $app->print_encode(
         $format->{serialize}->(
             {   error => {
+                    code    => $status+0,
                     message => $message,
-                    code    => $status,
                 }
             }
         )
