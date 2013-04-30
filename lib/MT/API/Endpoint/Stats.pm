@@ -70,6 +70,10 @@ sub fill_in_archive_info {
         else {
             push @in_paths, $path;
         }
+
+        for my $k (qw(archiveType entry category author)) {
+            $i->{$k} = undef;
+        }
     }
 
     return $data if !@in_paths && !@like_paths;
@@ -93,9 +97,7 @@ sub fill_in_archive_info {
         }
         next unless $i;
 
-        for my $k (qw(archive_type)) {
-            $i->{$k} = $fi->$k if defined $fi->$k;
-        }
+        $i->{archiveType} = $fi->archive_type if defined $fi->archive_type;
         for my $k (qw(entry_id category_id author_id)) {
             if ( defined $fi->$k ) {
                 ( my $hk = $k ) =~ s/_.*//g;
