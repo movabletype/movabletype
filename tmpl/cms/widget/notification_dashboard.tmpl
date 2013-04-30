@@ -7,7 +7,7 @@
 <ul id="message-center">
 <mt:if name="loop_notification_dashboard">
 <mt:loop name="loop_notification_dashboard">
-    <li><span class="icon-left icon-<mt:if name="level"><mt:var name="level"><mt:else>warning</mt:if> item"><mt:var name="text"></span><mt:if name="detail"><span class="detail"><mt:var name="detail"></span></mt:if></li>
+    <li><span class="icon-left icon-<mt:if name="level"><mt:var name="level"><mt:else>warning</mt:if> item<mt:if name="detail"> clickable</mt:if>"><mt:var name="text"></span><mt:if name="detail"><span class="detail"><mt:var name="detail"></span></mt:if></li>
 </mt:loop>
 <mt:else>
     <li><__trans phrase="There is no messages from the system."></li>

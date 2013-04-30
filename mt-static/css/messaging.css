@@ -143,10 +143,10 @@ p.zero-state {
     padding: 0 10px;
 }
 #notification_dashboard .item {
-    cursor: pointer;
     display: block;
 }
-#notification_dashboard .item:hover {
+#notification_dashboard .clickable:hover {
+    cursor: pointer;
     color: #507ea4;
 }
 #notification_dashboard .detail {
