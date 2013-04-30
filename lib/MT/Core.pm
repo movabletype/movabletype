@@ -316,13 +316,14 @@ BEGIN {
                     default_sort_order => 'descend',
                 },
                 float => {
-                    base      => '__virtual.integer',
-                    condition => sub {0},
-                    col_class => 'num',
-                    html      => sub {
+                    base        => '__virtual.integer',
+                    col_class   => 'num',
+                    filter_tmpl => '<mt:Var name="filter_form_float">',
+                    data_format => '%.1f',
+                    html        => sub {
                         my ( $prop, $obj ) = @_;
                         my $col = $prop->col;
-                        return sprintf "%0.1f", $obj->$col;
+                        return sprintf $prop->data_format, $obj->$col;
                     },
                     base_type => 'float',
                 },
@@ -956,6 +957,10 @@ BEGIN {
                     col         => 'id',
                     display     => 'none',
                     view_filter => [],
+                    condition   => sub {
+                        my $prop = shift;
+                        return $prop->datasource->has_column('id') ? 1 : 0;
+                    },
                 },
                 pack => {
                     view  => [],
@@ -1186,34 +1191,6 @@ BEGIN {
                         return $cond ? 1 : 0;
                     }
                     0;
-                },
-                condition => sub {
-                    my $app = MT->instance;
-                    return 1 if $app->user->is_superuser;
-
-                    my $blog = $app->blog;
-                    my $blog_ids
-                        = !$blog         ? undef
-                        : $blog->is_blog ? [ $blog->id ]
-                        :   [ map { $_->id } @{ $blog->blogs } ];
-
-                    require MT::Permission;
-                    my $iter = MT::Permission->load_iter(
-                        {   author_id => $app->user->id,
-                            (   $blog_ids
-                                ? ( blog_id => $blog_ids )
-                                : ( blog_id => { not => 0 } )
-                            ),
-                        }
-                    );
-
-                    my $cond;
-                    while ( my $p = $iter->() ) {
-                        $cond = 1, last
-                            if $p->can_do('access_to_entry_list')
-                            and $p->blog->is_blog;
-                    }
-                    return $cond ? 1 : 0;
                 },
             },
             page => {
@@ -1912,7 +1889,7 @@ BEGIN {
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
-            'DefaultWebsiteTheme'  => { default => 'rainier' },
+            'DefaultWebsiteTheme'  => { default => 'classic_website' },
             'DefaultBlogTheme'     => { default => 'rainier' },
             'ThemeStaticFileExtensions' => {
                 default => 'html jpg jpeg gif png js css ico flv swf otf ttf'

@@ -263,6 +263,7 @@ sub save {
         if ( !$obj->id ) {
             $obj->language( $q->param('blog_language')
                     || MT->config->DefaultLanguage );
+            $obj->date_language( $obj->language );
             $obj->nofollow_urls(1);
             $obj->follow_auth_links(1);
             $obj->page_layout('layout-wtt');
@@ -1394,7 +1395,6 @@ sub filtered_list {
             unless $allowed;
     }
 
-    my $class = $setting->{datasource} || MT->model($ds);
     my $filteritems;
     my $allpass = 0;
     if ( my $items = $q->param('items') ) {
@@ -1448,8 +1448,18 @@ sub filtered_list {
 
     ## FIXME: take identifical column from column defs.
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
-    my @cols = ( '__id', grep {/^[^\.]+$/} split( ',', $cols ) );
-    my @subcols = ( '__id', grep {/\./} split( ',', $cols ) );
+    my @cols = grep {/^[^\.]+$/} split( ',', $cols );
+    my @subcols = grep {/\./} split( ',', $cols );
+    my $class = MT->model( $setting->{object_type}) || MT->model($ds);
+    if ( $class->has_column('id') ) {
+        unshift @cols,    '__id';
+        unshift @subcols, '__id';
+    }
+    elsif ( $setting->{id_column} ) {
+        unshift @cols,    $setting->{id_column};
+        unshift @subcols, $setting->{id_column};
+    }
+
     $MT::DebugMode && $debug->{print}->("COLUMNS: $cols");
 
     my $scope_mode = $setting->{scope_mode} || 'wide';

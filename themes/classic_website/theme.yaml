@@ -2,7 +2,7 @@ label: Classic Website
 id: classic_website
 author_name: Six Apart, Ltd.
 author_link: http://www.movabletype.org/
-version: 1.1
+version: 1.11
 class: website
 protected: 1
 description: <__trans phrase="Create a blog portal that aggregates contents from several blogs in one website.">

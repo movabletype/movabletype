@@ -73,8 +73,6 @@ sub edit {
         $param->{languages}
             = MT::I18N::languages_list( $app, $obj->preferred_language )
             unless exists $param->{langauges};
-        eval { require MT::Image; MT::Image->new or die; };
-        $param->{can_use_userpic} = $@ ? 0 : 1;
         $param->{date_format} = $obj->date_format || 'relative';
 
         if (    $param->{is_me}
