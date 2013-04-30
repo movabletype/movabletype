@@ -244,8 +244,8 @@ sub filtered_list {
     my %load_options = (
         terms => { %$terms, @blog_id_term },
         args  => {%$args},
-        sort_by    => $q->param('sort_by')    || '',
-        sort_order => $q->param('sort_order') || '',
+        sort_by    => $q->param('sortBy')    || '',
+        sort_order => $q->param('sortOrder') || '',
         limit      => $limit,
         offset     => $offset,
         scope      => $scope,

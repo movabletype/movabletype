@@ -88,12 +88,12 @@ sub core_endpoints {
             method  => 'GET',
             version => 1,
             handler => "${pkg}Entry::list",
-            param   => {
-                limit      => 10,
-                offset     => 0,
-                sort_by    => 'authored_on',
-                sort_order => 'descend',
-                search_fields =>
+            param => {
+                limit     => 10,
+                offset    => 0,
+                sortBy    => 'authored_on',
+                sortOrder => 'descend',
+                searchFields =>
                     'title,text,text_more,keywords,excerpt,basename',
             },
             error_codes => {
