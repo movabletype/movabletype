@@ -44,8 +44,8 @@ API.prototype = {
     },
     
     updateTokenFromDefault: function() {
-        var defaultKey    = API.mtApiAccessTokenKey;
-        var defaultCookie = Cookie.fetch(defaultKey);
+        var defaultKey    = API.mtApiAccessTokenKey,
+            defaultCookie = Cookie.fetch(defaultKey);
         if (! defaultCookie) {
             return null;
         }
@@ -295,9 +295,7 @@ API.prototype = {
     }
 };
 
-if (typeof(window.MT) === 'undefined') {
-    window.MT = {};
-}
+window.MT     = window.MT || {};
 window.MT.API = API;
 
 
