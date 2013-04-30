@@ -233,30 +233,31 @@ API.prototype = {
                 };
             }
 
-            var status = callback(response);
-            
-            if (status !== false) {
-                // TODO default error handling
-                if (response.error) {
-                    if (response.error.code === 401) {
-                        if (endpoint !== '/token') {
-                            api.request('GET', '/token', function(response) {
-                                if (response.error) {
-                                    api.trigger('sessionExpired', response);
-                                }
-                                else {
-                                    api.storeToken(response);
-                                    api.request.apply(api, originalArguments);
-                                }
-                                return false;
-                            });
-                        }
-                        else {
-                            api.trigger('sessionExpired', response);
-                        }
+
+            function runCallbacks(response) {
+                var status = callback(response);
+                if (status !== false) {
+                    if (response.error) {
+                        // TODO default error handling
                     }
                 }
             }
+
+            if (response.error && response.error.code === 401 && endpoint !== '/token') {
+                api.request('GET', '/token', function(response) {
+                    if (response.error && response.error.code === 401) {
+                        api.trigger('sessionExpired', response);
+                        runCallbacks(response);
+                    }
+                    else {
+                        api.storeToken(response);
+                        api.request.apply(api, originalArguments);
+                    }
+                    return false;
+                });
+            }
+
+            runCallbacks(response);
         };
         return this.sendXMLHttpRequest(xhr, method, base + endpoint, params);
     },
