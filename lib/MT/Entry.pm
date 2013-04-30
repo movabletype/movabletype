@@ -272,11 +272,13 @@ sub list_props {
                     = MT->static_path . 'images/status_icons/' . $status_file;
                 my $view_img
                     = MT->static_path . 'images/status_icons/view.gif';
+                my $view_link_text
+                    = MT->translate( 'View [_1]', $class_label );
                 my $view_link = $obj->status == MT::Entry::RELEASE()
                     ? qq{
                     <span class="view-link">
                       <a href="$permalink" target="_blank">
-                        <img alt="View $class_label" src="$view_img" />
+                        <img alt="$view_link_text" src="$view_img" />
                       </a>
                     </span>
                 }

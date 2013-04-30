@@ -135,6 +135,12 @@ sub pwd {
     $fmgr->{ftp}->pwd();
 }
 
+sub list {
+    my $fmgr = shift;
+    my ($path) = @_;
+    $fmgr->{ftp}->list($path);
+}
+
 sub DESTROY { $_[0]->{ftp}->quit if $_[0]->{ftp} }
 
 package MT::FileMgr::FTP::StringTie;

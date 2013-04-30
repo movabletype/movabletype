@@ -339,7 +339,7 @@ if ( !$view ) {
             .msg-text { 
                 margin: 0;
             }
-            .msg textarea {
+            .msg span.exception {
                 display: none;
                 width: 100%;
                 max-width: 100%;
@@ -966,7 +966,7 @@ MSG
             }
             print_encode(qq{</p>});
             print_encode(
-                qq{<textarea id="exception-$i" class="exception text full" readonly="readonly">$exception</textarea>}
+                qq{<span id="exception-$i" class="exception">$exception</span>}
             ) if $exception;
             print_encode(qq{</div>});
         }
