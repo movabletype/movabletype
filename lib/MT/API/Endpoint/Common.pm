@@ -214,6 +214,16 @@ sub filtered_list {
             };
     }
 
+    for my $key ( split ',', $app->param('filterKeys') ) {
+        if ( defined( $app->param($key) ) ) {
+            push @$filteritems,
+                {
+                type => $key,
+                args => { value => scalar( $app->param($key) ), },
+                };
+        }
+    }
+
     require MT::ListProperty;
     my $props = MT::ListProperty->list_properties($ds);
 

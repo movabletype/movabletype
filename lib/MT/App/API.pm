@@ -95,6 +95,7 @@ sub core_endpoints {
                 sortOrder => 'descend',
                 searchFields =>
                     'title,text,text_more,keywords,excerpt,basename',
+                filterKeys => 'status',
             },
             error_codes => {
                 403 =>

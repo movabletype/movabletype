@@ -586,6 +586,14 @@ BEGIN {
                         my ($args) = @_;
                         my $col    = $prop->col || $prop->type or die;
                         my $value  = $args->{value};
+
+                        for my $o ( @{ $prop->single_select_options } ) {
+                            if ( $o->{text} && $o->{text} eq $value ) {
+                                $value = $o->{value};
+                                last;
+                            }
+                        }
+
                         return { $col => $value };
                     },
                     label_via_param => sub {
