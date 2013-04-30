@@ -140,14 +140,7 @@ p.zero-state {
 }
 #notification_dashboard li {
     display: block;
-    border-bottom: 1px solid #c0c6c9;
     padding: 0 10px;
-}
-#notification_dashboard li:last-child {
-    border-bottom: none;
-}
-#notification_dashboard li:hover {
-    border-bottom-color: #507ea4;
 }
 #notification_dashboard .item {
     cursor: pointer;
@@ -158,6 +151,12 @@ p.zero-state {
 }
 #notification_dashboard .detail {
     display: block;
-    padding-bottom: 10px;
-    padding-top: 5px;
+    border-bottom: 1px solid #c0c6c9;
+    padding: 0.5em 0.5em 0.5em 14px;
+    color: #7b7c7d;
+    font-size: 95%;
+}
+
+#notification_dashboard li:last-child .detail {
+    border-bottom: none;
 }
