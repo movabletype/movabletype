@@ -6,10 +6,7 @@ var API = function(options) {
         baseUrl: '',
         cookieDomain: undefined,
         cookiePath: undefined,
-        async: true,
-        on: {
-            sessionExpired: function(){}
-        }
+        async: true
     };
     for (k in this.o) {
         if (options[k]) {
@@ -25,6 +22,7 @@ var API = function(options) {
     }
     // TODO validate option
 
+    this.callbacks = [];
     this.tokenData = null;
 }
 
@@ -244,7 +242,7 @@ API.prototype = {
                         if (endpoint !== '/token') {
                             api.request('GET', '/token', function(response) {
                                 if (response.error) {
-                                    api.o.on.sessionExpired(response);
+                                    api.trigger('sessionExpired', response);
                                 }
                                 else {
                                     api.storeToken(response);
@@ -253,11 +251,47 @@ API.prototype = {
                                 return false;
                             });
                         }
+                        else {
+                            api.trigger('sessionExpired', response);
+                        }
                     }
                 }
             }
         };
         return this.sendXMLHttpRequest(xhr, method, base + endpoint, params);
+    },
+
+    on: function(key, callback) {
+        if (! this.callbacks[key]) {
+            this.callbacks[key] = [];
+        }
+
+        this.callbacks[key].push(callback);
+    },
+
+    off: function(key, callback) {
+        if (callback) {
+            var callbacks = this.callbacks[key] || [];
+
+            for (var i = 0; i < callbacks.length; i++) {
+                if (callbacks[i] === callback) {
+                    callbacks.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        else {
+            delete this.callbacks[key];
+        }
+    },
+
+    trigger: function(key) {
+        var callbacks = this.callbacks[key] || [],
+            args      = Array.prototype.slice.call(arguments, 1);
+
+        for (var i = 0; i < callbacks.length; i++) {
+            callbacks[i].apply(this, args);
+        }
     }
 };
 
