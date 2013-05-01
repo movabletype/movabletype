@@ -1473,9 +1473,13 @@ sub core_list_actions {
             refresh_tmpl_templates => {
                 label => "Refresh Template(s)",
                 code  => "${pkg}Template::refresh_individual_templates",
-                permit_action => 'refresh_template_via_list',
-                order         => 100,
-                condition     => sub {
+                permit_action => {
+                    permit_action => 'refresh_template_via_list',
+                    include_all   => 1,
+                    system_action => 'refresh_template_via_list',
+                },
+                order     => 100,
+                condition => sub {
                     my $app = MT->app;
                     my $tmpl_type = $app->param('filter_key') || '';
                     return 0 if $tmpl_type eq 'backup_templates';
@@ -3079,7 +3083,7 @@ sub set_default_tmpl_params {
             $has_uploads_path = 1;
         }
     }
-    unless ( $has_uploads_path || $fmgr->exists( $support_path ) ) {
+    unless ( $has_uploads_path || $fmgr->exists($support_path) ) {
 
         # the path didn't exist - change the warning a little
         $support_path = $app->support_directory_path;
