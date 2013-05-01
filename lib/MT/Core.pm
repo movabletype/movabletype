@@ -1889,7 +1889,7 @@ BEGIN {
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
-            'DefaultWebsiteTheme'  => { default => 'classic_website' },
+            'DefaultWebsiteTheme'  => { default => 'rainier' },
             'DefaultBlogTheme'     => { default => 'rainier' },
             'ThemeStaticFileExtensions' => {
                 default => 'html jpg jpeg gif png js css ico flv swf otf ttf'

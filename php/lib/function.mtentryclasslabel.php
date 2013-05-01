@@ -11,8 +11,7 @@ function smarty_function_mtentryclasslabel($args, &$ctx) {
     if (!isset($class)) {
         return '';
     }
-    return $ctx->mt->translate($class);
-    // translate('page'), translate('entry')
+    return $ctx->mt->translate(ucfirst($class));
     // translate('Page'), translate('Entry')
 } 
 ?>
