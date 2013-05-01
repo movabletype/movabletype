@@ -14,6 +14,26 @@ sub is_ready {
     GoogleAnalytics::current_plugindata(@_) ? 1 : 0;
 }
 
+sub snipet {
+    my $self = shift;
+    my ( $ctx, $args ) = @_;
+    my $app = MT->instance;
+    my $plugindata = GoogleAnalytics::current_plugindata( $app, $self->blog )
+        or return q();
+    <<__HTML__;
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', '@{[ $plugindata->data->{profile_web_property_id} ]}']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+__HTML__
+}
+
 sub _name {
     my %aliases = qw(
         pagepath path

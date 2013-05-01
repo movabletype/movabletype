@@ -339,6 +339,8 @@ sub core_tags {
             ## Misc
             'IfImageSupport?' =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_if_image_support',
+            'StatsSnippet' =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_stats_snippet',
         },
         function => {
 

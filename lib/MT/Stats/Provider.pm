@@ -17,4 +17,8 @@ sub new {
 
 sub init { }
 
+sub snippet {
+    q();
+}
+
 1;
