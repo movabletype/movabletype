@@ -8,9 +8,7 @@ l10n_class: GoogleAnalytics::L10N
 
 settings:
     client_id:
-        default: "276991769060.apps.googleusercontent.com"
     client_secret:
-        default: "VD9jHSXXoyabXTOGWBEKj-e_"
     profile_name:
     profile_web_property_id:
     profile_id:

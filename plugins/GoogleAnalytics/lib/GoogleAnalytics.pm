@@ -40,7 +40,11 @@ sub _find_current_plugindata {
 
     for my $o (@objs) {
         my $data = $o->data();
-        if ( $data && $data->{profile_id} ) {
+        if (   $data
+            && $data->{client_id}
+            && $data->{client_secret}
+            && $data->{profile_id} )
+        {
             return $o;
         }
     }
