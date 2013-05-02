@@ -16,9 +16,9 @@ sub _invoke {
         or return $app->error( 404, 'Readied provider is not found' );
 
     my $params = {
-        start_date => scalar( $app->param('start_date') ),
-        end_date   => scalar( $app->param('end_date') ),
-        limit      => scalar( $app->param('limit') ),
+        startDate => scalar( $app->param('startSate') ),
+        endDate   => scalar( $app->param('endDate') ),
+        limit     => scalar( $app->param('limit') ),
     };
     $params->{path} = do {
         if ( defined( my $path = $app->param('path') ) ) {
@@ -104,7 +104,7 @@ sub fill_in_archive_info {
                 $i->{$hk} = { id => $fi->$k, };
             }
         }
-        ( $i->{start_date} = $fi->startdate )
+        ( $i->{startDate} = $fi->startdate )
             =~ s/(\d{4})(\d{2})(\d{2}).*/$1-$2-$3/
             if defined $fi->startdate;
     }

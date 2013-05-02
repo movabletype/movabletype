@@ -57,8 +57,8 @@ sub _normalize_date {
 sub _extract_default_params {
     my ($params) = @_;
 
-    (   'start-date' => _normalize_date($params->{start_date}),
-        'end-date' => _normalize_date($params->{end_date}),
+    (   'start-date' => _normalize_date($params->{startDate}),
+        'end-date' => _normalize_date($params->{endDate}),
         'start-index' => ( $params->{offset} || 0 ) + 1,
         (   defined( $params->{limit} )
             ? ( 'max-results' => $params->{limit} )
