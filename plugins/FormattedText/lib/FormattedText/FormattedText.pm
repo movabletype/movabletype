@@ -159,7 +159,6 @@ sub list_props {
             base      => '__virtual.blog_name',
             order     => 400,
             display   => 'default',
-            site_name => 0,
             view      => ['system'],
             bulk_html => sub {
                 my $prop     = shift;
