@@ -110,8 +110,8 @@ $guest->save or die $guest->errstr;
         = MT::Template->load(
         { blog_id => $blog_id, identifier => 'category_entry_listing' } );
 
-    my $tm_cat1 = MT::TemplateMap->new;
-    $tm_cat1->set_values(
+    my $tm_cat = MT::TemplateMap->new;
+    $tm_cat->set_values(
         {   archive_type => 'Category',
             blog_id      => $blog_id,
             build_type   => MT::PublishOption::DYNAMIC(),
@@ -119,7 +119,7 @@ $guest->save or die $guest->errstr;
             template_id  => $cat_tmpl->id,
         }
     );
-    $tm_cat1->save or die $tm_cat1->errstr;
+    $tm_cat->save or die $tm_cat->errstr;
 
     my $fi_cat1 = MT::FileInfo->new;
     $fi_cat1->set_values(
@@ -129,9 +129,8 @@ $guest->save or die $guest->errstr;
             filepath =>
                 '/var/www/html/first_website/website_category_1/index.html',
             template_id    => $cat_tmpl->id,
-            templatemap_id => $tm_cat1->id,
-            url =>
-                'http://localhost/first_website/website_category_1/index.html',
+            templatemap_id => $tm_cat->id,
+            url            => '/first_website/website-category-1/index.html',
         }
     );
     $fi_cat1->save or die $fi_cat1->errstr;
@@ -147,6 +146,21 @@ $guest->save or die $guest->errstr;
     );
     $cat2->save or die $cat2->errstr;
 
+    my $fi_cat2 = MT::FileInfo->new;
+    $fi_cat2->set_values(
+        {   archive_type => 'Category',
+            blog_id      => $blog_id,
+            category_id  => $cat2->id,
+            filepath =>
+                '/var/www/html/first_website/website_category_1/website_subcategory_2/index.html',
+            template_id    => $cat_tmpl->id,
+            templatemap_id => $tm_cat->id,
+            url =>
+                '/first_website/website-category-1/website-subcategory-2/index.html',
+        }
+    );
+    $fi_cat2->save or die $fi_cat2->errstr;
+
     my $cat3 = MT::Category->new;
     $cat3->set_values(
         {   blog_id     => $blog_id,
@@ -157,6 +171,20 @@ $guest->save or die $guest->errstr;
     );
     $cat3->save or die $cat3->errstr;
 
+    my $fi_cat3 = MT::FileInfo->new;
+    $fi_cat3->set_values(
+        {   archive_type => 'Category',
+            blog_id      => $blog_id,
+            category_id  => $cat3->id,
+            filepath =>
+                '/var/www/html/first_website/website_category_3/index.html',
+            template_id    => $cat_tmpl->id,
+            templatemap_id => $tm_cat->id,
+            url            => '/first_website/website-category-3/index.html',
+        }
+    );
+    $fi_cat3->save or die $fi_cat3->errstr;
+
     my $cat4 = MT::Category->new;
     $cat4->set_values(
         {   blog_id     => $blog_id,
@@ -166,6 +194,20 @@ $guest->save or die $guest->errstr;
         }
     );
     $cat4->save or die $cat4->errstr;
+
+    my $fi_cat4 = MT::FileInfo->new;
+    $fi_cat4->set_values(
+        {   archive_type => 'Category',
+            blog_id      => $blog_id,
+            category_id  => $cat4->id,
+            filepath =>
+                '/var/www/html/first_website/website_category_4/index.html',
+            template_id    => $cat_tmpl->id,
+            templatemap_id => $tm_cat->id,
+            url            => '/first_website/website-category-4/index.html',
+        }
+    );
+    $fi_cat4->save or die $fi_cat4->errstr;
 
     my $cat5 = MT::Category->new;
     $cat5->set_values(
@@ -178,6 +220,21 @@ $guest->save or die $guest->errstr;
     );
     $cat5->save or die $cat5->errstr;
 
+    my $fi_cat5 = MT::FileInfo->new;
+    $fi_cat5->set_values(
+        {   archive_type => 'Category',
+            blog_id      => $blog_id,
+            category_id  => $cat5->id,
+            filepath =>
+                '/var/www/html/first_website/website_category_1/website_subcategory_2/website_subsubcategory_5/index.html',
+            template_id    => $cat_tmpl->id,
+            templatemap_id => $tm_cat->id,
+            url =>
+                '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/index.html',
+        }
+    );
+    $fi_cat5->save or die $fi_cat5->errstr;
+
     my $cat6 = MT::Category->new;
     $cat6->set_values(
         {   blog_id     => $blog_id,
@@ -188,6 +245,21 @@ $guest->save or die $guest->errstr;
         }
     );
     $cat6->save or die $cat6->errstr;
+
+    my $fi_cat6 = MT::FileInfo->new;
+    $fi_cat6->set_values(
+        {   archive_type => 'Category',
+            blog_id      => $blog_id,
+            category_id  => $cat6->id,
+            filepath =>
+                '/var/www/html/first_website/website_category_1/website_subcategory_2/website_subsubcategory_6/index.html',
+            template_id    => $cat_tmpl->id,
+            templatemap_id => $tm_cat->id,
+            url =>
+                '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/index.html',
+        }
+    );
+    $fi_cat6->save or die $fi_cat6->errstr;
 
     # Create entries
     my $e1 = $mt->model('entry')->new;
@@ -231,9 +303,8 @@ $guest->save or die $guest->errstr;
                 '/var/www/html/first_website/2011/01/website-entry-1.html',
             template_id    => $tmpl->id,
             templatemap_id => $tm1->id,
-            url =>
-                'http://localhost/first_website/2011/01/website-entry-1.html',
-            virtual => 1,
+            url            => '/first_website/2011/01/website-entry-1.html',
+            virtual        => 1,
         }
     );
     $fi1->save or die $fi1->errstr;
@@ -278,7 +349,7 @@ $guest->save or die $guest->errstr;
     my $objscore1 = $mt->model('objectscore')->new;
     $objscore1->set_values(
         {   author_id => $admin->id,
-            namespace => 'community_pack_recommend',
+            namespace => 'test_namespace',
             object_ds => 'entry',
             object_id => $e1->id,
             score     => 2,
@@ -289,7 +360,7 @@ $guest->save or die $guest->errstr;
     my $objscore2 = $mt->model('objectscore')->new;
     $objscore2->set_values(
         {   author_id => $guest->id,
-            namespace => 'community_pack_recommend',
+            namespace => 'test_namespace',
             object_ds => 'entry',
             object_id => $e1->id,
             score     => 4,
@@ -1495,7 +1566,6 @@ This is a website subsubcategory 5.
 This is a website subsubcategory 6.
 
 === mt:CategoryArchiveLink
---- SKIP
 --- template
 <mt:Categories><mt:CategoryArchiveLink>
 </mt:Categories>
@@ -1647,9 +1717,8 @@ Website Tag 1
 Website Entry 1
 
 === mt:EntryScore
---- SKIP
 --- template
-<mt:Entries><mt:EntryScore namespace="community_pack_recommend">
+<mt:Entries><mt:EntryScore namespace="test_namespace">
 </mt:Entries>
 --- expected
 0
@@ -1661,7 +1730,7 @@ Website Entry 1
 
 === mt:EntryScoreHigh
 --- template
-<mt:Entries><mt:EntryScoreHigh namespace="community_pack_recommend">
+<mt:Entries><mt:EntryScoreHigh namespace="test_namespace">
 </mt:Entries>
 --- expected
 0
@@ -1673,7 +1742,7 @@ Website Entry 1
 
 === mt:EntryScoreLow
 --- template
-<mt:Entries><mt:EntryScoreLow namespace="community_pack_recommend">
+<mt:Entries><mt:EntryScoreLow namespace="test_namespace">
 </mt:Entries>
 --- expected
 0
@@ -1685,7 +1754,7 @@ Website Entry 1
 
 === mt:EntryScoreAvg
 --- template
-<mt:Entries><mt:EntryScoreAvg namespace="community_pack_recommend">
+<mt:Entries><mt:EntryScoreAvg namespace="test_namespace">
 </mt:Entries>
 --- expected
 0
@@ -1697,7 +1766,7 @@ Website Entry 1
 
 === mt:EntryScoreCount
 --- template
-<mt:Entries><mt:EntryScoreCount namespace="community_pack_recommend">
+<mt:Entries><mt:EntryScoreCount namespace="test_namespace">
 </mt:Entries>
 --- expected
 0
@@ -1709,7 +1778,7 @@ Website Entry 1
 
 === mt:EntryRank
 --- template
-<mt:Entries><mt:EntryRank namespace="community_pack_recommend">
+<mt:Entries><mt:EntryRank namespace="test_namespace">
 </mt:Entries>
 --- expected
 5
