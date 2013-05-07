@@ -336,6 +336,9 @@ sub init_newdb {
         map      { $_ . ':meta' }
         grep     { MT->model($_)->meta_pkg }
         sort keys %$types;
+    foreach my $key (qw( entry user )) {
+        $types->{ $key . ':summary' } = $types->{$key} . '::Summary';
+    }
     my @classes = map { $types->{$_} } grep { $_ !~ /\./ } sort keys %$types;
     foreach my $class (@classes) {
         if ( ref($class) eq 'ARRAY' ) {
