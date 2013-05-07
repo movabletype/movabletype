@@ -3,21 +3,20 @@
 # GNU General Public License, version 2.
 #
 # $Id$
-package MT::API::Endpoint::Blog;
+package MT::DataAPI::Endpoint::Blog;
 
 use warnings;
 use strict;
 
-use MT::API::Endpoint::Common;
+use MT::DataAPI::Endpoint::Common;
 
 sub list {
-    my ($app, $endpoint) = @_;
+    my ( $app, $endpoint ) = @_;
 
     # TODO if user_id ne "me"
     my $res = filtered_list( $app, $endpoint, 'blog' );
 
-    +{
-        totalResults => $res->{count},
+    +{  totalResults => $res->{count},
         items        => $res->{objects},
     };
 }

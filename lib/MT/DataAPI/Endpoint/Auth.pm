@@ -1,15 +1,15 @@
-package MT::API::Endpoint::Auth;
+package MT::DataAPI::Endpoint::Auth;
 
 use strict;
 use warnings;
 
-use MT::API::Endpoint::Common;
+use MT::DataAPI::Endpoint::Common;
 
 use URI;
 use MT::Session;
 
-sub mt_api_login_magic_token_cookie_name {
-    'mt_api_login_magic_token';
+sub mt_data_api_login_magic_token_cookie_name {
+    'mt_data_api_login_magic_token';
 }
 
 sub make_access_token {
@@ -41,15 +41,15 @@ sub authorization {
     is_valid_redirect_url( $app, $redirect_uri ) or die;
 
     my %param = (
-        redirect_uri             => $redirect_uri,
-        api_version              => $app->current_api_version,
-        mt_api_login_magic_token => $token,
+        redirect_uri                  => $redirect_uri,
+        api_version                   => $app->current_api_version,
+        mt_data_api_login_magic_token => $token,
     );
 
     # TODO if redirect_uri is not specified
 
     $app->bake_cookie(
-        -name  => mt_api_login_magic_token_cookie_name(),
+        -name  => mt_data_api_login_magic_token_cookie_name(),
         -value => $token,
         -path  => $app->config->CookiePath || $app->mt_path,
     );
@@ -65,11 +65,11 @@ sub authentication {
 
     # TODO if not loggined
 
-    if ( $app->cookie_val( mt_api_login_magic_token_cookie_name() ) eq
-        ( $app->param('mt_api_login_magic_token') || '' ) )
+    if ( $app->cookie_val( mt_data_api_login_magic_token_cookie_name() ) eq
+        ( $app->param('mt_data_api_login_magic_token') || '' ) )
     {
         my $remember = $session->get('remember') || '';
-        my %arg      = (
+        my %arg = (
             -name  => $app->user_cookie,
             -value => Encode::encode(
                 $app->charset,
@@ -81,7 +81,7 @@ sub authentication {
         $app->bake_cookie(%arg);
 
         $app->bake_cookie(
-            -name    => mt_api_login_magic_token_cookie_name(),
+            -name    => mt_data_api_login_magic_token_cookie_name(),
             -value   => '',
             -expires => '-1y',
         );
@@ -100,7 +100,7 @@ sub token {
 
     my $session = do {
         my $header = $app->mt_authorization_header;
-        if ($header && $header->{MTAuth}{session_id}) {
+        if ( $header && $header->{MTAuth}{session_id} ) {
             MT::Session->load(
                 {   id => $header->{MTAuth}{session_id} || '',
                     kind => $app->session_kind,

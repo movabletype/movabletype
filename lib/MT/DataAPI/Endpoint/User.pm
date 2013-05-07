@@ -3,12 +3,12 @@
 # GNU General Public License, version 2.
 #
 # $Id$
-package MT::API::Endpoint::User;
+package MT::DataAPI::Endpoint::User;
 
 use warnings;
 use strict;
 
-use MT::API::Endpoint::Common;
+use MT::DataAPI::Endpoint::Common;
 
 sub _get_user {
     my ($app) = @_;
@@ -28,7 +28,7 @@ sub get {
     my $user = _get_user($app)
         or return;
 
-    run_permission_filter( $app, 'cms_view_permission_filter', 'author',
+    run_permission_filter( $app, 'data_api_view_permission_filter', 'author',
         $user->id )
         or return;
 
@@ -44,7 +44,7 @@ sub update {
     my $new_user = $app->resource_object( 'user', $user )
         or return $app->error( resource_error('user') );
 
-    run_permission_filter( $app, 'cms_save_permission_filter', 'author',
+    run_permission_filter( $app, 'data_api_save_permission_filter', 'author',
         $user->id )
         or return $app->error(403);
 

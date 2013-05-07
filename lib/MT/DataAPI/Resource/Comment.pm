@@ -1,4 +1,4 @@
-package MT::API::Resource::Comment;
+package MT::DataAPI::Resource::Comment;
 
 use strict;
 use warnings;
@@ -31,7 +31,7 @@ sub fields {
                         : undef;
                     if ($a) {
                         $hashs->[$i]{author}
-                            = MT::API::Resource->from_object($a);
+                            = MT::DataAPI::Resource->from_object($a);
                     }
                     else {
                         $hashs->[$i]{author} = {
@@ -58,7 +58,7 @@ sub fields {
         'id',
         {   name  => 'date',
             alias => 'created_on',
-            type  => 'MT::API::Resource::DataType::ISO8601',
+            type  => 'MT::DataAPI::Resource::DataType::ISO8601',
         },
         {   name  => 'body',
             alias => 'text',

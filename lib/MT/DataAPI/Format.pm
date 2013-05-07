@@ -1,4 +1,4 @@
-package MT::API::Format;
+package MT::DataAPI::Format;
 
 use strict;
 use warnings;
@@ -7,7 +7,7 @@ our %formats = ();
 
 sub core_formats {
     my $app = shift;
-    my $pkg = '$Core::MT::API::Format::';
+    my $pkg = '$Core::MT::DataAPI::Format::';
     return {
         'js'   => 'json',
         'json' => {
@@ -24,7 +24,7 @@ sub find_format {
     my $app   = MT->instance;
 
     if ( !%formats ) {
-        my $reg = $app->registry( 'applications', 'api', 'formats' );
+        my $reg = $app->registry( 'applications', 'data_api', 'formats' );
         %formats = map { $_ => 1 } keys %$reg;
     }
 
@@ -32,7 +32,7 @@ sub find_format {
         = $key
         || ( $app->current_endpoint || {} )->{format}
         || $app->param('format')
-        || $app->registry( 'applications', 'api' )->{default_format};
+        || $app->registry( 'applications', 'data_api' )->{default_format};
 
     my $format = $formats{$format_key};
     if ( !defined $format ) {
@@ -42,7 +42,8 @@ sub find_format {
 
     if ( !ref $format ) {
         $format = $formats{$format_key}
-            = $app->registry( 'applications', 'api', 'formats', $format_key );
+            = $app->registry( 'applications', 'data_api', 'formats',
+            $format_key );
 
         if ( ref $format ne 'HASH' ) {
             $format = $formats{$format_key}

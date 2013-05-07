@@ -1,4 +1,4 @@
-package MT::API::Format::JSON;
+package MT::DataAPI::Format::JSON;
 
 use strict;
 use warnings;

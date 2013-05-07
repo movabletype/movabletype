@@ -4,24 +4,24 @@
 #
 # $Id$
 
-package MT::App::API;
+package MT::App::DataAPI;
 
 use strict;
 use base qw( MT::App );
 
-use MT::API::Resource;
-use MT::API::Format;
+use MT::DataAPI::Resource;
+use MT::DataAPI::Format;
 use MT::App::CMS::Common;
 use MT::AccessToken;
 
 our %endpoints = ();
 
-sub id {'api'}
+sub id {'data_api'}
 
 sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
-    $app->{template_dir} = 'api';
+    $app->{template_dir} = 'data_api';
     $app->{default_mode} = 'api';
     $app;
 }
@@ -33,7 +33,7 @@ sub core_methods {
 
 sub core_endpoints {
     my $app = shift;
-    my $pkg = '$Core::MT::API::Endpoint::';
+    my $pkg = '$Core::MT::DataAPI::Endpoint::';
     return [
         {   id             => 'authorization',
             route          => '/authorization',
@@ -88,7 +88,7 @@ sub core_endpoints {
             method  => 'GET',
             version => 1,
             handler => "${pkg}Entry::list",
-            param => {
+            param   => {
                 limit     => 10,
                 offset    => 0,
                 sortBy    => 'authored_on',
@@ -176,9 +176,10 @@ sub init_plugins {
 sub _compile_endpoints {
     my ( $app, $version ) = @_;
 
-    my %hash           = ();
-    my %tree           = ();
-    my $endpoints_list = $app->registry( 'applications', 'api', 'endpoints' );
+    my %hash = ();
+    my %tree = ();
+    my $endpoints_list
+        = $app->registry( 'applications', 'data_api', 'endpoints' );
     foreach my $endpoints (@$endpoints_list) {
         foreach my $e (@$endpoints) {
             $e->{id}          ||= $e->{route};
@@ -228,12 +229,12 @@ sub endpoints {
 
 sub current_endpoint {
     my $app = shift;
-    $app->request( 'api_current_endpoint', @_ ? $_[0] : () );
+    $app->request( 'data_api_current_endpoint', @_ ? $_[0] : () );
 }
 
 sub current_api_version {
     my $app = shift;
-    $app->request( 'api_current_version', @_ ? $_[0] : () );
+    $app->request( 'data_api_current_version', @_ ? $_[0] : () );
 }
 
 sub find_endpoint_by_id {
@@ -269,8 +270,8 @@ sub find_endpoint_by_path {
 
     my $endpoints = $app->endpoints($version)->{tree};
 
-    my $handler         = $endpoints;
-    my @vars            = ();
+    my $handler     = $endpoints;
+    my @vars        = ();
     my $auto_format = '';
 
     $path =~ s#^/+##;
@@ -305,14 +306,14 @@ sub find_endpoint_by_path {
 
 sub current_format {
     my ($app) = @_;
-    MT::API::Format->find_format;
+    MT::DataAPI::Format->find_format;
 }
 
 sub current_error_format {
     my ($app) = @_;
     my $format = $app->current_format;
     if ( my $invoke = $format->{error_format} ) {
-        $format = MT::API::Format->find_format($invoke);
+        $format = MT::DataAPI::Format->find_format($invoke);
     }
     $format;
 }
@@ -349,7 +350,7 @@ sub resource_object {
     my $data = $app->current_format->{unserialize}->($data_text)
         or return undef;
 
-    MT::API::Resource->to_object( $name, $data, $original );
+    MT::DataAPI::Resource->to_object( $name, $data, $original );
 }
 
 sub object_to_resource {
@@ -357,11 +358,11 @@ sub object_to_resource {
     my $ref = ref $res;
 
     if ( UNIVERSAL::isa( $res, 'MT::Object' )
-        || $ref eq 'MT::API::Resource::Type::ObjectList' )
+        || $ref eq 'MT::DataAPI::Resource::Type::ObjectList' )
     {
-        MT::API::Resource->from_object( $res, $fields );
+        MT::DataAPI::Resource->from_object( $res, $fields );
     }
-    elsif ( $ref eq 'MT::API::Resource::Type::Raw' ) {
+    elsif ( $ref eq 'MT::DataAPI::Resource::Type::Raw' ) {
         $res->content;
     }
     elsif ( $ref eq 'HASH' ) {
@@ -420,11 +421,11 @@ sub authenticate {
 }
 
 sub user_cookie {
-    'mt_api_user';
+    'mt_data_api_user';
 }
 
 sub session_kind {
-    'PS';    # PS == API Session
+    'DS';    # DS == DataAPI Session
 }
 
 sub make_session {
@@ -499,7 +500,7 @@ sub error {
             }
         };
         $app->request(
-            'api_error_detail',
+            'data_api_error_detail',
             {   code    => $code,
                 message => $message,
             }
@@ -530,7 +531,7 @@ sub print_error {
     $app->print_encode(
         $format->{serialize}->(
             {   error => {
-                    code    => $status+0,
+                    code    => $status + 0,
                     message => $message,
                 }
             }
@@ -544,7 +545,7 @@ sub show_error {
     my $app      = shift;
     my ($param)  = @_;
     my $endpoint = $app->current_endpoint;
-    my $error    = $app->request('api_error_detail');
+    my $error    = $app->request('data_api_error_detail');
 
     return $app->SUPER::show_error(@_)
         if !$endpoint || ( !$error && $endpoint->{format} eq 'html' );
@@ -606,15 +607,17 @@ sub api {
     $app->current_endpoint($endpoint);
     $app->current_api_version($version);
 
-    $app->run_callbacks( 'pre_run_api.' . $endpoint->{id}, $app, $endpoint );
+    $app->run_callbacks( 'pre_run_data_api.' . $endpoint->{id},
+        $app, $endpoint );
     my $response = $endpoint->{handler_ref}->( $app, $endpoint );
-    $app->run_callbacks( 'post_run_api.' . $endpoint->{id},
+    $app->run_callbacks( 'post_run_data_api.' . $endpoint->{id},
         $app, $endpoint, $response );
 
     my $response_ref = ref $response;
 
     if ( UNIVERSAL::isa( $response, 'MT::Object' )
-        || $response_ref =~ m/\A(?:HASH|ARRAY|MT::API::Resource::Type::)/ )
+        || $response_ref
+        =~ m/\A(?:HASH|ARRAY|MT::DataAPI::Resource::Type::)/ )
     {
         my $format   = $app->current_format;
         my $resource = $app->object_to_resource( $response,
@@ -638,11 +641,11 @@ __END__
 
 =head1 NAME
 
-MT::App::API
+MT::App::DataAPI
 
 =head1 SYNOPSIS
 
-The I<MT::App::API> module is the application module for providing DATA API.
+The I<MT::App::DataAPI> module is the application module for providing Data API.
 This module provide the REST interface that is used to
 manage blogs, entries, comments, trackbacks, templates, etc.
 

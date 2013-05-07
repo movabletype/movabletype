@@ -3,13 +3,13 @@
 # GNU General Public License, version 2.
 #
 # $Id$
-package MT::API::Endpoint::Entry;
+package MT::DataAPI::Endpoint::Entry;
 
 use warnings;
 use strict;
 
-use MT::API::Endpoint::Common;
-use MT::API::Resource;
+use MT::DataAPI::Endpoint::Common;
+use MT::DataAPI::Resource;
 
 sub list {
     my ( $app, $endpoint ) = @_;
@@ -17,7 +17,8 @@ sub list {
     my $res = filtered_list( $app, $endpoint, 'entry' );
 
     +{  totalResults => $res->{count},
-        items => MT::API::Resource::Type::ObjectList->new( $res->{objects} ),
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
 }
 
@@ -49,7 +50,7 @@ sub get {
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
-    run_permission_filter( $app, 'cms_view_permission_filter', 'entry',
+    run_permission_filter( $app, 'data_api_view_permission_filter', 'entry',
         $entry->id, obj_promise($entry) )
         or return;
 

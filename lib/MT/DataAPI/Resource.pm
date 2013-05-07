@@ -1,4 +1,4 @@
-package MT::API::Resource;
+package MT::DataAPI::Resource;
 
 use strict;
 use warnings;
@@ -6,7 +6,7 @@ use warnings;
 our %resources = ();
 
 sub core_resources {
-    my $pkg = '$Core::MT::API::Resource::';
+    my $pkg = '$Core::MT::DataAPI::Resource::';
     return {
         'entry' => {
             fields           => "${pkg}Entry::fields",
@@ -51,7 +51,7 @@ sub resource {
     my $app   = MT->instance;
 
     if ( !%resources ) {
-        my $reg = $app->registry( 'applications', 'api', 'resources' );
+        my $reg = $app->registry( 'applications', 'data_api', 'resources' );
         %resources
             = map { $_ => ref( $reg->{$_} ) ? +{} : $reg->{$_} } keys %$reg;
     }
@@ -85,7 +85,7 @@ sub resource {
             $res->{$k} = [
                 map {@$_} @{
                     $app->registry(
-                        'applications', 'api',
+                        'applications', 'data_api',
                         'resources',    $resource_key,
                         $k
                     )
@@ -95,7 +95,7 @@ sub resource {
 
         for my $f ( @{ $res->{fields} } ) {
             if ( ref $f eq 'HASH' && ( my $type = $f->{type} ) ) {
-                $type = 'MT::API::Resource::DataType::' . $type
+                $type = 'MT::DataAPI::Resource::DataType::' . $type
                     unless $type =~ m/:/;
                 eval "require $type;";
                 for my $mtype (qw(from_object to_object)) {
@@ -119,7 +119,9 @@ sub from_object {
         $is_list = 0;
         $objs    = [$objs];
     }
-    elsif ( UNIVERSAL::isa( $objs, 'MT::API::Resource::Type::ObjectList' ) ) {
+    elsif (
+        UNIVERSAL::isa( $objs, 'MT::DataAPI::Resource::Type::ObjectList' ) )
+    {
         $objs = $objs->content;
     }
 
@@ -263,8 +265,8 @@ sub to_object {
     $is_list ? \@objs : $objs[0];
 }
 
-# MT::API::Resource::Type
-package MT::API::Resource::Type::Raw;
+# MT::DataAPI::Resource::Type
+package MT::DataAPI::Resource::Type::Raw;
 
 sub new {
     my $self = [ $_[1] ];
@@ -276,23 +278,23 @@ sub content {
     $_[0]->[0];
 }
 
-package MT::API::Resource::Type::ObjectList;
+package MT::DataAPI::Resource::Type::ObjectList;
 
-use base qw(MT::API::Resource::Type::Raw);
+use base qw(MT::DataAPI::Resource::Type::Raw);
 
-# MT::API::Resource::DataType
-package MT::API::Resource::DataType::Object;
+# MT::DataAPI::Resource::DataType
+package MT::DataAPI::Resource::DataType::Object;
 
 sub from_object {
     my ( $objs, $hashs, $f ) = @_;
     my $name = $f->{name};
     foreach my $h (@$hashs) {
-        $h->{$name} = MT::API::Resource->from_object( $h->{$name} )
+        $h->{$name} = MT::DataAPI::Resource->from_object( $h->{$name} )
             if $h->{$name};
     }
 }
 
-package MT::API::Resource::DataType::ISO8601;
+package MT::DataAPI::Resource::DataType::ISO8601;
 
 sub from_object {
     my ( $objs, $hashs, $f ) = @_;

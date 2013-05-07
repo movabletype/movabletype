@@ -1,4 +1,4 @@
-package MT::API::Resource::User;
+package MT::DataAPI::Resource::User;
 
 use strict;
 use warnings;

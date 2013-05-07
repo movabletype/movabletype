@@ -5,7 +5,7 @@ use warnings;
 
 sub init_core_callbacks {
     my $app = shift;
-    my $pkg = 'cms_';
+    my $pkg = $app->id . '_';
     my $pfx = '$Core::MT::CMS::';
     $app->_register_core_callbacks(
         {
@@ -70,7 +70,8 @@ sub init_core_callbacks {
                 my $terms = $opts->{terms};
                 my $args  = $opts->{args};
                 $args->{joins} ||= [];
-                push @{ $args->{joins} }, MT->model('permission')->join_on(
+                push @{ $args->{joins} },
+                    MT->model('permission')->join_on(
                     undef,
                     [   { blog_id => 0 },
                         '-and',
@@ -86,7 +87,7 @@ sub init_core_callbacks {
                             ],
                         ],
                     ],
-                );
+                    );
             },
             $pkg . 'pre_load_filtered_list.member' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;

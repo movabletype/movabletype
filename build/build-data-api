@@ -11,7 +11,7 @@ use strict;
 
 use lib qw(lib extlib);
 use MT;
-use MT::App::API;
+use MT::App::DataAPI;
 
 print <<__JS__;
 /*
@@ -23,8 +23,8 @@ print <<__JS__;
 
 __JS__
 
-my $mt = MT::App::API->new;
-my $endpoints_list = $mt->registry( 'applications', 'api', 'endpoints' );
+my $mt = MT::App::DataAPI->new;
+my $endpoints_list = $mt->registry( 'applications', 'data_api', 'endpoints' );
 foreach my $endpoints (@$endpoints_list) {
     foreach my $e (@$endpoints) {
         my $func = $e->{id};
@@ -69,7 +69,7 @@ __JS__
         my $method = $e->{method} || 'GET';
 
         print <<__JS__;
-window.MT.API.prototype.$func = function(@{[ join(', ', @vars, @resources) ]}) {
+window.MT.DataAPI.prototype.$func = function(@{[ join(', ', @vars, @resources) ]}) {
     var args = Array.prototype.slice.call(arguments, @{[ @vars + @resources ]});
     return this.request.apply(this, [
         '$method',

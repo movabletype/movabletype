@@ -1,4 +1,4 @@
-package MT::API::Resource::Category;
+package MT::DataAPI::Resource::Category;
 
 use strict;
 use warnings;

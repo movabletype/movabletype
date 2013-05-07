@@ -1,4 +1,4 @@
-package MT::API::Resource::Blog;
+package MT::DataAPI::Resource::Blog;
 
 use strict;
 use warnings;

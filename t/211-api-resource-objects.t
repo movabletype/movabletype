@@ -24,10 +24,10 @@ eval(
 use File::Spec;
 use File::Basename;
 
-use MT::App::API;
-use MT::API::Resource;
+use MT::App::DataAPI;
+use MT::DataAPI::Resource;
 
-my $app = MT::App::API->new;
+my $app = MT::App::DataAPI->new;
 
 ( my $spec_dir = __FILE__ ) =~ s/t$/d/;
 for my $d ( glob( File::Spec->catfile( $spec_dir, '*' ) ) ) {
@@ -66,7 +66,7 @@ sub from_object {
                 $model_class->load( $d->{from} );
             }
         };
-        my $hash = MT::API::Resource->from_object($obj);
+        my $hash = MT::DataAPI::Resource->from_object($obj);
         is_deeply( $hash, $d->{to}, 'converted data' );
     }
 }
@@ -90,7 +90,8 @@ sub to_object {
         }
 
         my $obj
-            = MT::API::Resource->to_object( $model, $d->{from}, $original );
+            = MT::DataAPI::Resource->to_object( $model, $d->{from},
+            $original );
         my $values = $obj->column_values;
 
         if ( $d->{not_to} ) {

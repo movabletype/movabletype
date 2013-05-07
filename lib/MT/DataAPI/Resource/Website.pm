@@ -1,9 +1,9 @@
-package MT::API::Resource::Website;
+package MT::DataAPI::Resource::Website;
 
 use strict;
 use warnings;
 
-use base qw(MT::API::Resource::Blog);
+use base qw(MT::DataAPI::Resource::Blog);
 
 sub fields {
     $_[0]->SUPER::fields();

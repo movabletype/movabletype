@@ -12,9 +12,9 @@ BEGIN {
 use lib qw(lib extlib);
 
 use MT;
-use MT::App::API;
+use MT::App::DataAPI;
 
-my $mock = Test::MockModule->new('MT::App::API');
+my $mock = Test::MockModule->new('MT::App::DataAPI');
 $mock->mock(
     'core_endpoints',
     sub {
@@ -51,7 +51,7 @@ $mock->mock(
     }
 );
 
-my $app = MT::App::API->new;
+my $app = MT::App::DataAPI->new;
 
 my @suite = (
     {   request  => [ 'GET', 1, '/sites/2/entries/3' ],

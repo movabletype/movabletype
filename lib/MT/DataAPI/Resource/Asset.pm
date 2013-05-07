@@ -1,9 +1,9 @@
-package MT::API::Resource::Asset;
+package MT::DataAPI::Resource::Asset;
 
 use strict;
 use warnings;
 
-use MT::API::Resource::Common;
+use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
     [   qw(
@@ -17,7 +17,7 @@ sub updatable_fields {
 
 sub fields {
     [   'id', 'label', 'description', 'url', 'mime_type',
-        $MT::API::Resource::Common::fields{tags},
+        $MT::DataAPI::Resource::Common::fields{tags},
     ];
 }
 

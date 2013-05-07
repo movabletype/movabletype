@@ -1,6 +1,6 @@
 (function(window) {
     
-var API = function(options) {
+var DataAPI = function(options) {
     this.o = {
         appId: 'default',
         baseUrl: '',
@@ -26,14 +26,14 @@ var API = function(options) {
     this.tokenData = null;
 }
 
-API.mtApiAccessTokenKey = 'mt_api_access_token';
-API.prototype = {
+DataAPI.mtApiAccessTokenKey = 'mt_api_access_token';
+DataAPI.prototype = {
     getVersion: function() {
         return 1;
     },
     
     getAppKey: function() {
-        return API.mtApiAccessTokenKey + '_' + this.o.appId;
+        return DataAPI.mtApiAccessTokenKey + '_' + this.o.appId;
     },
     
     storeToken: function(tokenData) {
@@ -44,7 +44,7 @@ API.prototype = {
     },
     
     updateTokenFromDefault: function() {
-        var defaultKey    = API.mtApiAccessTokenKey,
+        var defaultKey    = DataAPI.mtApiAccessTokenKey,
             defaultCookie = Cookie.fetch(defaultKey);
         if (! defaultCookie) {
             return null;
@@ -296,8 +296,8 @@ API.prototype = {
     }
 };
 
-window.MT     = window.MT || {};
-window.MT.API = API;
+window.MT         = window.MT || {};
+window.MT.DataAPI = DataAPI;
 
 
 

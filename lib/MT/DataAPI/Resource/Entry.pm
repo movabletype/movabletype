@@ -1,10 +1,10 @@
-package MT::API::Resource::Entry;
+package MT::DataAPI::Resource::Entry;
 
 use strict;
 use warnings;
 
 use boolean ();
-use MT::API::Resource::Common;
+use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
     [   qw(
@@ -26,7 +26,7 @@ sub updatable_fields {
 
 sub fields {
     [   {   name => 'author',
-            type => 'MT::API::Resource::DataType::Object',
+            type => 'MT::DataAPI::Resource::DataType::Object',
         },
         {   name        => 'blog',
             from_object => sub {
@@ -46,7 +46,7 @@ sub fields {
 
                 my $cats = MT::Category->lookup_multi(
                     [ map { $_->[0] } @$rows ] );
-                MT::API::Resource->from_object(
+                MT::DataAPI::Resource->from_object(
                     [   sort {
                                   $a->id == $primary ? 1
                                 : $b->id == $primary ? -1
@@ -117,15 +117,15 @@ sub fields {
         },
         {   name  => 'date',
             alias => 'authored_on',
-            type  => 'MT::API::Resource::DataType::ISO8601',
+            type  => 'MT::DataAPI::Resource::DataType::ISO8601',
         },
         {   name  => 'createdDate',
             alias => 'created_on',
-            type  => 'MT::API::Resource::DataType::ISO8601',
+            type  => 'MT::DataAPI::Resource::DataType::ISO8601',
         },
         {   name  => 'modifiedDate',
             alias => 'modified_on',
-            type  => 'MT::API::Resource::DataType::ISO8601',
+            type  => 'MT::DataAPI::Resource::DataType::ISO8601',
         },
         {   name  => 'commentCount',
             alias => 'comment_count',
@@ -143,7 +143,7 @@ sub fields {
                 {
                     $args = { limit => int( $app->param('maxComments') ), };
                 }
-                MT::API::Resource->from_object(
+                MT::DataAPI::Resource->from_object(
                     $obj->comments( undef, $args ) );
             },
         },
@@ -157,17 +157,17 @@ sub fields {
                 {
                     $args = { limit => int( $app->param('maxTrackbacks') ), };
                 }
-                MT::API::Resource->from_object( $obj->pings( undef, $args )
+                MT::DataAPI::Resource->from_object( $obj->pings( undef, $args )
                         || [] );
             },
         },
         {   name        => 'assets',
             from_object => sub {
                 my ($obj) = @_;
-                MT::API::Resource->from_object( $obj->assets );
+                MT::DataAPI::Resource->from_object( $obj->assets );
             },
         },
-        $MT::API::Resource::Common::fields{tags},
+        $MT::DataAPI::Resource::Common::fields{tags},
     ];
 }
 

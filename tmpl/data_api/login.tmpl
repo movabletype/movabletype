@@ -11,7 +11,7 @@
 <mt:loop name="query_params">
   <input type="hidden" name="<mt:var name="name" escape="html">" value="<mt:var name="value" escape="html">" />
 </mt:loop>
-  <input type="hidden" name="mt_api_login_magic_token" value="<mt:var name="mt_api_login_magic_token" escape="html">" />
+  <input type="hidden" name="mt_data_api_login_magic_token" value="<mt:var name="mt_data_api_login_magic_token" escape="html">" />
 
   <div id="msg-block"></div>
 
@@ -80,7 +80,7 @@
 
 <script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cookie.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">api/v1/js/app.js?v=<mt:var name="mt_version_id" escape="url">">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">data-api/v1/js/app.js?v=<mt:var name="mt_version_id" escape="url">">"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 if (window.top && (window.top.location != window.location)) {
@@ -108,7 +108,7 @@ jQuery(function($) {
             type: 'POST',
             cache : false
         }).done(function(data) {
-            Cookie.bake(MT.API.mtApiAccessTokenKey, $.toJSON(data), undefined, '/');
+            Cookie.bake(MT.DataAPI.mtApiAccessTokenKey, $.toJSON(data), undefined, '/');
             var url = $('#redirect_uri').val() + '#_login';
             location.href = url;
         }).fail(function(data) {

@@ -21,20 +21,20 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
-use MT::App::API;
-my $app    = MT::App::API->new;
+use MT::App::DataAPI;
+my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
 
 my $mock_author = Test::MockModule->new('MT::Author');
 $mock_author->mock( 'is_superuser', sub {0} );
-my $mock_app_api = Test::MockModule->new('MT::App::API');
+my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
 
 my @suite = (
     {   path      => '/v1/sites/1/entries',
         method    => 'GET',
         callbacks => [
-            {   name  => 'cms_pre_load_filtered_list.entry',
+            {   name  => 'data_api_pre_load_filtered_list.entry',
                 count => 2,
             },
         ],
@@ -48,16 +48,17 @@ my @suite = (
             },
         },
         callbacks => [
-            {   name  => 'MT::App::API::cms_save_permission_filter.entry',
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
                 count => 1,
             },
-            {   name  => 'MT::App::API::cms_save_filter.entry',
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
                 count => 1,
             },
-            {   name  => 'MT::App::API::cms_pre_save.entry',
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
                 count => 1,
             },
-            {   name  => 'MT::App::API::cms_post_save.entry',
+            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
                 count => 1,
             },
         ],
@@ -73,7 +74,8 @@ my @suite = (
     {   path      => '/v1/sites/1/entries/1',
         method    => 'GET',
         callbacks => [
-            {   name  => 'MT::App::API::cms_view_permission_filter.entry',
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.entry',
                 count => 1,
             },
         ],
@@ -83,16 +85,17 @@ my @suite = (
         params =>
             { entry => { title => 'update-test-api-permission-entry', }, },
         callbacks => [
-            {   name  => 'MT::App::API::cms_save_permission_filter.entry',
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
                 count => 1,
             },
-            {   name  => 'MT::App::API::cms_save_filter.entry',
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
                 count => 1,
             },
-            {   name  => 'MT::App::API::cms_pre_save.entry',
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
                 count => 1,
             },
-            {   name  => 'MT::App::API::cms_post_save.entry',
+            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
                 count => 1,
             },
         ],
@@ -107,10 +110,11 @@ my @suite = (
     {   path      => '/v1/sites/1/entries/1',
         method    => 'DELETE',
         callbacks => [
-            {   name  => 'MT::App::API::cms_delete_permission_filter.entry',
+            {   name =>
+                    'MT::App::DataAPI::data_api_delete_permission_filter.entry',
                 count => 1,
             },
-            {   name  => 'MT::App::API::cms_post_delete.entry',
+            {   name  => 'MT::App::DataAPI::data_api_post_delete.entry',
                 count => 1,
             },
         ],
@@ -133,14 +137,14 @@ $mock_mt->mock(
     }
 );
 
-my $format = MT::API::Format->find_format('json');
+my $format = MT::DataAPI::Format->find_format('json');
 
 for my $data (@suite) {
     note( $data->{path} );
 
     %callbacks = ();
     _run_app(
-        'MT::App::API',
+        'MT::App::DataAPI',
         {   __path_info      => $data->{path},
             __request_method => $data->{method},
             (   $data->{params}
@@ -174,9 +178,11 @@ for my $data (@suite) {
         $expected_result = $expected_result->()
             if ref $expected_result eq 'CODE';
         if ( UNIVERSAL::isa( $expected_result, 'MT::Object' ) ) {
-            $expected_result
-                = $format->{unserialize}->( $format->{serialize}
-                    ->( MT::API::Resource->from_object($expected_result) ) );
+            $expected_result = $format->{unserialize}->(
+                $format->{serialize}->(
+                    MT::DataAPI::Resource->from_object($expected_result)
+                )
+            );
         }
 
         my $result = $format->{unserialize}->($body);

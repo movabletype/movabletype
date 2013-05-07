@@ -1,4 +1,4 @@
-package MT::API::Endpoint::Common;
+package MT::DataAPI::Endpoint::Common;
 
 use warnings;
 use strict;
@@ -14,13 +14,14 @@ sub save_object {
     my ( $app, $type, $obj, $original ) = @_;
     $original ||= $app->model($type)->new;
 
-    run_permission_filter( $app, 'cms_save_permission_filter', $type, $obj->id )
+    run_permission_filter( $app, 'data_api_save_permission_filter', $type,
+        $obj->id )
         or return;
 
-    $app->run_callbacks( 'cms_save_filter.' . $type, $app )
+    $app->run_callbacks( 'data_api_save_filter.' . $type, $app )
         or return $app->error( $app->errstr, 409 );
 
-    $app->run_callbacks( 'cms_pre_save.' . $type, $app, $obj, $original )
+    $app->run_callbacks( 'data_api_pre_save.' . $type, $app, $obj, $original )
         or return $app->error(
         $app->translate( "Save failed: [_1]", $app->errstr ), 409 );
 
@@ -28,7 +29,7 @@ sub save_object {
         or return $app->error(
         $app->translate( 'Saving object failed: [_1]', $obj->errstr ), 500 );
 
-    $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $original );
+    $app->run_callbacks( 'data_api_post_save.' . $type, $app, $obj, $original );
 
     1;
 }
@@ -43,7 +44,7 @@ sub obj_promise {
 sub remove_object {
     my ( $app, $type, $obj ) = @_;
 
-    run_permission_filter( $app, 'cms_delete_permission_filter', $type, $obj )
+    run_permission_filter( $app, 'data_api_delete_permission_filter', $type, $obj )
         or return;
 
     $obj->remove
@@ -55,7 +56,7 @@ sub remove_object {
         500
         );
 
-    $app->run_callbacks( 'cms_post_delete.' . $type, $app, $obj );
+    $app->run_callbacks( 'data_api_post_delete.' . $type, $app, $obj );
 
     1;
 }
@@ -273,7 +274,7 @@ sub filtered_list {
         blog_ids => $blog_ids,
     );
 
-    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds,
+    MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $ds,
         $app, $filter, \%count_options, \@cols );
 
     my $count_result = $filter->count_objects(%count_options);
@@ -292,7 +293,7 @@ sub filtered_list {
 
     my ( $objs, @data );
     if ($count) {
-        MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds,
+        MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $ds,
             $app, $filter, \%load_options, \@cols );
 
         $objs = $filter->load_objects(%load_options);

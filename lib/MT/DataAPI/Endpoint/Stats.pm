@@ -1,11 +1,11 @@
-package MT::API::Endpoint::Stats;
+package MT::DataAPI::Endpoint::Stats;
 
 use strict;
 use warnings;
 
 use URI;
 use MT::Stats;
-use MT::API::Resource;
+use MT::DataAPI::Resource;
 
 sub _invoke {
     my ( $app, $endpoint ) = @_;
@@ -34,20 +34,20 @@ sub _invoke {
 
 sub pageviews_for_path {
     my ( $app, $endpoint ) = @_;
-    MT::API::Resource::Type::Raw->new(fill_in_archive_info( _invoke(@_), $app->blog ));
+    MT::DataAPI::Resource::Type::Raw->new(fill_in_archive_info( _invoke(@_), $app->blog ));
 }
 
 sub visits_for_path {
     my ( $app, $endpoint ) = @_;
-    MT::API::Resource::Type::Raw->new(fill_in_archive_info( _invoke(@_), $app->blog ));
+    MT::DataAPI::Resource::Type::Raw->new(fill_in_archive_info( _invoke(@_), $app->blog ));
 }
 
 sub pageviews_for_date {
-    MT::API::Resource::Type::Raw->new(_invoke(@_));
+    MT::DataAPI::Resource::Type::Raw->new(_invoke(@_));
 }
 
 sub visits_for_date {
-    MT::API::Resource::Type::Raw->new(_invoke(@_));
+    MT::DataAPI::Resource::Type::Raw->new(_invoke(@_));
 }
 
 sub fill_in_archive_info {

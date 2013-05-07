@@ -1765,7 +1765,7 @@ BEGIN {
             'UpgradeScript'         => { default => 'mt-upgrade.cgi', },
             'CheckScript'           => { default => 'mt-check.cgi', },
             'NotifyScript'          => { default => 'mt-add-notify.cgi', },
-            'APIScript'             => { default => 'mt-api.cgi', },
+            'DataAPIScript'         => { default => 'mt-api.cgi', },
             'PublishCharset'        => { default => 'utf-8', },
             'SafeMode'              => { default => 1, },
             'AllowFileInclude'      => { default => 0, },
@@ -1989,7 +1989,7 @@ BEGIN {
             'LockoutIPWhitelist'             => undef,
             'LockoutNotifyTo'                => undef,
 
-            # API
+            # DataAPI
             'AccessTokenTTL' => { default => 60 * 60, },
         },
         upgrade_functions => \&load_upgrade_fns,
@@ -2080,13 +2080,13 @@ BEGIN {
                 script  => sub { MT->config->UpgradeScript },
                 type    => 'run_once',
             },
-            'api' => {
-                handler        => 'MT::App::API',
-                script         => sub { MT->config->APIScript },
+            'data_api' => {
+                handler        => 'MT::App::DataAPI',
+                script         => sub { MT->config->DataAPIScript },
                 methods        => sub { MT->app->core_methods() },
                 endpoints      => sub { MT->app->core_endpoints() },
-                resources      => sub { MT::API::Resource->core_resources() },
-                formats        => sub { MT::API::Format->core_formats() },
+                resources      => sub { MT::DataAPI::Resource->core_resources() },
+                formats        => sub { MT::DataAPI::Format->core_formats() },
                 default_format => 'json',
             },
         },

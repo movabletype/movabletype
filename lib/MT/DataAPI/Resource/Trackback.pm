@@ -1,4 +1,4 @@
-package MT::API::Resource::Trackback;
+package MT::DataAPI::Resource::Trackback;
 
 use strict;
 use warnings;
@@ -34,7 +34,7 @@ sub fields {
         'id',
         {   name  => 'date',
             alias => 'created_on',
-            type => 'MT::API::Resource::DataType::ISO8601',
+            type => 'MT::DataAPI::Resource::DataType::ISO8601',
         },
         'title',
         'excerpt',

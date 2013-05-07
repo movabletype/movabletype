@@ -7,10 +7,10 @@ use lib qw(lib extlib);
 
 use Test::More;
 
-use MT::App::API;
-use MT::API::Format;
+use MT::App::DataAPI;
+use MT::DataAPI::Format;
 
-my $app = MT::App::API->new;
+my $app = MT::App::DataAPI->new;
 
 my @suite = (
     {   key       => 'js',
@@ -40,7 +40,7 @@ my @suite = (
 );
 
 foreach my $data (@suite) {
-    my $format = MT::API::Format->find_format( $data->{key} );
+    my $format = MT::DataAPI::Format->find_format( $data->{key} );
     ok( $format, $data->{key} . ' is defined' );
 
     for my $k (qw(serialize unserialize)) {
