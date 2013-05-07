@@ -14,8 +14,8 @@ sub save_object {
     my ( $app, $type, $obj, $original ) = @_;
     $original ||= $app->model($type)->new;
 
-    run_permission_filter( $app, 'data_api_save_permission_filter', $type,
-        $obj->id )
+    run_permission_filter( $app, 'data_api_save_permission_filter',
+        $type, $obj->id )
         or return;
 
     $app->run_callbacks( 'data_api_save_filter.' . $type, $app )
@@ -29,7 +29,8 @@ sub save_object {
         or return $app->error(
         $app->translate( 'Saving object failed: [_1]', $obj->errstr ), 500 );
 
-    $app->run_callbacks( 'data_api_post_save.' . $type, $app, $obj, $original );
+    $app->run_callbacks( 'data_api_post_save.' . $type,
+        $app, $obj, $original );
 
     1;
 }
@@ -44,7 +45,8 @@ sub obj_promise {
 sub remove_object {
     my ( $app, $type, $obj ) = @_;
 
-    run_permission_filter( $app, 'data_api_delete_permission_filter', $type, $obj )
+    run_permission_filter( $app, 'data_api_delete_permission_filter',
+        $type, $obj )
         or return;
 
     $obj->remove

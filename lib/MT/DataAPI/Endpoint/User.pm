@@ -28,8 +28,8 @@ sub get {
     my $user = _get_user($app)
         or return;
 
-    run_permission_filter( $app, 'data_api_view_permission_filter', 'author',
-        $user->id )
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'author', $user->id )
         or return;
 
     $user;
@@ -44,8 +44,8 @@ sub update {
     my $new_user = $app->resource_object( 'user', $user )
         or return $app->error( resource_error('user') );
 
-    run_permission_filter( $app, 'data_api_save_permission_filter', 'author',
-        $user->id )
+    run_permission_filter( $app, 'data_api_save_permission_filter',
+        'author', $user->id )
         or return $app->error(403);
 
     save_object( $app, $new_user, $user )

@@ -157,8 +157,8 @@ sub fields {
                 {
                     $args = { limit => int( $app->param('maxTrackbacks') ), };
                 }
-                MT::DataAPI::Resource->from_object( $obj->pings( undef, $args )
-                        || [] );
+                MT::DataAPI::Resource->from_object(
+                    $obj->pings( undef, $args ) || [] );
             },
         },
         {   name        => 'assets',

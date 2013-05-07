@@ -34,20 +34,22 @@ sub _invoke {
 
 sub pageviews_for_path {
     my ( $app, $endpoint ) = @_;
-    MT::DataAPI::Resource::Type::Raw->new(fill_in_archive_info( _invoke(@_), $app->blog ));
+    MT::DataAPI::Resource::Type::Raw->new(
+        fill_in_archive_info( _invoke(@_), $app->blog ) );
 }
 
 sub visits_for_path {
     my ( $app, $endpoint ) = @_;
-    MT::DataAPI::Resource::Type::Raw->new(fill_in_archive_info( _invoke(@_), $app->blog ));
+    MT::DataAPI::Resource::Type::Raw->new(
+        fill_in_archive_info( _invoke(@_), $app->blog ) );
 }
 
 sub pageviews_for_date {
-    MT::DataAPI::Resource::Type::Raw->new(_invoke(@_));
+    MT::DataAPI::Resource::Type::Raw->new( _invoke(@_) );
 }
 
 sub visits_for_date {
-    MT::DataAPI::Resource::Type::Raw->new(_invoke(@_));
+    MT::DataAPI::Resource::Type::Raw->new( _invoke(@_) );
 }
 
 sub fill_in_archive_info {

@@ -14,7 +14,7 @@ sub fields {
                 +{ id => $obj->blog_id, };
             },
         },
-        {   name              => 'entry',
+        {   name             => 'entry',
             bulk_from_object => sub {
                 my ( $objs, $hashs ) = @_;
                 my %parents = ();
@@ -34,7 +34,7 @@ sub fields {
         'id',
         {   name  => 'date',
             alias => 'created_on',
-            type => 'MT::DataAPI::Resource::DataType::ISO8601',
+            type  => 'MT::DataAPI::Resource::DataType::ISO8601',
         },
         'title',
         'excerpt',

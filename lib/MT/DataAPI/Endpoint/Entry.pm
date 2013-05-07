@@ -50,8 +50,8 @@ sub get {
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
-    run_permission_filter( $app, 'data_api_view_permission_filter', 'entry',
-        $entry->id, obj_promise($entry) )
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'entry', $entry->id, obj_promise($entry) )
         or return;
 
     $entry;
