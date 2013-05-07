@@ -5097,7 +5097,8 @@ sub setup_editor_param {
 }
 
 sub pre_run {
-    my $app  = shift;
+    my $app = shift;
+    $app->SUPER::pre_run(@_) or return;
     my $user = $app->user;
 
     # Message Center
