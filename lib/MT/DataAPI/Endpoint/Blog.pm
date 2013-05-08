@@ -14,7 +14,7 @@ sub list {
     my ( $app, $endpoint ) = @_;
 
     # TODO if user_id ne "me"
-    my $res = filtered_list( $app, $endpoint, 'blog' );
+    my $res = filtered_list( $app, $endpoint, 'blog', { class => '*' } );
 
     +{  totalResults => $res->{count},
         items        => $res->{objects},

@@ -3345,7 +3345,7 @@ sub cms_pre_load_filtered_list {
     my $terms = $load_options->{terms};
     $terms->{parent_id} = $load_options->{blog_id}
         if $app->blog;
-    $terms->{class} = 'blog';
+    $terms->{class} = 'blog' unless $terms->{class} eq '*';
 
     my $user = $app->user;
     return   if $user->is_superuser;
@@ -3360,9 +3360,12 @@ sub cms_pre_load_filtered_list {
 
     my $blog_ids;
     while ( my $perm = $iter->() ) {
-        my $blog = $perm->blog;
-        push @$blog_ids, $perm->blog_id
-            if $blog && $blog->class eq 'blog';
+        push @$blog_ids, $perm->blog_id if $perm->blog_id;
+        if ( $terms->{class} eq '*' ) {
+            if ( my $blog = $perm->blog ) {
+                push @$blog_ids, $blog->website->id if $blog->class eq 'blog';
+            }
+        }
     }
     if ($blog_ids) {
         $terms->{id} = $blog_ids;
