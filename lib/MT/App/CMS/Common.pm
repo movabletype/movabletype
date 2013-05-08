@@ -238,6 +238,7 @@ sub init_core_callbacks {
             $pkg
                 . 'delete_permission_filter.comment' =>
                 "${pfx}Comment::can_delete",
+            $pkg . 'save_filter.comment' => "${pfx}Comment::save_filter",
             $pkg . 'pre_save.comment'    => "${pfx}Comment::pre_save",
             $pkg . 'post_save.comment'   => "${pfx}Comment::post_save",
             $pkg . 'post_delete.comment' => "${pfx}Comment::post_delete",

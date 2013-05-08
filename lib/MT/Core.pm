@@ -578,22 +578,27 @@ BEGIN {
                     default_sort_order => 'descend',
                 },
                 single_select => {
-                    base      => '__virtual.base',
-                    sort      => 0,
-                    singleton => 1,
-                    terms     => sub {
+                    base             => '__virtual.base',
+                    sort             => 0,
+                    singleton        => 1,
+                    normalized_value => sub {
                         my $prop   = shift;
                         my ($args) = @_;
-                        my $col    = $prop->col || $prop->type or die;
                         my $value  = $args->{value};
 
                         for my $o ( @{ $prop->single_select_options } ) {
                             if ( $o->{text} && $o->{text} eq $value ) {
-                                $value = $o->{value};
-                                last;
+                                return $o->{value};
                             }
                         }
 
+                        return $value;
+                    },
+                    terms => sub {
+                        my $prop   = shift;
+                        my ($args) = @_;
+                        my $col    = $prop->col || $prop->type or die;
+                        my $value  = $prop->normalized_value(@_);
                         return { $col => $value };
                     },
                     label_via_param => sub {

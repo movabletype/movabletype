@@ -446,13 +446,14 @@ sub list_props {
             col     => 'visible',
             display => 'none',
             terms   => sub {
-                my ( $prop, $args ) = @_;
-                return $args->{value} eq 'approved'
+                my $prop  = shift;
+                my $value = $prop->normalized_value(@_);
+                return $value eq 'approved'
                     ? { visible => 1, junk_status => NOT_JUNK() }
-                    : $args->{value} eq 'pending'
+                    : $value eq 'pending'
                     ? { visible => 0, junk_status => NOT_JUNK() }
-                    : $args->{value} eq 'junk' ? { junk_status => JUNK() }
-                    :   { junk_status => NOT_JUNK() };
+                    : $value eq 'junk' ? { junk_status => JUNK() }
+                    :                    { junk_status => NOT_JUNK() };
             },
             single_select_options => [
                 {   label => MT->translate('Approved'),
@@ -784,6 +785,15 @@ sub list_props {
                     value => 'anonymous',
                 },
             ],
+        },
+        id => {
+            base      => '__virtual.id',
+            condition => sub {0},
+        },
+        content => {
+            base      => '__virtual.content',
+            fields    => [qw(url text email ip author)],
+            condition => sub {0},
         },
     };
 }

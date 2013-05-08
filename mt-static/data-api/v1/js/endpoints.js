@@ -124,6 +124,95 @@ window.MT.DataAPI.prototype.deleteEntry = function(site_id, entry_id) {
     ].concat(args));
 }
 
+window.MT.DataAPI.prototype.listComments = function(site_id) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/comments', {
+            site_id: site_id
+        })
+    ].concat(args));
+}
+
+window.MT.DataAPI.prototype.listCommentsForEntries = function(site_id, entry_id) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/entries/:entry_id/comments', {
+            site_id: site_id,
+            entry_id: entry_id
+        })
+    ].concat(args));
+}
+
+window.MT.DataAPI.prototype.createComment = function(site_id, entry_id, comment) {
+    var args = Array.prototype.slice.call(arguments, 3);
+    return this.request.apply(this, [
+        'POST',
+        this.bindEndpointParams('/sites/:site_id/entries/:entry_id/comments', {
+            site_id: site_id,
+            entry_id: entry_id
+        })
+    ].concat(args).concat([
+        {
+            comment: comment
+        }
+    ]));
+}
+
+window.MT.DataAPI.prototype.createReplyComment = function(site_id, entry_id, comment_id, comment) {
+    var args = Array.prototype.slice.call(arguments, 4);
+    return this.request.apply(this, [
+        'POST',
+        this.bindEndpointParams('/sites/:site_id/entries/:entry_id/comments/:comment_id/replies', {
+            site_id: site_id,
+            entry_id: entry_id,
+            comment_id: comment_id
+        })
+    ].concat(args).concat([
+        {
+            comment: comment
+        }
+    ]));
+}
+
+window.MT.DataAPI.prototype.getComment = function(site_id, comment_id) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/comments/:comment_id', {
+            site_id: site_id,
+            comment_id: comment_id
+        })
+    ].concat(args));
+}
+
+window.MT.DataAPI.prototype.updateComment = function(site_id, comment_id, comment) {
+    var args = Array.prototype.slice.call(arguments, 3);
+    return this.request.apply(this, [
+        'PUT',
+        this.bindEndpointParams('/sites/:site_id/comments/:comment_id', {
+            site_id: site_id,
+            comment_id: comment_id
+        })
+    ].concat(args).concat([
+        {
+            comment: comment
+        }
+    ]));
+}
+
+window.MT.DataAPI.prototype.deleteComment = function(site_id, comment_id) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    return this.request.apply(this, [
+        'DELETE',
+        this.bindEndpointParams('/sites/:site_id/comments/:comment_id', {
+            site_id: site_id,
+            comment_id: comment_id
+        })
+    ].concat(args));
+}
+
 window.MT.DataAPI.prototype.statsPageviewsForPath = function(site_id) {
     var args = Array.prototype.slice.call(arguments, 1);
     return this.request.apply(this, [
