@@ -1765,7 +1765,7 @@ BEGIN {
             'UpgradeScript'         => { default => 'mt-upgrade.cgi', },
             'CheckScript'           => { default => 'mt-check.cgi', },
             'NotifyScript'          => { default => 'mt-add-notify.cgi', },
-            'DataAPIScript'         => { default => 'mt-api.cgi', },
+            'DataAPIScript'         => { default => 'mt-data-api.cgi', },
             'PublishCharset'        => { default => 'utf-8', },
             'SafeMode'              => { default => 1, },
             'AllowFileInclude'      => { default => 0, },
