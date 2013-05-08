@@ -51,9 +51,12 @@ sub resource {
     my $app   = MT->instance;
 
     if ( !%resources ) {
-        my $reg = $app->registry( 'applications', 'data_api', 'resources' );
-        %resources
-            = map { $_ => ref( $reg->{$_} ) ? +{} : $reg->{$_} } keys %$reg;
+        my $reg = MT::Component->registry( 'applications', 'data_api',
+            'resources' );
+        %resources = map {
+            my $reg = $_;
+            map { $_ => ref( $reg->{$_} ) ? +{} : $reg->{$_} } keys %$reg;
+        } @$reg;
     }
 
     my $res;
@@ -84,7 +87,7 @@ sub resource {
         for my $k (qw(fields updatable_fields)) {
             $res->{$k} = [
                 map {@$_} @{
-                    $app->registry(
+                    MT::Component->registry(
                         'applications', 'data_api',
                         'resources',    $resource_key,
                         $k
