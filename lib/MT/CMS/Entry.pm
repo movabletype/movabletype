@@ -1840,6 +1840,7 @@ sub save {
                     Entry       => $orig_obj,
                     ArchiveType => $archive_type,
                     Category    => $primary_category_old,
+                    Force       => 0,
                 );
             }
         }
@@ -2764,7 +2765,8 @@ sub update_entry_status {
                 : 'Individual';
             $app->publisher->remove_entry_archive_file(
                 Entry       => $entry,
-                ArchiveType => $archive_type
+                ArchiveType => $archive_type,
+                Force       => 0,
             );
         }
         my $original   = $entry->clone;
