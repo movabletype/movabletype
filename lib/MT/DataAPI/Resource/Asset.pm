@@ -10,7 +10,6 @@ sub updatable_fields {
             label
             description
             tags
-            customFields
             )
     ];
 }

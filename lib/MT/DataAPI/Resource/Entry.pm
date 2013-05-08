@@ -19,7 +19,6 @@ sub updatable_fields {
             basename
             date
             tags
-            customFields
             )
     ];
 }
