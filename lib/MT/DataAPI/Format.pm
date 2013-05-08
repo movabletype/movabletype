@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 our %formats = ();
+our $default_format;
 
 sub core_formats {
     my $app = shift;
@@ -28,11 +29,12 @@ sub find_format {
         %formats = map { $_ => 1 } keys %$reg;
     }
 
+    $default_format ||= $app->registry( 'applications', 'data_api' )->{default_format};
     my $format_key
         = $key
         || ( $app->current_endpoint || {} )->{format}
         || $app->param('format')
-        || $app->registry( 'applications', 'data_api' )->{default_format};
+        || $default_format;
 
     my $format = $formats{$format_key};
     if ( !defined $format ) {
