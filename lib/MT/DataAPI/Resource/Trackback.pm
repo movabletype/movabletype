@@ -3,8 +3,13 @@ package MT::DataAPI::Resource::Trackback;
 use strict;
 use warnings;
 
+use MT::DataAPI::Resource::Common;
+
 sub updatable_fields {
-    [];
+    [   qw(
+            status
+            )
+    ];
 }
 
 sub fields {
@@ -45,6 +50,7 @@ sub fields {
             alias => 'source_url',
         },
         'ip',
+        $MT::DataAPI::Resource::Common::fields{status},
     ];
 }
 

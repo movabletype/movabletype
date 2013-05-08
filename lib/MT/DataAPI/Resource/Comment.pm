@@ -3,6 +3,8 @@ package MT::DataAPI::Resource::Comment;
 use strict;
 use warnings;
 
+use MT::DataAPI::Resource::Common;
+
 sub updatable_fields {
     [   qw(
             body
@@ -72,17 +74,7 @@ sub fields {
         {   name  => 'parent',
             alias => 'parent_id',
         },
-        {   name        => 'status',
-            from_object => sub {
-                my ($obj) = @_;
-                $obj->get_status_text;
-            },
-            to_object => sub {
-                my ( $hash, $obj ) = @_;
-                $obj->set_status_by_text( $hash->{status} );
-                return;
-            },
-        },
+        $MT::DataAPI::Resource::Common::fields{status},
     ];
 }
 
