@@ -43,7 +43,7 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
         if (isset($pos)) {
             $pos += $step;
             while (($pos >= 0) && ($pos < count($cats))) {
-                if ($cats[$pos]->category_count == 0) {
+              if ($cats[$pos]->entry_count() == 0) {
                     if (isset($args['show_empty']) && $args['show_empty']) {
                     } else {
                         $pos += $step;

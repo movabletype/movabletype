@@ -1709,15 +1709,14 @@ A deprecated tag, replaced with L<CommentDate>.
 
 =head2 CommentPreviewState
 
-For the comment preview template only.
+A deprecated tag, For the comment preview template only.
 
-=for tags comments
+=for tags comments deprecated
 
 =cut
 
 sub _hdlr_comment_prev_state {
-    my ($ctx) = @_;
-    return $ctx->stash('comment_state');
+    return '';
 }
 
 ###########################################################################

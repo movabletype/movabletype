@@ -459,8 +459,18 @@ sub load_objects {
     my $pkg      = $proxy->{pkg};
     my $meta_pkg = $proxy->meta_pkg;
 
-    my @objs = $meta_pkg->search(
-        { %{ $proxy->{__pkeys} }, $col ? ( type => $col ) : () } );
+    my $pkeys;
+    foreach my $pkey ( keys %{ $proxy->{__pkeys} } ) {
+        next if ( $pkey eq 'type' );
+        $pkeys->{$pkey} = $proxy->{__pkeys}->{$pkey};
+    }
+    my @objs;
+    if ( keys %{$pkeys} ) {
+        $pkeys->{type} = $proxy->{__pkeys}->{type}
+            if exists $proxy->{__pkeys}->{type};
+        @objs = $meta_pkg->search(
+            { %{ $pkeys }, $col ? ( type => $col ) : () } )
+    }
 
     if ( !$col ) {
         $proxy->{__loaded_all_objects} = 1;

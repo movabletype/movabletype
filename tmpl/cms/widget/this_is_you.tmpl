@@ -60,7 +60,7 @@
             <mt:if name="can_list_pages">
             <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a>." params="<mt:var name="my_entries_url">%%<mt:var name="publish_count">%%<mt:var name="my_pages_url">%%<mt:var name="publish_page_count">"></li>
             <mt:else>
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages]." params="<mt:var name="script_url">?__mode=search_replace&amp;_type=entry&amp;do_search=1&amp;publish_status=2&amp;my_posts=1%%<mt:var name="publish_count">%%<mt:var name="publish_page_count">"></li>
+            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages]." params="<mt:var name="script_url">?__mode=search_replace&amp;_type=entry&amp;do_search=1&amp;publish_status=2&amp;my_posts_on_this_context=1%%<mt:var name="publish_count">%%<mt:var name="publish_page_count">"></li>
             </mt:if>
         <mt:else>
             <mt:if name="can_list_pages">

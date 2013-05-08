@@ -34,6 +34,20 @@
                  <input type="text" class="prop-integer <mt:var name="type">-value text num required digit" value="" />">
 </mt:setvartemplate>
 
+<mt:setvartemplate name="filter_form_float">
+<__trans phrase="[_1] [_2] [_3]"
+         params="<mt:var name="label" escape="js">%%
+                 <select class="<mt:var name="type">-option">
+                   <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
+                   <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
+                   <option value="greater_than"><__trans phrase="is greater than" escape="js"></option>
+                   <option value="greater_equal"><__trans phrase="is greater than or equal to" escape="js"></option>
+                   <option value="less_than"><__trans phrase="is less than" escape="js"></option>
+                   <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
+                 </select>%%
+                 <input type="text" class="prop-float <mt:var name="type">-value text number required" value="" />">
+</mt:setvartemplate>
+
 <mt:setvartemplate name="filter_form_future_date">
   <mt:setvarblock name="future_date_filter_options">
   <select class="<mt:var name="type">-option filter-date">

@@ -329,7 +329,8 @@ sub core_methods {
 sub core_widgets {
     my $app = shift;
     my $pkg = '$Core::MT::CMS::';
-    return {
+
+    my $core_widgets = {
         this_is_you => {
             label    => 'This is You',
             template => 'widget/this_is_you.tmpl',
@@ -345,15 +346,6 @@ sub core_widgets {
             singular => 1,
             set      => 'sidebar',
             view     => 'user',
-        },
-        blog_stats => {
-            label    => 'Blog Stats',
-            template => 'widget/blog_stats.tmpl',
-            handler  => "${pkg}Dashboard::mt_blog_stats_widget",
-            singular => 1,
-            set      => 'main',
-            view     => 'blog',
-            param    => { tab => 'entry' },
         },
         recent_websites => {
             label    => 'Websites',
@@ -380,7 +372,28 @@ sub core_widgets {
             view     => 'user',
             param    => { tab => 'website' },
         },
+        notification_dashboard => {
+            label    => 'Notification Dashboard',
+            template => 'widget/notification_dashboard.tmpl',
+            singular => 1,
+            set      => 'main',
+            view     => 'user',
+        },
     };
+
+    if ( $app->config('EnableBlogStats') ) {
+        $core_widgets->{'blog_stats'} = {
+            label    => 'Blog Stats',
+            template => 'widget/blog_stats.tmpl',
+            handler  => "${pkg}Dashboard::mt_blog_stats_widget",
+            singular => 1,
+            set      => 'main',
+            view     => 'blog',
+            param    => { tab => 'entry' },
+        };
+    }
+
+    return $core_widgets;
 }
 
 sub core_blog_stats_tabs {
@@ -464,11 +477,11 @@ sub init_request {
 
     $app->set_no_cache
         if $mode ne 'export_notification'
-            && $mode ne 'backup_download'
-            && $mode ne 'export'
-            && $mode ne 'do_export_theme'
-            && $mode ne 'export_log'
-            && $mode ne 'export_authors';
+        && $mode ne 'backup_download'
+        && $mode ne 'export'
+        && $mode ne 'do_export_theme'
+        && $mode ne 'export_log'
+        && $mode ne 'export_authors';
 
     # Global 'blog_id' parameter check; if we get something
     # other than an integer, die
@@ -750,7 +763,7 @@ sub core_list_actions {
                     return 0 if $app->mode eq 'view';
                     return 0
                         if $app->param('filter_key')
-                            && $app->param('filter_key') eq 'spam_entries';
+                        && $app->param('filter_key') eq 'spam_entries';
                     return 0 unless $app->param('blog_id');
                     return 1;
                 },
@@ -837,7 +850,7 @@ sub core_list_actions {
                     return 0 if $app->mode eq 'view';
                     return 0
                         if $app->param('filter_key')
-                            && $app->param('filter_key') eq 'spam_entries';
+                        && $app->param('filter_key') eq 'spam_entries';
                     return 0 unless $app->param('blog_id');
                     return 1;
                 },
@@ -983,7 +996,8 @@ sub core_list_actions {
 
                     my $cond = 1;
                     while ( my $p = $iter->() ) {
-                        $cond = 0, last
+                        $cond = 0,
+                            last
                             if (
                             !$p->can_do('delete_own_entry_trackback')
                             && $p->can_do(
@@ -1179,7 +1193,8 @@ sub core_list_actions {
 
                     my $cond = 1;
                     while ( my $p = $iter->() ) {
-                        $cond = 0, last
+                        $cond = 0,
+                            last
                             if (
                             !$p->can_do('delete_own_entry_comment')
                             && $p->can_do(
@@ -1459,9 +1474,13 @@ sub core_list_actions {
             refresh_tmpl_templates => {
                 label => "Refresh Template(s)",
                 code  => "${pkg}Template::refresh_individual_templates",
-                permit_action => 'refresh_template_via_list',
-                order         => 100,
-                condition     => sub {
+                permit_action => {
+                    permit_action => 'refresh_template_via_list',
+                    include_all   => 1,
+                    system_action => 'refresh_template_via_list',
+                },
+                order     => 100,
+                condition => sub {
                     my $app = MT->app;
                     my $tmpl_type = $app->param('filter_key') || '';
                     return 0 if $tmpl_type eq 'backup_templates';
@@ -1748,8 +1767,7 @@ sub core_menus {
                 my $blog_ids
                     = !$blog         ? undef
                     : $blog->is_blog ? [ $blog->id ]
-                    : $blog->has_blog ? [ map { $_->id } @{ $blog->blogs } ]
-                    :                   undef;
+                    :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
 
                 require MT::Permission;
                 my $iter = MT::Permission->load_iter(
@@ -1764,8 +1782,7 @@ sub core_menus {
                 my $cond;
                 while ( my $p = $iter->() ) {
                     $cond = 1, last
-                        if $p->can_do('use_entry:manage_menu')
-                            and $p->blog->is_blog;
+                        if $p->can_do('use_entry:manage_menu');
                 }
                 return $cond ? 1 : 0;
             },
@@ -1776,7 +1793,7 @@ sub core_menus {
             mode       => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'entry:category' => {
             label      => "Categories",
@@ -1784,7 +1801,7 @@ sub core_menus {
             mode       => 'list',
             args       => { _type => 'category' },
             permission => 'edit_categories',
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'entry:view_category' => {
             order   => 10000,
@@ -2178,14 +2195,14 @@ sub core_menus {
             order      => 400,
             mode       => "start_import",
             permission => "administer_blog",
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'tools:export' => {
             label      => "Export Entries",
             order      => 500,
             mode       => "start_export",
             permission => "administer_blog",
-            view       => "blog",
+            view       => [ "blog", "website" ],
         },
         'tools:themeexport' => {
             label         => "Export Theme",
@@ -2322,7 +2339,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view       => "blog",
+            view => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2643,7 +2660,7 @@ sub set_default_tmpl_params {
             $param->{$perm_token} = $perm_hash->{$perm_name}
                 if defined $perm_hash->{$perm_name};
         }
-        $param->{can_edit_entries} 
+        $param->{can_edit_entries}
             = $param->{can_create_post}
             || $param->{can_edit_all_entries}
             || $param->{can_publish_post};
@@ -2651,11 +2668,11 @@ sub set_default_tmpl_params {
         $param->{can_search_replace}
             = MT::CMS::Search::can_search_replace($app);
         $param->{can_edit_authors} = $param->{can_administer_blog};
-        $param->{can_access_assets} 
+        $param->{can_access_assets}
             = $param->{can_create_post}
             || $param->{can_edit_all_posts}
             || $param->{can_edit_assets};
-        $param->{has_manage_label} 
+        $param->{has_manage_label}
             = $param->{can_edit_templates}
             || $param->{can_administer_blog}
             || $param->{can_edit_categories}
@@ -2663,13 +2680,13 @@ sub set_default_tmpl_params {
             || $param->{can_edit_tags}
             || $param->{can_set_publish_paths}
             || $param->{show_ip_info};
-        $param->{has_posting_label} 
+        $param->{has_posting_label}
             = $param->{can_create_post}
             || $param->{can_edit_entries}
             || $param->{can_access_assets};
         $param->{has_community_label} = $param->{can_edit_entries}
             || $param->{can_edit_notifications};
-        $param->{can_publish_feedbacks} 
+        $param->{can_publish_feedbacks}
             = $param->{can_manage_feedback}
             || $param->{can_publish_post}
             || $param->{can_edit_all_posts};
@@ -2681,12 +2698,12 @@ sub set_default_tmpl_params {
 
         $param->{can_edit_commenters} = 1
             if $app->user->is_superuser
-                || (   $app->config->SingleCommunity
-                    && !$blog
-                    && $param->{can_manage_feedback} )
-                || (  !$app->config->SingleCommunity
-                    && $blog
-                    && $param->{can_manage_feedback} );
+            || ( $app->config->SingleCommunity
+            && !$blog
+            && $param->{can_manage_feedback} )
+            || ( !$app->config->SingleCommunity
+            && $blog
+            && $param->{can_manage_feedback} );
     }
 
     my $static_app_url = $app->static_path;
@@ -2697,6 +2714,14 @@ sub set_default_tmpl_params {
 
     $param->{ "mode_$mode" . ( $type ? "_$type" : '' ) } = 1;
     $param->{return_args} ||= $app->make_return_args;
+
+    # Message Center
+    my $loop_nd = $app->param('loop_notification_dashboard');
+    if ( ref $loop_nd eq 'ARRAY' ) {
+        $param->{loop_notification_dashboard} = $loop_nd;
+        $param->{count_notification_dashboard} = @{$loop_nd} if $loop_nd;
+    }
+
     $tmpl->param($param);
 }
 
@@ -2729,8 +2754,8 @@ sub build_page {
                 $param->{scope_label}        = $class->class_label;
                 $param->{is_generic_website} = 1
                     if !$blog->is_blog
-                        && (   !$blog->column('site_path')
-                            || !$blog->column('site_url') );
+                    && ( !$blog->column('site_path')
+                    || !$blog->column('site_url') );
             }
             else {
                 $app->error(
@@ -2749,8 +2774,8 @@ sub build_page {
         if ( ref $app eq 'MT::App::CMS' ) {
             $param->{system_overview_nav} = 1
                 unless $blog_id
-                    || exists $param->{system_overview_nav}
-                    || $param->{no_breadcrumbs};
+                || exists $param->{system_overview_nav}
+                || $param->{no_breadcrumbs};
             $param->{quick_search} = 1 unless defined $param->{quick_search};
         }
     }
@@ -2827,7 +2852,7 @@ sub build_blog_selector {
         = MT::Permission->join_on( 'blog_id',
         { author_id => $auth->id, permissions => { not => "'comment'" } } )
         if !$auth->is_superuser
-            && !$auth->permissions(0)->can_do('edit_templates');
+        && !$auth->permissions(0)->can_do('edit_templates');
     $terms{class}     = 'blog';
     $terms{parent_id} = \">0";    # FOR-EDITOR";
     $args{limit}      = 6;        # Don't load over 6 blogs
@@ -2864,7 +2889,7 @@ sub build_blog_selector {
             { author_id => $auth->id, permissions => { not => "'comment'" } }
             )
             if !$auth->is_superuser
-                && !$auth->permissions(0)->can_do('edit_templates');
+            && !$auth->permissions(0)->can_do('edit_templates');
         $terms{class} = 'website';
         my $not_ids;
         push @$not_ids, @fav_websites;
@@ -3041,7 +3066,7 @@ sub build_menus {
             ## skip only if false value was set explicitly.
             next
                 if exists $theme_modify->{$sub_id}
-                    && !$theme_modify->{$sub_id};
+                && !$theme_modify->{$sub_id};
             my $sub = $menus->{$sub_id};
             $sub->{current} = 0;
 
@@ -3299,7 +3324,7 @@ sub build_user_menus {
     my $login_user = $app->user
         or return;
     my $scope = $app->view;
-    my $user_id 
+    my $user_id
         = $param->{user_menu_id}
         || $app->param('author_id')
         || $login_user->id;
@@ -3862,7 +3887,7 @@ sub autosave_session_obj {
     my $id = $q->param('id');
     $id = '0' unless $id;
     my $ident
-        = 'autosave' 
+        = 'autosave'
         . ':user='
         . $app->user->id
         . ':type='
@@ -4070,9 +4095,9 @@ sub add_to_favorite_blogs {
     return unless $blog->is_blog;
 
     return
-        unless $auth->has_perm($fav)
-            || $auth->is_superuser
-            || $auth->permissions(0)->can_do('edit_templates');
+           unless $auth->has_perm($fav)
+        || $auth->is_superuser
+        || $auth->permissions(0)->can_do('edit_templates');
 
     my @current = @{ $auth->favorite_blogs || [] };
 
@@ -4111,9 +4136,9 @@ sub add_to_favorite_websites {
     }
 
     return
-        unless $trust
-            || $auth->is_superuser
-            || $auth->permissions(0)->can_do('edit_templates');
+           unless $trust
+        || $auth->is_superuser
+        || $auth->permissions(0)->can_do('edit_templates');
 
     my @current = @{ $auth->favorite_websites || [] };
 
@@ -4217,7 +4242,7 @@ sub rebuild_these {
             my $perms = $app->user->permissions( $e->blog_id );
             return $app->permission_denied()
                 unless $perms
-                    && $perms->can_republish_entry( $e, $app->user );
+                && $perms->can_republish_entry( $e, $app->user );
 
             my $type = $e->class;
 
@@ -4422,7 +4447,7 @@ sub _build_category_list {
             $row->{category_path_ids} = $path_ids;
 
             # $row->{category_label} = $path . '/';
-            $row->{category_label_full} 
+            $row->{category_label_full}
                 = $row->{category_basename} . '/'
                 . (
                 $obj->label ne $row->{category_basename}
@@ -4547,7 +4572,7 @@ sub view {
             : "website"
         : !defined $app->param('blog_id')
         && $app->mode eq 'dashboard' ? "user"
-        :                              'system';
+        : 'system';
 }
 
 sub setup_filtered_ids {
@@ -4714,6 +4739,105 @@ sub setup_editor_param {
             $param->{rich_editor_tmpl} = $rich_editor_tmpl;
         }
     }
+}
+
+sub pre_run {
+    my $app = shift;
+    $app->SUPER::pre_run(@_) or return;
+    my $user = $app->user;
+
+    # Message Center
+    my @messages;
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    my $support_path;
+    my $has_uploads_path;
+    foreach my $subdir (qw( uploads userpics )) {
+        $support_path
+            = File::Spec->catdir( $app->support_directory_path, $subdir );
+        if ( !$fmgr->exists($support_path) ) {
+            $fmgr->mkpath($support_path);
+        }
+        if (   $fmgr->exists($support_path)
+            && $fmgr->can_write($support_path) )
+        {
+            $has_uploads_path = 1;
+        }
+    }
+    unless ( $has_uploads_path || $fmgr->exists($support_path) ) {
+
+        # the path didn't exist - change the warning a little
+        $support_path = $app->support_directory_path;
+    }
+    unless ($has_uploads_path) {
+        my $message = {
+            level => 'warning',
+            text => $app->translate('The support directory is not writable.'),
+        };
+        if ( $user && $user->is_superuser ) {
+            $message->{detail} = $app->translate(
+                'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.',
+                $support_path
+            );
+        }
+        else {
+            $message->{text}
+                .= ' '
+                . $app->translate(
+                'Please contact your Movable Type system administrator.');
+        }
+        push @messages, $message;
+    }
+
+    eval { require MT::Image; MT::Image->new or die; };
+    if ($@) {
+        my $message = {
+            level => 'warning',
+            text  => $app->translate('ImageDriver is not configured.'),
+        };
+        if ( $user && $user->is_superuser ) {
+            $message->{detail}
+                = $app->translate(
+                'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.'
+                );
+        }
+        else {
+            $message->{text}
+                .= ' '
+                . $app->translate(
+                'Please contact your Movable Type system administrator.');
+        }
+        push @messages, $message;
+    }
+
+    unless ( $app->config('EmailAddressMain') ) {
+        my $message = {
+            level => 'warning',
+            text =>
+                $app->translate('System email address is not configured.'),
+        };
+        if ( $user && $user->is_superuser ) {
+            $message->{detail} = $app->translate(
+                'You do not have a system email address configured.  Please set this. Unless this is configured, notification e-mail is not sent. <a href="[_1]">Configure</a>',
+                $app->uri(
+                    mode => 'cfg_system_general',
+                    args => { blog_id => 0 }
+                )
+            );
+        }
+        else {
+            $message->{text}
+                .= ' '
+                . $app->translate(
+                'Please contact your Movable Type system administrator.');
+        }
+        push @messages, $message;
+    }
+
+    $app->run_callbacks( 'set_notification_dashboard', \@messages );
+
+    $app->param( 'loop_notification_dashboard', \@messages );
 }
 
 1;

@@ -919,7 +919,6 @@ function mtGetUser() {
  */
 </mt:Ignore>
 var mtFetchedUser = false;
-<mt:IfBlog>
 function mtFetchUser(cb) {
     if (!cb) cb = 'mtSetUser';
     if ( ( cb == 'mtSetUser' ) && mtGetUser() ) {
@@ -947,7 +946,6 @@ function mtVerifySession(cb) {
     script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=verify_session&blog_id=<$mt:BlogID$>&jsonp=' + cb + '&ts=' + ts + '&sid=' + u.sid;
     (document.getElementsByTagName('head'))[0].appendChild(script);
 }
-</mt:IfBlog>
 
 <mt:Ignore>
 /***
@@ -971,7 +969,6 @@ function mtRememberMeOnClick(b) {
  * a token that is checked by the comment script.
  */
 </mt:Ignore>
-<mt:IfBlog>
 var mtRequestSubmitted = false;
 function mtCommentOnSubmit(f) {
     if (!mtRequestSubmitted) {
@@ -1060,7 +1057,6 @@ function mtUserOnLoad() {
         }
     }
 }
-</mt:IfBlog>
 
 <mt:Ignore>
 /***
@@ -1069,7 +1065,6 @@ function mtUserOnLoad() {
  * or hidden, depending on commenter type and blog configuration.
  */
 </mt:Ignore>
-<mt:IfBlog>
 function mtEntryOnLoad() {
     var cf = document['comments_form'];
     if (cf && cf.preview) cf.preview.value = '';
@@ -1094,7 +1089,6 @@ function mtEntryOnUnload() {
 }
 
 mtAttachEvent('usersignin', mtUserOnLoad);
-</mt:IfBlog>
 
 <mt:Ignore>
 /***
@@ -1186,7 +1180,6 @@ function mtSignOutOnClick() {
  * user is logged in and blog comment policy.
  */
 </mt:Ignore>
-<mt:IfBlog>
 function mtShowGreeting() {
 <mt:IfRegistrationAllowed>
     var reg_reqd = <mt:IfRegistrationRequired>true<mt:Else>false</mt:IfRegistrationRequired>;
@@ -1237,7 +1230,6 @@ function mtShowGreeting() {
     mtShowCaptcha();
 </mt:IfRegistrationAllowed>
 }
-</mt:IfBlog>
 
 <mt:Ignore>
 /***
@@ -1449,11 +1441,9 @@ function mtInit() {
         window.onload();
         window.onload = function() {};
     }
-<mt:IfBlog>
 <mt:IfRegistrationAllowed>
     mtInitCommenter();
 </mt:IfRegistrationAllowed>
-</mt:IfBlog>
 }
 
 /* for Mozilla/Opera9 */
@@ -1489,7 +1479,6 @@ window.onload = mtInit;
 
 // END: fast browser onload init
 
-<mt:IfBlog>
 <mt:IfRegistrationAllowed>
 
 function mtLoggedIn(ott) {
@@ -1558,4 +1547,3 @@ function mtInitCommenter () {
     }
 }
 </mt:IfRegistrationAllowed>
-</mt:IfBlog>

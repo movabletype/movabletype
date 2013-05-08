@@ -71,30 +71,30 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="language"
+       id="date_language"
        label="<__trans phrase="Date Language">"
        hint="<__trans phrase="Select the language in which you would like dates on your blog displayed.">"
        help_page="blog_settings_general"
        help_section="date_language">
-      <select name="language" id="language">
-        <option value="cz"<mt:if name="language_cz"> selected="selected"</mt:if>><__trans phrase="Czech"></option>
-        <option value="dk"<mt:if name="language_dk"> selected="selected"</mt:if>><__trans phrase="Danish"></option>
-        <option value="nl"<mt:if name="language_nl"> selected="selected"</mt:if>><__trans phrase="Dutch"></option>
-        <option value="en"<mt:if name="language_en"> selected="selected"</mt:if>><__trans phrase="English"></option>
-        <option value="et"<mt:if name="language_et"> selected="selected"</mt:if>><__trans phrase="Estonian"></option>
-        <option value="fr"<mt:if name="language_fr"> selected="selected"</mt:if>><__trans phrase="French"></option>
-        <option value="de"<mt:if name="language_de"> selected="selected"</mt:if>><__trans phrase="German"></option>
-        <option value="is"<mt:if name="language_is"> selected="selected"</mt:if>><__trans phrase="Icelandic"></option>
-        <option value="it"<mt:if name="language_it"> selected="selected"</mt:if>><__trans phrase="Italian"></option>
-        <option value="ja"<mt:if name="language_ja"> selected="selected"</mt:if>><__trans phrase="Japanese"></option>
-        <option value="no"<mt:if name="language_no"> selected="selected"</mt:if>><__trans phrase="Norwegian"></option>
-        <option value="pl"<mt:if name="language_pl"> selected="selected"</mt:if>><__trans phrase="Polish"></option>
-        <option value="pt"<mt:if name="language_pt"> selected="selected"</mt:if>><__trans phrase="Portuguese"></option>
-        <option value="sk"<mt:if name="language_sk"> selected="selected"</mt:if>><__trans phrase="Slovak"></option>
-        <option value="si"<mt:if name="language_si"> selected="selected"</mt:if>><__trans phrase="Slovenian"></option>
-        <option value="es"<mt:if name="language_es"> selected="selected"</mt:if>><__trans phrase="Spanish"></option>
-        <option value="fi"<mt:if name="language_fi"> selected="selected"</mt:if>><__trans phrase="Suomi"></option>
-        <option value="se"<mt:if name="language_se"> selected="selected"</mt:if>><__trans phrase="Swedish"></option>
+      <select name="date_language" id="date_language">
+        <option value="cz"<mt:if name="date_language_cz"> selected="selected"</mt:if>><__trans phrase="Czech"></option>
+        <option value="dk"<mt:if name="date_language_dk"> selected="selected"</mt:if>><__trans phrase="Danish"></option>
+        <option value="nl"<mt:if name="date_language_nl"> selected="selected"</mt:if>><__trans phrase="Dutch"></option>
+        <option value="en"<mt:if name="date_language_en"> selected="selected"</mt:if>><__trans phrase="English"></option>
+        <option value="et"<mt:if name="date_language_et"> selected="selected"</mt:if>><__trans phrase="Estonian"></option>
+        <option value="fr"<mt:if name="date_language_fr"> selected="selected"</mt:if>><__trans phrase="French"></option>
+        <option value="de"<mt:if name="date_language_de"> selected="selected"</mt:if>><__trans phrase="German"></option>
+        <option value="is"<mt:if name="date_language_is"> selected="selected"</mt:if>><__trans phrase="Icelandic"></option>
+        <option value="it"<mt:if name="date_language_it"> selected="selected"</mt:if>><__trans phrase="Italian"></option>
+        <option value="ja"<mt:if name="date_language_ja"> selected="selected"</mt:if>><__trans phrase="Japanese"></option>
+        <option value="no"<mt:if name="date_language_no"> selected="selected"</mt:if>><__trans phrase="Norwegian"></option>
+        <option value="pl"<mt:if name="date_language_pl"> selected="selected"</mt:if>><__trans phrase="Polish"></option>
+        <option value="pt"<mt:if name="date_language_pt"> selected="selected"</mt:if>><__trans phrase="Portuguese"></option>
+        <option value="sk"<mt:if name="date_language_sk"> selected="selected"</mt:if>><__trans phrase="Slovak"></option>
+        <option value="si"<mt:if name="date_language_si"> selected="selected"</mt:if>><__trans phrase="Slovenian"></option>
+        <option value="es"<mt:if name="date_language_es"> selected="selected"</mt:if>><__trans phrase="Spanish"></option>
+        <option value="fi"<mt:if name="date_language_fi"> selected="selected"</mt:if>><__trans phrase="Suomi"></option>
+        <option value="se"<mt:if name="date_language_se"> selected="selected"</mt:if>><__trans phrase="Swedish"></option>
       </select>
     </mtapp:setting>
 
@@ -158,7 +158,6 @@
     </mt:unless>
     </mtapp:setting>
 
-  <mt:if name="scope_type" eq="blog">
     <mt:setvarblock name="entry_fields" id="entry_fields"></mt:setvarblock>
     <mtapp:setting
        id="entry_prefs"
@@ -167,16 +166,15 @@
       <ul class="fixed-width multiple-selection">
         <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-title"><__trans phrase="Title"></label></li>
         <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-body" value="text" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-body"><__trans phrase="Body"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-category" value="category" <mt:if name="entry_disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-category"><__trans phrase="Categories"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-excerpt" value="excerpt" <mt:if name="entry_disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-excerpt"><__trans phrase="Excerpt"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-keywords" value="keywords" <mt:if name="entry_disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-keywords"><__trans phrase="Keywords"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-tags" value="tags" <mt:if name="entry_disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-tags"><__trans phrase="Tags"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-feedback" value="feedback" <mt:if name="entry_disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-feedback"><__trans phrase="Comments"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-assets" value="assets" <mt:if name="entry_disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-assets"><__trans phrase="Assets"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-category" value="category"<mt:if name="entry_disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-category"><__trans phrase="Categories"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-excerpt" value="excerpt"<mt:if name="entry_disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-excerpt"><__trans phrase="Excerpt"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-keywords" value="keywords"<mt:if name="entry_disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-keywords"><__trans phrase="Keywords"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-tags" value="tags"<mt:if name="entry_disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-tags"><__trans phrase="Tags"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-feedback" value="feedback"<mt:if name="entry_disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-feedback"><__trans phrase="Comments"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-assets" value="assets"<mt:if name="entry_disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-assets"><__trans phrase="Assets"></label></li>
         <mt:var name="entry_fields">
       </ul>
     </mtapp:setting>
-  </mt:if>
 
   <mt:setvarblock name="page_fields" id="page_fields"></mt:setvarblock>
   <mtapp:setting

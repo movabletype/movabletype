@@ -64,13 +64,14 @@ sub list_props {
                 my ( $prop, $args, $db_terms, $db_args, $opts ) = @_;
                 my $blog_id = $opts->{blog_ids};
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('objecttag')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('objecttag')->join_on(
                     undef,
                     {   blog_id => $blog_id,
                         tag_id  => \'= tag_id',
                     },
                     { unique => 1, },
-                );
+                    );
                 return;
             },
         },
@@ -82,7 +83,7 @@ sub list_props {
             order       => 200,
             col         => 'id',
             entry_class => 'entry',
-            view        => 'blog',
+            view        => [ 'website', 'blog' ],
             view_filter => 'none',
             raw         => sub {
                 my ( $prop, $obj ) = @_;
@@ -150,7 +151,7 @@ sub list_props {
             label       => 'Tags with Entries',
             display     => 'none',
             entry_class => 'entry',
-            view        => 'blog',
+            view        => [ 'website', 'blog' ],
             singleton   => '1',
             terms       => sub {
                 my $prop = shift;
@@ -266,13 +267,14 @@ sub list_props {
                 my ( $args, $db_terms, $db_args, $options ) = @_;
                 my $blog_id = $options->{blog_ids};
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('objecttag')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('objecttag')->join_on(
                     'tag_id',
                     { object_datasource => 'asset', },
                     {   group  => ['tag_id'],
                         unique => 1,
                     }
-                );
+                    );
                 return;
             },
         },
@@ -284,7 +286,7 @@ sub system_filters {
     return {
         entry => {
             label => 'Tags with Entries',
-            view  => ['blog'],
+            view  => [ 'website', 'blog' ],
             items => [ { type => 'for_entry', } ],
             order => 100,
         },
@@ -878,8 +880,10 @@ sub tagged_count {
     }
     $jterms->{object_datasource} = $pkg->datasource;
     $jterms->{tag_id} = $tag_id if $tag_id;
-    my $args = {
-        join => [ 'MT::ObjectTag', 'object_id', $jterms, { unique => 1 } ] };
+    my $args
+        = {
+        join => [ 'MT::ObjectTag', 'object_id', $jterms, { unique => 1 } ]
+        };
     require MT::ObjectTag;
     $pkg->count( $terms, $args );
 }

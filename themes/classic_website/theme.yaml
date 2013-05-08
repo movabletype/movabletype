@@ -2,7 +2,7 @@ label: Classic Website
 id: classic_website
 author_name: Six Apart, Ltd.
 author_link: http://www.movabletype.org/
-version: 1.1
+version: 1.11
 class: website
 protected: 1
 description: <__trans phrase="Create a blog portal that aggregates contents from several blogs in one website.">
@@ -23,7 +23,22 @@ elements:
             base_path: templates
             require: 1
             templates:
+                archive:
+                    category_entry_listing:
+                        label: Category Entry Listing
+                        mappings:
+                            category:
+                                archive_type: Category
+                    monthly_entry_listing:
+                        label: Monthly Entry Listing
+                        mappings:
+                            monthly:
+                                archive_type: Monthly
                 index:
+                    archive_index:
+                        label: Archive Index
+                        outfile: archives.html
+                        rebuild_me: 1
                     feed_recent:
                         label: 'Feed - Recent Entries'
                         outfile: atom.xml
@@ -44,6 +59,12 @@ elements:
                         label: Stylesheet
                         outfile: styles.css
                         rebuild_me: 1
+                individual:
+                    entry:
+                        label: Entry
+                        mappings:
+                            entry_archive:
+                                archive_type: Individual
                 module:
                     banner_footer:
                         label: Banner Footer
@@ -87,12 +108,34 @@ elements:
                         description_label: Displays results of a search.
                         label: Search Results
                 widget:
+                    about_this_page:
+                        label: About This Page
+                    archive_widgets_group:
+                        label: Archive Widgets Group
+                    author_archive_list:
+                        label: Author Archives
                     blogs:
                         label: Blogs
+                    calendar:
+                        label: Calendar
+                    category_archive_list:
+                        label: Category Archives
                     creative_commons:
                         label: Creative Commons
+                    current_author_monthly_archive_list:
+                        label: Current Author Monthly Archives
+                    current_category_monthly_archive_list:
+                        label: Current Category Monthly Archives
+                    date_based_author_archives: 
+                        label: Date-Based Author Archives
+                    date_based_category_archives:
+                        label: Date-Based Category Archives
                     main_index_widgets_group:
                         label: Home Page Widgets Group
+                    monthly_archive_dropdown:
+                        label: Monthly Archives Dropdown
+                    monthly_archive_list:
+                        label: Monthly Archives
                     openid:
                         label: OpenID Accepted
                     pages_list:
@@ -122,7 +165,9 @@ elements:
                         widgets:
                             - Search
                             - Blogs
+                            - About This Page
                             - Home Page Widgets Group
+                            - Archive Widgets Group
                             - Page Listing
                             - Syndication
                             - OpenID Accepted
@@ -132,6 +177,7 @@ elements:
                         order: 1000
                         widgets:
                             - Blogs
+                            - Archive Widgets Group
                             - Page Listing
                             - Syndication
                             - OpenID Accepted
@@ -142,3 +188,5 @@ elements:
                         widgets:
                             - Search
                             - Home Page Widgets Group
+                            - About This Page
+
