@@ -273,9 +273,9 @@ $guest->save or die $guest->errstr;
             text_more   => 'Both allow_pings and allow_comments are null.',
             excerpt     => 'Website Entry Excerpt 1',
             keywords    => 'Foo',
-            authored_on => '2011-01-01 00:00:00',
-            modified_on => '2011-01-01 00:00:00',
-            created_on  => '2011-01-01 00:00:00',
+            authored_on => '20110101000000',
+            modified_on => '20110101000000',
+            created_on  => '20110101000000',
         }
     );
     $e1->save or die $e1->errstr;
@@ -283,8 +283,8 @@ $guest->save or die $guest->errstr;
     my $tmpl
         = MT::Template->load( { blog_id => $blog_id, type => 'individual' } );
 
-    my $tm1 = MT::TemplateMap->new;
-    $tm1->set_values(
+    my $tm = MT::TemplateMap->new;
+    $tm->set_values(
         {   archive_type => 'Individual',
             blog_id      => $blog_id,
             build_type   => MT::PublishOption::DYNAMIC(),
@@ -292,7 +292,7 @@ $guest->save or die $guest->errstr;
             template_id  => $tmpl->id,
         }
     );
-    $tm1->save or die $tm1->errstr;
+    $tm->save or die $tm->errstr;
 
     my $fi1 = MT::FileInfo->new;
     $fi1->set_values(
@@ -302,7 +302,7 @@ $guest->save or die $guest->errstr;
             file_path =>
                 '/var/www/html/first_website/2011/01/website-entry-1.html',
             template_id    => $tmpl->id,
-            templatemap_id => $tm1->id,
+            templatemap_id => $tm->id,
             url            => '/first_website/2011/01/website-entry-1.html',
             virtual        => 1,
         }
@@ -380,12 +380,27 @@ $guest->save or die $guest->errstr;
             text_more   => 'Allow_pings is 1, allow_comments is null.',
             excerpt     => 'Website Entry Excerpt 2',
             allow_pings => 1,
-            authored_on => '2012-02-02 00:00:00',
-            modified_on => '2012-02-02 00:00:00',
-            created_on  => '2012-02-02 00:00:00',
+            authored_on => '20120202000000',
+            modified_on => '20120202000000',
+            created_on  => '20120202000000',
         }
     );
     $e2->save or die $e2->errstr;
+
+    my $fi2 = MT::FileInfo->new;
+    $fi2->set_values(
+        {   archive_type => 'Individual',
+            blog_id      => $blog_id,
+            entry_id     => $e2->id,
+            file_path =>
+                '/var/www/html/first_website/2012/02/website-entry-2.html',
+            template_id    => $tmpl->id,
+            templatemap_id => $tm->id,
+            url            => '/first_website/2012/02/website-entry-2.html',
+            virtual        => 1,
+        }
+    );
+    $fi2->save or die $fi2->errstr;
 
     my $pl2 = MT::Placement->new;
     $pl2->set_values(
@@ -410,12 +425,27 @@ $guest->save or die $guest->errstr;
             excerpt        => 'Website Entry Excerpt 3',
             allow_comments => 1,
             keywords       => 'Bar',
-            authored_on    => '2013-03-03 00:00:00',
-            modified_on    => '2013-03-03 00:00:00',
-            created_on     => '2013-03-03 00:00:00',
+            authored_on    => '20130303000000',
+            modified_on    => '20130303000000',
+            created_on     => '20130303000000',
         }
     );
     $e3->save or die $e3->errstr;
+
+    my $fi3 = MT::FileInfo->new;
+    $fi3->set_values(
+        {   archive_type => 'Individual',
+            blog_id      => $blog_id,
+            entry_id     => $e3->id,
+            file_path =>
+                '/var/www/html/first_website/2013/03/website-entry-3.html',
+            template_id    => $tmpl->id,
+            templatemap_id => $tm->id,
+            url            => '/first_website/2013/03/website-entry-3.html',
+            virtual        => 1,
+        }
+    );
+    $fi3->save or die $fi3->errstr;
 
     my $pl3 = MT::Placement->new;
     $pl3->set_values(
@@ -435,10 +465,25 @@ $guest->save or die $guest->errstr;
             status      => MT::Entry::HOLD(),
             title       => 'Website Entry 4',
             text        => 'This is website entry 4.',
-            authored_on => '2014-04-04 00:00:00',
+            authored_on => '20140404000000',
         }
     );
     $e4->save or die $e4->errstr;
+
+    my $fi4 = MT::FileInfo->new;
+    $fi4->set_values(
+        {   archive_type => 'Individual',
+            blog_id      => $blog_id,
+            entry_id     => $e4->id,
+            file_path =>
+                '/var/www/html/first_website/2014/04/website-entry-4.html',
+            template_id    => $tmpl->id,
+            templatemap_id => $tm->id,
+            url            => '/first_website/2014/04/website-entry-4.html',
+            virtual        => 1,
+        }
+    );
+    $fi4->save or die $fi4->errstr;
 
     my $e5 = $mt->model('entry')->new;
     $e5->set_values(
@@ -447,12 +492,27 @@ $guest->save or die $guest->errstr;
             status      => MT::Entry::RELEASE(),
             title       => 'Website Entry 5',
             text        => 'This is website entry 5.',
-            authored_on => '2015-05-05 00:00:00',
-            modified_on => '2015-05-05 00:00:00',
-            created_on  => '2015-05-05 00:00:00',
+            authored_on => '20150505000000',
+            modified_on => '20150505000000',
+            created_on  => '20150505000000',
         }
     );
     $e5->save or die $e5->errstr;
+
+    my $fi5 = MT::FileInfo->new;
+    $fi5->set_values(
+        {   archive_type => 'Individual',
+            blog_id      => $blog_id,
+            entry_id     => $e5->id,
+            file_path =>
+                '/var/www/html/first_website/2015/05/website-entry-5.html',
+            template_id    => $tmpl->id,
+            templatemap_id => $tm->id,
+            url            => '/first_website/2015/05/website-entry-5.html',
+            virtual        => 1,
+        }
+    );
+    $fi5->save or die $fi5->errstr;
 
     my $pl5 = MT::Placement->new;
     $pl5->set_values(
@@ -471,12 +531,27 @@ $guest->save or die $guest->errstr;
             status      => MT::Entry::RELEASE(),
             title       => 'Website Entry 6',
             text        => 'This is website entry 6.',
-            authored_on => '2016-06-06 00:00:00',
-            modified_on => '2016-06-06 00:00:00',
-            created_on  => '2016-06-06 00:00:00',
+            authored_on => '20160606000000',
+            modified_on => '20160606000000',
+            created_on  => '20160606000000',
         }
     );
     $e6->save or die $e6->errstr;
+
+    my $fi6 = MT::FileInfo->new;
+    $fi6->set_values(
+        {   archive_type => 'Individual',
+            blog_id      => $blog_id,
+            entry_id     => $e6->id,
+            file_path =>
+                '/var/www/html/first_website/2016/06/website-entry-6.html',
+            template_id    => $tmpl->id,
+            templatemap_id => $tm->id,
+            url            => '/first_website/2016/06/website-entry-6.html',
+            virtual        => 1,
+        }
+    );
+    $fi6->save or die $fi6->errstr;
 
     my $pl6 = MT::Placement->new;
     $pl6->set_values(
@@ -495,12 +570,27 @@ $guest->save or die $guest->errstr;
             status      => MT::Entry::RELEASE(),
             title       => 'Website Entry 7',
             text        => 'This is website entry 7.',
-            authored_on => '2016-06-06 01:00:00',
-            modified_on => '2016-06-06 01:00:00',
-            created_on  => '2016-06-06 01:00:00',
+            authored_on => '20160606010000',
+            modified_on => '20160606010000',
+            created_on  => '20160606010000',
         }
     );
     $e7->save or die $e7->errstr;
+
+    my $fi7 = MT::FileInfo->new;
+    $fi7->set_values(
+        {   archive_type => 'Individual',
+            blog_id      => $blog_id,
+            entry_id     => $e7->id,
+            file_path =>
+                '/var/www/html/first_website/2016/06/website-entry-7.html',
+            template_id    => $tmpl->id,
+            templatemap_id => $tm->id,
+            url            => '/first_website/2016/06/website-entry-7.html',
+            virtual        => 1,
+        }
+    );
+    $fi7->save or die $fi7->errstr;
 
     # Create comment
     my $c1 = $mt->model('comment')->new;
@@ -508,9 +598,9 @@ $guest->save or die $guest->errstr;
         {   blog_id       => $blog_id,
             entry_id      => $e1->id,
             commenter_id  => $admin->id,
-            last_moved_on => '2010-10-10 00:00:00',
+            last_moved_on => '20101010000000',
             visible       => 1,
-            junk_status   => 1,                       # NOT_JUNK
+            junk_status   => 1,                  # NOT_JUNK
         }
     );
     $c1->save or die $c1->errstr;
@@ -522,8 +612,8 @@ $guest->save or die $guest->errstr;
             tb_id         => $e2->trackback->id,
             ip            => '127.0.0.1',
             visible       => 1,
-            junk_status   => 1,                       # NOT_JUNK
-            last_moved_on => '2008-08-08 00:00:00',
+            junk_status   => 1,                    # NOT_JUNK
+            last_moved_on => '20080808000000',
             blog_name     => 'first website',
         }
     );
@@ -535,8 +625,8 @@ $guest->save or die $guest->errstr;
             tb_id         => 1,
             ip            => '127.0.0.1',
             visible       => 1,
-            junk_status   => 1,                       # NOT_JUNK
-            last_moved_on => '2009-09-09 00:00:00',
+            junk_status   => 1,                  # NOT_JUNK
+            last_moved_on => '20090909000000',
             blog_name     => 'first website',
         }
     );
@@ -958,11 +1048,13 @@ Website Entry Excerpt 1
 Bar  Foo
 
 === mt:EntryLink
---- SKIP
 --- template
 <mt:Entries><mt:EntryLink>
 </mt:Entries>
 --- expected
+http://localhost/first_website/2016/06/website-entry-7.html
+http://localhost/first_website/2016/06/website-entry-6.html
+http://localhost/first_website/2015/05/website-entry-5.html
 http://localhost/first_website/2013/03/website-entry-3.html
 http://localhost/first_website/2012/02/website-entry-2.html
 http://localhost/first_website/2011/01/website-entry-1.html
@@ -992,11 +1084,13 @@ tag:localhost,2012:/first_website//1.2
 tag:localhost,2011:/first_website//1.1
 
 === mt:EntryPermalink
---- SKIP
 --- template
 <mt:Entries><mt:EntryPermalink>
 </mt:Entries>
 --- expected
+http://localhost/first_website/2016/06/website-entry-7.html
+http://localhost/first_website/2016/06/website-entry-6.html
+http://localhost/first_website/2015/05/website-entry-5.html
 http://localhost/first_website/2013/03/website-entry-3.html
 http://localhost/first_website/2012/02/website-entry-2.html
 http://localhost/first_website/2011/01/website-entry-1.html
@@ -1273,7 +1367,6 @@ if
 http://localhost/cgi-bin/mt-tb.cgi/2
 
 === mt:EntryTrackbackData
---- SKIP
 --- template
 <mt:Entries><mt:EntryTrackbackData>
 </mt:Entries>
@@ -1284,7 +1377,7 @@ http://localhost/cgi-bin/mt-tb.cgi/2
          xmlns:dc="http://purl.org/dc/elements/1.1/">
 <rdf:Description
     rdf:about="http://localhost/first_website/2012/02/website-entry-2.html"
-    trackback:ping="http://localhost/cgi-bin/mt-tb.cgi/1"
+    trackback:ping="http://localhost/cgi-bin/mt-tb.cgi/2"
     dc:title="Website Entry 2"
     dc:identifier="http://localhost/first_website/2012/02/website-entry-2.html"
     dc:subject="Website Subcategory 2"
@@ -1292,7 +1385,6 @@ http://localhost/cgi-bin/mt-tb.cgi/2
     dc:creator="Administrator Melody"
     dc:date="2012-02-02T00:00:00+00:00" />
 </rdf:RDF>
-RDF
 -->
 
 === mt:EntryTrackbackID
