@@ -15,10 +15,10 @@ sub save_object {
     $original ||= $app->model($type)->new;
 
     run_permission_filter( $app, 'data_api_save_permission_filter',
-        $type, $obj->id )
+        $type, $obj->id, $obj, $original )
         or return;
 
-    $app->run_callbacks( 'data_api_save_filter.' . $type, $app )
+    $app->run_callbacks( 'data_api_save_filter.' . $type, $app, $obj, $original )
         or return $app->error( $app->errstr, 409 );
 
     $app->run_callbacks( 'data_api_pre_save.' . $type, $app, $obj, $original )
