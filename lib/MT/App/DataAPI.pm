@@ -705,6 +705,11 @@ sub show_error {
         $error->{code} );
 }
 
+sub publish_error {
+    require MT::App::CMS;
+    MT::App::CMS::publish_error(@_);
+}
+
 sub api {
     my ($app) = @_;
     my $path = $app->_path;
