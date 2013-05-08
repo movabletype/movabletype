@@ -213,6 +213,64 @@ window.MT.DataAPI.prototype.deleteComment = function(site_id, comment_id) {
     ].concat(args));
 }
 
+window.MT.DataAPI.prototype.listTrackbacks = function(site_id) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/trackbacks', {
+            site_id: site_id
+        })
+    ].concat(args));
+}
+
+window.MT.DataAPI.prototype.listTrackbacksForEntries = function(site_id, entry_id) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/entries/:entry_id/trackbacks', {
+            site_id: site_id,
+            entry_id: entry_id
+        })
+    ].concat(args));
+}
+
+window.MT.DataAPI.prototype.getTrackback = function(site_id, ping_id) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/trackbacks/:ping_id', {
+            site_id: site_id,
+            ping_id: ping_id
+        })
+    ].concat(args));
+}
+
+window.MT.DataAPI.prototype.updateTrackback = function(site_id, ping_id, trackback) {
+    var args = Array.prototype.slice.call(arguments, 3);
+    return this.request.apply(this, [
+        'PUT',
+        this.bindEndpointParams('/sites/:site_id/trackbacks/:ping_id', {
+            site_id: site_id,
+            ping_id: ping_id
+        })
+    ].concat(args).concat([
+        {
+            trackback: trackback
+        }
+    ]));
+}
+
+window.MT.DataAPI.prototype.deleteTrackback = function(site_id, ping_id) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    return this.request.apply(this, [
+        'DELETE',
+        this.bindEndpointParams('/sites/:site_id/trackbacks/:ping_id', {
+            site_id: site_id,
+            ping_id: ping_id
+        })
+    ].concat(args));
+}
+
 window.MT.DataAPI.prototype.statsPageviewsForPath = function(site_id) {
     var args = Array.prototype.slice.call(arguments, 1);
     return this.request.apply(this, [
