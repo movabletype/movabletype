@@ -28,10 +28,22 @@ sub create {
     my ($blog) = context_objects(@_)
         or return;
 
+    my $author = $app->user;
+
     my $orig_entry = $app->model('entry')->new;
     $orig_entry->set_values(
-        {   blog_id   => $blog->id,
-            author_id => $app->user->id,
+        {   blog_id        => $blog->id,
+            author_id      => $author->id,
+            allow_comments => $blog->allow_comments_default,
+            allow_pings    => $blog->allow_pings_default,
+            convert_breaks => $blog->convert_paras,
+            status         => (
+                (          $app->can_do('publish_own_entry')
+                        || $app->can_do('publish_all_entry')
+                )
+                ? MT::Entry::RELEASE()
+                : MT::Entry::HOLD()
+            )
         }
     );
 
