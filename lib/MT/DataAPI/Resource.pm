@@ -211,7 +211,25 @@ sub to_object {
         or return;
 
     my @fields = do {
-        my @fs = @{ $resource_data->{updatable_fields} };
+        my @fs = map {
+            my $f = $_;
+            if ( ref $f ) {
+                my $cond = 1;
+                if ( exists( $f->{condition} ) ) {
+                    if ( !ref( $f->{condition} ) ) {
+                        $f->{condition}
+                            = MT->handler_to_coderef( $f->{condition} );
+                    }
+
+                    $cond = $f->{condition}->();
+                }
+
+                $cond ? $f->{name} : ();
+            }
+            else {
+                $f;
+            }
+        } @{ $resource_data->{updatable_fields} };
         grep {
             my $name = ref($_) ? $_->{name} : $_;
             grep { $_ eq $name } @fs
