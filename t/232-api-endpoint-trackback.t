@@ -23,7 +23,7 @@ eval(
 
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
-my $author = MT->model('author')->load(1);
+my $author = MT->model('author')->load(2);
 
 my $mock_author = Test::MockModule->new('MT::Author');
 $mock_author->mock( 'is_superuser', sub {0} );
@@ -51,7 +51,7 @@ my @suite = (
         method    => 'GET',
         callbacks => [
             {   name =>
-                    'MT::App::DataAPI::data_api_view_permission_filter.trackback',
+                    'MT::App::DataAPI::data_api_view_permission_filter.ping',
                 count => 1,
             },
         ],
@@ -64,16 +64,16 @@ my @suite = (
         params    => { trackback => { status => 'Pending' } },
         callbacks => [
             {   name =>
-                    'MT::App::DataAPI::data_api_save_permission_filter.trackback',
+                    'MT::App::DataAPI::data_api_save_permission_filter.ping',
                 count => 1,
             },
-            {   name  => 'MT::App::DataAPI::data_api_save_filter.trackback',
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.ping',
                 count => 1,
             },
-            {   name  => 'MT::App::DataAPI::data_api_pre_save.trackback',
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.ping',
                 count => 1,
             },
-            {   name  => 'MT::App::DataAPI::data_api_post_save.trackback',
+            {   name  => 'MT::App::DataAPI::data_api_post_save.ping',
                 count => 1,
             },
         ],
@@ -89,10 +89,10 @@ my @suite = (
         method    => 'DELETE',
         callbacks => [
             {   name =>
-                    'MT::App::DataAPI::data_api_delete_permission_filter.trackback',
+                    'MT::App::DataAPI::data_api_delete_permission_filter.ping',
                 count => 1,
             },
-            {   name  => 'MT::App::DataAPI::data_api_post_delete.trackback',
+            {   name  => 'MT::App::DataAPI::data_api_post_delete.ping',
                 count => 1,
             },
         ],
