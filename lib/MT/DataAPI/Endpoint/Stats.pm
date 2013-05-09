@@ -13,7 +13,7 @@ sub _invoke {
     ( my $method = ( caller 1 )[3] ) =~ s/.*:://;
 
     my $provider = readied_provider( $app, $app->blog )
-        or return $app->error( 404, 'Readied provider is not found' );
+        or return $app->error( 'Readied provider is not found', 404 );
 
     my $params = {
         startDate => scalar( $app->param('startDate') ),
@@ -34,22 +34,24 @@ sub _invoke {
 
 sub pageviews_for_path {
     my ( $app, $endpoint ) = @_;
-    MT::DataAPI::Resource::Type::Raw->new(
-        fill_in_archive_info( _invoke(@_), $app->blog ) );
+    _maybe_raw( fill_in_archive_info( _invoke(@_), $app->blog ) );
 }
 
 sub visits_for_path {
     my ( $app, $endpoint ) = @_;
-    MT::DataAPI::Resource::Type::Raw->new(
-        fill_in_archive_info( _invoke(@_), $app->blog ) );
+    _maybe_raw( fill_in_archive_info( _invoke(@_), $app->blog ) );
 }
 
 sub pageviews_for_date {
-    MT::DataAPI::Resource::Type::Raw->new( _invoke(@_) );
+    _maybe_raw( _invoke(@_) );
 }
 
 sub visits_for_date {
-    MT::DataAPI::Resource::Type::Raw->new( _invoke(@_) );
+    _maybe_raw( _invoke(@_) );
+}
+
+sub _maybe_raw {
+    $_[0] ? MT::DataAPI::Resource::Type::Raw->new( $_[0] ) : ();
 }
 
 sub fill_in_archive_info {
