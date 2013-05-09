@@ -7,6 +7,13 @@ use URI;
 use MT::Stats;
 use MT::DataAPI::Resource;
 
+sub provider {
+    my ( $app, $endpoint ) = @_;
+
+    readied_provider( $app, $app->blog )
+        || $app->error( 'Readied provider is not found', 404 );
+}
+
 sub _invoke {
     my ( $app, $endpoint ) = @_;
 

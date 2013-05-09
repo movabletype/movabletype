@@ -271,6 +271,16 @@ window.MT.DataAPI.prototype.deleteTrackback = function(site_id, ping_id) {
     ].concat(args));
 }
 
+window.MT.DataAPI.prototype.statsProvider = function(site_id) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/stats/provider', {
+            site_id: site_id
+        })
+    ].concat(args));
+}
+
 window.MT.DataAPI.prototype.statsPageviewsForPath = function(site_id) {
     var args = Array.prototype.slice.call(arguments, 1);
     return this.request.apply(this, [

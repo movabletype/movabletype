@@ -20,7 +20,7 @@ sub readied_provider {
 
     for my $k ( keys %providers ) {
         if ( $providers{$k}{provider}->is_ready( $app, $blog ) ) {
-            return $providers{$k}{provider}->new($blog);
+            return $providers{$k}{provider}->new($k, $blog);
         }
     }
 

@@ -15,7 +15,7 @@ class Stats {
             }
 
             if ($provider::is_ready($blog)) {
-                return new $provider($blog);
+                return new $provider($id, $blog);
             }
         }
 
@@ -28,9 +28,11 @@ class Stats {
 }
 
 class StatsBaseProvider {
+    public $id;
     public $blog;
 
-    public function __construct ($blog) {
+    public function __construct ($id, $blog) {
+        $this->id   = $id;
         $this->blog = $blog;
     }
 }

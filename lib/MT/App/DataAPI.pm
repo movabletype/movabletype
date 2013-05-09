@@ -282,6 +282,11 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete a trackback.', },
         },
+        {   id      => 'stats_provider',
+            route   => '/sites/:site_id/stats/provider',
+            version => 1,
+            handler => "${pkg}Stats::provider",
+        },
         {   id      => 'stats_pageviews_for_path',
             route   => '/sites/:site_id/stats/path/pageviews',
             version => 1,
@@ -500,7 +505,10 @@ sub object_to_resource {
     my ( $app, $res, $fields ) = @_;
     my $ref = ref $res;
 
-    if ( UNIVERSAL::isa( $res, 'MT::Object' )
+    if ( UNIVERSAL::can( $res, 'to_resource' ) ) {
+        $res->to_resource($fields);
+    }
+    elsif ( UNIVERSAL::isa( $res, 'MT::Object' )
         || $ref eq 'MT::DataAPI::Resource::Type::ObjectList' )
     {
         MT::DataAPI::Resource->from_object( $res, $fields );
@@ -763,9 +771,9 @@ sub api {
 
     my $response_ref = ref $response;
 
-    if ( UNIVERSAL::isa( $response, 'MT::Object' )
-        || $response_ref
-        =~ m/\A(?:HASH|ARRAY|MT::DataAPI::Resource::Type::)/ )
+    if (   UNIVERSAL::isa( $response, 'MT::Object' )
+        || $response_ref =~ m/\A(?:HASH|ARRAY|MT::DataAPI::Resource::Type::)/
+        || UNIVERSAL::can( $response, 'to_resource' ) )
     {
         my $format   = $app->current_format;
         my $resource = $app->object_to_resource( $response,
