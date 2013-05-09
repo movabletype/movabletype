@@ -25,7 +25,7 @@ sub _get_user {
 sub get {
     my ( $app, $endpoint ) = @_;
 
-    my $user = _get_user($app)
+    my $user = _get_user(@_)
         or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
@@ -48,10 +48,10 @@ sub update {
         'author', $user->id )
         or return $app->error(403);
 
-    save_object( $app, $new_user, $user )
+    save_object( $app, 'author', $new_user, $user )
         or return;
 
-    $user;
+    $new_user;
 }
 
 1;
