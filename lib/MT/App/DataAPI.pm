@@ -527,7 +527,7 @@ sub mt_authorization_header {
     my ($app) = @_;
 
     my $header = $app->get_header('X-MT-Authorization')
-        or undef;
+        or return undef;
 
     my %values = ();
 
