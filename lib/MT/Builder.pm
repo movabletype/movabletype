@@ -328,7 +328,7 @@ sub _consume_up_to {
     my ( $ctx, $text, $start, $stoptag ) = @_;
     my $whole_tag;
     ( pos $$text ) = $start;
-    while ( $$text =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:[^>]*?)[\$/]?>)!gi ) {
+    while ( $$text =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:<[^>]+?>|[^>])*?[\$/]?>)!gi ) {
         $whole_tag = $1;
         my ( $prefix, $tag ) = ( $2, $3 );
 
@@ -342,7 +342,7 @@ sub _consume_up_to {
                 if lc($tag) eq lc($stoptag);
             last;
         }
-        elsif ( $whole_tag !~ m|/>| ) {
+        elsif ( $whole_tag !~ m|/>\z| ) {
             my ( $sec_end, $end_tag )
                 = _consume_up_to( $ctx, $text, $end, $tag );
             last if !$sec_end;
