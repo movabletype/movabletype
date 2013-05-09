@@ -7,6 +7,7 @@ use lib qw(lib t/lib ../lib);
 
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $ENV{MT_APP}    = 'MT::App::CMS';
 }
 
 use IPC::Open2;
@@ -17,15 +18,19 @@ plan tests => 2 * blocks;
 use MT;
 use MT::PublishOption;
 use MT::Test qw(:app :db);
-my $app = MT->instance;
-$app->config->AllowComments(1);
+my $app    = MT->instance;
+my $config = $app->config;
+$config->AllowComments(1);
+$config->StaticFilePath('./mt-static');
+delete $app->{__static_file_path};
 
 my $blog_id       = 1;                                        # First Website
 my $first_website = $app->model('website')->load($blog_id);
 $first_website->set_values(
-    {   allow_reg_comments   => 1,
-        remove_auth_token    => 'token',
-        allow_unreg_comments => 1,
+    {   allow_reg_comments       => 1,
+        remote_auth_token        => 'token',
+        allow_unreg_comments     => 1,
+        commenter_authenticators => 'MovableType,TypeKey',
     }
 );
 $first_website->save or die $first_website->errstr;
@@ -43,9 +48,9 @@ $userpic->set_values(
     {   blog_id   => 0,
         class     => 'image',
         label     => 'Userpic',
-        file_path => './t/userpic.jpg',
-        file_name => 'userpic.jpg',
-        url       => '%r/userpic.jpg',
+        file_path => './mt-static/images/logo/movable-type-logo-system.png',
+        file_name => 'movable-type-logo-system.png',
+        url       => '%s/images/logo/movable-type-logo-system.png',
     }
 );
 $userpic->save or die $mt->errstr;
@@ -63,6 +68,9 @@ $admin->save or die $admin->errstr;
 my $guest = $mt->model('author')->new;
 $guest->set_values(
     {   name            => 'Guest',
+        nickname        => 'Guest',
+        email           => 'guest@localhost',
+        url             => 'http://localhost/~guest/',
         password        => '',
         type            => MT::Author::AUTHOR(),
         locked_out_time => 0,
@@ -598,12 +606,82 @@ $guest->save or die $guest->errstr;
         {   blog_id       => $blog_id,
             entry_id      => $e1->id,
             commenter_id  => $admin->id,
+            author        => $admin->nickname,
+            email         => $admin->email,
+            url           => $admin->url,
             last_moved_on => '20101010000000',
             visible       => 1,
             junk_status   => 1,                  # NOT_JUNK
+            ip            => '127.0.0.1',
+            text          => 'Comment 1',
+            created_on    => '20101010000000',
+            modified_on   => '20101010000000',
         }
     );
     $c1->save or die $c1->errstr;
+
+    my $c2 = $mt->model('comment')->new;
+    $c2->set_values(
+        {   blog_id       => $blog_id,
+            entry_id      => $e1->id,
+            commenter_id  => $guest->id,
+            author        => $guest->nickname,
+            email         => $guest->email,
+            url           => $guest->url,
+            parent_id     => $c1->id,
+            last_moved_on => '20111111000000',
+            visible       => 1,
+            junk_status   => 1,                  # NOT_JUNK
+            ip            => '192.168.0.1',
+            text          => 'Comment 2',
+            created_on    => '20111111000000',
+            modified_on   => '20111111000000',
+        }
+    );
+    $c2->save or die $c2->errstr;
+
+    my $c3 = $mt->model('comment')->new;
+    $c3->set_values(
+        {   blog_id       => $blog_id,
+            entry_id      => $e1->id,
+            commenter_id  => $admin->id,
+            author        => $admin->nickname,
+            email         => $admin->email,
+            url           => $admin->url,
+            parent_id     => $c2->id,
+            last_moved_on => '20121212000000',
+            visible       => 1,
+            junk_status   => 1,                  # NOT_JUNK
+            ip            => '127.0.0.1',
+            text          => 'Comment 3',
+            created_on    => '20121212000000',
+            modified_on   => '20121212000000',
+        }
+    );
+    $c3->save or die $c3->errstr;
+
+    # Create comment score
+    my $objscore3 = $mt->model('objectscore')->new;
+    $objscore3->set_values(
+        {   author_id => $admin->id,
+            namespace => 'test_namespace',
+            object_ds => 'comment',
+            object_id => $c1->id,
+            score     => 1,
+        }
+    );
+    $objscore3->save or die $objscore3->errstr;
+
+    my $objscore4 = $mt->model('objectscore')->new;
+    $objscore4->set_values(
+        {   author_id => $admin->id,
+            namespace => 'test_namespace',
+            object_ds => 'comment',
+            object_id => $c1->id,
+            score     => 3,
+        }
+    );
+    $objscore4->save or die $objscore4->errstr;
 
     # Create tbping
     my $tbp1 = $mt->model('tbping')->new;
@@ -720,6 +798,7 @@ include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
 
 $mt = MT::get_instance(1, $MT_CONFIG);
+$mt->config('SupportDirectoryPath', './mt-static');
 $mt->init_plugins();
 
 $ctx =& $mt->context();
@@ -1288,24 +1367,28 @@ http://localhost/first_website/
 --- expected
 6
 
-=== mt:CommentBlogID
+=== mt:Comments, mt:CommentBlogID
 --- template
 <mt:Comments><mt:CommentBlogID>
 </mt:Comments>
 --- expected
+1
+1
 1
 
 === mt:BlogCommentCount
 --- template
 <mt:BlogCommentCount>
 --- expected
-1
+3
 
 === mt:CommentEntry
 --- template
 <mt:Comments><mt:CommentEntry><mt:EntryTitle>
 </mt:CommentEntry></mt:Comments>
 --- expected
+Website Entry 1
+Website Entry 1
 Website Entry 1
 
 === mt:EntryIfAllowComments
@@ -1324,8 +1407,12 @@ if
 
 === mt:IfCommenterIsEntryAuthor
 --- template
-<mt:Comments><mt:IfCommenterIsEntryAuthor>if<mt:Else>else</mt:IfCommenterIsEntryAuthor></mt:Comments>
+<mt:Comments><mt:IfCommenterIsEntryAuthor>if
+<mt:Else>else
+</mt:IfCommenterIsEntryAuthor></mt:Comments>
 --- expected
+if
+else
 if
 
 === mt:CommentEntryID
@@ -1333,6 +1420,8 @@ if
 <mt:Comments><mt:CommentEntryID>
 </mt:Comments>
 --- expected
+1
+1
 1
 
 === mt:EntryCommentCount
@@ -1345,7 +1434,7 @@ if
 0
 0
 0
-1
+3
 
 === mt:EntryTrackbackCount
 --- template
@@ -1733,9 +1822,9 @@ Website Category 1
 <mt:Categories><mt:CategoryCommentCount>
 </mt:Categories>
 --- expected
-1
+3
 0
-1
+3
 0
 0
 0
@@ -1784,15 +1873,24 @@ Userpic
 <mt:Entries><mt:EntryAuthorUserpic>
 </mt:Entries>
 --- expected
-(dummy)
+<img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="25" height="25" alt="" />
+<img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="25" height="25" alt="" />
+<img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="25" height="25" alt="" />
+<img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="25" height="25" alt="" />
+<img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="25" height="25" alt="" />
+<img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="25" height="25" alt="" />
 
 === mt:EntryAuthorUserpicURL
---- SKIP
 --- template
 <mt:Entries><mt:EntryAuthorUserpicURL>
 </mt:Entries>
 --- expected
-(dummy)
+/mt-static/support/assets_c/userpics/userpic-1-100x100.png
+/mt-static/support/assets_c/userpics/userpic-1-100x100.png
+/mt-static/support/assets_c/userpics/userpic-1-100x100.png
+/mt-static/support/assets_c/userpics/userpic-1-100x100.png
+/mt-static/support/assets_c/userpics/userpic-1-100x100.png
+/mt-static/support/assets_c/userpics/userpic-1-100x100.png
 
 === mt:EntryTags
 --- template
@@ -1875,5 +1973,600 @@ Website Entry 1
 --- expected
 5
 
+=== mt:IfExternalUserManagement
+--- template
+<mt:IfExternalUserManagement>if<mt:Else>else</mt:IfExternalUserManagement>
+--- expected
+else
+
+=== mt:IfCommenterRegistrationAllowed
+--- template
+<mt:IfCommenterRegistrationAllowed>if</mt:IfCommenterRegistrationAllowed>
+--- expected
+if
+
+=== mt:IfCommenterTrusted
+--- template
+<mt:Comments><mt:IfCommenterTrusted><mt:CommenterName>
+<mt:Else>else
+</mt:IfCommenterTrusted></mt:Comments>
+--- expected
+Administrator Melody
+Guest
+Administrator Melody
+
+=== mt:CommenterIfTrusted
+--- template
+<mt:Comments><mt:CommenterIfTrusted><mt:CommenterName>
+<mt:Else>else
+</mt:CommenterIfTrusted></mt:Comments>
+--- expected
+Administrator Melody
+Guest
+Administrator Melody
+
+=== mt:CommenterIsAuthor
+--- template
+<mt:Comments><mt:IfCommenterIsAuthor><mt:CommenterName>
+<mt:Else>else
+</mt:IfCommenterIsAuthor></mt:Comments>
+--- expected
+Administrator Melody
+Guest
+Administrator Melody
+
+=== mt:IfCommentsModerated
+--- template
+<mt:IfCommentsModerated>if<mt:Else>else</mt:IfCommentsModerated>
+--- expected
+if
+
+=== mt:BlogIfCommentsOpen
+--- template
+<mt:BlogIfCommentsOpen>if<mt:Else>else</mt:BlogIfCommentsOpen>
+--- expected
+if
+
+=== mt:WebsiteIfCommentsOpen
+--- template
+<mt:WebsiteIfCommentsOpen>if<mt:Else>else</mt:WebsiteIfCommentsOpen>
+--- expected
+if
+
+=== mt:CommentsHeader, mt:CommentsFooter
+--- template
+<mt:Comments><mt:CommentsHeader>-- header --
+</mt:CommentsHeader><mt:CommentName>
+<mt:CommentsFooter>-- footer --
+</mt:CommentsFooter></mt:Comments>
+--- expected
+-- header --
+Administrator Melody
+Guest
+Administrator Melody
+-- footer --
+
+=== mt:CommentIfModerated
+--- template
+<mt:Comments><mt:CommentIfModerated>if<mt:Else>else</mt:CommentIfModerated>
+</mt:Comments>
+--- expected
+if
+if
+if
+
+=== mt:CommentParent
+--- template
+<mt:Comments><mt:CommentParent><mt:CommentName></mt:CommentParent>
+</mt:Comments>
+--- expected
+Administrator Melody
+Guest
+
+=== mt:CommentReplies
+--- template
+<mt:Comments><mt:CommentReplies><mt:CommentName></mt:CommentReplies>
+</mt:Comments>
+--- expected
+Guest
+Administrator Melody
+
+=== mt:IfCommentParent
+--- template
+<mt:Comments><mt:IfCommentParent>if<mt:Else>else</mt:IfCommentParent>
+</mt:Comments>
+--- expected
+else
+if
+if
+
+=== mt:IfCommentReplies
+--- template
+<mt:Comments><mt:IfCommentReplies>if<mt:Else>else</mt:IfCommentReplies>
+</mt:Comments>
+--- expected
+if
+if
+else
+
+=== mt:IfRegistrationRequired
+--- template
+<mt:IfRegistrationRequired>required<mt:Else>not required</mt:IfRegistrationRequired>
+--- expected
+not required
+
+=== mt:IfRegistrationNotRequired
+--- template
+<mt:IfRegistrationNotRequired>not required<mt:Else>required</mt:IfRegistrationNotRequired>
+--- expected
+not required
+
+=== mt:IfRegistrationAllowed
+--- template
+<mt:IfRegistrationAllowed>allowed<mt:Else>not allowed</mt:IfRegistrationAllowed>
+--- expected
+allowed
+
+=== mt:IfTypeKeyToken
+--- template
+<mt:IfTypeKeyToken>if<mt:Else>else</mt:IfTypeKeyToken>
+--- expected
+if
+
+=== mt:IfAllowCommentHTML
+--- template
+<mt:IfAllowCommentHTML>if<mt:Else>else</mt:IfAllowCommentHTML>
+--- expected
+if
+
+=== mt:IfCommentsAllowed
+--- template
+<mt:IfCommentsAllowed>if<mt:Else>else</mt:IfCommentsAllowed>
+--- expected
+if
+
+=== mt:IfCommentsAccepted
+--- template
+<mt:IfCommentsAccepted>if<mt:Else>else</mt:IfCommentsAccepted>
+--- expected
+if
+
+=== mt:IfCommentsActive
+--- template
+<mt:IfCommentsActive>if<mt:Else>else</mt:IfCommentsActive>
+--- expected
+if
+
+=== mt:IfNeedEmail
+--- template
+<mt:IfNeedEmail>if<mt:Else>else</mt:IfNeedEmail>
+--- expected
+else
+
+=== mt:IfRequireCommentEmails
+--- template
+<mt:IfRequireCommentEmails>if<mt:Else>else</mt:IfRequireCommentEmails>
+--- expected
+else
+
+=== mt:CommentID, mt:CommenterUserpicAsset
+--- template
+<mt:Comments><mt:CommentID>: <mt:CommenterUserpicAsset><mt:AssetLabel></mt:CommenterUserpicAsset>
+</mt:Comments>
+--- expected
+1: Userpic
+2: 
+3: Userpic
+
+=== mt:AuthorCommentCount
+--- SKIP
+--- template
+<mt:Authors><mt:AuthorCommentCount>
+</mt:Authors>
+--- expected
+1
+
+=== mt:CommenterNameChunk
+--- SKIP
+--- template
+<mt:Comments><mt:CommenterNameChunk>
+</mt:Comments>
+--- expected
+(no php code)
+
+=== mt:CommenterUsername
+--- template
+<mt:Comments><mt:CommenterUsername>
+</mt:Comments>
+--- expected
+Melody
+Guest
+Melody
+
+=== mt:CommenterName
+--- template
+<mt:Comments><mt:CommenterName>
+</mt:Comments>
+--- expected
+Administrator Melody
+Guest
+Administrator Melody
+
+=== mt:CommenterEmail
+--- template
+<mt:Comments><mt:CommenterEmail>
+</mt:Comments>
+--- expected
+melody@localhost
+guest@localhost
+melody@localhost
+
+=== mt:CommenterAuthType
+--- template
+<mt:Comments><mt:CommenterAuthType>
+</mt:Comments>
+--- expected
+MT
+
+MT
+
+=== mt:CommenterAuthIconURL
+--- template
+<mt:Comments><mt:CommenterAuthIconURL>
+</mt:Comments>
+--- expected
+http://localhost/mt-static/images/comment/mt_logo.png
+
+http://localhost/mt-static/images/comment/mt_logo.png
+
+=== mt:CommenterID
+--- template
+<mt:Comments><mt:CommenterID>
+</mt:Comments>
+--- expected
+1
+2
+1
+
+=== mt:CommenterURL
+--- template
+<mt:Comments><mt:CommenterURL>
+</mt:Comments>
+--- expected
+http://localhost/~melody/
+http://localhost/~guest/
+http://localhost/~melody/
+
+=== mt:UserSessionState
+--- SKIP
+--- template
+<mt:UserSessionState>
+--- expected
+(no php code)
+
+=== mt:UserSessionCookieTimeout
+--- template
+<mt:UserSessionCookieTimeout>
+--- expected
+14400
+
+=== mt:UserSessionCookieName
+--- template
+<mt:UserSessionCookieName>
+--- expected
+mt_blog_user
+
+=== mt:UserSessionCookiePath
+--- template
+<mt:UserSessionCookiePath>
+--- expected
+/
+
+=== mt:UserSessionCookieDomain
+--- template
+<mt:UserSessionCookieDomain>
+--- expected
+.localhost
+
+=== mt:CommentName
+--- template
+<mt:Comments><mt:CommentName>
+</mt:Comments>
+--- expected
+Administrator Melody
+Guest
+Administrator Melody
+
+=== mt:CommentIP
+--- template
+<mt:Comments><mt:CommentIP>
+</mt:Comments>
+--- expected
+127.0.0.1
+192.168.0.1
+127.0.0.1
+
+=== mt:CommentAuthor
+--- template
+<mt:Comments><mt:CommentAuthor>
+</mt:Comments>
+--- expected
+Administrator Melody
+Guest
+Administrator Melody
+
+=== mt:CommentAuthorLink
+--- template
+<mt:Comments><mt:CommentAuthorLink>
+</mt:Comments>
+--- expected
+<a title="http://localhost/~melody/" href="http://localhost/~melody/">Administrator Melody</a>
+<a title="http://localhost/~guest/" href="http://localhost/~guest/">Guest</a>
+<a title="http://localhost/~melody/" href="http://localhost/~melody/">Administrator Melody</a>
+
+=== mt:CommentAuthorIdentity
+--- template
+<mt:Comments><mt:CommentAuthorIdentity>
+</mt:Comments>
+--- expected
+<a class="commenter-profile" href="http://localhost/~melody/"><img alt="" src="http://localhost/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>
+<a class="commenter-profile" href="http://localhost/~guest/"><img alt="" src="http://localhost/mt-static/images/nav-commenters.gif" width="16" height="16" /></a>
+<a class="commenter-profile" href="http://localhost/~melody/"><img alt="" src="http://localhost/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>
+
+=== mt:CommentEmail
+--- template
+<mt:Comments><mt:CommentEmail>
+</mt:Comments>
+--- expected
+melody@localhost
+guest@localhost
+melody@localhost
+
+=== mt:CommentLink
+--- template
+<mt:Comments><mt:CommentLink>
+</mt:Comments>
+--- expected
+http://localhost/first_website/2011/01/website-entry-1.html#comment-1
+http://localhost/first_website/2011/01/website-entry-1.html#comment-2
+http://localhost/first_website/2011/01/website-entry-1.html#comment-3
+
+=== mt:CommentURL
+--- template
+<mt:Comments><mt:CommentURL>
+</mt:Comments>
+--- expected
+http://localhost/~melody/
+http://localhost/~guest/
+http://localhost/~melody/
+
+=== mt:CommentBody
+--- template
+<mt:Comments><mt:CommentBody>
+</mt:Comments>
+--- expected
+<p>Comment 1</p>
+<p>Comment 2</p>
+<p>Comment 3</p>
+
+=== mt:CommentOrderNumber
+--- template
+<mt:Comments><mt:CommentOrderNumber>
+</mt:Comments>
+--- expected
+1
+2
+3
+
+=== mt:CommentDate
+--- template
+<mt:Comments><mt:CommentDate>
+</mt:Comments>
+--- expected
+October 10, 2010 12:00 AM
+November 11, 2011 12:00 AM
+December 12, 2012 12:00 AM
+
+=== mt:CommentParentID
+--- template
+<mt:Comments><mt:CommentParentID>
+</mt:Comments>
+--- expected
+1
+2
+
+=== mt:CommentReplyToLink
+--- template
+<mt:Comments><mt:CommentReplyToLink>
+</mt:Comments>
+--- expected
+<a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(1, 'Administrator Melody')">Reply</a>
+<a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(2, 'Guest')">Reply</a>
+<a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(3, 'Administrator Melody')">Reply</a>
+
+=== mt:CommentPreviewAuthor
+--- SKIP
+--- template
+<mt:Comments><mt:CommentPreviewAuthor>
+</mt:Comments>
+--- expected
+(no php code)
+
+=== mt:CommentPreviewIP
+--- SKIP
+--- template
+<mt:Comments><mt:CommentPreviewIP>
+</mt:Comments>
+--- expected
+(no php code)
+
+=== mt:CommentPreviewAuthorLink
+--- SKIP
+--- template
+--- expected
+
+=== mt:CommentPreviewEmail
+--- SKIP
+--- template
+--- expected
+
+=== mt:CommentPreviewURL
+--- SKIP
+--- template
+--- expected
+
+=== mt:CommentPreviewBody
+--- SKIP
+--- template
+--- expected
+
+=== mt:CommentPreviewDate
+--- SKIP
+--- template
+--- expected
+
+=== mt:CommentPreviewState
+--- SKIP
+--- template
+--- expected
+
+=== mt:CommentPreviewIsStatic
+--- SKIP
+--- template
+--- expected
+
+=== mt:CommentRepliesRecurse
+--- template
+<mt:Comments><mt:CommentReplies><mt:CommentName>
+<mt:CommentRepliesRecurse></mt:CommentReplies></mt:Comments>
+--- expected
+Guest
+Administrator Melody
+Administrator Melody
+
+=== mt:WebsiteCommentCount
+--- template
+<mt:WebsiteCommentCount>
+--- expected
+3
+
+=== mt:TypeKeyToken
+--- template
+<mt:TypeKeyToken>
+--- expected
+token
+
+=== mt:CommentFields
+--- SKIP
+--- template
+<mt:CommentFields>
+--- expected
+(deprecated)
+
+=== mt:RemoteSignOutLink
+--- SKIP
+--- template
+<mt:RemoteSignOutLink>
+--- expected
+(deprecated)
+
+=== mt:RemoteSignInLink
+--- SKIP
+--- template
+<mt:RemoteSignInLink>
+--- expected
+(deprecated)
+
+=== mt:SignOutLink
+--- SKIP
+--- template
+<mt:SignOutLink>
+--- expected
+http://localhost/cgi-bin/mt-cp.cgi?__mode=logout&static=0&blog_id=1
+
+=== mt:SignInLink
+--- SKIP
+--- template
+<mt:SignInLink>
+--- expected
+http://localhost/cgi-bin/mt-cp.cgi?__mode=login&blog_id=1
+
+=== mt:SignOnURL
+--- SKIP
+--- template
+<mt:SignOnURL>
+--- expected
+https://www.typekey.com/t/typekey/login?
+
+=== mt:CommenterUserpic
+--- SKIP
+--- template
+<mt:Comments><mt:CommenterUserpic>
+</mt:Comments>
+--- expected
+<img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="100" height="100" alt="" />
+
+<img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="100" height="100" alt="" />
+
+=== mt:CommenterUserpicURL
+--- template
+<mt:Comments><mt:CommenterUserpicURL>
+</mt:Comments>
+--- expected
+/mt-static/support/assets_c/userpics/userpic-1-100x100.png
+
+/mt-static/support/assets_c/userpics/userpic-1-100x100.png
+
+=== mt:CommentScore
+--- template
+<mt:Comments><mt:CommentScore namespace="test_namespace">
+</mt:Comments>
+--- expected
+4
+0
+0
+
+=== mt:CommentScoreHigh
+--- template
+<mt:Comments><mt:CommentScoreHigh namespace="test_namespace">
+</mt:Comments>
+--- expected
+3
+0
+0
+
+=== mt:CommentScoreLow
+--- template
+<mt:Comments><mt:CommentScoreLow namespace="test_namespace">
+</mt:Comments>
+--- expected
+1
+0
+0
+
+=== mt:CommentScoreAvg
+--- template
+<mt:Comments><mt:CommentScoreAvg namespace="test_namespace">
+</mt:Comments>
+--- expected
+2.00
+0
+0
+
+=== mt:CommentScoreCount
+--- template
+<mt:Comments><mt:CommentScoreCount namespace="test_namespace">
+</mt:Comments>
+--- expected
+2
+0
+0
+
+=== mt:CommentRank
+--- template
+<mt:Comments><mt:CommentRank namespace="test_namespace">
+</mt:Comments>
+--- expected
+5
 
 
