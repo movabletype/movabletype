@@ -16,7 +16,7 @@ sub _invoke {
         or return $app->error( 404, 'Readied provider is not found' );
 
     my $params = {
-        startDate => scalar( $app->param('startSate') ),
+        startDate => scalar( $app->param('startDate') ),
         endDate   => scalar( $app->param('endDate') ),
         limit     => scalar( $app->param('limit') ),
     };
