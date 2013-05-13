@@ -133,6 +133,11 @@ sub list_props {
                 return @cats;
             },
         },
+        content => {
+            base      => '__virtual.content',
+            fields    => [qw(label basename)],
+            condition => sub {0},
+        },
     };
 }
 

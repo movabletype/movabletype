@@ -148,6 +148,23 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete an entry.', },
         },
+        {   id      => 'list_categories',
+            route   => '/sites/:site_id/categories',
+            method  => 'GET',
+            version => 1,
+            handler => "${pkg}Category::list",
+            param   => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'custom_sort',
+                sortOrder    => 'ascend',
+                searchFields => 'label,basename',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of categories.',
+            },
+        },
         {   id      => 'list_comments',
             route   => '/sites/:site_id/comments',
             method  => 'GET',

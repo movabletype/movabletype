@@ -134,6 +134,16 @@ window.MT.DataAPI.prototype.deleteEntry = function(site_id, entry_id) {
     ].concat(args));
 }
 
+window.MT.DataAPI.prototype.listCategories = function(site_id) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:site_id/categories', {
+            site_id: site_id
+        })
+    ].concat(args));
+}
+
 window.MT.DataAPI.prototype.listComments = function(site_id) {
     var args = Array.prototype.slice.call(arguments, 1);
     return this.request.apply(this, [
