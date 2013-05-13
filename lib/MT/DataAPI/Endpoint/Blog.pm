@@ -21,4 +21,17 @@ sub list {
     };
 }
 
+sub get {
+    my ( $app, $endpoint ) = @_;
+
+    my ($blog) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'blog', $blog->id, obj_promise($blog) )
+        or return;
+
+    $blog;
+}
+
 1;

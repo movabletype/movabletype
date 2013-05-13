@@ -63,6 +63,16 @@ window.MT.DataAPI.prototype.listBlogs = function(user_id) {
     ].concat(args));
 }
 
+window.MT.DataAPI.prototype.getBlog = function(blog_id) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return this.request.apply(this, [
+        'GET',
+        this.bindEndpointParams('/sites/:blog_id', {
+            blog_id: blog_id
+        })
+    ].concat(args));
+}
+
 window.MT.DataAPI.prototype.listEntries = function(site_id) {
     var args = Array.prototype.slice.call(arguments, 1);
     return this.request.apply(this, [

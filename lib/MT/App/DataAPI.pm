@@ -83,6 +83,15 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of blogs.',
             },
         },
+        {   id          => 'get_blog',
+            route       => '/sites/:blog_id',
+            version     => 1,
+            handler     => "${pkg}Blog::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested blog.',
+            },
+        },
         {   id      => 'list_entries',
             route   => '/sites/:site_id/entries',
             method  => 'GET',
