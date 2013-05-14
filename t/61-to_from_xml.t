@@ -149,13 +149,6 @@ sub checkthemout {
                                 $parent_class = [$parent_class];
                             }
                         }
-                        if (   !$parent_class
-                            && ( $col eq 'entry_id' )
-                            && ( 'MT::Trackback' eq $class ) )
-                        {
-                            $parent_class
-                                = [ MT->model('entry'), MT->model('page') ];
-                        }
                         if ( $parent_class
                             && ( 'ARRAY' eq ref($parent_class) ) )
                         {
@@ -313,6 +306,11 @@ sub finish {
     MT::Association->remove(
         { author_id => $mel->id, blog_id => 1, role_id => $au->id },
     );
+
+    my @website_ids = map { $_->id } MT::Website->load();
+    my $terms = { blog_id => \@website_ids };
+    MT::Entry->remove($terms);
+    MT::Category->remove($terms);
 }
 
 sub setup {
@@ -361,4 +359,45 @@ sub setup {
 
     my $r3 = MT::Role->load( { name => 'Author' } );
     MT::Association->link( $mel => $r3 => $b1 );     # Melody is a author
+
+    # Add website records
+    my $w = MT::Website->load();
+
+    my $w_cat_tmpl
+        = MT::Template->load(
+        { blog_id => $w->id, identifier => 'category_entry_listing' } );
+    my $w_tm_cat = MT::TemplateMap->load(
+        {   archive_type => 'Category',
+            blog_id      => $w->id,
+            template_id  => $w_cat_tmpl->id
+        }
+    );
+    my $w_cat1 = MT::Test::Permission->make_category( blog_id => $w->id, );
+    my $w_fi_cat1 = MT::Test::Permission->make_fileinfo(
+        archive_type   => 'Category',
+        blog_id        => $w->id,
+        template_id    => $w_cat_tmpl->id,
+        templatemap_id => $w_tm_cat->id,
+    );
+
+    my $w_e_tmpl
+        = MT::Template->load( { blog_id => $w->id, type => 'individual' } );
+    my $w_tm_e = MT::TemplateMap->load(
+        {   archive_type => 'Individual',
+            blog_id      => $w->id,
+            template_id  => $w_e_tmpl->id
+        }
+    );
+    my $w_e1 = MT::Test::Permission->make_entry( blog_id => $w->id, );
+    my $w_fi_e1 = MT::Test::Permission->make_fileinfo(
+        archive_type   => 'Individual',
+        blog_id        => $w->id,
+        template_id    => $w_e_tmpl->id,
+        templatemap_id => $w_tm_e->id,
+    );
+    my $w_placement = MT::Test::Permission->make_placement(
+        blog_id     => $w->id,
+        category_id => $w_cat1->id,
+        entry_id    => $w_e1->id,
+    );
 }
