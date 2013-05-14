@@ -309,7 +309,14 @@ sub finish {
 
     my @website_ids = map { $_->id } MT::Website->load();
     my $terms = { blog_id => \@website_ids };
-    MT::Entry->remove($terms);
+    my @entries = MT::Entry->load($terms);
+    foreach my $e (@entries) {
+        foreach my $c ( @{ $e->comments } ) {
+            MT::ObjectScore->remove(
+                { object_ds => 'comment', object_id => $c->id } );
+        }
+        $e->remove();
+    }
     MT::Category->remove($terms);
 }
 
@@ -399,5 +406,23 @@ sub setup {
         blog_id     => $w->id,
         category_id => $w_cat1->id,
         entry_id    => $w_e1->id,
+    );
+
+    # Create comment
+    my $w_cmt1 = MT::Test::Permission->make_comment(
+        blog_id  => $w->id,
+        entry_id => $w_e1->id,
+    );
+    my $w_cms1_os1 = MT::Test::Permission->make_objectscore(
+        object_ds => 'comment',
+        object_id => $w_cmt1->id,
+        score     => 1,
+        author_id => $chuck->id,
+    );
+    my $w_cmt1_os2 = MT::Test::Permission->make_objectscore(
+        object_ds => 'comment',
+        object_id => $w_cmt1->id,
+        score     => 3,
+        author_id => $bob->id,
     );
 }

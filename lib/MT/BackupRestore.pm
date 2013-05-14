@@ -52,7 +52,6 @@ sub core_backup_instructions {
         'placement'   => { 'order' => 510 },
         'trackback'   => { 'order' => 510 },
         'objecttag'   => { 'order' => 510 },
-        'objectscore' => { 'order' => 510 },
         'objectasset' => { 'order' => 510 },
         'filter'      => { 'order' => 510 },
 
@@ -65,6 +64,9 @@ sub core_backup_instructions {
         # because saving a comment ultimately triggers
         # MT::TBPing::save.
         'comment' => { 'order' => 530 },
+
+        # ObjetScore should be backed up after Comment.
+        'objectscore' => { 'order' => 540 },
 
         # Session, config and TheSchwartz packages are never backed up.
         'session'       => { 'skip' => 1 },
