@@ -488,7 +488,7 @@
      help_page="entries"
      help_section="date">
     <div class="date-time-fields">
-      <div id="unpublished-on" class="mt-edit-inputblock">
+      <div id="unpublished-on" class="mt-edit-inputblock<$mt:if name="show_input_unpublished_on"> show-input</mt:if>">
         <input type="text" id="unpublished-on-date" class="text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" /><span class="separator"> <__trans phrase="@"></span> <input type="text" id="unpublished-on-time" class="text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" />
       </div>
     </div>

@@ -261,6 +261,8 @@ sub edit {
             || POSIX::strftime( "%Y-%m-%d", @now );
         $param->{authored_on_time} = $q->param('authored_on_time')
             || POSIX::strftime( "%H:%M:%S", @now );
+        $param->{unpublished_on_date} = $q->param('unpublished_on_date');
+        $param->{unpublished_on_time} = $q->param('unpublished_on_time');
     }
 
     ## show the necessary associated assets
@@ -1685,15 +1687,11 @@ sub save {
                     "Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
                     $uo
                 );
+                $param{show_input_unpublished_on} = 1;
             }
             unless ( $param{error} ) {
                 my $s = $6 || 0;
-                $param{error} = $app->translate(
-                    "Invalid date '[_1]'; 'Unpublished on' dates should be real dates.",
-                    $uo
-                    )
-                    if (
-                       $s > 59
+                if (   $s > 59
                     || $s < 0
                     || $5 > 59
                     || $5 < 0
@@ -1704,22 +1702,31 @@ sub save {
                     || $3 < 1
                     || ( MT::Util::days_in( $2, $1 ) < $3
                         && !MT::Util::leap_day( $0, $1, $2 ) )
+                    )
+                {
+                    $param{error} = $app->translate(
+                        "Invalid date '[_1]'; 'Unpublished on' dates should be real dates.",
+                        $uo
                     );
+                    $param{show_input_unpublished_on} = 1;
+                }
             }
             my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
                 ( $6 || 0 );
             if ( !$param{error} && $obj->authored_on ) {
-                $param{error} = $app->translate(
-                    "Invalid date '[_1]'; 'Unpublished on' dates should be future from 'Published on'.",
-                    $uo
-                    )
-                    if (
-                    MT::DateTime->compare(
+                if (MT::DateTime->compare(
                         blog => $blog,
                         a    => $obj->authored_on,
                         b    => $ts
                     ) > 0
+                    )
+                {
+                    $param{error} = $app->translate(
+                        "Invalid date '[_1]'; 'Unpublished on' dates should be future from 'Published on'.",
+                        $uo
                     );
+                    $param{show_input_unpublished_on} = 1;
+                }
             }
             $param{return_args} = $app->param('return_args');
             return $app->forward( "view", \%param ) if $param{error};
