@@ -2700,7 +2700,7 @@ sub load_core_permissions {
                 'insert_asset'                    => 1,
                 'edit_page_basename'              => 1,
                 'edit_page_authored_on'           => 1,
-                'edit_page_published_on'          => 1,
+                'edit_page_unpublished_on'        => 1,
             }
         },
         'blog.manage_users' => {
