@@ -4181,6 +4181,21 @@ sub _entry_prefs_from_params {
 sub rebuild_these {
     my $app = shift;
     my ( $rebuild_set, %options ) = @_;
+    my $complete = $options{complete_handler} || sub {
+        my ($app) = @_;
+        $app->call_return;
+    };
+    my $phase = $options{rebuild_phase_handler} || sub {
+        my ( $app, $params ) = @_;
+        my %param = (
+            is_full_screen  => 1,
+            redirect_target => $app->uri(
+                mode => 'rebuild_phase',
+                args => $params
+            )
+        );
+        $app->load_tmpl( 'rebuilding.tmpl', \%param );
+    };
 
     # if there's nothing to rebuild, just return
     if ( !keys %$rebuild_set ) {
@@ -4202,7 +4217,7 @@ sub rebuild_these {
             $app->run_callbacks( 'rebuild', $this_blog );
             $app->run_callbacks('post_build');
         }
-        return $app->call_return;
+        return $complete->($app);
     }
 
     if ( exists $options{how} && ( $options{how} eq NEW_PHASE ) ) {
@@ -4214,14 +4229,7 @@ sub rebuild_these {
             id          => [ keys %$rebuild_set ],
             start_time  => $start_time,
         };
-        my %param = (
-            is_full_screen  => 1,
-            redirect_target => $app->uri(
-                mode => 'rebuild_phase',
-                args => $params
-            )
-        );
-        return $app->load_tmpl( 'rebuilding.tmpl', \%param );
+        return $phase->( $app, $params );
     }
     else {
         my @blogs      = $app->param('blog_ids');
@@ -4265,21 +4273,14 @@ sub rebuild_these {
             }
         }
         my $params = {
-            return_args     => $app->param('return_args'),
+            return_args     => scalar $app->param('return_args'),
             build_type_name => $app->translate("entry"),
             blog_id         => $app->param('blog_id') || 0,
             blog_ids        => [ keys %blogs ],
             id              => \@rest,
             start_time      => $start_time,
         };
-        my %param = (
-            is_full_screen  => 1,
-            redirect_target => $app->uri(
-                mode => 'rebuild_phase',
-                args => $params
-            )
-        );
-        return $app->load_tmpl( 'rebuilding.tmpl', \%param );
+        return $phase->( $app, $params );
     }
 }
 

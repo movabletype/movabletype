@@ -315,6 +315,12 @@ sub core_endpoints {
             handler => "${pkg}Asset::upload",
             error_codes => { 403 => 'Do not have permission to upload.', },
         },
+        {   id      => 'publish_entries',
+            route   => '/publish/entries',
+            method  => 'GET',
+            version => 1,
+            handler => "${pkg}Publish::entries",
+        },
         {   id      => 'stats_provider',
             route   => '/sites/:site_id/stats/provider',
             version => 1,
@@ -751,6 +757,12 @@ sub show_error {
 sub publish_error {
     require MT::App::CMS;
     MT::App::CMS::publish_error(@_);
+}
+
+sub set_next_phase_url {
+    my $app = shift;
+    my ($url) = @_;
+    $app->set_header('X-MT-Next-Phase-URL', $url);
 }
 
 sub api {

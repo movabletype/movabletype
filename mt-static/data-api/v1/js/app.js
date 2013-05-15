@@ -275,7 +275,6 @@ DataAPI.prototype = {
                 };
             }
 
-
             function runCallbacks(response) {
                 var status = callback(response);
                 if (status !== false) {
@@ -300,6 +299,15 @@ DataAPI.prototype = {
             }
 
             runCallbacks(response);
+
+            var url = xhr.getResponseHeader('X-MT-Next-Phase-URL');
+            if (url) {
+                xhr.abort();
+                api.sendXMLHttpRequest(xhr, method, base + url, params);
+            }
+            else {
+                xhr.onreadystatechange = new Function;
+            }
         };
         return this.sendXMLHttpRequest(xhr, method, base + endpoint, params);
     },

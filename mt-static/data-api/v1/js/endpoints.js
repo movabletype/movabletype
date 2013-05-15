@@ -301,6 +301,14 @@ window.MT.DataAPI.prototype.uploadAsset = function(site_id) {
     ].concat(args));
 }
 
+window.MT.DataAPI.prototype.publishEntries = function() {
+    var args = Array.prototype.slice.call(arguments, 0);
+    return this.request.apply(this, [
+        'GET',
+        '/publish/entries'
+    ].concat(args));
+}
+
 window.MT.DataAPI.prototype.statsProvider = function(site_id) {
     var args = Array.prototype.slice.call(arguments, 1);
     return this.request.apply(this, [
