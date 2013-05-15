@@ -1679,19 +1679,21 @@ sub save {
         if ( $uo_d || $uo_t ) {
             my %param = ();
             my $uo    = $uo_d . ' ' . $uo_t;
-            unless ( $uo
-                =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
+            $param{error} = $app->translate(
+                "Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                $uo
                 )
-            {
-                $param{error} = $app->translate(
-                    "Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
-                    $uo
+                unless ( $uo
+                =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
                 );
-                $param{show_input_unpublished_on} = 1;
-            }
             unless ( $param{error} ) {
                 my $s = $6 || 0;
-                if (   $s > 59
+                $param{error} = $app->translate(
+                    "Invalid date '[_1]'; 'Unpublished on' dates should be real dates.",
+                    $uo
+                    )
+                    if (
+                       $s > 59
                     || $s < 0
                     || $5 > 59
                     || $5 < 0
@@ -1702,32 +1704,37 @@ sub save {
                     || $3 < 1
                     || ( MT::Util::days_in( $2, $1 ) < $3
                         && !MT::Util::leap_day( $0, $1, $2 ) )
-                    )
-                {
-                    $param{error} = $app->translate(
-                        "Invalid date '[_1]'; 'Unpublished on' dates should be real dates.",
-                        $uo
                     );
-                    $param{show_input_unpublished_on} = 1;
-                }
             }
             my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
                 ( $6 || 0 );
+            unless ( $param{error} ) {
+                $param{error} = $app->translate(
+                    "Invalid date '[_1]'; 'Unpublished on' dates should be future from now.",
+                    $uo
+                    )
+                    if (
+                    MT::DateTime->compare(
+                        blog => $blog,
+                        a    => { value => time(), type => 'epoch' },
+                        b    => $ts
+                    ) > 0
+                    );
+            }
             if ( !$param{error} && $obj->authored_on ) {
-                if (MT::DateTime->compare(
+                $param{error} = $app->translate(
+                    "Invalid date '[_1]'; 'Unpublished on' dates should be future from 'Published on'.",
+                    $uo
+                    )
+                    if (
+                    MT::DateTime->compare(
                         blog => $blog,
                         a    => $obj->authored_on,
                         b    => $ts
                     ) > 0
-                    )
-                {
-                    $param{error} = $app->translate(
-                        "Invalid date '[_1]'; 'Unpublished on' dates should be future from 'Published on'.",
-                        $uo
                     );
-                    $param{show_input_unpublished_on} = 1;
-                }
             }
+            $param{show_input_unpublished_on} = 1 if $param{error};
             $param{return_args} = $app->param('return_args');
             return $app->forward( "view", \%param ) if $param{error};
             if ( $obj->unpublished_on ) {
