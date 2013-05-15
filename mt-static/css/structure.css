@@ -496,7 +496,7 @@ ul.tabs li a {
 /* - App Header */
 #header {
     position: relative;
-    height: 60px;
+    height: 90px;
 }
 
 /* -- Brand */
@@ -864,6 +864,18 @@ ul.tabs li a {
 }
 #basic-search .search-query {
     width: 200px;
+}
+
+/* - Notification Indicator */
+#notification-indicator {
+    height: 30px;
+    background-color: #e6eae3;
+    width: 100%;
+}
+
+/* -- Notification Content */
+#notification-indicator-content {
+    padding: 0.5em 0.75em;
 }
 
 /* - Navigation Menu */

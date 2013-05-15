@@ -2952,6 +2952,7 @@ sub pre_run {
     }
 
     MT->run_callbacks( ( ref $app ) . '::pre_run', $app );
+
     1;
 }
 

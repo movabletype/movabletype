@@ -1269,4 +1269,38 @@ $.fn.mtPlaceholder = function() {
     return this;
 };
 
+/*
+ * mtEditInputBlock
+ *
+ */
+$.fn.mtEditInputBlock = function(options) {
+    var defaults = {
+        edit: 'Edit',
+        text: 'Not specified'
+    },
+    opts = $.extend(defaults, options);
+    return this.each(function() {
+      var id    = $(this).attr('id'),
+          $div  = $('div#'+id),
+          $date = $('input#'+id),
+          $time = $('input#'+id);
+      if (!$div.hasClass('show-input')) {
+          $div
+              .before('<span class="'+id+'-text"></span>')
+              .after('<button type="button" id="mt-edit-'+id+'" class="button mt-edit-field-button">'+opts.edit+'</button>')
+              .hide();
+          $('span.'+id+'-text').text(opts.text);
+          $div.hide();
+      } else {
+          $div.show();
+      }
+      $('button#mt-edit-'+id).click(function() {
+          $(this).hide();
+          $('span.'+id+'-text').hide();
+          $div.show();
+          return false;
+      });
+    });
+};
+
 })(jQuery);

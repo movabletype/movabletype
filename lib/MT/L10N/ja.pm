@@ -5283,8 +5283,8 @@ use vars qw( @ISA %Lexicon );
 	'Full Restore' => '環境のリストア',
 	'SSL Certifications' => 'サーバー証明書',
 	'Config Directives' => 'MT環境変数',
-	'Sync' => 'サーバ配信',
-	'Contents Sync' => 'サーバ配信',
+	'Sync' => 'サーバー配信',
+	'Contents Sync' => 'サーバー配信',
 
 ## addons/Cloud.pack/lib/Cloud/App/CMS.pm
 	'Owner' => 'ブログ管理者',
@@ -5310,7 +5310,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot copy default secret file.' => '既定のサーバーキーのコピーに失敗しました。',
 	'Unable to update SSL certification.' => 'サーバー証明書の更新をする事が出来ませんでした。',
 	'Config Directive' => '環境変数',
-	'Saving sync settings failed: [_1]' => 'サーバ配信の設定を保存できませんでした',
+	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
 	'Restoring Backup Data' => 'バックアップデータの復元',
 	'backup data' => 'バックアップデータ',
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
@@ -5318,8 +5318,8 @@ use vars qw( @ISA %Lexicon );
 	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
 
 ## addons/Cloud.pack/lib/MT/FileSynchronizer.pm
-	'Synchronization with an external server has been successfully finished.' => 'サーバ配信が正常に処理されました',
-	'Failed to sync with an external server.' => 'サーバ配信に失敗しました',
+	'Synchronization with an external server has been successfully finished.' => 'サーバー配信が正常に処理されました',
+	'Failed to sync with an external server.' => 'サーバー配信に失敗しました',
 
 ## addons/Cloud.pack/lib/MT/FileSynchronizer/FTPBase.pm
 	'Cannot access to remote directory \'[_1]\'' => 'リモートディレクトリ\'[_1]\'にアクセスできません。',
@@ -5329,11 +5329,11 @@ use vars qw( @ISA %Lexicon );
 	'Unable to write remote file ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
 
 ## addons/Cloud.pack/lib/MT/SyncSetting.pm
-	'Sync settings' => 'サーバ配信の設定',
+	'Sync settings' => 'サーバー配信の設定',
 
 ## addons/Cloud.pack/lib/MT/Worker/ContentsSync.pm
-	'This email is to notify you that failed to sync with an external server.' => 'これはサーバ配信の処理に失敗したことを通知するメールです。',
-	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバ配信の処理に成功したことを通知するメールです。',
+	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
+	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバー配信の処理に成功したことを通知するメールです。',
 
 ## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
 	'Manage Basic Authentication' => 'Basic認証の管理',
@@ -5355,23 +5355,23 @@ use vars qw( @ISA %Lexicon );
 	'Remove Config Directive' => '環境変数の削除',
 
 ## addons/Cloud.pack/tmpl/cfg_contents_sync.tmpl
-	'Contents Sync Setting' => 'サーバ配信設定',
-	'Contents sync settings has been saved.' => 'サーバ配信の設定を保存しました。',
-	'An error occured while trying to connect to the FTP server. Check the settings and try again.' => 'FTPサーバに接続できませんでした。設定を見直してもう一度接続してください。',
+	'Contents Sync Setting' => 'サーバー配信設定',
+	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
+	'An error occured while trying to connect to the FTP server. Check the settings and try again.' => 'FTPサーバーに接続できませんでした。設定を見直してもう一度接続してください。',
 	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
-	'Enable contents synchronization' => 'サーバ配信を有効にする',
-	'Sync Settings' => 'サーバ配信の設定',
-	'Sync Date' => 'サーバ配信日時',
+	'Enable contents synchronization' => 'サーバー配信を有効にする',
+	'Sync Settings' => 'サーバー配信の設定',
+	'Sync Date' => 'サーバー配信日時',
 	'Sync Now!' => '今すぐ配信',
 	'Recipient for Notification' => '配信結果の通知先メールアドレス',
 	'Receive only error notification' => '配信に失敗したときだけ受け取る',
 	'FTP Settings' => 'FTPの設定',
-	'FTP Server' => 'FTPサーバ',
-	'Port' => 'FTPサーバのポート',
+	'FTP Server' => 'FTPサーバー',
+	'Port' => 'FTPサーバーのポート',
 	'SSL' => 'SSL',
 	'Enable SSL' => 'SSLで接続する',
 	'Start Directory' => '開始ディレクトリ',
-	'The sync date must be in the future.' => 'サーバ配信日時は、未来の日時を指定してください。',
+	'The sync date must be in the future.' => 'サーバー配信日時は、未来の日時を指定してください。',
 	'Invalid time.' => '無効な時刻指定です。',
 	'Do you want to synchronize the contents just now?' => 'いますぐ配信を実行しますか？',
 
@@ -5409,10 +5409,10 @@ use vars qw( @ISA %Lexicon );
 	'Remove SSL Certification' => 'サーバー証明書の削除',
 
 ## addons/Cloud.pack/tmpl/dialog/contents_sync_now.tmpl
-	'Preparing...' => 'サーバ配信の準備をしています...',
+	'Preparing...' => 'サーバー配信の準備をしています...',
 	'Synchronizing...' => '配信中です...',
 	'Finish!' => 'ファイルが配信されました!',
-	'The synchronization was interrupted. Unable to resume.' => 'サーバ配信が中断されました。再開できません。',
+	'The synchronization was interrupted. Unable to resume.' => 'サーバー配信が中断されました。再開できません。',
 
 ## addons/Cloud.pack/tmpl/full_restore.tmpl
 	'Restoring Full Backup Data' => 'バックアップデータからの復元',
@@ -5510,7 +5510,7 @@ use vars qw( @ISA %Lexicon );
 	'The template tag \'[_1]\' is already in use in the system level' => '[_1]というタグは既にシステムに存在します。',
 	'The template tag \'[_1]\' is already in use in [_2]' => '[_1]というタグは既に[_2]に存在します。',
 	'The template tag \'[_1]\' is already in use in this blog' => '[_1]というタグは既にこのブログに存在します。',
-	'The \'[_1]\' of the template tag \'[_2]\' that is already in use in [_3] is [_4].' => '[_1]が違う\'[_2]\'というタグが[_3]に見つかったため、保存できません。([_1]: [_4])',
+	'The \'[_1]\' of the template tag \'[_2]\' that is already in use in [_3] is [_4].' => '\'[_2]\'というテンプレートタグが[_3]に既に存在していますが、[_1]が異なるため、重複して作成する事が出来ません。テンプレートタグ名を変えるか、[_1]を同じにする必要があります。([_1]: [_4])',
 	'_CF_BASENAME' => 'ベースネーム',
 
 ## addons/Commercial.pack/lib/CustomFields/Template/ContextHandlers.pm

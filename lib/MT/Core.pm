@@ -1850,6 +1850,7 @@ BEGIN {
             'DefaultAssignments'     => { default => '' },
             'AutoSaveFrequency'      => { default => 5 },
             'FuturePostFrequency'    => { default => 1 },
+            'UnpublishPostFrequency' => { default => 1 },
             'AssetCacheDir'          => { default => 'assets_c', },
             'IncludesDir'            => { default => 'includes_c', },
             'MemcachedServers'       => { type    => 'ARRAY', },
@@ -2207,6 +2208,13 @@ sub load_core_tasks {
                 MT->instance->publisher->publish_future_posts;
                 }
         },
+        'UnpublishingPost' => {
+            label     => 'Unpublish Past Entries',
+            frequency => $cfg->UnpublishPostFrequency * 60,  # once per minute
+            code      => sub {
+                MT->instance->publisher->unpublish_past_entries;
+                }
+        },
         'AddSummaryWatcher' => {
             label     => 'Add Summary Watcher to queue',
             frequency => 2 * 60,                          # every other minute
@@ -2469,6 +2477,7 @@ sub load_core_permissions {
                 'add_tags_to_entry_via_list'              => 1,
                 'remove_tags_from_entry_via_list'         => 1,
                 'edit_entry_authored_on'                  => 1,
+                'edit_entry_unpublished_on'               => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2691,6 +2700,7 @@ sub load_core_permissions {
                 'insert_asset'                    => 1,
                 'edit_page_basename'              => 1,
                 'edit_page_authored_on'           => 1,
+                'edit_page_unpublished_on'        => 1,
             }
         },
         'blog.manage_users' => {

@@ -240,6 +240,15 @@ UPDATE mt_blog SET
 __SQL__
             },
         },
+        'v5_add_nortification_dashboard_widget' => {
+            version_limit => 5.0037,
+            priority      => 3.0,
+            updater       => {
+                type  => 'author',
+                label => "Adding nortification dashboard widget...",
+                code  => \&_v5_add_nortification_dashboard_widget,
+            },
+        },
     };
 }
 
@@ -859,6 +868,30 @@ sub _v5_recover_auth_type {
         $author->type( MT::Author::COMMENTER() );
         $author->save;
     }
+}
+
+sub _v5_add_nortification_dashboard_widget {
+    my $user    = shift;
+    my $widgets = $user->widgets;
+    return 1 unless $widgets;
+
+    foreach my $key ( keys %$widgets ) {
+        if ( $key eq 'dashboard:user:' . $user->id ) {
+            my @widget_keys = keys %{ $widgets->{$key} };
+            unless ( grep { $_ eq 'notification_dashboard' } @widget_keys ) {
+                foreach my $widget_key (@widget_keys) {
+                    $widgets->{$key}->{$widget_key}->{order} .= 1;
+                }
+                $widgets->{$key}->{'notification_dashboard'} = {
+                    order => 1,
+                    set   => 'main',
+                };
+            }
+        }
+    }
+
+    $user->widgets($widgets);
+    $user->save;
 }
 
 1;

@@ -163,6 +163,8 @@ sub delete_filters {
     return $app->errtrans('Invalid request')
         unless $app->validate_magic;
 
+    $app->setup_filtered_ids
+        if $app->param('all_selected');
     my @ids = $app->param('id');
 
     # handling either AJAX request and normal request

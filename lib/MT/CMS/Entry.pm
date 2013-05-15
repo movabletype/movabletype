@@ -126,6 +126,12 @@ sub edit {
         $param->{'authored_on_time'} = $q->param('authored_on_time')
             || format_ts( "%H:%M:%S", $obj->authored_on, $blog,
             $app->user ? $app->user->preferred_language : undef );
+        $param->{'unpublished_on_date'} = $q->param('unpublished_on_date')
+            || format_ts( "%Y-%m-%d", $obj->unpublished_on, $blog,
+            $app->user ? $app->user->preferred_language : undef );
+        $param->{'unpublished_on_time'} = $q->param('unpublished_on_time')
+            || format_ts( "%H:%M:%S", $obj->unpublished_on, $blog,
+            $app->user ? $app->user->preferred_language : undef );
 
         $param->{num_comments} = $id ? $obj->comment_count : 0;
         $param->{num_pings}    = $id ? $obj->ping_count    : 0;
@@ -255,6 +261,8 @@ sub edit {
             || POSIX::strftime( "%Y-%m-%d", @now );
         $param->{authored_on_time} = $q->param('authored_on_time')
             || POSIX::strftime( "%H:%M:%S", @now );
+        $param->{unpublished_on_date} = $q->param('unpublished_on_date');
+        $param->{unpublished_on_time} = $q->param('unpublished_on_time');
     }
 
     ## show the necessary associated assets
@@ -1142,11 +1150,17 @@ sub _build_entry_preview {
         $entry->{__tag_objects} = \@tags;
     }
 
-    my $date = $q->param('authored_on_date');
-    my $time = $q->param('authored_on_time');
-    my $ts   = $date . $time;
-    $ts =~ s/\D//g;
-    $entry->authored_on($ts);
+    my $ao_date = $q->param('authored_on_date');
+    my $ao_time = $q->param('authored_on_time');
+    my $ao_ts   = $ao_date . $ao_time;
+    $ao_ts =~ s/\D//g;
+    $entry->authored_on($ao_ts);
+
+    my $uo_date = $q->param('unpublished_on_date');
+    my $uo_time = $q->param('unpublished_on_time');
+    my $uo_ts   = $uo_date . $uo_time;
+    $uo_ts =~ s/\D//g;
+    $entry->unpublished_on($uo_ts);
 
     my $preview_basename = $app->preview_object_basename;
     $entry->basename( $q->param('basename') || $preview_basename );
@@ -1202,7 +1216,7 @@ sub _build_entry_preview {
     $ctx->stash( 'entry',    $entry );
     $ctx->stash( 'blog',     $blog );
     $ctx->stash( 'category', $cat ) if $cat;
-    $ctx->{current_timestamp}    = $ts;
+    $ctx->{current_timestamp}    = $ao_ts;
     $ctx->{current_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );
 
@@ -1312,6 +1326,7 @@ sub _build_entry_preview {
             || $col eq 'modified_by'
             || $col eq 'authored_on'
             || $col eq 'author_id'
+            || $col eq 'unpublished_on'
             || $col eq 'pinged_urls'
             || $col eq 'tangent_cache'
             || $col eq 'template_id'
@@ -1327,7 +1342,7 @@ sub _build_entry_preview {
             };
     }
     for my $data (
-        qw( authored_on_date authored_on_time basename_manual basename_old category_ids tags include_asset_ids save_revision revision-note )
+        qw( authored_on_date authored_on_time unpublished_on_date unpublished_on_time basename_manual basename_old category_ids tags include_asset_ids save_revision revision-note )
         )
     {
         push @data,
@@ -1537,6 +1552,8 @@ sub save {
         || $app->param('allow_pings') eq '';
     my $ao_d = $app->param('authored_on_date');
     my $ao_t = $app->param('authored_on_time');
+    my $uo_d = $app->param('unpublished_on_date');
+    my $uo_t = $app->param('unpublished_on_time');
 
     if ( !$id ) {
 
@@ -1657,6 +1674,78 @@ sub save {
         my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
             ( $6 || 0 );
         $obj->authored_on($ts);
+    }
+    if ( $perms->can_do("edit_${type}_unpublished_on") ) {
+        if ( $uo_d || $uo_t ) {
+            my %param = ();
+            my $uo    = $uo_d . ' ' . $uo_t;
+            $param{error} = $app->translate(
+                "Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                $uo
+                )
+                unless ( $uo
+                =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
+                );
+            unless ( $param{error} ) {
+                my $s = $6 || 0;
+                $param{error} = $app->translate(
+                    "Invalid date '[_1]'; 'Unpublished on' dates should be real dates.",
+                    $uo
+                    )
+                    if (
+                       $s > 59
+                    || $s < 0
+                    || $5 > 59
+                    || $5 < 0
+                    || $4 > 23
+                    || $4 < 0
+                    || $2 > 12
+                    || $2 < 1
+                    || $3 < 1
+                    || ( MT::Util::days_in( $2, $1 ) < $3
+                        && !MT::Util::leap_day( $0, $1, $2 ) )
+                    );
+            }
+            my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
+                ( $6 || 0 );
+            unless ( $param{error} ) {
+                $param{error} = $app->translate(
+                    "Invalid date '[_1]'; 'Unpublished on' dates should be future from now.",
+                    $uo
+                    )
+                    if (
+                    MT::DateTime->compare(
+                        blog => $blog,
+                        a    => { value => time(), type => 'epoch' },
+                        b    => $ts
+                    ) > 0
+                    );
+            }
+            if ( !$param{error} && $obj->authored_on ) {
+                $param{error} = $app->translate(
+                    "Invalid date '[_1]'; 'Unpublished on' dates should be future from 'Published on'.",
+                    $uo
+                    )
+                    if (
+                    MT::DateTime->compare(
+                        blog => $blog,
+                        a    => $obj->authored_on,
+                        b    => $ts
+                    ) > 0
+                    );
+            }
+            $param{show_input_unpublished_on} = 1 if $param{error};
+            $param{return_args} = $app->param('return_args');
+            return $app->forward( "view", \%param ) if $param{error};
+            if ( $obj->unpublished_on ) {
+                $previous_old = $obj->previous(1);
+                $next_old     = $obj->next(1);
+            }
+            $obj->unpublished_on($ts);
+        }
+        else {
+            $obj->unpublished_on(undef);
+        }
     }
     my $is_new = $obj->id ? 0 : 1;
 
@@ -1840,6 +1929,7 @@ sub save {
                     Entry       => $orig_obj,
                     ArchiveType => $archive_type,
                     Category    => $primary_category_old,
+                    Force       => 0,
                 );
             }
         }
@@ -2764,7 +2854,8 @@ sub update_entry_status {
                 : 'Individual';
             $app->publisher->remove_entry_archive_file(
                 Entry       => $entry,
-                ArchiveType => $archive_type
+                ArchiveType => $archive_type,
+                Force       => 0,
             );
         }
         my $original   = $entry->clone;

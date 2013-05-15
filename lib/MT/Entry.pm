@@ -106,7 +106,12 @@ __PACKAGE__->install_properties(
             'junk_log'      => 'string meta',
             'revision'      => 'integer meta',
 ## Have to keep this around for use in mt-upgrade.cgi.
-            'category_id' => 'integer',
+            'category_id'    => 'integer',
+            'unpublished_on' => {
+                type       => 'datetime',
+                label      => 'Unpublish Date',
+                revisioned => 1
+            },
         },
         indexes => {
             status      => 1,
@@ -155,6 +160,12 @@ __PACKAGE__->install_properties(
             # for tag count
             tag_count =>
                 { columns => [ 'status', 'class', 'blog_id', 'id' ], },
+
+            #for future unpublish
+            class_unpublished =>
+                { columns => [ 'class', 'unpublished_on' ], },
+            blog_unpublished =>
+                { columns => [ 'blog_id', 'class', 'unpublished_on' ], },
         },
         defaults => {
             comment_count => 0,
@@ -174,11 +185,12 @@ __PACKAGE__->install_properties(
     }
 );
 
-sub HOLD ()    {1}
-sub RELEASE () {2}
-sub REVIEW ()  {3}
-sub FUTURE ()  {4}
-sub JUNK ()    {5}
+sub HOLD ()     {1}
+sub RELEASE ()  {2}
+sub REVIEW ()   {3}
+sub FUTURE ()   {4}
+sub JUNK ()     {5}
+sub UNPUBLISH() {6}
 
 use Exporter;
 *import = \&Exporter::import;
@@ -253,21 +265,23 @@ sub list_props {
                 );
                 my $status = $obj->status;
                 my $status_class
-                    = $status == MT::Entry::HOLD()    ? 'Draft'
-                    : $status == MT::Entry::RELEASE() ? 'Published'
-                    : $status == MT::Entry::REVIEW()  ? 'Review'
-                    : $status == MT::Entry::FUTURE()  ? 'Future'
-                    : $status == MT::Entry::JUNK()    ? 'Junk'
-                    :                                   '';
+                    = $status == MT::Entry::HOLD()      ? 'Draft'
+                    : $status == MT::Entry::RELEASE()   ? 'Published'
+                    : $status == MT::Entry::REVIEW()    ? 'Review'
+                    : $status == MT::Entry::FUTURE()    ? 'Future'
+                    : $status == MT::Entry::JUNK()      ? 'Junk'
+                    : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
+                    :                                     '';
                 my $lc_status_class = lc $status_class;
                 require MT::Entry;
                 my $status_file
-                    = $status == MT::Entry::HOLD()    ? 'draft.gif'
-                    : $status == MT::Entry::RELEASE() ? 'success.gif'
-                    : $status == MT::Entry::REVIEW()  ? 'warning.gif'
-                    : $status == MT::Entry::FUTURE()  ? 'future.gif'
-                    : $status == MT::Entry::JUNK()    ? 'warning.gif'
-                    :                                   '';
+                    = $status == MT::Entry::HOLD()      ? 'draft.gif'
+                    : $status == MT::Entry::RELEASE()   ? 'success.gif'
+                    : $status == MT::Entry::REVIEW()    ? 'warning.gif'
+                    : $status == MT::Entry::FUTURE()    ? 'future.gif'
+                    : $status == MT::Entry::JUNK()      ? 'warning.gif'
+                    : $status == MT::Entry::UNPUBLISH() ? 'unpublished.gif'
+                    :                                     '';
                 my $status_img
                     = MT->static_path . 'images/status_icons/' . $status_file;
                 my $view_img
@@ -543,6 +557,12 @@ sub list_props {
             base  => '__virtual.modified_on',
             order => 700,
         },
+        unpublished_on => {
+            auto    => 1,
+            display => 'optional',
+            label   => 'Unpublish Date',
+            order   => 750,
+        },
         comment_count => {
             auto         => 1,
             display      => 'default',
@@ -607,11 +627,12 @@ sub list_props {
             col_class             => 'icon',
             base                  => '__virtual.single_select',
             single_select_options => [
-                { label => MT->translate('Draft'),     value => 1, },
-                { label => MT->translate('Published'), value => 2, },
-                { label => MT->translate('Reviewing'), value => 3, },
-                { label => MT->translate('Scheduled'), value => 4, },
-                { label => MT->translate('Junk'),      value => 5, },
+                { label => MT->translate('Draft'),             value => 1, },
+                { label => MT->translate('Published'),         value => 2, },
+                { label => MT->translate('Reviewing'),         value => 3, },
+                { label => MT->translate('Scheduled'),         value => 4, },
+                { label => MT->translate('Junk'),              value => 5, },
+                { label => MT->translate('Unpublished (End)'), value => 6, },
             ],
         },
         created_on => {
@@ -756,9 +777,14 @@ sub system_filters {
             order => 100,
         },
         draft => {
-            label => 'Unpublished Entries',
+            label => 'Draft Entries',
             items => [ { type => 'status', args => { value => '1' }, }, ],
             order => 200,
+        },
+        unpublished => {
+            label => 'Unpublished Entries',
+            items => [ { type => 'status', args => { value => '6' }, }, ],
+            order => 300,
         },
         future => {
             label => 'Scheduled Entries',
@@ -816,12 +842,13 @@ sub status {
 
 sub status_text {
     my $s = $_[0];
-          $s == HOLD    ? "Draft"
-        : $s == RELEASE ? "Publish"
-        : $s == REVIEW  ? "Review"
-        : $s == FUTURE  ? "Future"
-        : $s == JUNK    ? "Spam"
-        :                 '';
+          $s == HOLD      ? "Draft"
+        : $s == RELEASE   ? "Publish"
+        : $s == REVIEW    ? "Review"
+        : $s == FUTURE    ? "Future"
+        : $s == JUNK      ? "Spam"
+        : $s == UNPUBLISH ? "Unpublish"
+        :                   '';
 }
 
 sub status_int {

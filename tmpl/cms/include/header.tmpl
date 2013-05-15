@@ -180,13 +180,14 @@
       <!-- /Menu Bar Nav--></div>
     <!-- /Menu Bar --></div>
   </mt:if>
-  <!-- /Header --></div>
-
   <mt:if name="count_notification_dashboard">
-  <div id="notification_indicator" class="msg msg-info"> 
-      <p class="msg-text"><mt:unless name="scope_type" eq="user"><a href="<$mt:var name="mt_url"$>?__mode=dashboard"></mt:unless><__trans phrase="You have <strong>[_1]</strong> message(s) from system." params="<mt:var name="count_notification_dashboard">"><mt:unless name="scope_type" eq="user"></a></mt:unless></p>
+  <div id="notification-indicator">
+    <div id="notification-indicator-content"> 
+      <p class="msg-text"><mt:unless name="scope_type" eq="user"><a href="<$mt:var name="mt_url"$>?__mode=dashboard"></mt:unless><__trans phrase="You have <strong>[quant,_1,message,messages]</strong> from the system." params="<mt:var name="count_notification_dashboard">"><mt:unless name="scope_type" eq="user"></a></mt:unless></p>
+    </div>
   </div>
   </mt:if>
+  <!-- /Header --></div>
 
   <mt:if name="is_generic_website">
   <div id="is-generic-website" class="msg msg-warning">
