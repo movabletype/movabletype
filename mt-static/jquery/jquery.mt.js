@@ -1270,7 +1270,7 @@ $.fn.mtPlaceholder = function() {
 };
 
 /*
- * mtEditDatetime
+ * mtEditInputBlock
  *
  */
 $.fn.mtEditInputBlock = function(options) {
