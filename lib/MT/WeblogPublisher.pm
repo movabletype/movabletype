@@ -597,8 +597,8 @@ sub rebuild_entry {
             push( @$categories_for_rebuild,
                 MT::Category->load( { id => \@old_ids } ) );
         }
-        push @$categories_for_rebuild, ( map { $_ } @{$entry->categories} );
     }
+    push @$categories_for_rebuild, ( map { $_ } @{$entry->categories} );
 
     my $at
         = $param{PreferredArchiveOnly} ? $blog->archive_type_preferred
