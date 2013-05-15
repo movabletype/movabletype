@@ -25,12 +25,12 @@ function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat) {
                               'blog_id' => $blog_id,
                               'need_entry' => 1);
                 list($prev_author) = $ctx->mt->db()->fetch_authors($args);
-                if ($prev_author) {
-                    $_prev_cache[$author_id] = $prev_author;
-                    $ctx->stash('author', $prev_author);
-                } else
-                    $repeat = false;
             }
+            if ($prev_author) {
+              $_prev_cache[$author_id] = $prev_author;
+              $ctx->stash('author', $prev_author);
+            } else
+              $repeat = false;
         }
     } else {
         $ctx->restore(array('author'));

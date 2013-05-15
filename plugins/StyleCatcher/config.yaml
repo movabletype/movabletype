@@ -4,7 +4,8 @@ key: StyleCatcher
 author_link: http://www.movabletype.org/
 author_name: Six Apart, Ltd.
 description: <MT_TRANS phrase="StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.">
-version: 2.43
+version: 2.44
+schema_version: 1.0
 l10n_class: StyleCatcher::L10N
 stylecatcher_libraries:
     local:
@@ -40,3 +41,21 @@ applications:
                     - blog
                     - website
                 permission: edit_templates
+callbacks:
+    post_init: $StyleCatcher::StyleCatcher::Util::load_meta_fields
+upgrade_functions:
+    move_current_style_to_meta_for_website:
+        priority: 3.0
+        updater:
+            type: website
+            label: Moving current style to blog_meta for website...
+            code: $StyleCatcher::StyleCatcher::Upgrade::move_current_style_to_meta
+    move_current_style_to_meta_for_blog:
+        priority: 3.0
+        updater:
+            type: blog
+            label: Moving current style to blog_meta for blog...
+            code: $StyleCatcher::StyleCatcher::Upgrade::move_current_style_to_meta
+    reset_config:
+        priority: 3.1
+        code: $StyleCatcher::StyleCatcher::Upgrade::reset_config

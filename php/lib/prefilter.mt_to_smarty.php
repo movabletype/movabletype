@@ -274,6 +274,9 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                     if (count($args)) {
                         # else-if
                         $smart_source .= $ldelim.'if $elseif_conditional'.$rdelim;
+                    } else {
+                        # else
+                        $smart_source .= $ldelim.'if !$conditional'.$rdelim;
                     }
                 }
             } elseif ($open != '/' && $conditional && $close != '/') {

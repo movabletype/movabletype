@@ -148,7 +148,7 @@ sub substr_wref {
 }
 
 sub relative_date {
-    my ( $ts1, $ts2, $blog, $fmt, $style ) = @_;
+    my ( $ts1, $ts2, $blog, $fmt, $style, $lang ) = @_;
 
     $style ||= 1;
 
@@ -402,7 +402,7 @@ sub relative_date {
     my $user = $mt->user if $mt->isa('MT::App');
     return $fmt
         ? format_ts( $fmt, $ts, $blog,
-        $user ? $user->preferred_language : undef )
+        $lang || ( $user ? $user->preferred_language : undef ) )
         : "";
 }
 
@@ -414,8 +414,8 @@ sub format_ts {
     my %f;
     unless ($lang) {
         $lang
-            = $blog && $blog->language
-            ? $blog->language
+            = $blog && $blog->date_language
+            ? $blog->date_language
             : MT->config->DefaultLanguage;
     }
     if ( $lang eq 'jp' ) {
@@ -1341,7 +1341,7 @@ sub is_valid_date {
 
 sub is_valid_email {
     my ($addr) = @_;
-    return 0 if $addr =~ /[\n\r]/;
+    return 0 if !$addr || $addr =~ /[\n\r]/;
 
     # The case containing full-width character is error.
     return 0 if $addr =~ /[^\x01-\x7E]/;
@@ -2726,7 +2726,7 @@ sub canonicalize_path {
                 pop @parts;
             }
         }
-        elsif ( defined $path and $path ne File::Spec->curdir ) {
+        elsif ( $path ne '' and $path ne File::Spec->curdir ) {
             push @parts, $path;
         }
     }
@@ -2736,6 +2736,22 @@ sub canonicalize_path {
         $path =~ s/^\Q$sep\E// unless $is_abs;
     }
     return $path ? File::Spec->catpath( $vol, $path, $filename ) : $filename;
+}
+
+sub normalize_language {
+    my ( $language, $locale, $ietf ) = @_;
+
+    my %real_lang = ( cz => 'cs', dk => 'da', jp => 'ja', si => 'sl' );
+    $language = ( $real_lang{$language} || $language );
+    if ($locale) {
+        $language =~ s/^(..)([-_](..))?$/$1 . '_' . uc($3||$1)/e;
+    }
+    elsif ($ietf) {
+
+        # http://www.ietf.org/rfc/rfc3066.txt
+        $language =~ s/_/-/;
+    }
+    $language;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;
@@ -2968,6 +2984,23 @@ Why? Because on Windows, Cwd::realpath returns wrong value.
 =head2 canonicalize_path
 
 Returns canonical path
+
+=head2 normalize_language($language, $locale, $ietf)
+
+Returns normalized language notation.
+
+=over 4
+
+=item $locale
+
+If true, will format the language in the style "language_LOCALE" (ie: "en_US", "de_DE", etc).
+
+=item $ietf
+
+If true, will change any '_' in the language code to a '-', conforming
+it to the IETF RFC # 3066.
+
+=back
 
 =head1 AUTHOR & COPYRIGHTS
 

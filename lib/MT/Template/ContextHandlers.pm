@@ -416,6 +416,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_description',
             BlogLanguage =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_language',
+            BlogDateLanguage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_date_language',
             BlogURL => '$Core::MT::Template::Tags::Blog::_hdlr_blog_url',
             BlogArchiveURL =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_archive_url',
@@ -448,6 +450,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Website::_hdlr_website_description',
             WebsiteLanguage =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_language',
+            WebsiteDateLanguage =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_date_language',
             WebsiteURL =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_url',
             WebsitePath =>
@@ -1115,7 +1119,7 @@ sub build_date {
     my $lang 
         = $args->{language}
         || $ctx->var('local_lang_id')
-        || ( $blog && $blog->language );
+        || ( $blog && $blog->date_language );
     if ( $args->{utc} ) {
         my ( $y, $mo, $d, $h, $m, $s )
             = $ts
@@ -1185,7 +1189,8 @@ EOT
         else {
             my $old_lang = MT->current_language;
             MT->set_language($lang) if $lang && ( $lang ne $old_lang );
-            my $date = relative_date( $ts, time, $blog, $args->{format}, $r );
+            my $date = relative_date( $ts, time, $blog, $args->{format}, $r,
+                $lang );
             MT->set_language($old_lang) if $lang && ( $lang ne $old_lang );
             if ($date) {
                 return $date;
@@ -2429,7 +2434,7 @@ sub _hdlr_set_var {
 
     my $existing = $ctx->var($name);
     $existing = '' unless defined $existing;
-    if ( 'HASH' eq ref($existing) ) {
+    if ( 'HASH' eq ref($existing) && defined $key ) {
         $existing = $existing->{$key};
     }
     elsif ( 'ARRAY' eq ref($existing) ) {
@@ -3986,7 +3991,7 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
         # the block (so any variables/context changes made in that template
         # affect the contained template code)
         my $tokens = $ctx->stash('tokens');
-        local $ctx->{__stash}{vars}{$name} = sub {
+        local $ctx->{__stash}{vars}{lc $name} = sub {
             my $builder = $ctx->stash('builder');
             my $html = $builder->build( $ctx, $tokens, $cond );
             return $ctx->error( $builder->errstr ) unless defined $html;
@@ -4273,17 +4278,16 @@ B<Example:> Passing Parameters to a Template Module
         # Try to read from cache
         my $enc               = MT->config->PublishCharset;
         my $cache_expire_type = 0;
-        my $cache_enabled 
-            = $blog
-            && $blog->include_cache
-            && (
-               ( $arg->{cache} && $arg->{cache} > 0 )
+        my $cache_enabled     = 0;
+
+        if ( $blog && $blog->include_cache ) {
+            $cache_expire_type = $tmpl->cache_expire_type || 0;
+            $cache_enabled = ( ( $arg->{cache} && $arg->{cache} > 0 )
             || $arg->{cache_key}
             || $arg->{key}
             || ( exists $arg->{ttl} )
-            || ( ( $cache_expire_type = ( $tmpl->cache_expire_type || 0 ) )
-                != 0 )
-            ) ? 1 : 0;
+            || ( $cache_expire_type != 0 ) ) ? 1 : 0;
+        }
         my $cache_key 
             = $arg->{cache_key}
             || $arg->{key}
@@ -5765,7 +5769,11 @@ B<Example:>
             'p' =>
                 "<mt:PagerBlock><mt:IfCurrentPage><mt:Var name='__value__'></mt:IfCurrentPage></mt:PagerBlock>"
             ,                                        # current page number
+            '_Z' => "<MTArchiveDate format='%Y/%m'>"
+            ,    # year/month, used as default archive map
+
         );
+        $format =~ s!%y/%m!%_Z!g if defined $format;
         $format =~ s!%([_-]?[A-Za-z])!$f{$1}!g if defined $format;
 
         # now build this template and return result

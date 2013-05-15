@@ -169,8 +169,8 @@ sub compile {
 
             # determine line #
             my $pre_error = substr( $text, 0, $tag_start );
-            my @m = $pre_error =~ m/\r?\n/g;
-            my $line = scalar @m;
+            my @m         = $pre_error =~ m/\r?\n/g;
+            my $line      = scalar @m;
             if ($depth) {
                 $opt->{error_line} = $line;
                 push @$errors,
@@ -197,7 +197,7 @@ sub compile {
         if ($is_container) {
             if ( $whole_tag !~ m|/>$| ) {
                 my ( $sec_end, $tag_end )
-                    = _consume_up_to( \$text, $sec_start, $tag );
+                    = _consume_up_to( $ctx, \$text, $sec_start, $tag );
                 if ($sec_end) {
                     my $sec = $tag =~ m/ignore/i
                         ? ''    # ignore MTIgnore blocks
@@ -221,8 +221,8 @@ sub compile {
                             $build->compile( $ctx, $sec, $opt ) );
                         if (@$errors) {
                             my $pre_error = substr( $text, 0, $sec_start );
-                            my @m = $pre_error =~ m/\r?\n/g;
-                            my $line = scalar @m;
+                            my @m         = $pre_error =~ m/\r?\n/g;
+                            my $line      = scalar @m;
                             foreach (@$errors) {
                                 $line += $_->{line};
                                 $_->{line} = $line;
@@ -250,8 +250,8 @@ sub compile {
                 }
                 else {
                     my $pre_error = substr( $text, 0, $tag_start );
-                    my @m = $pre_error =~ m/\r?\n/g;
-                    my $line = scalar @m;
+                    my @m         = $pre_error =~ m/\r?\n/g;
+                    my $line      = scalar @m;
                     if ($depth) {
 
 # $opt->{error_line} = $line;
@@ -325,18 +325,26 @@ sub translate_html_tmpl {
 }
 
 sub _consume_up_to {
-    my ( $text, $start, $stoptag ) = @_;
-    my $pos;
+    my ( $ctx, $text, $start, $stoptag ) = @_;
+    my $whole_tag;
     ( pos $$text ) = $start;
-    while ( $$text =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:[^>]*?)[\$/]?>)!gi ) {
-        my ( $whole_tag, $prefix, $tag ) = ( $1, $2, $3 );
-        next if lc $tag ne lc $stoptag;
+    while ( $$text =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:<[^>]+?>|[^>])*?[\$/]?>)!gi ) {
+        $whole_tag = $1;
+        my ( $prefix, $tag ) = ( $2, $3 );
+
+        # not a container tag
+        my $hdlr = $ctx->handler_for($tag);
+        next if !( $hdlr && $hdlr->type );
+
         my $end = pos $$text;
         if ( $prefix && ( $prefix eq '/' ) ) {
-            return ( $end - length($whole_tag), $end );
+            return ( $end - length($whole_tag), $end )
+                if lc($tag) eq lc($stoptag);
+            last;
         }
-        elsif ( $whole_tag !~ m|/>| ) {
-            my ( $sec_end, $end_tag ) = _consume_up_to( $text, $end, $tag );
+        elsif ( $whole_tag !~ m|/>\z| ) {
+            my ( $sec_end, $end_tag )
+                = _consume_up_to( $ctx, $text, $end, $tag );
             last if !$sec_end;
             ( pos $$text ) = $end_tag;
         }
@@ -344,7 +352,11 @@ sub _consume_up_to {
 
     # special case for unclosed 'else' tag:
     if ( lc($stoptag) eq 'else' || lc($stoptag) eq 'elseif' ) {
-        return ( $start + length($$text), $start + length($$text) );
+        my $pos
+            = pos($$text)
+            ? pos($$text) - length($whole_tag)
+            : length($$text);
+        return ( $pos, $pos );
     }
     return ( 0, 0 );
 }
@@ -607,7 +619,7 @@ sub args_to_string {
             else {
                 next
                     if exists $args->{ $a->[0] }
-                        && ( $args->{ $a->[0] } eq $a->[1] );
+                    && ( $args->{ $a->[0] } eq $a->[1] );
                 $str .= ';' . $a->[0] . ':';
                 $str .= $a->[1];
             }
