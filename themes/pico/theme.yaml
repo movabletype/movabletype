@@ -2,7 +2,7 @@ label: Pico
 id: pico
 author_name: Six Apart, Ltd.
 author_link: http://www.movabletype.org/
-version: 1.1
+version: 1.11
 class: blog
 protected: 1
 description: <__trans phrase="Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.">

@@ -973,6 +973,56 @@ $.mtValidator('simple', {
         $error_block.find('label.msg-error').text(msg);
     }
 });
+$.mtValidator('simple2', {
+    wrapError: function ( $target, msg ) {
+        return $('<li />').append(
+            $('<label/>')
+                .attr('for', $target.attr('id') )
+                .text(msg)
+            );
+    },
+    showError: function( $target, $error_block ) {
+        var id = $target.parents().find('div.field-content').first().parent().attr('id');
+        var ins = true;
+        if ( $('div#'+id+'-msg-block ul').length == 0 ) {
+            var $block = $('<div/>')
+                .addClass('validate-error msg-error')
+                .append( $('<ul />') );
+
+            $('div#'+id+'-msg-block').append( $block );
+        } else {
+            $('div#'+id+'-msg-block ul li').each( function() {
+                var $this = $(this);
+                var msg = $error_block.text();
+                if ( $this.text() === msg ) ins = false;
+            });
+
+        }
+        if ( ins ) {
+            $('div#'+id+'-msg-block ul').append($error_block);
+            $('div#'+id+'-msg-block').show();
+        }
+    },
+    removeError: function( $target, $error_block ) {
+        var id = $target.parents().find('div.field-content').first().parent().attr('id');
+        $error_block.remove();
+        if ( $('div#'+id+'-msg-block ul li').length == 0 ) {
+            $('div#'+id+'-msg-block').hide();
+        }
+    },
+    updateError: function( $target, $error_block, msg ) {
+        var id = $target.parents().find('div.field-content').first().parent().attr('id');
+        var ins = true;
+        $('div#'+id+'-msg-block ul li').each( function() {
+            var $this = $(this);
+            if ( $this.text() === msg ) ins = false;
+        });
+        if ( ins ) {
+            $error_block.find('label').text(msg);
+            this.showError( $target, $error_block );
+        }
+    }
+});
 $.mtValidator('default', {
     wrapError: function ( $target, msg ) {
         return $('<label style="position: absolute;" />')
@@ -1099,10 +1149,10 @@ $.fn.extend({
             if ( !validator ) return true;
             if ( typeof $this.attr('data-showing-placeholder') !== 'undefined' )
                 $this.val('');
-            var $current_error = $.data( this, 'mtValidateError' );
             var rules = $.data( this, 'mtValidateRules' );
             var res = validator.validateElement($this, rules);
             if ( res ) {
+                var $current_error = $.data( this, 'mtValidateError' );
                 successes++;
                 if ( $current_error ) {
                     validator.removeError( $this, $current_error );
@@ -1113,15 +1163,13 @@ $.fn.extend({
                 $this.removeClass( validator.errorClass );
             }
             else {
+                var $current_error = $.data( this, 'mtValidateError' );
                 errors++;
                 if ( validator.doFocus )
                     error_elements.push($this);
                 var msg = validator.errstr;
                 if ( $current_error ) {
-                    var last_error = $.data( this, 'mtValidateLastError' );
-                    if ( last_error != msg ) {
-                        validator.updateError( $this, $current_error, msg );
-                    }
+                    validator.updateError( $this, $current_error, msg );
                 }
                 else {
                     var $error_block = validator.wrapError( $this, msg );

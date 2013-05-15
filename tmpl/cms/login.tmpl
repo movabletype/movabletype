@@ -72,10 +72,33 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 if (window.top && (window.top.location != window.location)) {
-  jQuery('#username')
-    .val( window.top.jQuery('#user .username').text())
-    .addClass('disabled')
-    .attr('disabled','disabled');
+  var username = "";
+  if(document.cookie.length > 0){
+    var sp = "";
+    var ep = "";
+    var cookie = "";
+    sp = document.cookie.indexOf("mt_user=");
+    if (sp != -1) {
+      sp = sp + "mt_user".length + 1;
+      ep = document.cookie.indexOf(";", sp);
+      if (ep == -1) {
+        ep = document.cookie.length;
+      }
+      cookie = unescape(document.cookie.substring(sp, ep));
+      ep = cookie.indexOf("::");
+      if ( ep != -1 ) {
+        username = cookie.substring(0, ep);
+      }
+    }
+  }
+  if ( username.length > 0 ) {
+    jQuery('#username')
+      .val(username)
+      .addClass('disabled')
+      .attr('disabled','disabled');
+  } else {
+    window.top.location.href = '<mt:var name="script_url">';
+  }
   jQuery('#sign-in-button').click(function(){
     jQuery('#username').removeAttr('disabled');
   });

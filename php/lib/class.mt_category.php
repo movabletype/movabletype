@@ -51,6 +51,26 @@ class Category extends BaseObject
             $this->class = 'category';
         parent::Save();
     }
+
+    public function entry_count () {
+        $child_class = $this->class === 'category' ? 'entry' : 'page';
+        $blog_id = $this->blog_id;
+        $cat_id = $this->id;
+
+        $where = "entry_status = 2
+                  and entry_class = '$child_class'
+                  and entry_blog_id = $blog_id";
+        $join = array();
+        $join['mt_placement'] =
+            array(
+                'condition' => "placement_entry_id = entry_id and placement_category_id = $cat_id"
+            );
+
+        require_once('class.mt_entry.php');
+        $entry = new Entry();
+        $cnt = $entry->count( array( 'where' => $where, 'join' => $join ) );
+        return $cnt;
+    }
 }
 
 // Relations

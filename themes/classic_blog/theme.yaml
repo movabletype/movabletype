@@ -2,7 +2,7 @@ label: Classic Blog
 id: classic_blog
 author_name: Six Apart, Ltd.
 author_link: http://www.movabletype.org/
-version: 1.1
+version: 1.11
 class: blog
 protected: 1
 description: <__trans phrase="A traditional blogging design that comes with plenty of styles and a selection of 2 column / 3 column layouts. Best for use in standard blog publishing applications.">

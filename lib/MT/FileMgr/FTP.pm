@@ -15,7 +15,9 @@ use Net::FTP;
 sub init {
     my $fmgr = shift;
     $fmgr->SUPER::init(@_);
-    my $ftp = $fmgr->{ftp} = Net::FTP->new( $_[0] )
+    my %options = ();
+    $options{Port} = $_[3] if $_[3];
+    my $ftp = $fmgr->{ftp} = Net::FTP->new( $_[0], %options )
         or return $fmgr->error("FTP connection failed: $@");
     $ftp->login( @_[ 1, 2 ] );
     $fmgr;
@@ -119,6 +121,26 @@ sub delete {
     1;
 }
 
+sub rmdir {
+    my $fmgr = shift;
+    my ($path) = @_;
+    $fmgr->{ftp}->rmdir($path)
+        or return $fmgr->error(
+        MT->translate( "Deleting '[_1]' failed: [_2]", $path, $@ ) );
+    1;
+}
+
+sub pwd {
+    my $fmgr = shift;
+    $fmgr->{ftp}->pwd();
+}
+
+sub list {
+    my $fmgr = shift;
+    my ($path) = @_;
+    $fmgr->{ftp}->list($path);
+}
+
 sub DESTROY { $_[0]->{ftp}->quit if $_[0]->{ftp} }
 
 package MT::FileMgr::FTP::StringTie;
@@ -134,6 +156,13 @@ sub READ {
 }
 
 sub WRITE {
+    my $str
+        = substr( $_[1], $_[3] ? $_[3] : 0, $_[2] ? $_[2] : length( $_[1] ) );
+    $_[0]->{buf} .= $str;
+    length($str);
+}
+
+sub PRINT {
     my $str
         = substr( $_[1], $_[3] ? $_[3] : 0, $_[2] ? $_[2] : length( $_[1] ) );
     $_[0]->{buf} .= $str;

@@ -165,11 +165,47 @@ sub _hdlr_website_description {
     defined $d ? $d : '';
 }
 
-{
-    my %real_lang = ( cz => 'cs', dk => 'da', jp => 'ja', si => 'sl' );
-    ###########################################################################
+###########################################################################
 
 =head2 WebsiteLanguage
+
+The website's specified language. This setting can be changed on the website's
+general settings screen.
+
+B<Attributes:>
+
+=over 4
+
+=item * locale (optional; default "0")
+
+If assigned, will format the language in the style "language_LOCALE" (ie: "en_US", "de_DE", etc).
+
+=item * ietf (optional; default "0")
+
+If assigned, will change any '_' in the language code to a '-', conforming
+it to the IETF RFC # 3066.
+
+=back
+
+=for tags websites
+
+=cut
+
+sub _hdlr_website_language {
+    my ( $ctx, $args, $cond ) = @_;
+    my $blog = $ctx->stash('blog');
+    return $ctx->_no_website_error()
+        if $blog->class ne 'website';
+    my $lang_tag
+        = ( $blog ? $blog->language : $ctx->{config}->DefaultLanguage )
+        || '';
+    MT::Util::normalize_language( $lang_tag, $args->{'locale'},
+        $args->{'ietf'} );
+}
+
+###########################################################################
+
+=head2 WebsiteDateLanguage
 
 The website's specified language for date display. This setting can be changed
 on the website's Entry settings screen.
@@ -193,25 +229,16 @@ it to the IETF RFC # 3066.
 
 =cut
 
-    sub _hdlr_website_language {
-        my ( $ctx, $args, $cond ) = @_;
-        my $blog = $ctx->stash('blog');
-        return $ctx->_no_website_error()
-            if $blog->class ne 'website';
-        my $lang_tag
-            = ( $blog ? $blog->language : $ctx->{config}->DefaultLanguage )
-            || '';
-        $lang_tag = ( $real_lang{$lang_tag} || $lang_tag );
-        if ( $args->{'locale'} ) {
-            $lang_tag =~ s/^(..)([-_](..))?$/$1 . '_' . uc($3||$1)/e;
-        }
-        elsif ( $args->{"ietf"} ) {
-
-            # http://www.ietf.org/rfc/rfc3066.txt
-            $lang_tag =~ s/_/-/;
-        }
-        $lang_tag;
-    }
+sub _hdlr_website_date_language {
+    my ( $ctx, $args, $cond ) = @_;
+    my $blog = $ctx->stash('blog');
+    return $ctx->_no_website_error()
+        if $blog->class ne 'website';
+    my $lang_tag
+        = ( $blog ? $blog->date_language : $ctx->{config}->DefaultLanguage )
+        || '';
+    MT::Util::normalize_language( $lang_tag, $args->{'locale'},
+        $args->{'ietf'} );
 }
 
 ###########################################################################

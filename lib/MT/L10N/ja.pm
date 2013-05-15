@@ -2498,6 +2498,7 @@ use vars qw( @ISA %Lexicon );
 	'Ordering Categories and Folders of Blogs...' => 'ブログのカテゴリとフォルダの順番を設定しています...',
 	'Ordering Folders of Websites...' => 'ウェブサイトのフォルダの順番を設定しています...',
 	'Assigning ID of user who created for initial user...' => '初期作成ユーザーの作成者IDを設定しています...',
+	'Assigning language of blog to use for formatting date...' => 'ブログに日付の言語を設定しています...',
 
 ## lib/MT/Util.pm
 	'moments from now' => '今から',
@@ -3351,6 +3352,8 @@ use vars qw( @ISA %Lexicon );
 	'UTC-9 (Alaskan Time)' => 'UTC-9 (アラスカ標準時)',
 	'UTC-10 (Aleutians-Hawaii Time)' => 'UTC-10 (ハワイ標準時)',
 	'UTC-11 (Nome Time)' => 'UTC-11 (サモア標準時)',
+	'Language' => '使用言語',
+	'If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.' => 'グローバルなDefaultLanguage設定と異なる言語を選んだ場合、グローバルテンプレートの名称が異なるため、テンプレート内で読み込むモジュール名の変更が必要な場合があります。',
 	'License' => 'ライセンス',
 	'Your blog is currently licensed under:' => 'このブログは、次のライセンスで保護されています:',
 	'Change license' => 'ライセンスの変更',
@@ -3787,7 +3790,6 @@ use vars qw( @ISA %Lexicon );
 	'Password recovery word/phrase' => 'パスワード再設定用のフレーズ',
 	'This word or phrase is not used in the password recovery.' => 'パスワード再設定用のフレーズは使用されていません。',
 	'Preferences' => '設定',
-	'Language' => '使用言語',
 	'Display language for the Movable Type interface.' => '管理画面で使用する言語です。',
 	'Text Format' => 'テキスト形式',
 	'Default text formatting filter when creating new entries and new pages.' => 'ブログ記事とウェブページを作成する際のテキスト形式を指定します。',
@@ -3818,7 +3820,6 @@ use vars qw( @ISA %Lexicon );
 	q{The path where your index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{インデックスファイルが公開されるパスを入力してください。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨します。末尾には'/'や'\'を含めません。例: /home/melody/public_html/blogやC:\www\public_html\blog},
 	q{The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{インデックスファイルを配置するパスを入力してください。例: /home/mt/public_html/blogやC:\www\public_html\blog},
 	'Select your timezone from the pulldown menu.' => 'プルダウンメニューからタイムゾーンを選択してください。',
-	'If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.' => 'グローバルなDefaultLanguage設定と異なる言語を選んだ場合、グローバルテンプレートの名称が異なるため、テンプレート内で読み込むモジュール名の変更が必要な場合があります。',
 	'Create Blog (s)' => 'ブログを作成 (s)',
 	'You must set your Local Site Path.' => 'サイトパスを指定する必要があります。',
 
@@ -5282,6 +5283,8 @@ use vars qw( @ISA %Lexicon );
 	'Full Restore' => '環境のリストア',
 	'SSL Certifications' => 'サーバー証明書',
 	'Config Directives' => 'MT環境変数',
+	'Sync' => 'サーバー配信',
+	'Contents Sync' => 'サーバー配信',
 
 ## addons/Cloud.pack/lib/Cloud/App/CMS.pm
 	'Owner' => 'ブログ管理者',
@@ -5292,6 +5295,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot access to this uri: [_1]' => '[_1]が存在しません。',
 	'Unable to update Basic Authentication settings.' => 'Basic認証の設定を保存する事が出来ませんでした。',
 	'Administration Screen Setting' => '管理画面の設定',
+	'The URL you specified is not available.' => '指定されたURLは利用できません。',
 	'Unable to update Admin Screen URL settings.' => '管理画面のURLを変更できませんでした。',
 	'Cannot delete basicauth_admin file.' => 'Basic認証の設定を削除する事が出来ませんでした。',
 	'User ID is required.' => 'ユーザー名は必須です。',
@@ -5306,11 +5310,30 @@ use vars qw( @ISA %Lexicon );
 	'Cannot copy default secret file.' => '既定のサーバーキーのコピーに失敗しました。',
 	'Unable to update SSL certification.' => 'サーバー証明書の更新をする事が出来ませんでした。',
 	'Config Directive' => '環境変数',
+	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
 	'Restoring Backup Data' => 'バックアップデータの復元',
 	'backup data' => 'バックアップデータ',
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
 	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
 	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
+
+## addons/Cloud.pack/lib/MT/FileSynchronizer.pm
+	'Synchronization with an external server has been successfully finished.' => 'サーバー配信が正常に処理されました',
+	'Failed to sync with an external server.' => 'サーバー配信に失敗しました',
+
+## addons/Cloud.pack/lib/MT/FileSynchronizer/FTPBase.pm
+	'Cannot access to remote directory \'[_1]\'' => 'リモートディレクトリ\'[_1]\'にアクセスできません。',
+	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
+	'Deleting file \'[_1]\' failed.' => 'ファイル\'[_1]\'を削除できませんでした。',
+	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
+	'Unable to write remote file ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
+
+## addons/Cloud.pack/lib/MT/SyncSetting.pm
+	'Sync settings' => 'サーバー配信の設定',
+
+## addons/Cloud.pack/lib/MT/Worker/ContentsSync.pm
+	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
+	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバー配信の処理に成功したことを通知するメールです。',
 
 ## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
 	'Manage Basic Authentication' => 'Basic認証の管理',
@@ -5331,6 +5354,27 @@ use vars qw( @ISA %Lexicon );
 	'Configuration value' => '設定値',
 	'Remove Config Directive' => '環境変数の削除',
 
+## addons/Cloud.pack/tmpl/cfg_contents_sync.tmpl
+	'Contents Sync Setting' => 'サーバー配信設定',
+	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
+	'An error occured while trying to connect to the FTP server. Check the settings and try again.' => 'FTPサーバーに接続できませんでした。設定を見直してもう一度接続してください。',
+	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
+	'Enable contents synchronization' => 'サーバー配信を有効にする',
+	'Sync Settings' => 'サーバー配信の設定',
+	'Sync Date' => 'サーバー配信日時',
+	'Sync Now!' => '今すぐ配信',
+	'Recipient for Notification' => '配信結果の通知先メールアドレス',
+	'Receive only error notification' => '配信に失敗したときだけ受け取る',
+	'FTP Settings' => 'FTPの設定',
+	'FTP Server' => 'FTPサーバー',
+	'Port' => 'FTPサーバーのポート',
+	'SSL' => 'SSL',
+	'Enable SSL' => 'SSLで接続する',
+	'Start Directory' => '開始ディレクトリ',
+	'The sync date must be in the future.' => 'サーバー配信日時は、未来の日時を指定してください。',
+	'Invalid time.' => '無効な時刻指定です。',
+	'Do you want to synchronize the contents just now?' => 'いますぐ配信を実行しますか？',
+
 ## addons/Cloud.pack/tmpl/cfg_ftps_password.tmpl
 	'Reset FTPS Password' => 'FTPSパスワードのリセット',
 	'Please select the account for which you want to reset the password.' => 'FTPSパスワードのリセットを行うアカウントを選択してください。',
@@ -5349,7 +5393,6 @@ use vars qw( @ISA %Lexicon );
 	'HTTP redirect settings' => 'HTTPリダイレクトの設定',
 
 ## addons/Cloud.pack/tmpl/cfg_security.tmpl
-	'The URL you specified is not available.' => '指定されたURLは利用できません。',
 	'Administration screen setting have been saved.' => '管理画面の設定を保存しました。',
 	'Administration screen url have been reset to default.' => '管理画面のURLが既定のURLにリセットされました。',
 	'Admin Screen URL' => '管理画面のURL',
@@ -5364,6 +5407,12 @@ use vars qw( @ISA %Lexicon );
 	'Server Certification' => '証明書 (server.crt)',
 	'Secret Key' => '秘密鍵 (server.key)',
 	'Remove SSL Certification' => 'サーバー証明書の削除',
+
+## addons/Cloud.pack/tmpl/dialog/contents_sync_now.tmpl
+	'Preparing...' => 'サーバー配信の準備をしています...',
+	'Synchronizing...' => '配信中です...',
+	'Finish!' => 'ファイルが配信されました!',
+	'The synchronization was interrupted. Unable to resume.' => 'サーバー配信が中断されました。再開できません。',
 
 ## addons/Cloud.pack/tmpl/full_restore.tmpl
 	'Restoring Full Backup Data' => 'バックアップデータからの復元',
@@ -6469,6 +6518,7 @@ use vars qw( @ISA %Lexicon );
 	'publishes a TrackBack' => 'トラックバックの公開時',
 	'rebuild indexes.' => 'インデックスを再構築する',
 	'rebuild indexes and send pings.' => 'インデックスを再構築して更新pingを送信する',
+	'Updating trigger cache of MultiBlog...' => 'トリガーの設定を更新しています...',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => ' ',
@@ -6496,48 +6546,13 @@ use vars qw( @ISA %Lexicon );
 	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で許可されます。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを制限できます。',
 	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で不許可になります。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを許可することもできます。',
 
-## plugins/SmartphoneOption/config.yaml
-	'Provides an iPhone, iPad and Android touch-friendly UI for Movable Type. Once enabled, navigate to your MT installation from your mobile to use this interface.' => 'iPhone, iPad, Android などのタッチ操作に適したMovable Typeのユーザーインターフェースを提供します。プラグインを有効にして、端末からアクセスしてください。',
-	'iPhone' => 'iPhone',
-	'iPad' => 'iPad',
-	'Android' => 'Android',
-	'PC' => 'PC',
-
-## plugins/SmartphoneOption/extlib/Image/ExifTool/MIFF.pm
-
-## plugins/SmartphoneOption/lib/Smartphone/CMS.pm
-	'This function is not supported by [_1].' => 'この機能は、[_1]に対応していません。',
-	'This function is not supported by your browser.' => 'この機能は、お使いのブラウザに対応していません。',
-	'Mobile Dashboard' => 'モバイルダッシュボード',
-	'Rich text editor is not supported by your browser. Continue with  HTML editor ?' => 'この機能は、お使いのブラウザに対応していません。',
-	'Syntax highlight is not supported by your browser. Disable to continue ?' => 'お使いのブラウザは、コードのハイライト表示に対応していません。無効にして編集しますか？',
-	'[_1] View' => '[_1]表示',
-
-## plugins/SmartphoneOption/lib/Smartphone/CMS/Entry.pm
-	'Re-Edit' => '再編集する',
-	'Re-Edit (e)' => '再編集する (e)',
-	'Rich Text(HTML mode)' => 'リッチテキスト(HTMLモード)',
-
-## plugins/SmartphoneOption/lib/Smartphone/CMS/Listing.pm
-	'All' => '全て',
-	'Filters which you created from PC.' => 'PCで作成したフィルタが表示されます',
-
-## plugins/SmartphoneOption/lib/Smartphone/CMS/Search.pm
-	'Search [_1]' => '[_1]の検索',
-
-## plugins/SmartphoneOption/smartphone.yaml
-	'to [_1]' => 'to [_1]',
-	'Smartphone Main' => 'Smartphone Main',
-	'Smartphone Sub' => 'Smartphone Sub',
-
-## plugins/SmartphoneOption/tmpl/cms/dialog/select_formatted_text.tmpl
-	'No boilerplate could be found.' => '定型文が見つかりません。',
-
 ## plugins/StyleCatcher/config.yaml
 	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcherを使うと、ウェブサイトやブログのスタイルを探して、数クリックで変更することができます。',
 	'MT 4 Style Library' => 'MT 4 スタイルライブラリ',
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Movable Type 4のデフォルトテンプレートと互換性のあるスタイルです。',
 	'Styles' => 'スタイル',
+	'Moving current style to blog_meta for website...' => 'ウェブサイトの現在のスタイルの格納場所を移動しています...',
+	'Moving current style to blog_meta for blog...' => 'ブログの現在のスタイルの格納場所を移動しています...',
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'mt-staticディレクトリが見つかりませんでした。StaticFilePathを設定してください。',

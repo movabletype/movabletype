@@ -1679,6 +1679,19 @@ ul.tabs li a {
     overflow: hidden;
     white-space: nowrap;
 }
+/* take up the scrollbar space explicitly */
+.category-selector-list::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 11px;
+}
+.category-selector-list::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border: 2px solid #fff;
+    border-radius: 8px;
+}
+.category-selector-list::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0,0,0,0.5);
+}
 .list-item-hover {
     background: #dcdddd;
 }

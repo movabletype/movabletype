@@ -163,6 +163,12 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             'white-space': 'pre',
             resize: 'none'
         });
+        if (tinyMCE.isIE8) {
+            adapter.$editorTextarea.css({
+                'min-width': '100%',
+                padding: '0px'
+            });
+        }
         adapter.$editorTextareaParent = adapter.$editorTextarea.parent();
         adapter.$editorElement = adapter.$editorTextarea;
 
