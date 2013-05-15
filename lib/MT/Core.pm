@@ -1850,6 +1850,7 @@ BEGIN {
             'DefaultAssignments'     => { default => '' },
             'AutoSaveFrequency'      => { default => 5 },
             'FuturePostFrequency'    => { default => 1 },
+            'UnpublishPostFrequency' => { default => 1 },
             'AssetCacheDir'          => { default => 'assets_c', },
             'IncludesDir'            => { default => 'includes_c', },
             'MemcachedServers'       => { type    => 'ARRAY', },
@@ -2205,6 +2206,13 @@ sub load_core_tasks {
             frequency => $cfg->FuturePostFrequency * 60,    # once per minute
             code      => sub {
                 MT->instance->publisher->publish_future_posts;
+                }
+        },
+        'UnpublishingPost' => {
+            label     => 'Unpublish Past Entries',
+            frequency => $cfg->UnpublishPostFrequency * 60,  # once per minute
+            code      => sub {
+                MT->instance->publisher->unpublish_past_entries;
                 }
         },
         'AddSummaryWatcher' => {

@@ -93,6 +93,7 @@
 .icon-pending { background-image: url(../images/status_icons/warning.gif); }
 .icon-share { background-image: url(../images/status_icons/share.gif);}
 .icon-spam { background-image: url(../images/status_icons/warning.gif); }
+.icon-unpublish { background-image: url(../images/status_icons/unpublished.gif); }
 
 .icon-spinner { background-image: url(../images/arrow/spinner-right.png); }
 .active .icon-spinner { background-image: url(../images/arrow/spinner-bottom.png); }

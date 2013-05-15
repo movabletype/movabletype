@@ -334,6 +334,8 @@
     <span class="icon-left-wide icon-success"><__trans phrase="Published"></span>
     <mt:else name="status_spam">
     <span class="icon-left-wide icon-spam"><__trans phrase="Unpublished (Spam)"></span>
+    <mt:else name="status_unpublish">
+    <span class="icon-left-wide icon-unpublish"><__trans phrase="Unpublished (End)"></span>
     </mt:if>
   </mt:unless>
   </div>
@@ -434,6 +436,9 @@
       <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>><__trans phrase="Scheduled"></option>
       </mt:unless>
     </mt:if>
+    <mt:if name="status_unpublish">
+      <option value="6" selected="selected"><__trans phrase="Unpublished (End)"></option>
+    </mt:if>
     </select>
     <mt:else>
       <mt:if name="new_object">
@@ -449,6 +454,8 @@
     <input type="hidden" name="status" id="status" value="3" /><span><__trans phrase="Unpublished (Review)"></span>
         <mt:else name="status_spam">
     <input type="hidden" name="status" id="status" value="5" /><span><__trans phrase="Unpublished (Spam)"></span>
+        <mt:else name="status_unpublish">
+    <input type="hidden" name="status" id="status" value="6" /><span><__trans phrase="Unpublished (End)"></span>
         </mt:if>
       </mt:if>
     </mt:if>
@@ -469,6 +476,21 @@
      help_section="date">
     <div class="date-time-fields">
       <input type="text" id="created-on" class="text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" /><span class="separator"> <__trans phrase="@"></span> <input type="text" class="text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>" />
+    </div>
+  </mtapp:setting>
+
+  <mt:setvar name="unpublished_on_label" value="<__trans phrase="Unpublish Date">">
+
+  <mtapp:setting
+     id="unpublished_on"
+     label="$unpublished_on_label"
+     label_class="top-label"
+     help_page="entries"
+     help_section="date">
+    <div class="date-time-fields">
+      <div id="unpublished-on" class="mt-edit-inputblock">
+        <input type="text" id="unpublished-on-date" class="text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" /><span class="separator"> <__trans phrase="@"></span> <input type="text" id="unpublished-on-time" class="text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" />
+      </div>
     </div>
   </mtapp:setting>
 
@@ -1289,6 +1311,10 @@
     jQuery('button.preview').click(function(event) {
         jQuery('form#entry_form input[name=__mode]').val('preview_entry');
     });
+    jQuery('div.mt-edit-inputblock').mtEditInputBlock({
+        edit: '<__trans phrase="Edit">',
+        text: '<$mt:if name="unpublished_on_date"><$mt:var name="unpublished_on_date" escape="html"$> <__trans phrase="@"> <$mt:var name="unpublished_on_time" escape="html"$><mt:else><__trans phrase="Not specified"></mt:if>'
+    });
     jQuery('input#title').mtRebasename({
         edit: '<__trans phrase="Edit">',
         limit: '<$mt:var name="basename_limit" escape="js"$>',
@@ -1298,7 +1324,10 @@
         jQuery('input#revision-note').toggle();
     });
 
-    jQuery('select#status').change( setSaveButtonText );
+    jQuery('select#status').change(function() {
+        setSaveButtonText();
+        clearUnpublishDate();
+    });
     function setSaveButtonText () {
         var selectedStatus = jQuery('select#status').val();
         if (selectedStatus == 2) {
@@ -1310,6 +1339,14 @@
         } else {
             jQuery('button.publish').text('<mt:var name="draft_button_text">');
             jQuery('button.publish').attr('title', '<mt:var name="draft_button_title">');
+        }
+    }
+    function clearUnpublishDate () {
+        var selectedStatus = jQuery('select#status').val();
+        if (selectedStatus == 2) {
+            jQuery('input#unpublished-on-date').val('');
+            jQuery('input#unpublished-on-time').val('');
+            jQuery('span.unpublished-on-text').text('<__trans phrase="Not specified">');
         }
     }
     setSaveButtonText();
