@@ -2477,6 +2477,7 @@ sub load_core_permissions {
                 'add_tags_to_entry_via_list'              => 1,
                 'remove_tags_from_entry_via_list'         => 1,
                 'edit_entry_authored_on'                  => 1,
+                'edit_entry_unpublished_on'               => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2699,6 +2700,7 @@ sub load_core_permissions {
                 'insert_asset'                    => 1,
                 'edit_page_basename'              => 1,
                 'edit_page_authored_on'           => 1,
+                'edit_page_published_on'          => 1,
             }
         },
         'blog.manage_users' => {
