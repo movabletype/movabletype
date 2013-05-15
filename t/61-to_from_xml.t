@@ -407,6 +407,10 @@ sub setup {
         category_id => $w_cat1->id,
         entry_id    => $w_e1->id,
     );
+    my $w_e_tb1 = MT::Test::Permission->make_ping(
+        blog_id => $w->id,
+        tb_id   => $w_e1->trackback->id,
+    );
 
     # Create comment
     my $w_cmt1 = MT::Test::Permission->make_comment(
@@ -425,4 +429,43 @@ sub setup {
         score     => 3,
         author_id => $bob->id,
     );
+
+    # Create custom field
+    if ( my $class = MT->model('field') ) {
+        my $types         = MT->registry('customfield_types');
+        my @website_types = grep {
+            my $context = MT->registry( 'customfield_types', $_ )->{context};
+            !$context
+                || ( ref $context && grep { $_ eq 'website' } @$context )
+                || $context eq 'website';
+        } keys %$types;
+
+        foreach my $obj_type (qw( entry category )) {
+            foreach my $type (@website_types) {
+                my $field = $class->new;
+                $field->set_values(
+                    {   blog_id  => $w->id,
+                        name     => $obj_type . '_' . $type,
+                        obj_type => $obj_type,
+                        type     => $type,
+                        tag      => $obj_type . '_' . $type,
+                    }
+                );
+                $field->save or die $field->errstr;
+            }
+        }
+    }
+
+    # Create formatted text
+    if ( my $class = MT->model('formatted_text') ) {
+        my $ft = $class->new;
+        $ft->set_values(
+            {   blog_id     => $w->id,
+                label       => 'Label',
+                text        => 'Text',
+                description => 'Description',
+            }
+        );
+        $ft->save or die $ft->errstr;
+    }
 }

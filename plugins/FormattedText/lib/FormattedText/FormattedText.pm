@@ -286,7 +286,7 @@ sub required_fields {
 
 sub parents {
     my $obj = shift;
-    { blog_id => MT->model('blog'), };
+    { blog_id => [ MT->model('blog'), MT->model('website') ] };
 }
 
 1;
