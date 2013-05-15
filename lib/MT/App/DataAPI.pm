@@ -308,6 +308,13 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete a trackback.', },
         },
+        {   id      => 'upload_asset',
+            route   => '/sites/:site_id/assets',
+            method  => 'POST',
+            version => 1,
+            handler => "${pkg}Asset::upload",
+            error_codes => { 403 => 'Do not have permission to upload.', },
+        },
         {   id      => 'stats_provider',
             route   => '/sites/:site_id/stats/provider',
             version => 1,
@@ -668,18 +675,19 @@ sub error {
     my @args = @_;
 
     if ( $_[0] && ( $_[0] =~ m/\A\d{3}\z/ || $_[1] ) ) {
-        my ( $message, $code ) = do {
-            if ( scalar(@_) == 2 ) {
+        my ( $message, $code, $data ) = do {
+            if ( scalar(@_) >= 2 ) {
                 @_;
             }
             else {
-                ( '', $_[0] );
+                ( '', $_[0], undef );
             }
         };
         $app->request(
             'data_api_error_detail',
             {   code    => $code,
                 message => $message,
+                data    => $data,
             }
         );
         @args = join( ' ', reverse(@_) );
@@ -689,7 +697,7 @@ sub error {
 }
 
 sub print_error {
-    my ( $app, $message, $status ) = @_;
+    my ( $app, $message, $status, $data ) = @_;
 
     if ( !$status && $message =~ m/\A\d{3}\z/ ) {
         $status  = $message;
@@ -710,6 +718,7 @@ sub print_error {
             {   error => {
                     code    => $status + 0,
                     message => $message,
+                    ( $data ? ( data => $data ) : () ),
                 }
             }
         )
@@ -736,7 +745,7 @@ sub show_error {
 
     return $app->print_error( $error->{message}
             || $endpoint->{error_codes}{ $error->{code} },
-        $error->{code} );
+        $error->{code}, $error->{data} );
 }
 
 sub publish_error {

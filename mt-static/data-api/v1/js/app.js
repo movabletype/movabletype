@@ -99,6 +99,21 @@ DataAPI.prototype = {
         return endpoint;
     },
     
+    serializeObject: function(k, v) {
+        if (v instanceof Date) {
+            return v.getFullYear() + '-' + ( v.getMonth() + 1 ) + '-' + v.getDate() +
+                (k.match(/date/i)
+                    ? ''
+                    : (' ' + v.getHours() + ':' + v.getMinutes() + ':' + v.getSeconds()));
+        }
+        else if (typeof v === 'object') {
+            return JSON.stringify(v);
+        }
+        else {
+            return v;
+        }
+    },
+
     serialize: function(params) {
         if (! params) {
             return params;
@@ -109,21 +124,16 @@ DataAPI.prototype = {
         
         var str = '';
         for (k in params) {
-            if (str) {
-                str += '&';
-            }
-            
             var v = params[k];
-            if (v instanceof Date) {
-                v = v.getFullYear() + '-' + ( v.getMonth() + 1 ) + '-' + v.getDate() +
-                    (k.match(/date/i)
-                        ? ''
-                        : (' ' + v.getHours() + ':' + v.getMinutes() + ':' + v.getSeconds()));
+            if (! (typeof v === 'undefined' || v === null)) {
+                if (str) {
+                    str += '&';
+                }
+
+                str +=
+                    encodeURIComponent(k) + '=' +
+                    encodeURIComponent(this.serializeObject(k, params[k]));
             }
-            else if (typeof params[k] === 'object') {
-                v = JSON.stringify(params[k]);
-            }
-            str += encodeURIComponent(k) + '=' + encodeURIComponent(v);
         }
         return str;
     },
@@ -153,16 +163,48 @@ DataAPI.prototype = {
     },
     
     sendXMLHttpRequest: function(xhr, method, url, params) {
-        params = this.serialize(params);
-        if (params && method.match(/^(put|delete)$/i)) {
-            params += ( params === '' ? '' : '&' ) + '__method=' + method;
+        if (params) {
+            if (window.FormData && params instanceof window.FormData) {
+                // Do nothing
+            }
+            else if (window.FormData && params instanceof HTMLFormElement ) {
+                params = new FormData(params);
+            }
+            else if (window.FormData && typeof params === 'object') {
+                var data = new FormData();
+                for (k in params) {
+                    var v = params[k];
+                    if (! (typeof v === 'undefined' || v === null)) {
+                        data.append(k, this.serializeObject(k, v));
+                    }
+                }
+                params = data;
+            }
+            else if (typeof params !== 'string') {
+                params = this.serialize(params);
+            }
+        }
+
+        if (method.match(/^(put|delete)$/i)) {
+            if (! params) {
+                params = '';
+            }
+
+            if (window.FormData && params instanceof window.FormData) {
+                params.append('__method', method);
+            }
+            else {
+                params += ( params === '' ? '' : '&' ) + '__method=' + method;
+            }
             method = 'POST';
         }
         
         xhr.open(method, url, this.o.async);
-        xhr.setRequestHeader(
-            'Content-Type', 'application/x-www-form-urlencoded'
-        );
+        if (typeof params === 'string') {
+            xhr.setRequestHeader(
+                'Content-Type', 'application/x-www-form-urlencoded'
+            );
+        }
         xhr.setRequestHeader(
             'X-MT-Authorization', 'MTAuth access_token=' + this.getToken()
         );
@@ -186,7 +228,7 @@ DataAPI.prototype = {
                 break;
             case 'object':
             case 'string':
-                params_list.push(this.serialize(arguments[i]));
+                params_list.push(arguments[i]);
                 break;
             }
         }
@@ -198,7 +240,7 @@ DataAPI.prototype = {
             else {
                 endpoint += '&';
             }
-            endpoint += params_list.shift();
+            endpoint += this.serialize(params_list.shift());
         }
 
         if (params_list.length) {
