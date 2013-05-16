@@ -33,5 +33,10 @@ plugins/FacebookCommenters
 plugins/feeds-app-lite
 plugins/mixiComment
 
+mt-sp.cgi
+plugins/SmartphoneOption
+mt-static/plugins/SmartphoneOption
+themes/eiger
+
 t/site/
 t/db/mt.db
