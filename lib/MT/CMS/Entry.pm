@@ -2948,12 +2948,20 @@ sub cms_pre_load_filtered_list {
     my $user = $app->user;
     return if $user->is_superuser;
 
-    my $blog_id = $app->param('blog_id') || 0;
-    my $blog = $blog_id ? $app->blog : undef;
-    my $blog_ids
-        = !$blog         ? undef
-        : $blog->is_blog ? [$blog_id]
-        :                  [ $blog->id, map { $_->id } @{ $blog->blogs } ];
+    my $terms = $load_options->{terms} || {};
+    my $blog_ids = delete $terms->{blog_id}
+        if exists $terms->{blog_id};
+    delete $terms->{author_id}
+        if exists $terms->{author_id};
+
+    if ( !$blog_ids ) {
+        my $blog_id = $app->param('blog_id') || 0;
+        my $blog = $blog_id ? $app->blog : undef;
+        $blog_ids
+            = !$blog         ? undef
+            : $blog->is_blog ? [$blog_id]
+            :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
+    }
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
@@ -2977,16 +2985,10 @@ sub cms_pre_load_filtered_list {
         push @$filters, ( '-or', $user_filter );
     }
 
-    my $terms = $load_options->{terms} || {};
-    delete $terms->{blog_id}
-        if exists $terms->{blog_id};
-    delete $terms->{author_id}
-        if exists $terms->{author_id};
-
     my $new_terms;
     push @$new_terms, ($terms)
         if ( keys %$terms );
-    push @$new_terms, ( '-and', $filters );
+    push @$new_terms, ( '-and', $filters || { blog_id => 0 } );
     $load_options->{terms} = $new_terms;
 }
 

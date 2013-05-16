@@ -123,6 +123,14 @@ my @suite = (
             is( $deleted, undef, 'deleted' );
         },
     },
+    {   path      => '/v1/sites/2/entries',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.entry',
+                count => 1,
+            },
+        ],
+    },
 );
 
 my %callbacks = ();
@@ -169,7 +177,7 @@ for my $data (@suite) {
         }
 
         if ( my $c = $cb->{count} ) {
-            ok( @$params_list == $c,
+            is( @$params_list, $c,
                 $cb->{name} . ' was called ' . $c . ' time(s)' );
         }
     }

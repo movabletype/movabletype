@@ -18,7 +18,8 @@ sub save_object {
         $type, $obj->id, $obj, $original )
         or return;
 
-    $app->run_callbacks( 'data_api_save_filter.' . $type, $app, $obj, $original )
+    $app->run_callbacks( 'data_api_save_filter.' . $type,
+        $app, $obj, $original )
         or return $app->error( $app->errstr, 409 );
 
     $app->run_callbacks( 'data_api_pre_save.' . $type, $app, $obj, $original )
@@ -246,7 +247,8 @@ sub filtered_list {
     my @cols = ( '__id', grep {/^[^\.]+$/} split( ',', $cols ) );
     my @subcols = ( '__id', grep {/\./} split( ',', $cols ) );
 
-    my $scope_mode = $setting->{scope_mode} || 'wide';
+    my $scope_mode
+        = $setting->{data_api_scope_mode} || $setting->{scope_mode} || 'wide';
     my @blog_id_term = (
          !$blog_id              ? ()
         : $scope_mode eq 'none' ? ()
