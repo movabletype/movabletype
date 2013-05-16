@@ -48,10 +48,18 @@ my @apis = (
         result => sub {
             my ($som) = @_;
             my $result = $som->result;
+
+            # blog
             is( $result->[0]->{url},
                 'http://narnia.na/nana/', 'url is correct' );
             is( $result->[0]->{blogid},   1,      'blogid is correct' );
             is( $result->[0]->{blogName}, 'none', 'blogName is correct' );
+
+            # website
+            is( $result->[1]->{url}, 'http://narnia.na/', 'url is correct' );
+            is( $result->[1]->{blogid}, '2', 'blogid is correct' );
+            is( $result->[1]->{blogName}, 'Test site',
+                'blogName is correct' );
             }
     },
     {   api    => 'blogger.getUserInfo',

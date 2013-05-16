@@ -30,7 +30,7 @@ sub iso2ts {
     my ( $blog, $iso ) = @_;
     die MT::XMLRPCServer::_fault( MT->translate("Invalid timestamp format") )
         unless $iso
-            =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/;
+        =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/;
     my ( $y, $mo, $d, $h, $m, $s, $offset )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
     if ( $offset && !MT->config->IgnoreISOTimezones ) {
@@ -353,8 +353,8 @@ sub _new_entry {
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Permission denied.") )
         if !$author->is_superuser
-            && (   !$perms
-                || !$perms->can_do('create_new_entry_via_xmlrpc_server') );
+        && ( !$perms
+        || !$perms->can_do('create_new_entry_via_xmlrpc_server') );
     my $entry      = MT->model($obj_type)->new;
     my $orig_entry = $entry->clone;
     $entry->blog_id($blog_id);
@@ -541,12 +541,12 @@ sub _edit_entry {
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Not allowed to edit entry") )
         if !$author->is_superuser
-            && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
+        && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     my $orig_entry = $entry->clone;
     $entry->status( MT::Entry::RELEASE() )
         if $publish
-            && (   $author->is_superuser
-                || $perms->can_do('publish_entry_via_xmlrpc_server') );
+        && ( $author->is_superuser
+        || $perms->can_do('publish_entry_via_xmlrpc_server') );
     $entry->title( $item->{title} ) if $item->{title};
 
     $class->_apply_basename( $entry, $item, \%param );
@@ -604,8 +604,8 @@ sub _edit_entry {
 
     my $old_categories = $entry->categories;
     $entry->clear_cache('categories');
-    my $changed        = $class->_save_placements( $entry, $item, \%param );
-    my @types          = ($obj_type);
+    my $changed = $class->_save_placements( $entry, $item, \%param );
+    my @types = ($obj_type);
     if ($changed) {
         push @types, 'folder';    # folders are the only type that can be
                                   # created in _save_placements
@@ -687,11 +687,11 @@ sub getUsersBlogs {
 
     my $iter;
     if ( $author->is_superuser ) {
-        $iter = MT::Blog->load_iter();
+        $iter = MT::Blog->load_iter( { class => '*' } );
     }
     else {
         $iter = MT::Blog->load_iter(
-            {},
+            { class => '*' },
             {   join => MT::Permission->join_on(
                     'blog_id', { author_id => $author->id, }, {}
                 )
@@ -705,7 +705,7 @@ sub getUsersBlogs {
             my $perm = $author->permissions( $blog->id );
             next
                 unless $perm
-                    && $perm->can_do('get_blog_info_via_xmlrpc_server');
+                && $perm->can_do('get_blog_info_via_xmlrpc_server');
         }
         push @res,
             {
@@ -751,8 +751,8 @@ sub _get_entries {
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Permission denied.") )
         if !$author->is_superuser
-            && (   !$perms
-                || !$perms->can_do('get_entries_via_xmlrpc_server') );
+        && ( !$perms
+        || !$perms->can_do('get_entries_via_xmlrpc_server') );
     my $iter = MT->model($obj_type)->load_iter(
         { blog_id => $blog_id },
         {   'sort'    => 'authored_on',
@@ -863,7 +863,7 @@ sub _delete_entry {
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Permission denied.") )
         if !$author->is_superuser
-            && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
+        && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
 
     # Delete archive file
     my $blog   = MT::Blog->load( $entry->blog_id );
@@ -951,7 +951,7 @@ sub _get_entry {
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Not allowed to get entry") )
         if !$author->is_superuser
-            && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
+        && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     my $co = sprintf "%04d%02d%02dT%02d:%02d:%02d",
         unpack 'A4A2A2A2A2A2', $entry->authored_on;
     my $link = $entry->permalink;
@@ -1059,8 +1059,8 @@ sub getCategoryList {
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Permission denied.") )
         if !$author->is_superuser
-            && (   !$perms
-                || !$perms->can_do('get_category_list_via_xmlrpc_server') );
+        && ( !$perms
+        || !$perms->can_do('get_category_list_via_xmlrpc_server') );
     require MT::Category;
     my $iter = MT::Category->load_iter( { blog_id => $blog_id } );
     my @data;
@@ -1083,8 +1083,8 @@ sub getCategories {
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Permission denied.") )
         if !$author->is_superuser
-            && (   !$perms
-                || !$perms->can_do('get_categories_via_xmlrpc_server') );
+        && ( !$perms
+        || !$perms->can_do('get_categories_via_xmlrpc_server') );
     require MT::Category;
     my $iter = MT::Category->load_iter( { blog_id => $blog_id } );
     my @data;
@@ -1120,8 +1120,8 @@ sub getTagList {
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Permission denied.") )
         if !$author->is_superuser
-            && (   !$perms
-                || !$perms->can_do('get_tag_list_via_xmlrpc_server') );
+        && ( !$perms
+        || !$perms->can_do('get_tag_list_via_xmlrpc_server') );
     require MT::Tag;
     require MT::ObjectTag;
     my $iter = MT::Tag->load_iter(
@@ -1156,8 +1156,8 @@ sub getPostCategories {
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Permission denied.") )
         if !$author->is_superuser
-            && (   !$perms
-                || !$perms->can_do('get_post_categories_via_xmlrpc_server') );
+        && ( !$perms
+        || !$perms->can_do('get_post_categories_via_xmlrpc_server') );
     my @data;
     my $prim = $entry->category;
     my $cats = $entry->categories;
@@ -1187,7 +1187,7 @@ sub setPostCategories {
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Not allowed to set entry categories") )
         if !$author->is_superuser
-            && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
+        && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     my @place = MT::Placement->load( { entry_id => $entry_id } );
 
     for my $place (@place) {
@@ -1256,7 +1256,7 @@ sub publishPost {
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Not allowed to edit entry") )
         if !$author->is_superuser
-            && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
+        && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
     $mt->rebuild_entry( Entry => $entry, BuildDependencies => 1 )
         or
         die _fault( MT->translate( "Publishing failed: [_1]", $mt->errstr ) );
@@ -1375,8 +1375,8 @@ sub newMediaObject {
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Not allowed to upload files") )
         if !$author->is_superuser
-            && (   !$perms
-                || !$perms->can_do('upload_asset_via_xmlrpc_server') );
+        && ( !$perms
+        || !$perms->can_do('upload_asset_via_xmlrpc_server') );
 
     require MT::Blog;
     require File::Spec;
@@ -1424,13 +1424,14 @@ sub newMediaObject {
         my $fh;
         my $data = $file->{bits};
         open( $fh, "+<", \$data );
-        close($fh), die _fault(
+        close($fh),
+            die _fault(
             MT->translate(
                 "Saving [_1] failed: [_2]",
                 $file->{name},
                 "Invalid image file format."
             )
-        ) unless MT::Image::is_valid_image($fh);
+            ) unless MT::Image::is_valid_image($fh);
         close($fh);
     }
 
