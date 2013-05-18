@@ -70,7 +70,6 @@ sub resource {
         : ($key)
         )
     {
-
         $resource_key = $k;
         $res = $resources{$k} and last;
     }
@@ -360,7 +359,7 @@ sub to_object {
     for ( my $i = 0; $i < $size; $i++ ) {
         my $o = $objs->[$i];
         $o->$name( MT::Util::iso2ts( $blogs{ $blog_ids[$i] }, $o->$name ) )
-            if $o->$name;
+            if $o->{changed_cols}->{$name} && $o->$name;
     }
 }
 
