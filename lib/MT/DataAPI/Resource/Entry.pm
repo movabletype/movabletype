@@ -16,10 +16,19 @@ sub updatable_fields {
             more
             excerpt
             keywords
-            basename
-            date
             tags
-            )
+            ),
+        {
+            name => 'date',
+            condition => sub {
+                MT->instance->can_do('edit_entry_basename');
+            },
+        },
+        {   name      => 'basename',
+            condition => sub {
+                MT->instance->can_do('edit_entry_basename');
+            },
+        }
     ];
 }
 
