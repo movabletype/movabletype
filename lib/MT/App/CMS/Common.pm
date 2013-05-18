@@ -257,6 +257,7 @@ sub init_core_callbacks {
 
             # entry callbacks
             $pkg . 'edit.entry'                   => "${pfx}Entry::edit",
+            $pkg . 'save_permission_filter.entry' => "${pfx}Entry::can_save",
             $pkg . 'view_permission_filter.entry' => "${pfx}Entry::can_view",
             $pkg
                 . 'delete_permission_filter.entry' =>

@@ -1724,39 +1724,6 @@ sub save {
         }
     }
 
-    my $message;
-    if ($is_new) {
-        $message
-            = $app->translate( "[_1] '[_2]' (ID:[_3]) added by user '[_4]'",
-            $class->class_label, $obj->title, $obj->id, $author->name );
-    }
-    elsif ( $orig_obj->status ne $obj->status ) {
-        $message = $app->translate(
-            "[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'",
-            $class->class_label,
-            $obj->title,
-            $obj->id,
-            $app->translate( MT::Entry::status_text( $orig_obj->status ) ),
-            $app->translate( MT::Entry::status_text( $obj->status ) ),
-            $author->name
-        );
-
-    }
-    else {
-        $message
-            = $app->translate( "[_1] '[_2]' (ID:[_3]) edited by user '[_4]'",
-            $class->class_label, $obj->title, $obj->id, $author->name );
-    }
-    require MT::Log;
-    $app->log(
-        {   message => $message,
-            level   => MT::Log::INFO(),
-            class   => $type,
-            $is_new ? ( category => 'new' ) : ( category => 'edit' ),
-            metadata => $obj->id
-        }
-    );
-
     my $error_string = MT::callback_errstr();
 
     ## Now that the object is saved, we can be certain that it has an
@@ -2138,15 +2105,15 @@ PERMCHECK: {
     $app->call_return;
 }
 
-sub send_pings {
+sub do_send_pings {
     my $app = shift;
-    my $q   = $app->param;
-    $app->validate_magic() or return;
+    my ( $blog_id, $entry_id, $old_status, $callback ) = @_;
+
     require MT::Entry;
     require MT::Blog;
-    my $blog = MT::Blog->load( scalar $q->param('blog_id') )
+    my $blog = MT::Blog->load($blog_id)
         or return $app->errtrans('Invalid request');
-    my $entry = MT::Entry->load( scalar $q->param('entry_id') )
+    my $entry = MT::Entry->load($entry_id)
         or return $app->errtrans('Invalid request');
 
     return $app->permission_denied()
@@ -2161,7 +2128,7 @@ sub send_pings {
     my $results = $app->ping_and_save(
         Blog      => $blog,
         Entry     => $entry,
-        OldStatus => scalar $q->param('old_status')
+        OldStatus => $old_status,
     ) or return;
     my $has_errors = 0;
     require MT::Log;
@@ -2178,8 +2145,29 @@ sub send_pings {
             }
             ) unless $res->{good};
     }
-    _finish_rebuild_ping( $app, $entry, scalar $q->param('is_new'),
-        $has_errors );
+
+    $callback->($has_errors);
+}
+
+sub send_pings {
+    my $app = shift;
+    my $q   = $app->param;
+    $app->validate_magic() or return;
+
+    my $entry_id = $q->param('entry_id');
+
+    do_send_pings(
+        $app,
+        scalar $q->param('blog_id'),
+        $entry_id,
+        scalar $q->param('old_status'),
+        sub {
+            my ($has_errors) = @_;
+            my $entry = $app->model('entry')->load($entry_id);
+            _finish_rebuild_ping( $app, $entry, scalar $q->param('is_new'),
+                $has_errors );
+        }
+    );
 }
 
 sub pinged_urls {
@@ -2621,6 +2609,37 @@ sub quickpost_js {
     );
 }
 
+sub can_save {
+    my ( $eh, $app, $id, $obj, $original ) = @_;
+
+    my $perms = $app->permissions
+        or return 0;
+
+    if ($id) {
+        $original
+            ||= MT->model('entry')->load( { class => 'entry', id => $id } )
+            or return 0;
+
+        return 0
+            unless $perms->can_edit_entry( $original, $app->user );
+        return 0
+            if ( ( $obj && $obj->status != $original->status )
+            || ( !$obj && $original->status ne $app->param('status') ) )
+            && !( $perms->can_edit_entry( $original, $app->user, 1 ) );
+    }
+    else {
+        return 0
+            unless $perms->can_do('create_new_entry');
+        return 0
+            if $obj
+            && $obj->status != MT::Entry::HOLD()
+            && !$perms->can_do('publish_own_entry')
+            && !$perms->can_do('publish_all_entry');
+    }
+
+    1;
+}
+
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
     my $perms = $app->permissions;
@@ -2701,11 +2720,49 @@ sub pre_save {
 
 sub post_save {
     my $eh = shift;
-    my ( $app, $obj ) = @_;
+    my ( $app, $obj, $orig_obj ) = @_;
     if ( $app->can('autosave_session_obj') ) {
         my $sess_obj = $app->autosave_session_obj;
         $sess_obj->remove if $sess_obj;
     }
+
+    return 1 unless $orig_obj;
+
+    my $author = $app->user;
+
+    my $message;
+    if (! $orig_obj->id) {
+        $message
+            = $app->translate( "[_1] '[_2]' (ID:[_3]) added by user '[_4]'",
+            $obj->class_label, $obj->title, $obj->id, $author->name );
+    }
+    elsif ( $orig_obj->status ne $obj->status ) {
+        $message = $app->translate(
+            "[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'",
+            $obj->class_label,
+            $obj->title,
+            $obj->id,
+            $app->translate( MT::Entry::status_text( $orig_obj->status ) ),
+            $app->translate( MT::Entry::status_text( $obj->status ) ),
+            $author->name
+        );
+
+    }
+    else {
+        $message
+            = $app->translate( "[_1] '[_2]' (ID:[_3]) edited by user '[_4]'",
+            $obj->class_label, $obj->title, $obj->id, $author->name );
+    }
+    require MT::Log;
+    $app->log(
+        {   message => $message,
+            level   => MT::Log::INFO(),
+            class   => $obj->class,
+            $orig_obj->id ? ( category => 'edit' ) : ( category => 'new' ),
+            metadata => $obj->id
+        }
+    );
+
     1;
 }
 

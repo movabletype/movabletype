@@ -11,8 +11,9 @@ our @EXPORT = qw(
 );
 
 sub save_object {
-    my ( $app, $type, $obj, $original ) = @_;
+    my ( $app, $type, $obj, $original, $around_filter ) = @_;
     $original ||= $app->model($type)->new;
+    $around_filter ||= sub { $_[0]->() };
 
     run_permission_filter( $app, 'data_api_save_permission_filter',
         $type, $obj->id, $obj, $original )
@@ -26,9 +27,15 @@ sub save_object {
         or return $app->error(
         $app->translate( "Save failed: [_1]", $app->errstr ), 409 );
 
-    $obj->save
+    $around_filter->(
+        sub {
+            $obj->save;
+        }
+        )
         or return $app->error(
-        $app->translate( 'Saving object failed: [_1]', $obj->errstr ), 500 );
+        $app->translate( 'Saving object failed: [_1]', $obj->errstr ),
+        500
+        );
 
     $app->run_callbacks( 'data_api_post_save.' . $type,
         $app, $obj, $original );
