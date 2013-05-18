@@ -15,7 +15,13 @@ sub updatable_fields {
 }
 
 sub fields {
-    [   'id', 'label', 'description', 'url', 'mime_type',
+    [   qw(
+            id
+            label
+            description
+            url
+            mime_type
+            ),
         $MT::DataAPI::Resource::Common::fields{tags},
     ];
 }
