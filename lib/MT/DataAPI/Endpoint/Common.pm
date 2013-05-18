@@ -65,7 +65,7 @@ sub remove_object {
 }
 
 sub _load_object_by_name {
-    my ( $app, $name ) = @_;
+    my ( $app, $name, $parent ) = @_;
 
     return $app->blog if $name eq 'site_id';
 
@@ -73,8 +73,12 @@ sub _load_object_by_name {
     my $model = $app->model($model_name)
         or return;
 
-    my $id = $app->param($name);
-    my $obj = $id ? $model->load($id) : undef;
+    my $id  = $app->param($name);
+    my $obj = $model->load(
+        {   id => $id,
+            ( $parent ? ( $parent->datasource . '_id' => $parent->id ) : () ),
+        }
+    ) if $id;
 
     if ( !$obj && !$app->errstr ) {
         $app->error( ucfirst($model_name) . ' not found', 404 );
@@ -86,10 +90,16 @@ sub _load_object_by_name {
 sub context_objects {
     my ( $app, $endpoint ) = @_;
 
-    my @objects
-        = map { _load_object_by_name( $app, $_ ) } @{ $endpoint->{_vars} };
+    my @objects;
+    for my $name ( @{ $endpoint->{_vars} } ) {
+        my $obj
+            = _load_object_by_name( $app, $name,
+            @objects ? $objects[-1] : undef )
+            or return ();
+        push @objects, $obj;
+    }
 
-    return ( grep { !defined($_) } @objects ) ? () : @objects;
+    @objects;
 }
 
 sub resource_objects {
