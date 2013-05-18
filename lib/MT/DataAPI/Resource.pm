@@ -51,12 +51,29 @@ sub resource {
     my $app   = MT->instance;
 
     if ( !%resources ) {
-        my $reg = MT::Component->registry( 'applications', 'data_api',
+        my %aliases = ();
+        my $regs = MT::Component->registry( 'applications', 'data_api',
             'resources' );
-        %resources = map {
-            my $reg = $_;
-            map { $_ => ref( $reg->{$_} ) ? +{} : $reg->{$_} } keys %$reg;
-        } @$reg;
+        for my $reg (@$regs) {
+            for my $k ( keys %$reg ) {
+                if ( ref $reg->{$k} ) {
+                    $resources{$k} ||= { aliases => [{
+                                key => $k,
+                                plugin => $reg->{$k}{plugin},
+                            }], };
+                }
+                else {
+                    $aliases{$k} = $reg->{$k};
+                }
+            }
+        }
+
+        for my $k ( keys %aliases ) {
+            if ($resources{$k}) {
+                push @{ $resources{ $aliases{$k} }{aliases} }, @{ $resources{$k}{aliases} };
+            }
+            $resources{$k} = $aliases{$k};
+        }
     }
 
     my $res;
@@ -85,13 +102,15 @@ sub resource {
     if ( !$res->{fields} ) {
         for my $k (qw(fields updatable_fields)) {
             $res->{$k} = [
-                map {@$_} @{
-                    MT::Component->registry(
-                        'applications', 'data_api',
-                        'resources',    $resource_key,
-                        $k
-                    )
-                }
+                map {
+                    my $data = $_;
+                    @{  $_->{plugin}->registry(
+                            'applications', 'data_api',
+                            'resources',    $_->{key},
+                            $k
+                        )
+                        }
+                } @{ $res->{aliases} }
             ];
         }
 
@@ -210,28 +229,30 @@ sub to_object {
         or return;
 
     my @fields = do {
-        my @fs = map {
-            my $f = $_;
+        my %keys = ();
+        for my $f ( @{ $resource_data->{updatable_fields} } ) {
             if ( ref $f ) {
-                my $cond = 1;
                 if ( exists( $f->{condition} ) ) {
                     if ( !ref( $f->{condition} ) ) {
                         $f->{condition}
                             = MT->handler_to_coderef( $f->{condition} );
                     }
 
-                    $cond = $f->{condition}->();
+                    if ( !$f->{condition}->() ) {
+                        $keys{ $f->{name} } = 0;
+                        next;
+                    }
                 }
 
-                $cond ? $f->{name} : ();
+                $f = $f->{name};
             }
-            else {
-                $f;
-            }
-        } @{ $resource_data->{updatable_fields} };
+
+            $keys{$f} = 1 unless exists $keys{$f};
+        }
+
         grep {
             my $name = ref($_) ? $_->{name} : $_;
-            grep { $_ eq $name } @fs
+            $keys{$name};
         } @{ $resource_data->{fields} };
     };
 
