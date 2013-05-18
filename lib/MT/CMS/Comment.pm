@@ -603,6 +603,23 @@ window.setTimeout("init()", 1500);
 SPINNER
 }
 
+sub can_do_reply {
+    my $app = shift;
+    my ($entry) = @_;
+
+    unless ( $app->can_do('reply_comment_from_cms') ) {
+        my $user  = $app->user;
+        my $perms = $app->{perms};
+        return unless $perms;
+
+        return $app->permission_denied()
+            unless $perms->can_edit_entry( $entry, $user, 1 )
+            ;    # check for publish_post
+    }
+
+    1;
+}
+
 sub do_reply {
     my $app = shift;
 
@@ -630,15 +647,8 @@ sub do_reply {
         $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
         unless $blog;
 
-    unless ( $app->can_do('reply_comment_from_cms') ) {
-        my $user  = $app->user;
-        my $perms = $app->{perms};
-        return unless $perms;
-
-        return $app->permission_denied()
-            unless $perms->can_edit_entry( $entry, $user, 1 )
-        ;    # check for publish_post
-    }
+    can_do_reply($app, $entry)
+        or return;
 
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec

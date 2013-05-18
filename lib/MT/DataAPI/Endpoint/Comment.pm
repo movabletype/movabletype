@@ -11,6 +11,7 @@ use strict;
 use MT::Util qw(remove_html);
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
+use MT::CMS::Comment;
 
 sub list {
     my ( $app, $endpoint ) = @_;
@@ -62,6 +63,21 @@ sub _build_default_comment {
     $orig_comment;
 }
 
+sub _publish_and_send_notification {
+    my ( $app, $blog, $entry, $comment ) = @_;
+
+    MT::Util::start_background_task(
+        sub {
+            $app->rebuild_entry(
+                Entry             => $entry->id,
+                BuildDependencies => 1
+                )
+                or return $app->publish_error( "Publishing failed. [_1]",
+                $app->errstr );
+        }
+    );
+}
+
 sub create {
     my ( $app, $endpoint ) = @_;
 
@@ -77,6 +93,9 @@ sub create {
     save_object( $app, 'comment', $new_comment )
         or return;
 
+    $app->_send_comment_notification( $new_comment, q(), $entry,
+        $blog, $app->user );
+
     $new_comment;
 }
 
@@ -86,15 +105,22 @@ sub create_reply {
     my ( $blog, $entry, $parent ) = context_objects(@_)
         or return;
 
+    MT::CMS::Comment::can_do_reply( $app, $entry )
+        or return $app->error(403);
+
     my $orig_comment
         = _build_default_comment( $app, $endpoint, $blog, $entry );
     $orig_comment->set_values( { parent_id => $parent->id, } );
+    $orig_comment->approve;
 
     my $new_comment = $app->resource_object( 'comment', $orig_comment )
         or return $app->error( resource_error('comment') );
 
     save_object( $app, 'comment', $new_comment )
         or return;
+
+    $app->_send_comment_notification( $new_comment, q(), $entry,
+        $blog, $app->user );
 
     $new_comment;
 }

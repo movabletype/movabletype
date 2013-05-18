@@ -218,7 +218,7 @@ sub core_endpoints {
             version   => 1,
             handler   => "${pkg}Comment::create_reply",
             error_codes =>
-                { 403 => 'Do not have permission to create a comment.', },
+                { 403 => 'Do not have permission to create a reply to the requested comment.', },
         },
         {   id          => 'get_comment',
             route       => '/sites/:site_id/comments/:comment_id',
@@ -757,6 +757,11 @@ sub show_error {
 sub publish_error {
     require MT::App::CMS;
     MT::App::CMS::publish_error(@_);
+}
+
+sub permission_denied {
+    my $app = shift;
+    return $app->error(403);
 }
 
 sub set_next_phase_url {
