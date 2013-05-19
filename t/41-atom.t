@@ -490,6 +490,77 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
             }
 
             my $uri = new URI;
+            $uri->path( $base_uri . '/blog_id=' . $blog_id . '/svc=upload/' );
+            my $req = new HTTP::Request( POST => $uri );
+            $req->header( 'Authorization' => 'Atom' );
+            $req->header( 'X-WSSE' => "UserNameToken Username=\"$username\", "
+                    . "PasswordDigest=\"$PasswordDigest\", Nonce=\"$nonce\", "
+                    . "Created=\"$timestamp\"" );
+
+            my $fmgr = MT::FileMgr->new('Local');
+            if ( $fmgr->exists('t/test.gif') ) {
+                $fmgr->delete('t/test.gif');
+            }
+
+            my $name = 't/images/test.gif';
+            open my $fh, $name or die $!;
+            binmode $fh;
+            my $data = do { local $/; <$fh> };
+            close $fh;
+
+            use XML::Atom::Entry;
+            my $entry = XML::Atom::Entry->new;
+            $entry->title($name);
+            $entry->content($data);
+            $entry->content->type('image/gif');
+            $entry->summary('A picture.');
+
+            $req->content( $entry->as_xml );
+
+            my $resp = $ua->simple_request($req);
+
+            print "######### RESPONSE #########\n";
+            print "# " . $resp->code . " " . $resp->message . "\n";
+            my $content = $resp->content;
+            $content =~ s/^/# /gm;
+            print $content;
+            print "#########~RESPONSE #########\n";
+            ok( $resp->is_success() );
+
+            my $asset = MT::Asset::Image->load( { blog_id => $blog_id },
+                { sort => 'id', direction => 'descend' } );
+            ok($asset);
+            is( $asset->file_name, 'test.gif' );
+            my $asset_url = $asset->url;
+
+        }
+
+        unless (USE_DIGEST) {
+            print "# Doing Digest auth\n";
+
+            # # # # Now try posting an entry with authentication
+            my $nonce = make_nonce();
+            my $timestamp = strftime( "%Y-%m-%dT%H:%M:%SZ", gmtime(time) );
+            use Digest::SHA1 qw(sha1_base64);
+            my $PasswordDigest
+                = sha1_base64( $nonce . $timestamp . $chuck_token );
+
+       #     print STDERR ("Client hashing (",
+       #             unpack('H*', $nonce . $timestamp . $chuck_token), ")\n");
+       #     print STDERR "      produces: $PasswordDigest\n";
+
+            $nonce = MIME::Base64::encode_base64( $nonce, '' );
+
+            print "# nonce: $nonce\n";
+
+            my $dir = `pwd`;
+            chomp $dir;
+            while ( !-x ( $dir . "/mt-atom.cgi" ) ) {
+                $dir =~ s!(/[^/]*)$!!;
+                last if $dir =~ m!^/?$!;
+            }
+
+            my $uri = new URI;
             $uri->path( $base_uri
                     . '/blog_id='
                     . $blog_id
