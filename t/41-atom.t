@@ -4,6 +4,7 @@ use POSIX;
 
 use MT;
 use MT::Atom;
+use MT::Util;
 use XML::LibXML;    # this test would not work without it
 use XML::XPath;
 use XML::Atom;
@@ -21,6 +22,7 @@ my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
 isa_ok( $mt, 'MT' );
 
 use MT::Test qw(:db :data);
+use MT::Test::Permission;
 
 my %test_data;
 $test_data{'/mt-atom.cgi/weblog'} = <<XML1;
@@ -61,8 +63,8 @@ my %feed_link = (
         my ($resp) = @_;
         my $feed = XML::Atom::Feed->new( \$resp->content() );
         ok( $feed, 'got feed' );
-        my ($sfeed) = grep { $_->rel eq 'service.feed' } $feed->links;
-        $sfeed->href;
+        my @sfeeds = grep { $_->rel eq 'service.feed' } $feed->links;
+        [ map { $_->href } @sfeeds ];
     },
 
   #'/mt-atom.cgi/1.0' => sub {
@@ -78,6 +80,12 @@ my $username = 'Chuck D';
 my $chuck = MT::Author->load( { name => $username } )
     or die "Couldn't load $username";
 my $chuck_token = $chuck->api_password;
+
+# create website records
+foreach ( 0 .. 2 ) {
+    MT::Test::Permission->make_entry( blog_id => 2 );
+    MT::Test::Permission->make_category( blog_id => 2 );
+}
 
 # not a good nonce-maker
 my @hexch = ( '0' .. '9', 'a' .. 'f' );
@@ -118,11 +126,17 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
 
         my $resp = $ua->request($req);
         if ( ok( $resp->is_success ) ) {
-            my $blog_feed_url = $feed_link{$base_uri}->($resp);
-            my $blog_feed_uri = new URI($blog_feed_url);
+            my $blog_feed_urls = $feed_link{$base_uri}->($resp);
+            is( scalar @$blog_feed_urls, 2 );
+            my $blog_feed_uri = new URI( $blog_feed_urls->[0] );
             is( $blog_feed_uri->path,
                 '/cgi-bin' . $base_uri . '/blog_id=1',
                 'blog feed url is correct'
+            );
+            my $website_feed_uri = new URI( $blog_feed_urls->[1] );
+            is( $website_feed_uri->path,
+                '/cgi-bin' . $base_uri . '/blog_id=2',
+                'website feed url is correct'
             );
         }
         else {
@@ -183,6 +197,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
                     { limit   => 21 },
                 );
                 my @entries = $feed->entries;
+                ok($entry_count);
                 is( $entry_count, scalar(@entries),
                     'number of entries is correct' );
 
@@ -215,6 +230,45 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
             }
             else {
                 die 'failed to retrieve blog feed';
+            }
+        }
+
+        # test blog categories feed
+        {
+            my $wsse_header = make_wsse($chuck_token);
+            my $uri         = new URI;
+            $uri->path( $base_uri . "/blog_id=$blog_id/svc=categories" );
+            my $req = new HTTP::Request( GET => $uri );
+            $req->header( 'Authorization' => 'Atom' );
+            $req->header( 'X-WSSE'        => $wsse_header );
+
+            print "# X-WSSE: $wsse_header\n";
+
+            my $resp = $ua->request($req);
+            if ( ok( $resp->is_success ) ) {
+
+                my $parser = MT::Util::libxml_parser();
+                my $doc    = $parser->parse_string( \$resp->content );
+
+                my $cats = $doc->getElementsByTagName('categories');
+                ok( $cats && @$cats );
+
+                my @subjects = $cats->[0]->getElementsByTagName('subject');
+                my @categories
+                    = MT::Category->load( { blog_id => $blog_id } );
+                ok( scalar @subjects );
+                is( scalar @subjects, scalar @categories );
+
+                for ( my $cnt = 0; $cnt < scalar(@subjects); $cnt++ ) {
+                    ok( $subjects[$cnt]->textContent );
+                    is( $subjects[$cnt]->textContent,
+                        $categories[$cnt]->label
+                    );
+                }
+
+            }
+            else {
+                die 'failed to retrieve categories';
             }
         }
 
@@ -408,6 +462,60 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
                 skip(1);
                 skip(1);
             }
+        }
+
+        unless (USE_DIGEST) {
+            print "# Doing Digest auth\n";
+
+            # # # # Now try posting an entry with authentication
+            my $nonce = make_nonce();
+            my $timestamp = strftime( "%Y-%m-%dT%H:%M:%SZ", gmtime(time) );
+            use Digest::SHA1 qw(sha1_base64);
+            my $PasswordDigest
+                = sha1_base64( $nonce . $timestamp . $chuck_token );
+
+       #     print STDERR ("Client hashing (",
+       #             unpack('H*', $nonce . $timestamp . $chuck_token), ")\n");
+       #     print STDERR "      produces: $PasswordDigest\n";
+
+            $nonce = MIME::Base64::encode_base64( $nonce, '' );
+
+            print "# nonce: $nonce\n";
+
+            my $dir = `pwd`;
+            chomp $dir;
+            while ( !-x ( $dir . "/mt-atom.cgi" ) ) {
+                $dir =~ s!(/[^/]*)$!!;
+                last if $dir =~ m!^/?$!;
+            }
+
+            my $uri = new URI;
+            $uri->path( $base_uri
+                    . '/blog_id='
+                    . $blog_id
+                    . '/entry_id='
+                    . $entry_id );
+            my $req = new HTTP::Request( DELETE => $uri );
+            $req->header( 'Authorization' => 'Atom' );
+            $req->header( 'X-WSSE' => "UserNameToken Username=\"$username\", "
+                    . "PasswordDigest=\"$PasswordDigest\", Nonce=\"$nonce\", "
+                    . "Created=\"$timestamp\"" );
+
+            $req->content( $test_data{$base_uri} );
+
+            my $resp = $ua->simple_request($req);
+
+            print "######### RESPONSE #########\n";
+            print "# " . $resp->code . " " . $resp->message . "\n";
+            my $content = $resp->content;
+            $content =~ s/^/# /gm;
+            print $content;
+            print "#########~RESPONSE #########\n";
+            ok( $resp->is_success() );
+
+            print "# entry ID is $entry_id\n";
+            my $entry = MT::Entry->load($entry_id);
+            is( $entry, undef );
         }
 
     }    #end foreach of blog_id

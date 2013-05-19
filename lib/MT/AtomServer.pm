@@ -484,7 +484,7 @@ sub get_weblogs {
     my $user = $app->{user};
     my $iter
         = $user->is_superuser
-        ? MT::Blog->load_iter()
+        ? MT::Blog->load_iter( { class => '*' } )
         : MT::Permission->load_iter( { author_id => $user->id } );
     my $base = $app->base . $app->uri;
     my $enc  = $app->config->PublishCharset;
@@ -1240,7 +1240,7 @@ sub get_weblogs {
     my $user = $app->{user};
     my $iter
         = $user->is_superuser
-        ? MT::Blog->load_iter()
+        ? MT::Blog->load_iter( { class => '*' } )
         : MT::Permission->load_iter( { author_id => $user->id } );
     my $feed = $app->new_feed();
     my $base = $app->base . $app->uri;
