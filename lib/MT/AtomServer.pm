@@ -285,7 +285,7 @@ sub iso2ts {
     my ( $ts, $target_zone ) = @_;
     return
         unless $ts
-            =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|([+-]\d{2}:\d{2}))?)?)?)?/;
+        =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|([+-]\d{2}:\d{2}))?)?)?)?/;
     my ( $y, $mo, $d, $h, $m, $s, $zone )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
     if ($zone) {
@@ -314,7 +314,7 @@ sub iso2epoch {
     my ($ts) = @_;
     return
         unless $ts
-            =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|([+-]\d{2}:\d{2}))?)?)?)?/;
+        =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|([+-]\d{2}:\d{2}))?)?)?)?/;
     my ( $y, $mo, $d, $h, $m, $s, $zone )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
 
@@ -484,7 +484,7 @@ sub get_weblogs {
     my $user = $app->{user};
     my $iter
         = $user->is_superuser
-        ? MT::Blog->load_iter()
+        ? MT::Blog->load_iter( { class => '*' } )
         : MT::Permission->load_iter( { author_id => $user->id } );
     my $base = $app->base . $app->uri;
     my $enc  = $app->config->PublishCharset;
@@ -590,7 +590,7 @@ sub new_post {
             "Invalid blog ID '[_1]'",
             ( $blog ? ( $blog->id ) : ('') )
         )
-    ) if !$blog || !$blog->is_blog;
+    ) if !$blog;
     my $user  = $app->{user};
     my $perms = $app->{perms};
     my $enc   = $app->config('PublishCharset');
@@ -1062,13 +1062,14 @@ sub _upload_to_asset {
         my $fh;
         my $data = $content->body;
         open( $fh, "+<", \$data );
-        close($fh), return $app->error(
+        close($fh),
+            return $app->error(
             500,
             MT->translate(
                 "Saving [_1] failed: [_2]", $base,
                 MT->translate("Invalid image file format.")
             )
-        ) unless MT::Image::is_valid_image($fh);
+            ) unless MT::Image::is_valid_image($fh);
         close($fh);
     }
 
@@ -1239,7 +1240,7 @@ sub get_weblogs {
     my $user = $app->{user};
     my $iter
         = $user->is_superuser
-        ? MT::Blog->load_iter()
+        ? MT::Blog->load_iter( { class => '*' } )
         : MT::Permission->load_iter( { author_id => $user->id } );
     my $feed = $app->new_feed();
     my $base = $app->base . $app->uri;
@@ -1247,8 +1248,8 @@ sub get_weblogs {
     my $uri = URI->new($base);
     if ($uri) {
         my $created
-            = MT::Util::format_ts( '%Y-%m-%d', $user->created_on, undef, 'en',
-            0 );
+            = MT::Util::format_ts( '%Y-%m-%d', $user->created_on, undef,
+            'en', 0 );
         my $id
             = 'tag:'
             . $uri->host . ','
@@ -1477,8 +1478,8 @@ sub get_blog_comments {
     my $site_uri = URI->new( $blog->site_url );
     if ($site_uri) {
         my $blog_created
-            = MT::Util::format_ts( '%Y-%m-%d', $blog->created_on, $blog, 'en',
-            0 );
+            = MT::Util::format_ts( '%Y-%m-%d', $blog->created_on, $blog,
+            'en', 0 );
         my $id
             = 'tag:'
             . $site_uri->host . ','
