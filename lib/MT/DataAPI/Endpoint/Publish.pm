@@ -40,7 +40,7 @@ sub entries {
         $app->param( 'blog_id', $blog_id );
     }
     if ( my $v = $app->param('startTime') ) {
-        $app->param( 'start_time', _iso2epoch($blog_id, $v) );
+        $app->param( 'start_time', _iso2epoch( $blog_id, $v ) );
     }
     if ( my $v = $app->param('blogIds') ) {
         $app->param( 'blog_ids', split ',', $v );
@@ -96,6 +96,7 @@ sub entries {
     else {
         +{  status    => 'complete',
             startTime => _epoch2iso( $blog_id, $start_time ),
+            restIds   => q(),
         };
     }
 }
