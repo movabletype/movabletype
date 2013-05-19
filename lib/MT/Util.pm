@@ -114,7 +114,14 @@ sub ts2iso {
     my ( $yr, $mo, $dy, $hr, $mn, $sc ) = unpack( 'A4A2A2A2A2A2', $ts );
 
     if ($with_timezone) {
-        my ( $off_hour, $off_min ) = split( /\./, $blog->server_offset );
+        if ( $blog && !ref($blog) ) {
+            require MT::Blog;
+            $blog = MT::Blog->load($blog);
+        }
+        my $offset
+            = ref $blog ? $blog->server_offset : MT->config->TimeOffset;
+
+        my ( $off_hour, $off_min ) = split( /\./, $offset );
         $off_min = int( 6 * ( $off_min || 0 ) );
         sprintf(
             '%04d-%02d-%02dT%02d:%02d:%02d%s%02d:%02d',
