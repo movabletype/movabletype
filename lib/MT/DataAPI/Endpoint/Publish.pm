@@ -88,13 +88,13 @@ sub entries {
             )
         );
 
-        +{  status    => 'rebuilding',
+        +{  status    => 'Rebuilding',
             startTime => $start_time,
             restIds   => $ids,
         };
     }
     else {
-        +{  status    => 'complete',
+        +{  status    => 'Complete',
             startTime => _epoch2iso( $blog_id, $start_time ),
             restIds   => q(),
         };
