@@ -8,8 +8,8 @@ var DataAPI = function(options) {
         cookiePath: undefined,
         async: true
     };
-    for (k in this.o) {
-        if (options[k]) {
+    for (k in options) {
+        if (k in this.o) {
             if (typeof this.o[k] === 'object') {
                 for (l in this.o[k]) {
                    this.o[k][l] = options[k][l]; 
@@ -19,8 +19,10 @@ var DataAPI = function(options) {
                 this.o[k] = options[k];
             }
         }
+        else {
+            throw 'Unkown option: ' + k;
+        }
     }
-    // TODO validate option
 
     this.callbacks = [];
     this.tokenData = null;
