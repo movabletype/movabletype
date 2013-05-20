@@ -2310,6 +2310,13 @@ sub load_core_tasks {
                 MT::Core->purge_session_records;
                 }
         },
+        'PurgeExpiredDataAPISessionRecords' => {
+            label => 'Purge Stale DataAPI Session Records',
+            frequency => 60,     # * 60 * 24,   # once a day
+            code      => sub {
+                MT::CMS::DataAPI->purge_session_records;
+                }
+        },
         'CleanExpiredFailedLogin' => {
             label     => 'Remove expired lockout data',
             frequency => $cfg->FailedLoginExpirationFrequency,
@@ -2348,9 +2355,11 @@ sub remove_temporary_files {
 }
 
 sub purge_user_session_records {
+    my ( $kind, $timeout ) = @_;
+
     my $iter = MT::Session->load_iter(
-        {   kind  => 'US',
-            start => [ undef, time - MT->config->UserSessionTimeout ],
+        {   kind  => $kind,
+            start => [ undef, time - $timeout ],
         },
         { range => { start => 1 } }
     );
@@ -2368,7 +2377,7 @@ sub purge_session_records {
     require MT::Session;
 
     # remove expired user sessions
-    purge_user_session_records();
+    purge_user_session_records( 'US', MT->config->UserSessionTimeout );
 
     # remove stale search cache
     MT::Session->remove( { kind => 'CS', start => [ undef, time - 60 * 60 ] },

@@ -681,6 +681,21 @@ sub start_session {
     $app->{session} = $session;
 }
 
+sub purge_session_records {
+    my $class = shift;
+
+    require MT::Session;
+
+    # remove expired user sessions
+    MT::Core::purge_user_session_records( $class->session_kind,
+        MT->config->UserSessionTimeout );
+
+    # remove expired access tokens
+    MT::AccessToken->purge;
+
+    return '';
+}
+
 sub error {
     my $app  = shift;
     my @args = @_;

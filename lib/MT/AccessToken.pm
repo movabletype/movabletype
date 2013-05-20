@@ -51,4 +51,13 @@ sub ttl {
     MT->config->AccessTokenTTL;
 }
 
+sub purge {
+    my $class = shift;
+
+    $class->remove( { start => [ undef, time() - $class->ttl ] },
+        { range => { start => 1, } } );
+
+    1;
+}
+
 1;
