@@ -287,7 +287,7 @@ DataAPI.prototype = {
                 var status = callback(response);
                 if (status !== false) {
                     if (response.error) {
-                        // TODO default error handling
+                        api.trigger('error', response);
                     }
                 }
             }
