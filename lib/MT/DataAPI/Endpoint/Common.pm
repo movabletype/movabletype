@@ -6,7 +6,7 @@ use strict;
 use base 'Exporter';
 our @EXPORT = qw(
     save_object remove_object
-    context_objects resource_objects
+    context_objects resource_objects get_target_user
     run_permission_filter filtered_list obj_promise
 );
 
@@ -118,6 +118,18 @@ sub resource_objects {
     return ( grep { !defined($_) } @objects ) ? () : @objects;
 }
 
+sub get_target_user {
+    my ($app) = @_;
+
+    if ( $app->param('user_id') eq 'me' ) {
+        $app->user;
+    }
+    else {
+        my ($user) = context_objects(@_);
+        $user;
+    }
+}
+
 sub run_permission_filter {
     my $app = shift;
     my ( $filter, $type ) = splice( @_, 0, 2 );
@@ -128,9 +140,10 @@ sub run_permission_filter {
 }
 
 sub filtered_list {
-    my ( $app, $endpoint, $ds, $terms, $args ) = @_;
-    $terms ||= {};
-    $args  ||= {};
+    my ( $app, $endpoint, $ds, $terms, $args, $options ) = @_;
+    $terms   ||= {};
+    $args    ||= {};
+    $options ||= {};
     my $q         = $app->param;
     my $blog_id   = $q->param('blog_id') || 0;
     my $filter_id = $q->param('fid') || 0;
@@ -280,6 +293,7 @@ sub filtered_list {
         blog       => $blog,
         blog_id    => $blog_id,
         blog_ids   => $blog_ids,
+        %$options,
     );
 
     my %count_options = (
@@ -289,6 +303,7 @@ sub filtered_list {
         blog     => $blog,
         blog_id  => $blog_id,
         blog_ids => $blog_ids,
+        %$options,
     );
 
     MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $ds,

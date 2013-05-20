@@ -10,22 +10,10 @@ use strict;
 
 use MT::DataAPI::Endpoint::Common;
 
-sub _get_user {
-    my ($app) = @_;
-
-    if ( $app->param('user_id') eq 'me' ) {
-        $app->user;
-    }
-    else {
-        my ($user) = context_objects(@_);
-        $user;
-    }
-}
-
 sub get {
     my ( $app, $endpoint ) = @_;
 
-    my $user = _get_user(@_)
+    my $user = get_target_user(@_)
         or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',

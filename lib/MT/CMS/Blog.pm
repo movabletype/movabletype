@@ -3354,7 +3354,7 @@ sub cms_pre_load_filtered_list {
         if $app->blog;
     $terms->{class} = 'blog' unless $terms->{class} eq '*';
 
-    my $user = $app->user;
+    my $user = $load_options->{user} || $app->user;
     return   if $user->is_superuser;
     return 1 if $user->permissions(0)->can_do('edit_templates');
 
@@ -3375,6 +3375,7 @@ sub cms_pre_load_filtered_list {
         }
     }
     if ($blog_ids) {
+        delete $terms->{class};
         $terms->{id} = $blog_ids;
     }
     else {

@@ -13,8 +13,13 @@ use MT::DataAPI::Endpoint::Common;
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    # TODO if user_id ne "me"
-    my $res = filtered_list( $app, $endpoint, 'blog', { class => '*' } );
+    my $user = get_target_user(@_)
+        or return;
+
+    my $res = filtered_list(
+        $app, $endpoint, 'blog', { class => '*' },
+        undef, { user => $user }
+    );
 
     +{  totalResults => $res->{count},
         items        => $res->{objects},
