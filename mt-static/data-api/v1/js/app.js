@@ -138,28 +138,22 @@ DataAPI.prototype = {
         return str;
     },
     
-    newXMLHttpRequest: function() {
-        var xmlhttp;
+    _newXMLHttpRequestStandard: function() {
+        try {
+            return new window.XMLHttpRequest();
+        } catch( e ) {}
+    },
 
-        if (window.ActiveXObject){
-            try {
-                xmlhttp = new ActiveXObject('Msxml2.XMLHTTP');
-            } catch (e) {
-                try {
-                    xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
-                } catch (e) {
-                    return false;
-                }
-            }
-        }
-        else if (window.XMLHttpRequest) {
-            xmlhttp = new XMLHttpRequest();
-        }
-        else {
-            xmlhttp = false;
-        }
-        
-        return xmlhttp;
+    _newXMLHttpRequestActiveX: function() {
+        try {
+            return new window.ActiveXObject("Microsoft.XMLHTTP");
+        } catch( e ) {}
+    },
+
+    newXMLHttpRequest: function() {
+        return this._newXMLHttpRequestStandard()
+            || this._newXMLHttpRequestActiveX()
+            || false;
     },
     
     sendXMLHttpRequest: function(xhr, method, url, params) {
@@ -215,36 +209,48 @@ DataAPI.prototype = {
     },
     
     request: function(method, endpoint) {
-        var api         = this,
-            params_list = [],
-            params      = null,
-            callback    = function(){},
+        var api        = this,
+            paramsList = [],
+            params     = null,
+            callback   = function(){},
+            xhr        = null,
             originalArguments = Array.prototype.slice.call(arguments);
         
         for (var i = 2; i < arguments.length; i++) {
-            switch (typeof arguments[i]) {
+            var v = arguments[i];
+            switch (typeof v) {
             case 'function':
-                callback = arguments[i];
+                callback = v;
                 break;
             case 'object':
+                if (
+                    (window.ActiveXObject && v instanceof window.ActiveXObject)
+                    || (window.XMLHttpRequest && v instanceof window.XMLHttpRequest)
+                ) {
+                    xhr = v;
+                }
+                else {
+                    paramsList.push(v);
+                }
+                break;
             case 'string':
-                params_list.push(arguments[i]);
+                paramsList.push(v);
                 break;
             }
         }
         
-        if (params_list.length && (method.toLowerCase() === 'get' || params_list.length >= 2)) {
+        if (paramsList.length && (method.toLowerCase() === 'get' || paramsList.length >= 2)) {
             if (endpoint.indexOf('?') === -1) {
                 endpoint += '?';
             }
             else {
                 endpoint += '&';
             }
-            endpoint += this.serialize(params_list.shift());
+            endpoint += this.serialize(paramsList.shift());
         }
 
-        if (params_list.length) {
-            params = params_list.shift();
+        if (paramsList.length) {
+            params = paramsList.shift();
         }
         
         
@@ -252,7 +258,7 @@ DataAPI.prototype = {
         endpoint = endpoint.replace(/^\/*/, '/');
 
 
-        var xhr = this.newXMLHttpRequest();
+        var xhr = xhr || this.newXMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState !== 4) {
                 return;
