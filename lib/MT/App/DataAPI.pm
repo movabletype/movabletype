@@ -533,12 +533,16 @@ sub resource_object {
     my ( $app, $name, $original ) = @_;
 
     my $data_text = $app->param($name)
-        or return undef;
+        or return $app->error( qq{A resource "$name" is required.}, 400 );
 
     my $data = $app->current_format->{unserialize}->($data_text)
-        or return undef;
+        or return $app->error( 'Invalid data format: ' . $name, 400 );
 
-    MT::DataAPI::Resource->to_object( $name, $data, $original );
+    my $obj = MT::DataAPI::Resource->to_object( $name, $data, $original );
+    return $app->error( 'Failed to convert to the object: ' . $obj->errstr, 400 )
+        if ( $obj->errstr );
+
+    $obj;
 }
 
 sub object_to_resource {

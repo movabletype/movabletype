@@ -149,7 +149,7 @@ sub create {
     );
 
     my $new_entry = $app->resource_object( 'entry', $orig_entry )
-        or return $app->error( resource_error('entry') );
+        or return;
 
     if (  !$new_entry->basename
         || $app->model('entry')
@@ -190,7 +190,7 @@ sub update {
     my ( $blog, $orig_entry ) = context_objects(@_)
         or return;
     my $new_entry = $app->resource_object( 'entry', $orig_entry )
-        or return $app->error( resource_error('entry') );
+        or return;
 
     my $post_save
         = build_post_save_sub( $app, $blog, $new_entry, $orig_entry );

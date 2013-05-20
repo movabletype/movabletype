@@ -88,7 +88,7 @@ sub create {
         = _build_default_comment( $app, $endpoint, $blog, $entry );
 
     my $new_comment = $app->resource_object( 'comment', $orig_comment )
-        or return $app->error( resource_error('comment') );
+        or return;
 
     save_object( $app, 'comment', $new_comment )
         or return;
@@ -114,7 +114,7 @@ sub create_reply {
     $orig_comment->approve;
 
     my $new_comment = $app->resource_object( 'comment', $orig_comment )
-        or return $app->error( resource_error('comment') );
+        or return;
 
     save_object( $app, 'comment', $new_comment )
         or return;
@@ -144,7 +144,7 @@ sub update {
     my ( $blog, $comment ) = context_objects(@_)
         or return;
     my $new_comment = $app->resource_object( 'comment', $comment )
-        or return $app->error( resource_error('comment') );
+        or return;
 
     save_object( $app, 'comment', $new_comment, $comment )
         or return;

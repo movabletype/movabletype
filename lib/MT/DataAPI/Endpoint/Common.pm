@@ -7,7 +7,7 @@ use base 'Exporter';
 our @EXPORT = qw(
     save_object remove_object
     context_objects resource_objects
-    resource_error run_permission_filter filtered_list obj_promise
+    run_permission_filter filtered_list obj_promise
 );
 
 sub save_object {
@@ -116,10 +116,6 @@ sub resource_objects {
         = map { $app->resource_object($_) } @{ $endpoint->{resources} };
 
     return ( grep { !defined($_) } @objects ) ? () : @objects;
-}
-
-sub resource_error {
-    qq{A resource "$_[0]" is required.}, 400;
 }
 
 sub run_permission_filter {

@@ -42,7 +42,7 @@ sub update {
         or return;
 
     my $new_user = $app->resource_object( 'user', $user )
-        or return $app->error( resource_error('user') );
+        or return;
 
     run_permission_filter( $app, 'data_api_save_permission_filter',
         'author', $user->id )

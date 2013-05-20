@@ -69,7 +69,7 @@ sub update {
     my ( $blog, $trackback ) = context_objects(@_)
         or return;
     my $new_trackback = $app->resource_object( 'trackback', $trackback )
-        or return $app->error( resource_error('trackback') );
+        or return;
 
     save_object( $app, 'ping', $new_trackback, $trackback )
         or return;

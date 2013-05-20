@@ -57,10 +57,13 @@ sub resource {
         for my $reg (@$regs) {
             for my $k ( keys %$reg ) {
                 if ( ref $reg->{$k} ) {
-                    $resources{$k} ||= { aliases => [{
-                                key => $k,
+                    $resources{$k} ||= {
+                        aliases => [
+                            {   key    => $k,
                                 plugin => $reg->{$k}{plugin},
-                            }], };
+                            }
+                        ],
+                    };
                 }
                 else {
                     $aliases{$k} = $reg->{$k};
@@ -69,8 +72,9 @@ sub resource {
         }
 
         for my $k ( keys %aliases ) {
-            if ($resources{$k}) {
-                push @{ $resources{ $aliases{$k} }{aliases} }, @{ $resources{$k}{aliases} };
+            if ( $resources{$k} ) {
+                push @{ $resources{ $aliases{$k} }{aliases} },
+                    @{ $resources{$k}{aliases} };
             }
             $resources{$k} = $aliases{$k};
         }
@@ -379,8 +383,19 @@ sub to_object {
     my $name = $f->{alias} || $f->{name};
     for ( my $i = 0; $i < $size; $i++ ) {
         my $o = $objs->[$i];
-        $o->$name( MT::Util::iso2ts( $blogs{ $blog_ids[$i] }, $o->$name ) )
-            if $o->{changed_cols}->{$name} && $o->$name;
+        next unless $o->{changed_cols}->{$name} && $o->$name;
+        my $ts = MT::Util::iso2ts( $blogs{ $blog_ids[$i] }, $o->$name );
+        if ($ts) {
+            $o->error(
+                MT->translate(
+                    'Cannot parse "[_1]" as ISO8601 datetime',
+                    $o->$name
+                )
+            );
+        }
+        else {
+            $o->$name($ts);
+        }
     }
 }
 
