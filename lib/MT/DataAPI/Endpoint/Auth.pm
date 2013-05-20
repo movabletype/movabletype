@@ -38,15 +38,14 @@ sub authorization {
     my $token = $app->make_magic_token;
 
     my $redirect_uri = $app->param('redirect_uri') || '';
-    is_valid_redirect_url( $app, $redirect_uri ) or die;
+    is_valid_redirect_url( $app, $redirect_uri )
+        or return $app->errtrans('Invalid parameter.');
 
     my %param = (
         redirect_uri                  => $redirect_uri,
         api_version                   => $app->current_api_version,
         mt_data_api_login_magic_token => $token,
     );
-
-    # TODO if redirect_uri is not specified
 
     $app->bake_cookie(
         -name  => mt_data_api_login_magic_token_cookie_name(),
@@ -62,8 +61,6 @@ sub authentication {
     my ( $author, $new_login ) = $app->login;
     my $session = $app->{session}
         or return $app->error(401);
-
-    # TODO if not loggined
 
     if ( $app->cookie_val( mt_data_api_login_magic_token_cookie_name() ) eq
         ( $app->param('mt_data_api_login_magic_token') || '' ) )
@@ -113,8 +110,6 @@ sub token {
         }
     };
     return $app->error(401) unless $session;
-
-    # TODO if not loggined
 
     my $access_token = make_access_token( $app, $session );
 
