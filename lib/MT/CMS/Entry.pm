@@ -1708,6 +1708,7 @@ sub save {
             }
             my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
                 ( $6 || 0 );
+            require MT::DateTime;
             unless ( $param{error} ) {
                 $param{error} = $app->translate(
                     "Invalid date '[_1]'; 'Unpublished on' dates should be future from now.",
