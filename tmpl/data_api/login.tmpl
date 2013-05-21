@@ -102,6 +102,7 @@ jQuery(function() {
 
 jQuery(function($) {
     $('#login_form').submit(function() {
+        var form = this;
         $.ajax({
             url: this.action,
             data: $(this).serialize(),
@@ -114,6 +115,7 @@ jQuery(function($) {
         }).fail(function(data) {
             if (data.status === 401) {
                 $('#login-error').removeClass('hidden');
+                form.reset();
             }
             else {
                 alert('Ajax error: ' + data.responseText);
