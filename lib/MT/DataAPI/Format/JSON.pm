@@ -6,7 +6,9 @@ use warnings;
 use MT::Util;
 
 sub serialize {
-    MT::Util::to_json( $_[0], { convert_blessed => 1, ascii => 1 } );
+    my $s = MT::Util::to_json( $_[0], { convert_blessed => 1, ascii => 1 } );
+    $s =~ s/([<>\/\+])/sprintf("\\u%04x",ord($1))/eg;
+    $s;
 }
 
 sub unserialize {
