@@ -2126,6 +2126,13 @@ PERMCHECK: {
             $date_closure->(
                 $co, 'modified_on', MT->translate('modified on')
             ) or return;
+
+            # Clear Unpublish Date
+            if (   $old_status == MT::Entry::UNPUBLISH()
+                && $entry->status == MT::Entry::RELEASE() )
+            {
+                $entry->unpublished_on(undef);
+            }
         }
         $app->run_callbacks( 'cms_pre_save.' . $type,
             $app, $entry, $orig_obj )
