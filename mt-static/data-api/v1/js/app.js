@@ -102,14 +102,48 @@ DataAPI.prototype = {
     },
     
     serializeObject: function(k, v) {
-        if (v instanceof Date) {
-            return v.getFullYear() + '-' + ( v.getMonth() + 1 ) + '-' + v.getDate() +
-                (k.match(/date/i)
-                    ? ''
-                    : (' ' + v.getHours() + ':' + v.getMinutes() + ':' + v.getSeconds()));
+        function f(n) {
+            return n < 10 ? '0' + n : n;
         }
-        else if (typeof v === 'object') {
-            return JSON.stringify(v);
+
+        function dateToJSON(v) {
+            if (! isFinite(v.valueOf())) {
+                return '';
+            }
+
+            var off;
+            var tz = v.getTimezoneOffset();
+            if(tz === 0) {
+                off = 'Z';
+            }
+            else {
+                off  = (tz > 0 ? '-': '+');
+                tz   = Math.abs(tz);
+                off += f(Math.floor(tz / 60)) + ':' + f(tz % 60);
+            }
+
+            return v.getFullYear()     + '-' +
+                f(v.getMonth() + 1) + '-' +
+                f(v.getDate())      + 'T' +
+                f(v.getHours())     + ':' +
+                f(v.getMinutes())   + ':' +
+                f(v.getSeconds())   + off;
+        }
+
+        var type = typeof v;
+        if (type === 'undefined' || v === null || (type === 'number' && ! isFinite(v))) {
+            return '';
+        }
+        else if (v instanceof Date) {
+            return dateToJSON(v);
+        }
+        else if (type === 'object') {
+            return JSON.stringify(v, function(key, value) {
+                if (this[key] instanceof Date) {
+                    return dateToJSON(this[key]);
+                }
+                return value;
+            });
         }
         else {
             return v;
@@ -127,15 +161,13 @@ DataAPI.prototype = {
         var str = '';
         for (k in params) {
             var v = params[k];
-            if (! (typeof v === 'undefined' || v === null)) {
-                if (str) {
-                    str += '&';
-                }
-
-                str +=
-                    encodeURIComponent(k) + '=' +
-                    encodeURIComponent(this.serializeObject(k, params[k]));
+            if (str) {
+                str += '&';
             }
+
+            str +=
+                encodeURIComponent(k) + '=' +
+                encodeURIComponent(this.serializeObject(k, params[k]));
         }
         return str;
     },
