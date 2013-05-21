@@ -29,6 +29,22 @@ window.MT.DataAPI.prototype.token = function() {
     ].concat(args));
 }
 
+window.MT.DataAPI.prototype.revokeAuthentication = function() {
+    var args = Array.prototype.slice.call(arguments, 0);
+    return this.request.apply(this, [
+        'DELETE',
+        '/authentication'
+    ].concat(args));
+}
+
+window.MT.DataAPI.prototype.revokeToken = function() {
+    var args = Array.prototype.slice.call(arguments, 0);
+    return this.request.apply(this, [
+        'DELETE',
+        '/token'
+    ].concat(args));
+}
+
 window.MT.DataAPI.prototype.getUser = function(user_id) {
     var args = Array.prototype.slice.call(arguments, 1);
     return this.request.apply(this, [

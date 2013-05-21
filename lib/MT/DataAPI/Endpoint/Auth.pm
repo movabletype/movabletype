@@ -96,10 +96,10 @@ sub token {
     my ($app) = @_;
 
     my $session = do {
-        my $header = $app->mt_authorization_header;
-        if ( $header && $header->{MTAuth}{session_id} ) {
+        my $data = $app->mt_authorization_data;
+        if ( $data && $data->{MTAuth}{session_id} ) {
             MT::Session->load(
-                {   id => $header->{MTAuth}{session_id} || '',
+                {   id => $data->{MTAuth}{session_id} || '',
                     kind => $app->session_kind,
                 }
             );
@@ -116,6 +116,57 @@ sub token {
     +{  access_token => $access_token->id,
         expires_in   => MT::AccessToken::ttl(),
     };
+}
+
+sub revoke_authentication {
+    my ($app) = @_;
+
+    my $session = $app->{session} || do {
+        my $data = $app->mt_authorization_data;
+        if ( $data && $data->{MTAuth}{session_id} ) {
+            MT::Session->load(
+                {   id => $data->{MTAuth}{session_id} || '',
+                    kind => $app->session_kind,
+                }
+            );
+        }
+        else {
+            my ( $author, $new_login ) = $app->login;
+            $app->{session};
+        }
+    };
+    return $app->error(401) unless $session;
+
+    if ( my $user
+        = $app->model('author')->load( $session->get('author_id') ) )
+    {
+        $app->log(
+            {   message => $app->translate(
+                    "User '[_1]' (ID:[_2]) logged out", $user->name,
+                    $user->id
+                ),
+                level    => MT::Log::INFO(),
+                class    => 'author',
+                category => 'logout_user',
+            }
+        );
+    }
+
+    $session->remove;
+    $app->model('accesstoken')->remove( { session_id => $session->id } );
+    $app->clear_login_cookie;
+
+    +{ status => 'success' };
+}
+
+sub revoke_token {
+    my ($app) = @_;
+
+    my $data = $app->mt_authorization_data;
+    $app->model('accesstoken')
+        ->remove( { id => $data->{MTAuth}{access_token} } );
+
+    +{ status => 'success' };
 }
 
 1;

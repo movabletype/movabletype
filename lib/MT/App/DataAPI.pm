@@ -55,6 +55,19 @@ sub core_endpoints {
             handler        => "${pkg}Auth::token",
             requires_login => 0,
         },
+        {   id             => 'revoke_authentication',
+            route          => '/authentication',
+            method         => 'DELETE',
+            version        => 1,
+            handler        => "${pkg}Auth::revoke_authentication",
+            requires_login => 0,
+        },
+        {   id      => 'revoke_token',
+            route   => '/token',
+            method  => 'DELETE',
+            version => 1,
+            handler => "${pkg}Auth::revoke_token",
+        },
         {   id          => 'get_user',
             route       => '/users/:user_id',
             version     => 1,
@@ -575,7 +588,7 @@ sub object_to_resource {
     }
 }
 
-sub mt_authorization_header {
+sub mt_authorization_data {
     my ($app) = @_;
 
     my $header = $app->get_header('X-MT-Authorization')
@@ -600,12 +613,11 @@ sub mt_authorization_header {
 sub authenticate {
     my ($app) = @_;
 
-    my $header = $app->mt_authorization_header
+    my $data = $app->mt_authorization_data
         or undef;
 
     my $session
-        = MT::AccessToken->load_session( $header->{MTAuth}{access_token}
-            || '' )
+        = MT::AccessToken->load_session( $data->{MTAuth}{access_token} || '' )
         or return undef;
     my $user = $app->model('author')->load( $session->get('author_id') )
         or return undef;
