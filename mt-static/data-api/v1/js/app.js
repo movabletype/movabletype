@@ -30,6 +30,10 @@ var DataAPI = function(options) {
 
 DataAPI.mtApiAccessTokenKey = 'mt_api_access_token';
 DataAPI.prototype = {
+    getCurrentEpoch: function() {
+        return Math.round(new Date().getTime() / 1000);
+    },
+
     getVersion: function() {
         return 1;
     },
@@ -40,7 +44,7 @@ DataAPI.prototype = {
     
     storeToken: function(tokenData) {
         var o = this.o;
-        tokenData.start_time = new Date().getTime() / 1000;
+        tokenData.start_time = this.getCurrentEpoch();
         Cookie.bake(this.getAppKey(), JSON.stringify(tokenData), o.cookieDomain, o.cookiePath);
         this.tokenData = null;
     },
@@ -65,10 +69,11 @@ DataAPI.prototype = {
     },
     
     getToken: function() {
+        var o = this.o;
         if (! this.tokenData) {
             var token = null;
             
-            if (window.location.hash.match(/#_login$/)) {
+            if (window.location.hash === '#_login') {
                 try {
                     token = this.updateTokenFromDefault();
                 }
@@ -82,6 +87,11 @@ DataAPI.prototype = {
                 }
                 catch (e) {
                 }
+            }
+
+            if (token && (token.start_time + token.expires_in < this.getCurrentEpoch())) {
+                Cookie.bake(this.getAppKey(), '', o.cookieDomain, o.cookiePath, new Date(0));
+                token = null;
             }
             
             this.tokenData = token;
