@@ -386,15 +386,15 @@ sub to_object {
         next unless $o->{changed_cols}->{$name} && $o->$name;
         my $ts = MT::Util::iso2ts( $blogs{ $blog_ids[$i] }, $o->$name );
         if ($ts) {
+            $o->$name($ts);
+        }
+        else {
             $o->error(
                 MT->translate(
                     'Cannot parse "[_1]" as ISO8601 datetime',
                     $o->$name
                 )
             );
-        }
-        else {
-            $o->$name($ts);
         }
     }
 }
