@@ -874,9 +874,6 @@ sub api {
         $app->print_encode($data);
         undef;
     }
-    elsif ( $response_ref eq 'MT::Template' ) {
-        $response;
-    }
     else {
         $response;
     }
