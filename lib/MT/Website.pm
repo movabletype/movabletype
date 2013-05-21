@@ -12,8 +12,9 @@ use base qw( MT::Blog );
 __PACKAGE__->install_properties(
     {   class_type    => 'website',
         child_classes => [
-            'MT::Page',         'MT::Template',
-            'MT::Asset',        'MT::Folder',
+            'MT::Entry',        'MT::Page',
+            'MT::Template',     'MT::Asset',
+            'MT::Category',     'MT::Folder',
             'MT::Notification', 'MT::Log',
             'MT::ObjectTag',    'MT::Association',
             'MT::Comment',      'MT::TBPing',
