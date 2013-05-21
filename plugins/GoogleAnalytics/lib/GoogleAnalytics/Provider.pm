@@ -86,7 +86,7 @@ sub _request {
     my $uri = URI->new('https://www.googleapis.com/analytics/v3/data/ga');
     $uri->query_form($params);
 
-    my $ua  = $app->new_ua;
+    my $ua  = new_ua();
     my $res = $ua->request(
         GET($uri,
             Authorization => "$token->{token_type} $token->{access_token}"

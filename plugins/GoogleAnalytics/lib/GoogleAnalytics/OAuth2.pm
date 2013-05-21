@@ -141,7 +141,7 @@ sub effective_token {
 
     if ( time() - $token_data->{start} > $token_data->{data}{expires_in} ) {
         my $new_token_data = refresh_access_token(
-            $app, $app->new_ua,
+            $app, new_ua(),
             $token_data->{data}{refresh_token},
             @$data{qw(client_id client_secret)}
         ) or return undef;

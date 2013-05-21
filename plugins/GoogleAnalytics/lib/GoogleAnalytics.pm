@@ -9,7 +9,7 @@ package GoogleAnalytics;
 use strict;
 use warnings;
 
-our @EXPORT = qw( plugin translate );
+our @EXPORT = qw( plugin translate new_ua );
 use base qw(Exporter);
 
 sub translate {
@@ -75,6 +75,21 @@ sub extract_response_error {
     }
 
     $res->status_line, $message;
+}
+
+sub new_ua {
+    my $ua = MT->new_ua;
+
+    if (eval { require IO::Socket::SSL }
+        && $IO::Socket::SSL::VERSION >= 1.79 &&
+        $ua->can('ssl_opts')
+        )
+    {
+        $ua->ssl_opts(
+            SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_PEER() );
+    }
+
+    $ua;
 }
 
 1;

@@ -106,7 +106,7 @@ sub select_profile {
         or return _render_input_code( $app,
         { error => translate('You did not specify a code.'), } );
 
-    my $ua = $app->new_ua;
+    my $ua = new_ua();
 
     my $token_data = get_token(
         $app, $ua,
