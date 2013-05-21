@@ -226,12 +226,14 @@ sub core_endpoints {
         {   id => 'create_reply_comment',
             route =>
                 '/sites/:site_id/entries/:entry_id/comments/:comment_id/replies',
-            resources => ['comment'],
-            method    => 'POST',
-            version   => 1,
-            handler   => "${pkg}Comment::create_reply",
-            error_codes =>
-                { 403 => 'Do not have permission to create a reply to the requested comment.', },
+            resources   => ['comment'],
+            method      => 'POST',
+            version     => 1,
+            handler     => "${pkg}Comment::create_reply",
+            error_codes => {
+                403 =>
+                    'Do not have permission to create a reply to the requested comment.',
+            },
         },
         {   id          => 'get_comment',
             route       => '/sites/:site_id/comments/:comment_id',
@@ -321,12 +323,15 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete a trackback.', },
         },
-        {   id      => 'upload_asset',
-            route   => '/sites/:site_id/assets',
-            method  => 'POST',
-            version => 1,
-            handler => "${pkg}Asset::upload",
-            error_codes => { 403 => 'Do not have permission to publish the requested entry.', },
+        {   id          => 'upload_asset',
+            route       => '/sites/:site_id/assets',
+            method      => 'POST',
+            version     => 1,
+            handler     => "${pkg}Asset::upload",
+            error_codes => {
+                403 =>
+                    'Do not have permission to publish the requested entry.',
+            },
         },
         {   id      => 'publish_entries',
             route   => '/publish/entries',
@@ -552,7 +557,8 @@ sub resource_object {
         or return $app->error( 'Invalid data format: ' . $name, 400 );
 
     my $obj = MT::DataAPI::Resource->to_object( $name, $data, $original );
-    return $app->error( 'Failed to convert to the object: ' . $obj->errstr, 400 )
+    return $app->error( 'Failed to convert to the object: ' . $obj->errstr,
+        400 )
         if ( $obj->errstr );
 
     $obj;
@@ -799,7 +805,7 @@ sub permission_denied {
 sub set_next_phase_url {
     my $app = shift;
     my ($url) = @_;
-    $app->set_header('X-MT-Next-Phase-URL', $url);
+    $app->set_header( 'X-MT-Next-Phase-URL', $url );
 }
 
 sub api {
