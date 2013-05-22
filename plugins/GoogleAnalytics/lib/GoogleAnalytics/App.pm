@@ -24,10 +24,17 @@ sub config_tmpl {
     my $config   = $plugin->get_config_hash($scope);
     my $defaults = $plugin->settings->defaults($scope);
 
+    my $missing = undef;
+    $missing = $app->translate( 'missing required Perl modules: [_1]',
+        'Crypt::SSLeay' )
+        unless eval { require IO::Socket::SSL }
+        || eval     { require Crypt::SSLeay };
+
     $plugin->load_tmpl(
         'web_service_config.tmpl',
-        {   authorize_url => authorize_url( $app, '__client_id__' ),
-            dialog_url    => $app->uri(
+        {   missing_modules => $missing,
+            authorize_url   => authorize_url( $app, '__client_id__' ),
+            dialog_url      => $app->uri(
                 mode => 'ga_input_code',
                 args => { blog_id => $app->blog->id, },
             ),

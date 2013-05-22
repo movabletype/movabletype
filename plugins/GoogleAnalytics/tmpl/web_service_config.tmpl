@@ -1,4 +1,9 @@
 <h2><__trans phrase="Google Analytics"></h2>
+
+<mt:If name="missing_modules">
+<p><mt:Var name="missing_modules" /></p>
+<mt:Else>
+
 <mtapp:settinggroup id="google-analytics-settings">
 
 <mtapp:setting
@@ -101,3 +106,4 @@ jQuery(function($) {
 </script>
 
 </mtapp:settinggroup>
+</mt:If>
