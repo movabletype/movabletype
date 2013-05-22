@@ -7,7 +7,7 @@ use MT::Util;
 
 sub serialize {
     my $s = MT::Util::to_json( $_[0], { convert_blessed => 1, ascii => 1 } );
-    $s =~ s/([<>\/\+])/sprintf("\\u%04x",ord($1))/eg;
+    $s =~ s/([<>\+])/sprintf("\\u%04x",ord($1))/eg;
     $s;
 }
 
