@@ -88,10 +88,16 @@ sub core_endpoints {
                 403 => 'Do not have permission to update the requested user.',
             },
         },
-        {   id          => 'list_blogs',
-            route       => '/users/:user_id/sites',
-            version     => 1,
-            handler     => "${pkg}Blog::list",
+        {   id      => 'list_blogs',
+            route   => '/users/:user_id/sites',
+            version => 1,
+            handler => "${pkg}Blog::list",
+            param   => {
+                limit     => 25,
+                offset    => 0,
+                sortBy    => 'name',
+                sortOrder => 'ascend',
+            },
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the list of blogs.',
