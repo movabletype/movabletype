@@ -243,6 +243,7 @@ DataAPI.prototype = {
                 'Content-Type', 'application/x-www-form-urlencoded'
             );
         }
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.setRequestHeader(
             'X-MT-Authorization', 'MTAuth access_token=' + this.getToken()
         );
