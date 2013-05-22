@@ -24,7 +24,7 @@ window.MT.DataAPI.prototype.authentication = function() {
 window.MT.DataAPI.prototype.token = function() {
     var args = Array.prototype.slice.call(arguments, 0);
     return this.request.apply(this, [
-        'GET',
+        'POST',
         '/token'
     ].concat(args));
 }

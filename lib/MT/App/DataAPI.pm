@@ -51,6 +51,7 @@ sub core_endpoints {
         },
         {   id             => 'token',
             route          => '/token',
+            method         => 'POST',
             version        => 1,
             handler        => "${pkg}Auth::token",
             requires_login => 0,
