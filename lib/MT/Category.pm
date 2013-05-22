@@ -133,6 +133,10 @@ sub list_props {
                 return @cats;
             },
         },
+        user_custom => {
+            base      => 'category.custom_sort',
+            condition => sub {0},
+        },
         content => {
             base      => '__virtual.content',
             fields    => [qw(label basename)],

@@ -176,7 +176,7 @@ sub core_endpoints {
             param   => {
                 limit        => 10,
                 offset       => 0,
-                sortBy       => 'custom_sort',
+                sortBy       => 'user_custom',
                 sortOrder    => 'ascend',
                 searchFields => 'label,basename',
             },
