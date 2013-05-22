@@ -254,6 +254,25 @@ sub filtered_list {
         }
     }
 
+    if ( my $ids = $app->param('excludeIds') ) {
+        push @$filteritems, {
+            type => 'pack',
+            args => {
+                op    => 'and',
+                items => [
+                    map {
+                        +{  type => 'id',
+                            args => {
+                                option => 'not_equal',
+                                value  => $_,
+                            },
+                        };
+                    } grep {$_} split( ',', $ids )
+                ],
+            },
+        };
+    }
+
     require MT::ListProperty;
     my $props = MT::ListProperty->list_properties($ds);
 
