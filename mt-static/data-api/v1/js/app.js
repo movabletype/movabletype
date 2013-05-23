@@ -336,7 +336,7 @@ DataAPI.prototype = {
             }
 
             if (response.error && response.error.code === 401 && endpoint !== '/token') {
-                api.request('GET', '/token', function(response) {
+                api.request('POST', '/token', function(response) {
                     if (response.error && response.error.code === 401) {
                         api.trigger('sessionExpired', response);
                         runCallbacks(response);
