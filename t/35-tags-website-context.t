@@ -1018,12 +1018,6 @@ $guest->save or die $guest->errstr;
                     '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/06/index.html',
                 category_id => 6,
             },
-            {   file_path =>
-                    '/var/www/html/first_website/2016/06/06/index.html',
-                startdate   => '20160606000000',
-                url         => '/first_website/2016/06/06/index.html',
-                category_id => 7,
-            },
         ],
         'Category-Weekly' => [
             {   file_path =>
@@ -1061,12 +1055,6 @@ $guest->save or die $guest->errstr;
                     '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/05-week/index.html',
                 category_id => 6,
             },
-            {   file_path =>
-                    '/var/www/html/first_website/2016/06/05-week/index.html',
-                startdate   => '20160605000000',
-                url         => '/first_website/2016/06/05-week/index.html',
-                category_id => 7,
-            },
         ],
         'Category-Monthly' => [
             {   file_path =>
@@ -1102,11 +1090,6 @@ $guest->save or die $guest->errstr;
                     '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/index.html',
                 category_id => 6,
             },
-            {   file_path => '/var/www/html/first_website/2016/06/index.html',
-                startdate => '20160601000000',
-                url       => '/first_website/2016/06/index.html',
-                category_id => 7,
-            },
         ],
         'Category-Yearly' => [
             {   file_path =>
@@ -1141,11 +1124,6 @@ $guest->save or die $guest->errstr;
                 url =>
                     '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/index.html',
                 category_id => 6,
-            },
-            {   file_path   => '/var/www/html/first_website/2016/index.html',
-                startdate   => '20160101000000',
-                url         => '/first_website/2016/index.html',
-                category_id => 7,
             },
         ],
     );
@@ -1741,12 +1719,10 @@ http://localhost/first_website/author/melody/2012/#000002
 http://localhost/first_website/author/melody/2011/#000001
 
 === mt:EntryPermalink - Category
---- SKIP
 --- template
-<mt:Entries><mt:EntryPermalink archive_type="Category">
+<mt:Entries><mt:EntryIfCategory><mt:EntryPermalink archive_type="Category"></mt:EntryIfCategory>
 </mt:Entries>
 --- expected
-http://localhost/first_website/#000007
 http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/#000006
 http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/#000005
 http://localhost/first_website/website-category-3/#000003
@@ -1754,12 +1730,10 @@ http://localhost/first_website/website-category-1/website-subcategory-2/#000002
 http://localhost/first_website/website-category-1/#000001
 
 === mt:EntryPermalink - Category-Daily
---- SKIP
 --- template
-<mt:Entries><mt:EntryPermalink archive_type="Category-Daily">
+<mt:Entries><mt:EntryIfCategory><mt:EntryPermalink archive_type="Category-Daily"></mt:EntryIfCategory>
 </mt:Entries>
 --- expected
-http://localhost/first_website/2016/06/06/#000007
 http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/06/#000006
 http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/05/#000005
 http://localhost/first_website/website-category-3/2013/03/03/#000003
@@ -1767,12 +1741,10 @@ http://localhost/first_website/website-category-1/website-subcategory-2/2012/02/
 http://localhost/first_website/website-category-1/2011/01/01/#000001
 
 === mt:EntryPermalink - Category-Weekly
---- SKIP
 --- template
-<mt:Entries><mt:EntryPermalink archive_type="Category-Weekly">
+<mt:Entries><mt:EntryIfCategory><mt:EntryPermalink archive_type="Category-Weekly"></mt:EntryIfCategory>
 </mt:Entries>
 --- expected
-http://localhost/first_website/2016/06/05-week/#000007
 http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/05-week/#000006
 http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/03-week/#000005
 http://localhost/first_website/website-category-3/2013/03/03-week/#000003
@@ -1780,12 +1752,10 @@ http://localhost/first_website/website-category-1/website-subcategory-2/2012/01/
 http://localhost/first_website/website-category-1/2010/12/26-week/#000001
 
 === mt:EntryPermalink - Category-Monthly
---- SKIP
 --- template
-<mt:Entries><mt:EntryPermalink archive_type="Category-Monthly">
+<mt:Entries><mt:EntryIfCategory><mt:EntryPermalink archive_type="Category-Monthly"></mt:EntryIfCategory>
 </mt:Entries>
 --- expected
-http://localhost/first_website/2016/06/#000007
 http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/#000006
 http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/#000005
 http://localhost/first_website/website-category-3/2013/03/#000003
@@ -1793,12 +1763,10 @@ http://localhost/first_website/website-category-1/website-subcategory-2/2012/02/
 http://localhost/first_website/website-category-1/2011/01/#000001
 
 === mt:EntryPermalink - Category-Yearly
---- SKIP
 --- template
-<mt:Entries><mt:EntryPermalink archive_type="Category-Yearly">
+<mt:Entries><mt:EntryIfCategory><mt:EntryPermalink archive_type="Category-Yearly"></mt:EntryIfCategory>
 </mt:Entries>
 --- expected
-http://localhost/first_website/2016/#000007
 http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/#000006
 http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/#000005
 http://localhost/first_website/website-category-3/2013/#000003
