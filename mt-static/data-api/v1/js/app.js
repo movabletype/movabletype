@@ -28,7 +28,7 @@ var DataAPI = function(options) {
     this.tokenData = null;
 }
 
-DataAPI.mtApiAccessTokenKey = 'mt_api_access_token';
+DataAPI.dataApiAccessTokenKey = 'mt_api_access_token';
 DataAPI.prototype = {
     getCurrentEpoch: function() {
         return Math.round(new Date().getTime() / 1000);
@@ -39,7 +39,7 @@ DataAPI.prototype = {
     },
     
     getAppKey: function() {
-        return DataAPI.mtApiAccessTokenKey + '_' + this.o.appId;
+        return DataAPI.dataApiAccessTokenKey + '_' + this.o.appId;
     },
     
     storeToken: function(tokenData) {
@@ -50,7 +50,7 @@ DataAPI.prototype = {
     },
     
     updateTokenFromDefault: function() {
-        var defaultKey    = DataAPI.mtApiAccessTokenKey,
+        var defaultKey    = DataAPI.dataApiAccessTokenKey,
             defaultCookie = Cookie.fetch(defaultKey);
         if (! defaultCookie) {
             return null;

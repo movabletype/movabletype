@@ -109,7 +109,7 @@ jQuery(function($) {
             type: 'POST',
             cache : false
         }).done(function(data) {
-            Cookie.bake(MT.DataAPI.mtApiAccessTokenKey, $.toJSON(data), undefined, '/');
+            Cookie.bake(MT.DataAPI.dataApiAccessTokenKey, $.toJSON(data), undefined, '/');
             var url = $('#redirect_uri').val() + '#_login';
             location.href = url;
         }).fail(function(data) {
