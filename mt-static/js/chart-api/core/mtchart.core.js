@@ -1055,10 +1055,10 @@ ChartAPI.Graph.css.Base.prototype.horizontalBar = function (data, config, range,
     createCSSGraphBarEl = function () {
       return $('<div class="css-graph-container"><div class="css-graph-date"></div><div class="css-graph-bar-container" style="height:' + barWidth + 'px; margin-bottom:' + barInterval + 'px"><div class="css-graph-bar"></div><div class="css-graph-bar-background"><div class="css-graph-bar-count"></div></div></div>');
     },
-    dataY = _.map(data, function (d) {
+    dataY = $.map(data, function (d) {
       return parseInt(d.y, 10);
     }),
-    label = _.map(data, function (d) {
+    label = $.map(data, function (d) {
       return parseInt(d.x.substr(d.x.lastIndexOf('-') + 1), 10).toString();
     }),
     maxY = Math.max.apply(null, dataY) || 1,
