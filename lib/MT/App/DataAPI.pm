@@ -331,7 +331,7 @@ sub core_endpoints {
                 { 403 => 'Do not have permission to delete a trackback.', },
         },
         {   id          => 'upload_asset',
-            route       => '/sites/:site_id/assets',
+            route       => '/sites/:site_id/assets/upload',
             method      => 'POST',
             version     => 1,
             handler     => "${pkg}Asset::upload",

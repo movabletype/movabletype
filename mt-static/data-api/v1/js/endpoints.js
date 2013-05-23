@@ -311,7 +311,7 @@ window.MT.DataAPI.prototype.uploadAsset = function(site_id) {
     var args = Array.prototype.slice.call(arguments, 1);
     return this.request.apply(this, [
         'POST',
-        this.bindEndpointParams('/sites/:site_id/assets', {
+        this.bindEndpointParams('/sites/:site_id/assets/upload', {
             site_id: site_id
         })
     ].concat(args));
