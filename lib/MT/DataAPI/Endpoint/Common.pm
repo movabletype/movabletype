@@ -126,7 +126,12 @@ sub get_target_user {
     }
     else {
         my ($user) = context_objects(@_);
-        $user;
+        if ( $user && $user->status == MT::Author::ACTIVE() ) {
+            $user;
+        }
+        else {
+            undef;
+        }
     }
 }
 
