@@ -58,6 +58,7 @@ $userpic->save or die $mt->errstr;
 my $admin = $mt->model('author')->load(1);    # Administrator
 $admin->set_values(
     {   nickname         => 'Administrator Melody',
+        basename         => 'melody',
         email            => 'melody@localhost',
         url              => 'http://localhost/~melody/',
         userpic_asset_id => $userpic->id,
@@ -69,6 +70,7 @@ my $guest = $mt->model('author')->new;
 $guest->set_values(
     {   name            => 'Guest',
         nickname        => 'Guest',
+        basename        => 'guest',
         email           => 'guest@localhost',
         url             => 'http://localhost/~guest/',
         password        => '',
@@ -728,6 +730,460 @@ $guest->save or die $guest->errstr;
         }
     );
     $objas1->save or die $objas1->errstr;
+
+    # Create template maps for archive
+    my $tm_mo = $mt->model('templatemap')->load(
+        {   blog_id      => $blog_id,
+            archive_type => 'Monthly',
+        }
+    );
+
+    my %suite = (
+        Daily => [
+            {   file_path =>
+                    '/var/www/html/first_website/2011/01/01/index.html',
+                startdate => '20110101000000',
+                url       => '/first_website/2011/01/01/index.html',
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/2011/02/02/index.html',
+                startdate => '20120202000000',
+                url       => '/first_website/2012/02/02/index.html',
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/2013/03/03/index.html',
+                startdate => '20130303000000',
+                url       => '/first_website/2013/03/03/index.html',
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/2015/05/05/index.html',
+                startdate => '20150505000000',
+                url       => '/first_website/2015/05/05/index.html',
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/2016/06/06/index.html',
+                startdate => '20160606000000',
+                url       => '/first_website/2016/06/06/index.html',
+            },
+        ],
+        Weekly => [
+            {   file_path =>
+                    '/var/www/html/first_website/2010/12/26-week/index.html',
+                startdate => '20101226000000',
+                url       => '/first_website/2010/12/26-week/index.html',
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/2012/01/29-week/index.html',
+                startdate => '20120129000000',
+                url       => '/first_website/2012/01/29-week/index.html',
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/2013/03/03-week/index.html',
+                startdate => '20130303000000',
+                url       => '/first_website/2013/03/03-week/index.html',
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/2015/05/03-week/index.html',
+                startdate => '20150503000000',
+                url       => '/first_website/2015/05/03-week/index.html',
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/2016/06/05-week/index.html',
+                startdate => '20160605000000',
+                url       => '/first_website/2016/06/05-week/index.html',
+            },
+        ],
+        Monthly => [
+            {   file_path => '/var/www/html/first_website/2011/01/index.html',
+                startdate => '20110101000000',
+                url       => '/first_website/2011/01/index.html',
+            },
+            {   file_path => '/var/www/html/first_website/2012/02/index.html',
+                startdate => '20120201000000',
+                url       => '/first_website/2012/02/index.html',
+            },
+            {   file_path => '/var/www/html/first_website/2013/03/index.html',
+                startdate => '20130301000000',
+                url       => '/first_website/2013/03/index.html',
+            },
+            {   file_path => '/var/www/html/first_website/2015/05/index.html',
+                startdate => '20150501000000',
+                url       => '/first_website/2015/05/index.html',
+            },
+            {   file_path => '/var/www/html/first_website/2016/06/index.html',
+                startdate => '20160601000000',
+                url       => '/first_website/2016/06/index.html',
+            },
+        ],
+        Yearly => [
+            {   file_path => '/var/www/html/first_website/2011/index.html',
+                startdate => '20110101000000',
+                url       => '/first_website/2011/index.html',
+            },
+            {   file_path => '/var/www/html/first_website/2012/index.html',
+                startdate => '20120101000000',
+                url       => '/first_website/2012/index.html',
+            },
+            {   file_path => '/var/www/html/first_website/2013/index.html',
+                startdate => '20130101000000',
+                url       => '/first_website/2013/index.html',
+            },
+            {   file_path => '/var/www/html/first_website/2015/index.html',
+                startdate => '20150101000000',
+                url       => '/first_website/2015/index.html',
+            },
+            {   file_path => '/var/www/html/first_websiete/2016/index.html',
+                startdate => '20160101000000',
+                url       => '/first_website/2016/index.html'
+            },
+        ],
+        Author => [
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/index.html',
+                url       => '/first_website/author/melody/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/guest/index.html',
+                url       => '/first_website/author/guest/index.html',
+                author_id => 2,
+            },
+        ],
+        'Author-Daily' => [
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2011/01/01/index.html',
+                startdate => '20110101000000',
+                url => '/first_website/author/melody/2011/01/01/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2012/02/02/index.html',
+                startdate => '20120202000000',
+                url => '/first_website/author/melody/2012/02/02/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2013/03/03/index.html',
+                startdate => '20130303000000',
+                url => '/first_website/author/melody/2013/03/03/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2015/05/05/index.html',
+                startdate => '20150505000000',
+                url => '/first_website/author/melody/2015/05/05/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2016/06/06/index.html',
+                startdate => '20160606000000',
+                url => '/first_website/author/melody/2016/06/06/index.html',
+                author_id => 1,
+            },
+        ],
+        'Author-Weekly' => [
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2010/12/26-week/index.html',
+                startdate => '20101226000000',
+                url =>
+                    '/first_website/author/melody/2010/12/26-week/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2012/01/29-week/index.html',
+                startdate => '20120129000000',
+                url =>
+                    '/first_website/author/melody/2012/01/29-week/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2013/03/03-week/index.html',
+                startdate => '20130303000000',
+                url =>
+                    '/first_website/author/melody/2013/03/03-week/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2015/05/03-week/index.html',
+                startdate => '20150503000000',
+                url =>
+                    '/first_website/author/melody/2015/05/03-week/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2016/06/05-week/index.html',
+                startdate => '20160605000000',
+                url =>
+                    '/first_website/author/melody/2016/06/05-week/index.html',
+                author_id => 1,
+            },
+        ],
+        'Author-Monthly' => [
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2011/01/index.html',
+                startdate => '20110101000000',
+                url => '/first_website/author/melody/2011/01/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2012/02/index.html',
+                startdate => '20120201000000',
+                url => '/first_website/author/melody/2012/02/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2013/03/index.html',
+                startdate => '20130301000000',
+                url => '/first_website/author/melody/2013/03/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2015/05/index.html',
+                startdate => '20150501000000',
+                url => '/first_website/author/melody/2015/05/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2016/06/index.html',
+                startdate => '20160601000000',
+                url => '/first_website/author/melody/2016/06/index.html',
+                author_id => 1,
+            },
+        ],
+        'Author-Yearly' => [
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2011/index.html',
+                startdate => '20110101000000',
+                url       => '/first_website/author/melody/2011/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2012/index.html',
+                startdate => '20120101000000',
+                url       => '/first_website/author/melody/2012/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2013/index.html',
+                startdate => '20130101000000',
+                url       => '/first_website/author/melody/2013/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2015/index.html',
+                startdate => '20150101000000',
+                url       => '/first_website/author/melody/2015/index.html',
+                author_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/author/melody/2016/index.html',
+                startdate => '20160101000000',
+                url       => '/first_website/author/melody/2016/index.html',
+                author_id => 1,
+            },
+        ],
+        'Category-Daily' => [
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/2011/01/01/index.html',
+                startdate => '20110101000000',
+                url =>
+                    '/first_website/website-category-1/2011/01/01/index.html',
+                category_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/website-subcategory-2/2012/02/02/index.html',
+                startdate => '20120202000000',
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/2012/02/02/index.html',
+                category_id => 2,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-3/2013/03/03/index.html',
+                startdate => '20130303000000',
+                url =>
+                    '/first_website/website-category-3/2013/03/03/index.html',
+                category_id => 3,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/05/index.html',
+                startdate => '20150505000000',
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/05/index.html',
+                category_id => 5,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/06/index.html',
+                startdate => '20160606000000',
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/06/index.html',
+                category_id => 6,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/2016/06/06/index.html',
+                startdate   => '20160606000000',
+                url         => '/first_website/2016/06/06/index.html',
+                category_id => 7,
+            },
+        ],
+        'Category-Weekly' => [
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/2010/12/26-week/index.html',
+                startdate => '20101226000000',
+                url =>
+                    '/first_website/website-category-1/2010/12/26-week/index.html',
+                category_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/website-subcategory-2/2012/01/29-week/index.html',
+                startdate => '20120129000000',
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/2012/01/29-week/index.html',
+                category_id => 2,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-3/2013/03/03-week/index.html',
+                startdate => '20130303000000',
+                url =>
+                    '/first_website/website-category-3/2013/03/03-week/index.html',
+                category_id => 3,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/03-week/index.html',
+                startdate => '20150503000000',
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/03-week/index.html',
+                category_id => 5,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/05-week/index.html',
+                startdate => '20160605000000',
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/05-week/index.html',
+                category_id => 6,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/2016/06/05-week/index.html',
+                startdate   => '20160605000000',
+                url         => '/first_website/2016/06/05-week/index.html',
+                category_id => 7,
+            },
+        ],
+        'Category-Monthly' => [
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/2011/01/index.html',
+                startdate => '20110101000000',
+                url => '/first_website/website-category-1/2011/01/index.html',
+                category_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/website-subcategory-2/2012/02/index.html',
+                startdate => '20120201000000',
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/2012/02/index.html',
+                category_id => 2,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-3/2013/03/index.html',
+                startdate => '20130301000000',
+                url => '/first_website/website-category-3/2013/03/index.html',
+                category_id => 3,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/index.html',
+                startdate => '20150501000000',
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/index.html',
+                category_id => 5,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/index.html',
+                startdate => '20160601000000',
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/index.html',
+                category_id => 6,
+            },
+            {   file_path => '/var/www/html/first_website/2016/06/index.html',
+                startdate => '20160601000000',
+                url       => '/first_website/2016/06/index.html',
+                category_id => 7,
+            },
+        ],
+        'Category-Yearly' => [
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/2011/index.html',
+                startdate => '20110101000000',
+                url => '/first_website/website-category-1/2011/index.html',
+                category_id => 1,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/website-subcategory-2/2012/index.html',
+                startdate => '20120101000000',
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/2012/index.html',
+                category_id => 2,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-3/2013/index.html',
+                startdate => '20130101000000',
+                url => '/first_website/website-category-3/2013/index.html',
+                category_id => 3,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/index.html',
+                startdate => '20150101000000',
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/index.html',
+                category_id => 5,
+            },
+            {   file_path =>
+                    '/var/www/html/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/index.html',
+                startdate => '20160101000000',
+                url =>
+                    '/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/index.html',
+                category_id => 6,
+            },
+            {   file_path   => '/var/www/html/first_website/2016/index.html',
+                startdate   => '20160101000000',
+                url         => '/first_website/2016/index.html',
+                category_id => 7,
+            },
+        ],
+    );
+
+    foreach my $key ( keys %suite ) {
+        my $templatemap;
+        if ( $key eq 'Monthly' ) {
+            $templatemap = $tm_mo;
+        }
+        else {
+            $templatemap = $mt->model('templatemap')->new;
+            $templatemap->set_values(
+                {   archive_type => $key,
+                    blog_id      => $blog_id,
+                    build_type   => MT::PublishOption::DYNAMIC(),
+                    is_preferred => 1,
+                    template_id  => $tm_mo->template_id,
+                }
+            );
+            $templatemap->save or die $templatemap->errstr;
+        }
+
+        foreach my $data ( @{ $suite{$key} } ) {
+            my $fi = $mt->model('fileinfo')->new;
+            $fi->set_values(
+                {   archive_type   => $key,
+                    blog_id        => $blog_id,
+                    template_id    => $templatemap->template_id,
+                    templatemap_id => $templatemap->id,
+                    virtual        => 1,
+                }
+            );
+            foreach my $col ( keys %$data ) {
+                $fi->$col( $data->{$col} );
+            }
+            $fi->save or die $fi->errstr;
+        }
+    }
 }
 
 {
@@ -751,6 +1207,8 @@ $guest->save or die $guest->errstr;
     );
     $e1->save or die $e1->errstr;
 }
+
+MT->request->reset;
 
 run {
     my $block = shift;
@@ -1173,6 +1631,179 @@ http://localhost/first_website/2015/05/website-entry-5.html
 http://localhost/first_website/2013/03/website-entry-3.html
 http://localhost/first_website/2012/02/website-entry-2.html
 http://localhost/first_website/2011/01/website-entry-1.html
+
+=== mt:EntryPermalink - Daily
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Daily">
+</mt:Entries>
+--- expected
+http://localhost/first_website/2016/06/06/#000007
+http://localhost/first_website/2016/06/06/#000006
+http://localhost/first_website/2015/05/05/#000005
+http://localhost/first_website/2013/03/03/#000003
+http://localhost/first_website/2012/02/02/#000002
+http://localhost/first_website/2011/01/01/#000001
+
+=== mt:EntryPermalink - Weekly
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Weekly">
+</mt:Entries>
+--- expected
+http://localhost/first_website/2016/06/05-week/#000007
+http://localhost/first_website/2016/06/05-week/#000006
+http://localhost/first_website/2015/05/03-week/#000005
+http://localhost/first_website/2013/03/03-week/#000003
+http://localhost/first_website/2012/01/29-week/#000002
+http://localhost/first_website/2010/12/26-week/#000001
+
+=== mt:EntryPermalink - Monthly
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Monthly">
+</mt:Entries>
+--- expected
+http://localhost/first_website/2016/06/#000007
+http://localhost/first_website/2016/06/#000006
+http://localhost/first_website/2015/05/#000005
+http://localhost/first_website/2013/03/#000003
+http://localhost/first_website/2012/02/#000002
+http://localhost/first_website/2011/01/#000001
+
+=== mt:EntryPermalink - Yearly
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Yearly">
+</mt:Entries>
+--- expected
+http://localhost/first_website/2016/#000007
+http://localhost/first_website/2016/#000006
+http://localhost/first_website/2015/#000005
+http://localhost/first_website/2013/#000003
+http://localhost/first_website/2012/#000002
+http://localhost/first_website/2011/#000001
+
+=== mt:EntryPermalink - Author
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Author">
+</mt:Entries>
+--- expected
+http://localhost/first_website/author/melody/#000007
+http://localhost/first_website/author/melody/#000006
+http://localhost/first_website/author/melody/#000005
+http://localhost/first_website/author/melody/#000003
+http://localhost/first_website/author/melody/#000002
+http://localhost/first_website/author/melody/#000001
+
+=== mt:EntryPermalink - Author-Daily
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Author-Daily">
+</mt:Entries>
+--- expected
+http://localhost/first_website/author/melody/2016/06/06/#000007
+http://localhost/first_website/author/melody/2016/06/06/#000006
+http://localhost/first_website/author/melody/2015/05/05/#000005
+http://localhost/first_website/author/melody/2013/03/03/#000003
+http://localhost/first_website/author/melody/2012/02/02/#000002
+http://localhost/first_website/author/melody/2011/01/01/#000001
+
+=== mt:EntryPermalink - Author-Weekly
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Author-Weekly">
+</mt:Entries>
+--- expected
+http://localhost/first_website/author/melody/2016/06/05-week/#000007
+http://localhost/first_website/author/melody/2016/06/05-week/#000006
+http://localhost/first_website/author/melody/2015/05/03-week/#000005
+http://localhost/first_website/author/melody/2013/03/03-week/#000003
+http://localhost/first_website/author/melody/2012/01/29-week/#000002
+http://localhost/first_website/author/melody/2010/12/26-week/#000001
+
+=== mt:EntryPermalink - Author-Monthly
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Author-Monthly">
+</mt:Entries>
+--- expected
+http://localhost/first_website/author/melody/2016/06/#000007
+http://localhost/first_website/author/melody/2016/06/#000006
+http://localhost/first_website/author/melody/2015/05/#000005
+http://localhost/first_website/author/melody/2013/03/#000003
+http://localhost/first_website/author/melody/2012/02/#000002
+http://localhost/first_website/author/melody/2011/01/#000001
+
+=== mt:EntryPermalink - Author-Yearly
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Author-Yearly">
+</mt:Entries>
+--- expected
+http://localhost/first_website/author/melody/2016/#000007
+http://localhost/first_website/author/melody/2016/#000006
+http://localhost/first_website/author/melody/2015/#000005
+http://localhost/first_website/author/melody/2013/#000003
+http://localhost/first_website/author/melody/2012/#000002
+http://localhost/first_website/author/melody/2011/#000001
+
+=== mt:EntryPermalink - Category
+--- SKIP
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Category">
+</mt:Entries>
+--- expected
+http://localhost/first_website/#000007
+http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/#000006
+http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/#000005
+http://localhost/first_website/website-category-3/#000003
+http://localhost/first_website/website-category-1/website-subcategory-2/#000002
+http://localhost/first_website/website-category-1/#000001
+
+=== mt:EntryPermalink - Category-Daily
+--- SKIP
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Category-Daily">
+</mt:Entries>
+--- expected
+http://localhost/first_website/2016/06/06/#000007
+http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/06/#000006
+http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/05/#000005
+http://localhost/first_website/website-category-3/2013/03/03/#000003
+http://localhost/first_website/website-category-1/website-subcategory-2/2012/02/02/#000002
+http://localhost/first_website/website-category-1/2011/01/01/#000001
+
+=== mt:EntryPermalink - Category-Weekly
+--- SKIP
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Category-Weekly">
+</mt:Entries>
+--- expected
+http://localhost/first_website/2016/06/05-week/#000007
+http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/05-week/#000006
+http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/03-week/#000005
+http://localhost/first_website/website-category-3/2013/03/03-week/#000003
+http://localhost/first_website/website-category-1/website-subcategory-2/2012/01/29-week/#000002
+http://localhost/first_website/website-category-1/2010/12/26-week/#000001
+
+=== mt:EntryPermalink - Category-Monthly
+--- SKIP
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Category-Monthly">
+</mt:Entries>
+--- expected
+http://localhost/first_website/2016/06/#000007
+http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/06/#000006
+http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/05/#000005
+http://localhost/first_website/website-category-3/2013/03/#000003
+http://localhost/first_website/website-category-1/website-subcategory-2/2012/02/#000002
+http://localhost/first_website/website-category-1/2011/01/#000001
+
+=== mt:EntryPermalink - Category-Yearly
+--- SKIP
+--- template
+<mt:Entries><mt:EntryPermalink archive_type="Category-Yearly">
+</mt:Entries>
+--- expected
+http://localhost/first_website/2016/#000007
+http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-6/2016/#000006
+http://localhost/first_website/website-category-1/website-subcategory-2/website-subsubcategory-5/2015/#000005
+http://localhost/first_website/website-category-3/2013/#000003
+http://localhost/first_website/website-category-1/website-subcategory-2/2012/#000002
+http://localhost/first_website/website-category-1/2011/#000001
 
 === mt:EntryClass
 --- template

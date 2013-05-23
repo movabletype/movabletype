@@ -556,7 +556,7 @@ abstract class MTDatabase {
                 $entry = $this->fetch_entry($eid);
             }
 
-            $ts = $entry->entry_authored_on;
+            $ts = $this->db2ts($entry->entry_authored_on);
             if (preg_match('/Monthly$/', $at)) {
                 $ts = substr($ts, 0, 6) . '01000000';
             } elseif (preg_match('/Daily$/', $at)) {
@@ -570,7 +570,7 @@ abstract class MTDatabase {
             } elseif ($at == 'Individual' || $at == 'Page') {
                 $filter .= " and fileinfo_entry_id = $eid";
             }
-            if ($ts != $entry->entry_authored_on) {
+            if (preg_match('/(Monthly|Daily|Weekly|Yearly)$/', $at)) {
                 $filter .= " and fileinfo_startdate = '$ts'";
             }
             if (preg_match('/Author/', $at)) {
