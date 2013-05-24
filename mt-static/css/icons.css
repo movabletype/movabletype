@@ -170,6 +170,7 @@
 .listing .status-future img { background-image: url(../images/status_icons/future.gif); }
 .listing .status-pending img { background-image: url(../images/status_icons/warning.gif); }
 .listing .status-spam img { background-image: url(../images/status_icons/warning.gif); }
+.listing .status-unpublish img { background-image: url(../images/status_icons/unpublished.gif); }
 .listing .status-review img { background-image: url(../images/status_icons/warning.gif); }
 .listing .status-trusted img { background-image: url(../images/status_icons/trusted.gif); }
 .listing .status-banned img { background-image: url(../images/status_icons/banned.gif); }
