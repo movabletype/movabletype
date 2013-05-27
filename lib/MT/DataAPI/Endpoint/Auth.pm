@@ -92,24 +92,28 @@ sub authentication {
     };
 }
 
+sub _current_session {
+    my ($app) = @_;
+
+    my $data = $app->mt_authorization_data;
+    if ( $data && $data->{MTAuth}{session_id} ) {
+        MT::Session->load(
+            {   id => $data->{MTAuth}{session_id} || '',
+                kind => $app->session_kind,
+            }
+        );
+    }
+    else {
+        my ( $author, $new_login ) = $app->login;
+        $app->{session};
+    }
+}
+
 sub token {
     my ($app) = @_;
 
-    my $session = do {
-        my $data = $app->mt_authorization_data;
-        if ( $data && $data->{MTAuth}{session_id} ) {
-            MT::Session->load(
-                {   id => $data->{MTAuth}{session_id} || '',
-                    kind => $app->session_kind,
-                }
-            );
-        }
-        else {
-            my ( $author, $new_login ) = $app->login;
-            $app->{session};
-        }
-    };
-    return $app->error(401) unless $session;
+    my $session = _current_session($app)
+        or return $app->error(401);
 
     my $access_token = make_access_token( $app, $session );
 
@@ -121,21 +125,8 @@ sub token {
 sub revoke_authentication {
     my ($app) = @_;
 
-    my $session = $app->{session} || do {
-        my $data = $app->mt_authorization_data;
-        if ( $data && $data->{MTAuth}{session_id} ) {
-            MT::Session->load(
-                {   id => $data->{MTAuth}{session_id} || '',
-                    kind => $app->session_kind,
-                }
-            );
-        }
-        else {
-            my ( $author, $new_login ) = $app->login;
-            $app->{session};
-        }
-    };
-    return $app->error(401) unless $session;
+    my $session = $app->{session} || _current_session($app)
+        or return $app->error(401);
 
     if ( my $user
         = $app->model('author')->load( $session->get('author_id') ) )
