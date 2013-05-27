@@ -153,9 +153,10 @@ sub revoke_authentication {
 sub revoke_token {
     my ($app) = @_;
 
-    my $data = $app->mt_authorization_data;
-    $app->model('accesstoken')
-        ->remove( { id => $data->{MTAuth}{access_token} } );
+    if ( my $data = $app->mt_authorization_data ) {
+        $app->model('accesstoken')
+            ->remove( { id => $data->{MTAuth}{access_token} } );
+    }
 
     +{ status => 'success' };
 }
