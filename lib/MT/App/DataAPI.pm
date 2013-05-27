@@ -721,6 +721,14 @@ sub purge_session_records {
     return '';
 }
 
+sub send_http_header {
+    my $app = shift;
+
+    $app->set_header( 'X-Content-Type', 'nosniff' );
+
+    return $app->SUPER::send_http_header(@_);
+}
+
 sub error {
     my $app  = shift;
     my @args = @_;
