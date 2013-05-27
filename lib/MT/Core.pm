@@ -1221,6 +1221,7 @@ BEGIN {
                 default_sort_key    => 'authored_on',
                 data_api_scope_mode => 'this',
                 permission          => "access_to_entry_list",
+                data_api_permission => undef,
                 feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;

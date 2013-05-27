@@ -464,6 +464,19 @@ sub init_plugins {
     # older callback names. The callback aliases are declared
     # in init_core_callbacks.
     MT::App::CMS::Common::init_core_callbacks($app);
+
+    my $pkg = $app->id . '_';
+    my $pfx = '$Core::MT::CMS::';
+    $app->_register_core_callbacks(
+        {
+            # entry callbacks
+            $pkg
+                . 'pre_load_filtered_list.entry' =>
+                "${pfx}Entry::cms_pre_load_filtered_list",
+            $pkg . 'view_permission_filter.entry' => "${pfx}Entry::can_view",
+        }
+    );
+
     $app->SUPER::init_plugins(@_);
 }
 

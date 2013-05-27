@@ -146,6 +146,11 @@ sub run_permission_filter {
 
 sub filtered_list {
     my ( $app, $endpoint, $ds, $terms, $args, $options ) = @_;
+
+    run_permission_filter( $app, 'data_api_list_permission_filter',
+        $ds, $terms, $args, $options )
+        or return;
+
     $terms   ||= {};
     $args    ||= {};
     $options ||= {};
@@ -187,8 +192,12 @@ sub filtered_list {
     }
 
     # Permission check
-    if ( defined $setting->{permission}
-        && !$app->user->is_superuser() )
+    if ((   exists $setting->{data_api_permission}
+            ? defined $setting->{data_api_permission}
+            : defined $setting->{permission}
+        )
+        && !$app->user->is_superuser()
+        )
     {
         my $list_permission = $setting->{permission};
         my $inherit_blogs   = 1;

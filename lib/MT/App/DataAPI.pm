@@ -128,8 +128,9 @@ sub core_endpoints {
             },
             error_codes => {
                 403 =>
-                    'Do not have permission to retrieve the list of entries.',
+                    'Do not have permission to retrieve the requested entries.',
             },
+            requires_login => 0,
         },
         {   id        => 'create_entry',
             route     => '/sites/:site_id/entries',
@@ -149,6 +150,7 @@ sub core_endpoints {
                 403 =>
                     'Do not have permission to retrieve the requested entry.',
             },
+            requires_login => 0,
         },
         {   id        => 'update_entry',
             route     => '/sites/:site_id/entries/:entry_id',
@@ -383,6 +385,20 @@ sub init_plugins {
     # older callback names. The callback aliases are declared
     # in init_core_callbacks.
     MT::App::CMS::Common::init_core_callbacks($app);
+
+    my $pkg = $app->id . '_';
+    my $pfx = '$Core::MT::DataAPI::Callback::';
+    $app->_register_core_callbacks(
+        {
+            # entry callbacks
+            $pkg
+                . 'pre_load_filtered_list.entry' =>
+                "${pfx}Entry::cms_pre_load_filtered_list",
+            $pkg . 'list_permission_filter.entry' => "${pfx}Entry::can_list",
+            $pkg . 'view_permission_filter.entry' => "${pfx}Entry::can_view",
+        }
+    );
+
     $app->SUPER::init_plugins(@_);
 }
 
@@ -841,6 +857,7 @@ sub api {
     if ( $endpoint->{requires_login} && !$user ) {
         return $app->print_error( 'Unauthorized', 401 );
     }
+    $user ||= MT::Author->anonymous;
     $app->user($user);
 
     if ( my $id = $params->{site_id} ) {
