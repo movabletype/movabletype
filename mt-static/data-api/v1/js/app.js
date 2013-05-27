@@ -335,6 +335,10 @@ DataAPI.prototype = {
                 }
             }
 
+            function cleanup() {
+                xhr.onreadystatechange = new Function;
+            }
+
             if (response.error && response.error.code === 401 && endpoint !== '/token') {
                 api.request('POST', '/token', function(response) {
                     if (response.error && response.error.code === 401) {
@@ -347,6 +351,8 @@ DataAPI.prototype = {
                     }
                     return false;
                 });
+                cleanup();
+                return false;
             }
 
             runCallbacks(response);
@@ -357,7 +363,7 @@ DataAPI.prototype = {
                 api.sendXMLHttpRequest(xhr, method, base + url, params);
             }
             else {
-                xhr.onreadystatechange = new Function;
+                cleanup();
             }
         };
         return this.sendXMLHttpRequest(xhr, method, base + endpoint, params);
