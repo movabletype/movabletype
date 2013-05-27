@@ -349,7 +349,7 @@ sub core_endpoints {
             method  => 'GET',
             version => 1,
             handler => "${pkg}Publish::entries",
-            error_codes => { 403 => 'Do not have permission to upload.', },
+            error_codes => { 403 => 'Do not have permission to publish.', },
         },
         {   id      => 'stats_provider',
             route   => '/sites/:site_id/stats/provider',
