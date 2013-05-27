@@ -772,7 +772,7 @@ ChartAPI.Graph.prototype.draw_ = function (data) {
   }
 
   if (config.fallback && config.fallback.test) {
-    if (!ChartAPI.Graph.test[config.fallback.test]) {
+    if (!ChartAPI.Graph.test[config.fallback.test]()) {
       arr = config.fallback.type.split('.');
       lib = arr[0];
       method = arr[1];
@@ -1191,10 +1191,10 @@ ChartAPI.Graph.easel.Base = function (data, config, range, $container) {
   this.config = config;
   this.range = range;
   this.$container = $container;
-  if (!createjs && typeof window.require === 'function') {
-    require(['easeljs'], function (createjs) {
+  if (!window.createjs && typeof window.require === 'function') {
+    require(['easeljs'], $.proxy(function () {
       this.buildCanvas(createjs);
-    })
+    }, this));
   } else {
     var width = parseInt((config.width || $container.width()), 10);
 
@@ -1420,10 +1420,10 @@ ChartAPI.Graph.easel.bar = ChartAPI.Graph.easel.motionLine = ChartAPI.Graph.ease
   ChartAPI.Graph.morris = {};
 
 ChartAPI.Graph.morris.Base = function (data, config, range, $container) {
-  if (!Morris && typeof window.require === 'function') {
-    require(['morris'], function (Morris) {
+  if (!window.Morris && typeof window.require === 'function') {
+    require(['raphael', 'morris'], $.proxy(function () {
       this.build_(Morris, data, config, range, $container);
-    });
+    }, this));
   } else {
     var width = config.width || $container.width();
     if (width) {
