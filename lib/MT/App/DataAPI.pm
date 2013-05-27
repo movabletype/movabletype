@@ -77,6 +77,7 @@ sub core_endpoints {
                 403 =>
                     'Do not have permission to retrieve the requested user.',
             },
+            requires_login => 0,
         },
         {   id          => 'update_user',
             route       => '/users/:user_id',
@@ -397,6 +398,9 @@ sub init_plugins {
                 "${pfx}Entry::cms_pre_load_filtered_list",
             $pkg . 'list_permission_filter.entry' => "${pfx}Entry::can_list",
             $pkg . 'view_permission_filter.entry' => "${pfx}Entry::can_view",
+
+            # user callbacks
+            $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
         }
     );
 

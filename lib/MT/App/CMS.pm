@@ -474,6 +474,9 @@ sub init_plugins {
                 . 'pre_load_filtered_list.entry' =>
                 "${pfx}Entry::cms_pre_load_filtered_list",
             $pkg . 'view_permission_filter.entry' => "${pfx}Entry::can_view",
+
+            # user callbacks
+            $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
         }
     );
 

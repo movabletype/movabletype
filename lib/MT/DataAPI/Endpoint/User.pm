@@ -17,7 +17,7 @@ sub get {
         or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
-        'author', $user->id )
+        'author', $user->id, obj_promise($user) )
         or return;
 
     $user;

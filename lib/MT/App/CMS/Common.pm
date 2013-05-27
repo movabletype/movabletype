@@ -51,7 +51,6 @@ sub init_core_callbacks {
 
             # user callbacks
             $pkg . 'edit.author'                   => "${pfx}User::edit",
-            $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
             $pkg . 'save_permission_filter.author' => "${pfx}User::can_save",
             $pkg
                 . 'delete_permission_filter.author' =>
