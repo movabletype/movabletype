@@ -1371,9 +1371,10 @@ BEGIN {
                     permit_action => 'access_to_category_list',
                     inherit       => 0,
                 },
-                view       => [ 'website', 'blog' ],
-                scope_mode => 'this',
-                condition  => sub {
+                data_api_permission => undef,
+                view                => [ 'website', 'blog' ],
+                scope_mode          => 'this',
+                condition           => sub {
                     my $app = shift;
                     ( $app->param('_type') || '' ) ne 'filter';
                 },

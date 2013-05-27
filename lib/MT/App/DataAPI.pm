@@ -186,6 +186,7 @@ sub core_endpoints {
                 403 =>
                     'Do not have permission to retrieve the list of categories.',
             },
+            requires_login => 0,
         },
         {   id      => 'list_comments',
             route   => '/sites/:site_id/comments',
