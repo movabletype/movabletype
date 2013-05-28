@@ -122,16 +122,12 @@ sub get_target_user {
     my ($app) = @_;
 
     if ( $app->param('user_id') eq 'me' ) {
-        $app->user;
+        my $user = $app->user;
+        $user->is_anonymous ? undef : $user;
     }
     else {
         my ($user) = context_objects(@_);
-        if ( $user && $user->status == MT::Author::ACTIVE() ) {
-            $user;
-        }
-        else {
-            undef;
-        }
+        ( $user && $user->status == MT::Author::ACTIVE() ) ? $user : undef;
     }
 }
 
