@@ -1398,11 +1398,12 @@ BEGIN {
                 },
             },
             comment => {
-                object_label     => 'Comment',
-                default_sort_key => 'created_on',
-                permission       => 'access_to_comment_list',
-                primary          => 'comment',
-                feed_link        => sub {
+                object_label        => 'Comment',
+                default_sort_key    => 'created_on',
+                permission          => 'access_to_comment_list',
+                data_api_permission => undef,
+                primary             => 'comment',
+                feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 

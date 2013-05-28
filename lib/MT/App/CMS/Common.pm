@@ -229,9 +229,6 @@ sub init_core_callbacks {
             # comment callbacks
             $pkg . 'edit.comment' => "${pfx}Comment::edit",
             $pkg
-                . 'view_permission_filter.comment' =>
-                "${pfx}Comment::can_view",
-            $pkg
                 . 'save_permission_filter.comment' =>
                 "${pfx}Comment::can_save",
             $pkg
@@ -241,9 +238,6 @@ sub init_core_callbacks {
             $pkg . 'pre_save.comment'    => "${pfx}Comment::pre_save",
             $pkg . 'post_save.comment'   => "${pfx}Comment::post_save",
             $pkg . 'post_delete.comment' => "${pfx}Comment::post_delete",
-            $pkg
-                . 'pre_load_filtered_list.comment' =>
-                "${pfx}Comment::cms_pre_load_filtered_list",
 
             # commenter callbacks
             $pkg . 'edit.commenter' => "${pfx}Comment::edit_commenter",

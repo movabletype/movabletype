@@ -206,6 +206,7 @@ sub core_endpoints {
                 403 =>
                     'Do not have permission to retrieve the list of comments.',
             },
+            requires_login => 0,
         },
         {   id      => 'list_comments_for_entries',
             route   => '/sites/:site_id/entries/:entry_id/comments',
@@ -224,6 +225,7 @@ sub core_endpoints {
                 403 =>
                     'Do not have permission to retrieve the list of comments.',
             },
+            requires_login => 0,
         },
         {   id        => 'create_comment',
             route     => '/sites/:site_id/entries/:entry_id/comments',
@@ -254,6 +256,7 @@ sub core_endpoints {
                 403 =>
                     'Do not have permission to retrieve the requested comment.',
             },
+            requires_login => 0,
         },
         {   id        => 'update_comment',
             route     => '/sites/:site_id/comments/:comment_id',
@@ -401,6 +404,14 @@ sub init_plugins {
 
             # user callbacks
             $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
+
+            # comment callbacks
+            $pkg
+                . 'view_permission_filter.comment' =>
+                "${pfx}Comment::can_view",
+            $pkg
+                . 'pre_load_filtered_list.comment' =>
+                "${pfx}Comment::cms_pre_load_filtered_list",
         }
     );
 

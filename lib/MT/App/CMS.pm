@@ -477,6 +477,14 @@ sub init_plugins {
 
             # user callbacks
             $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
+
+            # comment callbacks
+            $pkg
+                . 'view_permission_filter.comment' =>
+                "${pfx}Comment::can_view",
+            $pkg
+                . 'pre_load_filtered_list.comment' =>
+                "${pfx}Comment::cms_pre_load_filtered_list",
         }
     );
 
