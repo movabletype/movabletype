@@ -46,7 +46,10 @@ sub cms_pre_load_filtered_list {
 
     my %filters = ();
     for my $id ( ref $blog_ids ? @$blog_ids : $blog_ids ) {
-        $filters{$id} = { blog_id => $id, status => MT::Entry::RELEASE() };
+        $filters{ $id || 0 } = {
+            ( $id ? ( blog_id => $id ) : () ),
+            status => MT::Entry::RELEASE()
+        };
     }
 
     require MT::Permission;

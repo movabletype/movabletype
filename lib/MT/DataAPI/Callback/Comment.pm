@@ -38,8 +38,8 @@ sub cms_pre_load_filtered_list {
 
     my %filters = ();
     for my $id ( ref $blog_ids ? @$blog_ids : $blog_ids ) {
-        $filters{$id} = {
-            blog_id                 => $id,
+        $filters{ $id || 0 } = {
+            ( $id ? ( blog_id => $id ) : () ),
             '!comment_visible!'     => 1,
             '!comment_junk_status!' => MT::Comment::NOT_JUNK(),
         };
@@ -58,7 +58,7 @@ sub cms_pre_load_filtered_list {
     my $args = $load_options->{args};
     while ( my $perm = $iter->() ) {
         my $blog_id = $perm->blog_id;
-        if ( $perm->can_do('view_all_comments') || 1) {
+        if ( $perm->can_do('view_all_comments') ) {
             $filters{$blog_id} = { blog_id => $blog_id, };
         }
         elsif ( $perm->can_do('view_own_entry_comment') ) {
