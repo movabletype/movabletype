@@ -485,6 +485,14 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.comment' =>
                 "${pfx}Comment::cms_pre_load_filtered_list",
+
+            # ping callbacks
+            $pkg
+                . 'view_permission_filter.ping' =>
+                "${pfx}TrackBack::can_view",
+            $pkg
+                . 'pre_load_filtered_list.ping' =>
+                "${pfx}TrackBack::cms_pre_load_filtered_list",
         }
     );
 

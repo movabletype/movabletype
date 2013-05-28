@@ -292,6 +292,7 @@ sub core_endpoints {
                 403 =>
                     'Do not have permission to retrieve the list of trackbacks.',
             },
+            requires_login => 0,
         },
         {   id      => 'list_trackbacks_for_entries',
             route   => '/sites/:site_id/entries/:entry_id/trackbacks',
@@ -310,6 +311,7 @@ sub core_endpoints {
                 403 =>
                     'Do not have permission to retrieve the list of trackbacks.',
             },
+            requires_login => 0,
         },
         {   id          => 'get_trackback',
             route       => '/sites/:site_id/trackbacks/:ping_id',
@@ -319,6 +321,7 @@ sub core_endpoints {
                 403 =>
                     'Do not have permission to retrieve the requested trackback.',
             },
+            requires_login => 0,
         },
         {   id        => 'update_trackback',
             route     => '/sites/:site_id/trackbacks/:ping_id',
@@ -412,6 +415,14 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.comment' =>
                 "${pfx}Comment::cms_pre_load_filtered_list",
+
+            # ping callbacks
+            $pkg
+                . 'view_permission_filter.ping' =>
+                "${pfx}TrackBack::can_view",
+            $pkg
+                . 'pre_load_filtered_list.ping' =>
+                "${pfx}TrackBack::cms_pre_load_filtered_list",
         }
     );
 

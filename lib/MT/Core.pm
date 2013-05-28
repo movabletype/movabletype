@@ -1429,11 +1429,12 @@ BEGIN {
                 },
             },
             ping => {
-                primary          => 'excerpt',
-                object_label     => 'Trackback',
-                default_sort_key => 'created_on',
-                permission       => 'access_to_trackback_list',
-                feed_link        => sub {
+                primary             => 'excerpt',
+                object_label        => 'Trackback',
+                default_sort_key    => 'created_on',
+                permission          => 'access_to_trackback_list',
+                data_api_permission => undef,
+                feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 

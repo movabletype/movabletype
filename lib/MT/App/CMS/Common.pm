@@ -274,9 +274,6 @@ sub init_core_callbacks {
             # ping callbacks
             $pkg . 'edit.ping' => "${pfx}TrackBack::edit",
             $pkg
-                . 'view_permission_filter.ping' =>
-                "${pfx}TrackBack::can_view",
-            $pkg
                 . 'save_permission_filter.ping' =>
                 "${pfx}TrackBack::can_save",
             $pkg
@@ -285,9 +282,6 @@ sub init_core_callbacks {
             $pkg . 'pre_save.ping'    => "${pfx}TrackBack::pre_save",
             $pkg . 'post_save.ping'   => "${pfx}TrackBack::post_save",
             $pkg . 'post_delete.ping' => "${pfx}TrackBack::post_delete",
-            $pkg
-                . 'pre_load_filtered_list.ping' =>
-                "${pfx}TrackBack::cms_pre_load_filtered_list",
 
             # template callbacks
             $pkg . 'edit.template' => "${pfx}Template::edit",
