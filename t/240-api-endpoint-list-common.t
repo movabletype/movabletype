@@ -153,6 +153,26 @@ my @suite = (
             }
         ),
     },
+    {   path   => '/v1/sites/1/entries',
+        method => 'GET',
+        params => {
+            limit      => 1,
+            includeIds => '3,2',
+            fields     => 'id,title',
+        },
+        result => result(
+            {   class   => 'entry',
+                blog_id => 1,
+                id      => [ 3, 2 ],
+            },
+            {   limit => 1,
+                sort  => [
+                    { column => 'authored_on', desc => 'DESC' },
+                    { column => "id",          desc => 'DESC' },
+                ]
+            }
+        ),
+    },
 );
 
 my %callbacks = ();
@@ -193,10 +213,14 @@ for my $data (@suite) {
         }
     );
     my $out = delete $app->{__test_output};
-    my ( $status, $content_type, $body ) = split /\n/, $out, 3;
-    my ($code) = ( $status =~ m/Status:\s*(\d+)/ );
-
-    is( $code, 200, 'status' );
+    my ( $headers, $body ) = split /^\s*$/m, $out, 2;
+    my %headers = map {
+        my ( $k, $v ) = split /\s*:\s*/, $_, 2;
+        $v =~ s/(\r\n|\r|\n)\z//;
+        lc $k => $v
+        }
+        split /\n/, $headers;
+    is( $headers{status}, $data->{code} || 200, 'Status' );
 
     foreach my $cb ( @{ $data->{callbacks} } ) {
         my $params_list = $callbacks{ $cb->{name} } || [];
