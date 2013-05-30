@@ -1,4 +1,17 @@
-(function(window) {
+/*
+ * Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
+ * This program is distributed under the terms of the
+ * GNU General Public License, version 2.
+ *
+ * Includes jQuery JavaScript Library to serialize a HTMLFormElement
+ * http://jquery.com/
+ * Copyright 2005, 2013 jQuery Foundation, Inc. and other contributors
+ * Released under the MIT license
+ * http://jquery.org/license
+ *
+ * $Id$
+ */
+;(function(window) {
     
 var DataAPI = function(options) {
     this.o = {
