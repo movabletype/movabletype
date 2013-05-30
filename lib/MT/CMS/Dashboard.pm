@@ -776,8 +776,8 @@ sub _build_favorite_websites_data {
             { author_id => $user->id, permissions => { not => "'comment'" } }
             )
             if !$auth->is_superuser
-                && !$auth->permissions(0)->can_do('edit_templates')
-                && !$auth->permissions(0)->can_do('create_blog');
+            && !$auth->permissions(0)->can_do('edit_templates')
+            && !$auth->permissions(0)->can_do('create_blog');
         $args{limit}  = 10 - $fav_count;
         $terms{class} = 'website';
         $terms{id}    = { not => \@fav_websites } if $fav_count;
@@ -838,8 +838,7 @@ sub _build_favorite_websites_data {
         {   group => ['blog_id'],
             join  => $app->model('entry')->join_on(
                 undef,
-                {   id    => \'=comment_entry_id',
-                    class => 'page',
+                {   id => \'=comment_entry_id',
                     $param->{my_posts} ? ( author_id => $user->id ) : (),
                 },
             ),
