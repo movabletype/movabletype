@@ -647,7 +647,10 @@ sub object_to_resource {
 sub mt_authorization_data {
     my ($app) = @_;
 
-    my $header = $app->get_header('X-MT-Authorization')
+    my $header
+        = $app->get_header('X-MT-Authorization')
+        || ( lc $app->request_method ne 'get'
+        && $app->param('X-MT-Authorization') )
         or return undef;
 
     my %values = ();
