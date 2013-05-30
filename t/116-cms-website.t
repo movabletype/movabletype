@@ -153,6 +153,35 @@ subtest 'Test cfg_prefs mode' => sub {
                 is( $test_blog->column('archive_path'),
                     $archive_path, 'Can save archive_path correctly.' );
             }
+
+            if ( $type eq 'blog' ) {
+                $app->config->BaseSitePath('dummy');
+
+                $app = _run_app(
+                    'MT::App::CMS',
+                    {   __test_user => $admin,
+                        __mode      => 'cfg_prefs',
+                        blog_id     => $test_blog->id,
+                    },
+                );
+                $out = delete $app->{__test_output};
+
+                like( $out, qr/$site_root_hint/,
+                    'Has Site Root hint(relative).' );
+                my $site_root_hint_abs = quotemeta
+                    "The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\\' for Windows) is preferred.  Do not end with '/' or '\\'. Example: /home/mt/public_html or C:\\www\\public_html";
+                unlike( $out, qr/$site_root_hint_abs/,
+                    'Has Site Root hint(absolute).' );
+
+                like( $out, qr/$archive_root_hint/,
+                    'Has Archive URL hint(relative).' );
+                my $archive_root_hint_abs = quotemeta
+                    "The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\\' for Windows) is preferred. Do not end with '/' or '\\'. Example: /home/mt/public_html or C:\\www\\public_html";
+                unlike( $out, qr/$archive_root_hint_abs/,
+                    'Has Archive URL hint(absolute).' );
+
+                $app->config->BaseSitePath(undef);
+            }
         };
     }
 };
