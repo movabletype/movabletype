@@ -6,7 +6,8 @@ var DataAPI = function(options) {
         baseUrl: '',
         cookieDomain: undefined,
         cookiePath: undefined,
-        async: true
+        async: true,
+        disableFormData: false
     };
     for (k in options) {
         if (k in this.o) {
@@ -26,12 +27,18 @@ var DataAPI = function(options) {
 
     this.callbacks = [];
     this.tokenData = null;
+    this.iframeId  = 0;
 }
 
-DataAPI.dataApiAccessTokenKey = 'mt_api_access_token';
+DataAPI.accessTokenKey = 'mt_data_api_access_token';
+DataAPI.iframePrefix   = 'mt_data_api_iframe_';
 DataAPI.prototype = {
     getCurrentEpoch: function() {
         return Math.round(new Date().getTime() / 1000);
+    },
+
+    getNextIframeName: function() {
+        return DataAPI.iframePrefix + ++this.iframeId;
     },
 
     getVersion: function() {
@@ -39,7 +46,7 @@ DataAPI.prototype = {
     },
     
     getAppKey: function() {
-        return DataAPI.dataApiAccessTokenKey + '_' + this.o.appId;
+        return DataAPI.accessTokenKey + '_' + this.o.appId;
     },
     
     storeToken: function(tokenData) {
@@ -50,7 +57,7 @@ DataAPI.prototype = {
     },
     
     updateTokenFromDefault: function() {
-        var defaultKey    = DataAPI.dataApiAccessTokenKey,
+        var defaultKey    = DataAPI.accessTokenKey,
             defaultCookie = Cookie.fetch(defaultKey);
         if (! defaultCookie) {
             return null;
@@ -111,7 +118,11 @@ DataAPI.prototype = {
         return endpoint;
     },
     
-    serializeObject: function(k, v) {
+    _isFileInputElement: function(e) {
+        return e instanceof HTMLInputElement && e.type.toLowerCase() === 'file';
+    },
+
+    serializeObject: function(v) {
         function f(n) {
             return n < 10 ? '0' + n : n;
         }
@@ -140,12 +151,22 @@ DataAPI.prototype = {
                 f(v.getSeconds())   + off;
         }
 
+        if (v instanceof HTMLFormElement) {
+            v = this.serializeFormElement(v);
+        }
+
         var type = typeof v;
         if (type === 'undefined' || v === null || (type === 'number' && ! isFinite(v))) {
             return '';
         }
         else if (v instanceof Date) {
             return dateToJSON(v);
+        }
+        else if (v instanceof File) {
+            return v;
+        }
+        else if (this._isFileInputElement(v)) {
+            return v.files[0];
         }
         else if (type === 'object') {
             return JSON.stringify(v, function(key, value) {
@@ -177,7 +198,7 @@ DataAPI.prototype = {
 
             str +=
                 encodeURIComponent(k) + '=' +
-                encodeURIComponent(this.serializeObject(k, params[k]));
+                encodeURIComponent(this.serializeObject(params[k]));
         }
         return str;
     },
@@ -200,29 +221,21 @@ DataAPI.prototype = {
             || false;
     },
     
-    sendXMLHttpRequest: function(xhr, method, url, params) {
-        if (params) {
-            if (window.FormData && params instanceof window.FormData) {
-                // Do nothing
-            }
-            else if (window.FormData && params instanceof HTMLFormElement ) {
-                params = new FormData(params);
-            }
-            else if (window.FormData && typeof params === 'object') {
-                var data = new FormData();
-                for (k in params) {
-                    var v = params[k];
-                    if (! (typeof v === 'undefined' || v === null)) {
-                        data.append(k, this.serializeObject(k, v));
-                    }
-                }
-                params = data;
-            }
-            else if (typeof params !== 'string') {
-                params = this.serialize(params);
+    _findFileInput: function(params) {
+        if (typeof params !== 'object') {
+            return null;
+        }
+
+        for (k in params) {
+            if (this._isFileInputElement(params[k])) {
+                return params[k];
             }
         }
 
+        return null;
+    },
+
+    sendXMLHttpRequest: function(xhr, method, url, params) {
         if (method.match(/^(put|delete)$/i)) {
             if (! params) {
                 params = '';
@@ -252,6 +265,84 @@ DataAPI.prototype = {
         
         return xhr;
     },
+
+    serializeFormElement: function(form) {
+        var submitterTypes = /^(?:submit|button|image|reset)$/i,
+            submittable    = /^(?:input|select|textarea|keygen)/i,
+            checkableTypes = /^(?:checkbox|radio)$/i;
+
+        var data = {};
+        for (var i = 0; i < form.elements.length; i++) {
+            var e    = form.elements[i],
+                type = e.type;
+
+            if (
+                    ! e.name ||
+                    e.disabled ||
+                    ! submittable.test(e.nodeName) ||
+                    submitterTypes.test(type) ||
+                    (checkableTypes.test(type) && ! e.checked)
+            ) {
+                continue;
+            }
+
+            if (this._isFileInputElement(e)) {
+                data[e.name] = e;
+            }
+            else {
+                data[e.name] = this._elementValue(e);
+            }
+        }
+
+        return data;
+    },
+
+    _elementValue: function(e) {
+        if (e.nodeName.toLowerCase() === 'select') {
+            var value, option,
+                options = e.options,
+                index = e.selectedIndex,
+                one = e.type === "select-one" || index < 0,
+                values = one ? null : [],
+                max = one ? index + 1 : options.length,
+                i = index < 0 ?
+                    max :
+                    one ? index : 0;
+
+            // Loop through all the selected options
+            for ( ; i < max; i++ ) {
+                option = options[ i ];
+
+                // oldIE doesn't update selected after form reset (#2551)
+                if ( ( option.selected || i === index ) &&
+                        // Don't return options that are disabled or in a disabled optgroup
+                        ( !option.parentNode.disabled || option.parentNode.nodeName.toLowerCase() !== "optgroup" ) ) {
+
+                    // Get the specific value for the option
+                    value = option.attributes.value;
+                    if (!value || value.specified) {
+                        value = option.value;
+                    }
+                    else {
+                        value = elem.text;
+                    }
+
+                    // We don't need an array for one selects
+                    if ( one ) {
+                        return value;
+                    }
+
+                    // Multi-Selects return an array
+                    values.push( value );
+                }
+            }
+
+            return values;
+        }
+        else {
+            return e.value;
+        }
+    },
     
     request: function(method, endpoint) {
         var api        = this,
@@ -259,7 +350,86 @@ DataAPI.prototype = {
             params     = null,
             callback   = function(){},
             xhr        = null,
+            viaXhr     = true,
             originalArguments = Array.prototype.slice.call(arguments);
+
+        function serializeParams(params) {
+            if (! api.o.disableFormData && window.FormData) {
+                if (params instanceof window.FormData) {
+                    return params;
+                }
+                else if (params instanceof HTMLFormElement ) {
+                    return new FormData(params);
+                }
+                else if (window.FormData && typeof params === 'object') {
+                    var data = new FormData();
+                    for (k in params) {
+                        data.append(k, api.serializeObject(params[k]));
+                    }
+                    return data;
+                }
+            }
+
+
+            if (params instanceof HTMLFormElement) {
+                params = api.serializeFormElement(params);
+                for (k in params) {
+                    if (params[k] instanceof Array) {
+                        params[k] = params[k].join(',');
+                    }
+                }
+            }
+
+            if (api._findFileInput(params)) {
+                viaXhr = false;
+
+                var data = {};
+                for (k in params) {
+                    if (api._isFileInputElement(params[k])) {
+                        data[k] = params[k];
+                    }
+                    else {
+                        data[k] = api.serializeObject(params[k]);
+                    }
+                }
+                params = data;
+            }
+            else if (typeof params !== 'string') {
+                params = api.serialize(params);
+            }
+
+            return params;
+        }
+
+        function runCallback(response) {
+            var status = callback(response);
+            if (status !== false) {
+                if (response.error) {
+                    api.trigger('error', response);
+                }
+            }
+        }
+
+        function needToRetry(response) {
+            return response.error &&
+                response.error.code === 401 &&
+                endpoint !== '/token';
+        }
+
+        function retry() {
+            api.request('POST', '/token', function(response) {
+                if (response.error && response.error.code === 401) {
+                    api.trigger('sessionExpired', response);
+                    runCallback(response);
+                }
+                else {
+                    api.storeToken(response);
+                    api.request.apply(api, originalArguments);
+                }
+                return false;
+            });
+        }
+
         
         for (var i = 2; i < arguments.length; i++) {
             var v = arguments[i];
@@ -295,78 +465,148 @@ DataAPI.prototype = {
         }
 
         if (paramsList.length) {
-            params = paramsList.shift();
+            params = serializeParams(paramsList.shift());
         }
         
         
         var base = this.o.baseUrl.replace(/\/*$/, '/') + 'v' + this.getVersion();
         endpoint = endpoint.replace(/^\/*/, '/');
 
-
-        var xhr = xhr || this.newXMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== 4) {
-                return;
-            }
-            
-            var response = null;
-            try {
-                response = JSON.parse(xhr.responseText);
-            }
-            catch (e) {
-                // Do nothing
-            }
-            
-            if (! response) {
-                response = {
-                    error: {
-                        code:    parseInt(xhr.status, 10),
-                        message: xhr.statusText
-                    }
-                };
-            }
-
-            function runCallbacks(response) {
-                var status = callback(response);
-                if (status !== false) {
-                    if (response.error) {
-                        api.trigger('error', response);
-                    }
+        if (viaXhr) {
+            var xhr = xhr || this.newXMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState !== 4) {
+                    return;
                 }
-            }
 
-            function cleanup() {
-                xhr.onreadystatechange = new Function;
-            }
+                var response;
+                try {
+                    response = JSON.parse(xhr.responseText);
+                }
+                catch (e) {
+                    response = {
+                        error: {
+                            code:    parseInt(xhr.status, 10),
+                            message: xhr.statusText
+                        }
+                    };
+                }
 
-            if (response.error && response.error.code === 401 && endpoint !== '/token') {
-                api.request('POST', '/token', function(response) {
-                    if (response.error && response.error.code === 401) {
-                        api.trigger('sessionExpired', response);
-                        runCallbacks(response);
+                function cleanup() {
+                    xhr.onreadystatechange = new Function;
+                }
+
+                if (needToRetry(response)) {
+                    retry();
+                    cleanup();
+                    return;
+                }
+
+                runCallback(response);
+
+                var url = xhr.getResponseHeader('X-MT-Next-Phase-URL');
+                if (url) {
+                    xhr.abort();
+                    api.sendXMLHttpRequest(xhr, method, base + url, params);
+                }
+                else {
+                    cleanup();
+                }
+            };
+            return this.sendXMLHttpRequest(xhr, method, base + endpoint, params);
+        }
+        else {
+            (function() {
+                var target = api.getNextIframeName();
+                var form   = document.createElement('form');
+                var iframe = document.createElement('iframe');
+                var file   = null;
+
+                // Set up a form element
+                form.action   = base + endpoint;
+                form.target   = target;
+                form.method   = method;
+                form.encoding = 'multipart/form-data';
+                form.enctype  = 'multipart/form-data';
+
+                // Set up a iframe element
+                iframe.name           = target;
+                iframe.style.position = 'absolute';
+                iframe.style.top      = '-9999px';
+                document.body.appendChild(iframe);
+
+
+                if (method.match(/^(put|delete)$/i)) {
+                    if (! params) {
+                        params = {};
                     }
-                    else {
-                        api.storeToken(response);
-                        api.request.apply(api, originalArguments);
+                    params['__method'] = method;
+
+                    method = 'POST';
+                }
+                params['X-MT-Authorization'] = 'MTAuth access_token=' + api.getToken();
+
+                for (k in params) {
+                    if (api._isFileInputElement(params[k])) {
+                        file = params[k];
+                        file.parentNode.insertBefore(form, file);
+                        form.appendChild(file);
+                        continue;
                     }
-                    return false;
-                });
-                cleanup();
-                return false;
-            }
 
-            runCallbacks(response);
+                    var input   = document.createElement('input');
+                    input.type  = 'hidden';
+                    input.name  = k;
+                    input.value = params[k];
+                    form.appendChild(input);
+                }
 
-            var url = xhr.getResponseHeader('X-MT-Next-Phase-URL');
-            if (url) {
-                xhr.abort();
-                api.sendXMLHttpRequest(xhr, method, base + url, params);
-            }
-            else {
-                cleanup();
-            }
-        };
-        return this.sendXMLHttpRequest(xhr, method, base + endpoint, params);
+                form.submit();
+
+
+                function handler(e) {
+                    var body     = iframe.contentWindow.document.body,
+                        contents = body.textContent || body.innerText,
+                        response;
+
+                    function cleanup() {
+                        setTimeout(function() {
+                            form.parentNode.insertBefore(file, form);
+                            form.parentNode.removeChild(form);
+                            iframe.parentNode.removeChild(iframe);
+                        });
+                    }
+
+                    try {
+                        response = JSON.parse(contents);
+                    }
+                    catch (e) {
+                        response = {
+                            error: {
+                                code:    500,
+                                message: 'Internal Server Error'
+                            }
+                        };
+                    }
+
+                    if (needToRetry(response)) {
+                        retry();
+                        cleanup();
+                        return;
+                    }
+
+                    cleanup();
+                    runCallback(response);
+                }
+                if ( iframe.addEventListener ) {
+                    iframe.addEventListener('load', handler, false);
+                } else if ( iframe.attachEvent ) {
+                    iframe.attachEvent('onload', handler);
+                }
+            })();
+
+            return;
+        }
     },
 
     on: function(key, callback) {
