@@ -3319,8 +3319,6 @@ sub build_blog_selector {
             }
         }
     }
-
-    #die scalar @website_data;
     $param->{fav_website_loop} = \@website_data;
 
     if ( !$param->{curr_website_id} ) {
