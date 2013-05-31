@@ -78,7 +78,7 @@ subtest 'Test cfg_prefs mode' => sub {
             my $site_root_hint
                 = $type eq 'blog'
                 ? 'The path where your index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog'
-                : 'The path where your index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html or C:\www\public_html';
+                : 'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\\\' for Windows) is preferred.  Do not end with \'/\' or \'\\\'. Example: /home/mt/public_html or C:\www\public_html';
             $site_root_hint = quotemeta $site_root_hint;
             like( $out, qr/$site_root_hint/, 'Has Site Root hint.' );
 
@@ -105,7 +105,7 @@ subtest 'Test cfg_prefs mode' => sub {
             my $archive_root_hint
                 = $type eq 'blog'
                 ? 'The path where your archives section index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog'
-                : 'The path where your archives section index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html or C:\www\public_html';
+                : 'The path where your archives section index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\\\' for Windows) is preferred. Do not end with \'/\' or \'\\\'. Example: /home/mt/public_html or C:\www\public_html';
             $archive_root_hint = quotemeta $archive_root_hint;
             like( $out, qr/$archive_root_hint/, 'Has Archive Root hint.' );
 
