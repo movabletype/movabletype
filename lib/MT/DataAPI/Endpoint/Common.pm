@@ -123,7 +123,7 @@ sub get_target_user {
 
     if ( $app->param('user_id') eq 'me' ) {
         my $user = $app->user;
-        $user->is_anonymous ? undef : $user;
+        $user->is_anonymous ? $app->error(401) : $user;
     }
     else {
         my ($user) = context_objects(@_);
