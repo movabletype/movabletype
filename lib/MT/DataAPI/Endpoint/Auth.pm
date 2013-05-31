@@ -47,11 +47,23 @@ sub authorization {
         mt_data_api_login_magic_token => $token,
     );
 
-    $app->bake_cookie(
-        -name  => mt_data_api_login_magic_token_cookie_name(),
-        -value => $token,
-        -path  => $app->config->CookiePath || $app->mt_path,
-    );
+    if ( my $session = _current_session($app) ) {
+        my $access_token = make_access_token( $app, $session );
+
+        $param{access_token} = {
+            session_id   => $session->id,
+            access_token => $access_token->id,
+            expires_in   => MT::AccessToken::ttl(),
+        };
+    }
+    else {
+        $app->bake_cookie(
+            -name  => mt_data_api_login_magic_token_cookie_name(),
+            -value => $token,
+            -path  => $app->config->CookiePath || $app->mt_path,
+        );
+    }
+
     $app->show_login( \%param );
 }
 
@@ -101,7 +113,7 @@ sub _current_session {
             {   id => $data->{MTAuth}{session_id} || '',
                 kind => $app->session_kind,
             }
-        );
+        ) or undef;
     }
     else {
         my ( $author, $new_login ) = $app->login;

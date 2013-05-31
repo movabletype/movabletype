@@ -3,6 +3,73 @@
 <mt:setvar name="screen_id" value="sign-in">
 <mt:setvar name="screen_class" value="sign-in">
 <mt:setvarblock name="html_head" append="1">  <meta name='robots' content='noindex,nofollow' /></mt:setvarblock>
+
+<mt:SetVarBlock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cookie.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">data-api/v1/js/app.js?v=<mt:var name="mt_version_id" escape="url">">"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+(function() {
+
+function redirect(jsonText) {
+    Cookie.bake(MT.DataAPI.accessTokenKey, jsonText, undefined, '/');
+    var url = '<mt:var name="redirect_uri" encode_js="1" />#_login';
+    location.href = url;
+}
+
+<mt:If name="access_token">
+redirect('<mt:Var name="access_token" to_json="1" encode_js="1" />');
+</mt:If>
+
+
+jQuery(function() {
+    if (window.top && (window.top.location != window.location)) {
+      jQuery('#username')
+        .val( window.top.jQuery('#user .username').text())
+        .addClass('disabled')
+        .attr('disabled','disabled');
+      jQuery('#sign-in-button').click(function(){
+        jQuery('#username').removeAttr('disabled');
+      });
+    }
+});
+
+jQuery(function() {
+    jQuery('#username').focus();
+    if (jQuery('#username').focus().val() != '') {
+        jQuery('#password').focus();
+    }
+});
+
+jQuery(function($) {
+    $('#login_form').submit(function() {
+        var form = this;
+        $.ajax({
+            url: this.action,
+            data: $(this).serialize(),
+            type: 'POST',
+            cache : false
+        }).done(function(data) {
+            redirect($.toJSON(data));
+        }).fail(function(data) {
+            if (data.status === 401) {
+                $('#login-error').removeClass('hidden');
+                form.reset();
+            }
+            else {
+                alert('Ajax error: ' + data.responseText);
+            }
+        });
+        return false;
+    });
+});
+
+})();
+/* ]]> */
+</script>
+</mt:SetVarBlock>
+
 <mt:include name="include/chromeless_header.tmpl">
 
 <input type="hidden" name="redirect_uri" id="redirect_uri" value="<mt:var name="redirect_uri" escape="html">" />
@@ -77,53 +144,4 @@
 
 </mt:unless>
 </form>
-
-<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cookie.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">data-api/v1/js/app.js?v=<mt:var name="mt_version_id" escape="url">">"></script>
-<script type="text/javascript">
-/* <![CDATA[ */
-if (window.top && (window.top.location != window.location)) {
-  jQuery('#username')
-    .val( window.top.jQuery('#user .username').text())
-    .addClass('disabled')
-    .attr('disabled','disabled');
-  jQuery('#sign-in-button').click(function(){
-    jQuery('#username').removeAttr('disabled');
-  });
-}
-
-jQuery(function() {
-    jQuery('#username').focus();
-    if (jQuery('#username').focus().val() != '') {
-        jQuery('#password').focus();
-    }
-});
-
-jQuery(function($) {
-    $('#login_form').submit(function() {
-        var form = this;
-        $.ajax({
-            url: this.action,
-            data: $(this).serialize(),
-            type: 'POST',
-            cache : false
-        }).done(function(data) {
-            Cookie.bake(MT.DataAPI.accessTokenKey, $.toJSON(data), undefined, '/');
-            var url = $('#redirect_uri').val() + '#_login';
-            location.href = url;
-        }).fail(function(data) {
-            if (data.status === 401) {
-                $('#login-error').removeClass('hidden');
-                form.reset();
-            }
-            else {
-                alert('Ajax error: ' + data.responseText);
-            }
-        });
-        return false;
-    });
-});
-/* ]]> */
-</script>
 <mt:include name="include/chromeless_footer.tmpl">
