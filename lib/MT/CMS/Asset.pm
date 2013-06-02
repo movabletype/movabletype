@@ -7,7 +7,7 @@ package MT::CMS::Asset;
 
 use strict;
 use Symbol;
-use MT::Util qw( epoch2ts encode_url format_ts relative_date );
+use MT::Util qw( epoch2ts encode_url format_ts relative_date perl_sha1_digest_hex);
 
 sub edit {
     my $cb = shift;
@@ -1249,6 +1249,24 @@ sub _upload_file {
         if ( $middle_path ne '' ) {
             $relative_path = $middle_path
                 . ( $relative_path ? '/' . $relative_path : '' );
+        }
+
+        if ( $q->param('auto_rename_if_exists') ) {
+            my $local_file = File::Spec->catfile( $root_path, $relative_path,
+                $basename );
+            if ( $fmgr->exists($local_file) ) {
+                my $ext = (
+                    File::Basename::fileparse(
+                        $basename, qr/\.[A-Za-z0-9]+$/
+                    )
+                )[2];
+
+                $basename = perl_sha1_digest_hex(
+                    join( '-',
+                        epoch2ts( $blog, time ), $app->remote_ip,
+                        $basename )
+                ) . $ext;
+            }
         }
 
         {
