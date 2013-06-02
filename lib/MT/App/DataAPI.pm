@@ -686,8 +686,20 @@ sub authenticate {
     $user;
 }
 
+sub current_client_id {
+    my ($app) = @_;
+
+    my $client_id = $app->request('data_api_current_client_id');
+    return $client_id if defined $client_id;
+
+    $client_id = $app->param('clientId') || '';
+    $client_id = '' if $client_id !~ m/\A[\w-]+\z/;
+    $app->request( 'data_api_current_client_id', $client_id );
+}
+
 sub user_cookie {
-    'mt_data_api_user';
+    my ($app) = @_;
+    'mt_data_api_user_' . $app->current_client_id;
 }
 
 sub session_kind {
@@ -702,7 +714,8 @@ sub make_session {
     $sess->kind( $app->session_kind );
     $sess->start(time);
     $sess->set( 'author_id', $auth->id );
-    $sess->set( 'remember', 1 ) if $remember;
+    $sess->set( 'client_id', $app->current_client_id );
+    $sess->set( 'remember',  1 ) if $remember;
     $sess->save;
     $sess;
 }

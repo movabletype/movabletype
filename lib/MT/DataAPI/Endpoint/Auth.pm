@@ -27,8 +27,8 @@ sub make_access_token {
 }
 
 sub is_valid_redirect_url {
-    my ( $app, $redirect_uri ) = @_;
-    eval { URI->new( $app->base )->host eq URI->new($redirect_uri)->host; }
+    my ( $app, $redirect_url ) = @_;
+    eval { URI->new( $app->base )->host eq URI->new($redirect_url)->host; }
         or undef($@);
 }
 
@@ -37,12 +37,15 @@ sub authorization {
 
     my $token = $app->make_magic_token;
 
-    my $redirect_uri = $app->param('redirect_uri') || '';
-    is_valid_redirect_url( $app, $redirect_uri )
+    my $redirect_url = $app->param('redirectUrl') || '';
+    is_valid_redirect_url( $app, $redirect_url )
+        or return $app->errtrans('Invalid parameter.');
+    my $client_id = $app->current_client_id
         or return $app->errtrans('Invalid parameter.');
 
     my %param = (
-        redirect_uri                  => $redirect_uri,
+        client_id                     => $client_id,
+        redirect_url                  => $redirect_url,
         api_version                   => $app->current_api_version,
         mt_data_api_login_magic_token => $token,
     );
@@ -70,12 +73,15 @@ sub authorization {
 sub authentication {
     my ($app) = @_;
 
+    $app->current_client_id
+        or return $app->error(400);
+
     my ( $author, $new_login ) = $app->login;
     my $session = $app->{session}
         or return $app->error(401);
 
     if ( $app->cookie_val( mt_data_api_login_magic_token_cookie_name() ) eq
-        ( $app->param('mt_data_api_login_magic_token') || '' ) )
+        ( $app->param('mtDataApiLoginMagicToken') || '' ) )
     {
         my $remember = $session->get('remember') || '';
         my %arg = (

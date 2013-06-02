@@ -14,7 +14,7 @@
 
 function redirect(jsonText) {
     Cookie.bake(MT.DataAPI.accessTokenKey, jsonText, undefined, '/');
-    var url = '<mt:var name="redirect_uri" encode_js="1" />#_login';
+    var url = '<mt:var name="redirect_url" encode_js="1" />#_login';
     location.href = url;
 }
 
@@ -72,13 +72,14 @@ jQuery(function($) {
 
 <mt:include name="include/chromeless_header.tmpl">
 
-<input type="hidden" name="redirect_uri" id="redirect_uri" value="<mt:var name="redirect_uri" escape="html">" />
+<input type="hidden" name="redirectUrl" id="redirect_url" value="<mt:var name="redirect_url" escape="html">" />
 
 <form method="post" action="<mt:var name="script_url">/v<mt:var name="api_version" />/authentication" id="login_form">
 <mt:loop name="query_params">
   <input type="hidden" name="<mt:var name="name" escape="html">" value="<mt:var name="value" escape="html">" />
 </mt:loop>
-  <input type="hidden" name="mt_data_api_login_magic_token" value="<mt:var name="mt_data_api_login_magic_token" escape="html">" />
+  <input type="hidden" name="clientId" id="clientId" value="<mt:var name="client_id" escape="html">" />
+  <input type="hidden" name="mtDataApiLoginMagicToken" value="<mt:var name="mt_data_api_login_magic_token" escape="html">" />
 
   <div id="msg-block"></div>
 

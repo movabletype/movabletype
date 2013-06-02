@@ -15,7 +15,7 @@
     
 var DataAPI = function(options) {
     this.o = {
-        appId: 'default',
+        clientId: undefined,
         baseUrl: '',
         cookieDomain: undefined,
         cookiePath: undefined,
@@ -24,7 +24,7 @@ var DataAPI = function(options) {
     };
     for (k in options) {
         if (k in this.o) {
-            if (typeof this.o[k] === 'object') {
+            if (typeof this.o[k] === 'object' && this.o[k] !== null) {
                 for (l in this.o[k]) {
                    this.o[k][l] = options[k][l]; 
                 }
@@ -38,6 +38,10 @@ var DataAPI = function(options) {
         }
     }
 
+    if (! this.o.clientId) {
+        throw 'The "clientId" is required.';
+    }
+
     this.callbacks = [];
     this.tokenData = null;
     this.iframeId  = 0;
@@ -45,7 +49,15 @@ var DataAPI = function(options) {
 
 DataAPI.accessTokenKey = 'mt_data_api_access_token';
 DataAPI.iframePrefix   = 'mt_data_api_iframe_';
-DataAPI.prototype = {
+DataAPI.prototype      = {
+    getAuthorizationUrl: function(redirectUrl) {
+        return this.o.baseUrl.replace(/\/*$/, '/') +
+            'v' + this.getVersion() +
+            '/authorization' +
+            '?clientId=' + this.o.clientId +
+            '&redirectUrl=' + redirectUrl;
+    },
+
     getCurrentEpoch: function() {
         return Math.round(new Date().getTime() / 1000);
     },
@@ -59,7 +71,7 @@ DataAPI.prototype = {
     },
     
     getAppKey: function() {
-        return DataAPI.accessTokenKey + '_' + this.o.appId;
+        return DataAPI.accessTokenKey + '_' + this.o.clientId;
     },
     
     storeToken: function(tokenData) {
@@ -248,19 +260,20 @@ DataAPI.prototype = {
         return null;
     },
 
-    sendXMLHttpRequest: function(xhr, method, url, params) {
-        if (method.match(/^(put|delete)$/i)) {
+    sendXMLHttpRequest: function(xhr, method, url, params, defaultParams) {
+        if (Object.keys(defaultParams).length) {
             if (! params) {
                 params = '';
             }
 
-            if (window.FormData && params instanceof window.FormData) {
-                params.append('__method', method);
+            for (k in defaultParams) {
+                if (window.FormData && params instanceof window.FormData) {
+                    params.append(k, defaultParams[k]);
+                }
+                else {
+                    params += ( params === '' ? '' : '&' ) + k + '=' + defaultParams[k];
+                }
             }
-            else {
-                params += ( params === '' ? '' : '&' ) + '__method=' + method;
-            }
-            method = 'POST';
         }
         
         xhr.open(method, url, this.o.async);
@@ -365,6 +378,7 @@ DataAPI.prototype = {
             xhr        = null,
             viaXhr     = true,
             originalArguments = Array.prototype.slice.call(arguments);
+            defaultParams     = {};
 
         function serializeParams(params) {
             if (! api.o.disableFormData && window.FormData) {
@@ -443,6 +457,10 @@ DataAPI.prototype = {
             });
         }
 
+
+        if (endpoint === '/token' || endpoint === '/authentication') {
+            defaultParams['clientId'] = this.o.clientId;
+        }
         
         for (var i = 2; i < arguments.length; i++) {
             var v = arguments[i];
@@ -481,6 +499,12 @@ DataAPI.prototype = {
             params = serializeParams(paramsList.shift());
         }
         
+
+        if (method.match(/^(put|delete)$/i)) {
+            defaultParams['__method'] = method;
+            method = 'POST';
+        }
+
         
         var base = this.o.baseUrl.replace(/\/*$/, '/') + 'v' + this.getVersion();
         endpoint = endpoint.replace(/^\/*/, '/');
@@ -520,13 +544,13 @@ DataAPI.prototype = {
                 var url = xhr.getResponseHeader('X-MT-Next-Phase-URL');
                 if (url) {
                     xhr.abort();
-                    api.sendXMLHttpRequest(xhr, method, base + url, params);
+                    api.sendXMLHttpRequest(xhr, method, base + url, params, defaultParams);
                 }
                 else {
                     cleanup();
                 }
             };
-            return this.sendXMLHttpRequest(xhr, method, base + endpoint, params);
+            return this.sendXMLHttpRequest(xhr, method, base + endpoint, params, defaultParams);
         }
         else {
             (function() {
@@ -549,13 +573,13 @@ DataAPI.prototype = {
                 document.body.appendChild(iframe);
 
 
-                if (method.match(/^(put|delete)$/i)) {
+                if (Object.keys(defaultParams).length) {
                     if (! params) {
                         params = {};
                     }
-                    params['__method'] = method;
-
-                    method = 'POST';
+                    for (k in defaultParams) {
+                        params[k] = defaultParams[k];
+                    }
                 }
                 params['X-MT-Authorization'] = 'MTAuth access_token=' + api.getToken();
 
