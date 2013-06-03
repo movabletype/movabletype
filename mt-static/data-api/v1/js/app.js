@@ -240,6 +240,9 @@ DataAPI.prototype      = {
         if (typeof params === 'string') {
             return params;
         }
+        if (this._isFormElement(params)) {
+            params = this.serializeFormElement(params);
+        }
         
         var str = '';
         for (k in params) {
