@@ -510,8 +510,9 @@ DataAPI.prototype      = {
                 break;
             case 'object':
                 if (
-                    (window.ActiveXObject && v instanceof window.ActiveXObject)
-                    || (window.XMLHttpRequest && v instanceof window.XMLHttpRequest)
+                    v &&
+                    ((window.ActiveXObject && v instanceof window.ActiveXObject) ||
+                     (window.XMLHttpRequest && v instanceof window.XMLHttpRequest))
                 ) {
                     xhr = v;
                 }
