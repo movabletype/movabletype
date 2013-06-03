@@ -194,7 +194,7 @@ DataAPI.prototype      = {
         else if (v instanceof Date) {
             return dateToJSON(v);
         }
-        else if (v instanceof File) {
+        else if (v instanceof window.File) {
             return v;
         }
         else if (this._isFileInputElement(v)) {
