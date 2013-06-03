@@ -435,6 +435,7 @@ DataAPI.prototype      = {
                     api.trigger('error', response);
                 }
             }
+            return status;
         }
 
         function needToRetry(response) {
@@ -446,8 +447,10 @@ DataAPI.prototype      = {
         function retry() {
             api.request('POST', '/token', function(response) {
                 if (response.error && response.error.code === 401) {
-                    api.trigger('authorizationRequired', response);
-                    runCallback(response);
+                    var status = runCallback(response);
+                    if (status !== false) {
+                        api.trigger('authorizationRequired', response);
+                    }
                 }
                 else {
                     api.storeToken(response);
