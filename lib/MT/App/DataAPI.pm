@@ -649,7 +649,7 @@ sub mt_authorization_data {
 
     my $header
         = $app->get_header('X-MT-Authorization')
-        || ( lc $app->request_method ne 'get'
+        || ( lc $app->request_method eq 'post'
         && $app->param('X-MT-Authorization') )
         or return undef;
 
@@ -828,8 +828,14 @@ sub print_error {
 
     my $format = $app->current_error_format;
 
-    $app->response_code($status);
-    $app->send_http_header( $format->{content_type} );
+    if ( $app->requires_plain_text_result ) {
+        $app->response_code(200);
+        $app->send_http_header('text/plain');
+    }
+    else {
+        $app->response_code($status);
+        $app->send_http_header( $format->{content_type} );
+    }
     $app->{no_print_body} = 1;
     $app->print_encode(
         $format->{serialize}->(
@@ -880,6 +886,12 @@ sub set_next_phase_url {
     my $app = shift;
     my ($url) = @_;
     $app->set_header( 'X-MT-Next-Phase-URL', $url );
+}
+
+sub requires_plain_text_result {
+    my $app = shift;
+    lc $app->request_method eq 'post'
+        && lc( $app->param('X-MT-Requested-Via') || '' ) eq 'iframe';
 }
 
 sub api {
@@ -944,7 +956,14 @@ sub api {
         my $resource = $app->object_to_resource( $response,
             $app->param('fields') || '' );
         my $data = $format->{serialize}->($resource);
-        $app->send_http_header( $format->{content_type} );
+
+        if ( $app->requires_plain_text_result ) {
+            $app->send_http_header('text/plain');
+        }
+        else {
+            $app->send_http_header( $format->{content_type} );
+        }
+
         $app->{no_print_body} = 1;
         $app->print_encode($data);
         undef;

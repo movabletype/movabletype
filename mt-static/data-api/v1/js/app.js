@@ -135,6 +135,10 @@ DataAPI.prototype      = {
         
         return this.tokenData.access_token;
     },
+
+    getAuthorizationHeader: function() {name
+        return 'MTAuth access_token=' + this.getToken();
+    },
     
     bindEndpointParams: function(endpoint, params) {
         for (k in params) {
@@ -150,8 +154,24 @@ DataAPI.prototype      = {
         return endpoint;
     },
     
+    _isElement: function(e, name) {
+        if (! e || typeof e !== 'object') {
+            return false;
+        }
+        var n = e.nodeName;
+        return n && n.toLowerCase() === name;
+    },
+
+    _isFormElement: function(e) {
+        return this._isElement(e, 'form');
+    },
+
+    _isInputElement: function(e) {
+        return this._isElement(e, 'input');
+    },
+
     _isFileInputElement: function(e) {
-        return e instanceof HTMLInputElement && e.type.toLowerCase() === 'file';
+        return this._isInputElement(e) && e.type.toLowerCase() === 'file';
     },
 
     serializeObject: function(v) {
@@ -183,7 +203,7 @@ DataAPI.prototype      = {
                 f(v.getSeconds())   + off;
         }
 
-        if (v instanceof HTMLFormElement) {
+        if (this._isFormElement(v)) {
             v = this.serializeFormElement(v);
         }
 
@@ -194,7 +214,7 @@ DataAPI.prototype      = {
         else if (v instanceof Date) {
             return dateToJSON(v);
         }
-        else if (v instanceof window.File) {
+        else if (window.File && v instanceof window.File) {
             return v;
         }
         else if (this._isFileInputElement(v)) {
@@ -267,8 +287,17 @@ DataAPI.prototype      = {
         return null;
     },
 
+    _isEmptyObject: function(o) {
+        for (var k in o) {
+            if (o.hasOwnProperty(k)) {
+                return false;
+            }
+        }
+        return true;
+    },
+
     sendXMLHttpRequest: function(xhr, method, url, params, defaultParams) {
-        if (Object.keys(defaultParams).length) {
+        if (this._isEmptyObject(defaultParams)) {
             if (! params) {
                 params = '';
             }
@@ -290,9 +319,7 @@ DataAPI.prototype      = {
             );
         }
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        xhr.setRequestHeader(
-            'X-MT-Authorization', 'MTAuth access_token=' + this.getToken()
-        );
+        xhr.setRequestHeader('X-MT-Authorization', this.getAuthorizationHeader());
         
         xhr.send(params);
         
@@ -392,7 +419,7 @@ DataAPI.prototype      = {
                 if (params instanceof window.FormData) {
                     return params;
                 }
-                else if (params instanceof HTMLFormElement ) {
+                else if (api._isFormElement(params)) {
                     return new FormData(params);
                 }
                 else if (window.FormData && typeof params === 'object') {
@@ -405,7 +432,7 @@ DataAPI.prototype      = {
             }
 
 
-            if (params instanceof HTMLFormElement) {
+            if (api._isFormElement(params)) {
                 params = api.serializeFormElement(params);
                 for (k in params) {
                     if (params[k] instanceof Array) {
@@ -581,9 +608,10 @@ DataAPI.prototype      = {
                 iframe.style.position = 'absolute';
                 iframe.style.top      = '-9999px';
                 document.body.appendChild(iframe);
+                iframe.contentWindow.name = target;
 
 
-                if (Object.keys(defaultParams).length) {
+                if (api._isEmptyObject(defaultParams)) {
                     if (! params) {
                         params = {};
                     }
@@ -591,7 +619,8 @@ DataAPI.prototype      = {
                         params[k] = defaultParams[k];
                     }
                 }
-                params['X-MT-Authorization'] = 'MTAuth access_token=' + api.getToken();
+                params['X-MT-Authorization'] = api.getAuthorizationHeader();
+                params['X-MT-Requested-Via'] = 'IFRAME';
 
                 for (k in params) {
                     if (api._isFileInputElement(params[k])) {
