@@ -138,7 +138,14 @@ DataAPI.prototype      = {
     
     bindEndpointParams: function(endpoint, params) {
         for (k in params) {
-            endpoint = endpoint.replace(new RegExp(':' + k), params[k]);
+            var v = params[k];
+            if (typeof v === 'object') {
+                v = v.id;
+            }
+            if (typeof v === 'function') {
+                v = v();
+            }
+            endpoint = endpoint.replace(new RegExp(':' + k), v);
         }
         return endpoint;
     },
