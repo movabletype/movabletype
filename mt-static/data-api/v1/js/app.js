@@ -446,7 +446,7 @@ DataAPI.prototype      = {
         function retry() {
             api.request('POST', '/token', function(response) {
                 if (response.error && response.error.code === 401) {
-                    api.trigger('sessionExpired', response);
+                    api.trigger('authorizationRequired', response);
                     runCallback(response);
                 }
                 else {
