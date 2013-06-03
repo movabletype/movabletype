@@ -66,6 +66,8 @@ sub authorization {
             -path  => $app->config->CookiePath || $app->mt_path,
         );
     }
+    # Clear login error
+    $app->error(undef);
 
     $app->show_login( \%param );
 }
