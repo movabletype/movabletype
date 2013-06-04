@@ -24,3 +24,4 @@
     blogName: Blog Name
     url: http://example.com/
     ip: 127:0.0.1
+    status: Pending

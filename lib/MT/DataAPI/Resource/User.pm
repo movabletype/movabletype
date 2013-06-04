@@ -16,6 +16,19 @@ sub fields {
             alias   => 'userpic_url',
             default => undef,
         },
+        {   name        => 'language',
+            from_object => sub {
+                my ($obj) = @_;
+                my $l = $obj->preferred_language;
+                if ( !$l ) {
+                    my $cfg = MT->config;
+                    $l = $cfg->DefaultUserLanguage
+                        || $cfg->DefaultLanguage;
+                }
+                $l =~ s/_/-/g;
+                lc $l;
+            },
+        },
     ];
 }
 

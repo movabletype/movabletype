@@ -40,6 +40,7 @@ sub fields {
                             id          => undef,
                             displayName => $c->author,
                             userpicURL  => undef,
+                            language    => undef,
                         };
                     }
                 }

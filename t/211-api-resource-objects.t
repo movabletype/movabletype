@@ -28,6 +28,9 @@ use MT::App::DataAPI;
 use MT::DataAPI::Resource;
 
 my $app = MT::App::DataAPI->new;
+MT->set_instance($app);
+$app->user($app->model('author')->load(1));
+
 
 ( my $spec_dir = __FILE__ ) =~ s/t$/d/;
 for my $d ( glob( File::Spec->catfile( $spec_dir, '*' ) ) ) {

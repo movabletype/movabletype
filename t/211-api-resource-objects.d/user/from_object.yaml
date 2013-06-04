@@ -8,12 +8,26 @@
     id: 1
     displayName: Test
     userpicURL: http://narnia.na/nana/assets_c/userpics/userpic-1-100x100.png
+    language: en-us
 - 
   note: An user without userpic
   from: 
     id: 1
     nickname: Test
+    preferred_language: en-us
   to: 
     displayName: Test
     id: 1
     userpicURL: ~
+    language: en-us
+- 
+  note: Language is ja
+  from: 
+    id: 1
+    nickname: Test
+    preferred_language: ja
+  to: 
+    displayName: Test
+    id: 1
+    userpicURL: ~
+    language: ja

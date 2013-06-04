@@ -29,6 +29,7 @@
       id: 2
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      language: en-us
     class: entry
     status: Publish
     allowComments: !!perl/scalar:boolean 1
@@ -82,6 +83,7 @@
       id: 2
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      language: en-us
     class: entry
     status: Draft
     allowComments: !!perl/scalar:boolean 1
@@ -133,6 +135,7 @@
       id: 2
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      language: en-us
     class: entry
     status: Review
     allowComments: !!perl/scalar:boolean 0
@@ -184,6 +187,7 @@
       id: 2
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      language: en-us
     class: entry
     status: Future
     allowComments: !!perl/scalar:boolean 0
@@ -235,6 +239,7 @@
       id: 2
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      language: en-us
     class: entry
     status: Spam
     allowComments: !!perl/scalar:boolean 0
@@ -268,6 +273,7 @@
       id: 2
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      language: en-us
     class: entry
     status: Publish
     allowComments: !!perl/scalar:boolean 1
@@ -293,6 +299,7 @@
           displayName: v14GrUH 4 cheep
           id: ~
           userpicURL: ~
+          language: ~
         blog:
           id: 1
         body: "Postmodern false consciousness has always been firmly rooted in post-Freudian Lacanian neo-Marxist bojangles. Needless to say, this quickly and asymptotically approches a purpletacular jouissance of etic jumpinmypants."
@@ -308,6 +315,7 @@
           displayName: Comment 12
           id: ~
           userpicURL: ~
+          language: ~
         blog:
           id: 1
         body: Comment reply for comment 11
@@ -323,6 +331,7 @@
           displayName: Comment 11
           id: ~
           userpicURL: ~
+          language: ~
         blog:
           id: 1
         body: Comment reply for comment 1
@@ -346,6 +355,7 @@
         ip: 127.0.0.1
         title: Foo
         url: http://example.com/
+        status: Approved
     assets:
       -
         id: 1
@@ -372,6 +382,7 @@
       id: 3
       displayName: Dylan
       userpicURL: ~
+      language: en-us
     class: entry
     status: Publish
     allowComments: !!perl/scalar:boolean 1
@@ -407,6 +418,7 @@
           displayName: Comment 4
           id: ~
           userpicURL: ~
+          language: ~
         blog:
           id: 1
         body: "Comment for entry 6, moderated"
@@ -422,6 +434,7 @@
           displayName: Dylan
           id: 3
           userpicURL: ~
+          language: en-us
         blog:
           id: 1
         body: All your comments are belonged to us MT Authors.
@@ -437,6 +450,7 @@
           displayName: Chucky Dee
           id: 2
           userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+          language: en-us
         blog:
           id: 1
         body: All your comments are belonged to me.
@@ -452,6 +466,7 @@
           displayName: Comment 3
           id: ~
           userpicURL: ~
+          language: ~
         blog:
           id: 1
         body: Comment for entry 6, visible
