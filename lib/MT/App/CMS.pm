@@ -5197,6 +5197,23 @@ sub pre_run {
     $app->param( 'loop_notification_dashboard', \@messages );
 }
 
+sub validate_request_params {
+    my $app = shift;
+    my ($method_info) = @_;
+
+    if ((   $app->param('xhr')
+            || ( ( $method_info->{app_mode} || '' ) eq 'JSON' )
+        )
+        && ( ( $app->get_header('X-Requested-With') || '' ) ne
+            'XMLHttpRequest' )
+        )
+    {
+        return $app->errtrans('Invalid request');
+    }
+
+    $app->SUPER::validate_request_params(@_);
+}
+
 1;
 __END__
 

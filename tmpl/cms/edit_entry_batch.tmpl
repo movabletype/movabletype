@@ -70,6 +70,9 @@
           <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
           <option value="3"<mt:if name="status_review"> selected="selected"</mt:if>><__trans phrase="Unpublished (Review)"></option>
           <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>><__trans phrase="Scheduled"></option>
+        <mt:if name="status_unpublish">
+          <option value="6" selected="selected"><__trans phrase="Unpublished (End)"></option>
+        </mt:if>
         </select>
       </td>
     </mt:if>

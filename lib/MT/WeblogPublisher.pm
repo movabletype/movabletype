@@ -2022,17 +2022,19 @@ sub unpublish_past_entries {
             $ts[4] + 1,
             @ts[ 3, 2, 1, 0 ];
         my $iter = MT::Entry->load_iter(
-            {   blog_id => $site->id,
-                status  => MT::Entry::RELEASE(),
-                class   => '*'
+            {   blog_id        => $site->id,
+                status         => MT::Entry::RELEASE(),
+                unpublished_on => [ undef, $now ],
+                class          => '*',
             },
-            {   'sort'    => 'unpublished_on',
-                direction => 'descend'
+            {   range     => { unpublished_on => 1 },
+                'sort'    => 'unpublished_on',
+                direction => 'descend',
             }
         );
         my @queue;
         while ( my $entry = $iter->() ) {
-            push @queue, $entry->id if $entry->unpublished_on le $now;
+            push @queue, $entry->id;
         }
 
         my $changed = 0;

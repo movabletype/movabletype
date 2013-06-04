@@ -853,12 +853,13 @@ sub status_text {
 
 sub status_int {
     my $s = lc $_[0];    ## Lower-case it so that it's case-insensitive
-          $s eq 'draft'   ? HOLD
-        : $s eq 'publish' ? RELEASE
-        : $s eq 'review'  ? REVIEW
-        : $s eq 'future'  ? FUTURE
-        : $s eq 'junk'    ? JUNK
-        :                   undef;
+          $s eq 'draft'     ? HOLD
+        : $s eq 'publish'   ? RELEASE
+        : $s eq 'review'    ? REVIEW
+        : $s eq 'future'    ? FUTURE
+        : $s eq 'junk'      ? JUNK
+        : $s eq 'unpublish' ? UNPUBLISH
+        :                     undef;
 }
 
 sub authored_on_obj {

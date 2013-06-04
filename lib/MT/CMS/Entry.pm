@@ -1708,6 +1708,7 @@ sub save {
             }
             my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
                 ( $6 || 0 );
+            require MT::DateTime;
             unless ( $param{error} ) {
                 $param{error} = $app->translate(
                     "Invalid date '[_1]'; 'Unpublished on' dates should be future from now.",
@@ -2125,6 +2126,13 @@ PERMCHECK: {
             $date_closure->(
                 $co, 'modified_on', MT->translate('modified on')
             ) or return;
+
+            # Clear Unpublish Date
+            if (   $old_status == MT::Entry::UNPUBLISH()
+                && $entry->status == MT::Entry::RELEASE() )
+            {
+                $entry->unpublished_on(undef);
+            }
         }
         $app->run_callbacks( 'cms_pre_save.' . $type,
             $app, $entry, $orig_obj )

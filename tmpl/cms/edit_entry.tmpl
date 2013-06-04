@@ -1326,7 +1326,6 @@
 
     jQuery('select#status').change(function() {
         setSaveButtonText();
-        clearUnpublishDate();
     });
     function setSaveButtonText () {
         var selectedStatus = jQuery('select#status').val();
@@ -1339,14 +1338,6 @@
         } else {
             jQuery('button.publish').text('<mt:var name="draft_button_text">');
             jQuery('button.publish').attr('title', '<mt:var name="draft_button_title">');
-        }
-    }
-    function clearUnpublishDate () {
-        var selectedStatus = jQuery('select#status').val();
-        if (selectedStatus == 2) {
-            jQuery('input#unpublished-on-date').val('');
-            jQuery('input#unpublished-on-time').val('');
-            jQuery('span.unpublished-on-text').text('<__trans phrase="Not specified">');
         }
     }
     setSaveButtonText();
