@@ -1822,6 +1822,10 @@ sub do_preview {
         $app->translate(
             "Somehow, the entry you tried to comment on does not exist")
         );
+    return $app->error(
+        $app->translate( "No such entry '[_1]'.", encode_html($entry_id) ) )
+        if $entry->status != RELEASE;
+
     my $ctx  = MT::Template::Context->new;
     my $blog = MT::Blog->load( $entry->blog_id );
 
@@ -1992,13 +1996,18 @@ sub save_commenter_profile {
 
     $param{ 'auth_mode_' . $cmntr->auth_type } = 1;
 
+    return $app->error( $app->translate("Invalid request") )
+        if $cmntr->name ne $q->param('name');
+    return $app->error( $app->translate("Invalid request") )
+        if $q->param('id') && $cmntr->id ne $q->param('id');
+
     $app->user($cmntr);
     $app->{session} = $sess_obj;
 
-    my $original = $cmntr->clone();
-
     $app->validate_magic
         or return $app->handle_error( $app->translate('Invalid request') );
+
+    my $original = $cmntr->clone();
 
     if ( 'MT' eq $cmntr->auth_type ) {
         my $nickname = $param{nickname};
