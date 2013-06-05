@@ -493,7 +493,7 @@ sub _compile_endpoints {
 }
 
 sub endpoints {
-    my ( $app, $version, $path ) = @_;
+    my ( $app, $version ) = @_;
     $endpoints{$version} ||= $app->_compile_endpoints($version);
 }
 
