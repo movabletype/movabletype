@@ -62,33 +62,40 @@ sub list_props {
             },
         },
         page_count => {
-            base      => 'blog.page_count',
-            display   => 'default',
-            html_link => sub {
+            base => 'blog.page_count',
+            html => sub {
                 my $prop = shift;
-                my ( $obj, $app ) = @_;
-                my $link = $prop->super(@_);
-                $link . '&filter=current_context';
+                my $html = $prop->super(@_);
+                $html =~ s/"(.+)"/"$1&filter=current_context"/;
+                return $html;
             },
         },
         description => { base => 'blog.description' },
-        entry_count => { view => [] },
-        asset_count => {
-            base      => 'blog.asset_count',
-            html_link => sub {
+        entry_count => {
+            base => 'blog.entry_count',
+            html => sub {
                 my $prop = shift;
-                my ( $obj, $app ) = @_;
-                my $link = $prop->super(@_);
-                $link . '&filter=current_context';
+                my $html = $prop->super(@_);
+                $html =~ s/"(.+)"/"$1&filter=current_context"/;
+                return $html;
+            },
+        },
+        asset_count => {
+            base => 'blog.asset_count',
+            html => sub {
+                my $prop = shift;
+                my $html = $prop->super(@_);
+                $html =~ s/"(.+)"/"$1&filter=current_context"/;
+                return $html;
             },
         },
         comment_count => {
-            base      => 'blog.comment_count',
-            html_link => sub {
+            base => 'blog.comment_count',
+            html => sub {
                 my $prop = shift;
-                my ( $obj, $app ) = @_;
-                my $link = $prop->super(@_);
-                $link . '&filter=current_context';
+                my $html = $prop->super(@_);
+                $html =~ s/"(.+)"/"$1&filter=current_context"/;
+                return $html;
             },
         },
 
