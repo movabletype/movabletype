@@ -35,6 +35,12 @@ sub core_endpoints {
     my $app = shift;
     my $pkg = '$Core::MT::DataAPI::Endpoint::';
     return [
+        {   id             => 'endpoints',
+            route          => '/endpoints',
+            version        => 1,
+            handler        => "${pkg}Util::endpoints",
+            requires_login => 0,
+        },
         {   id             => 'authorization',
             route          => '/authorization',
             version        => 1,
@@ -434,10 +440,16 @@ sub _compile_endpoints {
 
     my %hash = ();
     my %tree = ();
-    my $endpoints_list
-        = $app->registry( 'applications', 'data_api', 'endpoints' );
-    foreach my $endpoints (@$endpoints_list) {
+    my @list = ();
+
+    my @components = MT::Component->select();
+    for my $c (@components) {
+        my $endpoints
+            = $c->registry( 'applications', 'data_api', 'endpoints' );
+        next unless defined $endpoints;
+
         foreach my $e (@$endpoints) {
+            $e->{component} = $c;
             $e->{id}          ||= $e->{route};
             $e->{version}     ||= 1;
             $e->{verb}        ||= 'GET';
@@ -470,11 +482,13 @@ sub _compile_endpoints {
             }
 
             $hash{ $e->{id} } = $e;
+            push @list, $e;
         }
     }
 
     +{  hash => \%hash,
         tree => \%tree,
+        list => \@list,
     };
 }
 
