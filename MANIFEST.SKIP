@@ -78,6 +78,10 @@ themes/broken_blog_theme
 #?package=MTOS ^VERSIONS
 #?package=MTOS ^lib/MT/FileMgr/FTP.pm
 #?package=MTOS ^lib/MT/FileMgr/FTPS.pm
+#?package=MTOS ^themes/eiger
+#?package=MTOS ^plugins/SmartphoneOption
+#?package=MTOS ^mt-static/plugins/SmartphoneOption
+#?package=MTOS ^mt-sp.cgi
 
 #?package=MTCOM ^COPYING
 #?package=MTCOM ^COPYRIGHT
@@ -233,3 +237,4 @@ build-language-stamp
 ^plugins/Motion
 ^plugins/ActionStreams
 ^plugins/CommunityActionStreams
+^plugins/TypePadAntiSpam

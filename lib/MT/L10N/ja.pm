@@ -4342,7 +4342,7 @@ use vars qw( @ISA %Lexicon );
 	'View this commenter&rsquo;s profile' => 'このコメント投稿者のユーザー情報を見る',
 
 ## tmpl/cms/include/copyright.tmpl
-	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.',
+	'Copyright &copy; 2001 Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001 Six Apart. All Rights Reserved.',
 
 ## tmpl/cms/include/debug_hover.tmpl
 	'Hide Toolbar' => 'Hide Toolbar',
@@ -5510,7 +5510,7 @@ use vars qw( @ISA %Lexicon );
 	'The template tag \'[_1]\' is already in use in the system level' => '[_1]というタグは既にシステムに存在します。',
 	'The template tag \'[_1]\' is already in use in [_2]' => '[_1]というタグは既に[_2]に存在します。',
 	'The template tag \'[_1]\' is already in use in this blog' => '[_1]というタグは既にこのブログに存在します。',
-	'The \'[_1]\' of the template tag \'[_2]\' that is already in use in [_3] is [_4].' => '[_1]が違う\'[_2]\'というタグが[_3]に見つかったため、保存できません。([_1]: [_4])',
+	'The \'[_1]\' of the template tag \'[_2]\' that is already in use in [_3] is [_4].' => '\'[_2]\'というテンプレートタグが[_3]に既に存在していますが、[_1]が異なるため、重複して作成する事が出来ません。テンプレートタグ名を変えるか、[_1]を同じにする必要があります。([_1]: [_4])',
 	'_CF_BASENAME' => 'ベースネーム',
 
 ## addons/Commercial.pack/lib/CustomFields/Template/ContextHandlers.pm

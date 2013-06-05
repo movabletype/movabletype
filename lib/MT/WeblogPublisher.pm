@@ -2013,6 +2013,7 @@ sub remove_entry_archive_file {
     my $at    = $param{ArchiveType} || 'Individual';
     my $cat   = $param{Category};
     my $auth  = $param{Author};
+    my $force = exists $param{Force} ? $param{Force} : 1;
 
     require MT::TemplateMap;
     my $blog = $param{Blog};
@@ -2038,7 +2039,10 @@ sub remove_entry_archive_file {
         = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
 
     require File::Spec;
+    require MT::PublishOption;
     for my $map (@map) {
+        next if !$force && $map->build_type == MT::PublishOption::ASYNC();
+
         my $file
             = $mt->archive_file_for( $entry, $blog, $at, $cat, $map, undef,
             $auth );
