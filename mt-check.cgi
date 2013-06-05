@@ -99,7 +99,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '5.2.5';
+    $version = '5.2.6';
 }
 
 my ( $mt, $LH );
@@ -339,7 +339,7 @@ if ( !$view ) {
             .msg-text { 
                 margin: 0;
             }
-            .msg textarea {
+            .msg span.exception {
                 display: none;
                 width: 100%;
                 max-width: 100%;
@@ -966,7 +966,7 @@ MSG
             }
             print_encode(qq{</p>});
             print_encode(
-                qq{<textarea id="exception-$i" class="exception text full" readonly="readonly">$exception</textarea>}
+                qq{<span id="exception-$i" class="exception">$exception</span>}
             ) if $exception;
             print_encode(qq{</div>});
         }
