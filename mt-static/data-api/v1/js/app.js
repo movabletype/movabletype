@@ -813,7 +813,7 @@ DataAPI.prototype      = {
         var api = this;
 
         api.withOptions({async: false}, function() {
-            api.request('GET', '/endpoints', function(response) {
+            api.request('GET', '/endpoints', params, function(response) {
                 if (response.error) {
                     return;
                 }
