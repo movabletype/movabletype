@@ -72,7 +72,15 @@ sub list_props {
             },
         },
         description => { base => 'blog.description' },
-        entry_count => { view => [] },
+        entry_count => {
+            base => 'blog.entry_count',
+            html => sub {
+                my $prop = shift;
+                my $html = $prop->super(@_);
+                $html =~ s/"(.+)"/"$1&filter=current_context"/;
+                return $html;
+            },
+        },
         asset_count => {
             base      => 'blog.asset_count',
             html_link => sub {

@@ -359,5 +359,31 @@ subtest 'Test applying a blog theme to a website' => sub {
         '"Create Blog" view does not have blog\'s optgroup tag.' );
 };
 
+diag 'Website listing screen';
+subtest 'Website listing screen' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user => $admin,
+            __mode      => 'list',
+            _type       => 'website',
+            blog_id     => 0,
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, 'Request: list website' );
+
+    my $blogs = quotemeta
+        '<th class="col head blog_count num"><a href="#blog_count" class="sort-link"><span class="col-label">Blogs</span><span class="sm"></span></a></th>';
+    like( $out, qr/$blogs/, 'Listing screen has "Blogs" column.' );
+
+    my $entries = quotemeta
+        '<th class="col head entry_count num"><a href="#entry_count" class="sort-link"><span class="col-label">Entries</span><span class="sm"></span></a></th>';
+    like( $out, qr/$entries/, 'Listing screen has "Entries" column.' );
+
+    my $pages = quotemeta
+        '<th class="col head page_count num"><a href="#page_count" class="sort-link"><span class="col-label">Pages</span><span class="sm"></span></a></th>';
+    like( $out, qr/$pages/, 'Listing screen has "Pages" column.' );
+};
+
 done_testing();
 
