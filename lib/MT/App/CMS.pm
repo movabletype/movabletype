@@ -3071,7 +3071,7 @@ sub set_default_tmpl_params {
     $param->{return_args} ||= $app->make_return_args;
 
     # Message Center
-    my $loop_nd = $app->param('loop_notification_dashboard');
+    my $loop_nd = $app->request('loop_notification_dashboard');
     if ( ref $loop_nd eq 'ARRAY' ) {
         $param->{loop_notification_dashboard} = $loop_nd;
         $param->{count_notification_dashboard} = @{$loop_nd} if $loop_nd;
@@ -5194,7 +5194,7 @@ sub pre_run {
 
     $app->run_callbacks( 'set_notification_dashboard', \@messages );
 
-    $app->param( 'loop_notification_dashboard', \@messages );
+    $app->request( 'loop_notification_dashboard', \@messages );
 }
 
 sub validate_request_params {
