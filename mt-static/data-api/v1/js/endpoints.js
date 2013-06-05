@@ -12,7 +12,7 @@ DataAPI.on('initialize', function() {
    {
       "verb" : "GET",
       "route" : "/endpoints",
-      "id" : "endpoints"
+      "id" : "list_endpoints"
    },
    {
       "verb" : "GET",

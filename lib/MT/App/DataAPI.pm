@@ -35,7 +35,7 @@ sub core_endpoints {
     my $app = shift;
     my $pkg = '$Core::MT::DataAPI::Endpoint::';
     return [
-        {   id             => 'endpoints',
+        {   id             => 'list_endpoints',
             route          => '/endpoints',
             version        => 1,
             handler        => "${pkg}Util::endpoints",
