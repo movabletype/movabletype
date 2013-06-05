@@ -44,28 +44,28 @@ sub core_endpoints {
         },
         {   id             => 'authentication',
             route          => '/authentication',
-            method         => 'POST',
+            verb           => 'POST',
             version        => 1,
             handler        => "${pkg}Auth::authentication",
             requires_login => 0,
         },
         {   id             => 'token',
             route          => '/token',
-            method         => 'POST',
+            verb           => 'POST',
             version        => 1,
             handler        => "${pkg}Auth::token",
             requires_login => 0,
         },
         {   id             => 'revoke_authentication',
             route          => '/authentication',
-            method         => 'DELETE',
+            verb           => 'DELETE',
             version        => 1,
             handler        => "${pkg}Auth::revoke_authentication",
             requires_login => 0,
         },
         {   id      => 'revoke_token',
             route   => '/token',
-            method  => 'DELETE',
+            verb    => 'DELETE',
             version => 1,
             handler => "${pkg}Auth::revoke_token",
         },
@@ -82,18 +82,18 @@ sub core_endpoints {
         {   id          => 'update_user',
             route       => '/users/:user_id',
             resources   => ['user'],
-            method      => 'PUT',
+            verb        => 'PUT',
             version     => 1,
             handler     => "${pkg}User::update",
             error_codes => {
                 403 => 'Do not have permission to update the requested user.',
             },
         },
-        {   id      => 'list_blogs',
-            route   => '/users/:user_id/sites',
-            version => 1,
-            handler => "${pkg}Blog::list",
-            param   => {
+        {   id             => 'list_blogs',
+            route          => '/users/:user_id/sites',
+            version        => 1,
+            handler        => "${pkg}Blog::list",
+            default_params => {
                 limit     => 25,
                 offset    => 0,
                 sortBy    => 'name',
@@ -113,12 +113,12 @@ sub core_endpoints {
                     'Do not have permission to retrieve the requested blog.',
             },
         },
-        {   id      => 'list_entries',
-            route   => '/sites/:site_id/entries',
-            method  => 'GET',
-            version => 1,
-            handler => "${pkg}Entry::list",
-            param   => {
+        {   id             => 'list_entries',
+            route          => '/sites/:site_id/entries',
+            verb           => 'GET',
+            version        => 1,
+            handler        => "${pkg}Entry::list",
+            default_params => {
                 limit     => 10,
                 offset    => 0,
                 sortBy    => 'authored_on',
@@ -136,10 +136,10 @@ sub core_endpoints {
         {   id        => 'create_entry',
             route     => '/sites/:site_id/entries',
             resources => ['entry'],
-            method    => 'POST',
+            verb      => 'POST',
             version   => 1,
             handler   => "${pkg}Entry::create",
-            param => { save_revision => 1, },
+            default_params => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to create an entry.', },
         },
@@ -156,27 +156,27 @@ sub core_endpoints {
         {   id        => 'update_entry',
             route     => '/sites/:site_id/entries/:entry_id',
             resources => ['entry'],
-            method    => 'PUT',
+            verb      => 'PUT',
             version   => 1,
             handler   => "${pkg}Entry::update",
-            param => { save_revision => 1, },
+            default_params => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to update an entry.', },
         },
         {   id      => 'delete_entry',
             route   => '/sites/:site_id/entries/:entry_id',
-            method  => 'DELETE',
+            verb    => 'DELETE',
             version => 1,
             handler => "${pkg}Entry::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete an entry.', },
         },
-        {   id      => 'list_categories',
-            route   => '/sites/:site_id/categories',
-            method  => 'GET',
-            version => 1,
-            handler => "${pkg}Category::list",
-            param   => {
+        {   id             => 'list_categories',
+            route          => '/sites/:site_id/categories',
+            verb           => 'GET',
+            version        => 1,
+            handler        => "${pkg}Category::list",
+            default_params => {
                 limit        => 10,
                 offset       => 0,
                 sortBy       => 'user_custom',
@@ -189,12 +189,12 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id      => 'list_comments',
-            route   => '/sites/:site_id/comments',
-            method  => 'GET',
-            version => 1,
-            handler => "${pkg}Comment::list",
-            param   => {
+        {   id             => 'list_comments',
+            route          => '/sites/:site_id/comments',
+            verb           => 'GET',
+            version        => 1,
+            handler        => "${pkg}Comment::list",
+            default_params => {
                 limit        => 10,
                 offset       => 0,
                 sortBy       => 'id',
@@ -208,12 +208,12 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id      => 'list_comments_for_entries',
-            route   => '/sites/:site_id/entries/:entry_id/comments',
-            method  => 'GET',
-            version => 1,
-            handler => "${pkg}Comment::list_for_entries",
-            param   => {
+        {   id             => 'list_comments_for_entries',
+            route          => '/sites/:site_id/entries/:entry_id/comments',
+            verb           => 'GET',
+            version        => 1,
+            handler        => "${pkg}Comment::list_for_entries",
+            default_params => {
                 limit        => 10,
                 offset       => 0,
                 sortBy       => 'id',
@@ -230,7 +230,7 @@ sub core_endpoints {
         {   id        => 'create_comment',
             route     => '/sites/:site_id/entries/:entry_id/comments',
             resources => ['comment'],
-            method    => 'POST',
+            verb      => 'POST',
             version   => 1,
             handler   => "${pkg}Comment::create",
             error_codes =>
@@ -240,7 +240,7 @@ sub core_endpoints {
             route =>
                 '/sites/:site_id/entries/:entry_id/comments/:comment_id/replies',
             resources   => ['comment'],
-            method      => 'POST',
+            verb        => 'POST',
             version     => 1,
             handler     => "${pkg}Comment::create_reply",
             error_codes => {
@@ -261,7 +261,7 @@ sub core_endpoints {
         {   id        => 'update_comment',
             route     => '/sites/:site_id/comments/:comment_id',
             resources => ['comment'],
-            method    => 'PUT',
+            verb      => 'PUT',
             version   => 1,
             handler   => "${pkg}Comment::update",
             error_codes =>
@@ -269,18 +269,18 @@ sub core_endpoints {
         },
         {   id      => 'delete_comment',
             route   => '/sites/:site_id/comments/:comment_id',
-            method  => 'DELETE',
+            verb    => 'DELETE',
             version => 1,
             handler => "${pkg}Comment::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a comment.', },
         },
-        {   id      => 'list_trackbacks',
-            route   => '/sites/:site_id/trackbacks',
-            method  => 'GET',
-            version => 1,
-            handler => "${pkg}Trackback::list",
-            param   => {
+        {   id             => 'list_trackbacks',
+            route          => '/sites/:site_id/trackbacks',
+            verb           => 'GET',
+            version        => 1,
+            handler        => "${pkg}Trackback::list",
+            default_params => {
                 limit        => 10,
                 offset       => 0,
                 sortBy       => 'id',
@@ -294,12 +294,12 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id      => 'list_trackbacks_for_entries',
-            route   => '/sites/:site_id/entries/:entry_id/trackbacks',
-            method  => 'GET',
-            version => 1,
-            handler => "${pkg}Trackback::list_for_entries",
-            param   => {
+        {   id             => 'list_trackbacks_for_entries',
+            route          => '/sites/:site_id/entries/:entry_id/trackbacks',
+            verb           => 'GET',
+            version        => 1,
+            handler        => "${pkg}Trackback::list_for_entries",
+            default_params => {
                 limit        => 10,
                 offset       => 0,
                 sortBy       => 'id',
@@ -326,7 +326,7 @@ sub core_endpoints {
         {   id        => 'update_trackback',
             route     => '/sites/:site_id/trackbacks/:ping_id',
             resources => ['trackback'],
-            method    => 'PUT',
+            verb      => 'PUT',
             version   => 1,
             handler   => "${pkg}Trackback::update",
             error_codes =>
@@ -334,7 +334,7 @@ sub core_endpoints {
         },
         {   id      => 'delete_trackback',
             route   => '/sites/:site_id/trackbacks/:ping_id',
-            method  => 'DELETE',
+            verb    => 'DELETE',
             version => 1,
             handler => "${pkg}Trackback::delete",
             error_codes =>
@@ -342,7 +342,7 @@ sub core_endpoints {
         },
         {   id          => 'upload_asset',
             route       => '/sites/:site_id/assets/upload',
-            method      => 'POST',
+            verb        => 'POST',
             version     => 1,
             handler     => "${pkg}Asset::upload",
             error_codes => {
@@ -352,7 +352,7 @@ sub core_endpoints {
         },
         {   id      => 'publish_entries',
             route   => '/publish/entries',
-            method  => 'GET',
+            verb    => 'GET',
             version => 1,
             handler => "${pkg}Publish::entries",
             error_codes => { 403 => 'Do not have permission to publish.', },
@@ -440,7 +440,7 @@ sub _compile_endpoints {
         foreach my $e (@$endpoints) {
             $e->{id}          ||= $e->{route};
             $e->{version}     ||= 1;
-            $e->{method}      ||= 'GET';
+            $e->{verb}        ||= 'GET';
             $e->{error_codes} ||= {};
 
             if ( !exists( $e->{requires_login} ) ) {
@@ -463,10 +463,10 @@ sub _compile_endpoints {
             }
 
             $cur->{':e'} ||= {};
-            if (  !$cur->{':e'}{ lc $e->{method} }
-                || $cur->{':e'}{ lc $e->{method} }{version} < $e->{version} )
+            if (  !$cur->{':e'}{ lc $e->{verb} }
+                || $cur->{':e'}{ lc $e->{verb} }{version} < $e->{version} )
             {
-                $cur->{':e'}{ lc $e->{method} } = $e;
+                $cur->{':e'}{ lc $e->{verb} } = $e;
             }
 
             $hash{ $e->{id} } = $e;
@@ -521,8 +521,8 @@ sub endpoint_url {
 }
 
 sub find_endpoint_by_path {
-    my ( $app, $method, $version, $path ) = @_;
-    $method = lc($method);
+    my ( $app, $verb, $version, $path ) = @_;
+    $verb = lc($verb);
 
     my $endpoints = $app->endpoints($version)->{tree};
 
@@ -548,7 +548,7 @@ sub find_endpoint_by_path {
         }
     }
 
-    my $e = $handler->{':e'}{$method}
+    my $e = $handler->{':e'}{$verb}
         or return;
 
     my %params = ();
@@ -924,11 +924,11 @@ sub api {
     foreach my $k (%$params) {
         $app->param( $k, $params->{$k} );
     }
-    if ( my $default_param = $endpoint->{param} ) {
+    if ( my $default_params = $endpoint->{default_params} ) {
         my $request_param = $app->param->Vars;
-        foreach my $k (%$default_param) {
+        foreach my $k (%$default_params) {
             if ( !exists( $request_param->{$k} ) ) {
-                $app->param( $k, $default_param->{$k} );
+                $app->param( $k, $default_params->{$k} );
             }
         }
     }
