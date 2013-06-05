@@ -9,6 +9,13 @@
 use warnings;
 use strict;
 
+my $version    = 1;
+my $components = 'core';
+
+use Getopt::Long;
+GetOptions( 'version=s' => \$version, 'components=s' => \$components );
+my @includes = map { lc $_ } split ',', $components;
+
 use lib qw(lib extlib);
 use MT;
 use MT::App::DataAPI;
@@ -20,68 +27,35 @@ print <<__JS__;
  */
 (function(window) {
 
+var DataAPI = window.MT.DataAPI.v$version;
 
+DataAPI.on('initialize', function() {
+    this.generateEndpointMethods(
 __JS__
 
 my $mt = MT::App::DataAPI->new;
-my $endpoints_list = $mt->registry( 'applications', 'data_api', 'endpoints' );
-foreach my $endpoints (@$endpoints_list) {
-    foreach my $e (@$endpoints) {
-        my $func = $e->{id};
-        $func =~ s/_(\w)/uc($1)/ge;
-        my @vars = ();
-        while ($e->{route} =~ /:([a-zA-Z_-]+)/g) {
-            push @vars, $1;
-        }
 
-        my @resources = ();
-        for my $name (@{ $e->{resources} || [] }) {
-            push @resources, $name;
-        }
-
-        my $url;
-        if (@vars) {
-            $url = <<__JS__;
-        this.bindEndpointParams('$e->{route}', {
-            @{[ join(",\n            ", map {"$_: $_"} @vars) ]}
-        })
-__JS__
-        }
-        else {
-            $url = <<__JS__;
-        '$e->{route}'
-__JS__
-        }
-        chomp($url);
-
-        my $resources_str = '';
-        if (@resources) {
-            $resources_str = <<__JS__;
-.concat([
-        {
-            @{[ join(",\n            ", map {"$_: $_"} @resources) ]}
-        }
-    ])
-__JS__
-        }
-        chomp($resources_str);
-
-        my $method = $e->{method} || 'GET';
-
-        print <<__JS__;
-window.MT.DataAPI.prototype.$func = function(@{[ join(', ', @vars, @resources) ]}) {
-    var args = Array.prototype.slice.call(arguments, @{[ @vars + @resources ]});
-    return this.request.apply(this, [
-        '$method',
-$url
-    ].concat(args)$resources_str);
-}
-
-__JS__
-    }
-}
+my $endpoint_data = $mt->endpoints($version);
+print MT::Util::to_json(
+    [   map {
+            my $e = $_;
+            if ( @includes && !grep { $_ eq lc $e->{component}->id }
+                @includes )
+            {
+                ();
+            }
+            else {
+                +{ map { exists $e->{$_} ? ( $_ => $e->{$_} ) : () }
+                        qw(id route resources verb) };
+            }
+        } @{ $endpoint_data->{list} }
+    ],
+    { pretty => 1 }
+);
 
 print <<__JS__;
+    );
+});
 
 })(window);
 __JS__

@@ -16,13 +16,14 @@
 var DataAPI = function(options) {
     this.o = {
         clientId: undefined,
-        baseUrl: '',
+        baseUrl: undefined,
         cookieDomain: undefined,
         cookiePath: undefined,
         async: true,
+        cache: false,
         disableFormData: false
     };
-    for (k in options) {
+    for (var k in options) {
         if (k in this.o) {
             if (typeof this.o[k] === 'object' && this.o[k] !== null) {
                 for (l in this.o[k]) {
@@ -38,17 +39,48 @@ var DataAPI = function(options) {
         }
     }
 
-    if (! this.o.clientId) {
-        throw 'The "clientId" is required.';
+    var requireds = ['clientId', 'baseUrl'];
+    for (var i = 0; i < requireds.length; i++) {
+        if (! this.o[requireds[i]]) {
+            throw 'The "' + requireds[i] + '" is required.';
+        }
     }
 
-    this.callbacks = [];
+    this.callbacks = {};
     this.tokenData = null;
     this.iframeId  = 0;
+
+    this.trigger('initialize');
 }
 
+DataAPI.version        = 1;
 DataAPI.accessTokenKey = 'mt_data_api_access_token';
 DataAPI.iframePrefix   = 'mt_data_api_iframe_';
+DataAPI.callbacks      = {};
+
+DataAPI.on = function(key, callback) {
+    if (! this.callbacks[key]) {
+        this.callbacks[key] = [];
+    }
+
+    this.callbacks[key].push(callback);
+};
+DataAPI.off = function(key, callback) {
+    if (callback) {
+        var callbacks = this.callbacks[key] || [];
+
+        for (var i = 0; i < callbacks.length; i++) {
+            if (callbacks[i] === callback) {
+                callbacks.splice(i, 1);
+                break;
+            }
+        }
+    }
+    else {
+        delete this.callbacks[key];
+    }
+};
+
 DataAPI.prototype      = {
     getAuthorizationUrl: function(redirectUrl) {
         return this.o.baseUrl.replace(/\/*$/, '/') +
@@ -67,7 +99,7 @@ DataAPI.prototype      = {
     },
 
     getVersion: function() {
-        return 1;
+        return DataAPI.version;
     },
     
     getAppKey: function() {
@@ -246,6 +278,9 @@ DataAPI.prototype      = {
         
         var str = '';
         for (k in params) {
+            if (! params.hasOwnProperty(k)) {
+                continue;
+            }
             var v = params[k];
             if (str) {
                 str += '&';
@@ -300,26 +335,29 @@ DataAPI.prototype      = {
     },
 
     sendXMLHttpRequest: function(xhr, method, url, params, defaultParams) {
-        if (this._isEmptyObject(defaultParams)) {
-            if (! params) {
-                params = '';
-            }
-
-            for (k in defaultParams) {
-                if (window.FormData && params instanceof window.FormData) {
+        if (! this._isEmptyObject(defaultParams)) {
+            if (window.FormData && params instanceof window.FormData) {
+                for (k in defaultParams) {
                     params.append(k, defaultParams[k]);
                 }
+            }
+            else {
+                defaultParams = this.serialize(defaultParams);
+                if (method.toLowerCase() === 'get') {
+                    url += (url.indexOf('?') === -1 ? '?' : '&') + defaultParams;
+                }
                 else {
-                    params += ( params === '' ? '' : '&' ) + k + '=' + defaultParams[k];
+                    if (! params) {
+                        params = '';
+                    }
+                    params += (params === '' ? '' : '&') + defaultParams;
                 }
             }
         }
         
         xhr.open(method, url, this.o.async);
         if (typeof params === 'string') {
-            xhr.setRequestHeader(
-                'Content-Type', 'application/x-www-form-urlencoded'
-            );
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         }
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.setRequestHeader('X-MT-Authorization', this.getAuthorizationHeader());
@@ -407,6 +445,25 @@ DataAPI.prototype      = {
         }
     },
     
+    withOptions: function(option, func) {
+        var originalOption = this.o,
+            o = {},
+            result;
+
+        for (k in originalOption) {
+            o[k] = originalOption[k];
+        }
+        for (k in option) {
+            o[k] = option[k];
+        }
+
+        this.o = o;
+        result = func.apply(this);
+        this.o = originalOption;
+
+        return result;
+    },
+
     request: function(method, endpoint) {
         var api        = this,
             paramsList = [],
@@ -500,6 +557,10 @@ DataAPI.prototype      = {
 
         if (endpoint === '/token' || endpoint === '/authentication') {
             defaultParams['clientId'] = this.o.clientId;
+        }
+
+        if (! this.o.cache) {
+            defaultParams['_'] = new Date().getTime();
         }
         
         for (var i = 2; i < arguments.length; i++) {
@@ -615,7 +676,7 @@ DataAPI.prototype      = {
                 iframe.contentWindow.name = target;
 
 
-                if (api._isEmptyObject(defaultParams)) {
+                if (! api._isEmptyObject(defaultParams)) {
                     if (! params) {
                         params = {};
                     }
@@ -689,42 +750,83 @@ DataAPI.prototype      = {
         }
     },
 
-    on: function(key, callback) {
-        if (! this.callbacks[key]) {
-            this.callbacks[key] = [];
-        }
+    on: DataAPI.on,
 
-        this.callbacks[key].push(callback);
-    },
-
-    off: function(key, callback) {
-        if (callback) {
-            var callbacks = this.callbacks[key] || [];
-
-            for (var i = 0; i < callbacks.length; i++) {
-                if (callbacks[i] === callback) {
-                    callbacks.splice(i, 1);
-                    break;
-                }
-            }
-        }
-        else {
-            delete this.callbacks[key];
-        }
-    },
+    off: DataAPI.off,
 
     trigger: function(key) {
-        var callbacks = this.callbacks[key] || [],
-            args      = Array.prototype.slice.call(arguments, 1);
+        var args      = Array.prototype.slice.call(arguments, 1),
+            callbacks = (DataAPI.callbacks[key] || []) // Class level
+                .concat(this.callbacks[key] || []) // Instance level
 
         for (var i = 0; i < callbacks.length; i++) {
             callbacks[i].apply(this, args);
         }
+    },
+
+    generateEndpointMethod: function(e) {
+        var api       = this,
+            varRegexp = new RegExp(':([a-zA-Z_-]+)', 'g'),
+            vars      = null,
+            name      = e.id.replace(/_(\w)/g, function(all, letter) {
+                            return letter.toUpperCase();
+                        });
+
+        api[name] = function() {
+            if (! vars) {
+                var m;
+                vars = [];
+                while (m = varRegexp.exec(e.route)) {
+                    vars.push(m[1]);
+                }
+            }
+
+
+            var args           = Array.prototype.slice.call(arguments),
+                endpointParams = {},
+                resources      = {},
+                route, i;
+
+            for (i = 0; i < vars.length; i++) {
+                endpointParams[vars[i]] = args.shift();
+            }
+            route = api.bindEndpointParams(e.route, endpointParams);
+
+            if (e.resources) {
+                for (i = 0; i < e.resources.length; i++) {
+                    resources[e.resources[i]] = args.shift();
+                }
+                args.push(resources);
+            }
+
+            return api.request.apply(api, [e.verb, route].concat(args));
+        };
+    },
+
+    generateEndpointMethods: function(endpoints) {
+        for (var i = 0; i < endpoints.length; i++) {
+            this.generateEndpointMethod(endpoints[i]);
+        }
+    },
+
+    loadEndpoints: function(params) {
+        var api = this;
+
+        api.withOptions({async: false}, function() {
+            api.request('GET', '/endpoints', function(response) {
+                if (response.error) {
+                    return;
+                }
+
+                api.generateEndpointMethods(response.items);
+            });
+        });
     }
 };
 
 window.MT         = window.MT || {};
-window.MT.DataAPI = DataAPI;
+window.MT.DataAPI = window.MT.DataAPI || DataAPI;
+window.MT.DataAPI['v' + DataAPI.version] = DataAPI;
 
 
 
