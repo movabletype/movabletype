@@ -116,12 +116,16 @@ sub list_props {
                 require MT::Theme;
                 my $themes = MT::Theme->load_all_themes;
                 return [
-                    map { { label => $_->label, value => $_->id } }
-                        sort { $a->label cmp $b->label }
-                        grep {
-                               $_->{class} eq 'website'
-                            || $_->{class} eq 'both'
-                        } values %$themes
+                    map { { label => $_->label, value => $_->id } } (
+                        (   sort     { $a->label cmp $b->label }
+                                grep { $_->{class} eq 'website' }
+                                values %$themes
+                        ),
+                        (   sort     { $a->label cmp $b->label }
+                                grep { $_->{class} ne 'website' }
+                                values %$themes
+                        )
+                    )
                 ];
             },
         },
