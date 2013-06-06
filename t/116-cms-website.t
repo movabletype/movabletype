@@ -383,6 +383,15 @@ subtest 'Website listing screen' => sub {
     my $pages = quotemeta
         '<th class="col head page_count num"><a href="#page_count" class="sort-link"><span class="col-label">Pages</span><span class="sm"></span></a></th>';
     like( $out, qr/$pages/, 'Listing screen has "Pages" column.' );
+
+    my $classic_website = quotemeta
+        '<option value="classic_website">Classic Website</option>';
+    like( $out, qr/$classic_website/,
+        'Listing screen has website theme filters.' );
+
+    my $classic_blog
+        = quotemeta '<option value="classic_blog">Classic Blog</option>';
+    like( $out, qr/$classic_blog/, 'Listing screen has blog theme filters.' );
 };
 
 done_testing();
