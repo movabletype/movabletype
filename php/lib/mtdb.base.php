@@ -556,7 +556,7 @@ abstract class MTDatabase {
                 $entry = $this->fetch_entry($eid);
             }
 
-            $ts = $entry->entry_authored_on;
+            $ts = $this->db2ts($entry->entry_authored_on);
             if (preg_match('/Monthly$/', $at)) {
                 $ts = substr($ts, 0, 6) . '01000000';
             } elseif (preg_match('/Daily$/', $at)) {
@@ -570,7 +570,7 @@ abstract class MTDatabase {
             } elseif ($at == 'Individual' || $at == 'Page') {
                 $filter .= " and fileinfo_entry_id = $eid";
             }
-            if ($ts != $entry->entry_authored_on) {
+            if (preg_match('/(Monthly|Daily|Weekly|Yearly)$/', $at)) {
                 $filter .= " and fileinfo_startdate = '$ts'";
             }
             if (preg_match('/Author/', $at)) {
@@ -2397,9 +2397,16 @@ abstract class MTDatabase {
             and A.blog_id = fileinfo_blog_id
             and templatemap_id = fileinfo_templatemap_id
             and templatemap_is_preferred = 1
-            and A.blog_parent_id = B.blog_id
-            and B.blog_class = 'website'
-            and A.blog_class = 'blog'
+            and (
+             (
+              A.blog_parent_id = B.blog_id
+               and B.blog_class = 'website'
+               and A.blog_class = 'blog'
+             ) or (
+              ( A.blog_parent_id is null or A.blog_parent_id = 0 )
+               and A.blog_class = 'website'
+             )
+            )
         ";
 
         $results = $this->db()->Execute($query);
@@ -2409,16 +2416,20 @@ abstract class MTDatabase {
                 if (empty($blog_url))
                     $blog_url = $row['blog_site_url'];
 
-                preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
-                if ( count($matches > 1 ) ) {
-                    $site_url = preg_split( '/\/::\//', $blog_url );
-                    if ( count($site_url > 0 ) )
-                        $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
-                    else
-                        $path = $row['website_url'] . $this->blog_url;
-                }
-                else {
-                    $path = $row['website_url'] . $blog_url;
+                if ($row['blog_parent_id'] > 0) {
+                    preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
+                    if ( count($matches > 1 ) ) {
+                        $site_url = preg_split( '/\/::\//', $blog_url );
+                        if ( count($site_url > 0 ) )
+                            $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
+                        else
+                            $path = $row['website_url'] . $this->blog_url;
+                    }
+                    else {
+                        $path = $row['website_url'] . $blog_url;
+                    }
+                } else {
+                    $path = $row['blog_site_url'];
                 }
 
                 $blog_url = $path;
@@ -2454,9 +2465,16 @@ abstract class MTDatabase {
               and A.blog_id = fileinfo_blog_id
                and templatemap_id = fileinfo_templatemap_id
                and templatemap_is_preferred = 1
-               and A.blog_parent_id = B.blog_id
-               and B.blog_class = 'website'
-               and A.blog_class = 'blog'
+               and (
+                (
+                 A.blog_parent_id = B.blog_id
+                  and B.blog_class = 'website'
+                  and A.blog_class = 'blog'
+                ) or (
+                 ( A.blog_parent_id is null or A.blog_parent_id = 0 )
+                  and A.blog_class = 'website'
+                )
+               )
         ";
         $results = $this->db()->Execute($query);
         if ($results) {
@@ -2464,16 +2482,20 @@ abstract class MTDatabase {
                 $blog_url = $row['blog_archive_url'];
                 $blog_url or $blog_url = $row['blog_site_url'];
 
-                preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
-                if ( count($matches > 1 ) ) {
-                    $site_url = preg_split( '/\/::\//', $blog_url );
-                    if ( count($site_url > 0 ) )
-                        $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
-                    else
-                        $path = $row['website_url'] . $this->blog_url;
-                }
-                else {
-                    $path = $row['website_url'] . $blog_url;
+                if ($row['blog_parent_id'] > 0 ) {
+                    preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
+                    if ( count($matches > 1 ) ) {
+                        $site_url = preg_split( '/\/::\//', $blog_url );
+                        if ( count($site_url > 0 ) )
+                            $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
+                        else
+                            $path = $row['website_url'] . $this->blog_url;
+                    }
+                    else {
+                        $path = $row['website_url'] . $blog_url;
+                    }
+                } else {
+                    $path = $row['blog_site_url'];
                 }
 
                 $blog_url = $path;

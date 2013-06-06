@@ -2906,11 +2906,14 @@ sub build_blog_selector {
 
     # Load favorites or all websites
     my @fav_websites = @{ $auth->favorite_websites || [] };
+    if ( scalar @fav_websites > 5 ) {
+        @fav_websites = @fav_websites[ 0 .. 4 ];
+    }
     my @websites;
     @websites = $website_class->load( { id => \@fav_websites } )
         if scalar @fav_websites;
 
-    my $max_load = $blog && $blog->is_blog ? 3 : 4;
+    my $max_load = 6;
     if ( scalar @fav_websites < $max_load ) {
 
         # Load more accessible websites
@@ -2943,11 +2946,10 @@ sub build_blog_selector {
             = sort { ( $sorted{ $a->id } || 0 ) <=> ( $sorted{ $b->id } || 0 ) }
             @websites;
     }
-    unshift @websites, $blog->website if $blog && $blog->is_blog;
 
 # Special case. If this user can access 3 websites or smaller then load those websites.
     $param->{selector_hide_website_chooser} = 1;
-    if ( @websites && scalar @websites == 4 ) {
+    if ( @websites && scalar @websites == 6 ) {
         pop @websites;
         $param->{selector_hide_website_chooser} = 0;
     }
@@ -4177,8 +4179,8 @@ sub add_to_favorite_websites {
     return if @current && ( $current[0] == $fav );
     @current = grep { $_ != $fav } @current;
     unshift @current, $fav;
-    @current = @current[ 0 .. 2 ]
-        if @current > 3;
+    @current = @current[ 0 .. 9 ]
+        if @current > 10;
 
     $auth->favorite_websites( \@current );
     $auth->save;
@@ -4871,6 +4873,23 @@ sub pre_run {
     $app->run_callbacks( 'set_notification_dashboard', \@messages );
 
     $app->param( 'loop_notification_dashboard', \@messages );
+}
+
+sub validate_request_params {
+    my $app = shift;
+    my ($method_info) = @_;
+
+    if ((   $app->param('xhr')
+            || ( ( $method_info->{app_mode} || '' ) eq 'JSON' )
+        )
+        && ( ( $app->get_header('X-Requested-With') || '' ) ne
+            'XMLHttpRequest' )
+        )
+    {
+        return $app->errtrans('Invalid request');
+    }
+
+    $app->SUPER::validate_request_params(@_);
 }
 
 1;

@@ -88,7 +88,8 @@ sub list_props {
             base    => 'entry.modified_on',
             display => 'default',
         },
-        comment_count => {
+        unpublished_on => { base => 'entry.unpublished_on', },
+        comment_count  => {
             display => 'optional',
             base    => 'entry.comment_count',
             order   => 800,
@@ -109,9 +110,10 @@ sub list_props {
         status => {
             base                  => 'entry.status',
             single_select_options => [
-                { label => MT->translate('Draft'),     value => 1, },
-                { label => MT->translate('Published'), value => 2, },
-                { label => MT->translate('Scheduled'), value => 4, },
+                { label => MT->translate('Draft'),             value => 1, },
+                { label => MT->translate('Published'),         value => 2, },
+                { label => MT->translate('Scheduled'),         value => 4, },
+                { label => MT->translate('Unpublished (End)'), value => 6, },
             ],
         },
         basename     => { base => 'entry.basename' },
@@ -141,9 +143,14 @@ sub system_filters {
             order => 200,
         },
         draft => {
-            label => 'Unpublished Pages',
+            label => 'Draft Pages',
             items => [ { type => 'status', args => { value => '1' }, }, ],
             order => 300,
+        },
+        unpublished => {
+            label => 'Unpublished Pages',
+            items => [ { type => 'status', args => { value => '6' }, }, ],
+            order => 350,
         },
         future => {
             label => 'Scheduled Pages',

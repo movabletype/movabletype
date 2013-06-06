@@ -78,7 +78,7 @@ subtest 'Test cfg_prefs mode' => sub {
             my $site_root_hint
                 = $type eq 'blog'
                 ? 'The path where your index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog'
-                : 'The path where your index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html or C:\www\public_html';
+                : 'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\\\' for Windows) is preferred.  Do not end with \'/\' or \'\\\'. Example: /home/mt/public_html or C:\www\public_html';
             $site_root_hint = quotemeta $site_root_hint;
             like( $out, qr/$site_root_hint/, 'Has Site Root hint.' );
 
@@ -105,7 +105,7 @@ subtest 'Test cfg_prefs mode' => sub {
             my $archive_root_hint
                 = $type eq 'blog'
                 ? 'The path where your archives section index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog'
-                : 'The path where your archives section index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html or C:\www\public_html';
+                : 'The path where your archives section index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\\\' for Windows) is preferred. Do not end with \'/\' or \'\\\'. Example: /home/mt/public_html or C:\www\public_html';
             $archive_root_hint = quotemeta $archive_root_hint;
             like( $out, qr/$archive_root_hint/, 'Has Archive Root hint.' );
 
@@ -152,6 +152,35 @@ subtest 'Test cfg_prefs mode' => sub {
                     $archive_url, 'Can save archive_url correctly.' );
                 is( $test_blog->column('archive_path'),
                     $archive_path, 'Can save archive_path correctly.' );
+            }
+
+            if ( $type eq 'blog' ) {
+                $app->config->BaseSitePath('dummy');
+
+                $app = _run_app(
+                    'MT::App::CMS',
+                    {   __test_user => $admin,
+                        __mode      => 'cfg_prefs',
+                        blog_id     => $test_blog->id,
+                    },
+                );
+                $out = delete $app->{__test_output};
+
+                like( $out, qr/$site_root_hint/,
+                    'Has Site Root hint(relative).' );
+                my $site_root_hint_abs = quotemeta
+                    "The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\\' for Windows) is preferred.  Do not end with '/' or '\\'. Example: /home/mt/public_html or C:\\www\\public_html";
+                unlike( $out, qr/$site_root_hint_abs/,
+                    'Has Site Root hint(absolute).' );
+
+                like( $out, qr/$archive_root_hint/,
+                    'Has Archive URL hint(relative).' );
+                my $archive_root_hint_abs = quotemeta
+                    "The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\\' for Windows) is preferred. Do not end with '/' or '\\'. Example: /home/mt/public_html or C:\\www\\public_html";
+                unlike( $out, qr/$archive_root_hint_abs/,
+                    'Has Archive URL hint(absolute).' );
+
+                $app->config->BaseSitePath(undef);
             }
         };
     }
@@ -328,6 +357,32 @@ subtest 'Test applying a blog theme to a website' => sub {
         '"Create Blog" view does not have website\'s optgroup tag.' );
     unlike( $out, qr/$optgrp_blog/,
         '"Create Blog" view does not have blog\'s optgroup tag.' );
+};
+
+diag 'Website listing screen';
+subtest 'Website listing screen' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user => $admin,
+            __mode      => 'list',
+            _type       => 'website',
+            blog_id     => 0,
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, 'Request: list website' );
+
+    my $blogs = quotemeta
+        '<th class="col head blog_count num"><a href="#blog_count" class="sort-link"><span class="col-label">Blogs</span><span class="sm"></span></a></th>';
+    like( $out, qr/$blogs/, 'Listing screen has "Blogs" column.' );
+
+    my $entries = quotemeta
+        '<th class="col head entry_count num"><a href="#entry_count" class="sort-link"><span class="col-label">Entries</span><span class="sm"></span></a></th>';
+    like( $out, qr/$entries/, 'Listing screen has "Entries" column.' );
+
+    my $pages = quotemeta
+        '<th class="col head page_count num"><a href="#page_count" class="sort-link"><span class="col-label">Pages</span><span class="sm"></span></a></th>';
+    like( $out, qr/$pages/, 'Listing screen has "Pages" column.' );
 };
 
 done_testing();

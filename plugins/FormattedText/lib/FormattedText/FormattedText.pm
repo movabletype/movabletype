@@ -38,7 +38,7 @@ __PACKAGE__->install_properties(
             blog_c_by   => { columns => [ 'blog_id', 'created_by' ], },
         },
 
-        child_of => 'MT::Blog',
+        child_of => [ 'MT::Blog', 'MT::Website' ],
         audit    => 1,
 
         datasource  => 'formatted_text',
@@ -286,7 +286,7 @@ sub required_fields {
 
 sub parents {
     my $obj = shift;
-    { blog_id => MT->model('blog'), };
+    { blog_id => [ MT->model('blog'), MT->model('website') ] };
 }
 
 1;

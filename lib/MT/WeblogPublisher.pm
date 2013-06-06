@@ -597,8 +597,8 @@ sub rebuild_entry {
             push( @$categories_for_rebuild,
                 MT::Category->load( { id => \@old_ids } ) );
         }
-        push @$categories_for_rebuild, ( map { $_ } @{$entry->categories} );
     }
+    push @$categories_for_rebuild, ( map { $_ } @{$entry->categories} );
 
     my $at
         = $param{PreferredArchiveOnly} ? $blog->archive_type_preferred
@@ -1997,6 +1997,115 @@ sub publish_future_posts {
                     my $e = $rebuild_queue{$id};
                     next unless $e;
                     $e->status( MT::Entry::FUTURE() );
+                    $e->save or die $e->errstr;
+                }
+            }
+        }
+    }
+    $total_changed > 0 ? 1 : 0;
+}
+
+sub unpublish_past_entries {
+    my $app = shift;
+
+    require MT::Blog;
+    require MT::Entry;
+    require MT::Util;
+    my $mt            = MT->instance;
+    my $total_changed = 0;
+    my @sites         = MT->model('website')->load();
+    my @blogs         = MT->model('blog')->load();
+    push @sites, @blogs;
+    foreach my $site (@sites) {
+        my @ts = MT::Util::offset_time_list( time, $site );
+        my $now = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900,
+            $ts[4] + 1,
+            @ts[ 3, 2, 1, 0 ];
+        my $iter = MT::Entry->load_iter(
+            {   blog_id        => $site->id,
+                status         => MT::Entry::RELEASE(),
+                unpublished_on => [ undef, $now ],
+                class          => '*',
+            },
+            {   range     => { unpublished_on => 1 },
+                'sort'    => 'unpublished_on',
+                direction => 'descend',
+            }
+        );
+        my @queue;
+        while ( my $entry = $iter->() ) {
+            push @queue, $entry->id;
+        }
+
+        my $changed = 0;
+        my @results;
+        my %rebuild_queue;
+        foreach my $entry_id (@queue) {
+            my $entry = MT::Entry->load($entry_id)
+                or next;
+
+            $entry->status( MT::Entry::UNPUBLISH() );
+            $entry->save
+                or die $entry->errstr;
+
+            # remove file
+            if ( $mt->config('DeleteFilesAtRebuild') ) {
+                my $archive_type = $entry->is_entry ? 'Individual' : 'Page';
+                my $primary_category = $entry->category;
+                $app->remove_entry_archive_file(
+                    Entry       => $entry,
+                    ArchiveType => $archive_type,
+                    Category    => $primary_category,
+                    Force       => 0,
+                );
+            }
+
+            MT->run_callbacks( 'unpublish_past_entries', $mt, $entry );
+
+            $rebuild_queue{ $entry->id } = $entry;
+            my $n = $entry->next(1);
+            $rebuild_queue{ $n->id } = $n if $n;
+            my $p = $entry->previous(1);
+            $rebuild_queue{ $p->id } = $p if $p;
+            $changed++;
+            $total_changed++;
+        }
+        if ($changed) {
+            my %rebuilt_okay;
+            my $rebuilt;
+            eval {
+                foreach my $id ( keys %rebuild_queue )
+                {
+                    my $entry = $rebuild_queue{$id};
+                    $mt->rebuild_entry( Entry => $entry, Blog => $site )
+                        or die $mt->errstr;
+                    $rebuilt_okay{$id} = 1;
+                    $rebuilt++;
+                }
+                $mt->rebuild_indexes( Blog => $site )
+                    or die $mt->errstr;
+            };
+            if ( my $err = $@ ) {
+
+                # a fatal error occured while processing the rebuild
+                # step. LOG the error and revert the entry/entries:
+                require MT::Log;
+                $mt->log(
+                    {   message => $mt->translate(
+                            "An error occurred while unpublishing past entries: [_1]",
+                            $err
+                        ),
+                        class    => "unpublish",
+                        category => 'rebuild',
+                        blog_id  => $site->id,
+                        level    => MT::Log::ERROR()
+                    }
+                );
+                foreach my $id (@queue) {
+                    next if exists $rebuilt_okay{$id};
+                    my $e = $rebuild_queue{$id};
+                    next unless $e;
+                    $e->status( MT::Entry::RELEASE() );
                     $e->save or die $e->errstr;
                 }
             }

@@ -1312,7 +1312,7 @@ sub _make_comment {
     my $nick  = $q->param('author');
     my $email = $q->param('email');
     my ( $sess_obj, $commenter );
-    if ( $blog->accepts_registered_comments ) {
+    if ( $blog->accepts_registered_comments && !$app->param('bakecookie') ) {
         ( $sess_obj, $commenter ) = $app->_get_commenter_session();
     }
     if ( $commenter && ( 'do_reply' ne $app->mode ) ) {
