@@ -8,8 +8,6 @@
   <mt:var name="error">
 </mtapp:statusmsg>
 
-<a href="#" id="retry_getting_code" class="hidden"><__trans phrase="Retry getting authorization code" /></a>
-
 <div class="actions-bar">
   <button
      type="submit"
@@ -22,16 +20,12 @@
 
 <script type="text/javascript">
 jQuery(function($) {
-    var $select_profile = parent.jQuery.find('#ga_select_profile');
-    if ($select_profile.length) {
-        $select_profile = parent.jQuery($select_profile);
-        $('#retry_getting_code')
-            .removeClass('hidden')
-            .click(function() {
-                $select_profile.click();
-                return false;
-            });
-    }
+    var $p = parent.jQuery;
+<mt:If name="retry">
+    $p($p.find('#ga_configured_client_id')).val('');
+    $p($p.find('#ga_select_profile')).click();
+    $p.fn.mtDialog.close();
+</mt:If>
 });
 </script>
 <mt:include name="dialog/footer.tmpl">

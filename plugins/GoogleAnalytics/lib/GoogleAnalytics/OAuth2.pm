@@ -3,20 +3,20 @@ package GoogleAnalytics::OAuth2;
 use strict;
 use warnings;
 
-our @EXPORT = qw(authorize_url get_token get_profiles);
+our @EXPORT = qw(authorize_url get_token get_profiles effective_token);
 use base qw(Exporter);
 
 use GoogleAnalytics;
 use HTTP::Request::Common;
 
 sub authorize_url {
-    my ( $app, $client_id ) = @_;
+    my ( $app, $client_id, $redirect_uri ) = @_;
 
     my $uri = URI->new('https://accounts.google.com/o/oauth2/auth');
     $uri->query_form(
         response_type => 'code',
         client_id     => $client_id,
-        redirect_uri  => 'urn:ietf:wg:oauth:2.0:oob',
+        redirect_uri  => $redirect_uri,
         scope         => 'https://www.googleapis.com/auth/analytics.readonly',
     );
 
@@ -24,7 +24,7 @@ sub authorize_url {
 }
 
 sub get_token {
-    my ( $app, $ua, $client_id, $client_secret, $code ) = @_;
+    my ( $app, $ua, $client_id, $client_secret, $redirect_uri, $code ) = @_;
 
     my $res = $ua->request(
         POST(
@@ -32,7 +32,7 @@ sub get_token {
             {   code          => $code,
                 client_id     => $client_id,
                 client_secret => $client_secret,
-                redirect_uri  => 'urn:ietf:wg:oauth:2.0:oob',
+                redirect_uri  => $redirect_uri,
                 grant_type    => 'authorization_code',
             }
         )
@@ -47,7 +47,8 @@ sub get_token {
     ) unless $res->is_success;
 
     my $token_data = {
-        start => time(),
+        start     => time(),
+        client_id => $client_id,
         data =>
             MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) ),
     };

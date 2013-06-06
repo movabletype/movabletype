@@ -7,6 +7,7 @@ use base qw(MT::Stats::Provider);
 
 use HTTP::Request::Common;
 use GoogleAnalytics;
+use GoogleAnalytics::OAuth2 qw(effective_token);
 
 sub is_ready {
     my $class = shift;
@@ -77,7 +78,7 @@ sub _request {
 
     require GoogleAnalytics::OAuth2;
     my $plugindata = GoogleAnalytics::current_plugindata( $app, $self->blog );
-    my $token = GoogleAnalytics::OAuth2::effective_token( $app, $plugindata )
+    my $token = effective_token( $app, $plugindata )
         or return;
 
     my $config = $plugindata->data;

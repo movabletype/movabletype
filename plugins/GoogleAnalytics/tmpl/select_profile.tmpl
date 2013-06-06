@@ -29,6 +29,9 @@ jQuery(function($) {
                 $.trim($tr.find('.panel-description').text())
             );
             $p($p.find('#ga_profile_id')).val($radio.val());
+
+            $p($p.find('#ga_configured_client_id'))
+                .val($p($p.find('#ga_client_id')).val());
         }
         window.location.href = '<mt:Var name="complete_url" encode_js="1" />';
     });

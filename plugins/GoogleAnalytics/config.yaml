@@ -17,7 +17,7 @@ settings:
 applications:
     cms:
         methods:
-            ga_input_code: $GoogleAnalytics::GoogleAnalytics::App::input_code
+            ga_oauth2callback: $GoogleAnalytics::GoogleAnalytics::App::oauth2callback
             ga_select_profile: $GoogleAnalytics::GoogleAnalytics::App::select_profile
             ga_select_profile_complete: $GoogleAnalytics::GoogleAnalytics::App::select_profile_complete
         callbacks:

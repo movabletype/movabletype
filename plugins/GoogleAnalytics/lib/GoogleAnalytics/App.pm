@@ -15,6 +15,18 @@ use MT::Util;
 use GoogleAnalytics;
 use GoogleAnalytics::OAuth2;
 
+sub _is_effective_plugindata {
+    my ( $app, $plugindata, $client_id ) = @_;
+
+    my $result = $plugindata
+        && ( !$client_id
+        || $plugindata->data->{token_data}{client_id} eq $client_id )
+        && effective_token( $app, $plugindata );
+    $app->error(undef);
+
+    $result;
+}
+
 sub config_tmpl {
     my $app    = MT->instance;
     my $plugin = plugin();
@@ -23,6 +35,8 @@ sub config_tmpl {
     my $scope    = 'blog:' . $blog->id;
     my $config   = $plugin->get_config_hash($scope);
     my $defaults = $plugin->settings->defaults($scope);
+    my $configured
+        = _is_effective_plugindata( $app, $plugin->get_config_obj($scope) );
 
     my $missing = undef;
     $missing = $app->translate( 'missing required Perl modules: [_1]',
@@ -33,15 +47,20 @@ sub config_tmpl {
     $plugin->load_tmpl(
         'web_service_config.tmpl',
         {   missing_modules => $missing,
-            authorize_url   => authorize_url( $app, '__client_id__' ),
-            dialog_url      => $app->uri(
-                mode => 'ga_input_code',
-                args => { blog_id => $app->blog->id, },
-            ),
+            authorize_url =>
+                authorize_url( $app, '__client_id__', '__redirect_uri__' ),
             ( map { ( "ga_$_" => $config->{$_} || '' ) } keys(%$config) ),
             (   map { ( "default_$_" => $defaults->{$_} || '' ) }
                     keys(%$defaults)
             ),
+            dialog_url => $app->uri(
+                mode => 'ga_select_profile',
+                args => { blog_id => $app->blog->id, },
+            ),
+            redirect_uri         => $app->uri( mode => 'ga_oauth2callback' ),
+            configured_client_id => $configured
+            ? $config->{client_id}
+            : '',
         }
     )->build;
 }
@@ -85,16 +104,6 @@ sub pre_save_blog {
     1;
 }
 
-sub _render_input_code {
-    my ( $app, $params ) = @_;
-    $params ||= {};
-
-    $params->{client_id}     = $app->param('client_id');
-    $params->{client_secret} = $app->param('client_secret');
-
-    plugin()->load_tmpl( 'input_code.tmpl', $params );
-}
-
 sub _render_api_error {
     my ( $app, $params ) = @_;
     $params ||= {};
@@ -102,27 +111,47 @@ sub _render_api_error {
     plugin()->load_tmpl( 'api_error.tmpl', $params );
 }
 
-sub input_code {
-    my $app = shift;
-    _render_input_code($app);
-}
-
 sub select_profile {
-    my $app  = shift;
-    my $code = $app->param('code')
-        or return _render_input_code( $app,
-        { error => translate('You did not specify a code.'), } );
+    my $app = shift;
 
+    my $blog = $app->blog
+        or return;
     my $ua = new_ua();
+    my $token_data;
+    my $client_id = $app->param('client_id')
+        or
+        return $app->error( translate('You did not specify a client ID.') );
+    my $retry = 0;
 
-    my $token_data = get_token(
-        $app, $ua,
-        scalar $app->param('client_id'),
-        scalar $app->param('client_secret'), $code
-    ) or return _render_api_error( $app, { error => $app->errstr } );
+    if ( my $client_secret = $app->param('client_secret') ) {
+        $app->validate_magic or return;
+
+        my $code = $app->param('code')
+            or return $app->error( translate('You did not specify a code.') );
+
+        $token_data
+            = get_token( $app, $ua, $client_id, $client_secret,
+            scalar $app->param('redirect_uri'), $code )
+            or return _render_api_error( $app, { error => $app->errstr } );
+    }
+    else {
+        $token_data = $app->session->get('ga_token_data');
+        if ( !$token_data || $token_data->{client_id} ne $client_id ) {
+            my $plugindata = plugin()->get_config_obj( 'blog:' . $blog->id );
+            if ( _is_effective_plugindata( $app, $plugindata, $client_id ) ) {
+                $token_data = $plugindata->data->{token_data};
+            }
+        }
+
+        return _render_api_error( $app, { retry => 1 } )
+            unless $token_data;
+
+        $retry = 1;
+    }
 
     my $list = get_profiles( $app, $ua, $token_data )
-        or return _render_api_error( $app, { error => $app->errstr } );
+        or return _render_api_error( $app,
+        { error => $app->errstr, retry => $retry } );
 
     plugin()->load_tmpl(
         'select_profile.tmpl',
@@ -159,6 +188,14 @@ sub select_profile_complete {
     }
 
     plugin()->load_tmpl('select_profile_complete.tmpl');
+}
+
+sub oauth2callback {
+    my $app = shift;
+
+    my $params = { code => scalar $app->param('code'), };
+
+    plugin()->load_tmpl( 'oauth2callback.tmpl', $params );
 }
 
 1;

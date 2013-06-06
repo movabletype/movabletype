@@ -7,6 +7,13 @@
 <mtapp:settinggroup id="google-analytics-settings">
 
 <mtapp:setting
+   id="ga_redirect_uri"
+   label="<__trans phrase="The redirect URI of the OAuth2 application">"
+   show_hint="0">
+    <input type="text" id="ga_redirect_uri" readonly="readonly" value="<mt:Var name="redirect_uri" encode_html="1" />" />
+</mtapp:setting>
+
+<mtapp:setting
    id="ga_client_id"
    label="<__trans phrase="The client ID of the OAuth2 application">"
    show_hint="0">
@@ -44,8 +51,17 @@
     <a href="#" id="ga_clear_profile"><__trans phrase="Clear profile" /></a>
 </mtapp:setting>
 
+<input type="hidden" id="ga_dialog_url" value="<mt:Var name="dialog_url" encode_html="1" />" />
+<input type="hidden" id="ga_configured_client_id" value="<mt:Var name="configured_client_id" encode_html="1" />" />
 <script type="text/javascript">
 jQuery(function($) {
+    var redirectUri = $('#ga_redirect_uri').val();
+    if (! redirectUri.match(/^https?:\/\//)) {
+        redirectUri =
+            redirectUri.replace(/^\/?/, location.protocol + '//' + location.host + '/');
+        $('#ga_redirect_uri').val(redirectUri);
+    }
+
     $('#ga_client_id, #ga_client_secret')
         .on('input click keyup change', function() {
             if (
@@ -68,19 +84,21 @@ jQuery(function($) {
             return false;
         }
 
-        var url = '<mt:Var name="authorize_url" encode_js="1" />'
-            .replace('__client_id__', clientId);
-        window.open(
-            url, 'google_analytics_authorize',
-            'width=700, height=500, menubar=no, toolbar=no, scrollbars=yes'
-        );
+        if (clientId === $('#ga_configured_client_id').val()) {
+            var dialogUrl = $('#ga_dialog_url').val();
 
-        $.fn.mtDialog.close();
-        $.fn.mtDialog.open(
-            '<mt:Var name="dialog_url" encode_js="1" />' +
-            '&client_id=' + clientId +
-            '&client_secret=' + clientSecret
-        );
+            $.fn.mtDialog.close();
+            $.fn.mtDialog.open(dialogUrl + '&client_id=' + clientId);
+        }
+        else {
+            var url = '<mt:Var name="authorize_url" encode_js="1" />'
+                .replace('__client_id__', clientId)
+                .replace('__redirect_uri__', redirectUri);
+            window.open(
+                url, 'google_analytics_authorize',
+                'width=700, height=500, menubar=no, toolbar=no, scrollbars=yes'
+            );
+        }
 
         return false;
     });
