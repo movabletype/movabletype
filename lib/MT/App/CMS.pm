@@ -1452,19 +1452,41 @@ sub core_list_actions {
                     return 0 if $app->mode eq 'view';
                     return 1 if $app->user->is_superuser;
 
-                    require MT::Permission;
-                    my $iter = MT::Permission->load_iter(
-                        {   author_id => $app->user->id,
-                            blog_id   => { not => 0 },
-                        }
-                    );
+                    my $terms = {
+                        author_id => $app->user->id,
+                        blog_id   => { not => 0 },
+                    };
+                    my $args = {
+                        join => MT->model('website')->join_on(
+                            undef,
+                            {   id    => \'= permission_blog_id',
+                                class => 'website',
+                            },
+                        ),
+                    };
 
-                    my $cond = 1;
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter( $terms, $args );
+
+                    my $cond = 0;
                     while ( my $p = $iter->() ) {
-                        next if $p->blog->is_blog;
                         $cond = 0, last
                             if !$p->can_do('delete_website');
+                        $cond++;
                     }
+
+                    if ($cond) {
+                        my $has_system_edit_tmpl = MT::Permission->count(
+                            {   author_id   => $app->user->id,
+                                blog_id     => 0,
+                                permissions => { like => "'edit_templates'" },
+                            }
+                        );
+                        if ($has_system_edit_tmpl) {
+                            return $cond == MT::Website->count();
+                        }
+                    }
+
                     return $cond;
                 },
             },
