@@ -150,6 +150,10 @@ my $hada = MT::Test::Permission->make_author(
     name     => 'hada',
     nickname => 'Ichiro Hada',
 );
+my $hida = MT::Test::Permission->make_author(
+    name     => 'hida',
+    nickname => 'Jiro Hida',
+);
 
 my $admin = MT::Author->load(1);
 
@@ -212,6 +216,7 @@ MT::Association->link( $kumekawa => $manage_feedback => $blog );
 MT::Association->link( $tezuka   => $edit_templates  => $blog );
 MT::Association->link( $noda     => $blog_admin      => $blog );
 MT::Association->link( $hada     => $blog_admin      => $blog );
+MT::Association->link( $hida     => $blog_admin      => $blog );
 
 MT::Association->link( $kemikawa   => $blog_admin      => $second_blog );
 MT::Association->link( $koishikawa => $designer        => $second_blog );
@@ -257,6 +262,11 @@ $p = MT::Permission->new;
 $p->blog_id(0);
 $p->author_id( $hada->id );
 $p->permissions("'edit_templates'");
+$p->save;
+
+$p = MT::Permission->new;
+$p->blog_id(0);
+$p->author_id( $hida->id );
 $p->save;
 
 # Entry
@@ -650,6 +660,24 @@ subtest 'mode = list' => sub {
         ok( $out,                   "Request: list" );
         ok( $out !~ m!redirect=1!i, "list by not permitted user" );
         unlike( $out, qr/$button/, 'There is not "Delete" button.' );
+
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $hida,
+                __request_method => 'POST',
+                __mode           => 'list',
+                blog_id          => $blog_id,
+                _type            => 'blog',
+            }
+        );
+        $out = delete $app->{__test_output};
+        ok( $out,                   "Request: list" );
+        ok( $out !~ m!redirect=1!i, "list by permitted user" );
+        like( $out, qr/$button/, 'There is "Delete" button.' );
+        my $refresh_tmpl = quotemeta
+            '<option value="refresh_blog_templates">Refresh Template(s)</option>';
+        like( $out, qr/$refresh_tmpl/,
+            'There is "Refresh Template(s)" action.' );
 
     }
 
