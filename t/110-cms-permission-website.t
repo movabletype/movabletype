@@ -4,13 +4,16 @@ use strict;
 use warnings;
 
 BEGIN {
+    use Test::More;
+    eval { require Test::MockModule }
+        or plan skip_all => 'Test::MockModule is not installed';
+
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
 use lib 't/lib', 'lib', 'extlib';
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
-use Test::More;
 
 ### Make test data
 
@@ -248,6 +251,13 @@ subtest 'mode = list' => sub {
 };
 
 subtest 'mode = save (new)' => sub {
+    my %cookies;
+    my $module = Test::MockModule->new('MT::App::CMS');
+    $module->mock( 'cookies', sub { wantarray ? %cookies : \%cookies } );
+
+    my $args = $app->start_session($admin);
+    %cookies = ( $app->user_cookie() => CGI::Cookie->new(%$args) );
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -255,11 +265,15 @@ subtest 'mode = save (new)' => sub {
             __mode           => 'save',
             _type            => 'website',
             name             => 'websiteName',
+            website_theme    => 'classic_website',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out,                "Request: save" );
     ok( _is_not_error($out), "save (new) by admin" );
+
+    $args = $app->start_session($ukawa);
+    %cookies = ( $app->user_cookie() => CGI::Cookie->new(%$args) );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -268,11 +282,15 @@ subtest 'mode = save (new)' => sub {
             __mode           => 'save',
             _type            => 'website',
             name             => 'WebsiteName',
+            website_theme    => 'classic_website',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out,                "Request: save" );
     ok( _is_not_error($out), "save (new) by permitted user" );
+
+    $args = $app->start_session($ukawa);
+    %cookies = ( $app->user_cookie() => CGI::Cookie->new(%$args) );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -281,6 +299,7 @@ subtest 'mode = save (new)' => sub {
             __mode           => 'save',
             _type            => 'website',
             name             => 'WebsiteName',
+            website_theme    => 'classic_website',
         }
     );
     $out = delete $app->{__test_output};
