@@ -92,6 +92,10 @@ my $sorimachi = MT::Test::Permission->make_author(
     name     => 'sorimachi',
     nickname => 'Goro Sorimachi',
 );
+my $tada = MT::Test::Permission->make_author(
+    name     => 'tada',
+    nickname => 'Ichiro Tada',
+);
 
 my $admin = MT::Author->load(1);
 
@@ -121,6 +125,7 @@ MT::Association->link( $koishikawa, $edit_config,   $blog );
 MT::Association->link( $sagawa,     $edit_config,   $second_blog );
 MT::Association->link( $suda,       $blog_admin,    $blog );
 MT::Association->link( $seta,       $website_admin, $website );
+MT::Association->link( $tada,       $website_admin, $website );
 
 foreach my $w ( MT::Website->load() ) {
     MT::Association->link( $sorimachi, $website_admin, $w );
@@ -158,6 +163,11 @@ $p = MT::Permission->new;
 $p->blog_id(0);
 $p->author_id( $sorimachi->id );
 $p->permissions("'edit_templates'");
+$p->save;
+
+$p = MT::Permission->new;
+$p->blog_id(0);
+$p->author_id( $tada->id );
 $p->save;
 
 # Run
@@ -320,6 +330,24 @@ subtest 'mode = list' => sub {
         "list by permitted user (system) with website administrator permission"
     );
     unlike( $out, qr/$button/, 'There is not "Delete" button.' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $tada,
+            __request_method => 'POST',
+            __mode           => 'list',
+            _type            => 'website',
+            blog_id          => 0,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: list" );
+    ok( _is_not_error($out),
+        "list by permitted user with an empry system permission record." );
+    like( $out, qr/$button/, 'There is "Delete" button.' );
+    my $refresh_tmpl = quotemeta
+        '<option value="refresh_website_templates">Refresh Template(s)</option>';
+    like( $out, qr/$refresh_tmpl/, 'There is "Refresh Template(s)" action.' );
 
     $app = _run_app(
         'MT::App::CMS',

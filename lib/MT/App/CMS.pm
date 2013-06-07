@@ -1472,7 +1472,6 @@ sub core_list_actions {
                 },
                 permit_action => {
                     permit_action => 'refresh_template_via_list',
-                    include_all   => 1,
                     system_action => 'refresh_template_via_list',
                 },
                 condition => sub {
