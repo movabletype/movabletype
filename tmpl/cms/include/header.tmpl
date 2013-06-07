@@ -99,7 +99,7 @@
 
   <mt:var name="html_body">
 
-  <div id="header">
+  <div id="header"<mt:if name="count_notification_dashboard"> class="has-notification"</mt:if>>
     <div id="brand">
       <a href="<$mt:var name="mt_url"$>?__mode=dashboard"><span><img alt="<mt:var name="mt_product_name">" src="<mt:var name="static_uri">images/logo/movable-type-logo<mt:if name="blog_id"><mt:if name="is_blog"><mt:else>-website</mt:if><mt:else>-system</mt:if>.png" /></span></a>
     </div>
