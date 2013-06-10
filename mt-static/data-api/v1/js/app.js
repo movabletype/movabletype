@@ -572,6 +572,7 @@ DataAPI.prototype      = {
             case 'object':
                 if (
                     v &&
+                    ! v.nodeName &&
                     ((window.ActiveXObject && v instanceof window.ActiveXObject) ||
                      (window.XMLHttpRequest && v instanceof window.XMLHttpRequest))
                 ) {
