@@ -1402,19 +1402,59 @@ sub core_list_actions {
                 dialog        => 1,
             },
             'delete' => {
-                label         => 'Delete',
-                code          => "${pkg}Common::delete",
-                mode          => 'delete',
-                order         => 110,
-                js_message    => 'delete',
-                button        => 1,
-                permit_action => {
-                    permit_action => 'delete_blog',
-                    include_all   => 1,
-                },
-                condition => sub {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+                condition  => sub {
                     return 0 if $app->mode eq 'view';
-                    return 1;
+                    return 1 if $app->user->is_superuser;
+
+                    my $terms = {
+                        author_id => $app->user->id,
+                        blog_id   => { not => 0 },
+                    };
+                    my $args = {
+                        join => MT->model('blog')->join_on(
+                            undef,
+                            {   id    => \'= permission_blog_id',
+                                class => 'blog',
+                                $app->blog
+                                ? ( parent_id => $app->blog->id )
+                                : (),
+                            },
+                        ),
+                    };
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter( $terms, $args );
+
+                    my $cond = 0;
+                    while ( my $p = $iter->() ) {
+                        $cond = 0, last
+                            if !$p->can_do('delete_blog');
+                        $cond++;
+                    }
+
+                    if ($cond) {
+                        my $has_system_edit_tmpl = MT::Permission->count(
+                            {   author_id   => $app->user->id,
+                                blog_id     => 0,
+                                permissions => { like => "'edit_templates'" },
+                            }
+                        );
+                        if ($has_system_edit_tmpl) {
+                            return $cond == MT::Blog->count(
+                                $app->blog
+                                ? { parent_id => $app->blog->id }
+                                : undef
+                            );
+                        }
+                    }
+
+                    return $cond;
                 },
             },
         },
@@ -1432,7 +1472,6 @@ sub core_list_actions {
                 },
                 permit_action => {
                     permit_action => 'refresh_template_via_list',
-                    include_all   => 1,
                     system_action => 'refresh_template_via_list',
                 },
                 condition => sub {
@@ -1452,19 +1491,41 @@ sub core_list_actions {
                     return 0 if $app->mode eq 'view';
                     return 1 if $app->user->is_superuser;
 
-                    require MT::Permission;
-                    my $iter = MT::Permission->load_iter(
-                        {   author_id => $app->user->id,
-                            blog_id   => { not => 0 },
-                        }
-                    );
+                    my $terms = {
+                        author_id => $app->user->id,
+                        blog_id   => { not => 0 },
+                    };
+                    my $args = {
+                        join => MT->model('website')->join_on(
+                            undef,
+                            {   id    => \'= permission_blog_id',
+                                class => 'website',
+                            },
+                        ),
+                    };
 
-                    my $cond = 1;
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter( $terms, $args );
+
+                    my $cond = 0;
                     while ( my $p = $iter->() ) {
-                        next if $p->blog->is_blog;
                         $cond = 0, last
                             if !$p->can_do('delete_website');
+                        $cond++;
                     }
+
+                    if ($cond) {
+                        my $has_system_edit_tmpl = MT::Permission->count(
+                            {   author_id   => $app->user->id,
+                                blog_id     => 0,
+                                permissions => { like => "'edit_templates'" },
+                            }
+                        );
+                        if ($has_system_edit_tmpl) {
+                            return $cond == MT::Website->count();
+                        }
+                    }
+
                     return $cond;
                 },
             },

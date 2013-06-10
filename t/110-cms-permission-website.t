@@ -4,13 +4,16 @@ use strict;
 use warnings;
 
 BEGIN {
+    use Test::More;
+    eval { require Test::MockModule }
+        or plan skip_all => 'Test::MockModule is not installed';
+
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
 use lib 't/lib', 'lib', 'extlib';
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
-use Test::More;
 
 ### Make test data
 
@@ -77,6 +80,22 @@ my $shiki = MT::Test::Permission->make_author(
     name     => 'shiki',
     nickname => 'Jiro Shiki',
 );
+my $suda = MT::Test::Permission->make_author(
+    name     => 'suda',
+    nickname => 'Saburo Suda',
+);
+my $seta = MT::Test::Permission->make_author(
+    name     => 'seta',
+    nickname => 'Shiro Seta',
+);
+my $sorimachi = MT::Test::Permission->make_author(
+    name     => 'sorimachi',
+    nickname => 'Goro Sorimachi',
+);
+my $tada = MT::Test::Permission->make_author(
+    name     => 'tada',
+    nickname => 'Ichiro Tada',
+);
 
 my $admin = MT::Author->load(1);
 
@@ -91,6 +110,8 @@ my $edit_templates = MT::Test::Permission->make_role(
 );
 my $website_admin
     = MT::Role->load( { name => MT->translate('Website Administrator') } );
+my $blog_admin
+    = MT::Role->load( { name => MT->translate('Blog Administrator') } );
 my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;
@@ -100,8 +121,15 @@ MT::Association->link( $ichikawa => $designer      => $blog );
 MT::Association->link( $egawa    => $website_admin => $second_website );
 MT::Association->link( $ogawa    => $edit_config   => $website );
 MT::Association->link( $kagawa   => $edit_config   => $second_website );
-MT::Association->link( $koishikawa, $edit_config, $blog );
-MT::Association->link( $sagawa,     $edit_config, $second_blog );
+MT::Association->link( $koishikawa, $edit_config,   $blog );
+MT::Association->link( $sagawa,     $edit_config,   $second_blog );
+MT::Association->link( $suda,       $blog_admin,    $blog );
+MT::Association->link( $seta,       $website_admin, $website );
+MT::Association->link( $tada,       $website_admin, $website );
+
+foreach my $w ( MT::Website->load() ) {
+    MT::Association->link( $sorimachi, $website_admin, $w );
+}
 
 MT::Association->link( $kikkawa  => $edit_templates => $website );
 MT::Association->link( $kumekawa => $edit_templates => $second_website );
@@ -117,6 +145,29 @@ $p = MT::Permission->new;
 $p->blog_id(0);
 $p->author_id( $kemikawa->id );
 $p->permissions("'edit_templates'");
+$p->save;
+
+$p = MT::Permission->new;
+$p->blog_id(0);
+$p->author_id( $suda->id );
+$p->permissions("'edit_templates'");
+$p->save;
+
+$p = MT::Permission->new;
+$p->blog_id(0);
+$p->author_id( $seta->id );
+$p->permissions("'edit_templates'");
+$p->save;
+
+$p = MT::Permission->new;
+$p->blog_id(0);
+$p->author_id( $sorimachi->id );
+$p->permissions("'edit_templates'");
+$p->save;
+
+$p = MT::Permission->new;
+$p->blog_id(0);
+$p->author_id( $tada->id );
 $p->save;
 
 # Run
@@ -235,6 +286,87 @@ subtest 'mode = list' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
+        {   __test_user      => $kemikawa,
+            __request_method => 'POST',
+            __mode           => 'list',
+            _type            => 'website',
+            blog_id          => 0,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                "Request: list" );
+    ok( _is_not_error($out), "list by permitted user (system)" );
+    my $button = quotemeta '<a href="#delete" class="button">Delete</a>';
+    unlike( $out, qr/$button/, 'There is not "Delete" button.' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $suda,
+            __request_method => 'POST',
+            __mode           => 'list',
+            _type            => 'website',
+            blog_id          => 0,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: list" );
+    ok( _is_not_error($out),
+        "list by permitted user (system) with blog administrator permission"
+    );
+    unlike( $out, qr/$button/, 'There is not "Delete" button.' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $seta,
+            __request_method => 'POST',
+            __mode           => 'list',
+            _type            => 'website',
+            blog_id          => 0,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: list" );
+    ok( _is_not_error($out),
+        "list by permitted user (system) with website administrator permission"
+    );
+    unlike( $out, qr/$button/, 'There is not "Delete" button.' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $tada,
+            __request_method => 'POST',
+            __mode           => 'list',
+            _type            => 'website',
+            blog_id          => 0,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: list" );
+    ok( _is_not_error($out),
+        "list by permitted user with an empry system permission record." );
+    like( $out, qr/$button/, 'There is "Delete" button.' );
+    my $refresh_tmpl = quotemeta
+        '<option value="refresh_website_templates">Refresh Template(s)</option>';
+    like( $out, qr/$refresh_tmpl/, 'There is "Refresh Template(s)" action.' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $sorimachi,
+            __request_method => 'POST',
+            __mode           => 'list',
+            _type            => 'website',
+            blog_id          => 0,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: list" );
+    ok( _is_not_error($out),
+        "list by permitted user (system) with all website administrator permission"
+    );
+    like( $out, qr/$button/, 'There is "Delete" button.' );
+
+    $app = _run_app(
+        'MT::App::CMS',
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
             __mode           => 'list',
@@ -248,6 +380,13 @@ subtest 'mode = list' => sub {
 };
 
 subtest 'mode = save (new)' => sub {
+    my %cookies;
+    my $module = Test::MockModule->new('MT::App::CMS');
+    $module->mock( 'cookies', sub { wantarray ? %cookies : \%cookies } );
+
+    my $args = $app->start_session($admin);
+    %cookies = ( $app->user_cookie() => CGI::Cookie->new(%$args) );
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -255,11 +394,15 @@ subtest 'mode = save (new)' => sub {
             __mode           => 'save',
             _type            => 'website',
             name             => 'websiteName',
+            website_theme    => 'classic_website',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out,                "Request: save" );
     ok( _is_not_error($out), "save (new) by admin" );
+
+    $args = $app->start_session($ukawa);
+    %cookies = ( $app->user_cookie() => CGI::Cookie->new(%$args) );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -268,11 +411,15 @@ subtest 'mode = save (new)' => sub {
             __mode           => 'save',
             _type            => 'website',
             name             => 'WebsiteName',
+            website_theme    => 'classic_website',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out,                "Request: save" );
     ok( _is_not_error($out), "save (new) by permitted user" );
+
+    $args = $app->start_session($ukawa);
+    %cookies = ( $app->user_cookie() => CGI::Cookie->new(%$args) );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -281,6 +428,7 @@ subtest 'mode = save (new)' => sub {
             __mode           => 'save',
             _type            => 'website',
             name             => 'WebsiteName',
+            website_theme    => 'classic_website',
         }
     );
     $out = delete $app->{__test_output};
