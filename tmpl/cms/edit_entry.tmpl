@@ -245,6 +245,7 @@
   <input type="hidden" name="action_name" value="" />
   <input type="hidden" name="itemset_action_input" value="" />
   <input type="hidden" name="dirty" value="" />
+  <input type="hidden" name="old_status" id="old_status" value="<mt:var name="status">" />
 <mt:if name="use_revision">
   <input type="hidden" name="save_revision" id="save_revision" value="1" />
 </mt:if>
@@ -1326,6 +1327,7 @@
 
     jQuery('select#status').change(function() {
         setSaveButtonText();
+        clearUnpublishDate();
     });
     function setSaveButtonText () {
         var selectedStatus = jQuery('select#status').val();
@@ -1338,6 +1340,14 @@
         } else {
             jQuery('button.publish').text('<mt:var name="draft_button_text">');
             jQuery('button.publish').attr('title', '<mt:var name="draft_button_title">');
+        }
+    }
+    function clearUnpublishDate () {
+        var oldStatus = jQuery('input#old_status').val();
+        if (oldStatus == 6) {
+            jQuery('input#unpublished-on-date').val('');
+            jQuery('input#unpublished-on-time').val('');
+            jQuery('span.unpublished-on-text').text('Not specified');
         }
     }
     setSaveButtonText();

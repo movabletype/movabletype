@@ -1943,9 +1943,15 @@ sub publish_future_posts {
         foreach my $entry_id (@queue) {
             my $entry = MT::Entry->load($entry_id)
                 or next;
+            my $original = $entry->clone();
             $entry->status( MT::Entry::RELEASE() );
+            my @ts = MT::Util::offset_time_list( time, $entry->blog_id );
+            my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+                $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            $entry->modified_on($ts);
             $entry->save
                 or die $entry->errstr;
+            $this->post_scheduled( $entry, $original );
 
             MT->run_callbacks( 'scheduled_post_published', $mt, $entry );
 
@@ -2043,10 +2049,16 @@ sub unpublish_past_entries {
         foreach my $entry_id (@queue) {
             my $entry = MT::Entry->load($entry_id)
                 or next;
+            my $original = $entry->clone();
 
             $entry->status( MT::Entry::UNPUBLISH() );
+            my @ts = MT::Util::offset_time_list( time, $entry->blog_id );
+            my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+                $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            $entry->modified_on($ts);
             $entry->save
                 or die $entry->errstr;
+            $app->post_scheduled( $entry, $original );
 
             # remove file
             if ( $mt->config('DeleteFilesAtRebuild') ) {
@@ -2386,6 +2398,35 @@ sub queue_build_file_filter {
     MT::TheSchwartz->insert($job);
 
     return 0;
+}
+
+sub post_scheduled {
+    my $app = shift;
+    my ( $obj, $orig ) = @_;
+
+    $obj->gather_changed_cols( $orig, $app );
+
+    if ( exists $obj->{changed_revisioned_cols} ) {
+        my $col = 'max_revisions_' . $obj->datasource;
+        if ( my $blog = $obj->blog ) {
+            my $max = $blog->$col;
+            $obj->handle_max_revisions($max);
+        }
+        my $revision = $obj->save_revision( MT->translate('Scheduled.') );
+        $obj->current_revision($revision);
+
+        # call update to bypass instance save method
+        $obj->update or return $obj->error( $obj->errstr );
+        if ( $obj->has_meta('revision') ) {
+            $obj->revision($revision);
+
+            # hack to bypass instance save method
+            $obj->{__meta}->set_primary_keys($obj);
+            $obj->{__meta}->save;
+        }
+    }
+
+    return 1;
 }
 
 1;
