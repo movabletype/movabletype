@@ -657,10 +657,10 @@ DataAPI.prototype      = {
         }
         else {
             (function() {
-                var target = api.getNextIframeName();
-                var form   = document.createElement('form');
-                var iframe = document.createElement('iframe');
-                var file   = null;
+                var target = api.getNextIframeName(),
+                    form   = document.createElement('form'),
+                    iframe = document.createElement('iframe'),
+                    file, originalName;
 
                 // Set up a form element
                 form.action   = base + endpoint;
@@ -690,7 +690,9 @@ DataAPI.prototype      = {
 
                 for (k in params) {
                     if (api._isFileInputElement(params[k])) {
-                        file = params[k];
+                        file         = params[k];
+                        originalName = file.name;
+                        file.name    = k;
                         file.parentNode.insertBefore(form, file);
                         form.appendChild(file);
                         continue;
@@ -713,6 +715,7 @@ DataAPI.prototype      = {
 
                     function cleanup() {
                         setTimeout(function() {
+                            file.name = originalName;
                             form.parentNode.insertBefore(file, form);
                             form.parentNode.removeChild(form);
                             iframe.parentNode.removeChild(iframe);
