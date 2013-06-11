@@ -6,39 +6,35 @@
 
 <mtapp:settinggroup id="google-analytics-settings">
 
+<mt:SetVarBlock name="hint"><__trans phrase="Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://code.google.com/apis/console" target="_blank">Google APIs Console</a> before selecting profile." /></mt:SetVarBlock>
 <mtapp:setting
    id="ga_redirect_uri"
-   label="<__trans phrase="The redirect URI of the OAuth2 application">"
-   show_hint="0">
-    <input type="text" id="ga_redirect_uri" readonly="readonly" value="<mt:Var name="redirect_uri" encode_html="1" />" />
+   label="<__trans phrase="Redirect URI of the OAuth2 application">"
+   hint="$hint"
+   show_hint="1">
+    <span id="ga_redirect_uri_text"></span>
+    <input type="hidden" id="ga_redirect_uri" value="<mt:Var name="redirect_uri" encode_html="1" />" />
 </mtapp:setting>
 
 <mtapp:setting
    id="ga_client_id"
-   label="<__trans phrase="The client ID of the OAuth2 application">"
+   label="<__trans phrase="Client ID of the OAuth2 application">"
    show_hint="0">
     <input type="text" id="ga_client_id" name="ga_client_id" value="<mt:Var name="ga_client_id" encode_html="1" />" />
 </mtapp:setting>
 
 <mtapp:setting
    id="client_secret"
-   label="<__trans phrase="The client secret of the OAuth2 application">"
+   label="<__trans phrase="Client secret of the OAuth2 application">"
    show_hint="0">
     <input type="text" id="ga_client_secret" name="ga_client_secret" value="<mt:Var name="ga_client_secret" encode_html="1" />" />
 </mtapp:setting>
 
 <mtapp:setting
-   id="ga_profile_name"
-   label="<__trans phrase="The name of the profile">"
+   id="ga_profile"
+   label="<__trans phrase="Google Analytics profile">"
    show_hint="0">
-   <input type="text" id="ga_profile_name" name="ga_profile_name" readonly="readonly" value="<mt:Var name="ga_profile_name" encode_html="1" />" />
-</mtapp:setting>
-
-<mtapp:setting
-   id="ga_profile_web_property_id"
-   label="<__trans phrase="The web property ID of the profile">"
-   show_hint="0">
-    <input type="text" id="ga_profile_web_property_id" name="ga_profile_web_property_id" readonly="readonly" value="<mt:Var name="ga_profile_web_property_id" encode_html="1" />" />
+    <span id="ga_profile" class="items"></span>
 </mtapp:setting>
 
 <input type="hidden" id="ga_profile_id" name="ga_profile_id" value="<mt:Var name="ga_profile_id" encode_html="1" />" />
@@ -47,13 +43,14 @@
    id="ga_select_profile"
    label=""
    show_hint="0">
-    <a href="#" id="ga_select_profile"><__trans phrase="Associate profile" /></a>
-    <a href="#" id="ga_clear_profile"><__trans phrase="Clear profile" /></a>
+    <a href="#" id="ga_select_profile"><__trans phrase="Select google analytics profile" /></a>
 </mtapp:setting>
 
 <input type="hidden" id="ga_dialog_url" value="<mt:Var name="dialog_url" encode_html="1" />" />
 <input type="hidden" id="ga_configured_client_id" value="<mt:Var name="configured_client_id" encode_html="1" />" />
 <input type="hidden" id="ga_configured_client_secret" value="<mt:Var name="configured_client_secret" encode_html="1" />" />
+<input type="hidden" id="ga_profile_name" name="ga_profile_name" value="<mt:Var name="ga_profile_name" encode_html="1" />" />
+<input type="hidden" id="ga_profile_web_property_id" name="ga_profile_web_property_id" value="<mt:Var name="ga_profile_web_property_id" encode_html="1" />" />
 <script type="text/javascript">
 jQuery(function($) {
     var redirectUri = $('#ga_redirect_uri').val();
@@ -61,7 +58,35 @@ jQuery(function($) {
         redirectUri =
             redirectUri.replace(/^\/?/, location.protocol + '//' + location.host + '/');
         $('#ga_redirect_uri').val(redirectUri);
+        $('#ga_redirect_uri_text').text(redirectUri);
     }
+
+
+    function updateProfile() {
+        var $profile = $('#ga_profile');
+        var $name    = $('#ga_profile_name');
+
+        $profile.empty();
+        if ($name.val() == '') {
+            $profile.text('<__trans phrase="(No profile selected)" encode_js="1">');
+        }
+        else {
+            var $label = $('<span class="sticky-label selected-item" />');
+            $label.append($('<span />').text(
+                $name.val() + ' (' + $('#ga_profile_web_property_id').val() + ')'
+            ));
+            $label.append('&nbsp;<span class="remove clickable">x</span></span>');
+            $label.find('span.remove').click(function() {
+                $('#ga_profile_name, #ga_profile_web_property_id, #ga_profile_id')
+                    .val('');
+                updateProfile();
+            });
+            $profile.append($label);
+        }
+    }
+    updateProfile();
+    $(window).on('dialogDisposed', updateProfile);
+
 
     $('#ga_client_id, #ga_client_secret')
         .on('input click keyup change', function() {
