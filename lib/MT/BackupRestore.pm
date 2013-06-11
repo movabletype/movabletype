@@ -1548,6 +1548,24 @@ sub parents {
 
 package MT::Template;
 
+sub backup_terms_args {
+    my $class = shift;
+    my ($blog_ids) = @_;
+
+    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
+        return {
+            terms => { 'id' => $blog_ids },
+            args  => { sort => 'type' },
+        };
+    }
+    else {
+        return {
+            terms => undef,
+            args  => { sort => 'type' },
+        };
+    }
+}
+
 sub parents {
     my $obj = shift;
     { blog_id => [ MT->model('blog'), MT->model('website') ], };
