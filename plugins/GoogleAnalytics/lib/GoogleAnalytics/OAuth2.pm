@@ -18,6 +18,8 @@ sub authorize_url {
         client_id     => $client_id,
         redirect_uri  => $redirect_uri,
         scope         => 'https://www.googleapis.com/auth/analytics.readonly',
+        access_type   => 'offline',
+        approval_prompt => 'force',
     );
 
     $uri->as_string;
