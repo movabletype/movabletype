@@ -1466,7 +1466,10 @@ ChartAPI.Graph.easel.Base.prototype.motionLine = function (data, config) {
     lineWidth = parseInt(config.lineWidth, 10) || 8,
     yLength = config.yLength || 1,
     lineColors = config.lineColors || config.chartColors || ChartAPI.Graph.getCachedChartColors(config.id, null, config.chartColorsMethod),
-    lineColorsAlpha = this.config.chartColorsAlpha || [null],
+    lineColorsAlpha = config.chartColorsAlpha || [null],
+    pointerColors = config.pointerColors || config.chartColors || ChartAPI.Graph.getCachedChartColors(config.id, null, config.chartColorsMethod),
+    pointerColorsAlpha = config.pointerColorsAlpha || [null],
+    pointerRadius = config.pointerRadius || 10,
     paddingTop = lineWidth / 2,
     count = (length - 1) * 2,
     moveX = Math.floor(this.width / length) / 2,
@@ -1518,7 +1521,9 @@ ChartAPI.Graph.easel.Base.prototype.motionLine = function (data, config) {
     shapes = [],
     lines = [],
     x = paddingLeft,
-    y;
+    y,
+    circles = [],
+    pointerColor;
 
   for (i = 0; i < yLength; i++) {
     lineColor = this.convertColor(lineColors[i], lineColorsAlpha[i]);
@@ -1527,6 +1532,12 @@ ChartAPI.Graph.easel.Base.prototype.motionLine = function (data, config) {
     y = height - moveYs[i][0];
     lines[i].setStrokeStyle(lineWidth).beginStroke(lineColor).moveTo(x, y);
     this.stage.addChild(shapes[i]);
+    if (config.drawPointer) {
+      pointerColor = this.convertColor(pointerColors[i], pointerColorsAlpha[i]);
+      circles[i] = new createjs.Shape();
+      circles[i].graphics.beginFill(pointerColor).drawCircle(0, 0, pointerRadius);
+      this.stage.addChild(circles[i]);
+    }
   }
 
   var stage = this.stage;
@@ -1545,6 +1556,10 @@ ChartAPI.Graph.easel.Base.prototype.motionLine = function (data, config) {
       moveY = moveYs[i];
       y = height - moveY[moveY.length - count - 1];
       lines[i].lineTo(x, y);
+      if (config.drawPointer) {
+        circles[i].x = x;
+        circles[i].y = Math.max(y, pointerRadius);
+      }
     }
 
     stage.update(e);
