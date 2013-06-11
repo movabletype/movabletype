@@ -850,7 +850,7 @@ ChartAPI.Graph.prototype.generateLabel = function (template) {
     if (template && typeof template === 'function') {
       template = template(data);
       finalize();
-    } else if (_) {
+    } else if (window._) {
       template = _.template(template, data);
       finalize();
     } else {
