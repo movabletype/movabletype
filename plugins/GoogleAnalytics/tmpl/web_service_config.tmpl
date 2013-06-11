@@ -53,6 +53,7 @@
 
 <input type="hidden" id="ga_dialog_url" value="<mt:Var name="dialog_url" encode_html="1" />" />
 <input type="hidden" id="ga_configured_client_id" value="<mt:Var name="configured_client_id" encode_html="1" />" />
+<input type="hidden" id="ga_configured_client_secret" value="<mt:Var name="configured_client_secret" encode_html="1" />" />
 <script type="text/javascript">
 jQuery(function($) {
     var redirectUri = $('#ga_redirect_uri').val();
@@ -103,22 +104,15 @@ jQuery(function($) {
         return false;
     });
 
-    function updateClearProfileAnchor() {
-        if ($('#ga_profile_id').val()) {
-            $('#ga_clear_profile').show();
+    $($('#ga_client_id').get(0).form).on('submit', function() {
+        var clientId     = $('#ga_client_id').val();
+        var clientSecret = $('#ga_client_secret').val();
+        if (
+            (clientId && clientId !== $('#ga_configured_client_id').val()) ||
+            (clientSecret && clientSecret !== $('#ga_configured_client_secret').val())
+        ) {
+            return window.confirm('<__trans phrase="Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these informations?" encode_html="1">');
         }
-        else {
-            $('#ga_clear_profile').hide();
-        }
-    }
-    updateClearProfileAnchor();
-    $(window).on('dialogDisposed', updateClearProfileAnchor);
-
-
-    $('#ga_clear_profile').click(function() {
-        $('#ga_profile_name, #ga_profile_web_property_id, #ga_profile_id').val('');
-        updateClearProfileAnchor();
-        return false;
     });
 });
 </script>

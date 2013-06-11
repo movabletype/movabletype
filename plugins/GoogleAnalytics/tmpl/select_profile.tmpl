@@ -32,6 +32,8 @@ jQuery(function($) {
 
             $p($p.find('#ga_configured_client_id'))
                 .val($p($p.find('#ga_client_id')).val());
+            $p($p.find('#ga_configured_client_secret'))
+                .val($p($p.find('#ga_client_secret')).val());
         }
         window.location.href = '<mt:Var name="complete_url" encode_js="1" />';
     });

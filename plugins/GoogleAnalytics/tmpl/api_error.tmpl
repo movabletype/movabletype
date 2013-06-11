@@ -23,6 +23,7 @@ jQuery(function($) {
     var $p = parent.jQuery;
 <mt:If name="retry">
     $p($p.find('#ga_configured_client_id')).val('');
+    $p($p.find('#ga_configured_client_secret')).val('');
     $p($p.find('#ga_select_profile')).click();
     $p.fn.mtDialog.close();
 </mt:If>

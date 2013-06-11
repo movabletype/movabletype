@@ -57,9 +57,10 @@ sub config_tmpl {
                 mode => 'ga_select_profile',
                 args => { blog_id => $app->blog->id, },
             ),
-            redirect_uri         => $app->uri( mode => 'ga_oauth2callback' ),
-            configured_client_id => $configured
-            ? $config->{client_id}
+            redirect_uri => $app->uri( mode => 'ga_oauth2callback' ),
+            configured_client_id => $configured ? $config->{client_id}
+            : '',
+            configured_client_secret => $configured ? $config->{client_secret}
             : '',
         }
     )->build;
