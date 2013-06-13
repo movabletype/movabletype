@@ -694,7 +694,12 @@ DataAPI.prototype      = {
                         file         = params[k];
                         originalName = file.name;
                         file.name    = k;
-                        file.parentNode.insertBefore(form, file);
+                        if (file.parentNode) {
+                            file.parentNode.insertBefore(form, file);
+                        }
+                        else {
+                            document.body.appendChild(form);
+                        }
                         form.appendChild(file);
                         continue;
                     }
@@ -717,9 +722,13 @@ DataAPI.prototype      = {
                     function cleanup() {
                         setTimeout(function() {
                             file.name = originalName;
-                            form.parentNode.insertBefore(file, form);
-                            form.parentNode.removeChild(form);
-                            iframe.parentNode.removeChild(iframe);
+                            if (form.parentNode) {
+                                form.parentNode.insertBefore(file, form);
+                                form.parentNode.removeChild(form);
+                            }
+                            if (iframe.parentNode) {
+                                iframe.parentNode.removeChild(iframe);
+                            }
                         });
                     }
 
