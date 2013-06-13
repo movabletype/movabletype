@@ -198,6 +198,7 @@ clean:
 	-rm -rf $(local_js)
 	-rm -rf mt-static/js/mt_core_compact.js
 	-rm -rf mt-static/js/editor.js
+	-rm -rf mt-static/data-api/v1/js/all.js
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
