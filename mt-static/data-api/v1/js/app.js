@@ -663,11 +663,12 @@ DataAPI.prototype      = {
                     file, originalName;
 
                 // Set up a form element
-                form.action   = base + endpoint;
-                form.target   = target;
-                form.method   = method;
-                form.encoding = 'multipart/form-data';
-                form.enctype  = 'multipart/form-data';
+                form.action        = base + endpoint;
+                form.target        = target;
+                form.method        = method;
+                form.style.display = 'inline';
+                form.encoding      = 'multipart/form-data';
+                form.enctype       = 'multipart/form-data';
 
                 // Set up a iframe element
                 iframe.name           = target;
