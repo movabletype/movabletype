@@ -1,0 +1,40 @@
+{
+  "name": "mt-chart-api",
+  "description": "chart api for MT",
+  "version": "0.1.0",
+  "homepage": "",
+  "author": {
+    "name": "Yutaka Yamaguchi",
+    "email": "yyamaguchi@sixapart.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": {
+    "url": ""
+  },
+  "licenses": [
+    {
+      "type": "",
+      "url": ""
+    }
+  ],
+  "main": "lib/chart-api",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "devDependencies": {
+    "grunt-contrib-concat": "~0.1.2",
+    "grunt-contrib-uglify": "~0.1.1",
+    "grunt-contrib-jshint": "~0.1.1",
+    "grunt-contrib-watch": "~0.2.0",
+    "grunt": "~0.4.1",
+    "matchdep": "~0.1.2",
+    "grunt-preprocess": "~2.3.0",
+    "grunt-contrib-cssmin": "~0.6.0",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-copy": "~0.4.1"
+  },
+  "keywords": []
+}
