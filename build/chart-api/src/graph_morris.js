@@ -71,6 +71,7 @@ ChartAPI.Graph.morris.Base.prototype.build_ = function (Morris, data, config, ra
     gridTextColor: '#888',
     gridTextSize: 12,
     hideHover: false,
+    hoverCallback: null,
     yLabelFormat: null,
     numLines: 5,
     padding: 25,

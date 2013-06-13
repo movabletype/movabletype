@@ -21,6 +21,22 @@
   </div>
   <div id="my-graph-build"></div>
   <script>
+    new MT.ChartAPI.Graph({
+      "type": "morris.line",
+      "label": {
+        "template": "data/graph_label.template"
+      },
+      "data": "data/graph_data.json",
+      "yLength": 2,
+      "autoSized": true,
+      "lineWidth": 6,
+      "pointSize": 6,
+      hoverCallback:function (index, options, content) {
+        var row = options.data[index];
+        return "sin(" + row.x + ") = " + row.y;
+      }
+    }).trigger('APPEND_TO',[jQuery('#morris')]);
+
     jQuery.getJSON('data/settings_morris.json',function(settings){
         new MT.ChartAPI.Graph(settings.graph, settings.range).trigger('APPEND_TO',[jQuery('#morris')]);
       }
