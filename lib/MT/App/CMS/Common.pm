@@ -168,7 +168,6 @@ sub init_core_callbacks {
 
             # blog callbacks
             $pkg . 'edit.blog'                   => "${pfx}Blog::edit",
-            $pkg . 'view_permission_filter.blog' => "${pfx}Blog::can_view",
             $pkg . 'save_permission_filter.blog' => "${pfx}Blog::can_save",
             $pkg
                 . 'delete_permission_filter.blog' => "${pfx}Blog::can_delete",

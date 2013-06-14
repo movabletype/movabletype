@@ -493,6 +493,9 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.ping' =>
                 "${pfx}TrackBack::cms_pre_load_filtered_list",
+
+            # blog callbacks
+            $pkg . 'view_permission_filter.blog' => "${pfx}Blog::can_view",
         }
     );
 
