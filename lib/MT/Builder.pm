@@ -197,7 +197,7 @@ sub compile {
         if ($is_container) {
             if ( $whole_tag !~ m|/>$| ) {
                 my ( $sec_end, $tag_end )
-                    = _consume_up_to( $ctx, \$text, $sec_start, $tag );
+                    = _consume_up_to( $ctx, \$text, $sec_start, lc($tag) );
                 if ($sec_end) {
                     my $sec = $tag =~ m/ignore/i
                         ? ''    # ignore MTIgnore blocks
@@ -328,18 +328,27 @@ sub _consume_up_to {
     my ( $ctx, $text, $start, $stoptag ) = @_;
     my $whole_tag;
     ( pos $$text ) = $start;
-    while ( $$text =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:<[^>]+?>|[^>])*?[\$/]?>)!gi ) {
+    while (
+        $$text =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:<[^>]+?>|[^>])*?[\$/]?>)!gi )
+    {
         $whole_tag = $1;
-        my ( $prefix, $tag ) = ( $2, $3 );
+        my ( $prefix, $tag ) = ( $2, lc($3) );
 
-        # not a container tag
-        my $hdlr = $ctx->handler_for($tag);
-        next if !( $hdlr && $hdlr->type );
+        if ( $stoptag eq 'ignore' ) {
+
+            # check only ignore tag when searching close ignore tag.
+            next if $tag ne 'ignore';
+        }
+        else {
+            # check only container tag.
+            my $hdlr = $ctx->handler_for($tag);
+            next if !( $hdlr && $hdlr->type );
+        }
 
         my $end = pos $$text;
         if ( $prefix && ( $prefix eq '/' ) ) {
             return ( $end - length($whole_tag), $end )
-                if lc($tag) eq lc($stoptag);
+                if $tag eq $stoptag;
             last;
         }
         elsif ( $whole_tag !~ m|/>\z| ) {
@@ -351,7 +360,7 @@ sub _consume_up_to {
     }
 
     # special case for unclosed 'else' tag:
-    if ( lc($stoptag) eq 'else' || lc($stoptag) eq 'elseif' ) {
+    if ( $stoptag eq 'else' || $stoptag eq 'elseif' ) {
         my $pos
             = pos($$text)
             ? pos($$text) - length($whole_tag)
