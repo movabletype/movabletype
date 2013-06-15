@@ -19,10 +19,11 @@ sub list {
     my $res = filtered_list(
         $app, $endpoint, 'blog', { class => '*' },
         undef, { user => $user }
-    );
+    ) or return;
 
     +{  totalResults => $res->{count},
-        items        => $res->{objects},
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
 }
 

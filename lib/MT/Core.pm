@@ -1214,6 +1214,7 @@ BEGIN {
                     require MT::CMS::Blog;
                     return MT::CMS::Blog::can_view_blog_list( MT->instance );
                 },
+                data_api_condition => undef,
             },
             entry => {
                 object_label        => 'Entry',

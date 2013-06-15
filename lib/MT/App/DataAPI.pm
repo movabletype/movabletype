@@ -109,6 +109,7 @@ sub core_endpoints {
                 403 =>
                     'Do not have permission to retrieve the list of blogs.',
             },
+            requires_login => 0,
         },
         {   id             => 'get_blog',
             route          => '/sites/:blog_id',

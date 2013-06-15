@@ -166,7 +166,12 @@ sub filtered_list {
     my $setting = MT->registry( listing_screens => $ds )
         or return $app->error( $app->translate('Unknown list type'), 400 );
 
-    if ( my $cond = $setting->{condition} ) {
+    if (exists $setting->{data_api_condition}
+        ? defined $setting->{data_api_condition}
+        : defined $setting->{condition}
+        )
+    {
+        my $cond = $setting->{data_api_condition} || $setting->{condition};
         $cond = MT->handler_to_coderef($cond)
             if 'CODE' ne ref $cond;
         $app->error();
@@ -178,15 +183,6 @@ sub filtered_list {
         }
     }
 
-    # Validate scope
-    if ( my $view = $setting->{view} ) {
-        $view = [$view] unless ref $view;
-        my %view = map { $_ => 1 } @$view;
-        if ( !$view{$scope} ) {
-            return $app->return_to_dashboard( redirect => 1, );
-        }
-    }
-
     # Permission check
     if ((   exists $setting->{data_api_permission}
             ? defined $setting->{data_api_permission}
@@ -195,8 +191,9 @@ sub filtered_list {
         && !$app->user->is_superuser()
         )
     {
-        my $list_permission = $setting->{permission};
-        my $inherit_blogs   = 1;
+        my $list_permission
+            = $setting->{data_api_permission} || $setting->{permission};
+        my $inherit_blogs = 1;
         if ( 'HASH' eq ref $list_permission ) {
             $inherit_blogs = $list_permission->{inherit}
                 if defined $list_permission->{inherit};
