@@ -337,8 +337,17 @@ sub from_object {
     my ( $objs, $hashs, $f ) = @_;
     my $name = $f->{name};
     foreach my $h (@$hashs) {
-        $h->{$name} = MT::DataAPI::Resource->from_object( $h->{$name} )
-            if $h->{$name};
+        $h->{$name} = MT::DataAPI::Resource->from_object( $h->{$name}, $f->{fields} )
+            if defined $h->{$name};
+    }
+}
+
+sub to_object {
+    my ( $hashs, $objs, $f ) = @_;
+    my $name = $f->{alias} || $f->{name};
+    foreach my $o (@$objs) {
+        $o->$name( MT::DataAPI::Resource->to_object( $name, $o->$name ) )
+            if defined $o->$name;
     }
 }
 

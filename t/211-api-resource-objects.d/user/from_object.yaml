@@ -2,11 +2,17 @@
   note: An user
   from: 
     id: 1
+    name: test
+    email: test@example.com
+    url: http://test.example.com/
     nickname: Test
     userpic_asset_id: 1
   to: 
     id: 1
+    name: test
     displayName: Test
+    email: test@example.com
+    url: http://test.example.com/
     userpicURL: http://narnia.na/nana/assets_c/userpics/userpic-1-100x100.png
     language: en-us
     updatable: 1
@@ -14,11 +20,17 @@
   note: An user without userpic
   from: 
     id: 1
+    name: test
+    email: test@example.com
+    url: http://test.example.com/
     nickname: Test
     preferred_language: en-us
   to: 
-    displayName: Test
     id: 1
+    name: test
+    displayName: Test
+    email: test@example.com
+    url: http://test.example.com/
     userpicURL: ~
     language: en-us
     updatable: 1
@@ -26,11 +38,17 @@
   note: Language is ja
   from: 
     id: 1
+    name: test
+    email: test@example.com
+    url: http://test.example.com/
     nickname: Test
     preferred_language: ja
   to: 
-    displayName: Test
     id: 1
+    name: test
+    displayName: Test
+    email: test@example.com
+    url: http://test.example.com/
     userpicURL: ~
     language: ja
     updatable: 1

@@ -15,8 +15,6 @@
       id: 2
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
-      language: en-us
-      updatable: 1
     entry:
       id: 1
     blog:
@@ -45,8 +43,6 @@
       id: 2
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
-      language: en-us
-      updatable: 1
     entry:
       id: 1
     blog:
@@ -75,8 +71,6 @@
       id: 2
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
-      language: en-us
-      updatable: 1
     entry:
       id: 1
     blog:
@@ -106,8 +100,6 @@
       id: 2
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
-      language: en-us
-      updatable: 1
     entry:
       id: 1
     blog:
@@ -137,7 +129,6 @@
       id: ~
       displayName: Author name
       userpicURL: ~
-      language: ~
     entry:
       id: 1
     blog:

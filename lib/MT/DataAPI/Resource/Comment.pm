@@ -18,6 +18,11 @@ sub fields {
     [   {   name             => 'author',
             bulk_from_object => sub {
                 my ( $objs, $hashs ) = @_;
+
+                my $app          = MT->instance;
+                my $user         = $app->user;
+                my $is_superuser = $user->is_superuser;
+
                 my @commenter_ids = grep {$_} map { $_->commenter_id } @$objs;
                 my %authors = ();
                 my @authors
@@ -35,14 +40,14 @@ sub fields {
                         : undef;
                     if ($a) {
                         $hashs->[$i]{author}
-                            = MT::DataAPI::Resource->from_object($a);
+                            = MT::DataAPI::Resource->from_object( $a,
+                            [qw(id displayName userpicURL)] );
                     }
                     else {
                         $hashs->[$i]{author} = {
-                            id          => undef,
+                            ( $is_superuser ? ( id => undef ) : () ),
                             displayName => $c->author,
                             userpicURL  => undef,
-                            language    => undef,
                         };
                     }
                 }

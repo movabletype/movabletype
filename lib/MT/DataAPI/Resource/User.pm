@@ -4,14 +4,37 @@ use strict;
 use warnings;
 
 sub updatable_fields {
-    [qw(displayName)];
+    [qw(displayName email url)];
+}
+
+sub _private_bulk_from_object {
+    my ( $key, $column ) = @_;
+
+    sub {
+        my ( $objs, $hashs ) = @_;
+        my $app          = MT->instance;
+        my $user         = $app->user;
+        my $is_superuser = $user->is_superuser;
+        for ( my $i = 0; $i < scalar @$objs; $i++ ) {
+            my $obj = $objs->[$i];
+
+            $hashs->[$i]{$key} = $obj->$column
+                if $is_superuser || $user->id == $obj->id;
+        }
+    };
 }
 
 sub fields {
-    [   'id',
+    [   {   name             => 'id',
+            bulk_from_object => _private_bulk_from_object( 'id', 'id' ),
+        },
+        {   name             => 'name',
+            bulk_from_object => _private_bulk_from_object( 'name', 'name' ),
+        },
         {   name  => 'displayName',
             alias => 'nickname',
         },
+        'email', 'url',
         {   name                => 'userpicURL',
             alias               => 'userpic_url',
             from_object_default => undef,
@@ -33,15 +56,18 @@ sub fields {
             type             => 'MT::DataAPI::Resource::DataType::Boolean',
             bulk_from_object => sub {
                 my ( $objs, $hashs ) = @_;
-                my $app          = MT->instance;
-                my $user         = $app->user;
-                my $is_superuser = $user->is_superuser;
+                my $app  = MT->instance;
+                my $user = $app->user;
+
+                if ( $user->is_superuser ) {
+                    $_->{updatable} = 1 for @$hashs;
+                    return;
+                }
 
                 for ( my $i = 0; $i < scalar @$objs; $i++ ) {
                     my $obj = $objs->[$i];
 
-                    $hashs->[$i]{updatable}
-                        = $is_superuser || $user->id == $obj->id;
+                    $hashs->[$i]{updatable} = $user->id == $obj->id;
                 }
             },
         },

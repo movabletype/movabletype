@@ -32,6 +32,7 @@ sub updatable_fields {
 
 sub fields {
     [   {   name => 'author',
+            fields => [qw(id displayName userpicURL)],
             type => 'MT::DataAPI::Resource::DataType::Object',
         },
         {   name        => 'blog',

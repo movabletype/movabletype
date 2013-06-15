@@ -964,8 +964,9 @@ sub api {
         || UNIVERSAL::can( $response, 'to_resource' ) )
     {
         my $format   = $app->current_format;
+        my $fields   = $app->param('fields') || '';
         my $resource = $app->object_to_resource( $response,
-            [ split ',', ( $app->param('fields') || '' ) ] );
+            $fields ? [ split ',', $fields ] : undef );
         my $data = $format->{serialize}->($resource);
 
         if ( $app->requires_plain_text_result ) {
