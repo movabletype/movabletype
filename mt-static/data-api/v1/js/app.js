@@ -90,11 +90,11 @@ DataAPI.prototype      = {
             '&redirectUrl=' + redirectUrl;
     },
 
-    getCurrentEpoch: function() {
+    _getCurrentEpoch: function() {
         return Math.round(new Date().getTime() / 1000);
     },
 
-    getNextIframeName: function() {
+    _getNextIframeName: function() {
         return DataAPI.iframePrefix + ++this.iframeId;
     },
 
@@ -106,14 +106,14 @@ DataAPI.prototype      = {
         return DataAPI.accessTokenKey + '_' + this.o.clientId;
     },
     
-    storeToken: function(tokenData) {
+    _storeToken: function(tokenData) {
         var o = this.o;
-        tokenData.start_time = this.getCurrentEpoch();
+        tokenData.start_time = this._getCurrentEpoch();
         Cookie.bake(this.getAppKey(), JSON.stringify(tokenData), o.cookieDomain, o.cookiePath);
         this.tokenData = null;
     },
     
-    updateTokenFromDefault: function() {
+    _updateTokenFromDefault: function() {
         var defaultKey    = DataAPI.accessTokenKey,
             defaultCookie = Cookie.fetch(defaultKey);
         if (! defaultCookie) {
@@ -127,7 +127,7 @@ DataAPI.prototype      = {
             return null;
         }
         
-        this.storeToken(defaultToken);
+        this._storeToken(defaultToken);
         Cookie.bake(defaultKey, '', undefined, '/', new Date(0));
         return defaultToken;
     },
@@ -139,7 +139,7 @@ DataAPI.prototype      = {
             
             if (window.location.hash === '#_login') {
                 try {
-                    token = this.updateTokenFromDefault();
+                    token = this._updateTokenFromDefault();
                 }
                 catch (e) {
                 }
@@ -153,7 +153,7 @@ DataAPI.prototype      = {
                 }
             }
 
-            if (token && (token.start_time + token.expiresIn < this.getCurrentEpoch())) {
+            if (token && (token.start_time + token.expiresIn < this._getCurrentEpoch())) {
                 Cookie.bake(this.getAppKey(), '', o.cookieDomain, o.cookiePath, new Date(0));
                 token = null;
             }
@@ -206,7 +206,7 @@ DataAPI.prototype      = {
         return this._isInputElement(e) && e.type.toLowerCase() === 'file';
     },
 
-    serializeObject: function(v) {
+    _serializeObject: function(v) {
         function f(n) {
             return n < 10 ? '0' + n : n;
         }
@@ -236,7 +236,7 @@ DataAPI.prototype      = {
         }
 
         if (this._isFormElement(v)) {
-            v = this.serializeFormElement(v);
+            v = this._serializeFormElementToObject(v);
         }
 
         var type = typeof v;
@@ -265,7 +265,7 @@ DataAPI.prototype      = {
         }
     },
 
-    serialize: function(params) {
+    _serializeParams: function(params) {
         if (! params) {
             return params;
         }
@@ -273,7 +273,7 @@ DataAPI.prototype      = {
             return params;
         }
         if (this._isFormElement(params)) {
-            params = this.serializeFormElement(params);
+            params = this._serializeFormElementToObject(params);
         }
         
         var str = '';
@@ -288,7 +288,7 @@ DataAPI.prototype      = {
 
             str +=
                 encodeURIComponent(k) + '=' +
-                encodeURIComponent(this.serializeObject(params[k]));
+                encodeURIComponent(this._serializeObject(params[k]));
         }
         return str;
     },
@@ -342,7 +342,7 @@ DataAPI.prototype      = {
                 }
             }
             else {
-                defaultParams = this.serialize(defaultParams);
+                defaultParams = this._serializeParams(defaultParams);
                 if (method.toLowerCase() === 'get') {
                     url += (url.indexOf('?') === -1 ? '?' : '&') + defaultParams;
                 }
@@ -367,7 +367,7 @@ DataAPI.prototype      = {
         return xhr;
     },
 
-    serializeFormElement: function(form) {
+    _serializeFormElementToObject: function(form) {
         var submitterTypes = /^(?:submit|button|image|reset)$/i,
             submittable    = /^(?:input|select|textarea|keygen)/i,
             checkableTypes = /^(?:checkbox|radio)$/i;
@@ -485,7 +485,7 @@ DataAPI.prototype      = {
                 else if (window.FormData && typeof params === 'object') {
                     var data = new FormData();
                     for (k in params) {
-                        data.append(k, api.serializeObject(params[k]));
+                        data.append(k, api._serializeObject(params[k]));
                     }
                     return data;
                 }
@@ -493,7 +493,7 @@ DataAPI.prototype      = {
 
 
             if (api._isFormElement(params)) {
-                params = api.serializeFormElement(params);
+                params = api._serializeFormElementToObject(params);
                 for (k in params) {
                     if (params[k] instanceof Array) {
                         params[k] = params[k].join(',');
@@ -510,13 +510,13 @@ DataAPI.prototype      = {
                         data[k] = params[k];
                     }
                     else {
-                        data[k] = api.serializeObject(params[k]);
+                        data[k] = api._serializeObject(params[k]);
                     }
                 }
                 params = data;
             }
             else if (typeof params !== 'string') {
-                params = api.serialize(params);
+                params = api._serializeParams(params);
             }
 
             return params;
@@ -547,7 +547,7 @@ DataAPI.prototype      = {
                     }
                 }
                 else {
-                    api.storeToken(response);
+                    api._storeToken(response);
                     api.request.apply(api, originalArguments);
                 }
                 return false;
@@ -595,7 +595,7 @@ DataAPI.prototype      = {
             else {
                 endpoint += '&';
             }
-            endpoint += this.serialize(paramsList.shift());
+            endpoint += this._serializeParams(paramsList.shift());
         }
 
         if (paramsList.length) {
@@ -657,7 +657,7 @@ DataAPI.prototype      = {
         }
         else {
             (function() {
-                var target = api.getNextIframeName(),
+                var target = api._getNextIframeName(),
                     form   = document.createElement('form'),
                     iframe = document.createElement('iframe'),
                     file, originalName;
@@ -778,7 +778,7 @@ DataAPI.prototype      = {
         }
     },
 
-    generateEndpointMethod: function(e) {
+    _generateEndpointMethod: function(e) {
         var api       = this,
             varRegexp = new RegExp(':([a-zA-Z_-]+)', 'g'),
             vars      = null,
@@ -819,7 +819,7 @@ DataAPI.prototype      = {
 
     generateEndpointMethods: function(endpoints) {
         for (var i = 0; i < endpoints.length; i++) {
-            this.generateEndpointMethod(endpoints[i]);
+            this._generateEndpointMethod(endpoints[i]);
         }
     },
 
