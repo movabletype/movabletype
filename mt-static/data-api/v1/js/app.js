@@ -153,7 +153,7 @@ DataAPI.prototype      = {
                 }
             }
 
-            if (token && (token.start_time + token.expires_in < this.getCurrentEpoch())) {
+            if (token && (token.start_time + token.expiresIn < this.getCurrentEpoch())) {
                 Cookie.bake(this.getAppKey(), '', o.cookieDomain, o.cookiePath, new Date(0));
                 token = null;
             }
@@ -165,11 +165,11 @@ DataAPI.prototype      = {
             return null;
         }
         
-        return this.tokenData.access_token;
+        return this.tokenData.accessToken;
     },
 
     getAuthorizationHeader: function() {name
-        return 'MTAuth access_token=' + this.getToken();
+        return 'MTAuth accessToken=' + this.getToken();
     },
     
     bindEndpointParams: function(endpoint, params) {

@@ -687,7 +687,7 @@ sub authenticate {
         or undef;
 
     my $session
-        = MT::AccessToken->load_session( $data->{MTAuth}{access_token} || '' )
+        = MT::AccessToken->load_session( $data->{MTAuth}{accessToken} || '' )
         or return undef;
     my $user = $app->model('author')->load( $session->get('author_id') )
         or return undef;

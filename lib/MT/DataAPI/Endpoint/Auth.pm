@@ -54,9 +54,9 @@ sub authorization {
         my $access_token = make_access_token( $app, $session );
 
         $param{access_token} = {
-            session_id   => $session->id,
-            access_token => $access_token->id,
-            expires_in   => MT::AccessToken::ttl(),
+            sessionId   => $session->id,
+            accessToken => $access_token->id,
+            expiresIn   => MT::AccessToken::ttl(),
         };
     }
     else {
@@ -66,6 +66,7 @@ sub authorization {
             -path  => $app->config->CookiePath || $app->mt_path,
         );
     }
+
     # Clear login error
     $app->error(undef);
 
@@ -106,9 +107,9 @@ sub authentication {
 
     my $access_token = make_access_token( $app, $session );
 
-    +{  session_id   => $session->id,
-        access_token => $access_token->id,
-        expires_in   => MT::AccessToken::ttl(),
+    +{  sessionId   => $session->id,
+        accessToken => $access_token->id,
+        expiresIn   => MT::AccessToken::ttl(),
     };
 }
 
@@ -116,9 +117,9 @@ sub _current_session {
     my ($app) = @_;
 
     my $data = $app->mt_authorization_data;
-    if ( $data && $data->{MTAuth}{session_id} ) {
+    if ( $data && $data->{MTAuth}{sessionId} ) {
         MT::Session->load(
-            {   id => $data->{MTAuth}{session_id} || '',
+            {   id => $data->{MTAuth}{sessionId} || '',
                 kind => $app->session_kind,
             }
         ) or undef;
@@ -137,8 +138,8 @@ sub token {
 
     my $access_token = make_access_token( $app, $session );
 
-    +{  access_token => $access_token->id,
-        expires_in   => MT::AccessToken::ttl(),
+    +{  accessToken => $access_token->id,
+        expiresIn   => MT::AccessToken::ttl(),
     };
 }
 
@@ -175,7 +176,7 @@ sub revoke_token {
 
     if ( my $data = $app->mt_authorization_data ) {
         $app->model('accesstoken')
-            ->remove( { id => $data->{MTAuth}{access_token} } );
+            ->remove( { id => $data->{MTAuth}{accessToken} } );
     }
 
     +{ status => 'success' };
