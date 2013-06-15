@@ -4,11 +4,18 @@ use strict;
 use warnings;
 
 sub updatable_fields {
-    [qw(name)];
+    [];
 }
 
 sub fields {
-    [qw(id name)];
+    [   qw(id class name description),
+        {   name  => 'url',
+            alias => 'site_url',
+        },
+        {   name  => 'archiveUrl',
+            alias => 'archive_url',
+        },
+    ];
 }
 
 1;
