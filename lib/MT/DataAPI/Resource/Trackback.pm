@@ -103,7 +103,9 @@ sub fields {
                 }
             },
         },
-        'id',
+        {   name => 'id',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
         {   name  => 'date',
             alias => 'created_on',
             type  => 'MT::DataAPI::Resource::DataType::ISO8601',
