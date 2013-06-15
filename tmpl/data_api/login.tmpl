@@ -35,14 +35,15 @@ jQuery(function() {
     }
 });
 
-jQuery(function() {
-    jQuery('#username').focus();
-    if (jQuery('#username').focus().val() != '') {
-        jQuery('#password').focus();
-    }
-});
-
 jQuery(function($) {
+    function initFocus() {
+        $('#username').focus();
+        if ($('#username').focus().val() != '') {
+            $('#password').focus();
+        }
+    }
+    initFocus();
+
     $('#login_form').submit(function() {
         var form = this;
         $.ajax({
@@ -55,7 +56,12 @@ jQuery(function($) {
         }).fail(function(data) {
             if (data.status === 401) {
                 $('#login-error').removeClass('hidden');
-                form.reset();
+
+                $('#password').val('');
+                if (! $('#username').attr('disabled')) {
+                    $('#username').val('');
+                }
+                initFocus();
             }
             else {
                 alert('Ajax error: ' + data.responseText);
