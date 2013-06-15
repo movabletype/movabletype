@@ -13,7 +13,7 @@
     displayName: Test
     email: test@example.com
     url: http://test.example.com/
-    userpicURL: http://narnia.na/nana/assets_c/userpics/userpic-1-100x100.png
+    userpicUrl: http://narnia.na/nana/assets_c/userpics/userpic-1-100x100.png
     language: en-us
     updatable: 1
 - 
@@ -31,7 +31,7 @@
     displayName: Test
     email: test@example.com
     url: http://test.example.com/
-    userpicURL: ~
+    userpicUrl: ~
     language: en-us
     updatable: 1
 - 
@@ -49,6 +49,6 @@
     displayName: Test
     email: test@example.com
     url: http://test.example.com/
-    userpicURL: ~
+    userpicUrl: ~
     language: ja
     updatable: 1

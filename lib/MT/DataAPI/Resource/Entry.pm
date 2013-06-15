@@ -32,7 +32,7 @@ sub updatable_fields {
 
 sub fields {
     [   {   name   => 'author',
-            fields => [qw(id displayName userpicURL)],
+            fields => [qw(id displayName userpicUrl)],
             type   => 'MT::DataAPI::Resource::DataType::Object',
         },
         $MT::DataAPI::Resource::Common::fields{blog},
@@ -103,7 +103,7 @@ sub fields {
         },
         'basename',
         'permalink',
-        {   name  => 'pingsSentURL',
+        {   name  => 'pingsSentUrl',
             alias => 'pinged_url_list',
         },
         {   name  => 'date',

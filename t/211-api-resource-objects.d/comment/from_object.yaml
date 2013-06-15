@@ -14,7 +14,7 @@
     author:
       id: 2
       displayName: Chucky Dee
-      userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
     entry:
       id: 1
     blog:
@@ -42,7 +42,7 @@
     author:
       id: 2
       displayName: Chucky Dee
-      userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
     entry:
       id: 1
     blog:
@@ -70,7 +70,7 @@
     author:
       id: 2
       displayName: Chucky Dee
-      userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
     entry:
       id: 1
     blog:
@@ -99,7 +99,7 @@
     author:
       id: 2
       displayName: Chucky Dee
-      userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
     entry:
       id: 1
     blog:
@@ -128,7 +128,7 @@
     author:
       id: ~
       displayName: Author name
-      userpicURL: ~
+      userpicUrl: ~
     entry:
       id: 1
     blog:

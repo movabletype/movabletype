@@ -20,8 +20,10 @@ sub fields {
             label
             url
             description
-            mime_type
             ),
+        {   name  => 'mimeType',
+            alias => 'mime_type',
+        },
         {   name  => 'filename',
             alias => 'file_name',
         },

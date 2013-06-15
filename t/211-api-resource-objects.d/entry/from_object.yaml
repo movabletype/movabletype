@@ -28,7 +28,7 @@
     author:
       id: 2
       displayName: Chucky Dee
-      userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
     class: entry
     status: Publish
     allowComments: !!perl/scalar:boolean 1
@@ -45,7 +45,7 @@
     modifiedDate: 2013-04-17T10:10:10-03:30
     commentCount: 0
     trackbackCount: 0
-    pingsSentURL:
+    pingsSentUrl:
       - http://example.com/entry/1
       - http://example.com/entry/2
     categories: []
@@ -82,7 +82,7 @@
     author:
       id: 2
       displayName: Chucky Dee
-      userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
     class: entry
     status: Draft
     allowComments: !!perl/scalar:boolean 1
@@ -99,7 +99,7 @@
     modifiedDate: 2013-04-17T10:10:10-03:30
     commentCount: 0
     trackbackCount: 0
-    pingsSentURL: []
+    pingsSentUrl: []
     categories: []
     comments: []
     trackbacks: []
@@ -134,7 +134,7 @@
     author:
       id: 2
       displayName: Chucky Dee
-      userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
     class: entry
     status: Review
     allowComments: !!perl/scalar:boolean 0
@@ -151,7 +151,7 @@
     modifiedDate: 2013-04-17T10:10:10-03:30
     commentCount: 0
     trackbackCount: 0
-    pingsSentURL: []
+    pingsSentUrl: []
     categories: []
     comments: []
     trackbacks: []
@@ -186,7 +186,7 @@
     author:
       id: 2
       displayName: Chucky Dee
-      userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
     class: entry
     status: Future
     allowComments: !!perl/scalar:boolean 0
@@ -203,7 +203,7 @@
     modifiedDate: 2013-04-17T10:10:10-03:30
     commentCount: 0
     trackbackCount: 0
-    pingsSentURL: []
+    pingsSentUrl: []
     categories: []
     comments: []
     trackbacks: []
@@ -238,7 +238,7 @@
     author:
       id: 2
       displayName: Chucky Dee
-      userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
     class: entry
     status: Spam
     allowComments: !!perl/scalar:boolean 0
@@ -255,7 +255,7 @@
     modifiedDate: 2013-04-17T10:10:10-03:30
     commentCount: 0
     trackbackCount: 0
-    pingsSentURL: []
+    pingsSentUrl: []
     categories: []
     comments: []
     trackbacks: []
@@ -272,7 +272,7 @@
     author:
       id: 2
       displayName: Chucky Dee
-      userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
     class: entry
     status: Publish
     allowComments: !!perl/scalar:boolean 1
@@ -289,7 +289,7 @@
     modifiedDate: 1978-01-31T07:46:00-03:30
     commentCount: 3
     trackbackCount: 1
-    pingsSentURL:
+    pingsSentUrl:
       - http://technorati.com/
     categories: []
     comments:
@@ -297,7 +297,7 @@
         author:
           displayName: v14GrUH 4 cheep
           id: ~
-          userpicURL: ~
+          userpicUrl: ~
         blog:
           id: 1
         body: "Postmodern false consciousness has always been firmly rooted in post-Freudian Lacanian neo-Marxist bojangles. Needless to say, this quickly and asymptotically approches a purpletacular jouissance of etic jumpinmypants."
@@ -313,7 +313,7 @@
         author:
           displayName: Comment 12
           id: ~
-          userpicURL: ~
+          userpicUrl: ~
         blog:
           id: 1
         body: Comment reply for comment 11
@@ -329,7 +329,7 @@
         author:
           displayName: Comment 11
           id: ~
-          userpicURL: ~
+          userpicUrl: ~
         blog:
           id: 1
         body: Comment reply for comment 1
@@ -362,7 +362,7 @@
         description: This is a test photo.
         label: Image photo
         filename: test.jpg
-        mime_type: image/jpeg
+        mimeType: image/jpeg
         tags:
           - alpha
           - beta
@@ -383,7 +383,7 @@
     author:
       id: 3
       displayName: Dylan
-      userpicURL: ~
+      userpicUrl: ~
     class: entry
     status: Publish
     allowComments: !!perl/scalar:boolean 1
@@ -402,7 +402,7 @@
     modifiedDate: 1963-01-31T07:46:01-03:30
     commentCount: 3
     trackbackCount: 0
-    pingsSentURL: []
+    pingsSentUrl: []
     categories:
       - foo
     comments:
@@ -410,7 +410,7 @@
         author:
           displayName: Dylan
           id: 3
-          userpicURL: ~
+          userpicUrl: ~
         blog:
           id: 1
         body: "Comment for entry 6, moderated"
@@ -426,7 +426,7 @@
         author:
           id: 2
           displayName: Chucky Dee
-          userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+          userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
         blog:
           id: 1
         body: All your comments are belonged to us MT Authors.
@@ -442,7 +442,7 @@
         author:
           displayName: Chucky Dee
           id: ~
-          userpicURL: ~
+          userpicUrl: ~
         blog:
           id: 1
         body: All your comments are belonged to me.
@@ -458,7 +458,7 @@
         author:
           displayName: Comment 3
           id: ~
-          userpicURL: ~
+          userpicUrl: ~
         blog:
           id: 1
         body: Comment for entry 6, visible

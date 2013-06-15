@@ -41,13 +41,13 @@ sub fields {
                     if ($a) {
                         $hashs->[$i]{author}
                             = MT::DataAPI::Resource->from_object( $a,
-                            [qw(id displayName userpicURL)] );
+                            [qw(id displayName userpicUrl)] );
                     }
                     else {
                         $hashs->[$i]{author} = {
                             ( $is_superuser ? ( id => undef ) : () ),
                             displayName => $c->author,
-                            userpicURL  => undef,
+                            userpicUrl  => undef,
                         };
                     }
                 }

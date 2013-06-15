@@ -35,7 +35,7 @@ sub fields {
             alias => 'nickname',
         },
         'email', 'url',
-        {   name                => 'userpicURL',
+        {   name                => 'userpicUrl',
             alias               => 'userpic_url',
             from_object_default => undef,
         },
