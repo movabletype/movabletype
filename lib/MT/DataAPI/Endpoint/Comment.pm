@@ -16,7 +16,7 @@ use MT::CMS::Comment;
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    my $res = filtered_list( $app, $endpoint, 'comment' );
+    my $res = filtered_list( $app, $endpoint, 'comment' ) or return;
 
     +{  totalResults => $res->{count},
         items =>

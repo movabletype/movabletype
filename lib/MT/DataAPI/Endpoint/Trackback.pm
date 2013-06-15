@@ -15,7 +15,7 @@ use MT::DataAPI::Resource;
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    my $res = filtered_list( $app, $endpoint, 'ping' );
+    my $res = filtered_list( $app, $endpoint, 'ping' ) or return;
 
     +{  totalResults => $res->{count},
         items =>

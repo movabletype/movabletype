@@ -115,7 +115,7 @@ sub build_post_save_sub {
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    my $res = filtered_list( $app, $endpoint, 'entry' );
+    my $res = filtered_list( $app, $endpoint, 'entry' ) or return;
 
     +{  totalResults => $res->{count},
         items =>
