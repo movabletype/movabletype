@@ -339,6 +339,44 @@ sub from_object {
     }
 }
 
+package MT::DataAPI::Resource::DataType::Integer;
+
+sub from_object {
+    my ( $objs, $hashs, $f ) = @_;
+    my $name = $f->{name};
+    foreach my $h (@$hashs) {
+        $h->{$name} = int $h->{$name};
+    }
+}
+
+sub to_object {
+    my ( $hashs, $objs, $f ) = @_;
+    my $name = $f->{name};
+    foreach my $o (@$objs) {
+        $o->$name( int $o->$name );
+    }
+}
+
+package MT::DataAPI::Resource::DataType::Boolean;
+
+use boolean ();
+
+sub from_object {
+    my ( $objs, $hashs, $f ) = @_;
+    my $name = $f->{name};
+    foreach my $h (@$hashs) {
+        $h->{$name} = $h->{$name} ? boolean::true() : boolean::false();
+    }
+}
+
+sub to_object {
+    my ( $hashs, $objs, $f ) = @_;
+    my $name = $f->{name};
+    foreach my $o (@$objs) {
+        $o->$name( $o->$name ? 1 : 0 );
+    }
+}
+
 package MT::DataAPI::Resource::DataType::ISO8601;
 
 sub from_object {

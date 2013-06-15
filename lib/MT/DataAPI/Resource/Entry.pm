@@ -3,7 +3,6 @@ package MT::DataAPI::Resource::Entry;
 use strict;
 use warnings;
 
-use boolean ();
 use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
@@ -63,7 +62,9 @@ sub fields {
                 );
             },
         },
-        'id',
+        {   name => 'id',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
         'class',
         {   name        => 'status',
             from_object => sub {
@@ -75,27 +76,13 @@ sub fields {
                 MT::Entry::status_int( $hash->{status} );
             },
         },
-        {   name        => 'allowComments',
-            alias       => 'allow_comments',
-            from_object => sub {
-                my ($obj) = @_;
-                $obj->allow_comments ? boolean::true() : boolean::false();
-            },
-            to_object => sub {
-                my ($hash) = @_;
-                $hash->{allowComments} ? 1 : 0;
-            },
+        {   name  => 'allowComments',
+            alias => 'allow_comments',
+            type  => 'MT::DataAPI::Resource::DataType::Boolean',
         },
-        {   name        => 'allowTrackbacks',
-            alias       => 'allow_pings',
-            from_object => sub {
-                my ($obj) = @_;
-                $obj->allow_pings ? boolean::true() : boolean::false();
-            },
-            to_object => sub {
-                my ($hash) = @_;
-                $hash->{allowTrackbacks} ? 1 : 0;
-            },
+        {   name  => 'allowTrackbacks',
+            alias => 'allow_pings',
+            type  => 'MT::DataAPI::Resource::DataType::Boolean',
         },
         {   name    => 'title',
             default => '',
@@ -194,8 +181,7 @@ sub fields {
                     );
                     if (!$perm
                         || !(
-
-                            $perm->can_do('manage_feedback')
+                               $perm->can_do('manage_feedback')
                             || $perm->can_do('manage_pages')
                             || (   $perm->can_do('create_post')
                                 && $obj->author_id == $user->id )
