@@ -19,7 +19,9 @@ sub fields {
                 +{ id => $obj->blog_id, };
             },
         },
-        'id',
+        {   name => 'id',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
         'class',
         'label',
         'description',
