@@ -18,10 +18,13 @@ sub fields {
     [   qw(
             id
             label
-            description
             url
+            description
             mime_type
             ),
+        {   name  => 'filename',
+            alias => 'file_name',
+        },
         $MT::DataAPI::Resource::Common::fields{tags},
     ];
 }

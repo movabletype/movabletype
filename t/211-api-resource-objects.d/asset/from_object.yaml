@@ -6,6 +6,7 @@
     label: Image photo
     url: http://narnia.na/nana/images/test.jpg
     description: This is a test photo.
+    filename: test.jpg
     mime_type: image/jpeg
     tags:
       - alpha
