@@ -583,17 +583,17 @@ BEGIN {
                     sort             => 0,
                     singleton        => 1,
                     normalized_value => sub {
-                        my $prop   = shift;
-                        my ($args) = @_;
-                        my $value  = $args->{value};
+                        my $prop     = shift;
+                        my ($args)   = @_;
+                        my $lc_value = lc $args->{value};
 
                         for my $o ( @{ $prop->single_select_options } ) {
-                            if ( $o->{text} && $o->{text} eq $value ) {
+                            if ( $o->{text} && lc $o->{text} eq $lc_value ) {
                                 return $o->{value};
                             }
                         }
 
-                        return $value;
+                        return $args->{value};
                     },
                     terms => sub {
                         my $prop   = shift;
