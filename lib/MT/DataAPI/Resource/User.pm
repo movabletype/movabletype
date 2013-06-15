@@ -12,9 +12,9 @@ sub fields {
         {   name  => 'displayName',
             alias => 'nickname',
         },
-        {   name    => 'userpicURL',
-            alias   => 'userpic_url',
-            default => undef,
+        {   name                => 'userpicURL',
+            alias               => 'userpic_url',
+            from_object_default => undef,
         },
         {   name        => 'language',
             from_object => sub {
@@ -27,6 +27,22 @@ sub fields {
                 }
                 $l =~ s/_/-/g;
                 lc $l;
+            },
+        },
+        {   name             => 'updatable',
+            type             => 'MT::DataAPI::Resource::DataType::Boolean',
+            bulk_from_object => sub {
+                my ( $objs, $hashs ) = @_;
+                my $app          = MT->instance;
+                my $user         = $app->user;
+                my $is_superuser = $user->is_superuser;
+
+                for ( my $i = 0; $i < scalar @$objs; $i++ ) {
+                    my $obj = $objs->[$i];
+
+                    $hashs->[$i]{updatable}
+                        = $is_superuser || $user->id == $obj->id;
+                }
             },
         },
     ];

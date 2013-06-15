@@ -965,7 +965,7 @@ sub api {
     {
         my $format   = $app->current_format;
         my $resource = $app->object_to_resource( $response,
-            $app->param('fields') || '' );
+            [ split ',', ( $app->param('fields') || '' ) ] );
         my $data = $format->{serialize}->($resource);
 
         if ( $app->requires_plain_text_result ) {

@@ -9,6 +9,7 @@
     displayName: Test
     userpicURL: http://narnia.na/nana/assets_c/userpics/userpic-1-100x100.png
     language: en-us
+    updatable: 1
 - 
   note: An user without userpic
   from: 
@@ -20,6 +21,7 @@
     id: 1
     userpicURL: ~
     language: en-us
+    updatable: 1
 - 
   note: Language is ja
   from: 
@@ -31,3 +33,4 @@
     id: 1
     userpicURL: ~
     language: ja
+    updatable: 1

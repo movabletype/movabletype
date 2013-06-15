@@ -157,10 +157,9 @@ sub from_object {
 
     my @fields = do {
         if ($fields_specified) {
-            my @fs = split /,/, $fields_specified;
             grep {
                 my $name = ref($_) ? $_->{name} : $_;
-                grep { $_ eq $name } @fs
+                grep { $_ eq $name } @$fields_specified
             } @{ $resource_data->{fields} };
         }
         else {
@@ -169,7 +168,8 @@ sub from_object {
     };
 
     my $objs_count = scalar(@$objs);
-    my @hashs = map { +{} } 0 .. $#$objs;
+    my @hashs      = map { +{} } 0 .. $#$objs;
+    my $stash      = {};
 
     for my $f (@fields) {
         if ( !ref $f ) {
@@ -177,19 +177,19 @@ sub from_object {
         }
 
         if ( $f->{bulk_from_object} ) {
-            $f->{bulk_from_object}->( $objs, \@hashs, $f );
+            $f->{bulk_from_object}->( $objs, \@hashs, $f, $stash );
         }
         else {
             my $i;
             my $name        = $f->{name};
-            my $has_default = exists $f->{default};
-            my $default     = $has_default ? $f->{default} : undef;
+            my $has_default = exists $f->{from_object_default};
+            my $default     = $f->{from_object_default};
 
             # Prepare method to fetching value, outside of the loop
             my $method = do {
                 if ( exists $f->{from_object} ) {
                     sub {
-                        $f->{from_object}->( $_[0], $hashs[$i], $f );
+                        $f->{from_object}->( $_[0], $hashs[$i], $f, $stash );
                     };
                 }
                 else {
@@ -210,7 +210,7 @@ sub from_object {
 
     for my $f (@fields) {
         if ( ref $f && $f->{type_from_object} ) {
-            $f->{type_from_object}->( $objs, \@hashs, $f );
+            $f->{type_from_object}->( $objs, \@hashs, $f, $stash );
         }
     }
 
@@ -271,12 +271,15 @@ sub to_object {
 
     } 0 .. $#$hashs;
     my $objs_count = scalar(@$hashs);
+    my $stash      = {};
 
     for my $f (@fields) {
         if ( !ref $f ) {
             $f = { name => $f, };
         }
-        my $name = $f->{name};
+        my $name        = $f->{name};
+        my $has_default = exists $f->{to_object_default};
+        my $default     = $f->{to_object_default};
 
         for ( my $i = 0; $i < $objs_count; $i++ ) {
             my $hash = $hashs->[$i];
@@ -288,22 +291,22 @@ sub to_object {
                 # Do nothing
             }
             elsif ( exists $f->{to_object} ) {
-                @vals = $f->{to_object}->( $hash, $obj, $f );
+                @vals = $f->{to_object}->( $hash, $obj, $f, $stash );
             }
             else {
                 @vals = ( $hash->{$name} );
             }
 
-            if (@vals) {
+            if ( @vals || $has_default ) {
                 my $k = $f->{alias} || $name;
-                $obj->$k( $vals[0] );
+                $obj->$k( defined( $vals[0] ) ? $vals[0] : $default );
             }
         }
     }
 
     for my $f (@fields) {
         if ( ref $f && $f->{type_to_object} ) {
-            $f->{type_to_object}->( $hashs, \@objs, $f );
+            $f->{type_to_object}->( $hashs, \@objs, $f, $stash );
         }
     }
 
@@ -345,15 +348,15 @@ sub from_object {
     my ( $objs, $hashs, $f ) = @_;
     my $name = $f->{name};
     foreach my $h (@$hashs) {
-        $h->{$name} = int $h->{$name};
+        $h->{$name} = int $h->{$name} if defined $h->{$name};
     }
 }
 
 sub to_object {
     my ( $hashs, $objs, $f ) = @_;
-    my $name = $f->{name};
+    my $name = $f->{alias} || $f->{name};
     foreach my $o (@$objs) {
-        $o->$name( int $o->$name );
+        $o->$name( int $o->$name ) if defined $o->$name;
     }
 }
 
@@ -365,15 +368,16 @@ sub from_object {
     my ( $objs, $hashs, $f ) = @_;
     my $name = $f->{name};
     foreach my $h (@$hashs) {
-        $h->{$name} = $h->{$name} ? boolean::true() : boolean::false();
+        $h->{$name} = $h->{$name} ? boolean::true() : boolean::false()
+            if defined $h->{$name};
     }
 }
 
 sub to_object {
     my ( $hashs, $objs, $f ) = @_;
-    my $name = $f->{name};
+    my $name = $f->{alias} || $f->{name};
     foreach my $o (@$objs) {
-        $o->$name( $o->$name ? 1 : 0 );
+        $o->$name( $o->$name ? 1 : 0 ) if defined $o->$name;
     }
 }
 

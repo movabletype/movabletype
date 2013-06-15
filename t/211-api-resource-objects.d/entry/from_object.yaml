@@ -30,6 +30,7 @@
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
       language: en-us
+      updatable: 1
     class: entry
     status: Publish
     allowComments: !!perl/scalar:boolean 1
@@ -54,6 +55,7 @@
     trackbacks: []
     assets: []
     tags: []
+    updatable: 1
 - 
   note: A draft entry
   from: 
@@ -84,6 +86,7 @@
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
       language: en-us
+      updatable: 1
     class: entry
     status: Draft
     allowComments: !!perl/scalar:boolean 1
@@ -106,6 +109,7 @@
     trackbacks: []
     assets: []
     tags: []
+    updatable: 1
 - 
   note: A review entry
   from: 
@@ -136,6 +140,7 @@
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
       language: en-us
+      updatable: 1
     class: entry
     status: Review
     allowComments: !!perl/scalar:boolean 0
@@ -158,6 +163,7 @@
     trackbacks: []
     assets: []
     tags: []
+    updatable: 1
 - 
   note: A future entry
   from: 
@@ -188,6 +194,7 @@
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
       language: en-us
+      updatable: 1
     class: entry
     status: Future
     allowComments: !!perl/scalar:boolean 0
@@ -210,6 +217,7 @@
     trackbacks: []
     assets: []
     tags: []
+    updatable: 1
 - 
   note: A spam entry
   from: 
@@ -240,6 +248,7 @@
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
       language: en-us
+      updatable: 1
     class: entry
     status: Spam
     allowComments: !!perl/scalar:boolean 0
@@ -262,6 +271,7 @@
     trackbacks: []
     assets: []
     tags: []
+    updatable: 1
 - 
   note: A entry that has comments, trackbacks, assets and tags
   from: 1
@@ -274,6 +284,7 @@
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
       language: en-us
+      updatable: 1
     class: entry
     status: Publish
     allowComments: !!perl/scalar:boolean 1
@@ -310,6 +321,7 @@
         link: http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1
         parent: ~
         status: Approved
+        updatable: 1
       -
         author:
           displayName: Comment 12
@@ -326,6 +338,7 @@
         link: http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-12
         parent: 11
         status: Approved
+        updatable: 1
       -
         author:
           displayName: Comment 11
@@ -342,6 +355,7 @@
         link: http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-11
         parent: 1
         status: Approved
+        updatable: 1
     trackbacks:
       -
         blog:
@@ -356,6 +370,7 @@
         title: Foo
         url: http://example.com/
         status: Approved
+        updatable: 1
     assets:
       -
         id: 1
@@ -371,6 +386,7 @@
       - grandpa
       - rain
       - strolling
+    updatable: 1
 - 
   note: A entry that has categories
   from: 6
@@ -383,6 +399,7 @@
       displayName: Dylan
       userpicURL: ~
       language: en-us
+      updatable: 1
     class: entry
     status: Publish
     allowComments: !!perl/scalar:boolean 1
@@ -415,10 +432,11 @@
     comments:
       -
         author:
-          displayName: Comment 4
-          id: ~
+          displayName: Dylan
+          id: 3
           userpicURL: ~
-          language: ~
+          language: en-us
+          updatable: 1
         blog:
           id: 1
         body: "Comment for entry 6, moderated"
@@ -429,12 +447,14 @@
         link: http://narnia.na/nana/archives/1963/01/verse-3.html#comment-4
         parent: ~
         status: Pending
+        updatable: 1
       -
         author:
-          displayName: Dylan
-          id: 3
-          userpicURL: ~
+          id: 2
+          displayName: Chucky Dee
+          userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
           language: en-us
+          updatable: 1
         blog:
           id: 1
         body: All your comments are belonged to us MT Authors.
@@ -445,12 +465,13 @@
         link: http://narnia.na/nana/archives/1963/01/verse-3.html#comment-15
         parent: ~
         status: Approved
+        updatable: 1
       -
         author:
           displayName: Chucky Dee
-          id: 2
-          userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
-          language: en-us
+          id: ~
+          userpicURL: ~
+          language: ~
         blog:
           id: 1
         body: All your comments are belonged to me.
@@ -461,6 +482,7 @@
         link: http://narnia.na/nana/archives/1963/01/verse-3.html#comment-14
         parent: ~
         status: Approved
+        updatable: 1
       -
         author:
           displayName: Comment 3
@@ -477,8 +499,10 @@
         link: http://narnia.na/nana/archives/1963/01/verse-3.html#comment-3
         parent: ~
         status: Approved
+        updatable: 1
     trackbacks: []
     assets: []
     tags:
       - rain
       - verse
+    updatable: 1

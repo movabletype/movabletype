@@ -16,6 +16,7 @@
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
       language: en-us
+      updatable: 1
     entry:
       id: 1
     blog:
@@ -26,6 +27,7 @@
     link: http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1
     status: Approved
     parent: 1
+    updatable: 1
 - 
   note: A pending comment
   from: 
@@ -44,6 +46,7 @@
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
       language: en-us
+      updatable: 1
     entry:
       id: 1
     blog:
@@ -54,6 +57,7 @@
     link: http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1
     status: Pending
     parent: 1
+    updatable: 1
 - 
   note: A spam comment
   from: 
@@ -72,6 +76,7 @@
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
       language: en-us
+      updatable: 1
     entry:
       id: 1
     blog:
@@ -82,6 +87,7 @@
     link: http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1
     status: Spam
     parent: 1
+    updatable: 1
 - 
   note: An approved comment by named author
   from: 
@@ -101,6 +107,7 @@
       displayName: Chucky Dee
       userpicURL: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
       language: en-us
+      updatable: 1
     entry:
       id: 1
     blog:
@@ -111,6 +118,7 @@
     link: http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1
     status: Approved
     parent: 1
+    updatable: 1
 - 
   note: An approved comment by guest
   from: 
@@ -140,3 +148,4 @@
     link: http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1
     status: Approved
     parent: 1
+    updatable: 1

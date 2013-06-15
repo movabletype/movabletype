@@ -76,24 +76,26 @@ sub fields {
                 MT::Entry::status_int( $hash->{status} );
             },
         },
-        {   name  => 'allowComments',
-            alias => 'allow_comments',
-            type  => 'MT::DataAPI::Resource::DataType::Boolean',
+        {   name                => 'allowComments',
+            alias               => 'allow_comments',
+            from_object_default => 0,
+            type                => 'MT::DataAPI::Resource::DataType::Boolean',
         },
-        {   name  => 'allowTrackbacks',
-            alias => 'allow_pings',
-            type  => 'MT::DataAPI::Resource::DataType::Boolean',
+        {   name                => 'allowTrackbacks',
+            alias               => 'allow_pings',
+            from_object_default => 0,
+            type                => 'MT::DataAPI::Resource::DataType::Boolean',
         },
-        {   name    => 'title',
-            default => '',
+        {   name                => 'title',
+            from_object_default => '',
         },
-        {   name    => 'body',
-            alias   => 'text',
-            default => '',
+        {   name                => 'body',
+            alias               => 'text',
+            from_object_default => '',
         },
-        {   name    => 'more',
-            alias   => 'text_more',
-            default => '',
+        {   name                => 'more',
+            alias               => 'text_more',
+            from_object_default => '',
         },
         {   name        => 'excerpt',
             from_object => sub {
@@ -101,8 +103,8 @@ sub fields {
                 $obj->get_excerpt;
             },
         },
-        {   name    => 'keywords',
-            default => '',
+        {   name                => 'keywords',
+            from_object_default => '',
         },
         'basename',
         'permalink',
@@ -213,6 +215,43 @@ sub fields {
             },
         },
         $MT::DataAPI::Resource::Common::fields{tags},
+        {   name             => 'updatable',
+            type             => 'MT::DataAPI::Resource::DataType::Boolean',
+            bulk_from_object => sub {
+                my ( $objs, $hashs ) = @_;
+                my $app  = MT->instance;
+                my $user = $app->user;
+
+                if ( $user->is_superuser ) {
+                    $_->{updatable} = 1 for @$hashs;
+                    return;
+                }
+
+                my %blog_perms;
+
+                for ( my $i = 0; $i < scalar @$objs; $i++ ) {
+                    my $obj  = $objs->[$i];
+                    my $type = $obj->class_type;
+
+                    my $perms;
+                    $perms = $blog_perms{ $obj->blog_id }
+                        ||= $user->blog_perm( $obj->blog_id );
+
+                    $hashs->[$i]{updatable}
+                        = (    ( 'entry' eq $type )
+                            && $perms
+                            && $perms->can_edit_entry( $obj, $user ) )
+                        || (
+                           ( 'page' eq $type )
+                        && $perms
+                        && (  $user->id == $obj->author_id
+                            ? $perms->can_do('edit_own_page')
+                            : $perms->can_do('edit_all_pages')
+                        )
+                        );
+                }
+            },
+        },
     ];
 }
 
