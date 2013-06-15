@@ -13,17 +13,11 @@ sub updatable_fields {
 }
 
 sub fields {
-    [   {   name        => 'blog',
-            from_object => sub {
-                my ($obj) = @_;
-                +{ id => $obj->blog_id, };
-            },
-        },
+    [   $MT::DataAPI::Resource::Common::fields{blog},
         {   name => 'id',
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },
-        'class',
-        'label',
+        'class', 'label',
         'description',
         'parent',
         'basename',

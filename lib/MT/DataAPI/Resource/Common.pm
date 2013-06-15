@@ -4,6 +4,13 @@ use strict;
 use warnings;
 
 our %fields = (
+    blog => {
+        name        => 'blog',
+        from_object => sub {
+            my ($obj) = @_;
+            +{ id => $obj->blog_id, };
+        },
+    },
     tags => {
         name        => 'tags',
         from_object => sub {

@@ -83,12 +83,7 @@ sub _categories {
 }
 
 sub fields {
-    [   {   name        => 'blog',
-            from_object => sub {
-                my ($obj) = @_;
-                +{ id => $obj->blog_id, };
-            },
-        },
+    [   $MT::DataAPI::Resource::Common::fields{blog},
         {   name             => 'entry',
             bulk_from_object => sub {
                 my ( $objs, $hashs, $f, $stash ) = @_;

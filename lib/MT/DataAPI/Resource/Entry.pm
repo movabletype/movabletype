@@ -35,12 +35,7 @@ sub fields {
             fields => [qw(id displayName userpicURL)],
             type => 'MT::DataAPI::Resource::DataType::Object',
         },
-        {   name        => 'blog',
-            from_object => sub {
-                my ($obj) = @_;
-                +{ id => $obj->blog_id, };
-            },
-        },
+        $MT::DataAPI::Resource::Common::fields{blog},
         {   name        => 'categories',
             from_object => sub {
                 my ($obj) = @_;

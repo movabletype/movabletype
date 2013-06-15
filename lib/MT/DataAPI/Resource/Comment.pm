@@ -59,12 +59,7 @@ sub fields {
                 +{ id => $obj->entry_id, };
             },
         },
-        {   name        => 'blog',
-            from_object => sub {
-                my ($obj) = @_;
-                +{ id => $obj->blog_id, };
-            },
-        },
+        $MT::DataAPI::Resource::Common::fields{blog},
         {   name => 'id',
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },
