@@ -404,15 +404,7 @@
     trackbackCount: 0
     pingsSentURL: []
     categories:
-      -
-        basename: foo
-        blog:
-          id: 1
-        class: category
-        description: bar
-        id: 1
-        label: foo
-        parent: 0
+      - foo
     comments:
       -
         author:

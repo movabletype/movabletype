@@ -31,9 +31,9 @@ sub updatable_fields {
 }
 
 sub fields {
-    [   {   name => 'author',
+    [   {   name   => 'author',
             fields => [qw(id displayName userpicURL)],
-            type => 'MT::DataAPI::Resource::DataType::Object',
+            type   => 'MT::DataAPI::Resource::DataType::Object',
         },
         $MT::DataAPI::Resource::Common::fields{blog},
         {   name        => 'categories',
@@ -48,14 +48,13 @@ sub fields {
 
                 my $cats = MT::Category->lookup_multi(
                     [ map { $_->[0] } @$rows ] );
-                MT::DataAPI::Resource->from_object(
-                    [   sort {
-                                  $a->id == $primary ? 1
-                                : $b->id == $primary ? -1
-                                : $a->label cmp $b->label
-                        } @$cats
-                    ]
-                );
+
+                [   map { $_->category_label_path } sort {
+                              $a->id == $primary ? 1
+                            : $b->id == $primary ? -1
+                            : $a->label cmp $b->label
+                    } @$cats
+                ];
             },
         },
         {   name => 'id',
