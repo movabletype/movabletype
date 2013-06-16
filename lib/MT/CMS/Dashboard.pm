@@ -37,18 +37,18 @@ sub dashboard {
                 order => 1,
                 set   => 'main',
             },
-            'this_is_you-1' => {
-                order => 2,
-                set   => 'main'
-            },
-            'mt_news' => {
-                order => 4,
-                set   => 'sidebar'
-            },
             'favorite_blogs' => {
                 param => { tab => 'website' },
                 order => 3,
                 set   => 'main'
+            },
+            'personal_stats' => {
+                order => 1,
+                set   => 'sidebar'
+            },
+            'mt_news' => {
+                order => 4,
+                set   => 'sidebar'
             },
         },
         'website' => {
@@ -140,7 +140,7 @@ sub dashboard {
     return $app->load_tmpl( "dashboard.tmpl", $param );
 }
 
-sub this_is_you_widget {
+sub personal_stats_widget {
     my $app = shift;
     my ( $tmpl, $param ) = @_;
 

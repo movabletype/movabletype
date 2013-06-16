@@ -330,11 +330,11 @@ sub core_widgets {
     my $pkg = '$Core::MT::CMS::';
 
     my $core_widgets = {
-        this_is_you => {
-            label    => 'This is You',
-            template => 'widget/this_is_you.tmpl',
-            handler  => "${pkg}Dashboard::this_is_you_widget",
-            set      => 'main',
+        personal_stats => {
+            label    => 'Personal Stats',
+            template => 'widget/personal_stats.tmpl',
+            handler  => "${pkg}Dashboard::personal_stats_widget",
+            set      => 'sidebar',
             singular => 1,
             view     => 'user',
         },
