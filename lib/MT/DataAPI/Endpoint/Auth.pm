@@ -113,7 +113,7 @@ sub authentication {
     };
 }
 
-sub _current_session {
+sub _current_session_from_authorization_data {
     my ($app) = @_;
 
     my $data = $app->mt_authorization_data;
@@ -123,6 +123,15 @@ sub _current_session {
                 kind => $app->session_kind,
             }
         ) or undef;
+    }
+}
+
+sub _current_session {
+    my ($app) = @_;
+
+    my $data = $app->mt_authorization_data;
+    if ( $data && $data->{MTAuth}{sessionId} ) {
+        _current_session_from_authorization_data($app);
     }
     else {
         my ( $author, $new_login ) = $app->login;
@@ -146,7 +155,8 @@ sub token {
 sub revoke_authentication {
     my ($app) = @_;
 
-    my $session = $app->{session} || _current_session($app)
+    my $session
+        = $app->session || _current_session_from_authorization_data($app)
         or return $app->error(401);
 
     if ( my $user

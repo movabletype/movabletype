@@ -348,11 +348,11 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete a trackback.', },
         },
-        {   id          => 'upload_asset',
-            route       => '/sites/:site_id/assets/upload',
-            verb        => 'POST',
-            version     => 1,
-            handler     => "${pkg}Asset::upload",
+        {   id             => 'upload_asset',
+            route          => '/sites/:site_id/assets/upload',
+            verb           => 'POST',
+            version        => 1,
+            handler        => "${pkg}Asset::upload",
             default_params => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
@@ -702,6 +702,8 @@ sub authenticate {
         or return undef;
 
     return undef unless $user->is_active;
+
+    $app->{session} = $session;
 
     $user;
 }
