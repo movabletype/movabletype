@@ -53,6 +53,11 @@ sub find_format {
                 = $class->find_format( $format->[0] );
         }
         else {
+            for my $k ( keys %$format ) {
+                if ( ref $format->{$k} eq 'ARRAY' ) {
+                    $format->{$k} = $format->{$k}[-1];
+                }
+            }
             for my $k (qw(serialize unserialize)) {
                 $format->{$k} = $app->handler_to_coderef( $format->{$k} );
             }
