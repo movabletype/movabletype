@@ -141,6 +141,20 @@ my $negoro = MT::Test::Permission->make_author(
     nickname => 'Shiro Negoro',
 );
 
+my $noda = MT::Test::Permission->make_author(
+    name     => 'noda',
+    nickname => 'Goro Noda',
+);
+
+my $hada = MT::Test::Permission->make_author(
+    name     => 'hada',
+    nickname => 'Ichiro Hada',
+);
+my $hida = MT::Test::Permission->make_author(
+    name     => 'hida',
+    nickname => 'Jiro Hida',
+);
+
 my $admin = MT::Author->load(1);
 
 # Role
@@ -200,6 +214,9 @@ MT::Association->link( $kagawa   => $edit_all_posts  => $blog );
 MT::Association->link( $kikkawa  => $publish_post    => $blog );
 MT::Association->link( $kumekawa => $manage_feedback => $blog );
 MT::Association->link( $tezuka   => $edit_templates  => $blog );
+MT::Association->link( $noda     => $blog_admin      => $blog );
+MT::Association->link( $hada     => $blog_admin      => $blog );
+MT::Association->link( $hida     => $blog_admin      => $blog );
 
 MT::Association->link( $kemikawa   => $blog_admin      => $second_blog );
 MT::Association->link( $koishikawa => $designer        => $second_blog );
@@ -210,9 +227,11 @@ MT::Association->link( $seta       => $edit_all_posts  => $second_blog );
 MT::Association->link( $soneda     => $publish_post    => $second_blog );
 MT::Association->link( $taneda     => $manage_feedback => $second_blog );
 MT::Association->link( $toda       => $edit_templates  => $second_blog );
+MT::Association->link( $noda       => $blog_admin      => $second_blog );
 
-MT::Association->link( $niyagawa => $website_admin => $website );
-MT::Association->link( $nunota   => $website_admin => $second_website );
+MT::Association->link( $niyagawa => $website_admin  => $website );
+MT::Association->link( $noda     => $edit_all_posts => $website );
+MT::Association->link( $nunota   => $website_admin  => $second_website );
 
 MT::Association->link( $kemikawa   => $create_post => $blog );
 MT::Association->link( $koishikawa => $create_post => $blog );
@@ -237,6 +256,17 @@ $p = MT::Permission->new;
 $p->blog_id(0);
 $p->author_id( $namegawa->id );
 $p->permissions("'edit_templates'");
+$p->save;
+
+$p = MT::Permission->new;
+$p->blog_id(0);
+$p->author_id( $hada->id );
+$p->permissions("'edit_templates'");
+$p->save;
+
+$p = MT::Permission->new;
+$p->blog_id(0);
+$p->author_id( $hida->id );
 $p->save;
 
 # Entry
@@ -596,6 +626,61 @@ subtest 'mode = list' => sub {
     $out = delete $app->{__test_output};
     ok( $out,                   "Request: list" );
     ok( $out !~ m!redirect=1!i, "list by permitted user" );
+
+    foreach my $blog_id ( $website->id, 0 ) {
+        diag 'blog_id: ' . $blog_id;
+
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $noda,
+                __request_method => 'POST',
+                __mode           => 'list',
+                blog_id          => $blog_id,
+                _type            => 'blog',
+            }
+        );
+        $out = delete $app->{__test_output};
+        ok( $out, "Request: list" );
+        ok( $out !~ m!redirect=1!i,
+            "list by permitted user who is not parent website administrator"
+        );
+        my $button = quotemeta '<a href="#delete" class="button">Delete</a>';
+        like( $out, qr/$button/, 'There is "Delete" button.' );
+
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $hada,
+                __request_method => 'POST',
+                __mode           => 'list',
+                blog_id          => $blog_id,
+                _type            => 'blog',
+            }
+        );
+        $out = delete $app->{__test_output};
+        ok( $out,                   "Request: list" );
+        ok( $out !~ m!redirect=1!i, "list by not permitted user" );
+        unlike( $out, qr/$button/, 'There is not "Delete" button.' );
+
+        $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $hida,
+                __request_method => 'POST',
+                __mode           => 'list',
+                blog_id          => $blog_id,
+                _type            => 'blog',
+            }
+        );
+        $out = delete $app->{__test_output};
+        ok( $out,                   "Request: list" );
+        ok( $out !~ m!redirect=1!i, "list by permitted user" );
+        like( $out, qr/$button/, 'There is "Delete" button.' );
+        my $refresh_tmpl = quotemeta
+            '<option value="refresh_blog_templates">Refresh Template(s)</option>';
+        like( $out, qr/$refresh_tmpl/,
+            'There is "Refresh Template(s)" action.' );
+
+    }
+
     done_testing();
 };
 

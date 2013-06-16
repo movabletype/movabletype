@@ -850,7 +850,7 @@ ChartAPI.Graph.prototype.generateLabel = function (template) {
     if (template && typeof template === 'function') {
       template = template(data);
       finalize();
-    } else if (_) {
+    } else if (window._) {
       template = _.template(template, data);
       finalize();
     } else {
@@ -1048,6 +1048,8 @@ ChartAPI.Graph.css.Base.prototype.horizontalBar = function (data, config, range,
   var barColor = config.barColor || ChartAPI.Graph.getCachedChartColors(config.id, null, config.chartColorsMethod)[1],
     barBackgroundColor = config.barBackgroundColor || '#f0f0f0',
     dateColor = config.dateColor || '#999999',
+    dateColorSaturday = config.dateColorSaturday || dateColor,
+    dateColorSunday = config.dateColorSunday || dateColor,
     labelColor = config.labelColor || '#999999',
     barWidth = parseInt(config.barWidth, 10) || 30,
     barInterval = parseInt(config.barInterval, 10) || 5,
@@ -1059,7 +1061,10 @@ ChartAPI.Graph.css.Base.prototype.horizontalBar = function (data, config, range,
       return parseInt(d.y, 10);
     }),
     label = $.map(data, function (d) {
-      return parseInt(d.x.substr(d.x.lastIndexOf('-') + 1), 10).toString();
+      return {
+        value: parseInt(d.x.substr(d.x.lastIndexOf('-') + 1), 10).toString(),
+        weekday: ChartAPI.Date.parse(d.x) ? ChartAPI.Date.parse(d.x).getDay() : null
+      }
     }),
     maxY = Math.max.apply(null, dataY) || 1,
     yLabel = config.yLabel || dataY,
@@ -1076,11 +1081,21 @@ ChartAPI.Graph.css.Base.prototype.horizontalBar = function (data, config, range,
 
     if (config.showDate) {
       $date = $el.find('.css-graph-date');
-      $date.text(label[i]).css({
+      $date.text(label[i].value).css({
         'color': dateColor,
         'font-size': labelSize + 'px',
         'line-height': barWidth + 'px'
       });
+      if (label[i].weekday === 6) {
+        $date.addClass('saturday').css({
+          'color': dateColorSaturday
+        });
+      } else if (label[i].weekday === 0) {
+        $date.addClass('sunday').css({
+          'color': dateColorSunday
+        })
+      }
+
       $el.find('.css-graph-bar-container').css({
         'margin-left': barWidth + 'px'
       });
@@ -1263,7 +1278,10 @@ ChartAPI.Graph.easel.Base.prototype.motionLine = function (data, config) {
     lineWidth = parseInt(config.lineWidth, 10) || 8,
     yLength = config.yLength || 1,
     lineColors = config.lineColors || config.chartColors || ChartAPI.Graph.getCachedChartColors(config.id, null, config.chartColorsMethod),
-    lineColorsAlpha = this.config.chartColorsAlpha || [null],
+    lineColorsAlpha = config.chartColorsAlpha || [null],
+    pointerColors = config.pointerColors || config.chartColors || ChartAPI.Graph.getCachedChartColors(config.id, null, config.chartColorsMethod),
+    pointerColorsAlpha = config.pointerColorsAlpha || [null],
+    pointerRadius = config.pointerRadius || 10,
     paddingTop = lineWidth / 2,
     count = (length - 1) * 2,
     moveX = Math.floor(this.width / length) / 2,
@@ -1315,7 +1333,9 @@ ChartAPI.Graph.easel.Base.prototype.motionLine = function (data, config) {
     shapes = [],
     lines = [],
     x = paddingLeft,
-    y;
+    y,
+    circles = [],
+    pointerColor;
 
   for (i = 0; i < yLength; i++) {
     lineColor = this.convertColor(lineColors[i], lineColorsAlpha[i]);
@@ -1324,6 +1344,12 @@ ChartAPI.Graph.easel.Base.prototype.motionLine = function (data, config) {
     y = height - moveYs[i][0];
     lines[i].setStrokeStyle(lineWidth).beginStroke(lineColor).moveTo(x, y);
     this.stage.addChild(shapes[i]);
+    if (config.drawPointer) {
+      pointerColor = this.convertColor(pointerColors[i], pointerColorsAlpha[i]);
+      circles[i] = new createjs.Shape();
+      circles[i].graphics.beginFill(pointerColor).drawCircle(0, 0, pointerRadius);
+      this.stage.addChild(circles[i]);
+    }
   }
 
   var stage = this.stage;
@@ -1342,6 +1368,10 @@ ChartAPI.Graph.easel.Base.prototype.motionLine = function (data, config) {
       moveY = moveYs[i];
       y = height - moveY[moveY.length - count - 1];
       lines[i].lineTo(x, y);
+      if (config.drawPointer) {
+        circles[i].x = x;
+        circles[i].y = Math.max(y, pointerRadius);
+      }
     }
 
     stage.update(e);
@@ -1490,6 +1520,7 @@ ChartAPI.Graph.morris.Base.prototype.build_ = function (Morris, data, config, ra
     gridTextColor: '#888',
     gridTextSize: 12,
     hideHover: false,
+    hoverCallback: null,
     yLabelFormat: null,
     numLines: 5,
     padding: 25,

@@ -496,6 +496,10 @@ ul.tabs li a {
 /* - App Header */
 #header {
     position: relative;
+    height: 60px;
+}
+
+#header.has-notification {
     height: 90px;
 }
 
