@@ -4,6 +4,8 @@
  */
 ;(function(window) {
 
+"use strict";
+
 var DataAPI = window.MT.DataAPI.v1;
 
 DataAPI.on('initialize', function() {

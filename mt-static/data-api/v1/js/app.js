@@ -12,6 +12,8 @@
  * $Id$
  */
 ;(function(window) {
+
+"use strict";
     
 var DataAPI = function(options) {
     this.o = {
