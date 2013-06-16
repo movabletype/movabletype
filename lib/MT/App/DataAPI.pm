@@ -353,6 +353,10 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 1,
             handler     => "${pkg}Asset::upload",
+            default_params => {
+                autoRenameIfExists   => 0,
+                normalizeOrientation => 1,
+            },
             error_codes => {
                 403 =>
                     'Do not have permission to publish the requested entry.',

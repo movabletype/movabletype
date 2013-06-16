@@ -1615,6 +1615,10 @@ sub _upload_file {
     if ($is_image) {
         $asset->image_width($w);
         $asset->image_height($h);
+
+        if ( $q->param('normalize_orientation') ) {
+            $asset->normalize_orientation;
+        }
     }
 
     $asset->mime_type($mimetype) if $mimetype;

@@ -18,11 +18,12 @@ sub upload {
     $app->param( 'site_path', 1 );
 
     my %keys = (
-        overwrite          => 'overwrite_yes',
-        fileName           => 'fname',
-        temp               => 'temp',
-        path               => 'extra_path',
-        autoRenameIfExists => 'auto_rename_if_exists',
+        overwrite            => 'overwrite_yes',
+        fileName             => 'fname',
+        temp                 => 'temp',
+        path                 => 'extra_path',
+        autoRenameIfExists   => 'auto_rename_if_exists',
+        normalizeOrientation => 'normalize_orientation',
     );
     for my $k ( keys %keys ) {
         if ( my $v = $app->param($k) ) {
