@@ -29,7 +29,8 @@ sub find_format {
         %formats = map { $_ => 1 } keys %$reg;
     }
 
-    $default_format ||= $app->registry( 'applications', 'data_api' )->{default_format};
+    $default_format
+        ||= $app->registry( 'applications', 'data_api' )->{default_format};
     my $format_key
         = $key
         || ( $app->current_endpoint || {} )->{format}
