@@ -850,7 +850,7 @@ sub print_error {
     }
     else {
         $app->response_code($status);
-        $app->send_http_header( $format->{content_type} );
+        $app->send_http_header( $format->{mime_type} );
     }
     $app->{no_print_body} = 1;
     $app->print_encode(
@@ -978,7 +978,7 @@ sub api {
             $app->send_http_header('text/plain');
         }
         else {
-            $app->send_http_header( $format->{content_type} );
+            $app->send_http_header( $format->{mime_type} );
         }
 
         $app->{no_print_body} = 1;

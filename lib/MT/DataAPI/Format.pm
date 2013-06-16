@@ -12,9 +12,9 @@ sub core_formats {
     return {
         'js'   => 'json',
         'json' => {
-            content_type => 'application/json',
-            serialize    => "${pkg}JSON::serialize",
-            unserialize  => "${pkg}JSON::unserialize",
+            mime_type   => 'application/json',
+            serialize   => "${pkg}JSON::serialize",
+            unserialize => "${pkg}JSON::unserialize",
         },
     };
 }
