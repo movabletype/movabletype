@@ -63,6 +63,7 @@ DataAPI.callbacks      = {};
 DataAPI.defaultFormat  = 'json';
 DataAPI.formats        = {
     json: {
+        fileExtension: 'json',
         mimeType: 'application/json',
         serialize: function() {
             return JSON.stringify.apply(JSON, arguments);
@@ -139,9 +140,12 @@ DataAPI.prototype      = {
         return null;
     },
 
+    getDefaultFormat: function() {
+        return DataAPI.formats[DataAPI.defaultFormat];
+    },
+
     getCurrentFormat: function() {
-        return DataAPI.formats[this.o.format] ||
-            DataAPI.formats[DataAPI.defaultFormat]
+        return DataAPI.formats[this.o.format] || this.getDefaultFormat();
     },
 
     serializeData: function() {
@@ -338,6 +342,22 @@ DataAPI.prototype      = {
         }
         return str;
     },
+
+    _unserializeParams: function(params) {
+        if (typeof params !== 'string') {
+            return params;
+        }
+
+        var data   = {},
+            values = params.split('&');
+
+        for(var i = 0; i < values.length; i++) {
+            var pair = values[i].split('=');
+            data[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        }
+
+        return data;
+    },
     
     _newXMLHttpRequestStandard: function() {
         try {
@@ -517,6 +537,7 @@ DataAPI.prototype      = {
             callback   = function(){},
             xhr        = null,
             viaXhr     = true,
+            currentFormat     = this.getCurrentFormat(),
             originalArguments = Array.prototype.slice.call(arguments),
             defaultParams     = {};
 
@@ -608,6 +629,10 @@ DataAPI.prototype      = {
         if (! this.o.cache) {
             defaultParams['_'] = new Date().getTime();
         }
+
+        if (currentFormat !== this.getDefaultFormat()) {
+            defaultParams['format'] = currentFormat.fileExtension;
+        }
         
         for (var i = 2; i < arguments.length; i++) {
             var v = arguments[i];
@@ -629,8 +654,16 @@ DataAPI.prototype      = {
                 }
                 break;
             case 'string':
-                paramsList.push(v);
+                paramsList.push(this._unserializeParams(v));
                 break;
+            }
+        }
+
+        for (var k in defaultParams) {
+            for (var i = 0; i < paramsList.length; i++) {
+                if (k in paramsList[i]) {
+                    delete defaultParams[k];
+                }
             }
         }
         
