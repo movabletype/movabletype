@@ -19,6 +19,7 @@ var DataAPI = function(options) {
         baseUrl: undefined,
         cookieDomain: undefined,
         cookiePath: undefined,
+        format: undefined,
         async: true,
         cache: false,
         disableFormData: false
@@ -57,6 +58,18 @@ DataAPI.version        = 1;
 DataAPI.accessTokenKey = 'mt_data_api_access_token';
 DataAPI.iframePrefix   = 'mt_data_api_iframe_';
 DataAPI.callbacks      = {};
+DataAPI.defaultFormat  = 'json';
+DataAPI.formats        = {
+    json: {
+        mimeType: 'application/json',
+        serialize: function() {
+            return JSON.stringify.apply(JSON, arguments);
+        },
+        unserialize: function() {
+            return JSON.parse.apply(JSON, arguments);
+        }
+    }
+};
 
 DataAPI.on = function(key, callback) {
     if (! this.callbacks[key]) {
@@ -80,6 +93,10 @@ DataAPI.off = function(key, callback) {
         delete this.callbacks[key];
     }
 };
+
+DataAPI.registerFormat = function(key, spec) {
+    DataAPI.formats[key] = spec;
+}
 
 DataAPI.prototype      = {
     getAuthorizationUrl: function(redirectUrl) {
@@ -105,11 +122,38 @@ DataAPI.prototype      = {
     getAppKey: function() {
         return DataAPI.accessTokenKey + '_' + this.o.clientId;
     },
+
+    findFormat: function(mimeType) {
+        if (! mimeType) {
+            return null;
+        }
+
+        for (var k in DataAPI.formats) {
+            if (DataAPI.formats[k]['mimeType'] === mimeType) {
+                return DataAPI.formats[k];
+            }
+        }
+
+        return null;
+    },
+
+    getCurrentFormat: function() {
+        return DataAPI.formats[this.o.format] ||
+            DataAPI.formats[DataAPI.defaultFormat]
+    },
+
+    serializeData: function() {
+        return this.getCurrentFormat().serialize.apply(this, arguments);
+    },
+
+    unserializeData: function() {
+        return this.getCurrentFormat().unserialize.apply(this, arguments);
+    },
     
     _storeToken: function(tokenData) {
         var o = this.o;
-        tokenData.start_time = this._getCurrentEpoch();
-        Cookie.bake(this.getAppKey(), JSON.stringify(tokenData), o.cookieDomain, o.cookiePath);
+        tokenData.startTime = this._getCurrentEpoch();
+        Cookie.bake(this.getAppKey(), this.serializeData(tokenData), o.cookieDomain, o.cookiePath);
         this.tokenData = null;
     },
     
@@ -121,7 +165,7 @@ DataAPI.prototype      = {
         }
         
         try {
-            var defaultToken = JSON.parse(defaultCookie.value);
+            var defaultToken = this.unserializeData(defaultCookie.value);
         }
         catch (e) {
             return null;
@@ -144,16 +188,16 @@ DataAPI.prototype      = {
                 catch (e) {
                 }
             }
-            
+
             if (! token) {
                 try {
-                    token = JSON.parse(Cookie.fetch(this.getAppKey()).value);
+                    token = this.unserializeData(Cookie.fetch(this.getAppKey()).value);
                 }
                 catch (e) {
                 }
             }
 
-            if (token && (token.start_time + token.expiresIn < this._getCurrentEpoch())) {
+            if (token && (token.startTime + token.expiresIn < this._getCurrentEpoch())) {
                 Cookie.bake(this.getAppKey(), '', o.cookieDomain, o.cookiePath, new Date(0));
                 token = null;
             }
@@ -173,7 +217,7 @@ DataAPI.prototype      = {
     },
     
     bindEndpointParams: function(endpoint, params) {
-        for (k in params) {
+        for (var k in params) {
             var v = params[k];
             if (typeof v === 'object') {
                 v = v.id;
@@ -211,7 +255,7 @@ DataAPI.prototype      = {
             return n < 10 ? '0' + n : n;
         }
 
-        function dateToJSON(v) {
+        function ISO8601Date(v) {
             if (! isFinite(v.valueOf())) {
                 return '';
             }
@@ -244,7 +288,7 @@ DataAPI.prototype      = {
             return '';
         }
         else if (v instanceof Date) {
-            return dateToJSON(v);
+            return ISO8601Date(v);
         }
         else if (window.File && v instanceof window.File) {
             return v;
@@ -253,9 +297,9 @@ DataAPI.prototype      = {
             return v.files[0];
         }
         else if (type === 'object') {
-            return JSON.stringify(v, function(key, value) {
+            return this.serializeData(v, function(key, value) {
                 if (this[key] instanceof Date) {
-                    return dateToJSON(this[key]);
+                    return ISO8601Date(this[key]);
                 }
                 return value;
             });
@@ -277,7 +321,7 @@ DataAPI.prototype      = {
         }
         
         var str = '';
-        for (k in params) {
+        for (var k in params) {
             if (! params.hasOwnProperty(k)) {
                 continue;
             }
@@ -316,7 +360,7 @@ DataAPI.prototype      = {
             return null;
         }
 
-        for (k in params) {
+        for (var k in params) {
             if (this._isFileInputElement(params[k])) {
                 return params[k];
             }
@@ -337,7 +381,7 @@ DataAPI.prototype      = {
     sendXMLHttpRequest: function(xhr, method, url, params, defaultParams) {
         if (! this._isEmptyObject(defaultParams)) {
             if (window.FormData && params instanceof window.FormData) {
-                for (k in defaultParams) {
+                for (var k in defaultParams) {
                     params.append(k, defaultParams[k]);
                 }
             }
@@ -450,10 +494,10 @@ DataAPI.prototype      = {
             o = {},
             result;
 
-        for (k in originalOption) {
+        for (var k in originalOption) {
             o[k] = originalOption[k];
         }
-        for (k in option) {
+        for (var k in option) {
             o[k] = option[k];
         }
 
@@ -471,7 +515,7 @@ DataAPI.prototype      = {
             callback   = function(){},
             xhr        = null,
             viaXhr     = true,
-            originalArguments = Array.prototype.slice.call(arguments);
+            originalArguments = Array.prototype.slice.call(arguments),
             defaultParams     = {};
 
         function serializeParams(params) {
@@ -484,7 +528,7 @@ DataAPI.prototype      = {
                 }
                 else if (window.FormData && typeof params === 'object') {
                     var data = new FormData();
-                    for (k in params) {
+                    for (var k in params) {
                         data.append(k, api._serializeObject(params[k]));
                     }
                     return data;
@@ -494,7 +538,7 @@ DataAPI.prototype      = {
 
             if (api._isFormElement(params)) {
                 params = api._serializeFormElementToObject(params);
-                for (k in params) {
+                for (var k in params) {
                     if (params[k] instanceof Array) {
                         params[k] = params[k].join(',');
                     }
@@ -505,7 +549,7 @@ DataAPI.prototype      = {
                 viaXhr = false;
 
                 var data = {};
-                for (k in params) {
+                for (var k in params) {
                     if (api._isFileInputElement(params[k])) {
                         data[k] = params[k];
                     }
@@ -621,7 +665,9 @@ DataAPI.prototype      = {
 
                 var response;
                 try {
-                    response = JSON.parse(xhr.responseText);
+                    var mimeType = xhr.getResponseHeader('Content-Type'),
+                        format   = api.findFormat(mimeType) || api.getCurrentFormat();
+                    response = format.unserialize(xhr.responseText);
                 }
                 catch (e) {
                     response = {
@@ -682,14 +728,14 @@ DataAPI.prototype      = {
                     if (! params) {
                         params = {};
                     }
-                    for (k in defaultParams) {
+                    for (var k in defaultParams) {
                         params[k] = defaultParams[k];
                     }
                 }
                 params['X-MT-Authorization'] = api.getAuthorizationHeader();
                 params['X-MT-Requested-Via'] = 'IFRAME';
 
-                for (k in params) {
+                for (var k in params) {
                     if (api._isFileInputElement(params[k])) {
                         file         = params[k];
                         originalName = file.name;
@@ -733,7 +779,7 @@ DataAPI.prototype      = {
                     }
 
                     try {
-                        response = JSON.parse(contents);
+                        response = api.unserializeData(contents);
                     }
                     catch (e) {
                         response = {
