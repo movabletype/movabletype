@@ -1951,7 +1951,7 @@ sub publish_future_posts {
             $entry->modified_on($ts);
             $entry->save
                 or die $entry->errstr;
-            $this->post_scheduled( $entry, $original );
+            $this->post_scheduled( $entry, $original, MT->translate('Scheduled publishing.') );
 
             MT->run_callbacks( 'scheduled_post_published', $mt, $entry );
 
@@ -2402,7 +2402,7 @@ sub queue_build_file_filter {
 
 sub post_scheduled {
     my $app = shift;
-    my ( $obj, $orig ) = @_;
+    my ( $obj, $orig, $msg ) = @_;
 
     $obj->gather_changed_cols( $orig, $app );
 
@@ -2412,7 +2412,7 @@ sub post_scheduled {
             my $max = $blog->$col;
             $obj->handle_max_revisions($max);
         }
-        my $revision = $obj->save_revision( MT->translate('Scheduled.') );
+        my $revision = $obj->save_revision($msg);
         $obj->current_revision($revision);
 
         # call update to bypass instance save method
