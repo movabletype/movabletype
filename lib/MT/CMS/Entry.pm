@@ -1675,7 +1675,9 @@ sub save {
             ( $6 || 0 );
         $obj->authored_on($ts);
     }
-    if ( $perms->can_do("edit_${type}_unpublished_on") ) {
+    if (   $perms->can_do("edit_${type}_unpublished_on")
+        && $obj->status != MT::Entry::UNPUBLISH() )
+    {
         if ( $uo_d || $uo_t ) {
             my %param = ();
             my $uo    = $uo_d . ' ' . $uo_t;
