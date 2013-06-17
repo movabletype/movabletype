@@ -214,7 +214,7 @@ sub personal_stats_widget {
             = $perms && $perms->can_edit_entry( $last_post, $app->user );
     }
 
-    if ( my ($url) = $user->userpic_url() ) {
+    if ( my ($url) = $user->userpic_url( Width => 50, Height => 50 ) ) {
         $param->{author_userpic_url} = $url;
     }
     $param->{author_userpic_width}  = 50;
