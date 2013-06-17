@@ -67,7 +67,37 @@ __SQL__
                 label => 'Migrating Blog Administrator roles in MT4...',
             },
         },
+        '_v6_rename_this_is_you_widget' => {
+            version_limit => 6.0003,
+            priority      => 3.0,
+            updater       => {
+                type  => 'author',
+                label => "Rename This is you widget...",
+                code  => \&_v6_rename_this_is_you_widget,
+            },
+        },
     };
+}
+
+sub _v6_rename_this_is_you_widget {
+    my $user    = shift;
+    my $widgets = $user->widgets;
+    return 1 unless $widgets;
+
+    foreach my $key ( keys %$widgets ) {
+        if ( $key eq 'dashboard:user:' . $user->id ) {
+            my @widget_keys = keys %{ $widgets->{$key} };
+            delete $widgets->{$key}->{'this_is_you-1'}
+                if ( grep { $_ eq 'this_is_you-1' } @widget_keys );
+            $widgets->{$key}->{'personal_stats'} = {
+                order => 1,
+                set   => 'sidebar',
+            };
+        }
+    }
+
+    $user->widgets($widgets);
+    $user->save;
 }
 
 1;
