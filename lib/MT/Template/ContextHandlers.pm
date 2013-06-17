@@ -1116,7 +1116,7 @@ sub build_date {
                 unless $blog;
         }
     }
-    my $lang 
+    my $lang
         = $args->{language}
         || $ctx->var('local_lang_id')
         || ( $blog && $blog->date_language );
@@ -1941,7 +1941,7 @@ sub _hdlr_loop {
     my $var = $ctx->var($name);
     return ''
         unless $var && ( ( ref($var) eq 'ARRAY' ) && ( scalar @$var ) )
-            || ( ( ref($var) eq 'HASH' ) && ( scalar( keys %$var ) ) );
+        || ( ( ref($var) eq 'HASH' ) && ( scalar( keys %$var ) ) );
 
     my $hash_var;
     if ( 'HASH' eq ref($var) ) {
@@ -3991,7 +3991,7 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
         # the block (so any variables/context changes made in that template
         # affect the contained template code)
         my $tokens = $ctx->stash('tokens');
-        local $ctx->{__stash}{vars}{lc $name} = sub {
+        local $ctx->{__stash}{vars}{ lc $name } = sub {
             my $builder = $ctx->stash('builder');
             my $html = $builder->build( $ctx, $tokens, $cond );
             return $ctx->error( $builder->errstr ) unless defined $html;
@@ -4240,8 +4240,8 @@ B<Example:> Passing Parameters to a Template Module
                 )
                 )
                 if $cur_tmpl
-                    && $cur_tmpl->id
-                    && ( $cur_tmpl->id == $tmpl->id );
+                && $cur_tmpl->id
+                && ( $cur_tmpl->id == $tmpl->id );
 
             $req->stash( $stash_id, [ $tmpl, undef ] );
         }
@@ -4249,7 +4249,7 @@ B<Example:> Passing Parameters to a Template Module
         my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
 
         my %include_recipe;
-        my $use_ssi 
+        my $use_ssi
             = $blog
             && $blog->include_system
             && ( $arg->{ssi} || $tmpl->include_with_ssi ) ? 1 : 0;
@@ -4282,13 +4282,14 @@ B<Example:> Passing Parameters to a Template Module
 
         if ( $blog && $blog->include_cache ) {
             $cache_expire_type = $tmpl->cache_expire_type || 0;
-            $cache_enabled = ( ( $arg->{cache} && $arg->{cache} > 0 )
-            || $arg->{cache_key}
-            || $arg->{key}
-            || ( exists $arg->{ttl} )
-            || ( $cache_expire_type != 0 ) ) ? 1 : 0;
+            $cache_enabled
+                = (    ( $arg->{cache} && $arg->{cache} > 0 )
+                    || $arg->{cache_key}
+                    || $arg->{key}
+                    || ( exists $arg->{ttl} )
+                    || ( $cache_expire_type != 0 ) ) ? 1 : 0;
         }
-        my $cache_key 
+        my $cache_key
             = $arg->{cache_key}
             || $arg->{key}
             || $tmpl->get_cache_key();
@@ -4483,7 +4484,8 @@ B<Example:> Passing Parameters to a Template Module
                 MT->translate( "Cannot find included file '[_1]'", $file ) )
                 unless $path;
             local *FH;
-            open FH, $path
+            open FH,
+                $path
                 or return $ctx->error(
                 MT->translate(
                     "Error opening included file '[_1]': [_2]",
@@ -5366,13 +5368,31 @@ sub _hdlr_static_path {
 The value of the C<SupportDirectoryURL> configuration setting. This value is
 guaranteed to end with a "/" character.
 
+=over 4
+
+=item * with_domain (optional; default "0")
+
+Adds domain name of website before SupportDirectoryURL if this attribute is set to true (1)
+and SupportDirectoryURL does not begin from "http".
+
 =for tags configuration
 
 =cut
 
 sub _hdlr_support_directory_url {
-    my ($ctx) = @_;
-    return MT->support_directory_url;
+    my ( $ctx, $args ) = @_;
+    my $url = MT->support_directory_url;
+    if ( $args->{with_domain} && $url !~ m!^http! ) {
+        my $blog = $ctx->stash('blog') or return $url;
+        my $host = $blog->site_url;
+        if ( $url !~ m!^/! ) {
+            $url = '/' . $url;
+        }
+        if ( $host =~ m!(https?://[^/:]+)(:\d+)?/?! ) {
+            $url = $1 . $url;
+        }
+    }
+    return $url;
 }
 
 ###########################################################################
@@ -5773,7 +5793,7 @@ B<Example:>
             ,    # year/month, used as default archive map
 
         );
-        $format =~ s!%y/%m!%_Z!g if defined $format;
+        $format =~ s!%y/%m!%_Z!g               if defined $format;
         $format =~ s!%([_-]?[A-Za-z])!$f{$1}!g if defined $format;
 
         # now build this template and return result
