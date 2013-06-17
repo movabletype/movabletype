@@ -31,7 +31,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.06';
+$VERSION = '1.09';
 
 # program map table "stream_type" lookup (ref 6/1)
 my %streamType = (
@@ -129,6 +129,14 @@ my %noSyntax = (
         PrintHex => 1,
         PrintConv => \%streamType,
         SeparateTable => 'StreamType',
+    },
+    Duration => {
+        Notes => q{
+            the -fast option may be used to avoid scanning to the end of file to
+            calculate the Duration
+        },
+        ValueConv => '$val / 27000000', # (clock is 27MHz)
+        PrintConv => 'ConvertDuration($val)',
     },
     # the following tags are for documentation purposes only
     _AC3  => { SubDirectory => { TagTable => 'Image::ExifTool::M2TS::AC3' } },
@@ -301,8 +309,9 @@ sub ProcessM2TS($$)
 {
     my ($exifTool, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
-    my ($buff, $plen, $i, $j, $fileType, $eof);
-    my (%pmt, %pidType, %didPID, %data, %sectLen);
+    my ($buff, $pLen, $upkPrefix, $j, $fileType, $eof);
+    my (%pmt, %pidType, %data, %sectLen);
+    my ($startTime, $endTime, $backScan, $maxBack);
     my $verbose = $exifTool->Options('Verbose');
     my $out = $exifTool->Options('TextOut');
 
@@ -311,10 +320,12 @@ sub ProcessM2TS($$)
     # test for magic number (sync byte is the only thing we can safely check)
     return 0 unless $buff =~ /^(....)?\x47/s;
     unless ($1) {
-        $plen = 188;        # no timecode
+        $pLen = 188;        # no timecode
         $fileType = 'M2T';  # (just as a way to tell there is no timecode)
+        $upkPrefix = 'N';
     } else {
-        $plen = 192; # 188-byte transport packet + leading 4-byte timecode (ref 4)
+        $pLen = 192; # 188-byte transport packet + leading 4-byte timecode (ref 4)
+        $upkPrefix = 'x4N';
     }
     $exifTool->SetFileType($fileType);
     SetByteOrder('MM');
@@ -328,20 +339,53 @@ sub ProcessM2TS($$)
         2 => 'Transport Stream Description Table',
         0x1fff => 'Null Packet',
     );
-    my %needPID = ( 0x00 => 1 );    # lookup for stream PID's that we still need to parse
+    my %didPID = ( 1 => 0, 2 => 0, 0x1fff => 0 );
+    my %needPID = ( 0 => 1 );       # lookup for stream PID's that we still need to parse
+    my $prePos = $pLen - 188;       # byte position of packet prefix
+    my $readSize = 64 * $pLen;      # read 64 packets at once
+    my $pEnd = 0;
+    my $i = 0;
+    $buff = '';
 
     # parse packets from MPEG-2 Transport Stream
-    for ($i=0; %needPID; ++$i) {
+    for (;;) {
 
-        # read the next packet
-        $raf->Read($buff, $plen) == $plen or $eof = 1, last;
+        unless (%needPID) {
+            last unless defined $startTime;
+            # seek backwards to find last PCR
+            if (defined $backScan) {
+                last if defined $endTime;
+                $backScan -= $pLen;
+                last if $backScan < $maxBack;
+            } else {
+                undef $endTime;
+                last if $exifTool->Options('FastScan');
+                $verbose and print "[Starting backscan for last PCR]\n";
+                # calculate position of last complete packet
+                my $fwdPos = $raf->Tell();
+                $raf->Seek(0, 2) or last;
+                my $fsize = $raf->Tell();
+                my $nPack = int($fsize / $pLen);
+                $backScan = ($nPack - 1) * $pLen - $fsize;
+                # set limit on how far back we will go
+                $maxBack = $fwdPos - $fsize;
+                $maxBack = -256000 if $maxBack < -256000;
+            }
+            $raf->Seek($backScan, 2) or last;
+        }
+        my $pos = $pEnd;
+        # read more if necessary
+        if ($pos + $pLen > length $buff) {
+            $raf->Read($buff, $readSize) >= $pLen or $eof = 1, last;
+            $pos = $pEnd = 0;
+        }
+        $pEnd += $pLen;
         # decode the packet prefix
-        my $pos = length($buff) - 188;
-        my $prefix = Get32u(\$buff, $pos);
-        $pos += 4;
+        $pos += $prePos;
+        my $prefix = unpack("x${pos}N", $buff); # (use unpack instead of Get32u for speed)
         # validate sync byte
-        unless (($prefix & 0xff000000) >> 24 == 0x47) {
-            $exifTool->Warn('Synchronization error');
+        unless (($prefix & 0xff000000) == 0x47000000) {
+            $exifTool->Warn('Synchronization error') unless defined $backScan;
             last;
         }
       # my $transport_error_indicator    = $prefix & 0x00800000;
@@ -355,50 +399,71 @@ sub ProcessM2TS($$)
 
         if ($verbose > 1) {
             print  $out "Transport packet $i:\n";
-            Image::ExifTool::HexDump(\$buff, undef, Addr => $i * $plen, Out => $out) if $verbose > 2;
+            ++$i;
+            Image::ExifTool::HexDump(\$buff, $pLen, Addr => $i * $pLen, Out => $out,
+                Start => $pos - $prePos) if $verbose > 2;
             my $str = $pidName{$pid} ? " ($pidName{$pid})" : '';
-            printf $out "  Timecode:   0x%.4x\n", Get32u(\$buff, 0) if $plen == 192;
+            printf $out "  Timecode:   0x%.4x\n", Get32u(\$buff, 0) if $pLen == 192;
             printf $out "  Packet ID:  0x%.4x$str\n", $pid;
             printf $out "  Start Flag: %s\n", $payload_unit_start_indicator ? 'Yes' : 'No';
         }
 
-        # skip adaptation field
+        $pos += 4;
+        # handle adaptation field
         if ($adaptation_field_exists) {
-            $pos += 1 + Get8u(\$buff, $pos);
-            $pos > $plen and $exifTool->Warn('Invalid adaptation field length'), last;
+            my $len = Get8u(\$buff, $pos++);
+            $pos + $len > $pEnd and $exifTool->Warn('Invalid adaptation field length'), last;
+            # read PCR value for calculation of Duration
+            if ($len > 6) {
+                my $flags = Get8u(\$buff, $pos);
+                if ($flags & 0x10) { # PCR_flag
+                    # combine 33-bit program_clock_reference_base and 9-bit extension
+                    my $pcrBase = Get32u(\$buff, $pos + 1);
+                    my $pcrExt  = Get16u(\$buff, $pos + 5);
+                    # ignore separate programs (PID's) and store just the
+                    # first and last timestamps found in the file (is this OK?)
+                    $endTime = 300 * (2 * $pcrBase + ($pcrExt >> 15)) + ($pcrExt & 0x01ff);
+                    $startTime = $endTime unless defined $startTime;
+                }
+            }
+            $pos += $len;
         }
 
         # all done with this packet unless it carries a payload
-        next unless $payload_data_exists;
+        # or if we are just looking for the last timestamp
+        next unless $payload_data_exists and not defined $backScan;
 
         # decode payload data
         if ($pid == 0 or            # program association table
             defined $pmt{$pid})     # program map table(s)
         {
             # must interpret pointer field if payload_unit_start_indicator is set
+            my $buf2;
             if ($payload_unit_start_indicator) {
                 # skip to start of section
                 my $pointer_field = Get8u(\$buff, $pos);
                 $pos += 1 + $pointer_field;
-                $pos >= $plen and $exifTool->Warn('Bad pointer field'), last;
+                $pos >= $pEnd and $exifTool->Warn('Bad pointer field'), last;
+                $buf2 = substr($buff, $pEnd-$pLen, $pLen);
+                $pos -= $pEnd - $pLen;
             } else {
                 # not the start of a section
                 next unless $sectLen{$pid};
                 my $more = $sectLen{$pid} - length($data{$pid});
-                my $size = length($buff) - $pos;
+                my $size = $pLen - $pos;
                 $size = $more if $size > $more;
                 $data{$pid} .= substr($buff, $pos, $size);
                 next unless $size == $more;
-                # we have the complete section now, so put back into $buff for parsing
-                $buff = $data{$pid};
+                # we have the complete section now, so put into $buf2 for parsing
+                $buf2 = $data{$pid};
                 $pos = 0;
                 delete $data{$pid};
                 delete $sectLen{$pid};
             }
-            my $slen = length($buff);   # section length
+            my $slen = length($buf2);   # section length
             $pos + 8 > $slen and $exifTool->Warn("Truncated payload"), last;
             # validate table ID
-            my $table_id = Get8u(\$buff, $pos);
+            my $table_id = Get8u(\$buf2, $pos);
             my $name = ($tableID{$table_id} || sprintf('Unknown (0x%x)',$table_id)) . ' Table';
             my $expectedID = $pid ? 0x02 : 0x00;
             unless ($table_id == $expectedID) {
@@ -408,19 +473,19 @@ sub ProcessM2TS($$)
                 next;
             }
             # validate section syntax indicator for parsed tables (PAT, PMT)
-            my $section_syntax_indicator = Get8u(\$buff, $pos + 1) & 0xc0;
+            my $section_syntax_indicator = Get8u(\$buf2, $pos + 1) & 0xc0;
             $section_syntax_indicator == 0x80 or $exifTool->Warn("Bad $name"), last;
-            my $section_length = Get16u(\$buff, $pos + 1) & 0x0fff;
+            my $section_length = Get16u(\$buf2, $pos + 1) & 0x0fff;
             $section_length > 1021 and $exifTool->Warn("Invalid $name length"), last;
             if ($slen < $section_length + 3) { # (3 bytes for table_id + section_length)
                 # must wait until we have the full section
-                $data{$pid} = substr($buff, $pos);
+                $data{$pid} = substr($buf2, $pos);
                 $sectLen{$pid} = $section_length + 3;
                 next;
             }
-            my $program_number = Get16u(\$buff, $pos + 3);
-            my $section_number = Get8u(\$buff, $pos + 6);
-            my $last_section_number = Get8u(\$buff, $pos + 7);
+            my $program_number = Get16u(\$buf2, $pos + 3);
+            my $section_number = Get8u(\$buf2, $pos + 6);
+            my $last_section_number = Get8u(\$buf2, $pos + 7);
             if ($verbose > 1) {
                 print  $out "  $name length: $section_length\n";
                 print  $out "  Program No: $program_number\n" if $pid;
@@ -433,8 +498,8 @@ sub ProcessM2TS($$)
             if ($pid == 0) {
                 # decode PAT (Program Association Table)
                 while ($pos <= $end - 4) {
-                    my $program_number = Get16u(\$buff, $pos);
-                    my $program_map_PID = Get16u(\$buff, $pos + 2) & 0x1fff;
+                    my $program_number = Get16u(\$buf2, $pos);
+                    my $program_map_PID = Get16u(\$buf2, $pos + 2) & 0x1fff;
                     $pmt{$program_map_PID} = $program_number; # save our PMT PID's
                     if (not $pidName{$program_map_PID} or $verbose > 1) {
                         my $str = "Program $program_number Map";
@@ -447,8 +512,8 @@ sub ProcessM2TS($$)
             } else {
                 # decode PMT (Program Map Table)
                 $pos + 4 > $slen and $exifTool->Warn('Truncated PMT'), last;
-                my $pcr_pid = Get16u(\$buff, $pos) & 0x1fff;
-                my $program_info_length = Get16u(\$buff, $pos + 2) & 0x0fff;
+                my $pcr_pid = Get16u(\$buf2, $pos) & 0x1fff;
+                my $program_info_length = Get16u(\$buf2, $pos + 2) & 0x0fff;
                 if (not $pidName{$pcr_pid} or $verbose > 1) {
                     my $str = "Program $program_number Clock Reference";
                     $pidName{$pcr_pid} = $str;
@@ -458,20 +523,20 @@ sub ProcessM2TS($$)
                 $pos + $program_info_length > $slen and $exifTool->Warn('Truncated program info'), last;
                 # dump program information descriptors if verbose
                 if ($verbose > 1) { for ($j=0; $j<$program_info_length-2; ) {
-                    my $descriptor_tag = Get8u(\$buff, $pos + $j);
-                    my $descriptor_length = Get8u(\$buff, $pos + $j + 1);
+                    my $descriptor_tag = Get8u(\$buf2, $pos + $j);
+                    my $descriptor_length = Get8u(\$buf2, $pos + $j + 1);
                     $j += 2;
                     last if $j + $descriptor_length > $program_info_length;
-                    my $desc = substr($buff, $pos+$j, $descriptor_length);
+                    my $desc = substr($buf2, $pos+$j, $descriptor_length);
                     $j += $descriptor_length;
                     $desc =~ s/([\x00-\x1f\x80-\xff])/sprintf("\\x%.2x",ord $1)/eg;
                     printf $out "    Program Descriptor: Type=0x%.2x \"$desc\"\n", $descriptor_tag;
                 }}
                 $pos += $program_info_length; # skip descriptors (for now)
                 while ($pos <= $end - 5) {
-                    my $stream_type = Get8u(\$buff, $pos);
-                    my $elementary_pid = Get16u(\$buff, $pos + 1) & 0x1fff;
-                    my $es_info_length = Get16u(\$buff, $pos + 3) & 0x0fff;
+                    my $stream_type = Get8u(\$buf2, $pos);
+                    my $elementary_pid = Get16u(\$buf2, $pos + 1) & 0x1fff;
+                    my $es_info_length = Get16u(\$buf2, $pos + 3) & 0x0fff;
                     if (not $pidName{$elementary_pid} or $verbose > 1) {
                         my $str = $streamType{$stream_type};
                         $str or $str = ($stream_type < 0x7f ? 'Reserved' : 'Private');
@@ -491,11 +556,11 @@ sub ProcessM2TS($$)
                     $pos + $es_info_length > $slen and $exifTool->Warn('Trunacted ES info'), $pos = $end, last;
                     # parse elementary stream descriptors
                     for ($j=0; $j<$es_info_length-2; ) {
-                        my $descriptor_tag = Get8u(\$buff, $pos + $j);
-                        my $descriptor_length = Get8u(\$buff, $pos + $j + 1);
+                        my $descriptor_tag = Get8u(\$buf2, $pos + $j);
+                        my $descriptor_length = Get8u(\$buf2, $pos + $j + 1);
                         $j += 2;
                         last if $j + $descriptor_length > $es_info_length;
-                        my $desc = substr($buff, $pos+$j, $descriptor_length);
+                        my $desc = substr($buf2, $pos+$j, $descriptor_length);
                         $j += $descriptor_length;
                         if ($verbose > 1) {
                             my $dstr = $desc;
@@ -512,11 +577,10 @@ sub ProcessM2TS($$)
                     $pos += $es_info_length;
                 }
             }
-            $pos = $end + 4; # skip CRC
-        } elsif ($pid == 1) {       # conditional access table
-        } elsif ($pid == 2) {       # transport stream description table
-        } elsif ($pid == 0x1fff) {  # null packet
-        } elsif (not $didPID{$pid}) {
+            # $pos = $end + 4; # skip CRC
+
+        } elsif (not defined $didPID{$pid}) {
+
             # save data from the start of each elementary stream
             if ($payload_unit_start_indicator) {
                 if (defined $data{$pid}) {
@@ -533,7 +597,7 @@ sub ProcessM2TS($$)
                     $needPID{$pid} = -1;
                 }
                 # check for a PES header
-                next if $pos + 6 > $plen;
+                next if $pos + 6 > $pEnd;
                 my $start_code = Get32u(\$buff, $pos);
                 next unless ($start_code & 0xffffff00) == 0x00000100;
                 my $stream_id = $start_code & 0xff;
@@ -544,20 +608,20 @@ sub ProcessM2TS($$)
                 }
                 $pos += 6;
                 unless ($noSyntax{$stream_id}) {
-                    next if $pos + 3 > $plen;
+                    next if $pos + 3 > $pEnd;
                     # validate PES syntax
                     my $syntax = Get8u(\$buff, $pos) & 0xc0;
                     $syntax == 0x80 or $exifTool->Warn('Bad PES syntax'), next;
                     # skip PES header
                     my $pes_header_data_length = Get8u(\$buff, $pos + 2);
                     $pos += 3 + $pes_header_data_length;
-                    next if $pos >= $plen;
+                    next if $pos >= $pEnd;
                 }
-                $data{$pid} = substr($buff, $pos);
+                $data{$pid} = substr($buff, $pos, $pEnd-$pos);
             } else {
                 next unless defined $data{$pid};
                 # accumulate data for each elementary stream
-                $data{$pid} .= substr($buff, $pos);
+                $data{$pid} .= substr($buff, $pos, $pEnd-$pos);
             }
             # save only the first 256 bytes of most streams, except for
             # unknown or H.264 streams where we save 1 kB
@@ -578,6 +642,12 @@ sub ProcessM2TS($$)
             delete $needPID{$pid};
             $didPID{$pid} = 1;
         }
+    }
+
+    # calculate Duration if available
+    if (defined $startTime and defined $endTime and $startTime != $endTime) {
+        $endTime += 0x80000000 * 1200 if $startTime > $endTime; # handle 33-bit wrap
+        $exifTool->HandleTag($tagTablePtr, 'Duration', $endTime - $startTime);
     }
 
     if ($verbose) {
@@ -623,7 +693,7 @@ video.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

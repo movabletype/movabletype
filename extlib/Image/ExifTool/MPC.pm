@@ -105,7 +105,7 @@ sub ProcessMPC($$)
         my %dirInfo = ( DataPt => \$buff, DataPos => $pos );
         $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
     } else {
-        $exifTool->Warn('Audio info not currently extracted from this version MPC file');
+        $exifTool->Warn('Audio info currently not extracted from this version MPC file');
     }
 
     # process APE trailer if it exists
@@ -134,7 +134,7 @@ information from Musepack (MPC) audio files.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

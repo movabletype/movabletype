@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 sub ProcessITC($$);
 
@@ -68,7 +68,7 @@ sub ProcessITC($$);
     5 => {
         Name => 'ImageType',
         Format => 'undef[4]',
-        PrintConv => {
+        ValueConv => { # (not PrintConv because the unconverted JPEG value is nasty)
             'PNGf' => 'PNG',
             "\0\0\0\x0d" => 'JPEG',
         },
@@ -191,7 +191,7 @@ information (including artwork images) from iTunes Cover Flow files.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

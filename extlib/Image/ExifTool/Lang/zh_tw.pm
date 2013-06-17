@@ -11,7 +11,7 @@ package Image::ExifTool::Lang::zh_tw;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.04';
+$VERSION = '1.06';
 
 %Image::ExifTool::Lang::zh_tw::Translate = (
    'Album' => '相簿',
@@ -214,6 +214,14 @@ $VERSION = '1.04';
    'ExposureTime' => '曝光時間',
    'ExtraSamples' => '額外的樣本',
    'FNumber' => '光圈',
+   'FaceOrientation' => {
+      PrintConv => {
+        'Horizontal (normal)' => '0° (頂端/左邊)',
+        'Rotate 180' => '180° (底部/右邊)',
+        'Rotate 270 CW' => '90° CW (左邊/底部)',
+        'Rotate 90 CW' => '90° CCW (右邊/頂端)',
+      },
+    },
    'FaxRecvParams' => '傳真接收參數',
    'FaxRecvTime' => '傳真接收時間',
    'FaxSubAddress' => '傳真附屬地址',
@@ -230,6 +238,7 @@ $VERSION = '1.04';
       },
     },
    'FileType' => '檔案格式',
+   'Filename' => '檔案名稱',
    'FillOrder' => '填寫訂單',
    'Flash' => {
       Description => '閃光燈',
@@ -428,6 +437,7 @@ $VERSION = '1.04';
     },
    'HostComputer' => '主機',
    'Hue' => '色相',
+   'ICCProfile' => 'ICC 色彩設定檔',
    'IPTC-NAA' => 'IPTC-NAA 元資料',
    'ImageDescription' => '影像標題',
    'ImageHeight' => '影像高度',
@@ -443,6 +453,14 @@ $VERSION = '1.04';
    'InteropIndex' => '互通性鑑定',
    'InteropOffset' => '互用標記',
    'InteropVersion' => '互通性版本',
+   'JPEGQuality' => {
+      Description => '影像品質',
+      PrintConv => {
+        'Extra Fine' => '超精細',
+        'Fine' => '精細',
+        'Standard' => '標準品質',
+      },
+    },
    'Keyword' => '關鍵字',
    'Keywords' => '關鍵字',
    'Lens' => '鏡頭',
@@ -767,7 +785,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -16,7 +16,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.16';
+$VERSION = '1.22';
 
 sub ProcessJpeg2000Box($$$);
 
@@ -63,11 +63,47 @@ my %uuid = (
   # 'UUID-GeoJP2' => "\xb1\x4b\xf8\xbd\x08\x3d\x4b\x43\xa5\xae\x8c\xd7\xd5\xa6\xce\x03",
 );
 
+# JPEG2000 codestream markers (ref ISO/IEC FCD15444-1/2)
+my %j2cMarker = (
+    0x4f => 'SOC', # start of codestream
+    0x51 => 'SIZ', # image and tile size
+    0x52 => 'COD', # coding style default
+    0x53 => 'COC', # coding style component
+    0x55 => 'TLM', # tile-part lengths
+    0x57 => 'PLM', # packet length, main header
+    0x58 => 'PLT', # packet length, tile-part header
+    0x5c => 'QCD', # quantization default
+    0x5d => 'QCC', # quantization component
+    0x5e => 'RGN', # region of interest
+    0x5f => 'POD', # progression order default
+    0x60 => 'PPM', # packed packet headers, main
+    0x61 => 'PPT', # packed packet headers, tile-part
+    0x63 => 'CRG', # component registration
+    0x64 => 'CME', # comment and extension
+    0x90 => 'SOT', # start of tile-part
+    0x91 => 'SOP', # start of packet
+    0x92 => 'EPH', # end of packet header
+    0x93 => 'SOD', # start of data
+    # extensions (ref ISO/IEC FCD15444-2)
+    0x70 => 'DCO', # variable DC offset
+    0x71 => 'VMS', # visual masking
+    0x72 => 'DFS', # downsampling factor style
+    0x73 => 'ADS', # arbitrary decomposition style
+  # 0x72 => 'ATK', # arbitrary transformation kernels ?
+    0x78 => 'CBD', # component bit depth
+    0x74 => 'MCT', # multiple component transformation definition
+    0x75 => 'MCC', # multiple component collection
+    0x77 => 'MIC', # multiple component intermediate collection
+    0x76 => 'NLT', # non-linearity point transformation
+);
+
 # JPEG 2000 "box" (ie. atom) names
+# Note: only tags with a defined "Format" are extracted
 %Image::ExifTool::Jpeg2000::Main = (
     GROUPS => { 2 => 'Image' },
     PROCESS_PROC => \&ProcessJpeg2000Box,
     WRITE_PROC => \&ProcessJpeg2000Box,
+    PREFERRED => 1, # always add these tags when writing
     NOTES => q{
         The tags below are extracted from JPEG 2000 images, however ExifTool
         currently writes only EXIF, IPTC and XMP tags in these images.
@@ -92,31 +128,12 @@ my %uuid = (
             },
         },
         bpcc => 'BitsPerComponent',
-        colr => [
-            {
-                Name => 'ICC_Profile',
-                Condition => '$$valPt =~ /^(\x02|\x03)/',
-                SubDirectory => {
-                    TagTable => 'Image::ExifTool::ICC_Profile::Main',
-                    Start => '$valuePtr + 3',
-                },
+        colr => {
+            Name => 'ColorSpecification',
+            SubDirectory => {
+                TagTable => 'Image::ExifTool::Jpeg2000::ColorSpec',
             },
-            {
-                Name => 'Colorspace',
-                Condition => '$$valPt =~ /^\x01/',
-                Format => 'binary',
-                ValueConv => 'unpack("x3N", $val)',
-                PrintConv => {
-                    16 => 'sRGB',
-                    17 => 'Grayscale',
-                    18 => 'sYCC',
-                },
-            },
-            {
-                Name => 'ColorSpecification',
-                Binary => 1,
-            },
-        ],
+        },
         pclr => 'Palette',
         cdef => 'ComponentDefinition',
        'res '=> {
@@ -179,19 +196,26 @@ my %uuid = (
     jp2c => 'ContiguousCodestream',
     jp2i => {
         Name => 'IntellectualProperty',
-        SubDirectory => {
-            TagTable => 'Image::ExifTool::XMP::Main',
-        },
+        SubDirectory => { TagTable => 'Image::ExifTool::XMP::Main' },
     },
    'xml '=> {
         Name => 'XML',
-        SubDirectory => {
-            TagTable => 'Image::ExifTool::XMP::Main',
+        Writable => 'undef',
+        Flags => [ 'Binary', 'Protected' ],
+        List => 1,
+        Notes => q{
+            by default, the XML data in this tag is parsed using the ExifTool XMP module
+            to to allow individual tags to be accessed when reading, but it may also be
+            extracted as a block via the "XML" tag, which is also how this tag is
+            written and copied.  This is a List-type tag because multiple XML blocks may
+            exist
         },
+        SubDirectory => { TagTable => 'Image::ExifTool::XMP::Main' },
     },
     uuid => [
         {
             Name => 'UUID-EXIF',
+            # (this is the EXIF that we create)
             Condition => '$$valPt=~/^JpgTiffExif->JP2/',
             SubDirectory => {
                 TagTable => 'Image::ExifTool::Exif::Main',
@@ -202,8 +226,30 @@ my %uuid = (
             },
         },
         {
+            Name => 'UUID-EXIF2',
+            # written by Photoshop 7.01+Adobe JPEG2000-plugin v1.5
+            Condition => '$$valPt=~/^\x05\x37\xcd\xab\x9d\x0c\x44\x31\xa7\x2a\xfa\x56\x1f\x2a\x11\x3e/',
+            SubDirectory => {
+                TagTable => 'Image::ExifTool::Exif::Main',
+                ProcessProc => \&Image::ExifTool::ProcessTIFF,
+                WriteProc => \&Image::ExifTool::WriteTIFF,
+                DirName => 'EXIF',
+                Start => '$valuePtr + 16',
+            },
+        },
+        {
             Name => 'UUID-IPTC',
+            # (this is the IPTC that we create)
             Condition => '$$valPt=~/^\x33\xc7\xa4\xd2\xb8\x1d\x47\x23\xa0\xba\xf1\xa3\xe0\x97\xad\x38/',
+            SubDirectory => {
+                TagTable => 'Image::ExifTool::IPTC::Main',
+                Start => '$valuePtr + 16',
+            },
+        },
+        {
+            Name => 'UUID-IPTC2',
+            # written by Photoshop 7.01+Adobe JPEG2000-plugin v1.5
+            Condition => '$$valPt=~/^\x09\xa1\x4e\x97\xc0\xb4\x42\xe0\xbe\xbf\x36\xdf\x6f\x0c\xe3\x6f/',
             SubDirectory => {
                 TagTable => 'Image::ExifTool::IPTC::Main',
                 Start => '$valuePtr + 16',
@@ -229,8 +275,22 @@ my %uuid = (
             },
         },
         {
+            Name => 'UUID-Photoshop',
+            # written by Photoshop 7.01+Adobe JPEG2000-plugin v1.5
+            Condition => '$$valPt=~/^\x2c\x4c\x01\x00\x85\x04\x40\xb9\xa0\x3e\x56\x21\x48\xd6\xdf\xeb/',
+            SubDirectory => {
+                TagTable => 'Image::ExifTool::Photoshop::Main',
+                Start => '$valuePtr + 16',
+            },
+        },
+        {
             Name => 'UUID-Unknown',
         },
+        # also written by Adobe JPEG2000 plugin v1.5:
+        # 3a 0d 02 18 0a e9 41 15 b3 76 4b ca 41 ce 0e 71 - 1 byte (01)
+        # 47 c9 2c cc d1 a1 45 81 b9 04 38 bb 54 67 71 3b - 1 byte (01)
+        # bc 45 a7 74 dd 50 4e c6 a9 f6 f3 a1 37 f4 7e 90 - 4 bytes (00 00 00 32)
+        # d7 c8 c5 ef 95 1f 43 b2 87 57 04 25 00 f5 38 e8 - 4 bytes (00 00 00 32)
     ],
     uinf => {
         Name => 'UUIDInfo',
@@ -359,17 +419,111 @@ my %uuid = (
     },
 );
 
+%Image::ExifTool::Jpeg2000::ColorSpec = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 2 => 'Image' },
+    FORMAT => 'int8s',
+    0 => {
+        Name => 'ColorSpecMethod',
+        RawConv => '$$self{ColorSpecMethod} = $val',
+        PrintConv => {
+            1 => 'Enumerated',
+            2 => 'Restricted ICC',
+            3 => 'Any ICC',
+            4 => 'Vendor Color',
+        },
+    },
+    1 => 'ColorSpecPrecedence',
+    2 => {
+        Name => 'ColorSpecApproximation',
+        PrintConv => {
+            0 => 'Not Specified',
+            1 => 'Accurate',
+            2 => 'Exceptional Quality',
+            3 => 'Reasonable Quality',
+            4 => 'Poor Quality',
+        },
+    },
+    3 => [
+        {
+            Name => 'ICC_Profile',
+            Condition => q{
+                $$self{ColorSpecMethod} == 2 or
+                $$self{ColorSpecMethod} == 3
+            },
+            Format => 'undef[$size-3]',
+            SubDirectory => {
+                TagTable => 'Image::ExifTool::ICC_Profile::Main',
+            },
+        },
+        {
+            Name => 'ColorSpace',
+            Condition => '$$self{ColorSpecMethod} == 1',
+            Format => 'int32u',
+            PrintConv => { # ref 15444-2 2002-05-15
+                0 => 'Bi-level',
+                1 => 'YCbCr(1)',
+                3 => 'YCbCr(2)',
+                4 => 'YCbCr(3)',
+                9 => 'PhotoYCC',
+                11 => 'CMY',
+                12 => 'CMYK',
+                13 => 'YCCK',
+                14 => 'CIELab',
+                15 => 'Bi-level(2)', # (incorrectly listed as 18 in 15444-2 2000-12-07)
+                16 => 'sRGB',
+                17 => 'Grayscale',
+                18 => 'sYCC',
+                19 => 'CIEJab',
+                20 => 'e-sRGB',
+                21 => 'ROMM-RGB',
+                # incorrect in 15444-2 2000-12-07
+                #22 => 'sRGB based YCbCr',
+                #23 => 'YPbPr(1125/60)',
+                #24 => 'YPbPr(1250/50)',
+                22 => 'YPbPr(1125/60)',
+                23 => 'YPbPr(1250/50)',
+                24 => 'e-sYCC',
+            },
+        },
+        {
+            Name => 'ColorSpecData',
+            Format => 'undef[$size-3]',
+            Binary => 1,
+        },
+    ],
+);
+
 #------------------------------------------------------------------------------
 # Create new JPEG 2000 boxes when writing
-# (Currently only supports adding certain UUID boxes)
+# (Currently only supports adding top-level Writable JPEG2000 tags and certain UUID boxes)
 # Inputs: 0) ExifTool object ref, 1) Output file or scalar ref
 # Returns: 1 on success
 sub CreateNewBoxes($$)
 {
     my ($exifTool, $outfile) = @_;
+    my $addTags = $$exifTool{AddJp2Tags};
     my $addDirs = $$exifTool{AddJp2Dirs};
+    delete $$exifTool{AddJp2Tags};
     delete $$exifTool{AddJp2Dirs};
-    my $dirName;
+    my ($tag, $dirName);
+    # add JPEG2000 tags
+    foreach $tag (sort keys %$addTags) {
+        my $tagInfo = $$addTags{$tag};
+        my $nvHash = $exifTool->GetNewValueHash($tagInfo);
+        # (native JPEG2000 information is always preferred, so don't check IsCreating)
+        next unless $$tagInfo{List} or $exifTool->IsOverwriting($nvHash) > 0;
+        next if $$nvHash{EditOnly};
+        my @vals = $exifTool->GetNewValues($nvHash);
+        my $val;
+        foreach $val (@vals) {
+            my $boxhdr = pack('N', length($val) + 8) . $$tagInfo{TagID};
+            Write($outfile, $boxhdr, $val) or return 0;
+            ++$$exifTool{CHANGED};
+            $exifTool->VerboseValue("+ Jpeg2000:$$tagInfo{Name}", $val);
+        }
+    }
+    # add UUID boxes
     foreach $dirName (sort keys %$addDirs) {
         next unless $uuid{$dirName};
         my $tagInfo;
@@ -381,6 +535,9 @@ sub CreateNewBoxes($$)
                 DirName => $$subdir{DirName} || $dirName,
                 Parent => 'JP2',
             );
+            # remove "UUID-" from start of directory name to allow appropriate
+            # directories to be written as a block
+            $dirInfo{DirName} =~ s/^UUID-//;
             my $newdir = $exifTool->WriteDirectory(\%dirInfo, $tagTable, $$subdir{WriteProc});
             if (defined $newdir and length $newdir) {
                 my $boxhdr = pack('N', length($newdir) + 24) . 'uuid' . $uuid{$dirName};
@@ -405,6 +562,7 @@ sub ProcessJpeg2000Box($$$)
     my $dataPos = $$dirInfo{DataPos};
     my $dirLen = $$dirInfo{DirLen} || 0;
     my $dirStart = $$dirInfo{DirStart} || 0;
+    my $base = $$dirInfo{Base} || 0;
     my $raf = $$dirInfo{RAF};
     my $outfile = $$dirInfo{OutFile};
     my $dirEnd = $dirStart + $dirLen;
@@ -419,13 +577,14 @@ sub ProcessJpeg2000Box($$$)
     } else {
         # (must not set verbose flag when writing!)
         $verbose = $exifTool->{OPTIONS}->{Verbose};
+        $exifTool->VerboseDir($$dirInfo{DirName}) if $verbose;
     }
     # loop through all contained boxes
     my ($pos, $boxLen);
     for ($pos=$dirStart; ; $pos+=$boxLen) {
         my ($boxID, $buff, $valuePtr);
         if ($raf) {
-            $dataPos = $raf->Tell();
+            $dataPos = $raf->Tell() - $base;
             my $n = $raf->Read($buff,8);
             unless ($n == 8) {
                 $n and $err = '', last;
@@ -460,6 +619,9 @@ sub ProcessJpeg2000Box($$$)
                     while ($raf->Read($buff, 65536)) {
                         Write($outfile, $buff) or $err = 1;
                     }
+                } elsif ($verbose) {
+                    my $msg = sprintf("offset 0x%.4x to end of file", $dataPos + $base + $pos);
+                    $exifTool->VPrint(0, "$$exifTool{INDENT}- Tag '$boxID' ($msg)\n");
                 }
                 last;   # (ignore the rest of the file when reading)
             }
@@ -486,7 +648,7 @@ sub ProcessJpeg2000Box($$$)
         }
         if ($raf) {
             # read the box data
-            $dataPos = $raf->Tell();
+            $dataPos = $raf->Tell() - $base;
             $raf->Read($buff,$boxLen) == $boxLen or $err = '', last;
             $valuePtr = 0;
             $dataLen = $boxLen;
@@ -501,11 +663,29 @@ sub ProcessJpeg2000Box($$$)
             my $tmpVal = substr($$dataPt, $valuePtr, $boxLen < 128 ? $boxLen : 128);
             $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $boxID, \$tmpVal);
         }
-        # delete all UUID boxes if deleting all information
-        if ($outfile and $boxID eq 'uuid' and $exifTool->{DEL_GROUP}->{'*'}) {
-            $exifTool->VPrint(0, "  Deleting $$tagInfo{Name}\n");
-            ++$exifTool->{CHANGED};
-            next;
+        # delete all UUID boxes and any writable box if deleting all information
+        if ($outfile and $tagInfo) {
+            if ($boxID eq 'uuid' and $exifTool->{DEL_GROUP}->{'*'}) {
+                $exifTool->VPrint(0, "  Deleting $$tagInfo{Name}\n");
+                ++$exifTool->{CHANGED};
+                next;
+            } elsif ($$tagInfo{Writable}) {
+                my $isOverwriting;
+                if ($exifTool->{DEL_GROUP}->{Jpeg2000}) {
+                    $isOverwriting = 1;
+                } else {
+                    my $nvHash = $exifTool->GetNewValueHash($tagInfo);
+                    $isOverwriting = $exifTool->IsOverwriting($nvHash);
+                }
+                if ($isOverwriting) {
+                    my $val = substr($$dataPt, $valuePtr, $boxLen);
+                    $exifTool->VerboseValue("- Jpeg2000:$$tagInfo{Name}", $val);
+                    ++$exifTool->{CHANGED};
+                    next;
+                } elsif (not $$tagInfo{List}) {
+                    delete $$exifTool{AddJp2Tags}{$boxID};
+                }
+            }
         }
         if ($verbose) {
             $exifTool->VerboseInfo($boxID, $tagInfo,
@@ -513,6 +693,7 @@ sub ProcessJpeg2000Box($$$)
                 DataPt => $dataPt,
                 Size   => $boxLen,
                 Start  => $valuePtr,
+                Addr   => $valuePtr + $dataPos + $base,
             );
             next unless $tagInfo;
         }
@@ -527,14 +708,16 @@ sub ProcessJpeg2000Box($$$)
             my %subdirInfo = (
                 Parent => 'JP2',
                 DataPt => $dataPt,
-                DataPos => $dataPos,
+                DataPos => -$subdirStart, # (relative to Base)
                 DataLen => $dataLen,
                 DirStart => $subdirStart,
                 DirLen => $subdirLen,
                 DirName => $$subdir{DirName} || $$tagInfo{Name},
                 OutFile => $outfile,
-                Base => $dataPos + $subdirStart,
+                Base => $base + $dataPos + $subdirStart,
             );
+            # remove "UUID-" prefix to allow appropriate directories to be written as a block
+            $subdirInfo{DirName} =~ s/^UUID-//;
             my $subTable = GetTagTable($$subdir{TagTable}) || $tagTablePtr;
             if ($outfile) {
                 # remove this directory from our create list
@@ -551,18 +734,36 @@ sub ProcessJpeg2000Box($$$)
                 my $boxhdr = pack('N', length($newdir) + 8 + $prefixLen) . $boxID;
                 $boxhdr .= substr($$dataPt, $valuePtr, $prefixLen) if $prefixLen;
                 Write($outfile, $boxhdr, $newdir) or $err = 1;
-            } elsif (not $exifTool->ProcessDirectory(\%subdirInfo, $subTable, $$subdir{ProcessProc})) {
-                if ($subTable eq $tagTablePtr) {
-                    $err = 'JPEG 2000 format error';
-                } else {
-                    $err = "Unrecognized $$tagInfo{Name} box";
+            } else {
+                # extract writable directories if specified
+                if ($$tagInfo{Writable}) {
+                    my $lcTag = lc $$tagInfo{Name};
+                    if ($$exifTool{REQ_TAG_LOOKUP}{$lcTag} or
+                        ($exifTool->{TAGS_FROM_FILE} and not $exifTool->{EXCL_TAG_LOOKUP}{$lcTag}))
+                    {
+                        $exifTool->FoundTag($tagInfo, substr($$dataPt, $valuePtr, $boxLen));
+                        next;
+                    }
                 }
-                last;
+                unless ($exifTool->ProcessDirectory(\%subdirInfo, $subTable, $$subdir{ProcessProc})) {
+                    if ($subTable eq $tagTablePtr) {
+                        $err = 'JPEG 2000 format error';
+                    } else {
+                        $err = "Unrecognized $$tagInfo{Name} box";
+                        next if $$tagInfo{Name} eq 'XML';
+                    }
+                    last;
+                }
             }
         } elsif ($$tagInfo{Format} and not $outfile) {
             # only save tag values if Format was specified
-            my $val = ReadValue($dataPt, $valuePtr, $$tagInfo{Format}, undef, $boxLen);
-            $exifTool->FoundTag($tagInfo, $val) if defined $val;
+            my $rational;
+            my $val = ReadValue($dataPt, $valuePtr, $$tagInfo{Format}, undef, $boxLen, \$rational);
+            if (defined $val) {
+                my $key = $exifTool->FoundTag($tagInfo, $val);
+                # save Rational value
+                $$exifTool{RATIONAL}{$key} = $rational if defined $rational and defined $key;
+            }
         } elsif ($outfile) {
             my $boxhdr = pack('N', $boxLen + 8) . $boxID;
             Write($outfile, $boxhdr, substr($$dataPt, $valuePtr, $boxLen)) or $err = 1;
@@ -586,6 +787,7 @@ sub ProcessJpeg2000Box($$$)
 # Returns: 1 on success, 0 if this wasn't a valid JPEG 2000 file, or -1 on write error
 sub ProcessJP2($$)
 {
+    local $_;
     my ($exifTool, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $outfile = $$dirInfo{OutFile};
@@ -593,15 +795,29 @@ sub ProcessJP2($$)
 
     # check to be sure this is a valid JPG2000 file
     return 0 unless $raf->Read($hdr,12) == 12;
-    return 0 unless $hdr eq "\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a" or     # (ref 1)
-                    $hdr eq "\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"; # (ref 2)
-
+    unless ($hdr eq "\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a" or     # (ref 1)
+            $hdr eq "\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a") # (ref 2)
+    {
+        return 0 unless $hdr =~ /^\xff\x4f\xff\x51\0/;  # check for JP2 codestream format
+        if ($outfile) {
+            $exifTool->Error('Writing of J2C files is not yet supported');
+            return 0
+        }
+        # add J2C markers if not done already
+        unless ($Image::ExifTool::jpegMarker{0x4f}) {
+            $Image::ExifTool::jpegMarker{$_} = $j2cMarker{$_} foreach keys %j2cMarker;
+        }
+        $exifTool->SetFileType('J2C');
+        $raf->Seek(0,0);
+        return $exifTool->ProcessJPEG($dirInfo);    # decode with JPEG processor
+    }
     if ($outfile) {
         Write($outfile, $hdr) or return -1;
         $exifTool->InitWriteDirs(\%jp2Map);
         # save list of directories to create
         my %addDirs = %{$$exifTool{ADD_DIRS}};
         $$exifTool{AddJp2Dirs} = \%addDirs;
+        $$exifTool{AddJp2Tags} = $exifTool->GetNewTagInfoHash(\%Image::ExifTool::Jpeg2000::Main);
     } else {
         my ($buff, $fileType);
         # recognize JPX and JPM as unique types of JP2
@@ -641,7 +857,7 @@ files.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

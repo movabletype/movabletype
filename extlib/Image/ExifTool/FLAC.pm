@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 sub ProcessBitStream($$$);
 
@@ -28,14 +28,20 @@ sub ProcessBitStream($$$);
         Name => 'StreamInfo',
         SubDirectory => { TagTable => 'Image::ExifTool::FLAC::StreamInfo' },
     },
+    1 => { Name => 'Padding',     Binary => 1, Unknown => 1 },
+    2 => { Name => 'Application', Binary => 1, Unknown => 1 },
+    3 => { Name => 'SeekTable',   Binary => 1, Unknown => 1 },
     4 => {
         Name => 'VorbisComment',
         SubDirectory => { TagTable => 'Image::ExifTool::Vorbis::Comments' },
     },
+    5 => { Name => 'CueSheet',    Binary => 1, Unknown => 1 },
     6 => {
         Name => 'Picture',
         SubDirectory => { TagTable => 'Image::ExifTool::FLAC::Picture' },
     },
+    # 7-126 - Reserved
+    # 127 - Invalid
 );
 
 %Image::ExifTool::FLAC::StreamInfo = (
@@ -267,7 +273,7 @@ information from Free Lossless Audio Codec (FLAC) audio files.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -283,6 +289,7 @@ under the same terms as Perl itself.
 =head1 SEE ALSO
 
 L<Image::ExifTool::TagNames/FLAC Tags>,
+L<Image::ExifTool::TagNames/Ogg Tags>,
 L<Image::ExifTool(3pm)|Image::ExifTool>
 
 =cut

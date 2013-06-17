@@ -16,7 +16,7 @@ use Image::ExifTool::ZIP;
 
 $VERSION = '1.02';
 
-# test for recognized iWork document extensions and outter XML elements
+# test for recognized iWork document extensions and outer XML elements
 my %iWorkType = (
     # file extensions
     NUMBERS => 'Apple Numbers',
@@ -26,7 +26,7 @@ my %iWorkType = (
     NMBTEMPLATE => 'Apple Numbers Template',
     # we don't support double extensions --
     # "PAGES.TEMPLATE" => 'Apple Pages Template',
-    # outter XML elements
+    # outer XML elements
     'ls:document' => 'Apple Numbers',
     'sl:document' => 'Apple Pages',
     'key:presentation' => 'Apple Keynote',
@@ -96,7 +96,7 @@ sub FoundTag($$$$;$)
     # add any unknown tags to table
     unless ($$tagTablePtr{$tag}) {
         $exifTool->VPrint(0, "  [adding $tag]\n") if $verbose;
-        Image::ExifTool::AddTagToTable($tagTablePtr, $tag, { Name => ucfirst $tag });
+        AddTagToTable($tagTablePtr, $tag, { Name => ucfirst $tag });
     }
     # save the tag
     $exifTool->HandleTag($tagTablePtr, $tag, $val);
@@ -208,7 +208,7 @@ information from Apple iWork '09 XML+ZIP files.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 # PGF header information
 %Image::ExifTool::PGF::Main = (
@@ -30,7 +30,13 @@ $VERSION = '1.00';
     },
     3  => {
         Name => 'PGFVersion',
-        PrintConv => '$val>=0x30 ? chr($val) : sprintf("0x%.2x", $val)',
+        PrintConv => 'sprintf("0x%.2x", $val)',
+        # this is actually a bitmask (ref digikam PGFtypes.h):
+        # 0x02 - data structure PGFHeader of major version 2
+        # 0x04 - 32-bit values
+        # 0x08 - supports regions of interest
+        # 0x10 - new coding scheme since major version 5
+        # 0x20 - new HeaderSize: 32 bits instead of 16 bits
     },
     8  => { Name => 'ImageWidth',  Format => 'int32u' },
     12 => { Name => 'ImageHeight', Format => 'int32u' },
@@ -67,14 +73,14 @@ sub ProcessPGF($$)
     my $buff;
 
     # read header and check magic number
-    return 0 unless $raf->Read($buff, 24) == 24 and $buff =~ /^PGF([0-9\0-\x09])/;
-    my $ver = $1;
+    return 0 unless $raf->Read($buff, 24) == 24 and $buff =~ /^PGF(.)/s;
+    my $ver = ord $1;
     $exifTool->SetFileType();
     SetByteOrder('II');
 
-    # currently support only version '6'
-    unless ($ver eq '6') {
-        $exifTool->Error(sprintf('Unsupported PGF version 0x%.2x',ord $ver));
+    # currently support only version 0x36
+    unless ($ver == 0x36) {
+        $exifTool->Error(sprintf('Unsupported PGF version 0x%.2x', $ver));
         return 1;
     }
     # extract information from the PGF header
@@ -83,8 +89,8 @@ sub ProcessPGF($$)
 
     my $len = Get32u(\$buff, 4) - 16; # length of post-header data
 
-    # skip colour table if necessary (768 bytes contrary to PGF spec, ref 2)
-    $len -= $raf->Seek(768, 1) ? 768 : $len if $$exifTool{PGFColorMode} == 2;
+    # skip colour table if necessary
+    $len -= $raf->Seek(1024, 1) ? 1024 : $len if $$exifTool{PGFColorMode} == 2;
 
     # extract information from the embedded metadata image (PNG format)
     if ($len > 0 and $len < 0x1000000 and $raf->Read($buff, $len) == $len) {
@@ -113,7 +119,7 @@ information from Progressive Graphics File (PGF) images.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

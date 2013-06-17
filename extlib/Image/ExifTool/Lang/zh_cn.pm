@@ -11,7 +11,7 @@ package Image::ExifTool::Lang::zh_cn;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.05';
+$VERSION = '1.07';
 
 %Image::ExifTool::Lang::zh_cn::Translate = (
    'AEProgramMode' => {
@@ -114,8 +114,8 @@ $VERSION = '1.05';
         'Standard Light C' => '标准光C',
         'Tungsten (Incandescent)' => '白炽灯',
         'Unknown' => '未知',
-        'White Fluorescent' => '白色荧光灯（WW3250-3800K）',
         'Warm White Fluorescent' => '暖白荧光灯（L2600-3250K）',
+        'White Fluorescent' => '白色荧光灯（WW3250-3800K）',
       },
     },
    'CalibrationIlluminant2' => {
@@ -136,8 +136,8 @@ $VERSION = '1.05';
         'Standard Light C' => '标准光C',
         'Tungsten (Incandescent)' => '白炽灯',
         'Unknown' => '未知',
-        'White Fluorescent' => '白色荧光灯（WW3250-3800K）',
         'Warm White Fluorescent' => '暖白荧光灯（L2600-3250K）',
+        'White Fluorescent' => '白色荧光灯（WW3250-3800K）',
       },
     },
    'CameraOrientation' => {
@@ -339,6 +339,7 @@ $VERSION = '1.05';
         'Portrait' => '人物',
         'Shutter Priority' => '快门优先',
         'Shutter speed priority AE' => '快门优先',
+        'n/a' => '未设置',
       },
     },
    'ExposureProgram' => {
@@ -370,6 +371,14 @@ $VERSION = '1.05';
       },
     },
    'FNumber' => '光圈数',
+   'FaceOrientation' => {
+      PrintConv => {
+        'Horizontal (normal)' => '0° (上/左)',
+        'Rotate 180' => '180° (底/右)',
+        'Rotate 270 CW' => '90° CW (左/底)',
+        'Rotate 90 CW' => '90° CCW (右/上)',
+      },
+    },
    'FaxProfile' => {
       PrintConv => {
         'Unknown' => '未知',
@@ -644,6 +653,7 @@ $VERSION = '1.05';
       },
     },
    'Hue' => '色相',
+   'ICCProfile' => 'ICC 规范',
    'IPTC-NAA' => 'IPTC-NAA 元数据',
    'ISOSetting' => {
       PrintConv => {
@@ -683,6 +693,15 @@ $VERSION = '1.05';
    'InteropOffset' => '互用指针',
    'InteropVersion' => '互用版本',
    'JFIFVersion' => 'JFIF 版本',
+   'JPEGQuality' => {
+      Description => '图像质量',
+      PrintConv => {
+        'Extra Fine' => '超精细',
+        'Fine' => '精细',
+        'Standard' => '标准画质',
+        'n/a' => '未设置',
+      },
+    },
    'Keyword' => '关键词',
    'Keywords' => '关键字',
    'Lens' => '镜头',
@@ -712,8 +731,8 @@ $VERSION = '1.05';
         'Standard Light C' => '标准光C',
         'Tungsten (Incandescent)' => '白炽灯',
         'Unknown' => '未知',
-        'White Fluorescent' => '白色荧光灯（WW3250-3800K）',
         'Warm White Fluorescent' => '暖白荧光灯（L2600-3250K）',
+        'White Fluorescent' => '白色荧光灯（WW3250-3800K）',
       },
     },
    'Lightness' => '明暗度',
@@ -723,12 +742,14 @@ $VERSION = '1.05';
         'Auto' => '自动',
         'Off' => '关',
         'On' => '开',
+        'n/a' => '未设置',
       },
     },
    'MIEVersion' => 'MIE 版本',
    'Macro' => {
       PrintConv => {
         'Manual' => '手动',
+        'n/a' => '未设置',
       },
     },
    'Make' => '厂商',
@@ -907,6 +928,7 @@ $VERSION = '1.05';
         'Normal' => '标准画质',
         'RAW + JPEG' => 'RAW+JPEG',
         'Standard' => '标准',
+        'n/a' => '未设置',
       },
     },
    'RAFVersion' => 'RAF 版本',
@@ -1213,8 +1235,8 @@ $VERSION = '1.05';
         'Shade' => '阴影',
         'Tungsten' => '白炽灯',
         'Unknown' => '未知',
-        'White Fluorescent' => '白色荧光灯',
         'Warm White Fluorescent' => '暖白荧光灯',
+        'White Fluorescent' => '白色荧光灯',
       },
     },
    'WhiteBalance2' => {
@@ -1290,7 +1312,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

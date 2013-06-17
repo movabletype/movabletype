@@ -11,7 +11,7 @@ package Image::ExifTool::Lang::fr;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.19';
+$VERSION = '1.21';
 
 %Image::ExifTool::Lang::fr::Translate = (
    'AEAperture' => 'Ouverture AE',
@@ -140,12 +140,6 @@ $VERSION = '1.19';
    'AFInfo2' => 'Infos AF',
    'AFInfo2Version' => 'Version des infos AF',
    'AFIntegrationTime' => 'Temps d\'intégration AF',
-   'AFMicroAdjActive' => {
-      PrintConv => {
-        'No' => 'Non',
-        'Yes' => 'Oui',
-      },
-    },
    'AFMicroadjustment' => {
       Description => 'Micro-ajustement de l\'AF',
       PrintConv => {
@@ -553,6 +547,7 @@ $VERSION = '1.19';
       },
     },
    'AutoFocus' => {
+      Description => 'Auto-Focus',
       PrintConv => {
         'Off' => 'Désactivé',
         'On' => 'Activé',
@@ -1651,6 +1646,14 @@ $VERSION = '1.19';
    'ExtraSamples' => 'Echantillons supplémentaires',
    'FNumber' => 'Nombre F',
    'FOV' => 'Champ de vision',
+   'FaceOrientation' => {
+      PrintConv => {
+        'Horizontal (normal)' => '0° (haut/gauche)',
+        'Rotate 180' => '180° (bas/droit)',
+        'Rotate 270 CW' => '90° sens horaire (gauche/bas)',
+        'Rotate 90 CW' => '90° sens antihoraire (droit/haut)',
+      },
+    },
    'FastSeek' => {
       PrintConv => {
         'No' => 'Non',
@@ -1694,6 +1697,7 @@ $VERSION = '1.19';
     },
    'FileType' => 'Type de fichier',
    'FileVersion' => 'Version de format de fichier',
+   'Filename' => 'Nom du fichier ',
    'FillFlashAutoReduction' => {
       Description => 'Mesure E-TTL',
       PrintConv => {
@@ -2284,6 +2288,7 @@ $VERSION = '1.19';
    'Hue' => 'Nuance',
    'HueAdjustment' => 'Teinte',
    'HyperfocalDistance' => 'Distanace hyperfocale',
+   'ICCProfile' => 'Profil ICC',
    'ICCProfileName' => 'Nom du profil ICC',
    'ICC_Profile' => 'Profil de couleur ICC d\'entrée',
    'ID3Size' => 'Taille ID3',
@@ -2398,6 +2403,7 @@ $VERSION = '1.19';
         'Square' => 'Carré',
       },
     },
+   'ImageProcessing' => 'Retouche d\'image',
    'ImageQuality' => {
       PrintConv => {
         'Normal' => 'Normale',
@@ -2448,6 +2454,7 @@ $VERSION = '1.19';
    'InkNames' => 'Nom des encres',
    'InkSet' => 'Encrage',
    'IntellectualGenre' => 'Genre intellectuel',
+   'IntelligentAuto' => 'Mode Auto intelligent',
    'IntensityStereo' => {
       PrintConv => {
         'Off' => 'Désactivé',
@@ -2516,6 +2523,13 @@ $VERSION = '1.19';
    'JPEGPointTransforms' => 'Transformations de point JPEG',
    'JPEGProc' => 'Proc JPEG',
    'JPEGQTables' => 'Tableaux Q JPEG',
+   'JPEGQuality' => {
+      Description => 'Qualité',
+      PrintConv => {
+        'Extra Fine' => 'Extra fine',
+        'Standard' => 'Normale',
+      },
+    },
    'JPEGRestartInterval' => 'Intervalle de redémarrage JPEG',
    'JPEGTables' => 'Tableaux JPEG',
    'JobID' => 'ID de la tâche',
@@ -2990,6 +3004,7 @@ $VERSION = '1.19';
         'Uncompressed' => 'Non compressé',
       },
     },
+   'NEFLinearizationTable' => 'Table de Linearization',
    'Name' => 'Nom',
    'NamedColor2' => 'Couleur nommée 2',
    'NativeDigest' => 'Sommaire natif',
@@ -3467,6 +3482,7 @@ $VERSION = '1.19';
         'Linear Reflectance/Transmittance' => 'Réflectance/transmittance linéaire',
       },
     },
+   'QuickAdjust' => 'Réglages rapides',
    'QuickControlDialInMeter' => {
       Description => 'Molette de contrôle rapide en mesure',
       PrintConv => {
@@ -3545,7 +3561,9 @@ $VERSION = '1.19';
     },
    'RawImageCenter' => 'Centre Image RAW',
    'RawImageDigest' => 'Digest d\'image brute',
+   'RawImageHeight' => 'Hauteur de l\'image brute',
    'RawImageSize' => 'Taille d\'image RAW',
+   'RawImageWidth' => 'Largeur de l\'image brute',
    'RawJpgQuality' => {
       PrintConv => {
         'Normal' => 'Normale',
@@ -4245,6 +4263,7 @@ $VERSION = '1.19';
     },
    'TimeSent' => 'Heure d\'envoi',
    'TimeSincePowerOn' => 'Temps écoulé depuis la mise en marche',
+   'TimeZone' => 'Fuseau horaire',
    'TimeZoneOffset' => 'Offset de zone de date',
    'TimerLength' => {
       Description => 'Durée du retardateur',
@@ -4477,8 +4496,6 @@ $VERSION = '1.19';
         'None' => 'Aucune',
       },
     },
-   'WBAdjustAB' => 'Ajustement Balance des Blancs bleu/jaune',
-   'WBAdjustGM' => 'Ajustement Balance des Blancs vert/magenta',
    'WBBlueLevel' => 'Niveau Bleu Balance des Blancs',
    'WBBracketMode' => {
       PrintConv => {
@@ -4500,9 +4517,8 @@ $VERSION = '1.19';
       },
     },
    'WBRedLevel' => 'Niveau Rouge Balance des Blancs',
-   'WBShiftAB' => 'Décalage bal. blancs ambre-bleu',
-   'WBShiftGM' => 'Décalage bal. blancs vert-magenta',
-   'WBShiftMG' => 'Décalage bal. blancs magenta-vert',
+   'WBShiftAB' => 'Décalage Balance Blancs ambre-bleu',
+   'WBShiftGM' => 'Décalage Balance Blancs vert-magenta',
    'WB_GBRGLevels' => 'Niveaux BB VBRV',
    'WB_GRBGLevels' => 'Niveaux BB VRBV',
    'WB_GRGBLevels' => 'Niveaux BB VRVB',
@@ -4686,7 +4702,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

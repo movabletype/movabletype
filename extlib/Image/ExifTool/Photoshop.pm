@@ -183,9 +183,12 @@ my %psdMap = (
         Writable => 'string',
         Protected => 1,
         Notes => q{
-            when writing, special values of "new" and "old" represent the digests of the
-            IPTC from the edited and original files respectively, and are undefined if
-            the IPTC does not exist in the respective file
+            this tag indicates provides a way for XMP-aware applications to indicate
+            that the XMP is synchronized with the IPTC.  When writing, special values of
+            "new" and "old" represent the digests of the IPTC from the edited and
+            original files respectively, and are undefined if the IPTC does not exist in
+            the respective file.  Set this to "new" as an indication that the XMP is
+            synchronized with the IPTC
         },
         # also note the 'new' feature requires that the IPTC comes before this tag is written
         ValueConv => 'unpack("H*", $val)',
@@ -566,7 +569,7 @@ be preserved when copying Photoshop information via user-defined tags.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

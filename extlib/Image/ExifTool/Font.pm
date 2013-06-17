@@ -19,7 +19,7 @@ use strict;
 use vars qw($VERSION %ttLang);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.05';
+$VERSION = '1.06';
 
 sub ProcessOTF($$);
 
@@ -216,7 +216,7 @@ my %ttCharset = (
         The following tags are extracted from the TrueType font "name" table found
         in OTF, TTF, TTC and DFONT files.  These tags support localized languages by
         adding a hyphen followed by a language code to the end of the tag name (ie.
-        "Copyright-fr" or "Licence-en-US").  Tags with no language code use the
+        "Copyright-fr" or "License-en-US").  Tags with no language code use the
         default language of "en".
     },
     0 => { Name => 'Copyright', Groups => { 2 => 'Author' } },
@@ -373,7 +373,7 @@ sub ProcessOTF($$)
     my $base = $$dirInfo{Base} || 0;
 
     return 0 unless $raf->Read($buff, 12) == 12;
-    return 0 unless $buff =~ /^(\0\x01\0\0|OTTO|true|typ1)[\0\x01]/;
+    return 0 unless $buff =~ /^(\0\x01\0\0|OTTO|true|typ1|\xa5(kbd|lst))[\0\x01]/;
 
     $exifTool->SetFileType($1 eq 'OTTO' ? 'OTF' : 'TTF');
     SetByteOrder('MM');
@@ -474,7 +474,7 @@ sub ProcessOTF($$)
                     $tagInfo = $langInfo if $langInfo;
                 }
                 if ($verbose) {
-                	$langID > 0x400 and $langID = sprintf('0x%x', $langID);
+                    $langID > 0x400 and $langID = sprintf('0x%x', $langID);
                     $extra = ", Plat=$platform/" . ($sys || 'Unknown') . ', ' .
                                "Enc=$encoding/" . ($charset || 'Unknown') . ', ' .
                                "Lang=$langID/" . ($lang || 'Unknown');
@@ -611,7 +611,7 @@ types are OTF, TTF, TTC, DFONT, PFA, PFB, PFM, AFM, ACFM and AMFM.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

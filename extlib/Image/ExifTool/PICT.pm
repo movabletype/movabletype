@@ -20,7 +20,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 sub ReadPictValue($$$;$);
 
@@ -273,7 +273,7 @@ my %structs = (
 
 # PICT image opcodes
 %Image::ExifTool::PICT::Main = (
-    PROCESS_PROC => 0,  # set this to zero to omit tags from lookup
+    VARS => { NO_LOOKUP => 1 }, # omit tags from lookup
     NOTES => q{
 The PICT format contains no true meta information, except for the possible
 exception of the LongComment opcode.  By default, only ImageWidth,
@@ -821,7 +821,7 @@ experimental, and is only enabled with the Verbose or Unknown options.
         Format => 'int16u',
     },
     0x00a1 => [
-        # this list for documentation only [not currently extracted]
+        # this list for documentation only [currently not extracted]
         {
             # (not actually a full Photohop IRB record it appears, but it does start
             #  with '8BIM', and does contain resolution information at offset 0x0a)
@@ -1236,7 +1236,7 @@ Verbose or the Unknown option.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -160,7 +160,7 @@ sub ProcessParasites($$$)
             $name = ucfirst $name;
             $name =~ s/([a-z])-([a-z])/$1\u$2/g;
             $name = "GIMP-$name" unless length($name) > 1;
-            Image::ExifTool::AddTagToTable($tagTablePtr, $tag, { Name => $name, Unknown => 1 });
+            AddTagToTable($tagTablePtr, $tag, { Name => $name, Unknown => 1 });
         }
         $exifTool->HandleTag($tagTablePtr, $tag, undef,
             DataPt => $dataPt,
@@ -234,7 +234,7 @@ GIMP software.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

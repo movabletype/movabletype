@@ -11,7 +11,7 @@ package Image::ExifTool::Lang::cs;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.04';
+$VERSION = '1.06';
 
 %Image::ExifTool::Lang::cs::Translate = (
    'AEMeteringMode' => {
@@ -226,6 +226,7 @@ $VERSION = '1.04';
    'ColorSpace' => {
       Description => 'Barevný prostor',
       PrintConv => {
+        'ICC Profile' => 'ICC Profil',
         'Uncalibrated' => 'Nekalibrován',
       },
     },
@@ -449,6 +450,14 @@ $VERSION = '1.04';
    'ExposureTime' => 'Expoziční čas',
    'ExposureTime2' => 'Expoziční čas 2',
    'FNumber' => 'F hodnota',
+   'FaceOrientation' => {
+      PrintConv => {
+        'Horizontal (normal)' => '0° (nahoru/vlevo)',
+        'Rotate 180' => '180° (dolů/vpravo)',
+        'Rotate 270 CW' => '90° po směru HR (vlevo/dolů)',
+        'Rotate 90 CW' => '90° ptoti směru HR (vpravo/nahoru)',
+      },
+    },
    'FaxProfile' => {
       PrintConv => {
         'Unknown' => 'Neznámý',
@@ -470,6 +479,7 @@ $VERSION = '1.04';
       },
     },
    'FileType' => 'Typ',
+   'Filename' => 'Jméno',
    'FillOrder' => {
       Description => 'Pořadí výplně',
       PrintConv => {
@@ -787,6 +797,7 @@ $VERSION = '1.04';
     },
    'HostComputer' => 'Host',
    'Hue' => 'Odstín',
+   'ICCProfile' => 'ICC-Profil',
    'IPTC-NAA' => 'IPTC-NAA metadata',
    'ISO' => 'Citlivost ISO',
    'ISOSetting' => {
@@ -840,6 +851,11 @@ $VERSION = '1.04';
    'InteropOffset' => 'Značka součinnosti',
    'InteropVersion' => 'Verze kompatibility',
    'JFIFVersion' => 'JFIF verze',
+   'JPEGQuality' => {
+      PrintConv => {
+        'Standard' => 'Normální',
+      },
+    },
    'Keyword' => 'Klíčová slova',
    'Keywords' => 'Klíčová slova',
    'LeafData' => 'Leaf data',
@@ -1170,7 +1186,7 @@ $VERSION = '1.04';
       Description => 'Jednotka X a Y rozlišení',
       PrintConv => {
         'None' => 'Žádná',
-        'cm' => 'pixely/cm',
+        'cm' => 'Pixely/cm',
         'inches' => 'Palce',
       },
     },
@@ -1552,7 +1568,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

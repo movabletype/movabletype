@@ -37,7 +37,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.02';
+$VERSION = '1.04';
 
 sub ProcessPrimer($$$);
 sub ProcessLocalSet($$$);
@@ -117,8 +117,7 @@ my %componentDataDef = (
 # Note: The Binary flag is automatically set for all Unknown tags with unknown Type
 %Image::ExifTool::MXF::Main = (
     GROUPS => { 2 => 'Video' },
-    PROCESS_PROC => 0,  # set this to zero to omit tags from lookup (way too many!)
-    VARS => { NO_ID => 1 }, # tag ID's are too bulky for documentation
+    VARS => { NO_LOOKUP => 1, NO_ID => 1 }, # tag ID's are too bulky
     NOTES => q{
         Tags extracted from Material Exchange Format files.  Tag ID's are not listed
         because they are bulky 16-byte binary values.
@@ -807,8 +806,8 @@ my %componentDataDef = (
   # '060e2b34.0101.0101.07020102.04000000' => { Name => 'MaterialEndTimeAddress', Type => 'Node' },
     '060e2b34.0101.0101.07020102.04010000' => { Name => 'TimecodeEndDateTime', Type => 'UILSBF', Unknown => 1, Groups => { 2 => 'Time' } },
   # '060e2b34.0101.0101.07020102.05000000' => { Name => 'MaterialOccurrenceTrueDateTime', Type => 'Node' },
-    '060e2b34.0101.0101.07020102.05010000' => { Name => 'UTCLastModifyDate', Format => 'string' },
-    '060e2b34.0101.0101.07020102.05020000' => { Name => 'LocalLastModifyDate', Format => 'string' },
+    '060e2b34.0101.0101.07020102.05010000' => { Name => 'UTCLastModifyDate', Format => 'string', Groups => { 2 => 'Time' } },
+    '060e2b34.0101.0101.07020102.05020000' => { Name => 'LocalLastModifyDate', Format => 'string', Groups => { 2 => 'Time' } },
   # '060e2b34.0101.0101.07020102.06000000' => { Name => 'MaterialOccurrenceTimeAddress', Type => 'Node' },
     '060e2b34.0101.0101.07020102.06010000' => { Name => 'TimecodeLastModifyDate', Type => 'UILSBF', Unknown => 1, Groups => { 2 => 'Time' } },
   # '060e2b34.0101.0101.07020102.07000000' => { Name => 'EventStartTrueDateTime', Type => 'Node' },
@@ -844,7 +843,7 @@ my %componentDataDef = (
     '060e2b34.0101.0101.07020110.01010000' => { Name => 'LocalCreationDateTime', Format => 'string', Groups => { 2 => 'Time' } },
     '060e2b34.0101.0101.07020110.01020000' => { Name => 'TimecodeCreationDateTime', Type => 'UILSBF', Unknown => 1, Groups => { 2 => 'Time' } },
   # '060e2b34.0101.0101.07020110.02000000' => { Name => 'ModifyDate', Type => 'Node' },
-    '060e2b34.0101.0101.07020110.02010000' => { Name => 'LocalModifyDate', Format => 'string' },
+    '060e2b34.0101.0101.07020110.02010000' => { Name => 'LocalModifyDate', Format => 'string', Groups => { 2 => 'Time' } },
     '060e2b34.0101.0101.07020110.02020000' => { Name => 'TimecodeModifyDate', Type => 'UILSBF', Unknown => 1, Groups => { 2 => 'Time' } },
   # '060e2b34.0101.0101.07020200.00000000' => { Name => 'Durations', Type => 'Node' },
   # '060e2b34.0101.0101.07020201.00000000' => { Name => 'AbsoluteDurations', Type => 'Node' },
@@ -1356,7 +1355,7 @@ my %componentDataDef = (
     '060e2b34.0101.0103.02080202.00000000' => { Name => 'SecurityClassificationCaveats', Format => 'string' },
     '060e2b34.0101.0103.02080203.00000000' => { Name => 'ClassifiedBy', Format => 'string' },
     '060e2b34.0101.0103.02080204.00000000' => { Name => 'ClassificationReason', Format => 'string' },
-    '060e2b34.0101.0103.02080205.00000000' => { Name => 'DeclassificationDate', Format => 'string' },
+    '060e2b34.0101.0103.02080205.00000000' => { Name => 'DeclassificationDate', Format => 'string', Groups => { 2 => 'Time' } },
     '060e2b34.0101.0103.02080206.00000000' => { Name => 'DerivedFrom', Format => 'string' },
     '060e2b34.0101.0103.02080207.00000000' => { Name => 'ClassificationComment', Format => 'string' },
     '060e2b34.0101.0103.02080208.00000000' => { Name => 'ClassificationAndMarkingSystem', Format => 'string' },
@@ -2877,7 +2876,7 @@ sub ProcessMXF($$)
             # generate some unknown set tags automatically
             my $name = $1 eq '0d' ? 'UserOrganizationPublicUse' : 'Experimental';
             $tagInfo = { Name => $name, %localSet };
-            Image::ExifTool::AddTagToTable($tagTablePtr, $ul, $tagInfo);
+            AddTagToTable($tagTablePtr, $ul, $tagInfo);
         }
         my ($val, $dataPt);
         if ($tagInfo and not $$tagInfo{Unknown} and $len < 10000000) {
@@ -2989,7 +2988,7 @@ information from MXF (Material Exchange Format) files.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

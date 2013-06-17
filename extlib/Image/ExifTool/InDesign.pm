@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 # map for writing metadata to InDesign files (currently only write XMP)
 my %indMap = (
@@ -105,9 +105,10 @@ sub ProcessIND($$)
         if ($verbose) {
             printf $out "Contiguous object at offset 0x%x (%d bytes):\n", $raf->Tell(), $len;
             if ($verbose > 2) {
+                my $len2 = $len < 1024000 ? $len : 1024000;
                 my %parms = (Addr => $raf->Tell());
                 $parms{MaxLen} = $verbose > 3 ? 1024 : 96 if $verbose < 5;
-                $raf->Seek(-$raf->Read($buff, $len), 1) or $err = 1;
+                $raf->Seek(-$raf->Read($buff, $len2), 1) or $err = 1;
                 Image::ExifTool::HexDump(\$buff, undef, %parms);
             }
         }
@@ -118,12 +119,27 @@ sub ProcessIND($$)
             if ($buff =~ /^(....)<\?xpacket begin=(['"])\xef\xbb\xbf\2 id=(['"])W5M0MpCehiHzreSzNTczkc9d\3/s) {
                 my $lenWord = $1;   # save length word for writing later
                 $len -= 4;          # get length of XMP only
+                $foundXMP = 1;
+                # I have a sample where the XMP is 107 MB, and ActivePerl may run into
+                # memory troubles (with its apparent 1 GB limit) if the XMP is larger
+                # than about 400 MB, so guard against this
+                if ($len > 300 * 1024 * 1024) {
+                    my $msg = sprintf('Insanely large XMP (%.0f MB)', $len / (1024 * 1024));
+                    if ($outfile) {
+                        $exifTool->Error($msg, 2) and $err = 1, last;
+                    } elsif ($exifTool->Options('IgnoreMinorErrors')) {
+                        $exifTool->Warn($msg);
+                    } else {
+                        $exifTool->Warn("$msg. Ignored.", 1);
+                        $err = 1;
+                        last;
+                    }
+                }
                 # load and parse the XMP data
                 unless ($raf->Seek(-52, 1) and $raf->Read($buff, $len) == $len) {
                     $err = 'Error reading XMP stream';
                     last;
                 }
-                $foundXMP = 1;
                 my %dirInfo = (
                     DataPt  => \$buff,
                     Parent  => 'IND',
@@ -235,12 +251,12 @@ meta information from Adobe InDesign (.IND, .INDD and .INDT) files.
 2) A new XMP stream may not be created, so XMP tags may only be written to
 InDesign files which previously contained XMP.
 
-3) File sizes of greater than 2 GB and are not currently supported because
+3) File sizes of greater than 2 GB and are currently not supported because
 the ability to handle large files like this is system dependent.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

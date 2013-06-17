@@ -11,7 +11,7 @@ package Image::ExifTool::Lang::sv;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.03';
+$VERSION = '1.05';
 
 %Image::ExifTool::Lang::sv::Translate = (
    'Aperture' => 'Bländare',
@@ -34,13 +34,13 @@ $VERSION = '1.03';
         'Flash' => 'Blixt',
         'Fluorescent' => 'Lysrörsbelysning',
         'ISO Studio Tungsten' => 'ISO tungsten studiobelysning',
-        'Other' => 'annan ljuskälla',
+        'Other' => 'Annan ljuskälla',
         'Shade' => 'Skugga',
         'Standard Light A' => 'Standardljus A',
         'Standard Light B' => 'Standardljus B',
         'Standard Light C' => 'Standardljus C',
         'Tungsten (Incandescent)' => 'Tungsten',
-        'Unknown' => 'okänt',
+        'Unknown' => 'Okänt',
         'Warm White Fluorescent' => 'Varmt vitt fluorescerande (L 2600 - 3250k)',
         'White Fluorescent' => 'Vit lysrörsbelysning (WW 3250 - 3800 k)',
       },
@@ -56,13 +56,13 @@ $VERSION = '1.03';
         'Flash' => 'Blixt',
         'Fluorescent' => 'Lysrörsbelysning',
         'ISO Studio Tungsten' => 'ISO tungsten studiobelysning',
-        'Other' => 'annan ljuskälla',
+        'Other' => 'Annan ljuskälla',
         'Shade' => 'Skugga',
         'Standard Light A' => 'Standardljus A',
         'Standard Light B' => 'Standardljus B',
         'Standard Light C' => 'Standardljus C',
         'Tungsten (Incandescent)' => 'Tungsten',
-        'Unknown' => 'okänt',
+        'Unknown' => 'Okänt',
         'Warm White Fluorescent' => 'Varmt vitt fluorescerande (L 2600 - 3250k)',
         'White Fluorescent' => 'Vit lysrörsbelysning (WW 3250 - 3800 k)',
       },
@@ -105,7 +105,7 @@ $VERSION = '1.03';
       Description => 'Komprimeringsschema',
       PrintConv => {
         'JPEG' => 'JPEG-komprimering',
-        'Uncompressed' => 'ingen komprimering',
+        'Uncompressed' => 'Ingen komprimering',
       },
     },
    'Contrast' => {
@@ -179,6 +179,12 @@ $VERSION = '1.03';
     },
    'ExposureTime' => 'Exponeringstid',
    'FNumber' => 'Bländare',
+   'FaceOrientation' => {
+      PrintConv => {
+        'Horizontal (normal)' => 'Positiv riktning',
+        'Rotate 90 CW' => 'Rotera 90° medurs',
+      },
+    },
    'FileFormat' => 'Format',
    'FileModifyDate' => 'Uppdateringsdatum',
    'FileName' => 'Filnamn',
@@ -192,6 +198,7 @@ $VERSION = '1.03';
       },
     },
    'FileType' => 'Filtyp',
+   'Filename' => 'Filnamn',
    'Flash' => {
       Description => 'Blixt',
       PrintConv => {
@@ -333,6 +340,7 @@ $VERSION = '1.03';
       },
     },
    'Hue' => 'Nyans',
+   'ICCProfile' => 'ICC profil',
    'ISO' => 'ISO värde',
    'ImageHeight' => 'Bildhöjd',
    'ImageSize' => 'Bildstorlek',
@@ -343,6 +351,14 @@ $VERSION = '1.03';
    'InteropIndex' => 'Interoperability Identification',
    'InteropOffset' => 'Interoperability tag',
    'InteropVersion' => 'Interoperability Version',
+   'JPEGQuality' => {
+      Description => 'Bildkvalitet',
+      PrintConv => {
+        'Extra Fine' => 'Extra fin',
+        'Fine' => 'Fin',
+        'Standard' => 'Standardkvalitet',
+      },
+    },
    'Keywords' => 'Nyckelord',
    'Lens' => 'Objektiv',
    'LensInfo' => 'Objektivinformation',
@@ -358,13 +374,13 @@ $VERSION = '1.03';
         'Flash' => 'Blixt',
         'Fluorescent' => 'Lysrörsbelysning',
         'ISO Studio Tungsten' => 'ISO tungsten studiobelysning',
-        'Other' => 'annan ljuskälla',
+        'Other' => 'Annan ljuskälla',
         'Shade' => 'Skugga',
         'Standard Light A' => 'Standardljus A',
         'Standard Light B' => 'Standardljus B',
         'Standard Light C' => 'Standardljus C',
         'Tungsten (Incandescent)' => 'Tungsten',
-        'Unknown' => 'okänt',
+        'Unknown' => 'Okänt',
         'Warm White Fluorescent' => 'Varmt vitt fluorescerande (L 2600 - 3250k)',
         'White Fluorescent' => 'Vit lysrörsbelysning (WW 3250 - 3800 k)',
       },
@@ -388,9 +404,9 @@ $VERSION = '1.03';
         'Center-weighted average' => 'Centrumvägd genomsnittsmätning',
         'Multi-segment' => 'Mönster',
         'Multi-spot' => 'MultiSpot',
-        'Other' => 'annat',
+        'Other' => 'Annat',
         'Partial' => 'Delvis',
-        'Unknown' => 'okänt',
+        'Unknown' => 'Okänt',
       },
     },
    'Model' => 'Kamera',
@@ -564,7 +580,7 @@ $VERSION = '1.03';
         'Manual' => 'Manuell vitbalans',
         'Shade' => 'Skugga',
         'Tungsten' => 'Glödlampa',
-        'Unknown' => 'okänt',
+        'Unknown' => 'Okänt',
         'Warm White Fluorescent' => 'Varmt vitt fluorescerande',
         'White Fluorescent' => 'Vit lysrörsbelysning',
       },
@@ -575,8 +591,7 @@ $VERSION = '1.03';
    'YCbCrPositioning' => {
       Description => 'Y- och C-placering',
       PrintConv => {
-        'Centered' => 'centrerad',
-        'Co-sited' => 'co-sited',
+        'Centered' => 'Centrerad',
       },
     },
    'YCbCrSubSampling' => 'Subsampling ratio of Y to C',
@@ -606,7 +621,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

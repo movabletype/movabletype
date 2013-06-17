@@ -11,7 +11,7 @@ package Image::ExifTool::Lang::ru;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.02';
+$VERSION = '1.04';
 
 %Image::ExifTool::Lang::ru::Translate = (
    'ActiveArea' => 'Активная область',
@@ -233,6 +233,14 @@ $VERSION = '1.02';
     },
    'ExposureTime' => 'Выдержка',
    'FNumber' => 'Диафрагма',
+   'FaceOrientation' => {
+      PrintConv => {
+        'Horizontal (normal)' => 'Положительное направление',
+        'Rotate 180' => 'Поворот на 180°',
+        'Rotate 270 CW' => 'Поворот на 270° по часовой стрелке',
+        'Rotate 90 CW' => 'Поворот на 90° по часовой стрелке',
+      },
+    },
    'FileFormat' => 'Формат',
    'FileModifyDate' => 'Дата обновления',
    'FileName' => 'Имя файла',
@@ -246,6 +254,7 @@ $VERSION = '1.02';
       },
     },
    'FileType' => 'Тип файла',
+   'Filename' => 'Имя файла',
    'Flash' => {
       Description => 'Вспышка',
       PrintConv => {
@@ -397,6 +406,14 @@ $VERSION = '1.02';
    'ISO' => 'Значение ISO',
    'ImageHeight' => 'Высота снимка',
    'ImageSize' => '"Снимок, размер"',
+   'ImageStabilization' => {
+      PrintConv => {
+        'CCD Shift' => 'Оптический стабилизатор',
+        'High Sensitivity' => 'Движение объекта съёмки',
+        'Off' => 'Выкл',
+        'Off (1)' => 'Выкл (1)',
+      },
+    },
    'ImageUniqueID' => 'Уникальный ID-код снимка',
    'ImageWidth' => 'Ширина снимка',
    'Index' => 'Индекс',
@@ -404,6 +421,14 @@ $VERSION = '1.02';
    'InteropIndex' => 'Идентификация взаимной совместимости',
    'InteropOffset' => 'Тэг взаимной совместимости',
    'InteropVersion' => 'Версия взаимной совместимости',
+   'JPEGQuality' => {
+      Description => 'Качество изображения',
+      PrintConv => {
+        'Extra Fine' => 'Сверхвысокое',
+        'Fine' => 'Высокое',
+        'Standard' => 'Стандартное качество',
+      },
+    },
    'Keywords' => 'Ключевые слова',
    'Lens' => 'Объектив',
    'LensInfo' => 'Информация об объективе',
@@ -483,6 +508,8 @@ $VERSION = '1.02';
       Description => 'Ориентация',
       PrintConv => {
         'Horizontal (normal)' => 'Положительное направление',
+        'Rotate 180' => 'Поворот на 180°',
+        'Rotate 270 CW' => 'Поворот на 270° по часовой стрелке',
         'Rotate 90 CW' => 'Поворот на 90° по часовой стрелке',
       },
     },
@@ -724,7 +751,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

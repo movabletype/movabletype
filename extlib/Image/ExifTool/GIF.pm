@@ -4,10 +4,13 @@
 # Description:  Read and write GIF meta information
 #
 # Revisions:    10/18/2005 - P. Harvey Separated from ExifTool.pm
+#               05/23/2008 - P. Harvey Added ability to read/write XMP
+#               10/28/2011 - P. Harvey Added ability to read/write ICC_Profile
 #
 # References:   1) http://www.w3.org/Graphics/GIF/spec-gif89a.txt
 #               2) http://www.adobe.com/devnet/xmp/
 #               3) http://graphcomp.com/info/specs/ani_gif.html
+#               4) http://www.color.org/icc_specs2.html
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::GIF;
@@ -16,11 +19,12 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.06';
+$VERSION = '1.10';
 
 # road map of directory locations in GIF images
 my %gifMap = (
-    XMP => 'GIF',
+    XMP         => 'GIF',
+    ICC_Profile => 'GIF',
 );
 
 %Image::ExifTool::GIF::Main = (
@@ -46,11 +50,15 @@ my %gifMap = (
     ScreenDescriptor => {
         SubDirectory => { TagTable => 'Image::ExifTool::GIF::Screen' },
     },
-    AnimationExtension => {
+    # GIF89a application extensions:
+    ExtensionAnimation => {
         SubDirectory => { TagTable => 'Image::ExifTool::GIF::Animate' },
     },
-    XMPExtension => { # (for documentation only)
+    ExtensionXMP => { # (for documentation only)
         SubDirectory => { TagTable => 'Image::ExifTool::XMP::Main' },
+    },
+    ExtensionICC => { # (for documentation only)
+        SubDirectory => { TagTable => 'Image::ExifTool::ICC_Profile::Main' },
     },
 );
 
@@ -109,8 +117,8 @@ sub ProcessGIF($$)
     my $raf = $$dirInfo{RAF};
     my $verbose = $exifTool->Options('Verbose');
     my $out = $exifTool->Options('TextOut');
-    my ($a, $s, $ch, $length, $buff, $comment);
-    my ($err, $newComment, $setComment);
+    my ($a, $s, $ch, $length, $buff);
+    my ($err, $newComment, $setComment, $nvComment);
     my ($addDirs, %doneDir);
     my ($frameCount, $delayTime) = (0, 0);
 
@@ -129,18 +137,10 @@ sub ProcessGIF($$)
         $addDirs = $exifTool->{ADD_DIRS};
         # determine if we are editing the File:Comment tag
         my $delGroup = $exifTool->{DEL_GROUP};
-        if ($$delGroup{File}) {
-            $setComment = 1;
-            if ($$delGroup{File} == 2) {
-                $newComment = $exifTool->GetNewValues('Comment');
-            }
-        } else {
-            my $nvHash;
-            $newComment = $exifTool->GetNewValues('Comment', \$nvHash);
-            $setComment = 1 if $nvHash;
-        }
-        # change to GIF 89a if adding comment or XMP
-        $buff = 'GIF89a' if $$addDirs{XMP} or defined $newComment;
+        $newComment = $exifTool->GetNewValues('Comment', \$nvComment);
+        $setComment = 1 if $nvComment or $$delGroup{File};
+        # change to GIF 89a if adding comment, XMP or ICC_Profile
+        $buff = 'GIF89a' if $$addDirs{XMP} or $$addDirs{ICC_Profile} or defined $newComment;
         Write($outfile, $buff, $s) or $err = 1;
     } else {
         $exifTool->SetFileType();   # set file type
@@ -154,32 +154,34 @@ sub ProcessGIF($$)
         $raf->Read($buff, $length) == $length or return 0; # skip color table
         Write($outfile, $buff) or $err = 1 if $outfile;
     }
-    # write the comment first if necessary
-    if ($outfile and defined $newComment) {
-        # write comment marker
-        Write($outfile, "\x21\xfe") or $err = 1;
-        $verbose and print $out "  + Comment = $newComment\n";
-        my $len = length($newComment);
-        # write out the comment in 255-byte chunks, each
-        # chunk beginning with a length byte
-        my $n;
-        for ($n=0; $n<$len; $n+=255) {
-            my $size = $len - $n;
-            $size > 255 and $size = 255;
-            my $str = substr($newComment,$n,$size);
-            Write($outfile, pack('C',$size), $str) or $err = 1;
-        }
-        Write($outfile, "\0") or $err = 1;  # empty chunk as terminator
-        undef $newComment;
-        ++$exifTool->{CHANGED};     # increment file changed flag
-    }
 #
 # loop through GIF blocks
 #
 Block:
     for (;;) {
         last unless $raf->Read($ch, 1);
+        # write out any new metadata now if this isn't an extension block
         if ($outfile and ord($ch) != 0x21) {
+            # write the comment first if necessary
+            if (defined $newComment and $$nvComment{IsCreating}) {
+                # write comment marker
+                Write($outfile, "\x21\xfe") or $err = 1;
+                $verbose and print $out "  + Comment = $newComment\n";
+                my $len = length($newComment);
+                # write out the comment in 255-byte chunks, each
+                # chunk beginning with a length byte
+                my $n;
+                for ($n=0; $n<$len; $n+=255) {
+                    my $size = $len - $n;
+                    $size > 255 and $size = 255;
+                    my $str = substr($newComment,$n,$size);
+                    Write($outfile, pack('C',$size), $str) or $err = 1;
+                }
+                Write($outfile, "\0") or $err = 1;  # empty chunk as terminator
+                undef $newComment;
+                undef $nvComment;   # delete any other extraneous comments
+                ++$exifTool->{CHANGED};     # increment file changed flag
+            }
             # add application extension containing XMP block if necessary
             # (this will place XMP before the first non-extension block)
             if (exists $$addDirs{XMP} and not defined $doneDir{XMP}) {
@@ -195,6 +197,30 @@ Block:
                     ++$doneDir{XMP};    # set to 2 to indicate we added XMP
                 } else {
                     $verbose and print $out "  -> no XMP to add\n";
+                }
+            }
+            # add application extension containing ICC_Profile if necessary
+            if (exists $$addDirs{ICC_Profile} and not defined $doneDir{ICC_Profile}) {
+                $doneDir{ICC_Profile} = 1;
+                # write new ICC_Profile
+                my $iccTable = GetTagTable('Image::ExifTool::ICC_Profile::Main');
+                my %dirInfo = ( Parent => 'GIF' );
+                $verbose and print $out "Creating ICC_Profile application extension block:\n";
+                $buff = $exifTool->WriteDirectory(\%dirInfo, $iccTable);
+                if (defined $buff and length $buff) {
+                    my $pos = 0;
+                    Write($outfile, "\x21\xff\x0bICCRGBG1012") or $err = 1;
+                    my $len = length $buff;
+                    while ($pos < $len) {
+                        my $n = $len - $pos;
+                        $n = 255 if $n > 255;
+                        Write($outfile, chr($n), substr($buff, $pos, $n)) or $err = 1;
+                        $pos += $n;
+                    }
+                    Write($outfile, "\0") or $err = 1;  # write null terminator
+                    ++$doneDir{ICC_Profile};    # set to 2 to indicate we added a new profile
+                } else {
+                    $verbose and print $out "  -> no ICC_Profile to add\n";
                 }
             }
         }
@@ -246,31 +272,56 @@ Block:
 
         if ($a == 0xfe) {                           # comment extension
 
-            if ($setComment) {
-                ++$exifTool->{CHANGED}; # increment the changed flag
-            } else {
-                Write($outfile, $ch, $s) or $err = 1 if $outfile;
-            }
+            my $comment = '';
             while ($length) {
                 last unless $raf->Read($buff, $length) == $length;
                 if ($verbose > 2 and not $outfile) {
                     Image::ExifTool::HexDump(\$buff, undef, Out => $out);
                 }
                 # add buffer to comment string
-                $comment = defined $comment ? $comment . $buff : $buff;
+                $comment .= $buff;
                 last unless $raf->Read($ch, 1);  # read next block header
                 $length = ord($ch);  # get next block size
-
-                # write or delete comment
-                next unless $outfile;
-                if ($setComment) {
-                    $verbose and print $out "  - Comment = $buff\n";
-                } else {
-                    Write($outfile, $buff, $ch) or $err = 1;
-                }
             }
             last if $length;    # was a read error if length isn't zero
-            unless ($outfile) {
+            if ($outfile) {
+                my $isOverwriting;
+                if ($setComment) {
+                    if ($nvComment) {
+                        $isOverwriting = $exifTool->IsOverwriting($nvComment,$comment);
+                        # get new comment again (may have been shifted)
+                        $newComment = $exifTool->GetNewValues($nvComment) if defined $newComment;
+                    } else {
+                        # group delete, or deleting additional comments after writing one
+                        $isOverwriting = 1;
+                    }
+                }
+                if ($isOverwriting) {
+                    ++$exifTool->{CHANGED};     # increment file changed flag
+                    $exifTool->VerboseValue('- Comment', $comment);
+                    $comment = $newComment;
+                    $exifTool->VerboseValue('+ Comment', $comment) if defined $comment;
+                    undef $nvComment;   # just delete remaining comments
+                } else {
+                    undef $setComment;  # leave remaining comments alone
+                }
+                if (defined $comment) {
+                    # write comment marker
+                    Write($outfile, "\x21\xfe") or $err = 1;
+                    my $len = length($comment);
+                    # write out the comment in 255-byte chunks, each
+                    # chunk beginning with a length byte
+                    my $n;
+                    for ($n=0; $n<$len; $n+=255) {
+                        my $size = $len - $n;
+                        $size > 255 and $size = 255;
+                        my $str = substr($comment,$n,$size);
+                        Write($outfile, pack('C',$size), $str) or $err = 1;
+                    }
+                    Write($outfile, "\0") or $err = 1;  # empty chunk as terminator
+                }
+                undef $newComment;  # don't write the new comment again
+            } else {
                 $rtnVal = 1;
                 $exifTool->FoundTag('Comment', $comment) if $comment;
                 undef $comment;
@@ -288,6 +339,7 @@ Block:
                 print $out "Application Extension: @a\n";
             }
             if ($buff eq 'XMP DataXMP') {   # XMP data (ref 2)
+
                 my $hdr = "$ch$s$buff";
                 # read XMP data
                 my $xmp = '';
@@ -316,17 +368,18 @@ Block:
                     if ($doneDir{XMP} and $doneDir{XMP} > 1) {
                         $exifTool->Warn('Duplicate XMP block created');
                     }
-                    my $newXMP = $exifTool->WriteDirectory(\%dirInfo, $xmpTable);
-                    if (not defined $newXMP) {
-                        Write($outfile, $hdr, $xmp) or $err = 1;  # write original XMP
+                    $buff = $exifTool->WriteDirectory(\%dirInfo, $xmpTable);
+                    if (not defined $buff) {
+                        # rewrite original XMP with landing zone (adding back null terminator)
+                        Write($outfile, $hdr, $xmp, "\0") or $err = 1;
                         $doneDir{XMP} = 1;
-                    } elsif (length $newXMP) {
-                        if ($newXMP =~ /\0/) { # (check just to be safe)
+                    } elsif (length $buff) {
+                        if ($buff =~ /\0/) { # (check just to be safe)
                             $exifTool->Error('XMP contained NULL character');
                         } else {
                             # write new XMP and landing zone
                             my $lz = pack('C*',1,reverse(0..255),0);
-                            Write($outfile, $hdr, $newXMP, $lz) or $err = 1;
+                            Write($outfile, $hdr, $buff, $lz) or $err = 1;
                         }
                         $doneDir{XMP} = 1;
                     } # else we are deleting the XMP
@@ -334,14 +387,63 @@ Block:
                     $exifTool->ProcessDirectory(\%dirInfo, $xmpTable);
                 }
                 next;
+
+            } elsif ($buff eq 'ICCRGBG1012') {      # ICC_Profile extension (ref 4)
+
+                my $hdr = "$ch$s$buff";
+                # read ICC profile data
+                my $icc_profile = '';
+                for (;;) {
+                    $raf->Read($ch, 1) or last Block;   # read next block header
+                    $length = ord($ch) or last;         # get next block size
+                    $raf->Read($buff, $length) == $length or last Block;
+                    $icc_profile .= $buff;
+                }
+                my %dirInfo = (
+                    DataPt  => \$icc_profile,
+                    DataLen => length $icc_profile,
+                    DirLen  => length $icc_profile,
+                    Parent  => 'GIF',
+                );
+                my $iccTable = GetTagTable('Image::ExifTool::ICC_Profile::Main');
+                if ($outfile) {
+                    if ($doneDir{ICC_Profile} and $doneDir{ICC_Profile} > 1) {
+                        $exifTool->Warn('Duplicate ICC_Profile block created');
+                    }
+                    $buff = $exifTool->WriteDirectory(\%dirInfo, $iccTable);
+                    # rewrite original ICC_Profile if nothing changed 
+                    $buff = $icc_profile unless defined $buff;
+                    if (length $buff) {
+                        # write ICC profile sub-blocks
+                        my $pos = 0;
+                        Write($outfile, $hdr) or $err = 1;
+                        my $len = length $buff;
+                        while ($pos < $len) {
+                            my $n = $len - $pos;
+                            $n = 255 if $n > 255;
+                            Write($outfile, chr($n), substr($buff, $pos, $n)) or $err = 1;
+                            $pos += $n;
+                        }
+                        Write($outfile, "\0") or $err = 1;  # write null terminator
+                        $doneDir{ICC_Profile} = 1;
+                    } # else we are deleting the ICC profile
+                } else {
+                    $exifTool->ProcessDirectory(\%dirInfo, $iccTable);
+                }
+                next;
+
             } elsif ($buff eq 'NETSCAPE2.0') {      # animated GIF extension (ref 3)
+
                 $raf->Read($buff, 5) == 5 or last;
                 # make sure this contains the expected data
-                if ($buff =~ /^\x03\x01(..)\0$/) {
-                    $exifTool->HandleTag($tagTablePtr, 'AnimationExtension', $buff);
+                if ($buff =~ /^\x03\x01(..)\0$/s) {
+                    $exifTool->HandleTag($tagTablePtr, 'ExtensionAnimation', $buff);
                 }
                 $raf->Seek(-$length-5, 1) or last;  # seek back to start of block
+
             } else {
+
+                # rewind to start of application extension to copy the unknown block
                 $raf->Seek(-$length, 1) or last;
             }
 
@@ -387,8 +489,6 @@ Block:
     unless ($outfile) {
         $exifTool->HandleTag($tagTablePtr, 'FrameCount', $frameCount) if $frameCount > 1;
         $exifTool->HandleTag($tagTablePtr, 'Duration', $delayTime/100) if $delayTime;
-        # for historical reasons, the GIF Comment tag is in the Extra table
-        $exifTool->FoundTag('Comment', $comment) if $comment;
     }
 
     # set return value to -1 if we only had a write error
@@ -416,7 +516,7 @@ write GIF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -430,6 +530,8 @@ under the same terms as Perl itself.
 =item L<http://www.adobe.com/devnet/xmp/>
 
 =item L<http://graphcomp.com/info/specs/ani_gif.html>
+
+=item L<http://www.color.org/icc_specs2.html>
 
 =back
 

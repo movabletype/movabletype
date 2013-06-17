@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.05';
+$VERSION = '1.06';
 
 # MIFF chunks
 %Image::ExifTool::MIFF::Main = (
@@ -31,7 +31,7 @@ $VERSION = '1.05';
    'matt-color' => 'MattColor',
     class => 'Class',
     colors => 'Colors',
-    colorspace => 'Colorspace',
+    colorspace => 'ColorSpace',
     columns => 'ImageWidth',
     compression => 'Compression',
     delay => 'Delay',
@@ -159,7 +159,7 @@ sub ProcessMIFF($$)
             my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
             unless ($tagInfo) {
                 $tagInfo = { Name => $tag };
-                Image::ExifTool::AddTagToTable($tagTablePtr, $tag, $tagInfo);
+                AddTagToTable($tagTablePtr, $tag, $tagInfo);
             }
             $verbose and $exifTool->VerboseInfo($tag, $tagInfo,
                 Table  => $tagTablePtr,
@@ -255,7 +255,7 @@ This module contains routines required by Image::ExifTool to read MIFF
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

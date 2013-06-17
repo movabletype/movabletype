@@ -21,12 +21,13 @@ use vars qw($VERSION $AUTOLOAD $lastFetched);
 use Image::ExifTool qw(:DataAccess :Utils);
 require Exporter;
 
-$VERSION = '1.28';
+$VERSION = '1.35';
 
 sub FetchObject($$$$);
 sub ExtractObject($$;$$);
 sub ReadToNested($;$);
 sub ProcessDict($$$$;$$);
+sub ProcessAcroForm($$$$;$$);
 sub ReadPDFValue($);
 sub CheckPDF($$$);
 
@@ -41,12 +42,33 @@ my %streamObjs;     # hash of stream objects
 my %fetched;        # dicts fetched in verbose mode (to avoid cyclical recursion)
 my $pdfVer;         # version of PDF file being processed
 
+# filters supported in DecodeStream()
+my %supportedFilter = (
+    '/FlateDecode' => 1,
+    '/Crypt' => 1,
+    '/Identity' => 1,  # (not filtered)
+    '/DCTDecode' => 1, # (JPEG image - not filtered)
+    '/JPXDecode' => 1, # (Jpeg2000 image - not filtered)
+    '/LZWDecode' => 1, # (usually a bitmapped image)
+    '/ASCIIHexDecode' => 1,
+    # other standard filters that we currently don't support
+    #'/JBIG2Decode' => 0, # (JBIG2 image format not supported)
+    #'/CCITTFaxDecode' => 0,
+    #'/RunLengthDecode' => 0,
+    #'/ASCII85Decode' => 0,
+);
+
 # tags in main PDF directories
 %Image::ExifTool::PDF::Main = (
     GROUPS => { 2 => 'Document' },
     VARS => { CAPTURE => ['Main','Prev'] },
     Info => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::Info' },
+        # Adobe Acrobat 10.1.5 will create a duplicate Info dictionary with
+        # a different object number when metadata is edited.  This flag
+        # is part of a patch to ignore this duplicate information (unless
+        # the IgnoreMinorErrors option is used)
+        IgnoreDuplicates => 1,
     },
     Root => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::Root' },
@@ -62,7 +84,7 @@ my $pdfVer;         # version of PDF file being processed
     },
 );
 
-# tags in PDF Info directory
+# tags in PDF Info dictionary
 %Image::ExifTool::PDF::Info = (
     GROUPS => { 2 => 'Document' },
     VARS => { CAPTURE => ['Info'] },
@@ -70,6 +92,10 @@ my $pdfVer;         # version of PDF file being processed
     WRITE_PROC => \&Image::ExifTool::DummyWriteProc,
     CHECK_PROC => \&CheckPDF,
     WRITABLE => 'string',
+    # set PRIORITY to 0 so most recent Info dictionary takes precedence
+    # (Acrobat Pro bug? doesn't use same object/generation number for
+    #  new Info dictionary when doing incrmental update)
+    PRIORITY => 0,
     NOTES => q{
         As well as the tags listed below, the PDF specification allows for
         user-defined tags to exist in the Info dictionary.  These tags, which should
@@ -135,6 +161,9 @@ my $pdfVer;         # version of PDF file being processed
     Perms => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::Perms' },
     },
+    AcroForm => {
+        SubDirectory => { TagTable => 'Image::ExifTool::PDF::AcroForm' },
+    },
     Lang       => 'Language',
     PageLayout => { },
     PageMode   => { },
@@ -145,7 +174,13 @@ my $pdfVer;         # version of PDF file being processed
 %Image::ExifTool::PDF::Encrypt = (
     GROUPS => { 2 => 'Document' },
     NOTES => 'Tags extracted from the document Encrypt dictionary.',
-    Filter => 'Encryption',
+    Filter => {
+        Name => 'Encryption',
+        Notes => q{
+            extracted value is actually a combination of the Filter, SubFilter, V, R and
+            Length information from the Encrypt dictionary
+        },
+    },
     P => {
         Name => 'UserAccess',
         ValueConv => '$val & 0x0f3c',  # ignore reserved bits
@@ -163,7 +198,7 @@ my $pdfVer;         # version of PDF file being processed
     },
 );
 
-# tags in PDF Pages directory
+# tags in PDF Pages dictionary
 %Image::ExifTool::PDF::Pages = (
     GROUPS => { 2 => 'Document' },
     Count => 'PageCount',
@@ -172,7 +207,7 @@ my $pdfVer;         # version of PDF file being processed
     },
 );
 
-# tags in PDF Perms directory
+# tags in PDF Perms dictionary
 %Image::ExifTool::PDF::Perms = (
     NOTES => 'Additional document permissions imposed by digital signatures.',
     DocMDP => {
@@ -186,7 +221,20 @@ my $pdfVer;         # version of PDF file being processed
     },
 );
 
-# tags in PDF Kids directory
+# tags in PDF Perms dictionary
+%Image::ExifTool::PDF::AcroForm = (
+    PROCESS_PROC => \&ProcessAcroForm,
+    _has_xfa => {
+        Name => 'HasXFA',
+        Notes => q{
+            this tag is defined if a document contains form fields, and is true if it
+            uses XML Forms Architecture; not a real Tag ID
+        },
+        PrintConv => { 'true' => 'Yes', 'false' => 'No' },
+    },
+);
+
+# tags in PDF Kids dictionary
 %Image::ExifTool::PDF::Kids = (
     Metadata => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::Metadata' },
@@ -197,37 +245,111 @@ my $pdfVer;         # version of PDF file being processed
     Resources => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::Resources' },
     },
+    Kids => {
+        Condition => '$self->Options("ExtractEmbedded")',
+        SubDirectory => { TagTable => 'Image::ExifTool::PDF::Kids' },
+    },
 );
 
-# tags in PDF Resources directory
+# tags in PDF Resources dictionary
 %Image::ExifTool::PDF::Resources = (
     ColorSpace => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::ColorSpace' },
     },
+    XObject => {
+        Condition => '$self->Options("ExtractEmbedded")',
+        SubDirectory => { TagTable => 'Image::ExifTool::PDF::XObject' },
+    },
+    Properties => {
+        Condition => '$self->Options("ExtractEmbedded")',
+        SubDirectory => { TagTable => 'Image::ExifTool::PDF::Properties' },
+    },
 );
 
-# tags in PDF ColorSpace directory
+# tags in PDF ColorSpace dictionary
 %Image::ExifTool::PDF::ColorSpace = (
     DefaultRGB => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::DefaultRGB' },
     },
+    Cs1 => {
+        SubDirectory => { TagTable => 'Image::ExifTool::PDF::Cs1' },
+    },
 );
 
-# tags in PDF DefaultRGB directory
+# tags in PDF DefaultRGB dictionary
 %Image::ExifTool::PDF::DefaultRGB = (
     ICCBased => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::ICCBased' },
     },
 );
 
-# tags in PDF ICCBased directory
+# tags in PDF Cs1 dictionary
+%Image::ExifTool::PDF::Cs1 = (
+    _stream => {
+        SubDirectory => { TagTable => 'Image::ExifTool::ICC_Profile::Main' },
+    },
+);
+
+# tags in PDF ICCBased dictionary
 %Image::ExifTool::PDF::ICCBased = (
     _stream => {
         SubDirectory => { TagTable => 'Image::ExifTool::ICC_Profile::Main' },
     },
 );
 
-# tags in PDF PieceInfo directory
+# tags in PDF XObject dictionary (parsed only if ExtractEmbedded is enabled)
+%Image::ExifTool::PDF::XObject = (
+    EXTRACT_UNKNOWN => 0,   # extract known but numbered tags (Im1, Im2, etc)
+    Im => {
+        Notes => q{
+            the ExtractEmbedded option enables information to be extracted from these
+            embedded images
+        },
+        SubDirectory => { TagTable => 'Image::ExifTool::PDF::Im' },
+    },
+);
+
+# tags in PDF Im# dictionary
+%Image::ExifTool::PDF::Im = (
+    NOTES => q{
+        Information extracted from embedded images with the ExtractEmbedded option.
+        The EmbeddedImage and its metadata are extracted only for JPEG and Jpeg2000
+        image formats.
+    },
+    Width => 'EmbeddedImageWidth',
+    Height => 'EmbeddedImageHeight',
+    Filter => { Name => 'EmbeddedImageFilter', List => 1 },
+    ColorSpace => {
+        Name => 'EmbeddedImageColorSpace',
+        List => 1,
+        RawConv => 'ref $val ? undef : $val', # (ignore color space data)
+    },
+    Image_stream => {
+        Name => 'EmbeddedImage',
+        Binary => 1,
+    },
+);
+
+# tags in PDF Properties dictionary
+%Image::ExifTool::PDF::Properties = (
+    EXTRACT_UNKNOWN => 0,   # extract known but numbered tags (MC0, MC1, etc)
+    MC => {
+        Notes => q{
+            the ExtractEmbedded option enables information to be extracted from these
+            embedded metadata dictionaries
+        },
+        SubDirectory => { TagTable => 'Image::ExifTool::PDF::MC' },
+    }
+);
+
+# tags in PDF MC# dictionary
+%Image::ExifTool::PDF::MC = (
+    Metadata => {
+        SubDirectory => { TagTable => 'Image::ExifTool::PDF::Metadata' },
+    }
+);
+
+# tags in PDF PieceInfo dictionary
 %Image::ExifTool::PDF::PieceInfo = (
     AdobePhotoshop => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::AdobePhotoshop' },
@@ -243,28 +365,28 @@ my $pdfVer;         # version of PDF file being processed
     },
 );
 
-# tags in PDF AdobePhotoshop directory
+# tags in PDF AdobePhotoshop dictionary
 %Image::ExifTool::PDF::AdobePhotoshop = (
     Private => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::Private' },
     },
 );
 
-# tags in PDF Illustrator directory
+# tags in PDF Illustrator dictionary
 %Image::ExifTool::PDF::Illustrator = (
     Private => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::AIPrivate' },
     },
 );
 
-# tags in PDF Private directory
+# tags in PDF Private dictionary
 %Image::ExifTool::PDF::Private = (
     ImageResources => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::ImageResources' },
     },
 );
 
-# tags in PDF AI Private directory
+# tags in PDF AI Private dictionary
 %Image::ExifTool::PDF::AIPrivate = (
     GROUPS => { 2 => 'Document' },
     EXTRACT_UNKNOWN => 0,   # extract known but numbered tags
@@ -274,8 +396,13 @@ my $pdfVer;         # version of PDF file being processed
     AIPrivateData => {
         Notes => q{
             the ExtractEmbedded option enables information to be extracted from embedded
-            PostScript documents in the AIPrivateData stream
+            PostScript documents in the AIPrivateData# and AIPDFPrivateData# streams
         },
+        JoinStreams => 1,   # join streams from numbered tags and process as one
+        SubDirectory => { TagTable => 'Image::ExifTool::PostScript::Main' },
+    },
+    AIPDFPrivateData => {
+        JoinStreams => 1,   # join streams from numbered tags and process as one
         SubDirectory => { TagTable => 'Image::ExifTool::PostScript::Main' },
     },
     RoundTripVersion => { },
@@ -283,21 +410,21 @@ my $pdfVer;         # version of PDF file being processed
     CreatorVersion => { },
 );
 
-# tags in PDF AIMetaData directory
+# tags in PDF AIMetaData dictionary
 %Image::ExifTool::PDF::AIMetaData = (
     _stream => {
         SubDirectory => { TagTable => 'Image::ExifTool::PostScript::Main' },
     },
 );
 
-# tags in PDF ImageResources directory
+# tags in PDF ImageResources dictionary
 %Image::ExifTool::PDF::ImageResources = (
     _stream => {
         SubDirectory => { TagTable => 'Image::ExifTool::Photoshop::Main' },
     },
 );
 
-# tags in PDF MarkInfo directory
+# tags in PDF MarkInfo dictionary
 %Image::ExifTool::PDF::MarkInfo = (
     GROUPS => { 2 => 'Document' },
     Marked => {
@@ -307,7 +434,7 @@ my $pdfVer;         # version of PDF file being processed
     },
 );
 
-# tags in PDF Metadata directory
+# tags in PDF Metadata dictionary
 %Image::ExifTool::PDF::Metadata = (
     GROUPS => { 2 => 'Document' },
     XML_stream => { # this is the stream for a Subtype /XML dictionary (not a real tag)
@@ -339,45 +466,54 @@ my $pdfVer;         # version of PDF file being processed
     Prop_AuthType => 'AuthenticationType',
 );
 
-# tags in PDF Reference directory
+# tags in PDF Reference dictionary
 %Image::ExifTool::PDF::Reference = (
     TransformParams => {
         SubDirectory => { TagTable => 'Image::ExifTool::PDF::TransformParams' },
     },
 );
 
-# tags in PDF TransformParams directory
+# tags in PDF TransformParams dictionary
 %Image::ExifTool::PDF::TransformParams = (
     GROUPS => { 2 => 'Document' },
     Annots => {
         Name => 'AnnotationUsageRights',
-        Notes => 'UR3 signatures only',
+        Notes => q{
+            possible values are Create, Delete, Modify, Copy, Import and Export;
+            additional values for UR3 signatures are Online and SummaryView
+        },
         List => 1,
     },
     Document => {
         Name => 'DocumentUsageRights',
-        Notes => 'UR3 signatures only',
+        Notes => 'only possible value is FullSave',
         List => 1,
     },
     Form => {
         Name => 'FormUsageRights',
-        Notes => 'UR3 signatures only',
+        Notes => q{
+            possible values are FillIn, Import, Export, SubmitStandalone and
+            SpawnTemplate; additional values for UR3 signatures are BarcodePlaintext and
+            Online
+        },
+        List => 1,
+    },
+    FormEX => {
+        Name => 'FormExtraUsageRights',
+        Notes => 'UR signatures only; only possible value is BarcodePlaintext',
         List => 1,
     },
     Signature => {
         Name => 'SignatureUsageRights',
-        Notes => 'UR3 signatures only',
+        Notes => 'only possible value is Modify',
         List => 1,
     },
     EF => {
         Name => 'EmbeddedFileUsageRights',
-        Notes => 'UR3 signatures only',
+        Notes => 'possible values are Create, Delete, Modify and Import',
         List => 1,
     },
-    Msg => {
-        Name => 'UsageRightsMessage',
-        Notes => 'UR3 signatures only',
-    },
+    Msg => 'UsageRightsMessage',
     P => {
         Name => 'ModificationPermissions',
         Notes => q{
@@ -388,7 +524,7 @@ my $pdfVer;         # version of PDF file being processed
             1 => 'No changes permitted',
             2 => 'Fill forms, Create page templates, Sign',
             3 => 'Fill forms, Create page templates, Sign, Create/Delete/Edit annotations',
-            'true' => 'Restrict al applications to reader permissions',
+            'true' => 'Restrict all applications to reader permissions',
             'false' => 'Do not restrict applications to reader permissions',
         },
     },
@@ -810,13 +946,17 @@ sub ExtractObject($$;$$)
         # verify that we are reading the expected object
         $raf->ReadLine($data) or $exifTool->Warn('Error reading Length data'), return $dict;
         $length =~ s/R/obj/;
-        unless ($data =~ /^$length/) {
+        unless ($data =~ /^$length\s+(\d+)?/) {
             $exifTool->Warn("Length object ($length) not found at $offset");
             return $dict;
         }
-        $raf->ReadLine($data) or $exifTool->Warn('Error reading stream Length'), return $dict;
-        $data =~ /(\d+)/ or $exifTool->Warn('Stream length not found'), return $dict;
-        $length = $1;
+        if (defined $1) {
+            $length = $1;
+        } else {
+            $raf->ReadLine($data) or $exifTool->Warn('Error reading stream Length'), return $dict;
+            $data =~ /^\s*(\d+)/ or $exifTool->Warn('Stream length not found'), return $dict;
+            $length = $1;
+        }
         $raf->Seek($oldpos, 0); # restore position to start of stream
     }
     # extract the trailing stream data
@@ -880,7 +1020,7 @@ sub ReadToNested($;$)
         }
         # are we in a literal string?
         if ($delim[0] eq ')') {
-            # ignore escaped delimiters (preceeded by odd number of \'s)
+            # ignore escaped delimiters (preceded by odd number of \'s)
             next if length($1) & 0x01;
             # ignore all delimiters but unescaped braces
             next unless $2 eq '(' or $2 eq ')';
@@ -916,11 +1056,69 @@ sub ReadToNested($;$)
 }
 
 #------------------------------------------------------------------------------
+# Decode LZW-encoded data (ref 1)
+# Inputs: 0) data reference
+# Returns: true on success and data is decoded, or false and data is untouched
+sub DecodeLZW($)
+{
+    my $dataPt = shift;
+    return 0 if length $$dataPt < 4;
+    my @lzw = (map(chr, 0..255), undef, undef); # LZW code table
+    my $mask = 0x01ff;  # mask for least-significant 9 bits
+    my @dat = unpack 'n*', $$dataPt . "\0";
+    my $word = ($dat[0] << 16) | $dat[1];
+    my ($bit, $pos, $bits, $out) = (0, 2, 9, '');
+    my $lastVal;
+    for (;;) {
+        # bits are packed MSB first in PDF LZW (the PDF spec doesn't mention this)
+        my $shift = 32 - ($bit + $bits);
+        if ($shift < 0) {
+            return 0 if $pos >= @dat; # missing EOD marker
+            $word = (($word & 0xffff) << 16) | $dat[$pos++]; # read next word
+            $bit -= 16;
+            $shift += 16;
+        };
+        my $code = ($word >> $shift) & $mask;
+        $bit += $bits;
+        my $val = $lzw[$code];
+        if (defined $val) {
+            # store new code as previous sequence plus 1st char of new sequence
+            push @lzw, $lastVal . substr($val, 0, 1) if defined $lastVal;
+        } elsif ($code == @lzw) { # new code
+            return 0 unless defined $lastVal;
+            # we are using the code that we are about to generate, so the last
+            # character in the new sequence must be the same as the first
+            # character in the previous sequence (makes sense if you think about it)
+            $val = $lastVal . substr($lastVal, 0, 1);
+            push @lzw, $val;
+        } elsif ($code == 256) { # clear table
+            splice @lzw, 258;
+            $bits = 9;
+            $mask = 0x1ff;
+            undef $lastVal;
+            next;
+        } elsif ($code == 257) { # EOD marker
+            last;   # all done!
+        } else {
+            return 0;
+        }
+        $out .= $val;   # add this byte sequence to the output
+        # we added a new entry to the LZW table, so we must increase
+        # the bit width if necessary, up to a maximum of 12
+        @lzw >= $mask and $bits < 12 and ++$bits, $mask |= $mask << 1;
+        $lastVal = $val;
+    }
+    $$dataPt = $out;    # return decompressed data
+    return 1;
+}
+
+#------------------------------------------------------------------------------
 # Decode filtered stream
 # Inputs: 0) ExifTool object reference, 1) dictionary reference
 # Returns: true if stream has been decoded OK
 sub DecodeStream($$)
 {
+    local $_;
     my ($exifTool, $dict) = @_;
 
     return 0 unless $$dict{_stream}; # no stream to decode
@@ -931,6 +1129,12 @@ sub DecodeStream($$)
         @filters = @{$$dict{Filter}};
     } elsif (defined $$dict{Filter}) {
         @filters = ($$dict{Filter});
+    }
+    # be sure we can process all the filters before we take the time to do the decryption
+    foreach $filter (@filters) {
+        next if $supportedFilter{$filter};
+        $exifTool->WarnOnce("Unsupported Filter $filter");
+        return 0;
     }
     # apply decryption first if required (and if the default encryption
     # has not been overridden by a Crypt filter. Note: the Crypt filter
@@ -948,10 +1152,20 @@ sub DecodeStream($$)
     } else {
         @decodeParms = ($$dict{DecodeParms});
     }
+
     foreach $filter (@filters) {
         my $decodeParms = shift @decodeParms;
 
         if ($filter eq '/FlateDecode') {
+            # make sure we support the predictor (if used) before decoding
+            my $pre;
+            if (ref $decodeParms eq 'HASH') {
+                $pre = $$decodeParms{Predictor};
+                if ($pre and $pre ne '1' and $pre ne '12') {
+                    $exifTool->WarnOnce("FlateDecode Predictor $pre currently not supported");
+                    return 0;
+                }
+            }
             if (eval 'require Compress::Zlib') {
                 my $inflate = Compress::Zlib::inflateInit();
                 my ($buff, $stat);
@@ -966,15 +1180,9 @@ sub DecodeStream($$)
                 $exifTool->WarnOnce('Install Compress::Zlib to process filtered streams');
                 return 0;
             }
-            # apply anti-predictor if necessary
-            next unless ref $decodeParms eq 'HASH';
-            my $pre = $$decodeParms{Predictor};
-            next unless $pre and $pre != 1;
-            if ($pre != 12) {
-                # currently only support 'up' prediction
-                $exifTool->WarnOnce("FlateDecode Predictor $pre not currently supported");
-                return 0;
-            }
+            next unless $pre and $pre eq '12';  # 12 = 'up' prediction
+
+            # apply anti-predictor
             my $cols = $$decodeParms{Columns};
             unless ($cols) {
                 # currently only support 'up' prediction
@@ -1023,10 +1231,29 @@ sub DecodeStream($$)
             Crypt(\$$dict{_stream}, 'none');
             $$dict{_decrypted} = ($cryptStream ? 1 : 0);
 
-        } elsif ($filter ne '/Identity') {
+        } elsif ($filter eq '/LZWDecode') {
 
-            $exifTool->WarnOnce("Unsupported Filter $filter");
-            return 0;
+            # make sure we don't have any unsupported decoding parameters
+            if (ref $decodeParms eq 'HASH') {
+                if ($$decodeParms{Predictor}) {
+                    $exifTool->WarnOnce("LZWDecode Predictor $$decodeParms{Predictor} currently not supported");
+                    return 0;
+                } elsif ($$decodeParms{EarlyChange}) {
+                    $exifTool->WarnOnce("LZWDecode EarlyChange currently not supported");
+                    return 0;
+                }                    
+            }
+            unless (DecodeLZW(\$$dict{_stream})) {
+                $exifTool->WarnOnce('LZW decompress error');
+                return 0;
+            }
+
+        } elsif ($filter eq '/ASCIIHexDecode') {
+
+            $$dict{_stream} =~ s/>.*//; # truncate at '>' (end of data mark)
+            $$dict{_stream} =~ tr/0-9a-zA-Z//d; # remove illegal characters
+            $$dict{_stream} = pack 'H*', $$dict{_stream};
+
         }
     }
     return 1;
@@ -1077,6 +1304,82 @@ sub RC4Crypt($$)
 }
 
 #------------------------------------------------------------------------------
+# Update AES cipher with a bit of data
+# Inputs: 0) data
+# Returns: encrypted data
+my $cipherMore;
+sub CipherUpdate($)
+{
+    my $dat = shift;
+    my $pos = 0;
+    $dat = $cipherMore . $dat if length $dat;
+    while ($pos + 16 <= length($dat)) {
+        substr($dat,$pos,16) = Image::ExifTool::AES::Cipher(substr($dat,$pos,16));
+        $pos += 16;
+    }
+    if ($pos < length $dat) {
+        $cipherMore = substr($dat,$pos);
+        $dat = substr($dat,0,$pos);
+    } else {
+        $cipherMore = '';
+    }
+    return $dat;
+}
+
+#------------------------------------------------------------------------------
+# Get encrypted hash
+# Inputs: 0) Password, 1) salt, 2) vector, 3) encryption revision
+# Returns: hash
+sub GetHash($$$$)
+{
+    my ($password, $salt, $vector, $rev) = @_;
+
+    # return Rev 5 hash
+    return Digest::SHA::sha256($password, $salt, $vector) if $rev == 5;
+
+    # compute Rev 6 hardened hash
+    # (ref http://code.google.com/p/origami-pdf/source/browse/lib/origami/encryption.rb)
+    my $blockSize = 32;
+    my $input = Digest::SHA::sha256($password, $salt, $vector) . ("\0" x 32);
+    my $key = substr($input, 0, 16);
+    my $iv = substr($input, 16, 16);
+    my $h;
+    my $x = '';
+    my $i = 0;
+    while ($i < 64 or $i < ord(substr($x,-1,1))+32) {
+
+        my $block = substr($input, 0, $blockSize);
+        $x = '';
+        Image::ExifTool::AES::Crypt(\$x, $key, $iv, 1);
+        $cipherMore = '';
+
+        my ($j, $digest);
+        for ($j=0; $j<64; ++$j)  {
+            $x = '';
+            $x .= CipherUpdate($password) if length $password;
+            $x .= CipherUpdate($block);
+            $x .= CipherUpdate($vector) if length $vector;
+            if ($j == 0) {
+                my @a = unpack('C16', $x);
+                my $sum = 0;
+                $sum += $_ foreach @a;
+                # set SHA block size (32, 48 or 64 bytes = SHA-256, 384 or 512)
+                $blockSize = 32 + ($sum % 3) * 16;
+                $digest = Digest::SHA->new($blockSize * 8);
+            }
+            $digest->add($x);
+        }
+
+        $h = $digest->digest();
+        $key = substr($h, 0, 16);
+        substr($input,0,16) = $h;
+        $iv = substr($h, 16, 16);
+        ++$i;
+    }
+    return substr($h, 0, 32);
+}
+
+#------------------------------------------------------------------------------
 # Initialize decryption
 # Inputs: 0) ExifTool object reference, 1) Encrypt dictionary reference,
 #         2) ID from file trailer dictionary
@@ -1100,15 +1403,20 @@ sub DecryptInit($$$)
     my $enc = "$filt V$ver";
     $enc .= ".$rev" if $filt eq 'Standard';
     $enc .= " ($1)" if $$encrypt{SubFilter} and $$encrypt{SubFilter} =~ /^\/(.*)/;
+    $enc .= ' (' . ($$encrypt{Length} || 40) . '-bit)' if $filt eq 'Standard';
     my $tagTablePtr = GetTagTable('Image::ExifTool::PDF::Encrypt');
     $exifTool->HandleTag($tagTablePtr, 'Filter', $enc);
     if ($filt ne 'Standard') {
-        return "Encryption filter $filt not currently supported";
+        return "Encryption filter $filt currently not supported";
     } elsif (not defined $$encrypt{R}) {
         return 'Standard security handler missing revision';
     }
     unless ($$encrypt{O} and $$encrypt{P} and $$encrypt{U}) {
         return 'Incomplete Encrypt specification';
+    }
+    if ("$ver.$rev" >= 5.6) {
+        # apologize for poor performance (AES is a pure Perl implementation)
+        $exifTool->Warn('Decryption is very slow for encryption V5.6 or higher', 1);
     }
     $exifTool->HandleTag($tagTablePtr, 'P', $$encrypt{P});
 
@@ -1144,7 +1452,7 @@ sub DecryptInit($$$)
             require Image::ExifTool::AES;   # will need this later
         }
     } else {
-        return "Encryption version $ver not currently supported";
+        return "Encryption version $ver currently not supported";
     }
     $id or return "Can't decrypt (no document ID)";
 
@@ -1243,9 +1551,9 @@ sub DecryptInit($$$)
                 $password = substr($password, 0, 127) if length($password) > 127;
             }
             # test for the owner password
-            my $sha = Digest::SHA::sha256($password, substr($o,32,8), substr($u,0,48));
+            my $sha = GetHash($password, substr($o,32,8), substr($u,0,48), $rev);
             if ($sha eq substr($o, 0, 32)) {
-                $key = Digest::SHA::sha256($password, substr($o,40,8), substr($u,0,48));
+                $key = GetHash($password, substr($o,40,8), substr($u,0,48), $rev);
                 my $dat = ("\0" x 16) . $parm{OE};
                 # decrypt with no padding
                 my $err = Image::ExifTool::AES::Crypt(\$dat, $key, 0, 1);
@@ -1254,9 +1562,9 @@ sub DecryptInit($$$)
                 last;
             }
             # test for the user password
-            $sha = Digest::SHA::sha256($password, substr($u,32,8));
+            $sha = GetHash($password, substr($u,32,8), '', $rev);
             if ($sha eq substr($u, 0, 32)) {
-                $key = Digest::SHA::sha256($password, substr($u,40,8));
+                $key = GetHash($password, substr($u,40,8), '', $rev);
                 my $dat = ("\0" x 16) . $parm{UE};
                 my $err = Image::ExifTool::AES::Crypt(\$dat, $key, 0, 1);
                 return $err if $err;
@@ -1347,8 +1655,18 @@ sub NewPDFTag($$)
     $name =~ s/[^-\w]+/_/g;         # translate invalid characters to an underline
     $name =~ s/(^|_)([a-z])/\U$2/g; # start words with upper case
     my $tagInfo = { Name => $name };
-    Image::ExifTool::AddTagToTable($tagTablePtr, $tag, $tagInfo);
+    AddTagToTable($tagTablePtr, $tag, $tagInfo);
     return $tagInfo;
+}
+
+#------------------------------------------------------------------------------
+# Process AcroForm dictionary to set HasXMLFormsArchitecture flag
+# Inputs: Same as ProcessDict
+sub ProcessAcroForm($$$$;$$)
+{
+    my ($exifTool, $tagTablePtr, $dict, $xref, $nesting, $type) = @_;
+    $exifTool->HandleTag($tagTablePtr, '_has_xfa', $$dict{XFA} ? 'true' : 'false');
+    return ProcessDict($exifTool, $tagTablePtr, $dict, $xref, $nesting, $type);
 }
 
 #------------------------------------------------------------------------------
@@ -1388,7 +1706,7 @@ sub ProcessDict($$$$;$$)
 # extract information from all tags in the dictionary
 #
     for (;;) {
-        my ($tag, $tagInfo);
+        my ($tag, $isSubDoc);
         if (@tags) {
             $tag = shift @tags;
         } elsif (defined $next and not $next) {
@@ -1398,19 +1716,26 @@ sub ProcessDict($$$$;$$)
             last;
         }
         my $val = $$dict{$tag};
-        if ($$tagTablePtr{$tag}) {
-            $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        if ($tagInfo) {
             undef $tagInfo if $$tagInfo{NoProcess};
         } elsif ($embedded and $tag =~ /^(.*?)(\d+)$/ and
-            $$tagTablePtr{$1} and ref $val eq 'SCALAR' and not $fetched{$$val})
+            $$tagTablePtr{$1} and (ref $val ne 'SCALAR' or not $fetched{$$val}))
         {
             my ($name, $num) = ($1, $2);
-            $join{$name} = [] unless $join{$name};
-            $fetched{$$val} = 1;
-            my $obj = FetchObject($exifTool, $$val, $xref, $tag);
-            next unless ref $obj eq 'HASH' and $$obj{_stream};
-            # save all the stream data to join later
-            $join{$name}->[$num] = $$obj{_stream};
+            $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $name);
+            if (ref $tagInfo eq 'HASH' and $$tagInfo{JoinStreams}) {
+                $fetched{$$val} = 1;
+                my $obj = FetchObject($exifTool, $$val, $xref, $tag);
+                $join{$name} = [] unless $join{$name};
+                next unless ref $obj eq 'HASH' and $$obj{_stream};
+                # save all the stream data to join later
+                DecodeStream($exifTool, $obj);
+                $join{$name}->[$num] = $$obj{_stream};
+                undef $tagInfo;    # don't process
+            } else {
+                $isSubDoc = 1;  # treat as a sub-document
+            }
         }
         if ($verbose) {
             my ($val2, $extra);
@@ -1461,15 +1786,14 @@ sub ProcessDict($$$$;$$)
                 # create bogus subdirectory to recurse into this dict
                 $tagInfo or $tagInfo = {
                     Name => $tag,
-                    SubDirectory => {
-                        TagTable => 'Image::ExifTool::PDF::Unknown',
-                    },
+                    SubDirectory => { TagTable => 'Image::ExifTool::PDF::Unknown' },
                 };
             } else {
                 if (ref $val eq 'ARRAY') {
                     my @list = @$val;
                     foreach (@list) {
                         $_ = "ref($$_)" if ref $_ eq 'SCALAR';
+                        $_ = '<undef>' unless defined $_;
                     }
                     $val2 = '[' . join(',',@list) . ']';
                 }
@@ -1486,36 +1810,121 @@ sub ProcessDict($$$$;$$)
             next unless defined $val;
         }
         unless ($tagInfo) {
-            # add any tag found in Info directory to table
+            # add any tag found in Info dictionary to table
             next unless $unknown;
             $tagInfo = NewPDFTag($tagTablePtr, $tag);
         }
-        unless ($$tagInfo{SubDirectory}) {
+        # increment document number if necessary
+        my ($oldDocNum, $oldNumTags);
+        if ($isSubDoc) {
+            $oldDocNum = $$exifTool{DOC_NUM};
+            $oldNumTags = $$exifTool{NUM_FOUND};
+            $$exifTool{DOC_NUM} = ++$$exifTool{DOC_COUNT};
+        }
+        if ($$tagInfo{SubDirectory}) {
+            # process the subdirectory
+            my @subDicts;
+            if (ref $val eq 'ARRAY') {
+                @subDicts = @{$val};
+            } else {
+                @subDicts = ( $val );
+            }
+            # loop through all values of this tag
+            for (;;) {
+                my $subDict = shift @subDicts or last;
+                # save last fetched object in case we fetch another one here
+                my $prevFetched = $lastFetched;
+                if (ref $subDict eq 'SCALAR') {
+                    # only fetch once (other copies are obsolete)
+                    next if $fetched{$$subDict};
+                    if ($$tagInfo{IgnoreDuplicates}) {
+                        my $flag = "ProcessedPDF_$tag";
+                        if ($$exifTool{$flag}) {
+                            next if $exifTool->WarnOnce("Ignored duplicate $tag dictionary", 2);
+                        } else {
+                            $$exifTool{$flag} = 1;
+                        }
+                    }
+                    # load dictionary via an indirect reference
+                    $fetched{$$subDict} = 1;
+                    my $obj = FetchObject($exifTool, $$subDict, $xref, $tag);
+                    unless (defined $obj) {
+                        unless (defined $lastOffset) {
+                            $exifTool->Warn("Error reading $tag object ($$subDict)");
+                        }
+                        next;
+                    }
+                    $subDict = $obj;
+                }
+                if (ref $subDict eq 'ARRAY') {
+                    # convert array of key/value pairs to a hash
+                    next if @$subDict < 2;
+                    my %hash = ( _tags => [] );
+                    while (@$subDict >= 2) {
+                        my $key = shift @$subDict;
+                        $key =~ s/^\///;
+                        push @{$hash{_tags}}, $key;
+                        $hash{$key} = shift @$subDict;
+                    }
+                    $subDict = \%hash;
+                } else {
+                    next unless ref $subDict eq 'HASH';
+                }
+                # set flag to re-crypt all strings when rewriting if the dictionary
+                # came from an encrypted stream
+                $$subDict{_needCrypt}{'*'} = 1 unless $lastFetched;
+                my $subTablePtr = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
+                if (not $verbose) {
+                    my $proc = $$subTablePtr{PROCESS_PROC} || \&ProcessDict;
+                    &$proc($exifTool, $subTablePtr, $subDict, $xref, $nesting);
+                } elsif ($next) {
+                    # handle 'Next' links at this level to avoid deep recursion
+                    undef $next;
+                    $index = 0;
+                    $tagTablePtr = $subTablePtr;
+                    $dict = $subDict;
+                    @tags = @{$$subDict{_tags}};
+                    $exifTool->VerboseDir($tag, scalar(@tags));
+                } else {
+                    my $oldIndent = $exifTool->{INDENT};
+                    my $oldDir = $exifTool->{DIR_NAME};
+                    $exifTool->{INDENT} .= '| ';
+                    $exifTool->{DIR_NAME} = $tag;
+                    $exifTool->VerboseDir($tag, scalar(@{$$subDict{_tags}}));
+                    ProcessDict($exifTool, $subTablePtr, $subDict, $xref, $nesting);
+                    $exifTool->{INDENT} = $oldIndent;
+                    $exifTool->{DIR_NAME} = $oldDir;
+                }
+                $lastFetched = $prevFetched;
+            }
+        } else {
             # fetch object if necessary
             # (OS X 10.6 writes indirect objects in the Info dictionary!)
             if (ref $val eq 'SCALAR') {
                 my $prevFetched = $lastFetched;
                 # (note: fetching the same object multiple times is OK here)
                 $val = FetchObject($exifTool, $$val, $xref, $tag);
-                next unless defined $val;
-                $val = ReadPDFValue($val);
-                # set flag to re-encrypt if necessary if rewritten
-                $$dict{_needCrypt}{$tag} = ($lastFetched ? 0 : 1) if $cryptString;
-                $lastFetched = $prevFetched; # restore last fetched object reference
+                if (defined $val) {
+                    $val = ReadPDFValue($val);
+                    # set flag to re-encrypt if necessary if rewritten
+                    $$dict{_needCrypt}{$tag} = ($lastFetched ? 0 : 1) if $cryptString;
+                    $lastFetched = $prevFetched; # restore last fetched object reference
+                }
             } else {
                 $val = ReadPDFValue($val);
             }
-            my $format = $$tagInfo{Format} || $$tagInfo{Writable} || 'string';
-            $val = ConvertPDFDate($val) if $format eq 'date';
             # convert from UTF-16 (big endian) to UTF-8 or Latin if necessary
             # unless this is binary data (hex-encoded strings would not have been converted)
             if (ref $val) {
-                next if ref $val ne 'ARRAY';
-                my $v;
-                foreach $v (@$val) {
-                    $exifTool->FoundTag($tagInfo, $v);
+                if (ref $val eq 'ARRAY') {
+                    my $v;
+                    foreach $v (@$val) {
+                        $exifTool->FoundTag($tagInfo, $v);
+                    }
                 }
-            } else {
+            } elsif (defined $val) {
+                my $format = $$tagInfo{Format} || $$tagInfo{Writable} || 'string';
+                $val = ConvertPDFDate($val) if $format eq 'date';
                 if (not $$tagInfo{Binary} and $val =~ /[\x18-\x1f\x80-\xff]/) {
                     # text string is already in Unicode if it starts with "\xfe\xff",
                     # otherwise we must first convert from PDFDocEncoding
@@ -1532,74 +1941,11 @@ sub ProcessDict($$$$;$$)
                     $exifTool->FoundTag($tagInfo, $val);
                 }
             }
-            next;
         }
-        # process the subdirectory
-        my @subDicts;
-        if (ref $val eq 'ARRAY') {
-            @subDicts = @{$val};
-        } else {
-            @subDicts = ( $val );
-        }
-        # loop through all values of this tag
-        for (;;) {
-            my $subDict = shift @subDicts or last;
-            # save last fetched object in case we fetch another one here
-            my $prevFetched = $lastFetched;
-            if (ref $subDict eq 'SCALAR') {
-                # only fetch once (other copies are obsolete)
-                next if $fetched{$$subDict};
-                # load dictionary via an indirect reference
-                $fetched{$$subDict} = 1;
-                my $obj = FetchObject($exifTool, $$subDict, $xref, $tag);
-                unless (defined $obj) {
-                    unless (defined $lastOffset) {
-                        $exifTool->Warn("Error reading $tag object ($$subDict)");
-                    }
-                    next;
-                }
-                $subDict = $obj;
-            }
-            if (ref $subDict eq 'ARRAY') {
-                # convert array of key/value pairs to a hash
-                next if @$subDict < 2;
-                my %hash = ( _tags => [] );
-                while (@$subDict >= 2) {
-                    my $key = shift @$subDict;
-                    $key =~ s/^\///;
-                    push @{$hash{_tags}}, $key;
-                    $hash{$key} = shift @$subDict;
-                }
-                $subDict = \%hash;
-            } else {
-                next unless ref $subDict eq 'HASH';
-            }
-            # set flag to re-crypt all strings when rewriting if the dictionary
-            # came from an encrypted stream
-            $$subDict{_needCrypt}{'*'} = 1 unless $lastFetched;
-            my $subTablePtr = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
-            if (not $verbose) {
-                my $proc = $$subTablePtr{PROCESS_PROC} || \&ProcessDict;
-                &$proc($exifTool, $subTablePtr, $subDict, $xref, $nesting);
-            } elsif ($next) {
-                # handle 'Next' links at this level to avoid deep recursion
-                undef $next;
-                $index = 0;
-                $tagTablePtr = $subTablePtr;
-                $dict = $subDict;
-                @tags = @{$$subDict{_tags}};
-                $exifTool->VerboseDir($tag, scalar(@tags));
-            } else {
-                my $oldIndent = $exifTool->{INDENT};
-                my $oldDir = $exifTool->{DIR_NAME};
-                $exifTool->{INDENT} .= '| ';
-                $exifTool->{DIR_NAME} = $tag;
-                $exifTool->VerboseDir($tag, scalar(@{$$subDict{_tags}}));
-                ProcessDict($exifTool, $subTablePtr, $subDict, $xref, $nesting);
-                $exifTool->{INDENT} = $oldIndent;
-                $exifTool->{DIR_NAME} = $oldDir;
-            }
-            $lastFetched = $prevFetched;
+        if ($isSubDoc) {
+            # restore original document number
+            $$exifTool{DOC_NUM} = $oldDocNum;
+            --$$exifTool{DOC_COUNT} if $oldNumTags == $$exifTool{NUM_FOUND};
         }
     }
 #
@@ -1616,31 +1962,63 @@ sub ProcessDict($$$$;$$)
                 $buff .= $$list[$i];
                 undef $$list[$i];   # free memory
             }
+            # increment document number for tags extracted from embedded EPS
+            my $oldDocNum = $$exifTool{DOC_NUM};
+            my $oldNumTags = $$exifTool{NUM_FOUND};
+            $$exifTool{DOC_NUM} = ++$$exifTool{DOC_COUNT};
+            # extract PostScript information
             $exifTool->HandleTag($tagTablePtr, $tag, $buff);
+            $$exifTool{DOC_NUM} = $oldDocNum;
+            # revert document counter if we didn't add any new tags
+            --$$exifTool{DOC_COUNT} if $oldNumTags == $$exifTool{NUM_FOUND};
+            delete $$exifTool{DOC_NUM};
         }
     }
 #
 # extract information from stream object if it exists (ie. Metadata stream)
 #
-    return unless $$dict{_stream};
-    my $tag = '_stream';
-    # add Subtype (if it exists) to stream name and remove leading '/'
-    ($tag = $$dict{Subtype} . $tag) =~ s/^\/// if $$dict{Subtype};
-    return unless $$tagTablePtr{$tag};
-    my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
-    # decode stream if necessary
-    DecodeStream($exifTool, $dict) or return;
-    # extract information from stream
-    my %dirInfo = (
-        DataPt   => \$$dict{_stream},
-        DataLen  => length $$dict{_stream},
-        DirStart => 0,
-        DirLen   => length $$dict{_stream},
-        Parent   => 'PDF',
-    );
-    my $subTablePtr = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
-    unless ($exifTool->ProcessDirectory(\%dirInfo, $subTablePtr)) {
-        $exifTool->Warn("Error processing $$tagInfo{Name} information");
+    for (;;) { # (cheap goto)
+        last unless $$dict{_stream};
+        my $tag = '_stream';
+        # add Subtype (if it exists) to stream name and remove leading '/'
+        ($tag = $$dict{Subtype} . $tag) =~ s/^\/// if $$dict{Subtype};
+        last unless $$tagTablePtr{$tag};
+        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag) or last;
+        unless ($$tagInfo{SubDirectory}) {
+            # don't build filter lists across different images
+            delete $$exifTool{LIST_TAGS}{$$tagTablePtr{Filter}};
+            # we arrive here only when extracting embedded images
+            # - only extract known image types and ignore others
+            my $filter = $$dict{Filter} || '';
+            $filter = @$filter[-1] if ref $filter eq 'ARRAY'; # (get last Filter type)
+            my $result;
+            if ($filter eq '/DCTDecode' or $filter eq '/JPXDecode') {
+                DecodeStream($exifTool, $dict) or last;
+                # save the image itself
+                $exifTool->FoundTag($tagInfo, \$$dict{_stream});
+                # extract information from embedded image
+                $result = $exifTool->ExtractInfo(\$$dict{_stream}, { ReEntry => 1 });
+            }
+            unless ($result) {
+                $exifTool->FoundTag('FileType', defined $result ? '(unknown)' : '(unsupported)');
+            }
+            last;
+        }
+        # decode stream if necessary
+        DecodeStream($exifTool, $dict) or last;
+        # extract information from stream
+        my %dirInfo = (
+            DataPt   => \$$dict{_stream},
+            DataLen  => length $$dict{_stream},
+            DirStart => 0,
+            DirLen   => length $$dict{_stream},
+            Parent   => 'PDF',
+        );
+        my $subTablePtr = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
+        unless ($exifTool->ProcessDirectory(\%dirInfo, $subTablePtr)) {
+            $exifTool->Warn("Error processing $$tagInfo{Name} information");
+        }
+        last;
     }
 }
 
@@ -1696,18 +2074,22 @@ sub ReadPDF($$)
     $len = 1024 if $len > 1024;
     $raf->Seek(-$len, 2) or return -2;
     $raf->Read($buff, $len) == $len or return -3;
-    # find the last xref table in the file (may be multiple %%EOF marks)
-    $buff =~ /.*startxref *(\x0d\x0a|\x0d|\x0a)\s*?(\d+)\s+%%EOF/s or return -4;
-    local $/ = $1;    # set input record separator
-    push @xrefOffsets, $2, 'Main';
+    # find the LAST xref table in the file (may be multiple %%EOF marks)
+    $buff =~ /.*startxref(\s+)(\d+)(\s+)%%EOF/s or return -4;
+    my $ws = $1 . $3;
+    my $xr = $2;
+    push @xrefOffsets, $xr, 'Main';
+    # set input record separator
+    local $/ = $ws =~ /(\x0d\x0a|\x0d|\x0a)/ ? $1 : "\x0a";
     my (%xref, @mainDicts, %loaded, $mainFree);
     # initialize variables to capture when rewriting
     if ($capture) {
-        $capture->{startxref} = $2;
+        $capture->{startxref} = $xr;
         $capture->{xref} = \%xref;
         $capture->{newline} = $/;
         $capture->{mainFree} = $mainFree = { };
     }
+XRef:
     while (@xrefOffsets) {
         my $offset = shift @xrefOffsets;
         my $type = shift @xrefOffsets;
@@ -1719,19 +2101,22 @@ sub ReadPDF($$)
         }
         # Note: care must be taken because ReadLine may read more than we want if
         # the newline sequence for this table is different than the rest of the file
-        unless ($raf->ReadLine($buff)) {
-            %loaded or return -6;
-            $exifTool->Warn('Bad offset for secondary xref table');
-            next;
+        for (;;) {
+            unless ($raf->ReadLine($buff)) {
+                %loaded or return -6;
+                $exifTool->Warn('Bad offset for secondary xref table');
+                next XRef;
+            }
+            last if $buff =~/\S/;   # skip blank lines
         }
         my $loadXRefStream;
-        if ($buff =~ s/^xref\s+//s) {
+        if ($buff =~ s/^\s*xref\s+//s) {
             # load xref table
             for (;;) {
                 # read another line if necessary (skipping blank lines)
                 $raf->ReadLine($buff) or return -6 until $buff =~ /\S/;
-                last if $buff =~ s/^\s*trailer\s+//s;
-                $buff =~ s/\s*(\d+)\s+(\d+)\s+//s or return -4;
+                last if $buff =~ s/^\s*trailer([\s<[(])/$1/s;
+                $buff =~ s/^\s*(\d+)\s+(\d+)\s+//s or return -4;
                 my ($start, $num) = ($1, $2);
                 $raf->Seek(-length($buff), 1) or return -4;
                 my $i;
@@ -1758,7 +2143,7 @@ sub ReadPDF($$)
                 $buff = '';
             }
             undef $mainFree;    # only do this for the last xref table
-        } elsif ($buff =~ s/^(\d+)\s+(\d+)\s+obj//s) {
+        } elsif ($buff =~ s/^\s*(\d+)\s+(\d+)\s+obj//s) {
             # this is a PDF-1.5 cross-reference stream dictionary
             $loadXRefStream = 1;
         } else {
@@ -1828,12 +2213,15 @@ sub ReadPDF($$)
 #
 # extract the information beginning with each of the main dictionaries
 #
+    my $i = 0;
+    my $num = (scalar @mainDicts) / 2;
     while (@mainDicts) {
         my $dict = shift @mainDicts;
         my $type = shift @mainDicts;
         if ($verbose) {
+            ++$i;
             my $n = scalar(@{$$dict{_tags}});
-            $exifTool->VPrint(0, "PDF dictionary with $n entries:\n");
+            $exifTool->VPrint(0, "PDF dictionary ($i of $num) with $n entries:\n");
         }
         ProcessDict($exifTool, $tagTablePtr, $dict, \%xref, 0, $type);
     }
@@ -1908,7 +2296,7 @@ including AESV2 (AES-128) and AESV3 (AES-256).
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

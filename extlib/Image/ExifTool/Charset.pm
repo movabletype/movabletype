@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION %csType);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.06';
+$VERSION = '1.07';
 
 my %charsetTable;   # character set tables we've loaded
 
@@ -293,7 +293,7 @@ sub Recompose($$;$$)
     if ($csType & 0x801) {
         $conv = LoadCharset($charset);
         unless ($conv) {
-            $exifTool->Warn("Missing charset $charset");
+            $exifTool->Warn("Missing charset $charset") if $exifTool;
             return '';
         }
         $inv = $unicode2byte{$charset};
@@ -379,12 +379,12 @@ character sets.  Currently, the following character sets are supported:
   PDFDoc, RSymbol, ShiftJIS, Symbol, Thai, Turkish, Vietnam
 
 However, only some of these character sets are available to the user via
-ExifTool options; the multi-byte character sets are used only internally
+ExifTool options -- the multi-byte character sets are used only internally
 when decoding certain types of information.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -39,8 +39,8 @@ my %rtfEntity = (
         This table lists standard tags of the RTF information group, but ExifTool
         will also extract any non-standard tags found in this group.  As well,
         ExifTool will extract any custom properties that are found.  See
-        L<http://download.microsoft.com/download/2/f/5/2f599e18-07ee-4ec5-a1e7-f4e6a9423592/Word2007RTFSpec9.doc>
-        for the specification.
+        L<http://www.microsoft.com/en-ca/download/details.aspx?id=10725> for the
+        specification.
     },
     title    => { },
     subject  => { },
@@ -292,7 +292,7 @@ sub ProcessRTF($$)
             }
             # create tagInfo for unknown tags
             if (not $tagInfo) {
-                Image::ExifTool::AddTagToTable($tagTablePtr, $tag, { Name => ucfirst($tag) });
+                AddTagToTable($tagTablePtr, $tag, { Name => ucfirst($tag) });
             }
             $exifTool->HandleTag($tagTablePtr, $tag, $val);
         }
@@ -331,7 +331,7 @@ sub ProcessRTF($$)
             next unless $tag;
             # create tagInfo for unknown tags
             unless ($$tagTablePtr{$tag}) {
-                Image::ExifTool::AddTagToTable($tagTablePtr, $tag, { Name => $tag });
+                AddTagToTable($tagTablePtr, $tag, { Name => $tag });
             }
             $exifTool->HandleTag($tagTablePtr, $tag, $val);
         }
@@ -359,7 +359,7 @@ information from RTF (Rich Text Format) documents.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

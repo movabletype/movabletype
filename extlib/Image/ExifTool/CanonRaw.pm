@@ -6,7 +6,6 @@
 # Revisions:    11/25/2003 - P. Harvey Created
 #               12/02/2003 - P. Harvey Completely reworked and figured out many
 #                            more tags
-#               01/19/2004 - P. Harvey Added CleanRaw()
 #
 # References:   1) http://www.cybercom.net/~dcoffin/dcraw/
 #               2) http://www.wonderland.org/crw/
@@ -22,7 +21,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::Canon;
 
-$VERSION = '1.54';
+$VERSION = '1.55';
 
 sub WriteCRW($$);
 sub ProcessCanonRaw($$$);
@@ -794,6 +793,7 @@ sub ProcessCanonRaw($$$)
                 DirLen   => $size - $subdirStart,
                 Nesting  => $$dirInfo{Nesting} + 1,
                 RAF      => $raf,
+                DirName  => $name,
                 Parent   => $$dirInfo{DirName},
             );
             #### eval Validate ($dirData, $subdirStart, $size)
@@ -852,9 +852,12 @@ sub ProcessCRW($$)
 
     # process the raw directory
     my $rawTagTable = GetTagTable('Image::ExifTool::CanonRaw::Main');
-    unless ($exifTool->ProcessDirectory(\%dirInfo, $rawTagTable)) {
+    my $oldIndent = $$exifTool{INDENT};
+    $$exifTool{INDENT} .= '| ';
+    unless (ProcessCanonRaw($exifTool, \%dirInfo, $rawTagTable)) {
         $exifTool->Warn('CRW file format error');
     }
+    $$exifTool{INDENT} = $oldIndent;
 
     # finish building maker notes if necessary
     $buildMakerNotes and SaveMakerNotes($exifTool);
@@ -895,7 +898,7 @@ tags.)
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

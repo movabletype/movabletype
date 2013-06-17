@@ -205,10 +205,11 @@ sub AddChunks($$)
     foreach $tag (sort keys %$addTags) {
         my $tagInfo = $$addTags{$tag};
         my $nvHash = $exifTool->GetNewValueHash($tagInfo);
-        # (always create native PNG information, so don't check IsCreating())
-        next unless Image::ExifTool::IsOverwriting($nvHash) > 0;
-        my $val = Image::ExifTool::GetNewValues($nvHash);
+        # (native PNG information is always preferred, so don't check IsCreating)
+        next unless $exifTool->IsOverwriting($nvHash);
+        my $val = $exifTool->GetNewValues($nvHash);
         if (defined $val) {
+            next if $$nvHash{EditOnly};
             my $data;
             if ($$tagInfo{Table} eq \%Image::ExifTool::PNG::TextualData) {
                 $data = BuildTextChunk($exifTool, $tag, $tagInfo, $val, $$tagInfo{LangCode});
@@ -261,7 +262,8 @@ sub AddChunks($$)
             }
         } elsif ($dir eq 'IPTC') {
             $exifTool->VPrint(0, "Creating IPTC profile:\n");
-            # write new IPTC data
+            # write new IPTC data (stored in a Photoshop directory)
+            $dirInfo{DirName} = 'Photoshop';
             $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::Photoshop::Main');
             $buff = $exifTool->WriteDirectory(\%dirInfo, $tagTablePtr);
             if (defined $buff and length $buff) {
@@ -315,7 +317,7 @@ strings).
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

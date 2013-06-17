@@ -14,33 +14,13 @@ package Image::ExifTool::SigmaRaw;
 use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
+use Image::ExifTool::Sigma;
 
-$VERSION = '1.14';
+$VERSION = '1.20';
 
 sub ProcessX3FHeader($$$);
 sub ProcessX3FDirectory($$$);
 sub ProcessX3FProperties($$$);
-
-# sigma LensType lookup (ref PH)
-my %sigmaLensTypes = (
-    # 0 => 'Sigma 50mm F2.8 EX Macro', (0 used for other lenses too)
-    # 8 - 18-125mm LENSARANGE@18mm=22-4
-    16 => 'Sigma 18-50mm F3.5-5.6 DC',
-    129 => 'Sigma 14mm F2.8 EX Aspherical',
-    131 => 'Sigma 17-70mm F2.8-4.5 DC Macro',
-    145 => 'Sigma Lens (145)',
-    145.1 => 'Sigma 15-30mm F3.5-4.5 EX DG Aspherical',
-    145.2 => 'Sigma 18-50mm F2.8 EX DG', #(NC)
-    145.3 => 'Sigma 20-40mm F2.8 EX DG',
-    165 => 'Sigma 70-200mm F2.8 EX', # ...but what specific model?:
-    # 70-200mm F2.8 EX APO - Original version, minimum focus distance 1.8m (1999)
-    # 70-200mm F2.8 EX DG - Adds 'digitally optimized' lens coatings to reduce flare (2005)
-    # 70-200mm F2.8 EX DG Macro (HSM) - Minimum focus distance reduced to 1m (2006)
-    # 70-200mm F2.8 EX DG Macro HSM II - Improved optical performance (2007)
-    169 => 'Sigma 18-50mm F2.8 EX DC', #(NC)
-    '100' => 'Sigma 24-70mm f/2.8 DG Macro', # (SD15)
-    8900 => 'Sigma 70-300mm f/4-5.6 DG OS', # (SD15)
-);
 
 # main X3F sections (plus header stuff)
 %Image::ExifTool::SigmaRaw::Main = (
@@ -130,6 +110,7 @@ my %sigmaLensTypes = (
 %Image::ExifTool::SigmaRaw::Properties = (
     PROCESS_PROC => \&ProcessX3FProperties,
     GROUPS => { 2 => 'Camera' },
+    PRIORITY => 0,  # (because these aren't writable like the EXIF ones)
     AEMODE => {
         Name => 'MeteringMode',
         PrintConv => {
@@ -220,12 +201,9 @@ my %sigmaLensTypes = (
     LENSFRANGE  => 'LensFocalRange',
     LENSMODEL   => {
         Name => 'LensType',
-        Notes => q{
-            decimal values differentiate lenses which would otherwise have the same
-            LensType, and are used by the Composite LensID tag when attempting to
-            identify the specific lens model
-        },
-        PrintConv => \%sigmaLensTypes,
+        ValueConvInv => '$val=~s/\.\d+$//; $val', # (truncate decimal part)
+        PrintConv => \%Image::ExifTool::Sigma::sigmaLensTypes,
+        SeparateTable => 'Sigma LensType',
     },
     PMODE => {
         Name => 'ExposureProgram',
@@ -374,7 +352,7 @@ sub ProcessX3FProperties($$$)
                 Writable => 0,  # can't write unknown tags
             };
             # add tag information to table
-            Image::ExifTool::AddTagToTable($tagTablePtr, $tag, $tagInfo);
+            AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
 
         $exifTool->HandleTag($tagTablePtr, $tag, $val,
@@ -582,11 +560,8 @@ sub ProcessX3F($$)
     # check version number
     my $ver = unpack('x4V',$buff);
     $ver = ($ver >> 16) . '.' . ($ver & 0xffff);
-    if ($ver >= 3) {
-        &$warn($exifTool, "Can't read version $ver X3F image");
-        return 1;
-    } elsif ($ver > 2.3) {
-        &$warn($exifTool, 'Untested X3F version. Please submit sample for testing', 1);
+    if ($ver > 3) {
+        &$warn($exifTool, "Untested X3F version ($ver). Please submit sample for testing", 1);
     }
     my $hdrLen = length $buff;
     # read version 2.1/2.2/2.3 extended header
@@ -652,7 +627,7 @@ Sigma and Foveon X3F images.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

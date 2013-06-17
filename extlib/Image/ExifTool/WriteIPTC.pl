@@ -241,6 +241,17 @@ sub IptcTime($)
 }
 
 #------------------------------------------------------------------------------
+# Inverse print conversion for IPTC date or time value
+# Inputs: 0) IPTC date or 'now'
+# Returns: IPTC date
+sub InverseDateOrTime($)
+{
+    my $val = shift;
+    return Image::ExifTool::TimeNow() if lc($val) eq 'now';
+    return $val;
+}
+
+#------------------------------------------------------------------------------
 # Convert picture number
 # Inputs: 0) value
 # Returns: Converted value
@@ -391,12 +402,12 @@ sub DoWriteIPTC($$$)
             if ($id == 0x1c) {
                 if ($rec < $lastRec) {
                     if ($rec == 0) {
-                        return undef if $exifTool->Warn("IPTC record 0 encountered, subsequent records ignored", 1);
+                        return undef if $exifTool->Warn("IPTC record 0 encountered, subsequent records ignored", 2);
                         undef $rec;
                         $pos = $dirEnd;
                         $len = 0;
                     } else {
-                        return undef if $exifTool->Warn("IPTC doesn't conform to spec: Records out of sequence", 1);
+                        return undef if $exifTool->Warn("IPTC doesn't conform to spec: Records out of sequence", 2);
                     }
                 }
                 # handle extended IPTC entry if necessary
@@ -495,13 +506,13 @@ sub DoWriteIPTC($$$)
                     $doSet = 1 unless $found & 0x04;
                 } elsif ($$tagInfo{List}) {
                     # ...tag is List and it existed before or we are creating it
-                    $doSet = 1 if $found or Image::ExifTool::IsCreating($nvHash);
+                    $doSet = 1 if $found ? not $$nvHash{CreateOnly} : $$nvHash{IsCreating};
                 } else {
                     # ...tag didn't exist before and we are creating it
-                    $doSet = 1 if not $found and Image::ExifTool::IsCreating($nvHash);
+                    $doSet = 1 if not $found and $$nvHash{IsCreating};
                 }
                 if ($doSet) {
-                    @values = Image::ExifTool::GetNewValues($nvHash);
+                    @values = $exifTool->GetNewValues($nvHash);
                     @values and $foundRec{$newRec}->{$newTag} = $found | 0x04;
                     # write tags for each value in list
                     my $value;
@@ -555,9 +566,11 @@ sub DoWriteIPTC($$$)
             my $nvHash = $exifTool->GetNewValueHash($tagInfo);
             $len = $pos - $valuePtr;
             my $val = substr($$dataPt, $valuePtr, $len);
+            # remove null terminator if it exists (written by braindead software like Picasa 2.0)
+            $val =~ s/\0+$// if $$tagInfo{Format} and $$tagInfo{Format} =~ /^string/;
             my $oldXlat = $xlat;
             FormatIPTC($exifTool, $tagInfo, \$val, \$xlat, $rec, 1);
-            if (Image::ExifTool::IsOverwriting($nvHash, $val)) {
+            if ($exifTool->IsOverwriting($nvHash, $val)) {
                 $xlat = $oldXlat;   # don't change translation (not writing this value)
                 $exifTool->VerboseValue("- IPTC:$$tagInfo{Name}", $val);
                 ++$exifTool->{CHANGED};
@@ -592,7 +605,7 @@ sub DoWriteIPTC($$$)
     if ($tail < $dirEnd) {
         my $trailer = substr($$dataPt, $tail, $dirEnd-$tail);
         if ($trailer =~ /[^\0]/) {
-            return undef if $exifTool->Warn('Unrecognized data in IPTC trailer', 1);
+            return undef if $exifTool->Warn('Unrecognized data in IPTC trailer', 2);
         }
     }
     return $newData;
@@ -616,7 +629,7 @@ sub WriteIPTC($$$)
         my $nvHash = $exifTool->{NEW_VALUE}{$Image::ExifTool::Photoshop::iptcDigestInfo};
         last unless defined $nvHash;
         last unless IsStandardIPTC($exifTool->MetadataPath());
-        my @values = Image::ExifTool::GetNewValues($nvHash);
+        my @values = $exifTool->GetNewValues($nvHash);
         push @values, @{$$nvHash{DelValue}} if $$nvHash{DelValue};
         my $new = grep /^new$/, @values;
         my $old = grep /^old$/, @values;
@@ -676,7 +689,7 @@ seldom-used routines.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

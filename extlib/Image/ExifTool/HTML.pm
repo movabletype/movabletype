@@ -20,7 +20,7 @@ use Image::ExifTool::PostScript;
 use Image::ExifTool::XMP qw(EscapeXML UnescapeXML);
 require Exporter;
 
-$VERSION = '1.11';
+$VERSION = '1.12';
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(EscapeHTML UnescapeHTML);
 
@@ -160,6 +160,7 @@ my %entityName; # look up entity names by number (built as necessary)
     abstract        => { },
     author          => { },
     classification  => { },
+   'content-language'=>{ Name => 'ContentLanguage' },
     copyright       => { },
     description     => { },
     distribution    => { },
@@ -168,6 +169,7 @@ my %entityName; # look up entity names by number (built as necessary)
    'doc-type'       => { Name => 'DocType' },
     formatter       => { },
     generator       => { },
+    generatorversion=> { Name => 'GeneratorVersion' },
     googlebot       => { Name => 'GoogleBot' },
     keywords        => { List => 1 },
     mssmarttagspreventparsing => { Name => 'NoMSSmartTags' },
@@ -437,7 +439,9 @@ sub ProcessHTML($$)
         my ($tagName, $attrs) = ($1, $2);
         my $tag = lc($tagName);
         my ($val, $grp);
-        unless ($attrs =~ m{/$}) {  # self-contained XHTML tags end in '/>'
+        if ($attrs =~ m{/$}) {  # self-contained XHTML tags end in '/>'
+            $val = '';
+        } else {
             # look for element close
             my $pos = pos($doc);
             my $close = "</$tagName>";
@@ -449,6 +453,7 @@ sub ProcessHTML($$)
             } else {
                 pos($doc) = $pos;
                 next unless $tag eq 'meta'; # META tags don't need to be closed
+                $val = '';
             }
         }
         my $table = $tagTablePtr;
@@ -456,17 +461,22 @@ sub ProcessHTML($$)
             # parse HTML META element
             undef $tag;
             # tag name is in NAME or HTTP-EQUIV attribute
-            if ($attrs =~ /name=['"]?([\w:.-]+)/si) {
+            if ($attrs =~ /\bname\s*=\s*['"]?([\w:.-]+)/si) {
                 $tagName = $1;
-            } elsif ($attrs =~ /http-equiv=['"]?([\w:.-]+)/si) {
+            } elsif ($attrs =~ /\bhttp-equiv\s*=\s*['"]?([\w:.-]+)/si) {
                 $tagName = "HTTP-equiv.$1";
             } else {
                 next;   # no name
             }
-            $tag = lc($tagName);
+            $tag = lc($tagName) or next;
             # tag value is in CONTENT attribute
-            $val = $2 if $attrs =~ /content=(['"])(.*?)\1/si;
-            next unless $tag and defined $val;
+            if ($attrs =~ /\bcontent\s*=\s*(['"])(.*?)\1/si or
+                $attrs =~ /\bcontent\s*=\s*(['"]?)([\w:.-]+)/si)
+            {
+                $val = $2;
+            } else {
+                next unless length $val;
+            }
             # isolate group name (separator is '.' in HTML, but ':' in ref 2)
             if ($tag =~ /^([\w-]+)[:.]([\w-]+)/) {
                 ($grp, $tag) = ($1, $2);
@@ -491,7 +501,7 @@ sub ProcessHTML($$)
                     $name =~ s/_x([0-9a-f]{4})_/chr(hex($1))/gie; # convert hex codes
                     $name =~ s/\s(.)/\U$1/g;     # capitalize all words in tag name
                     $name =~ tr/-_a-zA-Z0-9//dc; # remove illegal characters (also hex code wide chars)
-                    Image::ExifTool::AddTagToTable($table, $tag, { Name => $name });
+                    AddTagToTable($table, $tag, { Name => $name });
                     $exifTool->VPrint(0, "  [adding $tag '$name']\n");
                 }
                 $val = $exifTool->Decode($val, $$exifTool{HTMLCharset}) if $$exifTool{HTMLCharset};
@@ -507,7 +517,7 @@ sub ProcessHTML($$)
             $name =~ s/\W+(\w)/\u$1/sg;
             my $info = { Name => $name, Groups => { 0 => 'HTML' } };
             $info->{Groups}->{1} = ($grp eq 'http-equiv' ? 'HTTP-equiv' : "HTML-$grp") if $grp;
-            Image::ExifTool::AddTagToTable($table, $tag, $info);
+            AddTagToTable($table, $tag, $info);
             $exifTool->VPrint(0, "  [adding $tag '$tagName']\n");
         }
         # recode if necessary
@@ -538,7 +548,7 @@ meta information from HTML documents.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

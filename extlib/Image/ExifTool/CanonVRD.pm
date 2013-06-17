@@ -20,7 +20,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.12';
+$VERSION = '1.20';
 
 sub ProcessCanonVRD($$;$);
 sub WriteCanonVRD($$;$);
@@ -129,7 +129,7 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
     },
     5 => {
         Name => 'RawCodecVersion',
-        ValueConv => '$val =~ s/\0.*//; $val',  # truncate string at null
+        ValueConv => '$val =~ s/\0.*//s; $val',  # truncate string at null
     },
     6 => {
         Name => 'CRCDevelParams',
@@ -156,16 +156,16 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
         Writable => 0,
         DataMember => 'VRDVersion',
         RawConv => '$$self{VRDVersion} = $val',
-        PrintConv => 'sprintf("%.2f", $val / 100)',
+        PrintConv => '$val =~ s/^(\d)(\d*)(\d)$/$1.$2.$3/; $val',
     },
-    # 0x006 related somehow to RGB levels
-    0x008 => {
-        Name => 'WBAdjRGBLevels',
-        Format => 'int16u[3]',
+    0x006 => {
+        Name => 'WBAdjRGGBLevels',
+        Format => 'int16u[4]',
     },
     0x018 => {
         Name => 'WhiteBalanceAdj',
         Format => 'int16u',
+        PrintConvColumns => 2,
         PrintConv => {
             0 => 'Auto',
             1 => 'Daylight',
@@ -184,7 +184,6 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
         Format => 'int16u',
     },
     # 0x01c similar to 0x006
-    # 0x01e similar to 0x008
     0x024 => {
         Name => 'WBFineTuneActive',
         Format => 'int16u',
@@ -226,6 +225,7 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
     0x03c => {
         Name => 'ToneCurveProperty',
         Format => 'int16u',
+        PrintConvColumns => 2,
         PrintConv => {
             0 => 'Shot Settings',
             1 => 'Linear',
@@ -376,6 +376,8 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
             9 => '4:5',
             10 => '5:4',
             11 => '1:1',
+            12 => 'Circle',
+            65535 => 'Custom',
         },
     },
     0x262 => {
@@ -421,7 +423,7 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
             4 => 'ColorMatch RGB',
         },
     },
-    # (VRD 1.0 edit data ends here -- 0x272 bytes)
+    # (VRD 1.0.0 edit data ends here -- 0x272 bytes)
 );
 
 # VRD Stamp Tool tags (ref PH)
@@ -442,11 +444,12 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
     WRITABLE => 1,
     FIRST_ENTRY => 0,
     FORMAT => 'int16s',
-    DATAMEMBER => [ 0x58 ], # (required for writable var-format tags)
+    DATAMEMBER => [ 0x58, 0xdf, 0xea ], # (required for DataMember and var-format tags)
     GROUPS => { 2 => 'Image' },
     NOTES => 'Tags added in DPP version 2.0 and later.',
     0x02 => {
         Name => 'PictureStyle',
+        PrintConvColumns => 2,
         PrintConv => {
             0 => 'Standard',
             1 => 'Portrait',
@@ -462,6 +465,11 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
         Name => 'IsCustomPictureStyle',
         PrintConv => \%noYes,
     },
+    # 0x08: 3
+    # 0x09: 4095
+    # 0x0a: 0
+    # 0x0b: 4095
+    # 0x0c: 0
     0x0d => 'StandardRawColorTone',
     0x0e => 'StandardRawSaturation',
     0x0f => 'StandardRawContrast',
@@ -581,11 +589,11 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
         Writable => 0,
         RawConv => 'length($val) == 2 ? undef : $val', # ignore if no data
     },
-    # (VRD 2.0 edit data ends here: 178 bytes, index 0x59)
+    # (VRD 2.0.0 edit data ends here: 178 bytes, index 0x59)
     0x5e => [{
         Name => 'ChrominanceNoiseReduction',
         Condition => '$$self{VRDVersion} < 330',
-        Notes => 'VRDVersion prior to 3.30',
+        Notes => 'VRDVersion prior to 3.3.0',
         PrintConv => {
             0   => 'Off',
             58  => 'Low',
@@ -593,7 +601,7 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
         },
     },{ #1
         Name => 'ChrominanceNoiseReduction',
-        Notes => 'VRDVersion 3.30 or later',
+        Notes => 'VRDVersion 3.3.0 or later',
         PrintHex => 1,
         PrintConvColumns => 4,
         PrintConv => {
@@ -623,7 +631,7 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
     0x5f => [{
         Name => 'LuminanceNoiseReduction',
         Condition => '$$self{VRDVersion} < 330',
-        Notes => 'VRDVersion prior to 3.30',
+        Notes => 'VRDVersion prior to 3.3.0',
         PrintConv => {
             0   => 'Off',
             65  => 'Low',
@@ -631,7 +639,7 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
         },
     },{ #1
         Name => 'LuminanceNoiseReduction',
-        Notes => 'VRDVersion 3.30 or later',
+        Notes => 'VRDVersion 3.3.0 or later',
         PrintHex => 1,
         PrintConvColumns => 4,
         PrintConv => {
@@ -661,7 +669,7 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
     0x60 => [{
         Name => 'ChrominanceNR_TIFF_JPEG',
         Condition => '$$self{VRDVersion} < 330',
-        Notes => 'VRDVersion prior to 3.30',
+        Notes => 'VRDVersion prior to 3.3.0',
         PrintConv => {
             0   => 'Off',
             33  => 'Low',
@@ -669,7 +677,7 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
         },
     },{ #1
         Name => 'ChrominanceNR_TIFF_JPEG',
-        Notes => 'VRDVersion 3.30 or later',
+        Notes => 'VRDVersion 3.3.0 or later',
         PrintHex => 1,
         PrintConvColumns => 4,
         PrintConv => {
@@ -696,7 +704,8 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
             0xb0 => 20,
         },
     }],
-    # (VRD 3.0 edit data ends here: 196 bytes, index 0x62)
+    # 0x61: 1
+    # (VRD 3.0.0 edit data ends here: 196 bytes, index 0x62)
     0x62 => {
         Name => 'ChromaticAberrationOn',
         ValueConv => \%noYes,
@@ -751,7 +760,7 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
         ValueConv => '$val / 10',
         ValueConvInv => 'int($val * 10 + 0.5)',
     },
-    # (VRD 3.4 edit data ends here: 220 bytes, index 0x6e)
+    # (VRD 3.4.0 edit data ends here: 220 bytes, index 0x6e)
     0x6e => {
         Name => 'AutoLightingOptimizerOn',
         PrintConv => \%noYes,
@@ -765,7 +774,9 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
             0x7fff => 'n/a', #1
         },
     },
-    # (VRD 3.5 edit data ends here: 232 bytes, index 0x74)
+    # 0x71: 200
+    # 0x73: 100
+    # (VRD 3.5.0 edit data ends here: 232 bytes, index 0x74)
     0x75 => {
         Name => 'StandardRawHighlight',
         ValueConv => '$val / 10',
@@ -857,6 +868,7 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
     0x8e => {
         Name => 'CheckMark2',
         Format => 'int16u',
+        PrintConvColumns => 2,
         PrintConv => {
             0 => 'Clear',
             1 => 1,
@@ -866,15 +878,89 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
             5 => 5,
         },
     },
-    # (VRD 3.8 edit data ends here: 286 bytes, index 0x8f)
+    # (VRD 3.8.0 edit data ends here: 286 bytes, index 0x8f)
     0x90 => {
         Name => 'UnsharpMask',
         PrintConv => { 0 => 'Off', 1 => 'On' },
     },
-    0x92 => 'UnsharpMaskStrength',
-    0x94 => 'UnsharpMaskFineness',
-    0x96 => 'UnsharpMaskThreshold',
-    # (VRD 3.91 edit data ends here: 392 bytes, index 0xc4)
+    0x92 => 'StandardUnsharpMaskStrength',
+    0x94 => 'StandardUnsharpMaskFineness',
+    0x96 => 'StandardUnsharpMaskThreshold',
+    0x98 => 'PortraitUnsharpMaskStrength',
+    0x9a => 'PortraitUnsharpMaskFineness',
+    0x9c => 'PortraitUnsharpMaskThreshold',
+    0x9e => 'LandscapeUnsharpMaskStrength',
+    0xa0 => 'LandscapeUnsharpMaskFineness',
+    0xa2 => 'LandscapeUnsharpMaskThreshold',
+    0xa4 => 'NeutraUnsharpMaskStrength',
+    0xa6 => 'NeutralUnsharpMaskFineness',
+    0xa8 => 'NeutralUnsharpMaskThreshold',
+    0xaa => 'FaithfulUnsharpMaskStrength',
+    0xac => 'FaithfulUnsharpMaskFineness',
+    0xae => 'FaithfulUnsharpMaskThreshold',
+    0xb0 => 'MonochromeUnsharpMaskStrength',
+    0xb2 => 'MonochromeUnsharpMaskFineness',
+    0xb4 => 'MonochromeUnsharpMaskThreshold',
+    0xb6 => 'CustomUnsharpMaskStrength',
+    0xb8 => 'CustomUnsharpMaskFineness',
+    0xba => 'CustomUnsharpMaskThreshold',
+    0xbc => 'CustomDefaultUnsharpStrength',
+    0xbe => 'CustomDefaultUnsharpFineness',
+    0xc0 => 'CustomDefaultUnsharpThreshold',
+    # (VRD 3.9.1 edit data ends here: 392 bytes, index 0xc4)
+    # 0xc9: 3    - some RawSharpness
+    # 0xca: 4095 - some RawHighlightPoint
+    # 0xcb: 0    - some RawShadowPoint
+    # 0xcc: 4095 - some OutputHighlightPoint
+    # 0xcd: 0    - some OutputShadowPoint
+    # 0xd1: 3    - some UnsharpMaskStrength
+    # 0xd3: 7    - some UnsharpMaskFineness
+    # 0xd5: 3,4  - some UnsharpMaskThreshold
+    0xd6 => {
+        Name => 'CropCircleActive',
+        PrintConv => \%noYes,
+    },
+    0xd7 => 'CropCircleX',
+    0xd8 => 'CropCircleY',
+    0xd9 => 'CropCircleRadius',
+    # 0xda: 0, 1
+    # 0xdb: 100
+    0xdc => {
+        Name => 'DLOOn',
+        PrintConv => \%noYes,
+    },
+    0xdd => 'DLOSetting',
+    # (VRD 3.11.0 edit data ends here: 444 bytes, index 0xde)
+    0xde => {
+        Name => 'DLOShootingDistance',
+        Notes => '100% = infinity',
+        RawConv => '$val == 0x7fff ? undef : $val',
+        ValueConv => '1 - $val / 0x400',
+        ValueConvInv => 'int((1 - $val) * 0x400 + 0.5)',
+        PrintConv => 'sprintf("%.0f%%", $val * 100)',
+        PrintConvInv => 'ToFloat($val) / 100',
+    },
+    0xdf => {
+        Name => 'DLODataLength',
+        Format => 'int32u',
+        Writable => 0,
+        # - have seen 65536 when DLO is Off
+        #   --> this is my only sample where 0xda is 1 -- coincidence?
+    },
+    # 0xe1 - 0 without DLO, seen 3112 with DLO
+    # (VRD 3.11.2 edit data ends here: 452 bytes, index 0xe2, unless DLO is on)
+    0xe4 => 'DLOSettingApplied',
+    0xe5 => {
+        Name => 'DLOVersion', #(NC)
+        Format => 'string[10]',
+    },
+    0xea => {
+        Name => 'DLOData',
+        Notes => 'variable-length Digital Lens Optimizer data, stored in JPEG-like format',
+        Format => 'var_undef[$val{0xdf}]',
+        Writable => 0,
+        RawConv => 'length($val) ? \$val : undef', # (don't extract if zero length)
+    },
 );
 
 #------------------------------------------------------------------------------
@@ -924,7 +1010,7 @@ sub ProcessEditData($$$)
     my $out = $exifTool->Options('TextOut');
     my $oldChanged = $$exifTool{CHANGED};
 
-    $exifTool->VerboseDir('VRD Edit Data', 0, $dirLen);
+    $exifTool->VerboseDir('VRD Edit Data', 0, $dirLen) unless $outfile;
 
     # loop through all records in the edit data
     my ($recNum, $recLen, $err);
@@ -944,6 +1030,16 @@ sub ProcessEditData($$$)
         if ($verbose > 1 and not $outfile) {
             printf $out "$$exifTool{INDENT}CanonVRD Edit record ($recLen bytes at offset 0x%x)\n",
                    $pos + $dataPos;
+            if ($recNum and $verbose > 2) {
+                my %parms = (
+                    Start  => $pos,
+                    Addr   => $pos + $dataPos,
+                    Out    => $out,
+                    Prefix => $$exifTool{INDENT},
+                );
+                $parms{MaxLen} = $verbose == 3 ? 96 : 2048 if $verbose < 5;
+                Image::ExifTool::HexDump($dataPt, $recLen, %parms);
+            }
         }
 
         # our edit information is the 0th record, so don't process the others
@@ -1119,8 +1215,8 @@ sub WriteCanonVRD($$;$)
     my ($exifTool, $dirInfo, $tagTablePtr) = @_;
     $exifTool or return 1;    # allow dummy access
     my $nvHash = $exifTool->GetNewValueHash($Image::ExifTool::Extra{CanonVRD});
-    return undef unless Image::ExifTool::IsOverwriting($nvHash);
-    my $val = Image::ExifTool::GetNewValues($nvHash);
+    return undef unless $exifTool->IsOverwriting($nvHash);
+    my $val = $exifTool->GetNewValues($nvHash);
     $val = '' unless defined $val;
     ++$exifTool->{CHANGED};
     return $val;
@@ -1173,8 +1269,10 @@ sub ProcessCanonVRD($$;$)
         $exifTool->Warn('Bad CanonVRD trailer');
         return 0;
     }
-    # extract CanonVRD block if Binary option set, or if requested
-    if ($exifTool->{OPTIONS}->{Binary} or $exifTool->{REQ_TAG_LOOKUP}->{canonvrd}) {
+    # extract CanonVRD block if copying tags, or if requested
+    if (($exifTool->{TAGS_FROM_FILE} and not $exifTool->{EXCL_TAG_LOOKUP}{canonvrd}) or
+        $exifTool->{REQ_TAG_LOOKUP}{canonvrd})
+    {
         $exifTool->FoundTag('CanonVRD', $header . $buff . $footer);
     }
     # set variables returned in dirInfo hash
@@ -1265,7 +1363,7 @@ sub ProcessCanonVRD($$;$)
                 Description => $desc,
                 Binary      => 1,
             };
-            Image::ExifTool::AddTagToTable($tagTablePtr, $blockType, $tagInfo);
+            AddTagToTable($tagTablePtr, $blockType, $tagInfo);
         }
         if ($$tagInfo{SubDirectory}) {
             my $subTablePtr = GetTagTable($$tagInfo{SubDirectory}{TagTable});
@@ -1365,7 +1463,7 @@ trailer in JPEG, CRW, CR2 and TIFF images.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

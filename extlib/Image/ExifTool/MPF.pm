@@ -15,7 +15,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.05';
+$VERSION = '1.06';
 
 sub ProcessMPImageList($$$);
 
@@ -24,7 +24,10 @@ sub ProcessMPImageList($$$);
     GROUPS => { 0 => 'MPF', 1 => 'MPF0', 2 => 'Image'},
     NOTES => q{
         These tags are part of the CIPA Multi-Picture Format specification, and are
-        found in the APP2 "MPF" segment of JPEG images.  See
+        found in the APP2 "MPF" segment of JPEG images.  MPImage data referenced
+        from this segment is stored as a JPEG trailer.  The MPF tags are not
+        writable, however the MPG segment may be deleted as a group (with "MPF:All")
+        but then the JPEG trailer should also be deleted (with "Trailer:All").  See
         L<http://www.cipa.jp/english/hyoujunka/kikaku/pdf/DC-007_E.pdf> for the
         official specification.
     },
@@ -203,7 +206,7 @@ sub ExtractMPImages($)
             $exifTool->Options('Binary', $saveBinary) if $ee;
             next unless defined $val;
             unless ($Image::ExifTool::Extra{$tag}) {
-                Image::ExifTool::AddTagToTable(\%Image::ExifTool::Extra, $tag, {
+                AddTagToTable(\%Image::ExifTool::Extra, $tag, {
                     Name => $tag,
                     Groups => { 0 => 'Composite', 1 => 'Composite', 2 => 'Image'},
                 });
@@ -264,7 +267,7 @@ Format (MPF) information from JPEG images.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

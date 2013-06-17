@@ -15,7 +15,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::IPTC;
 use Image::ExifTool::XMP;
 
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 sub ProcessPhotoMechanic($$);
 
@@ -110,8 +110,13 @@ my %rawCropConv = (
         namespace prefix is "photomechanic" but ExifTool shortens this in
         the "XMP-photomech" family 1 group name.
     },
+    ColorClass  => {
+        Writable => 'integer',
+        PrintConv => \%colorClasses,
+    },
     CountryCode => { Avoid => 1, Groups => { 2 => 'Location' } },
     EditStatus  => { },
+    PMVersion   => { },
     Prefs       => {
         Notes => 'format is "Tagged:0, ColorClass:1, Rating:2, FrameNum:3"',
         PrintConv => q{
@@ -125,6 +130,7 @@ my %rawCropConv = (
             return $val;
         },
     },
+    Tagged      => { Writable => 'boolean', PrintConv => { False => 'No', True => 'Yes' } },
     TimeCreated => {
         Avoid => 1,
         Groups => { 2 => 'Time' },
@@ -230,7 +236,7 @@ write information written by the Camera Bits Photo Mechanic software.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

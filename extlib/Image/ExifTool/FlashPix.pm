@@ -19,7 +19,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::ASF;   # for GetGUID()
 
-$VERSION = '1.18';
+$VERSION = '1.21';
 
 sub ProcessFPX($$);
 sub ProcessFPXR($$$);
@@ -272,10 +272,10 @@ my %codePage = (
     65001 => 'Unicode (UTF-8)',
 );
 
-# test for file extensions which could be MSOffice files instead of FPX images
+# test for file extensions which may be variants of the FPX format
 # (have seen one password-protected DOCX file that is FPX-like, so assume
 #  that all the rest could be as well)
-my %isMSOffice = (
+my %fpxFileType = (
     DOC => 1,  DOCX => 1,  DOCM => 1,
     DOT => 1,  DOTX => 1,  DOTM => 1,
     POT => 1,  POTX => 1,  POTM => 1,
@@ -284,6 +284,8 @@ my %isMSOffice = (
     XLA => 1,  XLAM => 1,
     XLS => 1,  XLSX => 1,  XLSM => 1,  XLSB => 1,
     XLT => 1,  XLTX => 1,  XLTM => 1,
+    # non MSOffice types
+    FLA => 1,  VSD  => 1,
 );
 
 %Image::ExifTool::FlashPix::Main = (
@@ -300,9 +302,10 @@ my %isMSOffice = (
 
         ExifTool extracts FlashPix information from both FPX images and the APP2
         FPXR segment of JPEG images.  As well, FlashPix information is extracted
-        from DOC, PPT, XLS (Microsoft Word, PowerPoint and Excel) documents and FLA
-        (Macromedia/Adobe Flash project) files since these are based on the same
-        file format as FlashPix (the Windows Compound Binary File format).  See
+        from DOC, PPT, XLS (Microsoft Word, PowerPoint and Excel) documents, VSD
+        (Microsoft Visio) drawings, and FLA (Macromedia/Adobe Flash project) files
+        since these are based on the same file format as FlashPix (the Windows
+        Compound Binary File format).  See
         L<http://graphcomp.com/info/specs/livepicture/fpx.pdf> for the FlashPix
         specification.
     },
@@ -461,7 +464,10 @@ my %isMSOffice = (
     0x0f => 'Words',
     0x10 => 'Characters',
     0x11 => { Name => 'ThumbnailClip',  Binary => 1 },
-    0x12 => 'Software',
+    0x12 => {
+        Name => 'Software',
+        RawConv => '$$self{Software} = $val', # (use to determine file type)
+    },
     0x13 => {
         Name => 'Security',
         # see http://msdn.microsoft.com/en-us/library/aa379255(VS.85).aspx
@@ -971,7 +977,11 @@ my %isMSOffice = (
     GROUPS => { 2 => 'Other' },
     FORMAT => 'int32u',
     0 => { Name => 'CompObjUserTypeLen' },
-    1 => { Name => 'CompObjUserType', Format => 'string[$val{0}]' },
+    1 => {
+        Name => 'CompObjUserType',
+        Format => 'string[$val{0}]',
+        RawConv => '$$self{CompObjUserType} = $val', # (use to determine file type)
+    },
 );
 
 # composite FlashPix tags
@@ -1072,12 +1082,12 @@ sub ReadFPXValue($$$$$;$$)
                 push @vals, $val;
                 next;   # avoid adding $size to $valPos again
             } elsif ($format eq 'VT_FILETIME') {
-                # get time in seconds
+                # convert from time in 100 ns increments to time in seconds
                 $val = 1e-7 * Image::ExifTool::Get64u($dataPt, $valPos);
                 # print as date/time if value is greater than one year (PH hack)
                 if ($val > 365 * 24 * 3600) {
                     # shift from Jan 1, 1601 to Jan 1, 1970
-                    $val -= 134774 * 24 * 3600 if $val != 0;
+                    $val -= 134774 * 24 * 3600;
                     $val = Image::ExifTool::ConvertUnixTime($val);
                 }
             } elsif ($format eq 'VT_DATE') {
@@ -1151,7 +1161,7 @@ sub ProcessContents($$$)
     # Contents of all of my FLA samples start with two bytes (0x29,0x38,0x3f,0x43 or 0x47,
     # then 0x01) followed by a number of zero bytes (from 0x18 to 0x26 of them, related
     # somehow to the value of the first byte), followed by the string "DocumentPage"
-    $isFLA = 1 if $$dataPt =~ /^..\0+\xff\xff\x01\0\x0d\0CDocumentPage/;
+    $isFLA = 1 if $$dataPt =~ /^..\0+\xff\xff\x01\0\x0d\0CDocumentPage/s;
     
     # do a brute-force scan of the "Contents" for UTF-16 XMP
     # (this may always be little-endian, but allow for either endianness)
@@ -1253,7 +1263,7 @@ sub ProcessProperties($$$)
                     $name =~ tr/-_a-zA-Z0-9//dc;    # remove illegal characters
                     next unless length $name;
                     $exifTool->VPrint(0, "$$exifTool{INDENT}\[adding $name]\n") if $verbose;
-                    Image::ExifTool::AddTagToTable($tagTablePtr, $tag, { Name => $name });
+                    AddTagToTable($tagTablePtr, $tag, { Name => $name });
                 }
                 next;
             }
@@ -1560,7 +1570,7 @@ sub ProcessFPX($$)
 
     # set FileType initially based on file extension (we may override this later)
     my $fileType = $exifTool->{FILE_EXT};
-    $fileType = 'FPX' unless $fileType and ($isMSOffice{$fileType} or $fileType eq 'FLA');
+    $fileType = 'FPX' unless $fileType and $fpxFileType{$fileType};
     $exifTool->SetFileType($fileType);
     SetByteOrder(substr($buff, 0x1c, 2) eq "\xff\xfe" ? 'MM' : 'II');
     my $tagTablePtr = GetTagTable('Image::ExifTool::FlashPix::Main');
@@ -1807,6 +1817,19 @@ sub ProcessFPX($$)
         }
     }
     $exifTool->{INDENT} = $oldIndent if $verbose;
+    # try to better identify the file type
+    if ($$exifTool{VALUE}{FileType} eq 'FPX') {
+        my $val = $$exifTool{CompObjUserType} || $$exifTool{Software};
+        if ($val) {
+            my %type = ( Word => 'DOC', PowerPoint => 'PPT', Excel => 'XLS' );
+            my $pat;
+            foreach $pat (sort keys %type) {
+                next unless $val =~ /$pat/;
+                $exifTool->OverrideFileType($type{$pat});
+                last;
+            }
+        }
+    }
     return 1;
 }
 
@@ -1830,7 +1853,7 @@ JPEG images.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

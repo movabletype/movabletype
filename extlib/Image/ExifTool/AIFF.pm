@@ -18,7 +18,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::ID3;
 
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 # information for time/date-based tags (time zero is Jan 1, 1904)
 my %timeInfo = (
@@ -30,7 +30,11 @@ my %timeInfo = (
 # AIFF info
 %Image::ExifTool::AIFF::Main = (
     GROUPS => { 2 => 'Audio' },
-    NOTES => 'Only the tags decoded by ExifTool are listed in this table.',
+    NOTES => q{
+        Tags extracted from Audio Interchange File Format (AIFF) files.  See
+        L<http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/AIFF/AIFF.html> for
+        the AIFF specification.
+    },
 #    FORM => 'Format',
     FVER => {
         Name => 'FormatVersion',
@@ -44,10 +48,24 @@ my %timeInfo = (
         Name => 'Comment',
         SubDirectory => { TagTable => 'Image::ExifTool::AIFF::Comment' },
     },
-    NAME => 'Name',
-    AUTH => { Name => 'Author', Groups => { 2 => 'Author' } },
-   '(c) ' => { Name => 'Copyright', Groups => { 2 => 'Author' } },
-    ANNO => 'Annotation',
+    NAME => {
+        Name => 'Name',
+        ValueConv => '$self->Decode($val, "MacRoman")',
+    },
+    AUTH => {
+        Name => 'Author',
+        Groups => { 2 => 'Author' },
+        ValueConv => '$self->Decode($val, "MacRoman")',
+    },
+   '(c) ' => {
+        Name => 'Copyright',
+        Groups => { 2 => 'Author' },
+        ValueConv => '$self->Decode($val, "MacRoman")',
+    },
+    ANNO => {
+        Name => 'Annotation',
+        ValueConv => '$self->Decode($val, "MacRoman")',
+    },
    'ID3 ' => {
         Name => 'ID3',
         SubDirectory => {
@@ -83,6 +101,11 @@ my %timeInfo = (
             sowt => 'Little-endian, no compression',
         },
     },
+    11 => { #PH
+        Name => 'CompressorName',
+        Format => 'pstring',
+        ValueConv => '$self->Decode($val, "MacRoman")',
+    },
 );
 
 %Image::ExifTool::AIFF::FormatVers = (
@@ -96,7 +119,10 @@ my %timeInfo = (
     GROUPS => { 2 => 'Audio' },
     0 => { Name => 'CommentTime', %timeInfo },
     1 => 'MarkerID',
-    2 => 'Comment',
+    2 => {
+        Name => 'Comment',
+        ValueConv => '$self->Decode($val, "MacRoman")',
+    },
 );
 
 #------------------------------------------------------------------------------
@@ -161,6 +187,7 @@ sub ProcessAIFF($$)
         $type = 'AIFF';
     }
     SetByteOrder('MM');
+    my $verbose = $exifTool->Options('Verbose');
 #
 # Read through the IFF chunks
 #
@@ -188,6 +215,9 @@ sub ProcessAIFF($$)
                 Start => 0,
                 Size => $len,
             );
+        } elsif ($verbose > 2 and $len2 < 1024000) {
+            $raf->Read($buff, $len2) == $len2 or $err = 1, last;
+            Image::ExifTool::HexDump(\$buff, undef, MaxLen => 512);
         } else {
             $raf->Seek($len2, 1) or $err=1, last;
         }
@@ -216,7 +246,7 @@ information from AIFF (Audio Interchange File Format) audio files.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

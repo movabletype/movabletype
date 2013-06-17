@@ -16,7 +16,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.16';
+$VERSION = '1.24';
 
 sub ProcessRicohText($$$);
 sub ProcessRicohRMETA($$$);
@@ -33,6 +33,8 @@ my %ricohLensIDs = (
     'RL2' => 'Ricoh Lens S10 24-70mm F2.5-4.4 VC',
     'RL3' => 'Ricoh Lens P10 28-300mm F3.5-5.6 VC',
     'RL5' => 'GR Lens A12 28mm F2.5',
+    'RL8' => 'Mount A12',
+    'RL6' => 'Ricoh Lens A16 24-85mm F3.5-5.5',
 );
 
 %Image::ExifTool::Ricoh::Main = (
@@ -65,8 +67,8 @@ my %ricohLensIDs = (
             Name => 'InternalSerialNumber',
             Writable => 'undef',
             Count => 16,
-            PrintConv => 'unpack("H*", $val)',
-            PrintConvInv => 'pack("H*", $val)',
+            ValueConv => 'unpack("H*", $val)',
+            ValueConvInv => 'pack("H*", $val)',
         },
     ],
     0x0e00 => {
@@ -91,11 +93,25 @@ my %ricohLensIDs = (
     0x2001 => [
         {
             Name => 'RicohSubdir',
-            Condition => '$self->{Model} !~ /^Caplio RR1\b/',
+            Condition => q{
+                $self->{Model} !~ /^Caplio RR1\b/ and
+                ($format ne 'int32u' or $count != 1)
+            },
             SubDirectory => {
                 Validate => '$val =~ /^\[Ricoh Camera Info\]/',
                 TagTable => 'Image::ExifTool::Ricoh::Subdir',
                 Start => '$valuePtr + 20',
+                ByteOrder => 'BigEndian',
+            },
+        },
+        {
+            Name => 'RicohSubdirIFD',
+            # the CX6 and GR Digital 4 write an int32u pointer in AVI videos -- doh!
+            Condition => '$self->{Model} !~ /^Caplio RR1\b/',
+            Flags => 'SubIFD',
+            SubDirectory => {
+                TagTable => 'Image::ExifTool::Ricoh::Subdir',
+                Start => '$val + 20', # (skip over "[Ricoh Camera Info]\0" header)
                 ByteOrder => 'BigEndian',
             },
         },
@@ -149,15 +165,15 @@ my %ricohLensIDs = (
     },
     28 => {
         Name => 'PreviewImageStart',
-        Format => 'int16u',
+        Format => 'int16u', # ha!  (only the lower 16 bits, even if > 0xffff)
         Flags => 'IsOffset',
         OffsetPair => 30,   # associated byte count tagID
         DataTag => 'PreviewImage',
         Protected => 2,
-        # prevent preview from being written to raw images
+        # prevent preview from being written to MakerNotes of DNG images
         RawConvInv => q{
             return $val if $$self{FILE_TYPE} eq "JPEG";
-            warn "Can't write PreviewImage to $$self{TIFF_TYPE} file\n";
+            warn "\n"; # suppress warning
             return undef;
         },
     },
@@ -169,7 +185,7 @@ my %ricohLensIDs = (
         Protected => 2,
         RawConvInv => q{
             return $val if $$self{FILE_TYPE} eq "JPEG";
-            warn "\n"; # suppress warning (already issued for PreviewImageStart)
+            warn "\n"; # suppress warning
             return undef;
         },
     },
@@ -217,6 +233,8 @@ my %ricohLensIDs = (
             7 => 800,
             8 => 1600,
             9 => 'Auto', #PH (? CX3)
+            10 => 3200, #PH (A16)
+            11 => '100 (Low)', #PH (A16)
         },
     },
     40 => {
@@ -234,7 +252,7 @@ my %ricohLensIDs = (
 );
 
 # Ricoh subdirectory tags (ref PH)
-# NOTE: this subdir is not currently writable because the offsets would require
+# NOTE: this subdir is currently not writable because the offsets would require
 # special code to handle the funny start location and base offset
 %Image::ExifTool::Ricoh::Subdir = (
     GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
@@ -256,7 +274,12 @@ my %ricohLensIDs = (
         Count => 20,
     },
     # 0x000c - int32u[2] 1st number is a counter (file number? shutter count?) - PH
+    # 0x0014 - int8u[338] - could contain some data related to face detection? - PH
     # 0x0015 - int8u[2]: related to noise reduction?
+    0x001a => { #PH
+        Name => 'FaceInfo',
+        SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::FaceInfo' },
+    },
     0x0029 => {
         Name => 'FirmwareInfo',
         SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::FirmwareInfo' },
@@ -277,6 +300,70 @@ my %ricohLensIDs = (
         SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::SerialInfo' },
     }
     # 0x000E ProductionNumber? (ref 2) [no. zero for most models - PH]
+);
+
+# face detection information (ref PH, CX4)
+%Image::ExifTool::Ricoh::FaceInfo = (
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
+    CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
+    WRITABLE => 1,
+    FIRST_ENTRY => 0,
+    DATAMEMBER => [ 181 ],
+    0xb5 => { # (should be int16u at 0xb4?)
+        Name => 'FacesDetected',
+        DataMember => 'FacesDetected',
+        RawConv => '$$self{FacesDetected} = $val',
+    },
+    0xb6 => {
+        Name => 'FaceDetectFrameSize',
+        Format => 'int16u[2]',
+    },
+    0xbc => {
+        Name => 'Face1Position',
+        Condition => '$$self{FacesDetected} >= 1',
+        Format => 'int16u[4]',
+        Notes => q{
+            left, top, width and height of detected face in coordinates of
+            FaceDetectFrameSize with increasing Y downwards
+        },
+    },
+    0xc8 => {
+        Name => 'Face2Position',
+        Condition => '$$self{FacesDetected} >= 2',
+        Format => 'int16u[4]',
+    },
+    0xd4 => {
+        Name => 'Face3Position',
+        Condition => '$$self{FacesDetected} >= 3',
+        Format => 'int16u[4]',
+    },
+    0xe0 => {
+        Name => 'Face4Position',
+        Condition => '$$self{FacesDetected} >= 4',
+        Format => 'int16u[4]',
+    },
+    0xec => {
+        Name => 'Face5Position',
+        Condition => '$$self{FacesDetected} >= 5',
+        Format => 'int16u[4]',
+    },
+    0xf8 => {
+        Name => 'Face6Position',
+        Condition => '$$self{FacesDetected} >= 6',
+        Format => 'int16u[4]',
+    },
+    0x104 => {
+        Name => 'Face7Position',
+        Condition => '$$self{FacesDetected} >= 7',
+        Format => 'int16u[4]',
+    },
+    0x110 => {
+        Name => 'Face8Position',
+        Condition => '$$self{FacesDetected} >= 8',
+        Format => 'int16u[4]',
+    },
 );
 
 # firmware version information (ref PH)
@@ -401,6 +488,10 @@ my %ricohLensIDs = (
         15 => 'NW',
         16 => 'NNW',
     } },
+    _audio => {
+        Name => 'SoundFile',
+        Notes => 'audio data recorded in JPEG images by the G700SE',
+    },
 );
 
 # information stored in Ricoh AVI images (ref PH)
@@ -488,7 +579,7 @@ sub ProcessRicohText($$$)
                 PrintConv => 'length($val) > 60 ? substr($val,0,55) . "[...]" : $val',
             };
             # add tag information to table
-            Image::ExifTool::AddTagToTable($tagTablePtr, $tag, $tagInfo);
+            AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
         $exifTool->FoundTag($tagInfo, $val);
     }
@@ -497,9 +588,7 @@ sub ProcessRicohText($$$)
 
 #------------------------------------------------------------------------------
 # Process Ricoh APP5 RMETA information
-# Inputs: 0) ExifTool object reference
-#         1) Reference to directory information hash
-#         2) Pointer to tag table for this directory
+# Inputs: 0) ExifTool ref, 1) dirInfo ref, 2) tag table ref
 # Returns: 1 on success, otherwise returns 0 and sets a Warning
 sub ProcessRicohRMETA($$$)
 {
@@ -507,20 +596,43 @@ sub ProcessRicohRMETA($$$)
     my $dataPt = $$dirInfo{DataPt};
     my $dirStart = $$dirInfo{DirStart};
     my $dataLen = length($$dataPt);
+    my $dirLen = $dataLen - $dirStart;
     my $verbose = $exifTool->Options('Verbose');
 
-    $dataLen > 6 or $exifTool->Warn('Truncated Ricoh RMETA data'), return 0;
+    $exifTool->VerboseDir('Ricoh RMETA') if $verbose;
+    $dirLen > 6 or $exifTool->Warn('Truncated Ricoh RMETA data', 1), return 0;
     my $byteOrder = substr($$dataPt, $dirStart, 2);
-    SetByteOrder($byteOrder) or $exifTool->Warn('Bad Ricoh RMETA data'), return 0;
+    SetByteOrder($byteOrder) or $exifTool->Warn('Bad Ricoh RMETA data', 1), return 0;
+    my $rmetaType = Get16u($dataPt, $dirStart+4);
+    if ($rmetaType != 0) {
+        # not sure how to recognize audio, so do it by brute force and assume
+        # all subsequent RMETA segments are part of the audio data
+        $dirLen < 14 and $exifTool->Warn('Short Ricoh RMETA block', 1), return 0;
+        my $audioLen = Get16u($dataPt, $dirStart+12);
+        $audioLen + 14 > $dirLen and $exifTool->Warn('Truncated Ricoh RMETA audio data', 1), return 0;
+        my $buff = substr($$dataPt, $dirStart + 14, $audioLen);
+        my $val = $$exifTool{VALUE}{SoundFile};
+        if ($val) {
+            $$val .= $buff;
+        } elsif ($audioLen >= 4 and substr($buff, 0, 4) eq 'RIFF') {
+            $exifTool->HandleTag($tagTablePtr, '_audio', \$buff);
+        } else {
+            $exifTool->Warn('Unknown Ricoh RMETA type', 1);
+            return 0;
+        }
+        return 1;
+    }
+    # standard RMETA tag directory
     my (@tags, @vals, @nums, $valPos);
     my $pos = $dirStart + 6;
     while ($pos <= $dataLen - 4) {
         my $type = Get16u($dataPt, $pos);
         my $size = Get16u($dataPt, $pos + 2);
+        last unless $size;
         $pos += 4;
         $size -= 2;
         if ($size < 0 or $pos + $size > $dataLen) {
-            $exifTool->Warn('Corrupted Ricoh RMETA data');
+            $exifTool->Warn('Corrupted Ricoh RMETA data', 1);
             last;
         }
         if ($type eq 1) {
@@ -544,16 +656,16 @@ sub ProcessRicohRMETA($$$)
         $pos += $size;
     }
     if (@tags or @vals) {
-        if (@tags != @vals) {
+        if (@tags < @vals) {
             my ($nt, $nv) = (scalar(@tags), scalar(@vals));
-            $exifTool->Warn("Number of tags ($nt) and values ($nv) differs in Ricoh RMETA");
+            $exifTool->Warn("Fewer tags ($nt) than values ($nv) in Ricoh RMETA", 1);
         }
         # find next tag in null-delimited list
         # unpack numerical values from block of int16u values
         my ($tag, $name, $val);
         foreach $tag (@tags) {
             $val = shift @vals;
-            last unless defined $val;
+            $val = '' unless defined $val;
             ($name = $tag) =~ s/\b([a-z])/\U$1/gs;  # make capitalize all words
             $name =~ s/ (\w)/\U$1/g;                # remove special characters
             $name = 'RMETA_Unknown' unless length($name);
@@ -565,7 +677,7 @@ sub ProcessRicohRMETA($$$)
             } else {
                 # create tagInfo hash
                 $tagInfo = { Name => $name, PrintConv => { } };
-                Image::ExifTool::AddTagToTable($tagTablePtr, $tag, $tagInfo);
+                AddTagToTable($tagTablePtr, $tag, $tagInfo);
             }
             # use string value directly if no numerical value
             $num = $val unless defined $num;
@@ -607,7 +719,7 @@ interpret Ricoh maker notes EXIF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

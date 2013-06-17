@@ -10,6 +10,7 @@ package Image::ExifTool::JVC;
 
 use strict;
 use vars qw($VERSION);
+use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
 $VERSION = '1.02';
@@ -90,7 +91,7 @@ sub ProcessJVCText($$$)
                 PrintConv => 'length($val) > 60 ? substr($val,0,55) . "[...]" : $val',
             };
             # add tag information to table
-            Image::ExifTool::AddTagToTable($tagTablePtr, $tag, $tagInfo);
+            AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
         $exifTool->FoundTag($tagInfo, $val);
     }
@@ -116,7 +117,7 @@ notes.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

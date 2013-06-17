@@ -14,19 +14,18 @@ sub ShiftTime($$$;$);
 
 #------------------------------------------------------------------------------
 # apply shift to value in new value hash
-# Inputs: 0) shift type, 1) shift string, 2) value to shift, 3) new value hash ref
+# Inputs: 0) ExifTool ref, 1) shift type, 2) shift string, 3) raw date/time value,
+#         4) new value hash ref
 # Returns: error string or undef on success and updates value in new value hash
-sub ApplyShift($$$;$)
+sub ApplyShift($$$$;$)
 {
-    my ($func, $shift, $val, $nvHash) = @_;
+    my ($self, $func, $shift, $val, $nvHash) = @_;
 
     # get shift direction from first character in shift string
-    $shift =~ s/^(\+|-)// or return 'Bad shift string (no sign)';
-    my $pre = $1;
+    my $pre = ($shift =~ s/^(\+|-)//) ? $1 : '+';
     my $dir = ($pre eq '+') ? 1 : -1;
     my $tagInfo = $$nvHash{TagInfo};
     my $tag = $$tagInfo{Name};
-    my $self = $$nvHash{Self};    # (used in eval)
     my $shiftOffset;
     if ($$nvHash{ShiftOffset}) {
         $shiftOffset = $$nvHash{ShiftOffset};
@@ -265,6 +264,18 @@ sub ShiftComponents($$$$$;$)
 }
 
 #------------------------------------------------------------------------------
+# Shift an integer or floating-point number
+# Inputs: 0) date/time string, 1) shift string, 2) shift direction (+1 or -1)
+#         3) (unused)
+# Returns: undef and updates input value
+sub ShiftNumber($$$;$)
+{
+    my ($val, $shift, $dir) = @_;
+    $_[0] = $val + $shift * $dir;   # return shifted value
+    return undef;                   # success!
+}
+
+#------------------------------------------------------------------------------
 # Shift date/time string
 # Inputs: 0) date/time string, 1) shift string, 2) shift direction (+1 or -1)
 #         3) reference to ShiftOffset hash (with Date, DateTime, Time, Timezone keys)
@@ -489,7 +500,7 @@ If only one is provided, it is assumed to be a time shift when applied to a
 time-only or a date/time value, or a date shift when applied to a date-only
 value.  For example:
 
-    '7'         - shift by 1 hour if applied to a time or date/time
+    '1'         - shift by 1 hour if applied to a time or date/time
                   value, or by one day if applied to a date value
     '2:0'       - shift 2 hours (time, date/time), or 2 months (date)
     '5:0:0'     - shift 5 hours (time, date/time), or 5 years (date)
@@ -523,6 +534,7 @@ Below are some specific examples applied to real date and/or time values
     ---------------------  -------  ---  ---------------------
     '20:30:00'             '5'       +   '01:30:00'
     '2005:01:27'           '5'       +   '2005:02:01'
+    '2005:01:27 20:30:00'  '5'       +   '2005:01:28 01:30:00'
     '11:54:00'             '2.5 0'   -   '23:54:00'
     '2005:11:02'           '2.5 0'   -   '2005:10:31'
     '2005:11:02 11:54:00'  '2.5 0'   -   '2005:10:30 23:54:00'
@@ -549,10 +561,10 @@ This module is perhaps more complicated than it needs to be because it is
 designed to be very flexible in the way time shifts are specified and
 applied...
 
-The ability to shift dates by Y years, M months, etc, is somewhat
-contradictory to the goal of maintaining a constant shift for all time
-values when applying a batch shift.  This is because shifting by 1 month can
-be equivalent to anything from 28 to 31 days, and 1 year can be 365 or 366
+The ability to shift dates by Y years, M months, etc, conflicts with the
+design goal of maintaining a constant shift for all time values when
+applying a batch shift.  This is because shifting by 1 month can be
+equivalent to anything from 28 to 31 days, and 1 year can be 365 or 366
 days, depending on the starting date.
 
 The inconsistency is handled by shifting the first tag found with the actual
@@ -565,12 +577,12 @@ philosophy).
 
 =head1 BUGS
 
-This feature uses the standard time library functions, which typically are
-limited to dates in the range 1970 to 2038.
+Due to the use of the standard time library functions, dates are typically
+limited to the range 1970 to 2038.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -8,6 +8,7 @@
 #                            and add new marker-related routines
 #               06/21/2006 - P. Harvey Patch to work with negative offsets
 #               07/07/2006 - P. Harvey Added support for 16-bit pointers
+#               02/19/2013 - P. Harvey Added IsEmpty()
 #
 # Data Members:
 #
@@ -26,7 +27,7 @@ use Image::ExifTool qw(GetByteOrder SetByteOrder Get32u Get32s Set32u
                        Get16u Get16s Set16u);
 use vars qw($VERSION);
 
-$VERSION = '1.04';
+$VERSION = '1.05';
 
 sub AddFixup($$;$$);
 sub ApplyFixup($$);
@@ -168,6 +169,24 @@ sub ApplyFixup($$)
 }
 
 #------------------------------------------------------------------------------
+# Is this Fixup empty?
+# Inputs: 0) Fixup object ref
+# Returns: True if there are no offsets to fix
+sub IsEmpty($)
+{
+    my $self = shift;
+    my $phash = $self->{Pointers};
+    if ($phash) {
+        my $key;
+        foreach $key (keys %$phash) {
+            next unless ref $$phash{$key} eq 'ARRAY';
+            return 0 if @{$$phash{$key}};
+        }
+    }
+    return 1;
+}
+
+#------------------------------------------------------------------------------
 # Does specified marker exist?
 # Inputs: 0) Fixup object reference, 1) marker name
 # Returns: True if fixup contains specified marker name
@@ -303,6 +322,8 @@ Image::ExifTool::Fixup - Utility to handle pointer fixups
 
     $fixup->Dump();               # dump debugging information
 
+    $fixup->IsEmpty();            # return true if no offsets to fix
+
 =head1 DESCRIPTION
 
 This module contains the code to keep track of pointers in memory and to
@@ -321,7 +342,7 @@ linear list when ApplyFixups() is called.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

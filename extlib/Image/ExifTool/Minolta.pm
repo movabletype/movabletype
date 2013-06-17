@@ -32,31 +32,149 @@
 #              22) http://www.mi-fo.de/forum/index.php?act=attach&type=post&id=6024
 #              23) Marcin Krol private communication
 #              24) http://cpanforum.com/threads/12291
+#              25) Joseph Roost private communication, from one or more of
+#                   - A100 brochure, 2006-07
+#                   - Alpha Lenses Accessories brochure, 2007-09 (JP)
+#                   - Alpha Lenses brochure, 2010-09
+#                   - A77 brochure, 2011-08
+#              26) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3521.0.html
+#              27) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3833.0.html
+#              28) Michael Reitinger private communication (RX100)
+#              29) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,4086.0.html
 #              JD) Jens Duttke private communication
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::Minolta;
 
 use strict;
-use vars qw($VERSION %minoltaLensTypes %minoltaColorMode %sonyColorMode %minoltaSceneMode);
+use vars qw($VERSION %minoltaLensTypes %minoltaTeleconverters %minoltaColorMode
+            %sonyColorMode %minoltaSceneMode);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.75';
+$VERSION = '2.02';
+
+# Full list of product codes for Sony-compatible Minolta lenses
+# (ref http://www.kb.sony.com/selfservice/documentLink.do?externalId=C1000570)
+# NOTE: Unfortunately, these product codes sometimes do not match the first 4
+#       digits of the lens ID
+# 2578 AF 16mm F2.8 FISH-EYE
+# 2579 AF 20mm F2.8
+# 2641 AF 20mm F2.8 NEW
+# 2566 AF 24mm F2.8
+# 2642 AF 24mm F2.8 NEW
+# 2596 AF 28mm F2
+# 2668 AF 28mm F2 NEW
+# 2557 AF 28mm F2.8
+# 2591 AF 35mm F1.4 G
+# 2666 AF 35mm F1.4 G NEW
+# 2597 AF 35mm F2
+# 2667 AF 35mm F2 NEW
+# 2562 AF 50mm F1.4
+# 2662 AF 50mm F1.4 NEW
+# 2550 AF 50mm F1.7
+# 2613 AF 50mm F1.7 NEW
+# 2592 AF 85mm F1.4
+# 2629 AF 85mm F1.4 G
+# 2677 AF 85mm F1.4 G (D)
+# 2689 AF 85mm F1.4 G (D) Limited
+# 2598 AF 100mm F2
+# 2648 AF 100mm F2.8 SOFT
+# 2556 AF 135mm F2.8
+# 2656 STF 135mm F2.8 [T4.5]
+# 2593 AF APO 20 0mm F2.8
+# 2612 High Speed AF APO 200mm F2.8 G
+# 2563 AF APO 300mm F2.8
+# 2608 High Speed AF APO 300mm F2.8 G
+# 2674 AF APO 300mm F2.8 G(D) SSM
+# 2640 AF APO 300mm F4 G
+# 2651 AF APO 400mm F4.5 G
+# 2572 AF REFLEX 500mm F8
+# 2565 AF APO 600mm F4
+# 2609 High Speed AF APO 600mm F4 G
+# 2564 AF MACRO 50mm F2.8
+# 2638 AF MACRO 50mm F2.8 NEW
+# 2675 AF MACRO 50mm F2.8 (D)
+# 2646 AF MACRO 50mm F3.5
+# 2581 AF MACRO 100mm F2.8
+# 2639 AF MACRO 100mm F2.8 NEW
+# 2676 AF MACRO 100mm F2.8 (D)
+# 2658 AF APO TE LE MACRO 200mm F4 G
+# 2594 AF MACRO ZOOM 1x-3x F1.7-2.8
+# 2695 AF 17-35mm F2.8-4 (D)
+# 2654 AF 17-35mm F3.5 G
+# 2657 AF 20-35mm F3.5-4.5
+# 2558 AF 24-50mm F4
+# 2632 AF 24-50mm F4 NEW
+# 2636 AF 24-85mm F3.5-4.5
+# 2660 AF 24-85mm F3.5-4.5 NEW
+# 2672 AF 24-105mm F3.5-4.5 (D)
+# 2620 AF 28-70mm F2.8 G
+# 2696 AF 28-75mm F2.8 (D)
+# 2659 AF 28-80mm F3.5-5.6
+# 2670 AF 28-80mm F3.5-5.6 II
+# 2683 AF 28-80mm F3.5-5.6 (D)
+# 2633 AF 28-80mm F4-5.6
+# 2552 AF 28-85mm F3.5-4.5
+# 2586 AF 28-85mm F3.5-4.5 NEW
+# 2692 AF 28-100mm F3.5-5.6 (D)
+# 2635 AF 28-105mm F3.5-4.5
+# 2661 AF 28-105mm F3.5-4.5 NEW
+# 2553 AF 28-135mm F4-4.5
+# 2551 AF 35-70mm F4
+# 2643 AF 35-70mm F3.5-4.5
+# 2652 AF 35-70mm F3.5-4.5 NEW
+# 2605 AF 35-80mm F4-5.6
+# 2671 AF 35-80mm F4.5-5.6 II
+# 2554 AF 35-105mm F3.5-4.5
+# 2585 AF 35-105mm F3.5-4.5
+# 2682 AF APO 70-200mm F2.8 G (D) SSM
+# 2588 AF 70-210mm F4.5-5.6
+# 2555 AF 70-210mm F4
+# 2634 AF 70-210mm F4.5-5.6 NEW
+# 2669 AF 70-210mm F4.5-5.6 II
+# 2561 AF 75-300mm F4.5-5.6
+# 2649 AF 75-300mm F4.5-5.6 NEW
+# 2665 AF 75-300mm F4.5-5.6 II
+# 2684 AF 75-300mm F4.5-5.6 (D)
+# 2589 AF APO 80-200mm F2.8
+# 2628 High-Speed AF APO 80-200mm F2.8 G
+# 2604 AF 80-200mm F4.5-5.6
+# 2560 AF 100-200mm F4.5
+# 2606 AF 100-300mm F4.5-5.6
+# 2631 AF APO 100-300mm F4.5-5.6
+# 2681 AF APO 100-300mm F4.5-5.6 (D)
+# 2644 AF APO 100-400mm F4.5-6.7
+# 2618 AF Xi 28-80mm F4-5.6
+# 2615 AF Xi 28-105mm F3.5-4.5
+# 2624 AF PZ 35-80mm F4-5.6
+# 2616 AF Xi 35-200mm F4.5-5.6
+# 2619 AF Xi 80-200mm F4.5-5.6
+# 2621 AF Xi 100-300mm F4.5-5.6
+# 2698 AF DT 11-18mm F4.5-5.6 (D)
+# 2697 AF DT 18-70mm F3.5-5.6 (D)
+# 2699 AF DT 18-200mm F3.5-6.3 (D)
+# 2590 1.4x TELE CONVERTER APO
+# 2601 2x TELE CONVERTER APO
+# 2610 1.4x TELE CONVERTER APO II
+# 2611 2x TELE CONVERTER APO II
+# 2687 1.4x TELE CONVERTER APO (D)
+# 2688 2x TELE CONVERTER APO (D)
 
 # lens ID numbers (ref 3)
 # ("New" and "II" appear in brackets if original version also has this LensType)
 %minoltaLensTypes = (
     Notes => q{
-        Decimal values differentiate lenses which would otherwise have the same
-        LensType, and are used by the Composite LensID tag when attempting to
-        identify the specific lens model.  "New" or "II" appear in brackets if the
-        original version of the lens has the same LensType.
+        Decimal values have been added to differentiate lenses which would otherwise
+        have the same LensType, and are used by the Composite LensID tag when
+        attempting to identify the specific lens model.  "New" or "II" appear in
+        brackets if the original version of the lens has the same LensType.
     },
     0 => 'Minolta AF 28-85mm F3.5-4.5 New', # New added (ref 13/18)
     1 => 'Minolta AF 80-200mm F2.8 HS-APO G',
     2 => 'Minolta AF 28-70mm F2.8 G',
     3 => 'Minolta AF 28-80mm F4-5.6',
+    4 => 'Minolta AF 85mm F1.4G', #exiv2 0.23
     5 => 'Minolta AF 35-70mm F3.5-4.5 [II]', # (original and II, ref 13)
     6 => 'Minolta AF 24-85mm F3.5-4.5 [New]', # (original and New, ref 13)
   # 7 => 'AF 100-400mm F4.5-6.7 (D)', ??
@@ -76,67 +194,87 @@ $VERSION = '1.75';
     18 => 'Minolta AF 28-80mm F3.5-5.6 II',
     19 => 'Minolta AF 35mm F1.4 G', # G added (ref 18), but not New as per ref 13
     20 => 'Minolta/Sony 135mm F2.8 [T4.5] STF',
+    # 20 => 'Sony 135mm F2.8 [T4.5] STF (SAL135F28)', (ref 25)
     22 => 'Minolta AF 35-80mm F4-5.6 II', # II added (ref 13)
     23 => 'Minolta AF 200mm F4 Macro APO G',
     24 => 'Minolta/Sony AF 24-105mm F3.5-4.5 (D) or Sigma or Tamron Lens',
+    # 24 => 'Sony 24-105mm F3.5-4.5 (SAL24105)', (ref 25)
     24.1 => 'Sigma 18-50mm F2.8',
     24.2 => 'Sigma 17-70mm F2.8-4.5 (D)',
-    24.3 => 'Sigma 20-40mm F2.8 EX DG Aspherical IF', #JD
+    24.3 => 'Sigma 20-40mm F2.8 EX DG Aspherical IF', #JD/22
     24.4 => 'Sigma 18-200mm F3.5-6.3 DC', #22
-    24.5 => 'Sigma 20-40mm F2.8 EX DG Aspherical IF', #22
+    24.5 => 'Sigma DC 18-125mm F4-5,6 D', #exiv2 0.23
     24.6 => 'Tamron SP AF 28-75mm F2.8 XR Di (IF) Macro', #JD
     25 => 'Minolta AF 100-300mm F4.5-5.6 APO (D) or Sigma Lens',
     25.1 => 'Sigma 100-300mm F4 EX (APO (D) or D IF)', #JD
     25.2 => 'Sigma 70mm F2.8 EX DG Macro', #JD
     25.3 => 'Sigma 20mm F1.8 EX DG Aspherical RF', #19
-    25.4 => 'Sigma 30mm F1.4 DG EX', #21
+    25.4 => 'Sigma 30mm F1.4 EX DC', #21/27
+    25.5 => 'Sigma 24mm F1.8 EX DG ASP Macro', #Florian Knorn
     27 => 'Minolta AF 85mm F1.4 G (D)', # added (D) (ref 13)
     28 => 'Minolta/Sony AF 100mm F2.8 Macro (D) or Tamron Lens',
-    # 28 => 'Sony 100mm F2.8 Macro (SAL-100M28)' (ref 18)
+    # 28 => 'Sony 100mm F2.8 Macro (SAL100M28)', (ref 18/25)
     28.1 => 'Tamron SP AF 90mm F2.8 Di Macro', #JD
+    28.2 => 'Tamron AF 180mm F3.5 SP Di LD [IF] Macro', #27
     29 => 'Minolta/Sony AF 75-300mm F4.5-5.6 (D)', # Sony added (ref 13)
+    # 29 => 'Sony 75-300mm F4.5-5.6 (SAL75300)', (ref 25)
     30 => 'Minolta AF 28-80mm F3.5-5.6 (D) or Sigma Lens',
     30.1 => 'Sigma AF 10-20mm F4-5.6 EX DC', #JD
     30.2 => 'Sigma AF 12-24mm F4.5-5.6 EX DG',
     30.3 => 'Sigma 28-70mm EX DG F2.8', #16
     30.4 => 'Sigma 55-200mm F4-5.6 DC', #JD
     31 => 'Minolta/Sony AF 50mm F2.8 Macro (D) or F3.5',
+    # 31 => 'Sony 50mm F2.8 Macro (SAL50M28)', (ref 25)
     31.1 => 'Minolta/Sony AF 50mm F3.5 Macro',
     32 => 'Minolta/Sony AF 300mm F2.8 G or 1.5x Teleconverter', #13/18
-    # 32 => 'Minolta AF 300mm F2.8 G (D) SSM' (ref 13)
-    # 32 => 'Sony 300mm F2.8 G (SAL-300F28G)' (ref 18)
+    # 32 => 'Minolta AF 300mm F2.8 G (D) SSM', (ref 13)
+    # 32 => 'Sony 300mm F2.8 G (SAL300F28G)', (ref 18/25)
     33 => 'Minolta/Sony AF 70-200mm F2.8 G',
+    # 33 => 'Sony 70-200mm F2.8 G (SAL70200G)', (ref 25)
     # 33 => 'Minolta AF 70-200mm F2.8 G (D) SSM' (ref 13)
     35 => 'Minolta AF 85mm F1.4 G (D) Limited',
     36 => 'Minolta AF 28-100mm F3.5-5.6 (D)',
     38 => 'Minolta AF 17-35mm F2.8-4 (D)', # (Konica Minolta, ref 13)
     39 => 'Minolta AF 28-75mm F2.8 (D)', # (Konica Minolta, ref 13)
-    40 => 'Minolta/Sony AF DT 18-70mm F3.5-5.6 (D) or 18-200m F3.5-6.3', # (Konica Minolta, ref 13)
-    40.1 => 'Sony AF DT 18-200mm F3.5-6.3', #11
+    40 => 'Minolta/Sony AF DT 18-70mm F3.5-5.6 (D)', # (Konica Minolta, ref 13)
+    # 40 => 'Sony DT 18-70mm F3.5-5.6 (SAL1870)', (ref 25)
+    #40.1 => 'Sony AF DT 18-200mm F3.5-6.3', #11 (anomaly? - PH)
     41 => 'Minolta/Sony AF DT 11-18mm F4.5-5.6 (D) or Tamron Lens', # (Konica Minolta, ref 13)
+    # 41 => 'Sony DT 11-18mm F4.5-5.6 (SAL1118)', (ref 25)
     41.1 => 'Tamron SP AF 11-18mm F4.5-5.6 Di II LD Aspherical IF', #JD
     42 => 'Minolta/Sony AF DT 18-200mm F3.5-6.3 (D)', # Sony added (ref 13) (Konica Minolta, ref 13)
-    43 => 'Sony 35mm F1.4 G (SAL-35F14G)', # changed from Minolta to Sony (ref 13/18) (but ref 11 shows both!)
-    44 => 'Sony 50mm F1.4 (SAL-50F14)', # changed from Minolta to Sony (ref 13/18)
-    45 => 'Carl Zeiss Planar T* 85mm F1.4 ZA',
-    46 => 'Carl Zeiss Vario-Sonnar T* DT 16-80mm F3.5-4.5 ZA',
-    47 => 'Carl Zeiss Sonnar T* 135mm F1.8 ZA',
-    48 => 'Carl Zeiss Vario-Sonnar T* 24-70mm F2.8 ZA SSM (SAL-2470Z)', #11
-    49 => 'Sony AF DT 55-200mm F4-5.6', #JD
-    50 => 'Sony AF DT 18-250mm F3.5-6.3', #11
-    51 => 'Sony AF DT 16-105mm F3.5-5.6 or 55-200mm F4-5.5', #11
-    51.1 => 'Sony AF DT 55-200mm F4-5.5', #11
-    52 => 'Sony 70-300mm F4.5-5.6 G SSM', #JD
-    53 => 'Sony AF 70-400mm F4-5.6 G SSM (SAL-70400G)', #17 (/w correction by Stephen Bishop)
-    54 => 'Carl Zeiss Vario-Sonnar T* 16-35mm F2.8 ZA SSM (SAL-1635Z)', #17
-    55 => 'Sony DT 18-55mm F3.5-5.6 SAM (SAL-1855)', #PH
-    56 => 'Sony AF DT 55-200mm F4-5.6 SAM', #22
-    57 => 'Sony AF DT 50mm F1.8 SAM', #22
-    58 => 'Sony AF DT 30mm F2.8 SAM Macro', #22
-    59 => 'Sony 28-75/2.8 SAM', #21
-    60 => 'Carl Zeiss Distagon T* 24mm F2 SSM', #17
-    61 => 'Sony 85mm F2.8 SAM (SAL-85F28)', #17
-    62 => 'Sony DT 35mm F1.8 SAM (SAL-35F18)', #PH
+    # 42 => 'Sony DT 18-200mm F3.5-6.3 (SAL18200)', (ref 25)
+    43 => 'Sony 35mm F1.4 G (SAL35F14G)', # changed from Minolta to Sony (ref 13/18/25) (but ref 11 shows both!)
+    44 => 'Sony 50mm F1.4 (SAL50F14)', # changed from Minolta to Sony (ref 13/18/25)
+    45 => 'Carl Zeiss Planar T* 85mm F1.4 ZA (SAL85F14Z)', #25
+    46 => 'Carl Zeiss Vario-Sonnar T* DT 16-80mm F3.5-4.5 ZA (SAL1680Z)', #25
+    47 => 'Carl Zeiss Sonnar T* 135mm F1.8 ZA (SAL135F18Z)', #25
+    48 => 'Carl Zeiss Vario-Sonnar T* 24-70mm F2.8 ZA SSM (SAL2470Z)', #11/25
+    49 => 'Sony DT 55-200mm F4-5.6 (SAL55200)', #JD/25
+    50 => 'Sony DT 18-250mm F3.5-6.3 (SAL18250)', #11/25
+    51 => 'Sony DT 16-105mm F3.5-5.6 (SAL16105)', #11/25
+    #51.1 => 'Sony AF DT 55-200mm F4-5.5', #11 (anomaly? - PH)
+    52 => 'Sony 70-300mm F4.5-5.6 G SSM (SAL70300G) or Tamron Lens', #JD/25
+    52.1 => 'Tamron SP 70-300mm F4-5.6 Di VC USD', #25
+    53 => 'Sony 70-400mm F4-5.6 G SSM (SAL70400G)', #17(/w correction by Stephen Bishop)/25
+    54 => 'Carl Zeiss Vario-Sonnar T* 16-35mm F2.8 ZA SSM (SAL1635Z)', #17/25
+    55 => 'Sony DT 18-55mm F3.5-5.6 SAM (SAL1855)', #PH/25
+    56 => 'Sony DT 55-200mm F4-5.6 SAM (SAL55200-2)', #22/25
+    57 => 'Sony DT 50mm F1.8 SAM (SAL50F18) or Tamron Lens', #22/25
+    57.1 => 'Tamron SP AF 60mm F2 Di II LD [IF] Macro 1:1', # model G005 (ref http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3858.0.html)
+    57.2 => 'Tamron 18-270mm F3.5-6.3 Di II PZD', #27
+    58 => 'Sony DT 30mm F2.8 Macro SAM (SAL30M28)', #22/25
+    59 => 'Sony 28-75mm F2.8 SAM (SAL2875)', #21/25
+    60 => 'Carl Zeiss Distagon T* 24mm F2 ZA SSM (SAL24F20Z)', #17/25
+    61 => 'Sony 85mm F2.8 SAM (SAL85F28)', #17/25
+    62 => 'Sony DT 35mm F1.8 SAM (SAL35F18)', #PH/25
+    63 => 'Sony DT 16-50mm F2.8 SSM (SAL1650)', #17/25
+    64 => 'Sony 500mm F4.0 G SSM (SAL500F40G)', #29
+    65 => 'Sony DT 18-135mm F3.5-5.6 SAM (SAL18135)', #25
+    66 => 'Sony 300mm F2.8 G SSM II (SAL300F28G2)', #29
+    68 => 'Sony DT 55-300mm F4.5-5.6 SAM (SAL55300)', #29
+    69 => 'Sony 70-400mm F4-5.6 G SSM II (SAL70400G2)', #25
+    70 => 'Carl Zeiss Planar T* 50mm F1.4 ZA SSM (SAL50F14Z)', #25
     128 => 'Tamron or Sigma Lens (128)',
     128.1 => 'Tamron 18-200mm F3.5-6.3',
     128.2 => 'Tamron 28-300mm F3.5-6.3',
@@ -146,6 +284,12 @@ $VERSION = '1.75';
     128.6 => 'Sigma AF 50-150mm F2.8 EX DC APO HSM II', #JD
     128.7 => 'Sigma 10-20mm F3.5 EX DC HSM', #11 (model 202-205)
     128.8 => 'Sigma 70-200mm F2.8 II EX DG APO MACRO HSM', #24
+    128.9 => 'Sigma 10mm F2.8 EX DC HSM Fisheye', #Florian Knorn
+    # (yes, '128.10'.  My condolences to typed languages that use this database - PH)
+   '128.10' => 'Sigma 50mm F1.4 EX DG HSM', #Florian Knorn
+   '128.11' => 'Sigma 85mm F1.4 EX DG HSM', #27
+   '128.12' => 'Sigma 24-70mm F2.8 IF EX DG HSM', #27
+   '128.13' => 'Sigma 18-250mm F3.5-6.3 DC OS HSM', #27
     129 => 'Tamron Lens (129)',
     129.1 => 'Tamron 200-400mm F5.6 LD', #12 (LD ref 23)
     129.2 => 'Tamron 70-300mm F4-5.6 LD', #12
@@ -156,10 +300,11 @@ $VERSION = '1.75';
     138 => 'Soligor 19-35mm F3.5-4.5', #11
     142 => 'Voigtlander 70-300mm F4.5-5.6', #JD
     146 => 'Voigtlander Macro APO-Lanthar 125mm F2.5 SL', #JD
+    194 => 'Tamron SP AF 17-50mm F2.8 XR Di II LD Aspherical [IF]', #23
     255 => 'Tamron Lens (255)',
     255.1 => 'Tamron SP AF 17-50mm F2.8 XR Di II LD Aspherical',
     255.2 => 'Tamron AF 18-250mm F3.5-6.3 XR Di II LD', #JD
-    255.3 => 'Tamron AF 55-200mm F4-5.6 Di II',
+    255.3 => 'Tamron AF 55-200mm F4-5.6 Di II LD Macro', # (added "LD Macro", ref 23)
     255.4 => 'Tamron AF 70-300mm F4-5.6 Di LD MACRO 1:2',
     255.5 => 'Tamron SP AF 200-500mm F5.0-6.3 Di LD IF',
     255.6 => 'Tamron SP AF 10-24mm F3.5-4.5 Di II LD Aspherical IF', #22
@@ -179,6 +324,7 @@ $VERSION = '1.75';
     25521.5 => 'Tokina AT-X PRO II AF 28-70mm F2.6-2.8 270', #24
     25521.6 => 'Tamron AF 19-35mm F3.5-4.5', #JD
     25521.7 => 'Angenieux AF 28-70mm F2.6', #JD
+    25521.8 => 'Tokina AT-X 17 AF 17mm F3.5', #27
     25531 => 'Minolta AF 28-135mm F4-4.5 or Sigma Lens',
     25531.1 => 'Sigma ZOOM-alpha 35-135mm F3.5-4.5', #16
     25531.2 => 'Sigma 28-105mm F2.8-4 Aspherical', #JD
@@ -189,45 +335,56 @@ $VERSION = '1.75';
     25551.3 => 'Sigma 75-200mm F2.8-3.5', #22
     25561 => 'Minolta AF 135mm F2.8',
     25571 => 'Minolta/Sony AF 28mm F2.8', # Sony added (ref 18)
-    # 25571 => 'Sony 28mm F2.8 (SAL-28F28)' (ref 18)
+    # 25571 => 'Sony 28mm F2.8 (SAL28F28)', (ref 18/25)
     25581 => 'Minolta AF 24-50mm F4',
     25601 => 'Minolta AF 100-200mm F4.5',
     25611 => 'Minolta AF 75-300mm F4.5-5.6 or Sigma Lens', #13
-    25611.1 => 'Sigma 70-300mm F4-5.6 DL Macro', #12
+    25611.1 => 'Sigma 70-300mm F4-5.6 DL Macro', #12 (also DG version, ref 27)
     25611.2 => 'Sigma 300mm F4 APO Macro', #3/7
     25611.3 => 'Sigma AF 500mm F4.5 APO', #JD
     25611.4 => 'Sigma AF 170-500mm F5-6.3 APO Aspherical', #JD
     25611.5 => 'Tokina AT-X AF 300mm F4', #JD
     25611.6 => 'Tokina AT-X AF 400mm F5.6 SD', #22
     25611.7 => 'Tokina AF 730 II 75-300mm F4.5-5.6', #JD
+    25611.8 => 'Sigma 800mm F5.6 APO', #http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3472.0.html
+    25611.9 => 'Sigma AF 400mm F5.6 APO Macro', #27
     25621 => 'Minolta AF 50mm F1.4 [New]', # original and New, not Sony (ref 13/18)
     25631 => 'Minolta AF 300mm F2.8 APO or Sigma Lens', # changed G to APO (ref 13)
     25631.1 => 'Sigma AF 50-500mm F4-6.3 EX DG APO', #JD
-    25631.2 => 'Sigma AF 170-500mm F5-6.3 APO Aspherical', #JD
+    25631.2 => 'Sigma AF 170-500mm F5-6.3 APO Aspherical', #JD (also DG version, ref 27)
     25631.3 => 'Sigma AF 500mm F4.5 EX DG APO', #JD
     25631.4 => 'Sigma 400mm F5.6 APO', #22
     25641 => 'Minolta AF 50mm F2.8 Macro or Sigma Lens',
     25641.1 => 'Sigma 50mm F2.8 EX Macro', #11
     25651 => 'Minolta AF 600mm F4',
-    25661 => 'Minolta AF 24mm F2.8',
+    25661 => 'Minolta AF 24mm F2.8 or Sigma Lens',
+    25661.1 => 'Sigma 17-35mm F2.8-4 EX Aspherical', #http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3789.msg17679.html#msg17679
     25721 => 'Minolta/Sony AF 500mm F8 Reflex',
+    # 25721 => 'Sony 500mm F8 Reflex (SAL500F80)', (ref 25)
     25781 => 'Minolta/Sony AF 16mm F2.8 Fisheye or Sigma Lens', # Sony added (ref 13/18)
-    # 25781 => 'Sony 16mm F2.8 Fisheye (SAL-16F28)' (ref 18)
+    # 25781 => 'Sony 16mm F2.8 Fisheye (SAL16F28)', (ref 18/25)
     25781.1 => 'Sigma 8mm F4 EX [DG] Fisheye',
     25781.2 => 'Sigma 14mm F3.5',
     25781.3 => 'Sigma 15mm F2.8 Fisheye', #JD (writes 16mm to EXIF)
-    25791 => 'Minolta/Sony AF 20mm F2.8', # Sony added (ref 11)
+    25791 => 'Minolta/Sony AF 20mm F2.8 or Tokina Lens', # Sony added (ref 11)
+    # 25791 => 'Sony 20mm F2.8 (SAL20F28)', (ref 25)
+    25791.1 => 'Tokina AT-X Pro DX 11-16mm F2.8', #http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3593.0.html
     25811 => 'Minolta AF 100mm F2.8 Macro [New] or Sigma or Tamron Lens', # not Sony (ref 13/18)
     25811.1 => 'Sigma AF 90mm F2.8 Macro', #JD
     25811.2 => 'Sigma AF 105mm F2.8 EX [DG] Macro', #JD
     25811.3 => 'Sigma 180mm F5.6 Macro',
-    25811.4 => 'Tamron 90mm F2.8 Macro',
+    25811.4 => 'Sigma 180mm F3.5 EX DG Macro', #http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3789.msg17679.html#msg17679
+    25811.5 => 'Tamron 90mm F2.8 Macro',
     25851 => 'Beroflex 35-135mm F3.5-4.5', #16
     25858 => 'Minolta AF 35-105mm F3.5-4.5 New or Tamron Lens',
     25858.1 => 'Tamron 24-135mm F3.5-5.6',
     25881 => 'Minolta AF 70-210mm F3.5-4.5',
     25891 => 'Minolta AF 80-200mm F2.8 APO or Tokina Lens',
     25891.1 => 'Tokina 80-200mm F2.8',
+    # 25901 - Note: only get this with older 1.4x and lenses with 5-digit LensTypes (ref 27)
+    # 25901 - also "Minolta AF 200mm F2.8 HS-APO G + Minolta AF 1.4x APO"
+    25901 => 'Minolta AF 200mm F2.8 G APO + Minolta AF 1.4x APO or Other Lens + 1.4x', #26
+    25901.1 => 'Minolta AF 600mm F4 HS-APO G + Minolta AF 1.4x APO', #27
     25911 => 'Minolta AF 35mm F1.4', #(from Sony list) (not G as per ref 13)
     25921 => 'Minolta AF 85mm F1.4 G (D)',
     25931 => 'Minolta AF 200mm F2.8 G APO',
@@ -235,6 +392,10 @@ $VERSION = '1.75';
     25961 => 'Minolta AF 28mm F2',
     25971 => 'Minolta AF 35mm F2 [New]', #13
     25981 => 'Minolta AF 100mm F2',
+    # 26011 - Note: only get this with older 2x and lenses with 5-digit LensTypes (ref 27)
+    # 26011 - also "Minolta AF 200mm F2.8 HS-APO G + Minolta AF 2x APO"
+    26011 => 'Minolta AF 200mm F2.8 G APO + Minolta AF 2x APO or Other Lens + 2x', #26
+    26011.1 => 'Minolta AF 600mm F4 HS-APO G + Minolta AF 2x APO', #27
     26041 => 'Minolta AF 80-200mm F4.5-5.6',
     26051 => 'Minolta AF 35-80mm F4-5.6', #(from Sony list)
     26061 => 'Minolta AF 100-300mm F4.5-5.6', # not (D) (ref 13/18)
@@ -270,15 +431,45 @@ $VERSION = '1.75';
     45741.3 => 'Tokina 300mm F2.8 x2',
     45751 => '1.4x Teleconverter', #18
     45851 => 'Tamron SP AF 300mm F2.8 LD IF', #11
+    45871 => 'Tamron AF 70-210mm F2.8 SP LD', #Fabio Suprani
     # all M42-type lenses give a value of 65535 (and FocalLength=0, FNumber=1)
-    65535 => 'T-Mount or Other Lens or no lens', #JD
-    65535.1 => 'Arax MC 35mm F2.8 Tilt+Shift', #JD
-    65535.2 => 'Arax MC 80mm F2.8 Tilt+Shift', #JD
-    65535.3 => 'Zenitar MF 16mm F2.8 Fisheye M42', #JD
-    65535.4 => 'Samyang 500mm Mirror F8.0', #19
-    65535.5 => 'Pentacon Auto 135mm F2.8', #19
-    65535.6 => 'Pentacon Auto 29mm F2.8', #19
-    65535.7 => 'Helios 44-2 58mm F2.0', #19
+    65535 => 'E-Mount, T-Mount, Other Lens or no lens', #JD/25
+    65535.1  => 'Sony E 16mm F2.8', #PH (SEL16F28)
+    65535.2  => 'Sony E 20mm F2.8', #PH (NC) (SEL20F28)
+    65535.3  => 'Sony E 24mm F1.8 ZA', #PH (SEL24F18Z)
+    65535.4  => 'Sony E 30mm F3.5 Macro', #25 (SEL30M35)
+    65535.5  => 'Sony E 35mm F1.8 OSS', #25 (SEL35F18)
+    65535.6  => 'Sony E 50mm F1.8 OSS', #PH (SEL50F18)
+    65535.7  => 'Sony E 10-18mm F4 OSS', #PH (SEL1018)
+    65535.8  => 'Sony E PZ 16-50mm F3.5-5.6 OSS', #PH (SELP1650)
+    65535.9  => 'Sony E 18-55mm F3.5-5.6 OSS', #PH (SEL1855)
+   '65535.10'=> 'Sony E 18-200mm F3.5-6.3 OSS', #PH (SEL18200) (also "LE" and "PZ" models, SEL18200LE and SELP18200)
+   '65535.11' => 'Sony E 55-210mm F4.5-6.3 OSS', #PH (SEL55210)
+    # <-- insert new Sony lenses here and bump down 3rd party lens ID's -->
+   '65535.12' => 'Sigma 19mm F2.8 EX DN', #25
+   '65535.13' => 'Sigma 30mm F2.8 EX DN', #25
+   '65535.14' => 'Tamron 18-200mm F3.5-6.3 Di III VC', #25
+   '65535.15' => 'Arax MC 35mm F2.8 Tilt+Shift', #JD
+   '65535.16' => 'Arax MC 80mm F2.8 Tilt+Shift', #JD
+   '65535.17' => 'Zenitar MF 16mm F2.8 Fisheye M42', #JD
+   '65535.18' => 'Samyang 500mm Mirror F8.0', #19
+   '65535.19' => 'Pentacon Auto 135mm F2.8', #19
+   '65535.20' => 'Pentacon Auto 29mm F2.8', #19
+   '65535.21' => 'Helios 44-2 58mm F2.0', #19
+);
+
+%minoltaTeleconverters = (
+    0x00 => 'None',
+    0x04 => 'Minolta/Sony AF 1.4x APO (D) (0x04)', # (Andy Johnson, A77 APO and APO D)
+    0x05 => 'Minolta/Sony AF 2x APO (D) (0x05)', # (Andy Johnson, A77 APO D)
+    0x48 => 'Minolta/Sony AF 2x APO (D)',
+    # 0x48 => 'Sony 2x Teleconverter (SAL20TC)', (ref 25)
+    0x50 => 'Minolta AF 2x APO II',
+    0x60 => 'Minolta AF 2x APO',#26
+    0x88 => 'Minolta/Sony AF 1.4x APO (D)',
+    # 0x88 => 'Sony 1.4x Teleconverter (SAL14TC)', (ref 25)
+    0x90 => 'Minolta AF 1.4x APO II',
+    0xa0 => 'Minolta AF 1.4x APO',#26
 );
 
 %minoltaColorMode = (
@@ -309,12 +500,18 @@ $VERSION = '1.75';
     6 => 'B&W',
     7 => 'Adobe RGB',
     12 => 'Neutral', # Sony
+    13 => 'Clear', #25 (NC)
+    14 => 'Deep', #25
+    15 => 'Light', #25 (NC)
+    16 => 'Autumn Leaves', #25 (NC)
+    17 => 'Sepia', #25
     100 => 'Neutral', #JD
     101 => 'Clear', #JD
     102 => 'Deep', #JD
     103 => 'Light', #JD
     104 => 'Night View', #JD
     105 => 'Autumn Leaves', #JD
+    0xffffffff => 'n/a', #PH
 );
 
 %minoltaSceneMode = (
@@ -328,7 +525,7 @@ $VERSION = '1.75';
     7 => 'Night Portrait', #JD
     8 => 'Macro',
     9 => 'Super Macro',
-    16 => 'Auto',
+    16 => 'Auto', # (RX100 'Intelligent Auto' - PH)
     17 => 'Night View/Portrait',
     18 => 'Sweep Panorama', #PH (SLT-A55V)
     19 => 'Handheld Night Shot', #PH
@@ -336,6 +533,12 @@ $VERSION = '1.75';
     21 => 'Cont. Priority AE', #PH
     22 => 'Auto+',
     23 => '3D Sweep Panorama', #PH (SLT-A55V)
+    24 => 'Superior Auto', #28
+    25 => 'High Sensitivity', #28
+    26 => 'Fireworks', #28
+    27 => 'Food', #28
+    28 => 'Pet', #28
+    0xffff => 'n/a', #PH
 );
 
 my %exposureIndicator = (
@@ -365,6 +568,22 @@ my %exposureIndicator = (
 
 my %onOff = ( 0 => 'On', 1 => 'Off' );
 my %offOn = ( 0 => 'Off', 1 => 'On' );
+
+# tag information for AFStatus tags (ref 20)
+my %afStatusInfo = (
+    Format => 'int16s',
+    # 0=in focus, -32768=out of focus, -ve=front focus, +ve=back focus
+    PrintConvColumns => 2,
+    PrintConv => {
+        0 => 'In Focus',
+        -32768 => 'Out of Focus',
+        OTHER => sub {
+            my ($val, $inv) = @_;
+            $inv and $val =~ /([-+]?\d+)/, return $1;
+            return $val < 0 ? "Front Focus ($val)" : "Back Focus (+$val)";
+        },
+    },
+);
 
 # Minolta tag table
 %Image::ExifTool::Minolta::Main = (
@@ -400,17 +619,34 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
             ByteOrder => 'BigEndian',
         },
     },
+    0x0010 => { #20 (count: 256)
+        Name => 'CameraInfoA100',
+        Condition => '$$self{Model} eq "DSLR-A100"',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Minolta::CameraInfoA100',
+            ByteOrder => 'LittleEndian',
+        },
+    },
     # it appears that image stabilization is on if this tag exists (ref 2),
     # but it is an 8kB binary data block!
-    0x0018 => {
-        Name => 'ImageStabilization',
-        Condition => '$self->{Model} =~ /^DiMAGE (A1|A2|X1)$/',
-        Notes => q{
-            a block of binary data which exists in DiMAGE A2 (and A1/X1?) images only if
-            image stabilization is enabled
+    0x0018 => [
+        {
+            Name => 'ISInfoA100',
+            Condition => '$self->{Model} eq "DSLR-A100"',
+            SubDirectory => {
+                TagTable => 'Image::ExifTool::Minolta::ISInfoA100',
+                ByteOrder => 'BigEndian',
+            },
+        },{
+            Name => 'ImageStabilization',
+            Condition => '$self->{Model} =~ /^DiMAGE (A1|A2|X1)$/',
+            Notes => q{
+                a block of binary data which exists in DiMAGE A2 (and A1/X1?) images only if
+                image stabilization is enabled
+            },
+            ValueConv => '"On"',
         },
-        ValueConv => '"On"',
-    },
+    ],
     0x0020 => {
         Name => 'WBInfoA100',
         Condition => '$$self{Model} eq "DSLR-A100"',
@@ -522,13 +758,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         Name => 'Teleconverter',
         Writable => 'int32u',
         PrintHex => 1,
-        PrintConv => {
-            0x00 => 'None',
-            0x48 => 'Minolta AF 2x APO (D)',
-            0x50 => 'Minolta AF 2x APO II',
-            0x88 => 'Minolta AF 1.4x APO (D)',
-            0x90 => 'Minolta AF 1.4x APO II',
-        },
+        PrintConv => \%minoltaTeleconverters,
     },
     0x0107 => { #8
         Name => 'ImageStabilization',
@@ -560,6 +790,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         Name => 'LensType',
         Writable => 'int32u',
         SeparateTable => 1,
+        ValueConvInv => 'int($val)', # (must truncate decimal part)
         PrintConv => \%minoltaLensTypes,
     },
     # 0x010e - WhiteBalance according to ref #10
@@ -1408,6 +1639,122 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
     },
 );
 
+# Camera settings used by the Sony DSLR-A100 (ref 20)
+%Image::ExifTool::Minolta::CameraInfoA100 = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
+    CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
+    NOTES => 'Camera information for the Sony DSLR-A100.',
+    WRITABLE => 1,
+    PRIORITY => 0, # may not be as reliable as other information
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    FIRST_ENTRY => 0,
+    0x01 => { #PH
+        Name => 'AFSensorActive',
+        PrintConv => {
+            0 => 'Top-Right',
+            1 => 'Bottom-Right',
+            2 => 'Bottom',
+            3 => 'Middle Horizontal',
+            4 => 'Center Vertical',
+            5 => 'Top',
+            6 => 'Top-Left',
+            7 => 'Bottom-Left',
+        },
+    },
+    0x02 => {
+        Name => 'AFStatusActiveSensor',
+        %afStatusInfo,
+        Notes => q{
+            the focus status at shutter release.  May not reflect the status after
+            focusing if the image is focused then recomposed
+        },
+    },
+    0x04 => { Name => 'AFStatusTop-Right',      %afStatusInfo },
+    0x06 => { Name => 'AFStatusBottom-Right',   %afStatusInfo },
+    0x08 => { Name => 'AFStatusBottom',         %afStatusInfo },
+    0x0a => {
+        Name => 'AFStatusMiddleHorizontal',
+        %afStatusInfo,
+        Notes => q{
+            any of the three horizontal sensors at the middle of the focus frame: Left,
+            Center or Right
+        },
+    },
+    0x0c => { Name => 'AFStatusCenterVertical', %afStatusInfo },
+    0x0e => { Name => 'AFStatusTop',            %afStatusInfo },
+    0x10 => { Name => 'AFStatusTop-Left',       %afStatusInfo },
+    0x12 => { Name => 'AFStatusBottom-Left',    %afStatusInfo },
+    0x14 => {
+        Name => 'FocusLocked',
+        # (Focus can be locked in all modes other than Manual and Continuous,
+        # and the latter can be overridden by pushing the Spot AF button)
+        PrintConv => {
+            0 => 'Manual Focus',
+            4 => 'No',
+            16 => 'Continuous Focus',
+            64 => 'Yes',
+        },
+    },
+    0x15 => {
+        Name => 'AFPoint',
+        PrintConvColumns => 2,
+        PrintConv => {
+            0 => 'Auto',
+            1 => 'Center',
+            2 => 'Top',
+            3 => 'Top-Right',
+            4 => 'Right',
+            5 => 'Bottom-Right',
+            6 => 'Bottom',
+            7 => 'Bottom-Left',
+            8 => 'Left',
+            9 => 'Top-Left',
+        },
+    },
+    0x16 => {
+        Name => 'AFMode',
+        PrintConv => {
+            0 => 'DMF',
+            1 => 'AF-S',
+            2 => 'AF-C',
+            3 => 'AF-A',
+        },
+    },
+    0x2d => { Name => 'AFStatusLeft',            %afStatusInfo },
+    0x2f => { Name => 'AFStatusCenterHorizontal',%afStatusInfo },
+    0x31 => { Name => 'AFStatusRight',           %afStatusInfo },
+    0x33 => {
+        Name => 'AFAreaMode',
+        PrintConv => {
+            0 => 'Wide',
+            1 => 'Local',
+            2 => 'Spot',
+        },
+    },
+);
+
+# Image stabilization inforamtion used by the Sony DSLR-A100 (ref 20)
+%Image::ExifTool::Minolta::ISInfoA100 = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
+    CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
+    NOTES => 'Image stabilization information for the Sony DSLR-A100.',
+    WRITABLE => 1,
+    PRIORITY => 0, # may not be as reliable as other information
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    FIRST_ENTRY => 0,
+    0 => {
+        Name => 'ImageStabilization',
+        Format => 'int16u',
+        PrintHex => 1,
+        PrintConv => {
+            0x0000 => 'Off',
+            0x2784 => 'On',
+        },
+    },
+);
+
 # Camera settings used by the Sony DSLR-A100 (ref PH)
 %Image::ExifTool::Minolta::CameraSettingsA100 = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
@@ -1449,48 +1796,49 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         PrintConv => \%offOn,
     },
     0x06 => { #20
-        Name => 'ManualExposureTime',
-        Notes => 'the most recent exposure time set manually by the user',
-        ValueConv => '$val ? 2 ** ((48-$val)/8) : $val',
-        ValueConvInv => '$val ? 48 - 8*log($val)/log(2) : $val',
+        Name => 'ShutterSpeedSetting',
+        Notes => 'used only in M and S exposure modes',
+        ValueConv => '$val ? 2 ** (6 - $val/8) : 0',
+        ValueConvInv => '$val ? int((6 - log($val) / log(2)) * 8 + 0.5) : 0',
         PrintConv => '$val ? Image::ExifTool::Exif::PrintExposureTime($val) : "Bulb"',
         PrintConvInv => 'lc($val) eq "bulb" ? 0 : Image::ExifTool::Exif::ConvertFraction($val)',
     },
     0x07 => { #20
-        Name => 'ManualFNumber',
-        Notes => 'the most recent aperture set manually by the user',
-        ValueConv => '2 ** (($val-8)/16)',
-        ValueConvInv => '8 + 16*log($val)/log(2)',
-        PrintConv => 'sprintf("%.1f",$val)',
+        Name => 'ApertureSetting',
+        Notes => 'used only in M and A exposure modes',
+        ValueConv => '2 ** (($val/8 - 1) / 2)',
+        ValueConvInv => 'int((log($val) * 2 / log(2) + 1) * 8 + 0.5)',
+        PrintConv => 'Image::ExifTool::Exif::PrintFNumber($val)',
         PrintConvInv => '$val',
     },
     0x08 => { #20
         Name => 'ExposureTime',
-        ValueConv => '$val ? 2 ** ((48-$val)/8) : $val',
-        ValueConvInv => '$val ? 48 - 8*log($val)/log(2) : $val',
+        ValueConv => '$val ? 2 ** (6 - $val/8) : 0',
+        ValueConvInv => '$val ? int((6 - log($val) / log(2)) * 8 + 0.5) : 0',
         PrintConv => '$val ? Image::ExifTool::Exif::PrintExposureTime($val) : "Bulb"',
         PrintConvInv => 'lc($val) eq "bulb" ? 0 : Image::ExifTool::Exif::ConvertFraction($val)',
     },
     0x09 => { #15/20
         Name => 'FNumber',
-        ValueConv => '2 ** (($val / 8 - 1) / 2)',
-        ValueConvInv => '$val>0 ? (2*log($val)/log(2)+1) * 8 : undef',
-        PrintConv => 'sprintf("%.1f",$val)',
+        ValueConv => '2 ** (($val/8 - 1) / 2)',
+        ValueConvInv => 'int((log($val) * 2 / log(2) + 1) * 8 + 0.5)',
+        PrintConv => 'Image::ExifTool::Exif::PrintFNumber($val)',
         PrintConvInv => '$val',
     },
     0x0a => { #20
-        Name => 'DriveMode2',
+        Name => 'DriveMode2', # (one of these is probably DriveModeSetting like Sony - PH)
+        PrintHex => 1,
         PrintConv => {
-            0 => 'Self-timer 10 sec',
-            1 => 'Continuous',
-            4 => 'Self-timer 2 sec',
-            5 => 'Single Frame',
-            8 => 'White Balance Bracketing Low',
-            9 => 'White Balance Bracketing High',
-            770 => 'Single-frame Bracketing Low',
-            771 => 'Continous Bracketing Low',
-            1794 => 'Single-frame Bracketing High',
-            1795 => 'Continuous Bracketing High',
+            0x000 => 'Self-timer 10 sec',
+            0x001 => 'Continuous',
+            0x302 => 'Single-frame Bracketing Low',
+            0x702 => 'Single-frame Bracketing High',
+            0x303 => 'Continous Bracketing Low',
+            0x703 => 'Continuous Bracketing High',
+            0x004 => 'Self-timer 2 sec',
+            0x005 => 'Single Frame',
+            0x008 => 'White Balance Bracketing Low',
+            0x009 => 'White Balance Bracketing High',
         },
     },
     0x0b => { #15
@@ -1519,7 +1867,8 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         },
     },
     0x0d => { #20
-        Name => 'LocalAFAreaPoint',
+        Name => 'AFPointSelected', # (v8.88: renamed from LocalAFAreaPoint)
+        # (9-point centre-cross AF system, ref 25)
         PrintConv => {
             1 => 'Center',
             2 => 'Top',
@@ -1550,7 +1899,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         },
     },
     0x10 => { #20
-        Name => 'FlashExposureCompSetting',
+        Name => 'FlashExposureCompSet',
         Description => 'Flash Exposure Comp. Setting',
         # (may differ from FlashExposureComp for flash bracketing shots)
         ValueConv => '$val / 100 - 3',
@@ -1615,6 +1964,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         Name => 'ColorSpace',
         PrintConv => {
             0 => 'sRGB',
+            2 => 'B&W', #PH (A100)
             5 => 'Adobe RGB',
         },
     },
@@ -1978,7 +2328,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         Notes => 'ranges from -2 for green to +2 for magenta',
     },
     0x60 => { #20
-        Name => 'BatteryLevel',
+        Name => 'BatteryState',
         PrintConv => {
             3 => 'Very Low',
             4 => 'Low',
@@ -1997,30 +2347,273 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
     WRITABLE => 1,
     GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
     FIRST_ENTRY => 0,
-    0x96  => { Name => 'WB_RGBLevels',          Format => 'int16u[3]' },
-    0xae  => { Name => 'WB_GBRGLevels',         Format => 'int16u[4]' },
-    0x304 => { Name => 'WB_RBPresetFlash',      Format => 'int16u[2]' },
-    0x308 => { Name => 'WB_RBPresetCoolWhiteF', Format => 'int16u[2]' },
-    0x3e8 => { Name => 'WB_RBPresetTungsten',   Format => 'int16u[2]' },
-    0x3ec => { Name => 'WB_RBPresetDaylight',   Format => 'int16u[2]' },
-    0x3f0 => { Name => 'WB_RBPresetCloudy',     Format => 'int16u[2]' },
-    0x3f4 => { Name => 'WB_RBPresetFlash',      Format => 'int16u[2]' },
-    0x3fc => {
-        Name => 'WB_RedPresetsFluorescent',
+    PRIORITY => 0,
+    0x0e => {
+        Name => 'DriveMode',
+        PrintConv => {
+            0 => 'Self-timer 10 sec',
+            1 => 'Continuous',
+            2 => 'Single-frame Exposure Bracketing',
+            3 => 'Continuous Exposure Bracketing',
+            4 => 'Self-Timer 2 sec',
+            5 => 'Single Frame',
+            8 => 'White Balance Bracketing Low',
+            9 => 'White Balance Bracketing High',
+        },
+    },
+    0x10 => {
+        Name => 'Rotation',
+        PrintConv => {
+            0 => 'Horizontal (normal)',
+            1 => 'Rotate 270 CW',
+            2 => 'Rotate 90 CW',
+        },
+    },
+    0x14 => {
+        Name => 'ImageStabilizationSetting',
+        PrintConv => { 0 => 'Off', 1 => 'On' },
+    },
+    0x15 => {
+        Name => 'DynamicRangeOptimizerMode',
+        PrintConv => {
+            0 => 'Off',
+            1 => 'Standard',
+            2 => 'Advanced',
+        },
+    },
+    0x2a => {
+        Name => 'ExposureCompensationMode',
+        PrintConv => {
+            0 => 'Ambient and Flash',
+            1 => 'Ambient Only',
+        },
+    },
+    0x2b => 'WBBracketShotNumber',
+    0x2c => {
+        Name => 'WhiteBalanceBracketing',
+        PrintConv => {
+            0 => 'Off',
+            1 => 'Low',
+            2 => 'High',
+        },
+    },
+    0x2d => 'ExposureBracketShotNumber',
+    0x31 => {
+        Name => 'FlashFunction',
+        Format => 'int16u',
+        PrintHex => 1,
+        PrintConv => {
+            0x0000 => 'No flash',
+            0x0300 => 'Built-in flash',
+            # (the following refers to an external flash)
+            0x1205 => 'Manual',
+            0x120e => 'Strobe',
+            #0x122e => ?
+            0x128e => 'Fill flash, Pre-flash TTL',
+            0x12ae => 'Bounce flash',
+            0x140e => 'Rear sync, ADI',
+            0x148e => 'Fill flash, ADI',
+            0x1580 => 'Wireless',
+            # 0x17ae => ?
+            0x178e => 'HSS',
+        },
+    },
+    0x34 => {
+        Name => 'ExposureMode',
+        Format => 'int16u',
+        PrintHex => 1,
+        PrintConvColumns => 2,
+        PrintConv => {
+            0x0000 => 'Program',
+            0x0001 => 'Aperture Priority',
+            0x0002 => 'Shutter Priority',
+            0x0003 => 'Manual',
+            0x0004 => 'Auto',
+            0x0005 => 'Program Shift A',
+            0x0006 => 'Program Shift S',
+            0x1013 => 'Portrait',
+            0x1023 => 'Sports',
+            0x1033 => 'Sunset',
+            0x1043 => 'Night View/Portrait',
+            0x1053 => 'Landscape',
+            0x1083 => 'Macro',
+        },
+    },
+    0x36 => {
+        Name => 'ColorMode',
+        Format => 'int16u',
+        PrintConv => {
+            0x00 => 'Standard',
+            0x01 => 'Vivid',
+            0x02 => 'Portrait',
+            0x03 => 'Landscape',
+            0x04 => 'Sunset',
+            0x05 => 'Night View',
+            0x07 => 'B&W',
+            0x08 => 'Adobe RGB',
+        },
+    },
+    0x38 => {
+        Name => 'AverageLV',
+        Format => 'int16u',
+        Notes => 'arithmetic mean of the readings from the 40 honeycomb segments',
+        ValueConv => '($val-106)/8',
+        ValueConvInv => '$val * 8 + 106',
+    },
+    # 0x3a - int16u: Approx FocusDistance in metres (0x0f50=inf)
+    0x3c => {
+        Name => 'FrameNumber',
+        # Numbers > 1 appear in continuous and continuous bracketing drive modes,
+        # as well as WB bracketing.
+    },
+    0x96  => { Name => 'WB_RGBLevels',              Format => 'int16u[3]' },
+    0xae  => { Name => 'WB_GBRGLevels',             Format => 'int16u[4]' },
+    0xc0  => {
+        Name => 'WB_RedLevelsTungsten',
+        Notes => '7 values for adjustments of -3 through +3',
+        Format => 'int16u[7]',
+    },
+    0xce  => { Name => 'WB_BlueLevelsTungsten',     Format => 'int16u[7]' },
+    0xdc  => { Name => 'WB_RedLevelsDaylight',      Format => 'int16u[7]' },
+    0xea  => { Name => 'WB_BlueLevelsDaylight',     Format => 'int16u[7]' },
+    0xf8  => { Name => 'WB_RedLevelsCloudy',        Format => 'int16u[7]' },
+    0x106 => { Name => 'WB_BlueLevelsCloudy',       Format => 'int16u[7]' },
+    0x114 => { Name => 'WB_RedLevelsFlash',         Format => 'int16u[7]' },
+    0x122 => { Name => 'WB_BlueLevelsFlash',        Format => 'int16u[7]' },
+    0x14c => {
+        Name => 'WB_RedLevelsFluorescent',
         Format => 'int16u[7]',
         Notes => q{
-            white balance red presets for fluorescent -2 through +4.  -2=Fluorescent,
+            white balance red presets for fluorescent -2 through +4:  -2=Fluorescent,
             -1=WhiteFluorescent, 0=CoolWhiteFluorescent, +1=DayWhiteFluorescent and
             +3=DaylightFluorescent
         },
     },
-    0x40a => {
-        Name => 'WB_BluePresetsFluorescent',
-        Format => 'int16u[7]',
-        Notes => 'white balance blue presets for fluorescent -2 through +4',
+    0x15a => { Name => 'WB_BlueLevelsFluorescent',  Format => 'int16u[7]' },
+    0x168 => { Name => 'WB_RedLevelsShade',         Format => 'int16u[7]' },
+    0x176 => { Name => 'WB_BlueLevelsShade',        Format => 'int16u[7]' },
+    0x188 => { Name => 'WB_RedLevel6500K',          Format => 'int16u' },
+    0x18a => { Name => 'WB_BlueLevel6500K',         Format => 'int16u' },
+    0x18c => { Name => 'WB_RedLevelCustom',         Format => 'int16u' },
+    0x18e => { Name => 'WB_BlueLevelCustom',        Format => 'int16u' },
+    0x198 => { Name => 'WB_RedLevel3500K',          Format => 'int16u' },
+    0x19a => { Name => 'WB_BlueLevel3500K',         Format => 'int16u' },
+    0x1be => {
+        Name => 'WB_RedLevelsKelvin',
+        Format => 'int16u[75]',
+        Notes => 'values for 2500-9900 K, in increments of 100 K',
     },
-    0x418 => { Name => 'WB_RBPresetShade',                 Format => 'int16u[2]' },
-    0x424 => { Name => 'WB_RBPresetCustom',                Format => 'int16u[2]' },
+    0x254 => { Name => 'WB_BlueLevelsKelvin',       Format => 'int16u[75]' },
+    0x304 => { Name => 'WB_RBLevelsFlash',          Format => 'int16u[2]' },
+    0x308 => { Name => 'WB_RBLevelsCoolWhiteF',     Format => 'int16u[2]' },
+    0x3e8 => { Name => 'WB_RBLevelsTungsten',       Format => 'int16u[2]' },
+    0x3ec => { Name => 'WB_RBLevelsDaylight',       Format => 'int16u[2]' },
+    0x3f0 => { Name => 'WB_RBLevelsCloudy',         Format => 'int16u[2]' },
+    0x3f4 => { Name => 'WB_RBLevelsFlash',          Format => 'int16u[2]' },
+    0x3fc => { Name => 'WB_RedLevelsFluorescent',   Format => 'int16u[7]' },
+    0x40a => { Name => 'WB_BlueLevelsFluorescent',  Format => 'int16u[7]' },
+    0x418 => { Name => 'WB_RBLevelsShade',          Format => 'int16u[2]' },
+    0x420 => { Name => 'WB_RBLevels6500K',          Format => 'int16u[2]' },
+    0x424 => { Name => 'WB_RBLevelsCustom',         Format => 'int16u[2]' },
+    0x430 => { Name => 'WB_RBLevels3500K',          Format => 'int16u[2]' },
+    0x528 => { Name => 'WB_RBLevelsDaylight',       Format => 'int16u[2]' },
+    0x546 => { Name => 'WB_RGBLevels',              Format => 'int16u[3]' },
+    0x628 => {
+        Name => 'AEMeteringSegments',
+        Format => 'int8u[40]',
+        Notes => q{
+            metering values from the 40 honeycomb segments, converted to LV.  The first
+            value is for the outer cell, then the values are given row by row, from top
+            to bottom, with each row scanned left-to-right.  The 21st value is the
+            middle cell, which gives the spot metering
+        },        
+        ValueConv    => sub { join ' ', map( { ($_ - 106) / 8 } split(' ',$_[0]) ) },
+        ValueConvInv => sub { join ' ', map( { int($_ * 8 + 106.5) } split(' ',$_[0]) ) },
+    },
+    0x690 => {
+        Name => 'MeasuredLV',
+        Notes => 'measured light value based on MeteringMode',
+        ValueConv => '($val-106)/8',
+        ValueConvInv => '$val * 8 + 106',
+    },
+    0x691 => {
+        Name => 'BrightnessValue',
+        ValueConv => '($val-106)/8',
+        ValueConvInv => '$val * 8 + 106',
+    },
+    # 0x87f - int8u: 33mm Equivalent magnification (FocusDistance = (1.5 * $val + 1) * FocalLength) (255=inf)
+    0x49b8 => {
+        Name => 'ExposureTime',
+        ValueConv => '$val ? 2 ** (6 - $val/8) : 0',
+        ValueConvInv => '$val ? int((6 - log($val) / log(2)) * 8 + 0.5) : 0',
+        PrintConv => '$val ? Image::ExifTool::Exif::PrintExposureTime($val) : "Bulb"',
+        PrintConvInv => 'lc($val) eq "bulb" ? 0 : Image::ExifTool::Exif::ConvertFraction($val)',
+    },
+    0x49ba => {
+        Name => 'ISO',
+        ValueConv => '2 ** (($val-48)/8) * 100',
+        ValueConvInv => '48 + 8*log($val/100)/log(2)',
+        PrintConv => 'int($val + 0.5)',
+        PrintConvInv => '$val',
+    },
+    0x49bb => { # (http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3688.0.html)
+        # if this value is the 35mm equivalent magnification, then the formula could
+        # be (1.5 * 2**($val/16-5)+1) * FocalLength, but this tends to underestimate
+        # distance by about 18% (ref 20) (255=inf)
+        Name => 'FocusDistance',
+        ValueConv => '2**(($val-126)/16)',
+        ValueConvInv => 'log($val)/log(2)*16+126',
+        PrintConv => '$val > 266 ? "inf" : sprintf("%.2f m", $val)',
+        PrintConvInv => '$val=~s/ ?m//; $val=~/inf/i ? 267 : $val',
+    },
+    0x49bd => {
+        Name => 'LensType',
+        Format => 'int16uRev',
+        SeparateTable => 1,
+        ValueConvInv => 'int($val)', # (must truncate decimal part)
+        PrintConv => \%minoltaLensTypes,
+    },
+    0x49c0 => {
+        Name => 'ExposureCompensation', # (in exposure bracketing, this is the actual value used)
+        Format => 'int8s',
+        ValueConv => '$val / 8',
+        ValueConvInv => '$val * 8',
+        PrintConv => '$val ? sprintf("%+.1f",$val) : $val',
+        PrintConvInv => 'Image::ExifTool::Exif::ConvertFraction($val)',
+    },
+    0x49c1 => {
+        Name => 'FlashExposureComp',
+        Description => 'Flash Exposure Compensation',
+        Format => 'int8s',
+        ValueConv => '$val / 8',
+        ValueConvInv => '$val * 8',
+        PrintConv => '$val ? sprintf("%+.1f",$val) : $val',
+        PrintConvInv => 'Image::ExifTool::Exif::ConvertFraction($val)',
+    },
+    0x49c2 => {
+        Name => 'ImageStabilization',
+        PrintConv => \%offOn,
+    },
+    0x49c3 => {
+        Name => 'BrightnessValue',
+        ValueConv => '($val-106)/8',
+        ValueConvInv => '$val * 8 + 106',
+    },
+    0x49c5 => {
+        Name => 'MaxAperture',
+        ValueConv => '2 ** (($val-8)/16)',
+        ValueConvInv => '8 + 16*log($val)/log(2)',
+        PrintConv => 'sprintf("%.1f",$val)',
+        PrintConvInv => '$val',
+    },
+    # 0x49c6 - gives focal length using same formula as 0x49bb
+    0x49c7 => {
+        Name => 'FNumber',
+        ValueConv => '2 ** (($val-8)/16)',
+        ValueConvInv => '8 + 16*log($val)/log(2)',
+        PrintConv => 'sprintf("%.1f",$val)',
+        PrintConvInv => '$val',
+    },
     0x49dc => {
         Name => 'InternalSerialNumber',
         Format => 'string[12]',
@@ -2199,7 +2792,7 @@ and write Minolta RAW (MRW) images.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -2218,8 +2811,9 @@ under the same terms as Perl itself.
 
 Thanks to Jay Al-Saadi, Niels Kristian Bech Jensen, Shingo Noguchi, Pedro
 Corte-Real, Jeffery Small, Jens Duttke,  Thomas Kassner, Mladen Sever, Olaf
-Ulrich, Lukasz Stelmach and Igal Milchtaich for the information they
-provided, and for everyone who helped with the LensType list.
+Ulrich, Lukasz Stelmach, Igal Milchtaich, Jos Roost and Michael Reitinger
+for the information they provided, and for everyone who helped with the
+LensType list.
 
 =head1 SEE ALSO
 

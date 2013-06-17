@@ -394,7 +394,7 @@ Record: for ($rec=0; ; ++$rec) {
                 next if ref($v) eq 'ARRAY' and not @$v; # ignore empty arrays
                 last if $t == 0x09; # (end of object)
                 if (not $$subTablePtr{$tag} and $tag =~ /^\w+$/) {
-                    Image::ExifTool::AddTagToTable($subTablePtr, $tag, { Name => ucfirst($tag) });
+                    AddTagToTable($subTablePtr, $tag, { Name => ucfirst($tag) });
                     $exifTool->VPrint(1, "  | (adding $tag)\n");
                 }
                 $exifTool->HandleTag($subTablePtr, $tag, $v,
@@ -721,7 +721,7 @@ will add AMF3 support.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

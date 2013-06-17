@@ -396,7 +396,7 @@ sub ProcessRealProperties($$$)
             ($tagName = $tag) =~ s/\s+//g;
             next unless $tagName =~ /^\w+$/;    # ignore crazy names
             $tagInfo = { Name => ucfirst($tagName) };
-            Image::ExifTool::AddTagToTable($tagTablePtr, $tag, $tagInfo);
+            AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
         if ($verbose) {
             $exifTool->VerboseInfo($tag, $tagInfo,
@@ -459,7 +459,7 @@ sub ProcessRealMeta($$$)
             my $tagName = $tag;
             $tagName =~ tr/A-Za-z0-9//dc;
             $tagInfo = { Name => ucfirst($tagName) };
-            Image::ExifTool::AddTagToTable($tagTablePtr, $tag, $tagInfo);
+            AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
         if ($verbose) {
             $format = 'undef' unless defined $format;
@@ -712,7 +712,7 @@ little-endian, but the Real format is big-endian.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

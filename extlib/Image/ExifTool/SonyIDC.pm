@@ -279,7 +279,7 @@ sub ExtractPreviews($)
         if ($grp1 =~ /(\d+)$/) {
             my $tag = "IDCPreviewImage$1";
             unless ($Image::ExifTool::Extra{$tag}) {
-                Image::ExifTool::AddTagToTable(\%Image::ExifTool::Extra, $tag, {
+                AddTagToTable(\%Image::ExifTool::Extra, $tag, {
                     Name => $tag,
                     Groups => { 0 => 'Composite', 1 => 'Composite', 2 => 'Image'},
                 });
@@ -312,11 +312,11 @@ This module is used by Image::ExifTool
 =head1 DESCRIPTION
 
 This module contains definitions required by Image::ExifTool to read and
-write Sony Image Data Converter verson 3.0 metadata in ARW images.
+write Sony Image Data Converter version 3.0 metadata in ARW images.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

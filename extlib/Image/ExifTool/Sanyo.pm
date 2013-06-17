@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.13';
+$VERSION = '1.15';
 
 my %offOn = (
     0 => 'Off',
@@ -121,6 +121,7 @@ my %offOn = (
         Writable => 'int16u',
         PrintConv => \%offOn,
     },
+    # 0x0215 - Flash?
     0x0216 => {
         Name => 'VoiceMemo',
         Writable => 'int16u',
@@ -175,10 +176,16 @@ my %offOn = (
             6 => 'Lamp', #PH
         },
     },
-    0x0223 => {
-        Name => 'ManualFocusDistance',
-        Writable => 'rational64u',
-    },
+    0x0223 => [
+        {
+            Name => 'ManualFocusDistance',
+            Condition => '$format eq "rational64u"',
+            Writable => 'rational64u',
+        }, { #PH
+            Name => 'FaceInfo',
+            SubDirectory => { TagTable => 'Image::ExifTool::Sanyo::FaceInfo' },
+        },
+    ],
     0x0224 => {
         Name => 'SequenceShotInterval',
         Writable => 'int16u',
@@ -211,6 +218,26 @@ my %offOn = (
         Name => 'DataDump',
         Writable => 0,
         Binary => 1,
+    },
+);
+
+# face detection information (ref PH)
+%Image::ExifTool::Sanyo::FaceInfo = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
+    CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
+    WRITABLE => 1,
+    FORMAT => 'int32u',
+    FIRST_ENTRY => 0,
+    0 => 'FacesDetected',
+    4 => {
+        Name => 'FacePosition',
+        Format => 'int32u[4]',
+        Notes => q{
+            left, top, right and bottom coordinates of detected face in an unrotated
+            640-pixel-wide image, with increasing Y downwards
+        },
     },
 );
 
@@ -323,31 +350,36 @@ my %offOn = (
             return $val;
         },
     },
-    0xfd => {
-        Name => 'ThumbnailLength',
+    0xf1 => {
+        Name => 'Thumbnail',
         Condition => '$$self{SanyoSledder0xd1}',
-        Format => 'int32u',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Sanyo::Thumbnail',
+            Base => '$start',
+        },
     },
-    0xfe => {
-        Name => 'ThumbnailLength',
+    0xf2 => {
+        Name => 'Thumbnail',
         Condition => '$$self{SanyoSledder0xd2}',
-        Format => 'int32u',
-    },
-    0x101 => {
-        Name => 'ThumbnailOffset',
-        Condition => '$$self{SanyoSledder0xd1}',
-        IsOffset => 1,
-        Format => 'int32u',
-        RawConv => '$val + 0xf1',
-    },
-    0x102 => {
-        Name => 'ThumbnailOffset',
-        Condition => '$$self{SanyoSledder0xd2}',
-        IsOffset => 1,
-        Format => 'int32u',
-        RawConv => '$val + 0xf2',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Sanyo::Thumbnail',
+            Base => '$start',
+        },
     },
 );
+
+# thumbnail image information found in MP4 videos (similar in Olympus,Samsung,Sanyo)
+%Image::ExifTool::Sanyo::Thumbnail = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    FIRST_ENTRY => 0,
+    FORMAT => 'int32u',
+    1 => 'ThumbnailWidth',
+    2 => 'ThumbnailHeight',
+    3 => 'ThumbnailLength',
+    4 => { Name => 'ThumbnailOffset', IsOffset => 1 },
+);
+
 
 #------------------------------------------------------------------------------
 # Patch incorrect offsets in J1, J2, J4, S1, S3 and S4 maker notes
@@ -386,7 +418,7 @@ Sanyo maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

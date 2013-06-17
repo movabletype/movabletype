@@ -15,7 +15,7 @@ package Image::ExifTool::Shortcuts;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.40';
+$VERSION = '1.45';
 
 # this is a special table used to define command-line shortcuts
 %Image::ExifTool::Shortcuts::Main = (
@@ -111,9 +111,11 @@ $VERSION = '1.40';
         'MakerNoteCanon',
         'MakerNoteCasio',
         'MakerNoteCasio2',
+        'MakerNoteFLIR',
         'MakerNoteFujiFilm',
         'MakerNoteGE',
         'MakerNoteGE2',
+        'MakerNoteHasselblad',
         'MakerNoteHP',
         'MakerNoteHP2',
         'MakerNoteHP4',
@@ -156,6 +158,8 @@ $VERSION = '1.40';
         'MakerNotePentax2',
         'MakerNotePentax3',
         'MakerNotePentax4',
+        'MakerNotePentax5',
+        'MakerNotePentax6',
         'MakerNotePhaseOne',
         'MakerNoteReconyx',
         'MakerNoteRicoh',
@@ -174,6 +178,7 @@ $VERSION = '1.40';
         'MakerNoteSonyEricsson',
         'MakerNoteSonySRF',
         'MakerNoteUnknownText',
+        'MakerNoteUnknownBinary',
         'MakerNoteUnknown',
     ],
     # "unsafe" tags we normally don't copy in JPEG images, defined
@@ -274,7 +279,7 @@ FocalLengthIn35mmFormat.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

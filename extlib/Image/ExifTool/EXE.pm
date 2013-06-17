@@ -4,6 +4,7 @@
 # Description:  Read meta information of various executable file formats
 #
 # Revisions:    2008/08/28 - P. Harvey Created
+#               2011/07/12 - P. Harvey Added CHM (ok, not EXE, but it fits here)
 #
 # References:   1) http://www.openwatcom.org/ftp/devel/docs/pecoff.pdf
 #               2) http://support.microsoft.com/kb/65122
@@ -20,7 +21,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.04';
+$VERSION = '1.06';
 
 sub ProcessPEResources($$);
 sub ProcessPEVersion($$);
@@ -48,6 +49,122 @@ my %resourceType = (
     22 => 'Animated Icon',
     23 => 'HTML',
     24 => 'Manifest',
+);
+
+my %languageCode = (
+    '0000' => 'Neutral',
+    '007F' => 'Invariant',
+    '0400' => 'Process default',
+    '0401' => 'Arabic',
+    '0402' => 'Bulgarian',
+    '0403' => 'Catalan',
+    '0404' => 'Chinese (Traditional)',
+    '0405' => 'Czech',
+    '0406' => 'Danish',
+    '0407' => 'German',
+    '0408' => 'Greek',
+    '0409' => 'English (U.S.)',
+    '040A' => 'Spanish (Castilian)',
+    '040B' => 'Finnish',
+    '040C' => 'French',
+    '040D' => 'Hebrew',
+    '040E' => 'Hungarian',
+    '040F' => 'Icelandic',
+    '0410' => 'Italian',
+    '0411' => 'Japanese',
+    '0412' => 'Korean',
+    '0413' => 'Dutch',
+    '0414' => 'Norwegian (Bokml)',
+    '0415' => 'Polish',
+    '0416' => 'Portuguese (Brazilian)',
+    '0417' => 'Rhaeto-Romanic',
+    '0418' => 'Romanian',
+    '0419' => 'Russian',
+    '041A' => 'Croato-Serbian (Latin)',
+    '041B' => 'Slovak',
+    '041C' => 'Albanian',
+    '041D' => 'Swedish',
+    '041E' => 'Thai',
+    '041F' => 'Turkish',
+    '0420' => 'Urdu',
+    # 0421-0493 ref 6
+    '0421' => 'Indonesian',
+    '0422' => 'Ukrainian',
+    '0423' => 'Belarusian',
+    '0424' => 'Slovenian',
+    '0425' => 'Estonian',
+    '0426' => 'Latvian',
+    '0427' => 'Lithuanian',
+    '0428' => 'Maori',
+    '0429' => 'Farsi',
+    '042a' => 'Vietnamese',
+    '042b' => 'Armenian',
+    '042c' => 'Azeri',
+    '042d' => 'Basque',
+    '042e' => 'Sorbian',
+    '042f' => 'Macedonian',
+    '0430' => 'Sutu',
+    '0431' => 'Tsonga',
+    '0432' => 'Tswana',
+    '0433' => 'Venda',
+    '0434' => 'Xhosa',
+    '0435' => 'Zulu',
+    '0436' => 'Afrikaans',
+    '0437' => 'Georgian',
+    '0438' => 'Faeroese',
+    '0439' => 'Hindi',
+    '043a' => 'Maltese',
+    '043b' => 'Saami',
+    '043c' => 'Gaelic',
+    '043e' => 'Malay',
+    '043f' => 'Kazak',
+    '0440' => 'Kyrgyz',
+    '0441' => 'Swahili',
+    '0443' => 'Uzbek',
+    '0444' => 'Tatar',
+    '0445' => 'Bengali',
+    '0446' => 'Punjabi',
+    '0447' => 'Gujarati',
+    '0448' => 'Oriya',
+    '0449' => 'Tamil',
+    '044a' => 'Telugu',
+    '044b' => 'Kannada',
+    '044c' => 'Malayalam',
+    '044d' => 'Assamese',
+    '044e' => 'Marathi',
+    '044f' => 'Sanskrit',
+    '0450' => 'Mongolian',
+    '0456' => 'Galician',
+    '0457' => 'Konkani',
+    '0458' => 'Manipuri',
+    '0459' => 'Sindhi',
+    '045a' => 'Syriac',
+    '0460' => 'Kashmiri',
+    '0461' => 'Nepali',
+    '0465' => 'Divehi',
+    '047f' => 'Invariant',
+    '048f' => 'Esperanto',
+    '0490' => 'Walon',
+    '0491' => 'Cornish',
+    '0492' => 'Welsh',
+    '0493' => 'Breton',
+    '0800' => 'Neutral 2',
+    '0804' => 'Chinese (Simplified)',
+    '0807' => 'German (Swiss)',
+    '0809' => 'English (British)',
+    '080A' => 'Spanish (Mexican)',
+    '080C' => 'French (Belgian)',
+    '0810' => 'Italian (Swiss)',
+    '0813' => 'Dutch (Belgian)',
+    '0814' => 'Norwegian (Nynorsk)',
+    '0816' => 'Portuguese',
+    '081A' => 'Serbo-Croatian (Cyrillic)',
+    '0C07' => 'German (Austrian)',
+    '0C09' => 'English (Australian)',
+    '0C0A' => 'Spanish (Modern)',
+    '0C0C' => 'French (Canadian)',
+    '1009' => 'English (Canadian)',
+    '100C' => 'French (Swiss)',
 );
 
 # Information extracted from PE COFF (Windows EXE) file header
@@ -153,7 +270,7 @@ my %resourceType = (
             1 => 'Native',
             2 => 'Windows GUI',
             3 => 'Windows command line',
-            5 => 'OS/2 Command line', #5
+            5 => 'OS/2 command line', #5
             7 => 'POSIX command line',
             9 => 'Windows CE GUI',
             10 => 'EFI application',
@@ -264,121 +381,8 @@ my %resourceType = (
         # (also see ftp://ftp.dyu.edu.tw/pub/cpatch/faq/tech/tech_nlsnt.txt)
         # (not a complete set)
         PrintString => 1,
-        PrintConv => {
-            '0000' => 'Neutral',
-            '007F' => 'Invariant',
-            '0400' => 'Process default',
-            '0401' => 'Arabic',
-            '0402' => 'Bulgarian',
-            '0403' => 'Catalan',
-            '0404' => 'Chinese (Traditional)',
-            '0405' => 'Czech',
-            '0406' => 'Danish',
-            '0407' => 'German',
-            '0408' => 'Greek',
-            '0409' => 'English (U.S.)',
-            '040A' => 'Spanish (Castilian)',
-            '040B' => 'Finnish',
-            '040C' => 'French',
-            '040D' => 'Hebrew',
-            '040E' => 'Hungarian',
-            '040F' => 'Icelandic',
-            '0410' => 'Italian',
-            '0411' => 'Japanese',
-            '0412' => 'Korean',
-            '0413' => 'Dutch',
-            '0414' => 'Norwegian (Bokml)',
-            '0415' => 'Polish',
-            '0416' => 'Portuguese (Brazilian)',
-            '0417' => 'Rhaeto-Romanic',
-            '0418' => 'Romanian',
-            '0419' => 'Russian',
-            '041A' => 'Croato-Serbian (Latin)',
-            '041B' => 'Slovak',
-            '041C' => 'Albanian',
-            '041D' => 'Swedish',
-            '041E' => 'Thai',
-            '041F' => 'Turkish',
-            '0420' => 'Urdu',
-            # 0421-0493 ref 6
-            '0421' => 'Indonesian',
-            '0422' => 'Ukrainian',
-            '0423' => 'Belarusian',
-            '0424' => 'Slovenian',
-            '0425' => 'Estonian',
-            '0426' => 'Latvian',
-            '0427' => 'Lithuanian',
-            '0428' => 'Maori',
-            '0429' => 'Farsi',
-            '042a' => 'Vietnamese',
-            '042b' => 'Armenian',
-            '042c' => 'Azeri',
-            '042d' => 'Basque',
-            '042e' => 'Sorbian',
-            '042f' => 'Macedonian',
-            '0430' => 'Sutu',
-            '0431' => 'Tsonga',
-            '0432' => 'Tswana',
-            '0433' => 'Venda',
-            '0434' => 'Xhosa',
-            '0435' => 'Zulu',
-            '0436' => 'Afrikaans',
-            '0437' => 'Georgian',
-            '0438' => 'Faeroese',
-            '0439' => 'Hindi',
-            '043a' => 'Maltese',
-            '043b' => 'Saami',
-            '043c' => 'Gaelic',
-            '043e' => 'Malay',
-            '043f' => 'Kazak',
-            '0440' => 'Kyrgyz',
-            '0441' => 'Swahili',
-            '0443' => 'Uzbek',
-            '0444' => 'Tatar',
-            '0445' => 'Bengali',
-            '0446' => 'Punjabi',
-            '0447' => 'Gujarati',
-            '0448' => 'Oriya',
-            '0449' => 'Tamil',
-            '044a' => 'Telugu',
-            '044b' => 'Kannada',
-            '044c' => 'Malayalam',
-            '044d' => 'Assamese',
-            '044e' => 'Marathi',
-            '044f' => 'Sanskrit',
-            '0450' => 'Mongolian',
-            '0456' => 'Galician',
-            '0457' => 'Konkani',
-            '0458' => 'Manipuri',
-            '0459' => 'Sindhi',
-            '045a' => 'Syriac',
-            '0460' => 'Kashmiri',
-            '0461' => 'Nepali',
-            '0465' => 'Divehi',
-            '047f' => 'Invariant',
-            '048f' => 'Esperanto',
-            '0490' => 'Walon',
-            '0491' => 'Cornish',
-            '0492' => 'Welsh',
-            '0493' => 'Breton',
-            '0800' => 'Neutral 2',
-            '0804' => 'Chinese (Simplified)',
-            '0807' => 'German (Swiss)',
-            '0809' => 'English (British)',
-            '080A' => 'Spanish (Mexican)',
-            '080C' => 'French (Belgian)',
-            '0810' => 'Italian (Swiss)',
-            '0813' => 'Dutch (Belgian)',
-            '0814' => 'Norwegian (Nynorsk)',
-            '0816' => 'Portuguese',
-            '081A' => 'Serbo-Croatian (Cyrillic)',
-            '0C07' => 'German (Austrian)',
-            '0C09' => 'English (Australian)',
-            '0C0A' => 'Spanish (Modern)',
-            '0C0C' => 'French (Canadian)',
-            '1009' => 'English (Canadian)',
-            '100C' => 'French (Swiss)',
-        },
+        SeparateTable => 1,
+        PrintConv => \%languageCode,
     },
     CharacterSet => {
         Notes => 'extracted from the StringFileInfo value',
@@ -698,6 +702,43 @@ my %resourceType = (
     },
 );
 
+# Microsoft compiled help format (ref http://www.russotto.net/chm/chmformat.html)
+%Image::ExifTool::EXE::CHM = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 2 => 'Other' },
+    NOTES => 'Tags extracted from Microsoft Compiled HTML files.',
+    FORMAT => 'int32u',
+    1 => { Name => 'CHMVersion' },
+    # 2 - total header length
+    # 3 - 1
+    # 4 - low bits of date/time value plus 42 (ref http://www.nongnu.org/chmspec/latest/ITSF.html)
+    5 => {
+        Name => 'LanguageCode',
+        SeparateTable => 1,
+        ValueConv => 'sprintf("%.4X", $val)',
+        PrintConv => \%languageCode,
+    },
+);
+
+#------------------------------------------------------------------------------
+# Extract information from a CHM file
+# Inputs: 0) ExifTool object reference, 1) dirInfo reference
+# Returns: 1 on success, 0 if this wasn't a valid CHM file
+sub ProcessCHM($$)
+{
+    my ($exifTool, $dirInfo) = @_;
+    my $raf = $$dirInfo{RAF};
+    my $buff;
+
+    return 0 unless $raf->Read($buff, 56) == 56 and
+        $buff =~ /^ITSF.{20}\x10\xfd\x01\x7c\xaa\x7b\xd0\x11\x9e\x0c\0\xa0\xc9\x22\xe6\xec/s;
+    my $tagTablePtr = GetTagTable('Image::ExifTool::EXE::CHM');
+    $exifTool->SetFileType();
+    SetByteOrder('II');
+    $exifTool->ProcessDirectory({ DataPt => \$buff }, $tagTablePtr);
+    return 1;
+}
+
 #------------------------------------------------------------------------------
 # Read Unicode string (null terminated) from resource
 # Inputs: 0) data ref, 1) start offset, 2) optional ExifTool object ref
@@ -783,7 +824,7 @@ sub ProcessPEVersion($$)
                     my $name = $tag;
                     $name =~ tr/-_a-zA-Z0-9//dc; # remove illegal characters
                     next unless length $name;
-                    Image::ExifTool::AddTagToTable($tagTablePtr, $tag, { Name => $name });
+                    AddTagToTable($tagTablePtr, $tag, { Name => $name });
                 }
                 # get tag value (converted to current Charset)
                 if ($valLen) {
@@ -948,13 +989,12 @@ sub ProcessEXE($$)
         SetByteOrder('II');
         my ($cblp, $cp, $lfarlc, $lfanew) = unpack('x2v2x18vx34V', $buff);
         my $fileSize = ($cp - ($cblp ? 1 : 0)) * 512 + $cblp;
-        return 0 if $fileSize < 0x40 or $fileSize < $lfarlc;
-        # read the Windows PE header
-        if ($lfarlc == 0x40 and $fileSize > $lfanew + 2 and
-            # read the Windows NE, PE or LE (virtual device driver) header
-            $raf->Seek($lfanew, 0) and $raf->Read($buff, 0x40) and
-            $buff =~ /^(NE|PE|LE)/)
-        {
+        #(patch to accommodate observed 64-bit files)
+        #return 0 if $fileSize < 0x40 or $fileSize < $lfarlc;
+        return 0 if $fileSize < 0x40;
+        # read the Windows NE, PE or LE (virtual device driver) header
+        #if ($lfarlc == 0x40 and $fileSize > $lfanew + 2 and ...
+        if ($raf->Seek($lfanew, 0) and $raf->Read($buff, 0x40) and $buff =~ /^(NE|PE|LE)/) {
             if ($1 eq 'NE') {
                 if ($size >= 0x40) { # NE header is 64 bytes (ref 2)
                     # check for DLL
@@ -973,8 +1013,10 @@ sub ProcessEXE($$)
                 #  20 int16u SizeOfOptionalHeader
                 #  22 int16u Characteristics
                 if ($size >= 24) {  # PE header is 24 bytes (plus optional header)
+                    my $machine = $Image::ExifTool::EXE::Main{0}{PrintConv}{Get16u(\$buff, 4)} || '';
+                    my $winType = $machine =~ /64/ ? 'Win64' : 'Win32';
                     my $flags = Get16u(\$buff, 22);
-                    $exifTool->SetFileType('Win32 ' . ($flags & 0x2000 ? 'DLL' : 'EXE'));
+                    $exifTool->SetFileType($winType . ' ' . ($flags & 0x2000 ? 'DLL' : 'EXE'));
                     # read the rest of the optional header if necessary
                     my $optSize = Get16u(\$buff, 20);
                     my $more = $optSize + 24 - $size;
@@ -1152,7 +1194,7 @@ library files.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -14,7 +14,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '1.34';
+$VERSION = '1.39';
 
 sub ProcessMIE($$);
 sub ProcessMIEGroup($$$);
@@ -151,6 +151,9 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         these tags, units may be added in brackets immediately following the value
         (ie. C<55(mi/h)>).  If no units are specified, the default units are
         written.
+
+        See L<http://owl.phy.queensu.ca/~phil/exiftool/MIE1.1-20070121.pdf> for the
+        official MIE specification.
     },
    '0Type' => {
         Name => 'SubfileType',
@@ -826,13 +829,13 @@ sub MIEGroupFormat(;$)
 # ReadValue() with added support for UTF formats (utf8, utf16 and utf32)
 # Inputs: 0) data reference, 1) value offset, 2) format string,
 #         3) number of values (or undef to use all data)
-#         4) valid data length relative to offset
+#         4) valid data length relative to offset, 5) returned rational ref
 # Returns: converted value, or undefined if data isn't there
 #          or list of values in list context
 # Notes: all string formats are converted to UTF8
-sub ReadMIEValue($$$$$)
+sub ReadMIEValue($$$$$;$)
 {
-    my ($dataPt, $offset, $format, $count, $size) = @_;
+    my ($dataPt, $offset, $format, $count, $size, $ratPt) = @_;
     my $val;
     if ($format =~ /^(utf(8|16|32)|string)/) {
         if ($1 eq 'utf8' or $1 eq 'string') {
@@ -859,7 +862,7 @@ sub ReadMIEValue($$$$$)
         $val =~ s/\0.*//s unless $format =~ /_list$/;
     } else {
         $format = 'undef' if $format eq 'free'; # read 'free' as 'undef'
-        return ReadValue($dataPt, $offset, $format, $count, $size);
+        return ReadValue($dataPt, $offset, $format, $count, $size, $ratPt);
     }
     return $val;
 }
@@ -1079,7 +1082,7 @@ sub WriteMIEGroup($$$)
                     $subdirInfo{DirName} = $newInfo->{SubDirectory}->{DirName} || $newTag;
                     $subdirInfo{Parent} = $dirName;
                     # don't compress elements of an already compressed group
-                    $subdirInfo{IsCompressed} = 1;
+                    $subdirInfo{IsCompressed} = $$dirInfo{IsCompressed} || $compress;
                     $msg = WriteMIEGroup($exifTool, \%subdirInfo, $subTablePtr);
                     last MieElement if $msg;
                     # message is defined but empty if nothing was written
@@ -1090,6 +1093,10 @@ sub WriteMIEGroup($$$)
                         # group was written already
                         $toWrite = '';
                         next;
+                    } elsif (length($newVal) <= 4) {    # terminator only?
+                        $verbose and print $out "Deleted compressed $grp1 (empty)\n";
+                        next MieElement if $newTag eq $tag; # deleting the directory
+                        next;       # not creating the new directory
                     }
                     $writable = 'undef';
                     $newFormat = MIEGroupFormat();
@@ -1103,7 +1110,7 @@ sub WriteMIEGroup($$$)
                             DataPt  => \$oldVal,
                             DataLen => $valLen,
                             DirName => $$newInfo{Name},
-                            DataPos => $raf->Tell() - $valLen,
+                            DataPos => $$dirInfo{IsCompressed} ? undef : $raf->Tell() - $valLen,
                             DirStart=> 0,
                             DirLen  => $valLen,
                         );
@@ -1147,9 +1154,10 @@ sub WriteMIEGroup($$$)
                     my $isOverwriting;
                     my $isList = $$newInfo{List};
                     if ($isList) {
+                        last if $$nvHash{CreateOnly};
                         $isOverwriting = -1;    # force processing list elements individually
                     } else {
-                        $isOverwriting = Image::ExifTool::IsOverwriting($nvHash);
+                        $isOverwriting = $exifTool->IsOverwriting($nvHash);
                         last unless $isOverwriting;
                     }
                     my ($val, $cmpVal);
@@ -1186,12 +1194,12 @@ sub WriteMIEGroup($$$)
                                 }
                                 # keep any list items that we aren't overwriting
                                 foreach $v (@vals) {
-                                    next if Image::ExifTool::IsOverwriting($nvHash, $v);
+                                    next if $exifTool->IsOverwriting($nvHash, $v);
                                     push @newVals, $v;
                                 }
                             } else {
                                 # test to see if we really want to overwrite the value
-                                $isOverwriting = Image::ExifTool::IsOverwriting($nvHash, $val);
+                                $isOverwriting = $exifTool->IsOverwriting($nvHash, $val);
                             }
                         }
                     }
@@ -1216,6 +1224,7 @@ sub WriteMIEGroup($$$)
                         # write the old value now
                         Write($outfile, $toWrite, $oldHdr, $oldVal) or $err = 1;
                         $toWrite = '';
+                        next MieElement;
                     }
                     unless (@newVals) {
                         # unshift the new tag info to write it later
@@ -1225,11 +1234,12 @@ sub WriteMIEGroup($$$)
                 } else {
                     # write new value if creating, or if List and list existed, or
                     # if tag was previously deleted
-                    next unless Image::ExifTool::IsCreating($nvHash) or
-                        ($newTag eq $lastTag and ($$newInfo{List} or $deletedTag eq $lastTag));
+                    next unless $$nvHash{IsCreating} or
+                        (($newTag eq $lastTag and ($$newInfo{List} or $deletedTag eq $lastTag)
+                        and not $$nvHash{EditOnly}));
                 }
                 # get the new value to write (undef to delete)
-                push @newVals, Image::ExifTool::GetNewValues($nvHash);
+                push @newVals, $exifTool->GetNewValues($nvHash);
                 next unless @newVals;
                 $writable = $$newInfo{Writable} || $$tagTablePtr{WRITABLE};
                 if ($writable eq 'string') {
@@ -1515,7 +1525,7 @@ sub ProcessMIEGroup($$$)
                 Writable => 0,
                 PrintConv => 'length($val) > 60 ? substr($val,0,55) . "[...]" : $val',
             };
-            Image::ExifTool::AddTagToTable($tagTablePtr, $tag, $tagInfo);
+            AddTagToTable($tagTablePtr, $tag, $tagInfo);
             last;
         }
 
@@ -1562,7 +1572,7 @@ sub ProcessMIEGroup($$$)
                 WasCompressed => $wasCompressed,
             );
             # read from uncompressed data instead if necessary
-            $subdirInfo{RAF} = new File::RandomAccess(\$value) if $format & 0x04;
+            $subdirInfo{RAF} = new File::RandomAccess(\$value) if $valLen;
 
             my $oldOrder = GetByteOrder();
             SetByteOrder($format & 0x08 ? 'II' : 'MM');
@@ -1573,8 +1583,9 @@ sub ProcessMIEGroup($$$)
         } else {
             # process MIE data format types
             if ($tagInfo) {
+                my $rational;
                 # extract tag value
-                my $val = ReadMIEValue(\$value, 0, $formatStr, undef, $valLen);
+                my $val = ReadMIEValue(\$value, 0, $formatStr, undef, $valLen, \$rational);
                 unless (defined $val) {
                     $exifTool->Warn("Error reading $tag value");
                     $val = '<err>';
@@ -1609,7 +1620,7 @@ sub ProcessMIEGroup($$$)
                     );
                     # set DataPos and Base for uncompressed information only
                     unless ($wasCompressed) {
-                        $subdirInfo{DataPos} = $raf->Tell() - $valLen;
+                        $subdirInfo{DataPos} = 0; # (relative to Base)
                         $subdirInfo{Base}    = $raf->Tell() - $valLen;
                     }
                     # reset PROCESSED lookup for each MIE directory
@@ -1636,7 +1647,8 @@ sub ProcessMIEGroup($$$)
                         # add units to value if specified
                         $val .= "($units)" if defined $units;
                     }
-                    $exifTool->FoundTag($tagInfo, $val);
+                    my $key = $exifTool->FoundTag($tagInfo, $val);
+                    $$exifTool{RATIONAL}{$key} = $rational if defined $rational and defined $key;
                 }
             } else {
                 # skip over unknown information or free bytes
@@ -1715,7 +1727,7 @@ sub ProcessMIE($$)
         my $num = $raf->Read($buff, 8);
         if ($num == 8) {
             # verify file identifier
-            if ($buff =~ /^~(\x10|\x18)\x04(.)0MIE/) {
+            if ($buff =~ /^~(\x10|\x18)\x04(.)0MIE/s) {
                 SetByteOrder($1 eq "\x10" ? 'MM' : 'II');
                 my $len = ord($2);
                 # skip extended DataLength if it exists
@@ -1851,7 +1863,7 @@ following features are rated for each format with a score of 0 to 10:
  11) Compressed meta information supported.
  12) Relocatable data elements (ie. no fixed offsets).
  13) Binary meta information (+7) with variable byte order (+3).
- 14) Mandatory tags not required (an unecessary complication).
+ 14) Mandatory tags not required (an unnecessary complication).
  15) Append information to end of file without editing.
 
                           Feature number                   Total
@@ -2526,7 +2538,7 @@ tag name.  For example:
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.  The MIE format itself is also

@@ -11,7 +11,10 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.12';
+$VERSION = '1.17';
+
+sub ProcessScalado($$$);
+sub ProcessOcad($$$);
 
 # (this main JPEG table is for documentation purposes only)
 %Image::ExifTool::JPEG::Main = (
@@ -32,6 +35,10 @@ $VERSION = '1.12';
         Name => 'AVI1',
         Condition => '$$valPt =~ /^AVI1/',
         SubDirectory => { TagTable => 'Image::ExifTool::JPEG::AVI1' },
+      }, {
+        Name => 'Ocad',
+        Condition => '$$valPt =~ /^Ocad/',
+        SubDirectory => { TagTable => 'Image::ExifTool::JPEG::Ocad' },
     }],
     APP1 => [{
         Name => 'EXIF',
@@ -49,6 +56,10 @@ $VERSION = '1.12';
         Name => 'QVCI',
         Condition => '$$valPt =~ /^QVCI\0/',
         SubDirectory => { TagTable => 'Image::ExifTool::Casio::QVCI' },
+      }, {
+        Name => 'FLIR',
+        Condition => '$$valPt =~ /^FLIR\0/',
+        SubDirectory => { TagTable => 'Image::ExifTool::FLIR::FFF' },
     }],
     APP2 => [{
         Name => 'ICC_Profile',
@@ -64,8 +75,8 @@ $VERSION = '1.12';
         SubDirectory => { TagTable => 'Image::ExifTool::MPF::Main' },
       }, {
         Name => 'PreviewImage',
-        Condition => '$$valPt =~ /^\xff\xd8\xff\xdb/',
-        Notes => 'Samsung large preview',
+        Condition => '$$valPt =~ /^(|QVGA\0|BGTH)\xff\xd8\xff\xdb/',
+        Notes => 'Samsung APP2 preview image', # (Samsung="", BenQ="QVGA\0", Digilife="BGTH")
     }],
     APP3 => [{
         Name => 'Meta',
@@ -78,7 +89,7 @@ $VERSION = '1.12';
       }, {
         Name => 'PreviewImage', # (written by HP R837 and Samsung S1060)
         Condition => '$$valPt =~ /^\xff\xd8\xff\xdb/',
-        Notes => 'Hewlett-Packard or Samsung preview image',
+        Notes => 'Samsung/HP preview image', # (Samsung, HP, BenQ)
     }],
     APP4 => [{
         Name => 'Scalado',
@@ -89,14 +100,17 @@ $VERSION = '1.12';
         Condition => '$$valPt =~ /^FPXR\0/',
         SubDirectory => { TagTable => 'Image::ExifTool::FlashPix::Main' },
       }, {
-        Name => 'PreviewImage', # (written by S1060)
-        Notes => 'Continued Samsung preview from APP3',
+        Name => 'PreviewImage', # (ie. Samsung S1060)
+        Notes => 'continued from APP3',
     }],
-    APP5 => {
+    APP5 => [{
         Name => 'RMETA',
         Condition => '$$valPt =~ /^RMETA\0/',
         SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::RMETA' },
-    },
+      }, {
+        Name => 'PreviewImage', # (ie. BenQ DC E1050)
+        Notes => 'continued from APP4',
+    }],
     APP6 => [{
         Name => 'EPPIM',
         Condition => '$$valPt =~ /^EPPIM\0/',
@@ -110,6 +124,11 @@ $VERSION = '1.12';
         Condition => '$$valPt =~ /^TDHD\x01\0\0\0/',
         SubDirectory => { TagTable => 'Image::ExifTool::HP::TDHD' },
     }],
+    APP7 => {
+        Name => 'Qualcomm',
+        Condition => '$$valPt =~ /^\x1aQualcomm Camera Attributes/',
+        SubDirectory => { TagTable => 'Image::ExifTool::Qualcomm::Main' },
+    },
     APP8 => {
         Name => 'SPIFF',
         Condition => '$$valPt =~ /^SPIFF\0/',
@@ -141,6 +160,7 @@ $VERSION = '1.12';
     APP14 => {
         Name => 'Adobe',
         Condition => '$$valPt =~ /^Adobe/',
+        Writable => 1,  # (for docs only)
         SubDirectory => { TagTable => 'Image::ExifTool::JPEG::Adobe' },
     },
     APP15 => {
@@ -148,6 +168,7 @@ $VERSION = '1.12';
         Condition => '$$valPt =~ /^Q\s*(\d+)/',
         SubDirectory => { TagTable => 'Image::ExifTool::JPEG::GraphConv' },
     },
+    # APP15 - Also unknown "TEXT\0" segment stored by Casio/FujiFilm
     COM => {
         Name => 'Comment',
         # note: flag as writable for documentation, but it won't show up
@@ -316,7 +337,12 @@ $VERSION = '1.12';
 %Image::ExifTool::JPEG::Adobe = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
     GROUPS => { 0 => 'APP14', 1 => 'Adobe', 2 => 'Image' },
-    NOTES => 'The "Adobe" APP14 segment stores image encoding information for DCT filters.',
+    NOTES => q{
+        The "Adobe" APP14 segment stores image encoding information for DCT filters.
+        This segment may be copied or deleted as a block using the Extra "Adobe"
+        tag, but note that it is not deleted by default when deleting all metadata
+        because it may affect the appearance of the image.
+    },
     FORMAT => 'int16u',
     0 => 'DCTEncodeVersion',
     1 => {
@@ -361,6 +387,21 @@ $VERSION = '1.12';
             2 => 'Even',
         },
     },    
+);
+
+# Ocad APP0 segment (ref PH)
+%Image::ExifTool::JPEG::Ocad = (
+    PROCESS_PROC => \&ProcessOcad,
+    GROUPS => { 0 => 'APP0', 1 => 'Ocad', 2 => 'Image' },
+    FIRST_ENTRY => 0,
+    NOTES => q{
+        Tags extracted from the JPEG APP0 "Ocad" segment (found in Photobucket
+        images).
+    },
+    Rev => {
+        Name => 'OcadRevision',
+        Format => 'string[6]',
+    }
 );
 
 # NITF APP6 segment (National Imagery Transmission Format)
@@ -426,7 +467,7 @@ $VERSION = '1.12';
 # information written by Scalado software (PhotoFusion maybe?)
 %Image::ExifTool::JPEG::Scalado = (
     GROUPS => { 0 => 'APP4', 1 => 'Scalado', 2 => 'Image' },
-    PROCESS_PROC => \&Image::ExifTool::JPEG::ProcessScalado,
+    PROCESS_PROC => \&ProcessScalado,
     TAG_PREFIX => 'Scalado',
     FORMAT => 'int32s',
     # I presume this was written by 
@@ -462,6 +503,27 @@ $VERSION = '1.12';
     # SCX1: (+ve data length)
     # WDEC: 0
 );
+
+#------------------------------------------------------------------------------
+# Extract information from the JPEG APP0 Ocad segment
+# Inputs: 0) ExifTool object ref, 1) dirInfo ref, 2) tag table ref
+# Returns: 1 on success
+sub ProcessOcad($$$)
+{
+    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my $dataPt = $$dirInfo{DataPt};
+    $exifTool->VerboseDir('APP0 Ocad', undef, length $$dataPt);
+    for (;;) {
+        last unless $$dataPt =~ /\$(\w+):([^\0\$]+)/g;
+        my ($tag, $val) = ($1, $2);
+        $val =~ s/^\s+//; $val =~ s/\s+$//;     # remove leading/trailing spaces
+        unless ($$tagTablePtr{$tag}) {
+            AddTagToTable($tagTablePtr, $tag, { Name => "Ocad_$tag" });
+        }
+        $exifTool->HandleTag($tagTablePtr, $tag, $val);
+    }
+    return 1;
+}
 
 #------------------------------------------------------------------------------
 # Extract information from the JPEG APP4 SCALADO segment
@@ -512,7 +574,7 @@ segments are included in the Image::ExifTool module itself.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -262,10 +262,11 @@ sub EncodeTag($$)
         $val = "($val)";
     }
     my $line = "%%$tag: $val";
-    # postscript line limit is 255 characters
+    # postscript line limit is 255 characters (but it seems that
+    # the limit may be 254 characters if the DOS CR/LF is used)
     # --> split if necessary using continuation comment "%%+"
     my $n;
-    for ($n=255; length($line)>$n; $n+=255+length($/)) {
+    for ($n=254; length($line)>$n; $n+=254+length($/)) {
         substr($line, $n, 0) = "$/%%+";
     }
     return $line . $/;
@@ -288,8 +289,8 @@ sub WriteNewTags($$$)
     foreach $tag (sort keys %$newTags) {
         my $tagInfo = $$newTags{$tag};
         my $nvHash = $exifTool->GetNewValueHash($tagInfo);
-        next unless Image::ExifTool::IsCreating($nvHash);
-        my $val = Image::ExifTool::GetNewValues($nvHash);
+        next unless $$nvHash{IsCreating};
+        my $val = $exifTool->GetNewValues($nvHash);
         $exifTool->VerboseValue("+ PostScript:$$tagInfo{Name}", $val);
         Write($outfile, EncodeTag($tag, $val)) or $success = 0;
         ++$exifTool->{CHANGED};
@@ -442,7 +443,7 @@ sub WritePS($$)
     }
     $data .= $buff;
     unless ($data =~ /^%!PS-Adobe-3\.(\d+)\b/ and $1 < 2) {
-        if ($exifTool->Error("Document does not conform to DSC spec. Metadata may be unreadable by other apps", 1)) {
+        if ($exifTool->Error("Document does not conform to DSC spec. Metadata may be unreadable by other apps", 2)) {
             return 1;
         }
     }
@@ -585,9 +586,9 @@ sub WritePS($$)
                 $val = DecodeComment($val, $raf, \@lines, \$data);
                 $val = join $exifTool->Options('ListSep'), @$val if ref $val eq 'ARRAY';
                 my $nvHash = $exifTool->GetNewValueHash($tagInfo);
-                if (Image::ExifTool::IsOverwriting($nvHash, $val)) {
+                if ($exifTool->IsOverwriting($nvHash, $val)) {
                     $exifTool->VerboseValue("- PostScript:$$tagInfo{Name}", $val);
-                    $val = Image::ExifTool::GetNewValues($nvHash);
+                    $val = $exifTool->GetNewValues($nvHash);
                     ++$exifTool->{CHANGED};
                     next unless defined $val;   # next if tag is being deleted
                     $exifTool->VerboseValue("+ PostScript:$$tagInfo{Name}", $val);
@@ -763,7 +764,7 @@ Thanks to Tim Kordick for his help testing the EPS writer.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

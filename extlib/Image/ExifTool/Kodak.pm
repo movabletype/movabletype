@@ -20,9 +20,10 @@ package Image::ExifTool::Kodak;
 
 use strict;
 use vars qw($VERSION);
+use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.27';
+$VERSION = '1.32';
 
 sub ProcessKodakIFD($$$);
 sub ProcessKodakText($$$);
@@ -748,11 +749,19 @@ sub WriteKodakIFD($$$);
         Format => 'string[16]',
         Notes => 'Kodak only',
     },
-    0xa8 => { # (not confirmed)
-        Name => 'SerialNumber',
-        Condition => '$$self{Make} =~ /Kodak/i',
+    0xa8 => {
+        Name => 'UnknownNumber', # (was SerialNumber, but not unique for all cameras. ie C1013)
+        Condition => '$$self{Make} =~ /Kodak/i and $$valPt =~ /^([A-Z0-9]{1,11}\0|[A-Z0-9]{12})/i',
         Format => 'string[12]',
         Notes => 'Kodak only',
+        Writable => 0,
+    },
+    0xc4 => {
+        Name => 'UnknownNumber', # (confirmed NOT to be serial number for Easyshare Mini - PH)
+        Condition => '$$self{Make} =~ /Kodak/i and $$valPt =~ /^([A-Z0-9]{1,11}\0|[A-Z0-9]{12})/i',
+        Format => 'string[12]',
+        Notes => 'Kodak only',
+        Writable => 0,
     },
 );
 
@@ -846,6 +855,7 @@ sub WriteKodakIFD($$$);
         Name => 'SceneMode',
         Writable => 'int16u',
         Notes => 'may not be valid for some models', # ie. M580?
+        PrintConvColumns => 2,
         PrintConv => {
             1 => 'Sport',
             3 => 'Portrait',
@@ -947,11 +957,11 @@ sub WriteKodakIFD($$$);
         Writable => 'int16u',
     },
     0xfa57 => {
-        Name => 'PreviewWidth',
+        Name => 'PreviewImageWidth',
         Writable => 'int16u',
     },
     0xfa58 => {
-        Name => 'PreviewHeight',
+        Name => 'PreviewImageHeight',
         Writable => 'int16u',
     },
 );
@@ -1007,6 +1017,7 @@ my %sceneModeUsed = (
     0x6002 => {
         Name => 'SceneModeUsed',
         Writable => 'int32u',
+        PrintConvColumns => 2,
         PrintConv => \%sceneModeUsed,
     },
     0x6006 => {
@@ -1027,6 +1038,7 @@ my %sceneModeUsed = (
     0xf002 => {
         Name => 'SceneModeUsed',
         Writable => 'int32u',
+        PrintConvColumns => 2,
         PrintConv => \%sceneModeUsed,
     },
     0xf006 => {
@@ -1542,6 +1554,7 @@ my %sceneModeUsed = (
     0xc365 => 'MetadataNumber',
     0xc366 => 'EditTagArray',
     0xc367 => 'Magnification',
+    # 0xc36b - string[8]: "1.0"
     0xc36c => 'NativeXResolution',
     0xc36d => 'NativeYResolution',
     0xc36e => {
@@ -1568,6 +1581,7 @@ my %sceneModeUsed = (
     0xc41a => 'SourceImageVolumeName',
     0xc46c => 'PrintQuality',
     0xc46e => 'ImagePrintStatus',
+    # 0cx46f - int16u: 1
 );
 
 # Kodak APP3 "Meta" Special Effects sub-IFD (ref 2)
@@ -1603,7 +1617,10 @@ my %sceneModeUsed = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
     GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
     FIRST_ENTRY => 0,
-    NOTES => 'This information is found in Kodak MOV videos from models such as the P880.',
+    NOTES => q{
+        This information is found in the TAGS atom of MOV videos from Kodak models
+        such as the P880.
+    },
     0 => {
         Name => 'Make',
         Format => 'string[21]',
@@ -1638,6 +1655,145 @@ my %sceneModeUsed = (
         Name => 'FocalLength',
         Format => 'rational64u',
         PrintConv => 'sprintf("%.1f mm",$val)',
+    },
+);
+
+# Kodak DcMD atoms (ref PH)
+%Image::ExifTool::Kodak::DcMD = (
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Video' },
+    NOTES => 'Metadata directory found in MOV and MP4 videos from some Kodak cameras.',
+    Cmbo => {
+        Name => 'CameraByteOrder',
+        PrintConv => {
+            II => 'Little-endian (Intel, II)',
+            MM => 'Big-endian (Motorola, MM)',
+        },
+    },
+    CMbo => { # (as written by Kodak Playsport video camera)
+        Name => 'CameraByteOrder',
+        PrintConv => {
+            II => 'Little-endian (Intel, II)',
+            MM => 'Big-endian (Motorola, MM)',
+        },
+    },
+    DcME => {
+        Name => 'DcME',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Kodak::DcME',
+        },
+    },
+    DcEM => {
+        Name => 'DcEM',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Kodak::DcEM',
+        },
+    },
+);
+
+# Kodak DcME atoms (ref PH)
+%Image::ExifTool::Kodak::DcME = (
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Video' },
+    # Mtmd - 24 bytes: ("00 00 00 00 00 00 00 01" x 3)
+    # Keyw - keywords? (six bytes all zero)
+    # Rate -  2 bytes: 00 00
+);
+
+# Kodak DcEM atoms (ref PH)
+%Image::ExifTool::Kodak::DcEM = (
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Video' },
+    # Mtmd - 24 bytes: ("00 00 00 00 00 00 00 01" x 3)
+    # Csat - 16 bytes: 00 06 00 00 62 00 61 00 73 00 69 00 63 00 00 00 [....b.a.s.i.c...]
+    # Ksre -  8 bytes: 00 01 00 00 00 00
+);
+
+# tags in "free" atom of Kodak M5370 MP4 videos (ref PH)
+%Image::ExifTool::Kodak::Free = (
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Video' },
+    NOTES => q{
+        Information stored in the "free" atom of Kodak MP4 videos. (VERY bad form
+        for Kodak to store useful information in an atom intended for unused space!)
+    },
+    # (2012/01/19: Kodak files for bankruptcy -- this is poetic metadata justice)
+    Seri => {
+        Name => 'SerialNumber',
+        # byte 0 is string length;  byte 1 is zero;  string starts at byte 2
+        ValueConv => 'substr($val, 2, unpack("C",$val))',
+    },
+    SVer => {
+        Name => 'FirmwareVersion',
+        ValueConv => 'substr($val, 2, unpack("C",$val))',
+    },
+    # Clor - 2 bytes: 0 1  (?)
+    # CapM - 2 bytes: 0 1  (capture mode? = exposure mode?)
+    # WBMD - 2 bytes: 0 0  (white balance?)
+    Expc => { # (NC)
+        Name => 'ExposureCompensation',
+        Format => 'int16s',
+        ValueConv => '$val / 3', # (guess)
+        PrintConv => 'Image::ExifTool::Exif::PrintFraction($val)',
+    },
+    # Zone - 2 bytes: 0 2  (time zone? focus zone?)
+    # FoMD - 2 bytes: 0 0  (focus mode?)
+    # Shap - 2 bytes: 0 2  (sharpness?)
+    Expo => {
+        Name => 'ExposureTime',
+        Format => 'rational32u',
+        PrintConv => 'Image::ExifTool::Exif::PrintExposureTime($val)',
+    },
+    FNum => {
+        Name => 'FNumber',
+        Format => 'int16u',
+        ValueConv => '$val / 100',
+        PrintConv => 'Image::ExifTool::Exif::PrintFNumber($val)',
+    },
+    ISOS => { Name => 'ISO', Format => 'int16u' },
+    StSV => {
+        Name => 'ShutterSpeedValue',
+        Format => 'int16s',
+        ValueConv => 'abs($val)<100 ? 2**(-$val/3) : 0',
+        PrintConv => 'Image::ExifTool::Exif::PrintExposureTime($val)',
+    },
+    AprV => {
+        Name => 'ApertureValue',
+        Format => 'int16s',
+        ValueConv => '2 ** ($val / 2000)',
+        PrintConv => 'sprintf("%.1f",$val)',
+    },
+    BrtV => { # (NC)
+        Name => 'BrightnessValue',
+        Format => 'int32s',
+        ValueConv => '$val / 1000', # (guess)
+    },
+    FoLn => {
+        Name => 'FocalLength',
+        Groups => { 2 => 'Camera' },
+        Format => 'int16u',
+        PrintConv => 'sprintf("%.1f mm",$val)',
+    },
+    FL35 => {
+        Name => 'FocalLengthIn35mmFormat',
+        Groups => { 2 => 'Camera' },
+        Format => 'int16u',
+        PrintConv => '"$val mm"',
+    },
+    Scrn => {
+        Name => 'PreviewInfo',
+        SubDirectory => { TagTable => 'Image::ExifTool::Kodak::Scrn' },
+    },
+);
+
+# preview information in free/Scrn atom of MP4 videos (ref PH)
+%Image::ExifTool::Kodak::Scrn = (
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    FORMAT => 'int16u',
+    0 => 'PreviewImageWidth',
+    1 => 'PreviewImageHeight',
+    2 => { Name => 'PreviewImageLength', Format => 'int32u' },
+    4 => {
+        Name => 'PreviewImage',
+        Format => 'undef[$val{2}]',
+        RawConv => '$self->ValidateImage(\$val, $tag)',
     },
 );
 
@@ -1745,7 +1901,7 @@ sub ProcessKodakText($$$)
                 $tagName =~ s/[^-\w]+//g;   # delete remaining invalid characters
                 $tagName = 'NoName' unless $tagName;
                 $tagInfo = { Name => $tagName };
-                Image::ExifTool::AddTagToTable($tagTablePtr, $tag, $tagInfo);
+                AddTagToTable($tagTablePtr, $tag, $tagInfo);
             }
             $exifTool->HandleTag($tagTablePtr, $tag, $val, TagInfo => $tagInfo);
             $success = 1;
@@ -1831,7 +1987,7 @@ interpret Kodak maker notes EXIF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -217,7 +217,7 @@ $VERSION = '1.06';
    'ColorantYellow' => 'Colourant Yellow',
    'ColorimetricReference' => 'Colourimetric Reference',
    'Colors' => 'Colours',
-   'Colorspace' => 'Colourspace',
+   'ColorSpace' => 'Colour Space',
    'Compression' => {
       PrintConv => {
         'JBIG Color' => 'JBIG Colour',
@@ -493,7 +493,7 @@ $VERSION = '1.06';
     },
    'WhiteBalance' => {
       PrintConv => {
-        'Color Temperature/Color Filter' => 'Color Temperature/Colour Filter',
+        'Color Temperature/Color Filter' => 'Colour Temperature/Colour Filter',
       },
     },
    'WhiteBalanceSet' => {
@@ -544,7 +544,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

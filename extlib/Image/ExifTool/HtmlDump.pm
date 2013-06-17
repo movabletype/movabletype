@@ -13,7 +13,7 @@ use vars qw($VERSION);
 use Image::ExifTool;    # only for FinishTiffDump()
 use Image::ExifTool::HTML qw(EscapeHTML);
 
-$VERSION = '1.30';
+$VERSION = '1.31';
 
 sub DumpTable($$$;$$$$$);
 sub Open($$$;@);
@@ -60,10 +60,12 @@ my $htmlHeader2 = <<_END_PART_2_;
     visibility: hidden;
     position: absolute;
     background: #ffffdd;
-    opacity: 0.8;
+    zoom: 1;
     -moz-opacity: 0.8;
-    filter: alpha(opacity=80);
+    -khtml-opacity: 0.8;
     -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=80)';
+    filter: alpha(opacity=80);
+    opacity: 0.8;
     z-index: 2;
 }
 /* table styles */
@@ -312,13 +314,20 @@ sub Print($$;$$$$$)
     my (@names, $wasUnused, @starts);
     # only do dump if we didn't have a serious error
     @starts = sort { $a <=> $b } keys %$block unless $$self{Error};
-    for ($i=0; $i<@starts; ++$i) {
+    for ($i=0; $i<=@starts; ++$i) {
         my $start = $starts[$i];
-        my $parmList = $$block{$start};
+        my $parmList;
+        if (defined $start) {
+            $parmList = $$block{$start};
+        } elsif ($bkgEnd and $pos < $bkgEnd and not defined $wasUnused) {
+            $start = $bkgEnd;   # finish last bkg block
+        } else {
+            last;
+        }
         my $len = $start - $pos;
         if ($len > 0 and not $wasUnused) {
-            # we have an unused bytes before this data block
-            --$i;           # dump the data block next time around
+            # we have a unused bytes before this data block
+            --$i;   # dump the data block next time around
             # split unused data into 2 blocks if it spans end of a bkg block
             my ($nextBkgEnd, $bkg);
             if (not defined $wasUnused and $bkgEnd) {
@@ -873,7 +882,7 @@ page.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -20,7 +20,7 @@ use strict;
 use vars qw($VERSION %uid);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.11';
+$VERSION = '1.16';
 
 # DICOM VR (Value Representation) format conversions
 my %dicomFormat = (
@@ -49,7 +49,7 @@ my %implicitVR = (
 # Note: "XxxGroupLength" tags are generated automatically if they don't exist
 %Image::ExifTool::DICOM::Main = (
     GROUPS => { 2 => 'Image' },
-    PROCESS_PROC => 0,  # set this to zero to omit tags from lookup (way too many!)
+    VARS => { NO_LOOKUP => 1 }, # omit tags from lookup (way too many!)
     NOTES => q{
         The DICOM format is based on the ACR-NEMA specification, but adds a file
         header and a number of new tags.  ExifTool will extract information from
@@ -57,6 +57,9 @@ my %implicitVR = (
         and element numbers in hexadecimal, as given in the DICOM specification (see
         L<http://medical.nema.org/>).  The table below contains tags from the DICOM
         2009 and earlier specifications plus some vendor-specific private tags.
+
+        Note that DICOM information may be saved in other file formats using the
+        L<XMP DICOM Tags|Image::ExifTool::TagNames/XMP DICOM Tags>.
     },
     # file meta information group (names end with VR)
     '0002,0000' => { VR => 'UL', Name => 'FileMetaInfoGroupLength' },
@@ -2340,7 +2343,7 @@ my %implicitVR = (
     '0072,0512' => { VR => 'FD', Name => 'ReformattingThickness' },
     '0072,0514' => { VR => 'FD', Name => 'ReformattingInterval' },
     '0072,0516' => { VR => 'CS', Name => 'ReformattingOpInitialViewDir' },
-    '0072,0520' => { VR => 'CS', Name => '3DRenderingType' },
+    '0072,0520' => { VR => 'CS', Name => 'RenderingType3D' },
     '0072,0600' => { VR => 'SQ', Name => 'SortingOperationsSequence' },
     '0072,0602' => { VR => 'CS', Name => 'SortByCategory' },
     '0072,0604' => { VR => 'CS', Name => 'SortingDirection' },
@@ -3706,7 +3709,7 @@ sub ProcessDICM($$)
                     };
                 }
                 $$tagInfo{Unknown} = 1;
-                Image::ExifTool::AddTagToTable($tagTablePtr, $tag, $tagInfo);
+                AddTagToTable($tagTablePtr, $tag, $tagInfo);
             }
         }
         # get VR from our tag information if implicit
@@ -3720,8 +3723,9 @@ sub ProcessDICM($$)
         if ($len > 1024) {
             # treat large data elements as binary data
             my $binData;
-            if ($exifTool->Options('Binary') or ($tagInfo and
-                $exifTool->{REQ_TAG_LOOKUP}->{lc($$tagInfo{Name})}))
+            my $lcTag = $tagInfo ? lc($$tagInfo{Name}) : 'unknown';
+            if ($exifTool->{REQ_TAG_LOOKUP}{$lcTag} or
+                ($exifTool->{OPTIONS}{Binary} and not $exifTool->{EXCL_TAG_LOOKUP}{$lcTag}))
             {
                 $binData = $buff;   # must make a copy
             } else {
@@ -3748,7 +3752,7 @@ sub ProcessDICM($$)
                 $val = sprintf('%.4X,%.4X', $g, $e);
             } elsif ($vr eq 'UI') {
                 # add PrintConv to translate registered UID's
-                $val =~ s/\0.*//; # truncate at null
+                $val =~ s/\0.*//s; # truncate at null
                 $$tagInfo{PrintConv} = \%uid if $uid{$val} and $tagInfo;
             }
         }
@@ -3803,7 +3807,7 @@ No translation of special characters sets is done.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

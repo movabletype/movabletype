@@ -178,7 +178,7 @@ sub CheckStruct($$$)
 {
     my ($exifTool, $struct, $strTable) = @_;
 
-    my $strName = $$strTable{STRUCT_NAME} || RegisterNamespace($strTable);
+    my $strName = $$strTable{STRUCT_NAME} || ('XMP ' . RegisterNamespace($strTable));
     ref $struct eq 'HASH' or return wantarray ? (undef, "Expecting $strName structure") : undef;
 
     my ($key, $err, $warn, %copy, $rtnVal, $val);
@@ -325,17 +325,18 @@ Key:
 # Inputs: 0) ExifTool ref, 1) capture hash ref, 2) structure path ref,
 #         3) new value hash ref, 4) reference to change counter
 # Returns: 0) delete flag, 1) list index of deleted structure if adding to list
+#          2) flag set if structure existed
 # Notes: updates path to new base path for structure to be added
 sub DeleteStruct($$$$$)
 {
     my ($exifTool, $capture, $pathPt, $nvHash, $changed) = @_;
-    my ($deleted, $added, $p, $pp, $val, $delPath);
+    my ($deleted, $added, $existed, $p, $pp, $val, $delPath);
     my (@structPaths, @matchingPaths, @delPaths);
 
     # find all existing elements belonging to this structure
     ($pp = $$pathPt) =~ s/ \d+/ \\d\+/g;
-    @structPaths = sort grep(/^$pp\//, keys %$capture);
-
+    @structPaths = sort grep(/^$pp(\/|$)/, keys %$capture);
+    $existed = 1 if @structPaths;
     # delete only structures with matching fields if necessary
     if ($$nvHash{DelValue}) {
         if (@{$$nvHash{DelValue}}) {
@@ -361,7 +362,7 @@ sub DeleteStruct($$$$$)
                             my $a2 = $$capture{$p2}[1];
                             next unless $$a2{'xml:lang'} and $$a2{'xml:lang'} eq $$attr{'xml:lang'};
                         }
-                        if ($$capture{$p2}[0] eq $cap{$p}[0]) {
+                        if ($$capture{$p2} and $$capture{$p2}[0] eq $cap{$p}[0]) {
                             # ($1 contains root path for this structure)
                             $match{$1} = ($match{$1} || 0) + 1;
                         }
@@ -394,30 +395,34 @@ sub DeleteStruct($$$$$)
             $deleted = 1;
             ++$$changed;
         }
-        $delPath or warn("Internal error 1 in DeleteStruct\n"), return(undef,undef);
+        $delPath or warn("Internal error 1 in DeleteStruct\n"), return(undef,undef,$existed);
         $$pathPt = $delPath;    # return path of first element deleted
-    } else {
-        my $tagInfo = $$nvHash{TagInfo};
-        if ($$tagInfo{List}) {
-            # NOTE: we don't yet properly handle lang-alt elements!!!!
-            if (@structPaths) {
-                $structPaths[-1] =~ /^($pp)/ or warn("Internal error 2 in DeleteStruct\n"), return(undef,undef);
-                my $path = $1;
-                # (match last index to put in same lang-alt list for Bag of lang-alt items)
-                $path =~ m/.* (\d+)/g or warn("Internal error 3 in DeleteStruct\n"), return(undef,undef);
-                $added = $1;
-                # add after last item in list
-                my $len = length $added;
-                my $pos = pos($path) - $len;
-                my $nxt = substr($added, 1) + 1;
-                substr($path, $pos, $len) = length($nxt) . $nxt;
-                $$pathPt = $path;
-            } else {
-                $added = '10';
+    } elsif ($$nvHash{TagInfo}{List}) {
+        # NOTE: we don't yet properly handle lang-alt elements!!!!
+        if (@structPaths) {
+            $structPaths[-1] =~ /^($pp)/ or warn("Internal error 2 in DeleteStruct\n"), return(undef,undef,$existed);
+            my $path = $1;
+            # delete any improperly formatted xmp
+            if ($$capture{$path}) {
+                my $cap = $$capture{$path};
+                # an error unless this was an empty structure
+                $exifTool->Error("Improperly structured XMP ($path)",1) if ref $cap ne 'ARRAY' or $$cap[0];
+                delete $$capture{$path};
             }
+            # (match last index to put in same lang-alt list for Bag of lang-alt items)
+            $path =~ m/.* (\d+)/g or warn("Internal error 3 in DeleteStruct\n"), return(undef,undef,$existed);
+            $added = $1;
+            # add after last item in list
+            my $len = length $added;
+            my $pos = pos($path) - $len;
+            my $nxt = substr($added, 1) + 1;
+            substr($path, $pos, $len) = length($nxt) . $nxt;
+            $$pathPt = $path;
+        } else {
+            $added = '10';
         }
     }
-    return($deleted, $added);
+    return($deleted, $added, $existed);
 }
 
 #------------------------------------------------------------------------------
@@ -583,14 +588,16 @@ sub ConvertStruct($$$$;$)
 
 #------------------------------------------------------------------------------
 # Restore XMP structures in extracted information
-# Inputs: 0) ExifTool object ref
+# Inputs: 0) ExifTool object ref, 1) flag to keep original flattened tags
 # Notes: also restores lists (including multi-dimensional)
-sub RestoreStruct($)
+sub RestoreStruct($;$)
 {
     local $_;
-    my $exifTool = shift;
+    my ($exifTool, $keepFlat) = @_;
     my ($key, %structs, %var, %lists, $si, %listKeys);
     my $ex = $$exifTool{TAG_EXTRA};
+    my $valueHash = $$exifTool{VALUE};
+    my $tagExtra = $$exifTool{TAG_EXTRA};
     foreach $key (keys %{$$exifTool{TAG_INFO}}) {
         $$ex{$key} or next;
         my ($err, $i);
@@ -628,13 +635,13 @@ sub RestoreStruct($)
             # add Struct entry if this is a structure
             if (@$structProps) {
                 # this is a structure
-                $$strInfo{Struct} = { STRUCT_NAME => 'Unknown' } if @$structProps;
+                $$strInfo{Struct} = { STRUCT_NAME => 'XMP Unknown' } if @$structProps;
             } elsif ($$tagInfo{LangCode}) {
                 # this is lang-alt list
                 $tag = $tag . '-' . $$tagInfo{LangCode};
                 $$strInfo{LangCode} = $$tagInfo{LangCode};
             }
-            Image::ExifTool::AddTagToTable($table, $tag, $strInfo);
+            AddTagToTable($table, $tag, $strInfo);
         }
         # use strInfo ref for base key to avoid collisions
         $tag = $strInfo;
@@ -687,7 +694,7 @@ sub RestoreStruct($)
                     $struct = $$struct[$index] = { };
                 } else {
                     $lists{$struct} = $struct;
-                    $$struct[$index] = $$exifTool{VALUE}{$key};
+                    $$struct[$index] = $$valueHash{$key};
                     last;
                 }
             } else {
@@ -697,7 +704,7 @@ sub RestoreStruct($)
                 } elsif (@$structProps) {
                     $struct = $$struct{$tag} = { };
                 } else {
-                    $$struct{$tag} = $$exifTool{VALUE}{$key};
+                    $$struct{$tag} = $$valueHash{$key};
                     last;
                 }
             }
@@ -730,12 +737,32 @@ sub RestoreStruct($)
                 $exifTool->DeleteTag($k);   # remove tag with greater copy number
             }
             # replace existing value with new list
-            $$exifTool{VALUE}{$key} = $structs{$strInfo};
+            $$valueHash{$key} = $structs{$strInfo};
             $listKeys{$structs{$strInfo}} = $key;   # save key for this list tag
         } else {
             # save strInfo ref and file order
-            $var{$strInfo} = [ $strInfo, $$exifTool{FILE_ORDER}{$key} ];
-            $exifTool->DeleteTag($key);
+            if ($var{$strInfo}) {
+                # set file order to just before the first associated flattened tag
+                if ($var{$strInfo}[1] > $$exifTool{FILE_ORDER}{$key}) {
+                    $var{$strInfo}[1] = $$exifTool{FILE_ORDER}{$key} - 0.5;
+                }
+            } else {
+                $var{$strInfo} = [ $strInfo, $$exifTool{FILE_ORDER}{$key} - 0.5 ];
+            }
+            # preserve original flattened tags if requested
+            if ($keepFlat) {
+                my $extra = $$tagExtra{$key} or next;
+                # restore list behaviour of this flattened tag
+                if ($$extra{NoList}) {
+                    $$valueHash{$key} = $$extra{NoList};
+                    delete $$extra{NoList};
+                } elsif ($$extra{NoListDel}) {
+                    # delete this tag since its value was included another list
+                    $exifTool->DeleteTag($key);
+                }
+            } else {
+                $exifTool->DeleteTag($key); # delete the flattened tag
+            }
         }
     }
     # fill in undefined items in lists.  In theory, undefined list items should
@@ -748,7 +775,7 @@ sub RestoreStruct($)
     foreach $si (keys %structs) {
         next unless $var{$si};  # already handled regular lists
         $key = $exifTool->FoundTag($var{$si}[0], '');
-        $$exifTool{VALUE}{$key} = $structs{$si};
+        $$valueHash{$key} = $structs{$si};
         $$exifTool{FILE_ORDER}{$key} = $var{$si}[1];
     }
 }
@@ -773,7 +800,7 @@ information.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -4,6 +4,7 @@
 # Description:  Write Canon RAW (CRW and CR2) meta information
 #
 # Revisions:    01/25/2005 - P. Harvey Created
+#               09/16/2010 - PH Added ability to write XMP in CRW images
 #------------------------------------------------------------------------------
 package Image::ExifTool::CanonRaw;
 
@@ -147,7 +148,7 @@ sub SaveMakerNotes($)
     $makerNotes .= $makerInfo->{ValBuff};
     # get MakerNotes tag info
     my $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::Exif::Main');
-    my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, 0x927c);
+    my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, 0x927c, \$makerNotes);
     # save the MakerNotes
     $exifTool->FoundTag($tagInfo, $makerNotes);
     # save the garbage collection some work later
@@ -430,8 +431,8 @@ sub WriteCanonRaw($$$)
                     $oldVal = $value;
                 }
                 my $nvHash = $exifTool->GetNewValueHash($tagInfo);
-                if (Image::ExifTool::IsOverwriting($nvHash, $oldVal)) {
-                    my $newVal = Image::ExifTool::GetNewValues($nvHash);
+                if ($exifTool->IsOverwriting($nvHash, $oldVal)) {
+                    my $newVal = $exifTool->GetNewValues($nvHash);
                     my $verboseVal;
                     $verboseVal = $newVal if $verbose > 1;
                     # convert to specified format if necessary
@@ -622,7 +623,7 @@ files, and would lead to far fewer problems with corrupted metadata.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -12,6 +12,7 @@
 #               5) European Patent (EP2 051 528A1) application no. 07792522.0 filed 08.08.2007
 #               6) Dave Nicholson private communication
 #               7) http://www.freepatentsonline.com/20050076039.pdf
+#               8) Michael Reitinger private communication (RX100)
 #
 # Glossary:     RBSP = Raw Byte Sequence Payload
 #------------------------------------------------------------------------------
@@ -23,7 +24,7 @@ use vars qw($VERSION %convMake);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.06';
+$VERSION = '1.08';
 
 sub ProcessSEI($$);
 
@@ -94,7 +95,7 @@ my $parsePictureTiming; # flag to enable parsing of picture timing information (
         Combine => 1,   # the next tag (0x19) contains the rest of the date
         # first byte is timezone information:
         #   0x80 - unused
-        #   0x40 - DST flag (not currently decoded)
+        #   0x40 - DST flag (currently not decoded)
         #   0x20 - TimeZoneSign
         #   0x1e - TimeZoneValue
         #   0x01 - half-hour flag
@@ -416,8 +417,10 @@ my $parsePictureTiming; # flag to enable parsing of picture timing information (
     1 => {
         Name => 'Gain',
         Mask => 0x0f,
+        # (0x0f would translate to 42 dB, but this value is used by the Sony
+        #  HXR-NX5U for any out-of-range value such as -6 dB or "hyper gain" - PH)
         ValueConv => '($val - 1) * 3',
-        PrintConv => '"$val dB"',
+        PrintConv => '$val==42 ? "Out of range" : "$val dB"',
     },
     1.1 => {
         Name => 'ExposureProgram',
@@ -461,8 +464,11 @@ my $parsePictureTiming; # flag to enable parsing of picture timing information (
     FIRST_ENTRY => 0,
     1 => {
         Name => 'ImageStabilization',
+        PrintHex => 1,
         PrintConv => {
             0 => 'Off',
+            0x3f => 'On (0x3f)', #8
+            0xbf => 'Off (0xbf)', #8
             0xff => 'n/a',
             OTHER => sub {
                 my $val = shift;
@@ -693,7 +699,7 @@ sub ParseSeqParamSet($$$)
     my $bstr = NewBitStream($dataPt) or return;
     my ($t, $i, $j, $n);
     # the messy nature of H.264 encoding makes it difficult to use
-    # data-driven structure parsing, so I code it explicitely (yuck!)
+    # data-driven structure parsing, so I code it explicitly (yuck!)
     $t = GetIntN($bstr, 8);         # profile_idc
     GetIntN($bstr, 16);             # constraints and level_idc
     GetGolomb($bstr);               # seq_parameter_set_id
@@ -903,7 +909,7 @@ sub ProcessSEI($$)
 
     # look for our 16-byte UUID
     # - plus "MDPM" for "ModifiedDVPackMeta"
-    # - plus "GA94" for closed-caption data (not currently decoded)
+    # - plus "GA94" for closed-caption data (currently not decoded)
     return 0 unless $size > 20 and substr($$dataPt, $pos, 20) eq
         "\x17\xee\x8c\x60\xf8\x4d\x11\xd9\x8c\xd6\x08\0\x20\x0c\x9a\x66MDPM";
 
@@ -1065,7 +1071,7 @@ information from H.264 video streams.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

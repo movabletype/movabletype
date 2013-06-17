@@ -16,7 +16,7 @@ use strict;
 use vars qw($VERSION @ISA @EXPORT_OK);
 require Exporter;
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(Crypt);
 
@@ -101,45 +101,31 @@ sub KeyExpansion($)
     $nr = $nk + 6;                      # number of rounds
 
     # temporary variables (all unsigned characters)
-    my ($i,$j,$k,@temp);
+    my ($i,@temp);
     
     # The first round key is the key itself.
     for ($i=0; $i<$nk; ++$i) {
-        $RoundKey[$i*4]   = $key[$i*4];
-        $RoundKey[$i*4+1] = $key[$i*4+1];
-        $RoundKey[$i*4+2] = $key[$i*4+2];
-        $RoundKey[$i*4+3] = $key[$i*4+3];
+        @RoundKey[$i*4..$i*4+3] = @key[$i*4..$i*4+3];
     }
     # All other round keys are found from the previous round keys.
     while ($i < (4 * ($nr+1))) {
 
-        for ($j=0; $j<4; ++$j) {
-            $temp[$j] = $RoundKey[($i-1) * 4 + $j];
-        }
+        @temp[0..3] = @RoundKey[($i-1)*4..($i-1)*4+3];
+
         if ($i % $nk == 0) {
             # rotate the 4 bytes in a word to the left once
             # [a0,a1,a2,a3] becomes [a1,a2,a3,a0]
-            $k = $temp[0];
-            $temp[0] = $temp[1];
-            $temp[1] = $temp[2];
-            $temp[2] = $temp[3];
-            $temp[3] = $k;
+            @temp[0..3] = @temp[1,2,3,0];
 
             # take a four-byte input word and apply the S-box
             # to each of the four bytes to produce an output word.
-            $temp[0] = $sbox[$temp[0]];
-            $temp[1] = $sbox[$temp[1]];
-            $temp[2] = $sbox[$temp[2]];
-            $temp[3] = $sbox[$temp[3]];
+            @temp[0..3] = @sbox[@temp[0..3]];
 
             $temp[0] = $temp[0] ^ $rcon[$i/$nk];
 
         } elsif ($nk > 6 && $i % $nk == 4) {
 
-            $temp[0] = $sbox[$temp[0]];
-            $temp[1] = $sbox[$temp[1]];
-            $temp[2] = $sbox[$temp[2]];
-            $temp[3] = $sbox[$temp[3]];
+            @temp[0..3] = @sbox[@temp[0..3]];
         }
         $RoundKey[$i*4+0] = $RoundKey[($i-$nk)*4+0] ^ $temp[0];
         $RoundKey[$i*4+1] = $RoundKey[($i-$nk)*4+1] ^ $temp[1];
@@ -157,8 +143,9 @@ sub AddRoundKey($)
     my $round = shift;
     my ($i,$j);
     for ($i=0; $i<4; ++$i) {
+        my $k = $round*16 + $i*4;
         for ($j=0; $j<4; ++$j) {
-            $state[$j][$i] ^= $RoundKey[$round * 16 + $i * 4 + $j];
+            $state[$j][$i] ^= $RoundKey[$k + $j];
         }
     }
 }
@@ -167,21 +154,17 @@ sub AddRoundKey($)
 # Substitute the values in the state matrix with values in an S-box
 sub SubBytes()
 {
-    my ($i, $j);
+    my $i;
     for ($i=0; $i<4; ++$i) {
-        for ($j=0; $j<4; ++$j) {
-            $state[$i][$j] = $sbox[$state[$i][$j]];
-        }
+        @{$state[$i]}[0..3] = @sbox[@{$state[$i]}[0..3]];
     }
 }
 
 sub InvSubBytes()
 {
-    my ($i, $j);
+    my $i;
     for ($i=0; $i<4; ++$i) {
-        for ($j=0; $j<4; ++$j) {
-            $state[$i][$j] = $rsbox[$state[$i][$j]];
-        }
+        @{$state[$i]}[0..3] = @rsbox[@{$state[$i]}[0..3]];
     }
 }
 
@@ -192,55 +175,25 @@ sub InvSubBytes()
 sub ShiftRows()
 {
     # rotate first row 1 columns to left
-    my $temp = $state[1][0];
-    $state[1][0] = $state[1][1];
-    $state[1][1] = $state[1][2];
-    $state[1][2] = $state[1][3];
-    $state[1][3] = $temp;
+    @{$state[1]}[0,1,2,3] = @{$state[1]}[1,2,3,0];
 
     # rotate second row 2 columns to left
-    $temp = $state[2][0];
-    $state[2][0] = $state[2][2];
-    $state[2][2] = $temp;
-
-    $temp = $state[2][1];
-    $state[2][1] = $state[2][3];
-    $state[2][3] = $temp;
+    @{$state[2]}[0,1,2,3] = @{$state[2]}[2,3,0,1];
 
     # rotate third row 3 columns to left
-    $temp = $state[3][0];
-    $state[3][0] = $state[3][3];
-    $state[3][3] = $state[3][2];
-    $state[3][2] = $state[3][1];
-    $state[3][1] = $temp;
+    @{$state[3]}[0,1,2,3] = @{$state[3]}[3,0,1,2];
 }
 
 sub InvShiftRows()
 {
-    my $temp;
-
     # rotate first row 1 columns to right
-    $temp = $state[1][3];
-    $state[1][3] = $state[1][2];
-    $state[1][2] = $state[1][1];
-    $state[1][1] = $state[1][0];
-    $state[1][0] = $temp;
+    @{$state[1]}[0,1,2,3] = @{$state[1]}[3,0,1,2];
 
     # rotate second row 2 columns to right
-    $temp = $state[2][0];
-    $state[2][0] = $state[2][2];
-    $state[2][2] = $temp;
-
-    $temp = $state[2][1];
-    $state[2][1] = $state[2][3];
-    $state[2][3] = $temp;
+    @{$state[2]}[0,1,2,3] = @{$state[2]}[2,3,0,1];
 
     # rotate third row 3 columns to right
-    $temp = $state[3][0];
-    $state[3][0] = $state[3][1];
-    $state[3][1] = $state[3][2];
-    $state[3][2] = $state[3][3];
-    $state[3][3] = $temp;
+    @{$state[3]}[0,1,2,3] = @{$state[3]}[1,2,3,0];
 }
 
 #------------------------------------------------------------------------------
@@ -305,7 +258,7 @@ sub Cipher($)
     # copy the input PlainText to state array and apply the CBC
     for ($i=0; $i<4; ++$i) {
         for ($j=0; $j<4; ++$j) {
-            my $k = $i * 4 + $j;
+            my $k = $i*4 + $j;
             $state[$j][$i] = $in[$k] ^ $cbc[$k];
         }
     }
@@ -314,16 +267,18 @@ sub Cipher($)
     AddRoundKey(0);
 
     # there will be $nr rounds; the first $nr-1 rounds are identical
-    for ($round=1; $round<$nr; ++$round) {
+    for ($round=1; ; ++$round) {
         SubBytes();
         ShiftRows();
-        MixColumns();
-        AddRoundKey($round);
+        if ($round < $nr) {
+            MixColumns();
+            AddRoundKey($round);
+        } else {
+            # MixColumns() is not used in the last round
+            AddRoundKey($nr);
+            last;
+        }
     }
-    # MixColumns() is not used in the last round
-    SubBytes();
-    ShiftRows();
-    AddRoundKey($nr);
 
     # the encryption process is over
     # copy the state array to output array (and save for CBC)
@@ -351,16 +306,14 @@ sub InvCipher($)
     AddRoundKey($nr);
 
     # there will be $nr rounds; the first $nr-1 rounds are identical
-    for ($round=$nr-1; $round>0; --$round) {
+    for ($round=$nr-1; ; --$round) {
         InvShiftRows();
         InvSubBytes();
         AddRoundKey($round);
+        # InvMixColumns() is not used in the last round
+        last if $round <= 0;
         InvMixColumns();
     }
-    # InvMixColumns() is not used in the last round
-    InvShiftRows();
-    InvSubBytes();
-    AddRoundKey(0);
 
     # copy the state array to output array and reverse the CBC
     for ($i=0; $i<4; ++$i) {
@@ -382,7 +335,7 @@ sub InvCipher($)
 #            encrypt with a randomly-generated IV)
 #         3) flag to disable padding
 # Returns: error string, or undef on success
-# Notes: encrypts/decrypts data in place
+# Notes: encrypts/decrypts data in place (encrypted data returned with leading IV)
 sub Crypt($$;$$)
 {
     my ($dataPt, $key, $encrypt, $noPad) = @_;
@@ -460,9 +413,9 @@ Image::ExifTool::AES - AES encryption with cipher-block chaining
 
   use Image::ExifTool::AES qw(Crypt);
 
-  $err = Crypt($plaintext, $key, 1);    # encryption
+  $err = Crypt(\$plaintext, $key, 1);   # encryption
 
-  $err = Crypt($ciphertext, $key);      # decryption
+  $err = Crypt(\$ciphertext, $key);     # decryption
 
 =head1 DESCRIPTION
 
@@ -484,7 +437,7 @@ Implement AES encryption/decryption with cipher-block chaining.
 
 =item Inputs:
 
-0) Data to encrypt/decrypt.
+0) Scalar reference for data to encrypt/decrypt.
 
 1) Encryption key string (must have length 16, 24 or 32).
 
@@ -496,7 +449,9 @@ multiple of 16 bytes.
 
 =item Returns:
 
-Undefined on success, otherwise returns the error string.
+On success, the return value is undefined and the data is encrypted or
+decrypted as specified.  Otherwise returns an error string and the data is
+left in an indeterminate state.
 
 =item Notes:
 
@@ -522,7 +477,7 @@ main purpose of encryption, so this really can't be considered a bug.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

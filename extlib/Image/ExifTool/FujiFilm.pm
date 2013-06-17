@@ -13,6 +13,7 @@
 #               5) http://www.cybercom.net/~dcoffin/dcraw/
 #               6) http://forums.dpreview.com/forums/readflat.asp?forum=1012&thread=31350384
 #                  and http://forum.photome.de/viewtopic.php?f=2&t=353&p=742#p740
+#               7) Kai Lappalainen private communication
 #               JD) Jens Duttke private communication
 #------------------------------------------------------------------------------
 
@@ -23,14 +24,17 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.27';
+$VERSION = '1.41';
 
 sub ProcessFujiDir($$$);
+sub ProcessFaceRec($$$);
 
 # the following RAF version numbers have been tested for writing:
 my %testedRAF = (
-    '0100' => 'E550, E900, S5600, S6000fd, S6500fd, HS10/HS11, S200EXR (all Ver1.00)',
-    '0102' => 'S100FS Ver1.02',
+    '0100' => 'E550, E900, F770, S5600, S6000fd, S6500fd, HS10/HS11, HS30, S200EXR, X100, XF1, X-Pro1, X-S1 Ver1.00',
+    '0101' => 'X-E1',
+    '0102' => 'S100FS, X10 Ver1.02',
+    '0103' => 'IS Pro Ver1.03',
     '0104' => 'S5Pro Ver1.04',
     '0106' => 'S5Pro Ver1.06',
     '0111' => 'S5Pro Ver1.11',
@@ -44,6 +48,16 @@ my %testedRAF = (
     '0269' => 'S9500 Ver1.02',
     '0271' => 'S3Pro Ver2.71', # UV/IR model?
     '0712' => 'S5000 Ver3.00',
+    '0716' => 'S5000 Ver3.00', # (yes, 2 RAF versions with the same firmware version)
+);
+
+my %faceCategories = (
+    Format => 'int8u',
+    PrintConv => { BITMASK => {
+        1 => 'Partner',
+        2 => 'Family',
+        3 => 'Friend',
+    }},
 );
 
 # FujiFilm MakerNotes tags
@@ -128,6 +142,10 @@ my %testedRAF = (
             0x180 => 'Medium Low', #2
             0x200 => 'Low',
             0x300 => 'None (B&W)', #2
+            0x301 => 'B&W Green Filter', #PH (X100)
+            0x302 => 'B&W Yellow Filter', #PH (X100)
+            0x303 => 'B&W Blue Filter', #PH (X100)
+            0x310 => 'B&W Sepia', #PH (X100)
             0x8000 => 'Film Simulation', #2
         },
     },
@@ -172,6 +190,17 @@ my %testedRAF = (
         PrintConv => {
             0x40 => 'Low',
             0x80 => 'Normal',
+            0x100 => 'n/a', #PH (NC) (all X100 samples)
+        },
+    },
+    0x100e => { #PH (X100)
+        Name => 'HighISONoiseReduction',
+        Flags => 'PrintHex',
+        Writable => 'int16u',
+        PrintConv => {
+            0x000 => 'Normal',
+            0x100 => 'Strong',
+            0x200 => 'Weak',
         },
     },
     0x1010 => {
@@ -243,6 +272,14 @@ my %testedRAF = (
             0x11 => 'Snow', #3
             0x12 => 'Fireworks', #3
             0x13 => 'Underwater', #3
+            0x14 => 'Portrait with Skin Correction', #7
+            0x16 => 'Panorama', #PH (X100)
+            0x17 => 'Night (tripod)', #7
+            0x18 => 'Pro Low-light', #7
+            0x19 => 'Pro Focus', #7
+            0x1b => 'Dog Face Detection', #7
+            0x1c => 'Cat Face Detection', #7
+            0x40 => 'Advanced Filter',
             0x100 => 'Aperture-priority AE',
             0x200 => 'Shutter speed priority AE',
             0x300 => 'Manual',
@@ -284,6 +321,10 @@ my %testedRAF = (
         Name => 'SequenceNumber',
         Writable => 'int16u',
     },
+    # (0x1150-0x1152 exist only for Pro Low-light and Pro Focus PictureModes)
+    # 0x1150 - Pro Low-light - val=1; Pro Focus - val=2 (ref 7)
+    # 0x1151 - Pro Low-light - val=4 (number of pictures taken?); Pro Focus - val=2,3 (ref 7)
+    # 0x1152 - Pro Low-light - val=1,3,4 (stacked pictures used?); Pro Focus - val=1,2 (ref 7)
     0x1210 => { #2
         Name => 'ColorMode',
         Writable => 'int16u',
@@ -318,6 +359,12 @@ my %testedRAF = (
             1 => 'Bad exposure',
         },
     },
+    0x1304 => { #PH
+        Name => 'GEImageSize',
+        Condition => '$$self{Make} =~ /^GENERAL IMAGING/',
+        Format => 'string',
+        Notes => 'GE models only',
+    },
     0x1400 => { #2
         Name => 'DynamicRange',
         Writable => 'int16u',
@@ -327,19 +374,21 @@ my %testedRAF = (
             # the S5Pro has 100%(STD),130%,170%,230%(W1),300%,400%(W2) - PH
         },
     },
-    0x1401 => { #2
+    0x1401 => { #2 (this doesn't seem to work for the X100 - PH)
         Name => 'FilmMode',
         Writable => 'int16u',
         PrintHex => 1,
         PrintConv => {
-            0x000 => 'F0/Standard',
+            0x000 => 'F0/Standard (Provia)',
             0x100 => 'F1/Studio Portrait',
             0x110 => 'F1a/Studio Portrait Enhanced Saturation',
-            0x120 => 'F1b/Studio Portrait Smooth Skin Tone',
+            0x120 => 'F1b/Studio Portrait Smooth Skin Tone (Astia)',
             0x130 => 'F1c/Studio Portrait Increased Sharpness',
-            0x200 => 'F2/Fujichrome',
+            0x200 => 'F2/Fujichrome (Velvia)',
             0x300 => 'F3/Studio Portrait Ex',
             0x400 => 'F4/Velvia',
+            0x500 => 'Pro Neg. Std', #PH (X-Pro1)
+            0x501 => 'Pro Neg. Hi', #PH (X-Pro1)
         },
     },
     0x1402 => { #2
@@ -385,6 +434,9 @@ my %testedRAF = (
         PrintConvInv => '$val=~s/\s*\%$//; $val',
     },
     # 0x140b - DR value for AutoDR???? (ref 6) - values: 100
+    # 0x3820 - int16u video frame rate? - PH (HS20EXR)
+    # 0x3821 - int16u video frame width? - PH (HS20EXR)
+    # 0x3822 - int16u video frame height? - PH (HS20EXR)
     0x4100 => { #PH
         Name => 'FacesDetected',
         Writable => 'int16u',
@@ -398,7 +450,15 @@ my %testedRAF = (
             detected
         },
     },
+    # 0x4101-0x4105 - exist only if face detection active
     # 0x4104 - also related to face detection (same number of entries as FacePositions)
+    # 0x4200 - same as 0x4100?
+    # 0x4203 - same as 0x4103
+    # 0x4204 - same as 0x4104
+    0x4282 => { #PH
+        Name => 'FaceRecInfo',
+        SubDirectory => { TagTable => 'Image::ExifTool::FujiFilm::FaceRecInfo' },
+    },
     0x8000 => { #2
         Name => 'FileSource',
         Writable => 'string',
@@ -418,6 +478,38 @@ my %testedRAF = (
         Notes => 'only found in MPImage2 of .MPO images',
     },
     # 0xb212 - also found in MPIMage2 images - PH
+);
+
+# Face recognition information from FinePix F550EXR (ref PH)
+%Image::ExifTool::FujiFilm::FaceRecInfo = (
+    PROCESS_PROC => \&ProcessFaceRec,
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
+    VARS => { NO_ID => 1 },
+    NOTES => 'Face recognition information.',
+    Face1Name => { },
+    Face2Name => { },
+    Face3Name => { },
+    Face4Name => { },
+    Face5Name => { },
+    Face6Name => { },
+    Face7Name => { },
+    Face8Name => { },
+    Face1Category => { %faceCategories },
+    Face2Category => { %faceCategories },
+    Face3Category => { %faceCategories },
+    Face4Category => { %faceCategories },
+    Face5Category => { %faceCategories },
+    Face6Category => { %faceCategories },
+    Face7Category => { %faceCategories },
+    Face8Category => { %faceCategories },
+    Face1Birthday => { },
+    Face2Birthday => { },
+    Face3Birthday => { },
+    Face4Birthday => { },
+    Face5Birthday => { },
+    Face6Birthday => { },
+    Face7Birthday => { },
+    Face8Birthday => { },
 );
 
 # tags in RAF images (ref 5)
@@ -480,7 +572,186 @@ my %testedRAF = (
         Format => 'int16u',
         Count => 4,
     },
+    0xc000 => {
+        Name => 'RAFData',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::FujiFilm::RAFData',
+            ByteOrder => 'Little-endian',
+        }
+    },
 );
+
+%Image::ExifTool::FujiFilm::RAFData = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    FIRST_ENTRY => 0,
+    # (FujiFilm image dimensions are REALLY confusing)
+    0 => {
+        Name => 'RawImageWidth',
+        Format => 'int32u',
+        RawConv => '$val < 10000 ? $$self{FujiWidth} = $val : undef', #5
+        ValueConv => '$$self{FujiLayout} ? ($val / 2) : $val',
+    },
+    4 => [
+        {
+            Name => 'RawImageWidth',
+            Condition => 'not $$self{FujiWidth}',
+            Format => 'int32u',
+            ValueConv => '$$self{FujiLayout} ? ($val / 2) : $val',
+        },
+        {
+            Name => 'RawImageHeight',
+            Format => 'int32u',
+            ValueConv => '$$self{FujiLayout} ? ($val * 2) : $val',
+        },
+    ],
+    8 => {
+        Name => 'RawImageHeight',
+        Condition => 'not $$self{FujiWidth}',
+        Format => 'int32u',
+        ValueConv => '$$self{FujiLayout} ? ($val * 2) : $val',
+    },
+);
+
+# TIFF IFD-format information stored in FujiFilm RAF images (ref 5)
+%Image::ExifTool::FujiFilm::IFD = (
+    PROCESS_PROC => \&Image::ExifTool::Exif::ProcessExif,
+    GROUPS => { 0 => 'RAF', 1 => 'FujiIFD', 2 => 'Image' },
+    NOTES => 'Tags found in the FujiIFD information of RAF images from some models.',
+    0xf000 => {
+        Name => 'FujiIFD',
+        Groups => { 1 => 'FujiIFD' },
+        Flags => 'SubIFD',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::FujiFilm::IFD',
+            DirName => 'FujiSubIFD',
+            Start => '$val',
+        },
+    },
+    0xf001 => 'RawImageFullWidth',
+    0xf002 => 'RawImageFullHeight',
+    0xf003 => 'BitsPerSample',
+    # 0xf004 - values: 4
+    # 0xf005 - values: 1374, 1668
+    # 0xf006 - some sort of flag indicating packed format?
+    0xf007 => {
+        Name => 'StripOffsets',
+        IsOffset => 1,
+        OffsetPair => 0xf008,  # point to associated byte counts
+    },
+    0xf008 => {
+        Name => 'StripByteCounts',
+        OffsetPair => 0xf007,  # point to associated offsets
+    },
+    # 0xf009 - values: 0, 3
+    # 0xf00a-0xf00c ?
+    # 0xf00d - similar to 0xf00e
+    0xf00e => 'WB_GRBLevels',
+    # 0xf00f ?
+);
+
+# information found in FFMV atom of MOV videos
+%Image::ExifTool::FujiFilm::FFMV = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    FIRST_ENTRY => 0,
+    NOTES => 'Information found in the FFMV atom of MOV videos.',
+    0 => {
+        Name => 'MovieStreamName',
+        Format => 'string[34]',
+    },
+);
+
+# tags in FujiFilm QuickTime videos (ref PH)
+# (similar information in Kodak,Minolta,Nikon,Olympus,Pentax and Sanyo videos)
+%Image::ExifTool::FujiFilm::MOV = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    FIRST_ENTRY => 0,
+    NOTES => 'This information is found in MOV videos from some FujiFilm cameras.',
+    0x00 => {
+        Name => 'Make',
+        Format => 'string[24]',
+    },
+    0x18 => {
+        Name => 'Model',
+        Description => 'Camera Model Name',
+        Format => 'string[16]',
+    },
+    0x2e => { # (NC)
+        Name => 'ExposureTime',
+        Format => 'int32u',
+        ValueConv => '$val ? 1 / $val : 0',
+        PrintConv => 'Image::ExifTool::Exif::PrintExposureTime($val)',
+    },
+    0x32 => {
+        Name => 'FNumber',
+        Format => 'rational64u',
+        PrintConv => 'sprintf("%.1f",$val)',
+    },
+    0x3a => { # (NC)
+        Name => 'ExposureCompensation',
+        Format => 'rational64s',
+        PrintConv => '$val ? sprintf("%+.1f", $val) : 0',
+    },
+);
+
+#------------------------------------------------------------------------------
+# decode information from FujiFilm face recognition information
+# Inputs: 0) ExifTool object reference, 1) dirInfo reference, 2) tag table ref
+# Returns: 1
+sub ProcessFaceRec($$$)
+{
+    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my $dataPt = $$dirInfo{DataPt};
+    my $dataPos = $$dirInfo{DataPos} + ($$dirInfo{Base} || 0);
+    my $dirStart = $$dirInfo{DirStart};
+    my $dirLen = $$dirInfo{DirLen};
+    my $pos = $dirStart;
+    my $end = $dirStart + $dirLen;
+    my ($i, $n, $p, $val);
+    $exifTool->VerboseDir('FaceRecInfo');
+    for ($i=1; ; ++$i) {
+        last if $pos + 8 > $end;
+        my $off = Get32u($dataPt, $pos) + $dirStart;
+        my $len = Get32u($dataPt, $pos + 4);
+        last if $len==0 or $off>$end or $off+$len>$end or $len < 62;
+        # values observed for each offset (always zero if not listed):
+        # 0=5; 3=1; 4=4; 6=1; 10-13=numbers(constant for a given registered face)
+        # 15=16; 16=3; 18=1; 22=nameLen; 26=1; 27=16; 28=7; 30-33=nameLen(int32u)
+        # 34-37=nameOffset(int32u); 38=32; 39=16; 40=4; 42=1; 46=0,2,4,8(category)
+        # 50=33; 51=16; 52=7; 54-57=dateLen(int32u); 58-61=dateOffset(int32u)
+        $n = Get32u($dataPt, $off + 30);
+        $p = Get32u($dataPt, $off + 34) + $dirStart;
+        last if $p < $dirStart or $p + $n > $end;
+        $val = substr($$dataPt, $p, $n);
+        $exifTool->HandleTag($tagTablePtr, "Face${i}Name", $val,
+            DataPt  => $dataPt,
+            DataPos => $dataPos,
+            Start   => $p,
+            Size    => $n,
+        );
+        $n = Get32u($dataPt, $off + 54);
+        $p = Get32u($dataPt, $off + 58) + $dirStart;
+        last if $p < $dirStart or $p + $n > $end;
+        $val = substr($$dataPt, $p, $n);
+        $val =~ s/(\d{4})(\d{2})(\d{2})/$1:$2:$2/;
+        $exifTool->HandleTag($tagTablePtr, "Face${i}Birthday", $val,
+            DataPt  => $dataPt,
+            DataPos => $dataPos,
+            Start   => $p,
+            Size    => $n,
+        );
+        $exifTool->HandleTag($tagTablePtr, "Face${i}Category", undef,
+            DataPt  => $dataPt,
+            DataPos => $dataPos,
+            Start   => $off + 46,
+            Size    => 1,
+        );
+        $pos += 8;
+    }
+    return 1;
+}
 
 #------------------------------------------------------------------------------
 # get information from FujiFilm RAF directory
@@ -552,7 +823,7 @@ sub WriteRAF($$)
     }
     # check to make sure this version of RAF has been tested
     unless ($testedRAF{$ver}) {
-        $exifTool->Error("RAF version $ver not yet tested", 1) and return 1;
+        $exifTool->Warn("RAF version $ver not yet tested", 1);
     }
     # read the embedded JPEG
     unless ($raf->Seek($jpos, 0) and $raf->Read($jpeg, $jlen) == $jlen) {
@@ -596,16 +867,16 @@ sub WriteRAF($$)
             return 1;
         }
         # make sure padding is only zero bytes (can be >100k for HS10)
+        # (have seen non-null padding in X-Pro1)
         if ($buff =~ /[^\0]/) {
-            $exifTool->Error('Non-null bytes found in padding');
-            return 1;
+            return 1 if $exifTool->Error('Non-null bytes found in padding', 2);
         }
     }
     # calculate offset difference due to change in JPEG size
     my $ptrDiff = length($outJpeg) + length($pad) - ($jlen + $oldPadLen);
     # update necessary pointers in header
     foreach $offset (0x5c, 0x64, 0x78, 0x80) {
-        last if $offset >= $jpos;    # some versions have a short header
+        last if $offset >= $jpos;   # some versions have a short header
         my $oldPtr = Get32u(\$hdr, $offset);
         next unless $oldPtr;        # don't update if pointer is zero
         Set32u($oldPtr + $ptrDiff, \$hdr, $offset);
@@ -643,6 +914,7 @@ sub ProcessRAF($$)
     $raf->Seek($jpos, 0)              or return 0;
     $raf->Read($jpeg, $jlen) == $jlen or return 0;
 
+    $exifTool->SetFileType();
     $exifTool->FoundTag('RAFVersion', substr($buff, 0x3c, 4));
 
     # extract information from embedded JPEG
@@ -655,9 +927,9 @@ sub ProcessRAF($$)
     $$exifTool{BASE} -= $jpos;
     $exifTool->FoundTag('PreviewImage', \$jpeg) if $rtnVal;
 
-    # extract information from Fuji RAF directories
-    my $num = '';
-    foreach $offset (0x5c, 0x78) {
+    # extract information from Fuji RAF and TIFF directories
+    my ($rafNum, $ifdNum) = ('','');
+    foreach $offset (0x5c, 0x64, 0x78, 0x80) {
         last if $offset >= $jpos;
         unless ($raf->Seek($offset, 0) and $raf->Read($buff, 4)) {
             $warn = 1;
@@ -665,17 +937,30 @@ sub ProcessRAF($$)
         }
         my $start = unpack('N',$buff);
         next unless $start;
-
-        %dirInfo = (
-            RAF      => $raf,
-            DirStart => $start,
-        );
-        $$exifTool{SET_GROUP1} = "RAF$num";
-        my $tagTablePtr = GetTagTable('Image::ExifTool::FujiFilm::RAF');
-        $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr) or $warn = 1;
-        delete $$exifTool{SET_GROUP1};
-
-        $num = ($num || 1) + 1;
+        if ($offset == 0x64 or $offset == 0x80) {
+            # parse FujiIFD directory
+            %dirInfo = (
+                RAF  => $raf,
+                Base => $start,
+            );
+            $$exifTool{SET_GROUP1} = "FujiIFD$ifdNum";
+            my $tagTablePtr = GetTagTable('Image::ExifTool::FujiFilm::IFD');
+            # this is TIFF-format data only for some models, so no warning if it fails
+            $exifTool->ProcessTIFF(\%dirInfo, $tagTablePtr, \&Image::ExifTool::ProcessTIFF);
+            delete $$exifTool{SET_GROUP1};
+            $ifdNum = ($ifdNum || 1) + 1;
+        } else {
+            # parse RAF directory
+            %dirInfo = (
+                RAF      => $raf,
+                DirStart => $start,
+            );
+            $$exifTool{SET_GROUP1} = "RAF$rafNum";
+            my $tagTablePtr = GetTagTable('Image::ExifTool::FujiFilm::RAF');
+            $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr) or $warn = 1;
+            delete $$exifTool{SET_GROUP1};
+            $rafNum = ($rafNum || 1) + 1;
+        }
     }
     $warn and $exifTool->Warn('Possibly corrupt RAF information');
 
@@ -702,7 +987,7 @@ FujiFilm maker notes in EXIF information, and to read/write FujiFilm RAW
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

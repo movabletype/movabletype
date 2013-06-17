@@ -89,7 +89,7 @@ sub ProcessBigIFD($$$)
             my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tagID);
             next unless defined $tagInfo or $verbose;
             my $valuePtr = $entry + 12;
-            my ($valBuff, $valBase);
+            my ($valBuff, $valBase, $rational);
             if ($size > 8) {
                 if ($size > $maxOffset) {
                     $exifTool->Warn("Can't handle $dirName entry $index (huge size)");
@@ -113,15 +113,11 @@ sub ProcessBigIFD($$$)
                 # GetTagInfo() required the value for a Condition
                 $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tagID, \$valBuff);
             }
-            my $val = ReadValue(\$valBuff, 0, $formatStr, $count, $size);
+            my $val = ReadValue(\$valBuff, 0, $formatStr, $count, $size, \$rational);
             if ($htmlDump) {
                 my $tval = $val;
-                if ($formatStr =~ /^rational64([su])$/) {
-                    # show numerator/denominator separately
-                    my $f = ReadValue(\$valBuff, 0, "int32$1", $count*2, $size);
-                    $f =~ s/(-?\d+) (-?\d+)/$1\/$2/g;
-                    $tval .= " ($f)";
-                }
+                # show numerator/denominator separately for rational numbers
+                $tval .= " ($rational)" if defined $rational;
                 my ($tagName, $colName);
                 if ($tagID == 0x927c and $dirName eq 'ExifIFD') {
                     $tagName = 'MakerNotes';
@@ -264,7 +260,7 @@ information in BigTIFF images.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

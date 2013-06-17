@@ -18,7 +18,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.13';
+$VERSION = '1.14';
 
 %Image::ExifTool::MPEG::Audio = (
     GROUPS => { 2 => 'Audio' },
@@ -460,10 +460,11 @@ sub ProcessFrameHeader($$@)
 #------------------------------------------------------------------------------
 # Read MPEG audio frame header
 # Inputs: 0) ExifTool object reference, 1) Reference to audio data
+#         2) flag set if we are trying to recognized MP3 file only
 # Returns: 1 on success, 0 if no audio header was found
-sub ParseMPEGAudio($$)
+sub ParseMPEGAudio($$;$)
 {
-    my ($exifTool, $buffPt) = @_;
+    my ($exifTool, $buffPt, $mp3) = @_;
     my ($word, $pos);
     my $ext = $$exifTool{FILE_EXT} || '';
 
@@ -481,7 +482,8 @@ sub ParseMPEGAudio($$)
             ($word & 0x00f000) == 0x000000 or   # 0000 is the "free" bitrate index
             ($word & 0x00f000) == 0x00f000 or   # 1111 is a bad bitrate index
             ($word & 0x000c00) == 0x000c00 or   # 11 is a reserved sampling frequency
-            ($word & 0x000003) == 0x000002)     # 10 is a reserved emphasis
+            ($word & 0x000003) == 0x000002 or   # 10 is a reserved emphasis
+            (($mp3 and ($word & 0x060000) != 0x020000))) # must be layer 3 for MP3
         {
             # give up easily unless this really should be an MP3 file
             return 0 unless $ext eq 'MP3';
@@ -574,7 +576,7 @@ sub ParseMPEGAudio($$)
             $exifTool->HandleTag($xingTable, 4, substr($$buffPt, $pos, 20));
         }
         last;   # (didn't want to loop anyway)
-	}
+    }
 
     return 1;
 }
@@ -703,7 +705,7 @@ based on unofficial sources which may be incomplete, inaccurate or outdated.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

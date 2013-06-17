@@ -104,7 +104,7 @@ sub WritePhotoshop($$$)
             my $nvHash = $exifTool->GetNewValueHash($tagInfo);
             # check to see if we are overwriting this tag
             $value = substr($$dataPt, $pos, $size);
-            my $isOverwriting = Image::ExifTool::IsOverwriting($nvHash, $value);
+            my $isOverwriting = $exifTool->IsOverwriting($nvHash, $value);
             # handle special 'new' and 'old' values for IPTCDigest
             if (not $isOverwriting and $tagInfo eq $iptcDigestInfo) {
                 if (grep /^new$/, @{$$nvHash{DelValue}}) {
@@ -124,7 +124,7 @@ sub WritePhotoshop($$$)
                     $$newTags{$tagID} = $tagInfo;   # add later
                     $value = undef;
                 } else {
-                    $value = Image::ExifTool::GetNewValues($nvHash);
+                    $value = $exifTool->GetNewValues($nvHash);
                 }
                 ++$exifTool->{CHANGED};
                 next unless defined $value;     # next if tag is being deleted
@@ -185,7 +185,7 @@ sub WritePhotoshop($$$)
         if ($$newTags{$tagID}) {
             $tagInfo = $$newTags{$tagID};
             my $nvHash = $exifTool->GetNewValueHash($tagInfo);
-            $value = Image::ExifTool::GetNewValues($nvHash);
+            $value = $exifTool->GetNewValues($nvHash);
             # handle new IPTCDigest value specially
             if ($tagInfo eq $iptcDigestInfo and defined $value) {
                 if ($value eq 'new') {
@@ -196,7 +196,7 @@ sub WritePhotoshop($$$)
                 # (we already know we want to create this tag)
             } else {
                 # don't add this tag unless specified
-                next unless Image::ExifTool::IsCreating($nvHash);
+                next unless $$nvHash{IsCreating};
             }
             next unless defined $value;     # next if tag is being deleted
             $exifTool->VerboseValue("+ Photoshop:$$tagInfo{Name}", $value);
@@ -253,7 +253,7 @@ default resource name, and applied if no appended name is provided.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

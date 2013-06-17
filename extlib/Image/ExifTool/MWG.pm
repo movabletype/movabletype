@@ -14,36 +14,28 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
+use Image::ExifTool::XMP;
 
-$VERSION = '1.08';
-
-# enable MWG strict mode by default
-# (causes non-standard EXIF, IPTC and XMP to be ignored)
-$Image::ExifTool::MWG::strict = 1 unless defined $Image::ExifTool::MWG::strict;
+$VERSION = '1.11';
 
 sub RecoverTruncatedIPTC($$$);
 sub ListToString($);
 sub StringToList($$);
 sub OverwriteStringList($$$$);
 
+my $mwgLoaded;  # flag set if we alreaded Load()ed the MWG tags
+
 # MWG Composite tags
 %Image::ExifTool::MWG::Composite = (
     GROUPS => { 0 => 'Composite', 1 => 'MWG', 2 => 'Image' },
     VARS => { NO_ID => 1 },
     NOTES => q{
-        The Metadata Working Group (MWG) recommendations provide a set of rules to
-        allow certain overlapping EXIF, IPTC and XMP tags to be reconciled when
-        reading, and synchronized when writing.  The ExifTool MWG module is designed
-        to aid in the implementation of these recommendations.  (See
-        L<http://www.metadataworkinggroup.org/> for the complete MWG technical
-        specifications.)
-
         The table below lists special Composite tags which are used to access other
         tags based on the MWG 2.0 recommendations.  These tags are only accessible
-        when the MWG module is loaded.  The MWG module is loaded automatically by
-        the exiftool application if MWG is specified as a group for any tag on the
-        command line, or manually with the C<-use MWG> option.  Via the API, the MWG
-        module is loaded with "C<use Image::ExifTool::MWG>".
+        when explicitly loaded, but this is done automatically by the exiftool
+        application if MWG is specified as a group for any tag on the command line,
+        or manually with the C<-use MWG> option.  Via the API, the MWG Composite
+        tags are loaded by calling "C<Image::ExifTool::MWG::Load()>".
 
         When reading, the value of each MWG tag is B<Derived From> the specified
         tags based on the MWG guidelines.  When writing, the appropriate associated
@@ -58,12 +50,17 @@ sub OverwriteStringList($$$$);
         ignored when reading, as per the MWG recommendations.  Instead, a "Warning"
         tag is generated when non-standard metadata is encountered.  This feature
         may be disabled by setting C<$Image::ExifTool::MWG::strict = 0> in the
-        ExifTool config file (or from your Perl script when using the API).  Note
+        L<ExifTool config file|../config.html> (or from your Perl script when using the API).  Note
         that the behaviour when writing is not changed:  ExifTool always creates new
         records only in the standard location, but writes new tags to any
         EXIF/IPTC/XMP records that exist.
 
-        A complication of the specification is that although the MWG:Creator
+        Contrary to the EXIF specification, the MWG recommends that EXIF "ASCII"
+        string values be stored as UTF-8.  To honour this, the exiftool application
+        sets the default internal EXIF string encoding to "UTF8" when the MWG module
+        is loaded (but this setting does not change automatically via the API).
+
+        A complication of the MWG specification is that although the MWG:Creator
         property may consist of multiple values, the associated EXIF tag
         (EXIF:Artist) is only a simple string.  To resolve this discrepancy the MWG
         recommends a technique which allows a list of values to be stored in a
@@ -79,7 +76,7 @@ sub OverwriteStringList($$$$);
             2 => 'CurrentIPTCDigest',
             3 => 'IPTCDigest',
         },
-        ValueConv => q{
+        RawConv => q{
             return $val[1] if not defined $val[2] or (defined $val[1] and
                              (not defined $val[3] or $val[2] eq $val[3]));
             return Image::ExifTool::MWG::RecoverTruncatedIPTC($val[0], $val[1], 64);
@@ -101,7 +98,7 @@ sub OverwriteStringList($$$$);
             3 => 'CurrentIPTCDigest',
             4 => 'IPTCDigest',
         },
-        ValueConv => q{
+        RawConv => q{
             return $val[0] if defined $val[0] and $val[0] !~ /^ *$/;
             return $val[2] if not defined $val[3] or (defined $val[2] and
                              (not defined $val[4] or $val[3] eq $val[4]));
@@ -129,6 +126,9 @@ sub OverwriteStringList($$$$);
             5 => 'CurrentIPTCDigest',
             6 => 'IPTCDigest',
         },
+        # must check for validity in RawConv to avoid hiding a same-named tag,
+        # but IPTC dates use a ValueConv so we need to derive the value there
+        RawConv => '(defined $val[0] or defined $val[2] or defined $val[4]) ? $val : undef',
         ValueConv => q{
             if (defined $val[0] and $val[0] !~ /^[: ]*$/) {
                 return ($val[1] and $val[1] !~ /^ *$/) ? "$val[0].$val[1]" : $val[0];
@@ -165,6 +165,7 @@ sub OverwriteStringList($$$$);
             5 => 'CurrentIPTCDigest',
             6 => 'IPTCDigest',
         },
+        RawConv => '(defined $val[0] or defined $val[2] or defined $val[4]) ? $val : undef',
         ValueConv => q{
             if (defined $val[0] and $val[0] !~ /^[: ]*$/) {
                 return ($val[1] and $val[1] !~ /^ *$/) ? "$val[0].$val[1]" : $val[0];
@@ -197,7 +198,7 @@ sub OverwriteStringList($$$$);
             3 => 'CurrentIPTCDigest',
             4 => 'IPTCDigest',
         },
-        ValueConv => q{
+        RawConv => q{
             if (defined $val[0] and $val[0] !~ /^[: ]*$/) {
                 return ($val[1] and $val[1] !~ /^ *$/) ? "$val[0].$val[1]" : $val[0];
             }
@@ -247,7 +248,7 @@ sub OverwriteStringList($$$$);
             3 => 'CurrentIPTCDigest',
             4 => 'IPTCDigest',
         },
-        ValueConv => q{
+        RawConv => q{
             return $val[0] if defined $val[0] and $val[0] !~ /^ *$/;
             return $val[2] if not defined $val[3] or (defined $val[2] and
                              (not defined $val[4] or $val[3] eq $val[4]));
@@ -271,7 +272,7 @@ sub OverwriteStringList($$$$);
             3 => 'CurrentIPTCDigest',
             4 => 'IPTCDigest',
         },
-        ValueConv => q{
+        RawConv => q{
             return $val[0] if defined $val[0] and $val[0] !~ /^ *$/;
             return $val[2] if not defined $val[3] or (defined $val[2] and
                              (not defined $val[4] or $val[3] eq $val[4]));
@@ -294,7 +295,7 @@ sub OverwriteStringList($$$$);
             2 => 'CurrentIPTCDigest',
             3 => 'IPTCDigest',
         },
-        ValueConv => q{
+        RawConv => q{
             return $val[1] if not defined $val[2] or (defined $val[1] and
                              (not defined $val[3] or $val[2] eq $val[3]));
             return Image::ExifTool::MWG::RecoverTruncatedIPTC($val[0], $val[1], 64);
@@ -315,7 +316,7 @@ sub OverwriteStringList($$$$);
             2 => 'CurrentIPTCDigest',
             3 => 'IPTCDigest',
         },
-        ValueConv => q{
+        RawConv => q{
             return $val[1] if not defined $val[2] or (defined $val[1] and
                              (not defined $val[3] or $val[2] eq $val[3]));
             return Image::ExifTool::MWG::RecoverTruncatedIPTC($val[0], $val[1], 32);
@@ -336,7 +337,7 @@ sub OverwriteStringList($$$$);
             2 => 'CurrentIPTCDigest',
             3 => 'IPTCDigest',
         },
-        ValueConv => q{
+        RawConv => q{
             return $val[1] if not defined $val[2] or (defined $val[1] and
                              (not defined $val[3] or $val[2] eq $val[3]));
             return Image::ExifTool::MWG::RecoverTruncatedIPTC($val[0], $val[1], 32);
@@ -357,7 +358,7 @@ sub OverwriteStringList($$$$);
             2 => 'CurrentIPTCDigest',
             3 => 'IPTCDigest',
         },
-        ValueConv => q{
+        RawConv => q{
             return $val[1] if not defined $val[2] or (defined $val[1] and
                              (not defined $val[3] or $val[2] eq $val[3]));
             return Image::ExifTool::MWG::RecoverTruncatedIPTC($val[0], $val[1], 32);
@@ -371,21 +372,170 @@ sub OverwriteStringList($$$$);
     },
 );
 
-unless ($Image::ExifTool::documentOnly) {
+# MWG XMP structures
+my %sExtensions = (
+    STRUCT_NAME => 'MWG Extensions',
+    NAMESPACE   => undef, # variable namespace
+    NOTES => q{
+        This structure may contain any top-level XMP tags, but none have been
+        pre-defined in ExifTool.  Since no flattened tags have been pre-defined,
+        RegionExtensions is writable only as a structure (ie.
+        C<{xmp-dc:creator=me,rating=5}>).  Fields for this structure are identified
+        using the standard ExifTool tag name (with optional leading group name,
+        and/or trailing language code, and/or trailing C<#> symbol to disable print
+        conversion).
+    },
+);
+my %sRegionStruct = (
+    STRUCT_NAME => 'MWG RegionStruct',
+    NAMESPACE   => 'mwg-rs',
+    Area => { Struct => \%Image::ExifTool::XMP::sArea },
+    Type => {
+        PrintConv => {
+            Face => 'Face',
+            Pet => 'Pet',
+            Focus => 'Focus',
+            BarCode => 'BarCode',
+        },
+    },
+    Name        => { },
+    Description => { },
+    FocusUsage  => {
+        PrintConv => {
+            EvaluatedUsed => 'Evaluated, Used',
+            EvaluatedNotUsed => 'Evaluated, Not Used',
+            NotEvaluatedNotUsed => 'Not Evaluated, Not Used',
+        },
+    },
+    BarCodeValue=> { },
+    Extensions  => { Struct => \%sExtensions },
+    seeAlso => { Namespace => 'rdfs', Resource => 1 },
+);
+my %sKeywordStruct;
+%sKeywordStruct = (
+    STRUCT_NAME => 'MWG KeywordStruct',
+    NAMESPACE   => 'mwg-kw',
+    Keyword   => { },
+    Applied   => { Writable => 'boolean' },
+    Children  => { Struct => \%sKeywordStruct, List => 'Bag' },
+);
+
+# MWG 2.0 XMP region namespace tags
+%Image::ExifTool::MWG::Regions = (
+    %Image::ExifTool::XMP::xmpTableDefaults,
+    GROUPS => { 0 => 'XMP', 1 => 'XMP-mwg-rs', 2 => 'Image' },
+    NAMESPACE => 'mwg-rs',
+    NOTES => q{
+        Image region metadata defined by the MWG 2.0 specification.  These tags
+        belong to the ExifTool XMP-mwg-rs group, and as such they may be accessed
+        without the need to load the MWG Composite tags above.  See
+        L<http://www.metadataworkinggroup.org/> for the official specification.
+    },
+    Regions => {
+        Name => 'RegionInfo',
+        FlatName => 'Region',
+        Struct => {
+            STRUCT_NAME => 'RegionInfo',
+            NAMESPACE   => 'mwg-rs',
+            RegionList => {
+                FlatName => 'Region',
+                Struct => \%sRegionStruct,
+                List => 'Bag',
+            },
+            AppliedToDimensions => { Struct => \%Image::ExifTool::XMP::sDimensions },
+        },
+    },
+    RegionsRegionList => { Flat => 1, Name => 'RegionList' },
+);
+
+# MWG 2.0 XMP hierarchical keyword namespace tags
+%Image::ExifTool::MWG::Keywords = (
+    %Image::ExifTool::XMP::xmpTableDefaults,
+    GROUPS => { 0 => 'XMP', 1 => 'XMP-mwg-kw', 2 => 'Image' },
+    NAMESPACE => 'mwg-kw',
+    NOTES => q{
+        Hierarchical keywords metadata defined by the MWG 2.0 specification.  These
+        tags belong to the ExifTool XMP-mwg-kw group. ExifTool unrolls keyword
+        structures to an arbitrary depth of 6 to allow individual levels to be
+        accessed with different tag names, and to avoid infinite recursion.  See
+        L<http://www.metadataworkinggroup.org/> for the official specification.
+    },
+    # arbitrarily define only the first 6 levels of the keyword hierarchy
+    Keywords => {
+        Name => 'KeywordInfo',
+        Struct => {
+            STRUCT_NAME => 'KeywordInfo',
+            NAMESPACE   => 'mwg-kw',
+            Hierarchy => { Struct => \%sKeywordStruct, List => 'Bag' },
+        },
+    },
+    KeywordsHierarchy => { Name => 'HierarchicalKeywords', Flat => 1 },
+    KeywordsHierarchyKeyword  => { Name => 'HierarchicalKeywords1', Flat => 1 },
+    KeywordsHierarchyApplied  => { Name => 'HierarchicalKeywords1Applied', Flat => 1 },
+    KeywordsHierarchyChildren => { Name => 'HierarchicalKeywords1Children', Flat => 1 },
+    KeywordsHierarchyChildrenKeyword  => { Name => 'HierarchicalKeywords2', Flat => 1 },
+    KeywordsHierarchyChildrenApplied  => { Name => 'HierarchicalKeywords2Applied', Flat => 1 },
+    KeywordsHierarchyChildrenChildren => { Name => 'HierarchicalKeywords2Children', Flat => 1 },
+    KeywordsHierarchyChildrenChildrenKeyword  => { Name => 'HierarchicalKeywords3', Flat => 1 },
+    KeywordsHierarchyChildrenChildrenApplied  => { Name => 'HierarchicalKeywords3Applied', Flat => 1 },
+    KeywordsHierarchyChildrenChildrenChildren => { Name => 'HierarchicalKeywords3Children', Flat => 1 },
+    KeywordsHierarchyChildrenChildrenChildrenKeyword  => { Name => 'HierarchicalKeywords4', Flat => 1 },
+    KeywordsHierarchyChildrenChildrenChildrenApplied  => { Name => 'HierarchicalKeywords4Applied', Flat => 1 },
+    KeywordsHierarchyChildrenChildrenChildrenChildren => { Name => 'HierarchicalKeywords4Children', Flat => 1 },
+    KeywordsHierarchyChildrenChildrenChildrenChildrenKeyword  => { Name => 'HierarchicalKeywords5', Flat => 1 },
+    KeywordsHierarchyChildrenChildrenChildrenChildrenApplied  => { Name => 'HierarchicalKeywords5Applied', Flat => 1 },
+    KeywordsHierarchyChildrenChildrenChildrenChildrenChildren => { Name => 'HierarchicalKeywords5Children', Flat => 1, NoSubStruct => 1 }, # break infinite recursion
+    KeywordsHierarchyChildrenChildrenChildrenChildrenChildrenKeyword => { Name => 'HierarchicalKeywords6', Flat => 1 },
+    KeywordsHierarchyChildrenChildrenChildrenChildrenChildrenApplied => { Name => 'HierarchicalKeywords6Applied', Flat => 1 },
+);
+
+# MWG 2.0 XMP collections namespace tags
+%Image::ExifTool::MWG::Collections = (
+    %Image::ExifTool::XMP::xmpTableDefaults,
+    GROUPS => { 0 => 'XMP', 1 => 'XMP-mwg-coll', 2 => 'Image' },
+    NAMESPACE => 'mwg-coll',
+    NOTES => q{
+        Collections metadata defined by the MWG 2.0 specification.  These tags
+        belong to the ExifTool XMP-mwg-coll group.  See
+        L<http://www.metadataworkinggroup.org/> for the official specification.
+    },
+    Collections => {
+        FlatName => '',
+        List => 'Bag',
+        Struct => {
+            STRUCT_NAME => 'CollectionInfo',
+            NAMESPACE   => 'mwg-coll',
+            CollectionName => { },
+            CollectionURI  => { },
+        },
+    },
+);
+
+
+#------------------------------------------------------------------------------
+# Load the MWG Composite tags
+sub Load()
+{
+    return if $mwgLoaded;
+
     # add our composite tags
     Image::ExifTool::AddCompositeTags('Image::ExifTool::MWG');
     # must also add to lookup so we can write them
     # (since MWG tags aren't in the tag lookup by default)
     Image::ExifTool::AddTagsToLookup(\%Image::ExifTool::MWG::Composite,
                                      'Image::ExifTool::Composite');
-}
 
-# modify EXIF:Artist to behave as a List-type tag
-{
+    # modify EXIF:Artist to behave as a list-type tag
     my $artist = $Image::ExifTool::Exif::Main{0x13b};
     $$artist{List} = 1;
     $$artist{IsOverwriting} = \&OverwriteStringList;
     $$artist{RawConv} = \&StringToList;
+
+    # enable MWG strict mode if not set already
+    # (causes non-standard EXIF, IPTC and XMP to be ignored)
+    $Image::ExifTool::MWG::strict = 1 unless defined $Image::ExifTool::MWG::strict;
+
+    $mwgLoaded = 1;
 }
 
 #------------------------------------------------------------------------------
@@ -532,31 +682,40 @@ Image::ExifTool::MWG - Metadata Working Group support
 
 =head1 SYNOPSIS
 
-    # enable MWG tags (strict mode enabled by default)
+    # enable MWG Composite tags
     use Image::ExifTool::MWG;
+    Image::ExifTool::MWG::Load();
+
+    # enable MWG strict mode
+    $Image::ExifTool::MWG::strict = 1;
 
     # disable MWG strict mode
     $Image::ExifTool::MWG::strict = 0;
 
 =head1 DESCRIPTION
 
-The MWG module contains tag definitions which are designed to simplify
-implementation of the Metadata Working Group guidelines.  These special MWG
-composite tags are enabled simply by loading this module:
+The MWG module contains Composite tag definitions which are designed to
+simplify implementation of the Metadata Working Group guidelines.  These
+special MWG Composite tags are enabled by calling the Load() method:
 
     use Image::ExifTool::MWG;
+    Image::ExifTool::MWG::Load();
 
-When the MWG module is loaded, "strict MWG conformance" is enabled by
-default.  In this mode, ExifTool will generate a Warning tag instead of
-extracting EXIF, IPTC and XMP from non-standard locations.  The strict mode
-may be disabled by setting the MWG "strict" flag to zero (either before or
-after loading the MWG module):
+By default, loading the MWG Composite tags enables "strict MWG conformance"
+unless previously enabled or disabled by the user.  In this mode, ExifTool
+will generate a Warning instead of extracting EXIF, IPTC and XMP from
+non-standard locations.  The strict mode may be disabled or enabled at any
+time by setting the MWG "strict" flag to 0 or 1.  ie)
 
     $Image::ExifTool::MWG::strict = 0;
 
+This module also contains the MWG XMP tags which are loaded automatically by
+ExifTool as required, and are independent of the MWG Composite tags which
+must be loaded explicitly as described above.
+
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

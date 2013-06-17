@@ -5,6 +5,7 @@
 #
 # Revisions:    11/08/2005 - P. Harvey Created
 #               10/10/2008 - P. Harvey Updated for Capture NX 2
+#               16/04/2011 - P. Harvey Decode NikonCaptureEditVersions
 #
 # References:   1) http://www.cybercom.net/~dcoffin/dcraw/
 #------------------------------------------------------------------------------
@@ -16,7 +17,9 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.05';
+$VERSION = '1.09';
+
+sub ProcessNikonCapture($$$);
 
 # common print conversions
 my %offOn = ( 0 => 'Off', 1 => 'On' );
@@ -85,6 +88,10 @@ my %unsharpColor = (
             TagTable => 'Image::ExifTool::NikonCapture::RedEyeData',
         },
     },
+    0x3d136244 => {
+        Name => 'EditVersionName',
+        Writable => 'string', # (null terminated)
+    },
     # 0x3e726567 added when I rotated by 90 degrees
     0x56a54260 => {
         Name => 'Exposure',
@@ -146,7 +153,12 @@ my %unsharpColor = (
         Name => 'Rotation',
         Writable => 'int16u',
     },
-  # 0x083a1a25 XML histogram data
+    0x083a1a25 => {
+        Name => 'HistogramXML',
+        Writable => 'undef',
+        Binary => 1,
+        AdjustSize => 4,    # patch Nikon bug
+    },
     0x84589434 => {
         Name => 'BrightnessData',
         SubDirectory => {
@@ -221,7 +233,11 @@ my %unsharpColor = (
             TagTable => 'Image::ExifTool::NikonCapture::UnsharpData',
         },
     },
-    # 0xe9651831 - photo effect history (XML data)
+    0xe9651831 => {
+        Name => 'PhotoEffectHistoryXML',
+        Binary => 1,
+        Writable => 'undef',
+    },
     0xfe28a44f => {
         Name => 'AutoRedEye',
         Writable => 'int8u',
@@ -623,7 +639,7 @@ my %unsharpColor = (
         Name => 'ExposureAdj2',
         Format => 'double',
         PrintConv => 'sprintf("%.4f", $val)',
-        PrintConvInvn => '$val',
+        PrintConvInv => '$val',
     },
     0x24 => {
         Name => 'ActiveD-Lighting',
@@ -679,14 +695,15 @@ sub WriteNikonCapture($$$)
     # make sure the capture data is properly contained
     SetByteOrder('II');
     my $tagID = Get32u($dataPt, $dirStart);
+    # sometimes size includes 18 header bytes, and other times it doesn't (ie. ViewNX 2.1.1)
     my $size = Get32u($dataPt, $dirStart + 18);
     my $pad = $dirLen - $size - 18; 
-    unless ($tagID == 0x7a86a940 and $pad >= 0) {
+    unless ($tagID == 0x7a86a940 and ($pad >= 0 or $pad == -18)) {
         $exifTool->Warn('Unrecognized Nikon Capture Data header');
         return undef;
     }
     # determine if there is any data after this block
-    if ($pad) {
+    if ($pad > 0) {
         $pad = substr($$dataPt, $dirStart + 18 + $size, $pad);
         $dirLen = $size + 18;
     } else {
@@ -725,7 +742,7 @@ sub WriteNikonCapture($$$)
                 my $format = $$tagInfo{Format} || $$tagInfo{Writable};
                 my $oldVal = ReadValue($dataPt,$pos+22,$format,1,$size);
                 my $nvHash = $exifTool->GetNewValueHash($tagInfo);
-                if (Image::ExifTool::IsOverwriting($nvHash, $oldVal)) {
+                if ($exifTool->IsOverwriting($nvHash, $oldVal)) {
                     my $val = $exifTool->GetNewValues($tagInfo);
                     $newVal = WriteValue($val, $$tagInfo{Writable}) if defined $val;
                     if (defined $newVal and length $newVal) {
@@ -768,6 +785,43 @@ sub WriteNikonCapture($$$)
 # process Nikon Capture data (ref 1)
 # Inputs: 0) ExifTool object ref, 1) dirInfo ref, 2) tag table ref
 # Returns: 1 on success
+sub ProcessNikonCaptureEditVersions($$$)
+{
+    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my $dataPt = $$dirInfo{DataPt};
+    my $dirStart = $$dirInfo{DirStart};
+    my $dirLen = $$dirInfo{DirLen};
+    my $dirEnd = $dirStart + $dirLen;
+    my $verbose = $exifTool->Options('Verbose');
+    SetByteOrder('II');
+    return 0 unless $dirLen > 4;
+    my $num = Get32u($dataPt, $dirStart);
+    my $pos = $dirStart + 4;
+    $verbose and $exifTool->VerboseDir('NikonCaptureEditVersions', $num);
+    while ($num) {
+        last if $pos + 4 > $dirEnd;
+        my $len = Get32u($dataPt, $pos);
+        last if $pos + $len + 4 > $dirEnd;
+        my %dirInfo = (
+            DirName  => 'NikonCapture',
+            Parent   => 'NikonCaptureEditVersions',
+            DataPt   => $dataPt,
+            DirStart => $pos + 4,
+            DirLen   => $len,
+        );
+        $$exifTool{DOC_NUM} = ++$$exifTool{DOC_COUNT};
+        $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+        --$num;
+        $pos += $len + 4;
+    }
+    delete $$exifTool{DOC_NUM};
+    return 1;
+}
+
+#------------------------------------------------------------------------------
+# process Nikon Capture data (ref 1)
+# Inputs: 0) ExifTool object ref, 1) dirInfo ref, 2) tag table ref
+# Returns: 1 on success
 sub ProcessNikonCapture($$$)
 {
     my ($exifTool, $dirInfo, $tagTablePtr) = @_;
@@ -795,7 +849,13 @@ sub ProcessNikonCapture($$$)
                 $format = 'int' . ($size * 8) . 'u';
             }
             if ($format) {
-                $value = ReadValue($dataPt,$pos,$format,1,$size);
+                my $count = 1;
+                if ($format eq 'string' or $format eq 'undef') {
+                    # patch Nikon bug in size of some values (HistogramXML)
+                    $size += $$tagInfo{AdjustSize} if $tagInfo and $$tagInfo{AdjustSize};
+                    $count = $size;
+                }
+                $value = ReadValue($dataPt,$pos,$format,$count,$size);
             } elsif ($size == 1) {
                 $value = substr($$dataPt, $pos, $size);
             }
@@ -829,7 +889,7 @@ the maker notes of NEF images.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

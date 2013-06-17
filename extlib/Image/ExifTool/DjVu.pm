@@ -135,7 +135,7 @@ sub ProcessBZZ($$$);
         any tags that exist even if they don't appear here.  The DjVu v3
         documentation endorses tags borrowed from two standards: 1) BibTeX
         bibliography system tags (all lowercase Tag ID's in the table below), and 2)
-        PDF DocInfo tags (uppercase Tag ID's).
+        PDF DocInfo tags (capitalized Tag ID's).
     },
     # BibTeX tags (ref http://en.wikipedia.org/wiki/BibTeX)
     address     => { Groups => { 2 => 'Location' } },
@@ -294,7 +294,7 @@ sub ProcessMeta($$$)
             my $name = $$item[0];
             $name =~ tr/-_a-zA-Z0-9//dc; # remove illegal characters
             length $name or $err = 1, next;
-            Image::ExifTool::AddTagToTable($tagTablePtr, $$item[0], { Name => ucfirst($name) });
+            AddTagToTable($tagTablePtr, $$item[0], { Name => ucfirst($name) });
         }
         $exifTool->HandleTag($tagTablePtr, $$item[0], $$item[1]);
     }
@@ -348,7 +348,7 @@ Image::ExifTool::AIFF.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

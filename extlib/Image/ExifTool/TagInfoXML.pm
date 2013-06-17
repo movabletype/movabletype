@@ -15,14 +15,11 @@ use vars qw($VERSION @ISA);
 use Image::ExifTool qw(:Utils :Vars);
 use Image::ExifTool::XMP;
 
-$VERSION = '1.15';
+$VERSION = '1.20';
 @ISA = qw(Exporter);
 
 # set this to a language code to generate Lang module with 'MISSING' entries
 my $makeMissing = '';
-
-# set this to true to override existing different descriptions/values
-my $overrideDifferent;
 
 sub LoadLangModules($);
 sub WriteLangModule($$;$);
@@ -32,13 +29,14 @@ sub NumbersFirst;
 my %credits = (
     cs   => 'Jens Duttke and Petr MichE<aacute>lek',
     de   => 'Jens Duttke and Herbert Kauer',
-    es   => 'Jens Duttke and Santiago del BrE<iacute>o GonzE<aacute>lez',
+    es   => 'Jens Duttke, Santiago del BrE<iacute>o GonzE<aacute>lez and Emilio Sancha',
+    fi   => 'Jens Duttke and Jarkko ME<auml>kineva',
     fr   => 'Jens Duttke, Bernard Guillotin, Jean Glasser, Jean Piquemal and Harry Nizard',
-    it   => 'Jens Duttke, Ferdinando Agovino and Emilio Dati',
+    it   => 'Jens Duttke, Ferdinando Agovino, Emilio Dati and Michele Locati',
     ja   => 'Jens Duttke and Kazunari Nishina',
     ko   => 'Jens Duttke and Jeong Beom Kim',
     nl   => 'Jens Duttke, Peter Moonen and Herman Beld',
-    pl   => 'Jens Duttke and Przemyslaw Sulek',
+    pl   => 'Jens Duttke, Przemyslaw Sulek and Kacper Perschke',
     ru   => 'Jens Duttke, Sergey Shemetov, Dmitry Yerokhin and Anton Sukhinov',
     sv   => 'Jens Duttke and BjE<ouml>rn SE<ouml>derstrE<ouml>m',
    'tr'  => 'Jens Duttke, Hasan Yildirim and Cihan Ulusoy',
@@ -94,10 +92,14 @@ sub Write(;$$%)
         my ($tagID, $didTag);
         # sort in same order as tag name documentation
         $caseInsensitive = ($tableName =~ /::XMP::/);
-        my @keys = sort NumbersFirst TagTableKeys($table);
         # get list of languages defining elements in this table
         my $isBinary = ($$table{PROCESS_PROC} and
                         $$table{PROCESS_PROC} eq \&Image::ExifTool::ProcessBinaryData);
+        # generate flattened tag names for structure fields if this is an XMP table
+        if ($$table{GROUPS} and $$table{GROUPS}{0} eq 'XMP') {
+            Image::ExifTool::XMP::AddFlattenedTags($table);
+        }
+        my @keys = sort NumbersFirst TagTableKeys($table);
         # loop throug all tag ID's in this table
         foreach $tagID (@keys) {
             my @infoArray = GetTagInfoList($table, $tagID);
@@ -150,6 +152,7 @@ PTILoop:    for ($index=0; $index<@infoArray; ++$index) {
                     }
                 }
                 $format = $$tagInfo{Format} || $$table{FORMAT} if not defined $format or $format eq '1';
+                $format = 'struct' if $$tagInfo{Struct};
                 if (defined $format) {
                     $format =~ s/\[.*\$.*\]//;   # remove expressions from format
                 } elsif ($isBinary) {
@@ -178,6 +181,7 @@ PTILoop:    for ($index=0; $index<@infoArray; ++$index) {
                         push @flags, $_ if $$tagInfo{$_};
                     }
                     push @flags, $$tagInfo{List} if $$tagInfo{List} and $$tagInfo{List} =~ /^(Alt|Bag|Seq)$/;
+                    push @flags, 'Flattened' if defined $$tagInfo{Flat};
                     push @flags, 'Unsafe' if $$tagInfo{Protected} and $$tagInfo{Protected} & 0x01;
                     push @flags, 'Protected' if $$tagInfo{Protected} and $$tagInfo{Protected} & 0x02;
                     push @flags, 'Permanent' if $$tagInfo{Permanent} or
@@ -268,32 +272,6 @@ PTILoop:    for ($index=0; $index<@infoArray; ++$index) {
 }
 
 #------------------------------------------------------------------------------
-# Perl-ize this constant
-# Inputs: string
-# Returns: constant string for Perl
-sub Perlize($)
-{
-    my $str = shift;
-    unless (($str =~ /^[+-]?(?=\d|\.\d)\d*(\.\d*)?$/ and # int or float
-             not $str =~ /^[+-]?0\d+$/) or # not octal
-            $str =~ /^0x[0-9a-f]+$/i) # hexadecimal
-    {
-        # translate unprintable characters
-        $str =~ s/\\/\\\\/g; # escape backslashes
-        if ($str =~ /([\x00-\x1f\x80-\xff])/) {
-            $str =~ s/"/\\"/g; # escape double quotes
-            # escape unprintable characters
-            $str =~ s/([\x00-\x1f\x80-\xff])/sprintf("\\x%.2x",ord $1)/eg;
-            $str = qq{"$str"};
-        } else {
-            $str =~ s/'/\\'/g; # escape single quotes
-            $str = qq{'$str'};
-        }
-    }
-    return $str;
-}
-
-#------------------------------------------------------------------------------
 # Escape backslash and quote in string
 # Inputs: string
 # Returns: escaped string
@@ -307,23 +285,31 @@ sub EscapePerl
 
 #------------------------------------------------------------------------------
 # Generate Lang modules from input tag info XML database
-# Inputs: 0) XML filename, 1) update flag:
-#       undef = default (update changed modules only)
-#       0 = (update changed modules only, but preserve version numbers)
-#       1 = (update all, but preserve version numbers)
-#       2 = (update all from scratch, but preserve version numbers)
+# Inputs: 0) XML filename, 1) update flags:
+#       0x01 = preserve version numbers
+#       0x02 = update all modules, even if they didn't change
+#       0x04 = update from scratch, ignoring existing definitions
+#       0x08 = override existing different descriptions and values
 # Returns: Count of updated Lang modules, or -1 on error
 # Notes: Must be run from the directory containing 'lib'
 sub BuildLangModules($;$)
 {
     local ($_, *XFILE);
-    my ($file, $forceUpdate) = @_;
-    my ($table, $tableName, $id, $index, $valIndex, $name, $key, $lang);
-    my (%langInfo, %different, %changed);
+    my ($file, $updateFlag) = @_;
+    my ($table, $tableName, $id, $index, $valIndex, $name, $key, $lang, $defDesc);
+    my (%langInfo, %different, %changed, $overrideDifferent);
 
     Image::ExifTool::LoadAllTables();   # first load all our tables
+    # generate our flattened tags
+    foreach $tableName (sort keys %allTables) {
+        my $table = GetTagTable($tableName);
+        next unless $$table{GROUPS} and $$table{GROUPS}{0} eq 'XMP';
+        Image::ExifTool::XMP::AddFlattenedTags($table);
+    }
     LoadLangModules(\%langInfo);        # load all existing Lang modules
-    %langInfo = () if $forceUpdate and $forceUpdate eq '2';
+    $updateFlag = 0 unless $updateFlag;
+    %langInfo = () if $updateFlag & 0x04;
+    $overrideDifferent = 1 if $updateFlag & 0x08;
 
     if (defined $file) {
         open XFILE, $file or return -1;
@@ -336,6 +322,7 @@ sub BuildLangModules($;$)
                     undef $id;
                     undef $index;
                     undef $name;
+                    undef $defDesc;
                 } elsif ($tok eq 'values') {
                     undef $key;
                     undef $valIndex;
@@ -380,6 +367,7 @@ sub BuildLangModules($;$)
                 $lang = $translateLang{$lang} if $translateLang{$lang};
                 my $tval = Image::ExifTool::XMP::UnescapeXML($3);
                 my $val = ucfirst $tval;
+                $val = $tval if $tval =~ /^(cRAW|iTun)/; # special-case non-capitalized values
                 my $cap = ($tval ne $val);
                 if ($makeMissing and $lang eq 'en') {
                     $lang = $makeMissing;
@@ -418,6 +406,7 @@ sub BuildLangModules($;$)
                     unless ($$tagInfo{Description}) {
                         $$tagInfo{Description} = Image::ExifTool::MakeDescription($tagName);
                     }
+                    $defDesc = $$tagInfo{Description};
                     $langInfo = $tagInfo;
                 } else {
                     $langInfo = $langInfo{$lang}{$tagName};
@@ -444,7 +433,11 @@ sub BuildLangModules($;$)
                         next unless $overrideDifferent;
                     }
                     next if $isDefault;
-                    $$langInfo{Description} = $val;
+                    if (defined $defDesc and $defDesc eq $val) {
+                        delete $$langInfo{Description}; # delete if same as default language
+                    } else {
+                        $$langInfo{Description} = $val;
+                    }
                 } else {
                     defined $key or warn("No key for $$tagInfo{Name}"), next;
                     my $printConv = $$tagInfo{PrintConv};
@@ -463,6 +456,10 @@ sub BuildLangModules($;$)
                             }
                         }
                         warn("Missing PrintConv entry for $key") and next unless defined $convVal;
+                    }
+                    if ($cap and $convVal =~ /^[a-z]/) {
+                        $val = lcfirst $val;    # change back to lower case
+                        undef $cap;
                     }
                     my $lc = $$langInfo{PrintConv};
                     $lc or $lc = $$langInfo{PrintConv} = { };
@@ -492,11 +489,11 @@ sub BuildLangModules($;$)
     }
     # rewrite all changed Lang modules
     my $rtnVal = 0;
-    foreach $lang ($forceUpdate ? @Image::ExifTool::langs : sort keys %changed) {
+    foreach $lang ($updateFlag & 0x02 ? @Image::ExifTool::langs : sort keys %changed) {
         next if $lang eq $Image::ExifTool::defaultLang;
         ++$rtnVal;
         # write this module (only increment version number if not forced)
-        WriteLangModule($lang, $langInfo{$lang}, not defined $forceUpdate) or $rtnVal = -1, last;
+        WriteLangModule($lang, $langInfo{$lang}, not $updateFlag & 0x01) or $rtnVal = -1, last;
     }
     return $rtnVal;
 }
@@ -615,7 +612,7 @@ and values.
 
 ~head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -767,6 +764,13 @@ Build all Image::ExifTool::Lang modules from an XML database file.
 
 0) XML file name
 
+1) Update flags:
+
+    0x01 = preserve version numbers
+    0x02 = update all modules, even if they didn't change
+    0x04 = update from scratch, ignoring existing definitions
+    0x08 = override existing different descriptions and values
+
 =item Return Value:
 
 Number of modules updated, or negative on error.
@@ -775,7 +779,7 @@ Number of modules updated, or negative on error.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

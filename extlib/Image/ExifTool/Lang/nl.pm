@@ -11,7 +11,7 @@ package Image::ExifTool::Lang::nl;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.07';
+$VERSION = '1.09';
 
 %Image::ExifTool::Lang::nl::Translate = (
    'AEBAutoCancel' => {
@@ -117,12 +117,6 @@ $VERSION = '1.07';
       PrintConv => {
         'Off' => 'Uit',
         'On' => 'Aan',
-      },
-    },
-   'AFMicroAdjActive' => {
-      PrintConv => {
-        'No' => 'Nee',
-        'Yes' => 'Ja',
       },
     },
    'AFPoint' => {
@@ -348,6 +342,7 @@ $VERSION = '1.07';
       },
     },
    'AutoFP' => {
+      Description => 'Auto FP',
       PrintConv => {
         'Off' => 'Uit',
         'On' => 'Aan',
@@ -1159,6 +1154,14 @@ $VERSION = '1.07';
     },
    'ExtraSamples' => 'Extra componenten',
    'FNumber' => 'F waarde',
+   'FaceOrientation' => {
+      PrintConv => {
+        'Horizontal (normal)' => '0° (boven/links)',
+        'Rotate 180' => '180° (onder/rechts)',
+        'Rotate 270 CW' => 'Draai 270° met de klok mee',
+        'Rotate 90 CW' => '90° tegen de klok in (rechts/boven)',
+      },
+    },
    'FastSeek' => {
       PrintConv => {
         'No' => 'Nee',
@@ -1200,6 +1203,7 @@ $VERSION = '1.07';
     },
    'FileType' => 'Bestandtype',
    'FileVersion' => 'Fileformaat versie',
+   'Filename' => 'Bestandnaam',
    'FillOrder' => {
       Description => 'Vul volgorde',
       PrintConv => {
@@ -1679,8 +1683,10 @@ $VERSION = '1.07';
       },
     },
    'Hue' => 'Kleurtoon',
+   'ICCProfile' => 'ICC Profiel',
    'IPTC-NAA' => 'IPTC-NAA metadata',
    'ISO' => 'ISO gevoeligheid',
+   'ISOAuto' => 'ISO auto',
    'ISODisplay' => 'ISO-weergave',
    'ISOExpansion' => {
       PrintConv => {
@@ -1846,6 +1852,14 @@ $VERSION = '1.07';
    'InteropOffset' => 'Interoperabiliteit-tag',
    'InteropVersion' => 'Interoperabiliteits versie',
    'JFIFVersion' => 'JFIF versie',
+   'JPEGQuality' => {
+      Description => 'Beeldkwaliteit',
+      PrintConv => {
+        'Extra Fine' => 'Extra fijn',
+        'Fine' => 'Fijn',
+        'Standard' => 'Normaal',
+      },
+    },
    'JobID' => 'ID van baan',
    'Keyword' => 'Trefwoorden',
    'Keywords' => 'Trefwoord',
@@ -1940,6 +1954,7 @@ $VERSION = '1.07';
       },
     },
    'MB-D10Batteries' => 'MB-D10 batterijen',
+   'MB-D10BatteryType' => 'MB-D10 batterijen',
    'MB-D80Batteries' => 'MB-D80 batterijen',
    'MIEVersion' => 'MIE versie',
    'MSStereo' => {
@@ -3187,7 +3202,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

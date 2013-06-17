@@ -1,12 +1,14 @@
 #------------------------------------------------------------------------------
 # File:         Vorbis.pm
 #
-# Description:  Read Ogg Vorbis meta information
+# Description:  Read Ogg Vorbis audio meta information
 #
-# Revisions:    11/10/2006 - P. Harvey Created
+# Revisions:    2006/11/10 - P. Harvey Created
+#               2011/07/12 - PH Moved Ogg to a separate module and added Theora
 #
 # References:   1) http://www.xiph.org/vorbis/doc/
 #               2) http://flac.sourceforge.net/ogg_mapping.html
+#               3) http://www.theora.org/doc/Theora.pdf
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::Vorbis;
@@ -15,18 +17,15 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.02';
-
-my $MAX_PACKETS = 2;    # maximum packets to scan from each stream at start of file
+$VERSION = '1.06';
 
 sub ProcessComments($$$);
-sub DecodeCoverArt($);
 
-# Vorbis comment tags
+# Vorbis header types
 %Image::ExifTool::Vorbis::Main = (
     NOTES => q{
-        ExifTool extracts the following Vorbis information from Ogg files.  As well
-        as this, ExifTool also extracts FLAC and ID3 information from Ogg files.
+        Information extracted from Ogg Vorbis files.  See
+        L<http://www.xiph.org/vorbis/doc/> for the Vorbis specification.
     },
     1 => {
         Name => 'Identification',
@@ -111,7 +110,28 @@ sub DecodeCoverArt($);
     ENCODED_USING => { Name => 'EncodedUsing' },
     ENCODED_BY  => { Name => 'EncodedBy' },
     COMMENT     => { Name => 'Comment' },
+    # in Theora documentation (ref 3)
+    DIRECTOR    => { Name => 'Director' },
+    PRODUCER    => { Name => 'Producer' },
+    COMPOSER    => { Name => 'Composer' },
+    ACTOR       => { Name => 'Actor' },
 );
+
+# Vorbis composite tags
+%Image::ExifTool::Vorbis::Composite = (
+    Duration => {
+        Require => {
+            0 => 'Vorbis:NominalBitrate',
+            1 => 'FileSize',
+        },
+        RawConv => '$val[0] ? $val[1] * 8 / $val[0] : undef',
+        PrintConv => 'ConvertDuration($val) . " (approx)"', # (only approximate)
+    },
+);
+
+# add our composite tags
+Image::ExifTool::AddCompositeTags('Image::ExifTool::Vorbis');
+
 
 #------------------------------------------------------------------------------
 # Process Vorbis Comments
@@ -138,6 +158,9 @@ sub ProcessComments($$$)
         if (defined $num) {
             $buff =~ /(.*?)=(.*)/s or last;
             ($tag, $val) = ($1, $2);
+            # Vorbis tag ID's are all capitals, so they may conflict with our internal tags
+            # --> protect against this by adding a trailing underline if necessary
+            $tag .= '_' if $Image::ExifTool::specialTags{$tag};
         } else {
             $tag = 'vendor';
             $val = $buff;
@@ -151,9 +174,9 @@ sub ProcessComments($$$)
             # remove invalid characters in tag name and capitalize following letters
             $name =~ s/[^\w-]+(.?)/\U$1/sg;
             $name =~ s/([a-z0-9])_([a-z])/$1\U$2/g;
-            Image::ExifTool::AddTagToTable($tagTablePtr, $tag, { Name => $name });
+            AddTagToTable($tagTablePtr, $tag, { Name => $name });
         }
-        $exifTool->HandleTag($tagTablePtr, $tag, $val,
+        $exifTool->HandleTag($tagTablePtr, $tag, $exifTool->Decode($val, 'UTF8'),
             Index   => $index,
             DataPt  => $dataPt,
             DataPos => $dataPos,
@@ -168,158 +191,13 @@ sub ProcessComments($$$)
     return 0;
 }
 
-#------------------------------------------------------------------------------
-# Process Ogg packet
-# Inputs: 0) ExifTool object ref, 1) data ref, 2) tag table ref
-# Returns: 1 on success
-sub ProcessPacket($$$)
-{
-    my ($exifTool, $dataPt, $tagTablePtr) = @_;
-    if ($$dataPt =~ /^(.)vorbis/s) {
-        my $tag = ord($1);
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
-        return 0 unless $tagInfo and $$tagInfo{SubDirectory};
-        my %dirInfo = (
-            DataPt => $dataPt,
-            DirName => $$tagInfo{Name},
-            DirStart => 7,
-        );
-        my $table = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
-        return $exifTool->ProcessDirectory(\%dirInfo, $table);
-    }
-    return 0;
-}
-
-#------------------------------------------------------------------------------
-# Extract information from an Ogg Vorbis or Ogg FLAC file
-# Inputs: 0) ExifTool object reference, 1) dirInfo reference
-# Returns: 1 on success, 0 if this wasn't a valid Ogg Vorbis file
-sub ProcessOGG($$)
-{
-    my ($exifTool, $dirInfo) = @_;
-
-    # must first check for leading/trailing ID3 information
-    unless ($exifTool->{DoneID3}) {
-        require Image::ExifTool::ID3;
-        Image::ExifTool::ID3::ProcessID3($exifTool, $dirInfo) and return 1;
-    }
-    my $raf = $$dirInfo{RAF};
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
-    my ($success, $page, $packets, $streams) = (0,0,0,0);
-    my ($buff, $tagTablePtr, $flag, $stream, %val, $numFlac);
-
-    for (;;) {
-        # must read ahead to next page to see if it is a continuation
-        # (this code would be a lot simpler if the continuation flag
-        #  was on the leading instead of the trailing page!)
-        if ($raf and $raf->Read($buff, 28) == 28) {
-            # validate magic number
-            unless ($buff =~ /^OggS/) {
-                $success and $exifTool->Warn('Lost synchronization');
-                last;
-            }
-            unless ($success) {
-                # set file type and initialize on first page
-                $success = 1;
-                $exifTool->SetFileType();
-                SetByteOrder('II');
-                $tagTablePtr = GetTagTable('Image::ExifTool::Vorbis::Main');
-            }
-            $flag = Get8u(\$buff, 5);       # page flag
-            $stream = Get32u(\$buff, 14);   # stream serial number
-            ++$streams if $flag & 0x02;     # count start-of-stream pages
-            ++$packets unless $flag & 0x01; # keep track of packet count
-        } else {
-            # all done unless we have to process our last packet
-            last unless %val;
-            ($stream) = sort keys %val;     # take a stream
-            $flag = 0;                      # no continuation
-            undef $raf;                     # flag for done reading
-        }
-
-        if (defined $numFlac) {
-            # stop to process FLAC headers if we hit the end of file
-            last unless $raf;
-            --$numFlac; # one less header packet to read
-        } else {
-            # can finally process previous packet from this stream
-            # unless this is a continuation page
-            if (defined $val{$stream} and not $flag & 0x01) {
-                ProcessPacket($exifTool, \$val{$stream}, $tagTablePtr);
-                delete $val{$stream};
-                # only read the first $MAX_PACKETS packets from each stream
-                if ($packets > $MAX_PACKETS * $streams or not defined $raf) {
-                    last unless %val;   # all done (success!)
-                    next;               # process remaining stream(s)
-                }
-            }
-            # stop processing Ogg Vorbis if we have scanned enough packets
-            last if $packets > $MAX_PACKETS * $streams and not %val;
-        }
-
-        # continue processing the current page
-        my $pageNum = Get32u(\$buff, 18);   # page sequence number
-        my $nseg = Get8u(\$buff, 26);       # number of segments
-        # calculate total data length
-        my $dataLen = Get8u(\$buff, 27);
-        if ($nseg) {
-            $raf->Read($buff, $nseg-1) == $nseg-1 or last;
-            my @segs = unpack('C*', $buff);
-            # could check that all these (but the last) are 255...
-            foreach (@segs) { $dataLen += $_ }
-        }
-        if (defined $page) {
-            if ($page == $pageNum) {
-                ++$page;
-            } else {
-                $exifTool->Warn('Missing page(s) in Ogg file');
-                undef $page;
-            }
-        }
-        # read page data
-        $raf->Read($buff, $dataLen) == $dataLen or last;
-        if ($verbose > 1) {
-            printf $out "Page %d, stream 0x%x, flag 0x%x (%d bytes)\n",
-                   $pageNum, $stream, $flag, $dataLen;
-            $exifTool->VerboseDump(\$buff, DataPos => $raf->Tell() - $dataLen);
-        }
-        if (defined $val{$stream}) {
-            $val{$stream} .= $buff;     # add this continuation page
-        } elsif (not $flag & 0x01) {    # ignore remaining pages of a continued packet
-            # ignore the first page of any packet we aren't parsing
-            if ($buff =~ /^(.)vorbis/s and $$tagTablePtr{ord($1)}) {
-                $val{$stream} = $buff;      # save this page
-            } elsif ($buff =~ /^\x7fFLAC..(..)/s) {
-                $numFlac = unpack('n',$1);
-                $val{$stream} = substr($buff, 9);
-            }
-        }
-        if (defined $numFlac) {
-            # stop to process FLAC headers if we have them all
-            last if $numFlac <= 0;
-        } elsif (defined $val{$stream} and $flag & 0x04) {
-            # process Ogg Vorbis packet now if end-of-stream bit is set
-            ProcessPacket($exifTool, \$val{$stream}, $tagTablePtr);
-            delete $val{$stream};
-        }
-    }
-    if (defined $numFlac and defined $val{$stream}) {
-        # process FLAC headers as if it was a complete FLAC file
-        require Image::ExifTool::FLAC;
-        my %dirInfo = ( RAF => new File::RandomAccess(\$val{$stream}) );
-        Image::ExifTool::FLAC::ProcessFLAC($exifTool, \%dirInfo);
-    }
-    return $success;
-}
-
 1;  # end
 
 __END__
 
 =head1 NAME
 
-Image::ExifTool::Vorbis - Read Ogg Vorbis meta information
+Image::ExifTool::Vorbis - Read Ogg Vorbis audio meta information
 
 =head1 SYNOPSIS
 
@@ -328,11 +206,11 @@ This module is used by Image::ExifTool
 =head1 DESCRIPTION
 
 This module contains definitions required by Image::ExifTool to extract meta
-information from Ogg Vorbis and Ogg FLAC audio files.
+information from Ogg Vorbis audio headers.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -345,11 +223,14 @@ under the same terms as Perl itself.
 
 =item L<http://flac.sourceforge.net/ogg_mapping.html>
 
+=item L<http://www.theora.org/doc/Theora.pdf>
+
 =back
 
 =head1 SEE ALSO
 
 L<Image::ExifTool::TagNames/Vorbis Tags>,
+L<Image::ExifTool::TagNames/Ogg Tags>,
 L<Image::ExifTool(3pm)|Image::ExifTool>
 
 =cut

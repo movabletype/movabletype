@@ -8,6 +8,7 @@
 #
 # References:   1) CPAN forum post by 'hardloaf' (http://www.cpanforum.com/threads/2183)
 #               2) http://www.cybercom.net/~dcoffin/dcraw/
+#               3) http://syscall.eu/#pana
 #              JD) Jens Duttke private communication (TZ3,FZ30,FZ50)
 #------------------------------------------------------------------------------
 
@@ -18,10 +19,12 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.02';
+$VERSION = '1.05';
 
 sub ProcessJpgFromRaw($$$);
 sub WriteJpgFromRaw($$$);
+sub WriteDistortionInfo($$$);
+sub ProcessDistortionInfo($$$);
 
 my %jpgFromRawMap = (
     IFD1         => 'IFD0',
@@ -53,8 +56,8 @@ my %jpgFromRawMap = (
     0x03 => 'SensorHeight', #1/PH
     0x04 => 'SensorTopBorder', #JD
     0x05 => 'SensorLeftBorder', #JD
-    0x06 => 'ImageHeight', #1/PH
-    0x07 => 'ImageWidth', #1/PH
+    0x06 => 'SensorBottomBorder', #PH
+    0x07 => 'SensorRightBorder', #PH
     # observed values for unknown tags - PH
     # 0x08: 1
     # 0x09: 1,3,4
@@ -160,10 +163,14 @@ my %jpgFromRawMap = (
         PanasonicHack => 1,
         OffsetPair => 0x117, # (use StripByteCounts as the offset pair)
     },
-    # 0x119 undef[32] - lens distortion data? (http://thinkfat.blogspot.com/2009/02/dissecting-panasonic-rw2-files.html)
+    0x119 => {
+        Name => 'DistortionInfo',
+        SubDirectory => { TagTable => 'Image::ExifTool::PanasonicRaw::DistortionInfo' },
+    },
+    # 0x11b - chromatic aberration correction (ref 3)
     0x2bc => { # PH Extension!!
-        Name => 'ApplicationNotes',
-        Writable => 'int8u', # (writable directory!)
+        Name => 'ApplicationNotes', # (writable directory!)
+        Writable => 'int8u',
         Format => 'undef',
         Flags => [ 'Binary', 'Protected' ],
         SubDirectory => {
@@ -203,6 +210,151 @@ my %jpgFromRawMap = (
         },
     },
 );
+
+# lens distortion information (ref 3)
+# (distortion correction equation: Ru = scale*(Rd + a*Rd^3 + b*Rd^5 + c*Rd^7), ref 3)
+%Image::ExifTool::PanasonicRaw::DistortionInfo = (
+    PROCESS_PROC => \&ProcessDistortionInfo,
+    WRITE_PROC => \&WriteDistortionInfo,
+    CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
+    # (don't make this family 0 MakerNotes because we don't want it to be a deletable group)
+    GROUPS => { 0 => 'PanasonicRaw', 1 => 'PanasonicRaw', 2 => 'Image'},
+    WRITABLE => 1,
+    FORMAT => 'int16s',
+    FIRST_ENTRY => 0,
+    NOTES => 'Lens distortion correction information.',
+    # 0,1 - checksums
+    2 => {
+        Name => 'DistortionParam02',
+        ValueConv => '$val / 32768',
+        ValueConvInv => '$val * 32768',
+    },
+    # 3 - usually 0, but seen 0x026b when value 5 is non-zero
+    4 => {
+        Name => 'DistortionParam04',
+        ValueConv => '$val / 32768',
+        ValueConvInv => '$val * 32768',
+    },
+    5 => {
+        Name => 'DistortionScale',
+        ValueConv => '1 / (1 + $val/32768)',
+        ValueConvInv => '(1/$val - 1) * 32768',
+    },
+    # 6 - seen 0x0000-0x027f
+    7.1 => {
+        Name => 'DistortionCorrection',
+        Mask => 0x0f,
+        # (have seen the upper 4 bits set for GF5 and GX1, giving a value of -4095 - PH)
+        PrintConv => { 0 => 'Off', 1 => 'On' },
+    },
+    8 => {
+        Name => 'DistortionParam08',
+        ValueConv => '$val / 32768',
+        ValueConvInv => '$val * 32768',
+    },
+    9 => {
+        Name => 'DistortionParam09',
+        ValueConv => '$val / 32768',
+        ValueConvInv => '$val * 32768',
+    },
+    # 10 - seen 0xfc,0x0101,0x01f4,0x021d,0x0256
+    11 => {
+        Name => 'DistortionParam11',
+        ValueConv => '$val / 32768',
+        ValueConvInv => '$val * 32768',
+    },
+    12 => {
+        Name => 'DistortionN',
+        Unknown => 1,
+    },
+    # 13 - seen 0x0000,0x01f9-0x02b2
+    # 14,15 - checksums
+);
+
+# PanasonicRaw composite tags
+%Image::ExifTool::PanasonicRaw::Composite = (
+    ImageWidth => {
+        Require => {
+            0 => 'IFD0:SensorLeftBorder',
+            1 => 'IFD0:SensorRightBorder',
+        },
+        ValueConv => '$val[1] - $val[0]',
+    },
+    ImageHeight => {
+        Require => {
+            0 => 'IFD0:SensorTopBorder',
+            1 => 'IFD0:SensorBottomBorder',
+        },
+        ValueConv => '$val[1] - $val[0]',
+    },
+);
+
+# add our composite tags
+Image::ExifTool::AddCompositeTags('Image::ExifTool::PanasonicRaw');
+
+
+#------------------------------------------------------------------------------
+# checksum algorithm for lens distortion correction information (ref 3)
+# Inputs: 0) data ref, 1) start position, 2) number of bytes, 3) incement
+# Returns: checksum value
+sub Checksum($$$$)
+{
+    my ($dataPt, $start, $num, $inc) = @_;
+    my $csum = 0;
+    my $i;
+    for ($i=0; $i<$num; ++$i) {
+        $csum = (73 * $csum + Get8u($dataPt, $start + $i * $inc)) % 0xffef;
+    }
+    return $csum;
+}
+
+#------------------------------------------------------------------------------
+# Read lens distortion information
+# Inputs: 0) ExifTool ref, 1) dirInfo ref, 2) tag table ref
+# Returns: 1 on success
+sub ProcessDistortionInfo($$$)
+{
+    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my $dataPt = $$dirInfo{DataPt};
+    my $start = $$dirInfo{DirStart} || 0;
+    my $size = $$dirInfo{DataLen} || (length($$dataPt) - $start);
+    if ($size == 32) {
+        # verify the checksums (ref 3)
+        my $csum1 = Checksum($dataPt, $start +  4, 12, 1);
+        my $csum2 = Checksum($dataPt, $start + 16, 12, 1);
+        my $csum3 = Checksum($dataPt, $start +  2, 14, 2);
+        my $csum4 = Checksum($dataPt, $start +  3, 14, 2);
+        my $res = $csum1 ^ Get16u($dataPt, $start + 2) ^
+                  $csum2 ^ Get16u($dataPt, $start + 28) ^
+                  $csum3 ^ Get16u($dataPt, $start + 0) ^
+                  $csum4 ^ Get16u($dataPt, $start + 30);
+        $exifTool->Warn('Invalid DistortionInfo checksum',1) if $res;
+    } else {
+        $exifTool->Warn('Invalid DistortionInfo',1);
+    }
+    return $exifTool->ProcessBinaryData($dirInfo, $tagTablePtr);
+}
+
+#------------------------------------------------------------------------------
+# Write lens distortion information
+# Inputs: 0) ExifTool ref, 1) dirInfo ref, 2) tag table ref
+# Returns: updated distortion information or undef on error
+sub WriteDistortionInfo($$$)
+{
+    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    $exifTool or return 1;  # (allow dummy access)
+    my $dat = $exifTool->WriteBinaryData($dirInfo, $tagTablePtr);
+    if (defined $dat and length($dat) == 32) {
+        # fix checksums (ref 3)
+        Set16u(Checksum(\$dat,  4, 12, 1), \$dat,  2);
+        Set16u(Checksum(\$dat, 16, 12, 1), \$dat, 28);
+        Set16u(Checksum(\$dat,  2, 14, 2), \$dat,  0);
+        Set16u(Checksum(\$dat,  3, 14, 2), \$dat, 30);
+    } else {
+        $exifTool->Warn('Error wriing DistortionInfo',1);
+    }
+    return $dat;
+}
 
 #------------------------------------------------------------------------------
 # Patch for writing non-standard Panasonic RAW/RW2/RWL raw data
@@ -362,7 +514,7 @@ write meta information in Panasonic/Leica RAW, RW2 and RWL images.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

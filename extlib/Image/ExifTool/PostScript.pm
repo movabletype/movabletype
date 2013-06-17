@@ -16,7 +16,7 @@ use strict;
 use vars qw($VERSION $AUTOLOAD);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.33';
+$VERSION = '1.35';
 
 sub WritePS($$);
 sub ProcessPS($$;$);
@@ -38,6 +38,7 @@ sub ProcessPS($$;$);
         Groups => { 2 => 'Time' },
         Writable => 'string',
         PrintConv => '$self->ConvertDateTime($val)',
+        PrintConvInv => '$self->InverseDateTime($val)',
     },
     Creator     => { Priority => 0, Writable => 'string' },
     ImageData   => { Priority => 0 },
@@ -49,6 +50,7 @@ sub ProcessPS($$;$);
         Groups => { 2 => 'Time' },
         Writable => 'string',
         PrintConv => '$self->ConvertDateTime($val)',
+        PrintConvInv => '$self->InverseDateTime($val)',
     },
     Pages       => { Priority => 0 },
     Routing     => { Priority => 0, Writable => 'string' }, #2
@@ -210,10 +212,12 @@ sub DecodeComment($$$;$)
             $raf->ReadLine($buff) or last;
             my $altnl = $/ eq "\x0d" ? "\x0a" : "\x0d";
             if ($buff =~ /$altnl/) {
+                chomp $buff if $/ eq "\x0d\x0a";        # remove DOS newline before splitting
                 # split into separate lines
                 @$lines = split /$altnl/, $buff, -1;
                 # handle case of DOS newline data inside file using Unix newlines
                 @$lines = ( $$lines[0] . $$lines[1] ) if @$lines == 2 and $$lines[1] eq $/;
+                @$lines[-1] .= $/ if $/ eq "\x0d\x0a";  # add back trailing newline
             } else {
                 push @$lines, $buff;
             }
@@ -664,7 +668,7 @@ This code reads meta information from EPS (Encapsulated PostScript), PS
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
 # File:         XMP2.pl
 #
-# Description:  Additional XMP schema definitions
+# Description:  Additional XMP namespace definitions
 #
 # Revisions:    10/12/2008 - P. Harvey Created
 #
@@ -12,6 +12,7 @@
 #                  --> changed to http://wiki.creativecommons.org/Companion_File_metadata_specification (2007/12/21)
 #               6) http://www.optimasc.com/products/fileid/xmp-extensions.pdf
 #               9) http://www.w3.org/TR/SVG11/
+#               11) http://www.extensis.com/en/support/kb_article.jsp?articleNumber=6102211
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::XMP;
@@ -70,12 +71,12 @@ my %sTimecode = (
     value       => { Writable => 'integer' },
 );
 
-# XMP Dynamic Media schema properties (xmpDM)
+# XMP Dynamic Media namespace properties (xmpDM)
 %Image::ExifTool::XMP::xmpDM = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-xmpDM', 2 => 'Image' },
     NAMESPACE => 'xmpDM',
-    NOTES => 'XMP Dynamic Media schema tags.',
+    NOTES => 'XMP Dynamic Media namespace tags.',
     absPeakAudioFilePath=> { },
     album               => { },
     altTapeName         => { },
@@ -382,7 +383,7 @@ my %plusImageSupplier = (
     GROUPS => { 0 => 'XMP', 1 => 'XMP-plus', 2 => 'Author' },
     NAMESPACE => 'plus',
     NOTES => q{
-        PLUS License Data Format 1.2.0 schema tags.  Note that all
+        PLUS License Data Format 1.2.0 namespace tags.  Note that all
         controlled-vocabulary tags in this table (ie. tags with a fixed set of
         values) have raw values which begin with "http://ns.useplus.org/ldf/vocab/",
         but to reduce clutter this prefix has been removed from the values shown
@@ -390,35 +391,20 @@ my %plusImageSupplier = (
     },
     Version  => { Name => 'PLUSVersion' },
     Licensee => {
+        FlatName => '',
         Struct => \%plusLicensee,
         List => 'Seq',
     },
-    LicenseeLicenseeID   => { Flat => 1, Name => 'LicenseeID' },
-    LicenseeLicenseeName => { Flat => 1, Name => 'LicenseeName' },
     EndUser => {
+        FlatName => '',
         Struct => \%plusEndUser,
         List => 'Seq',
     },
-    EndUserEndUserID    => { Flat => 1, Name => 'EndUserID' },
-    EndUserEndUserName  => { Flat => 1, Name => 'EndUserName' },
     Licensor => {
+        FlatName => '',
         Struct => \%plusLicensor,
         List => 'Seq',
     },
-    LicensorLicensorID              => { Flat => 1, Name => 'LicensorID' },
-    LicensorLicensorName            => { Flat => 1, Name => 'LicensorName' },
-    LicensorLicensorStreetAddress   => { Flat => 1, Name => 'LicensorStreetAddress' },
-    LicensorLicensorExtendedAddress => { Flat => 1, Name => 'LicensorExtendedAddress' },
-    LicensorLicensorCity            => { Flat => 1, Name => 'LicensorCity' },
-    LicensorLicensorRegion          => { Flat => 1, Name => 'LicensorRegion' },
-    LicensorLicensorPostalCode      => { Flat => 1, Name => 'LicensorPostalCode' },
-    LicensorLicensorCountry         => { Flat => 1, Name => 'LicensorCountry' },
-    LicensorLicensorTelephoneType1  => { Flat => 1, Name => 'LicensorTelephoneType1' },
-    LicensorLicensorTelephone1      => { Flat => 1, Name => 'LicensorTelephone1' },
-    LicensorLicensorTelephoneType2  => { Flat => 1, Name => 'LicensorTelephoneType2' },
-    LicensorLicensorTelephone2      => { Flat => 1, Name => 'LicensorTelephone2' },
-    LicensorLicensorEmail           => { Flat => 1, Name => 'LicensorEmail' },
-    LicensorLicensorURL             => { Flat => 1, Name => 'LicensorURL' },
     LicensorNotes               => { Writable => 'lang-alt' },
     MediaSummaryCode            => { },
     LicenseStartDate            => { %dateTimeInfo, Groups => { 2 => 'Time'} },
@@ -565,23 +551,23 @@ my %plusImageSupplier = (
     },
     CopyrightRegistrationNumber => { },
     FirstPublicationDate        => { %dateTimeInfo, Groups => { 2 => 'Time'} },
-    CopyrightOwner              => { Struct => \%plusCopyrightOwner, List => 'Seq' },
-    CopyrightOwnerCopyrightOwnerID   => { Flat => 1, Name => 'CopyrightOwnerID' },
-    CopyrightOwnerCopyrightOwnerName => { Flat => 1, Name => 'CopyrightOwnerName' },
-    CopyrightOwnerImageID            => { },
+    CopyrightOwner => {
+        FlatName => '',
+        Struct => \%plusCopyrightOwner,
+        List => 'Seq',
+    },
+    CopyrightOwnerImageID   => { },
     ImageCreator => {
+        FlatName => '',
         Struct => \%plusImageCreator,
         List => 'Seq',
     },
-    ImageCreatorImageCreatorID   => { Flat => 1, Name => 'ImageCreatorID' },
-    ImageCreatorImageCreatorName => { Flat => 1, Name => 'ImageCreatorName' },
-    ImageCreatorImageID          => { },
+    ImageCreatorImageID     => { },
     ImageSupplier => {
+        FlatName => '',
         Struct => \%plusImageSupplier,
         List => 'Seq',
     },
-    ImageSupplierImageSupplierID   => { Flat => 1, Name => 'ImageSupplierID' },
-    ImageSupplierImageSupplierName => { Flat => 1, Name => 'ImageSupplierName' },
     ImageSupplierImageID    => { },
     LicenseeImageID         => { },
     LicenseeImageNotes      => { Writable => 'lang-alt' },
@@ -636,8 +622,8 @@ my %plusImageSupplier = (
     GROUPS => { 0 => 'XMP', 1 => 'XMP-prism', 2 => 'Document' },
     NAMESPACE => 'prism',
     NOTES => q{
-        Publishing Requirements for Industry Standard Metadata 2.1 schema tags. (see
-        L<http://www.prismstandard.org/>)
+        Publishing Requirements for Industry Standard Metadata 2.1 namespace
+        tags.  (see L<http://www.prismstandard.org/>)
     },
     aggregationType => { List => 'Bag' },
     alternateTitle  => { List => 'Bag' },
@@ -737,13 +723,13 @@ my %plusImageSupplier = (
 #    releaseTime
 );
 
-# PRISM Rights Language 2.1 schema (prl) (ref 2)
+# PRISM Rights Language 2.1 namespace (prl) (ref 2)
 %Image::ExifTool::XMP::prl = (
     %xmpTableDefaults,
     GROUPS => { 0 => 'XMP', 1 => 'XMP-prl', 2 => 'Document' },
     NAMESPACE => 'prl',
     NOTES => q{
-        PRISM Rights Language 2.1 schema tags.  (see
+        PRISM Rights Language 2.1 namespace tags.  (see
         L<http://www.prismstandard.org/>)
     },
     geography       => { List => 'Bag' },
@@ -751,13 +737,14 @@ my %plusImageSupplier = (
     usage           => { List => 'Bag' },
 );
 
-# PRISM Usage Rights 2.1 schema (prismusagerights) (ref 2)
+# PRISM Usage Rights 2.1 namespace (prismusagerights) (ref 2)
 %Image::ExifTool::XMP::pur = (
     %xmpTableDefaults,
     GROUPS => { 0 => 'XMP', 1 => 'XMP-pur', 2 => 'Document' },
     NAMESPACE => 'pur',
     NOTES => q{
-        Prism Usage Rights 2.1 schema tags.  (see L<http://www.prismstandard.org/>)
+        Prism Usage Rights 2.1 namespace tags.  (see
+        L<http://www.prismstandard.org/>)
     },
     adultContentWarning => { List => 'Bag' },
     agreement           => { List => 'Bag' },
@@ -776,12 +763,17 @@ my %plusImageSupplier = (
     usageFee            => { List => 'Bag' },
 );
 
-# DICOM schema properties (DICOM) (ref PH, written by CS3)
+# DICOM namespace properties (DICOM) (ref PH, written by CS3)
 %Image::ExifTool::XMP::DICOM = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-DICOM', 2 => 'Image' },
     NAMESPACE => 'DICOM',
-    NOTES => 'DICOM schema tags.',
+    NOTES => q{
+        DICOM namespace tags.  These XMP tags allow some DICOM information to be
+        stored in files of other than DICOM format.  See the
+        L<DICOM Tags documentation|Image::ExifTool::TagNames/DICOM Tags> for a list
+        of tags available in DICOM-format files.
+    },
     # change some tag names to correspond with DICOM tags
     PatientName             => { },
     PatientID               => { },
@@ -803,12 +795,12 @@ my %plusImageSupplier = (
     EquipmentManufacturer   => { },
 );
 
-# PixelLive schema properties (PixelLive) (ref 3)
+# PixelLive namespace properties (PixelLive) (ref 3)
 %Image::ExifTool::XMP::PixelLive = (
     GROUPS => { 1 => 'XMP-PixelLive', 2 => 'Image' },
     NAMESPACE => 'PixelLive',
     NOTES => q{
-        PixelLive schema tags.  These tags are not writable becase they are very
+        PixelLive namespace tags.  These tags are not writable becase they are very
         uncommon and I haven't been able to locate a reference which gives the
         namespace URI.
     },
@@ -820,18 +812,91 @@ my %plusImageSupplier = (
     TITLE     => { Name => 'Title',    Avoid => 1 },
 );
 
-# ACDSee schema (acdsee) (ref PH)
+# Extensis Portfolio tags (extensis) (ref 11)
+%Image::ExifTool::XMP::extensis = (
+    %xmpTableDefaults,
+    GROUPS => { 1 => 'XMP-extensis', 2 => 'Image' },
+    NAMESPACE => 'extensis',
+    NOTES => 'Tags used by Extensis Portfolio.',
+    Approved     => { Writable => 'boolean' },
+    ApprovedBy   => { },
+    ClientName   => { },
+    JobName      => { },
+    JobStatus    => { },
+    RoutedTo     => { },
+    RoutingNotes => { },
+    WorkToDo     => { },
+);
+
+# IDimager structures (ref PH)
+my %sTagStruct;
+%sTagStruct = (
+    STRUCT_NAME => 'TagStructure',
+    NAMESPACE => 'ics',
+    LabelName => { },
+    Reference => { },
+    ParentReference => { },
+    SubLabels => { Struct => \%sTagStruct, List => 'Bag' },
+);
+my %sSubVersion = (
+    STRUCT_NAME => 'SubVersion',
+    NAMESPACE => 'ics',
+    VersRef => { },
+    FileName => { },
+);
+
+# IDimager namespace (ics) (ref PH)
+%Image::ExifTool::XMP::ics = (
+    %xmpTableDefaults,
+    GROUPS => { 0 => 'XMP', 1 => 'XMP-ics', 2 => 'Image' },
+    NAMESPACE => 'ics',
+    NOTES => q{
+        Tags used by IDimager.  Nested TagStructure structures are unrolled to an
+        arbitrary depth of 6 to avoid infinite recursion.
+    },
+    ImageRef => { },
+    TagStructure => { Struct => \%sTagStruct, List => 'Bag' },
+    TagStructureLabelName => { Name => 'LabelName1', Flat => 1 },
+    TagStructureReference => { Name => 'Reference1', Flat => 1 },
+    TagStructureSubLabels => { Name => 'SubLables1', Flat => 1 },
+    TagStructureParentReference => { Name => 'ParentReference1', Flat => 1 },
+    TagStructureSubLabelsLabelName => { Name => 'LabelName2', Flat => 1 },
+    TagStructureSubLabelsReference => { Name => 'Reference2', Flat => 1 },
+    TagStructureSubLabelsSubLabels => { Name => 'SubLables2', Flat => 1 },
+    TagStructureSubLabelsParentReference => { Name => 'ParentReference2', Flat => 1 },
+    TagStructureSubLabelsSubLabelsLabelName => { Name => 'LabelName3', Flat => 1 },
+    TagStructureSubLabelsSubLabelsReference => { Name => 'Reference3', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabels => { Name => 'SubLables3', Flat => 1 },
+    TagStructureSubLabelsSubLabelsParentReference => { Name => 'ParentReference3', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabelsLabelName => { Name => 'LabelName4', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabelsReference => { Name => 'Reference4', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabelsSubLabels => { Name => 'SubLabels4', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabelsParentReference => { Name => 'ParentReference4', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabelsSubLabelsLabelName => { Name => 'LabelName5', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabelsSubLabelsReference => { Name => 'Reference5', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabelsSubLabelsSubLabels => { Name => 'SubLabels5', Flat => 1, NoSubStruct => 1 }, # break infinite recursion
+    TagStructureSubLabelsSubLabelsSubLabelsSubLabelsParentReference => { Name => 'ParentReference5', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabelsSubLabelsSubLabelsLabelName => { Name => 'LabelName6', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabelsSubLabelsSubLabelsReference => { Name => 'Reference6', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabelsSubLabelsSubLabelsParentReference => { Name => 'ParentReference6', Flat => 1 },
+    SubVersions => { Struct => \%sSubVersion, List => 'Bag' },
+    SubVersionsVersRef => { Name => 'SubVersionReference', Flat => 1 },
+    SubVersionsFileName => { Name => 'SubVersionFileName', Flat => 1 },
+);
+
+# ACDSee namespace (acdsee) (ref PH)
 %Image::ExifTool::XMP::acdsee = (
     %xmpTableDefaults,
     GROUPS => { 0 => 'XMP', 1 => 'XMP-acdsee', 2 => 'Image' },
     NAMESPACE => 'acdsee',
     NOTES => q{
-        ACD Systems ACDSee schema tags.
+        ACD Systems ACDSee namespace tags.
 
         (A note to software developers: Re-inventing your own private tags instead
-        of using the equivalent tags in standard XMP schemas defeats one of the most
-        valuable features of metadata: interoperability.  Your applications mumble
-        to themselves instead of speaking out for the rest of the world to hear.)
+        of using the equivalent tags in standard XMP namespaces defeats one of the
+        most valuable features of metadata: interoperability.  Your applications
+        mumble to themselves instead of speaking out for the rest of the world to
+        hear.)
     },
     author     => { Avoid => 1, Groups => { 2 => 'Author' } },
     caption    => { Avoid => 1 },
@@ -841,46 +906,90 @@ my %plusImageSupplier = (
     notes      => { Avoid => 1 },
     rating     => { Avoid => 1, Writable => 'real' }, # integer?
     tagged     => { Avoid => 1, Writable => 'boolean' },
+    rawrppused => { Writable => 'boolean' },
     rpp => {
         Name => 'RPP',
         Writable => 'lang-alt',
         Notes => 'raw processing settings in XML format',
         Binary => 1,
     },
+    dpp => {
+        Name => 'DPP',
+        Writable => 'lang-alt',
+        Notes => 'newer version of XML raw processing settings',
+        Binary => 1,
+    },
 );
 
-# Picture Licensing Universal System schema properties (xmpPLUS)
+# Picture Licensing Universal System namespace properties (xmpPLUS)
 %Image::ExifTool::XMP::xmpPLUS = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-xmpPLUS', 2 => 'Author' },
     NAMESPACE => 'xmpPLUS',
-    NOTES => 'XMP Picture Licensing Universal System (PLUS) schema tags.',
+    NOTES => 'XMP Picture Licensing Universal System (PLUS) namespace tags.',
     CreditLineReq   => { Writable => 'boolean' },
     ReuseAllowed    => { Writable => 'boolean' },
 );
 
-# Creative Commons schema properties (cc) (ref 5)
+# Creative Commons namespace properties (cc) (ref 5)
 %Image::ExifTool::XMP::cc = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-cc', 2 => 'Author' },
     NAMESPACE => 'cc',
     NOTES => q{
-        Creative Commons schema tags.  (see
-        L<http://creativecommons.org/technology/xmp>)
+        Creative Commons namespace tags.  Note that the CC specification for XMP is
+        non-existent, so ExifTool must make some assumptions about the format of the
+        specific properties in XMP (see L<http://creativecommons.org/ns>).
     },
-    license => { },
-    morePermissions => { },
+    # Work properties
+    license         => { Resource => 1 },
     attributionName => { },
-    attributionURL  => { },
+    attributionURL  => { Resource => 1 },
+    morePermissions => { Resource => 1 },
+    useGuidelines   => { Resource => 1 },
+    # License properties
+    permits => {
+        List => 'Bag',
+        Resource => 1,
+        PrintConv => {
+            'cc:Sharing' => 'Sharing',
+            'cc:DerivativeWorks' => 'Derivative Works',
+            'cc:Reproduction' => 'Reproduction',
+            'cc:Distribution' => 'Distribution',
+        },
+    },
+    requires => {
+        List => 'Bag',
+        Resource => 1,
+        PrintConv => {
+            'cc:Copyleft' => 'Copyleft',
+            'cc:LesserCopyleft' => 'Lesser Copyleft',
+            'cc:SourceCode' => 'Source Code',
+            'cc:ShareAlike' => 'Share Alike',
+            'cc:Notice' => 'Notice',
+            'cc:Attribution' => 'Attribution',
+        },
+    },
+    prohibits => {
+        List => 'Bag',
+        Resource => 1,
+        PrintConv => {
+            'cc:HighIncomeNationUse' => 'High Income Nation Use',
+            'cc:CommercialUse' => 'Commercial Use',
+        },
+    },
+    jurisdiction    => { Resource => 1 },
+    legalcode       => { Name => 'LegalCode', Resource => 1 },
+    deprecatedOn    => { %dateTimeInfo, Groups => { 2 => 'Time' } },
 );
 
-# Description Explorer schema properties (dex) (ref 6)
+# Description Explorer namespace properties (dex) (ref 6)
 %Image::ExifTool::XMP::dex = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-dex', 2 => 'Image' },
     NAMESPACE => 'dex',
     NOTES => q{
-        Description Explorer schema tags.  These tags are not very common.  The
+        Description Explorer namespace tags.  These tags are not very common.  The
         Source and Rating tags are avoided when writing due to name conflicts with
         other XMP tags.  (see L<http://www.optimasc.com/products/fileid/>)
     },
@@ -909,13 +1018,16 @@ my %plusImageSupplier = (
     ffid        => { Name => 'FFID' },
 );
 
-# iView MediaPro schema properties (mediapro) (ref PH)
+# iView MediaPro namespace properties (mediapro) (ref PH)
 %Image::ExifTool::XMP::MediaPro = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-mediapro', 2 => 'Image' },
     NAMESPACE => 'mediapro',
-    NOTES => 'iView MediaPro schema tags.',
-    Event       => { },
+    NOTES => 'iView MediaPro namespace tags.',
+    Event       => {
+        Avoid => 1,
+        Notes => 'avoided due to conflict with XMP-iptcExt:Event',
+    },
     Location    => {
         Avoid => 1,
         Groups => { 2 => 'Location' },
@@ -927,23 +1039,39 @@ my %plusImageSupplier = (
     CatalogSets => { List => 'Bag' },
 );
 
-# DigiKam schema tags (ref PH)
+# Microsoft ExpressionMedia namespace properties (expressionmedia)
+# (ref http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,4235.0.html)
+%Image::ExifTool::XMP::ExpressionMedia = (
+    %xmpTableDefaults,
+    GROUPS => { 1 => 'XMP-expressionmedia', 2 => 'Image' },
+    NAMESPACE => 'expressionmedia',
+    NOTES => 'Microsoft Expression Media namespace tags.',
+    CatalogSets => {
+        List => 'Bag',
+        Avoid => 1,
+        Notes => 'avoided due to conflict with XMP-mediapro:CatalogSets',
+    },
+);
+
+# DigiKam namespace tags (ref PH)
 %Image::ExifTool::XMP::digiKam = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-digiKam', 2 => 'Image' },
     NAMESPACE => 'digiKam',
-    NOTES => 'DigiKam schema tags.',
+    NOTES => 'DigiKam namespace tags.',
     CaptionsAuthorNames    => { Writable => 'lang-alt' },
-    CaptionsDateTimeStamps => { Writable => 'lang-alt' },
+    CaptionsDateTimeStamps => { Writable => 'lang-alt', Groups => { 2 => 'Time' } },
     TagsList               => { List => 'Seq' },
+    ColorLabel             => { },
+    PickLabel              => { },
 );
 
-# SWF schema tags (ref PH)
+# SWF namespace tags (ref PH)
 %Image::ExifTool::XMP::swf = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-swf', 2 => 'Image' },
     NAMESPACE => 'swf',
-    NOTES => 'Adobe SWF schema tags.',
+    NOTES => 'Adobe SWF namespace tags.',
     type         => { Avoid => 1 },
     bgalpha      => { Name => 'BackgroundAlpha', Writable => 'integer' },
     forwardlock  => { Name => 'ForwardLock',     Writable => 'boolean' },
@@ -967,169 +1095,122 @@ my %plusImageSupplier = (
     r       => { Name => 'CellR' }, # (what is this? Radius?)
 );
 
-my %sExtensions = (
-    STRUCT_NAME => 'Extensions',
-    NAMESPACE   => undef, # variable namespace
-    NOTES => q{
-        This structure may contain any top-level XMP tags, but none have been
-        pre-defined in ExifTool.  Without pre-defined flattened tag names,
-        RegionExtensions may be written only as a structure (ie.
-        C<{xmp-dc:creator=me,rating=5}>).  Fields for this structure are identified
-        using the standard ExifTool tag name (with optional leading group name,
-        and/or trailing language code, and/or trailing C<#> symbol to disable print
-        conversion).
-    },
-);
-my %sRegionStruct = (
-    STRUCT_NAME => 'RegionStruct',
-    NAMESPACE   => 'mwg-rs',
-    Area => { Struct => \%sArea },
-    Type => {
-        PrintConv => {
-            Face => 'Face',
-            Pet => 'Pet',
-            Focus => 'Focus',
-            BarCode => 'BarCode',
-        },
-    },
-    Name        => { },
-    Description => { },
-    FocusUsage  => {
-        PrintConv => {
-            EvaluatedUsed => 'Evaluated, Used',
-            EvaluatedNotUsed => 'Evaluated, Not Used',
-            NotEvaluatedNotUsed => 'Not Evaluated, Not Used',
-        },
-    },
-    BarCodeValue=> { },
-    Extensions  => { Struct => \%sExtensions },
-    seeAlso => { Namespace => 'rdfs', Resource => 1 },
-);
-my %sKeywordStruct4 = (
-    STRUCT_NAME => 'KeywordStruct4',
-    NAMESPACE   => 'mwg-kw',
-    Keyword   => { },
-    Applied   => { Writable => 'boolean' },
-);
-my %sKeywordStruct3 = (
-    STRUCT_NAME => 'KeywordStruct3',
-    NAMESPACE   => 'mwg-kw',
-    Keyword   => { },
-    Applied   => { Writable => 'boolean' },
-    Children  => { Struct => \%sKeywordStruct4, List => 'Bag' },
-);
-my %sKeywordStruct2 = (
-    STRUCT_NAME => 'KeywordStruct2',
-    NAMESPACE   => 'mwg-kw',
-    Keyword   => { },
-    Applied   => { Writable => 'boolean' },
-    Children  => { Struct => \%sKeywordStruct3, List => 'Bag' },
-);
-my %sKeywordStruct1 = (
-    STRUCT_NAME => 'KeywordStruct1',
-    NAMESPACE   => 'mwg-kw',
-    Keyword   => { },
-    Applied   => { Writable => 'boolean' },
-    Children  => { Struct => \%sKeywordStruct2, List => 'Bag' },
-);
-
-# MWG 2.0 region schema tags
-%Image::ExifTool::XMP::mwg_rs = (
+# Apple adjustment settings (ref PH)
+%Image::ExifTool::XMP::aas = (
     %xmpTableDefaults,
-    GROUPS => { 1 => 'XMP-mwg-rs', 2 => 'Image' },
-    NAMESPACE => 'mwg-rs',
-    NOTES => q{
-        Image region metadata defined by the MWG 2.0 specification.  See
-        L<http://www.metadataworkinggroup.org/> for the official specification.
-    },
-    Regions => {
-        Name => 'RegionInfo',
-        Struct => {
-            STRUCT_NAME => 'RegionInfo',
-            NAMESPACE   => 'mwg-rs',
-            RegionList => { Struct => \%sRegionStruct, List => 'Bag' },
-            AppliedToDimensions => { Struct => \%sDimensions },
-        },
-    },
-    RegionsAppliedToDimensions  => { Flat => 1, Name => 'RegionAppliedToDimensions' },
-    RegionsAppliedToDimensionsW => { Flat => 1, Name => 'RegionAppliedToDimensionsW' },
-    RegionsAppliedToDimensionsH => { Flat => 1, Name => 'RegionAppliedToDimensionsH' },
-    RegionsAppliedToDimensionsUnit=>{Flat => 1, Name => 'RegionAppliedToDimensionsUnit' },
-    RegionsRegionList           => { Flat => 1, Name => 'RegionList' },
-    RegionsRegionListArea       => { Flat => 1, Name => 'RegionArea' },
-    RegionsRegionListAreaX      => { Flat => 1, Name => 'RegionAreaX' },
-    RegionsRegionListAreaY      => { Flat => 1, Name => 'RegionAreaY' },
-    RegionsRegionListAreaW      => { Flat => 1, Name => 'RegionAreaW' },
-    RegionsRegionListAreaH      => { Flat => 1, Name => 'RegionAreaH' },
-    RegionsRegionListAreaD      => { Flat => 1, Name => 'RegionAreaD' },
-    RegionsRegionListAreaUnit   => { Flat => 1, Name => 'RegionAreaUnit' },
-    RegionsRegionListType       => { Flat => 1, Name => 'RegionType' },
-    RegionsRegionListName       => { Flat => 1, Name => 'RegionName' },
-    RegionsRegionListDescription=> { Flat => 1, Name => 'RegionDescription' },
-    RegionsRegionListFocusUsage => { Flat => 1, Name => 'RegionFocusUsage' },
-    RegionsRegionListBarCodeValue=>{ Flat => 1, Name => 'RegionBarCodeValue' },
-    RegionsRegionListExtensions => { Flat => 1, Name => 'RegionExtensions' },
-    RegionsRegionListSeeAlso    => { Flat => 1, Name => 'RegionSeeAlso' },
+    GROUPS => { 1 => 'XMP-aas', 2 => 'Image' },
+    NAMESPACE => 'aas',
+    NOTES => 'Apple Adjustment Settings used by iPhone/iPad.',
+    CropX      => { Writable => 'integer', Avoid => 1 },
+    CropY      => { Writable => 'integer', Avoid => 1 },
+    CropW      => { Writable => 'integer', Avoid => 1 },
+    CropH      => { Writable => 'integer', Avoid => 1 },
+    AffineA    => { Writable => 'real' },
+    AffineB    => { Writable => 'real' },
+    AffineC    => { Writable => 'real' },
+    AffineD    => { Writable => 'real' },
+    AffineX    => { Writable => 'real' },
+    AffineY    => { Writable => 'real' },
+    Vibrance   => { Writable => 'real', Avoid => 1 },
+    Curve0x    => { Writable => 'real' },
+    Curve0y    => { Writable => 'real' },
+    Curve1x    => { Writable => 'real' },
+    Curve1y    => { Writable => 'real' },
+    Curve2x    => { Writable => 'real' },
+    Curve2y    => { Writable => 'real' },
+    Curve3x    => { Writable => 'real' },
+    Curve3y    => { Writable => 'real' },
+    Curve4x    => { Writable => 'real' },
+    Curve4y    => { Writable => 'real' },
+    Shadows    => { Writable => 'real', Avoid => 1 },
+    Highlights => { Writable => 'real', Avoid => 1 },
 );
 
-# MWG 2.0 hierarchical keyword schema tags
-%Image::ExifTool::XMP::mwg_kw = (
+# FastPictureViewer namespace properties (http://www.fastpictureviewer.com/help/#rtfcomments)
+%Image::ExifTool::XMP::fpv = (
     %xmpTableDefaults,
-    GROUPS => { 1 => 'XMP-mwg-kw', 2 => 'Image' },
-    NAMESPACE => 'mwg-kw',
+    GROUPS => { 1 => 'XMP-fpv', 2 => 'Image' },
+    NAMESPACE => 'fpv',
     NOTES => q{
-        Hierarchical keywords metadata defined by the MWG 2.0 specification. 
-        ExifTool unrolls keyword structures to an arbitrary depth of 4 to allow
-        individual levels to be accessed with different tag names, and to avoid
-        infinite recursion.  See L<http://www.metadataworkinggroup.org/> for the
-        official specification.
+        Fast Picture Viewer tags (see
+        L<http://www.fastpictureviewer.com/help/#rtfcomments>).
     },
-    # arbitrarily define only the first 4 levels of the keyword hierarchy
-    Keywords => {
-        Name => 'KeywordInfo',
-        Struct => {
-            STRUCT_NAME => 'KeywordInfo',
-            NAMESPACE   => 'mwg-kw',
-            Hierarchy => { Struct => \%sKeywordStruct1, List => 'Bag' },
-        },
-    },
-    KeywordsHierarchy => { Name => 'HierarchicalKeywords', Flat => 1 },
-    KeywordsHierarchyKeyword  => { Name => 'HierarchicalKeywords1', Flat => 1 },
-    KeywordsHierarchyApplied  => { Name => 'HierarchicalKeywords1Applied', Flat => 1 },
-    KeywordsHierarchyChildren => { Name => 'HierarchicalKeywords1Children', Flat => 1 },
-    KeywordsHierarchyChildrenKeyword  => { Name => 'HierarchicalKeywords2', Flat => 1 },
-    KeywordsHierarchyChildrenApplied  => { Name => 'HierarchicalKeywords2Applied', Flat => 1 },
-    KeywordsHierarchyChildrenChildren => { Name => 'HierarchicalKeywords2Children', Flat => 1 },
-    KeywordsHierarchyChildrenChildrenKeyword  => { Name => 'HierarchicalKeywords3', Flat => 1 },
-    KeywordsHierarchyChildrenChildrenApplied  => { Name => 'HierarchicalKeywords3Applied', Flat => 1 },
-    KeywordsHierarchyChildrenChildrenChildren => { Name => 'HierarchicalKeywords3Children', Flat => 1 },
-    KeywordsHierarchyChildrenChildrenChildrenKeyword => { Name => 'HierarchicalKeywords4', Flat => 1 },
-    KeywordsHierarchyChildrenChildrenChildrenApplied => { Name => 'HierarchicalKeywords4Applied', Flat => 1 },
+    RichTextComment => { },
 );
 
-# MWG 2.0 collections schema tags
-%Image::ExifTool::XMP::mwg_coll = (
+# Apple FaceInfo namespace properties (ref PH)
+%Image::ExifTool::XMP::apple_fi = (
     %xmpTableDefaults,
-    GROUPS => { 1 => 'XMP-mwg-coll', 2 => 'Image' },
-    NAMESPACE => 'mwg-coll',
+    GROUPS => { 1 => 'XMP-apple-fi', 2 => 'Image' },
+    NAMESPACE => 'apple-fi',
     NOTES => q{
-        Collections metadata defined by the MWG 2.0 specification.  See
-        L<http://www.metadataworkinggroup.org/> for the official specification.
+        Face information tags written by the Apple iPhone 5 inside the mwg-rs
+        RegionExtensions.
     },
-    Collections => {
-        List => 'Bag',
-        Struct => {
-            STRUCT_NAME => 'CollectionInfo',
-            NAMESPACE   => 'mwg-coll',
-            CollectionName => { },
-            CollectionURI  => { },
-        },
+    Timestamp => {
+        Name => 'TimeStamp',
+        Writable => 'integer',
+        # (don't know how to convert this)
     },
-    CollectionsCollectionName => { Name => 'CollectionName', Flat => 1 },
-    CollectionsCollectionURI  => { Name => 'CollectionURI',  Flat => 1 },
+    FaceID          => { Writable => 'integer' },
+    AngleInfoRoll   => { Writable => 'integer' },
+    ConfidenceLevel => { Writable => 'integer' },
 );
 
-# SVG schema properties (ref 9)
+# Google panorama namespace properties
+# (ref http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,4569.0.html)
+%Image::ExifTool::XMP::GPano = (
+    %xmpTableDefaults,
+    GROUPS => { 1 => 'XMP-GPano', 2 => 'Image' },
+    NAMESPACE => 'GPano',
+    NOTES => q{
+        Panorama tags written by Google Photosphere. See
+        L<https://developers.google.com/panorama/metadata/> for the specification.
+    },
+    UsePanoramaViewer               => { Writable => 'boolean' },
+    CaptureSoftware                 => { },
+    StitchingSoftware               => { },
+    ProjectionType                  => { },
+    PoseHeadingDegrees              => { Writable => 'real' },
+    PosePitchDegrees                => { Writable => 'real' },
+    PoseRollDegrees                 => { Writable => 'real' },
+    InitialViewHeadingDegrees       => { Writable => 'integer' },
+    InitialViewPitchDegrees         => { Writable => 'integer' },
+    InitialViewRollDegrees          => { Writable => 'integer' },
+    InitialHorizontalFOVDegrees     => { Writable => 'real' },
+    FirstPhotoDate                  => { %dateTimeInfo, Groups => { 2 => 'Time' } },
+    LastPhotoDate                   => { %dateTimeInfo, Groups => { 2 => 'Time' } },
+    SourcePhotosCount               => { Writable => 'integer' },
+    ExposureLockUsed                => { Writable => 'boolean' },
+    CroppedAreaImageWidthPixels     => { Writable => 'integer' },
+    CroppedAreaImageHeightPixels    => { Writable => 'integer' },
+    FullPanoWidthPixels             => { Writable => 'integer' },
+    FullPanoHeightPixels            => { Writable => 'integer' },
+    CroppedAreaLeftPixels           => { Writable => 'integer' },
+    CroppedAreaTopPixels            => { Writable => 'integer' },
+    # (the following have been observed, but are not in the specification)
+    LargestValidInteriorRectLeft    => { Writable => 'integer' },
+    LargestValidInteriorRectTop     => { Writable => 'integer' },
+    LargestValidInteriorRectWidth   => { Writable => 'integer' },
+    LargestValidInteriorRectHeight  => { Writable => 'integer' },
+);
+
+# Getty Images namespace (ref PH)
+%Image::ExifTool::XMP::GettyImages = (
+    %xmpTableDefaults,
+    GROUPS => { 1 => 'XMP-getty', 2 => 'Image' },
+    NAMESPACE => 'GettyImagesGIFT',
+    NOTES => q{
+        The actual Getty Images namespace prefix is "GettyImagesGIFT", which is the
+        prefix recorded in the file, but ExifTool shortens this for the "XMP-getty"
+        family 1 group name.
+    },
+    Personality => { },
+    OriginalFilename => { },
+    ParentMEID => { },
+);
+
+# SVG namespace properties (ref 9)
 %Image::ExifTool::XMP::SVG = (
     GROUPS => { 0 => 'SVG', 1 => 'SVG', 2 => 'Image' },
     NAMESPACE => 'svg',
@@ -1174,7 +1255,7 @@ __END__
 
 =head1 NAME
 
-Image::ExifTool::XMP2.pl - Additional XMP schema definitions
+Image::ExifTool::XMP2.pl - Additional XMP namespace definitions
 
 =head1 SYNOPSIS
 
@@ -1182,11 +1263,11 @@ This module is loaded automatically by Image::ExifTool when required.
 
 =head1 DESCRIPTION
 
-This file contains definitions for less common XMP schemas.
+This file contains definitions for less common XMP namespaces.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

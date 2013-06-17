@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 # APE metadata blocks
 %Image::ExifTool::APE::Main = (
@@ -23,7 +23,8 @@ $VERSION = '1.01';
     NOTES => q{
         Tags found in Monkey's Audio (APE) information.  Only a few common tags are
         listed below, but ExifTool will extract any tag found.  ExifTool supports
-        APEv1 and APEv2 tags, as well as ID3 information in APE files.
+        APEv1 and APEv2 tags, as well as ID3 information in APE files, and will also
+        read APE metadata from MP3 files.
     },
     Album   => { },
     Artist  => { },
@@ -82,7 +83,7 @@ sub MakeTag($$)
     # remove invalid characters in tag name and capitalize following letters
     $name =~ s/[^\w-]+(.?)/\U$1/sg;
     $name =~ s/([a-z0-9])_([a-z])/$1\U$2/g;
-    Image::ExifTool::AddTagToTable($tagTablePtr, $tag, { Name => $name });
+    AddTagToTable($tagTablePtr, $tag, { Name => $name });
 }
 
 #------------------------------------------------------------------------------
@@ -101,7 +102,9 @@ sub ProcessAPE($$)
     }
     my $raf = $$dirInfo{RAF};
     my $verbose = $exifTool->Options('Verbose');
-    my ($buff, $i, $header, $tagTablePtr, $dataPos);
+    my ($buff, $i, $header, $tagTablePtr, $dataPos, $oldIndent);
+
+    $exifTool->{DoneAPE} = 1;
 
     # check APE signature and process audio information
     # unless this is some other type of file
@@ -155,6 +158,8 @@ sub ProcessAPE($$)
         $raf->Read($buff, $size) == $size)
     {
         if ($verbose) {
+            $oldIndent = $$exifTool{INDENT};
+            $$exifTool{INDENT} .= '| ';
             $exifTool->VerboseDir("APEv$version", $count, $size);
             $exifTool->VerboseDump(\$buff, DataPos => $raf->Tell() - $size);
         }
@@ -175,6 +180,8 @@ sub ProcessAPE($$)
         pos($buff) = $pos + 8;
         last unless $buff =~ /\G(.*?)\0/sg;
         my $tag = $1;
+        # avoid conflicts with our special table entries
+        $tag .= '.' if $Image::ExifTool::specialTags{$tag};
         $pos = pos($buff);
         last if $pos + $len > $size;
         my $val = substr($buff, $pos, $len);
@@ -204,6 +211,7 @@ sub ProcessAPE($$)
         $pos += $len;
     }
     $i == $count or $exifTool->Warn('Bad APE trailer');
+    $$exifTool{INDENT} = $oldIndent if defined $oldIndent;
     return 1;
 }
 
@@ -230,7 +238,7 @@ Currently doesn't parse MAC header unless it is at the start of the file.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

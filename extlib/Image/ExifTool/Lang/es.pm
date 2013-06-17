@@ -11,15 +11,163 @@ package Image::ExifTool::Lang::es;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.06';
+$VERSION = '1.12';
 
 %Image::ExifTool::Lang::es::Translate = (
-   'AFMicroAdjActive' => {
+   'AEAperture' => 'Aperture AE',
+   'AELock' => 'Bloqueo AE',
+   'AELockButton' => {
+      Description => 'Botón Bloqueo AE',
       PrintConv => {
-        'Yes' => 'Si',
+        'None' => 'Ninguno',
       },
     },
+   'AELockButtonPlusDials' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'AEMaxAperture2' => 'Apertura máxima AE 2',
+   'AEMinAperture' => 'Apertura mínima AE',
+   'AEProgramMode' => {
+      PrintConv => {
+        'Landscape' => 'Paisaje',
+        'Portrait' => 'Retrato',
+        'Standard' => 'Estándar',
+      },
+    },
+   'AESetting' => {
+      PrintConv => {
+        'AE Lock' => 'Bloqueo AE',
+        'Exposure Compensation' => 'Compensación Exposición',
+      },
+    },
+   'AFAperture' => 'Apertura AF',
+   'AFAreaHeight' => 'AF Alto Área',
+   'AFAreaHeights' => 'AF Alto Área',
+   'AFAreaIllumination' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'AFAreaMode' => {
+      Description => 'AF Modo Área',
+      PrintConv => {
+        'Face Detect AF' => 'Detección Caras AF',
+        'Multi-point AF or AI AF' => 'Multipunto AF o AI AF',
+        'Off (Manual Focus)' => 'Desactivado (Enfoque Manual)',
+        'Single-point AF' => 'Punto único AF)',
+        'Zone AF' => 'Zona AF',
+      },
+    },
+   'AFAreaWidth' => 'AF Ancho Área',
+   'AFAreaWidths' => 'AF Ancho Área',
+   'AFAssist' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'AFImageHeight' => 'AF Alto Imágen',
+   'AFImageWidth' => 'AF Ancho Imágen',
    'AFMode' => 'Modo AF',
+   'AFPoint' => {
+      Description => 'Punto AF',
+      PrintConv => {
+        'Center' => 'Centro',
+        'Face Detect' => 'Detección Caras',
+        'Left' => 'Izquierda',
+        'None' => 'Ninguno',
+        'None (MF)' => 'Ninguno (MF)',
+        'Right' => 'Derecha',
+      },
+    },
+   'AFPointActivationArea' => {
+      Description => 'Area de Activación Punto AF',
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
+   'AFPointAreaExpansion' => {
+      Description => 'Area Expansion Punto AF',
+      PrintConv => {
+        'Disable' => 'Desactivado',
+      },
+    },
+   'AFPointAutoSelection' => 'Autoselección Punto AF',
+   'AFPointBrightness' => {
+      Description => 'Brillo Punto AF',
+      PrintConv => {
+        'Brighter' => 'Brillante',
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+      },
+    },
+   'AFPointDisplayDuringFocus' => {
+      Description => 'Mostrar Punto AF durante el enfoque',
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'AFPointIllumination' => {
+      Description => 'Iluminación de Punto AF',
+      PrintConv => {
+        'Brighter' => 'Brillante',
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'AFPointMode' => 'Modo Punto AF',
+   'AFPointPosition' => 'Posición Punto AF',
+   'AFPointRegistration' => 'Registro de Puntos AF',
+   'AFPointSelected' => {
+      Description => 'Punto AF Seleccionado',
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'AFPointSelected2' => 'Punto AF Seleccionado 2 ',
+   'AFPointSelection' => 'Selección de Punto AF',
+   'AFPointSelectionMethod' => 'Método Selección Punto AF',
+   'AFPoints' => 'Punto AF',
+   'AFPointsInFocus' => {
+      Description => 'Puntos AF en foco',
+      PrintConv => {
+        'All' => 'Todo',
+        'None' => 'Ninguno',
+      },
+    },
+   'AFPointsInFocus1D' => 'Puntos AF en foco',
+   'AFPointsInFocus5D' => {
+      Description => 'Puntos AF en foco 5D',
+      PrintConv => {
+        'Bottom' => 'Abajo',
+        'Center' => 'Centro',
+        'Left' => 'Izquierda',
+        'Lower-left' => 'Inferior izquierda',
+        'Lower-right' => 'Inferior derecha',
+        'Right' => 'Derecha',
+        'Top' => 'Arriba',
+        'Upper-left' => 'Superior izquierda',
+        'Upper-right' => 'Superior derecha',
+      },
+    },
+   'AFPointsSelected' => 'Puntos AF seleccionados',
+   'AFPointsUnknown1' => {
+      PrintConv => {
+        'All' => 'Todo',
+      },
+    },
+   'AFPointsUsed' => 'Puntos AF utilizados',
+   'AIServoTrackingSensitivity' => {
+      PrintConv => {
+        'Fast' => 'Rápido',
+        'Standard' => 'Estándar',
+      },
+    },
+   'APEVersion' => 'Versión APE',
    'ARMIdentifier' => 'Identificador ARM',
    'ARMVersion' => 'Versión ARM',
    'AToB0' => 'A a B0',
@@ -35,7 +183,44 @@ $VERSION = '1.06';
       },
     },
    'ActiveArea' => 'Área Activa',
+   'ActiveD-Lighting' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'ActiveD-LightingMode' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Off' => 'Desactivado',
+      },
+    },
+   'AddAspectRatioInfo' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'AddOriginalDecisionData' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'AdjustmentMode' => 'Modo Ajuste',
+   'AdvancedRaw' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'AdvancedSceneMode' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+        'Soft' => 'Suave',
+      },
+    },
    'Album' => 'Álbum',
    'AlphaByteCount' => 'Número Byte Alfa',
    'AlphaDataDiscard' => {
@@ -48,12 +233,40 @@ $VERSION = '1.06';
       },
     },
    'AlphaOffset' => 'Offset Alfa',
+   'AmbienceSelection' => {
+      PrintConv => {
+        'Brighter' => 'Brillante',
+        'Cool' => 'Frío',
+        'Darker' => 'Oscuro',
+        'Intense' => 'Intenso',
+        'Monochrome' => 'Monocromo',
+        'Soft' => 'Suave',
+        'Standard' => 'Estándar',
+        'Vivid' => 'Vívido',
+        'Warm' => 'Cálido',
+      },
+    },
    'AnalogBalance' => 'Balance Analógico',
+   'Annotation' => 'Anotación',
+   'Annotations' => 'Anotaciones',
+   'Anti-Blur' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
    'AntiAliasStrength' => 'Potencia Relativa del Filtro Antialiasing',
-   'Aperture' => 'Abertura',
-   'ApertureValue' => 'Abertura',
+   'Aperture' => 'Apertura',
+   'ApertureRange' => 'Rango Apertura',
+   'ApertureSetting' => 'Ajustes Apertura',
+   'ApertureValue' => 'Apertura',
    'ApplicationRecordVersion' => 'Versión Registro Aplicación',
-   'Artist' => 'Persona que Creó la Imagen',
+   'ArtMode' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+        'Panorama' => 'Panoramica',
+      },
+    },
+   'Artist' => 'Autor',
    'AsShotICCProfile' => 'Perfil ICC Captura',
    'AsShotNeutral' => 'Captura Neutral',
    'AsShotPreProfileMatrix' => 'Matriz Pre Perfil Captura',
@@ -64,8 +277,24 @@ $VERSION = '1.06';
         'Yes' => 'Si',
       },
     },
+   'AudioChannelType' => {
+      PrintConv => {
+        'Other' => 'Otro',
+      },
+    },
+   'AudioChannels' => 'Canales Audio',
+   'AudioCodecID' => {
+      PrintConv => {
+        'Unknown -' => 'Desconocido -',
+      },
+    },
    'AudioDuration' => 'Duración Audio',
    'AudioOutcue' => 'Cola Audio',
+   'AudioSampleType' => {
+      PrintConv => {
+        'Other' => 'Otro',
+      },
+    },
    'AudioSamplingRate' => 'Ratio Muestreo Audio',
    'AudioSamplingResolution' => 'Resolución Muestreo Audio',
    'AudioType' => {
@@ -92,19 +321,53 @@ $VERSION = '1.06';
     },
    'Author' => 'Autor',
    'AuthorsPosition' => 'Posición del Autor',
+   'AutoAperture' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'AutoBracket' => 'Auto-horquillado',
+   'AutoExposureBracketing' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'AutoFP' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'AutoLightingOptimizer' => {
+      PrintConv => {
+        'Low' => 'Bajo',
+        'Off' => 'Desactivado',
+        'Standard' => 'Estándar',
+        'Strong' => 'Fuerte',
+      },
+    },
    'AutoLightingOptimizerOn' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
-   'AutoRotate' => {
+   'AutoRedEye' => {
       PrintConv => {
-        'Rotate 180' => 'Rotar 180°',
-        'Rotate 270 CW' => 'Rotar 270° sentido reloj',
-        'Rotate 90 CW' => 'Rotar 90° sentido reloj',
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
       },
     },
+   'AutoRotate' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+        'Rotate 180' => 'Girado 180°',
+        'Rotate 270 CW' => 'Girado 270° sentido reloj',
+        'Rotate 90 CW' => 'Girado 90° sentido reloj',
+      },
+    },
+   'AverageLevel' => 'Nivel Medio',
    'BToA0' => 'B a A0',
    'BToA1' => 'B a A1',
    'BToA2' => 'B a A2',
@@ -116,22 +379,84 @@ $VERSION = '1.06';
       },
     },
    'BadFaxLines' => 'Líneas Fax Malas',
+   'BannerImageType' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'BaselineExposure' => 'Exposición Base',
    'BaselineNoise' => 'Ruido Base',
    'BaselineSharpness' => 'Nitidez Base',
    'BatteryLevel' => 'Nivel Batería',
+   'BatteryState' => {
+      PrintConv => {
+        'Low' => 'Bajo',
+      },
+    },
    'BayerGreenSplit' => 'Mosaico Bayer Verde',
+   'Beep' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'BeepPitch' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+      },
+    },
    'BestQualityScale' => 'Escala Mayor Calidad',
+   'BestShotMode' => {
+      PrintConv => {
+        'Beach' => 'Playa',
+        'Fireworks' => 'Fuegos Artificiales',
+        'Food' => 'Comida',
+        'Monochrome' => 'Monocromo',
+        'Portrait' => 'Retrato',
+        'Snow' => 'Nieve',
+        'Underwater' => 'Subacuatica',
+      },
+    },
    'BitsPerComponent' => 'Bits Por Componente',
    'BitsPerExtendedRunLength' => 'Bits Por "Run Length" Extendido',
    'BitsPerRunLength' => 'Bits Por "Run Length"',
-   'BitsPerSample' => 'Número de Bits Por Componente',
+   'BitsPerSample' => 'Número de Bits Por Muestra',
    'BlackLevel' => 'Nivel Negro',
    'BlackLevelDeltaH' => 'Nivel Negro Delta H',
    'BlackLevelDeltaV' => 'Nivel Negro Delta V',
    'BlackLevelRepeatDim' => 'Dimensión Repetición Nivel Negro',
+   'BleachBypassToning' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'Orange' => 'Naranja',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'BlocksPerFrame' => 'Bloques por Imagen',
+   'BlueBalance' => 'Balance de azules',
    'BlueMatrixColumn' => 'Columna Matriz Azul',
    'BlueTRC' => 'Curva Reproducción Tono Azul',
+   'BlurControl' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+      },
+    },
+   'BlurWarning' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'BodyFirmwareVersion' => 'Versión Firmware del cuerpo de la cámara',
+   'BracketMode' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
    'Brightness' => 'Brillo',
    'BrightnessValue' => 'Luminosidad',
    'By-line' => 'Creador',
@@ -152,23 +477,28 @@ $VERSION = '1.06';
    'CFARepeatPatternDim' => 'Dimensión Patrón Repetición CFA',
    'CMMFlags' => 'Banderas CMM',
    'CMYKEquivalent' => 'CMYK Equivalente',
+   'CPUType' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'CalibrationDateTime' => 'Fecha y Hora Calibración',
    'CalibrationIlluminant1' => {
       Description => 'Calibración Iluminación 1',
       PrintConv => {
-        'Cloudy' => 'Tiempo nuboso',
+        'Cloudy' => 'Tiempo Nublado',
         'Cool White Fluorescent' => 'Fluorescente blanco cálido (W 3800 - 4500K)',
         'Day White Fluorescent' => 'Fluorescente blanco día (N 4600 - 5500K)',
         'Daylight' => 'Luz del día',
-        'Daylight Fluorescent' => 'Fluorescente luz del día (D 5700 - 7100K)',
+        'Daylight Fluorescent' => 'Fluorescente luz de día (D 5700 - 7100K)',
         'Fine Weather' => 'Buen tiempo',
         'Fluorescent' => 'Fluorescente',
         'ISO Studio Tungsten' => 'Tungsteno estudio ISO',
         'Other' => 'Otras Fuentes Luz',
-        'Shade' => 'Sombra',
-        'Standard Light A' => 'Luz estandar A',
-        'Standard Light B' => 'Luz estandar B',
-        'Standard Light C' => 'Luz estandar C',
+        'Shade' => 'Sombrío',
+        'Standard Light A' => 'Luz Estándar A',
+        'Standard Light B' => 'Luz Estándar B',
+        'Standard Light C' => 'Luz Estándar C',
         'Tungsten (Incandescent)' => 'Tungsteno (luz incandescente)',
         'Unknown' => 'Desconocido',
         'Warm White Fluorescent' => 'Fluorescente blanco cálido (L 2600 - 3250K)',
@@ -178,19 +508,19 @@ $VERSION = '1.06';
    'CalibrationIlluminant2' => {
       Description => 'Calibración Iluminación 2',
       PrintConv => {
-        'Cloudy' => 'Tiempo nuboso',
+        'Cloudy' => 'Tiempo Nublado',
         'Cool White Fluorescent' => 'Fluorescente blanco cálido (W 3800 - 4500K)',
         'Day White Fluorescent' => 'Fluorescente blanco día (N 4600 - 5500K)',
         'Daylight' => 'Luz del día',
-        'Daylight Fluorescent' => 'Fluorescente luz del día (D 5700 - 7100K)',
+        'Daylight Fluorescent' => 'Fluorescente luz de día (D 5700 - 7100K)',
         'Fine Weather' => 'Buen tiempo',
         'Fluorescent' => 'Fluorescente',
         'ISO Studio Tungsten' => 'Tungsteno estudio ISO',
         'Other' => 'Otras Fuentes Luz',
-        'Shade' => 'Sombra',
-        'Standard Light A' => 'Luz estandar A',
-        'Standard Light B' => 'Luz estandar B',
-        'Standard Light C' => 'Luz estandar C',
+        'Shade' => 'Sombrío',
+        'Standard Light A' => 'Luz Estándar A',
+        'Standard Light B' => 'Luz Estándar B',
+        'Standard Light C' => 'Luz Estándar C',
         'Tungsten (Incandescent)' => 'Tungsteno (luz incandescente)',
         'Unknown' => 'Desconocido',
         'Warm White Fluorescent' => 'Fluorescente blanco cálido (L 2600 - 3250K)',
@@ -200,29 +530,85 @@ $VERSION = '1.06';
    'CameraCalibration1' => 'Calibración Cámara 1',
    'CameraCalibration2' => 'Calibración Cámara 2',
    'CameraCalibrationSig' => 'Firma Calibración Cámara',
+   'CameraISO' => 'Camara-ISO',
    'CameraOrientation' => {
+      Description => 'Orientación Cámara',
       PrintConv => {
-        'Rotate 270 CW' => 'Rotar 270° sentido reloj',
-        'Rotate 90 CW' => 'Rotar 90° sentido reloj',
+        'Rotate 270 CW' => 'Girado 270° sentido reloj',
+        'Rotate 90 CW' => 'Girado 90° sentido reloj',
       },
     },
    'CameraSerialNumber' => 'Número Serie Cámara',
+   'CameraTemperature' => 'Temperatura Cámara',
+   'CameraType' => 'Tipo Cámara',
+   'CameraType2' => 'Tipo Cámara',
+   'CanonFileLength' => 'Tamaño Archivo',
+   'CanonFlashMode' => {
+      PrintConv => {
+        'Auto' => 'Automático',
+        'External flash' => 'Flash Externo',
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+        'Red-eye reduction' => 'Réducción ojos rojos',
+        'Red-eye reduction (Auto)' => 'Réducción ojos rojos (Automático)',
+        'Red-eye reduction (On)' => 'Réducción ojos rojos (Activado)',
+      },
+    },
+   'CanonImageSize' => {
+      PrintConv => {
+        '1280x720 Movie' => 'Película 1280x720',
+        '1920x1080 Movie' => 'Película 1920x1080',
+        '640x480 Movie' => 'Película 640x480',
+        'Large' => 'Ancho',
+        'Medium' => 'Medio',
+        'Medium 1' => 'Medio 1',
+        'Medium 2' => 'Medio 2',
+        'Medium 3' => 'Medio 3',
+        'Small' => 'Pequeño',
+        'Small 1' => 'Pequeño 1',
+        'Small 2' => 'Pequeño 2',
+        'Small 3' => 'Pequeño 3',
+        'Small Movie' => 'Película Pequeña',
+      },
+    },
    'Caption-Abstract' => 'Título/Descripción',
    'CaptionWriter' => 'Autor del Pie de Foto',
    'Categories' => 'Categorías',
    'Category' => 'Categoría',
    'CellLength' => 'Alto Celda',
    'CellWidth' => 'Ancho Celda',
+   'Certificate' => 'Certificado',
+   'Channels' => 'Canales',
    'CharTarget' => 'Objetivo Caracter',
    'CharacterSet' => 'Conjunto de Caracteres',
    'ChromaBlurRadius' => 'Radio Mezcla Croma',
    'ChromaticAdaptation' => 'Adaptación Cromática',
    'Chromaticity' => 'Cromaticidad',
+   'ChrominanceNR_TIFF_JPEG' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Off' => 'Desactivado',
+      },
+    },
+   'ChrominanceNoiseReduction' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Off' => 'Desactivado',
+      },
+    },
    'City' => 'Ciudad',
    'ClassifyState' => 'Clasificar Estado',
    'CleanFaxData' => 'Datos Fax Claro',
    'ClipPath' => 'Camino Fragmento',
    'CodedCharacterSet' => 'Juego Caracteres Codificado',
+   'ColorAberrationControl' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'ColorAdjustment' => 'Ajuste Color',
    'ColorAdjustmentMode' => {
       Description => 'Modo Ajuste Color',
@@ -231,14 +617,46 @@ $VERSION = '1.06';
         'On' => 'Encendido',
       },
     },
+   'ColorBalanceAdj' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'ColorBooster' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'ColorCalibrationMatrix' => 'Tabla Matriz Calibración Color',
    'ColorCharacterization' => 'Caracterización Color',
-   'ColorFilter' => 'Filtro de Color',
+   'ColorComponents' => 'Componentes de Color',
+   'ColorEffect' => {
+      PrintConv => {
+        'Cool' => 'Frío',
+        'Warm' => 'Cálido',
+      },
+    },
+   'ColorFilter' => {
+      Description => 'Filtro de Color',
+      PrintConv => {
+        'Green' => 'Verde',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
    'ColorMap' => 'Mapa Color',
+   'ColorMatrix' => 'Matriz de Color',
    'ColorMatrix1' => 'Matriz Color 1',
    'ColorMatrix2' => 'Matriz Color 2',
+   'ColorMatrixA' => 'Matriz de Color A',
+   'ColorMatrixAdobeRGB' => 'Matriz de Color Adobe RGB',
+   'ColorMatrixB' => 'Matriz de Color B',
+   'ColorMatrixNumber' => 'Número de Matriz de Color',
+   'ColorMatrixSRGB' => 'Matriz de Color SRGB',
    'ColorMode' => {
-      Description => 'Estilo.Creativo',
+      Description => 'Modo de Color',
       PrintConv => {
         'Autumn Leaves' => 'Hojas de otoño',
         'B&W' => 'ByN',
@@ -247,12 +665,26 @@ $VERSION = '1.06';
         'Evening' => 'Tarde',
         'Landscape' => 'Paisaje',
         'Light' => 'Luz',
+        'Neutral' => 'Neutro',
         'Night View' => 'Vista nocturna',
         'Night View/Portrait' => 'Retrato noct.',
         'Portrait' => 'Retrato',
         'Standard' => 'Estándar',
         'Sunset' => 'Puesta sol',
-        'Vivid' => 'Color vívido',
+        'Vivid' => 'Vívido',
+      },
+    },
+   'ColorMoireReduction' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'ColorMoireReductionMode' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Off' => 'Desactivado',
       },
     },
    'ColorPalette' => 'Paleta Color',
@@ -281,30 +713,100 @@ $VERSION = '1.06';
       Description => 'Espacio Color',
       PrintConv => {
         'ICC Profile' => 'Perfil ICC',
+        'Monochrome' => 'Monocromo',
         'Uncalibrated' => 'Sin calibrar',
+        'Wide Gamut RGB' => 'Gamut RVB Grande',
       },
     },
    'ColorSpaceData' => 'Espacio Color Datos',
    'ColorTable' => 'Tabla Color',
+   'ColorTempAuto' => 'Temperatura Color Automática',
+   'ColorTempCloudy' => 'Temperatura Color Nublado',
+   'ColorTempCustom' => 'Temperatura Color Personalizada',
+   'ColorTempCustom1' => 'Temperatura Color Personalizada 1',
+   'ColorTempCustom2' => 'Temperatura Color Personalizada 2',
+   'ColorTempDaylight' => 'Temperatura Color Luz de Día',
+   'ColorTempFlash' => 'Temperatura Color Flash',
+   'ColorTempFluorescent' => 'Temperatura Color Fluorescente',
+   'ColorTempKelvin' => 'Temperatura Color Kelvin',
+   'ColorTempMeasured' => 'Temperatura Color Medida',
+   'ColorTempShade' => 'Temperatura Color Sombrío',
+   'ColorTempTungsten' => 'Temperatura Color Tungsteno',
+   'ColorTempUnknown' => 'Temperatura de Color Desconocida',
+   'ColorTempUnknown10' => 'Temperatura de Color Desconocida 10',
+   'ColorTempUnknown11' => 'Temperatura de Color Desconocida 11',
+   'ColorTempUnknown12' => 'Temperatura de Color Desconocida 12',
+   'ColorTempUnknown13' => 'Temperatura de Color Desconocida 13',
+   'ColorTempUnknown14' => 'Temperatura de Color Desconocida 14',
+   'ColorTempUnknown15' => 'Temperatura de Color Desconocida 15',
+   'ColorTempUnknown16' => 'Temperatura de Color Desconocida 16',
+   'ColorTempUnknown17' => 'Temperatura de Color Desconocida 17',
+   'ColorTempUnknown18' => 'Temperatura de Color Desconocida 18',
+   'ColorTempUnknown19' => 'Temperatura de Color Desconocida 19',
+   'ColorTempUnknown2' => 'Temperatura de Color Desconocida 2',
+   'ColorTempUnknown20' => 'Temperatura de Color Desconocida 20',
+   'ColorTempUnknown3' => 'Temperatura de Color Desconocida 3',
+   'ColorTempUnknown4' => 'Temperatura de Color Desconocida 4',
+   'ColorTempUnknown5' => 'Temperatura de Color Desconocida 5',
+   'ColorTempUnknown6' => 'Temperatura de Color Desconocida 6',
+   'ColorTempUnknown7' => 'Temperatura de Color Desconocida 7',
+   'ColorTempUnknown8' => 'Temperatura de Color Desconocida 8',
+   'ColorTempUnknown9' => 'Temperatura de Color Desconocida 9',
    'ColorTemperature' => 'Temperatura de Color',
+   'ColorTone' => {
+      Description => 'Tono de Color',
+      PrintConv => {
+        'Normal' => 'Estándar',
+      },
+    },
    'ColorantOrder' => 'Orden Colorante',
    'ColorantTable' => 'Tabla Colorante',
    'ColorimetricReference' => 'Referencia Colorimétrica',
+   'CommandDialsChangeMainSub' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'CommandDialsMenuAndPlayback' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'CommandDialsReverseRotation' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
+   'CommanderGroupAMode' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'CommanderGroupBMode' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'CommanderInternalFlash' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
    'Comment' => 'Comentario',
+   'Compatibility' => 'Compatibilidad',
    'Compilation' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
-   'ComponentsConfiguration' => 'Significado de Cada Componente',
+   'ComponentsConfiguration' => 'Configuración de Componentes',
+   'Composer' => 'Compositor',
    'CompressedBitsPerPixel' => 'Modo Compresión Imagen',
+   'CompressedSize' => 'Tamaño Comprimido',
    'Compression' => {
-      Description => 'Esquema Compresión',
+      Description => 'Compresión',
       PrintConv => {
         'JPEG' => 'Compresión JPEG',
         'JPEG (old-style)' => 'JPEG (estilo antiguo)',
@@ -312,6 +814,7 @@ $VERSION = '1.06';
         'Kodak KDC Compressed' => 'Compresión Kodak KDC',
         'Next' => 'Codificación NeXT 2-bit',
         'Nikon NEF Compressed' => 'Compresión Nikon NEF',
+        'None' => 'Ninguno',
         'Pentax PEF Compressed' => 'Compresión Pentax PEF',
         'SGILog' => 'Codificación Log Luminancia SGI 32-bit',
         'SGILog24' => 'Codificación Log Luminancia SGI 24-bit',
@@ -320,26 +823,83 @@ $VERSION = '1.06';
         'Uncompressed' => 'Sin comprimir',
       },
     },
+   'CompressionFactor' => 'Factor de compresión',
+   'CompressionLevel' => 'Nivel Compresión',
+   'CompressionType' => {
+      Description => 'Tipo Compresión',
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'CompressorName' => 'Nombre Compresor',
+   'Conductor' => 'Director',
+   'Conductors' => 'Directores',
    'ConnectionSpaceIlluminant' => 'Iluminación Espacio Conexión',
    'ConsecutiveBadFaxLines' => 'Líneas Fax Malas Consecutivas',
    'Contact' => 'Contacto',
    'ContentLocationCode' => 'Código Localización Contenido',
    'ContentLocationName' => 'Nombre Localización Contenido',
+   'ContinuousBracketing' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+      },
+    },
+   'ContinuousDrive' => {
+      PrintConv => {
+        'Continuous' => 'Continuo',
+        'Continuous, High' => 'Continuo, Alto',
+        'Continuous, Low' => 'Continuo, Bajo',
+        'Continuous, Speed Priority' => 'Continuo, Prioridad Velocidad',
+        'Movie' => 'Película',
+        'Single' => 'Simple',
+      },
+    },
    'Contrast' => {
       Description => 'Contraste',
       PrintConv => {
-        'High' => 'Fuerte',
-        'Low' => 'Suave',
+        'High' => 'Alto',
+        'Low' => 'Bajo',
         'Normal' => 'Estándar',
       },
     },
-   'Copyright' => 'Copyright Perfil',
+   'ContrastMode' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+      },
+    },
+   'ContrastSetting' => 'Ajustes de Contraste',
    'CopyrightNotice' => 'Aviso Copyright',
    'Country' => 'País',
    'Country-PrimaryLocationCode' => 'Código País ISO',
    'Country-PrimaryLocationName' => 'País',
    'CreateDate' => 'Fecha y Hora de Datos Digital',
    'CreationDate' => 'Fecha Creación',
+   'CreativeStyle' => {
+      PrintConv => {
+        'Autumn Leaves' => 'Hojas de otoño',
+        'B&W' => 'ByN',
+        'Clear' => 'Claro',
+        'Deep' => 'Profundo',
+        'Landscape' => 'Paisaje',
+        'Light' => 'Luz',
+        'Neutral' => 'Neutro',
+        'Night View/Portrait' => 'Retrato noct.',
+        'Portrait' => 'Retrato',
+        'Standard' => 'Estándar',
+        'Sunset' => 'Puesta sol',
+        'Vivid' => 'Vívido',
+      },
+    },
+   'CreativeStyleSetting' => {
+      PrintConv => {
+        'Landscape' => 'Paisaje',
+        'Portrait' => 'Retrato',
+        'Standard' => 'Estándar',
+        'Vivid' => 'Vívido',
+      },
+    },
    'Creator' => 'Creador',
    'CreatorAddress' => 'Creador - Dirección',
    'CreatorCity' => 'Creador - Ciudad',
@@ -355,8 +915,22 @@ $VERSION = '1.06';
         'Yes' => 'Si',
       },
     },
+   'CropHeight' => 'Recorte Altura',
+   'CropLeft' => 'Recorte Izquierda',
+   'CropTop' => 'Recorte Arriba',
+   'CropWidth' => 'Recorte Anchura',
+   'CroppedImageHeight' => 'Alto Imágen Recortada',
+   'CroppedImageLeft' => 'Izquierda Imágen Recortada',
+   'CroppedImageTop' => 'Superior Imágen Recortada',
+   'CroppedImageWidth' => 'Ancho Imágen Recortada',
    'CurrentICCProfile' => 'Perfil ICC Actual',
    'CurrentPreProfileMatrix' => 'Matriz Pre Perfil Actual',
+   'Curves' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'CustomRendered' => {
       Description => 'Proceso Imagen Personalizado',
       PrintConv => {
@@ -364,28 +938,65 @@ $VERSION = '1.06';
         'Normal' => 'Proceso normal',
       },
     },
+   'CustomSaturation' => 'Saturación personalizada',
+   'D-LightingHQ' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'D-LightingHQSelected' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
+   'D-LightingHS' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'DNGBackwardVersion' => 'Versión Antigua DNG',
    'DNGLensInfo' => 'Distancia Focal Mínima',
    'DNGVersion' => 'Versión DNG',
+   'DOF' => 'Profundidad de campo',
+   'Data' => 'Datos',
    'DataCompressionMethod' => 'Proveedor/Propietario Algoritmo Compresión Datos',
+   'DataImprint' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'DataPackets' => ' Paquetes de Datos',
    'DataType' => 'Tipo Datos',
    'Date' => 'Fecha',
    'DateCreated' => 'Fecha Creación',
    'DateSent' => 'Fecha Envío',
+   'DateStampMode' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
    'DateTimeOriginal' => 'Fecha y Hora de Datos Original',
    'DaylightSavings' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
+   'DefaultBlackRender' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'DefaultCropOrigin' => 'Origen Corte Defecto',
    'DefaultCropSize' => 'Tamaño Corte Defecto',
    'DefaultScale' => 'Escala por Defecto',
+   'DerivedFromMaskMarkers' => {
+      PrintConv => {
+        'All' => 'Todo',
+        'None' => 'Ninguno',
+      },
+    },
    'Description' => 'Descripción',
    'Destination' => 'Destino',
    'DestinationDST' => {
@@ -401,7 +1012,114 @@ $VERSION = '1.06';
    'DeviceSettingDescription' => 'Descripción Ajustes Dispositivo',
    'DigitalCreationDate' => 'Fecha Creación Digital',
    'DigitalCreationTime' => 'Hora Creación Digital',
-   'DigitalZoom' => 'Zoom Digital',
+   'DigitalFilter01' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter02' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter03' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter04' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter05' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter06' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter07' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter08' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter09' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter10' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter11' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter12' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter13' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter14' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter15' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter16' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter17' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter18' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter19' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalFilter20' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'DigitalSignature' => 'Firma Digital',
+   'DigitalZoom' => {
+      Description => 'Zoom Digital',
+      PrintConv => {
+        'None' => 'Ninguno',
+        'Off' => 'Desactivado',
+      },
+    },
    'DigitalZoomOn' => {
       Description => 'Zoom Digital Encendido',
       PrintConv => {
@@ -411,11 +1129,47 @@ $VERSION = '1.06';
     },
    'DigitalZoomRatio' => 'Ratio Zoom Digital',
    'Directory' => 'Ubicación del Fichero',
+   'DistortionControl' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'DistortionCorrection' => {
+      Description => 'Corrección Distorsión',
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'DistortionCorrection2' => {
+      Description => 'Corrección Distorsión 2',
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'DistortionCorrectionOn' => 'Corrección Distorsión Activada',
+   'DocSecurity' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'DocumentHistory' => 'Historial del Documento',
    'DocumentName' => 'Nombre Documento',
    'DocumentNotes' => 'Notas del Documento',
    'DotRange' => 'Intervalo Puntos',
-   'DriveMode' => 'Modo Entrada',
+   'DriveMode' => {
+      Description => 'Modo Entrada',
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'Duration' => 'Duración',
+   'DynamicRange' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
    'DynamicRangeOptimizer' => {
       Description => 'Optim.gama diná',
       PrintConv => {
@@ -429,6 +1183,63 @@ $VERSION = '1.06';
         'Standard' => 'Estándar',
       },
     },
+   'DynamicRangeOptimizerBracket' => {
+      PrintConv => {
+        'Low' => 'Bajo',
+      },
+    },
+   'DynamicRangeOptimizerMode' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
+   'DynamicRangeOptimizerSetting' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
+   'EasyExposureCompensation' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'EasyMode' => {
+      PrintConv => {
+        'Beach' => 'Playa',
+        'Black & White' => 'Blanco y Negro',
+        'Digital Macro' => 'Macro digital',
+        'Easy' => 'Fácil',
+        'Fireworks' => 'Fuegos Artificiales',
+        'Fisheye Effect' => 'Efecto Ojo de Pez',
+        'Flash Off' => 'Flash Desactivado',
+        'Foliage' => 'Follaje',
+        'Gray Scale' => 'Escala de Grises',
+        'Indoor' => 'Interior',
+        'Kids & Pets' => 'Niños y Mascotas',
+        'Landscape' => 'Paisaje',
+        'Monochrome' => 'Monocromo',
+        'Neutral' => 'Neutro',
+        'Night' => 'Nocturno',
+        'Night Scene' => 'Escena Nocturna',
+        'Night Snapshot' => 'Fotografía Nocturna',
+        'Nostalgic' => 'Nostalgico',
+        'Portrait' => 'Retrato',
+        'Smile' => 'Sonrisa',
+        'Snow' => 'Nieve',
+        'Sports' => 'Deportes',
+        'Sunset' => 'Puesta de sol',
+        'Surface' => 'Superficie',
+        'Underwater' => 'Subacuatica',
+        'Vivid' => 'Vívido',
+      },
+    },
+   'EdgeNoiseReduction' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'EditStatus' => 'Estado Edición',
    'EditorialUpdate' => {
       Description => 'Actualización Editorial',
@@ -436,7 +1247,30 @@ $VERSION = '1.06';
         'Additional language' => 'Idioma Adicional',
       },
     },
+   'EffectiveMaxAperture' => 'Aperture Máxima Efectiva',
+   'Emphasis' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'EncodedBy' => 'Codificado por',
+   'EncodingProcess' => 'Proceso de codificación',
+   'EncodingSettings' => 'Ajustes de Codificación',
+   'EncodingTime' => 'Hora de codificación',
    'EndPoints' => 'Puntos Finales',
+   'EnhanceDarkTones' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'Enhancement' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'Red' => 'Rojo',
+        'Underwater' => 'Subacuatica',
+      },
+    },
    'EnvelopeNumber' => 'Número Sobre',
    'EnvelopePriority' => {
       Description => 'Prioridad Sobre',
@@ -449,6 +1283,9 @@ $VERSION = '1.06';
       },
     },
    'EnvelopeRecordVersion' => 'Versión Registro Sobre',
+   'EquipmentVersion' => 'Versión Equipo',
+   'ErrorCorrection' => 'Correción Error',
+   'ErrorCorrectionType' => 'Tipo Corrección Error',
    'ExcursionTolerance' => {
       Description => 'Tolerancia Excursión',
       PrintConv => {
@@ -460,6 +1297,7 @@ $VERSION = '1.06';
    'ExifImageHeight' => 'Alto Imagen',
    'ExifImageWidth' => 'Ancho Imagen',
    'ExifOffset' => 'Puntero Exif IFD',
+   'ExifToolVersion' => 'Versión Exiftool',
    'ExifVersion' => 'Versión Exif',
    'ExpandFilm' => 'Película Expandida',
    'ExpandFilterLens' => 'Filtro Objetivo Expandida',
@@ -470,6 +1308,12 @@ $VERSION = '1.06';
    'ExpirationDate' => 'Fecha Expiración',
    'ExpirationTime' => 'Hora Expiración',
    'ExposureCompensation' => 'Compensación Exposición',
+   'ExposureDelayMode' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'ExposureIndex' => 'Índice Exposición',
    'ExposureMode' => {
       Description => 'Modo Exposición',
@@ -477,16 +1321,24 @@ $VERSION = '1.06';
         'Aperture-priority AE' => 'Prioridad Aberture AE',
         'Auto' => 'Exposición automática',
         'Auto bracket' => 'Auto-horquillado',
+        'Beach' => 'Playa',
+        'Fireworks' => 'Fuegos Artificiales',
+        'Food' => 'Comida',
+        'Landscape' => 'Paisaje',
         'Manual' => 'Exposición manual',
+        'Panorama' => 'Panoramica',
+        'Portrait' => 'Retrato',
         'Program AE' => 'Programa AE',
         'Shutter speed priority AE' => 'Prioridad velocidad obturador AE',
+        'Snow' => 'Nieve',
+        'Underwater' => 'Subacuatica',
       },
     },
    'ExposureProgram' => {
       Description => 'Programa Exposición',
       PrintConv => {
         'Action (High speed)' => 'Programa acción (orientado a velocidad de obturación rápida)',
-        'Aperture-priority AE' => 'Prioridad abertura',
+        'Aperture-priority AE' => 'Prioridad Apertura',
         'Creative (Slow speed)' => 'Programa creativo (orientado a profundidad de campo)',
         'Landscape' => 'Modo paisaje (para fotos de paisaje con el fondo en enfoque)',
         'Manual' => 'Exposición manual',
@@ -496,26 +1348,78 @@ $VERSION = '1.06';
         'Shutter speed priority AE' => 'Prioridad obturador',
       },
     },
-   'ExposureTime' => 'Hora Exposición',
-   'ExposureTime2' => 'Hora Exposición 2',
+   'ExposureTime' => 'Tiempo de Exposición',
+   'ExposureTime2' => 'Tiempo de Exposición 2',
+   'Extender' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'ExternalFlash' => {
+      Description => 'Flash Externo',
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'ExternalFlashBounce' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
+   'ExternalFlashMode' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'ExternalFlashZoom' => 'Zoom Flash Externo',
    'ExtraSamples' => 'Muestra Extra',
    'FNumber' => 'Número F',
+   'FOV' => 'Angulo de Visión',
+   'FaceDetectArea' => 'Area detección caras',
+   'FaceDetectFrameSize' => 'Tamaño Area detección caras',
+   'FaceOrientation' => {
+      PrintConv => {
+        'Horizontal (normal)' => '0° (arriba/izquierda)',
+        'Rotate 180' => 'Girado 180°',
+        'Rotate 270 CW' => 'Girado 270° sentido reloj',
+        'Rotate 90 CW' => 'Girado 90° sentido reloj',
+      },
+    },
+   'FacesDetected' => 'Caras Detectadas',
    'FastSeek' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
+   'FaxProfile' => {
+      PrintConv => {
+        'Unknown' => 'Desconocido',
+      },
+    },
    'FaxRecvParams' => 'Parámetros Recepción Fax',
    'FaxRecvTime' => 'Hora Recepción Fax',
    'FaxSubAddress' => 'Subdirección Fax',
+   'FileAccessDate' => 'Fecha y hora de Acceso',
+   'FileCreateDate' => 'Fecha y hora de Creación',
    'FileFormat' => 'Formato Archivo',
-   'FileModifyDate' => 'Fecha Actualizada',
+   'FileLength' => 'Tamaño Archivo',
+   'FileModifyDate' => 'Fecha Actualización',
    'FileName' => 'Nombre Archivo',
+   'FileNumberMemory' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'FileNumberSequence' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'FileOwner' => 'Propietario del Archivo',
+   'FilePermissions' => 'Permisos',
    'FileSize' => 'Tamaño Archivo',
    'FileSource' => {
       Description => 'Fuente Archivo',
@@ -527,9 +1431,78 @@ $VERSION = '1.06';
     },
    'FileType' => 'Tipo Archivo',
    'FileVersion' => 'Versión Formato Archivo',
+   'Filename' => 'Nombre archivo',
    'FillOrder' => 'Orden Rellenado',
+   'FilterEffect' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+        'Off' => 'Desactivado',
+        'Orange' => 'Naranja',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'FilterEffectMonochrome' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+        'Orange' => 'Naranja',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'FilterEffectUnknown' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+        'Orange' => 'Naranja',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'FilterEffectUserDef1' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+        'Orange' => 'Naranja',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'FilterEffectUserDef2' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+        'Orange' => 'Naranja',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'FilterEffectUserDef3' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+        'Orange' => 'Naranja',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'FinderDisplayDuringExposure' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'FirmwareVersion' => 'Versión Firmware',
    'FixtureIdentifier' => 'Identificador Marca',
+   'Flags' => {
+      PrintConv => {
+        'Comment' => 'Comentario',
+        'FileName' => 'Nombre de Archivo',
+        'Text' => 'Texto',
+      },
+    },
    'Flash' => {
       PrintConv => {
         'Auto, Did not fire' => 'Flash no disparado, modo automático',
@@ -549,10 +1522,12 @@ $VERSION = '1.06';
         'Fired, Return not detected' => 'Luz devuelta en captador no detectada',
         'No Flash' => 'Flash no disparado',
         'No flash function' => 'Sin función flash',
+        'Off' => 'Desactivado',
         'Off, Did not fire' => 'Flash no disparado, modo flash forzado',
         'Off, Did not fire, Return not detected' => 'Apagado, flash no disparado, retorno luz no detectado',
         'Off, No flash function' => 'Apagado, sin función flash',
         'Off, Red-eye reduction' => 'Apagado, modo reducción ojos rojos',
+        'On' => 'Activado',
         'On, Did not fire' => 'Encendido, flash no disparado',
         'On, Fired' => 'Flash disparado, modo flash forzardo',
         'On, Red-eye reduction' => 'Flash disparado, modo flash forzado, modo reducción ojos rojos',
@@ -562,11 +1537,77 @@ $VERSION = '1.06';
         'On, Return not detected' => 'Flash disparado, modo flash forzado, retorno luz no detectado',
       },
     },
+   'FlashColorFilter' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'FlashCommanderMode' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'FlashControlMode' => {
+      Description => 'Modo Control Flash',
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'Repeating Flash' => 'Flash Estroboscopico',
+      },
+    },
+   'FlashDevice' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'FlashEnergy' => 'Energía Flash',
    'FlashExposureComp' => 'Compensación Exposición Flash',
+   'FlashExposureLock' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'FlashFired' => {
       PrintConv => {
         'Yes' => 'Si',
+      },
+    },
+   'FlashFocalLength' => 'Longitud Flash Flash',
+   'FlashGroupAControlMode' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'FlashGroupBControlMode' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'FlashGroupCControlMode' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'FlashIntensity' => {
+      Description => 'Intensidad Flash',
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+      },
+    },
+   'FlashLevel' => {
+      PrintConv => {
+        'Low' => 'Bajo',
+      },
+    },
+   'FlashMeteringMode' => {
+      PrintConv => {
+        'External Auto' => 'Externo Automatico',
+        'External Manual' => 'Externo Manual',
+        'Off' => 'Desactivado',
       },
     },
    'FlashMode' => {
@@ -578,6 +1619,37 @@ $VERSION = '1.06';
         'Off' => 'Apagado',
         'On' => 'Encendido',
         'Red eye' => 'Ojos rojos',
+      },
+    },
+   'FlashModel' => {
+      Description => 'Modelo Flash',
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'FlashOutput' => 'Flash Salida',
+   'FlashRemoteControl' => 'Control Remote Flash',
+   'FlashSerialNumber' => 'Número Serie Flash',
+   'FlashSource' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'FlashStatus' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'FlashType' => {
+      Description => 'Tipo Flash',
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'FlashWarning' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
       },
     },
    'FlashpixVersion' => 'Versión Flashpix Soportado',
@@ -606,14 +1678,53 @@ $VERSION = '1.06';
     },
    'FocalPlaneXResolution' => 'Resolución X Plano Focal',
    'FocalPlaneYResolution' => 'Resolución Y Plano Focal',
-   'FocusMode' => 'Modo Enfoque',
+   'FocusContinuous' => {
+      PrintConv => {
+        'Continuous' => 'Continuo',
+        'Single' => 'Sencillo',
+      },
+    },
+   'FocusMode' => {
+      Description => 'Modo Enfoque',
+      PrintConv => {
+        'Continuous' => 'Continuo',
+        'Manual Focus (3)' => 'Enfoque Manual (6)',
+        'Manual Focus (6)' => 'Enfoque Manual (6)',
+        'Single' => 'Simple',
+      },
+    },
+   'FocusRange' => {
+      Description => 'Rango de Enfoque',
+      PrintConv => {
+        'Close' => 'Próximo',
+        'Infinity' => 'Infinito',
+        'Not Known' => 'Desconocido',
+        'Very Close' => 'Muy Próximo',
+      },
+    },
    'FocusSetting' => 'Ajuste Enfoque',
+   'FocusTrackingLockOn' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
    'ForwardMatrix1' => 'Matriz Avance 1',
    'ForwardMatrix2' => 'Matriz Avance 2',
    'FrameRate' => 'Velocidad del Fotograma',
    'FrameSize' => 'Tamaño del Fotograma',
    'FreeByteCounts' => 'Número Bytes Libres',
    'FreeOffsets' => 'Offsets Libres',
+   'FuncButton' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'FuncButtonPlusDials' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'GEModel' => 'Modelo',
    'GPSAltitude' => 'Altitud',
    'GPSAltitudeRef' => {
       Description => 'Referencia Altitud',
@@ -678,8 +1789,8 @@ $VERSION = '1.06';
    'GPSLatitudeRef' => {
       Description => 'Latitud Norte o Sur',
       PrintConv => {
-        'North' => 'Latitud Norte',
-        'South' => 'Latitud Sur',
+        'North' => 'Latitud norte',
+        'South' => 'Latitud sur',
       },
     },
    'GPSLongitude' => 'Longitud',
@@ -733,7 +1844,7 @@ $VERSION = '1.06';
         'High gain up' => 'Ganancia alta',
         'Low gain down' => 'Atenuación baja',
         'Low gain up' => 'Ganancia debil',
-        'None' => 'Ninguna',
+        'None' => 'Ninguno',
       },
     },
    'GammaCompensatedValue' => 'Valor Compensado Gamma',
@@ -742,10 +1853,18 @@ $VERSION = '1.06';
         'Yes' => 'Si',
       },
     },
+   'Genre' => {
+      Description => 'Género',
+      PrintConv => {
+        'None' => 'Ninguno',
+        'Other' => 'Otro',
+      },
+    },
+   'GenreID' => 'ID Género',
    'GeoTiffAsciiParams' => 'Etiqueta Parámetros Ascii Geo',
    'GeoTiffDirectory' => 'Etiqueta Directorio Clave Geo',
    'GeoTiffDoubleParams' => 'Etiqueta Parámetros Doble Geo',
-   'Gradation' => 'Impresivo',
+   'Gradation' => 'Luminosidad',
    'GrayResponseCurve' => 'Curva Respuesta Gris',
    'GrayResponseUnit' => {
       Description => 'Unidad Respuesta Gris',
@@ -760,6 +1879,12 @@ $VERSION = '1.06';
    'GrayTRC' => 'Columna Matriz Gris',
    'GreenMatrixColumn' => 'Columna Matriz Verde',
    'GreenTRC' => 'Curva Reproducción Tono Verde',
+   'GridDisplay' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'HCUsage' => 'Uso HC',
    'HDR' => {
       Description => 'Auto HDR',
@@ -767,26 +1892,71 @@ $VERSION = '1.06';
         'Off' => 'Desactivado',
       },
     },
-   'HalftoneHints' => 'Indicación Medio Tono',
-   'Headline' => 'Titular',
-   'HeightResolution' => 'Resolución Imagen Vertical',
-   'HighISONoiseReduction' => {
-      Description => 'RR ISO Alta',
+   'HDRSmoothing' => {
       PrintConv => {
-        'High' => 'Hi',
-        'Low' => 'Lo',
+        'Low' => 'Bajo',
         'Off' => 'Desactivado',
       },
     },
+   'HalftoneHints' => 'Indicación Medio Tono',
+   'HasAttachedImages' => 'Tiene Imagenes Adjuntas',
+   'HasAudio' => 'Tiene Audio',
+   'HasImage' => 'Tiene Imagen',
+   'HasScript' => 'Tiene Script',
+   'HasVideo' => 'Tiene Video',
+   'Headline' => 'Titular',
+   'HeightResolution' => 'Resolución Imagen Vertical',
+   'HighISONoiseReduction' => {
+      Description => 'Reducción Ruido ISO Alta',
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+        'Standard' => 'Estándar',
+        'Strong' => 'Fuerte',
+      },
+    },
+   'HighISONoiseReduction2' => {
+      PrintConv => {
+        'Low' => 'Bajo',
+      },
+    },
    'Highlight' => 'Realce',
+   'HighlightColorDistortReduct' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
+   'HighlightTonePriority' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'HometownDST' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
    'HostComputer' => 'Ordenador Principal',
-   'Hue' => 'Tono',
+   'Hue' => {
+      Description => 'Tono',
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'HyperfocalDistance' => 'Distancia Hiperfocal',
+   'ICCProfile' => 'Perfil ICC',
    'ICC_Profile' => 'Perfil Color Entrada ICC',
+   'IDCCreativeStyle' => {
+      PrintConv => {
+        'Landscape' => 'Retrato',
+        'Neutral' => 'Neutro',
+        'Standard' => 'Estándar',
+        'Vivid' => 'Vívido',
+      },
+    },
    'IPTC-NAA' => 'Metadato IPTC-NAA',
    'IPTCBitsPerSample' => 'Número de Bits por Muestra',
    'IPTCImageHeight' => 'Número de Líneas',
@@ -804,6 +1974,22 @@ $VERSION = '1.06';
    'IPTCPixelHeight' => 'Tamaño Pixel Perpendicular a Dirección Escaneo',
    'IPTCPixelWidth' => 'Tamaño Pixel en Dirección Escaneo',
    'ISO' => 'Ratio Velocidad ISO',
+   'ISOAutoParameters' => {
+      PrintConv => {
+        'Fast' => 'Rápido',
+        'Standard' => 'Estándar',
+      },
+    },
+   'ISOExpansion' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'ISOExpansion2' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
    'ISOSetting' => 'Ajuste ISO',
    'ISOSpeedExpansion' => {
       PrintConv => {
@@ -811,7 +1997,24 @@ $VERSION = '1.06';
       },
     },
    'IT8Header' => 'Cabecera IT8',
+   'Illumination' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'Image::ExifTool::AIFF::Comment' => 'Comentario AIFF',
+   'ImageAuthentication' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
    'ImageByteCount' => 'Número Byte Imagen',
+   'ImageColor' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
    'ImageColorIndicator' => 'Indicador Color Imagen',
    'ImageColorValue' => 'Valor Color Imagen',
    'ImageDataDiscard' => {
@@ -825,11 +2028,28 @@ $VERSION = '1.06';
     },
    'ImageDepth' => 'Ancho Imagen',
    'ImageDescription' => 'Título Imagen',
+   'ImageDustOff' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'ImageEditing' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'ImageFileFormatAsDelivered' => {
+      PrintConv => {
+        'Other' => 'Otro',
+      },
+    },
    'ImageHeight' => 'Alto Imagen',
    'ImageHistory' => 'Historia Imagen',
    'ImageID' => 'ID Imagen',
    'ImageInfo' => 'Info Imagen',
    'ImageLayer' => 'Capa Imagen',
+   'ImageLength' => 'Longitud Imagen',
    'ImageNumber' => 'Número Imagen',
    'ImageOffset' => 'Offset Imagen',
    'ImageOrientation' => {
@@ -840,23 +2060,110 @@ $VERSION = '1.06';
         'Square' => 'Cuadro',
       },
     },
+   'ImageQuality' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Standard' => 'Estándar',
+      },
+    },
    'ImageResourceBlocks' => 'Bloques Recursos Imagen',
+   'ImageReview' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'ImageRotated' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
+   'ImageRotation' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'ImageSize' => 'Tamaño de la Imagen',
    'ImageSourceData' => 'Datos Fuente Imagen',
-   'ImageType' => 'Tipo Imagen',
+   'ImageStabilization' => {
+      Description => 'Estabilización Imagen',
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'ImageStabilizationSetting' => 'Ajustes Estabilización Imagen',
+   'ImageStyle' => {
+      PrintConv => {
+        'Landscape' => 'Paisaje',
+        'Neutral' => 'Neutro',
+        'Portrait' => 'Retrato',
+        'Standard' => 'Estándar',
+        'Vivid' => 'Vívido',
+      },
+    },
+   'ImageTone' => {
+      PrintConv => {
+        'Landscape' => 'Paisaje',
+        'Monochrome' => 'Monocromo',
+        'Portrait' => 'Retrato',
+      },
+    },
+   'ImageType' => {
+      Description => 'Tipo Imagen',
+      PrintConv => {
+        'Other' => 'Otro',
+      },
+    },
    'ImageUniqueID' => 'ID Único Imagen',
    'ImageWidth' => 'Ancho Imagen',
    'Index' => 'Índice',
    'Indexed' => 'Indizado',
+   'IngredientsMaskMarkers' => {
+      PrintConv => {
+        'All' => 'Todo',
+        'None' => 'Ninguno',
+      },
+    },
+   'InitialKey' => 'Clave inicial',
    'InkNames' => 'Nombres Tinta',
    'InkSet' => 'Conjunto Tinta',
    'Instructions' => 'Instrucciones',
    'IntellectualGenre' => 'Género Intelectual',
+   'IntelligentContrast' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+        'n/a' => 'No Aplica',
+      },
+    },
+   'IntelligentD-Range' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Standard' => 'Estándar',
+      },
+    },
+   'IntelligentExposure' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Standard' => 'Estándar',
+      },
+    },
+   'IntelligentResolution' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Standard' => 'Estándar',
+      },
+    },
+   'IntensityStereo' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'InterchangeColorSpace' => {
       PrintConv => {
         'CMY (K) Device Dependent' => 'Dispositivo dependiente CMY(K)',
@@ -865,6 +2172,19 @@ $VERSION = '1.06';
     },
    'IntergraphMatrix' => 'Etiqueta Matriz Intergráfica',
    'Interlace' => 'Entrelazado',
+   'InternalFlash' => 'Flash Interno',
+   'InternalFlashAE1' => 'Flash Interno AE1',
+   'InternalFlashAE1_0' => 'Flash Interno',
+   'InternalFlashAE2' => 'Flash Interno AE2',
+   'InternalFlashAE2_0' => 'Flash Interno AE2',
+   'InternalFlashMode' => {
+      Description => 'Modo Flash Interno',
+      PrintConv => {
+        'Fired' => 'Activado',
+      },
+    },
+   'InternalFlashTable' => 'Tabla Flash Interno',
+   'InternalSerialNumber' => 'Número Serie Interno',
    'InteropIndex' => {
       Description => 'Identificación Interoperabilidad',
       PrintConv => {
@@ -875,38 +2195,86 @@ $VERSION = '1.06';
     },
    'InteropOffset' => 'Etiqueta de Interoperabilidad',
    'InteropVersion' => 'Versión Interoperabilidad',
+   'Is_Protected' => 'Está protegido',
+   'Is_Trusted' => 'Es de confianza',
+   'JFIFVersion' => 'Versión JFIF',
    'JPEGACTables' => 'Tablas AC JPEG',
    'JPEGDCTables' => 'Tablas DC JPEG',
    'JPEGLosslessPredictors' => 'Predictores Sin Perdidas JPEG',
    'JPEGPointTransforms' => 'Tranformadores Puntos JPEG',
    'JPEGProc' => 'Proc JPEG',
    'JPEGQTables' => 'Tablas Q JPEG',
+   'JPEGQuality' => {
+      Description => 'Calidad',
+      PrintConv => {
+        'Extra Fine' => 'Extrafina',
+        'Fine' => 'Fina',
+        'Standard' => 'Calidad estándar',
+      },
+    },
    'JPEGRestartInterval' => 'Intervalo Reinicio JPEG',
    'JPEGTables' => 'Tablas JPEG',
    'JobID' => 'ID del Trabajo',
    'Keyword' => 'Palabras Clave',
    'Keywords' => 'Clave',
+   'LCDIllumination' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'LCDIlluminationDuringBulb' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'LCHEditor' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'Language' => 'Idioma',
+   'LanguageCode' => {
+      PrintConv => {
+        'Neutral' => 'Neutro',
+      },
+    },
    'LanguageIdentifier' => 'Identificador Idioma',
+   'LanguageList' => 'Lista de Idiomas',
    'LeafData' => 'Datos Hoja',
    'Lens' => 'Objetivo',
-   'LensApertureRange' => 'Intervalo Abertura Objetivo',
+   'LensApertureRange' => 'Intervalo Apertura Objetivo',
+   'LensFirmwareVersion' => 'Versión Firmware Objetivo',
+   'LensID' => 'ID Objetivo',
+   'LensIDNumber' => 'Número ID Objetivo',
    'LensInfo' => 'Información del Objetivo',
+   'LensModel' => 'Modelo Objetivo',
+   'LensProperties' => 'Propiedades Objetivo',
+   'LensSerialNumber' => 'Número Serie Objetivo',
+   'LensType' => {
+      Description => 'Tipo Objetivo',
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'LightSource' => {
       Description => 'Fuente Luz',
       PrintConv => {
-        'Cloudy' => 'Tiempo nuboso',
+        'Cloudy' => 'Tiempo Nublado',
         'Cool White Fluorescent' => 'Fluorescente blanco cálido (W 3800 - 4500K)',
         'Day White Fluorescent' => 'Fluorescente blanco día (N 4600 - 5500K)',
         'Daylight' => 'Luz del día',
-        'Daylight Fluorescent' => 'Fluorescente luz del día (D 5700 - 7100K)',
+        'Daylight Fluorescent' => 'Fluorescente luz de día (D 5700 - 7100K)',
         'Fine Weather' => 'Buen tiempo',
         'Fluorescent' => 'Fluorescente',
         'ISO Studio Tungsten' => 'Tungsteno estudio ISO',
         'Other' => 'Otras Fuentes Luz',
-        'Shade' => 'Sombra',
-        'Standard Light A' => 'Luz estandar A',
-        'Standard Light B' => 'Luz estandar B',
-        'Standard Light C' => 'Luz estandar C',
+        'Shade' => 'Sombrío',
+        'Standard Light A' => 'Luz Estándar A',
+        'Standard Light B' => 'Luz Estándar B',
+        'Standard Light C' => 'Luz Estándar C',
         'Tungsten (Incandescent)' => 'Tungsteno (luz incandescente)',
         'Unknown' => 'Desconocido',
         'Warm White Fluorescent' => 'Fluorescente blanco cálido (L 2600 - 3250K)',
@@ -928,6 +2296,12 @@ $VERSION = '1.06';
         'Yes' => 'Si',
       },
     },
+   'LiveViewShooting' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'LocalizedCameraModel' => 'Modelo Cámara Traducido',
    'Location' => 'Localización',
    'LongExposureNoiseReduction' => {
@@ -939,11 +2313,33 @@ $VERSION = '1.06';
     },
    'LookupTable' => 'Tabla de Consulta',
    'Luminance' => 'Luminancia',
+   'LuminanceNoiseReduction' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Off' => 'Desactivado',
+      },
+    },
+   'Lyrics' => 'Letras',
+   'Lyrics_Synchronised' => 'Letras Sincronizadas',
+   'MSStereo' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'Macro' => {
       PrintConv => {
         'Off' => 'Apagado',
         'On' => 'Encendido',
         'View' => 'Vista',
+      },
+    },
+   'MacroMode' => 'Modo Macro',
+   'MainDialExposureComp' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
       },
     },
    'Make' => 'Marca',
@@ -958,14 +2354,42 @@ $VERSION = '1.06';
       },
     },
    'MakerNoteType' => 'Tipo Maker Note',
-   'MakerNoteVersion' => 'Versión Maker Note',
+   'MakerNoteVersion' => 'Versión nota Fabricante',
    'MakerNotes' => 'Notas del Fabricante',
+   'ManagedFromMaskMarkers' => {
+      PrintConv => {
+        'All' => 'Todo',
+        'None' => 'Ninguno',
+      },
+    },
+   'ManifestReferenceMaskMarkers' => {
+      PrintConv => {
+        'All' => 'Todo',
+        'None' => 'Ninguno',
+      },
+    },
+   'ManometerPressure' => 'Presión Manometrica',
+   'ManometerReading' => 'Lectura Manometrica',
+   'ManualFlashOutput' => {
+      PrintConv => {
+        'Full' => 'Completo',
+        'Low' => 'Bajo',
+        'Medium' => 'Medio',
+        'n/a' => 'No Aplica',
+      },
+    },
    'ManualFocusDistance' => 'Distancia Enfoque Manual',
+   'Marker' => 'Marcador',
    'MaskedAreas' => 'Área Oculta',
    'MasterDocumentID' => 'ID de Documento Maestro',
    'Matteing' => 'Mate',
-   'MaxAperture' => 'Máxima Abertura del Objetivo',
-   'MaxApertureValue' => 'Abertura Lente Máxima',
+   'MaxAperture' => 'Máxima Apertura del Objetivo',
+   'MaxApertureAtMaxFocal' => 'Apertura máxima a focal máxima',
+   'MaxApertureAtMinFocal' => 'Apertura máxima a focal mínima',
+   'MaxApertureValue' => 'Apertura Lente Máxima',
+   'MaxFaces' => 'Máximo caras',
+   'MaxFocalLength' => 'Longitud focal máxima',
+   'MaxPacketSize' => 'Tamaño Máximo Paquete',
    'MaxSampleValue' => 'Valor Muestra Max',
    'MaximumDensityRange' => 'Rango Densidad Maxima',
    'Measurement' => 'Observador de Medida',
@@ -985,8 +2409,8 @@ $VERSION = '1.06';
    'MeteringMode' => {
       Description => 'Modo Medición',
       PrintConv => {
-        'Average' => 'Ponderado',
-        'Center-weighted average' => 'Ponderado central',
+        'Average' => 'Promedio',
+        'Center-weighted average' => 'Media ponderada al centro',
         'Multi-segment' => 'Multi-segmento',
         'Multi-spot' => 'Multi-puntual',
         'Other' => 'Otro',
@@ -995,31 +2419,174 @@ $VERSION = '1.06';
         'Unknown' => 'Desconocido',
       },
     },
+   'MinAperture' => 'Apertura mínima',
+   'MinFocalLength' => 'Longitud focal mínima',
+   'MinPacketSize' => 'Tamaño Mínimo Paquete',
    'MinSampleValue' => 'Valor Muestra Min',
-   'Model' => 'Modelo',
-   'Model2' => 'Modelo Equipamiento Entrada Imagen (2)',
-   'ModelTiePoint' => 'Etiqueta Modelo Punto Lazo',
-   'ModelTransform' => 'Etiqueta Modelo Transformación',
-   'ModifyDate' => 'Fecha y Hora de Cambio del Archivo',
-   'MonochromeLinear' => {
+   'MinoltaQuality' => {
       PrintConv => {
-        'Yes' => 'Si',
+        'Standard' => 'Estándar',
       },
     },
-   'MultiFrameNoiseReduction' => {
-      Description => 'Reduc. ruido varios fotogr.',
+   'ModeDialPosition' => {
+      PrintConv => {
+        'Panorama' => 'Panoramica',
+      },
+    },
+   'Model' => 'Modelo',
+   'Model2' => 'Modelo Equipamiento Entrada Imagen (2)',
+   'ModelReleaseStatus' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'ModelTiePoint' => 'Etiqueta Modelo Punto Lazo',
+   'ModelTransform' => 'Etiqueta Modelo Transformación',
+   'ModelingFlash' => {
       PrintConv => {
         'Off' => 'Desactivado',
         'On' => 'Activado',
       },
     },
+   'ModifiedBy' => 'Modificado por',
+   'ModifiedPictureStyle' => {
+      PrintConv => {
+        'High Saturation' => 'Saturación Alta',
+        'Landscape' => 'Paisaje',
+        'Low Saturation' => 'Saturación Baja',
+        'Monochrome' => 'Monocromo',
+        'Neutral' => 'Neutro',
+        'None' => 'Ninguno',
+        'Portrait' => 'Retrato',
+        'Standard' => 'Estándar',
+      },
+    },
+   'ModifiedSharpnessFreq' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Standard' => 'Estándar',
+      },
+    },
+   'ModifiedToneCurve' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
+   'ModifiedWhiteBalance' => {
+      PrintConv => {
+        'Underwater' => 'Subacuatica',
+      },
+    },
+   'ModifyDate' => 'Fecha y Hora de Cambio del Archivo',
+   'MoireFilter' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'MonochromeFilterEffect' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+        'Orange' => 'Naranja',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'MonochromeLinear' => {
+      PrintConv => {
+        'Yes' => 'Si',
+      },
+    },
+   'MonochromeToning' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'MonochromeToningEffect' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+      },
+    },
+   'MultiExposureAutoGain' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'MultiExposureMode' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'MultiFrameNoiseReduction' => {
+      Description => 'Reduc. ruido varios fotogr.',
+      PrintConv => {
+        'None' => 'Ninguno',
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'MultipleExposureMode' => 'Modo Exposición Múltiple',
+   'MultipleExposureSet' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'Mute' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'MyColorMode' => {
+      PrintConv => {
+        'Neutral' => 'Neutro',
+        'Off' => 'Desactivado',
+        'Vivid' => 'Vívido',
+      },
+    },
+   'NDFilter' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'NSC_Description' => 'Descripción NSC',
+   'Name' => 'Nombre',
    'NamedColor2' => 'Color Llamado 2',
    'NativeDisplayInfo' => 'Información Pantalla Nativa',
    'NewsPhotoVersion' => 'Versión Registro Foto Noticias',
    'Noise' => 'Ruido',
-   'NoiseReduction' => 'Reducción Ruido',
+   'NoiseFilter' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Off' => 'Desactivado',
+        'Standard' => 'Estándar',
+      },
+    },
+   'NoiseReduction' => {
+      Description => 'Reducción Ruido',
+      PrintConv => {
+        'Low' => 'Bajo',
+        'Off' => 'Desactivado',
+        'Standard' => 'Estándar',
+      },
+    },
    'NoiseReductionApplied' => 'Reducción Ruido Aplicada',
+   'NominalMaxAperture' => 'Apertura máxima nominal',
+   'NominalMinAperture' => 'Apertura mínima nominal',
+   'NumAFPoints' => 'Número de Puntos AF',
+   'NumChannels' => 'Número Canales',
+   'NumColors' => 'Número de colores',
+   'NumImportantColors' => 'Número Colores Importantes',
    'NumIndexEntries' => 'Número de Entradas de Índice',
+   'NumSampleFrames' => 'Número de fotogramas',
+   'NumberOfFrames' => 'Número de imágenes',
    'NumberofInks' => 'Número de Tintas',
    'OPIProxy' => 'Proxy OPI',
    'ObjectAttributeReference' => 'Género Intelectual',
@@ -1031,12 +2598,29 @@ $VERSION = '1.06';
         'Morning' => 'Mañana',
       },
     },
+   'ObjectFileType' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+        'Unknown' => 'Desconocido',
+      },
+    },
    'ObjectName' => 'Título',
    'ObjectPreviewData' => 'Datos Previos del Objecto',
    'ObjectPreviewFileFormat' => 'Formato Archivo Previo de Objecto',
    'ObjectPreviewFileVersion' => 'Versión Formato Archivo Previo del Objecto',
    'ObjectTypeReference' => 'Referencia Tipo Objeto',
    'OffsetSchema' => 'Offset Esquema',
+   'OperatingSystem' => {
+      Description => 'Sistema Operativo',
+      PrintConv => {
+        'unknown' => 'desconocido',
+      },
+    },
+   'OpticalZoomMode' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
    'OpticalZoomOn' => {
       Description => 'Zoom Óptico Encendido',
       PrintConv => {
@@ -1053,23 +2637,71 @@ $VERSION = '1.06';
         'Mirror horizontal and rotate 270 CW' => 'Invertir horizontal y rotar 270° sentido reloj',
         'Mirror horizontal and rotate 90 CW' => 'Invertir horizontal y rotar 90° sentido reloj',
         'Mirror vertical' => 'Invertir vertical',
-        'Rotate 180' => 'Rotar 180°',
-        'Rotate 270 CW' => 'Rotar 270° sentido reloj',
-        'Rotate 90 CW' => 'Rotar 90° sentido reloj',
+        'Rotate 180' => 'Girado 180°',
+        'Rotate 270 CW' => 'Girado 270° sentido reloj',
+        'Rotate 90 CW' => 'Girado 90° sentido reloj',
       },
     },
+   'OriginPlatform' => {
+      PrintConv => {
+        'Other' => 'Otro',
+      },
+    },
+   'OriginalAlbumTitle' => 'Título Original Album',
+   'OriginalArtist' => 'Artista original',
+   'OriginalFilename' => 'Nombre archivo original',
+   'OriginalLyricist' => 'Letrista Original',
    'OriginalRawFileData' => 'Dato Archivo Raw Original',
    'OriginalRawFileDigest' => 'Cifrado Archivo Raw Original',
    'OriginalRawFileName' => 'Nombre Archivo Raw Original',
+   'OriginalReleaseYear' => 'Año Versión Original',
    'OriginalTransmissionReference' => 'Identificador de Trabajo',
    'OriginatingProgram' => 'Programa Originario',
    'OutputResponse' => 'Respuesta Salida',
+   'Owner' => 'Propietario',
    'OwnerID' => 'ID del Propietario',
+   'OwnerName' => 'Nombre del Propietario',
+   'PF25ColorMatrix' => 'Matriz de Color PF25',
+   'PackingMethod' => {
+      PrintConv => {
+        'Best Compression' => 'Mejor Compresión',
+        'Fast' => 'Rápido',
+        'Fastest' => 'Mas Rápido',
+        'Good Compression' => 'Buena Compresión',
+        'Stored' => 'Almacenado',
+      },
+    },
    'Padding' => 'Margen Inferior',
    'PageName' => 'Nombre Página',
    'PageNumber' => 'Número Página',
+   'PanoramaSize3D' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
+   'Period' => 'Período',
+   'PhotoEffect' => {
+      PrintConv => {
+        'B&W' => 'Blanco y Negro',
+        'Custom' => 'Personalizado',
+        'Neutral' => 'Neutro',
+        'Off' => 'Desactivado',
+        'Vivid' => 'Vívido',
+      },
+    },
+   'PhotoEffects' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'PhotoEffectsType' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'PhotometricInterpretation' => {
-      Description => 'Esquema Pixel',
+      Description => 'Interpretación Fotométrica',
       PrintConv => {
         'BlackIsZero' => 'Negro es cero',
         'Color Filter Array' => 'CFA (Matriz Filtro Color)',
@@ -1081,7 +2713,112 @@ $VERSION = '1.06';
       },
     },
    'PhotoshopAnnotations' => 'Anotaciones Photoshop',
+   'PhotoshopFormat' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
    'PictInfo' => 'Info Imagen',
+   'Picture' => 'Imágen',
+   'PictureControl' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'PictureControlActive' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'PictureDescription' => 'Descripción Imágen',
+   'PictureFinish' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+        'Portrait' => 'Retrato',
+      },
+    },
+   'PictureMode' => {
+      PrintConv => {
+        'Beach' => 'Playa',
+        'Fireworks' => 'Fuegos Artificiales',
+        'Food' => 'Comida',
+        'Green' => 'Verde',
+        'Landscape' => 'Paisaje',
+        'Panorama' => 'Panoramica',
+        'Portrait' => 'Retrato',
+        'Red' => 'Rojo',
+        'Snow' => 'Nieve',
+        'Soft' => 'Suave',
+        'Standard' => 'Estándar',
+        'Underwater' => 'Subacuatica',
+        'Vivid' => 'Vívido',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'PictureModeBWFilter' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'Neutral' => 'Neutro',
+        'Orange' => 'Naranja',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'PictureModeEffect' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Standard' => 'Estándar',
+      },
+    },
+   'PictureModeTone' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'Neutral' => 'Neutro',
+      },
+    },
+   'PictureStyle' => {
+      PrintConv => {
+        'Faithful' => 'Fiel',
+        'High Saturation' => 'Saturación Alta',
+        'Landscape' => 'Paisaje',
+        'Low Saturation' => 'Saturación Baja',
+        'Monochrome' => 'Monocromo',
+        'Neutral' => 'Neutro',
+        'None' => 'Ninguno',
+        'Portrait' => 'Retrato',
+        'Standard' => 'Estándar',
+      },
+    },
+   'PictureType' => {
+      Description => 'Tipo Imágen',
+      PrintConv => {
+        '32x32 PNG Icon' => 'Icono PNG 32x32',
+        'Artist' => 'Artista',
+        'Back Cover' => 'Cubierta Posterior',
+        'Composer' => 'Compositor',
+        'Conductor' => 'Director',
+        'Front Cover' => 'Cubierta Frontal',
+        'Illustration' => 'Ilustración',
+        'Lyricist' => 'Letrista',
+        'Media' => 'Soporte',
+        'Other' => 'Otro',
+        'Other Icon' => 'Otro Icono',
+        'Performance' => 'Interpretación',
+        'Recording Session' => 'Sesión Grabación',
+      },
+    },
+   'PictureWizardMode' => {
+      PrintConv => {
+        'Cool' => 'Frío',
+        'Landscape' => 'Paisaje',
+        'Portrait' => 'Retrato',
+        'Standard' => 'Estándar',
+        'Vivid' => 'Vívido',
+      },
+    },
    'PixelFormat' => 'Formato Pixel',
    'PixelIntensityRange' => 'Intervalo Intensidad Pixel',
    'PixelScale' => 'Etiqueta Escala Pixel Modelo',
@@ -1103,6 +2840,16 @@ $VERSION = '1.06';
    'Preview2' => 'Previa 2',
    'PreviewApplicationName' => 'Nombre Aplicación Previa',
    'PreviewApplicationVersion' => 'Versión Aplicación Previa',
+   'PreviewButton' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'PreviewButtonPlusDials' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'PreviewColorSpace' => {
       Description => 'Espacio Color Previa',
       PrintConv => {
@@ -1110,7 +2857,7 @@ $VERSION = '1.06';
       },
     },
    'PreviewDateTime' => 'Fecha y Hora Previa',
-   'PreviewImage' => 'Previo',
+   'PreviewImage' => 'Vista Previa',
    'PreviewImageLength' => 'Longitud Imagen Previa',
    'PreviewImageSize' => 'Tamaño Imagen Previa',
    'PreviewImageStart' => 'Inicio Imagen Previa',
@@ -1121,9 +2868,11 @@ $VERSION = '1.06';
     },
    'PreviewSettingsDigest' => 'Cifrado Configuración Previa',
    'PreviewSettingsName' => 'Nombre Configuración Previa',
+   'PrimaryAFPoint' => 'Punto AF primario',
    'PrimaryChromaticities' => 'Cromaticidades de Colores Primarios',
    'PrimaryPlatform' => 'Plataforma Primaria',
    'ProcessingSoftware' => 'Tratamiendo de Software',
+   'Producer' => 'Productor',
    'ProductID' => 'ID Producto',
    'ProfileCMMType' => 'Tipo Perfil CMM',
    'ProfileCalibrationSig' => 'Firma Perfil Calibración',
@@ -1141,7 +2890,7 @@ $VERSION = '1.06';
       },
     },
    'ProfileConnectionSpace' => 'Espacio Conexión Perfil',
-   'ProfileCopyright' => 'Copyright Perfil',
+   'ProfileCopyright' => 'Copyright',
    'ProfileCreator' => 'Creador Perfil',
    'ProfileDateTime' => 'Fecha y Hora Perfil',
    'ProfileDescription' => 'Descripción Perfil',
@@ -1166,8 +2915,26 @@ $VERSION = '1.06';
    'ProfileSequenceDesc' => 'Descripción Secuencia Perfil',
    'ProfileToneCurve' => 'Perfil Curva Tono',
    'ProfileVersion' => 'Versión Perfil',
+   'ProgramMode' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+        'Portrait' => 'Retrato',
+      },
+    },
    'ProgramVersion' => 'Versión Programa',
+   'Projects' => 'Proyectos',
+   'PromotionURL' => 'URL Promocional',
+   'PropertyReleaseStatus' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'Protect' => 'Protección',
+   'ProtectionType' => 'Tipo Protección',
+   'Provider' => 'Proveedor',
+   'ProviderCopyright' => 'Copyright Proveedor',
    'Province-State' => 'Provincia/Estado',
+   'Publisher' => 'Editor',
    'Quality' => {
       Description => 'Calidad',
       PrintConv => {
@@ -1175,10 +2942,12 @@ $VERSION = '1.06';
         'Compressed RAW + JPEG' => 'cRAW+JPEG',
         'Extra Fine' => 'Extrafina',
         'Fine' => 'Fina',
-        'Low' => 'Calidad baja',
+        'High' => 'Alto',
+        'Low' => 'Bajo',
         'Normal' => 'Calidad estándar',
         'RAW + JPEG' => 'RAW+JPEG',
         'Standard' => 'Estándar',
+        'n/a' => 'no aplica',
       },
     },
    'QuantizationMethod' => {
@@ -1201,18 +2970,94 @@ $VERSION = '1.06';
         'On' => 'Encendido',
       },
     },
+   'RadioStationName' => 'Nombre Emisora Radio',
+   'RadioStationOwner' => 'Propietario Emisora Radio',
    'RasterPadding' => 'Relleno Trama',
    'RasterizedCaption' => 'Título Rasterizado',
-   'Rating' => 'Clasificación',
+   'Rating' => {
+      Description => 'Clasificación',
+      PrintConv => {
+        'none' => 'Ninguno',
+      },
+    },
    'RatingPercent' => 'Valoración en Porcentaje',
+   'RawCustomSaturation' => 'Raw Saturación personalizada',
    'RawDataUniqueID' => 'ID Único Dato Raw',
+   'RawDevAutoGradation' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'RawDevNoiseReduction' => {
+      PrintConv => {
+        'Noise Filter' => 'Filtro ruido',
+        'Noise Filter (ISO Boost)' => 'Filtro ruido (ISO Boost)',
+        'Noise Reduction' => 'Reducción ruido',
+      },
+    },
+   'RawDevPMPictureTone' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'Neutral' => 'Neutro',
+      },
+    },
+   'RawDevPM_BWFilter' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'Neutral' => 'Neutro',
+        'Orange' => 'Naranja',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'RawDevPictureMode' => {
+      PrintConv => {
+        'Vivid' => 'Vívido',
+      },
+    },
+   'RawDevSettings' => {
+      PrintConv => {
+        'Noise Reduction' => 'Reducción ruido',
+      },
+    },
    'RawImageDigest' => 'Cifrado Imagen RAW',
+   'RawJpgSize' => {
+      PrintConv => {
+        'Medium' => 'Medio',
+        'Medium 1' => 'Medio 1 ',
+        'Medium 2' => 'Medio 2',
+        'Medium 3' => 'Medio 3',
+        'Postcard' => 'Tarjeta Postal',
+        'Small 1' => 'Pequeño 1',
+        'Small 2' => 'Pequeño 21',
+        'Small 3' => 'Pequeño 3',
+      },
+    },
    'RecordMode' => 'Modo de Grabación',
    'RecordShutterRelease' => {
       Description => 'Soltar Obturador Grabación',
       PrintConv => {
         'Press start, press stop' => 'Pulsa para iniciar, pulsa para parar',
         'Record while down' => 'Grabar mientras se pulsa',
+      },
+    },
+   'RecordedTrackNumber' => 'Número Pista grabada',
+   'RecordingMode' => {
+      PrintConv => {
+        'Panorama' => 'Panoramica',
+        'Portrait' => 'Retrato',
+      },
+    },
+   'RedEyeCorrection' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'RedEyeReduction' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
       },
     },
    'RedMatrixColumn' => 'Columna Matriz Rojo',
@@ -1242,42 +3087,69 @@ $VERSION = '1.06';
         'Saturation' => 'Saturación',
       },
     },
+   'RenditionOfMaskMarkers' => {
+      PrintConv => {
+        'All' => 'Todo',
+        'None' => 'Ninguno',
+      },
+    },
+   'ResampleParamsQuality' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+      },
+    },
    'Resaved' => {
       Description => 'Regrabado',
       PrintConv => {
         'Yes' => 'Si',
       },
     },
+   'Reserved1' => 'Reservado 1',
+   'Resolution' => 'Resolución',
    'ResolutionMode' => 'Modo Resolución',
    'ResolutionUnit' => {
       Description => 'Unidad de Resolución de X e Y',
       PrintConv => {
-        'None' => 'Ninguna',
+        'None' => 'Ninguno',
         'cm' => 'Píxeles/cm',
         'inches' => 'Pulgada',
       },
     },
+   'RetouchHistory' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'RevisionNumber' => 'Número Revisión',
    'Rotation' => {
+      Description => 'Rotación',
       PrintConv => {
-        'Rotate 180' => 'Rotar 180°',
-        'Rotate 270 CW' => 'Rotar 270° sentido reloj',
-        'Rotate 90 CW' => 'Rotar 90° sentido reloj',
-        'Rotated 180' => 'Rotar 180°',
-        'Rotated 270 CW' => 'Rotar 270° sentido reloj',
-        'Rotated 90 CW' => 'Rotar 90° sentido reloj',
+        'Rotate 180' => 'Girado 180°',
+        'Rotate 270 CW' => 'Girado 270° sentido reloj',
+        'Rotate 90 CW' => 'Girado 90° sentido reloj',
+        'Rotated 180' => 'Girado 180°',
+        'Rotated 270 CW' => 'Girado 270° sentido reloj',
+        'Rotated 90 CW' => 'Girado 90° sentido reloj',
       },
     },
    'RowInterleaveFactor' => 'Factor Interpolar Fila',
    'RowsPerStrip' => 'Número de Filas por Tira',
    'SMaxSampleValue' => 'Valor Muestra Max S',
    'SMinSampleValue' => 'Valor Muestra Min S',
+   'SRAWQuality' => {
+      PrintConv => {
+        'n/a' => 'No Aplica',
+      },
+    },
    'SRActive' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
    'SampleFormat' => 'Formato Muestra',
+   'SampleRate' => 'Frecuencia muestreo',
+   'SampleSize' => 'Tamaño muestra',
    'SampleStructure' => {
       Description => 'Estructura Muestreo',
       PrintConv => {
@@ -1320,10 +3192,18 @@ $VERSION = '1.06';
    'Saturation' => {
       Description => 'Saturación',
       PrintConv => {
-        'High' => 'Alta',
-        'Low' => 'Baja',
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'None' => 'Ninguno',
         'None (B&W)' => 'Ninguna (N&B)',
         'Normal' => 'Estándar',
+        'Vivid' => 'Vívido',
+      },
+    },
+   'ScanImageEnhancer' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
       },
     },
    'ScanningDirection' => {
@@ -1346,7 +3226,7 @@ $VERSION = '1.06';
         'Landscape' => 'Paisaje',
         'Night' => 'Escena nocturna',
         'Portrait' => 'Retrato',
-        'Standard' => 'Estandar',
+        'Standard' => 'Estándar',
       },
     },
    'SceneMode' => {
@@ -1354,17 +3234,36 @@ $VERSION = '1.06';
       PrintConv => {
         '3D Sweep Panorama' => '3D',
         'Anti Motion Blur' => 'Anti movimiento',
+        'Beach' => 'Playa',
         'Cont. Priority AE' => 'AE prioridad cont.',
+        'Fireworks' => 'Fuegos Artificiales',
+        'Food' => 'Comida',
         'Handheld Night Shot' => 'Toma noct. manual',
+        'Indoor' => 'Interior',
         'Landscape' => 'Paisaje',
         'Night Portrait' => 'Retrato noct.',
         'Night Scene' => 'Vista nocturna',
         'Night View/Portrait' => 'Vista/retrato nocturno',
+        'Off' => 'Desactivado',
+        'Panorama' => 'Panoramica',
         'Portrait' => 'Retrato',
+        'Snow' => 'Nieve',
         'Sports' => 'Acción deportiva',
-        'Standard' => '',
+        'Standard' => 'Estándar',
         'Sunset' => 'Puesta sol',
         'Sweep Panorama' => 'Barrido panorámico',
+        'Underwater' => 'Subacuatica',
+        'Vivid' => 'Vívido',
+      },
+    },
+   'SceneModeUsed' => {
+      PrintConv => {
+        'Beach' => 'Playa',
+        'Fireworks' => 'Fuegos Artificiales',
+        'Landscape' => 'Paisaje',
+        'Panorama' => 'Panoramica',
+        'Portrait' => 'Retrato',
+        'Snow' => 'Nieve',
       },
     },
    'SceneSelect' => {
@@ -1384,6 +3283,11 @@ $VERSION = '1.06';
         'Directly photographed' => 'Imagen fotografiada directamente',
       },
     },
+   'Security' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'SecurityClassification' => {
       Description => 'Clasificación Seguridad',
       PrintConv => {
@@ -1394,6 +3298,7 @@ $VERSION = '1.06';
         'Unclassified' => 'Sin clasificar',
       },
     },
+   'SelectableAFPoint' => 'Punto AF seleccionable',
    'SelfTimer' => {
       Description => 'Temporizador Automático',
       PrintConv => {
@@ -1416,6 +3321,11 @@ $VERSION = '1.06';
         'Two-chip color area' => 'Sensor bichip de color',
       },
     },
+   'SensitivityType' => {
+      PrintConv => {
+        'Unknown' => 'Desconocido',
+      },
+    },
    'SequenceShotInterval' => {
       Description => 'Intervalo Disparo Secuencial',
       PrintConv => {
@@ -1431,14 +3341,32 @@ $VERSION = '1.06';
         'Adjust Exposure' => 'Ajustar Exposición',
         'Best' => 'Mejor',
         'None' => 'Ninguno',
-        'Standard' => 'Estandar',
+        'Standard' => 'Estándar',
       },
     },
    'SerialNumber' => 'Número Serie',
    'ServiceIdentifier' => 'Identificador Servicio',
    'ShadingCompensation' => 'Compensación de Sombreado',
-   'Shadow' => 'Sombra',
-   'ShadowScale' => 'Escala Sombra',
+   'ShadingCompensation2' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'Shadow' => 'Sombrío',
+   'ShadowScale' => 'Escala Sombrío',
+   'ShakeReduction' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'Sharpening' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+      },
+    },
    'Sharpness' => {
       Description => 'Nitidez',
       PrintConv => {
@@ -1448,30 +3376,114 @@ $VERSION = '1.06';
         'Soft' => 'Suave',
       },
     },
-   'ShootingMode' => 'Modo de Disparo',
+   'SharpnessFrequency' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Highest' => 'Muy Alto',
+        'Low' => 'Bajo',
+        'Lowest' => 'Mas bajo',
+        'Standard' => 'Estándar',
+        'n/a' => 'No Aplica',
+      },
+    },
+   'ShootingMode' => {
+      Description => 'Modo de Disparo',
+      PrintConv => {
+        'Beach' => 'Playa',
+        'Fireworks' => 'Fuegos Artificiales',
+        'Food' => 'Comida',
+        'Portrait' => 'Retrato',
+        'Snow' => 'Nieve',
+        'Underwater' => 'Subacuatica',
+      },
+    },
    'ShortDocumentID' => 'ID Corta del Documento',
+   'Shutter-AELock' => 'Disparador Bloqueo AE',
+   'ShutterCount' => 'Contador de disparos',
+   'ShutterReleaseButtonAE-L' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'ShutterReleaseNoCFCard' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
-   'ShutterSpeed' => 'Hora Exposición',
+   'ShutterSpeed' => 'Tiempo de Exposición',
    'ShutterSpeedValue' => 'Velocidad Obturación',
+   'Signature_Name' => 'Firma',
    'SimilarityIndex' => 'Índice de Similitudes',
+   'SingleFrameBracketing' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+      },
+    },
    'Site' => 'Sitio',
    'SlideShow' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
+   'SlowShutter' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'SoftSkinEffect' => {
+      PrintConv => {
+        'Low' => 'Bajo',
+      },
+    },
    'Software' => 'Programa Utilizado',
    'SoftwareVersion' => 'Versión Software',
+   'SonyImageSize' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
+   'SonyQuality' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
    'Source' => 'Fuente',
    'SpatialFrequencyResponse' => 'Respuesta Frecuencia Espacial',
+   'SpecialEffectsOpticalFilter' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'SpecialInstructions' => 'Instrucciones',
    'SpecialMode' => 'Modo Especial',
    'SpectralSensitivity' => 'Sensibilidad Espectral',
+   'Speed' => {
+      PrintConv => {
+        'Fast' => 'Rápido',
+      },
+    },
+   'SpotMeteringMode' => {
+      PrintConv => {
+        'AF Point' => 'Punto AF',
+        'Center' => 'Centro',
+      },
+    },
    'State' => 'Estado',
+   'StreamColor' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
+   'StreamType' => {
+      PrintConv => {
+        'Binary' => 'Binario',
+        'File Transfer' => 'Transferencia Archivo',
+      },
+    },
    'StripByteCounts' => 'Bytes por Tira Comprimida',
    'StripOffsets' => 'Localización Datos Imagen',
    'Sub-location' => 'Localización',
@@ -1479,7 +3491,14 @@ $VERSION = '1.06';
    'SubSecTimeDigitized' => 'Subsegundos DateTimeDigitized',
    'SubSecTimeOriginal' => 'Subsegundos DateTimeOriginal',
    'SubTileBlockSize' => 'Tamaño Bloque Submosaico',
+   'SubTitle' => 'Subtitulo',
+   'SubTitleDescription' => 'Descripción Subtitulo',
    'SubfileType' => 'Nuevo Tipo Subarchivo',
+   'SubimageColor' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
    'Subject' => 'Sujeto',
    'SubjectArea' => 'Zona Sujeto',
    'SubjectDistance' => 'Distancia Sujeto',
@@ -1492,7 +3511,24 @@ $VERSION = '1.06';
       },
     },
    'SubjectLocation' => 'Localización Sujeto',
+   'SubjectProgram' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+        'Portrait' => 'Retrato',
+      },
+    },
    'SubjectReference' => 'Código Sujeto',
+   'Subsystem' => {
+      PrintConv => {
+        'Unknown' => 'Desconocido',
+      },
+    },
+   'SuperimposedDisplay' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'SupplementalCategories' => 'Categoría Suplementaria',
    'SupplementalType' => {
       Description => 'Tipo Suplemento',
@@ -1502,9 +3538,20 @@ $VERSION = '1.06';
         'Reduced Resolution Image' => 'Imagen resolución reducida',
       },
     },
+   'SweepPanoramaSize' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
+   'SwitchToRegisteredAFPoint' => 'Conmutación de Punto AF registrado',
+   'SynchronizedLyricsType' => {
+      PrintConv => {
+        'Other' => 'Otro',
+      },
+    },
    'T4Options' => 'Opciones T4',
    'T6Options' => 'Opciones T6',
-   'TIFF-EPStandardID' => 'ID Estandar TIFF/EP',
+   'TIFF-EPStandardID' => 'ID Estándar TIFF/EP',
    'Tagged' => {
       PrintConv => {
         'Yes' => 'Si',
@@ -1537,7 +3584,17 @@ $VERSION = '1.06';
         'Video Monitor' => 'Monitor Video',
       },
     },
+   'Teleconverter' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'Text' => 'Texto',
+   'TextStamp' => {
+      PrintConv => {
+        'On' => 'Activado',
+      },
+    },
    'Thresholding' => 'Umbral',
    'ThumbnailImage' => 'Miniatura',
    'ThumbnailImageSize' => 'Tamaño de la Vista en Miniatura',
@@ -1547,14 +3604,84 @@ $VERSION = '1.06';
    'TileOffsets' => 'Offsets Elemento',
    'TileWidth' => 'Ancho Elemento',
    'TimeCreated' => 'Hora Creación',
+   'TimeScaleParamsQuality' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+      },
+    },
    'TimeSent' => 'Hora Envío',
+   'TimeSignature' => {
+      PrintConv => {
+        'other' => 'Otro',
+      },
+    },
+   'TimeStamp' => 'Marca de Tiempo',
+   'TimeStamp1' => 'Marca de Tiempo 1',
    'TimeZoneOffset' => 'Offset Zona Horaria',
    'Title' => 'Título',
+   'ToneCurve' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
    'ToneCurveActive' => {
       PrintConv => {
         'Yes' => 'Si',
       },
     },
+   'ToningEffect' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'ToningEffectMonochrome' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+      },
+    },
+   'ToningEffectUnknown' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+      },
+    },
+   'ToningEffectUserDef1' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+      },
+    },
+   'ToningEffectUserDef2' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+      },
+    },
+   'ToningEffectUserDef3' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'None' => 'Ninguno',
+      },
+    },
+   'ToolName' => 'Nombre Herramienta',
+   'ToolVersion' => 'Versión Herramienta',
+   'TotalFrames' => 'Total Imagenes',
+   'Track' => 'Pista',
+   'TrackCreateDate' => 'Fecha creación Track',
+   'TrackDefault' => 'Pista Defecto',
+   'TrackForced' => 'Pista Forzada',
+   'TrackHeaderVersion' => 'Versión cabecera Pista',
+   'TrackID' => 'ID Pista',
+   'TrackName' => 'Nombre Pista',
+   'TrackNumber' => 'Número Pista',
+   'TrackType' => 'Tipo Pista',
+   'TrackUsed' => 'Pista utilizada',
+   'Tracks' => 'Pistas',
    'TransferFunction' => 'Función Transferencia',
    'TransferRange' => 'Intervalo Transferencia',
    'Transformation' => {
@@ -1564,9 +3691,9 @@ $VERSION = '1.06';
         'Mirror horizontal and rotate 270 CW' => 'Invertir horizontal y rotar 270° sentido reloj',
         'Mirror horizontal and rotate 90 CW' => 'Invertir horizontal y rotar 90° sentido reloj',
         'Mirror vertical' => 'Invertir vertical',
-        'Rotate 180' => 'Rotar 180°',
-        'Rotate 270 CW' => 'Rotar 270° sentido reloj',
-        'Rotate 90 CW' => 'Rotar 90° sentido reloj',
+        'Rotate 180' => 'Girado 180°',
+        'Rotate 270 CW' => 'Girado 270° sentido reloj',
+        'Rotate 90 CW' => 'Girado 90° sentido reloj',
       },
     },
    'TransmissionReference' => 'Referencia de Transmisión',
@@ -1579,10 +3706,46 @@ $VERSION = '1.06';
         'Yes' => 'Si',
       },
     },
+   'UncompressedSize' => 'Tamaño Descomprimido',
    'UniqueCameraModel' => 'Modelo Cámara Unico',
    'UniqueDocumentID' => 'ID de Documento Única',
+   'UniqueFileIdentifier' => 'Identificador Unico Archivo',
    'UniqueObjectName' => 'Nombre Único de Objeto',
    'Unknown' => 'Desconocido',
+   'Unsharp1Color' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'Unsharp2Color' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'Unsharp3Color' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'Unsharp4Color' => {
+      PrintConv => {
+        'Green' => 'Verde',
+        'Red' => 'Rojo',
+        'Yellow' => 'Amarillo',
+      },
+    },
+   'UnsharpMask' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'Urgency' => {
       Description => 'Urgencia',
       PrintConv => {
@@ -1594,18 +3757,119 @@ $VERSION = '1.06';
       },
     },
    'UserComment' => 'Comentarios Usuario',
+   'UserDef1PictureStyle' => {
+      PrintConv => {
+        'Landscape' => 'Paisaje',
+        'Monochrome' => 'Monocromo',
+        'Neutral' => 'Neutro',
+        'Portrait' => 'Retrato',
+        'Standard' => 'Estándar',
+      },
+    },
+   'UserDef2PictureStyle' => {
+      PrintConv => {
+        'Landscape' => 'Paisaje',
+        'Monochrome' => 'Monocromo',
+        'Neutral' => 'Neutro',
+        'Portrait' => 'Retrato',
+        'Standard' => 'Estándar',
+      },
+    },
+   'UserDef3PictureStyle' => {
+      PrintConv => {
+        'Landscape' => 'Paisaje',
+        'Monochrome' => 'Monocromo',
+        'Neutral' => 'Neutro',
+        'Portrait' => 'Retrato',
+        'Standard' => 'Estándar',
+      },
+    },
+   'VR_0x66' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+      },
+    },
+   'ValidAFPoints' => 'Puntos AF validos',
    'Version' => 'Versión PrintIM',
+   'VersionYear' => 'Año versión',
+   'VibrationReduction' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'VideoAlphaMode' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
    'VideoCardGamma' => 'Tarjeta Video Gamma',
+   'VideoCompressor' => 'Video Compresor',
+   'VideoFieldOrder' => {
+      PrintConv => {
+        'Lower' => 'Inferior',
+        'Progressive' => 'Progresivo',
+        'Upper' => 'Superior',
+      },
+    },
+   'VideoHeight' => 'Altura Video',
+   'VideoPixelDepth' => {
+      PrintConv => {
+        '16-bit integer' => 'Entero 16-bits',
+        '24-bit integer' => 'Entero 24-bits',
+        '32-bit float' => 'Flotante 32-bits',
+        '32-bit integer' => 'Entero 32-bits',
+        '8-bit integer' => 'Entero 8-bits',
+        'Other' => 'Otro',
+      },
+    },
+   'VideoQuality' => {
+      PrintConv => {
+        'Low' => 'Bajo',
+        'Standard' => 'Estándar',
+      },
+    },
+   'VideoWidth' => 'Ancho Video',
+   'ViewCompressionFactor' => 'Ver Factor de compresión',
+   'ViewfinderWarning' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'ViewfinderWarnings' => {
+      PrintConv => {
+        'Monochrome' => 'Monocromo',
+      },
+    },
    'ViewingCondDesc' => 'Descripción en Condiciones de Visión',
    'ViewingCondIlluminant' => 'Iluminación en Condiciones de Visión',
    'ViewingCondIlluminantType' => 'Tipo Iluminación en Condiciones de Visión',
    'ViewingCondSurround' => 'Entorno en Condiciones de Visión',
    'ViewingConditions' => 'Iluminación en Condiciones de Visión',
+   'VignetteControl' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
    'VoiceMemo' => {
       Description => 'Notas Voz',
       PrintConv => {
         'Off' => 'Apagado',
         'On' => 'Encendido',
+      },
+    },
+   'WBAdjLighting' => {
+      PrintConv => {
+        'None' => 'Ninguno',
+      },
+    },
+   'WBBracketMode' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
       },
     },
    'WBFineTuneActive' => {
@@ -1615,28 +3879,42 @@ $VERSION = '1.06';
     },
    'WCSProfiles' => 'Perfil Sistema Color Windows',
    'WhiteBalance' => {
-      Description => 'Equilibrio Blanco',
+      Description => 'Balance de Blancos',
       PrintConv => {
         'Auto' => 'Automático',
         'Black & White' => 'Monocromo',
-        'Cloudy' => 'Nuboso',
+        'Cloudy' => 'Nublado',
         'Color Temperature/Color Filter' => 'Temperatura de color / Filtro de color',
         'Cool White Fluorescent' => 'Fluorescente blanco frío',
         'Custom' => 'Personalizado',
-        'Custom 1' => 'PERSONAL.1',
-        'Custom 2' => 'PERSONAL.2',
-        'Custom 3' => 'PERSONAL.3',
-        'Custom 4' => 'PERSONAL.4',
+        'Custom 1' => 'Personalizado 1',
+        'Custom 2' => 'Personalizado 2',
+        'Custom 3' => 'Personalizado 3',
+        'Custom 4' => 'Personalizado 4',
         'Day White Fluorescent' => 'Fluorescente blanco de día',
         'Daylight' => 'Luz de día',
-        'Daylight Fluorescent' => 'Fluorescente de luz del día',
+        'Daylight Fluorescent' => 'Fluorescente luz de día',
         'Fluorescent' => 'Flourescente',
         'Manual' => 'Equilibrio del blanco manual',
-        'Shade' => 'Sombra',
+        'Manual Temperature (Kelvin)' => 'Temperatura Manual (Kelvin)',
+        'Shade' => 'Sombrío',
         'Tungsten' => 'Tungsteno',
+        'Underwater' => 'Subacuatica',
         'Unknown' => 'Desconocido',
         'Warm White Fluorescent' => 'Fluorescente blanco cálido',
         'White Fluorescent' => 'Fluorescente blanco',
+      },
+    },
+   'WhiteBalanceAdj' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'WhiteBalanceBracketing' => {
+      PrintConv => {
+        'High' => 'Alto',
+        'Low' => 'Bajo',
       },
     },
    'WhiteLevel' => 'Nivel Blanco',
@@ -1649,6 +3927,7 @@ $VERSION = '1.06';
       },
     },
    'WidthResolution' => 'Resolución Imagen Horizontal',
+   'Writer' => 'Escritor',
    'Writer-Editor' => 'Título/Descripción Escritor',
    'X3FillLight' => 'Luz Relleno X3',
    'XClipPathUnits' => 'Unidades Camino Fragmento X',
@@ -1667,14 +3946,40 @@ $VERSION = '1.06';
    'YClipPathUnits' => 'Unidades Camino Fragmento Y',
    'YPosition' => 'Posición Y',
    'YResolution' => 'Resolución Imagen Vertical',
+   'Year' => 'Año',
+   'YearCreated' => 'Año Creación',
+   'ZipCompressedSize' => 'Zip Tamaño Comprimido',
+   'ZipCompression' => {
+      Description => 'Compresión Zip',
+      PrintConv => {
+        'None' => 'Ninguno',
+        'Reduced with compression factor 1' => 'Reducido con factor de compresión 1',
+        'Reduced with compression factor 2' => 'Reducido con factor de compresión 2',
+        'Reduced with compression factor 3' => 'Reducido con factor de compresión 3',
+        'Reduced with compression factor 4' => 'Reducido con factor de compresión 4',
+      },
+    },
+   'ZipUncompressedSize' => 'Zip Tamaño Descomprimido',
    'ZoneMatching' => {
       Description => 'Zone matching',
       PrintConv => {
-        'High Key' => 'Hi',
+        'High Key' => 'Alto',
         'ISO Setting Used' => 'Desactivado',
-        'Low Key' => 'Lo',
+        'Low Key' => 'Bajo',
       },
     },
+   'ZoneMatchingMode' => {
+      PrintConv => {
+        'Standard' => 'Estándar',
+      },
+    },
+   'ZoneMatchingOn' => {
+      PrintConv => {
+        'Off' => 'Desactivado',
+        'On' => 'Activado',
+      },
+    },
+   'ZoomPos' => 'Posición Zoom',
 );
 
 1;  # end
@@ -1693,15 +3998,15 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
 =head1 ACKNOWLEDGEMENTS
 
-Thanks to Jens Duttke and Santiago del BrE<iacute>o GonzE<aacute>lez for
-providing this translation.
+Thanks to Jens Duttke, Santiago del BrE<iacute>o GonzE<aacute>lez and Emilio
+Sancha for providing this translation.
 
 =head1 SEE ALSO
 

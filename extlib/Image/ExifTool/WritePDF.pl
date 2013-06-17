@@ -42,10 +42,7 @@ sub CheckPDF($$$)
     if (not $format) {
         return 'No writable format';
     } elsif ($format eq 'string') {
-        # convert to Unicode if necessary
-        if ($$valPtr =~ /[\x80-\xff]/) {
-            $$valPtr = "\xfe\xff" . $exifTool->Encode($$valPtr,'UCS2','MM');
-        }
+        # (encode later because list-type string tags need to be encoded as a unit)
     } elsif ($format eq 'date') {
         # be flexible about this for now
         return 'Bad date format' unless $$valPtr =~ /^\d{4}/;
@@ -65,15 +62,17 @@ sub CheckPDF($$$)
 
 #------------------------------------------------------------------------------
 # Format value for writing to PDF file
-# Inputs: 0) value, 1) format string (string,date,integer,real,boolean,name)
+# Inputs: 0) ExifTool ref, 1) value, 2) format string (string,date,integer,real,boolean,name)
 # Returns: formatted value or undef on error
 # Notes: Called at write time, so $pdfVer may be checked
-sub WritePDFValue($$)
+sub WritePDFValue($$$)
 {
-    my ($val, $format) = @_;
+    my ($exifTool, $val, $format) = @_;
     if (not $format) {
         return undef;
     } elsif ($format eq 'string') {
+        # encode as UCS2 if it contains any special characters
+        $val = "\xfe\xff" . $exifTool->Encode($val,'UCS2','MM') if $val =~ /[\x80-\xff]/;
         EncodeString(\$val);
     } elsif ($format eq 'date') {
         # convert date to "D:YYYYmmddHHMMSS+-HH'MM'" format
@@ -420,7 +419,7 @@ sub WritePDF($$)
                 $val = shift @oldVals;
             }
             for (;;) {
-                if (Image::ExifTool::IsOverwriting($nvHash, $val) > 0) {
+                if ($exifTool->IsOverwriting($nvHash, $val) > 0) {
                     $deleted = 1;
                     $exifTool->VerboseValue("- PDF:$tag", $val);
                     ++$infoChanged;
@@ -432,13 +431,15 @@ sub WritePDF($$)
             }
             # don't write this out if we deleted all values
             delete $$infoDict{$tagID} unless @vals;
+        } elsif ($$nvHash{EditOnly}) {
+            next;
         }
         # decide whether we want to write this tag
-        # (always create native PDF information, so don't check IsCreating())
+        # (native PDF information is always preferred, so don't check IsCreating)
         next unless $deleted or $$tagInfo{List} or not exists $$infoDict{$tagID};
-
+        
         # add new values to existing ones
-        my @newVals = Image::ExifTool::GetNewValues($nvHash);
+        my @newVals = $exifTool->GetNewValues($nvHash);
         if (@newVals) {
             push @vals, @newVals;
             ++$infoChanged;
@@ -456,15 +457,15 @@ sub WritePDF($$)
         # format value(s) for writing to PDF file
         my $writable = $$tagInfo{Writable} || $Image::ExifTool::PDF::Info{WRITABLE};
         if (not $$tagInfo{List}) {
-            $val = WritePDFValue(shift @vals, $writable);
+            $val = WritePDFValue($exifTool, shift(@vals), $writable);
         } elsif ($$tagInfo{List} eq 'array') {
             foreach $val (@vals) {
-                $val = WritePDFValue($val, $writable);
+                $val = WritePDFValue($exifTool, $val, $writable);
                 defined $val or undef(@vals), last;
             }
             $val = @vals ? \@vals : undef;
         } else {
-            $val = WritePDFValue(join($exifTool->Options('ListSep'), @vals), $writable);
+            $val = WritePDFValue($exifTool, join($exifTool->Options('ListSep'), @vals), $writable);
         }
         if (defined $val) {
             $$infoDict{$tagID} = $val;
@@ -737,7 +738,7 @@ C<PDF-update> pseudo group).
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.02';
+$VERSION = '1.07';
 
 # Information decoded from Mac OS resources
 %Image::ExifTool::RSRC::Main = (
@@ -22,9 +22,11 @@ $VERSION = '1.02';
     NOTES => q{
         Tags extracted from Mac OS resource files and DFONT files.  These tags may
         also be extracted from the resource fork of any file in OS X, either by
-        adding "/rsrc" to the filename to process the resource fork alone, or by
-        using the ExtractEmbedded (-ee) option to process the resource fork as a
-        sub-document of the main file.
+        adding "/..namedfork/rsrc" to the filename to process the resource fork
+        alone, or by using the ExtractEmbedded (-ee) option to process the resource
+        fork as a sub-document of the main file.  When writing, ExifTool preserves
+        the Mac OS resource fork by default, but it may deleted with C<-rsrc:all=>
+        on the command line.
     },
     '8BIM' => {
         Name => 'PhotoshopInfo',
@@ -33,6 +35,12 @@ $VERSION = '1.02';
     'sfnt' => {
         Name => 'Font',
         SubDirectory => { TagTable => 'Image::ExifTool::Font::Name' },
+    },
+    # my samples of postscript-type DFONT files have a POST resource
+    # with ID 0x1f5 and the same format as a PostScript file
+    'POST_0x01f5' => {
+        Name => 'PostscriptFont',
+        SubDirectory => { TagTable => 'Image::ExifTool::PostScript::Main' },
     },
     'usro_0x0000' => 'OpenWithApplication',
     'vers_0x0001' => 'ApplicationVersion',
@@ -81,6 +89,7 @@ sub ProcessRSRC($$)
     $exifTool->SetFileType('RSRC') unless $$exifTool{IN_RESOURCE};
     my $verbose = $exifTool->Options('Verbose');
     my $tagTablePtr = GetTagTable('Image::ExifTool::RSRC::Main');
+    $exifTool->VerboseDir('RSRC', $numTypes+1);
 
     # parse resource type list
     for ($i=0; $i<=$numTypes; ++$i) {
@@ -108,7 +117,7 @@ sub ProcessRSRC($$)
             # read the resource data if necessary
             if ($tagInfo or $verbose) {
                 unless ($raf->Seek($resOff, 0) and $raf->Read($buff, 4) == 4 and
-                        ($valLen = unpack('N', $buff)) < 1024000 and # arbitrary size limit
+                        ($valLen = unpack('N', $buff)) < 100000000 and # arbitrary size limit (100MB)
                         $raf->Read($val, $valLen) == $valLen)
                 {
                     $exifTool->Warn("Error reading $resType resource");
@@ -119,7 +128,8 @@ sub ProcessRSRC($$)
                 my ($resName, $nameLen);
                 $resName = '' unless $raf->Seek($resNameOff, 0) and $raf->Read($buff, 1) and
                     ($nameLen = ord $buff) != 0 and $raf->Read($resName, $nameLen) == $nameLen;
-                $exifTool->VPrint(0,sprintf("$resType resource ID 0x%.4x (offset 0x%.4x, $valLen bytes, name='$resName'):\n", $id, $resOff));
+                $exifTool->VPrint(0,sprintf("%s resource ID 0x%.4x (offset 0x%.4x, $valLen bytes, name='%s'):\n",
+                    $resType, $id, $resOff, $resName));
                 $exifTool->VerboseDump(\$val);
             }
             next unless $tagInfo;
@@ -141,7 +151,8 @@ sub ProcessRSRC($$)
                 unless (Image::ExifTool::Font::ProcessOTF($exifTool, $dirInfo)) {
                     $exifTool->Warn('Unrecognized sfnt resource format');
                 }
-                $exifTool->OverrideFileType('DFONT');
+                # assume this is a DFONT file unless processing the rsrc fork
+                $exifTool->OverrideFileType('DFONT') unless $$exifTool{DOC_NUM};
                 next;
             } elsif ($resType eq '8BIM') {
                 my $ttPtr = GetTagTable('Image::ExifTool::Photoshop::Main');
@@ -176,6 +187,10 @@ sub ProcessRSRC($$)
                     $pos += $len;
                 }
                 $val = \@vals;
+            } elsif ($resType eq 'POST') {
+                # assume this is a DFONT file unless processing the rsrc fork
+                $exifTool->OverrideFileType('DFONT') unless $$exifTool{DOC_NUM};
+                $val = substr $val, 2;
             } elsif ($resType ne 'TEXT') {
                 next;
             }
@@ -204,7 +219,7 @@ resource files.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

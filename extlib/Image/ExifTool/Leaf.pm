@@ -13,7 +13,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 sub ProcessLeaf($$$);
 
@@ -73,7 +73,7 @@ sub ProcessLeaf($$$);
     back_serial_number => {
         Name => 'BackSerial',
         Description => 'Back Serial Number',
-        PrintConv => '$val =~ s/ .*//; $val',
+        PrintConv => '$val =~ s/ .*//s; $val',
     },
     image_offset => { Format => 'int16u' },
 );
@@ -110,7 +110,7 @@ sub ProcessLeaf($$$);
     CaptProf_serial_number  => {
         Name => 'CaptureSerial',
         Description => 'Capture Serial Number',
-        PrintConv => '$val =~ s/ .*//; $val',
+        PrintConv => '$val =~ s/ .*//s; $val',
     },
     CaptProf_image_offset       => {},
     CaptProf_luminance_consts   => {},
@@ -417,7 +417,7 @@ sub ProcessLeaf($$$)
             last;
         }
         my $tag = substr($header, 8, 40);
-        $tag =~ s/\0.*//;
+        $tag =~ s/\0.*//s;
         next unless $tag;
         my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
         # generate tag info for unknown tags
@@ -447,7 +447,7 @@ sub ProcessLeaf($$$)
                 # make tags in main table unknown because they tend to be binary
                 $$tagInfo{Unknown} = 1 if $tagTablePtr eq \%Image::ExifTool::Leaf::Main;
             }
-            $tagInfo and Image::ExifTool::AddTagToTable($tagTablePtr, $tag, $tagInfo);
+            $tagInfo and AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
         if ($verbose) {
             $exifTool->VerboseInfo($tag, $tagInfo,
@@ -502,7 +502,7 @@ Capture.
 
 =head1 AUTHOR
 
-Copyright 2003-2011, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
