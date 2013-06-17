@@ -17,8 +17,10 @@ class PluginData extends BaseObject
     private $_data = null;
 
     public function data($name = null) {
-        $mt = MT::get_instance();
-        $this->_data = $mt->db()->unserialize($this->data);
+        if (empty($this->_data)) {
+            $mt = MT::get_instance();
+            $this->_data = $mt->db()->unserialize($this->data);
+        }
 
         if (!empty($name))
             if (isset($this->_data[$name]))

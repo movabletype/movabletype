@@ -41,6 +41,9 @@ editor_js = mt-static/js/editor/editor_manager.js \
           mt-static/js/editor/app/editor_strategy/separator.js \
           mt-static/js/editor/editor/source.js
 
+data_api_v1_js = mt-static/data-api/v1/js/app.js \
+          mt-static/data-api/v1/js/endpoints.js
+
 main_css = mt-static/css/reset.css \
 	mt-static/css/structure.css \
 	mt-static/css/form.css \
@@ -68,6 +71,10 @@ mt-static/js/editor.js: $(editor_js)
 	cat $(editor_js) > mt-static/js/editor.js
 	./build/minifier.pl mt-static/js/editor.js
 
+mt-static/data-api/v1/js/all.js: $(data_api_v1_js)
+	cat $(data_api_v1_js) > mt-static/data-api/v1/js/all.js
+	./build/minifier.pl mt-static/data-api/v1/js/all.js
+
 mt-static/css/main.css: $(main_css)
 	cat $(main_css) > mt-static/css/main.css
 	./build/minifier.pl mt-static/css/main.css
@@ -81,6 +88,7 @@ mt-static/css/simple.css: $(simple_css)
 code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/js/mt_core_compact.js \
         mt-static/js/editor.js \
+        mt-static/data-api/v1/js/all.js \
         mt-static/css/main.css \
         mt-static/css/simple.css
 
@@ -190,6 +198,7 @@ clean:
 	-rm -rf $(local_js)
 	-rm -rf mt-static/js/mt_core_compact.js
 	-rm -rf mt-static/js/editor.js
+	-rm -rf mt-static/data-api/v1/js/all.js
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp

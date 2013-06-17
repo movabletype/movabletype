@@ -1,0 +1,26 @@
+- 
+  note: Create a category
+  from: 
+    label: Test
+    description: Description
+    basename: a-basename
+  to: 
+    label: Test
+    description: Description
+    basename: a-basename
+- 
+  note: Update a category
+  original: 
+    id: 1
+    label: Original Test
+    description: Original Description
+    basename: original-a-basename
+  from: 
+    label: Test
+    description: Description
+    basename: a-basename
+  to: 
+    id: 1
+    label: Test
+    description: Description
+    basename: a-basename

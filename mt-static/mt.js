@@ -1374,7 +1374,9 @@ Pager = new Class(Object, {
 });
 
 
-MT = {};
+if (typeof MT === 'undefined') {
+    MT = {};
+}
 
 
 if ( window.App ) {

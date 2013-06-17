@@ -1484,22 +1484,31 @@ sub can_delete {
 }
 
 sub save_filter {
-    my ( $eh, $app ) = @_;
+    my ( $eh, $app, $obj, $original ) = @_;
+    my $accessor = sub {
+        if ($obj) {
+            my $k = shift;
+            $obj->$k(@_);
+        }
+        else {
+            $app->param(@_);
+        }
+    };
 
-    my $status = $app->param('status');
+    my $status = $accessor->('status');
     return 1 if $status and $status == MT::Author::INACTIVE();
 
     require MT::Auth;
     my $auth_mode = $app->config('AuthenticationModule');
     my ($pref) = split /\s+/, $auth_mode;
 
-    my $name     = $app->param('name');
-    my $nickname = $app->param('nickname');
+    my $name     = $accessor->('name');
+    my $nickname = $accessor->('nickname');
 
     if ( $pref eq 'MT' ) {
         if ( defined $name ) {
             $name =~ s/(^\s+|\s+$)//g;
-            $app->param( 'name', $name );
+            $accessor->( 'name', $name );
         }
         return $eh->error( $app->translate("User requires username") )
             if ( !$name );
@@ -1520,7 +1529,7 @@ sub save_filter {
     # undefined. Only check requirement if the value is defined.
     if ( defined $nickname ) {
         $nickname =~ s/(^\s+|\s+$)//g;
-        $app->param( 'nickname', $nickname );
+        $accessor->( 'nickname', $nickname );
         return $eh->error( $app->translate("User requires display name") )
             if ( !length($nickname) );
 
@@ -1541,7 +1550,7 @@ sub save_filter {
             type => MT::Author::AUTHOR()
         }
     );
-    my $id = $app->param('id');
+    my $id = $accessor->('id');
     if ( $existing && ( ( $id && $existing->id ne $id ) || !$id ) ) {
         return $eh->error(
             $app->translate("A user with the same name already exists.") );
@@ -1562,11 +1571,11 @@ sub save_filter {
     }
 
     return 1 if ( $pref ne 'MT' );
-    if ( !$app->param('id') ) {    # it's a new object
+    if ( !$accessor->('id') ) {    # it's a new object
         return $eh->error( $app->translate("User requires password") )
             if ( 0 == length( scalar $app->param('pass') ) );
     }
-    my $email = $app->param('email');
+    my $email = $accessor->('email');
     return $eh->error(
         MT->translate("Email Address is required for password reset.") )
         unless $email;
@@ -1584,8 +1593,8 @@ sub save_filter {
         );
     }
 
-    if ( $app->param('url') ) {
-        my $url = $app->param('url');
+    if ( $accessor->('url') ) {
+        my $url = $accessor->('url');
         return $eh->error( MT->translate("URL is invalid.") )
             if !is_url($url) || ( $url =~ m/[<>]/ );
     }

@@ -1,0 +1,146 @@
+<h2><__trans phrase="Google Analytics"></h2>
+
+<mt:If name="missing_modules">
+<p><mt:Var name="missing_modules" /></p>
+<mt:Else>
+
+<mtapp:settinggroup id="google-analytics-settings">
+
+<mt:SetVarBlock name="hint"><__trans phrase="Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://code.google.com/apis/console" target="_blank">Google APIs Console</a> before selecting profile." /></mt:SetVarBlock>
+<mtapp:setting
+   id="ga_redirect_uri"
+   label="<__trans phrase="Redirect URI of the OAuth2 application">"
+   hint="$hint"
+   show_hint="1">
+    <span id="ga_redirect_uri_text"></span>
+    <input type="hidden" id="ga_redirect_uri" value="<mt:Var name="redirect_uri" encode_html="1" />" />
+</mtapp:setting>
+
+<mtapp:setting
+   id="ga_client_id"
+   label="<__trans phrase="Client ID of the OAuth2 application">"
+   show_hint="0">
+    <input type="text" id="ga_client_id" name="ga_client_id" value="<mt:Var name="ga_client_id" encode_html="1" />" />
+</mtapp:setting>
+
+<mtapp:setting
+   id="client_secret"
+   label="<__trans phrase="Client secret of the OAuth2 application">"
+   show_hint="0">
+    <input type="text" id="ga_client_secret" name="ga_client_secret" value="<mt:Var name="ga_client_secret" encode_html="1" />" />
+</mtapp:setting>
+
+<mtapp:setting
+   id="ga_profile"
+   label="<__trans phrase="Google Analytics profile">"
+   show_hint="0">
+    <span id="ga_profile" class="items"></span>
+</mtapp:setting>
+
+<input type="hidden" id="ga_profile_id" name="ga_profile_id" value="<mt:Var name="ga_profile_id" encode_html="1" />" />
+
+<mtapp:setting
+   id="ga_select_profile"
+   label=""
+   show_hint="0">
+    <a href="#" id="ga_select_profile"><__trans phrase="Select google analytics profile" /></a>
+</mtapp:setting>
+
+<input type="hidden" id="ga_dialog_url" value="<mt:Var name="dialog_url" encode_html="1" />" />
+<input type="hidden" id="ga_configured_client_id" value="<mt:Var name="configured_client_id" encode_html="1" />" />
+<input type="hidden" id="ga_configured_client_secret" value="<mt:Var name="configured_client_secret" encode_html="1" />" />
+<input type="hidden" id="ga_profile_name" name="ga_profile_name" value="<mt:Var name="ga_profile_name" encode_html="1" />" />
+<input type="hidden" id="ga_profile_web_property_id" name="ga_profile_web_property_id" value="<mt:Var name="ga_profile_web_property_id" encode_html="1" />" />
+<script type="text/javascript">
+jQuery(function($) {
+    var redirectUri = $('#ga_redirect_uri').val();
+    if (! redirectUri.match(/^https?:\/\//)) {
+        redirectUri =
+            redirectUri.replace(/^\/?/, location.protocol + '//' + location.host + '/');
+        $('#ga_redirect_uri').val(redirectUri);
+        $('#ga_redirect_uri_text').text(redirectUri);
+    }
+
+
+    function updateProfile() {
+        var $profile = $('#ga_profile');
+        var $name    = $('#ga_profile_name');
+
+        $profile.empty();
+        if ($name.val() == '') {
+            $profile.text('<__trans phrase="(No profile selected)" encode_js="1">');
+        }
+        else {
+            var $label = $('<span class="sticky-label selected-item" />');
+            $label.append($('<span />').text(
+                $name.val() + ' (' + $('#ga_profile_web_property_id').val() + ')'
+            ));
+            $label.append('&nbsp;<span class="remove clickable">x</span></span>');
+            $label.find('span.remove').click(function() {
+                $('#ga_profile_name, #ga_profile_web_property_id, #ga_profile_id')
+                    .val('');
+                updateProfile();
+            });
+            $profile.append($label);
+        }
+    }
+    updateProfile();
+    $(window).on('dialogDisposed', updateProfile);
+
+
+    $('#ga_client_id, #ga_client_secret')
+        .on('input click keyup change', function() {
+            if (
+                $('#ga_client_id').val() &&
+                $('#ga_client_secret').val()
+            ) {
+                $('#ga_select_profile').removeClass('disabled');
+            }
+            else {
+                $('#ga_select_profile').addClass('disabled');
+            }
+        })
+        .triggerHandler('input');
+
+    $('#ga_select_profile').click(function() {
+        var clientId     = $('#ga_client_id').val();
+        var clientSecret = $('#ga_client_secret').val();
+
+        if (! clientId || ! clientSecret) {
+            return false;
+        }
+
+        if (clientId === $('#ga_configured_client_id').val()) {
+            var dialogUrl = $('#ga_dialog_url').val();
+
+            $.fn.mtDialog.close();
+            $.fn.mtDialog.open(dialogUrl + '&client_id=' + clientId);
+        }
+        else {
+            var url = '<mt:Var name="authorize_url" encode_js="1" />'
+                .replace('__client_id__', clientId)
+                .replace('__redirect_uri__', redirectUri);
+            window.open(
+                url, 'google_analytics_authorize',
+                'width=700, height=500, menubar=no, toolbar=no, scrollbars=yes'
+            );
+        }
+
+        return false;
+    });
+
+    $($('#ga_client_id').get(0).form).on('submit', function() {
+        var clientId     = $('#ga_client_id').val();
+        var clientSecret = $('#ga_client_secret').val();
+        if (
+            (clientId && clientId !== $('#ga_configured_client_id').val()) ||
+            (clientSecret && clientSecret !== $('#ga_configured_client_secret').val())
+        ) {
+            return window.confirm('<__trans phrase="Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these informations?" encode_html="1">');
+        }
+    });
+});
+</script>
+
+</mtapp:settinggroup>
+</mt:If>

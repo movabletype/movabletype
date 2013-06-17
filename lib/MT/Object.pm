@@ -1758,6 +1758,29 @@ sub inflate {
     $obj;
 }
 
+sub assets {
+    my ($self) = @_;
+
+    if ( $self->has_summary('all_assets') ) {
+        my @assets = $self->get_summary_objs( 'all_assets' => 'MT::Asset' );
+        @assets && $assets[0] ? [@assets] : [];
+    }
+    else {
+        [   MT->model('asset')->load(
+                { class => '*' },
+                {   join => MT->model('objectasset')->join_on(
+                        undef,
+                        {   asset_id  => \'= asset_id',
+                            object_ds => $self->datasource,
+                            object_id => $self->id
+                        }
+                    )
+                }
+            )
+        ];
+    }
+}
+
 package MT::Object::Meta;
 
 use base qw( Data::ObjectDriver::BaseObject );

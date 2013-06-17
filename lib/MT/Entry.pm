@@ -627,12 +627,30 @@ sub list_props {
             col_class             => 'icon',
             base                  => '__virtual.single_select',
             single_select_options => [
-                { label => MT->translate('Draft'),             value => 1, },
-                { label => MT->translate('Published'),         value => 2, },
-                { label => MT->translate('Reviewing'),         value => 3, },
-                { label => MT->translate('Scheduled'),         value => 4, },
-                { label => MT->translate('Junk'),              value => 5, },
-                { label => MT->translate('Unpublished (End)'), value => 6, },
+                {   label => MT->translate('Draft'),
+                    text  => 'Draft',
+                    value => 1,
+                },
+                {   label => MT->translate('Published'),
+                    text  => 'Publish',
+                    value => 2,
+                },
+                {   label => MT->translate('Reviewing'),
+                    text  => 'Review',
+                    value => 3,
+                },
+                {   label => MT->translate('Scheduled'),
+                    text  => 'Future',
+                    value => 4,
+                },
+                {   label => MT->translate('Junk'),
+                    text  => 'Spam',
+                    value => 5,
+                },
+                {   label => MT->translate('Unpublished (End)'),
+                    text  => 'Unpublish',
+                    value => 6,
+                },
             ],
         },
         created_on => {
@@ -760,6 +778,11 @@ sub list_props {
             },
         },
         current_context => { base => '__common.current_context', },
+        content         => {
+            base      => '__virtual.content',
+            fields    => [qw(title text text_more keywords excerpt basename)],
+            condition => sub {0},
+        },
     };
 }
 
@@ -858,6 +881,7 @@ sub status_int {
         : $s eq 'review'    ? REVIEW
         : $s eq 'future'    ? FUTURE
         : $s eq 'junk'      ? JUNK
+        : $s eq 'spam'      ? JUNK
         : $s eq 'unpublish' ? UNPUBLISH
         :                     undef;
 }
@@ -1280,7 +1304,7 @@ sub pinged_url_list {
             delete $urls{$_} if $exclude_successes;
         }
     }
-    [ keys %urls ];
+    [ sort keys %urls ];
 }
 
 sub to_ping_url_list {

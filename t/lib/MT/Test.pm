@@ -1440,7 +1440,12 @@ sub _run_app {
     my $cgi              = CGI->new;
     my $follow_redirects = 0;
     my $max_redirects    = 10;
+    my %app_hash_values = qw(
+        __request_method request_method
+        __path_info __path_info
+    );
     while ( my ( $k, $v ) = each(%$params) ) {
+        next if grep { $_ eq $k } keys %app_hash_values;
         if ( ref($v) eq 'ARRAY' && $k ne '__test_upload' ) {
             $cgi->param( $k, @$v );
         }
@@ -1487,8 +1492,10 @@ sub _run_app {
     # seems to be hanging around when it doesn't need to be
     $app->{init_request} = 0;    # gotta set this to force the init request
     $app->init_request( CGIObject => $cgi );
-    $app->{request_method} = $params->{__request_method}
-        if ( $params->{__request_method} );
+    while ( my ( $params_key, $app_key ) = each %app_hash_values ) {
+        $app->{$app_key} = $params->{$params_key}
+            if exists $params->{$params_key};
+    }
     $app->run;
 
     my $out = $app->{__test_output};
