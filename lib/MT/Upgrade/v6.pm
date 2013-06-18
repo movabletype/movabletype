@@ -75,6 +75,15 @@ __SQL__
                 code  => \&_v6_rename_this_is_you_widget,
             },
         },
+        '_v6_add_site_stats_widget' => {
+            version_limit => 6.0005,
+            priority      => 3.0,
+            updater       => {
+                type  => 'author',
+                label => "Add Blog Statistics widget...",
+                code  => \&_v6_add_site_stats_widget,
+            },
+        },
     };
 }
 
@@ -92,6 +101,57 @@ sub _v6_rename_this_is_you_widget {
                 order => 1,
                 set   => 'sidebar',
             };
+        }
+    }
+
+    $user->widgets($widgets);
+    $user->save;
+}
+
+sub _v6_add_site_stats_widget {
+    my $user    = shift;
+    my $widgets = $user->widgets;
+    return 1 unless $widgets;
+
+    foreach my $key ( keys %$widgets ) {
+        if ( $key eq 'dashboard:user:' . $user->id ) {
+            my @widget_keys = keys %{ $widgets->{$key} };
+            unless ( grep { $_ eq 'site_stats' } @widget_keys ) {
+                foreach my $widget_key (@widget_keys) {
+                    next
+                        if ( $widget_key eq 'notification_dashboard'
+                        || $widgets->{$key}->{$widget_key}->{set} eq 'main' );
+                    $widgets->{$key}->{$widget_key}->{order} .= 1;
+                }
+                $widgets->{$key}->{'site_stats'} = {
+                    order => 2,
+                    set   => 'main',
+                };
+            }
+        }
+        if ( $key eq 'dashboard:website:' . $user->id ) {
+            my @widget_keys = keys %{ $widgets->{$key} };
+            unless ( grep { $_ eq 'site_stats' } @widget_keys ) {
+                foreach my $widget_key (@widget_keys) {
+                    $widgets->{$key}->{$widget_key}->{order} .= 1;
+                }
+                $widgets->{$key}->{'site_stats'} = {
+                    order => 1,
+                    set   => 'main',
+                };
+            }
+        }
+        if ( $key eq 'dashboard:blog:' . $user->id ) {
+            my @widget_keys = keys %{ $widgets->{$key} };
+            unless ( grep { $_ eq 'site_stats' } @widget_keys ) {
+                foreach my $widget_key (@widget_keys) {
+                    $widgets->{$key}->{$widget_key}->{order} .= 1;
+                }
+                $widgets->{$key}->{'site_stats'} = {
+                    order => 1,
+                    set   => 'main',
+                };
+            }
         }
     }
 

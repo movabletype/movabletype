@@ -305,6 +305,8 @@ sub core_methods {
             code     => "${pkg}Tools::login_json",
             app_mode => 'JSON',
         },
+        'regenerate_site_stats_data' =>
+            "${pkg}Dashboard::regenerate_site_stats_data",
 
         # declared in MT::App
         'update_widget_prefs' =>
@@ -378,6 +380,14 @@ sub core_widgets {
             singular => 1,
             set      => 'main',
             view     => 'user',
+        },
+        site_stats => {
+            label    => 'Site Stats',
+            template => 'widget/site_stats.tmpl',
+            handler  => "${pkg}Dashboard::site_stats_widget",
+            singular => 1,
+            set      => 'main',
+            view     => [ 'user', 'website', 'blog' ],
         },
     };
 
