@@ -1293,12 +1293,12 @@ ChartAPI.Graph.easel.Base.prototype.motionLine = function (data, config) {
     pointerColorsAlpha = config.pointerColorsAlpha || [null],
     pointerRadius = config.pointerRadius || 10,
     paddingTop = lineWidth / 2,
-    paddingBottom = 0,
+    paddingBottom = lineWidth / 2,
     count = (length - 1) * 2,
     moveX = Math.floor(this.width / length) / 2,
     paddingLeft = (this.width - (moveX * count)) / 2,
     height = this.height,
-    canvasInnnerHeight = this.height - lineWidth,
+    canvasInnerHeight,
     dataYs = [],
     dataY,
     mapfunc = function (d) {
@@ -1308,6 +1308,8 @@ ChartAPI.Graph.easel.Base.prototype.motionLine = function (data, config) {
   if (config.drawPointer) {
     paddingBottom = paddingBottom + pointerRadius;
   }
+
+  canvasInnerHeight = this.height - (paddingTop + paddingBottom);
 
   for (var i = 0; i < yLength; i++) {
     dataY = $.map(data, mapfunc);
@@ -1329,11 +1331,11 @@ ChartAPI.Graph.easel.Base.prototype.motionLine = function (data, config) {
         var prevY = dataY[i - 1];
         var medium = prevY + Math.floor((y - prevY) / 2);
 
-        medium = Math.floor((medium / maxY) * canvasInnnerHeight) + paddingTop + paddingBottom;
-        y = Math.floor((y / maxY) * canvasInnnerHeight) + paddingTop + paddingBottom;
+        medium = Math.floor((medium / maxY) * canvasInnerHeight) + paddingBottom;
+        y = Math.floor((y / maxY) * canvasInnerHeight) + paddingBottom;
         moveY = moveY.concat([medium, y]);
       } else {
-        y = Math.floor((y / maxY) * canvasInnnerHeight) + paddingTop + paddingBottom;
+        y = Math.floor((y / maxY) * canvasInnerHeight) + paddingBottom;
         moveY.push(y);
       }
     });
