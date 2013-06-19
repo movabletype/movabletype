@@ -42,6 +42,10 @@ sub core_resources {
             fields           => "${pkg}Asset::fields",
             updatable_fields => "${pkg}Asset::updatable_fields",
         },
+        'permission' => {
+            fields           => "${pkg}Permission::fields",
+            updatable_fields => "${pkg}Permission::updatable_fields",
+        },
     };
 }
 
@@ -337,7 +341,8 @@ sub from_object {
     my ( $objs, $hashs, $f ) = @_;
     my $name = $f->{name};
     foreach my $h (@$hashs) {
-        $h->{$name} = MT::DataAPI::Resource->from_object( $h->{$name}, $f->{fields} )
+        $h->{$name}
+            = MT::DataAPI::Resource->from_object( $h->{$name}, $f->{fields} )
             if defined $h->{$name};
     }
 }
@@ -377,8 +382,7 @@ sub from_object {
     my ( $objs, $hashs, $f ) = @_;
     my $name = $f->{name};
     foreach my $h (@$hashs) {
-        $h->{$name} = $h->{$name} ? boolean::true() : boolean::false()
-            if defined $h->{$name};
+        $h->{$name} = $h->{$name} ? boolean::true() : boolean::false();
     }
 }
 

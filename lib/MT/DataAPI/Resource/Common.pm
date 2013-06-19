@@ -8,7 +8,7 @@ our %fields = (
         name        => 'blog',
         from_object => sub {
             my ($obj) = @_;
-            +{ id => $obj->blog_id, };
+            $obj->blog_id ? +{ id => $obj->blog_id, } : undef;
         },
     },
     tags => {

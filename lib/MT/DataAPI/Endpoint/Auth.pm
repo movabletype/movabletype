@@ -54,7 +54,6 @@ sub authorization {
         my $access_token = make_access_token( $app, $session );
 
         $param{access_token} = {
-            sessionId   => $session->id,
             accessToken => $access_token->id,
             expiresIn   => MT::AccessToken::ttl(),
         };
@@ -83,6 +82,14 @@ sub authentication {
     my $session = $app->{session}
         or return $app->error(401);
 
+    my $access_token = make_access_token( $app, $session );
+
+    my $response = {
+        sessionId   => $session->id,
+        accessToken => $access_token->id,
+        expiresIn   => MT::AccessToken::ttl(),
+    };
+
     if ( $app->cookie_val( mt_data_api_login_magic_token_cookie_name() ) eq
         ( $app->param('mtDataApiLoginMagicToken') || '' ) )
     {
@@ -103,14 +110,11 @@ sub authentication {
             -value   => '',
             -expires => '-1y',
         );
+
+        delete $response->{sessionId};
     }
 
-    my $access_token = make_access_token( $app, $session );
-
-    +{  sessionId   => $session->id,
-        accessToken => $access_token->id,
-        expiresIn   => MT::AccessToken::ttl(),
-    };
+    $response;
 }
 
 sub _current_session_from_authorization_data {
