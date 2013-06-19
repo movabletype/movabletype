@@ -188,7 +188,7 @@ DataAPI.prototype      = {
         if (! this.tokenData) {
             var token = null;
             
-            if (window.location.hash === '#_login') {
+            if (window.location && window.location.hash === '#_login') {
                 try {
                     token = this._updateTokenFromDefault();
                 }
