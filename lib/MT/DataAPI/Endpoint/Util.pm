@@ -18,9 +18,11 @@ sub endpoints {
 
     my $endpoint_data = $app->endpoints( $app->current_api_version );
     my @results       = map {
-        my %endpoint = %$_;
-        my $c        = delete $endpoint{component};
-        my $c_id     = $c->id;
+        my $e = $_;
+        my %endpoint = map { $_ => $e->{$_} }
+            qw(id route version resources format verb);
+        my $c    = $e->{component};
+        my $c_id = $c->id;
 
         if (   ( @includes && !grep { $_ eq lc $c_id } @includes )
             || ( @excludes && grep { $_ eq lc $c_id } @excludes ) )
@@ -28,7 +30,6 @@ sub endpoints {
             ();
         }
         else {
-            delete $endpoint{$_} for qw(handler handler_ref _vars);
             $endpoint{component} = {
                 id   => $c_id,
                 name => $c->name,
