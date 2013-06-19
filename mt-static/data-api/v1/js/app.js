@@ -933,10 +933,6 @@ window.MT.DataAPI['v' + DataAPI.version] = DataAPI;
 
 
 
-function exists(x) {
-    return (x === undefined || x === null) ? false : true;
-};
-
 var Cookie = function( name, value, domain, path, expires, secure ) {
     this.name = name;
     this.value = value;
@@ -954,8 +950,12 @@ Cookie.prototype = {
      * @return <code>Cookie</code> The fetched cookie.
      */
     fetch: function() {
+        if (! window.document) {
+            return undefined;
+        }
+
         var prefix = escape( this.name ) + "=";
-        var cookies = ("" + document.cookie).split( /;\s*/ );
+        var cookies = ("" + window.document.cookie).split( /;\s*/ );
         
         for( var i = 0; i < cookies.length; i++ ) {
             if( cookies[ i ].indexOf( prefix ) == 0 ) {
@@ -973,6 +973,14 @@ Cookie.prototype = {
      * @return <code>Cookie</code> The set and stored ("baked") cookie.
      */
     bake: function( value ) {
+        if (! window.document) {
+            return undefined;
+        }
+
+        function exists(x) {
+            return (x === undefined || x === null) ? false : true;
+        };
+
         if( !exists( this.name ) )
         	return undefined;
 		
@@ -992,7 +1000,7 @@ Cookie.prototype = {
 
         
         var batter = name + "=" + value + attributes;                   
-        document.cookie = batter;
+        window.document.cookie = batter;
 
         return this;
     },
