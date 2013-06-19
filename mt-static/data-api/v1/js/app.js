@@ -555,10 +555,10 @@ DataAPI.prototype      = {
                     return params;
                 }
                 else if (api._isFormElement(params)) {
-                    return new FormData(params);
+                    return new window.FormData(params);
                 }
                 else if (window.FormData && typeof params === 'object') {
-                    var data = new FormData();
+                    var data = new window.FormData();
                     for (var k in params) {
                         data.append(k, api._serializeObject(params[k]));
                     }
