@@ -157,11 +157,11 @@ DataAPI.prototype      = {
         return this.getCurrentFormat().unserialize.apply(this, arguments);
     },
     
-    _storeToken: function(tokenData) {
+    storeToken: function(tokenData) {
         var o = this.o;
         tokenData.startTime = this._getCurrentEpoch();
         Cookie.bake(this.getAppKey(), this.serializeData(tokenData), o.cookieDomain, o.cookiePath);
-        this.tokenData = null;
+        this.tokenData = tokenData;
     },
     
     _updateTokenFromDefault: function() {
@@ -178,7 +178,7 @@ DataAPI.prototype      = {
             return null;
         }
         
-        this._storeToken(defaultToken);
+        this.storeToken(defaultToken);
         Cookie.bake(defaultKey, '', undefined, '/', new Date(0));
         return defaultToken;
     },
@@ -615,7 +615,7 @@ DataAPI.prototype      = {
                     }
                 }
                 else {
-                    api._storeToken(response);
+                    api.storeToken(response);
                     api.request.apply(api, originalArguments);
                 }
                 return false;
