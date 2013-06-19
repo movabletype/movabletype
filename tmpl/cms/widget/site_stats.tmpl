@@ -1,0 +1,128 @@
+<mtapp:widget
+  class="site-stats-widget"
+  label="<__trans phrase="Site Stats">"
+  can_close="1">
+<mt:setvarblock name="widget_header">
+</mt:setvarblock>
+<div id="widget-container">
+  <div class="left-column">
+    <div class="stats-for">
+      Stats for
+    <mt:if name="object_loop">
+      <select id="select_blog_id">
+      <mt:loop name="object_loop">
+        <option value="<mt:var name="id">"><mt:var name="name"></option>
+      </mt:loop>
+      </select>
+    <mt:else>
+      <mt:var name="name">
+    </mt:if>
+    </div>
+    <div class="count-title">
+      <div id="todays_title"></div>
+      <div id="yesterdays_title"></div>
+    </div>
+    <div class="count-number">
+      <div id="todays_count"></div>
+      <div id="yesterdays_count"></div>
+    </div>
+    <div class="count-diff">
+      <div id="diff"></div>
+    </div>
+  </div>
+  <div class="right-column">
+    <div id="graph">
+    <mt:if name="not_configured">
+      <__trans phrase="Selected site does not have statistics settings."><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_web_services&blog_id=<mt:var name="blog_id">"><__trans phrase="Please configure statistics settings."></a></mt:if>
+    </mt:if>
+    </div>
+  </div>
+  <div class="clear"></div>
+</div>
+</mtapp:widget>
+
+<mt:setvarblock name="html_head" append="1">
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>js/chart-api/mtchart.css">
+<script src="<$mt:var name="static_uri"$>js/chart-api/mtchart.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+  jQuery(function() {
+    jQuery('select#select_blog_id').change( function() {
+      jQuery('#graph').empty();
+      jQuery('#todays_title').empty();
+      jQuery('#yesterdays_title').empty();
+      jQuery('#todays_count').empty();
+      jQuery('#yesterdays_count').empty();
+      jQuery('#diff').empty();
+      var select_blog_id = jQuery('select#select_blog_id').val();
+      jQuery.ajax({
+        type: 'POST',
+        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+        async: true,
+        url: '<mt:var name="script_url">',
+        dataType: 'json',
+        data: {
+          __mode: 'regenerate_site_stats_data',
+          blog_id: select_blog_id,
+          magic_token: '<mt:var name="magic_token">',
+        },
+        success: function(data) {
+          if (data.result.not_configured) {
+            jQuery('#graph').html('<__trans phrase="Current blog/website does not have Statistics settings."><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_web_services&blog_id=<mt:var name="blog_id">"><__trans phrase="Please configure Statistics settings."></a></mt:if>');
+          } else {
+            draw_graph(data.result.stat_url);
+          }
+        },
+        error: function(data) {
+        }
+      });
+    });
+
+  <mt:unless name="not_configured">
+    draw_graph('<mt:var name="stat_url">');
+  </mt:unless>
+
+    function draw_graph(stat_url) {
+      jQuery.getJSON(stat_url, function(data) {
+        var config = {
+          type: 'morris.line',
+          yLength: 2,
+          autoResize: true,
+          height: 200,
+          lineWidth: 3,
+          pointSize: 3,
+          data: data.graph_data,
+          hoverCallback: function (index, options, content) {
+            var row   = options.data[index];
+            var pv    = data.hover_data[index+1].pv;
+            var count = data.hover_data[index+1].count;
+            return '<div class="morris-hover-row-label">' + row.x + '</div><div class="morris-hover-point" style="color: #6AAC2B;">PV: ' + pv + '</div><div class="morris-hover-point" style="color: #FFBE00;">Entry: ' + count + '</div>';
+          }
+        }
+        var range = {
+          unit: 'daily',
+          length: 10
+        }
+        new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
+        var todays_count     = data.hover_data[10].pv;
+        var yesterdays_count = data.hover_data[9].pv;
+        var diff = todays_count - yesterdays_count;
+        var mark = diff > 0 ? '+' : '';
+        jQuery('#todays_title').text('Today: ');
+        jQuery('#yesterdays_title').text('Yesterday: ');
+        jQuery('#todays_count').text( addComma(todays_count) );
+        jQuery('#yesterdays_count').text( addComma(yesterdays_count) );
+        jQuery('#diff').text('(' + mark + diff + ')');
+      });
+    }
+
+    function addComma (str) {
+      var num = new String(str).replace(/,/g, "");
+      while(num != (num = num.replace(/^(-?\d+)(\d{3})/, "$1,$2")));
+      return num;
+    }
+
+  });
+  /* ]]> */
+</script>
+</mt:setvarblock>

@@ -50,24 +50,113 @@ __SQL__
             updater       => {
                 type      => 'association',
                 condition => sub {
-                    my $blog_admin
-                        = MT->model('role')
-                        ->load(
-                        { name => MT->translate('Blog Administrator') } );
-                    $_[0]->role_id == $blog_admin->id;
+                    my $association = shift;
+                    require MT::Role;
+                    my @blog_admin
+                        = MT::Role->load_by_permission('administer_blog');
+                    grep { $_->id == $association->role_id } @blog_admin;
                 },
                 code => sub {
+                    require MT::Role;
                     my $website_admin
-                        = MT->model('role')
-                        ->load(
-                        { name => MT->translate('Website Administrator') } );
+                        = MT::Role->load_by_permission('administer_website');
                     $_[0]->role_id( $website_admin->id );
                     $_[0]->save;
                 },
                 label => 'Migrating Blog Administrator roles in MT4...',
             },
         },
+        '_v6_rename_this_is_you_widget' => {
+            version_limit => 6.0003,
+            priority      => 3.0,
+            updater       => {
+                type  => 'author',
+                label => "Rename This is you widget...",
+                code  => \&_v6_rename_this_is_you_widget,
+            },
+        },
+        '_v6_add_site_stats_widget' => {
+            version_limit => 6.0005,
+            priority      => 3.0,
+            updater       => {
+                type  => 'author',
+                label => "Add Blog Statistics widget...",
+                code  => \&_v6_add_site_stats_widget,
+            },
+        },
     };
+}
+
+sub _v6_rename_this_is_you_widget {
+    my $user    = shift;
+    my $widgets = $user->widgets;
+    return 1 unless $widgets;
+
+    foreach my $key ( keys %$widgets ) {
+        if ( $key eq 'dashboard:user:' . $user->id ) {
+            my @widget_keys = keys %{ $widgets->{$key} };
+            delete $widgets->{$key}->{'this_is_you-1'}
+                if ( grep { $_ eq 'this_is_you-1' } @widget_keys );
+            $widgets->{$key}->{'personal_stats'} = {
+                order => 1,
+                set   => 'sidebar',
+            };
+        }
+    }
+
+    $user->widgets($widgets);
+    $user->save;
+}
+
+sub _v6_add_site_stats_widget {
+    my $user    = shift;
+    my $widgets = $user->widgets;
+    return 1 unless $widgets;
+
+    foreach my $key ( keys %$widgets ) {
+        if ( $key eq 'dashboard:user:' . $user->id ) {
+            my @widget_keys = keys %{ $widgets->{$key} };
+            unless ( grep { $_ eq 'site_stats' } @widget_keys ) {
+                foreach my $widget_key (@widget_keys) {
+                    next
+                        if ( $widget_key eq 'notification_dashboard'
+                        || $widgets->{$key}->{$widget_key}->{set} eq 'main' );
+                    $widgets->{$key}->{$widget_key}->{order} .= 1;
+                }
+                $widgets->{$key}->{'site_stats'} = {
+                    order => 2,
+                    set   => 'main',
+                };
+            }
+        }
+        if ( $key eq 'dashboard:website:' . $user->id ) {
+            my @widget_keys = keys %{ $widgets->{$key} };
+            unless ( grep { $_ eq 'site_stats' } @widget_keys ) {
+                foreach my $widget_key (@widget_keys) {
+                    $widgets->{$key}->{$widget_key}->{order} .= 1;
+                }
+                $widgets->{$key}->{'site_stats'} = {
+                    order => 1,
+                    set   => 'main',
+                };
+            }
+        }
+        if ( $key eq 'dashboard:blog:' . $user->id ) {
+            my @widget_keys = keys %{ $widgets->{$key} };
+            unless ( grep { $_ eq 'site_stats' } @widget_keys ) {
+                foreach my $widget_key (@widget_keys) {
+                    $widgets->{$key}->{$widget_key}->{order} .= 1;
+                }
+                $widgets->{$key}->{'site_stats'} = {
+                    order => 1,
+                    set   => 'main',
+                };
+            }
+        }
+    }
+
+    $user->widgets($widgets);
+    $user->save;
 }
 
 1;

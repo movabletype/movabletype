@@ -133,6 +133,7 @@ BEGIN {
             'user'            => 'MT::Author',
             'commenter'       => 'MT::Author',
             'blog'            => 'MT::Blog',
+            'site'            => 'MT::Blog',
             'blog.website'    => 'MT::Website',
             'website'         => 'MT::Website',
             'template'        => 'MT::Template',
@@ -165,6 +166,7 @@ BEGIN {
             'filter'          => 'MT::Filter',
             'touch'           => 'MT::Touch',
             'failedlogin'     => 'MT::FailedLogin',
+            'accesstoken'     => 'MT::AccessToken',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
@@ -577,14 +579,27 @@ BEGIN {
                     default_sort_order => 'descend',
                 },
                 single_select => {
-                    base      => '__virtual.base',
-                    sort      => 0,
-                    singleton => 1,
-                    terms     => sub {
+                    base             => '__virtual.base',
+                    sort             => 0,
+                    singleton        => 1,
+                    normalized_value => sub {
+                        my $prop     = shift;
+                        my ($args)   = @_;
+                        my $lc_value = lc $args->{value};
+
+                        for my $o ( @{ $prop->single_select_options } ) {
+                            if ( $o->{text} && lc $o->{text} eq $lc_value ) {
+                                return $o->{value};
+                            }
+                        }
+
+                        return $args->{value};
+                    },
+                    terms => sub {
                         my $prop   = shift;
                         my ($args) = @_;
                         my $col    = $prop->col || $prop->type or die;
-                        my $value  = $args->{value};
+                        my $value  = $prop->normalized_value(@_);
                         return { $col => $value };
                     },
                     label_via_param => sub {
@@ -1106,6 +1121,43 @@ BEGIN {
                     },
                     singleton => 1,
                 },
+                content => {
+                    base  => '__virtual.hidden',
+                    terms => sub {
+                        my ( $prop, $args, $db_terms, $db_args ) = @_;
+                        my $defaults = $prop->{fields};
+                        my $option   = $args->{option};
+                        my $query    = $args->{string};
+                        my $and_or;
+                        if ( 'contains' eq $option ) {
+                            $query = { like => "%$query%" };
+                            $and_or = '-or';
+                        }
+                        elsif ( 'not_contains' eq $option ) {
+                            $query = { not_like => "%$query%" };
+                            $and_or = '-and';
+                        }
+
+                        my @fields;
+                        if ( my $specifieds = $args->{fields} ) {
+                            @fields = grep {
+                                my $f = $_;
+                                grep { $_ eq $f } @$defaults
+                            } split ',', $specifieds;
+                        }
+                        else {
+                            @fields = @$defaults;
+                        }
+
+                        my @terms;
+                        for my $c (@fields) {
+                            push @terms, ( @terms ? $and_or : () ),
+                                { $c => $query, };
+                        }
+
+                        \@terms;
+                    },
+                },
             },
             website      => '$Core::MT::Website::list_props',
             blog         => '$Core::MT::Blog::list_props',
@@ -1126,6 +1178,7 @@ BEGIN {
             notification => '$Core::MT::Notification::list_props',
             log          => '$Core::MT::Log::list_props',
             filter       => '$Core::MT::Filter::list_props',
+            permission   => '$Core::MT::Permission::list_props',
         },
         system_filters => {
             entry     => '$Core::MT::Entry::system_filters',
@@ -1162,13 +1215,16 @@ BEGIN {
                     require MT::CMS::Blog;
                     return MT::CMS::Blog::can_view_blog_list( MT->instance );
                 },
+                data_api_condition => undef,
             },
             entry => {
-                object_label     => 'Entry',
-                primary          => 'title',
-                default_sort_key => 'authored_on',
-                permission       => "access_to_entry_list",
-                feed_link        => sub {
+                object_label        => 'Entry',
+                primary             => 'title',
+                default_sort_key    => 'authored_on',
+                data_api_scope_mode => 'this',
+                permission          => "access_to_entry_list",
+                data_api_permission => undef,
+                feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 
@@ -1317,9 +1373,10 @@ BEGIN {
                     permit_action => 'access_to_category_list',
                     inherit       => 0,
                 },
-                view       => [ 'website', 'blog' ],
-                scope_mode => 'this',
-                condition  => sub {
+                data_api_permission => undef,
+                view                => [ 'website', 'blog' ],
+                scope_mode          => 'this',
+                condition           => sub {
                     my $app = shift;
                     ( $app->param('_type') || '' ) ne 'filter';
                 },
@@ -1343,11 +1400,12 @@ BEGIN {
                 },
             },
             comment => {
-                object_label     => 'Comment',
-                default_sort_key => 'created_on',
-                permission       => 'access_to_comment_list',
-                primary          => 'comment',
-                feed_link        => sub {
+                object_label        => 'Comment',
+                default_sort_key    => 'created_on',
+                permission          => 'access_to_comment_list',
+                data_api_permission => undef,
+                primary             => 'comment',
+                feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 
@@ -1373,11 +1431,12 @@ BEGIN {
                 },
             },
             ping => {
-                primary          => 'excerpt',
-                object_label     => 'Trackback',
-                default_sort_key => 'created_on',
-                permission       => 'access_to_trackback_list',
-                feed_link        => sub {
+                primary             => 'excerpt',
+                object_label        => 'Trackback',
+                default_sort_key    => 'created_on',
+                permission          => 'access_to_trackback_list',
+                data_api_permission => undef,
+                feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 
@@ -1505,6 +1564,10 @@ BEGIN {
                 primary          => 'label',
                 default_sort_key => 'created_on',
                 scope_mode       => 'none',
+            },
+            permission => {
+                condition          => sub {0},
+                data_api_condition => sub {1},
             },
         },
         summaries => {
@@ -1701,6 +1764,7 @@ BEGIN {
             'UpgradeScript'         => { default => 'mt-upgrade.cgi', },
             'CheckScript'           => { default => 'mt-check.cgi', },
             'NotifyScript'          => { default => 'mt-add-notify.cgi', },
+            'DataAPIScript'         => { default => 'mt-data-api.cgi', },
             'PublishCharset'        => { default => 'utf-8', },
             'SafeMode'              => { default => 1, },
             'AllowFileInclude'      => { default => 0, },
@@ -1924,6 +1988,9 @@ BEGIN {
             'FailedLoginExpirationFrequency' => { default => 86400 },
             'LockoutIPWhitelist'             => undef,
             'LockoutNotifyTo'                => undef,
+
+            # DataAPI
+            'AccessTokenTTL' => { default => 60 * 60, },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2013,10 +2080,21 @@ BEGIN {
                 script  => sub { MT->config->UpgradeScript },
                 type    => 'run_once',
             },
+            'data_api' => {
+                handler        => 'MT::App::DataAPI',
+                script         => sub { MT->config->DataAPIScript },
+                methods        => sub { MT->app->core_methods() },
+                endpoints      => sub { MT->app->core_endpoints() },
+                resources      => sub { MT::DataAPI::Resource->core_resources() },
+                formats        => sub { MT::DataAPI::Format->core_formats() },
+                default_format => 'json',
+            },
         },
-        archive_types => \&load_archive_types,
-        tags          => \&load_core_tags,
-        text_filters  => {
+        web_services    => undef,
+        stats_providers => undef,
+        archive_types   => \&load_archive_types,
+        tags            => \&load_core_tags,
+        text_filters    => {
             '__default__' => {
                 label   => 'Convert Line Breaks',
                 handler => 'MT::Util::html_text_transform',
@@ -2250,6 +2328,14 @@ sub load_core_tasks {
                 MT::Core->purge_session_records;
                 }
         },
+        'PurgeExpiredDataAPISessionRecords' => {
+            label => 'Purge Stale DataAPI Session Records',
+            frequency => 60,     # * 60 * 24,   # once a day
+            code      => sub {
+                require MT::App::DataAPI;
+                MT::App::DataAPI->purge_session_records;
+                }
+        },
         'CleanExpiredFailedLogin' => {
             label     => 'Remove expired lockout data',
             frequency => $cfg->FailedLoginExpirationFrequency,
@@ -2288,9 +2374,11 @@ sub remove_temporary_files {
 }
 
 sub purge_user_session_records {
+    my ( $kind, $timeout ) = @_;
+
     my $iter = MT::Session->load_iter(
-        {   kind  => 'US',
-            start => [ undef, time - MT->config->UserSessionTimeout ],
+        {   kind  => $kind,
+            start => [ undef, time - $timeout ],
         },
         { range => { start => 1 } }
     );
@@ -2308,7 +2396,7 @@ sub purge_session_records {
     require MT::Session;
 
     # remove expired user sessions
-    purge_user_session_records();
+    purge_user_session_records( 'US', MT->config->UserSessionTimeout );
 
     # remove stale search cache
     MT::Session->remove( { kind => 'CS', start => [ undef, time - 60 * 60 ] },

@@ -363,7 +363,15 @@ sub list_props {
                 );
             },
         },
-
+        id => {
+            base      => '__virtual.id',
+            condition => sub {0},
+        },
+        content => {
+            base      => '__virtual.content',
+            fields    => [qw(title excerpt source_url ip blog_name)],
+            condition => sub {0},
+        },
     };
 }
 
@@ -675,6 +683,27 @@ sub visible {
 
     $ping->junk_status(NOT_JUNK) if $is_visible;
     return $ping->SUPER::visible($is_visible);
+}
+
+sub get_status_text {
+    my $self = shift;
+          $self->is_published ? 'Approved'
+        : $self->is_moderated ? 'Pending'
+        :                       'Spam';
+}
+
+sub set_status_by_text {
+    my $self   = shift;
+    my $status = lc $_[0];
+    if ( $status eq 'approved' ) {
+        $self->approve;
+    }
+    elsif ( $status eq 'pending' ) {
+        $self->moderate;
+    }
+    else {
+        $self->junk;
+    }
 }
 
 1;

@@ -7,6 +7,7 @@ package MT::CMS::Dashboard;
 
 use strict;
 use MT::Util qw( epoch2ts encode_html );
+use MT::Stats qw(readied_provider);
 
 sub dashboard {
     my $app = shift;
@@ -37,35 +38,47 @@ sub dashboard {
                 order => 1,
                 set   => 'main',
             },
-            'this_is_you-1' => {
+            'site_stats' => {
                 order => 2,
                 set   => 'main'
-            },
-            'mt_news' => {
-                order => 4,
-                set   => 'sidebar'
             },
             'favorite_blogs' => {
                 param => { tab => 'website' },
                 order => 3,
                 set   => 'main'
             },
+            'personal_stats' => {
+                order => 1,
+                set   => 'sidebar'
+            },
+            'mt_news' => {
+                order => 4,
+                set   => 'sidebar'
+            },
         },
         'website' => {
-            'recent_blogs' => {
+            'site_stats' => {
                 order => 1,
+                set   => 'main'
+            },
+            'recent_blogs' => {
+                order => 2,
                 set   => 'main',
+            },
+        },
+        'blog' => {
+            'site_stats' => {
+                order => 1,
+                set   => 'main'
             },
         },
     };
 
     if ( $app->config('EnableBlogStats') ) {
-        $default_widgets->{'blog'} = {
-            'blog_stats' => {
-                param => { tab => 'entry' },
-                order => 1,
-                set   => 'main'
-            }
+        $default_widgets->{'blog'}{'blog_stats'} = {
+            param => { tab => 'entry' },
+            order => 2,
+            set   => 'main'
         };
     }
 
@@ -140,7 +153,7 @@ sub dashboard {
     return $app->load_tmpl( "dashboard.tmpl", $param );
 }
 
-sub this_is_you_widget {
+sub personal_stats_widget {
     my $app = shift;
     my ( $tmpl, $param ) = @_;
 
@@ -214,7 +227,7 @@ sub this_is_you_widget {
             = $perms && $perms->can_edit_entry( $last_post, $app->user );
     }
 
-    if ( my ($url) = $user->userpic_url() ) {
+    if ( my ($url) = $user->userpic_url( Width => 50, Height => 50 ) ) {
         $param->{author_userpic_url} = $url;
     }
     $param->{author_userpic_width}  = 50;
@@ -1095,6 +1108,168 @@ sub _build_favorite_blogs_data {
     }
 
     return \@param;
+}
+
+sub site_stats_widget {
+    my $app = shift;
+    my ( $tmpl, $param ) = @_;
+
+    if ( $param->{blog_id} ) {
+        $param->{name} = $app->blog->name;
+    }
+    else {
+        # Load favorite websites data
+        my $websites
+            = _build_favorite_websites_data( $app, { my_posts => 1 } );
+        foreach my $website (@$websites) {
+            my $row;
+            $row->{id}   = $website->{website_id};
+            $row->{name} = $website->{website_name};
+            push @{ $param->{object_loop} }, $row;
+        }
+
+        # Load favorite blogs data
+        my $blogs = _build_favorite_blogs_data( $app, { my_posts => 1 } );
+        foreach my $blog (@$blogs) {
+            my $row;
+            $row->{id}   = $blog->{blog_id};
+            $row->{name} = $blog->{blog_name};
+            push @{ $param->{object_loop} }, $row;
+        }
+
+        @{ $param->{object_loop} }
+            = sort { $a->{name} cmp $b->{name} } @{ $param->{object_loop} };
+        $param->{blog_id} = $param->{object_loop}->[0]->{id};
+    }
+
+    generate_site_stats_data( $app, $param ) or return;
+
+    $param;
+}
+
+sub generate_site_stats_data {
+    my $app     = shift;
+    my ($param) = @_;
+    my $user    = $app->user;
+    my $blog_id = $param->{blog_id};
+    my $perms   = $app->user->permissions($blog_id)
+        or return $app->error( $app->translate("No permissions") );
+    $param->{can_edit_config} = 1
+        if $perms->can_do('edit_config');
+
+    my $cache_time = 60 * MT->config('StatsCacheTTL');   # cache for x minutes
+    my $stats_static_path = create_stats_directory( $app, $param ) or return;
+
+    my $file = "data_" . $blog_id . ".json";
+    $param->{stat_url} = $stats_static_path . '/' . $file;
+    my $path = File::Spec->catfile( $param->{support_path}, $file );
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    my $time = $fmgr->file_mod_time($path) if -f $path;
+
+    require MT::App::DataAPI;
+    my $mt   = MT::App::DataAPI->new;
+    my $blog = $app->model('blog')->load($blog_id);
+    if ( my $provider = readied_provider( $mt, $blog ) ) {
+        if (( lc( MT->config('StatsCachePublishing') ) eq 'off' )
+            || (   ( lc( MT->config('StatsCachePublishing') ) eq 'onload' )
+                && ( !$time || ( time - $time > $cache_time ) ) )
+            )
+        {
+            require MT::Util;
+            my @ten_days_before_ts
+                = MT::Util::offset_time_list( time - ( 10 * 24 * 60 * 60 ),
+                $blog_id );
+            my $ten_days_before = sprintf( '%04d-%02d-%02d',
+                $ten_days_before_ts[5] + 1900,
+                $ten_days_before_ts[4] + 1,
+                @ten_days_before_ts[ 3, 2, 1, 0 ] );
+            my @ts = MT::Util::offset_time_list( time, $blog_id );
+            my $today = sprintf( '%04d-%02d-%02d',
+                $ts[5] + 1900,
+                $ts[4] + 1,
+                @ts[ 3, 2, 1, 0 ] );
+            my $for_date = $provider->pageviews_for_date(
+                $mt,
+                {   startDate => $ten_days_before,
+                    endDate   => $today,
+                }
+            );
+
+            my $entry_class = $app->model('entry');
+            my $terms       = { status => MT::Entry::RELEASE() };
+            my $args        = {
+                group => [
+                    "extract(year from authored_on)",
+                    "extract(month from authored_on)",
+                    "extract(day from authored_on)"
+                ],
+            };
+
+            require MT::Util;
+            my $earliest = sprintf(
+                '%04d%02d%02d%02d%02d%02d',
+                $ten_days_before_ts[5] + 1900,
+                $ten_days_before_ts[4] + 1,
+                @ten_days_before_ts[ 3, 2, 1, 0 ]
+            );
+            $terms->{authored_on} = [ $earliest, undef ];
+            $args->{range_incl}{authored_on} = 1;
+
+            $terms->{blog_id} = $blog_id;
+
+            my $entry_iter = $entry_class->count_group_by( $terms, $args );
+            my %counts;
+            my $max_count = 0;
+            while ( my ( $count, $y, $m, $d ) = $entry_iter->() ) {
+                my $date = sprintf( "%04d-%02d-%02d", $y, $m, $d );
+                $counts{$date} = $count;
+                $max_count = $count if $max_count < $count;
+            }
+
+            my @items  = @{ $for_date->{items} };
+            my @pvs    = map { $_->{pageviews} } @items;
+            my $max_pv = ( sort { $b <=> $a } @pvs )[0];
+
+            my $rate = $max_pv && $max_count ? $max_pv / $max_count : 1;
+            my $result;
+            foreach my $item (@items) {
+                my %row1 = (
+                    x  => $item->{date},
+                    y  => $item->{pageviews},
+                    y1 => $counts{ $item->{date} } * $rate || 0,
+                );
+                my %row2 = (
+                    pv    => $item->{pageviews},
+                    count => $counts{ $item->{date} } || 0,
+                );
+                push @{ $result->{graph_data} }, \%row1;
+                push @{ $result->{hover_data} }, \%row2;
+            }
+
+            $fmgr->put_data( MT::Util::to_json($result), $path );
+        }
+    }
+    else {
+        $param->{not_configured} = 1;
+    }
+    1;
+}
+
+sub regenerate_site_stats_data {
+    my $app = shift;
+    $app->validate_magic() or return;
+
+    my $param;
+    $param->{blog_id} = $app->param('blog_id');
+
+    generate_site_stats_data( $app, $param ) or return;
+
+    my $result = { stat_url => $param->{stat_url} };
+    $result->{not_configured} = 1
+        if $param->{not_configured};
+    return $app->json_result($result);
 }
 
 1;

@@ -56,6 +56,10 @@ sub class_label_plural {
     MT->translate("Permissions");
 }
 
+sub list_props {
+    return { blog_id => { base => '__virtual.id', }, };
+}
+
 sub user {
     my $perm = shift;
 
@@ -501,8 +505,13 @@ sub can_edit_entry {
             or return;
     }
 
-    $perms = $author->permissions( $entry->blog_id )
-        or return;
+    if (   !ref $perms
+        || $perms->author_id != $author->id
+        || $perms->blog_id != $entry->blog_id )
+    {
+        $perms = $author->permissions( $entry->blog_id )
+            or return;
+    }
 
     return $perms->can_manage_pages
         unless $entry->is_entry;
