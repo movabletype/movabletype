@@ -21,7 +21,7 @@ sub list {
         undef, { user => $user }
     ) or return;
 
-    +{  totalResults => $res->{count},
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };

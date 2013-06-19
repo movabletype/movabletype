@@ -56,6 +56,10 @@ sub class_label_plural {
     MT->translate("Permissions");
 }
 
+sub list_props {
+    return { blog_id => { base => '__virtual.id', }, };
+}
+
 sub user {
     my $perm = shift;
 

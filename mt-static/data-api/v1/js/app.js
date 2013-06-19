@@ -11,7 +11,8 @@
  *
  * $Id$
  */
-;(function(window) {
+
+;(function(window, undefined) {
 
 "use strict";
     
@@ -156,11 +157,11 @@ DataAPI.prototype      = {
         return this.getCurrentFormat().unserialize.apply(this, arguments);
     },
     
-    _storeToken: function(tokenData) {
+    storeToken: function(tokenData) {
         var o = this.o;
         tokenData.startTime = this._getCurrentEpoch();
         Cookie.bake(this.getAppKey(), this.serializeData(tokenData), o.cookieDomain, o.cookiePath);
-        this.tokenData = null;
+        this.tokenData = tokenData;
     },
     
     _updateTokenFromDefault: function() {
@@ -177,7 +178,7 @@ DataAPI.prototype      = {
             return null;
         }
         
-        this._storeToken(defaultToken);
+        this.storeToken(defaultToken);
         Cookie.bake(defaultKey, '', undefined, '/', new Date(0));
         return defaultToken;
     },
@@ -187,7 +188,7 @@ DataAPI.prototype      = {
         if (! this.tokenData) {
             var token = null;
             
-            if (window.location.hash === '#_login') {
+            if (window.location && window.location.hash === '#_login') {
                 try {
                     token = this._updateTokenFromDefault();
                 }
@@ -218,7 +219,7 @@ DataAPI.prototype      = {
         return this.tokenData.accessToken;
     },
 
-    getAuthorizationHeader: function() {name
+    getAuthorizationHeader: function() {
         return 'MTAuth accessToken=' + this.getToken();
     },
     
@@ -427,6 +428,13 @@ DataAPI.prototype      = {
         }
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.setRequestHeader('X-MT-Authorization', this.getAuthorizationHeader());
+
+        if (params && params.getHeaders) {
+            var headers = params.getHeaders();
+            for (var k in headers) {
+                xhr.setRequestHeader(k, headers[k]);
+            }
+        }
         
         xhr.send(params);
         
@@ -547,10 +555,10 @@ DataAPI.prototype      = {
                     return params;
                 }
                 else if (api._isFormElement(params)) {
-                    return new FormData(params);
+                    return new window.FormData(params);
                 }
                 else if (window.FormData && typeof params === 'object') {
-                    var data = new FormData();
+                    var data = new window.FormData();
                     for (var k in params) {
                         data.append(k, api._serializeObject(params[k]));
                     }
@@ -614,7 +622,7 @@ DataAPI.prototype      = {
                     }
                 }
                 else {
-                    api._storeToken(response);
+                    api.storeToken(response);
                     api.request.apply(api, originalArguments);
                 }
                 return false;
@@ -659,14 +667,6 @@ DataAPI.prototype      = {
             }
         }
 
-        for (var k in defaultParams) {
-            for (var i = 0; i < paramsList.length; i++) {
-                if (k in paramsList[i]) {
-                    delete defaultParams[k];
-                }
-            }
-        }
-        
         if (paramsList.length && (method.toLowerCase() === 'get' || paramsList.length >= 2)) {
             if (endpoint.indexOf('?') === -1) {
                 endpoint += '?';
@@ -676,15 +676,22 @@ DataAPI.prototype      = {
             }
             endpoint += this._serializeParams(paramsList.shift());
         }
-
-        if (paramsList.length) {
-            params = serializeParams(paramsList.shift());
-        }
         
-
         if (method.match(/^(put|delete)$/i)) {
             defaultParams['__method'] = method;
             method = 'POST';
+        }
+
+        for (var k in defaultParams) {
+            for (var i = 0; i < paramsList.length; i++) {
+                if (k in paramsList[i]) {
+                    delete defaultParams[k];
+                }
+            }
+        }
+
+        if (paramsList.length) {
+            params = serializeParams(paramsList.shift());
         }
 
         
@@ -739,8 +746,9 @@ DataAPI.prototype      = {
         else {
             (function() {
                 var target = api._getNextIframeName(),
-                    form   = document.createElement('form'),
-                    iframe = document.createElement('iframe'),
+                    doc    = window.document;
+                    form   = doc.createElement('form'),
+                    iframe = doc.createElement('iframe'),
                     file, originalName;
 
                 // Set up a form element
@@ -755,7 +763,7 @@ DataAPI.prototype      = {
                 iframe.name           = target;
                 iframe.style.position = 'absolute';
                 iframe.style.top      = '-9999px';
-                document.body.appendChild(iframe);
+                doc.body.appendChild(iframe);
                 iframe.contentWindow.name = target;
 
 
@@ -779,13 +787,13 @@ DataAPI.prototype      = {
                             file.parentNode.insertBefore(form, file);
                         }
                         else {
-                            document.body.appendChild(form);
+                            doc.body.appendChild(form);
                         }
                         form.appendChild(file);
                         continue;
                     }
 
-                    var input   = document.createElement('input');
+                    var input   = doc.createElement('input');
                     input.type  = 'hidden';
                     input.name  = k;
                     input.value = params[k];
@@ -925,10 +933,6 @@ window.MT.DataAPI['v' + DataAPI.version] = DataAPI;
 
 
 
-function exists(x) {
-    return (x === undefined || x === null) ? false : true;
-};
-
 var Cookie = function( name, value, domain, path, expires, secure ) {
     this.name = name;
     this.value = value;
@@ -946,8 +950,12 @@ Cookie.prototype = {
      * @return <code>Cookie</code> The fetched cookie.
      */
     fetch: function() {
+        if (! window.document) {
+            return undefined;
+        }
+
         var prefix = escape( this.name ) + "=";
-        var cookies = ("" + document.cookie).split( /;\s*/ );
+        var cookies = ("" + window.document.cookie).split( /;\s*/ );
         
         for( var i = 0; i < cookies.length; i++ ) {
             if( cookies[ i ].indexOf( prefix ) == 0 ) {
@@ -965,6 +973,14 @@ Cookie.prototype = {
      * @return <code>Cookie</code> The set and stored ("baked") cookie.
      */
     bake: function( value ) {
+        if (! window.document) {
+            return undefined;
+        }
+
+        function exists(x) {
+            return (x === undefined || x === null) ? false : true;
+        };
+
         if( !exists( this.name ) )
         	return undefined;
 		
@@ -984,7 +1000,7 @@ Cookie.prototype = {
 
         
         var batter = name + "=" + value + attributes;                   
-        document.cookie = batter;
+        window.document.cookie = batter;
 
         return this;
     },
@@ -1482,5 +1498,8 @@ if (typeof JSON !== 'object') {
     }
 }());
 
+if ( typeof module === 'object' && module && typeof module.exports === 'object' ) {
+    module.exports = window.MT.DataAPI;
+}
 
-})(window);
+})(typeof window === 'undefined' ? null : window);

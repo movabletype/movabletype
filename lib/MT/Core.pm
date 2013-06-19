@@ -1178,6 +1178,7 @@ BEGIN {
             notification => '$Core::MT::Notification::list_props',
             log          => '$Core::MT::Log::list_props',
             filter       => '$Core::MT::Filter::list_props',
+            permission   => '$Core::MT::Permission::list_props',
         },
         system_filters => {
             entry     => '$Core::MT::Entry::system_filters',
@@ -1563,6 +1564,10 @@ BEGIN {
                 primary          => 'label',
                 default_sort_key => 'created_on',
                 scope_mode       => 'none',
+            },
+            permission => {
+                condition          => sub {0},
+                data_api_condition => sub {1},
             },
         },
         summaries => {

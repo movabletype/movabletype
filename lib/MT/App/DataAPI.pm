@@ -362,6 +362,22 @@ sub core_endpoints {
                     'Do not have permission to publish the requested entry.',
             },
         },
+        {   id             => 'list_permissions',
+            route          => '/users/:user_id/permissions',
+            version        => 1,
+            handler        => "${pkg}Permission::list",
+            default_params => {
+                limit      => 25,
+                offset     => 0,
+                sortBy     => 'blog_id',
+                sortOrder  => 'ascend',
+                filterKeys => 'blogIds',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested user\'s permissions.',
+            },
+        },
         {   id      => 'publish_entries',
             route   => '/publish/entries',
             verb    => 'GET',
@@ -435,6 +451,14 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.ping' =>
                 "${pfx}TrackBack::cms_pre_load_filtered_list",
+
+            # permission callbacks
+            $pkg
+                . 'pre_load_filtered_list.permission' =>
+                "${pfx}Permission::cms_pre_load_filtered_list",
+            $pkg
+                . 'list_permission_filter.permission' =>
+                "${pfx}Permission::can_list",
         }
     );
 

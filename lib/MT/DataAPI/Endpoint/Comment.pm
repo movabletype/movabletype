@@ -18,7 +18,7 @@ sub list {
 
     my $res = filtered_list( $app, $endpoint, 'comment' ) or return;
 
-    +{  totalResults => $res->{count},
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -33,7 +33,7 @@ sub list_for_entries {
     my $res = filtered_list( $app, $endpoint, 'comment',
         { entry_id => $entry->id } );
 
-    +{  totalResults => $res->{count},
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
