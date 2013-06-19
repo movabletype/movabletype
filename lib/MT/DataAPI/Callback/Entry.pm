@@ -44,12 +44,28 @@ sub cms_pre_load_filtered_list {
     my $blog_ids = delete $terms->{blog_id}
         if exists $terms->{blog_id};
 
+    my $make_week_perm_filter = sub {
+        my ($blog_id) = @_;
+
+        my @f = ();
+
+        if ($blog_id) {
+            push @f, { blog_id => $blog_id }, '-and';
+        }
+
+        push @f,
+            [
+            { status => MT::Entry::RELEASE(), },
+            '-or',
+            { author_id => $user->id, }
+            ];
+
+        \@f;
+    };
+
     my %filters = ();
     for my $id ( ref $blog_ids ? @$blog_ids : $blog_ids ) {
-        $filters{ $id || 0 } = {
-            ( $id ? ( blog_id => $id ) : () ),
-            status => MT::Entry::RELEASE()
-        };
+        $filters{ $id || 0 } = $make_week_perm_filter->($id);
     }
 
     require MT::Permission;
@@ -68,6 +84,9 @@ sub cms_pre_load_filtered_list {
             || $perm->can_do('edit_all_entries') )
         {
             $filters{$blog_id} = { blog_id => $blog_id, };
+        }
+        else {
+            $filters{$blog_id} = $make_week_perm_filter->($blog_id);
         }
     }
 
