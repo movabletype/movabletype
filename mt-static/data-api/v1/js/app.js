@@ -219,7 +219,7 @@ DataAPI.prototype      = {
         return this.tokenData.accessToken;
     },
 
-    getAuthorizationHeader: function() {name
+    getAuthorizationHeader: function() {
         return 'MTAuth accessToken=' + this.getToken();
     },
     
