@@ -746,8 +746,9 @@ DataAPI.prototype      = {
         else {
             (function() {
                 var target = api._getNextIframeName(),
-                    form   = document.createElement('form'),
-                    iframe = document.createElement('iframe'),
+                    doc    = window.document;
+                    form   = doc.createElement('form'),
+                    iframe = doc.createElement('iframe'),
                     file, originalName;
 
                 // Set up a form element
@@ -762,7 +763,7 @@ DataAPI.prototype      = {
                 iframe.name           = target;
                 iframe.style.position = 'absolute';
                 iframe.style.top      = '-9999px';
-                document.body.appendChild(iframe);
+                doc.body.appendChild(iframe);
                 iframe.contentWindow.name = target;
 
 
@@ -786,13 +787,13 @@ DataAPI.prototype      = {
                             file.parentNode.insertBefore(form, file);
                         }
                         else {
-                            document.body.appendChild(form);
+                            doc.body.appendChild(form);
                         }
                         form.appendChild(file);
                         continue;
                     }
 
-                    var input   = document.createElement('input');
+                    var input   = doc.createElement('input');
                     input.type  = 'hidden';
                     input.name  = k;
                     input.value = params[k];
