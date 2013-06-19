@@ -251,13 +251,31 @@ sub filtered_list {
             };
     }
 
+    require MT::ListProperty;
+    my $props = MT::ListProperty->list_properties($ds);
+
     for my $key ( split ',', ( $app->param('filterKeys') || '' ) ) {
         if ( defined( $app->param($key) ) ) {
-            push @$filteritems,
-                {
-                type => $key,
-                args => { value => scalar( $app->param($key) ), },
-                };
+            ( my $obj_key = $key ) =~ s/([A-Z])/_\l$1/g;
+            $obj_key =~ s/s\z// unless exists $props->{$obj_key};
+
+            push @$filteritems, {
+                type => 'pack',
+                args => {
+                    op    => 'or',
+                    items => [
+                        map {
+                            +{  type => $obj_key,
+                                args => {
+                                    option => 'equal',
+                                    value  => $_,
+                                },
+                            };
+                            } grep {$_}
+                            split( ',', scalar( $app->param($key) ) )
+                    ],
+                },
+            };
         }
     }
 
@@ -283,9 +301,6 @@ sub filtered_list {
             };
         }
     }
-
-    require MT::ListProperty;
-    my $props = MT::ListProperty->list_properties($ds);
 
     my $filter = MT->model('filter')->new;
     $filter->set_values(

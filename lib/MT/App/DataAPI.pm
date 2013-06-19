@@ -367,10 +367,11 @@ sub core_endpoints {
             version        => 1,
             handler        => "${pkg}Permission::list",
             default_params => {
-                limit     => 25,
-                offset    => 0,
-                sortBy    => 'blog_id',
-                sortOrder => 'ascend',
+                limit      => 25,
+                offset     => 0,
+                sortBy     => 'blog_id',
+                sortOrder  => 'ascend',
+                filterKeys => 'blogIds',
             },
             error_codes => {
                 403 =>

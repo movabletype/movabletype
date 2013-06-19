@@ -22,6 +22,13 @@ sub list {
         my $offset = $app->param('offset');
         my $limit  = $app->param('limit');
 
+        my $filter_keys = $app->param('filterKeys');
+        my $blog_ids = $app->param('blogIds') || '';
+        $filter_keys =~ s/blogIds/ids/;
+        $app->param( 'filterKeys', $filter_keys );
+        $app->param( 'ids',        $blog_ids );
+        my @blog_ids = split ',', $blog_ids;
+
         $res = filtered_list(
             $app,
             $endpoint,
@@ -43,15 +50,17 @@ sub list {
             } @{ $res->{objects} }
         ];
 
-        if ( !$offset ) {
-            if ( $res->{count} >= $limit ) {
-                pop @{ $res->{objects} };
+        if ( !@blog_ids || grep { $_ eq '0' } @blog_ids ) {
+            if ( !$offset ) {
+                if ( $res->{count} >= $limit ) {
+                    pop @{ $res->{objects} };
+                }
+
+                unshift @{ $res->{objects} }, $permission_class->new;
+
             }
-
-            unshift @{ $res->{objects} }, $permission_class->new;
+            $res->{count} += 1;
         }
-
-        $res->{count} += 1;
     }
     else {
         $res
