@@ -11,7 +11,8 @@
  *
  * $Id$
  */
-;(function(window) {
+
+;(function(window, undefined) {
 
 "use strict";
     
