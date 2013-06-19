@@ -17,7 +17,7 @@ sub list {
 
     my $res = filtered_list( $app, $endpoint, 'ping' ) or return;
 
-    +{  totalResults => $res->{count},
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -44,7 +44,7 @@ sub list_for_entries {
         }
     );
 
-    +{  totalResults => $res->{count},
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
