@@ -428,6 +428,13 @@ DataAPI.prototype      = {
         }
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.setRequestHeader('X-MT-Authorization', this.getAuthorizationHeader());
+
+        if (params && params.getHeaders) {
+            var headers = params.getHeaders();
+            for (var k in headers) {
+                xhr.setRequestHeader(k, headers[k]);
+            }
+        }
         
         xhr.send(params);
         
