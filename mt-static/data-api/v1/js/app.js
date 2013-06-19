@@ -667,14 +667,6 @@ DataAPI.prototype      = {
             }
         }
 
-        for (var k in defaultParams) {
-            for (var i = 0; i < paramsList.length; i++) {
-                if (k in paramsList[i]) {
-                    delete defaultParams[k];
-                }
-            }
-        }
-        
         if (paramsList.length && (method.toLowerCase() === 'get' || paramsList.length >= 2)) {
             if (endpoint.indexOf('?') === -1) {
                 endpoint += '?';
@@ -684,15 +676,22 @@ DataAPI.prototype      = {
             }
             endpoint += this._serializeParams(paramsList.shift());
         }
-
-        if (paramsList.length) {
-            params = serializeParams(paramsList.shift());
-        }
         
-
         if (method.match(/^(put|delete)$/i)) {
             defaultParams['__method'] = method;
             method = 'POST';
+        }
+
+        for (var k in defaultParams) {
+            for (var i = 0; i < paramsList.length; i++) {
+                if (k in paramsList[i]) {
+                    delete defaultParams[k];
+                }
+            }
+        }
+
+        if (paramsList.length) {
+            params = serializeParams(paramsList.shift());
         }
 
         
