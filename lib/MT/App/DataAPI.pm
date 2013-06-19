@@ -357,10 +357,7 @@ sub core_endpoints {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
             },
-            error_codes => {
-                403 =>
-                    'Do not have permission to publish the requested entry.',
-            },
+            error_codes => { 403 => 'Do not have permission to upload.', },
         },
         {   id             => 'list_permissions',
             route          => '/users/:user_id/permissions',
@@ -960,11 +957,18 @@ sub api {
     }
     $user ||= MT::Author->anonymous;
     $app->user($user);
+    $app->permissions(undef);
 
     if ( my $id = $params->{site_id} ) {
         $app->blog( scalar $app->model('blog')->load($id) )
             or return $app->print_error( 'Site not found', 404 );
         $app->param( 'blog_id', $id );
+
+        $app->permissions( $user->permissions($id) )
+            unless $user->is_anonymous;
+    }
+    else {
+        $app->param( 'blog_id', undef );
     }
 
     foreach my $k (%$params) {
