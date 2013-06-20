@@ -838,13 +838,16 @@ sub save_filter {
 
     # $obj is passed only via MT::App::DataAPI.
     if ($obj) {
-        return $app->errtrans(
-            'You cannot create comment for unpublished entry.' )
-            if $obj->entry->status != MT::Entry::RELEASE();
+        if ( !$obj->id ) {
+            return $app->errtrans(
+                'You cannot create comment for unpublished entry.')
+                if $obj->entry->status != MT::Entry::RELEASE();
 
-        my $parent = $obj->parent;
-        if ($parent && !$parent->is_published ) {
-            return $app->errtrans('You cannot reply to unpublished comment.');
+            my $parent = $obj->parent;
+            if ( $parent && !$parent->is_published ) {
+                return $app->errtrans(
+                    'You cannot reply to unpublished comment.');
+            }
         }
     }
 
