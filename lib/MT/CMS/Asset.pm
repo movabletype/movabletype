@@ -1129,6 +1129,7 @@ sub _upload_file {
     my (%upload_param) = @_;
     require MT::Image;
 
+    my $app_id = $app->id;
     my $eh = $upload_param{error_handler} || sub {
         start_upload(@_);
     };
@@ -1274,7 +1275,7 @@ sub _upload_file {
             @$path_info{qw(rootPath relativePath basename)}
                 = ( $root_path, $relative_path, $basename );
 
-            $app->run_callbacks( 'cms_asset_upload_path',
+            $app->run_callbacks( $app_id . '_asset_upload_path',
                 $app, $fmgr, $path_info );
 
             ( $root_path, $relative_path, $basename )
@@ -1622,16 +1623,17 @@ sub _upload_file {
     }
 
     $asset->mime_type($mimetype) if $mimetype;
-    $app->run_callbacks( 'cms_pre_save.asset', $app, $asset, $original )
+    $app->run_callbacks( $app_id . '_pre_save.asset', $app, $asset, $original )
         || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
         $app->errstr );
 
     $asset->save;
-    $app->run_callbacks( 'cms_post_save.asset', $app, $asset, $original );
+    $app->run_callbacks( $app_id . '_post_save.asset',
+        $app, $asset, $original );
 
     if ($is_image) {
         $app->run_callbacks(
-            'cms_upload_file.' . $asset->class,
+            $app_id . '_upload_file.' . $asset->class,
             File  => $local_file,
             file  => $local_file,
             Url   => $url,
@@ -1646,7 +1648,7 @@ sub _upload_file {
             blog  => $blog
         );
         $app->run_callbacks(
-            'cms_upload_image',
+            $app_id . '_upload_image',
             File       => $local_file,
             file       => $local_file,
             Url        => $url,
@@ -1669,7 +1671,7 @@ sub _upload_file {
     }
     else {
         $app->run_callbacks(
-            'cms_upload_file.' . $asset->class,
+            $app_id . '_upload_file.' . $asset->class,
             File  => $local_file,
             file  => $local_file,
             Url   => $url,
