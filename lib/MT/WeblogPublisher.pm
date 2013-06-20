@@ -590,7 +590,7 @@ sub rebuild_entry {
 
     my $categories_for_rebuild;
     if ( my $ids = $param{OldCategories} ) {
-        my %new_ids = map { $_->id => 1 } @{$entry->categories};
+        my %new_ids = map { $_->id => 1 } @{ $entry->categories };
         my @old_ids = grep { !$new_ids{$_} } split( ',', $ids );
 
         if (@old_ids) {
@@ -598,7 +598,7 @@ sub rebuild_entry {
                 MT::Category->load( { id => \@old_ids } ) );
         }
     }
-    push @$categories_for_rebuild, ( map { $_ } @{$entry->categories} );
+    push @$categories_for_rebuild, ( map {$_} @{ $entry->categories } );
 
     my $at
         = $param{PreferredArchiveOnly} ? $blog->archive_type_preferred
@@ -2205,6 +2205,22 @@ sub _delete_archive_file {
 {
     my %tokens_cache;
 
+    sub archive_file_cache_key {
+        my $mt = shift;
+        my ( $entry, $blog, $at, $cat, $map, $timestamp, $author ) = @_;
+
+        return join ':',
+            (
+            $entry     ? $entry->id  : '0',
+            $blog      ? $blog->id   : '0',
+            $at        ? $at         : 'None',
+            $cat       ? $cat->id    : '0',
+            $map       ? $map->id    : '0',
+            $timestamp ? $timestamp  : '0',
+            $author    ? $author->id : '0'
+            );
+    }
+
     sub archive_file_for {
         my $mt = shift;
         init_archive_types() unless %ArchiveTypes;
@@ -2219,16 +2235,7 @@ sub _delete_archive_file {
         unless ($cache_file) {
             MT::Request->instance->cache( 'file', $cache_file = {} );
         }
-        my $cache_key = join ':',
-            (
-            $entry     ? $entry->id  : '0',
-            $blog      ? $blog->id   : '0',
-            $at        ? $at         : 'None',
-            $cat       ? $cat->id    : '0',
-            $map       ? $map->id    : '0',
-            $timestamp ? $timestamp  : '0',
-            $author    ? $author->id : '0'
-            );
+        my $cache_key = $mt->archive_file_cache_key(@_);
         if ( $file = $cache_file->{$cache_key} ) {
             return $file;
         }
