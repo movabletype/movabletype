@@ -253,12 +253,12 @@ If any stats provider was not found, this template tag will return blank string.
 
 sub _hdlr_stats_snippet {
     my ( $ctx, $args ) = @_;
-    my $blog_id = $ctx->stash('blog');
+    my $blog_id = $ctx->stash('blog_id');
     my $blog    = MT->model('blog')->load($blog_id);
 
     require MT::Stats;
     my $provider
-        = MT::Stats::readied_provider( MT->instance, $ctx->stash('blog') )
+        = MT::Stats::readied_provider( MT->instance, $blog )
         or return q();
 
     $provider->snipet(@_);

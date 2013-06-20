@@ -2332,7 +2332,8 @@ sub load_core_tasks {
             label => 'Purge Stale DataAPI Session Records',
             frequency => 60,     # * 60 * 24,   # once a day
             code      => sub {
-                MT::CMS::DataAPI->purge_session_records;
+                require MT::App::DataAPI;
+                MT::App::DataAPI->purge_session_records;
                 }
         },
         'CleanExpiredFailedLogin' => {

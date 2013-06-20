@@ -1376,6 +1376,49 @@ ul.tabs li a {
     margin-top: 5px;
 }
 
+/* -- New Blog Stats Widget */
+.site-stats-widget #widget-container {
+    padding: 10px;
+}
+.site-stats-widget #select_blog_id {
+    margin-left: 3px;
+    width: 120px;
+}
+.site-stats-widget .left-column {
+    float: left;
+    width: 30%;
+    height: 200px;
+}
+.site-stats-widget .right-column {
+    float: left;
+    width: 70%;
+}
+.site-stats-widget .clear {
+    clear: both;
+}
+.site-stats-widget .stats-for {
+    margin-bottom: 10px;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.site-stats-widget .count-title {
+    float: left;
+    text-align: right;
+    padding: 3px;
+}
+.site-stats-widget .count-number {
+    float: left;
+    text-align: right;
+    padding: 3px;
+}
+.site-stats-widget .count-diff{
+    float: left;
+    text-align: left;
+    padding: 3px;
+}
+
 /* -- MT News */
 .news-widget #news-widget-tabs {
     margin: 0 -10px 15px;

@@ -55,11 +55,12 @@ sub _find_current_plugindata {
 sub current_plugindata {
     my ( $app, $blog ) = @_;
 
-    my $hash = $app->request('ga_current_plugindata');
+    my $key = 'ga_current_plugindata:blog:' . $blog->id;
+
+    my $hash = $app->request($key);
     defined($hash)
         ? $hash
-        : $app->request( 'ga_current_plugindata',
-        _find_current_plugindata(@_) );
+        : $app->request( $key, _find_current_plugindata(@_) );
 }
 
 sub extract_response_error {

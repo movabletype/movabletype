@@ -749,7 +749,7 @@ sub normalize_orientation {
         );
         $exif_tool->WriteInfo( \$img_data );
 
-        my $img = MT::Image->new( Data => $img_data );
+        my $img = MT::Image->new( Data => $img_data, Type => $obj->file_ext );
 
         my ( $blob, $width, $height ) = do {
             if ( $o eq 'Mirror horizontal' ) {

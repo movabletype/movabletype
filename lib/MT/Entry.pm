@@ -346,15 +346,14 @@ sub list_props {
                 ) unless $cat_id;
 
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} },
-                    MT->model('placement')->join_on(
+                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
                     undef,
                     {   category_id => $cat_id,
                         entry_id    => \'= entry_id',
                         blog_id     => $blog_id,
                     },
                     { unique => 1, },
-                    );
+                );
                 return;
             },
             args_via_param => sub {
@@ -515,8 +514,7 @@ sub list_props {
                 elsif ( 'end' eq $option ) {
                     $query = { like => "%$query" };
                 }
-                push @{ $db_args->{joins} },
-                    MT->model('placement')->join_on(
+                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
                     undef,
                     {   entry_id => \'= entry_id',
                         ( $blog_id ? ( blog_id => $blog_id ) : () ),
@@ -531,7 +529,7 @@ sub list_props {
                             { unique => 1, }
                         ),
                     },
-                    );
+                );
                 return;
             },
         },
@@ -678,8 +676,8 @@ sub list_props {
                 my $from   = $args->{from}   || undef;
                 my $to     = $args->{to}     || undef;
                 my $origin = $args->{origin} || undef;
-                $from =~ s/\D//g;
-                $to =~ s/\D//g;
+                $from   =~ s/\D//g;
+                $to     =~ s/\D//g;
                 $origin =~ s/\D//g;
                 $from .= '000000' if $from;
                 $to   .= '235959' if $to;
@@ -767,13 +765,12 @@ sub list_props {
                         ? MT::Author::ACTIVE()
                         : MT::Author::INACTIVE();
                     $db_args->{joins} ||= [];
-                    push @{ $db_args->{joins} },
-                        MT->model('author')->join_on(
+                    push @{ $db_args->{joins} }, MT->model('author')->join_on(
                         undef,
                         {   id     => \'= entry_author_id',
                             status => $status,
                         },
-                        );
+                    );
                 }
             },
         },
@@ -1507,7 +1504,25 @@ sub save {
         }
     }
 
-    $entry->clear_cache() if $is_new;
+    if ($is_new) {
+
+        # Clear some cache
+        $entry->clear_cache();
+
+        my $blog = $entry->blog;
+        my $at 
+            = $blog->archive_type_preferred
+            || $blog->archive_type
+            || 'Individual';
+
+        my $key;
+        my $publisher  = MT->instance->publisher;
+        my $cache_file = MT::Request->instance->cache('file');
+        $key = $publisher->archive_file_cache_key( $entry, $blog, $at )
+            if $publisher->can('archive_file_cache_key');
+        delete $cache_file->{$key}
+            if $key && $cache_file && exists $cache_file->{$key};
+    }
 
     1;
 }
