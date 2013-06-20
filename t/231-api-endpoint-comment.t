@@ -49,12 +49,7 @@ my @suite = (
     },
     {   path   => '/v1/sites/1/entries/1/comments',
         method => 'POST',
-        params => {
-            comment => {
-                body   => 'test-api-endopoint-comment',
-                status => 'Approved',
-            },
-        },
+        params => { comment => { body => 'test-api-endopoint-comment', }, },
         callbacks => [
             {   name =>
                     'MT::App::DataAPI::data_api_save_permission_filter.comment',
@@ -82,14 +77,9 @@ my @suite = (
             );
         },
     },
-    {   path   => '/v1/sites/1/entries/1/comments/1/replies',
-        method => 'POST',
-        params => {
-            comment => {
-                body   => 'test-api-endopoint-reply',
-                status => 'Approved',
-            },
-        },
+    {   path      => '/v1/sites/1/entries/1/comments/1/replies',
+        method    => 'POST',
+        params    => { comment => { body => 'test-api-endopoint-reply', }, },
         callbacks => [
             {   name =>
                     'MT::App::DataAPI::data_api_save_permission_filter.comment',
@@ -132,8 +122,12 @@ my @suite = (
     },
     {   path   => '/v1/sites/1/comments/1',
         method => 'PUT',
-        params =>
-            { comment => { body => 'update-test-api-permission-comment', }, },
+        params => {
+            comment => {
+                body   => 'update-test-api-permission-comment',
+                status => 'Pending'
+            },
+        },
         callbacks => [
             {   name =>
                     'MT::App::DataAPI::data_api_save_permission_filter.comment',
@@ -151,13 +145,73 @@ my @suite = (
         ],
         result => sub {
             MT->model('comment')->load(
-                {   id   => 1,
-                    text => 'update-test-api-permission-comment',
+                {   id          => 1,
+                    text        => 'update-test-api-permission-comment',
+                    visible     => 0,
+                    junk_status => MT::Comment::NOT_JUNK(),
                 }
             );
         },
     },
-    {   path      => '/v1/sites/1/comments/1',
+    {   note   => 'reply to pending comment',
+        path   => '/v1/sites/1/entries/1/comments/1/replies',
+        method => 'POST',
+        params => {
+            comment =>
+                { body => 'test-api-endopoint-reply-to-pending-comment', },
+        },
+        code => '409',
+    },
+    {   setup => sub {
+            my ($data) = @_;
+            $data->{comment} = MT->model('comment')->load(
+                { text => 'test-api-endopoint-reply', },
+                {   sort      => 'id',
+                    direction => 'descend',
+                },
+            );
+        },
+        note   => 'Update status when parent comment is pending',
+        path   => '/v1/sites/1/comments/:comment_id',
+        method => 'PUT',
+        params => { comment => { status => 'Pending' }, },
+        result => sub {
+            MT->model('comment')->load(
+                {   text        => 'test-api-endopoint-reply',
+                    visible     => 0,
+                    junk_status => MT::Comment::NOT_JUNK(),
+                    parent_id   => 1,
+                },
+                {   sort      => 'id',
+                    direction => 'descend',
+                },
+            );
+        },
+    },
+    {   note   => 'status: Approved',
+        path   => '/v1/sites/1/comments/1',
+        method => 'PUT',
+        params => { comment => { status => 'Approved' }, },
+        result => sub {
+            MT->model('comment')->load(
+                {   id          => 1,
+                    text        => 'update-test-api-permission-comment',
+                    visible     => 1,
+                    junk_status => MT::Comment::NOT_JUNK(),
+                }
+            );
+        },
+    },
+    {   setup => sub {
+            my ($data) = @_;
+            $data->{comment} = MT->model('comment')->load(
+                { text => 'test-api-endopoint-reply', },
+                {   sort      => 'id',
+                    direction => 'descend',
+                },
+            );
+        },
+        path      => '/v1/sites/1/comments/:comment_id',
         method    => 'DELETE',
         callbacks => [
             {   name =>
@@ -169,7 +223,8 @@ my @suite = (
             },
         ],
         complete => sub {
-            my $deleted = MT->model('comment')->load(1);
+            my ( $data, $body ) = @_;
+            my $deleted = MT->model('comment')->load( $data->{comment}->id );
             is( $deleted, undef, 'deleted' );
         },
     },
@@ -190,24 +245,62 @@ $mock_mt->mock(
 my $format = MT::DataAPI::Format->find_format('json');
 
 for my $data (@suite) {
-    note( $data->{path} );
+    $data->{setup}->($data) if $data->{setup};
+
+    my $path = $data->{path};
+    $path
+        =~ s/:(?:(\w+)_id)|:(\w+)/ref $data->{$1} ? $data->{$1}->id : $data->{$2}/ge;
+
+    my $params
+        = ref $data->{params} eq 'CODE'
+        ? $data->{params}->($data)
+        : $data->{params};
+
+    my $note = $path;
+    if ( lc $data->{method} eq 'get' && $data->{params} ) {
+        $note .= '?'
+            . join( '&',
+            map { $_ . '=' . $data->{params}{$_} }
+                keys %{ $data->{params} } );
+    }
+    $note .= ' ' . $data->{method};
+    $note .= ' ' . $data->{note} if $data->{note};
+    note($note);
 
     %callbacks = ();
     _run_app(
         'MT::App::DataAPI',
-        {   __path_info      => $data->{path},
+        {   __path_info      => $path,
             __request_method => $data->{method},
-            (   $data->{params}
-                ? map { $_ => MT::Util::to_json( $data->{params}{$_} ); }
-                    keys %{ $data->{params} }
+            ( $data->{upload} ? ( __test_upload => $data->{upload} ) : () ),
+            (   $params
+                ? map {
+                    $_ => ref $params->{$_}
+                        ? MT::Util::to_json( $params->{$_} )
+                        : $params->{$_};
+                    }
+                    keys %{$params}
                 : ()
             ),
         }
     );
     my $out = delete $app->{__test_output};
-    my ( $status, $content_type, $body ) = split /\n/, $out, 3;
-    my ($code) = ( $status =~ m/Status:\s*(\d+)/ );
-    is( $code, 200, 'Status is OK' );
+    my ( $headers, $body ) = split /^\s*$/m, $out, 2;
+    my %headers = map {
+        my ( $k, $v ) = split /\s*:\s*/, $_, 2;
+        $v =~ s/(\r\n|\r|\n)\z//;
+        lc $k => $v
+        }
+        split /\n/, $headers;
+    my $expected_status = $data->{code} || 200;
+    is( $headers{status}, $expected_status, 'Status ' . $expected_status );
+    if ( $data->{next_phase_url} ) {
+        like(
+            $headers{'x-mt-next-phase-url'},
+            $data->{next_phase_url},
+            'X-MT-Next-Phase-URL'
+        );
+    }
 
     foreach my $cb ( @{ $data->{callbacks} } ) {
         my $params_list = $callbacks{ $cb->{name} } || [];
@@ -218,15 +311,16 @@ for my $data (@suite) {
         }
 
         if ( my $c = $cb->{count} ) {
-            ok( @$params_list == $c,
+            is( @$params_list, $c,
                 $cb->{name} . ' was called ' . $c . ' time(s)' );
         }
     }
 
     if ( my $expected_result = $data->{result} ) {
-        $expected_result = $expected_result->()
+        $expected_result = $expected_result->( $data, $body )
             if ref $expected_result eq 'CODE';
         if ( UNIVERSAL::isa( $expected_result, 'MT::Object' ) ) {
+            MT->instance->user($author);
             $expected_result = $format->{unserialize}->(
                 $format->{serialize}->(
                     MT::DataAPI::Resource->from_object($expected_result)
@@ -239,7 +333,7 @@ for my $data (@suite) {
     }
 
     if ( my $complete = $data->{complete} ) {
-        $complete->();
+        $complete->( $data, $body );
     }
 }
 
