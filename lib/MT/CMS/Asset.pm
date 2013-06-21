@@ -1121,6 +1121,9 @@ sub _set_start_upload_params {
     $require_type =~ s/\W//g;
     $param->{require_type} = $require_type;
 
+    $param->{auto_rename_if_exists} = 0;
+    $param->{normalize_orientation} = 0;
+
     $param;
 }
 
@@ -1252,28 +1255,14 @@ sub _upload_file {
                 . ( $relative_path ? '/' . $relative_path : '' );
         }
 
-        if ( $q->param('auto_rename_if_exists') ) {
-            my $local_file = File::Spec->catfile( $root_path, $relative_path,
-                $basename );
-            if ( $fmgr->exists($local_file) ) {
-                my $ext = (
-                    File::Basename::fileparse(
-                        $basename, qr/\.[A-Za-z0-9]+$/
-                    )
-                )[2];
-
-                $basename = perl_sha1_digest_hex(
-                    join( '-',
-                        epoch2ts( $blog, time ), $app->remote_ip,
-                        $basename )
-                ) . $ext;
-            }
-        }
-
         {
             my $path_info = {};
             @$path_info{qw(rootPath relativePath basename)}
                 = ( $root_path, $relative_path, $basename );
+
+            if ( $q->param('auto_rename_if_exists') ) {
+                _rename_if_exists($app, $fmgr, $path_info);
+            }
 
             $app->run_callbacks( $app_id . '_asset_upload_path',
                 $app, $fmgr, $path_info );
@@ -1695,6 +1684,27 @@ sub _is_valid_tempfile_basename {
     $filename
         && File::Basename::basename($filename) eq $filename
         && $filename !~ m!^\.\.|\0|\|!;
+}
+
+sub _rename_if_exists {
+    my ( $app, $fmgr, $path_info ) = @_;
+
+    my $local_file = File::Spec->catfile(
+        @$path_info{qw(rootPath relativePath basename)} );
+    if ( $fmgr->exists($local_file) ) {
+        my $ext = (
+            File::Basename::fileparse(
+                $path_info->{basename},
+                qr/\.[A-Za-z0-9]+$/
+            )
+        )[2];
+
+        $path_info->{basename} = perl_sha1_digest_hex(
+            join( '-',
+                epoch2ts( $app->blog, time ), $app->remote_ip,
+                $path_info->{basename} )
+        ) . $ext;
+    }
 }
 
 sub _write_upload {
