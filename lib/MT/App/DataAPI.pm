@@ -937,6 +937,14 @@ sub requires_plain_text_result {
         && lc( $app->param('X-MT-Requested-Via') || '' ) eq 'iframe';
 }
 
+sub load_default_entry_prefs {
+    return q();
+}
+
+sub load_default_page_prefs {
+    return q();
+}
+
 sub api {
     my ($app) = @_;
     my $path = $app->_path;
