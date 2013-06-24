@@ -14,8 +14,9 @@ class Stats {
                 require_once($provider . '.php');
             }
 
-            if ($provider::is_ready($blog)) {
-                return new $provider($id, $blog);
+            $instance = new $provider($id, $blog);
+            if ($instance->is_ready($blog)) {
+                return $instance;
             }
         }
 
