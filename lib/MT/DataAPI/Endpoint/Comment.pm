@@ -53,7 +53,11 @@ sub _build_default_comment {
             email        => remove_html( $app->user->email ),
         }
     );
-    if ( $blog->publish_trusted_commenters ) {
+
+    if (   $app->can_do('manage_feedback')
+        || MT::Permission->can_edit_entry( $entry, $app->user, 1 )
+        || $blog->publish_trusted_commenters )
+    {
         $orig_comment->approve;
     }
     else {

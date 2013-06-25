@@ -228,6 +228,23 @@ my @suite = (
             is( $deleted, undef, 'deleted' );
         },
     },
+    {
+        path   => '/v1/sites/1/entries/1',
+        method => 'PUT',
+        params => { entry => { allowComments => 0 }, },
+    },
+    {
+        note => 'post comment to an entry whose allowComments is false',
+        path   => '/v1/sites/1/entries/1/comments',
+        method => 'POST',
+        params => { comment => { body => 'test-api-endopoint-comment', }, },
+        code => '409',
+    },
+    {
+        path   => '/v1/sites/1/entries/1',
+        method => 'PUT',
+        params => { entry => { allowComments => 1 }, },
+    },
 );
 
 my %callbacks = ();
