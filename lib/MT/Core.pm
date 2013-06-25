@@ -1418,6 +1418,7 @@ BEGIN {
             comment => {
                 object_label        => 'Comment',
                 default_sort_key    => 'created_on',
+                data_api_scope_mode => 'this',
                 permission          => 'access_to_comment_list',
                 data_api_permission => undef,
                 primary             => 'comment',
@@ -1450,6 +1451,7 @@ BEGIN {
                 primary             => 'excerpt',
                 object_label        => 'Trackback',
                 default_sort_key    => 'created_on',
+                data_api_scope_mode => 'this',
                 permission          => 'access_to_trackback_list',
                 data_api_permission => undef,
                 feed_link           => sub {

@@ -55,7 +55,9 @@ sub cms_pre_load_filtered_list {
     my $user = $app->user;
     return if $user->is_superuser;
 
-    my $blog_ids = $load_options->{blog_ids} || undef;
+    my $terms = $load_options->{terms} ||= {};
+    my $blog_ids = delete $terms->{blog_id}
+        if exists $terms->{blog_id};
 
     my %filters = ();
     for my $id ( ref $blog_ids ? @$blog_ids : $blog_ids ) {
@@ -108,10 +110,6 @@ sub cms_pre_load_filtered_list {
     push @{ $args->{joins} },
         MT->model('trackback')
         ->join_on( undef, [ { id => \'=tbping_tb_id', }, ], );
-
-    my $terms = $load_options->{terms} || {};
-    delete $terms->{blog_id}
-        if exists $terms->{blog_id};
 }
 
 1;
