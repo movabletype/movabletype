@@ -596,11 +596,27 @@ BEGIN {
                         return $args->{value};
                     },
                     terms => sub {
-                        my $prop   = shift;
-                        my ($args) = @_;
-                        my $col    = $prop->col || $prop->type or die;
-                        my $value  = $prop->normalized_value(@_);
-                        return { $col => $value };
+                        my $prop = shift;
+                        my ( $args, $db_terms, $db_args ) = @_;
+                        my $col = $prop->col || $prop->type or die;
+                        my $value = $prop->normalized_value(@_);
+
+                        if ( $col =~ /\./ ) {
+                            my ( $parent, $c ) = split /\./, $col;
+                            $db_args->{joins} ||= [];
+                            my $ds = $prop->datasource->datasource;
+                            push @{ $db_args->{joins} },
+                                MT->model($parent)->join_on(
+                                undef,
+                                {   id => \"=${ds}_${parent}_id",
+                                    $c => $value
+                                },
+                            );
+                            return;
+                        }
+                        else {
+                            return { $col => $value };
+                        }
                     },
                     label_via_param => sub {
                         my $prop = shift;
