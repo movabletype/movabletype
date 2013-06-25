@@ -839,6 +839,10 @@ sub save_filter {
     # $obj is passed only via MT::App::DataAPI.
     if ($obj) {
         if ( !$obj->id ) {
+            return $app->errtrans("Comments are not allowed on this entry.")
+                unless ( $app->config->AllowComments
+                && $obj->entry->allow_comments );
+
             return $app->errtrans(
                 'You cannot create comment for unpublished entry.')
                 if $obj->entry->status != MT::Entry::RELEASE();
@@ -858,13 +862,19 @@ sub can_save {
     my ( $eh, $app, $id, $obj, $original ) = @_;
     if ( !$id ) {
         if ( $app->id eq 'data_api' ) {
-            return 1 if $app->can_do('edit_all_comments');
-            return 0
-                if !( $app->can_do('edit_own_entry_comment')
-                && $obj->entry->author_id == $app->user->id )
-                && ( $obj->get_status_text ne $original->get_status_text );
-
-            return 1;
+            my $cfg          = $app->config;
+            my $registration = $cfg->CommenterRegistration;
+            return
+                   $app->can_do('post_comment')
+                || $app->can_do('manage_feedback')
+                || MT::Permission->can_edit_entry( $obj->entry, $app->user,
+                1 )
+                || (
+                   $registration
+                && $registration->{Allow}
+                && (   $cfg->ExternalUserManagement
+                    || $app->blog->allow_commenter_regist )
+                );
         }
 
         return 0;    # Can't create new comments here by default
