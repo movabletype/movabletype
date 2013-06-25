@@ -795,6 +795,11 @@ sub list_props {
             fields    => [qw(url text email ip author)],
             condition => sub {0},
         },
+        entry_status => {
+            base      => 'entry.status',
+            col       => 'entry.status',
+            display   => 'none',
+        },
     };
 }
 

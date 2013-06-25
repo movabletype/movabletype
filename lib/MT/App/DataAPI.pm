@@ -208,7 +208,7 @@ sub core_endpoints {
                 sortBy       => 'id',
                 sortOrder    => 'descend',
                 searchFields => 'url,text,email,ip,author',
-                filterKeys   => 'status',
+                filterKeys   => 'status,entryStatus',
             },
             error_codes => {
                 403 =>
@@ -935,6 +935,14 @@ sub requires_plain_text_result {
     my $app = shift;
     lc $app->request_method eq 'post'
         && lc( $app->param('X-MT-Requested-Via') || '' ) eq 'iframe';
+}
+
+sub load_default_entry_prefs {
+    return q();
+}
+
+sub load_default_page_prefs {
+    return q();
 }
 
 sub api {
