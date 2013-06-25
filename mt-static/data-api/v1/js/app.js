@@ -16,7 +16,30 @@
 
 "use strict";
     
+/**
+ * @namespace MT
+ */
+
+/**
+ * The MT.DataAPI is a client class for accessing to the Movable Type DataAPI.
+ * @class DataAPI
+ * @constructor
+ * @param {Object} options Options.
+ *   @param {String} options.clientId client ID
+ *     (Available charactors: Alphabet, '_', '-')
+ *   @param {String} options.baseUrl the CGI URL of the DataAPI
+ *     (e.g. http://example.com/mt/mt-data-api.cgi)
+ *   @param {String} options.cookieDomain
+ *   @param {String} options.cookiePath
+ *   @param {String} options.format
+ *   @param {String} options.async
+ *   @param {String} options.cache
+ *   @param {String} options.disableFormData
+ */
 var DataAPI = function(options) {
+    var i, k, l,
+        requireds = ['clientId', 'baseUrl'];
+
     this.o = {
         clientId: undefined,
         baseUrl: undefined,
@@ -27,11 +50,11 @@ var DataAPI = function(options) {
         cache: false,
         disableFormData: false
     };
-    for (var k in options) {
+    for (k in options) {
         if (k in this.o) {
             if (typeof this.o[k] === 'object' && this.o[k] !== null) {
                 for (l in this.o[k]) {
-                   this.o[k][l] = options[k][l]; 
+                   this.o[k][l] = options[k][l];
                 }
             }
             else {
@@ -43,8 +66,7 @@ var DataAPI = function(options) {
         }
     }
 
-    var requireds = ['clientId', 'baseUrl'];
-    for (var i = 0; i < requireds.length; i++) {
+    for (i = 0; i < requireds.length; i++) {
         if (! this.o[requireds[i]]) {
             throw 'The "' + requireds[i] + '" is required.';
         }
@@ -55,14 +77,63 @@ var DataAPI = function(options) {
     this.iframeId  = 0;
 
     this.trigger('initialize');
-}
+};
 
-DataAPI.version        = 1;
+
+/**
+ * API version.
+ * @property version
+ * @static
+ * @private
+ * @type Number
+ */
+DataAPI.version = 1;
+
+/**
+ * The key of access token of this api object.
+ * This value is used for the session store.
+ * @property accessTokenKey
+ * @static
+ * @private
+ * @type String
+ */
 DataAPI.accessTokenKey = 'mt_data_api_access_token';
-DataAPI.iframePrefix   = 'mt_data_api_iframe_';
-DataAPI.callbacks      = {};
-DataAPI.defaultFormat  = 'json';
-DataAPI.formats        = {
+
+/**
+ * The name prefix for iframe that created to upload asset.
+ * @property iframePrefix
+ * @static
+ * @private
+ * @type String
+ */
+DataAPI.iframePrefix = 'mt_data_api_iframe_';
+
+/**
+ * Default format that serializes data.
+ * @property defaultFormat
+ * @static
+ * @private
+ * @type Number
+ */
+DataAPI.defaultFormat = 'json';
+
+/**
+ * Class level callback function data.
+ * @property callbacks
+ * @static
+ * @private
+ * @type Object
+ */
+DataAPI.callbacks = {};
+
+/**
+ * Available formats that serialize data.
+ * @property formats
+ * @static
+ * @private
+ * @type Object
+ */
+DataAPI.formats = {
     json: {
         fileExtension: 'json',
         mimeType: 'application/json',
@@ -75,6 +146,14 @@ DataAPI.formats        = {
     }
 };
 
+/**
+ * Register callback to class.
+ * @method on
+ * @static
+ * @param {String} key Event name
+ * @param {Function} callback Callback function
+ * @category core
+ */
 DataAPI.on = function(key, callback) {
     if (! this.callbacks[key]) {
         this.callbacks[key] = [];
@@ -82,11 +161,22 @@ DataAPI.on = function(key, callback) {
 
     this.callbacks[key].push(callback);
 };
-DataAPI.off = function(key, callback) {
-    if (callback) {
-        var callbacks = this.callbacks[key] || [];
 
-        for (var i = 0; i < callbacks.length; i++) {
+/**
+ * Deregister callback from class.
+ * @method off
+ * @static
+ * @param {String} key Event name
+ * @param {Function} callback Callback function
+ * @category core
+ */
+DataAPI.off = function(key, callback) {
+    var i, callbacks;
+
+    if (callback) {
+        callbacks = this.callbacks[key] || [];
+
+        for (i = 0; i < callbacks.length; i++) {
             if (callbacks[i] === callback) {
                 callbacks.splice(i, 1);
                 break;
@@ -98,11 +188,40 @@ DataAPI.off = function(key, callback) {
     }
 };
 
+/**
+ * Register formats that serialize data.
+ * @method registerFormat
+ * @static
+ * @param {String} key Format name
+ * @param {Object} spec Format spec
+ *   @param {String} spec.fileExtension Extension
+ *   @param {String} spec.mimeType MIME type
+ * @category core
+ */
 DataAPI.registerFormat = function(key, spec) {
     DataAPI.formats[key] = spec;
-}
+};
 
-DataAPI.prototype      = {
+/**
+ * Get default format of this class
+ * @method getDefaultFormat
+ * @static
+ * @return {Object} Format
+ * @category core
+ */
+DataAPI.getDefaultFormat = function() {
+    return DataAPI.formats[DataAPI.defaultFormat];
+};
+
+DataAPI.prototype = {
+
+    /**
+     * Get authorization URL
+     * @method getAuthorizationUrl
+     * @param {String} redirectUrl The user is redirected to this URL with "#_login" if authorization succeeded.
+     * @return {String} Authorization URL
+     * @category core
+     */
     getAuthorizationUrl: function(redirectUrl) {
         return this.o.baseUrl.replace(/\/*$/, '/') +
             'v' + this.getVersion() +
@@ -116,24 +235,44 @@ DataAPI.prototype      = {
     },
 
     _getNextIframeName: function() {
-        return DataAPI.iframePrefix + ++this.iframeId;
+        return DataAPI.iframePrefix + (++this.iframeId);
     },
 
+    /**
+     * Get API version
+     * @method getVersion
+     * @return {String} API version
+     * @category core
+     */
     getVersion: function() {
         return DataAPI.version;
     },
-    
+
+    /**
+     * Get application key of this object
+     * @method getAppKey
+     * @return {String} Application key
+     *   This value is used for the session store.
+     * @category core
+     */
     getAppKey: function() {
         return DataAPI.accessTokenKey + '_' + this.o.clientId;
     },
 
+    /**
+     * Get format that associated with specified MIME Type
+     * @method findFormat
+     * @param {String} mimeType MIME Type
+     * @return {Object|null} Format. Return null if any format is not found.
+     * @category core
+     */
     findFormat: function(mimeType) {
         if (! mimeType) {
             return null;
         }
 
         for (var k in DataAPI.formats) {
-            if (DataAPI.formats[k]['mimeType'] === mimeType) {
+            if (DataAPI.formats[k].mimeType === mimeType) {
                 return DataAPI.formats[k];
             }
         }
@@ -141,53 +280,89 @@ DataAPI.prototype      = {
         return null;
     },
 
-    getDefaultFormat: function() {
-        return DataAPI.formats[DataAPI.defaultFormat];
-    },
-
+    /**
+     * Get current format of this object
+     * @method getCurrentFormat
+     * @return {Object} Format
+     * @category core
+     */
     getCurrentFormat: function() {
-        return DataAPI.formats[this.o.format] || this.getDefaultFormat();
+        return DataAPI.formats[this.o.format] || DataAPI.getDefaultFormat();
     },
 
+    /**
+     * Serialize data.
+     * @method serializeData
+     * @param {Object} data The data to serialize
+     * @return {String} Serialized data
+     * @category core
+     */
     serializeData: function() {
         return this.getCurrentFormat().serialize.apply(this, arguments);
     },
 
+    /**
+     * Unserialize data.
+     * @method unserializeData
+     * @param {String} data The data to unserialize
+     * @return {Object} Unserialized data
+     * @category core
+     */
     unserializeData: function() {
         return this.getCurrentFormat().unserialize.apply(this, arguments);
     },
-    
+
+    /**
+     * Store token data via current session store.
+     * @method storeToken
+     * @param {Object} tokenData The token data
+     *   @param {String} tokenData.accessToken access token
+     *   @param {String} tokenData.expiresIn The number of seconds
+     *     until access token becomes invalid
+     *   @param {String} tokenData.sessionId [optional] session ID
+     * @category core
+     */
     storeToken: function(tokenData) {
         var o = this.o;
         tokenData.startTime = this._getCurrentEpoch();
         Cookie.bake(this.getAppKey(), this.serializeData(tokenData), o.cookieDomain, o.cookiePath);
         this.tokenData = tokenData;
     },
-    
+
     _updateTokenFromDefault: function() {
         var defaultKey    = DataAPI.accessTokenKey,
-            defaultCookie = Cookie.fetch(defaultKey);
+            defaultCookie = Cookie.fetch(defaultKey),
+            defaultToken;
+
         if (! defaultCookie) {
             return null;
         }
-        
+
         try {
-            var defaultToken = this.unserializeData(defaultCookie.value);
+            defaultToken = this.unserializeData(defaultCookie.value);
         }
         catch (e) {
             return null;
         }
-        
+
         this.storeToken(defaultToken);
         Cookie.bake(defaultKey, '', undefined, '/', new Date(0));
         return defaultToken;
     },
-    
+
+    /**
+     * Get token data via current session store.
+     * @method getToken
+     * @return {Object} Token data
+     * @category core
+     */
     getToken: function() {
-        var o = this.o;
+        var token,
+            o = this.o;
+
         if (! this.tokenData) {
-            var token = null;
-            
+            token = null;
+
             if (window.location && window.location.hash === '#_login') {
                 try {
                     token = this._updateTokenFromDefault();
@@ -208,35 +383,58 @@ DataAPI.prototype      = {
                 Cookie.bake(this.getAppKey(), '', o.cookieDomain, o.cookiePath, new Date(0));
                 token = null;
             }
-            
+
             this.tokenData = token;
         }
-        
+
         if (! this.tokenData) {
             return null;
         }
-        
+
         return this.tokenData.accessToken;
     },
 
+    /**
+     * Get authorization request header
+     * @method getAuthorizationHeader
+     * @return {String|null} Header string. Return null if api object has no token.
+     * @category core
+     */
     getAuthorizationHeader: function() {
         return 'MTAuth accessToken=' + this.getToken();
     },
-    
-    bindEndpointParams: function(endpoint, params) {
-        for (var k in params) {
-            var v = params[k];
+
+    /**
+     * Bind parameters to route spec
+     * @method bindEndpointParams
+     * @param {String} route Specification of route
+     * @param {Object} params parameters
+     *   @param {Number|Object|Function} params.{key} Value to bind
+     * @return {String} Endpoint to witch parameters was bound
+     * @example
+     *     api.bindEndpointParams('/sites/:site_id/entries/:entry_id/comments/:comment_id', {
+     *       blog_id: 1,
+     *       entry_id: {id: 1},
+     *       comment_id: functioin(){ return 1; }
+     *     });
+     * @category core
+     */
+    bindEndpointParams: function(route, params) {
+        var k, v;
+
+        for (k in params) {
+            v = params[k];
             if (typeof v === 'object') {
                 v = v.id;
             }
             if (typeof v === 'function') {
                 v = v();
             }
-            endpoint = endpoint.replace(new RegExp(':' + k), v);
+            route = route.replace(new RegExp(':' + k), v);
         }
-        return endpoint;
+        return route;
     },
-    
+
     _isElement: function(e, name) {
         if (! e || typeof e !== 'object') {
             return false;
@@ -262,13 +460,13 @@ DataAPI.prototype      = {
             return n < 10 ? '0' + n : n;
         }
 
-        function ISO8601Date(v) {
+        function iso8601Date(v) {
             if (! isFinite(v.valueOf())) {
                 return '';
             }
 
-            var off;
-            var tz = v.getTimezoneOffset();
+            var off,
+                tz = v.getTimezoneOffset();
             if(tz === 0) {
                 off = 'Z';
             }
@@ -295,7 +493,7 @@ DataAPI.prototype      = {
             return '';
         }
         else if (v instanceof Date) {
-            return ISO8601Date(v);
+            return iso8601Date(v);
         }
         else if (window.File && v instanceof window.File) {
             return v;
@@ -306,7 +504,7 @@ DataAPI.prototype      = {
         else if (type === 'object') {
             return this.serializeData(v, function(key, value) {
                 if (this[key] instanceof Date) {
-                    return ISO8601Date(this[key]);
+                    return iso8601Date(this[key]);
                 }
                 return value;
             });
@@ -326,13 +524,13 @@ DataAPI.prototype      = {
         if (this._isFormElement(params)) {
             params = this._serializeFormElementToObject(params);
         }
-        
-        var str = '';
-        for (var k in params) {
+
+        var k,
+            str = '';
+        for (k in params) {
             if (! params.hasOwnProperty(k)) {
                 continue;
             }
-            var v = params[k];
             if (str) {
                 str += '&';
             }
@@ -349,17 +547,18 @@ DataAPI.prototype      = {
             return params;
         }
 
-        var data   = {},
+        var i, pair,
+            data   = {},
             values = params.split('&');
 
-        for(var i = 0; i < values.length; i++) {
-            var pair = values[i].split('=');
+        for(i = 0; i < values.length; i++) {
+            pair = values[i].split('=');
             data[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
         }
 
         return data;
     },
-    
+
     _newXMLHttpRequestStandard: function() {
         try {
             return new window.XMLHttpRequest();
@@ -372,12 +571,18 @@ DataAPI.prototype      = {
         } catch( e ) {}
     },
 
+    /**
+     * Create XMLHttpRequest by higher browser compatibility way
+     * @method newXMLHttpRequest
+     * @return {XMLHttpRequest} Created XMLHttpRequest
+     * @category core
+     */
     newXMLHttpRequest: function() {
-        return this._newXMLHttpRequestStandard()
-            || this._newXMLHttpRequestActiveX()
-            || false;
+        return this._newXMLHttpRequestStandard() ||
+            this._newXMLHttpRequestActiveX() ||
+            false;
     },
-    
+
     _findFileInput: function(params) {
         if (typeof params !== 'object') {
             return null;
@@ -393,6 +598,10 @@ DataAPI.prototype      = {
     },
 
     _isEmptyObject: function(o) {
+        if (! o) {
+            return true;
+        }
+
         for (var k in o) {
             if (o.hasOwnProperty(k)) {
                 return false;
@@ -401,10 +610,23 @@ DataAPI.prototype      = {
         return true;
     },
 
+    /**
+     * Send request to specified URL with params via XMLHttpRequest
+     * @method sendXMLHttpRequest
+     * @param {XMLHttpRequest} xhr XMLHttpRequest object to send request
+     * @param {String} method Request method
+     * @param {String} url Request URL
+     * @param {String|FormData} params Parameters to send with request
+     * @param {Object|null} defaultParams System default parameters to merge to params
+     * @return {XMLHttpRequest}
+     * @category core
+     */
     sendXMLHttpRequest: function(xhr, method, url, params, defaultParams) {
+        var k, headers, uk;
+
         if (! this._isEmptyObject(defaultParams)) {
             if (window.FormData && params instanceof window.FormData) {
-                for (var k in defaultParams) {
+                for (k in defaultParams) {
                     params.append(k, defaultParams[k]);
                 }
             }
@@ -421,7 +643,7 @@ DataAPI.prototype      = {
                 }
             }
         }
-        
+
         xhr.open(method, url, this.o.async);
         if (typeof params === 'string') {
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -429,27 +651,32 @@ DataAPI.prototype      = {
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.setRequestHeader('X-MT-Authorization', this.getAuthorizationHeader());
 
+        function normalizeHeaderKey(all, prefix, letter) {
+            return prefix + letter.toUpperCase();
+        }
         if (params && params.getHeaders) {
-            var headers = params.getHeaders();
-            for (var k in headers) {
-                xhr.setRequestHeader(k, headers[k]);
+            headers = params.getHeaders();
+            for (k in headers) {
+                uk = k.replace(/(^|-)([a-z])/g, normalizeHeaderKey);
+                xhr.setRequestHeader(uk, headers[k]);
             }
         }
-        
+
         xhr.send(params);
-        
+
         return xhr;
     },
 
     _serializeFormElementToObject: function(form) {
-        var submitterTypes = /^(?:submit|button|image|reset)$/i,
+        var i, e, type,
+            data           = {},
+            submitterTypes = /^(?:submit|button|image|reset)$/i,
             submittable    = /^(?:input|select|textarea|keygen)/i,
             checkableTypes = /^(?:checkbox|radio)$/i;
 
-        var data = {};
-        for (var i = 0; i < form.elements.length; i++) {
-            var e    = form.elements[i],
-                type = e.type;
+        for (i = 0; i < form.elements.length; i++) {
+            e    = form.elements[i];
+            type = e.type;
 
             if (
                     ! e.name ||
@@ -499,7 +726,7 @@ DataAPI.prototype      = {
                         value = option.value;
                     }
                     else {
-                        value = elem.text;
+                        value = e.text;
                     }
 
                     // We don't need an array for one selects
@@ -518,16 +745,34 @@ DataAPI.prototype      = {
             return e.value;
         }
     },
-    
-    withOptions: function(option, func) {
-        var originalOption = this.o,
-            o = {},
-            result;
 
-        for (var k in originalOption) {
+    /**
+     * Execute function with specified options
+     * @method withOptions
+     * @param {option} option Option to overwrite
+     * @param {Function} func Function to execute
+     * @return Return value of specified func
+     * @example
+     *     // The DataAPI object is created with {async: true}
+     *     api.withOptions({async: false}, function() {
+     *       api.listEntries(1, function() {
+     *         // This is executed synchronously
+     *       });
+     *     });
+     *     api.listEntries(1, function() {
+     *       // This is executed asynchronously
+     *     });
+     * @category core
+     */
+    withOptions: function(option, func) {
+        var k, result,
+            originalOption = this.o,
+            o = {};
+
+        for (k in originalOption) {
             o[k] = originalOption[k];
         }
-        for (var k in option) {
+        for (k in option) {
             o[k] = option[k];
         }
 
@@ -538,8 +783,24 @@ DataAPI.prototype      = {
         return result;
     },
 
+    /**
+     * Execute function with specified options
+     * @method request
+     * @param {String} method Request method
+     * @param {String} endpoint Endpoint to request
+     * @param {String|Object} [queryParameter]
+     * @param {String|Object|HTMLFormElement|FormData} [requestData]
+     *   @param {String|Object|HTMLFormElement} [requestData.{requires-json-text}] Can specify json-text value by string or object or HTMLFormElement. Serialize automatically if object or HTMLFormElement is passed.
+     *   @param {HTMLInputElement|File} [requestData.{requires-file}] Can specify file value by HTMLInputElement or File object.
+     * @param {Function} [callback]
+     * @return {XMLHttpRequest|null} Return XMLHttpRequest if request is sent
+     *   via XMLHttpRequest. Return null if request is not sent
+     *   via XMLHttpRequest (e.g. sent via iframe).
+     * @category core
+     */
     request: function(method, endpoint) {
-        var api        = this,
+        var i, k, v, base,
+            api        = this,
             paramsList = [],
             params     = null,
             callback   = function(){},
@@ -550,6 +811,8 @@ DataAPI.prototype      = {
             defaultParams     = {};
 
         function serializeParams(params) {
+            var k, data;
+
             if (! api.o.disableFormData && window.FormData) {
                 if (params instanceof window.FormData) {
                     return params;
@@ -558,8 +821,8 @@ DataAPI.prototype      = {
                     return new window.FormData(params);
                 }
                 else if (window.FormData && typeof params === 'object') {
-                    var data = new window.FormData();
-                    for (var k in params) {
+                    data = new window.FormData();
+                    for (k in params) {
                         data.append(k, api._serializeObject(params[k]));
                     }
                     return data;
@@ -569,7 +832,7 @@ DataAPI.prototype      = {
 
             if (api._isFormElement(params)) {
                 params = api._serializeFormElementToObject(params);
-                for (var k in params) {
+                for (k in params) {
                     if (params[k] instanceof Array) {
                         params[k] = params[k].join(',');
                     }
@@ -579,8 +842,8 @@ DataAPI.prototype      = {
             if (api._findFileInput(params)) {
                 viaXhr = false;
 
-                var data = {};
-                for (var k in params) {
+                data = {};
+                for (k in params) {
                     if (api._isFileInputElement(params[k])) {
                         data[k] = params[k];
                     }
@@ -631,19 +894,19 @@ DataAPI.prototype      = {
 
 
         if (endpoint === '/token' || endpoint === '/authentication') {
-            defaultParams['clientId'] = this.o.clientId;
+            defaultParams.clientId = this.o.clientId;
         }
 
         if (! this.o.cache) {
-            defaultParams['_'] = new Date().getTime();
+            defaultParams._ = new Date().getTime();
         }
 
-        if (currentFormat !== this.getDefaultFormat()) {
-            defaultParams['format'] = currentFormat.fileExtension;
+        if (currentFormat !== DataAPI.getDefaultFormat()) {
+            defaultParams.format = currentFormat.fileExtension;
         }
-        
-        for (var i = 2; i < arguments.length; i++) {
-            var v = arguments[i];
+
+        for (i = 2; i < arguments.length; i++) {
+            v = arguments[i];
             switch (typeof v) {
             case 'function':
                 callback = v;
@@ -676,14 +939,14 @@ DataAPI.prototype      = {
             }
             endpoint += this._serializeParams(paramsList.shift());
         }
-        
+
         if (method.match(/^(put|delete)$/i)) {
-            defaultParams['__method'] = method;
+            defaultParams.__method = method;
             method = 'POST';
         }
 
-        for (var k in defaultParams) {
-            for (var i = 0; i < paramsList.length; i++) {
+        for (k in defaultParams) {
+            for (i = 0; i < paramsList.length; i++) {
                 if (k in paramsList[i]) {
                     delete defaultParams[k];
                 }
@@ -694,21 +957,22 @@ DataAPI.prototype      = {
             params = serializeParams(paramsList.shift());
         }
 
-        
-        var base = this.o.baseUrl.replace(/\/*$/, '/') + 'v' + this.getVersion();
+
+        base = this.o.baseUrl.replace(/\/*$/, '/') + 'v' + this.getVersion();
         endpoint = endpoint.replace(/^\/*/, '/');
 
         if (viaXhr) {
-            var xhr = xhr || this.newXMLHttpRequest();
+            xhr = xhr || this.newXMLHttpRequest();
             xhr.onreadystatechange = function() {
                 if (xhr.readyState !== 4) {
                     return;
                 }
 
-                var response;
+                var response, mimeType, format, url;
+
                 try {
-                    var mimeType = xhr.getResponseHeader('Content-Type'),
-                        format   = api.findFormat(mimeType) || api.getCurrentFormat();
+                    mimeType = xhr.getResponseHeader('Content-Type');
+                    format   = api.findFormat(mimeType) || api.getCurrentFormat();
                     response = format.unserialize(xhr.responseText);
                 }
                 catch (e) {
@@ -721,7 +985,7 @@ DataAPI.prototype      = {
                 }
 
                 function cleanup() {
-                    xhr.onreadystatechange = new Function;
+                    xhr.onreadystatechange = function(){};
                 }
 
                 if (needToRetry(response)) {
@@ -732,7 +996,7 @@ DataAPI.prototype      = {
 
                 runCallback(response);
 
-                var url = xhr.getResponseHeader('X-MT-Next-Phase-URL');
+                url = xhr.getResponseHeader('X-MT-Next-Phase-URL');
                 if (url) {
                     xhr.abort();
                     api.sendXMLHttpRequest(xhr, method, base + url, params, defaultParams);
@@ -745,11 +1009,12 @@ DataAPI.prototype      = {
         }
         else {
             (function() {
-                var target = api._getNextIframeName(),
-                    doc    = window.document;
+                var k, file, originalName, input,
+                    target = api._getNextIframeName(),
+                    doc    = window.document,
                     form   = doc.createElement('form'),
-                    iframe = doc.createElement('iframe'),
-                    file, originalName;
+                    iframe = doc.createElement('iframe');
+
 
                 // Set up a form element
                 form.action        = base + endpoint;
@@ -771,14 +1036,14 @@ DataAPI.prototype      = {
                     if (! params) {
                         params = {};
                     }
-                    for (var k in defaultParams) {
+                    for (k in defaultParams) {
                         params[k] = defaultParams[k];
                     }
                 }
                 params['X-MT-Authorization'] = api.getAuthorizationHeader();
                 params['X-MT-Requested-Via'] = 'IFRAME';
 
-                for (var k in params) {
+                for (k in params) {
                     if (api._isFileInputElement(params[k])) {
                         file         = params[k];
                         originalName = file.name;
@@ -793,7 +1058,7 @@ DataAPI.prototype      = {
                         continue;
                     }
 
-                    var input   = doc.createElement('input');
+                    input       = doc.createElement('input');
                     input.type  = 'hidden';
                     input.name  = k;
                     input.value = params[k];
@@ -803,7 +1068,7 @@ DataAPI.prototype      = {
                 form.submit();
 
 
-                function handler(e) {
+                function handler() {
                     var body     = iframe.contentWindow.document.body,
                         contents = body.textContent || body.innerText,
                         response;
@@ -853,16 +1118,38 @@ DataAPI.prototype      = {
         }
     },
 
+    /**
+     * Register callback to instance.
+     * @method on
+     * @param {String} key Event name
+     * @param {Function} callback Callback function
+     * @category core
+     */
     on: DataAPI.on,
 
+    /**
+     * Deregister callback from instance.
+     * @method off
+     * @param {String} key Event name
+     * @param {Function} callback Callback function
+     * @category core
+     */
     off: DataAPI.off,
 
+    /**
+     * Trigger event
+     * First, run class level callbacks. Then, run instance level callbacks.
+     * @method trigger
+     * @param {String} key Event name
+     * @category core
+     */
     trigger: function(key) {
-        var args      = Array.prototype.slice.call(arguments, 1),
+        var i,
+            args      = Array.prototype.slice.call(arguments, 1),
             callbacks = (DataAPI.callbacks[key] || []) // Class level
-                .concat(this.callbacks[key] || []) // Instance level
+                .concat(this.callbacks[key] || []); // Instance level
 
-        for (var i = 0; i < callbacks.length; i++) {
+        for (i = 0; i < callbacks.length; i++) {
             callbacks[i].apply(this, args);
         }
     },
@@ -875,15 +1162,18 @@ DataAPI.prototype      = {
                             return letter.toUpperCase();
                         });
 
+        function extractVars() {
+            var m, vars = [];
+            while ((m = varRegexp.exec(e.route)) !== null) {
+                vars.push(m[1]);
+            }
+            return vars;
+        }
+
         api[name] = function() {
             if (! vars) {
-                var m;
-                vars = [];
-                while (m = varRegexp.exec(e.route)) {
-                    vars.push(m[1]);
-                }
+                vars = extractVars();
             }
-
 
             var args           = Array.prototype.slice.call(arguments),
                 endpointParams = {},
@@ -906,12 +1196,66 @@ DataAPI.prototype      = {
         };
     },
 
+    /**
+     * Generate endpoint methods
+     * @method generateEndpointMethods
+     * @param {Array.Object} endpoints Endpoints to register
+     *   @param {Object} endpoints.{i}
+     *     @param {String} endpoints.{i}.id
+     *     @param {String} endpoints.{i}.route
+     *     @param {String} endpoints.{i}.verb
+     *     @param {Array.String} [endpoints.{i}.resources]
+     * @example
+     *     api.generateEndpointMethods([
+     *       {
+     *           "id": "list_entries",
+     *           "route": "/sites/:site_id/entries",
+     *           "verb": "GET",
+     *       },
+     *       {
+     *           "id": "create_entry",
+     *           "route": "/sites/:site_id/entries",
+     *           "verb": "POST",
+     *           "resources": [
+     *               "entry"
+     *           ]
+     *       }
+     *     ]);
+     * @category core
+     */
     generateEndpointMethods: function(endpoints) {
         for (var i = 0; i < endpoints.length; i++) {
             this._generateEndpointMethod(endpoints[i]);
         }
     },
 
+    /**
+     * Load endpoint from DataAPI dynamically
+     * @method loadEndpoints
+     * @param {Object} [params]
+     *   @param {String} [params.includeComponents] Comma separated component IDs to load
+     *   @param {String} [params.excludeComponents] Comma separated component IDs to exclude
+     * @example
+     * Load endpoints only from specified module.
+     *
+     *     api.loadEndpoints({
+     *       includeComponents: 'your-extension-module'
+     *     });
+     *     api.getDataViaYourExtensionModule(function(response) {
+     *       // Do stuff
+     *     });
+     *
+     * Load all endpoints except for core.
+     * Since all the endpoints of core is already loaded.
+     *
+     *     api.loadEndpoints({
+     *       excludeComponents: 'core'
+     *     });
+     *     api.getDataViaYourExtensionModule(function(response) {
+     *       // Do stuff
+     *     });
+     * @category core
+     */
     loadEndpoints: function(params) {
         var api = this;
 
@@ -926,6 +1270,41 @@ DataAPI.prototype      = {
         });
     }
 };
+
+/**
+ * Triggered on initializing an instance
+ *
+ * @event initialize
+ **/
+
+/**
+ * Triggered on getting an error of a HTTP request
+ *
+ * @event error
+ * @param {Object} response A response object
+ *   @param {Number} response.code The HTTP response code
+ *   @param {String} response.message The error message
+ *   @param {Object} response.data The data exists only if a current error has optional data
+ * @example
+ *     api.on("error", function(response) {
+ *       console.log(response.message);
+ *     });
+ **/
+
+/**
+ * Fired on response code is 401
+ *
+ * @event authorizationRequired
+ * @param {Object} response A response object
+ *   @param {Number} response.code The HTTP response code
+ *   @param {Number} response.message The error message
+ * @example
+ *     api.on("authorizationRequired", function(response) {
+ *       // You will return to current URL after authorization succeeded.
+ *       location.href = api.getAuthorizationUrl(location.href);
+ *     });
+ **/
+
 
 window.MT         = window.MT || {};
 window.MT.DataAPI = window.MT.DataAPI || DataAPI;
