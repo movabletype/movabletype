@@ -164,10 +164,17 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             resize: 'none'
         });
         if (tinyMCE.isIE8) {
-            adapter.$editorTextarea.css({
-                'min-width': '100%',
-                padding: '0px'
-            });
+            // The workaround for IE8 textarea bug.
+            // The "width" value is overwrote by the "max-width" and the "min-width".
+            // But this workaround requires the "width" value.
+            adapter.$editorTextarea
+                .css({
+                    'width': '100px',
+                    'min-width': '100%',
+                    'max-width': '100%',
+                    padding: '0px'
+                })
+                .attr('cols', '5000');
         }
         adapter.$editorTextareaParent = adapter.$editorTextarea.parent();
         adapter.$editorElement = adapter.$editorTextarea;

@@ -15,7 +15,7 @@ use MT::CMS::Asset;
 sub upload {
     my ( $app, $endpoint ) = @_;
 
-    return $app->error(403) unless $app->can('upload');
+    return $app->error(403) unless $app->can_do('upload');
 
     $app->param( 'site_path', 1 );
 
