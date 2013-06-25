@@ -884,7 +884,7 @@ sub _v5_add_nortification_dashboard_widget {
             my @widget_keys = keys %{ $widgets->{$key} };
             unless ( grep { $_ eq 'notification_dashboard' } @widget_keys ) {
                 foreach my $widget_key (@widget_keys) {
-                    $widgets->{$key}->{$widget_key}->{order} .= 1;
+                    $widgets->{$key}->{$widget_key}->{order} += 1;
                 }
                 $widgets->{$key}->{'notification_dashboard'} = {
                     order => 1,

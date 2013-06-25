@@ -77,10 +77,10 @@ __SQL__
         },
         '_v6_add_site_stats_widget' => {
             version_limit => 6.0005,
-            priority      => 3.0,
+            priority      => 3.1,
             updater       => {
                 type  => 'author',
-                label => "Add Blog Statistics widget...",
+                label => "Adding blog statistics widget...",
                 code  => \&_v6_add_site_stats_widget,
             },
         },
@@ -114,41 +114,21 @@ sub _v6_add_site_stats_widget {
     return 1 unless $widgets;
 
     foreach my $key ( keys %$widgets ) {
-        if ( $key eq 'dashboard:user:' . $user->id ) {
+        my @keys = split ':', $key;
+        if ( $keys[0] eq 'dashboard' && ( $keys[1] eq 'user' || $keys[1] eq 'blog' ) ) {
             my @widget_keys = keys %{ $widgets->{$key} };
             unless ( grep { $_ eq 'site_stats' } @widget_keys ) {
                 foreach my $widget_key (@widget_keys) {
-                    next
-                        if ( $widget_key eq 'notification_dashboard'
-                        || $widgets->{$key}->{$widget_key}->{set} eq 'main' );
-                    $widgets->{$key}->{$widget_key}->{order} .= 1;
+                    if ( $keys[1] eq 'user' ) {
+                        next
+                            if ( $widget_key eq 'notification_dashboard'
+                            || $widgets->{$key}->{$widget_key}->{set} eq 'main' );
+                    }
+                    $widgets->{$key}->{$widget_key}->{order} += 1;
                 }
+                my $order = $keys[1] eq 'user' ? 2 : 1;
                 $widgets->{$key}->{'site_stats'} = {
-                    order => 2,
-                    set   => 'main',
-                };
-            }
-        }
-        if ( $key eq 'dashboard:website:' . $user->id ) {
-            my @widget_keys = keys %{ $widgets->{$key} };
-            unless ( grep { $_ eq 'site_stats' } @widget_keys ) {
-                foreach my $widget_key (@widget_keys) {
-                    $widgets->{$key}->{$widget_key}->{order} .= 1;
-                }
-                $widgets->{$key}->{'site_stats'} = {
-                    order => 1,
-                    set   => 'main',
-                };
-            }
-        }
-        if ( $key eq 'dashboard:blog:' . $user->id ) {
-            my @widget_keys = keys %{ $widgets->{$key} };
-            unless ( grep { $_ eq 'site_stats' } @widget_keys ) {
-                foreach my $widget_key (@widget_keys) {
-                    $widgets->{$key}->{$widget_key}->{order} .= 1;
-                }
-                $widgets->{$key}->{'site_stats'} = {
-                    order => 1,
+                    order => $order,
                     set   => 'main',
                 };
             }
