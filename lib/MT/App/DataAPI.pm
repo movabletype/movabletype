@@ -208,7 +208,7 @@ sub core_endpoints {
                 sortBy       => 'id',
                 sortOrder    => 'descend',
                 searchFields => 'url,text,email,ip,author',
-                filterKeys   => 'status',
+                filterKeys   => 'status,entryStatus',
             },
             error_codes => {
                 403 =>
