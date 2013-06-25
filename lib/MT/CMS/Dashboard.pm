@@ -1137,9 +1137,18 @@ sub site_stats_widget {
             push @{ $param->{object_loop} }, $row;
         }
 
-        @{ $param->{object_loop} }
-            = sort { $a->{name} cmp $b->{name} } @{ $param->{object_loop} };
-        $param->{blog_id} = $param->{object_loop}->[0]->{id};
+        my $loop_count = @{ $param->{object_loop} };
+        if ( $loop_count > 1 ) {
+            @{ $param->{object_loop} }
+                = sort { $a->{name} cmp $b->{name} }
+                @{ $param->{object_loop} };
+            $param->{blog_id} = $param->{object_loop}->[0]->{id};
+        }
+        elsif ($loop_count) {
+            $param->{blog_id} = $param->{object_loop}->[0]->{id};
+            $param->{name}    = $param->{object_loop}->[0]->{name};
+            delete $param->{object_loop};
+        }
     }
 
     generate_site_stats_data( $app, $param ) or return;
