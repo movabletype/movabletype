@@ -134,13 +134,13 @@ sub list_props {
             },
         },
         user_custom => {
-            base      => 'category.custom_sort',
-            condition => sub {0},
+            base    => 'category.custom_sort',
+            display => 'none',
         },
         content => {
             base      => '__virtual.content',
             fields    => [qw(label basename)],
-            condition => sub {0},
+            display   => 'none',
         },
     };
 }

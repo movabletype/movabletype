@@ -775,10 +775,10 @@ sub list_props {
             },
         },
         current_context => { base => '__common.current_context', },
-        content         => {
-            base      => '__virtual.content',
-            fields    => [qw(title text text_more keywords excerpt basename)],
-            condition => sub {0},
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw(title text text_more keywords excerpt basename)],
+            display => 'none',
         },
     };
 }

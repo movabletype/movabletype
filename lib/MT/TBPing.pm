@@ -364,13 +364,13 @@ sub list_props {
             },
         },
         id => {
-            base      => '__virtual.id',
-            condition => sub {0},
+            base    => '__virtual.id',
+            display => 'none',
         },
         content => {
-            base      => '__virtual.content',
-            fields    => [qw(title excerpt source_url ip blog_name)],
-            condition => sub {0},
+            base    => '__virtual.content',
+            fields  => [qw(title excerpt source_url ip blog_name)],
+            display => 'none',
         },
     };
 }
