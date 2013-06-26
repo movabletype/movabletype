@@ -115,14 +115,17 @@ sub _v6_add_site_stats_widget {
 
     foreach my $key ( keys %$widgets ) {
         my @keys = split ':', $key;
-        if ( $keys[0] eq 'dashboard' && ( $keys[1] eq 'user' || $keys[1] eq 'blog' ) ) {
+        if ( $keys[0] eq 'dashboard'
+            && ( $keys[1] eq 'user' || $keys[1] eq 'blog' ) )
+        {
             my @widget_keys = keys %{ $widgets->{$key} };
             unless ( grep { $_ eq 'site_stats' } @widget_keys ) {
                 foreach my $widget_key (@widget_keys) {
                     if ( $keys[1] eq 'user' ) {
                         next
                             if ( $widget_key eq 'notification_dashboard'
-                            || $widgets->{$key}->{$widget_key}->{set} eq 'main' );
+                            || $widgets->{$key}->{$widget_key}->{set} eq
+                            'main' );
                     }
                     $widgets->{$key}->{$widget_key}->{order} += 1;
                 }
