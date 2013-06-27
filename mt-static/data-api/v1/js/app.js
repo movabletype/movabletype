@@ -622,32 +622,12 @@ DataAPI.prototype = {
      * @param {String} method Request method
      * @param {String} url Request URL
      * @param {String|FormData} params Parameters to send with request
-     * @param {Object|null} defaultParams System default parameters to merge to params
      * @return {XMLHttpRequest}
      * @category core
      */
-    sendXMLHttpRequest: function(xhr, method, url, params, defaultParams) {
-        var k, headers, uk;
-
-        if (! this._isEmptyObject(defaultParams)) {
-            if (window.FormData && params instanceof window.FormData) {
-                for (k in defaultParams) {
-                    params.append(k, defaultParams[k]);
-                }
-            }
-            else {
-                defaultParams = this._serializeParams(defaultParams);
-                if (method.toLowerCase() === 'get') {
-                    url += (url.indexOf('?') === -1 ? '?' : '&') + defaultParams;
-                }
-                else {
-                    if (! params) {
-                        params = '';
-                    }
-                    params += (params === '' ? '' : '&') + defaultParams;
-                }
-            }
-        }
+    sendXMLHttpRequest: function(xhr, method, url, params) {
+        var k, headers, uk,
+            authHeader = this.getAuthorizationHeader();
 
         xhr.open(method, url, this.o.async);
         if (typeof params === 'string') {
@@ -899,6 +879,16 @@ DataAPI.prototype = {
             });
         }
 
+        function appendParamsToURL(base, params) {
+            if (base.indexOf('?') === -1) {
+                base += '?';
+            }
+            else {
+                base += '&';
+            }
+            return base + api._serializeParams(params);
+        }
+
 
         if (endpoint === '/token' || endpoint === '/authentication') {
             defaultParams.clientId = this.o.clientId;
@@ -938,13 +928,7 @@ DataAPI.prototype = {
         }
 
         if (paramsList.length && (method.toLowerCase() === 'get' || paramsList.length >= 2)) {
-            if (endpoint.indexOf('?') === -1) {
-                endpoint += '?';
-            }
-            else {
-                endpoint += '&';
-            }
-            endpoint += this._serializeParams(paramsList.shift());
+            endpoint = appendParamsToURL(endpoint, paramsList.shift());
         }
 
         if (method.match(/^(put|delete)$/i)) {
@@ -952,17 +936,28 @@ DataAPI.prototype = {
             method = 'POST';
         }
 
-        for (k in defaultParams) {
-            for (i = 0; i < paramsList.length; i++) {
-                if (k in paramsList[i]) {
-                    delete defaultParams[k];
+        if (paramsList.length) {
+            params = paramsList.shift();
+        }
+
+        if (! this._isEmptyObject(defaultParams)) {
+            if (method.toLowerCase() === 'get') {
+                endpoint = appendParamsToURL(endpoint, defaultParams);
+            }
+            else if (window.FormData && params && params instanceof window.FormData) {
+                for (k in defaultParams) {
+                    params.append(k, defaultParams[k]);
+                }
+            }
+            else {
+                params = params || {};
+                for (k in defaultParams) {
+                    params[k] = defaultParams[k];
                 }
             }
         }
 
-        if (paramsList.length) {
-            params = serializeParams(paramsList.shift());
-        }
+        params = serializeParams(params);
 
 
         base = this.o.baseUrl.replace(/\/*$/, '/') + 'v' + this.getVersion();
@@ -1006,13 +1001,13 @@ DataAPI.prototype = {
                 url = xhr.getResponseHeader('X-MT-Next-Phase-URL');
                 if (url) {
                     xhr.abort();
-                    api.sendXMLHttpRequest(xhr, method, base + url, params, defaultParams);
+                    api.sendXMLHttpRequest(xhr, method, base + url, params);
                 }
                 else {
                     cleanup();
                 }
             };
-            return this.sendXMLHttpRequest(xhr, method, base + endpoint, params, defaultParams);
+            return this.sendXMLHttpRequest(xhr, method, base + endpoint, params);
         }
         else {
             (function() {
@@ -1040,13 +1035,7 @@ DataAPI.prototype = {
                 iframe.contentWindow.name = target;
 
 
-                if (! api._isEmptyObject(defaultParams)) {
-                    if (! params) {
-                        params = {};
-                    }
-                    for (k in defaultParams) {
-                        params[k] = defaultParams[k];
-                    }
+                params = params || {};
                 if (authHeader) {
                     params['X-MT-Authorization'] = authHeader;
                 }
