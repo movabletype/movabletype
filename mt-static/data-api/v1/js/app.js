@@ -430,7 +430,12 @@ DataAPI.prototype = {
         for (k in params) {
             v = params[k];
             if (typeof v === 'object') {
-                v = v.id;
+                if (typeof v === 'function') {
+                    v = v.id();
+                }
+                else {
+                    v = v.id;
+                }
             }
             if (typeof v === 'function') {
                 v = v();
