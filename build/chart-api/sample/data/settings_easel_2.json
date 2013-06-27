@@ -1,0 +1,18 @@
+{
+  "graph": {
+    "type": "easel.motionLine",
+    "label": {
+      "template": "data/graph_label.template"
+    },
+    "data": "data/graph_data.json",
+    "yLength": 2,
+    "lineWidth": 8,
+    "pointSize": 8
+  },
+  "range": {
+    "dataType": "timeline",
+    "unit": "monthly",
+    "maxLength": 90,
+    "length": 10
+  }
+}

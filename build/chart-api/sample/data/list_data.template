@@ -1,0 +1,8 @@
+<style>
+.list_template {padding: 0; margin: 0; font-size: 0.9em; font-family: 'Helvetica Neue', sans-serif;}
+.list_template a:link{ color:#6AAC2B; }
+.list_template li span {font-size: 0.8em; }
+</style>
+<ul class="list_template">
+<% _.each(data, function(value) { %> <li><a href="<%= value.href %>"><%= value.title %></a> <span style="color:#666">( <%= value.date %> )</span></li> <% }); %>
+</ul>
