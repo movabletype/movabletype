@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 # $Id$
-package MT::DataAPI::Callback::TrackBack;
+package MT::DataAPI::Callback::Trackback;
 
 use strict;
 use warnings;

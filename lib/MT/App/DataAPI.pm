@@ -444,10 +444,10 @@ sub init_plugins {
             # ping callbacks
             $pkg
                 . 'view_permission_filter.ping' =>
-                "${pfx}TrackBack::can_view",
+                "${pfx}Trackback::can_view",
             $pkg
                 . 'pre_load_filtered_list.ping' =>
-                "${pfx}TrackBack::cms_pre_load_filtered_list",
+                "${pfx}Trackback::cms_pre_load_filtered_list",
 
             # permission callbacks
             $pkg
