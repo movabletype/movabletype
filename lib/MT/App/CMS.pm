@@ -340,6 +340,7 @@ sub core_widgets {
             set      => 'sidebar',
             singular => 1,
             view     => 'user',
+            order    => { 'user' => 4 },
         },
         mt_news => {
             label    => 'Movable Type News',
@@ -348,6 +349,7 @@ sub core_widgets {
             singular => 1,
             set      => 'sidebar',
             view     => 'user',
+            order    => { 'user' => 5 },
         },
         recent_websites => {
             label    => 'Websites',
@@ -356,6 +358,7 @@ sub core_widgets {
             singular => 1,
             set      => 'main',
             view     => 'system',
+            order    => { 'system' => 1 },
         },
         recent_blogs => {
             label    => 'Blogs',
@@ -364,6 +367,7 @@ sub core_widgets {
             singular => 1,
             set      => 'main',
             view     => 'website',
+            order    => { 'website' => 1 },
         },
         favorite_blogs => {
             label    => 'Websites and Blogs',
@@ -373,6 +377,7 @@ sub core_widgets {
             set      => 'main',
             view     => 'user',
             param    => { tab => 'website' },
+            order    => { 'user' => 3 },
         },
         notification_dashboard => {
             label    => 'Notification Dashboard',
@@ -380,6 +385,7 @@ sub core_widgets {
             singular => 1,
             set      => 'main',
             view     => 'user',
+            order    => { 'user' => 1 },
         },
         site_stats => {
             label    => 'Site Stats',
@@ -388,6 +394,11 @@ sub core_widgets {
             singular => 1,
             set      => 'main',
             view     => [ 'user', 'website', 'blog' ],
+            order    => {
+                'user'    => 2,
+                'website' => 1,
+                'blog'    => 1,
+            },
         },
     };
 
@@ -400,6 +411,7 @@ sub core_widgets {
             set      => 'main',
             view     => 'blog',
             param    => { tab => 'entry' },
+            order    => { 'blog' => 2 },
         };
     }
 

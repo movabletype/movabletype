@@ -48,11 +48,11 @@ sub dashboard {
                 set   => 'main'
             },
             'personal_stats' => {
-                order => 1,
+                order => 4,
                 set   => 'sidebar'
             },
             'mt_news' => {
-                order => 4,
+                order => 5,
                 set   => 'sidebar'
             },
         },
@@ -1115,11 +1115,12 @@ sub site_stats_widget {
     my ( $tmpl, $param ) = @_;
 
     if ( $param->{blog_id} ) {
-        my $perm = MT::Permission->load({
-            author_id   => $app->user->id,
-            blog_id     => $param->{blog_id},
-            permissions => { not => "'comment'" }
-        });
+        my $perm = MT::Permission->load(
+            {   author_id   => $app->user->id,
+                blog_id     => $param->{blog_id},
+                permissions => { not => "'comment'" }
+            }
+        );
         if ($perm) {
             $param->{name} = $app->blog->name;
         }
