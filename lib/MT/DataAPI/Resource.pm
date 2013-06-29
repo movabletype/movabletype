@@ -61,13 +61,13 @@ sub resource {
         for my $reg (@$regs) {
             for my $k ( keys %$reg ) {
                 if ( ref $reg->{$k} ) {
-                    $resources{$k} ||= {
-                        aliases => [
-                            {   key    => $k,
-                                plugin => $reg->{$k}{plugin},
-                            }
-                        ],
-                    };
+                    $resources{$k} ||= { aliases => [], };
+
+                    push @{ $resources{$k}{aliases} },
+                        {
+                        key    => $k,
+                        plugin => $reg->{$k}{plugin},
+                        };
                 }
                 else {
                     $aliases{$k} = $reg->{$k};
@@ -108,43 +108,89 @@ sub resource {
     return unless $res;
 
     if ( !$res->{fields} ) {
+        my %tmp_res = ();
         for my $k (qw(fields updatable_fields)) {
-            $res->{$k} = [
+            $tmp_res{$k} = [
                 map {
-                    my $data = $_;
-                    @{  $_->{plugin}->registry(
-                            'applications', 'data_api',
-                            'resources',    $_->{key},
-                            $k
-                        )
-                        }
+                    my $reg
+                        = $_->{plugin}->registry( 'applications', 'data_api',
+                        'resources', $_->{key}, $k );
+                    $reg ? @$reg : ();
                 } @{ $res->{aliases} }
             ];
         }
 
-        $res->{field_name_map} = {};
-        for ( @{ $res->{fields} } ) {
-            my $ref = ref $_;
-            if ( !$ref ) {
-                ( my $alias = $_ ) =~ s/([A-Z])/_\l$1/g;
-                $_ = { name => $_, alias => $alias };
-            }
-            elsif ( $ref eq 'HASH' && ( my $type = $_->{type} ) ) {
-                $type = 'MT::DataAPI::Resource::DataType::' . $type
-                    unless $type =~ m/:/;
-                eval "require $type;";
-                for my $mtype (qw(from_object to_object)) {
-                    if ( my $method = $type->can($mtype) ) {
-                        $_->{ 'type_' . $mtype } = $method;
+        $res->{fields} = [];
+        {
+            my %fields = ();
+
+            for my $f ( @{ $tmp_res{fields} } ) {
+                my $ref = ref $f;
+                if ( !$ref ) {
+                    ( my $alias = $f ) =~ s/([A-Z])/_\l$1/g;
+                    $f = { name => $f, alias => $alias };
+                }
+                elsif ( $ref eq 'HASH' && ( my $type = $f->{type} ) ) {
+                    $type = 'MT::DataAPI::Resource::DataType::' . $type
+                        unless $type =~ m/:/;
+                    eval "require $type;";
+                    for my $mtype (qw(from_object to_object)) {
+                        if ( my $method = $type->can($mtype) ) {
+                            $f->{ 'type_' . $mtype } = $method;
+                        }
                     }
                 }
-            }
 
-            $res->{field_name_map}{ $_->{name} } = $_->{alias} || $_->{name};
+                if (my $hash = $fields{$f->{name}}) {
+                    for my $k (keys %$f) {
+                        $hash->{$k} = $f->{$k};
+                    }
+                }
+                else {
+                    $fields{$f->{name}} = $f;
+                    push @{ $res->{fields} }, $f;
+                }
+            }
+        }
+        $res->{field_name_map}
+            = +{ map { $_->{name} => $_->{alias} || $_->{name} }
+                @{ $res->{fields} } };
+
+
+        $res->{updatable_fields} = [];
+        {
+            my %fields = ();
+
+            for my $f ( @{ $tmp_res{updatable_fields} } ) {
+                if ( !ref $f ) {
+                    $f = { name => $f };
+                }
+
+                if (my $hash = $fields{$f->{name}}) {
+                    for my $k (keys %$f) {
+                        $hash->{$k} = $f->{$k};
+                    }
+                }
+                else {
+                    $fields{$f->{name}} = $f;
+                    push @{ $res->{updatable_fields} }, $f;
+                }
+            }
         }
     }
 
     $res;
+}
+
+sub _is_condition_ok {
+    my ($f) = @_;
+    return 1 unless exists $f->{condition};    # not specified
+    return 0 unless $f->{condition};           # "0" had been specified
+    if ( !ref( $f->{condition} ) ) {
+        $f->{condition}
+            = MT->handler_to_coderef( $f->{condition} );
+    }
+    $f->{condition}->();
 }
 
 sub from_object {
@@ -167,12 +213,10 @@ sub from_object {
     my $resource_data = $class->resource( $objs->[0] )
         or return;
 
-    my @fields = do {
+    my @fields = grep { _is_condition_ok($_) } do {
         if ($fields_specified) {
-            grep {
-                my $name = ref($_) ? $_->{name} : $_;
-                grep { $_ eq $name } @$fields_specified
-            } @{ $resource_data->{fields} };
+            my %keys = map { $_ => 1 } @$fields_specified;
+            grep { $keys{ $_->{name} } } @{ $resource_data->{fields} };
         }
         else {
             @{ $resource_data->{fields} };
@@ -241,31 +285,11 @@ sub to_object {
         or return;
 
     my @fields = do {
-        my %keys = ();
-        for my $f ( @{ $resource_data->{updatable_fields} } ) {
-            if ( ref $f ) {
-                if ( exists( $f->{condition} ) ) {
-                    if ( !ref( $f->{condition} ) ) {
-                        $f->{condition}
-                            = MT->handler_to_coderef( $f->{condition} );
-                    }
+        my %keys = map { _is_condition_ok($_) ? ( $_->{name} => 1 ) : () }
+            @{ $resource_data->{updatable_fields} };
 
-                    if ( !$f->{condition}->() ) {
-                        $keys{ $f->{name} } = 0;
-                        next;
-                    }
-                }
-
-                $f = $f->{name};
-            }
-
-            $keys{$f} = 1 unless exists $keys{$f};
-        }
-
-        grep {
-            my $name = ref($_) ? $_->{name} : $_;
-            $keys{$name};
-        } @{ $resource_data->{fields} };
+        grep { $keys{ $_->{name} } && _is_condition_ok($_) }
+            @{ $resource_data->{fields} };
     };
 
     my $model_class = MT->model($name);
