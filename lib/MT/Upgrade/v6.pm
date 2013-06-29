@@ -84,6 +84,13 @@ __SQL__
                 code  => \&_v6_add_site_stats_widget,
             },
         },
+        '_v6_enable_session_key_compat' => {
+            version_limit => 6.0006,
+            priority => 3.1,
+            code => sub {
+                MT->config( 'EnableSessionKeyCompat', 1, 1 );
+            },
+        },
     };
 }
 

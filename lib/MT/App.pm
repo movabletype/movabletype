@@ -1419,6 +1419,7 @@ sub make_session {
     $sess->id( make_magic_token() );
     $sess->kind('US');    # US == User Session
     $sess->start(time);
+    $sess->name( $auth->id );
     $sess->set( 'author_id', $auth->id );
     $sess->set( 'remember', 1 ) if $remember;
     $sess->save;

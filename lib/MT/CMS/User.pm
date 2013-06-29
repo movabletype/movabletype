@@ -1682,6 +1682,14 @@ sub post_save {
             $app->run_callbacks( 'new_user_provisioning', $obj );
         }
     }
+
+    if ( $app->user->id eq $obj->id and $obj->password ne $original->password ) {
+        my $current_session = $app->session;
+
+        MT::Auth->invalidate_credentials( { app => $app } );
+        $app->start_session( $obj, $current_session->get('remember') || 0 );
+    }
+
     1;
 }
 
