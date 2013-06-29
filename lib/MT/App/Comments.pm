@@ -2065,7 +2065,19 @@ sub save_commenter_profile {
             = $app->translate( 'Commenter profile could not be updated: [_1]',
             $cmntr->errstr );
     }
-    $param{magic_token} = $app->current_magic;
+
+    # Clear and refresh session for this user.
+    my $magic_token = $app->current_magic;
+    if ( $param{password} && 'MT' eq $cmntr->auth_type ) {
+        MT::Auth->invalidate_credentials( { app => $app } );
+        my %cookies = $app->cookies();
+        $app->_invalidate_commenter_session( \%cookies );
+        require MT::Session;
+        MT::Session->remove( { kind => 'SI', name => $cmntr->name } );
+        $magic_token = $app->make_commenter_session( $cmntr );
+    }
+
+    $param{magic_token} = $sid;
 
     return $app->build_page( 'profile.tmpl', \%param );
 }
