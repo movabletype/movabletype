@@ -713,8 +713,10 @@ sub mt_authorization_data {
 sub authenticate {
     my ($app) = @_;
 
-    my $data = $app->mt_authorization_data
-        or undef;
+    my $data = $app->mt_authorization_data;
+    return MT::Author->anonymous
+        unless $data
+        && exists $data->{MTAuth}{accessToken};
 
     my $session
         = MT::AccessToken->load_session( $data->{MTAuth}{accessToken} || '' )
@@ -960,7 +962,7 @@ sub api {
         or return $app->print_error( 'Unknown endpoint', 404 );
     my $user = $app->authenticate;
 
-    if ( $endpoint->{requires_login} && !$user ) {
+    if ( !$user || ( $endpoint->{requires_login} && $user->is_anonymous ) ) {
         return $app->print_error( 'Unauthorized', 401 );
     }
     $user ||= MT::Author->anonymous;
