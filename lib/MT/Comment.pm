@@ -446,19 +446,27 @@ sub list_props {
             col     => 'visible',
             display => 'none',
             terms   => sub {
-                my ( $prop, $args ) = @_;
-                return $args->{value} eq 'approved'
+                my $prop  = shift;
+                my $value = $prop->normalized_value(@_);
+                return $value eq 'approved'
                     ? { visible => 1, junk_status => NOT_JUNK() }
-                    : $args->{value} eq 'pending'
+                    : $value eq 'pending'
                     ? { visible => 0, junk_status => NOT_JUNK() }
-                    : $args->{value} eq 'junk' ? { junk_status => JUNK() }
-                    :   { junk_status => NOT_JUNK() };
+                    : $value eq 'junk' ? { junk_status => JUNK() }
+                    :                    { junk_status => NOT_JUNK() };
             },
             single_select_options => [
-                { label => MT->translate('Approved'), value => 'approved', },
-                { label => MT->translate('Unapproved'), value => 'pending', },
+                {   label => MT->translate('Approved'),
+                    text  => 'Approved',
+                    value => 'approved',
+                },
+                {   label => MT->translate('Unapproved'),
+                    text  => 'Pending',
+                    value => 'pending',
+                },
                 { label => MT->translate('Not spam'), value => 'not_junk', },
                 {   label => MT->translate('Reported as spam'),
+                    text  => 'Spam',
                     value => 'junk',
                 },
             ],
@@ -778,6 +786,20 @@ sub list_props {
                 },
             ],
         },
+        id => {
+            base      => '__virtual.id',
+            condition => sub {0},
+        },
+        content => {
+            base      => '__virtual.content',
+            fields    => [qw(url text email ip author)],
+            condition => sub {0},
+        },
+        entry_status => {
+            base      => 'entry.status',
+            col       => 'entry.status',
+            display   => 'none',
+        },
     };
 }
 
@@ -1009,6 +1031,19 @@ sub all_text {
     $text;
 }
 
+sub permalink {
+    my $self = shift;
+
+    my $id    = $self->id;
+    my $entry = $self->entry;
+    if ( $id && $entry ) {
+        $entry->archive_url . '#comment-' . $id;
+    }
+    else {
+        '#';
+    }
+}
+
 sub is_published {
     return $_[0]->visible && !$_[0]->is_junk;
 }
@@ -1106,6 +1141,27 @@ sub parent {
             }
         }
     );
+}
+
+sub get_status_text {
+    my $self = shift;
+          $self->is_published ? 'Approved'
+        : $self->is_moderated ? 'Pending'
+        :                       'Spam';
+}
+
+sub set_status_by_text {
+    my $self   = shift;
+    my $status = lc $_[0];
+    if ( $status eq 'approved' ) {
+        $self->approve;
+    }
+    elsif ( $status eq 'pending' ) {
+        $self->moderate;
+    }
+    else {
+        $self->junk;
+    }
 }
 
 1;

@@ -938,6 +938,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Misc::_hdlr_widget_manager',
             CaptchaFields =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_captcha_fields',
+            'StatsSnippet' =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_stats_snippet',
         },
         modifier => {
             'numify'  => '$Core::MT::Template::Tags::Filters::_fltr_numify',

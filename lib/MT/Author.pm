@@ -1525,6 +1525,23 @@ sub locked_out {
         >= MT::Lockout::locked_out_user_threshold();
 }
 
+sub anonymous {
+    my $class = shift;
+    my $obj   = $class->new;
+    $obj->set_values(
+        {   id     => 0,
+            type   => AUTHOR,
+            status => ACTIVE,
+        }
+    );
+    $obj;
+}
+
+sub is_anonymous {
+    my $self = shift;
+    $self->id == 0;
+}
+
 1;
 
 __END__

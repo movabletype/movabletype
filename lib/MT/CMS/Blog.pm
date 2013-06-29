@@ -581,12 +581,35 @@ sub cfg_web_services {
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
+
+    my @config_templates = ();
+    my $web_services     = $app->registry('web_services');
+    for my $k (%$web_services) {
+        my $plugin  = $web_services->{$k}{plugin};
+        my $tmpl    = $web_services->{$k}{config_template}
+            or next;
+
+        if ( ref $tmpl eq 'HASH' ) {
+            $tmpl = MT->handler_to_coderef( $tmpl->{code} );
+        }
+
+        push @config_templates,
+            {
+            tmpl => (
+                  ref $tmpl eq 'CODE' ? $tmpl->( $plugin, @_ )
+                : $plugin             ? $plugin->load_tmpl($tmpl)
+                :                       $app->load_tmpl($tmpl)
+            )
+            };
+    }
+
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward(
         "view",
-        {   output       => 'cfg_web_services.tmpl',
-            screen_class => 'settings-screen web-services-settings'
+        {   output           => 'cfg_web_services.tmpl',
+            screen_class     => 'settings-screen web-services-settings',
+            config_templates => \@config_templates,
         }
     );
 }
@@ -3329,9 +3352,9 @@ sub cms_pre_load_filtered_list {
     my $terms = $load_options->{terms};
     $terms->{parent_id} = $load_options->{blog_id}
         if $app->blog;
-    $terms->{class} = 'blog';
+    $terms->{class} = 'blog' unless $terms->{class} eq '*';
 
-    my $user = $app->user;
+    my $user = $load_options->{user} || $app->user;
     return   if $user->is_superuser;
     return 1 if $user->permissions(0)->can_do('edit_templates');
 
@@ -3344,11 +3367,21 @@ sub cms_pre_load_filtered_list {
 
     my $blog_ids;
     while ( my $perm = $iter->() ) {
-        my $blog = $perm->blog;
-        push @$blog_ids, $perm->blog_id
-            if $blog && $blog->class eq 'blog';
+        push @$blog_ids, $perm->blog_id if $perm->blog_id;
     }
+    if ( $terms->{class} eq '*' ) {
+        push @$blog_ids,
+            map { $_->parent_id } $app->model('blog')->load(
+            { class     => 'blog', id => $blog_ids },
+            { fetchonly => ['parent_id'] }
+            );
+    }
+
     if ($blog_ids) {
+        if ($terms->{class} eq '*' ) {
+            delete $terms->{class};
+            $load_options->{args}{no_class} = 1;
+        }
         $terms->{id} = $blog_ids;
     }
     else {

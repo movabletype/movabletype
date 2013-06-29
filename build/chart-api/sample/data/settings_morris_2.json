@@ -1,0 +1,19 @@
+{
+  "graph": {
+    "type": "morris.bar",
+    "label": {
+      "template": "data/graph_label.template"
+    },
+    "data": "data/graph_data.json",
+    "yLength": 2,
+    "autoSized": true,
+    "lineWidth": 6,
+    "pointSize": 6
+  },
+  "range": {
+    "dataType": "timeline",
+    "unit": "monthly",
+    "maxLength": 90,
+    "length": 10
+  }
+}

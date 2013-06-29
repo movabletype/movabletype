@@ -590,7 +590,7 @@ sub rebuild_entry {
 
     my $categories_for_rebuild;
     if ( my $ids = $param{OldCategories} ) {
-        my %new_ids = map { $_->id => 1 } @{$entry->categories};
+        my %new_ids = map { $_->id => 1 } @{ $entry->categories };
         my @old_ids = grep { !$new_ids{$_} } split( ',', $ids );
 
         if (@old_ids) {
@@ -598,7 +598,7 @@ sub rebuild_entry {
                 MT::Category->load( { id => \@old_ids } ) );
         }
     }
-    push @$categories_for_rebuild, ( map { $_ } @{$entry->categories} );
+    push @$categories_for_rebuild, ( map {$_} @{ $entry->categories } );
 
     my $at
         = $param{PreferredArchiveOnly} ? $blog->archive_type_preferred
@@ -1943,9 +1943,15 @@ sub publish_future_posts {
         foreach my $entry_id (@queue) {
             my $entry = MT::Entry->load($entry_id)
                 or next;
+            my $original = $entry->clone();
             $entry->status( MT::Entry::RELEASE() );
+            my @ts = MT::Util::offset_time_list( time, $entry->blog_id );
+            my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+                $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            $entry->modified_on($ts);
             $entry->save
                 or die $entry->errstr;
+            $this->post_scheduled( $entry, $original, MT->translate('Scheduled publishing.') );
 
             MT->run_callbacks( 'scheduled_post_published', $mt, $entry );
 
@@ -2043,10 +2049,16 @@ sub unpublish_past_entries {
         foreach my $entry_id (@queue) {
             my $entry = MT::Entry->load($entry_id)
                 or next;
+            my $original = $entry->clone();
 
             $entry->status( MT::Entry::UNPUBLISH() );
+            my @ts = MT::Util::offset_time_list( time, $entry->blog_id );
+            my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+                $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            $entry->modified_on($ts);
             $entry->save
                 or die $entry->errstr;
+            $app->post_scheduled( $entry, $original );
 
             # remove file
             if ( $mt->config('DeleteFilesAtRebuild') ) {
@@ -2193,6 +2205,22 @@ sub _delete_archive_file {
 {
     my %tokens_cache;
 
+    sub archive_file_cache_key {
+        my $mt = shift;
+        my ( $entry, $blog, $at, $cat, $map, $timestamp, $author ) = @_;
+
+        return join ':',
+            (
+            $entry     ? $entry->id  : '0',
+            $blog      ? $blog->id   : '0',
+            $at        ? $at         : 'None',
+            $cat       ? $cat->id    : '0',
+            $map       ? $map->id    : '0',
+            $timestamp ? $timestamp  : '0',
+            $author    ? $author->id : '0'
+            );
+    }
+
     sub archive_file_for {
         my $mt = shift;
         init_archive_types() unless %ArchiveTypes;
@@ -2207,16 +2235,7 @@ sub _delete_archive_file {
         unless ($cache_file) {
             MT::Request->instance->cache( 'file', $cache_file = {} );
         }
-        my $cache_key = join ':',
-            (
-            $entry     ? $entry->id  : '0',
-            $blog      ? $blog->id   : '0',
-            $at        ? $at         : 'None',
-            $cat       ? $cat->id    : '0',
-            $map       ? $map->id    : '0',
-            $timestamp ? $timestamp  : '0',
-            $author    ? $author->id : '0'
-            );
+        my $cache_key = $mt->archive_file_cache_key(@_);
         if ( $file = $cache_file->{$cache_key} ) {
             return $file;
         }
@@ -2386,6 +2405,35 @@ sub queue_build_file_filter {
     MT::TheSchwartz->insert($job);
 
     return 0;
+}
+
+sub post_scheduled {
+    my $app = shift;
+    my ( $obj, $orig, $msg ) = @_;
+
+    $obj->gather_changed_cols( $orig, $app );
+
+    if ( exists $obj->{changed_revisioned_cols} ) {
+        my $col = 'max_revisions_' . $obj->datasource;
+        if ( my $blog = $obj->blog ) {
+            my $max = $blog->$col;
+            $obj->handle_max_revisions($max);
+        }
+        my $revision = $obj->save_revision($msg);
+        $obj->current_revision($revision);
+
+        # call update to bypass instance save method
+        $obj->update or return $obj->error( $obj->errstr );
+        if ( $obj->has_meta('revision') ) {
+            $obj->revision($revision);
+
+            # hack to bypass instance save method
+            $obj->{__meta}->set_primary_keys($obj);
+            $obj->{__meta}->save;
+        }
+    }
+
+    return 1;
 }
 
 1;

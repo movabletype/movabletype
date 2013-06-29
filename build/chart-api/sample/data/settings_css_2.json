@@ -1,0 +1,16 @@
+{
+  "graph": {
+    "type": "css.ratioHorizontalBar",
+    "data": "data/graph_data.json",
+    "yLength": 2,
+    "showCount": true,
+    "showDate": true,
+    "labelColors": ["#ffffff", "#ffffff"]
+  },
+  "range": {
+    "dataType": "general",
+    "unit": "monthly",
+    "maxLength": 90,
+    "length": 10
+  }
+}

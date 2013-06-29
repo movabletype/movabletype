@@ -660,5 +660,12 @@
 { "r" : "1", "t" : "<MTAssets tag='alphabeta'><$MTAssetID$></MTAssets>", "e" : ""}, #644
 { "r" : "1", "t" : "<MTAssets tag='alpha OR beta'><$MTAssetID$></MTAssets>", "e" : "12"}, #645
 { "r" : "1", "t" : "<MTAssets tag='alpha AND beta'><$MTAssetID$></MTAssets>", "e" : "1"}, #646
-{ "r" : "1", "t" : "<MTAssets tag='NOT gamma'><$MTAssetID$></MTAssets>", "e" : "2"} #647
+{ "r" : "1", "t" : "<MTAssets tag='NOT gamma'><$MTAssetID$></MTAssets>", "e" : "2"}, #647
+{ "r" : "1", "t" : "<MTIgnore><MTEntries></MTIgnore>", "e" : "" }, #648
+{ "r" : "1", "t" : "<MTIgnore><MTEntries></MTEntries></MTIgnore>", "e" : "" }, #649
+{ "r" : "1", "t" : "<MTIgnore><MTDate></MTIgnore>", "e" : "" }, #650
+{ "r" : "1", "t" : "<MTIgnore><MTFoo></MTIgnore>", "e" : "" }, #651
+{ "r" : "1", "t" : "<MTSupportDirectoryURL with_domain='1'>", "e" : "http://narnia.na/mt-static/support/"}, #652
+{ "r" : "1", "t" : "<MTSupportDirectoryURL with_domain='0'>", "e" : "/mt-static/support/"}, #653
+{ "r" : "1", "t" : "<MTSupportDirectoryURL with_domain=''>", "e" : "/mt-static/support/"} #654
 ]

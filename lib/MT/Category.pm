@@ -133,6 +133,15 @@ sub list_props {
                 return @cats;
             },
         },
+        user_custom => {
+            base    => 'category.custom_sort',
+            display => 'none',
+        },
+        content => {
+            base      => '__virtual.content',
+            fields    => [qw(label basename)],
+            display   => 'none',
+        },
     };
 }
 

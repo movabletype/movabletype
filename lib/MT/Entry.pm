@@ -346,15 +346,14 @@ sub list_props {
                 ) unless $cat_id;
 
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} },
-                    MT->model('placement')->join_on(
+                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
                     undef,
                     {   category_id => $cat_id,
                         entry_id    => \'= entry_id',
                         blog_id     => $blog_id,
                     },
                     { unique => 1, },
-                    );
+                );
                 return;
             },
             args_via_param => sub {
@@ -515,8 +514,7 @@ sub list_props {
                 elsif ( 'end' eq $option ) {
                     $query = { like => "%$query" };
                 }
-                push @{ $db_args->{joins} },
-                    MT->model('placement')->join_on(
+                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
                     undef,
                     {   entry_id => \'= entry_id',
                         ( $blog_id ? ( blog_id => $blog_id ) : () ),
@@ -531,7 +529,7 @@ sub list_props {
                             { unique => 1, }
                         ),
                     },
-                    );
+                );
                 return;
             },
         },
@@ -627,12 +625,30 @@ sub list_props {
             col_class             => 'icon',
             base                  => '__virtual.single_select',
             single_select_options => [
-                { label => MT->translate('Draft'),             value => 1, },
-                { label => MT->translate('Published'),         value => 2, },
-                { label => MT->translate('Reviewing'),         value => 3, },
-                { label => MT->translate('Scheduled'),         value => 4, },
-                { label => MT->translate('Junk'),              value => 5, },
-                { label => MT->translate('Unpublished (End)'), value => 6, },
+                {   label => MT->translate('Draft'),
+                    text  => 'Draft',
+                    value => 1,
+                },
+                {   label => MT->translate('Published'),
+                    text  => 'Publish',
+                    value => 2,
+                },
+                {   label => MT->translate('Reviewing'),
+                    text  => 'Review',
+                    value => 3,
+                },
+                {   label => MT->translate('Scheduled'),
+                    text  => 'Future',
+                    value => 4,
+                },
+                {   label => MT->translate('Junk'),
+                    text  => 'Spam',
+                    value => 5,
+                },
+                {   label => MT->translate('Unpublished (End)'),
+                    text  => 'Unpublish',
+                    value => 6,
+                },
             ],
         },
         created_on => {
@@ -660,8 +676,8 @@ sub list_props {
                 my $from   = $args->{from}   || undef;
                 my $to     = $args->{to}     || undef;
                 my $origin = $args->{origin} || undef;
-                $from =~ s/\D//g;
-                $to =~ s/\D//g;
+                $from   =~ s/\D//g;
+                $to     =~ s/\D//g;
                 $origin =~ s/\D//g;
                 $from .= '000000' if $from;
                 $to   .= '235959' if $to;
@@ -749,17 +765,21 @@ sub list_props {
                         ? MT::Author::ACTIVE()
                         : MT::Author::INACTIVE();
                     $db_args->{joins} ||= [];
-                    push @{ $db_args->{joins} },
-                        MT->model('author')->join_on(
+                    push @{ $db_args->{joins} }, MT->model('author')->join_on(
                         undef,
                         {   id     => \'= entry_author_id',
                             status => $status,
                         },
-                        );
+                    );
                 }
             },
         },
         current_context => { base => '__common.current_context', },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw(title text text_more keywords excerpt basename)],
+            display => 'none',
+        },
     };
 }
 
@@ -858,6 +878,7 @@ sub status_int {
         : $s eq 'review'    ? REVIEW
         : $s eq 'future'    ? FUTURE
         : $s eq 'junk'      ? JUNK
+        : $s eq 'spam'      ? JUNK
         : $s eq 'unpublish' ? UNPUBLISH
         :                     undef;
 }
@@ -1280,7 +1301,7 @@ sub pinged_url_list {
             delete $urls{$_} if $exclude_successes;
         }
     }
-    [ keys %urls ];
+    [ sort keys %urls ];
 }
 
 sub to_ping_url_list {
@@ -1483,7 +1504,25 @@ sub save {
         }
     }
 
-    $entry->clear_cache() if $is_new;
+    if ($is_new) {
+
+        # Clear some cache
+        $entry->clear_cache();
+
+        my $blog = $entry->blog;
+        my $at 
+            = $blog->archive_type_preferred
+            || $blog->archive_type
+            || 'Individual';
+
+        my $key;
+        my $publisher  = MT->instance->publisher;
+        my $cache_file = MT::Request->instance->cache('file');
+        $key = $publisher->archive_file_cache_key( $entry, $blog, $at )
+            if $publisher->can('archive_file_cache_key');
+        delete $cache_file->{$key}
+            if $key && $cache_file && exists $cache_file->{$key};
+    }
 
     1;
 }

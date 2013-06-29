@@ -186,8 +186,8 @@
 var index = <mt:if name="tab" eq="website">0<mt:else>1</mt:if>
 var updateTabPrefTimeout;
 jQuery('#favorite_blogs').tabs({
-    select: function (event, ui) {
-        index = ui.index == 0 ? 'website' : 'blog';
+    beforeActivate: function (event, ui) {
+        index = ui.newTab.index() == 0 ? 'website' : 'blog';
         if (updateTabPrefTimeout) {
             window.clearTimeout(updateTabPrefTimeout);
         }
@@ -195,7 +195,7 @@ jQuery('#favorite_blogs').tabs({
         // user selects again
         updateTabPrefTimeout = window.setTimeout('favoriteUpdateTabPref()', 1000);
     },
-    selected: index
+    active: index
 });
 
 function favoriteUpdateTabPref() {

@@ -1,0 +1,14 @@
+- 
+  note: Create an asset
+  from: 
+    label: Label
+    description: Description
+    tags:
+      - tag1
+      - tag2
+  to: 
+    label: Label
+    description: Description
+    tags:
+      - tag1
+      - tag2
