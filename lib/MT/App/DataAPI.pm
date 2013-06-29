@@ -132,7 +132,7 @@ sub core_endpoints {
                 sortBy    => 'authored_on',
                 sortOrder => 'descend',
                 searchFields =>
-                    'title,text,text_more,keywords,excerpt,basename',
+                    'title,body,more,keywords,excerpt,basename',
                 filterKeys => 'status',
             },
             error_codes => {
@@ -207,7 +207,7 @@ sub core_endpoints {
                 offset       => 0,
                 sortBy       => 'id',
                 sortOrder    => 'descend',
-                searchFields => 'url,text,email,ip,author',
+                searchFields => 'body',
                 filterKeys   => 'status,entryStatus',
             },
             error_codes => {
@@ -226,7 +226,7 @@ sub core_endpoints {
                 offset       => 0,
                 sortBy       => 'id',
                 sortOrder    => 'descend',
-                searchFields => 'url,text,email,ip,author',
+                searchFields => 'body',
                 filterKeys   => 'status',
             },
             error_codes => {
@@ -293,7 +293,7 @@ sub core_endpoints {
                 offset       => 0,
                 sortBy       => 'id',
                 sortOrder    => 'descend',
-                searchFields => 'title,excerpt,source_url,ip,blog_name',
+                searchFields => 'title,excerpt,blogName',
                 filterKeys   => 'status',
             },
             error_codes => {
@@ -312,7 +312,7 @@ sub core_endpoints {
                 offset       => 0,
                 sortBy       => 'id',
                 sortOrder    => 'descend',
-                searchFields => 'title,excerpt,source_url,ip,blog_name',
+                searchFields => 'title,excerpt,blogName',
                 filterKeys   => 'status',
             },
             error_codes => {

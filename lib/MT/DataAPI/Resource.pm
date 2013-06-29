@@ -122,17 +122,25 @@ sub resource {
             ];
         }
 
-        for my $f ( @{ $res->{fields} } ) {
-            if ( ref $f eq 'HASH' && ( my $type = $f->{type} ) ) {
+        $res->{field_name_map} = {};
+        for ( @{ $res->{fields} } ) {
+            my $ref = ref $_;
+            if ( !$ref ) {
+                ( my $alias = $_ ) =~ s/([A-Z])/_\l$1/g;
+                $_ = { name => $_, alias => $alias };
+            }
+            elsif ( $ref eq 'HASH' && ( my $type = $_->{type} ) ) {
                 $type = 'MT::DataAPI::Resource::DataType::' . $type
                     unless $type =~ m/:/;
                 eval "require $type;";
                 for my $mtype (qw(from_object to_object)) {
                     if ( my $method = $type->can($mtype) ) {
-                        $f->{ 'type_' . $mtype } = $method;
+                        $_->{ 'type_' . $mtype } = $method;
                     }
                 }
             }
+
+            $res->{field_name_map}{ $_->{name} } = $_->{alias} || $_->{name};
         }
     }
 
@@ -176,10 +184,6 @@ sub from_object {
     my $stash      = {};
 
     for my $f (@fields) {
-        if ( !ref $f ) {
-            $f = { name => $f, };
-        }
-
         if ( $f->{bulk_from_object} ) {
             $f->{bulk_from_object}->( $objs, \@hashs, $f, $stash );
         }
@@ -278,9 +282,6 @@ sub to_object {
     my $stash      = {};
 
     for my $f (@fields) {
-        if ( !ref $f ) {
-            $f = { name => $f, };
-        }
         my $name        = $f->{name};
         my $has_default = exists $f->{to_object_default};
         my $default     = $f->{to_object_default};
