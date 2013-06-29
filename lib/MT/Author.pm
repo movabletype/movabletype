@@ -737,9 +737,9 @@ sub remove_sessions {
     require MT::Session;
 
     if ( MT->config('EnableSessionKeyCompat') ) {
-        my $sess_iter = MT::Session->load_iter({ kind => 'US' });
+        my $sess_iter = MT::Session->load_iter( { kind => 'US' } );
         my @sess;
-        while (my $sess = $sess_iter->()) {
+        while ( my $sess = $sess_iter->() ) {
             my $id = $sess->get('author_id');
             next unless $id == $auth->id;
             push @sess, $sess;

@@ -1683,7 +1683,9 @@ sub post_save {
         }
     }
 
-    if ( $app->user->id eq $obj->id and $obj->password ne $original->password ) {
+    if (    $app->user->id eq $obj->id
+        and $obj->password ne $original->password )
+    {
         my $current_session = $app->session;
 
         MT::Auth->invalidate_credentials( { app => $app } );
