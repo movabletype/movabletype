@@ -166,8 +166,7 @@ sub filtered_list {
         :                  [ $blog->id, map { $_->id } @{ $blog->blogs } ];
     my $resource_data = MT::DataAPI::Resource->resource($ds);
 
-    my $setting = MT->registry( listing_screens => $ds )
-        or return $app->error( $app->translate('Unknown list type'), 400 );
+    my $setting = MT->registry( listing_screens => $ds ) || {};
 
     if (exists $setting->{data_api_condition}
         ? defined $setting->{data_api_condition}
@@ -267,7 +266,7 @@ sub filtered_list {
     }
 
     require MT::ListProperty;
-    my $props = MT::ListProperty->list_properties($ds);
+    my $props = MT::ListProperty->list_properties($ds) || {};
 
     for my $key ( split ',', ( $app->param('filterKeys') || '' ) ) {
         if ( defined( $app->param($key) ) ) {
