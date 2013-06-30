@@ -1258,7 +1258,7 @@ sub generate_site_stats_data {
                 my %row1 = (
                     x  => $item->{date},
                     y  => $item->{pageviews},
-                    y1 => $counts{ $item->{date} } * $rate || 0,
+                    y1 => ( $counts{ $item->{date} } || 0 )  * ( $rate || 0 ),
                 );
                 my %row2 = (
                     pv    => $item->{pageviews},
