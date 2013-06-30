@@ -1021,6 +1021,9 @@ DataAPI.prototype = {
                 defaultHeaders['X-MT-Authorization'] =
                     api.getAuthorizationHeader('sessionId');
             }
+            else if (endpoint === '/token' && originalMethod.toLowerCase() === 'post') {
+                defaultHeaders['X-MT-Authorization'] = '';
+            }
             defaultParams.clientId = api.o.clientId;
         }
 
