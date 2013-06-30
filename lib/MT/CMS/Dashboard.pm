@@ -940,7 +940,7 @@ sub _build_favorite_websites_data {
             if $blog_perms_cnt;
 
         my @num_vars = qw(
-            website_blog_count website_page_count website_comment_count
+            website_entry_count website_blog_count website_page_count website_comment_count
         );
         map { $row->{$_} = 0 if !defined $row->{$_} } @num_vars;
         push @param, $row;
