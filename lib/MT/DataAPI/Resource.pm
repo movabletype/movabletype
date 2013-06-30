@@ -141,13 +141,13 @@ sub resource {
                     }
                 }
 
-                if (my $hash = $fields{$f->{name}}) {
-                    for my $k (keys %$f) {
+                if ( my $hash = $fields{ $f->{name} } ) {
+                    for my $k ( keys %$f ) {
                         $hash->{$k} = $f->{$k};
                     }
                 }
                 else {
-                    $fields{$f->{name}} = $f;
+                    $fields{ $f->{name} } = $f;
                     push @{ $res->{fields} }, $f;
                 }
             }
@@ -155,7 +155,6 @@ sub resource {
         $res->{field_name_map}
             = +{ map { $_->{name} => $_->{alias} || $_->{name} }
                 @{ $res->{fields} } };
-
 
         $res->{updatable_fields} = [];
         {
@@ -166,13 +165,13 @@ sub resource {
                     $f = { name => $f };
                 }
 
-                if (my $hash = $fields{$f->{name}}) {
-                    for my $k (keys %$f) {
+                if ( my $hash = $fields{ $f->{name} } ) {
+                    for my $k ( keys %$f ) {
                         $hash->{$k} = $f->{$k};
                     }
                 }
                 else {
-                    $fields{$f->{name}} = $f;
+                    $fields{ $f->{name} } = $f;
                     push @{ $res->{updatable_fields} }, $f;
                 }
             }

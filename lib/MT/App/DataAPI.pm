@@ -127,13 +127,12 @@ sub core_endpoints {
             version        => 1,
             handler        => "${pkg}Entry::list",
             default_params => {
-                limit     => 10,
-                offset    => 0,
-                sortBy    => 'authored_on',
-                sortOrder => 'descend',
-                searchFields =>
-                    'title,body,more,keywords,excerpt,basename',
-                filterKeys => 'status',
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'authored_on',
+                sortOrder    => 'descend',
+                searchFields => 'title,body,more,keywords,excerpt,basename',
+                filterKeys   => 'status',
             },
             error_codes => {
                 403 =>
