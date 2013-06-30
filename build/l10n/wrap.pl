@@ -1,8 +1,8 @@
 #! /usr/bin/perl -w
 
-# Movable Type (r) Open Source (C) 2005-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -13,10 +13,9 @@ BEGIN {
     shift @ARGV unless (-e $LANG);
     my $year = (localtime(time))[5] + 1900;
     print <<EOF;
-# Movable Type (r) Open Source (C) 2005-$year Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
-#
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # \$Id:\$
 

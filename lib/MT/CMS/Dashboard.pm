@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Dashboard;
@@ -48,11 +48,11 @@ sub dashboard {
                 set   => 'main'
             },
             'personal_stats' => {
-                order => 1,
+                order => 4,
                 set   => 'sidebar'
             },
             'mt_news' => {
-                order => 4,
+                order => 5,
                 set   => 'sidebar'
             },
         },
@@ -822,26 +822,26 @@ sub _build_favorite_websites_data {
     }
 
     require MT::Entry;
-    my $iter = MT::Entry->count_group_by(
+    my $entry_iter = MT::Entry->count_group_by(
         {   class   => 'entry',
             blog_id => \@website_ids,
             $param->{my_posts} ? ( author_id => $user->id ) : (),
         },
         { group => ['blog_id'], }
     );
-    while ( my ( $count, $blog_id ) = $iter->() ) {
+    while ( my ( $count, $blog_id ) = $entry_iter->() ) {
         $data{$blog_id}->{entry_count} = $count;
     }
 
     require MT::Page;
-    my $entry_iter = MT::Page->count_group_by(
+    my $page_iter = MT::Page->count_group_by(
         {   class   => 'page',
             blog_id => \@website_ids,
             $param->{my_posts} ? ( author_id => $user->id ) : (),
         },
         { group => ['blog_id'], }
     );
-    while ( my ( $count, $blog_id ) = $entry_iter->() ) {
+    while ( my ( $count, $blog_id ) = $page_iter->() ) {
         $data{$blog_id}->{page_count} = $count;
     }
 
@@ -940,7 +940,7 @@ sub _build_favorite_websites_data {
             if $blog_perms_cnt;
 
         my @num_vars = qw(
-            website_blog_count website_page_count website_comment_count
+            website_entry_count website_blog_count website_page_count website_comment_count
         );
         map { $row->{$_} = 0 if !defined $row->{$_} } @num_vars;
         push @param, $row;
@@ -1115,7 +1115,18 @@ sub site_stats_widget {
     my ( $tmpl, $param ) = @_;
 
     if ( $param->{blog_id} ) {
-        $param->{name} = $app->blog->name;
+        my $perm = MT::Permission->load(
+            {   author_id   => $app->user->id,
+                blog_id     => $param->{blog_id},
+                permissions => { not => "'comment'" }
+            }
+        );
+        if ($perm) {
+            $param->{name} = $app->blog->name;
+        }
+        else {
+            $param->{no_permission} = 1;
+        }
     }
     else {
         # Load favorite websites data
@@ -1137,9 +1148,18 @@ sub site_stats_widget {
             push @{ $param->{object_loop} }, $row;
         }
 
-        @{ $param->{object_loop} }
-            = sort { $a->{name} cmp $b->{name} } @{ $param->{object_loop} };
-        $param->{blog_id} = $param->{object_loop}->[0]->{id};
+        my $loop_count = @{ $param->{object_loop} };
+        if ( $loop_count > 1 ) {
+            @{ $param->{object_loop} }
+                = sort { $a->{name} cmp $b->{name} }
+                @{ $param->{object_loop} };
+            $param->{blog_id} = $param->{object_loop}->[0]->{id};
+        }
+        elsif ($loop_count) {
+            $param->{blog_id} = $param->{object_loop}->[0]->{id};
+            $param->{name}    = $param->{object_loop}->[0]->{name};
+            delete $param->{object_loop};
+        }
     }
 
     generate_site_stats_data( $app, $param ) or return;
@@ -1238,7 +1258,7 @@ sub generate_site_stats_data {
                 my %row1 = (
                     x  => $item->{date},
                     y  => $item->{pageviews},
-                    y1 => $counts{ $item->{date} } * $rate || 0,
+                    y1 => ( $counts{ $item->{date} } || 0 )  * ( $rate || 0 ),
                 );
                 my %row2 = (
                     pv    => $item->{pageviews},

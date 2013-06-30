@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -1419,6 +1419,7 @@ sub make_session {
     $sess->id( make_magic_token() );
     $sess->kind('US');    # US == User Session
     $sess->start(time);
+    $sess->name( $auth->id );
     $sess->set( 'author_id', $auth->id );
     $sess->set( 'remember', 1 ) if $remember;
     $sess->save;
@@ -3448,12 +3449,18 @@ sub load_widgets {
     my $order_num = 0;
     foreach my $widget_id ( keys %$widgets ) {
         my $widget_param = $widgets->{$widget_id} ||= {};
+        if ( my $order = $widget_param->{order} ) {
+            $order_num = $order_num < $order ? $order : $order_num;
+        }
+    }
+    foreach my $widget_id ( keys %$widgets ) {
+        my $widget_param = $widgets->{$widget_id} ||= {};
         my $order;
         if ( !( $order = $widget_param->{order} ) ) {
-            $order                 = $all_widgets->{$widget_id}{order};
-            $order                 = ++$order_num unless defined $order;
-            $widget_param->{order} = $order_num;
-            $resave_widgets        = 1;
+            $order = $all_widgets->{$widget_id}{order}{$scope_type};
+            $order = ++$order_num unless defined $order;
+            $widget_param->{order} = $order;
+            $resave_widgets = 1;
         }
         push @ordered_list, $widget_id;
         $orders{$widget_id} = $order;
@@ -3612,7 +3619,9 @@ sub update_widget_prefs {
                     $num++;
                 }
             }
-            $these_widgets->{$widget_inst} = { set   => $set };
+            $these_widgets->{$widget_inst} = { set => $set };
+            $these_widgets->{$widget_inst}
+                = { order => $widget->{order}{$widget_scope} };
             $these_widgets->{$widget_inst} = { param => $widget->{param} }
                 if exists $widget->{param};
         }

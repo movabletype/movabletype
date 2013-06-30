@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -2065,7 +2065,19 @@ sub save_commenter_profile {
             = $app->translate( 'Commenter profile could not be updated: [_1]',
             $cmntr->errstr );
     }
-    $param{magic_token} = $app->current_magic;
+
+    # Clear and refresh session for this user.
+    my $magic_token = $app->current_magic;
+    if ( $param{password} && 'MT' eq $cmntr->auth_type ) {
+        MT::Auth->invalidate_credentials( { app => $app } );
+        my %cookies = $app->cookies();
+        $app->_invalidate_commenter_session( \%cookies );
+        require MT::Session;
+        MT::Session->remove( { kind => 'SI', name => $cmntr->name } );
+        $magic_token = $app->make_commenter_session( $cmntr );
+    }
+
+    $param{magic_token} = $sid;
 
     return $app->build_page( 'profile.tmpl', \%param );
 }
