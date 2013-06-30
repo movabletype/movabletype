@@ -1,5 +1,6 @@
 /*
  * Movable Type DataAPI SDK for JavaScript v1
+ * https://github.com/movabletype/mt-data-api-sdk-js
  * Copyright (c) 2013 Six Apart, Ltd.
  * This program is distributed under the terms of the MIT license.
  *
@@ -2015,8 +2016,7 @@ if (typeof JSON !== 'object') {
 
 DataAPI.on('initialize', function() {
     this.generateEndpointMethods(
-
-[
+        [
     {
         "id": "list_endpoints",
         "route": "/endpoints",
@@ -2254,4 +2254,5 @@ if ( typeof module === 'object' && module && typeof module.exports === 'object' 
     module.exports = DataAPI;
 }
 
-})(typeof window === 'undefined' ? null : window);
+
+})(typeof window === "undefined" ? null : window);
