@@ -822,26 +822,26 @@ sub _build_favorite_websites_data {
     }
 
     require MT::Entry;
-    my $iter = MT::Entry->count_group_by(
+    my $entry_iter = MT::Entry->count_group_by(
         {   class   => 'entry',
             blog_id => \@website_ids,
             $param->{my_posts} ? ( author_id => $user->id ) : (),
         },
         { group => ['blog_id'], }
     );
-    while ( my ( $count, $blog_id ) = $iter->() ) {
+    while ( my ( $count, $blog_id ) = $entry_iter->() ) {
         $data{$blog_id}->{entry_count} = $count;
     }
 
     require MT::Page;
-    my $entry_iter = MT::Page->count_group_by(
+    my $page_iter = MT::Page->count_group_by(
         {   class   => 'page',
             blog_id => \@website_ids,
             $param->{my_posts} ? ( author_id => $user->id ) : (),
         },
         { group => ['blog_id'], }
     );
-    while ( my ( $count, $blog_id ) = $entry_iter->() ) {
+    while ( my ( $count, $blog_id ) = $page_iter->() ) {
         $data{$blog_id}->{page_count} = $count;
     }
 
