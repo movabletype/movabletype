@@ -3,7 +3,7 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Callback::TrackBack;
+package MT::DataAPI::Callback::Trackback;
 
 use strict;
 use warnings;

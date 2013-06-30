@@ -1,21 +1,20 @@
 /*
- * Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
- * This code cannot be redistributed without permission from www.sixapart.com.
- * For more information, consult your Movable Type license.
+ * Movable Type DataAPI SDK for JavaScript v1
+ * https://github.com/movabletype/mt-data-api-sdk-js
+ * Copyright (c) 2013 Six Apart, Ltd.
+ * This program is distributed under the terms of the MIT license.
  *
  * Includes jQuery JavaScript Library to serialize a HTMLFormElement
  * http://jquery.com/
  * Copyright 2005, 2013 jQuery Foundation, Inc. and other contributors
  * Released under the MIT license
  * http://jquery.org/license
- *
- * $Id$
  */
 
 ;(function(window, undefined) {
 
 "use strict";
-    
+
 /**
  * @namespace MT
  */
@@ -29,9 +28,10 @@
  *     (Available charactors: Alphabet, '_', '-')
  *   @param {String} options.baseUrl the CGI URL of the DataAPI
  *     (e.g. http://example.com/mt/mt-data-api.cgi)
- *   @param {String} options.cookieDomain
- *   @param {String} options.cookiePath
  *   @param {String} options.format
+ *   @param {String} options.sessionStore
+ *   @param {String} options.sessionDomain
+ *   @param {String} options.sessionPath
  *   @param {String} options.async
  *   @param {String} options.cache
  *   @param {String} options.disableFormData
@@ -43,9 +43,10 @@ var DataAPI = function(options) {
     this.o = {
         clientId: undefined,
         baseUrl: undefined,
-        cookieDomain: undefined,
-        cookiePath: undefined,
         format: undefined,
+        sessionStore: undefined,
+        sessionDomain: undefined,
+        sessionPath: undefined,
         async: true,
         cache: false,
         disableFormData: false
@@ -113,9 +114,19 @@ DataAPI.iframePrefix = 'mt_data_api_iframe_';
  * @property defaultFormat
  * @static
  * @private
- * @type Number
+ * @type String
  */
 DataAPI.defaultFormat = 'json';
+
+/**
+ * Default session store.
+ * @property defaultSessionStore
+ * @static
+ * @private
+ * @type String
+ */
+DataAPI.defaultSessionStore =
+    (window.document && window.document.cookie) ? 'cookie' : 'fs';
 
 /**
  * Class level callback function data.
@@ -143,6 +154,29 @@ DataAPI.formats = {
         unserialize: function() {
             return JSON.parse.apply(JSON, arguments);
         }
+    }
+};
+
+/**
+ * Available session stores.
+ * @property sessionStores
+ * @static
+ * @private
+ * @type Object
+ */
+DataAPI.sessionStores = {
+    cookie: {
+        save: function(name, data) {
+            var o = this.o;
+            Cookie.bake(name, data, o.sessionDomain, o.sessionPath);
+        },
+        fetch: function(name) {
+            return Cookie.fetch(name).value;
+        },
+        remove: function(name) {
+            var o = this.o;
+            Cookie.bake(name, '', o.sessionDomain, o.sessionPath, new Date(0));
+        },
     }
 };
 
@@ -196,10 +230,27 @@ DataAPI.off = function(key, callback) {
  * @param {Object} spec Format spec
  *   @param {String} spec.fileExtension Extension
  *   @param {String} spec.mimeType MIME type
+ *   @param {String} spec.serialize
+ *   @param {String} spec.unserialize
  * @category core
  */
 DataAPI.registerFormat = function(key, spec) {
-    DataAPI.formats[key] = spec;
+    this.formats[key] = spec;
+};
+
+/**
+ * Register session store
+ * @method registerSessionStore
+ * @static
+ * @param {String} key Format name
+ * @param {Object} spec Format spec
+ *   @param {String} spec.save
+ *   @param {String} spec.restore
+ *   @param {String} spec.dispose
+ * @category core
+ */
+DataAPI.registerSessionStore = function(key, spec) {
+    this.sessionStores[key] = spec;
 };
 
 /**
@@ -210,10 +261,22 @@ DataAPI.registerFormat = function(key, spec) {
  * @category core
  */
 DataAPI.getDefaultFormat = function() {
-    return DataAPI.formats[DataAPI.defaultFormat];
+    return this.formats[this.defaultFormat];
+};
+
+/**
+ * Get default session store of this class
+ * @method getDefaultSessionStore
+ * @static
+ * @return {Object} Format
+ * @category core
+ */
+DataAPI.getDefaultSessionStore = function() {
+    return this.sessionStores[this.defaultSessionStore];
 };
 
 DataAPI.prototype = {
+    constructor: DataAPI.prototype.constructor,
 
     /**
      * Get authorization URL
@@ -235,7 +298,7 @@ DataAPI.prototype = {
     },
 
     _getNextIframeName: function() {
-        return DataAPI.iframePrefix + (++this.iframeId);
+        return this.constructor.iframePrefix + (++this.iframeId);
     },
 
     /**
@@ -245,7 +308,7 @@ DataAPI.prototype = {
      * @category core
      */
     getVersion: function() {
-        return DataAPI.version;
+        return this.constructor.version;
     },
 
     /**
@@ -256,7 +319,7 @@ DataAPI.prototype = {
      * @category core
      */
     getAppKey: function() {
-        return DataAPI.accessTokenKey + '_' + this.o.clientId;
+        return this.constructor.accessTokenKey + '_' + this.o.clientId;
     },
 
     /**
@@ -271,9 +334,9 @@ DataAPI.prototype = {
             return null;
         }
 
-        for (var k in DataAPI.formats) {
-            if (DataAPI.formats[k].mimeType === mimeType) {
-                return DataAPI.formats[k];
+        for (var k in this.constructor.formats) {
+            if (this.constructor.formats[k].mimeType === mimeType) {
+                return this.constructor.formats[k];
             }
         }
 
@@ -287,7 +350,8 @@ DataAPI.prototype = {
      * @category core
      */
     getCurrentFormat: function() {
-        return DataAPI.formats[this.o.format] || DataAPI.getDefaultFormat();
+        return this.constructor.formats[this.o.format] ||
+            this.constructor.getDefaultFormat();
     },
 
     /**
@@ -313,6 +377,49 @@ DataAPI.prototype = {
     },
 
     /**
+     * Get current session store of this object.
+     * @method getCurrentSessionStore
+     * @return {Object} Session store
+     * @category core
+     */
+    getCurrentSessionStore: function() {
+        return this.constructor.sessionStores[this.o.sessionStore] ||
+            this.constructor.getDefaultSessionStore();
+    },
+
+    /**
+     * Save session data.
+     * @method saveSessionData
+     * @param {String} name The name of session
+     * @param {Object} data The data to save
+     * @category core
+     */
+    saveSessionData: function() {
+        return this.getCurrentSessionStore().save.apply(this, arguments);
+    },
+
+    /**
+     * Fetch session data.
+     * @method fetchSessionData
+     * @param {String} name The name of session
+     * @return {String} The data fetched
+     * @category core
+     */
+    fetchSessionData: function() {
+        return this.getCurrentSessionStore().fetch.apply(this, arguments);
+    },
+
+    /**
+     * Remove session data.
+     * @method removeSessionData
+     * @param {String} name The name of session
+     * @category core
+     */
+    removeSessionData: function() {
+        return this.getCurrentSessionStore().remove.apply(this, arguments);
+    },
+
+    /**
      * Store token data via current session store.
      * @method storeTokenData
      * @param {Object} tokenData The token data
@@ -323,14 +430,13 @@ DataAPI.prototype = {
      * @category core
      */
     storeTokenData: function(tokenData) {
-        var o = this.o;
         tokenData.startTime = this._getCurrentEpoch();
-        Cookie.bake(this.getAppKey(), this.serializeData(tokenData), o.cookieDomain, o.cookiePath);
+        this.saveSessionData(this.getAppKey(), this.serializeData(tokenData));
         this.tokenData = tokenData;
     },
 
-    _updateTokenFromDefault: function() {
-        var defaultKey    = DataAPI.accessTokenKey,
+    _updateTokenFromDefaultCookie: function() {
+        var defaultKey    = this.constructor.accessTokenKey,
             defaultCookie = Cookie.fetch(defaultKey),
             defaultToken;
 
@@ -357,15 +463,12 @@ DataAPI.prototype = {
      * @category core
      */
     getTokenData: function() {
-        var token,
-            o = this.o;
+        var token = this.tokenData;
 
-        if (! this.tokenData) {
-            token = null;
-
+        if (! token) {
             if (window.location && window.location.hash === '#_login') {
                 try {
-                    token = this._updateTokenFromDefault();
+                    token = this._updateTokenFromDefaultCookie();
                 }
                 catch (e) {
                 }
@@ -373,19 +476,20 @@ DataAPI.prototype = {
 
             if (! token) {
                 try {
-                    token = this.unserializeData(Cookie.fetch(this.getAppKey()).value);
+                    token = this.unserializeData(this.fetchSessionData(this.getAppKey()));
                 }
                 catch (e) {
                 }
             }
-
-            if (token && (token.startTime + token.expiresIn < this._getCurrentEpoch())) {
-                Cookie.bake(this.getAppKey(), '', o.cookieDomain, o.cookiePath, new Date(0));
-                token = null;
-            }
-
-            this.tokenData = token;
         }
+
+        if (token && (token.startTime + token.expiresIn < this._getCurrentEpoch())) {
+            delete token.accessToken;
+            delete token.startTime;
+            delete token.expiresIn;
+        }
+
+        this.tokenData = token;
 
         if (! this.tokenData) {
             return null;
@@ -400,10 +504,10 @@ DataAPI.prototype = {
      * @return {String|null} Header string. Return null if api object has no token.
      * @category core
      */
-    getAuthorizationHeader: function() {
+    getAuthorizationHeader: function(key) {
         var tokenData = this.getTokenData();
-        if (tokenData && tokenData.accessToken) {
-            return 'MTAuth accessToken=' + tokenData.accessToken;
+        if (tokenData) {
+            return 'MTAuth ' + key + '=' + (tokenData[key] || '');
         }
 
         return '';
@@ -501,6 +605,9 @@ DataAPI.prototype = {
         var type = typeof v;
         if (type === 'undefined' || v === null || (type === 'number' && ! isFinite(v))) {
             return '';
+        }
+        else if (type === 'boolean') {
+            return v ? '1' : '';
         }
         else if (v instanceof Date) {
             return iso8601Date(v);
@@ -630,16 +737,19 @@ DataAPI.prototype = {
      * @return {XMLHttpRequest}
      * @category core
      */
-    sendXMLHttpRequest: function(xhr, method, url, params) {
+    sendXMLHttpRequest: function(xhr, method, url, params, defaultHeaders) {
         var k, headers, uk,
-            authHeader = this.getAuthorizationHeader();
+            authHeader = this.getAuthorizationHeader('accessToken');
 
         xhr.open(method, url, this.o.async);
+        for (k in defaultHeaders) {
+            xhr.setRequestHeader(k, defaultHeaders[k]);
+        }
         if (typeof params === 'string') {
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         }
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        if (authHeader) {
+        if (authHeader && ! ('X-MT-Authorization' in defaultHeaders)) {
             xhr.setRequestHeader('X-MT-Authorization', authHeader);
         }
 
@@ -798,9 +908,12 @@ DataAPI.prototype = {
             callback   = function(){},
             xhr        = null,
             viaXhr     = true,
+            tokenData  = this.getTokenData(),
             currentFormat     = this.getCurrentFormat(),
+            originalMethod    = method,
             originalArguments = Array.prototype.slice.call(arguments),
-            defaultParams     = {};
+            defaultParams     = {},
+            defaultHeaders    = {};
 
         function serializeParams(params) {
             var k, data;
@@ -868,15 +981,21 @@ DataAPI.prototype = {
                 endpoint !== '/token';
         }
 
-        function retry() {
+        function retryWithAuthentication() {
             api.request('POST', '/token', function(response) {
+                var status, oldData;
                 if (response.error && response.error.code === 401) {
-                    var status = runCallback(response);
+                    status = runCallback(response);
                     if (status !== false) {
                         api.trigger('authorizationRequired', response);
                     }
                 }
                 else {
+                    oldData = api.getTokenData();
+                    if (! response.sessionId && oldData.sessionId) {
+                        response.sessionId = oldData.sessionId;
+                    }
+
                     api.storeTokenData(response);
                     api.request.apply(api, originalArguments);
                 }
@@ -894,17 +1013,32 @@ DataAPI.prototype = {
             return base + api._serializeParams(params);
         }
 
+        if (tokenData && ! tokenData.accessToken && endpoint !== '/token') {
+            return retryWithAuthentication();
+        }
 
         if (endpoint === '/token' || endpoint === '/authentication') {
-            defaultParams.clientId = this.o.clientId;
+            if (tokenData && tokenData.sessionId) {
+                defaultHeaders['X-MT-Authorization'] =
+                    api.getAuthorizationHeader('sessionId');
+            }
+            else if (endpoint === '/token' && originalMethod.toLowerCase() === 'post') {
+                defaultHeaders['X-MT-Authorization'] = '';
+            }
+            defaultParams.clientId = api.o.clientId;
         }
 
         if (! this.o.cache) {
             defaultParams._ = new Date().getTime();
         }
 
-        if (currentFormat !== DataAPI.getDefaultFormat()) {
+        if (currentFormat !== this.constructor.getDefaultFormat()) {
             defaultParams.format = currentFormat.fileExtension;
+        }
+
+        if (method.match(/^(put|delete)$/i)) {
+            defaultParams.__method = method;
+            method = 'POST';
         }
 
         for (i = 2; i < arguments.length; i++) {
@@ -934,11 +1068,6 @@ DataAPI.prototype = {
 
         if (paramsList.length && (method.toLowerCase() === 'get' || paramsList.length >= 2)) {
             endpoint = appendParamsToURL(endpoint, paramsList.shift());
-        }
-
-        if (method.match(/^(put|delete)$/i)) {
-            defaultParams.__method = method;
-            method = 'POST';
         }
 
         if (paramsList.length) {
@@ -996,9 +1125,15 @@ DataAPI.prototype = {
                 }
 
                 if (needToRetry(response)) {
-                    retry();
+                    retryWithAuthentication();
                     cleanup();
                     return;
+                }
+
+                if (endpoint === '/authentication' &&
+                    originalMethod.toLowerCase() === 'delete' &&
+                    ! response.error) {
+                    api.removeSessionData(api.getAppKey());
                 }
 
                 runCallback(response);
@@ -1006,13 +1141,13 @@ DataAPI.prototype = {
                 url = xhr.getResponseHeader('X-MT-Next-Phase-URL');
                 if (url) {
                     xhr.abort();
-                    api.sendXMLHttpRequest(xhr, method, base + url, params);
+                    api.sendXMLHttpRequest(xhr, method, base + url, params, defaultHeaders);
                 }
                 else {
                     cleanup();
                 }
             };
-            return this.sendXMLHttpRequest(xhr, method, base + endpoint, params);
+            return this.sendXMLHttpRequest(xhr, method, base + endpoint, params, defaultHeaders);
         }
         else {
             (function() {
@@ -1021,7 +1156,7 @@ DataAPI.prototype = {
                     doc        = window.document,
                     form       = doc.createElement('form'),
                     iframe     = doc.createElement('iframe'),
-                    authHeader = api.getAuthorizationHeader();
+                    authHeader = api.getAuthorizationHeader('accessToken');
 
 
                 // Set up a form element
@@ -1043,6 +1178,9 @@ DataAPI.prototype = {
                 params = params || {};
                 if (authHeader) {
                     params['X-MT-Authorization'] = authHeader;
+                }
+                for (k in defaultHeaders) {
+                    params[k] = defaultHeaders[k];
                 }
                 params['X-MT-Requested-Via'] = 'IFRAME';
 
@@ -1102,7 +1240,7 @@ DataAPI.prototype = {
                     }
 
                     if (needToRetry(response)) {
-                        retry();
+                        retryWithAuthentication();
                         cleanup();
                         return;
                     }
@@ -1128,7 +1266,9 @@ DataAPI.prototype = {
      * @param {Function} callback Callback function
      * @category core
      */
-    on: DataAPI.on,
+    on: function() {
+        this.constructor.on.apply(this, arguments);
+    },
 
     /**
      * Deregister callback from instance.
@@ -1137,7 +1277,9 @@ DataAPI.prototype = {
      * @param {Function} callback Callback function
      * @category core
      */
-    off: DataAPI.off,
+    off: function() {
+        this.constructor.off.apply(this, arguments);
+    },
 
     /**
      * Trigger event
@@ -1149,7 +1291,7 @@ DataAPI.prototype = {
     trigger: function(key) {
         var i,
             args      = Array.prototype.slice.call(arguments, 1),
-            callbacks = (DataAPI.callbacks[key] || []) // Class level
+            callbacks = (this.constructor.callbacks[key] || []) // Class level
                 .concat(this.callbacks[key] || []); // Instance level
 
         for (i = 0; i < callbacks.length; i++) {
@@ -1295,7 +1437,7 @@ DataAPI.prototype = {
  **/
 
 /**
- * Fired on response code is 401
+ * Triggered on receiving the HTTP response code 401 (Authorization required).
  *
  * @event authorizationRequired
  * @param {Object} response A response object
@@ -1307,13 +1449,6 @@ DataAPI.prototype = {
  *       location.href = api.getAuthorizationUrl(location.href);
  *     });
  **/
-
-
-window.MT         = window.MT || {};
-window.MT.DataAPI = window.MT.DataAPI || DataAPI;
-window.MT.DataAPI['v' + DataAPI.version] = DataAPI;
-
-
 
 var Cookie = function( name, value, domain, path, expires, secure ) {
     this.name = name;
@@ -1332,7 +1467,7 @@ Cookie.prototype = {
      * @return <code>Cookie</code> The fetched cookie.
      */
     fetch: function() {
-        if (! window.document) {
+        if (! window.document || ! window.document.cookie) {
             return undefined;
         }
 
@@ -1355,7 +1490,7 @@ Cookie.prototype = {
      * @return <code>Cookie</code> The set and stored ("baked") cookie.
      */
     bake: function( value ) {
-        if (! window.document) {
+        if (! window.document || ! window.document.cookie) {
             return undefined;
         }
 
@@ -1411,7 +1546,6 @@ Cookie.remove = function( name ) {
     if( cookie )
         return cookie.remove();
 };
-
 
 var JSON = window.JSON;
 /*
@@ -1880,8 +2014,245 @@ if (typeof JSON !== 'object') {
     }
 }());
 
+DataAPI.on('initialize', function() {
+    this.generateEndpointMethods(
+        [
+    {
+        "id": "list_endpoints",
+        "route": "/endpoints",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "authenticate",
+        "route": "/authentication",
+        "verb": "POST",
+        "resources": null
+    },
+    {
+        "id": "get_token",
+        "route": "/token",
+        "verb": "POST",
+        "resources": null
+    },
+    {
+        "id": "revoke_authentication",
+        "route": "/authentication",
+        "verb": "DELETE",
+        "resources": null
+    },
+    {
+        "id": "revoke_token",
+        "route": "/token",
+        "verb": "DELETE",
+        "resources": null
+    },
+    {
+        "id": "get_user",
+        "route": "/users/:user_id",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "update_user",
+        "route": "/users/:user_id",
+        "verb": "PUT",
+        "resources": [
+            "user"
+        ]
+    },
+    {
+        "id": "list_blogs_for_user",
+        "route": "/users/:user_id/sites",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "get_blog",
+        "route": "/sites/:blog_id",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "list_entries",
+        "route": "/sites/:site_id/entries",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "create_entry",
+        "route": "/sites/:site_id/entries",
+        "verb": "POST",
+        "resources": [
+            "entry"
+        ]
+    },
+    {
+        "id": "get_entry",
+        "route": "/sites/:site_id/entries/:entry_id",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "update_entry",
+        "route": "/sites/:site_id/entries/:entry_id",
+        "verb": "PUT",
+        "resources": [
+            "entry"
+        ]
+    },
+    {
+        "id": "delete_entry",
+        "route": "/sites/:site_id/entries/:entry_id",
+        "verb": "DELETE",
+        "resources": null
+    },
+    {
+        "id": "list_categories",
+        "route": "/sites/:site_id/categories",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "list_comments",
+        "route": "/sites/:site_id/comments",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "list_comments_for_entry",
+        "route": "/sites/:site_id/entries/:entry_id/comments",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "create_comment",
+        "route": "/sites/:site_id/entries/:entry_id/comments",
+        "verb": "POST",
+        "resources": [
+            "comment"
+        ]
+    },
+    {
+        "id": "create_reply_comment",
+        "route": "/sites/:site_id/entries/:entry_id/comments/:comment_id/replies",
+        "verb": "POST",
+        "resources": [
+            "comment"
+        ]
+    },
+    {
+        "id": "get_comment",
+        "route": "/sites/:site_id/comments/:comment_id",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "update_comment",
+        "route": "/sites/:site_id/comments/:comment_id",
+        "verb": "PUT",
+        "resources": [
+            "comment"
+        ]
+    },
+    {
+        "id": "delete_comment",
+        "route": "/sites/:site_id/comments/:comment_id",
+        "verb": "DELETE",
+        "resources": null
+    },
+    {
+        "id": "list_trackbacks",
+        "route": "/sites/:site_id/trackbacks",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "list_trackbacks_for_entry",
+        "route": "/sites/:site_id/entries/:entry_id/trackbacks",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "get_trackback",
+        "route": "/sites/:site_id/trackbacks/:ping_id",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "update_trackback",
+        "route": "/sites/:site_id/trackbacks/:ping_id",
+        "verb": "PUT",
+        "resources": [
+            "trackback"
+        ]
+    },
+    {
+        "id": "delete_trackback",
+        "route": "/sites/:site_id/trackbacks/:ping_id",
+        "verb": "DELETE",
+        "resources": null
+    },
+    {
+        "id": "upload_asset",
+        "route": "/sites/:site_id/assets/upload",
+        "verb": "POST",
+        "resources": null
+    },
+    {
+        "id": "list_permissions",
+        "route": "/users/:user_id/permissions",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "publish_entries",
+        "route": "/publish/entries",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "get_stats_provider",
+        "route": "/sites/:site_id/stats/provider",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "list_stats_pageviews_for_path",
+        "route": "/sites/:site_id/stats/path/pageviews",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "list_stats_visits_for_path",
+        "route": "/sites/:site_id/stats/path/visits",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "list_stats_pageviews_for_date",
+        "route": "/sites/:site_id/stats/date/pageviews",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "list_stats_visits_for_date",
+        "route": "/sites/:site_id/stats/date/visits",
+        "verb": "GET",
+        "resources": null
+    }
+]
+
+    );
+});
+
+window.MT         = window.MT || {};
+window.MT.DataAPI = window.MT.DataAPI || DataAPI;
+window.MT.DataAPI['v' + DataAPI.version] = DataAPI;
+
 if ( typeof module === 'object' && module && typeof module.exports === 'object' ) {
-    module.exports = window.MT.DataAPI;
+    module.exports = DataAPI;
 }
 
-})(typeof window === 'undefined' ? null : window);
+
+})(typeof window === "undefined" ? null : window);

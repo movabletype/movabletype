@@ -32,10 +32,6 @@ sub update {
     my $new_user = $app->resource_object( 'user', $user )
         or return;
 
-    run_permission_filter( $app, 'data_api_save_permission_filter',
-        'author', $user->id )
-        or return $app->error(403);
-
     save_object( $app, 'author', $new_user, $user )
         or return;
 

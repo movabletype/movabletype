@@ -41,21 +41,21 @@ sub core_endpoints {
             handler        => "${pkg}Util::endpoints",
             requires_login => 0,
         },
-        {   id             => 'authorization',
+        {   id             => 'authorize',
             route          => '/authorization',
             version        => 1,
             handler        => "${pkg}Auth::authorization",
             format         => 'html',
             requires_login => 0,
         },
-        {   id             => 'authentication',
+        {   id             => 'authenticate',
             route          => '/authentication',
             verb           => 'POST',
             version        => 1,
             handler        => "${pkg}Auth::authentication",
             requires_login => 0,
         },
-        {   id             => 'token',
+        {   id             => 'get_token',
             route          => '/token',
             verb           => 'POST',
             version        => 1,
@@ -95,7 +95,7 @@ sub core_endpoints {
                 403 => 'Do not have permission to update the requested user.',
             },
         },
-        {   id             => 'list_blogs',
+        {   id             => 'list_blogs_for_user',
             route          => '/users/:user_id/sites',
             version        => 1,
             handler        => "${pkg}Blog::list",
@@ -127,13 +127,12 @@ sub core_endpoints {
             version        => 1,
             handler        => "${pkg}Entry::list",
             default_params => {
-                limit     => 10,
-                offset    => 0,
-                sortBy    => 'authored_on',
-                sortOrder => 'descend',
-                searchFields =>
-                    'title,text,text_more,keywords,excerpt,basename',
-                filterKeys => 'status',
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'authored_on',
+                sortOrder    => 'descend',
+                searchFields => 'title,body,more,keywords,excerpt,basename',
+                filterKeys   => 'status',
             },
             error_codes => {
                 403 =>
@@ -207,7 +206,7 @@ sub core_endpoints {
                 offset       => 0,
                 sortBy       => 'id',
                 sortOrder    => 'descend',
-                searchFields => 'url,text,email,ip,author',
+                searchFields => 'body',
                 filterKeys   => 'status,entryStatus',
             },
             error_codes => {
@@ -216,17 +215,17 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id             => 'list_comments_for_entries',
+        {   id             => 'list_comments_for_entry',
             route          => '/sites/:site_id/entries/:entry_id/comments',
             verb           => 'GET',
             version        => 1,
-            handler        => "${pkg}Comment::list_for_entries",
+            handler        => "${pkg}Comment::list_for_entry",
             default_params => {
                 limit        => 10,
                 offset       => 0,
                 sortBy       => 'id',
                 sortOrder    => 'descend',
-                searchFields => 'url,text,email,ip,author',
+                searchFields => 'body',
                 filterKeys   => 'status',
             },
             error_codes => {
@@ -293,7 +292,7 @@ sub core_endpoints {
                 offset       => 0,
                 sortBy       => 'id',
                 sortOrder    => 'descend',
-                searchFields => 'title,excerpt,source_url,ip,blog_name',
+                searchFields => 'title,excerpt,blogName',
                 filterKeys   => 'status',
             },
             error_codes => {
@@ -302,17 +301,17 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id             => 'list_trackbacks_for_entries',
+        {   id             => 'list_trackbacks_for_entry',
             route          => '/sites/:site_id/entries/:entry_id/trackbacks',
             verb           => 'GET',
             version        => 1,
-            handler        => "${pkg}Trackback::list_for_entries",
+            handler        => "${pkg}Trackback::list_for_entry",
             default_params => {
                 limit        => 10,
                 offset       => 0,
                 sortBy       => 'id',
                 sortOrder    => 'descend',
-                searchFields => 'title,excerpt,source_url,ip,blog_name',
+                searchFields => 'title,excerpt,blogName',
                 filterKeys   => 'status',
             },
             error_codes => {
@@ -382,27 +381,27 @@ sub core_endpoints {
             handler => "${pkg}Publish::entries",
             error_codes => { 403 => 'Do not have permission to publish.', },
         },
-        {   id      => 'stats_provider',
+        {   id      => 'get_stats_provider',
             route   => '/sites/:site_id/stats/provider',
             version => 1,
             handler => "${pkg}Stats::provider",
         },
-        {   id      => 'stats_pageviews_for_path',
+        {   id      => 'list_stats_pageviews_for_path',
             route   => '/sites/:site_id/stats/path/pageviews',
             version => 1,
             handler => "${pkg}Stats::pageviews_for_path",
         },
-        {   id      => 'stats_visits_for_path',
+        {   id      => 'list_stats_visits_for_path',
             route   => '/sites/:site_id/stats/path/visits',
             version => 1,
             handler => "${pkg}Stats::visits_for_path",
         },
-        {   id      => 'stats_pageviews_for_date',
+        {   id      => 'list_stats_pageviews_for_date',
             route   => '/sites/:site_id/stats/date/pageviews',
             version => 1,
             handler => "${pkg}Stats::pageviews_for_date",
         },
-        {   id      => 'stats_visits_for_date',
+        {   id      => 'list_stats_visits_for_date',
             route   => '/sites/:site_id/stats/date/visits',
             version => 1,
             handler => "${pkg}Stats::visits_for_date",
@@ -444,10 +443,10 @@ sub init_plugins {
             # ping callbacks
             $pkg
                 . 'view_permission_filter.ping' =>
-                "${pfx}TrackBack::can_view",
+                "${pfx}Trackback::can_view",
             $pkg
                 . 'pre_load_filtered_list.ping' =>
-                "${pfx}TrackBack::cms_pre_load_filtered_list",
+                "${pfx}Trackback::cms_pre_load_filtered_list",
 
             # permission callbacks
             $pkg
@@ -713,8 +712,10 @@ sub mt_authorization_data {
 sub authenticate {
     my ($app) = @_;
 
-    my $data = $app->mt_authorization_data
-        or undef;
+    my $data = $app->mt_authorization_data;
+    return MT::Author->anonymous
+        unless $data
+        && exists $data->{MTAuth}{accessToken};
 
     my $session
         = MT::AccessToken->load_session( $data->{MTAuth}{accessToken} || '' )
@@ -960,7 +961,7 @@ sub api {
         or return $app->print_error( 'Unknown endpoint', 404 );
     my $user = $app->authenticate;
 
-    if ( $endpoint->{requires_login} && !$user ) {
+    if ( !$user || ( $endpoint->{requires_login} && $user->is_anonymous ) ) {
         return $app->print_error( 'Unauthorized', 401 );
     }
     $user ||= MT::Author->anonymous;

@@ -24,7 +24,7 @@ sub list {
     };
 }
 
-sub list_for_entries {
+sub list_for_entry {
     my ( $app, $endpoint ) = @_;
 
     my ( $blog, $entry ) = context_objects(@_)

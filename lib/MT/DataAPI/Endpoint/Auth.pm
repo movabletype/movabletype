@@ -87,10 +87,13 @@ sub authentication {
     my $response = {
         sessionId   => $session->id,
         accessToken => $access_token->id,
-        expiresIn   => MT::AccessToken::ttl(),
+        expiresIn   => 10,
     };
 
-    if ( $app->cookie_val( mt_data_api_login_magic_token_cookie_name() ) eq
+    my $magic_token_cookie
+        = $app->cookie_val( mt_data_api_login_magic_token_cookie_name() );
+    if (   $magic_token_cookie
+        && $magic_token_cookie eq
         ( $app->param('mtDataApiLoginMagicToken') || '' ) )
     {
         my $remember = $session->get('remember') || '';
