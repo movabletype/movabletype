@@ -62,7 +62,7 @@ sub core_tags {
             ## Website
             Websites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
             'IfWebsite?' =>
-                '$Core::MT::Template::Tags::Website::_hdlr_website_id',
+                '$Core::MT::Template::Tags::Website::_hdlr_if_website',
             'WebsiteIfCCLicense?' =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_if_cc_license',
             'WebsiteHasBlog?' =>

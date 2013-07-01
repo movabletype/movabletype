@@ -8,7 +8,12 @@
 function smarty_function_mtwebsitethemeid($args, &$ctx) {
     // status: complete
     // parameters: none
-    require_once('function.mtblogthemeid.php');
-    return smarty_function_mtblogthemeid($args, $ctx);
+    $blog = $ctx->stash('blog');
+    if (empty($blog)) return '';
+    $website = $blog->is_blog() ? $blog->website() : $blog;
+    if (empty($website)) return '';
+    $id = $website->blog_theme_id;
+    $id = str_replace ('_', '-', $id);
+    return $id;
 }
 ?>

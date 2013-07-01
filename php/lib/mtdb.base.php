@@ -229,8 +229,22 @@ abstract class MTDatabase {
                 $mt = MT::get_instance();
                 $ctx = $mt->context();
                 $blog = $ctx->stash('blog');
-                if ( !empty( $blog ) )
-                    return " = " . $blog->id;
+                if ( !empty( $blog ) ) {
+                    $tag = $ctx->_tag_stack[count($ctx->_tag_stack)-1][0];
+                    if ( !empty($tag)
+                      && ( $tag === 'mtwebsitepingcount'
+                        || $tag === 'mtwebsitepagecount'
+                        || $tag === 'mtwebsitecommentcount' ) )
+                    {
+                        $website = $blog->is_blog() ? $blog->website() : $blog;
+                        if (empty($website))
+                            return " = -1";
+                        else
+                            return " = " . $website->id;
+                    } else {
+                        return " = " . $blog->id;
+                    }
+                }
                 else
                     return " > 0";
             }

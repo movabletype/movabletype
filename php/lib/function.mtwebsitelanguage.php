@@ -6,7 +6,15 @@
 # $Id$
 
 function smarty_function_mtwebsitelanguage($args, &$ctx) {
-    require_once('function.mtbloglanguage.php');
-    return smarty_function_mtbloglanguage($args, $ctx);
+    $blog = $ctx->stash('blog');
+    if (!empty($blog)) {
+        $website = $blog->is_blog() ? $blog->website() : $blog;
+        if (empty($website)) return '';
+    }
+    $language = empty($website)
+        ? $ctx->mt->config('DefaultLanguage')
+        : $website->blog_language;
+    return normalize_language( $language, $args['locale'],
+        $args['ietf'] );
 }
 ?>
