@@ -24,17 +24,23 @@
  * @class DataAPI
  * @constructor
  * @param {Object} options Options.
- *   @param {String} options.clientId client ID
- *     (Available charactors: Alphabet, '_', '-')
- *   @param {String} options.baseUrl the CGI URL of the DataAPI
+ *   @param {String} options.clientId Client ID
+ *     This value allows alphanumeric, (_)underscore, (-)dash.
+ *   @param {String} options.baseUrl The absolute CGI URL of the DataAPI.
  *     (e.g. http://example.com/mt/mt-data-api.cgi)
- *   @param {String} options.format
- *   @param {String} options.sessionStore
- *   @param {String} options.sessionDomain
- *   @param {String} options.sessionPath
- *   @param {String} options.async
- *   @param {String} options.cache
- *   @param {String} options.disableFormData
+ *   @param {String} options.format The format to serialize.
+ *   @param {String} options.sessionStore The session store.
+ *     In browser, the cookie is used by default.
+ *   @param {String} options.sessionDomain The session domain.
+ *     When using the cookie, this value is used as cookie domain.
+ *   @param {String} options.sessionPath The session path
+ *     When using the cookie, this value is used as cookie path.
+ *   @param {String} options.async If true, use asynchronous XMLHttpRequest.
+ *      The default value is the true.
+ *   @param {String} options.cache If false, add an additional parameter to request
+ *      to avoid cache. The default value is the false.
+ *   @param {String} options.disableFormData If true, use FormData class when
+ *      available that. The default value is the false.
  */
 var DataAPI = function(options) {
     var i, k, l,
@@ -82,7 +88,7 @@ var DataAPI = function(options) {
 
 
 /**
- * API version.
+ * The API version.
  * @property version
  * @static
  * @private
@@ -110,7 +116,7 @@ DataAPI.accessTokenKey = 'mt_data_api_access_token';
 DataAPI.iframePrefix = 'mt_data_api_iframe_';
 
 /**
- * Default format that serializes data.
+ * The default format that serializes data.
  * @property defaultFormat
  * @static
  * @private
@@ -119,7 +125,7 @@ DataAPI.iframePrefix = 'mt_data_api_iframe_';
 DataAPI.defaultFormat = 'json';
 
 /**
- * Default session store.
+ * The default session store.
  * @property defaultSessionStore
  * @static
  * @private
@@ -129,7 +135,7 @@ DataAPI.defaultSessionStore =
     (window.document && window.document.cookie) ? 'cookie' : 'fs';
 
 /**
- * Class level callback function data.
+ * Class level callbacks function data.
  * @property callbacks
  * @static
  * @private
@@ -239,7 +245,7 @@ DataAPI.registerFormat = function(key, spec) {
 };
 
 /**
- * Register session store
+ * Register session store.
  * @method registerSessionStore
  * @static
  * @param {String} key Format name
@@ -254,7 +260,7 @@ DataAPI.registerSessionStore = function(key, spec) {
 };
 
 /**
- * Get default format of this class
+ * Get default format of this class.
  * @method getDefaultFormat
  * @static
  * @return {Object} Format
@@ -265,7 +271,7 @@ DataAPI.getDefaultFormat = function() {
 };
 
 /**
- * Get default session store of this class
+ * Get default session store of this class.
  * @method getDefaultSessionStore
  * @static
  * @return {Object} Format
@@ -279,7 +285,7 @@ DataAPI.prototype = {
     constructor: DataAPI.prototype.constructor,
 
     /**
-     * Get authorization URL
+     * Get authorization URL.
      * @method getAuthorizationUrl
      * @param {String} redirectUrl The user is redirected to this URL with "#_login" if authorization succeeded.
      * @return {String} Authorization URL
@@ -302,7 +308,7 @@ DataAPI.prototype = {
     },
 
     /**
-     * Get API version
+     * Get API version.
      * @method getVersion
      * @return {String} API version
      * @category core
@@ -312,7 +318,7 @@ DataAPI.prototype = {
     },
 
     /**
-     * Get application key of this object
+     * Get application key of this object.
      * @method getAppKey
      * @return {String} Application key
      *   This value is used for the session store.
@@ -323,7 +329,7 @@ DataAPI.prototype = {
     },
 
     /**
-     * Get format that associated with specified MIME Type
+     * Get format by MIME Type.
      * @method findFormat
      * @param {String} mimeType MIME Type
      * @return {Object|null} Format. Return null if any format is not found.
@@ -344,7 +350,7 @@ DataAPI.prototype = {
     },
 
     /**
-     * Get current format of this object
+     * Get current format of this object.
      * @method getCurrentFormat
      * @return {Object} Format
      * @category core
@@ -499,7 +505,7 @@ DataAPI.prototype = {
     },
 
     /**
-     * Get authorization request header
+     * Get authorization request header.
      * @method getAuthorizationHeader
      * @return {String|null} Header string. Return null if api object has no token.
      * @category core
@@ -514,7 +520,7 @@ DataAPI.prototype = {
     },
 
     /**
-     * Bind parameters to route spec
+     * Bind parameters to route spec.
      * @method bindEndpointParams
      * @param {String} route Specification of route
      * @param {Object} params parameters
@@ -689,7 +695,7 @@ DataAPI.prototype = {
     },
 
     /**
-     * Create XMLHttpRequest by higher browser compatibility way
+     * Create XMLHttpRequest by higher browser compatibility way.
      * @method newXMLHttpRequest
      * @return {XMLHttpRequest} Created XMLHttpRequest
      * @category core
@@ -728,7 +734,7 @@ DataAPI.prototype = {
     },
 
     /**
-     * Send request to specified URL with params via XMLHttpRequest
+     * Send request to specified URL with params via XMLHttpRequest.
      * @method sendXMLHttpRequest
      * @param {XMLHttpRequest} xhr XMLHttpRequest object to send request
      * @param {String} method Request method
@@ -849,7 +855,7 @@ DataAPI.prototype = {
     },
 
     /**
-     * Execute function with specified options
+     * Execute function with specified options.
      * @method withOptions
      * @param {option} option Option to overwrite
      * @param {Function} func Function to execute
@@ -886,7 +892,7 @@ DataAPI.prototype = {
     },
 
     /**
-     * Execute function with specified options
+     * Execute function with specified options.
      * @method request
      * @param {String} method Request method
      * @param {String} endpoint Endpoint to request
@@ -1282,7 +1288,7 @@ DataAPI.prototype = {
     },
 
     /**
-     * Trigger event
+     * Trigger event.
      * First, run class level callbacks. Then, run instance level callbacks.
      * @method trigger
      * @param {String} key Event name
@@ -1342,14 +1348,15 @@ DataAPI.prototype = {
     },
 
     /**
-     * Generate endpoint methods
+     * Generate methods to access endpoint.
      * @method generateEndpointMethods
      * @param {Array.Object} endpoints Endpoints to register
      *   @param {Object} endpoints.{i}
-     *     @param {String} endpoints.{i}.id
-     *     @param {String} endpoints.{i}.route
-     *     @param {String} endpoints.{i}.verb
-     *     @param {Array.String} [endpoints.{i}.resources]
+     *     @param {String} endpoints.{i}.id Normally, the ID is snake case,
+     *       but generated method is camel case.
+     *     @param {String} endpoints.{i}.route The template of route
+     *     @param {String} endpoints.{i}.verb The HTTP verb
+     *     @param {Array.String} [endpoints.{i}.resources] The required resource data
      * @example
      *     api.generateEndpointMethods([
      *       {
@@ -1375,7 +1382,7 @@ DataAPI.prototype = {
     },
 
     /**
-     * Load endpoint from DataAPI dynamically
+     * Load endpoint from DataAPI dynamically.
      * @method loadEndpoints
      * @param {Object} [params]
      *   @param {String} [params.includeComponents] Comma separated component IDs to load
@@ -1420,6 +1427,10 @@ DataAPI.prototype = {
  * Triggered on initializing an instance
  *
  * @event initialize
+ * @example
+ *     DataAPI.on("initialize", function() {
+ *       console.log("initializing...");
+ *     });
  **/
 
 /**
