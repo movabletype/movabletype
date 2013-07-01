@@ -2200,7 +2200,7 @@ DataAPI.on('initialize', function() {
         "resources": null
     },
     {
-        "id": "list_permissions",
+        "id": "list_permissions_for_user",
         "route": "/users/:user_id/permissions",
         "verb": "GET",
         "resources": null

@@ -59,6 +59,12 @@ DataAPI.on('initialize', function() {
       "id" : "stats_visits_for_date",
       "route" : "/sites/:site_id/stats/date/visits"
    },
+   {
+       "id": "list_permissions",
+       "route": "/users/:user_id/permissions",
+       "verb": "GET",
+       "resources": null
+   },
     {
         "id": "list_endpoints",
         "route": "/endpoints",
@@ -242,7 +248,7 @@ DataAPI.on('initialize', function() {
         "resources": null
     },
     {
-        "id": "list_permissions",
+        "id": "list_permissions_for_user",
         "route": "/users/:user_id/permissions",
         "verb": "GET",
         "resources": null
