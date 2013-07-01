@@ -6,7 +6,19 @@
 # $Id$
 
 function smarty_function_mtwebsitedatelanguage($args, &$ctx) {
-    require_once('function.mtblogdatelanguage.php');
-    return smarty_function_mtblogdatelanguage($args, $ctx);
+    $blog = $ctx->stash('blog');
+    if (!empty($blog)) {
+        if ($blog->is_blog()) {
+            $website = $blog->website();
+            if (empty($website)) return '';
+        } else {
+            $website = $blog;
+        }
+    }
+    $date_language = empty($website)
+        ? $ctx->mt->config('DefaultLanguage')
+        : $website->blog_date_language;
+    return normalize_language( $date_language, $args['locale'],
+        $args['ietf'] );
 }
 ?>

@@ -124,7 +124,7 @@ sub init_handlers {
                     my $modifier = lc $orig_mod;
                     next
                         if exists $f->{$modifier}
-                            && ( $mod->{plugin}{id} || '' ) eq 'core';
+                        && ( $mod->{plugin}{id} || '' ) eq 'core';
                     $f->{$modifier} = $mod->{$orig_mod};
                 }
             }
@@ -356,7 +356,7 @@ sub set_blog_load_context {
     $col ||= 'blog_id';
 
     # Grab specified blog IDs
-    my $blog_ids 
+    my $blog_ids
         = $attr->{blog_ids}
         || $attr->{include_blogs}
         || $attr->{site_ids}
@@ -379,7 +379,20 @@ sub set_blog_load_context {
     # If no blog IDs specified, use the current blog
     if ( !$blog_ids ) {
         if ( my $blog = $ctx->stash('blog') ) {
-            $terms->{$col} = $blog_id if $blog_id && $col eq 'blog_id';
+            my $tag = lc $ctx->stash('tag');
+            if (   $tag eq 'websitepingcount'
+                || $tag eq 'websiteentrycount'
+                || $tag eq 'websitepagecount'
+                || $tag eq 'websitecommentcount' )
+            {
+                my $website = $blog->website
+                    or return $ctx->_no_parent_website_error();
+                $terms->{$col} = $website->id
+                    if $website->id && $col eq 'blog_id';
+            }
+            else {
+                $terms->{$col} = $blog_id if $blog_id && $col eq 'blog_id';
+            }
         }
 
         # include_blogs="all" removes the blog_id/id constraint
@@ -406,7 +419,7 @@ sub set_blog_load_context {
         push @$blog_ids, $website->id if $attr->{include_with_website};
         $blog_ids = -1
             unless scalar @$blog_ids
-        ; # We should use non-existing blog id when calculated blog_ids is empty
+            ; # We should use non-existing blog id when calculated blog_ids is empty
         $terms->{$col} = $blog_ids;
 
         # Blogs are specified in include_blogs so set the terms
@@ -819,6 +832,19 @@ sub _no_website_error {
         MT->translate(
             "You used an '[_1]' tag outside of the context of the website; "
                 . "Perhaps you mistakenly placed it outside of an 'MTWebsites' container tag?",
+            $tag_name
+        )
+    );
+}
+
+sub _no_parent_website_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $_[0]->error(
+        MT->translate(
+            "You used an '[_1]' tag inside of the context of the blog which has no parent website; "
+                . "Perhaps your blog record has been broken?",
             $tag_name
         )
     );

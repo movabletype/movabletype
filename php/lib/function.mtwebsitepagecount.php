@@ -10,6 +10,7 @@ function smarty_function_mtwebsitepagecount($args, &$ctx) {
     // status: complete
     // parameters: none
     $args['class'] = 'page';
-    return smarty_function_mtblogentrycount($args, $ctx);
+    $count = $ctx->mt->db()->blog_entry_count($args);
+    return $ctx->count_format($count, $args);
 }
 ?>

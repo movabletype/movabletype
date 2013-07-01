@@ -107,6 +107,13 @@ B<Example:>
 
 =cut
 
+sub _hdlr_if_website {
+    my ($ctx) = @_;
+    my $blog = $ctx->stash('blog');
+    return 0 unless $blog;
+    return !$blog->is_blog;
+}
+
 ###########################################################################
 
 =head2 WebsiteID
@@ -121,8 +128,9 @@ sub _hdlr_website_id {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return 0 unless $blog;
-    return 0 if $blog->class ne 'website';
-    $blog ? $blog->id : 0;
+    my $website = $blog->website
+        or return $ctx->_no_parent_website_error();
+    $website->id;
 }
 
 ###########################################################################
@@ -139,9 +147,9 @@ sub _hdlr_website_name {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
-    return $ctx->_no_website_error()
-        if $blog->class ne 'website';
-    my $name = $blog->name;
+    my $website = $blog->website
+        or die $ctx->_no_parent_website_error();
+    my $name = $website->name;
     defined $name ? $name : '';
 }
 
@@ -159,9 +167,9 @@ sub _hdlr_website_description {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
-    return $ctx->_no_website_error()
-        if $blog->class ne 'website';
-    my $d = $blog->description;
+    my $website = $blog->website
+        or die $ctx->_no_parent_website_error();
+    my $d = $website->description;
     defined $d ? $d : '';
 }
 
@@ -194,10 +202,13 @@ it to the IETF RFC # 3066.
 sub _hdlr_website_language {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    return $ctx->_no_website_error()
-        if $blog->class ne 'website';
+    my $website;
+    if ($blog) {
+        $website = $blog->website
+            or die $ctx->_no_parent_website_error();
+    }
     my $lang_tag
-        = ( $blog ? $blog->language : $ctx->{config}->DefaultLanguage )
+        = ( $website ? $website->language : $ctx->{config}->DefaultLanguage )
         || '';
     MT::Util::normalize_language( $lang_tag, $args->{'locale'},
         $args->{'ietf'} );
@@ -232,10 +243,14 @@ it to the IETF RFC # 3066.
 sub _hdlr_website_date_language {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    return $ctx->_no_website_error()
-        if $blog->class ne 'website';
+    my $website;
+    if ($blog) {
+        $website = $blog->website
+            or return $ctx->_no_parent_website_error();
+    }
     my $lang_tag
-        = ( $blog ? $blog->date_language : $ctx->{config}->DefaultLanguage )
+        = (
+        $website ? $website->date_language : $ctx->{config}->DefaultLanguage )
         || '';
     MT::Util::normalize_language( $lang_tag, $args->{'locale'},
         $args->{'ietf'} );
@@ -256,9 +271,9 @@ sub _hdlr_website_url {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
-    return $ctx->_no_website_error()
-        if $blog->class ne 'website';
-    my $url = $blog->site_url;
+    my $website = $blog->website
+        or return $ctx->_no_parent_website_error();
+    my $url = $website->site_url;
     return '' unless defined $url;
     $url .= '/' unless $url =~ m!/$!;
     $url;
@@ -279,9 +294,9 @@ sub _hdlr_website_path {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
-    return $ctx->_no_website_error()
-        if $blog->class ne 'website';
-    my $path = $blog->site_path;
+    my $website = $blog->website
+        or return $ctx->_no_parent_website_error();
+    my $path = $website->site_path;
     return '' unless defined $path;
     $path .= '/' unless $path =~ m!/$!;
     $path;
@@ -314,9 +329,9 @@ sub _hdlr_website_timezone {
     my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
-    return $ctx->_no_website_error()
-        if $blog->class ne 'website';
-    my $so                  = $blog->server_offset;
+    my $website = $blog->website
+        or return $ctx->_no_parent_website_error();
+    my $so                  = $website->server_offset;
     my $no_colon            = $args->{no_colon};
     my $partial_hour_offset = 60 * abs( $so - int($so) );
     sprintf( "%s%02d%s%02d",
@@ -339,8 +354,9 @@ sub _hdlr_website_if_cc_license {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');
     return 0 unless $blog;
-    return 0 if $blog->class ne 'website';
-    return $blog->cc_license ? 1 : 0;
+    my $website = $blog->website
+        or return $ctx->_no_parent_website_error();
+    return $website->cc_license ? 1 : 0;
 }
 
 ###########################################################################
@@ -359,9 +375,9 @@ sub _hdlr_website_cc_license_url {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
-    return $ctx->_no_website_error()
-        if $blog->class ne 'website';
-    return $blog->cc_license_url;
+    my $website = $blog->website
+        or return $ctx->_no_parent_website_error();
+    return $website->cc_license_url;
 }
 
 ###########################################################################
@@ -386,9 +402,9 @@ sub _hdlr_website_cc_license_image {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
-    return $ctx->_no_website_error()
-        if $blog->class ne 'website';
-    my $cc = $blog->cc_license or return '';
+    my $website = $blog->website
+        or return $ctx->_no_parent_website_error();
+    my $cc = $website->cc_license or return '';
     my ( $code, $license, $image_url ) = $cc =~ /(\S+) (\S+) (\S+)/;
     return $image_url if $image_url;
     "http://creativecommons.org/images/public/"
@@ -411,9 +427,9 @@ sub _hdlr_website_file_extension {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
-    return $ctx->_no_website_error()
-        if $blog->class ne 'website';
-    my $ext = $blog->file_extension || '';
+    my $website = $blog->website
+        or return $ctx->_no_parent_website_error();
+    my $ext = $website->file_extension || '';
     $ext = '.' . $ext if $ext ne '';
     $ext;
 }
@@ -474,7 +490,9 @@ sub _hdlr_website_host {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
-    my $host = $blog->site_url;
+    my $website = $blog->website
+        or return $ctx->_no_parent_website_error();
+    my $host = $website->site_url;
     if ( $host =~ m!^https?://([^/:]+)(:\d+)?/?! ) {
         if ( $args->{signature} ) {
 
@@ -503,15 +521,17 @@ Similar to the L<WebsiteURL> tag, but removes any domain name from the URL.
 
 sub _hdlr_website_relative_url {
     my ( $ctx, $args, $cond ) = @_;
-    my $blog;
+    my $website;
     if ( $args->{id} && ( $args->{id} =~ m/^\d+$/ ) ) {
-        $blog = MT::Website->load( $args->{id} );
+        $website = MT::Website->load( $args->{id} );
     }
     else {
-        $blog = $ctx->stash('blog');
+        my $blog = $ctx->stash('blog');
+        $website = $blog->website
+            or return $ctx->_no_parent_website_error();
     }
-    return '' unless $blog;
-    my $host = $blog->site_url;
+    return '' unless $website;
+    my $host = $website->site_url;
     return '' unless defined $host;
     if ( $host =~ m!^https?://[^/]+(/.*)$! ) {
         return $1;
@@ -532,7 +552,15 @@ Outputs applied theme's ID for the website currently in context.
 =cut
 
 sub _hdlr_website_theme_id {
-    shift->invoke_handler( 'blogThemeID', @_ );
+    my ( $ctx, $args, $cond ) = @_;
+    my $blog = $ctx->stash('blog');
+    return $ctx->_no_website_error() unless $blog;
+    my $website = $blog->website
+        or return $ctx->_no_parent_website_error();
+    my $id = $website->theme_id
+        or return '';
+    $id =~ s/_/-/g;
+    return $id;
 }
 
 ###########################################################################

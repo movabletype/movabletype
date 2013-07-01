@@ -16,10 +16,11 @@ function smarty_function_mtwebsitepath($args, &$ctx) {
     if (empty($blog)) {
         $blog = $ctx->stash('blog');
     }
-    if (empty($blog))
-        return '';
+    if (empty($blog)) return '';
+    $website = $blog->is_blog() ? $blog->website() : $blog;
+    if (empty($website)) return '';
 
-    $path = $blog->site_path();
+    $path = $website->site_path();
     if (!preg_match('!/$!', $path))
         $path .= '/';
     return $path;

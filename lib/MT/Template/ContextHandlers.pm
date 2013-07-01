@@ -62,7 +62,7 @@ sub core_tags {
             ## Website
             Websites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
             'IfWebsite?' =>
-                '$Core::MT::Template::Tags::Website::_hdlr_website_id',
+                '$Core::MT::Template::Tags::Website::_hdlr_if_website',
             'WebsiteIfCCLicense?' =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_if_cc_license',
             'WebsiteHasBlog?' =>
@@ -605,6 +605,8 @@ sub core_tags {
             EntryEditLink =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_entry_edit_link',
             BlogEntryCount =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
+            WebsiteEntryCount =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
 
             ## Comment

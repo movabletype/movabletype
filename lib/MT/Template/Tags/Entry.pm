@@ -2495,6 +2495,17 @@ sub _hdlr_entry_edit_link {
 
 ###########################################################################
 
+=head2 WebsiteEntryCount
+
+Returns the number of published entries associated with the website
+currently in context.
+
+=for tags multiblog, count, websites, entries
+
+=cut
+
+###########################################################################
+
 =head2 BlogEntryCount
 
 Returns the number of published entries associated with the blog

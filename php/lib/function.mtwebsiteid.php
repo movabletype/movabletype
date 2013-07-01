@@ -8,7 +8,10 @@
 function smarty_function_mtwebsiteid($args, &$ctx) {
     // status: complete
     // parameters: none
-    require_once('function.mtblogid.php');
-    return smarty_function_mtblogid($args, $ctx);
+    $blog = $ctx->stash('blog');
+    if (empty($blog)) return 0;
+    $website = $blog->is_blog() ? $blog->website() : $blog;
+    if (empty($website)) return '';
+    return $website->id;
 }
 ?>

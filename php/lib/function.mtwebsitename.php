@@ -8,7 +8,10 @@
 function smarty_function_mtwebsitename($args, &$ctx) {
     // status: complete
     // parameters: none
-    require_once('function.mtblogname.php');
-    return smarty_function_mtblogname($args, $ctx);
+    $blog = $ctx->stash('blog');
+    if (empty($blog)) return '';
+    $website = $blog->is_blog() ? $blog->website() : $blog;
+    if (empty($website)) return '';
+    return $website->blog_name;
 }
 ?>

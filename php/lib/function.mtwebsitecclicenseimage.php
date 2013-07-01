@@ -8,7 +8,15 @@
 function smarty_function_mtwebsitecclicenseimage($args, &$ctx) {
     // status: complete
     // parameters: none
-    require_once('function.mtblogcclicenseimage.php');
-    return smarty_function_mtblogcclicenseimage($args, $ctx);
+    $blog = $ctx->stash('blog');
+    if (empty($blog)) return '';
+    $website = $blog->is_blog() ? $blog->website() : $blog;
+    if (empty($website)) return '';
+    $cc = $website->blog_cc_license;
+    if (empty($cc)) return '';
+    if (preg_match('/(\S+) (\S+) (\S+)/', $cc, $matches))
+        return $matches[3];  # the third element is the image
+    return 'http://creativecommons.org/images/public/' .
+        ($cc == 'pd' ? 'norights' : 'somerights');
 }
 ?>

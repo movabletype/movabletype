@@ -10,18 +10,18 @@ function smarty_function_mtwebsiterelativeurl($args, &$ctx) {
     // parameters: none
     if (isset($args['id']) && is_numeric($args['id'])) {
         require_once('class.mt_website.php');
-        $blog = new Website();
-        $ret = $blog->Load('blog_id = '.$args['id']);
+        $website = new Blog();
+        $ret = $website->Load('blog_id = '.$args['id']);
         if (!$ret)
-            $blog = null;
-    }
-    if (empty($blog)) {
+            $website = null;
+    } else {
         $blog = $ctx->stash('blog');
+        if (empty($blog)) return '';
+        $website = $blog->is_blog() ? $blog->website() : $blog;
     }
-    if (empty($blog))
-        return '';
+    if (empty($website)) return '';
 
-    $host = $blog->site_url();
+    $host = $website->site_url();
     if (!preg_match('!/$!', $host))
         $host .= '/';
 

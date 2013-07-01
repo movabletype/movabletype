@@ -151,12 +151,23 @@ abstract class MTDatabase {
 
         $incl = null;
         $excl = null;
-        if (isset($args['blog_ids']) || isset($args['include_blogs']) || isset($args['include_websites'])) {
+        if ( isset($args['blog_ids'])
+          || isset($args['include_blogs'])
+          || isset($args['site_ids'])
+          || isset($args['include_websites']) )
+        {
             // The following are aliased
-            $args['blog_ids'] and $args['include_blogs'] = $args['blog_ids'];
-            $args['include_websites'] and $args['include_blogs'] = $args['include_websites'];
-            $incl = $args['include_blogs'];
+            if ($args['blog_ids'])
+                $incl = $args['blog_ids'];
+            elseif ($args['include_blogs'])
+                $incl = $args['include_blogs'];
+            elseif ($args['site_ids'])
+                $incl = $args['site_ids'];
+            elseif ($args['include_websites'])
+                $incl = $args['include_websites'];
+            $args['include_blogs'] = $incl;
             unset($args['blog_ids']);
+            unset($args['site_ids']);
             unset($args['include_websites']);
         }
         else if (isset($args['blog_id'])) {
@@ -229,8 +240,23 @@ abstract class MTDatabase {
                 $mt = MT::get_instance();
                 $ctx = $mt->context();
                 $blog = $ctx->stash('blog');
-                if ( !empty( $blog ) )
-                    return " = " . $blog->id;
+                if ( !empty( $blog ) ) {
+                    $tag = $ctx->_tag_stack[count($ctx->_tag_stack)-1][0];
+                    if ( !empty($tag)
+                      && ( $tag === 'mtwebsitepingcount'
+                        || $tag === 'mtwebsiteentrycount'
+                        || $tag === 'mtwebsitepagecount'
+                        || $tag === 'mtwebsitecommentcount' ) )
+                    {
+                        $website = $blog->is_blog() ? $blog->website() : $blog;
+                        if (empty($website))
+                            return " = -1";
+                        else
+                            return " = " . $website->id;
+                    } else {
+                        return " = " . $blog->id;
+                    }
+                }
                 else
                     return " > 0";
             }
