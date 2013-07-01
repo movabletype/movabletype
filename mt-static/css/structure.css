@@ -518,19 +518,17 @@ ul.tabs li a {
     top: 0;
     left: 15px;
     z-index: 10;
-    width: 175px;
+    width: 128px;
     height: 32px;
     text-decoration: none;
-    background: #2b2b2b url(../images/logo/movable-type-brand-logo.png) center 3px no-repeat;
+    background: #2b2b2b url(../images/logo/movable-type-logo.png) center 3px no-repeat;
     outline: 0;
 }
 .website #brand a,
-.website.preview-screen #brand {
-    background-image: url(../images/logo/movable-type-brand-logo-website.png);
-}
+.website.preview-screen #brand,
 .system #brand a,
 .system.preview-screen #brand {
-    background-image: url(../images/logo/movable-type-brand-logo-system.png);
+    background-image: url(../images/logo/movable-type-logo.png);
 }
 #brand a:hover {
     background-color: #383c3c;
@@ -539,7 +537,7 @@ ul.tabs li a {
     display: block;
     position: absolute;
     top: 8px;
-    left: 195px;
+    left: 152px;
     color: #7b7c7d;
     text-transform: uppercase;
 }
