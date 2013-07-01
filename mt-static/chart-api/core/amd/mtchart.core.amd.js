@@ -1062,8 +1062,10 @@ ChartAPI.Graph.css.Base.prototype.horizontalBar = function (data, config, range,
     dateColorSunday = config.dateColorSunday || dateColor,
     labelColor = config.labelColor || '#999999',
     barWidth = parseInt(config.barWidth, 10) || 30,
+    barMarginLeft = parseInt(config.barMarginLeft, 10) || 30,
     barInterval = parseInt(config.barInterval, 10) || 5,
     labelSize = parseInt(config.labelSize, 10) || barWidth * 0.45,
+    dateLabelSize = parseInt(config.dateLabelSize, 10) || labelSize,
     createCSSGraphBarEl = function () {
       return $('<div class="css-graph-container"><div class="css-graph-date"></div><div class="css-graph-bar-container" style="height:' + barWidth + 'px; margin-bottom:' + barInterval + 'px"><div class="css-graph-bar"></div><div class="css-graph-bar-background"><div class="css-graph-bar-count"></div></div></div>');
     },
@@ -1093,7 +1095,7 @@ ChartAPI.Graph.css.Base.prototype.horizontalBar = function (data, config, range,
       $date = $el.find('.css-graph-date');
       $date.text(label[i].value).css({
         'color': dateColor,
-        'font-size': labelSize + 'px',
+        'font-size': dateLabelSize + 'px',
         'line-height': barWidth + 'px'
       });
       if (label[i].weekday === 6) {
@@ -1107,7 +1109,7 @@ ChartAPI.Graph.css.Base.prototype.horizontalBar = function (data, config, range,
       }
 
       $el.find('.css-graph-bar-container').css({
-        'margin-left': barWidth + 'px'
+        'margin-left': barMarginLeft + 'px'
       });
     }
 
@@ -1131,6 +1133,7 @@ ChartAPI.Graph.css.Base.prototype.horizontalBar = function (data, config, range,
 ChartAPI.Graph.css.Base.prototype.ratioHorizontalBar = function (data, config, range, $container) {
   var yLength = config.yLength,
     barWidth = parseInt(config.barWidth, 10) || 30,
+    barMarginLeft = parseInt(config.barMarginLeft, 10) || 30,
     barInterval = parseInt(config.barInterval, 10) || 5,
     labelSize = parseInt(config.labelSize, 10) || barWidth * 0.45,
     dateColor = config.dateColor || '#999999',
@@ -1160,7 +1163,7 @@ ChartAPI.Graph.css.Base.prototype.ratioHorizontalBar = function (data, config, r
 
     if (config.showDate) {
       $el.css({
-        'margin-left': barWidth + 'px'
+        'margin-left': barMarginLeft + 'px'
       });
     }
 
