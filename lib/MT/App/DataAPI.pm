@@ -358,7 +358,7 @@ sub core_endpoints {
             },
             error_codes => { 403 => 'Do not have permission to upload.', },
         },
-        {   id             => 'list_permissions',
+        {   id             => 'list_permissions_for_user',
             route          => '/users/:user_id/permissions',
             version        => 1,
             handler        => "${pkg}Permission::list",
