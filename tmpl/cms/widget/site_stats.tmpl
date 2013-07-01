@@ -98,6 +98,9 @@
             var pv    = hover_data[index].pv;
             var count = hover_data[index].count;
             return '<div class="morris-hover-row-label">' + row.x + '</div><div class="morris-hover-point" style="color: #6AAC2B;">PV: ' + pv + '</div><div class="morris-hover-point" style="color: #FFBE00;">Entry: ' + count + '</div>';
+          },
+          yLabelFormat: function (y) {
+              return '';
           }
         }
         var range = {
