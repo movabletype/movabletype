@@ -29,17 +29,17 @@ $mock->mock(
             },
             {   id      => 'create_entry',
                 route   => '/sites/:site_id/entries',
-                method  => 'POST',
+                verb    => 'POST',
                 version => 1,
             },
             {   id      => 'update_entry',
                 route   => '/sites/:site_id/entries/:entry_id',
-                method  => 'PUT',
+                verb    => 'PUT',
                 version => 1,
             },
             {   id      => 'delete_entry',
                 route   => '/sites/:site_id/entries/:entry_id',
-                method  => 'DELETE',
+                verb    => 'DELETE',
                 version => 1,
             },
             {   id      => 'get_some_resources_of_entry',
@@ -180,7 +180,7 @@ for my $d (@suite) {
             ok( !$endpoint, 'endpoint' );
             ok( !$params,   'extracted params' );
         }
-    };
+        };
 }
 
 note('find_endpoint_by_id');
@@ -200,7 +200,7 @@ for my $d (@suite) {
         else {
             ok( !$endpoint, 'endpoint' );
         }
-    };
+        };
 }
 
 done_testing();

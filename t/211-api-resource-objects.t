@@ -70,6 +70,7 @@ sub from_object {
             }
         };
         my $hash = MT::DataAPI::Resource->from_object($obj);
+        delete $hash->{customFields};
         is_deeply( $hash, $d->{to}, 'converted data' );
     }
 }

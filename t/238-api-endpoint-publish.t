@@ -32,8 +32,11 @@ $mock_author->mock( 'is_superuser', sub {0} );
 my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
 
-my $start_time = time();
-my @suite      = (
+my $blog = $app->model('blog')->load(1);
+my $start_time
+    = MT::Util::ts2iso( $blog, MT::Util::epoch2ts( $blog, time() ), 1 );
+
+my @suite = (
     {   path      => '/v1/publish/entries',
         method    => 'GET',
         params    => { ids => '1', },
@@ -73,7 +76,7 @@ my @suite      = (
         result         => +{
             startTime => $start_time,
             restIds   => '',
-            status    => 'rebuilding',
+            status    => 'Rebuilding',
         },
         complete => sub {
             my ($data) = @_;
@@ -111,7 +114,8 @@ my @suite      = (
         ],
         result => +{
             startTime => $start_time,
-            status    => 'complete',
+            restIds   => '',
+            status    => 'Complete',
         },
         complete => sub {
             my ($data) = @_;
@@ -138,19 +142,32 @@ $mock_mt->mock(
 my $format = MT::DataAPI::Format->find_format('json');
 
 for my $data (@suite) {
-    note( $data->{path} );
-
     $data->{setup}->($data) if $data->{setup};
+
+    my $path = $data->{path};
+    $path
+        =~ s/:(?:(\w+)_id)|:(\w+)/ref $data->{$1} ? $data->{$1}->id : $data->{$2}/ge;
 
     my $params
         = ref $data->{params} eq 'CODE'
         ? $data->{params}->($data)
         : $data->{params};
 
+    my $note = $path;
+    if ( lc $data->{method} eq 'get' && $data->{params} ) {
+        $note .= '?'
+            . join( '&',
+            map { $_ . '=' . $data->{params}{$_} }
+                keys %{ $data->{params} } );
+    }
+    $note .= ' ' . $data->{method};
+    $note .= ' ' . $data->{note} if $data->{note};
+    note($note);
+
     %callbacks = ();
     _run_app(
         'MT::App::DataAPI',
-        {   __path_info      => $data->{path},
+        {   __path_info      => $path,
             __request_method => $data->{method},
             ( $data->{upload} ? ( __test_upload => $data->{upload} ) : () ),
             (   $params
@@ -172,7 +189,8 @@ for my $data (@suite) {
         lc $k => $v
         }
         split /\n/, $headers;
-    is( $headers{status}, $data->{code} || 200, 'Status is OK' );
+    my $expected_status = $data->{code} || 200;
+    is( $headers{status}, $expected_status, 'Status ' . $expected_status );
     if ( $data->{next_phase_url} ) {
         like(
             $headers{'x-mt-next-phase-url'},
@@ -199,12 +217,14 @@ for my $data (@suite) {
         $expected_result = $expected_result->( $data, $body )
             if ref $expected_result eq 'CODE';
         if ( UNIVERSAL::isa( $expected_result, 'MT::Object' ) ) {
+            MT->instance->user($author);
             $expected_result = $format->{unserialize}->(
                 $format->{serialize}->(
                     MT::DataAPI::Resource->from_object($expected_result)
                 )
             );
         }
+
         my $result = $format->{unserialize}->($body);
         is_deeply( $result, $expected_result, 'result' );
     }

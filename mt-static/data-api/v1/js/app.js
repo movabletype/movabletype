@@ -1,7 +1,7 @@
 /*
- * Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
- * This program is distributed under the terms of the
- * GNU General Public License, version 2.
+ * Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+ * This code cannot be redistributed without permission from www.sixapart.com.
+ * For more information, consult your Movable Type license.
  *
  * Includes jQuery JavaScript Library to serialize a HTMLFormElement
  * http://jquery.com/
@@ -314,7 +314,7 @@ DataAPI.prototype = {
 
     /**
      * Store token data via current session store.
-     * @method storeToken
+     * @method storeTokenData
      * @param {Object} tokenData The token data
      *   @param {String} tokenData.accessToken access token
      *   @param {String} tokenData.expiresIn The number of seconds
@@ -322,7 +322,7 @@ DataAPI.prototype = {
      *   @param {String} tokenData.sessionId [optional] session ID
      * @category core
      */
-    storeToken: function(tokenData) {
+    storeTokenData: function(tokenData) {
         var o = this.o;
         tokenData.startTime = this._getCurrentEpoch();
         Cookie.bake(this.getAppKey(), this.serializeData(tokenData), o.cookieDomain, o.cookiePath);
@@ -345,18 +345,18 @@ DataAPI.prototype = {
             return null;
         }
 
-        this.storeToken(defaultToken);
+        this.storeTokenData(defaultToken);
         Cookie.bake(defaultKey, '', undefined, '/', new Date(0));
         return defaultToken;
     },
 
     /**
      * Get token data via current session store.
-     * @method getToken
+     * @method getTokenData
      * @return {Object} Token data
      * @category core
      */
-    getToken: function() {
+    getTokenData: function() {
         var token,
             o = this.o;
 
@@ -391,7 +391,7 @@ DataAPI.prototype = {
             return null;
         }
 
-        return this.tokenData.accessToken;
+        return this.tokenData;
     },
 
     /**
@@ -401,7 +401,12 @@ DataAPI.prototype = {
      * @category core
      */
     getAuthorizationHeader: function() {
-        return 'MTAuth accessToken=' + this.getToken();
+        var tokenData = this.getTokenData();
+        if (tokenData && tokenData.accessToken) {
+            return 'MTAuth accessToken=' + tokenData.accessToken;
+        }
+
+        return '';
     },
 
     /**
@@ -425,7 +430,12 @@ DataAPI.prototype = {
         for (k in params) {
             v = params[k];
             if (typeof v === 'object') {
-                v = v.id;
+                if (typeof v === 'function') {
+                    v = v.id();
+                }
+                else {
+                    v = v.id;
+                }
             }
             if (typeof v === 'function') {
                 v = v();
@@ -617,39 +627,21 @@ DataAPI.prototype = {
      * @param {String} method Request method
      * @param {String} url Request URL
      * @param {String|FormData} params Parameters to send with request
-     * @param {Object|null} defaultParams System default parameters to merge to params
      * @return {XMLHttpRequest}
      * @category core
      */
-    sendXMLHttpRequest: function(xhr, method, url, params, defaultParams) {
-        var k, headers, uk;
-
-        if (! this._isEmptyObject(defaultParams)) {
-            if (window.FormData && params instanceof window.FormData) {
-                for (k in defaultParams) {
-                    params.append(k, defaultParams[k]);
-                }
-            }
-            else {
-                defaultParams = this._serializeParams(defaultParams);
-                if (method.toLowerCase() === 'get') {
-                    url += (url.indexOf('?') === -1 ? '?' : '&') + defaultParams;
-                }
-                else {
-                    if (! params) {
-                        params = '';
-                    }
-                    params += (params === '' ? '' : '&') + defaultParams;
-                }
-            }
-        }
+    sendXMLHttpRequest: function(xhr, method, url, params) {
+        var k, headers, uk,
+            authHeader = this.getAuthorizationHeader();
 
         xhr.open(method, url, this.o.async);
         if (typeof params === 'string') {
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         }
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        xhr.setRequestHeader('X-MT-Authorization', this.getAuthorizationHeader());
+        if (authHeader) {
+            xhr.setRequestHeader('X-MT-Authorization', authHeader);
+        }
 
         function normalizeHeaderKey(all, prefix, letter) {
             return prefix + letter.toUpperCase();
@@ -885,11 +877,21 @@ DataAPI.prototype = {
                     }
                 }
                 else {
-                    api.storeToken(response);
+                    api.storeTokenData(response);
                     api.request.apply(api, originalArguments);
                 }
                 return false;
             });
+        }
+
+        function appendParamsToURL(base, params) {
+            if (base.indexOf('?') === -1) {
+                base += '?';
+            }
+            else {
+                base += '&';
+            }
+            return base + api._serializeParams(params);
         }
 
 
@@ -931,13 +933,7 @@ DataAPI.prototype = {
         }
 
         if (paramsList.length && (method.toLowerCase() === 'get' || paramsList.length >= 2)) {
-            if (endpoint.indexOf('?') === -1) {
-                endpoint += '?';
-            }
-            else {
-                endpoint += '&';
-            }
-            endpoint += this._serializeParams(paramsList.shift());
+            endpoint = appendParamsToURL(endpoint, paramsList.shift());
         }
 
         if (method.match(/^(put|delete)$/i)) {
@@ -945,17 +941,28 @@ DataAPI.prototype = {
             method = 'POST';
         }
 
-        for (k in defaultParams) {
-            for (i = 0; i < paramsList.length; i++) {
-                if (k in paramsList[i]) {
-                    delete defaultParams[k];
+        if (paramsList.length) {
+            params = paramsList.shift();
+        }
+
+        if (! this._isEmptyObject(defaultParams)) {
+            if (method.toLowerCase() === 'get') {
+                endpoint = appendParamsToURL(endpoint, defaultParams);
+            }
+            else if (window.FormData && params && params instanceof window.FormData) {
+                for (k in defaultParams) {
+                    params.append(k, defaultParams[k]);
+                }
+            }
+            else {
+                params = params || {};
+                for (k in defaultParams) {
+                    params[k] = defaultParams[k];
                 }
             }
         }
 
-        if (paramsList.length) {
-            params = serializeParams(paramsList.shift());
-        }
+        params = serializeParams(params);
 
 
         base = this.o.baseUrl.replace(/\/*$/, '/') + 'v' + this.getVersion();
@@ -999,21 +1006,22 @@ DataAPI.prototype = {
                 url = xhr.getResponseHeader('X-MT-Next-Phase-URL');
                 if (url) {
                     xhr.abort();
-                    api.sendXMLHttpRequest(xhr, method, base + url, params, defaultParams);
+                    api.sendXMLHttpRequest(xhr, method, base + url, params);
                 }
                 else {
                     cleanup();
                 }
             };
-            return this.sendXMLHttpRequest(xhr, method, base + endpoint, params, defaultParams);
+            return this.sendXMLHttpRequest(xhr, method, base + endpoint, params);
         }
         else {
             (function() {
                 var k, file, originalName, input,
-                    target = api._getNextIframeName(),
-                    doc    = window.document,
-                    form   = doc.createElement('form'),
-                    iframe = doc.createElement('iframe');
+                    target     = api._getNextIframeName(),
+                    doc        = window.document,
+                    form       = doc.createElement('form'),
+                    iframe     = doc.createElement('iframe'),
+                    authHeader = api.getAuthorizationHeader();
 
 
                 // Set up a form element
@@ -1032,15 +1040,10 @@ DataAPI.prototype = {
                 iframe.contentWindow.name = target;
 
 
-                if (! api._isEmptyObject(defaultParams)) {
-                    if (! params) {
-                        params = {};
-                    }
-                    for (k in defaultParams) {
-                        params[k] = defaultParams[k];
-                    }
+                params = params || {};
+                if (authHeader) {
+                    params['X-MT-Authorization'] = authHeader;
                 }
-                params['X-MT-Authorization'] = api.getAuthorizationHeader();
                 params['X-MT-Requested-Via'] = 'IFRAME';
 
                 for (k in params) {

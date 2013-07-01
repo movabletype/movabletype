@@ -7,6 +7,12 @@ BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
+BEGIN {
+    use Test::More;
+    eval { require Test::MockModule }
+        or plan skip_all => 'Test::MockModule is not installed';
+}
+
 use lib qw(lib extlib t/lib);
 
 use Test::More;
@@ -19,8 +25,15 @@ eval(
 use MT::App::DataAPI;
 use MT::DataAPI::Resource;
 
-my $app        = MT::App::DataAPI->new;
+my $app = MT::App::DataAPI->new;
+MT->set_instance($app);
 my $user_class = $app->model('user');
+my $author     = MT->model('author')->load(1);
+
+my $mock_author = Test::MockModule->new('MT::Author');
+$mock_author->mock( 'is_superuser', sub {0} );
+my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
+$mock_app_api->mock( 'user', $author );
 
 subtest 'from_object with $fields_specified' => sub {
     my @suite = (
@@ -31,9 +44,14 @@ subtest 'from_object with $fields_specified' => sub {
             },
             to => {
                 id          => 1,
+                name        => undef,
                 displayName => 'Test',
-                userpicURL =>
+                userpicUrl =>
                     'http://narnia.na/nana/assets_c/userpics/userpic-1-100x100.png',
+                language  => 'en-us',
+                email     => undef,
+                url       => undef,
+                updatable => 1,
             },
             fields => undef,
         },
@@ -43,7 +61,7 @@ subtest 'from_object with $fields_specified' => sub {
                 userpic_asset_id => 1,
             },
             to     => { id => 1, },
-            fields => 'id',
+            fields => [qw(id)],
         },
         {   from => {
                 id               => 1,
@@ -54,7 +72,7 @@ subtest 'from_object with $fields_specified' => sub {
                 id          => 1,
                 displayName => 'Test',
             },
-            fields => 'id,displayName',
+            fields => [qw(id displayName)],
         },
     );
 

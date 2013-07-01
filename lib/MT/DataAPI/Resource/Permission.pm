@@ -37,7 +37,7 @@ sub fields {
 
                 for ( my $i = 0; $i < scalar @$objs; $i++ ) {
                     my @restrictions = map { $_ =~ /'(.*?)'/ } split ',',
-                        $objs->[$i]->restrictions;
+                        ( $objs->[$i]->restrictions || '' );
                     $hashs->[$i]{permissions} = [
                         sort grep {
                             my $p = $_;
