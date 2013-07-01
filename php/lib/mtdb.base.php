@@ -151,12 +151,23 @@ abstract class MTDatabase {
 
         $incl = null;
         $excl = null;
-        if (isset($args['blog_ids']) || isset($args['include_blogs']) || isset($args['include_websites'])) {
+        if ( isset($args['blog_ids'])
+          || isset($args['include_blogs'])
+          || isset($args['site_ids'])
+          || isset($args['include_websites']) )
+        {
             // The following are aliased
-            $args['blog_ids'] and $args['include_blogs'] = $args['blog_ids'];
-            $args['include_websites'] and $args['include_blogs'] = $args['include_websites'];
-            $incl = $args['include_blogs'];
+            if ($args['blog_ids'])
+                $incl = $args['blog_ids'];
+            elseif ($args['include_blogs'])
+                $incl = $args['include_blogs'];
+            elseif ($args['site_ids'])
+                $incl = $args['site_ids'];
+            elseif ($args['include_websites'])
+                $incl = $args['include_websites'];
+            $args['include_blogs'] = $incl;
             unset($args['blog_ids']);
+            unset($args['site_ids']);
             unset($args['include_websites']);
         }
         else if (isset($args['blog_id'])) {

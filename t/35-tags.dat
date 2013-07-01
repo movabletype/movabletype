@@ -685,5 +685,17 @@
 { "r" : "1", "t" : "<MTWebsiteIfCCLicense>1</MTWebsiteIfCCLicense>", "e" : "1"}, #669
 { "r" : "1", "t" : "<MTWebsiteCCLicenseURL>", "e" : "http://creativecommons.org/licenses/by-nc-sa/2.0/"}, #670
 { "r" : "1", "t" : "<MTWebsiteCCLicenseImage>", "e" : "http://creativecommons.org/images/public/somerights20.gif"}, #671
-{ "r" : "1", "t" : "<MTWebsiteFileExtension>", "e" : ".html"} #672
+{ "r" : "1", "t" : "<MTWebsiteFileExtension>", "e" : ".html"}, #672
+{ "r" : "1", "t" : "<MTWebsiteCommentCount site_ids='1'>", "e" : "9"}, #673
+{ "r" : "1", "t" : "<MTWebsiteCommentCount site_ids='1' blog_ids='2'>", "e" : "0"}, #674
+{ "r" : "1", "t" : "<MTWebsiteCommentCount site_ids='1' include_blogs='2'>", "e" : "0"}, #675
+{ "r" : "1", "t" : "<MTWebsiteCommentCount site_ids='1' include_websites='2'>", "e" : "9"}, #676
+{ "r" : "1", "t" : "<MTWebsitePageCount site_ids='1'>", "e" : "4"}, #677
+{ "r" : "1", "t" : "<MTWebsitePageCount site_ids='1' blog_ids='2'>", "e" : "0"}, #678
+{ "r" : "1", "t" : "<MTWebsitePageCount site_ids='1' include_blogs='2'>", "e" : "0"}, #679
+{ "r" : "1", "t" : "<MTWebsitePageCount site_ids='1' include_websites='2'>", "e" : "4"}, #680
+{ "r" : "1", "t" : "<MTWebsitePingCount site_ids='1'>", "e" : "2"}, #681
+{ "r" : "1", "t" : "<MTWebsitePingCount site_ids='1' blog_ids='2'>", "e" : "0"}, #682
+{ "r" : "1", "t" : "<MTWebsitePingCount site_ids='1' include_blogs='2'>", "e" : "0"}, #683
+{ "r" : "1", "t" : "<MTWebsitePingCount site_ids='1' include_websites='2'>", "e" : "2"} #684
 ]
