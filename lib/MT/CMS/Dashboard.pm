@@ -1188,23 +1188,74 @@ sub generate_site_stats_data {
     my $fmgr = MT::FileMgr->new('Local');
     my $time = $fmgr->file_mod_time($path) if -f $path;
 
+    # Get readied provider
     require MT::App::DataAPI;
     my $mt   = MT::App::DataAPI->new;
     my $blog = $app->model('blog')->load($blog_id);
-    if ( my $provider = readied_provider( $mt, $blog ) ) {
-        if (( lc( MT->config('StatsCachePublishing') ) eq 'off' )
-            || (   ( lc( MT->config('StatsCachePublishing') ) eq 'onload' )
-                && ( !$time || ( time - $time > $cache_time ) ) )
-            )
-        {
-            require MT::Util;
-            my @ten_days_before_ts
-                = MT::Util::offset_time_list( time - ( 10 * 24 * 60 * 60 ),
-                $blog_id );
-            my $ten_days_before = sprintf( '%04d-%02d-%02d',
-                $ten_days_before_ts[5] + 1900,
-                $ten_days_before_ts[4] + 1,
-                @ten_days_before_ts[ 3, 2, 1, 0 ] );
+    my $provider = readied_provider( $mt, $blog );
+    unless ($provider) {
+        $param->{not_configured} = 1;
+    }
+
+    #if (( lc( MT->config('StatsCachePublishing') ) eq 'off' )
+    #    || (   ( lc( MT->config('StatsCachePublishing') ) eq 'onload' )
+    #        && ( !$time || ( time - $time > $cache_time ) ) )
+    #    )
+    #{
+        # Preparing dates of ten days ago.
+        require MT::Util;
+        my @ten_days_ago_tl
+            = MT::Util::offset_time_list( time - ( 10 * 24 * 60 * 60 ),
+            $blog_id );
+        my @dates;
+        for ( my $i = 9; $i >= 0; $i-- ) {
+            my @timelist = MT::Util::offset_time_list( time - ( $i * 24 * 60 * 60 ), $blog_id );
+            my $date = sprintf( '%04d-%02d-%02d',
+                $timelist[5] + 1900,
+                $timelist[4] + 1,
+                @timelist[ 3, 2, 1, 0 ] );
+            push @dates, $date;
+        }
+
+        # Get Entry Counts
+        my $entry_class = $app->model('entry');
+        my $terms       = { status => MT::Entry::RELEASE() };
+        my $args        = {
+            group => [
+                "extract(year from authored_on)",
+                "extract(month from authored_on)",
+                "extract(day from authored_on)"
+            ],
+        };
+
+        my $earliest = sprintf(
+            '%04d%02d%02d%02d%02d%02d',
+            $ten_days_ago_tl[5] + 1900,
+            $ten_days_ago_tl[4] + 1,
+            @ten_days_ago_tl[ 3, 2, 1, 0 ]
+        );
+        $terms->{authored_on} = [ $earliest, undef ];
+        $args->{range_incl}{authored_on} = 1;
+
+        $terms->{blog_id} = $blog_id;
+
+        my $entry_iter = $entry_class->count_group_by( $terms, $args );
+        my %counts;
+        my $max_count = 0;
+        while ( my ( $count, $y, $m, $d ) = $entry_iter->() ) {
+            my $date = sprintf( "%04d-%02d-%02d", $y, $m, $d );
+            $counts{$date} = $count;
+            $max_count = $count if $max_count < $count;
+        }
+
+        # Get PVs
+        my %pvs;
+        my $max_pv = 0;
+        if ($provider) {
+            my $ten_days_ago = sprintf( '%04d-%02d-%02d',
+                $ten_days_ago_tl[5] + 1900,
+                $ten_days_ago_tl[4] + 1,
+                @ten_days_ago_tl[ 3, 2, 1, 0 ] );
             my @ts = MT::Util::offset_time_list( time, $blog_id );
             my $today = sprintf( '%04d-%02d-%02d',
                 $ts[5] + 1900,
@@ -1212,68 +1263,37 @@ sub generate_site_stats_data {
                 @ts[ 3, 2, 1, 0 ] );
             my $for_date = $provider->pageviews_for_date(
                 $mt,
-                {   startDate => $ten_days_before,
+                {   startDate => $ten_days_ago,
                     endDate   => $today,
                 }
             );
 
-            my $entry_class = $app->model('entry');
-            my $terms       = { status => MT::Entry::RELEASE() };
-            my $args        = {
-                group => [
-                    "extract(year from authored_on)",
-                    "extract(month from authored_on)",
-                    "extract(day from authored_on)"
-                ],
-            };
-
-            require MT::Util;
-            my $earliest = sprintf(
-                '%04d%02d%02d%02d%02d%02d',
-                $ten_days_before_ts[5] + 1900,
-                $ten_days_before_ts[4] + 1,
-                @ten_days_before_ts[ 3, 2, 1, 0 ]
-            );
-            $terms->{authored_on} = [ $earliest, undef ];
-            $args->{range_incl}{authored_on} = 1;
-
-            $terms->{blog_id} = $blog_id;
-
-            my $entry_iter = $entry_class->count_group_by( $terms, $args );
-            my %counts;
-            my $max_count = 0;
-            while ( my ( $count, $y, $m, $d ) = $entry_iter->() ) {
-                my $date = sprintf( "%04d-%02d-%02d", $y, $m, $d );
-                $counts{$date} = $count;
-                $max_count = $count if $max_count < $count;
-            }
-
             my @items  = @{ $for_date->{items} };
-            my @pvs    = map { $_->{pageviews} } @items;
-            my $max_pv = ( sort { $b <=> $a } @pvs )[0];
-
-            my $rate = $max_pv && $max_count ? $max_pv / $max_count : 1;
-            my $result;
             foreach my $item (@items) {
-                my %row1 = (
-                    x  => $item->{date},
-                    y  => $item->{pageviews},
-                    y1 => ( $counts{ $item->{date} } || 0 )  * ( $rate || 0 ),
-                );
-                my %row2 = (
-                    pv    => $item->{pageviews},
-                    count => $counts{ $item->{date} } || 0,
-                );
-                push @{ $result->{graph_data} }, \%row1;
-                push @{ $result->{hover_data} }, \%row2;
+                $pvs{$item->{date}} = $item->{pageviews};
+                $max_pv = $item->{pageviews} if $max_pv < $item->{pageviews};
             }
-
-            $fmgr->put_data( MT::Util::to_json($result), $path );
         }
-    }
-    else {
-        $param->{not_configured} = 1;
-    }
+
+        my $rate = $max_pv && $max_count ? $max_pv / $max_count : 1;
+        my $result;
+        foreach my $date (@dates) {
+            my %row1 = (
+                x  => $date,
+                y  => $pvs{$date} || 0,
+                y1 => $counts{$date} * $rate || 0,
+            );
+            my %row2 = (
+                pv    => $pvs{$date} || 0,
+                count => $counts{$date} || 0,
+            );
+            push @{ $result->{graph_data} }, \%row1;
+            push @{ $result->{hover_data}{data} }, \%row2;
+        }
+        $result->{hover_data}{rate} = $rate;
+
+        $fmgr->put_data( MT::Util::to_json($result), $path );
+    #}
     1;
 }
 

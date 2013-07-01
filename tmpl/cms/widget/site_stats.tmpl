@@ -32,10 +32,10 @@
     </div>
   </div>
   <div class="right-column">
-    <div id="graph">
     <mt:if name="not_configured">
-      <__trans phrase="Selected site does not have statistics settings."><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_web_services&blog_id=<mt:var name="blog_id">"><__trans phrase="Please configure statistics settings."></a></mt:if>
+      <div id="msg_not_configured"><__trans phrase="Selected site does not have statistics settings."><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_web_services&blog_id=<mt:var name="blog_id">"><__trans phrase="Please configure statistics settings."></a></mt:if></div>
     </mt:if>
+    <div id="graph">
     </div>
   </div>
   <div class="clear"></div>
@@ -49,6 +49,7 @@
 /* <![CDATA[ */
   jQuery(function() {
     jQuery('select#select_blog_id').change( function() {
+      jQuery('#msg_not_configured').remove();
       jQuery('#graph').empty();
       jQuery('#todays_title').empty();
       jQuery('#yesterdays_title').empty();
@@ -69,22 +70,21 @@
         },
         success: function(data) {
           if (data.result.not_configured) {
-            jQuery('#graph').html('<__trans phrase="Current blog/website does not have Statistics settings."><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_web_services&blog_id=<mt:var name="blog_id">"><__trans phrase="Please configure Statistics settings."></a></mt:if>');
-          } else {
-            draw_graph(data.result.stat_url);
+            jQuery('#graph').before('<div id="msg_not_configured"><__trans phrase="Selected site does not have statistics settings."><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_web_services&blog_id=<mt:var name="blog_id">"><__trans phrase="Please configure statistics settings."></a></mt:if></div>');
           }
+          draw_graph(data.result.stat_url);
         },
         error: function(data) {
         }
       });
     });
 
-  <mt:unless name="not_configured">
     draw_graph('<mt:var name="stat_url">');
-  </mt:unless>
 
     function draw_graph(stat_url) {
       jQuery.getJSON(stat_url, function(data) {
+        var hover_data = data.hover_data.data;
+        var rate = data.hover_data.rate;
         var config = {
           type: 'morris.line',
           yLength: 2,
@@ -95,8 +95,8 @@
           data: data.graph_data,
           hoverCallback: function (index, options, content) {
             var row   = options.data[index];
-            var pv    = data.hover_data[index+1].pv;
-            var count = data.hover_data[index+1].count;
+            var pv    = hover_data[index].pv;
+            var count = hover_data[index].count;
             return '<div class="morris-hover-row-label">' + row.x + '</div><div class="morris-hover-point" style="color: #6AAC2B;">PV: ' + pv + '</div><div class="morris-hover-point" style="color: #FFBE00;">Entry: ' + count + '</div>';
           }
         }
@@ -105,8 +105,8 @@
           length: 10
         }
         new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
-        var todays_count     = data.hover_data[10].pv;
-        var yesterdays_count = data.hover_data[9].pv;
+        var todays_count     = hover_data[9].pv;
+        var yesterdays_count = hover_data[8].pv;
         var diff = todays_count - yesterdays_count;
         var mark = diff > 0 ? '+' : '';
         jQuery('#todays_title').text('Today: ');
