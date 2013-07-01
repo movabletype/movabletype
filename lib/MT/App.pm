@@ -3458,7 +3458,7 @@ sub load_widgets {
         my $order;
         if ( !( $order = $widget_param->{order} ) ) {
             $order = $all_widgets->{$widget_id}{order}{$scope_type};
-            $order = ++$order_num unless defined $order;
+            $order = $order_num = $order_num + 100 unless defined $order;
             $widget_param->{order} = $order;
             $resave_widgets = 1;
         }
@@ -3620,10 +3620,22 @@ sub update_widget_prefs {
                 }
             }
             $these_widgets->{$widget_inst} = { set => $set };
-            $these_widgets->{$widget_inst}
-                = { order => $widget->{order}{$widget_scope} };
             $these_widgets->{$widget_inst} = { param => $widget->{param} }
                 if exists $widget->{param};
+
+            # Renumbering widget order
+            my $widget_count = keys %$these_widgets;
+            foreach my $widget_id ( keys %$these_widgets ) {
+                if ( my $widget = $all_widgets->{$widget_id} ) {
+                    my @widget_scopes = split ':', $widget_scope;
+                    if ( my $order = $widget->{order}{$widget_scopes[1]} ) {
+                        $these_widgets->{$widget_id} = { order => $order };
+                    }
+                    else {
+                        $these_widgets->{$widget_id} = { order => $widget_count++ * 100 };
+                    }
+                }
+            }
         }
         $resave_widgets = 1;
     }

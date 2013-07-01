@@ -91,6 +91,15 @@ __SQL__
                 MT->config( 'EnableSessionKeyCompat', 1, 1 );
             },
         },
+        '_v6_renumbering_widget_orders' => {
+            version_limit => 6.0007,
+            priority      => 3.2,
+            updater       => {
+                type  => 'author',
+                label => "Renumbering widget orders...",
+                code  => \&_v6_renumbering_widget_orders,
+            },
+        },
     };
 }
 
@@ -149,5 +158,30 @@ sub _v6_add_site_stats_widget {
     $user->save;
 }
 
+sub _v6_renumbering_widget_orders {
+    my $user    = shift;
+    my $widgets = $user->widgets;
+    return 1 unless $widgets;
+
+    foreach my $key ( keys %$widgets ) {
+        my @keys        = split ':', $key;
+        my @widget_keys = keys %{ $widgets->{$key} };
+        my $widget_num  = @widget_keys;
+        foreach my $widget_key (@widget_keys) {
+            my $order = $widgets->{$key}->{$widget_key}->{order};
+            if ($order) {
+                $order = $order * 100;
+            }
+            else {
+                $widget_num++;
+                $order = $widget_num * 100;
+            }
+            $widgets->{$key}->{$widget_key}->{order} = $order;
+        }
+    }
+
+    $user->widgets($widgets);
+    $user->save;
+}
 1;
 __END__
