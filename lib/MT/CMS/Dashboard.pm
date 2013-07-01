@@ -1190,9 +1190,8 @@ sub generate_site_stats_data {
 
     # Get readied provider
     require MT::App::DataAPI;
-    my $mt   = MT::App::DataAPI->new;
     my $blog = $app->model('blog')->load($blog_id);
-    my $provider = readied_provider( $mt, $blog );
+    my $provider = readied_provider( $app, $blog );
     unless ($provider) {
         $param->{not_configured} = 1;
     }
@@ -1262,7 +1261,7 @@ sub generate_site_stats_data {
                 $ts[4] + 1,
                 @ts[ 3, 2, 1, 0 ] );
             my $for_date = $provider->pageviews_for_date(
-                $mt,
+                $app,
                 {   startDate => $ten_days_ago,
                     endDate   => $today,
                 }
