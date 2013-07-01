@@ -1197,11 +1197,11 @@ sub generate_site_stats_data {
         $param->{not_configured} = 1;
     }
 
-    #if (( lc( MT->config('StatsCachePublishing') ) eq 'off' )
-    #    || (   ( lc( MT->config('StatsCachePublishing') ) eq 'onload' )
-    #        && ( !$time || ( time - $time > $cache_time ) ) )
-    #    )
-    #{
+    if (( lc( MT->config('StatsCachePublishing') ) eq 'off' )
+        || (   ( lc( MT->config('StatsCachePublishing') ) eq 'onload' )
+            && ( !$time || ( time - $time > $cache_time ) ) )
+        )
+    {
         # Preparing dates of ten days ago.
         require MT::Util;
         my @ten_days_ago_tl
@@ -1293,7 +1293,7 @@ sub generate_site_stats_data {
         $result->{hover_data}{rate} = $rate;
 
         $fmgr->put_data( MT::Util::to_json($result), $path );
-    #}
+    }
     1;
 }
 
