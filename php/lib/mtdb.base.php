@@ -244,6 +244,7 @@ abstract class MTDatabase {
                     $tag = $ctx->_tag_stack[count($ctx->_tag_stack)-1][0];
                     if ( !empty($tag)
                       && ( $tag === 'mtwebsitepingcount'
+                        || $tag === 'mtwebsiteentrycount'
                         || $tag === 'mtwebsitepagecount'
                         || $tag === 'mtwebsitecommentcount' ) )
                     {

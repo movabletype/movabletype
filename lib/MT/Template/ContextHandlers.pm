@@ -606,6 +606,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Entry::_hdlr_entry_edit_link',
             BlogEntryCount =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
+            WebsiteEntryCount =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
 
             ## Comment
             CommentID =>

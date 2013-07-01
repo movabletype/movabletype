@@ -697,5 +697,14 @@
 { "r" : "1", "t" : "<MTWebsitePingCount site_ids='1'>", "e" : "2"}, #681
 { "r" : "1", "t" : "<MTWebsitePingCount site_ids='1' blog_ids='2'>", "e" : "0"}, #682
 { "r" : "1", "t" : "<MTWebsitePingCount site_ids='1' include_blogs='2'>", "e" : "0"}, #683
-{ "r" : "1", "t" : "<MTWebsitePingCount site_ids='1' include_websites='2'>", "e" : "2"} #684
+{ "r" : "1", "t" : "<MTWebsitePingCount site_ids='1' include_websites='2'>", "e" : "2"}, #684
+{ "r" : "1", "t" : "<MTWebsiteEntryCount>", "e" : "0"}, #685
+{ "r" : "1", "t" : "<MTWebsiteEntryCount site_ids='1'>", "e" : "6"}, #686
+{ "r" : "1", "t" : "<MTWebsiteEntryCount site_ids='1' blog_ids='2'>", "e" : "0"}, #687
+{ "r" : "1", "t" : "<MTWebsiteEntryCount site_ids='1' include_blogs='2'>", "e" : "0"}, #688
+{ "r" : "1", "t" : "<MTWebsiteEntryCount site_ids='1' include_websites='2'>", "e" : "6"}, #689
+{ "r" : "1", "t" : "<MTWebsiteEntryCount site_ids='all'>", "e" : "6"}, #690
+{ "r" : "1", "t" : "<MTWebsiteEntryCount site_ids='all' exclude_websites='1'>", "e" : "0"}, #691
+{ "r" : "1", "t" : "<MTWebsiteEntryCount blog_ids='1' none='none' singular='singular' plural='plural:#'>", "e" : "plural:6"}, #692
+{ "r" : "1", "t" : "<MTWebsiteEntryCount blog_ids='2' none='none' singular='singular' plural='plural:#'>", "e" : "none"} #693
 ]

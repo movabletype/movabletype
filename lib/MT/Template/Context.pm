@@ -381,6 +381,7 @@ sub set_blog_load_context {
         if ( my $blog = $ctx->stash('blog') ) {
             my $tag = lc $ctx->stash('tag');
             if (   $tag eq 'websitepingcount'
+                || $tag eq 'websiteentrycount'
                 || $tag eq 'websitepagecount'
                 || $tag eq 'websitecommentcount' )
             {
