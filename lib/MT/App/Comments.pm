@@ -2077,7 +2077,7 @@ sub save_commenter_profile {
         $magic_token = $app->make_commenter_session( $cmntr );
     }
 
-    $param{magic_token} = $sid;
+    $param{magic_token} = $magic_token;
 
     return $app->build_page( 'profile.tmpl', \%param );
 }
