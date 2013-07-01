@@ -29,46 +29,46 @@ sub dashboard {
     my $default_widgets = {
         'system' => {
             'recent_websites' => {
-                order => 1,
+                order => 100,
                 set   => 'main',
             },
         },
         'user' => {
             'notification_dashboard' => {
-                order => 1,
+                order => 100,
                 set   => 'main',
             },
             'site_stats' => {
-                order => 2,
+                order => 200,
                 set   => 'main'
             },
             'favorite_blogs' => {
                 param => { tab => 'website' },
-                order => 3,
+                order => 300,
                 set   => 'main'
             },
             'personal_stats' => {
-                order => 4,
+                order => 400,
                 set   => 'sidebar'
             },
             'mt_news' => {
-                order => 5,
+                order => 500,
                 set   => 'sidebar'
             },
         },
         'website' => {
             'site_stats' => {
-                order => 1,
+                order => 100,
                 set   => 'main'
             },
             'recent_blogs' => {
-                order => 2,
+                order => 200,
                 set   => 'main',
             },
         },
         'blog' => {
             'site_stats' => {
-                order => 1,
+                order => 100,
                 set   => 'main'
             },
         },
@@ -77,7 +77,7 @@ sub dashboard {
     if ( $app->config('EnableBlogStats') ) {
         $default_widgets->{'blog'}{'blog_stats'} = {
             param => { tab => 'entry' },
-            order => 2,
+            order => 200,
             set   => 'main'
         };
     }

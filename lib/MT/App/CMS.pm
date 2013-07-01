@@ -340,7 +340,7 @@ sub core_widgets {
             set      => 'sidebar',
             singular => 1,
             view     => 'user',
-            order    => { 'user' => 4 },
+            order    => { 'user' => 400 },
         },
         mt_news => {
             label    => 'Movable Type News',
@@ -349,7 +349,7 @@ sub core_widgets {
             singular => 1,
             set      => 'sidebar',
             view     => 'user',
-            order    => { 'user' => 5 },
+            order    => { 'user' => 500 },
         },
         recent_websites => {
             label    => 'Websites',
@@ -358,7 +358,7 @@ sub core_widgets {
             singular => 1,
             set      => 'main',
             view     => 'system',
-            order    => { 'system' => 1 },
+            order    => { 'system' => 100 },
         },
         recent_blogs => {
             label    => 'Blogs',
@@ -367,7 +367,7 @@ sub core_widgets {
             singular => 1,
             set      => 'main',
             view     => 'website',
-            order    => { 'website' => 1 },
+            order    => { 'website' => 200 },
         },
         favorite_blogs => {
             label    => 'Websites and Blogs',
@@ -377,7 +377,7 @@ sub core_widgets {
             set      => 'main',
             view     => 'user',
             param    => { tab => 'website' },
-            order    => { 'user' => 3 },
+            order    => { 'user' => 300 },
         },
         notification_dashboard => {
             label    => 'Notification Dashboard',
@@ -385,7 +385,7 @@ sub core_widgets {
             singular => 1,
             set      => 'main',
             view     => 'user',
-            order    => { 'user' => 1 },
+            order    => { 'user' => 100 },
         },
         site_stats => {
             label    => 'Site Stats',
@@ -395,9 +395,9 @@ sub core_widgets {
             set      => 'main',
             view     => [ 'user', 'website', 'blog' ],
             order    => {
-                'user'    => 2,
-                'website' => 1,
-                'blog'    => 1,
+                'user'    => 200,
+                'website' => 100,
+                'blog'    => 100,
             },
         },
     };
@@ -411,7 +411,7 @@ sub core_widgets {
             set      => 'main',
             view     => 'blog',
             param    => { tab => 'entry' },
-            order    => { 'blog' => 2 },
+            order    => { 'blog' => 200 },
         };
     }
 
