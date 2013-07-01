@@ -3,6 +3,8 @@ package MT::DataAPI::Endpoint::Common;
 use warnings;
 use strict;
 
+use MT::DataAPI::Resource;
+
 use base 'Exporter';
 our @EXPORT = qw(
     save_object remove_object
@@ -162,9 +164,9 @@ sub filtered_list {
         = !$blog         ? undef
         : $blog->is_blog ? [$blog_id]
         :                  [ $blog->id, map { $_->id } @{ $blog->blogs } ];
+    my $resource_data = MT::DataAPI::Resource->resource($ds);
 
-    my $setting = MT->registry( listing_screens => $ds )
-        or return $app->error( $app->translate('Unknown list type'), 400 );
+    my $setting = MT->registry( listing_screens => $ds ) || {};
 
     if (exists $setting->{data_api_condition}
         ? defined $setting->{data_api_condition}
@@ -240,19 +242,31 @@ sub filtered_list {
     }
 
     if ( my $search = $app->param('search') ) {
+        my $fields = '';
+        if ( my $specified = $app->param('searchFields') ) {
+            $fields = join(
+                ',',
+                map {
+                    exists $resource_data->{field_name_map}{$_}
+                        ? $resource_data->{field_name_map}{$_}
+                        : ()
+                    } split ',',
+                $specified
+            );
+        }
         push @$filteritems,
             {
             type => 'content',
             args => {
                 string => $search,
                 option => 'contains',
-                fields => $app->param('search_fields') || '',
+                fields => $fields,
             },
             };
     }
 
     require MT::ListProperty;
-    my $props = MT::ListProperty->list_properties($ds);
+    my $props = MT::ListProperty->list_properties($ds) || {};
 
     for my $key ( split ',', ( $app->param('filterKeys') || '' ) ) {
         if ( defined( $app->param($key) ) ) {

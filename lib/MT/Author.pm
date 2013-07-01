@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -733,9 +733,22 @@ sub set_defaults {
 sub remove_sessions {
     my $auth = shift;
     return if ( !$auth or !$auth->id );
+
     require MT::Session;
-    my $sess_iter
-        = MT::Session->remove( { kind => 'US', name => $auth->id } );
+
+    if ( MT->config('EnableSessionKeyCompat') ) {
+        my $sess_iter = MT::Session->load_iter( { kind => 'US' } );
+        my @sess;
+        while ( my $sess = $sess_iter->() ) {
+            my $id = $sess->get('author_id');
+            next unless $id == $auth->id;
+            push @sess, $sess;
+        }
+        $_->remove foreach @sess;
+    }
+
+    MT::Session->remove( { kind => 'US', name => $auth->id } );
+
     return 1;
 }
 

@@ -5,7 +5,7 @@ use vars qw(@ISA $VERSION);
 
 require LWP::MemberMixin;
 @ISA = qw(LWP::MemberMixin);
-$VERSION = "5.834";
+$VERSION = "6.05";
 
 use HTTP::Request ();
 use HTTP::Response ();
@@ -15,16 +15,6 @@ use LWP ();
 use LWP::Protocol ();
 
 use Carp ();
-
-if ($ENV{PERL_LWP_USE_HTTP_10}) {
-    require LWP::Protocol::http10;
-    LWP::Protocol::implementor('http', 'LWP::Protocol::http10');
-    eval {
-        require LWP::Protocol::https10;
-        LWP::Protocol::implementor('https', 'LWP::Protocol::https10');
-    };
-}
-
 
 
 sub new
@@ -41,6 +31,31 @@ sub new
     my $timeout = delete $cnf{timeout};
     $timeout = 3*60 unless defined $timeout;
     my $local_address = delete $cnf{local_address};
+    my $ssl_opts = delete $cnf{ssl_opts} || {};
+    unless (exists $ssl_opts->{verify_hostname}) {
+	# The processing of HTTPS_CA_* below is for compatibility with Crypt::SSLeay
+	if (exists $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME}) {
+	    $ssl_opts->{verify_hostname} = $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME};
+	}
+	elsif ($ENV{HTTPS_CA_FILE} || $ENV{HTTPS_CA_DIR}) {
+	    # Crypt-SSLeay compatibility (verify peer certificate; but not the hostname)
+	    $ssl_opts->{verify_hostname} = 0;
+	    $ssl_opts->{SSL_verify_mode} = 1;
+	}
+	else {
+	    $ssl_opts->{verify_hostname} = 1;
+	}
+    }
+    unless (exists $ssl_opts->{SSL_ca_file}) {
+	if (my $ca_file = $ENV{PERL_LWP_SSL_CA_FILE} || $ENV{HTTPS_CA_FILE}) {
+	    $ssl_opts->{SSL_ca_file} = $ca_file;
+	}
+    }
+    unless (exists $ssl_opts->{SSL_ca_path}) {
+	if (my $ca_path = $ENV{PERL_LWP_SSL_CA_PATH} || $ENV{HTTPS_CA_DIR}) {
+	    $ssl_opts->{SSL_ca_path} = $ca_path;
+	}
+    }
     my $use_eval = delete $cnf{use_eval};
     $use_eval = 1 unless defined $use_eval;
     my $parse_head = delete $cnf{parse_head};
@@ -49,7 +64,7 @@ sub new
     my $max_size = delete $cnf{max_size};
     my $max_redirect = delete $cnf{max_redirect};
     $max_redirect = 7 unless defined $max_redirect;
-    my $env_proxy = delete $cnf{env_proxy};
+    my $env_proxy = exists $cnf{env_proxy} ? delete $cnf{env_proxy} : $ENV{PERL_LWP_ENV_PROXY};
 
     my $cookie_jar = delete $cnf{cookie_jar};
     my $conn_cache = delete $cnf{conn_cache};
@@ -57,7 +72,6 @@ sub new
     
     Carp::croak("Can't mix conn_cache and keep_alive")
 	  if $conn_cache && $keep_alive;
-
 
     my $protocols_allowed   = delete $cnf{protocols_allowed};
     my $protocols_forbidden = delete $cnf{protocols_forbidden};
@@ -83,6 +97,7 @@ sub new
 		      def_headers  => $def_headers,
 		      timeout      => $timeout,
 		      local_address => $local_address,
+		      ssl_opts     => $ssl_opts,
 		      use_eval     => $use_eval,
                       show_progress=> $show_progress,
 		      max_size     => $max_size,
@@ -161,12 +176,11 @@ sub send_request
                 $@ =~ s/ at .* line \d+.*//s;  # remove file/line number
                 $response =  _new_response($request, &HTTP::Status::RC_NOT_IMPLEMENTED, $@);
                 if ($scheme eq "https") {
-                    $response->message($response->message . " (Crypt::SSLeay or IO::Socket::SSL not installed)");
+                    $response->message($response->message . " (LWP::Protocol::https not installed)");
                     $response->content_type("text/plain");
                     $response->content(<<EOT);
-LWP will support https URLs if either Crypt::SSLeay or IO::Socket::SSL
-is installed. More information at
-<http://search.cpan.org/dist/libwww-perl/README.SSL>.
+LWP will support https URLs if the LWP::Protocol::https module
+is installed.
 EOT
                 }
             }
@@ -175,14 +189,21 @@ EOT
         if (!$response && $self->{use_eval}) {
             # we eval, and turn dies into responses below
             eval {
-                $response = $protocol->request($request, $proxy,
-                                               $arg, $size, $self->{timeout});
+                $response = $protocol->request($request, $proxy, $arg, $size, $self->{timeout}) ||
+		    die "No response returned by $protocol";
             };
             if ($@) {
-                $@ =~ s/ at .* line \d+.*//s;  # remove file/line number
-                    $response = _new_response($request,
-                                              &HTTP::Status::RC_INTERNAL_SERVER_ERROR,
-                                              $@);
+                if (UNIVERSAL::isa($@, "HTTP::Response")) {
+                    $response = $@;
+                    $response->request($request);
+                }
+                else {
+                    my $full = $@;
+                    (my $status = $@) =~ s/\n.*//s;
+                    $status =~ s/ at .* line \d+.*//s;  # remove file/line number
+                    my $code = ($status =~ s/^(\d\d\d)\s+//) ? $1 : &HTTP::Status::RC_INTERNAL_SERVER_ERROR;
+                    $response = _new_response($request, $code, $status, $full);
+                }
             }
         }
         elsif (!$response) {
@@ -406,6 +427,22 @@ sub head {
 }
 
 
+sub put {
+    require HTTP::Request::Common;
+    my($self, @parameters) = @_;
+    my @suff = $self->_process_colonic_headers(\@parameters, (ref($parameters[1]) ? 2 : 1));
+    return $self->request( HTTP::Request::Common::PUT( @parameters ), @suff );
+}
+
+
+sub delete {
+    require HTTP::Request::Common;
+    my($self, @parameters) = @_;
+    my @suff = $self->_process_colonic_headers(\@parameters,1);
+    return $self->request( HTTP::Request::Common::DELETE( @parameters ), @suff );
+}
+
+
 sub _process_colonic_headers {
     # Process :content_cb / :content_file / :read_size_hint headers.
     my($self, $args, $start_index) = @_;
@@ -454,6 +491,15 @@ sub _process_colonic_headers {
     return $arg, $size if     defined $size;
     return $arg;
 }
+
+
+sub is_online {
+    my $self = shift;
+    return 1 if $self->get("http://www.msftncsi.com/ncsi.txt")->content eq "Microsoft NCSI";
+    return 1 if $self->get("http://www.apple.com")->content =~ m,<title>Apple</title>,;
+    return 0;
+}
+
 
 my @ANI = qw(- \ | /);
 
@@ -581,6 +627,31 @@ sub local_address{ shift->_elem('local_address',@_); }
 sub max_size     { shift->_elem('max_size',     @_); }
 sub max_redirect { shift->_elem('max_redirect', @_); }
 sub show_progress{ shift->_elem('show_progress', @_); }
+
+sub ssl_opts {
+    my $self = shift;
+    if (@_ == 1) {
+	my $k = shift;
+	return $self->{ssl_opts}{$k};
+    }
+    if (@_) {
+	my $old;
+	while (@_) {
+	    my($k, $v) = splice(@_, 0, 2);
+	    $old = $self->{ssl_opts}{$k} unless @_;
+	    if (defined $v) {
+		$self->{ssl_opts}{$k} = $v;
+	    }
+	    else {
+		delete $self->{ssl_opts}{$k};
+	    }
+	}
+	%{$self->{ssl_opts}} = (%{$self->{ssl_opts}}, @_);
+	return $old;
+    }
+
+    return keys %{$self->{ssl_opts}};
+}
 
 sub parse_head {
     my $self = shift;
@@ -781,7 +852,7 @@ sub run_handlers {
 }
 
 
-# depreciated
+# deprecated
 sub use_eval   { shift->_elem('use_eval',  @_); }
 sub use_alarm
 {
@@ -800,7 +871,7 @@ sub clone
     delete $copy->{conn_cache};
 
     # copy any plain arrays and hashes; known not to need recursive copy
-    for my $k (qw(proxy no_proxy requests_redirectable)) {
+    for my $k (qw(proxy no_proxy requests_redirectable ssl_opts)) {
         next unless $copy->{$k};
         if (ref($copy->{$k}) eq "ARRAY") {
             $copy->{$k} = [ @{$copy->{$k}} ];
@@ -925,6 +996,8 @@ sub proxy
 
 sub env_proxy {
     my ($self) = @_;
+    require Encode;
+    require Encode::Locale;
     my($k,$v);
     while(($k, $v) = each %ENV) {
 	if ($ENV{REQUEST_METHOD}) {
@@ -944,7 +1017,7 @@ sub env_proxy {
             next unless $k =~ /^$URI::scheme_re\z/;
             # Ignore xxx_proxy variables if xxx isn't a supported protocol
             next unless LWP::Protocol::implementor($k);
-	    $self->proxy($k, $v);
+	    $self->proxy($k, Encode::decode(locale => $v));
 	}
     }
 }
@@ -962,13 +1035,14 @@ sub no_proxy {
 
 
 sub _new_response {
-    my($request, $code, $message) = @_;
+    my($request, $code, $message, $content) = @_;
+    $message ||= HTTP::Status::status_message($code);
     my $response = HTTP::Response->new($code, $message);
     $response->request($request);
     $response->header("Client-Date" => HTTP::Date::time2str(time));
     $response->header("Client-Warning" => "Internal response");
     $response->header("Content-Type" => "text/plain");
-    $response->content("$code $message\n");
+    $response->content($content || "$code $message\n");
     return $response;
 }
 
@@ -1010,8 +1084,8 @@ needs to be performed. This request is then passed to one of the
 request method the UserAgent, which dispatches it using the relevant
 protocol, and returns a C<HTTP::Response> object.  There are
 convenience methods for sending the most common request types: get(),
-head() and post().  When using these methods then the creation of the
-request object is hidden as shown in the synopsis above.
+head(), post(), put() and delete().  When using these methods then the
+creation of the request object is hidden as shown in the synopsis above.
 
 The basic approach of the library is to use HTTP style communication
 for all protocol schemes.  This means that you will construct
@@ -1040,6 +1114,7 @@ The following options correspond to attribute methods described below:
    cookie_jar              undef
    default_headers         HTTP::Headers->new
    local_address           undef
+   ssl_opts		   { verify_hostname => 1 }
    max_size                undef
    max_redirect            7
    parse_head              1
@@ -1048,13 +1123,13 @@ The following options correspond to attribute methods described below:
    requests_redirectable   ['GET', 'HEAD']
    timeout                 180
 
-The following additional options are also accepted: If the
-C<env_proxy> option is passed in with a TRUE value, then proxy
-settings are read from environment variables (see env_proxy() method
-below).  If the C<keep_alive> option is passed in, then a
-C<LWP::ConnCache> is set up (see conn_cache() method below).  The
-C<keep_alive> value is passed on as the C<total_capacity> for the
-connection cache.
+The following additional options are also accepted: If the C<env_proxy> option
+is passed in with a TRUE value, then proxy settings are read from environment
+variables (see env_proxy() method below).  If C<env_proxy> isn't provided the
+C<PERL_LWP_ENV_PROXY> environment variable controls if env_proxy() is called
+during initialization.  If the C<keep_alive> option is passed in, then a
+C<LWP::ConnCache> is set up (see conn_cache() method below).  The C<keep_alive>
+value is passed on as the C<total_capacity> for the connection cache.
 
 =item $ua->clone
 
@@ -1284,6 +1359,54 @@ is observed for C<timeout> seconds.  This means that the time it takes
 for the complete transaction and the request() method to actually
 return might be longer.
 
+=item $ua->ssl_opts
+
+=item $ua->ssl_opts( $key )
+
+=item $ua->ssl_opts( $key => $value )
+
+Get/set the options for SSL connections.  Without argument return the list
+of options keys currently set.  With a single argument return the current
+value for the given option.  With 2 arguments set the option value and return
+the old.  Setting an option to the value C<undef> removes this option.
+
+The options that LWP relates to are:
+
+=over
+
+=item C<verify_hostname> => $bool
+
+When TRUE LWP will for secure protocol schemes ensure it connects to servers
+that have a valid certificate matching the expected hostname.  If FALSE no
+checks are made and you can't be sure that you communicate with the expected peer.
+The no checks behaviour was the default for libwww-perl-5.837 and earlier releases.
+
+This option is initialized from the L<PERL_LWP_SSL_VERIFY_HOSTNAME> environment
+variable.  If this environment variable isn't set; then C<verify_hostname>
+defaults to 1.
+
+=item C<SSL_ca_file> => $path
+
+The path to a file containing Certificate Authority certificates.
+A default setting for this option is provided by checking the environment
+variables C<PERL_LWP_SSL_CA_FILE> and C<HTTPS_CA_FILE> in order.
+
+=item C<SSL_ca_path> => $path
+
+The path to a directory containing files containing Certificate Authority
+certificates.
+A default setting for this option is provided by checking the environment
+variables C<PERL_LWP_SSL_CA_PATH> and C<HTTPS_CA_DIR> in order.
+
+=back
+
+Other options can be set and are processed directly by the SSL Socket implementation
+in use.  See L<IO::Socket::SSL> or L<Net::SSL> for details.
+
+The libwww-perl core no longer bundles protocol plugins for SSL.  You will need
+to install L<LWP::Protocol::https> separately to enable support for processing
+https-URLs.
+
 =back
 
 =head2 Proxy attributes
@@ -1371,13 +1494,13 @@ certain headers to specific requests.
 The method can assign a new request object to $_[0] to replace the
 request that is sent fully.
 
-The return value from the callback is ignored.  If an exceptions is
+The return value from the callback is ignored.  If an exception is
 raised it will abort the request and make the request method return a
 "400 Bad request" response.
 
 =item request_send => sub { my($request, $ua, $h) = @_; ... }
 
-This handler get a chance of handling requests before it's sent to the
+This handler gets a chance of handling requests before they're sent to the
 protocol handlers.  It should return an HTTP::Response object if it
 wishes to terminate the processing; otherwise it should return nothing.
 
@@ -1393,15 +1516,14 @@ handlers for data and might croak to abort the request.
 The handler might set the $response->{default_add_content} value to
 control if any received data should be added to the response object
 directly.  This will initially be false if the $ua->request() method
-was called with a ':content_filename' or ':content_callbak' argument;
-otherwise true.
+was called with a $content_file or $content_cb argument; otherwise true.
 
 =item response_data => sub { my($response, $ua, $h, $data) = @_; ... }
 
-This handlers is called for each chunk of data received for the
+This handler is called for each chunk of data received for the
 response.  The handler might croak to abort the request.
 
-This handler need to return a TRUE value to be called again for
+This handler needs to return a TRUE value to be called again for
 subsequent chunks for the same request.
 
 =item response_done => sub { my($response, $ua, $h) = @_; ... }
@@ -1413,7 +1535,7 @@ extract information or modify the response.
 =item response_redirect => sub { my($response, $ua, $h) = @_; ... }
 
 The handler is called in $ua->request after C<response_done>.  If the
-handler return an HTTP::Request object we'll start over with processing
+handler returns an HTTP::Request object we'll start over with processing
 this request instead.
 
 =back
@@ -1434,7 +1556,7 @@ The removed handlers are returned.
 =item $ua->set_my_handler( $phase, $cb, %matchspec )
 
 Set handlers private to the executing subroutine.  Works by defaulting
-an C<owner> field to the %matchhspec that holds the name of the called
+an C<owner> field to the %matchspec that holds the name of the called
 subroutine.  You might pass an explicit C<owner> to override this.
 
 If $cb is passed as C<undef>, remove the handler.
@@ -1545,6 +1667,38 @@ This method will use the POST() function from C<HTTP::Request::Common>
 to build the request.  See L<HTTP::Request::Common> for a details on
 how to pass form content and other advanced features.
 
+=item $ua->put( $url, \%form )
+
+=item $ua->put( $url, \@form )
+
+=item $ua->put( $url, \%form, $field_name => $value, ... )
+
+=item $ua->put( $url, $field_name => $value,... Content => \%form )
+
+=item $ua->put( $url, $field_name => $value,... Content => \@form )
+
+=item $ua->put( $url, $field_name => $value,... Content => $content )
+
+This method will dispatch a C<PUT> request on the given $url, with
+%form or @form providing the key/value pairs for the fill-in form
+content. Additional headers and content options are the same as for
+the get() method.
+
+This method will use the PUT() function from C<HTTP::Request::Common>
+to build the request.  See L<HTTP::Request::Common> for a details on
+how to pass form content and other advanced features.
+
+=item $ua->delete( $url )
+
+=item $ua->delete( $url, $field_name => $value, ... )
+
+This method will dispatch a C<DELETE> request on the given $url.  Additional
+headers and content options are the same as for the get() method.
+
+This method will use the DELETE() function from C<HTTP::Request::Common>
+to build the request.  See L<HTTP::Request::Common> for a details on
+how to pass form content and other advanced features.
+
 =item $ua->mirror( $url, $filename )
 
 This method will get the document identified by $url and store it in
@@ -1603,6 +1757,12 @@ received.  Arguments are the same as for request() described above.
 The difference from request() is that simple_request() will not try to
 handle redirects or authentication responses.  The request() method
 will in fact invoke this method for each simple request it sends.
+
+=item $ua->is_online
+
+Tries to determine if you have access to the Internet.  Returns
+TRUE if the built-in heuristics determine that the user agent is
+able to access the Internet (over HTTP).  See also L<LWP::Online>.
 
 =item $ua->is_protocol_supported( $scheme )
 

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::DataAPI::Endpoint::User;
@@ -31,10 +31,6 @@ sub update {
 
     my $new_user = $app->resource_object( 'user', $user )
         or return;
-
-    run_permission_filter( $app, 'data_api_save_permission_filter',
-        'author', $user->id )
-        or return $app->error(403);
 
     save_object( $app, 'author', $new_user, $user )
         or return;

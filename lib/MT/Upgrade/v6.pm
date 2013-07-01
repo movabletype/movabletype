@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -82,6 +82,13 @@ __SQL__
                 type  => 'author',
                 label => "Adding blog statistics widget...",
                 code  => \&_v6_add_site_stats_widget,
+            },
+        },
+        '_v6_enable_session_key_compat' => {
+            version_limit => 6.0006,
+            priority => 3.1,
+            code => sub {
+                MT->config( 'EnableSessionKeyCompat', 1, 1 );
             },
         },
     };
