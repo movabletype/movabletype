@@ -2,7 +2,10 @@
 <mt:setvar name="complete" value="1">
 <mt:setvar name="screen_id" value="sign-in">
 <mt:setvar name="screen_class" value="sign-in">
-<mt:setvarblock name="html_head" append="1">  <meta name='robots' content='noindex,nofollow' /></mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<meta name='robots' content='noindex,nofollow' />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes" />
+</mt:setvarblock>
 
 <mt:SetVarBlock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
