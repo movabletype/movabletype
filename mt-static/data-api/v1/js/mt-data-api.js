@@ -998,7 +998,7 @@ DataAPI.prototype = {
                 }
                 else {
                     oldData = api.getTokenData();
-                    if (! response.sessionId && oldData.sessionId) {
+                    if (! response.sessionId && oldData && oldData.sessionId) {
                         response.sessionId = oldData.sessionId;
                     }
 
