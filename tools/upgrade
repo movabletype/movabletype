@@ -167,10 +167,6 @@ sub main {
         my $theme = MT::Theme->load($site_theme);
         _error "Theme '$site_theme' isn't installed" unless $theme;
 
-        if ( $theme->{class} ne 'website' && $theme->{class} ne 'both' ) {
-            _error "Cannot apply theme '$site_theme' to website.";
-        }
-
         my $new_user = {
             user_name     => $username,
             user_nickname => $nickname,
