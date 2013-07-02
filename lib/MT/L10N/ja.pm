@@ -6883,6 +6883,4 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 233
-
 1;
