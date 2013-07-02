@@ -248,5 +248,76 @@ subtest '11 websites and 11 blogs' => sub {
     };
 };
 
+subtest 'default widgets' => sub {
+    my $expected = _expected_default_widgets();
+    foreach (qw( system user website blog )) {
+        my $got = $app->default_widgets_for_dashboard($_);
+        is_deeply( $got, $expected->{$_},
+            'Got correct widgets of ' . $_ . '.' );
+    }
+
+    $app->default_widgets_for_dashboard('dummy');
+    ok( defined $app->request('default_widget:dummy'),
+        'Cached widget data when data is empty.'
+    );
+};
+
 done_testing;
+
+sub _expected_default_widgets {
+    my $expected = {
+        'system' => {
+            recent_websites => {
+                order => 100,
+                set   => 'main',
+            },
+        },
+        user => {
+            notification_dashboard => {
+                order => 100,
+                set   => 'main',
+            },
+            site_stats => {
+                order => 200,
+                set   => 'main',
+            },
+            favorite_blogs => {
+                order => 300,
+                set   => 'main',
+                param => { tab => 'website' },
+            },
+            personal_stats => {
+                order => 400,
+                set   => 'sidebar',
+            },
+            mt_news => {
+                order => 500,
+                set   => 'sidebar',
+            },
+        },
+        website => {
+            site_stats => {
+                order => 100,
+                set   => 'main',
+            },
+            recent_blogs => {
+                order => 200,
+                set   => 'main',
+            },
+        },
+        blog => {
+            site_stats => {
+                order => 100,
+                set   => 'main',
+            },
+        },
+    };
+    if ( MT->component('Loupe') ) {
+        $expected->{user}{welcome_to_loupe} = {
+            order => 150,
+            set   => 'main',
+        };
+    }
+    $expected;
+}
 

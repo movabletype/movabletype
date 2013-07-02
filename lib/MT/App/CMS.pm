@@ -4986,6 +4986,34 @@ sub validate_request_params {
     $app->SUPER::validate_request_params(@_);
 }
 
+sub default_widgets_for_dashboard {
+    my ( $app, $scope ) = @_;
+
+    my $key = 'default_widget:' . $scope;
+    return $app->request($key) if defined $app->request($key);
+
+    my $widgets = $app->registry('widgets');
+    return $app->request( $key, '' ) unless ref($widgets) eq 'HASH';
+
+    my %default_widgets;
+    foreach my $key ( keys %$widgets ) {
+        my ( $view, $order, $set, $param, $default )
+            = map { $widgets->{$key}{$_} } qw( view order set param default );
+
+        my @views = ref($view) ? @$view : ($view);
+        next unless grep { $scope eq $_ } @views;
+        next unless ( ref($default) && $default->{$scope} ) || $default;
+
+        $default_widgets{$key} = {
+            order => ref($order) ? $order->{$scope} : $order,
+            set   => ref($set)   ? $set->{$scope}   : $set,
+            $param ? ( param => $param ) : (),
+        };
+    }
+
+    $app->request( $key, %default_widgets ? \%default_widgets : '' );
+}
+
 1;
 __END__
 

@@ -26,8 +26,6 @@ sub dashboard {
     $param->{screen_class}   = "dashboard";
     $param->{screen_id}      = "dashboard";
 
-    my $default_widgets = _default_widgets($app);
-
     my $blog  = $app->blog;
     my $scope = $app->view;
 
@@ -92,10 +90,8 @@ sub dashboard {
     # We require that the determination of the 'single blog mode'
     # state be done PRIOR to the generation of the widgets
     $app->build_blog_selector($param);
-    $app->load_widget_list( 'dashboard', $scope, $param,
-        $default_widgets->{$scope} );
-    $param = $app->load_widgets( 'dashboard', $scope, $param,
-        $default_widgets->{$scope} );
+    $app->load_widget_list( 'dashboard', $scope, $param );
+    $param = $app->load_widgets( 'dashboard', $scope, $param );
     return $app->load_tmpl( "dashboard.tmpl", $param );
 }
 
@@ -1257,30 +1253,6 @@ sub regenerate_site_stats_data {
     $result->{not_configured} = 1
         if $param->{not_configured};
     return $app->json_result($result);
-}
-
-sub _default_widgets {
-    my $app     = shift;
-    my $widgets = $app->registry('widgets');
-    return unless ref($widgets) eq 'HASH';
-
-    my %default_widgets;
-    foreach my $key ( keys %$widgets ) {
-        my ( $view, $order, $set, $param, $default )
-            = map { $widgets->{$key}{$_} } qw( view order set param default );
-        next unless $default;
-
-        my @views = ref($view) ? @$view : ($view);
-        foreach (@views) {
-            next if ref($default) && $default->{$_};
-            $default_widgets{$_}{$key} = {
-                order => ref($order) ? $order->{$_} : $order,
-                set   => ref($set)   ? $set->{$_}   : $set,
-                $param ? ( param => $param ) : (),
-            };
-        }
-    }
-    %default_widgets ? \%default_widgets : undef;
 }
 
 1;

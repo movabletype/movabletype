@@ -3401,7 +3401,7 @@ sub l10n_filter { $_[0]->translate_templatized( $_[1] ) }
 
 sub load_widgets {
     my $app = shift;
-    my ( $page, $scope_type, $param, $default_widgets ) = @_;
+    my ( $page, $scope_type, $param ) = @_;
 
     my $user    = $app->user;
     my $blog    = $app->blog;
@@ -3419,7 +3419,7 @@ sub load_widgets {
 
     unless ($widgets) {
         $resave_widgets = 1;
-        $widgets        = $default_widgets;
+        $widgets        = $app->default_widgets_for_dashboard($scope_type);
     }
 
     my $reg_widgets = $app->registry("widgets");
@@ -3623,7 +3623,7 @@ sub update_widget_prefs {
                     $num++;
                 }
             }
-            $these_widgets->{$widget_inst} = { set => $set };
+            $these_widgets->{$widget_inst} = { set   => $set };
             $these_widgets->{$widget_inst} = { param => $widget->{param} }
                 if exists $widget->{param};
 
@@ -3641,7 +3641,8 @@ sub update_widget_prefs {
                         $these_widgets->{$widget_id} = { order => $order };
                     }
                     else {
-                        $these_widgets->{$widget_id} = { order => $widget_count++ * 100 };
+                        $these_widgets->{$widget_id}
+                            = { order => $widget_count++ * 100 };
                     }
                 }
             }
@@ -3679,7 +3680,7 @@ sub update_widget_prefs {
 
 sub load_widget_list {
     my $app = shift;
-    my ( $page, $scope_type, $param, $default_set ) = @_;
+    my ( $page, $scope_type, $param ) = @_;
 
     my $blog    = $app->blog;
     my $blog_id = $blog->id if $blog;
@@ -3692,7 +3693,10 @@ sub load_widget_list {
     $scope = $page . ':' . $scope;
 
     my $user_widgets = $app->user->widgets || {};
-    $user_widgets = $user_widgets->{$scope} || $default_set || {};
+    $user_widgets
+        = $user_widgets->{$scope}
+        || $app->default_widgets_for_dashboard($scope_type)
+        || {};
     my %in_use;
     foreach my $uw ( keys %$user_widgets ) {
         $uw =~ s/-\d+$//;
