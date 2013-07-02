@@ -16,7 +16,7 @@ use vars qw($VERSION);
 
 sub BEGIN {
     @MT::Plugin::SpamLookup::Link::ISA = ('MT::Plugin');
-    $VERSION                           = '2.11';
+    $VERSION                           = '2.2';
     my $plugin;
     $plugin = new MT::Plugin::SpamLookup::Link(
         {   name    => 'SpamLookup - Link',
