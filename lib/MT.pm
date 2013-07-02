@@ -2599,11 +2599,15 @@ sub new_ua {
     }
 
     my $ua = $lwp_class->new;
+    eval "require Mozilla::CA;";
+    $ua->ssl_opts( verify_hostname => 0 )
+        if $@;   # Should not verify hostname if Mozilla::CA was not installed
     $ua->max_size($max_size) if ( defined $max_size ) && $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
     eval { require HTML::HeadParser; };
     $ua->parse_head(0) if $@;
+
     if ( defined $proxy ) {
         $ua->proxy( http => $proxy );
         my @domains = split( /,\s*/, $no_proxy ) if $no_proxy;
