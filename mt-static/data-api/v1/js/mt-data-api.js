@@ -436,6 +436,11 @@ DataAPI.prototype = {
      * @category core
      */
     storeTokenData: function(tokenData) {
+        var oldData = this.getTokenData();
+        if (! tokenData.sessionId && oldData && oldData.sessionId) {
+            tokenData.sessionId = oldData.sessionId;
+        }
+
         tokenData.startTime = this._getCurrentEpoch();
         this.saveSessionData(this.getAppKey(), this.serializeData(tokenData));
         this.tokenData = tokenData;
@@ -989,7 +994,8 @@ DataAPI.prototype = {
 
         function retryWithAuthentication() {
             api.request('POST', '/token', function(response) {
-                var status, oldData;
+                var status;
+
                 if (response.error && response.error.code === 401) {
                     status = runCallback(response);
                     if (status !== false) {
@@ -997,11 +1003,6 @@ DataAPI.prototype = {
                     }
                 }
                 else {
-                    oldData = api.getTokenData();
-                    if (! response.sessionId && oldData && oldData.sessionId) {
-                        response.sessionId = oldData.sessionId;
-                    }
-
                     api.storeTokenData(response);
                     api.request.apply(api, originalArguments);
                 }
@@ -1140,6 +1141,13 @@ DataAPI.prototype = {
                     originalMethod.toLowerCase() === 'delete' &&
                     ! response.error) {
                     api.removeSessionData(api.getAppKey());
+                }
+                else if (! response.error && (
+                    (endpoint === '/authentication' &&
+                     originalMethod.toLowerCase() === 'post') ||
+                    (endpoint === '/token' &&
+                     originalMethod.toLowerCase() === 'post'))) {
+                    api.storeTokenData(response);
                 }
 
                 runCallback(response);

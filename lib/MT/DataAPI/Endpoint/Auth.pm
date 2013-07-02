@@ -87,7 +87,7 @@ sub authentication {
     my $response = {
         sessionId   => $session->id,
         accessToken => $access_token->id,
-        expiresIn   => 10,
+        expiresIn   => MT::AccessToken::ttl(),
     };
 
     my $magic_token_cookie
