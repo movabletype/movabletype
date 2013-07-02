@@ -130,11 +130,9 @@ sub start_import {
 }
 
 sub get_param {
-    my $class = shift;
-    my ($blog_id) = @_;
-
+    my ($blog_id) = shift;
     my $blog = MT::Blog->load($blog_id)
-        or return $class->error( MT->translate('No Blog') );
+        or return;
 
     my $param = { blog_id => $blog_id };
     my $label_path;
