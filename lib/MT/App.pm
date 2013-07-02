@@ -3457,7 +3457,11 @@ sub load_widgets {
         my $widget_param = $widgets->{$widget_id} ||= {};
         my $order;
         if ( !( $order = $widget_param->{order} ) ) {
-            $order = $all_widgets->{$widget_id}{order}{$scope_type};
+            $order = $all_widgets->{$widget_id}{order};
+            $order
+                = $order && ref $order eq 'HASH'
+                ? $all_widgets->{$widget_id}{order}{$scope_type}
+                : $order * 100;
             $order = $order_num = $order_num + 100 unless defined $order;
             $widget_param->{order} = $order;
             $resave_widgets = 1;
@@ -3628,7 +3632,12 @@ sub update_widget_prefs {
             foreach my $widget_id ( keys %$these_widgets ) {
                 if ( my $widget = $all_widgets->{$widget_id} ) {
                     my @widget_scopes = split ':', $widget_scope;
-                    if ( my $order = $widget->{order}{$widget_scopes[1]} ) {
+                    my $order = $widget->{order};
+                    $order
+                        = $order && ref $order eq 'HASH'
+                        ? $widget->{order}{ $widget_scopes[1] }
+                        : $order * 100;
+                    if ($order) {
                         $these_widgets->{$widget_id} = { order => $order };
                     }
                     else {
