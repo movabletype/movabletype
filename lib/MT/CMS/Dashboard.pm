@@ -26,61 +26,7 @@ sub dashboard {
     $param->{screen_class}   = "dashboard";
     $param->{screen_id}      = "dashboard";
 
-    my $default_widgets = {
-        'system' => {
-            'recent_websites' => {
-                order => 100,
-                set   => 'main',
-            },
-        },
-        'user' => {
-            'notification_dashboard' => {
-                order => 100,
-                set   => 'main',
-            },
-            'site_stats' => {
-                order => 200,
-                set   => 'main'
-            },
-            'favorite_blogs' => {
-                param => { tab => 'website' },
-                order => 300,
-                set   => 'main'
-            },
-            'personal_stats' => {
-                order => 400,
-                set   => 'sidebar'
-            },
-            'mt_news' => {
-                order => 500,
-                set   => 'sidebar'
-            },
-        },
-        'website' => {
-            'site_stats' => {
-                order => 100,
-                set   => 'main'
-            },
-            'recent_blogs' => {
-                order => 200,
-                set   => 'main',
-            },
-        },
-        'blog' => {
-            'site_stats' => {
-                order => 100,
-                set   => 'main'
-            },
-        },
-    };
-
-    if ( $app->config('EnableBlogStats') ) {
-        $default_widgets->{'blog'}{'blog_stats'} = {
-            param => { tab => 'entry' },
-            order => 200,
-            set   => 'main'
-        };
-    }
+    my $default_widgets = _default_widgets($app);
 
     my $blog  = $app->blog;
     my $scope = $app->view;
@@ -1208,7 +1154,9 @@ sub generate_site_stats_data {
             $blog_id );
         my @dates;
         for ( my $i = 9; $i >= 0; $i-- ) {
-            my @timelist = MT::Util::offset_time_list( time - ( $i * 24 * 60 * 60 ), $blog_id );
+            my @timelist
+                = MT::Util::offset_time_list( time - ( $i * 24 * 60 * 60 ),
+                $blog_id );
             my $date = sprintf( '%04d-%02d-%02d',
                 $timelist[5] + 1900,
                 $timelist[4] + 1,
@@ -1267,9 +1215,9 @@ sub generate_site_stats_data {
                 }
             );
 
-            my @items  = @{ $for_date->{items} };
+            my @items = @{ $for_date->{items} };
             foreach my $item (@items) {
-                $pvs{$item->{date}} = $item->{pageviews};
+                $pvs{ $item->{date} } = $item->{pageviews};
                 $max_pv = $item->{pageviews} if $max_pv < $item->{pageviews};
             }
         }
@@ -1283,7 +1231,7 @@ sub generate_site_stats_data {
                 y1 => $counts{$date} * $rate || 0,
             );
             my %row2 = (
-                pv    => $pvs{$date} || 0,
+                pv    => $pvs{$date}    || 0,
                 count => $counts{$date} || 0,
             );
             push @{ $result->{graph_data} }, \%row1;
@@ -1309,6 +1257,30 @@ sub regenerate_site_stats_data {
     $result->{not_configured} = 1
         if $param->{not_configured};
     return $app->json_result($result);
+}
+
+sub _default_widgets {
+    my $app     = shift;
+    my $widgets = $app->registry('widgets');
+    return unless ref($widgets) eq 'HASH';
+
+    my %default_widgets;
+    foreach my $key ( keys %$widgets ) {
+        my ( $view, $order, $set, $param, $default )
+            = map { $widgets->{$key}{$_} } qw( view order set param default );
+        next unless $default;
+
+        my @views = ref($view) ? @$view : ($view);
+        foreach (@views) {
+            next if ref($default) && $default->{$_};
+            $default_widgets{$_}{$key} = {
+                order => ref($order) ? $order->{$_} : $order,
+                set   => ref($set)   ? $set->{$_}   : $set,
+                $param ? ( param => $param ) : (),
+            };
+        }
+    }
+    %default_widgets ? \%default_widgets : undef;
 }
 
 1;

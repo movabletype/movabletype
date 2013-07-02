@@ -341,6 +341,7 @@ sub core_widgets {
             singular => 1,
             view     => 'user',
             order    => { 'user' => 400 },
+            default  => 1,
         },
         mt_news => {
             label    => 'Movable Type News',
@@ -350,6 +351,7 @@ sub core_widgets {
             set      => 'sidebar',
             view     => 'user',
             order    => { 'user' => 500 },
+            default  => 1,
         },
         recent_websites => {
             label    => 'Websites',
@@ -359,6 +361,7 @@ sub core_widgets {
             set      => 'main',
             view     => 'system',
             order    => { 'system' => 100 },
+            default  => 1,
         },
         recent_blogs => {
             label    => 'Blogs',
@@ -368,6 +371,7 @@ sub core_widgets {
             set      => 'main',
             view     => 'website',
             order    => { 'website' => 200 },
+            default  => 1,
         },
         favorite_blogs => {
             label    => 'Websites and Blogs',
@@ -378,6 +382,7 @@ sub core_widgets {
             view     => 'user',
             param    => { tab => 'website' },
             order    => { 'user' => 300 },
+            default  => 1,
         },
         notification_dashboard => {
             label    => 'Notification Dashboard',
@@ -386,6 +391,7 @@ sub core_widgets {
             set      => 'main',
             view     => 'user',
             order    => { 'user' => 100 },
+            default  => 1,
         },
         site_stats => {
             label    => 'Site Stats',
@@ -399,6 +405,7 @@ sub core_widgets {
                 'website' => 100,
                 'blog'    => 100,
             },
+            default => 1,
         },
     };
 
@@ -412,6 +419,7 @@ sub core_widgets {
             view     => 'blog',
             param    => { tab => 'entry' },
             order    => { 'blog' => 200 },
+            default  => 1,
         };
     }
 
