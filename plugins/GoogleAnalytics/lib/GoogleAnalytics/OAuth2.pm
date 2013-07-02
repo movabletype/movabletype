@@ -42,7 +42,7 @@ sub get_token {
 
     return $app->error(
         translate(
-            'Error getting token: [_1]: [_2]',
+            'An error occurred when getting token: [_1]: [_2]',
             GoogleAnalytics::extract_response_error($res)
         ),
         500
@@ -76,7 +76,7 @@ sub refresh_access_token {
 
     return $app->error(
         translate(
-            'Error refreshing access token: [_1]: [_2]',
+            'An error occurred when access token refreshing: [_1]: [_2]',
             GoogleAnalytics::extract_response_error($res)
         ),
         500
@@ -113,7 +113,7 @@ sub get_profiles {
 
         return $app->error(
             translate(
-                'Error getting profiles: [_1]: [_2]',
+                'An error occurred when getting profiles: [_1]: [_2]',
                 GoogleAnalytics::extract_response_error($res)
             ),
             500

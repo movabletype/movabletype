@@ -100,7 +100,7 @@ sub _request {
 
     return $app->error(
         translate(
-            'Error retrieving stats: [_1]: [_2]',
+            'An error occurred when retrieving statistics data: [_1]: [_2]',
             GoogleAnalytics::extract_response_error($res)
         ),
         500

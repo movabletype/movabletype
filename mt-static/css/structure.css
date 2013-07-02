@@ -1376,6 +1376,7 @@ ul.tabs li a {
 
 /* -- New Blog Stats Widget */
 .site-stats-widget #widget-container {
+    width: 100%;
     padding: 10px;
 }
 .site-stats-widget #select_blog_id {
@@ -1384,12 +1385,16 @@ ul.tabs li a {
 }
 .site-stats-widget .left-column {
     float: left;
-    width: 30%;
+    width: 200px;
     height: 200px;
+    margin-right: -200px;
 }
 .site-stats-widget .right-column {
-    float: left;
-    width: 70%;
+    float: right;
+    width: 100%;
+}
+.site-stats-widget .right-column-contents {
+    margin-left: 200px;
 }
 .site-stats-widget .clear {
     clear: both;
@@ -1401,20 +1406,17 @@ ul.tabs li a {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .site-stats-widget .count-title {
-    float: left;
+    display: inline-block;
     text-align: right;
-    padding: 3px;
+    width: 5em;
+    padding-right: 3px;
 }
-.site-stats-widget .count-number {
-    float: left;
+
+.site-stats-widget .count-body {
+    display: inline-block;
     text-align: right;
-    padding: 3px;
-}
-.site-stats-widget .count-diff{
-    float: left;
-    text-align: left;
-    padding: 3px;
 }
 
 /* -- MT News */

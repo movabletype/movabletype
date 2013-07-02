@@ -35,16 +35,10 @@
    label="<__trans phrase="Google Analytics profile">"
    show_hint="0">
     <span id="ga_profile" class="items"></span>
+<inpzut type="hidden" id="ga_profile_id" name="ga_profile_id" value="<mt:Var name="ga_profile_id" encode_html="1" />" />
+<a href="#" id="ga_select_profile" class="button"><__trans phrase="Select Google Analytics profile" /></a>
 </mtapp:setting>
 
-<input type="hidden" id="ga_profile_id" name="ga_profile_id" value="<mt:Var name="ga_profile_id" encode_html="1" />" />
-
-<mtapp:setting
-   id="ga_select_profile"
-   label=""
-   show_hint="0">
-    <a href="#" id="ga_select_profile"><__trans phrase="Select google analytics profile" /></a>
-</mtapp:setting>
 
 <input type="hidden" id="ga_dialog_url" value="<mt:Var name="dialog_url" encode_html="1" />" />
 <input type="hidden" id="ga_configured_client_id" value="<mt:Var name="configured_client_id" encode_html="1" />" />
@@ -136,7 +130,7 @@ jQuery(function($) {
             (clientId && clientId !== $('#ga_configured_client_id').val()) ||
             (clientSecret && clientSecret !== $('#ga_configured_client_secret').val())
         ) {
-            return window.confirm('<__trans phrase="Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these informations?" encode_html="1">');
+            return window.confirm('<__trans phrase="Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?" encode_html="1">');
         }
     });
 });

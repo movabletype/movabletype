@@ -17,7 +17,7 @@ sub upgrade_functions {
                 type      => 'blog',
                 condition => sub { $_[0]->class eq 'blog' },
                 code      => sub { $_[0]->class('website') },
-                label     => "Updating class of blogs in MT4...",
+                label     => "Migrating current blog to a website...",
                 sql       => <<__SQL__,
 UPDATE mt_blog
 SET    blog_class = 'website'
@@ -36,7 +36,7 @@ __SQL__
                     $_[0]->favorite_websites( $_[0]->favorite_blogs );
                     $_[0]->favorite_blogs(undef);
                 },
-                label => "Migrating favorite_blogs of authors in MT4...",
+                label => "Migrating the record for recently accessed blogs...",
                 sql   => <<__SQL__,
 UPDATE mt_author_meta
 SET    author_meta_type = 'favorite_websites'
@@ -63,7 +63,7 @@ __SQL__
                     $_[0]->role_id( $website_admin->id );
                     $_[0]->save;
                 },
-                label => 'Migrating Blog Administrator roles in MT4...',
+                label => 'Adding Website Administrator role...',
             },
         },
         '_v6_rename_this_is_you_widget' => {
@@ -71,7 +71,7 @@ __SQL__
             priority      => 3.0,
             updater       => {
                 type  => 'author',
-                label => "Rename This is you widget...",
+                label => 'Migrating "This is you" dashboard widget...',
                 code  => \&_v6_rename_this_is_you_widget,
             },
         },
@@ -80,7 +80,7 @@ __SQL__
             priority      => 3.1,
             updater       => {
                 type  => 'author',
-                label => "Adding blog statistics widget...",
+                label => 'Adding "Site stats" dashboard widget...',
                 code  => \&_v6_add_site_stats_widget,
             },
         },
@@ -96,7 +96,7 @@ __SQL__
             priority      => 3.2,
             updater       => {
                 type  => 'author',
-                label => "Renumbering widget orders...",
+                label => "Renumbering dashboard widgets order...",
                 code  => \&_v6_renumbering_widget_orders,
             },
         },

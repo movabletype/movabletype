@@ -4944,11 +4944,11 @@ sub pre_run {
         my $message = {
             level => 'warning',
             text =>
-                $app->translate('System email address is not configured.'),
+                $app->translate('System Email Address is not configured.'),
         };
         if ( $user && $user->is_superuser ) {
             $message->{detail} = $app->translate(
-                'You do not have a system email address configured.  Please set this. Unless this is configured, notification e-mail is not sent. <a href="[_1]">Configure</a>',
+                q{The System Email Address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events. Please confirm your <a href="[_1]">settings.</a>},
                 $app->uri(
                     mode => 'cfg_system_general',
                     args => { blog_id => 0 }

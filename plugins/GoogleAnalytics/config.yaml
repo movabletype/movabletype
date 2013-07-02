@@ -3,7 +3,7 @@ name: GoogleAnalytics
 version: 1.00
 author_link: http://www.movabletype.org/
 author_name: Six Apart, Ltd.
-description: <MT_TRANS phrase="Associate the account of Google Analytics to the blog">
+description: <MT_TRANS phrase="Site statistics plugin using Google Analytics.">
 l10n_class: GoogleAnalytics::L10N
 
 settings:

@@ -470,7 +470,7 @@ sub to_object {
         else {
             $o->error(
                 MT->translate(
-                    'Cannot parse "[_1]" as ISO8601 datetime',
+                    'Cannot parse "[_1]" as ISO 8601 date-time',
                     $o->$name
                 )
             );
