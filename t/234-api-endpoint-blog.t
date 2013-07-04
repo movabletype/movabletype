@@ -29,8 +29,6 @@ $author->save;
 
 my $mock_author = Test::MockModule->new('MT::Author');
 $mock_author->mock( 'is_superuser', sub {0} );
-my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
-$mock_app_api->mock( 'authenticate', $author );
 
 my @suite = (
     {   path      => '/v1/users/me/sites',
@@ -49,6 +47,18 @@ my @suite = (
                 ),
             };
         },
+    },
+    {   path   => '/v1/users/4/sites',
+        method => 'GET',
+        result => sub {
+            +{  'totalResults' => '0',
+                'items'        => [],
+            };
+        },
+    },
+    {   path   => '/v1/users/9999/sites',
+        method => 'GET',
+        code   => 404,
     },
     {   path      => '/v1/sites/1',
         method    => 'GET',
@@ -112,6 +122,11 @@ for my $data (@suite) {
     $note .= ' ' . $data->{method};
     $note .= ' ' . $data->{note} if $data->{note};
     note($note);
+
+    my $user = $data->{user} || $author;
+    $user = $app->model('author')->load($user) unless ref $user;
+    my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
+    $mock_app_api->mock( 'authenticate', $user );
 
     %callbacks = ();
     _run_app(

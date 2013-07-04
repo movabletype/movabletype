@@ -3365,7 +3365,7 @@ sub cms_pre_load_filtered_list {
         }
     );
 
-    my $blog_ids;
+    my $blog_ids = [];
     while ( my $perm = $iter->() ) {
         push @$blog_ids, $perm->blog_id if $perm->blog_id;
     }
@@ -3377,7 +3377,7 @@ sub cms_pre_load_filtered_list {
             );
     }
 
-    if ($blog_ids) {
+    if ($blog_ids && @$blog_ids) {
         if ($terms->{class} eq '*' ) {
             delete $terms->{class};
             $load_options->{args}{no_class} = 1;
