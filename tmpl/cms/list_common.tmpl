@@ -584,14 +584,14 @@ function renameFilter(index, fid, name) {
       }
       renderFilterList();
     },
-    error: function(xhr, status) {
+    error: function(xhr, status, error) {
       if ( xhr.status == 401 ) {
         loginAgain(function(){
           renameFilter(index, fid, name);
         });
       }
       else {
-        alert( trans('Communication Error ([_1])', xhr.status) );
+        alert( trans('Communication Error (HTTP status code: [_1]. Message: [_2])', xhr.status, error) );
       }
     }
   });
@@ -633,14 +633,14 @@ function removeFilter(element) {
       complete: function() {
         renderFilterList();
       },
-      error: function(xhr, status) {
+      error: function(xhr, status, error) {
         if ( xhr.status == 401 ) {
           loginAgain(function(){
             removeFilter(element);
           });
         }
         else {
-          alert( trans('Communication Error ([_1])', xhr.status) );
+          alert( trans('Communication Error (HTTP status code: [_1]. Message: [_2])', xhr.status, error) );
         }
       }
     });
@@ -774,7 +774,7 @@ function saveListPrefs() {
       handleMessages(data);
       return false;
     },
-    error: function(xhr, status) {
+    error: function(xhr, status, error) {
       if ( this_request != request_id ) {
           return false;
       }
@@ -784,7 +784,7 @@ function saveListPrefs() {
         });
       }
       else {
-        alert( trans('Communication Error ([_1])', xhr.status) );
+        alert( trans('Communication Error (HTTP status code: [_1]. Message: [_2])', xhr.status, error) );
       }
     }
   });
@@ -969,7 +969,7 @@ function renderList(mode, columns, values, limit, page ) {
         // Maybe this is user abort. do nothing.
       }
       else {
-        alert( trans('Communication Error ([_1])', xhr.status) );
+        alert( trans('Communication Error (HTTP status code: [_1]. Message: [_2])', xhr.status, error) );
       }
     }
   });
