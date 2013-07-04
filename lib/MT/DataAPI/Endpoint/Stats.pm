@@ -10,8 +10,7 @@ use MT::DataAPI::Resource;
 sub provider {
     my ( $app, $endpoint ) = @_;
 
-    readied_provider( $app, $app->blog )
-        || $app->error( 'Readied provider is not found', 404 );
+    readied_provider( $app, $app->blog ) || { id => undef };
 }
 
 sub _invoke {
