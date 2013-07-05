@@ -198,6 +198,7 @@ BEGIN {
                                 || $prop->has('sort_method');
                         }
                     },
+                    label => '',
                 },
                 hidden => {
                     base  => '__virtual.base',
