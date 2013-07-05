@@ -1140,6 +1140,7 @@ BEGIN {
                 },
                 content => {
                     base  => '__virtual.hidden',
+                    filter_editable => 0,
                     terms => sub {
                         my ( $prop, $args, $db_terms, $db_args ) = @_;
                         my $defaults = $prop->{fields};
