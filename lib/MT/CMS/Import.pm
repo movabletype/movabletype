@@ -87,7 +87,7 @@ sub start_import {
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         $param{text_filters}
-            = $app->load_text_filters( $blog->convert_paras );
+            = $app->load_text_filters( $blog->convert_paras, 'entry' );
     }
 
     $app->add_breadcrumb( $app->translate('Import/Export') );
