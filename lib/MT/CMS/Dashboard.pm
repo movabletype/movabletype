@@ -1108,7 +1108,8 @@ sub site_stats_widget {
         }
     }
 
-    generate_site_stats_data( $app, $param ) or return;
+    generate_site_stats_data( $app, $param ) or return
+            unless $param->{no_permission};
 
     $param;
 }
