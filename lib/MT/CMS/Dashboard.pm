@@ -1090,21 +1090,26 @@ sub site_stats_widget {
             push @{ $param->{object_loop} }, $row;
         }
 
-        my $loop_count = @{ $param->{object_loop} };
+        my $loop_count
+            = defined $param->{object_loop} ? @{ $param->{object_loop} } : 0;
         if ( $loop_count > 1 ) {
             @{ $param->{object_loop} }
                 = sort { $a->{name} cmp $b->{name} }
                 @{ $param->{object_loop} };
             $param->{blog_id} = $param->{object_loop}->[0]->{id};
         }
-        elsif ($loop_count) {
+        elsif ( $loop_count >= 1 ) {
             $param->{blog_id} = $param->{object_loop}->[0]->{id};
             $param->{name}    = $param->{object_loop}->[0]->{name};
             delete $param->{object_loop};
         }
+        else {
+            $param->{no_permission} = 1;
+        }
     }
 
-    generate_site_stats_data( $app, $param ) or return;
+    generate_site_stats_data( $app, $param ) or return
+            unless $param->{no_permission};
 
     $param;
 }

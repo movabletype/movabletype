@@ -995,9 +995,9 @@ DataAPI.prototype = {
             api.request('POST', '/token', function(response) {
                 var status;
 
-                if (response.error && response.error.code === 401) {
+                if (response.error) {
                     status = runCallback(response);
-                    if (status !== false) {
+                    if (status !== false && response.error.code === 401) {
                         api.trigger('authorizationRequired', response);
                     }
                 }

@@ -1,3 +1,9 @@
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
+#
+# $Id$
+
 package MT::Stats;
 
 use strict;
@@ -12,7 +18,9 @@ sub readied_provider {
     my ( $app, $blog ) = @_;
 
     if ( !%providers ) {
-        for my $k ( keys %{ $app->registry('stats_providers') } ) {
+        my $all_providers = $app->registry('stats_providers');
+        return undef unless $all_providers;
+        for my $k ( keys %$all_providers ) {
             $providers{$k} = $app->registry( 'stats_providers', $k );
             eval "require $providers{$k}{provider};";
         }

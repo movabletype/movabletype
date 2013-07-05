@@ -1,3 +1,9 @@
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
+#
+# $Id$
+
 package MT::DataAPI::Endpoint::Stats;
 
 use strict;
@@ -10,8 +16,7 @@ use MT::DataAPI::Resource;
 sub provider {
     my ( $app, $endpoint ) = @_;
 
-    readied_provider( $app, $app->blog )
-        || $app->error( 'Readied provider is not found', 404 );
+    readied_provider( $app, $app->blog ) || { id => undef };
 }
 
 sub _invoke {
