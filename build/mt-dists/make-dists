@@ -96,7 +96,9 @@ my $skip     = 'MANIFEST.SKIP';
 my $skip_bak = "$skip.bak";
 
 my $orig = eval {
+    print "<================== clean ======================\n";
     verbose_command("$make clean");
+    print "================== clean ======================>\n";
     verbose_command("$make lib/MT.pm");
     require MT;
     $package . '-' . MT->VERSION;
@@ -130,11 +132,10 @@ for my $lang (@languages) {
         : $orig . '-' . $long_lang;
 
 
-use Cwd;
-die getcwd();
-
     print "---------------- Building $lang ----------------\n";
+    print "<================== clean ======================\n";
     verbose_command("$make clean");    # to clean MT.pm
+    print "================== clean ======================>\n";
     verbose_command("$make lib/MT.pm");
     verbose_command("$make php/mt.php");
     verbose_command($make);
