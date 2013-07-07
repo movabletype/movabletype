@@ -99,7 +99,9 @@ my $skip_bak = "$skip.bak";
 
 my $orig = eval {
     print STDERR "<================== clean ======================\n";
-    print STDERR "Curdir: " . getcwd() . "\n";
+use Cwd 'getcwd';
+my $cur_dir = getcwd;
+    print STDERR "Curdir: $cur_dir\n";
     verbose_command("$make clean");
     print STDERR "================== clean ======================>\n";
     verbose_command("$make lib/MT.pm");
