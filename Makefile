@@ -195,7 +195,7 @@ me:
 	perl build/exportmt.pl --make
 
 clean:
-    -pwd
+    -echo pwd
 	-rm -rf $(local_js)
 	-rm -rf mt-static/js/mt_core_compact.js
 	-rm -rf mt-static/js/editor.js
