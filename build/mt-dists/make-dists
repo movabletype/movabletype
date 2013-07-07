@@ -97,10 +97,10 @@ $ExtUtils::Manifest::Verbose = !$silent;
 my $skip     = 'MANIFEST.SKIP';
 my $skip_bak = "$skip.bak";
 
-my $orig = eval {
-    print STDERR "<================== clean ======================\n";
 use Cwd 'getcwd';
 my $cur_dir = getcwd;
+my $orig = eval {
+    print STDERR "<================== clean ======================\n";
     print STDERR "Curdir: $cur_dir\n";
     verbose_command("$make clean");
     print STDERR "================== clean ======================>\n";
