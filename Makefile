@@ -197,7 +197,7 @@ me:
 	perl build/exportmt.pl --make
 
 clean:
-    -echo $(curdir)
+	-echo $(curdir)
 	-rm -rf $(local_js)
 	-rm -rf mt-static/js/mt_core_compact.js
 	-rm -rf mt-static/js/editor.js
