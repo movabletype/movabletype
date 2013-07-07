@@ -1,6 +1,8 @@
 BUILD_LANGUAGE ?= en_US
 BUILD_PACKAGE ?= MTOS
 
+curdir = $(shell pwd)
+
 -include build/mt-dists/default.mk
 -include build/mt-dists/$(BUILD_PACKAGE).mk
 -include build/mt-dists/$(BUILD_LANGUAGE).mk
@@ -195,7 +197,7 @@ me:
 	perl build/exportmt.pl --make
 
 clean:
-    -echo pwd
+    -echo $(curdir)
 	-rm -rf $(local_js)
 	-rm -rf mt-static/js/mt_core_compact.js
 	-rm -rf mt-static/js/editor.js
