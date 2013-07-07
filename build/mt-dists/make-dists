@@ -97,13 +97,8 @@ $ExtUtils::Manifest::Verbose = !$silent;
 my $skip     = 'MANIFEST.SKIP';
 my $skip_bak = "$skip.bak";
 
-use Cwd 'getcwd';
-my $cur_dir = getcwd;
 my $orig = eval {
-    print STDERR "<================== clean ======================\n";
-    print STDERR "Curdir: $cur_dir\n";
     verbose_command("$make clean");
-    print STDERR "================== clean ======================>\n";
     verbose_command("$make lib/MT.pm");
     require MT;
     $package . '-' . MT->VERSION;
@@ -138,9 +133,7 @@ for my $lang (@languages) {
 
 
     print "---------------- Building $lang ----------------\n";
-    print STDERR "<================== clean ======================\n";
     verbose_command("$make clean");    # to clean MT.pm
-    print STDERR "================== clean ======================>\n";
     verbose_command("$make lib/MT.pm");
     verbose_command("$make php/mt.php");
     verbose_command($make);
