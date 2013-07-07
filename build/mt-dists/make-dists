@@ -85,8 +85,6 @@ GetOptions(
     'export-prefix:s' => \$export_prefix,
 ) or die "ERROR: Couldn't get the command-line options";
 
-$silent = 0;
-
 my %options;
 
 my $make = 'make';
