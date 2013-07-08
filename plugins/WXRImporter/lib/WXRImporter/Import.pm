@@ -9,6 +9,8 @@ use strict;
 
 use base qw(MT::ErrorHandler);
 
+use MT::I18N qw( guess_encoding );
+
 sub import_contents {
     my $class = shift;
     my %param = @_;
@@ -61,7 +63,7 @@ sub import_contents {
             )
             )
             if MT::Auth->password_exists
-                && !( exists $param{NewAuthorPassword} );
+            && !( exists $param{NewAuthorPassword} );
     }
     else {
         return $class->error(
@@ -69,8 +71,7 @@ sub import_contents {
     }
     $cb->("\n");
     my $import_result = eval {
-        while ( my $stream = $iter->() )
-        {
+        while ( my $stream = $iter->() ) {
             my $result = eval { $class->start_import( $stream, %param ); };
             $cb->($@) unless $result;
         }
@@ -87,7 +88,16 @@ sub start_import {
     #    $stream = WXRImporter::Stream->new($stream);
     #}
 
-    my $xml = do { local $/ = undef; <$stream> }
+    my $xml = do {
+        local $/ = undef;
+        my $str = <$stream>;
+        if ( my $encoding = $param{Encoding} ) {
+            my $guess_encoding
+                = $encoding eq 'guess' ? guess_encoding($str) : $encoding;
+            $str = Encode::decode( $guess_encoding, $str );
+        }
+        $str;
+        }
         || '';
     $xml
         =~ s{<wp:comment_content>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</wp:comment_content>} 
