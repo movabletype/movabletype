@@ -219,9 +219,9 @@ jQuery('#cfg_entry').submit(function(eventObject) {
        id="nwc_smart_replace"
        label="<__trans phrase="Punctuation Replacement">">
       <ul>
-        <li><input type="radio" value="2" name="nwc_smart_replace" id="nwc_replace_none" onclick="DOM.addClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_2"> checked="checked"</mt:if>> <label for="nwc_replace_none"><__trans phrase="No substitution"></label></li>
-        <li><input type="radio" value="1" name="nwc_smart_replace" id="nwc_replace_entities" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_1"> checked="checked"</mt:if>> <label for="nwc_replace_entities"><__trans phrase="Character entities (&amp#8221;, &amp#8220;, etc.)"></label></li>
-        <li><input type="radio" value="0" name="nwc_smart_replace" id="nwc_replace_ascii" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_0"> checked="checked"</mt:if>> <label for="nwc_replace_ascii"><__trans phrase="ASCII equivalents (&quot;, ', ..., -, --)"></label></li>
+        <li><input type="radio" value="2" name="nwc_smart_replace" id="nwc_replace_none" onclick="DOM.addClassName(DOM.getElement('replace-fields-field'), 'hidden');"<mt:if name="nwc_smart_replace_2"> checked="checked"</mt:if>> <label for="nwc_replace_none"><__trans phrase="No substitution"></label></li>
+        <li><input type="radio" value="1" name="nwc_smart_replace" id="nwc_replace_entities" onclick="DOM.removeClassName(DOM.getElement('replace-fields-field'), 'hidden');"<mt:if name="nwc_smart_replace_1"> checked="checked"</mt:if>> <label for="nwc_replace_entities"><__trans phrase="Character entities (&amp#8221;, &amp#8220;, etc.)"></label></li>
+        <li><input type="radio" value="0" name="nwc_smart_replace" id="nwc_replace_ascii" onclick="DOM.removeClassName(DOM.getElement('replace-fields-field'), 'hidden');"<mt:if name="nwc_smart_replace_0"> checked="checked"</mt:if>> <label for="nwc_replace_ascii"><__trans phrase="ASCII equivalents (&quot;, ', ..., -, --)"></label></li>
       </ul>
     </mtapp:setting>
 
