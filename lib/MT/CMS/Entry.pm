@@ -184,6 +184,9 @@ sub edit {
                 = $obj_author
                 ? $obj_author->name
                 : MT->translate('*User deleted*');
+            $param->{from_email} = 1
+                if ( ( $obj_author && $obj_author->email )
+                || $app->config('EmailAddressMain') );
         }
 
         $app->load_list_actions( $type, $param );
