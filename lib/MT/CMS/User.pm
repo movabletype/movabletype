@@ -816,8 +816,8 @@ sub remove_user_assoc {
             { blog_id => $blog_id, author_id => $id } );
         next
             if !$can_remove_administrator
-                && $perm
-                && $perm->can_administer_blog;
+            && $perm
+            && $perm->can_administer_blog;
 
         MT::Association->remove( { blog_id => $blog_id, author_id => $id } );
 
@@ -856,7 +856,7 @@ sub revoke_role {
         unless $blog && $role && $author;
     return $app->permission_denied()
         if !$app->can_do('revoke_administer_role')
-            && $role->has('administer_blog');
+        && $role->has('administer_blog');
 
     MT::Association->unlink( $blog => $role => $author );
 
@@ -1017,7 +1017,7 @@ sub dialog_select_author {
         foreach (@ids) {
             $ok = 1
                 if $app->user->permissions($_)
-                    ->can_do('open_select_author_dialog');
+                ->can_do('open_select_author_dialog');
         }
         return $app->permission_denied
             unless $ok;
@@ -1143,8 +1143,8 @@ PERMCHECK: {
             if $app->can_do('grant_role_for_all_blogs');
         last PERMCHECK
             if $blog_id
-                && $this_user->permissions($blog_id)
-                ->can_do('grant_role_for_blog');
+            && $this_user->permissions($blog_id)
+            ->can_do('grant_role_for_blog');
         return $app->permission_denied();
     }
 
@@ -1164,11 +1164,11 @@ PERMCHECK: {
         $row->{description} = $row->{nickname} if exists $row->{nickname};
         $row->{disabled}    = 1
             if UNIVERSAL::isa( $obj, 'MT::Role' )
-                && (   $obj->has('administer_blog')
-                    || $obj->has('administer_website') )
-                && !$app->can_do('grant_role_for_all_blogs')
-                && !$this_user->permissions($blog_id)
-                ->can_do('grant_role_for_blog');
+            && ( $obj->has('administer_blog')
+            || $obj->has('administer_website') )
+            && !$app->can_do('grant_role_for_all_blogs')
+            && !$this_user->permissions($blog_id)
+            ->can_do('grant_role_for_blog');
         if (   $app->param('type')
             && $app->param('type') eq 'blog'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
@@ -1364,8 +1364,8 @@ PERMCHECK: {
             if $app->can_do('grant_role_for_all_blogs');
         last PERMCHECK
             if $blog_id
-                && $this_user->permissions($blog_id)
-                ->can_do('grant_role_for_blog');
+            && $this_user->permissions($blog_id)
+            ->can_do('grant_role_for_blog');
         return $app->permission_denied();
     }
 
@@ -1477,7 +1477,8 @@ sub can_delete {
     if ( !( $obj->created_by && $obj->created_by == $author->id ) ) {
         return $eh->error(
             MT->translate(
-                "You have no permission to delete the user [_1].", $obj->name
+                "You have no permission to delete the user [_1].",
+                $obj->name
             )
         );
     }
@@ -1495,6 +1496,24 @@ sub save_filter {
         }
     };
 
+    my $name = $accessor->('name');
+    if ($name) {
+        require MT::Author;
+        my $existing = MT::Author->load(
+            {   name => $name,
+                type => MT::Author::AUTHOR()
+            }
+        );
+        my $id = $accessor->('id');
+        if ( $existing
+            && ( ( $id && $existing->id ne $id ) || !$id ) )
+        {
+            return $eh->error(
+                $app->translate("A user with the same name already exists.")
+            );
+        }
+    }
+
     my $status = $accessor->('status');
     return 1 if $status and $status == MT::Author::INACTIVE();
 
@@ -1502,7 +1521,6 @@ sub save_filter {
     my $auth_mode = $app->config('AuthenticationModule');
     my ($pref) = split /\s+/, $auth_mode;
 
-    my $name     = $accessor->('name');
     my $nickname = $accessor->('nickname');
 
     if ( $pref eq 'MT' ) {
@@ -1542,18 +1560,6 @@ sub save_filter {
                 )
             );
         }
-    }
-
-    require MT::Author;
-    my $existing = MT::Author->load(
-        {   name => $name,
-            type => MT::Author::AUTHOR()
-        }
-    );
-    my $id = $accessor->('id');
-    if ( $existing && ( ( $id && $existing->id ne $id ) || !$id ) ) {
-        return $eh->error(
-            $app->translate("A user with the same name already exists.") );
     }
 
     require MT::Auth;
