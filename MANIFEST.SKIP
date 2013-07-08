@@ -155,6 +155,7 @@ mt-add-notify.cgi
 \.svn\b
 \.git\b
 \.gitignore
+\.gitmodules
 ,v$
 
 # Hidden, temp and backup files.
@@ -209,6 +210,8 @@ lang-it
 #plugins/feeds-app-lite
 plugins/feeds-app-lite/tools/
 plugins/feeds-app-lite/t/
+plugins/MultiBlog/t/
+plugins/FormattedText/t/
 
 # 'Extras'
 ^extras/
@@ -229,6 +232,7 @@ index\.html\..*
 readme\.html\..*
 build-language-stamp
 ^mt-config.cgi$
+^exports/
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion

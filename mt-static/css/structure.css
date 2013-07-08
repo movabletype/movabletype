@@ -2734,11 +2734,11 @@ div.template-group-content.active {
 /* - beta */
 .mt-beta #brand {
     background-image: url(../images/beta_icons/beta_icon.png);
-    background-position: 195px center;
+    background-position: 152px center;
     background-repeat: no-repeat;
 }
 .mt-beta #brand span.tips {
-    left: 240px;
+    left: 197px;
 }
 .mt-beta #container {
     padding-bottom: 180px;
