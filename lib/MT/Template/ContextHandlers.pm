@@ -1545,6 +1545,7 @@ sub _hdlr_if {
         require Storable;
         my $local_args = Storable::dclone($args);
         $value = $ctx->tag( $tag, $local_args, $cond );
+        $ctx->{__stash}{vars}{__cond_tag__} = $tag;
     }
 
     $ctx->{__stash}{vars}{__cond_value__} = $value;
