@@ -82,6 +82,8 @@ $admin->is_superuser(1);
 $admin->save or die $admin->errstr;
 $mt->app->user($admin);
 
+MT::PluginData->remove_all;
+
 use IO::String;
 my $h = IO::String->new( \$backup_data );
 my ( %objects, %deferred, @errors );
@@ -111,7 +113,8 @@ sub checkthemout {
             my $key     = "$class#" . $old->id;
             my $tmp_obj = $objects->{$key};
             isnt( undef, $tmp_obj, "$key must not hold undef" );
-            my $obj = $class->load( $tmp_obj->id, { cached_ok => 0 } );
+            my $obj
+                = $class->load( { id => $tmp_obj->id }, { cached_ok => 0 } );
             isnt( $obj, undef );
             for my $col ( @{ $obj->column_names } ) {
                 next if $col eq 'id';
@@ -211,8 +214,7 @@ sub checkthemout {
                         }
                     }
                     if ( 'HASH' eq ref( $old->$col ) ) {
-                        is( Dumper( $old->$col ), Dumper( $obj->$col ),
-                            $col );
+                        is_deeply( $old->$col, $obj->$col, $col );
                     }
                     elsif ( 'blob' eq $obj->column_defs->{$col}->{type} ) {
                         is( MIME::Base64::encode_base64( $old->$col, '' ),
@@ -318,6 +320,8 @@ sub finish {
         $e->remove();
     }
     MT::Category->remove($terms);
+
+    MT::PluginData->remove_all;
 }
 
 sub setup {
@@ -468,4 +472,10 @@ sub setup {
         );
         $ft->save or die $ft->errstr;
     }
+
+    my $multiblog = MT->component('multiblog');
+    $multiblog->save_config( undef, 'system' );
+
+    my $slu = MT->component('spamlookup/spamlookup.pl');
+    $slu->save_config( undef, 'system' );
 }

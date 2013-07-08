@@ -46,9 +46,8 @@ sub start_element {
         die MT->translate(
             'The uploaded file was not a valid Movable Type backup manifest file.'
             )
-            if !(      ( 'movabletype' eq $name )
-                    && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns )
-            );
+            if !( ( 'movabletype' eq $name )
+            && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns ) );
 
         $self->{backup_what} = $attrs->{'{}backup_what'}->{Value};
 
@@ -222,8 +221,8 @@ sub start_element {
                     }
                 }
                 elsif ( 'filter' eq $name ) {
-                    if ($objects->{ "MT::Author#"
-                                . $column_data{author_id} } )
+                    if ( $objects->{ "MT::Author#" . $column_data{author_id} }
+                        )
                     {
                         $obj = $class->load(
                             {   author_id => $column_data{author_id},
@@ -329,7 +328,7 @@ sub start_element {
                         $obj->column( 'external_id',
                             $realcolumn_data{external_id} )
                             if $name eq 'author'
-                                && defined $realcolumn_data{external_id};
+                            && defined $realcolumn_data{external_id};
                         foreach my $metacol ( keys %metacolumns ) {
                             next
                                 if ( 'vclob' eq $metacolumns{$metacol} )
@@ -437,9 +436,9 @@ sub end_element {
             my $old_id = $obj->id;
             unless (
                 (      ( 'author' eq $name )
-                    || ( 'template'   eq $name )
-                    || ( 'filter'     eq $name )
-                    || ( 'image'      eq $name )
+                    || ( 'template' eq $name )
+                    || ( 'filter' eq $name )
+                    || ( 'image' eq $name )
                     || ( 'plugindata' eq $name )
                 )
                 && ( exists $self->{loaded} )
@@ -463,7 +462,8 @@ sub end_element {
                     $self->{callback}->("\n");
                     $self->{callback}->(
                         MT->translate(
-                            "Tag '[_1]' exists in the system.", $obj->name
+                            "Tag '[_1]' exists in the system.",
+                            $obj->name
                         )
                     );
                 }
@@ -577,9 +577,10 @@ sub end_element {
                 # when it was found in the database.
 
                 if ( $obj->key !~ /^configuration:blog:(\d+)$/i ) {
-                    if ( my $obj
-                        = MT->model('plugindata')
-                        ->load( { key => $obj->key, } ) )
+                    if (my $obj = MT->model('plugindata')->load(
+                            { key => $obj->key, plugin => $obj->plugin }
+                        )
+                        )
                     {
                         $exists = 1;
                         $self->{callback}->("\n");
