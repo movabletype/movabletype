@@ -1890,8 +1890,63 @@ sub adjust_sitepath {
     }
 
     if ($tmp_dir) {
-        require File::Path;
-        File::Path::rmtree($tmp_dir);
+        if ( $q->param('restore_upload') ) {
+            require File::Path;
+            File::Path::rmtree($tmp_dir);
+        }
+        else {
+            opendir my $dh, $tmp_dir
+                or return $app->error(
+                MT->translate(
+                    "Cannot open directory '[_1]': [_2]",
+                    $tmp_dir, "$!"
+                )
+                );
+            my $manifest;
+            for my $f ( readdir $dh ) {
+                next if $f !~ /^.+\.manifest$/i;
+                $manifest = File::Spec->catfile( $tmp_dir,
+                    Encode::decode( MT->config->PublishCharset, $f ) );
+                last;
+            }
+            closedir $dh;
+            if ($manifest) {
+                my $fh = gensym;
+                open $fh, "<$manifest"
+                    or return $app->error(
+                    MT->translate( "Cannot open [_1].", $manifest ) );
+                seek( $fh, 0, 0 ) or return undef;
+                require XML::SAX;
+                require MT::BackupRestore::ManifestFileHandler;
+                my $handler = MT::BackupRestore::ManifestFileHandler->new();
+
+                require MT::Util;
+                my $parser = MT::Util::sax_parser();
+                $parser->{Handler} = $handler;
+                eval { $parser->parse_file($fh); };
+                if ( my $e = $@ ) {
+                    die $e;
+                }
+                my $backups = $handler->{backups};
+                unless ($backups) {
+                    return $app->error(
+                        MT->translate(
+                            "Manifest file [_1] was not a valid Movable Type backup manifest file.",
+                            $manifest
+                        )
+                    );
+                }
+                else {
+                    my $files = $backups->{files};
+                    for my $file (@$files) {
+                        my $fh = gensym;
+                        my $filepath = File::Spec->catfile( $tmp_dir, $file );
+                        unlink $filepath;
+                    }
+                }
+                unlink $manifest;
+            }
+        }
     }
 
     my $param = {};
