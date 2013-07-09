@@ -58,12 +58,13 @@
     draw_graph('<mt:var name="stat_url">', <mt:var name="not_configured" default="0">);
 
     function draw_graph(stat_url, not_configured) {
+      var ylength = not_configured ? 1 : 2;
       jQuery.getJSON(stat_url, function(data) {
         var hover_data = data.hover_data.data;
         var rate = data.hover_data.rate;
         var config = {
           type: 'morris.line',
-          yLength: 2,
+          yLength: ylength,
           autoResize: true,
           height: 200,
           lineWidth: 3,
@@ -71,9 +72,13 @@
           data: data.graph_data,
           hoverCallback: function (index, options, content) {
             var row   = options.data[index];
-            var pv    = hover_data[index].pv;
             var count = hover_data[index].count;
-            return '<div class="morris-hover-row-label">' + row.x + '</div><div class="morris-hover-point" style="color: #6AAC2B;">PV: ' + pv + '</div><div class="morris-hover-point" style="color: #FFBE00;">Entry: ' + count + '</div>';
+            if (not_configured) {
+              return '<div class="morris-hover-row-label">' + row.x + '</div><div class="morris-hover-point" style="color: #6AAC2B;">Entry: ' + count + '</div>';
+            } else {
+              var pv    = hover_data[index].pv;
+              return '<div class="morris-hover-row-label">' + row.x + '</div><div class="morris-hover-point" style="color: #6AAC2B;">PV: ' + pv + '</div><div class="morris-hover-point" style="color: #FFBE00;">Entry: ' + count + '</div>';
+            }
           },
           yLabelFormat: function (y) {
               return '';

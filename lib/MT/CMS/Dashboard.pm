@@ -1226,11 +1226,20 @@ sub generate_site_stats_data {
         my $rate = $max_pv && $max_count ? $max_pv / $max_count : 1;
         my $result;
         foreach my $date (@dates) {
-            my %row1 = (
-                x  => $date,
-                y  => $pvs{$date} || 0,
-                y1 => $counts{$date} * $rate || 0,
-            );
+            my %row1;
+            if ($param->{not_configured}) {
+                %row1 = (
+                    x => $date,
+                    y => $counts{$date} * $rate || 0,
+                );
+            }
+            else {
+                %row1 = (
+                    x  => $date,
+                    y  => $pvs{$date} || 0,
+                    y1 => $counts{$date} * $rate || 0,
+                );
+            }
             my %row2 = (
                 pv    => $pvs{$date}    || 0,
                 count => $counts{$date} || 0,
