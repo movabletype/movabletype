@@ -407,7 +407,8 @@ sub set_object_status {
         if $app->param('all_selected');
 
     my @sync;
-    my $saved = 0;
+    my $saved       = 0;
+    my $not_enabled = 0;
     for my $id ( $q->param('id') ) {
         next unless $id;    # avoid 'empty' ids
         my $obj = $class->load($id);
@@ -422,6 +423,27 @@ sub set_object_status {
                 && $app->config->NewUserAutoProvisioning
                 && $obj->status == MT::Author::PENDING() ) ? 1 : 0;
         $obj->status($new_status);
+        if ( $new_status == MT::Author::ACTIVE() ) {
+            my $eh = MT::ErrorHandler->new;
+            if ( !save_filter( $eh, $app, $obj ) ) {
+                $app->log(
+                    {   message => $app->translate(
+                            $obj->name
+                            ? "User '[_2]' (ID:[_1]) has not been enabled."
+                            : "User (ID:[_1]) has not been enabled.",
+                            $obj->id,
+                            $obj->name,
+                        ),
+                        metadata => $eh->errstr,
+                        level    => MT::Log::ERROR(),
+                        class    => 'author',
+                        category => 'not_enabled',
+                    }
+                );
+                $not_enabled++;
+                next;
+            }
+        }
         $obj->save;
         $saved++;
         if ( $type eq 'author' ) {
@@ -444,7 +466,7 @@ sub set_object_status {
             }
         }
     }
-    if ( $saved && ( $saved > $unchanged ) ) {
+    if ( $saved && ( $saved > $unchanged ) && !$not_enabled ) {
         $app->add_return_arg(
             saved_status => ( $new_status == MT::Author::ACTIVE() )
             ? 'enabled'
@@ -455,6 +477,8 @@ sub set_object_status {
         if $q->param('is_power_edit');
     $app->add_return_arg( unchanged => $unchanged )
         if $unchanged;
+    $app->add_return_arg( not_enabled => $not_enabled )
+        if $not_enabled;
     $app->call_return;
 }
 
