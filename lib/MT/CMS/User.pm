@@ -428,11 +428,8 @@ sub set_object_status {
             if ( !save_filter( $eh, $app, $obj ) ) {
                 $app->log(
                     {   message => $app->translate(
-                            $obj->name
-                            ? "User '[_2]' (ID:[_1]) has not been enabled."
-                            : "User (ID:[_1]) has not been enabled.",
-                            $obj->id,
-                            $obj->name,
+                            "User '[_1]' (ID:[_2]) could not be re-enabled by '[_3]'",
+                            $obj->name, $obj->id, $app->user->name,
                         ),
                         metadata => $eh->errstr,
                         level    => MT::Log::ERROR(),
