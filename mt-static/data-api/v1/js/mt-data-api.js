@@ -454,6 +454,8 @@ DataAPI.prototype = {
             return null;
         }
 
+        Cookie.bake(defaultKey, '', undefined, '/', new Date(0));
+
         try {
             defaultToken = this.unserializeData(defaultCookie.value);
         }
@@ -462,7 +464,6 @@ DataAPI.prototype = {
         }
 
         this.storeTokenData(defaultToken);
-        Cookie.bake(defaultKey, '', undefined, '/', new Date(0));
         return defaultToken;
     },
 
