@@ -81,7 +81,6 @@ mt-static/css/simple.css: $(simple_css)
 code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/js/mt_core_compact.js \
         mt-static/js/editor.js \
-        mt-static/data-api/v1/js/all.js \
         mt-static/css/main.css \
         mt-static/css/simple.css
 
