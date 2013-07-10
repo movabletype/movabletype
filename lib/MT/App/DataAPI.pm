@@ -832,7 +832,8 @@ sub purge_session_records {
 sub send_http_header {
     my $app = shift;
 
-    $app->set_header( 'X-Content-Type', 'nosniff' );
+    $app->set_header( 'X-Content-Type' => 'nosniff' );
+    $app->set_header( 'Cache-Control'  => 'no-cache' );
 
     return $app->SUPER::send_http_header(@_);
 }
