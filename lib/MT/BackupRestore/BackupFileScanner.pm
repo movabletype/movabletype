@@ -1,3 +1,9 @@
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
+#
+# $Id$
+
 package MT::BackupRestore::BackupFileScanner;
 
 use strict;
@@ -32,7 +38,7 @@ sub start_element {
     my $attrs = $data->{Attributes};
     my $ns    = $data->{NamespaceURI};
     return unless MT::BackupRestore::NS_MOVABLETYPE() eq $ns;
-    return unless ( $name eq 'author' && $name eq 'website' );
+    return unless ( $name eq 'author' || $name eq 'website' );
 
     if ( $name eq 'author' && $self->{digest_sha_not_found} ) {
         my $pass = $attrs->{"{}password"}->{Value};
@@ -63,8 +69,8 @@ sub end_document {
             { author_id => $user->id, permissions => { not => "'comment'" } }
             )
             if !$user->is_superuser
-                && !$user->permissions(0)->can_do('edit_templates')
-                && !$user->permissions(0)->can_do('create_blog');
+            && !$user->permissions(0)->can_do('edit_templates')
+            && !$user->permissions(0)->can_do('create_blog');
         $terms{class} = 'website';
         my $count = MT::Website->count( \%terms, \%args );
 

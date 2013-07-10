@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -21,19 +21,13 @@ sub edit {
         my $type = $q->param('type') || ( $obj ? $obj->type : '' );
         return $app->return_to_dashboard( redirect => 1 )
             if $type eq 'archive'
-                || $type eq 'individual'
-                || $type eq 'category'
-                || $type eq 'page'
-                || $type eq 'index';
+            || $type eq 'individual'
+            || $type eq 'category'
+            || $type eq 'page'
+            || $type eq 'index';
     }
 
     my $blog = $app->blog;
-    if ( defined $blog && !$blog->is_blog ) {
-        my $type = $q->param('type') || ( $obj ? $obj->type : '' );
-        return $app->return_to_dashboard( redirect => 1 )
-            if $type eq 'archive'
-                || $type eq 'individual';
-    }
 
     # to trigger autosave logic in main edit routine
     $param->{autosave_support} = 1;
@@ -130,8 +124,8 @@ sub edit {
         $blog_id = $obj->blog_id;
 
         # FIXME: enumeration of types
-        $param->{has_name} 
-            = $obj->type  eq 'index'
+        $param->{has_name}
+            = $obj->type eq 'index'
             || $obj->type eq 'custom'
             || $obj->type eq 'widget'
             || $obj->type eq 'archive'
@@ -148,13 +142,13 @@ sub edit {
                 && ( ( $blog->custom_dynamic_templates || "" ) ne 'all' ) );
 
         # FIXME: enumeration of types
-        $param->{is_special} 
-            = $param->{type}  ne 'index'
+        $param->{is_special}
+            = $param->{type} ne 'index'
             && $param->{type} ne 'archive'
             && $param->{type} ne 'category'
             && $param->{type} ne 'page'
             && $param->{type} ne 'individual';
-        $param->{has_build_options} 
+        $param->{has_build_options}
             = $param->{has_build_options}
             && $param->{type} ne 'custom'
             && $param->{type} ne 'widget'
@@ -229,7 +223,7 @@ sub edit {
                                 : 0
                             : [ $obj->blog_id, 0 ];
 
-                        my $mod_id 
+                        my $mod_id
                             = $mod . "::"
                             . (
                             ref $inc_blog_id
@@ -444,8 +438,8 @@ sub edit {
         }
         $param->{have_includes} = 1
             if $param->{widget_set_loop}
-                || $param->{include_loop}
-                || $param->{widget_loop};
+            || $param->{include_loop}
+            || $param->{widget_loop};
 
         # Populate archive types for creating new map
         my $obj_type = $obj->type;
@@ -605,8 +599,8 @@ sub edit {
         $app->add_breadcrumb( $app->translate('New Template') );
 
         # FIXME: enumeration of types
-        $param->{has_name} 
-            = $template_type  eq 'index'
+        $param->{has_name}
+            = $template_type eq 'index'
             || $template_type eq 'custom'
             || $template_type eq 'widget'
             || $template_type eq 'archive'
@@ -623,13 +617,13 @@ sub edit {
             || $param->{has_rebuild} );
 
         # FIXME: enumeration of types
-        $param->{is_special} 
-            = $param->{type}  ne 'index'
+        $param->{is_special}
+            = $param->{type} ne 'index'
             && $param->{type} ne 'archive'
             && $param->{type} ne 'category'
             && $param->{type} ne 'page'
             && $param->{type} ne 'individual';
-        $param->{has_build_options} 
+        $param->{has_build_options}
             = $param->{has_build_options}
             && $param->{type} ne 'custom'
             && $param->{type} ne 'widget'
@@ -1686,7 +1680,7 @@ sub can_view {
         my $obj = $objp->force();
         return 0
             unless $app->user->permissions( $obj->blog_id )
-                ->can_do('edit_templates');
+            ->can_do('edit_templates');
     }
     else {
         my $perms = $app->permissions;
@@ -2002,7 +1996,7 @@ sub build_template_table {
         # FIXME: enumeration of types
         $row->{can_delete} = 1
             if $tmpl->type
-                =~ m/(custom|index|archive|page|individual|category|widget)/;
+            =~ m/(custom|index|archive|page|individual|category|widget)/;
         if ($blog) {
             $row->{weblog_name} = $blog->name;
         }
@@ -2038,8 +2032,8 @@ sub dialog_publishing_profile {
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
         unless $app->user->is_superuser
-            || $perms->can_administer_blog
-            || $perms->can_edit_templates;
+        || $perms->can_administer_blog
+        || $perms->can_edit_templates;
 
     my $param = {};
     $param->{dynamicity}  = $blog->custom_dynamic_templates || 'none';
@@ -2057,12 +2051,13 @@ sub dialog_refresh_templates {
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
         unless $app->user->is_superuser()
-            || $app->user->can_edit_templates()
-            || ($perms
-                && (   $perms->can_edit_templates()
-                    || $perms->can_administer_blog()
-                    || $perms->can_do('refresh_templates') )
-            );
+        || $app->user->can_edit_templates()
+        || (
+        $perms
+        && (   $perms->can_edit_templates()
+            || $perms->can_administer_blog()
+            || $perms->can_do('refresh_templates') )
+        );
 
     my $param = {};
     if ( my $blog = $app->blog ) {
@@ -2313,8 +2308,8 @@ BLOG: for my $blog_id (@id) {
                 # if it has been customized, back it up to a new tmpl record
                 if ( $def_text ne $text ) {
                     my $backup = $tmpl->clone;
-                    delete $backup->{column_values}
-                        ->{id};    # make sure we don't overwrite original
+                    delete $backup->{column_values}->{id}
+                        ;    # make sure we don't overwrite original
                     delete $backup->{changed_cols}->{id};
                     $backup->name( $backup->name
                             . $app->translate( ' (Backup from [_1])', $ts ) );
@@ -2448,11 +2443,12 @@ sub refresh_individual_templates {
 
         #TODO: system level-designer permission
         unless $user->is_superuser()
-            || $user->can_edit_templates()
-            || ($perms
-                && (   $perms->can_edit_templates()
-                    || $perms->can_administer_blog )
-            );
+        || $user->can_edit_templates()
+        || (
+        $perms
+        && (   $perms->can_edit_templates()
+            || $perms->can_administer_blog )
+        );
 
     my $set;
     my $blog_id = $app->param('blog_id');
@@ -2547,8 +2543,8 @@ sub refresh_individual_templates {
             # if it has been customized, back it up to a new tmpl record
             my $backup   = $tmpl->clone;
             my $orig_obj = $tmpl->clone;
-            delete $backup->{column_values}
-                ->{id};    # make sure we don't overwrite original
+            delete $backup->{column_values}->{id}
+                ;    # make sure we don't overwrite original
             delete $backup->{changed_cols}->{id};
             $backup->name( $backup->name . ' (Backup from ' . $ts . ')' );
             $backup->type('backup');
@@ -2604,11 +2600,12 @@ sub clone_templates {
 
         #TODO: system level-designer permission
         unless $user->is_superuser()
-            || $user->can_edit_templates()
-            || ($perms
-                && (   $perms->can_edit_templates()
-                    || $perms->can_administer_blog )
-            );
+        || $user->can_edit_templates()
+        || (
+        $perms
+        && (   $perms->can_edit_templates()
+            || $perms->can_administer_blog )
+        );
 
     my @id = $app->param('id');
     require MT::Template;
@@ -2686,8 +2683,8 @@ sub publish_index_templates {
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
         unless $app->user->is_superuser
-            || $perms->can_administer_blog
-            || $perms->can_rebuild;
+        || $perms->can_administer_blog
+        || $perms->can_rebuild;
 
     my $blog = $app->blog;
 
@@ -2722,8 +2719,8 @@ sub publish_archive_templates {
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
         unless $app->user->is_superuser
-            || $perms->can_administer_blog
-            || $perms->can_rebuild;
+        || $perms->can_administer_blog
+        || $perms->can_rebuild;
 
     my @ids = $app->param('id');
     if ( scalar @ids == 1 ) {
@@ -2906,7 +2903,7 @@ sub edit_widget {
         exists( $opt{saved} )   ? ( saved   => $opt{saved} )   : (),
         $id                     ? ( id      => $id )
         : $name                 ? ( name    => $name )
-        : (),
+        :                         (),
     };
     $param->{saved} = 1
         if $app->param('saved');

@@ -51,8 +51,15 @@ jQuery(function() {
      help_page="blog_settings_general"
      help_section="website_theme">
     <select name="website_theme">
-    <mt:loop name="theme_loop">
+    <mt:loop name="website_theme_loop">
+      <mt:if name="__first__"><optgroup label="<__trans phrase="Website">"></mt:if>
       <option value="<mt:var name="key" escape="html">"<mt:if name="key" eq='$config.DefaultWebsiteTheme'> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+      <mt:if name="__last__"></optgroup></mt:if>
+    </mt:loop>
+    <mt:loop name="blog_theme_loop">
+      <mt:if name="__first__"><optgroup label="<__trans phrase="Blog">"></mt:if>
+      <option value="<mt:var name="key" escape="html">"<mt:if name="key" eq='$config.DefaultWebsiteTheme'> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+      <mt:if name="__last__"></optgroup></mt:if>
     </mt:loop>
     </select>
   </mtapp:setting>

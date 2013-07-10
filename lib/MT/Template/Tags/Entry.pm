@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::Template::Tags::Entry;
@@ -936,7 +936,7 @@ sub _hdlr_entries {
         # page when we didn't request sorting.
         if ( $args->{sort_by} || $args->{sort_order} || $ctx->{archive_type} )
         {
-            my $so 
+            my $so
                 = $args->{sort_order}
                 || ( $blog ? $blog->sort_order_posts : undef )
                 || '';
@@ -965,14 +965,16 @@ sub _hdlr_entries {
                         if ( $type->{type} =~ m/integer|float/ ) {
                             @$entries
                                 = $so eq 'ascend'
-                                ? sort { $a->$col() <=> $b->$col() } @$entries
+                                ? sort { $a->$col() <=> $b->$col() }
+                                @$entries
                                 : sort { $b->$col() <=> $a->$col() }
                                 @$entries;
                         }
                         else {
                             @$entries
                                 = $so eq 'ascend'
-                                ? sort { $a->$col() cmp $b->$col() } @$entries
+                                ? sort { $a->$col() cmp $b->$col() }
+                                @$entries
                                 : sort { $b->$col() cmp $a->$col() }
                                 @$entries;
                         }
@@ -1054,7 +1056,7 @@ sub _hdlr_entries {
                 $i++;
                 $scores->end, last
                     if $post_sort_limit
-                        && ( scalar @tmp ) >= $post_sort_limit;
+                    && ( scalar @tmp ) >= $post_sort_limit;
             }
 
             if ( !$post_sort_limit || ( scalar @tmp ) < $post_sort_limit ) {
@@ -1067,7 +1069,7 @@ sub _hdlr_entries {
                     }
                     last
                         if $post_sort_limit
-                            && ( scalar @tmp ) >= $post_sort_limit;
+                        && ( scalar @tmp ) >= $post_sort_limit;
                 }
             }
             @entries = @tmp;
@@ -1098,7 +1100,7 @@ sub _hdlr_entries {
                 $i++;
                 $scores->end, last
                     if $post_sort_limit
-                        && ( scalar @tmp ) >= $post_sort_limit;
+                    && ( scalar @tmp ) >= $post_sort_limit;
             }
             if ( !$post_sort_limit || ( scalar @tmp ) < $post_sort_limit ) {
                 foreach ( values %e ) {
@@ -1110,7 +1112,7 @@ sub _hdlr_entries {
                     }
                     last
                         if $post_sort_limit
-                            && ( scalar @tmp ) >= $post_sort_limit;
+                        && ( scalar @tmp ) >= $post_sort_limit;
                 }
             }
             @entries = @tmp;
@@ -1137,12 +1139,12 @@ sub _hdlr_entries {
             {
                 @entries
                     = @entries[ $post_sort_offset .. $post_sort_offset
-                    + $post_sort_limit 
+                    + $post_sort_limit
                     - 1 ];
             }
         }
         else {
-            my $so 
+            my $so
                 = $args->{sort_order}
                 || ( $blog ? $blog->sort_order_posts : 'descend' )
                 || '';
@@ -1206,8 +1208,8 @@ sub _hdlr_entries {
         my $out = $builder->build(
             $ctx, $tok,
             {   %$cond,
-                DateHeader => ( $this_day ne $last_day ),
-                DateFooter => $footer,
+                DateHeader    => ( $this_day ne $last_day ),
+                DateFooter    => $footer,
                 EntriesHeader => !$i,
                 EntriesFooter => !defined $entries[ $i + 1 ],
                 PagesHeader   => !$i,
@@ -1567,7 +1569,7 @@ sub _hdlr_entry_flag {
     ## second test (else) (should we be looking at blog->convert_paras?).
     ## When we added allow_pings, we only want this to be applied if
     ## explicitly checked.
-    if ( $flag eq 'allow_pings' ) {
+    if ( $flag eq 'allow_pings' || $flag eq 'allow_comments' ) {
         return defined $v ? $v : 0;
     }
     else {
@@ -1616,7 +1618,7 @@ sub _hdlr_entry_body {
     my $convert_breaks
         = exists $args->{convert_breaks} ? $args->{convert_breaks}
         : defined $e->convert_breaks     ? $e->convert_breaks
-        :   ( $blog ? $blog->convert_paras : '__default__' );
+        : ( $blog ? $blog->convert_paras : '__default__' );
     if ($convert_breaks) {
         my $filters = $e->text_filters;
         push @$filters, '__default__' unless @$filters;
@@ -1652,7 +1654,7 @@ sub _hdlr_entry_more {
     my $convert_breaks
         = exists $args->{convert_breaks} ? $args->{convert_breaks}
         : defined $e->convert_breaks     ? $e->convert_breaks
-        :   ( $blog ? $blog->convert_paras : '__default__' );
+        : ( $blog ? $blog->convert_paras : '__default__' );
     if ($convert_breaks) {
         my $filters = $e->text_filters;
         push @$filters, '__default__' unless @$filters;
@@ -2490,6 +2492,17 @@ sub _hdlr_entry_edit_link {
         ),
         $edit_text;
 }
+
+###########################################################################
+
+=head2 WebsiteEntryCount
+
+Returns the number of published entries associated with the website
+currently in context.
+
+=for tags multiblog, count, websites, entries
+
+=cut
 
 ###########################################################################
 

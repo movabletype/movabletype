@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::Template::Tags::Tag;
@@ -426,9 +426,19 @@ sub _hdlr_entry_tags {
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
     my $res     = '';
+    my $i       = 1;
+    my $vars    = $ctx->{__stash}{vars} ||= {};
     my $tags    = $entry->get_tag_objects;
+    if (!$args->{include_private}) {
+        @$tags = grep { ! $_->is_private } @$tags;
+    }
     for my $tag (@$tags) {
-        next if $tag->is_private && !$args->{include_private};
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $i == scalar @$tags;
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
+        local $vars->{__counter__} = $i;
+        $i++;
         local $ctx->{__stash}{Tag}             = $tag;
         local $ctx->{__stash}{tag_count}       = undef;
         local $ctx->{__stash}{tag_entry_count} = undef;
@@ -557,7 +567,7 @@ sub _hdlr_asset_tags {
     local $ctx->{__stash}{all_tag_count} = undef;
     local $ctx->{__stash}{class_type}    = 'asset';
 
-    my $iter = MT::Tag->load_iter(
+    my @assets = MT::Tag->load(
         undef,
         {   'sort' => 'name',
             'join' => MT::ObjectTag->join_on(
@@ -573,12 +583,22 @@ sub _hdlr_asset_tags {
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
     my $res     = '';
+    my $i       = 1;
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+    if ( !$args->{include_private} ) {
+        @assets =  grep { ! $_->is_private }  @assets;
+    }
 
-    while ( my $tag = $iter->() ) {
-        next if $tag->is_private && !$args->{include_private};
+    foreach my $tag ( @assets ) {
         local $ctx->{__stash}{Tag}             = $tag;
         local $ctx->{__stash}{tag_count}       = undef;
         local $ctx->{__stash}{tag_asset_count} = undef;
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $i == scalar @assets;
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
+        local $vars->{__counter__} = $i;
+        $i++;
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $glue if defined $glue && length($res) && length($out);

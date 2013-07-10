@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Import;
@@ -19,7 +19,7 @@ sub start_import {
 
     my $blog = $app->model('blog')->load($blog_id);
     return $app->return_to_dashboard( redirect => 1 )
-        if !$blog || ( $blog && !$blog->is_blog );
+        if !$blog;
 
     my %param;
 
@@ -87,7 +87,7 @@ sub start_import {
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         $param{text_filters}
-            = $app->load_text_filters( $blog->convert_paras );
+            = $app->load_text_filters( $blog->convert_paras, 'entry' );
     }
 
     $app->add_breadcrumb( $app->translate('Import/Export') );
@@ -109,9 +109,6 @@ sub do_import {
             MT::Blog->errstr
         )
         );
-
-    return $app->return_to_dashboard( redirect => 1 )
-        if !$blog->is_blog;
 
     if ( 'POST' ne $app->request_method ) {
         return $app->redirect(

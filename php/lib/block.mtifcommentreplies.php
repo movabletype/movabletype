@@ -1,7 +1,7 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -10,7 +10,7 @@ function smarty_block_mtifcommentreplies($args, $content, &$ctx, &$repeat) {
         $comment = $ctx->stash('comment');
         $args['comment_id'] = $comment->comment_id;
         $children = $ctx->mt->db()->fetch_comment_replies($args);
-        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, count($children));
+        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, (count($children) > 0));
     } else {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -106,7 +106,12 @@ __PACKAGE__->install_properties(
             'junk_log'      => 'string meta',
             'revision'      => 'integer meta',
 ## Have to keep this around for use in mt-upgrade.cgi.
-            'category_id' => 'integer',
+            'category_id'    => 'integer',
+            'unpublished_on' => {
+                type       => 'datetime',
+                label      => 'Unpublish Date',
+                revisioned => 1
+            },
         },
         indexes => {
             status      => 1,
@@ -155,6 +160,12 @@ __PACKAGE__->install_properties(
             # for tag count
             tag_count =>
                 { columns => [ 'status', 'class', 'blog_id', 'id' ], },
+
+            #for future unpublish
+            class_unpublished =>
+                { columns => [ 'class', 'unpublished_on' ], },
+            blog_unpublished =>
+                { columns => [ 'blog_id', 'class', 'unpublished_on' ], },
         },
         defaults => {
             comment_count => 0,
@@ -174,11 +185,12 @@ __PACKAGE__->install_properties(
     }
 );
 
-sub HOLD ()    {1}
-sub RELEASE () {2}
-sub REVIEW ()  {3}
-sub FUTURE ()  {4}
-sub JUNK ()    {5}
+sub HOLD ()     {1}
+sub RELEASE ()  {2}
+sub REVIEW ()   {3}
+sub FUTURE ()   {4}
+sub JUNK ()     {5}
+sub UNPUBLISH() {6}
 
 use Exporter;
 *import = \&Exporter::import;
@@ -253,21 +265,23 @@ sub list_props {
                 );
                 my $status = $obj->status;
                 my $status_class
-                    = $status == MT::Entry::HOLD()    ? 'Draft'
-                    : $status == MT::Entry::RELEASE() ? 'Published'
-                    : $status == MT::Entry::REVIEW()  ? 'Review'
-                    : $status == MT::Entry::FUTURE()  ? 'Future'
-                    : $status == MT::Entry::JUNK()    ? 'Junk'
-                    :                                   '';
+                    = $status == MT::Entry::HOLD()      ? 'Draft'
+                    : $status == MT::Entry::RELEASE()   ? 'Published'
+                    : $status == MT::Entry::REVIEW()    ? 'Review'
+                    : $status == MT::Entry::FUTURE()    ? 'Future'
+                    : $status == MT::Entry::JUNK()      ? 'Junk'
+                    : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
+                    :                                     '';
                 my $lc_status_class = lc $status_class;
                 require MT::Entry;
                 my $status_file
-                    = $status == MT::Entry::HOLD()    ? 'draft.gif'
-                    : $status == MT::Entry::RELEASE() ? 'success.gif'
-                    : $status == MT::Entry::REVIEW()  ? 'warning.gif'
-                    : $status == MT::Entry::FUTURE()  ? 'future.gif'
-                    : $status == MT::Entry::JUNK()    ? 'warning.gif'
-                    :                                   '';
+                    = $status == MT::Entry::HOLD()      ? 'draft.gif'
+                    : $status == MT::Entry::RELEASE()   ? 'success.gif'
+                    : $status == MT::Entry::REVIEW()    ? 'warning.gif'
+                    : $status == MT::Entry::FUTURE()    ? 'future.gif'
+                    : $status == MT::Entry::JUNK()      ? 'warning.gif'
+                    : $status == MT::Entry::UNPUBLISH() ? 'unpublished.gif'
+                    :                                     '';
                 my $status_img
                     = MT->static_path . 'images/status_icons/' . $status_file;
                 my $view_img
@@ -304,15 +318,9 @@ sub list_props {
             display => 'default',
         },
         blog_name => {
-            base  => '__common.blog_name',
-            label => sub {
-                MT->app->blog
-                    ? MT->translate('Blog Name')
-                    : MT->translate('Website/Blog Name');
-            },
-            display   => 'default',
-            site_name => sub { MT->app->blog ? 0 : 1 },
-            order     => 400,
+            base    => '__common.blog_name',
+            display => 'default',
+            order   => 400,
         },
         category_id => {
             label           => 'Primary Category',
@@ -323,7 +331,7 @@ sub list_props {
             base            => '__virtual.integer',
             filter_editable => 0,
             col_class       => 'string',
-            view_filter     => 'blog',
+            view_filter     => [ 'website', 'blog' ],
             category_class  => 'category',
             terms           => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
@@ -390,7 +398,7 @@ sub list_props {
             display          => 'default',
             base             => '__virtual.string',
             col_class        => 'string',
-            view_filter      => 'blog',
+            view_filter      => [ 'website', 'blog', 'system' ],
             category_class   => 'category',
             zero_state_label => '-',
             bulk_cats        => sub {
@@ -482,10 +490,18 @@ sub list_props {
             # },
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
-                my $blog_id = MT->app->blog->id;
-                my $app     = MT->instance;
-                my $option  = $args->{option};
-                my $query   = $args->{string};
+                my $blog = MT->app->blog;
+                my $blog_id
+                    = $blog
+                    ? $blog->is_blog
+                        ? MT->app->blog->id
+                        : [ MT->app->blog->id,
+                            map { $_->id } @{ $blog->blogs }
+                        ]
+                    : 0;
+                my $app    = MT->instance;
+                my $option = $args->{option};
+                my $query  = $args->{string};
                 if ( 'contains' eq $option ) {
                     $query = { like => "%$query%" };
                 }
@@ -501,14 +517,14 @@ sub list_props {
                 push @{ $db_args->{joins} }, MT->model('placement')->join_on(
                     undef,
                     {   entry_id => \'= entry_id',
-                        blog_id  => $blog_id,
+                        ( $blog_id ? ( blog_id => $blog_id ) : () ),
                     },
                     {   unique => 1,
                         join   => MT->model( $prop->category_class )->join_on(
                             undef,
-                            {   label   => $query,
-                                id      => \'= placement_category_id',
-                                blog_id => $blog_id,
+                            {   label => $query,
+                                id    => \'= placement_category_id',
+                                ( $blog_id ? ( blog_id => $blog_id ) : () ),
                             },
                             { unique => 1, }
                         ),
@@ -538,6 +554,12 @@ sub list_props {
         modified_on => {
             base  => '__virtual.modified_on',
             order => 700,
+        },
+        unpublished_on => {
+            auto    => 1,
+            display => 'optional',
+            label   => 'Unpublish Date',
+            order   => 750,
         },
         comment_count => {
             auto         => 1,
@@ -603,11 +625,30 @@ sub list_props {
             col_class             => 'icon',
             base                  => '__virtual.single_select',
             single_select_options => [
-                { label => MT->translate('Draft'),     value => 1, },
-                { label => MT->translate('Published'), value => 2, },
-                { label => MT->translate('Reviewing'), value => 3, },
-                { label => MT->translate('Scheduled'), value => 4, },
-                { label => MT->translate('Junk'),      value => 5, },
+                {   label => MT->translate('Draft'),
+                    text  => 'Draft',
+                    value => 1,
+                },
+                {   label => MT->translate('Published'),
+                    text  => 'Publish',
+                    value => 2,
+                },
+                {   label => MT->translate('Reviewing'),
+                    text  => 'Review',
+                    value => 3,
+                },
+                {   label => MT->translate('Scheduled'),
+                    text  => 'Future',
+                    value => 4,
+                },
+                {   label => MT->translate('Junk'),
+                    text  => 'Spam',
+                    value => 5,
+                },
+                {   label => MT->translate('Unpublished (End)'),
+                    text  => 'Unpublish',
+                    value => 6,
+                },
             ],
         },
         created_on => {
@@ -733,36 +774,50 @@ sub list_props {
                 }
             },
         },
-        current_context => {
-            base      => '__common.current_context',
-            condition => sub {0},
+        current_context => { base => '__common.current_context', },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw(title text text_more keywords excerpt basename)],
+            display => 'none',
         },
     };
 }
 
 sub system_filters {
     return {
+        current_website => {
+            label => 'Entries in This Website',
+            items => [ { type => 'current_context' } ],
+            order => 50,
+            view  => 'website',
+        },
         published => {
             label => 'Published Entries',
             items => [ { type => 'status', args => { value => '2' }, }, ],
             order => 100,
         },
         draft => {
-            label => 'Unpublished Entries',
+            label => 'Draft Entries',
             items => [ { type => 'status', args => { value => '1' }, }, ],
             order => 200,
+        },
+        unpublished => {
+            label => 'Unpublished Entries',
+            items => [ { type => 'status', args => { value => '6' }, }, ],
+            order => 300,
         },
         future => {
             label => 'Scheduled Entries',
             items => [ { type => 'status', args => { value => '4' }, }, ],
             order => 500,
         },
-        my_posts => {
+        my_posts_on_this_context => {
             label => 'My Entries',
             items => sub {
-                [ { type => 'current_user' } ],;
+                [ { type => 'current_user' }, { type => 'current_context' } ]
+                ,;
             },
-            order => 1000,
+            order => 500,
         },
         commented_in_last_7_days => {
             label => 'Entries with Comments Within the Last 7 Days',
@@ -807,22 +862,25 @@ sub status {
 
 sub status_text {
     my $s = $_[0];
-          $s == HOLD    ? "Draft"
-        : $s == RELEASE ? "Publish"
-        : $s == REVIEW  ? "Review"
-        : $s == FUTURE  ? "Future"
-        : $s == JUNK    ? "Spam"
-        :                 '';
+          $s == HOLD      ? "Draft"
+        : $s == RELEASE   ? "Publish"
+        : $s == REVIEW    ? "Review"
+        : $s == FUTURE    ? "Future"
+        : $s == JUNK      ? "Spam"
+        : $s == UNPUBLISH ? "Unpublish"
+        :                   '';
 }
 
 sub status_int {
     my $s = lc $_[0];    ## Lower-case it so that it's case-insensitive
-          $s eq 'draft'   ? HOLD
-        : $s eq 'publish' ? RELEASE
-        : $s eq 'review'  ? REVIEW
-        : $s eq 'future'  ? FUTURE
-        : $s eq 'junk'    ? JUNK
-        :                   undef;
+          $s eq 'draft'     ? HOLD
+        : $s eq 'publish'   ? RELEASE
+        : $s eq 'review'    ? REVIEW
+        : $s eq 'future'    ? FUTURE
+        : $s eq 'junk'      ? JUNK
+        : $s eq 'spam'      ? JUNK
+        : $s eq 'unpublish' ? UNPUBLISH
+        :                     undef;
 }
 
 sub authored_on_obj {
@@ -1243,7 +1301,7 @@ sub pinged_url_list {
             delete $urls{$_} if $exclude_successes;
         }
     }
-    [ keys %urls ];
+    [ sort keys %urls ];
 }
 
 sub to_ping_url_list {

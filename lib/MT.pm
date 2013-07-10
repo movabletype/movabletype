@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '5.2', '5.0036' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.0', '6.0007' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '5.2.7',              '__PRODUCT_VERSION_ID__',
+        '6.0',                '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 7;
+        $RELEASE_NUMBER = 0;
     }
 
     $DebugMode = 0;
@@ -2599,11 +2599,15 @@ sub new_ua {
     }
 
     my $ua = $lwp_class->new;
+    eval "require Mozilla::CA;";
+    $ua->ssl_opts( verify_hostname => 0 )
+        if $@;   # Should not verify hostname if Mozilla::CA was not installed
     $ua->max_size($max_size) if ( defined $max_size ) && $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
     eval { require HTML::HeadParser; };
     $ua->parse_head(0) if $@;
+
     if ( defined $proxy ) {
         $ua->proxy( http => $proxy );
         my @domains = split( /,\s*/, $no_proxy ) if $no_proxy;
@@ -2853,6 +2857,7 @@ sub core_commenter_authenticators {
             order             => 16,
         },
         'TypeKey' => {
+            disable           => 1,
             class             => 'MT::Auth::TypeKey',
             label             => 'TypePad',
             login_form        => 'comment/auth_typepad.tmpl',

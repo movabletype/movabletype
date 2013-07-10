@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Website;
@@ -64,6 +64,26 @@ sub edit {
                 $param->{cc_license_url}
                     = MT::Util::cc_url( $obj->cc_license );
             }
+            if (   $obj->column('archive_path')
+                || $obj->column('archive_url') )
+            {
+                $param->{enable_archive_paths} = 1;
+                $param->{archive_url}          = $obj->archive_url;
+                my @raw_archive_url = $obj->raw_archive_url;
+                if ( 2 == @raw_archive_url ) {
+                    my $subdomain = $raw_archive_url[0];
+                    $subdomain =~ s/\.$//;
+                    $param->{archive_url_subdomain} = $subdomain;
+                    $param->{archive_url_path}      = $raw_archive_url[1];
+                }
+                $param->{archive_path} = $obj->column('archive_path');
+                $param->{archive_path_absolute}
+                    = $obj->is_archive_path_absolute;
+            }
+            else {
+                $param->{archive_path} = '';
+                $param->{archive_url}  = '';
+            }
             $param->{'use_revision'} = ( $obj->use_revision || 0 );
             require MT::PublishOption;
             if ($app->model('template')->exist(
@@ -81,7 +101,7 @@ sub edit {
                 $param->{dynamic_enabled} = 1;
                 $param->{warning_include} = 1
                     unless $blog->include_system eq 'php'
-                        || $blog->include_system eq '';
+                    || $blog->include_system eq '';
             }
             eval "require List::Util; require Scalar::Util;";
             unless ($@) {
@@ -290,6 +310,25 @@ sub edit {
         $param->{screen_class} = "settings-screen";
     }
     $param->{is_website} = 1;
+
+    if ($blog) {
+        $param->{website_path}
+            = File::Spec->catfile( $blog->column('site_path'), '' )
+            if $blog->column('site_path');
+        $param->{website_url} = $blog->site_url;
+    }
+    if ( exists $param->{website_path} ) {
+        my $sep = MT::Util::dir_separator;
+        $param->{website_path} = $param->{website_path} . $sep
+            if $param->{website_path} !~ m/$sep$/;
+    }
+    if ( exists $param->{website_url} ) {
+        my $website_url = $param->{website_url};
+        my ( $scheme, $domain ) = $website_url =~ m!^(\w+)://(.+)$!;
+        $domain .= '/' if $domain !~ m!/$!;
+        $param->{website_scheme} = $scheme;
+        $param->{website_domain} = $domain;
+    }
 
     1;
 }

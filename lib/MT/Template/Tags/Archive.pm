@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::Template::Tags::Archive;
@@ -55,9 +55,18 @@ sub _hdlr_archive_set {
     my $tokens  = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
     my $old_at  = $blog->archive_type_preferred();
+    my $i       = 1;
+    my $vars    = $ctx->{__stash}{vars} ||= {};
+
     foreach my $type (@at) {
         $blog->archive_type_preferred($type);
         local $ctx->{current_archive_type} = $type;
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $i == scalar @at;
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
+        local $vars->{__counter__} = $i;
+        $i++;
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $out;
@@ -579,15 +588,22 @@ sub _hdlr_index_list {
     my ( $ctx, $args, $cond ) = @_;
     my $tokens  = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
-    my $iter    = MT::Template->load_iter(
+    my @tmpls   = MT::Template->load(
         {   type    => 'index',
             blog_id => $ctx->stash('blog_id')
         },
         { 'sort' => 'name' }
     );
     my $res = '';
-    while ( my $tmpl = $iter->() ) {
+    for (my $ix = 1; $ix <= scalar @tmpls; $ix++) {
+        my $tmpl = $tmpls[$ix - 1];
+        my $vars = $ctx->{__stash}{vars} ||= {};
         local $ctx->{__stash}{'index'} = $tmpl;
+        local $vars->{__first__}   = $ix == 1;
+        local $vars->{__last__}    = $ix == scalar @tmpls;
+        local $vars->{__odd__}     = ( $ix % 2 ) == 1;
+        local $vars->{__even__}    = ( $ix % 2 ) == 0;
+        local $vars->{__counter__} = $ix;
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $out;

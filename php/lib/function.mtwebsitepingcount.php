@@ -1,12 +1,12 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
 function smarty_function_mtwebsitepingcount($args, &$ctx) {
-    require_once('function.mtblogpingcount.php');
-    return smarty_function_mtblogpingcount($args, $ctx);
+    $count = $ctx->mt->db()->blog_ping_count($args);
+    return $ctx->count_format($count, $args);
 }
 ?>

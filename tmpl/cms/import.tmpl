@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><__trans phrase="Import Blog Entries"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Import [_1] Entries" params="<mt:var name="scope_label">"></mt:setvarblock>
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="import" value="1">
 
@@ -108,7 +108,9 @@ function selectBlog() {
 
     <mtapp:setting
        id="convert_breaks"
-       label="<__trans phrase="Text Formatting">">
+       label="<__trans phrase="Text Formatting">"
+       show_hint="1"
+       hint="<__trans phrase="Apply if text format is not set to entry.">">
       <select name="convert_breaks" id="convert_breaks">
       <mt:loop name="text_filters">
         <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>

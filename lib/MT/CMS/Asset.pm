@@ -1,13 +1,13 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Asset;
 
 use strict;
 use Symbol;
-use MT::Util qw( epoch2ts encode_url format_ts relative_date );
+use MT::Util qw( epoch2ts encode_url format_ts relative_date perl_sha1_digest_hex);
 
 sub edit {
     my $cb = shift;
@@ -1121,6 +1121,9 @@ sub _set_start_upload_params {
     $require_type =~ s/\W//g;
     $param->{require_type} = $require_type;
 
+    $param->{auto_rename_if_exists} = 0;
+    $param->{normalize_orientation} = 0;
+
     $param;
 }
 
@@ -1129,6 +1132,19 @@ sub _upload_file {
     my (%upload_param) = @_;
     require MT::Image;
 
+    my $app_id = $app->id;
+    my $eh = $upload_param{error_handler} || sub {
+        start_upload(@_);
+    };
+    my $exists_handler = $upload_param{exists_handler} || sub {
+        my ( $app, %param ) = @_;
+        return $app->load_tmpl(
+            $app->param('dialog')
+            ? 'dialog/asset_replace.tmpl'
+            : 'asset_replace.tmpl',
+            \%param
+        );
+    };
     my $q = $app->param;
     my ( $fh, $info ) = $app->upload_info('file');
     my $mimetype;
@@ -1145,14 +1161,14 @@ sub _upload_file {
         extra_path   => scalar( $q->param('extra_path') ),
         upload_mode  => $app->mode,
     );
-    return start_upload( $app, %param,
+    return $eh->( $app, %param,
         error => $app->translate("Please select a file to upload.") )
         if !$fh && !$has_overwrite;
     my $basename = $q->param('file') || $q->param('fname');
     $basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
     $basename =~ s!^.*/!!;    ## Get rid of full directory paths
     if ( $basename =~ m!\.\.|\0|\|! ) {
-        return start_upload( $app, %param,
+        return $eh->( $app, %param,
             error => $app->translate( "Invalid filename '[_1]'", $basename )
         );
     }
@@ -1183,7 +1199,7 @@ sub _upload_file {
         );
 
         if ( my $settings = $settings_for{$asset_type} ) {
-            return start_upload( $app, %param, error => $settings->{error} )
+            return $eh->( $app, %param, error => $settings->{error} )
                 if !$asset_pkg->isa( $settings->{class} );
         }
     }
@@ -1244,7 +1260,11 @@ sub _upload_file {
             @$path_info{qw(rootPath relativePath basename)}
                 = ( $root_path, $relative_path, $basename );
 
-            $app->run_callbacks( 'cms_asset_upload_path',
+            if ( $q->param('auto_rename_if_exists') ) {
+                _rename_if_exists($app, $fmgr, $path_info);
+            }
+
+            $app->run_callbacks( $app_id . '_asset_upload_path',
                 $app, $fmgr, $path_info );
 
             ( $root_path, $relative_path, $basename )
@@ -1254,7 +1274,7 @@ sub _upload_file {
         my $path = $root_path;
         if ($relative_path) {
             if ( $relative_path =~ m!\.\.|\0|\|! ) {
-                return start_upload(
+                return $eh->(
                     $app, %param,
                     error => $app->translate(
                         "Invalid extra path '[_1]'",
@@ -1269,7 +1289,7 @@ sub _upload_file {
             ## determines the permissions of the new directories.
             unless ( $fmgr->exists($path) ) {
                 $fmgr->mkpath($path)
-                    or return start_upload(
+                    or return $eh->(
                     $app, %param,
                     error => $app->translate(
                         "Cannot make path '[_1]': [_2]", $path,
@@ -1330,7 +1350,7 @@ sub _upload_file {
                             )
                             );
                     }
-                    return start_upload($app);
+                    return $eh->($app);
                 }
             }
             else {
@@ -1379,22 +1399,18 @@ sub _upload_file {
                     = $app->translate( "Extension changed from [_1] to [_2]",
                     $ext_from, $ext_to )
                     if ( $ext_from && $ext_to );
-                my $dialog = $app->param('dialog') ? 1 : 0;
-                return $app->load_tmpl(
-                    $dialog
-                    ? 'dialog/asset_replace.tmpl'
-                    : 'asset_replace.tmpl',
-                    {   temp              => $tmp,
-                        extra_path        => $relative_path_save,
-                        site_path         => scalar $q->param('site_path'),
-                        asset_select      => $q->param('asset_select'),
-                        entry_insert      => $q->param('entry_insert'),
-                        edit_field        => $app->param('edit_field'),
-                        middle_path       => $middle_path,
-                        fname             => $basename,
-                        no_insert         => $q->param('no_insert') || "",
-                        extension_message => $extension_message,
-                    }
+                return $exists_handler->(
+                    $app,
+                    temp              => $tmp,
+                    extra_path        => $relative_path_save,
+                    site_path         => scalar $q->param('site_path'),
+                    asset_select      => scalar $q->param('asset_select'),
+                    entry_insert      => scalar $q->param('entry_insert'),
+                    edit_field        => scalar $app->param('edit_field'),
+                    middle_path       => $middle_path,
+                    fname             => $basename,
+                    no_insert         => $q->param('no_insert') || "",
+                    extension_message => $extension_message,
                 );
             }
         }
@@ -1589,19 +1605,24 @@ sub _upload_file {
     if ($is_image) {
         $asset->image_width($w);
         $asset->image_height($h);
+
+        if ( $q->param('normalize_orientation') ) {
+            $asset->normalize_orientation;
+        }
     }
 
     $asset->mime_type($mimetype) if $mimetype;
-    $app->run_callbacks( 'cms_pre_save.asset', $app, $asset, $original )
+    $app->run_callbacks( $app_id . '_pre_save.asset', $app, $asset, $original )
         || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
         $app->errstr );
 
     $asset->save;
-    $app->run_callbacks( 'cms_post_save.asset', $app, $asset, $original );
+    $app->run_callbacks( $app_id . '_post_save.asset',
+        $app, $asset, $original );
 
     if ($is_image) {
         $app->run_callbacks(
-            'cms_upload_file.' . $asset->class,
+            $app_id . '_upload_file.' . $asset->class,
             File  => $local_file,
             file  => $local_file,
             Url   => $url,
@@ -1616,7 +1637,7 @@ sub _upload_file {
             blog  => $blog
         );
         $app->run_callbacks(
-            'cms_upload_image',
+            $app_id . '_upload_image',
             File       => $local_file,
             file       => $local_file,
             Url        => $url,
@@ -1639,7 +1660,7 @@ sub _upload_file {
     }
     else {
         $app->run_callbacks(
-            'cms_upload_file.' . $asset->class,
+            $app_id . '_upload_file.' . $asset->class,
             File  => $local_file,
             file  => $local_file,
             Url   => $url,
@@ -1663,6 +1684,27 @@ sub _is_valid_tempfile_basename {
     $filename
         && File::Basename::basename($filename) eq $filename
         && $filename !~ m!^\.\.|\0|\|!;
+}
+
+sub _rename_if_exists {
+    my ( $app, $fmgr, $path_info ) = @_;
+
+    my $local_file = File::Spec->catfile(
+        @$path_info{qw(rootPath relativePath basename)} );
+    if ( $fmgr->exists($local_file) ) {
+        my $ext = (
+            File::Basename::fileparse(
+                $path_info->{basename},
+                qr/\.[A-Za-z0-9]+$/
+            )
+        )[2];
+
+        $path_info->{basename} = perl_sha1_digest_hex(
+            join( '-',
+                epoch2ts( $app->blog, time ), $app->remote_ip,
+                $path_info->{basename} )
+        ) . $ext;
+    }
 }
 
 sub _write_upload {

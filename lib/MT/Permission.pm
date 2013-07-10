@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -54,6 +54,10 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Permissions");
+}
+
+sub list_props {
+    return { blog_id => { base => '__virtual.id', }, };
 }
 
 sub user {
@@ -501,8 +505,13 @@ sub can_edit_entry {
             or return;
     }
 
-    $perms = $author->permissions( $entry->blog_id )
-        or return;
+    if (   !ref $perms
+        || $perms->author_id != $author->id
+        || $perms->blog_id != $entry->blog_id )
+    {
+        $perms = $author->permissions( $entry->blog_id )
+            or return;
+    }
 
     return $perms->can_manage_pages
         unless $entry->is_entry;

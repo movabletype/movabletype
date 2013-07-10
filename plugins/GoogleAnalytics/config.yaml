@@ -1,0 +1,33 @@
+id: GoogleAnalytics
+name: GoogleAnalytics
+version: 1.0
+author_link: http://www.movabletype.org/
+author_name: Six Apart, Ltd.
+description: <MT_TRANS phrase="Site statistics plugin using Google Analytics.">
+l10n_class: GoogleAnalytics::L10N
+
+settings:
+    client_id:
+    client_secret:
+    profile_name:
+    profile_web_property_id:
+    profile_id:
+    token_data:
+
+applications:
+    cms:
+        methods:
+            ga_oauth2callback: $GoogleAnalytics::GoogleAnalytics::App::oauth2callback
+            ga_select_profile: $GoogleAnalytics::GoogleAnalytics::App::select_profile
+            ga_select_profile_complete: $GoogleAnalytics::GoogleAnalytics::App::select_profile_complete
+        callbacks:
+            cms_pre_save.blog: $GoogleAnalytics::GoogleAnalytics::App::pre_save_blog
+
+web_services:
+    GoogleAnalytics:
+        config_template:
+            code: $GoogleAnalytics::GoogleAnalytics::App::config_tmpl
+
+stats_providers:
+    GoogleAnalytics:
+        provider: GoogleAnalytics::Provider

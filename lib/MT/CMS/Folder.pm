@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Folder;
@@ -31,13 +31,15 @@ sub can_save {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    unless ( ref $obj ) {
+    if ( $obj && !ref $obj ) {
         $obj = MT->model('folder')->load($obj)
             or return;
     }
-    return unless $obj->isa('MT::Folder');
+    if ($obj) {
+        return unless $obj->isa('MT::Folder');
+    }
 
-    my $blog_id = $obj->blog_id;
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)->can_do('save_folder');
 }
 
@@ -46,14 +48,15 @@ sub can_delete {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    unless ( ref $obj ) {
+    if ( $obj && !ref $obj ) {
         $obj = MT->model('folder')->load($obj)
             or return;
     }
+    if ($obj) {
+        return unless $obj->isa('MT::Folder');
+    }
 
-    return unless $obj->isa('MT::Folder');
-
-    my $blog_id = $obj->blog_id;
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)->can_do('delete_folder');
 }
 

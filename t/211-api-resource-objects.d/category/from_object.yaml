@@ -1,0 +1,36 @@
+- 
+  note: A toplevel category
+  from: 
+    id: 1
+    blog_id: 1
+    label: Test
+    description: Description
+    parent: 0
+    basename: a-basename
+  to: 
+    blog:
+      id: 1
+    id: 1
+    class: category
+    label: Test
+    description: Description
+    parent: 0
+    basename: a-basename
+- 
+  note: A sub category
+  from: 
+    id: 1
+    blog_id: 1
+    label: Test
+    description: Description
+    parent: 1
+    basename: a-basename
+  to: 
+    blog:
+      id: 1
+    id: 1
+    class: category
+    label: Test
+    description: Description
+    parent: 1
+    basename: a-basename

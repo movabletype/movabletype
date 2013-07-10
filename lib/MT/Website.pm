@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -12,8 +12,9 @@ use base qw( MT::Blog );
 __PACKAGE__->install_properties(
     {   class_type    => 'website',
         child_classes => [
-            'MT::Page',         'MT::Template',
-            'MT::Asset',        'MT::Folder',
+            'MT::Entry',        'MT::Page',
+            'MT::Template',     'MT::Asset',
+            'MT::Category',     'MT::Folder',
             'MT::Notification', 'MT::Log',
             'MT::ObjectTag',    'MT::Association',
             'MT::Comment',      'MT::TBPing',
@@ -61,33 +62,40 @@ sub list_props {
             },
         },
         page_count => {
-            base      => 'blog.page_count',
-            display   => 'default',
-            html_link => sub {
+            base => 'blog.page_count',
+            html => sub {
                 my $prop = shift;
-                my ( $obj, $app ) = @_;
-                my $link = $prop->super(@_);
-                $link . '&filter=current_context';
+                my $html = $prop->super(@_);
+                $html =~ s/"(.+)"/"$1&filter=current_context"/;
+                return $html;
             },
         },
         description => { base => 'blog.description' },
-        entry_count => { view => [] },
-        asset_count => {
-            base      => 'blog.asset_count',
-            html_link => sub {
+        entry_count => {
+            base => 'blog.entry_count',
+            html => sub {
                 my $prop = shift;
-                my ( $obj, $app ) = @_;
-                my $link = $prop->super(@_);
-                $link . '&filter=current_context';
+                my $html = $prop->super(@_);
+                $html =~ s/"(.+)"/"$1&filter=current_context"/;
+                return $html;
+            },
+        },
+        asset_count => {
+            base => 'blog.asset_count',
+            html => sub {
+                my $prop = shift;
+                my $html = $prop->super(@_);
+                $html =~ s/"(.+)"/"$1&filter=current_context"/;
+                return $html;
             },
         },
         comment_count => {
-            base      => 'blog.comment_count',
-            html_link => sub {
+            base => 'blog.comment_count',
+            html => sub {
                 my $prop = shift;
-                my ( $obj, $app ) = @_;
-                my $link = $prop->super(@_);
-                $link . '&filter=current_context';
+                my $html = $prop->super(@_);
+                $html =~ s/"(.+)"/"$1&filter=current_context"/;
+                return $html;
             },
         },
 
@@ -108,12 +116,16 @@ sub list_props {
                 require MT::Theme;
                 my $themes = MT::Theme->load_all_themes;
                 return [
-                    map { { label => $_->label, value => $_->id } }
-                        sort { $a->label cmp $b->label }
-                        grep {
-                               $_->{class} eq 'website'
-                            || $_->{class} eq 'both'
-                        } values %$themes
+                    map { { label => $_->label, value => $_->id } } (
+                        (   sort     { $a->label cmp $b->label }
+                                grep { $_->{class} eq 'website' }
+                                values %$themes
+                        ),
+                        (   sort     { $a->label cmp $b->label }
+                                grep { $_->{class} ne 'website' }
+                                values %$themes
+                        )
+                    )
                 ];
             },
         },

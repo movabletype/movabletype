@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -1943,9 +1943,15 @@ sub publish_future_posts {
         foreach my $entry_id (@queue) {
             my $entry = MT::Entry->load($entry_id)
                 or next;
+            my $original = $entry->clone();
             $entry->status( MT::Entry::RELEASE() );
+            my @ts = MT::Util::offset_time_list( time, $entry->blog_id );
+            my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+                $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            $entry->modified_on($ts);
             $entry->save
                 or die $entry->errstr;
+            $this->post_scheduled( $entry, $original, MT->translate('Scheduled publishing.') );
 
             MT->run_callbacks( 'scheduled_post_published', $mt, $entry );
 
@@ -1997,6 +2003,121 @@ sub publish_future_posts {
                     my $e = $rebuild_queue{$id};
                     next unless $e;
                     $e->status( MT::Entry::FUTURE() );
+                    $e->save or die $e->errstr;
+                }
+            }
+        }
+    }
+    $total_changed > 0 ? 1 : 0;
+}
+
+sub unpublish_past_entries {
+    my $app = shift;
+
+    require MT::Blog;
+    require MT::Entry;
+    require MT::Util;
+    my $mt            = MT->instance;
+    my $total_changed = 0;
+    my @sites         = MT->model('website')->load();
+    my @blogs         = MT->model('blog')->load();
+    push @sites, @blogs;
+    foreach my $site (@sites) {
+        my @ts = MT::Util::offset_time_list( time, $site );
+        my $now = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900,
+            $ts[4] + 1,
+            @ts[ 3, 2, 1, 0 ];
+        my $iter = MT::Entry->load_iter(
+            {   blog_id        => $site->id,
+                status         => MT::Entry::RELEASE(),
+                unpublished_on => [ undef, $now ],
+                class          => '*',
+            },
+            {   range     => { unpublished_on => 1 },
+                'sort'    => 'unpublished_on',
+                direction => 'descend',
+            }
+        );
+        my @queue;
+        while ( my $entry = $iter->() ) {
+            push @queue, $entry->id;
+        }
+
+        my $changed = 0;
+        my @results;
+        my %rebuild_queue;
+        foreach my $entry_id (@queue) {
+            my $entry = MT::Entry->load($entry_id)
+                or next;
+            my $original = $entry->clone();
+
+            $entry->status( MT::Entry::UNPUBLISH() );
+            my @ts = MT::Util::offset_time_list( time, $entry->blog_id );
+            my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+                $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            $entry->modified_on($ts);
+            $entry->save
+                or die $entry->errstr;
+            $app->post_scheduled( $entry, $original );
+
+            # remove file
+            if ( $mt->config('DeleteFilesAtRebuild') ) {
+                my $archive_type = $entry->is_entry ? 'Individual' : 'Page';
+                my $primary_category = $entry->category;
+                $app->remove_entry_archive_file(
+                    Entry       => $entry,
+                    ArchiveType => $archive_type,
+                    Category    => $primary_category,
+                    Force       => 0,
+                );
+            }
+
+            MT->run_callbacks( 'unpublish_past_entries', $mt, $entry );
+
+            $rebuild_queue{ $entry->id } = $entry;
+            my $n = $entry->next(1);
+            $rebuild_queue{ $n->id } = $n if $n;
+            my $p = $entry->previous(1);
+            $rebuild_queue{ $p->id } = $p if $p;
+            $changed++;
+            $total_changed++;
+        }
+        if ($changed) {
+            my %rebuilt_okay;
+            my $rebuilt;
+            eval {
+                foreach my $id ( keys %rebuild_queue )
+                {
+                    my $entry = $rebuild_queue{$id};
+                    $mt->rebuild_entry( Entry => $entry, Blog => $site )
+                        or die $mt->errstr;
+                    $rebuilt_okay{$id} = 1;
+                    $rebuilt++;
+                }
+                $mt->rebuild_indexes( Blog => $site )
+                    or die $mt->errstr;
+            };
+            if ( my $err = $@ ) {
+
+                # a fatal error occured while processing the rebuild
+                # step. LOG the error and revert the entry/entries:
+                require MT::Log;
+                $mt->log(
+                    {   message => $mt->translate(
+                            "An error occurred while unpublishing past entries: [_1]",
+                            $err
+                        ),
+                        class    => "unpublish",
+                        category => 'rebuild',
+                        blog_id  => $site->id,
+                        level    => MT::Log::ERROR()
+                    }
+                );
+                foreach my $id (@queue) {
+                    next if exists $rebuilt_okay{$id};
+                    my $e = $rebuild_queue{$id};
+                    next unless $e;
+                    $e->status( MT::Entry::RELEASE() );
                     $e->save or die $e->errstr;
                 }
             }
@@ -2284,6 +2405,35 @@ sub queue_build_file_filter {
     MT::TheSchwartz->insert($job);
 
     return 0;
+}
+
+sub post_scheduled {
+    my $app = shift;
+    my ( $obj, $orig, $msg ) = @_;
+
+    $obj->gather_changed_cols( $orig, $app );
+
+    if ( exists $obj->{changed_revisioned_cols} ) {
+        my $col = 'max_revisions_' . $obj->datasource;
+        if ( my $blog = $obj->blog ) {
+            my $max = $blog->$col;
+            $obj->handle_max_revisions($max);
+        }
+        my $revision = $obj->save_revision($msg);
+        $obj->current_revision($revision);
+
+        # call update to bypass instance save method
+        $obj->update or return $obj->error( $obj->errstr );
+        if ( $obj->has_meta('revision') ) {
+            $obj->revision($revision);
+
+            # hack to bypass instance save method
+            $obj->{__meta}->set_primary_keys($obj);
+            $obj->{__meta}->save;
+        }
+    }
+
+    return 1;
 }
 
 1;

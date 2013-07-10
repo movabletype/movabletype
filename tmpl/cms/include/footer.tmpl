@@ -67,7 +67,7 @@ jQuery(function() {
     jQuery.mtSelector();
     jQuery('a.mt-open-dialog').mtDialog();
     jQuery('a.mt-rebuild').mtRebuild(<mt:if name="blog_id">{blog_id: '<$mt:var name="blog_id"$>'}</mt:if>);
-    jQuery('.mt-close-msg').live('click', function() {
+    jQuery('#main').on('click','.mt-close-msg',function(){
         jQuery(this).parents('div.msg').remove();
     });
     jQuery('input.mt-edit-field').mtEditInput({
@@ -103,6 +103,11 @@ jQuery(function() {
         jQuery(this).addClass(jQuery(this).attr('type'));
     });
     jQuery('#quick-search').mtPlaceholder();
+
+    jQuery("#notification_dashboard li span.detail").css("display","none");
+    jQuery('#notification_dashboard li').click(function() {
+        jQuery(this).find("span.detail").toggle("fast");
+    });
 });
 /* ]]> */
 </script>

@@ -1,0 +1,114 @@
+<mt:unless name="no_permission">
+<mtapp:widget
+  class="site-stats-widget"
+  label="<__trans phrase="Site Stats">"
+  can_close="1">
+<div id="widget-container">
+  <div class="right-column">
+    <div class="right-column-contents">
+      <div id="graph"></div>
+    </div>
+  </div>
+  <div class="left-column">
+    <div class="stats-for">
+      <__trans phrase="Stats for [_1]", params="<mt:if name="object_loop"><select id="select_blog_id"><mt:loop name="object_loop"><option value="<mt:var name="id">"><mt:var name="name"></option></mt:loop></select><mt:else><mt:var name="name"></mt:if>">
+    </div>
+    <ul id="pv-counter" style="display: none; list-style-type: none;">
+      <li><span class="count-title"><__trans phrase="Today:"> </span><span class="count-body" id="count-today"></span></li>
+      <li><span class="count-title"><__trans phrase="Yesterday:"> </span><span class="count-body" id="count-yesterday"></span></li>
+    </ul>
+  </div>
+  <div class="clear"></div>
+</div>
+</mtapp:widget>
+
+<mt:setvarblock name="html_head" append="1">
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>chart-api/mtchart.css">
+<script src="<$mt:var name="static_uri"$>chart-api/mtchart.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+  jQuery(function() {
+    jQuery('select#select_blog_id').change( function() {
+      jQuery('#msg_not_configured').remove();
+      jQuery('#graph').empty();
+      jQuery('#pv-counter').hide();
+      jQuery('#count-today').text('');
+      jQuery('#count-yesterday').text('');
+      jQuery('#count-diff').text('');
+      var select_blog_id = jQuery('select#select_blog_id').val();
+      jQuery.ajax({
+        type: 'POST',
+        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+        async: true,
+        url: '<mt:var name="script_url">',
+        dataType: 'json',
+        data: {
+          __mode: 'regenerate_site_stats_data',
+          blog_id: select_blog_id,
+          magic_token: '<mt:var name="magic_token">',
+        },
+        success: function(data) {
+          draw_graph(data.result.stat_url, data.result.not_configured);
+        },
+        error: function(data) {
+        }
+      });
+    });
+
+    draw_graph('<mt:var name="stat_url">', <mt:var name="not_configured" default="0">);
+
+    function draw_graph(stat_url, not_configured) {
+      var ylength = not_configured ? 1 : 2;
+      jQuery.getJSON(stat_url, function(data) {
+        var hover_data = data.hover_data.data;
+        var rate = data.hover_data.rate;
+        var config = {
+          type: 'morris.line',
+          yLength: ylength,
+          autoResize: true,
+          height: 200,
+          lineWidth: 3,
+          pointSize: 3,
+          data: data.graph_data,
+          hoverCallback: function (index, options, content) {
+            var row   = options.data[index];
+            var count = hover_data[index].count;
+            if (not_configured) {
+              return '<div class="morris-hover-row-label">' + row.x + '</div><div class="morris-hover-point" style="color: #6AAC2B;">Entry: ' + count + '</div>';
+            } else {
+              var pv    = hover_data[index].pv;
+              return '<div class="morris-hover-row-label">' + row.x + '</div><div class="morris-hover-point" style="color: #6AAC2B;">PV: ' + pv + '</div><div class="morris-hover-point" style="color: #FFBE00;">Entry: ' + count + '</div>';
+            }
+          },
+          yLabelFormat: function (y) {
+              return '';
+          }
+        }
+        var range = {
+          unit: 'daily',
+          length: 10
+        }
+        new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
+        var todays_count     = hover_data[9].pv;
+        var yesterdays_count = hover_data[8].pv;
+        var diff = todays_count - yesterdays_count;
+        var mark = diff > 0 ? '+' : '';
+        if ( !not_configured ) {
+          jQuery('#count-today').text(trans('[_1] PV ([_2][_3])', addComma(todays_count), mark, addComma(diff)));
+          jQuery('#count-yesterday').text(trans('[_1] PV', addComma(yesterdays_count)));
+          jQuery('#pv-counter').show();
+        }
+      });
+    }
+
+    function addComma (str) {
+      var num = new String(str).replace(/,/g, "");
+      while(num != (num = num.replace(/^(-?\d+)(\d{3})/, "$1,$2")));
+      return num;
+    }
+
+  });
+  /* ]]> */
+</script>
+</mt:setvarblock>
+</mt:unless>

@@ -280,9 +280,9 @@ jQuery(function() {
         index = 0;
     }
     jQuery('#search-tabs').tabs({
-        selected: index,
-        select: function(event, ui) {
-            var type = ui.tab.href.replace(/^.*#/, '');
+        active: index,
+        beforeActivate: function(event, ui) {
+            var type = ui.newTab.attr('aria-controls');
             reSearch(type);
             return false;
         }

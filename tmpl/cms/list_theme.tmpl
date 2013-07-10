@@ -196,6 +196,7 @@
 <mt:include name="include/header.tmpl">
 
 <mt:if name="blog_id">
+  <mt:if name="is_blog">
 <div id="current-theme-group" class="theme-group">
   <h2 class="theme-group-name"><__trans phrase="Current Theme"></h2>
   <div class="theme-list">
@@ -208,6 +209,26 @@
     <mt:setvar name="loop_for" value="theme_loop" /><mt:var name="theme_loop_tmpl">
   </div>
 </div>
+  <mt:else>
+<div id="current-theme-group" class="theme-group">
+  <h2 class="theme-group-name"><__trans phrase="Current Theme"></h2>
+  <div class="theme-list">
+    <mt:setvar name="loop_for" value="current_theme_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
+</div>
+<div id="website-theme-group" class="theme-group">
+  <h2 class="theme-group-name"><__trans phrase="Available Themes for Websites"></h2>
+  <div class="theme-list">
+    <mt:setvar name="loop_for" value="website_theme_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
+</div>
+<div id="blog-theme-group" class="theme-group">
+  <h2 class="theme-group-name"><__trans phrase="Available Themes for Blogs"></h2>
+  <div class="theme-list">
+    <mt:setvar name="loop_for" value="blog_theme_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
+</div>
+  </mt:if>
 <mt:else>
   <mt:if name="both_theme_loop">
 <div id="both-theme-group" class="theme-group">
@@ -217,19 +238,19 @@
   </div>
 </div>
   </mt:if>
-  <mt:if name="blog_theme_loop">
-<div id="blog-theme-group" class="theme-group">
-  <h2 class="theme-group-name"><__trans phrase="Themes for Blogs"></h2>
-  <div class="theme-list">
-    <mt:setvar name="loop_for" value="blog_theme_loop" /><mt:var name="theme_loop_tmpl">
-  </div>
-</div>
-  </mt:if>
   <mt:if name="website_theme_loop">
 <div id="website-theme-group" class="theme-group">
   <h2 class="theme-group-name"><__trans phrase="Themes for Websites"></h2>
   <div class="theme-list">
     <mt:setvar name="loop_for" value="website_theme_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
+</div>
+  </mt:if>
+  <mt:if name="blog_theme_loop">
+<div id="blog-theme-group" class="theme-group">
+  <h2 class="theme-group-name"><__trans phrase="Themes for Blogs"></h2>
+  <div class="theme-list">
+    <mt:setvar name="loop_for" value="blog_theme_loop" /><mt:var name="theme_loop_tmpl">
   </div>
 </div>
   </mt:if>

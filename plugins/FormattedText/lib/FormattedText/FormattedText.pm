@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2006-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2006-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -38,7 +38,7 @@ __PACKAGE__->install_properties(
             blog_c_by   => { columns => [ 'blog_id', 'created_by' ], },
         },
 
-        child_of => 'MT::Blog',
+        child_of => [ 'MT::Blog', 'MT::Website' ],
         audit    => 1,
 
         datasource  => 'formatted_text',
@@ -155,11 +155,10 @@ sub list_props {
             display => 'default',
         },
         blog_name => {
-            label     => 'Blog Name',
+            label     => 'Website/Blog Name',
             base      => '__virtual.blog_name',
             order     => 400,
             display   => 'default',
-            site_name => 0,
             view      => ['system'],
             bulk_html => sub {
                 my $prop     = shift;
@@ -287,7 +286,7 @@ sub required_fields {
 
 sub parents {
     my $obj = shift;
-    { blog_id => MT->model('blog'), };
+    { blog_id => [ MT->model('blog'), MT->model('website') ] };
 }
 
 1;

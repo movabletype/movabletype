@@ -1,7 +1,7 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -12,7 +12,7 @@ $Lexicon_ja = array(
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
 
 ## php/lib/archive_lib.php
-	'Individual' => 'ブログ記事',
+	'Individual' => '記事',
 	'Page' => 'ウェブページ',
 	'Yearly' => '年別',
 	'Monthly' => '月別',
@@ -83,9 +83,7 @@ $Lexicon_ja = array(
 	'Reply' => '返信',
 
 ## php/lib/function.mtentryclasslabel.php
-	'page' => 'ウェブページ',
-	'entry' => 'ブログ記事',
-	'Entry' => 'ブログ記事',
+	'Entry' => '記事',
 
 ## php/lib/function.mtinclude.php
 	'\'parent\' modifier cannot be used with \'[_1]\'' => '\'parent\'属性を[_1]属性と同時に指定することは出来ません。',

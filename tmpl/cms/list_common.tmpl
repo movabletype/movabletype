@@ -17,7 +17,7 @@
     <mt:setvarblock name="content_header">
     <ul id="content-actions" class="action-link-list">
     <mt:loop name="content_actions">
-      <li><a href="<mt:var name="url">" class="icon-left<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id">id=<mt:var name="id"></mt:if><mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>><mt:var name="label"></a></li>
+      <li><a href="<mt:var name="url">" class="icon-left<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id"> id="<mt:var name="id">"</mt:if><mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>><mt:var name="label"></a></li>
     </mt:loop>
     </ul>
     </mt:setvarblock>
@@ -241,9 +241,9 @@ jQuery.event.special.listReady = {
     }
 };
 
-jQuery(window).bind( 'ajaxStart', function() {
-    jQuery('#msg-block .msg-error').remove();
-  });
+jQuery(document).ajaxStart(function(){
+  jQuery('#msg-block .msg-error').remove();
+})
 
 var line = '<th class="col head cb"<mt:unless name="has_list_actions"> style="display: none;"</mt:unless>><input type="checkbox" /></th>';
 var table = jQuery('table.listing-table')[0];
@@ -584,14 +584,14 @@ function renameFilter(index, fid, name) {
       }
       renderFilterList();
     },
-    error: function(xhr, status) {
+    error: function(xhr, status, error) {
       if ( xhr.status == 401 ) {
         loginAgain(function(){
           renameFilter(index, fid, name);
         });
       }
       else {
-        alert( trans('Communication Error ([_1])', xhr.status) );
+        alert( trans('Communication Error (HTTP status code: [_1]. Message: [_2])', xhr.status, error) );
       }
     }
   });
@@ -633,14 +633,14 @@ function removeFilter(element) {
       complete: function() {
         renderFilterList();
       },
-      error: function(xhr, status) {
+      error: function(xhr, status, error) {
         if ( xhr.status == 401 ) {
           loginAgain(function(){
             removeFilter(element);
           });
         }
         else {
-          alert( trans('Communication Error ([_1])', xhr.status) );
+          alert( trans('Communication Error (HTTP status code: [_1]. Message: [_2])', xhr.status, error) );
         }
       }
     });
@@ -774,7 +774,7 @@ function saveListPrefs() {
       handleMessages(data);
       return false;
     },
-    error: function(xhr, status) {
+    error: function(xhr, status, error) {
       if ( this_request != request_id ) {
           return false;
       }
@@ -784,7 +784,7 @@ function saveListPrefs() {
         });
       }
       else {
-        alert( trans('Communication Error ([_1])', xhr.status) );
+        alert( trans('Communication Error (HTTP status code: [_1]. Message: [_2])', xhr.status, error) );
       }
     }
   });
@@ -869,7 +869,7 @@ function renderList(mode, columns, values, limit, page ) {
       }
 </mt:if>
       jQuery('table.listing-table tbody').empty();
-      jQuery('table.listing-table th :checkbox').removeAttr('checked');
+      jQuery('table.listing-table th :checkbox').prop('checked',false);
       var objs = data.result.objects;
       var count = objs.length;
       var last = data.result.page_max;
@@ -935,7 +935,7 @@ function renderList(mode, columns, values, limit, page ) {
       var $checked = jQuery('td :checked');
       $checked.parents('tr').addClass('selected');
       if ($checkboxes.length && $checkboxes.length == $checked.length) {
-        jQuery('table.listing-table th :checkbox').attr('checked', 'checked');
+        jQuery('table.listing-table th :checkbox').prop('checked', true);
         addSelectAll($checkboxes);
       }
       if (mode == 'save_filter' || mode == 'delete_filter') {
@@ -969,7 +969,7 @@ function renderList(mode, columns, values, limit, page ) {
         // Maybe this is user abort. do nothing.
       }
       else {
-        alert( trans('Communication Error ([_1])', xhr.status) );
+        alert( trans('Communication Error (HTTP status code: [_1]. Message: [_2])', xhr.status, error) );
       }
     }
   });
@@ -1034,10 +1034,10 @@ jQuery('ul#disp_cols .sub:checkbox').click(function() {
 jQuery('#reset-display-options').click(function() {
   jQuery('#disp_cols input[type=checkbox]').each(function() {
     if ( jQuery(this).is('.show-default') ) {
-      jQuery(this).attr('checked', 'checked');
+      jQuery(this).prop('checked', true);
     }
     else {
-      jQuery(this).removeAttr('checked');
+      jQuery(this).prop('checked', false);
     }
   });
   renderColumns();
@@ -1048,7 +1048,7 @@ jQuery('#reset-display-options').click(function() {
 });
 
 function toggleSubField (obj) {
-  if ( jQuery(obj).attr('checked') )
+  if ( jQuery(obj).prop('checked') )
     jQuery( '#listing-table .' + jQuery(obj).val() ).show();
   else
     jQuery( '#listing-table .' + jQuery(obj).val() ).hide();
@@ -1107,20 +1107,20 @@ jQuery('table.listing-table tbody').selectable({
   cancel: 'tr.no-action, a, .select-all, .text, .can-select, button, pre, :input:not([name=id])',
   selected: function(event, ui) {
     var $checkboxes = jQuery(ui.selected).find(':checkbox');
-    if ($checkboxes.attr('checked')) {
+    if ($checkboxes.prop('checked')) {
       jQuery(ui.selected).removeClass('selected');
-      $checkboxes.removeAttr('checked');
+      $checkboxes.prop('checked',false);
     } else {
       jQuery(ui.selected).addClass('selected');
-      $checkboxes.attr('checked', 'checked');
+      $checkboxes.prop('checked', true);
     }
     if (jQuery('table.listing-table td :checkbox').length == jQuery('table.listing-table td :checked').length) {
-      jQuery('table.listing-table th :checkbox').attr('checked', 'checked');
+      jQuery('table.listing-table th :checkbox').prop('checked', true);
       if (!jQuery('table.listing-table tr.select-all').length) {
         addSelectAll($checkboxes);
       }
     } else {
-      jQuery('table.listing-table th :checkbox').removeAttr('checked');
+      jQuery('table.listing-table th :checkbox').prop('checked', false);
       removeSelectAll($checkboxes);
     }
   }
@@ -1130,11 +1130,11 @@ jQuery('table.listing-table tbody').selectable({
 jQuery('table.listing-table th :checkbox').click(function() {
   var $checkboxes = jQuery('tr :checkbox');
   if (this.checked) {
-    $checkboxes.attr('checked', 'checked');
+    $checkboxes.prop('checked', true);
     addSelectAll($checkboxes);
     $checkboxes.parents('tr').addClass('selected');
   } else {
-    $checkboxes.removeAttr('checked');
+    $checkboxes.prop('checked', false);
     removeSelectAll($checkboxes);
     $checkboxes.parents('tr').removeClass('selected');
   }
@@ -1386,7 +1386,7 @@ jQuery('#save-filter').click(function() {
 });
 
 jQuery('#cancel-save-filter').click(function() {
-  jQuery(this).parents().dialog('close');
+  jQuery(this).parents('#dialog_save_filter').dialog('close');
 });
 
 function validateFilterName (name) {
@@ -1633,7 +1633,7 @@ jQuery('.actions-bar a.button').click(function() {
   return false;
 });
 
-jQuery('.filtertype .minus').live('click', function() {
+jQuery('#filter-detail').on('click','.filtertype .minus',function(){
   var $item = jQuery(this).parents('.filteritem');
   jQuery(this).parents('.filtertype').find('input').mtUnvalidate().end().remove();
   if ( $item.find('.filtertype').length == 1 ) {
@@ -1641,7 +1641,7 @@ jQuery('.filtertype .minus').live('click', function() {
   }
 });
 
-jQuery('.filtertype .plus').live('click', function() {
+jQuery('#filter-detail').on('click','.filtertype .plus',function(){
   var op = 'and';
   jQuery(this).parents('.filteritem').addClass(op);
   var $filtertype = jQuery(this).parents('.filtertype');

@@ -1,14 +1,16 @@
 package LWP;
 
-$VERSION = "5.834";
+$VERSION = "6.05";
 sub Version { $VERSION; }
 
-require 5.005;
+require 5.008;
 require LWP::UserAgent;  # this should load everything you need
 
 1;
 
 __END__
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -99,7 +101,7 @@ The libwww-perl library is based on HTTP style communication. This
 section tries to describe what that means.
 
 Let us start with this quote from the HTTP specification document
-<URL:http://www.w3.org/pub/WWW/Protocols/>:
+<URL:http://www.w3.org/Protocols/>:
 
 =over 3
 
@@ -152,25 +154,25 @@ The main attributes of the request objects are:
 
 =item *
 
-The B<method> is a short string that tells what kind of
+B<method> is a short string that tells what kind of
 request this is.  The most common methods are B<GET>, B<PUT>,
 B<POST> and B<HEAD>.
 
 =item *
 
-The B<uri> is a string denoting the protocol, server and
+B<uri> is a string denoting the protocol, server and
 the name of the "document" we want to access.  The B<uri> might
 also encode various other parameters.
 
 =item *
 
-The B<headers> contain additional information about the
+B<headers> contains additional information about the
 request and can also used to describe the content.  The headers
 are a set of keyword/value pairs.
 
 =item *
 
-The B<content> is an arbitrary amount of data.
+B<content> is an arbitrary amount of data.
 
 =back
 
@@ -183,22 +185,22 @@ The main attributes of objects of this class are:
 
 =item *
 
-The B<code> is a numerical value that indicates the overall
+B<code> is a numerical value that indicates the overall
 outcome of the request.
 
 =item *
 
-The B<message> is a short, human readable string that
+B<message> is a short, human readable string that
 corresponds to the I<code>.
 
 =item *
 
-The B<headers> contain additional information about the
+B<headers> contains additional information about the
 response and describe the content.
 
 =item *
 
-The B<content> is an arbitrary amount of data.
+B<content> is an arbitrary amount of data.
 
 =back
 
@@ -211,7 +213,7 @@ response classification methods are:
 
 =item is_success()
 
-The request was was successfully received, understood or accepted.
+The request was successfully received, understood or accepted.
 
 =item is_error()
 
@@ -251,34 +253,34 @@ application.
 
 =item *
 
-The B<timeout> specifies how much time we give remote servers to
+B<timeout> specifies how much time we give remote servers to
 respond before the library disconnects and creates an
 internal I<timeout> response.
 
 =item *
 
-The B<agent> specifies the name that your application should use when it
+B<agent> specifies the name that your application uses when it
 presents itself on the network.
 
 =item *
 
-The B<from> attribute can be set to the e-mail address of the person
+B<from> can be set to the e-mail address of the person
 responsible for running the application.  If this is set, then the
 address will be sent to the servers with every request.
 
 =item *
 
-The B<parse_head> specifies whether we should initialize response
+B<parse_head> specifies whether we should initialize response
 headers from the E<lt>head> section of HTML documents.
 
 =item *
 
-The B<proxy> and B<no_proxy> attributes specify if and when to go through
-a proxy server. <URL:http://www.w3.org/pub/WWW/Proxies/>
+B<proxy> and B<no_proxy> specify if and when to go through
+a proxy server. <URL:http://www.w3.org/History/1994/WWW/Proxies/>
 
 =item *
 
-The B<credentials> provide a way to set up user names and
+B<credentials> provides a way to set up user names and
 passwords needed to access certain services.
 
 =back
@@ -554,10 +556,10 @@ The following modules provide various functions and definitions.
 =head1 MORE DOCUMENTATION
 
 All modules contain detailed information on the interfaces they
-provide.  The I<lwpcook> manpage is the libwww-perl cookbook that contain
+provide.  The L<lwpcook> manpage is the libwww-perl cookbook that contain
 examples of typical usage of the library.  You might want to take a
-look at how the scripts C<lwp-request>, C<lwp-rget> and C<lwp-mirror>
-are implemented.
+look at how the scripts L<lwp-request>, L<lwp-download>, L<lwp-dump>
+and L<lwp-mirror> are implemented.
 
 =head1 ENVIRONMENT
 
@@ -582,12 +584,25 @@ These environment variables can be set to enable communication through
 a proxy server.  See the description of the C<env_proxy> method in
 L<LWP::UserAgent>.
 
-=item PERL_LWP_USE_HTTP_10
+=item PERL_LWP_ENV_PROXY
 
-Enable the old HTTP/1.0 protocol driver instead of the new HTTP/1.1
-driver.  You might want to set this to a TRUE value if you discover
-that your old LWP applications fails after you installed LWP-5.60 or
-better.
+If set to a TRUE value, then the C<LWP::UserAgent> will by default call
+C<env_proxy> during initialization.  This makes LWP honor the proxy variables
+described above.
+
+=item PERL_LWP_SSL_VERIFY_HOSTNAME
+
+The default C<verify_hostname> setting for C<LWP::UserAgent>.  If
+not set the default will be 1.  Set it as 0 to disable hostname
+verification (the default prior to libwww-perl 5.840.
+
+=item PERL_LWP_SSL_CA_FILE
+
+=item PERL_LWP_SSL_CA_PATH
+
+The file and/or directory
+where the trusted Certificate Authority certificates
+is located.  See L<LWP::UserAgent> for details.
 
 =item PERL_HTTP_URI_CLASS
 
@@ -646,7 +661,7 @@ modify it under the same terms as Perl itself.
 The latest version of this library is likely to be available from CPAN
 as well as:
 
-  http://gitorious.org/projects/libwww-perl
+  http://github.com/libwww-perl/libwww-perl
 
 The best place to discuss this code is on the <libwww@perl.org>
 mailing list.

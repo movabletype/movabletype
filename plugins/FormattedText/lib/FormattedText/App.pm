@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2006-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2006-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -93,7 +93,7 @@ sub can_view_formatted_text {
 
 sub cms_object_scope_filter {
     my ( $cb, $app, $id ) = @_;
-    $app->blog && $app->blog->is_blog;
+    $app->blog;
 }
 
 sub save_permission_filter {
@@ -217,8 +217,6 @@ sub listing_screens {
             permit_action => 'access_to_formatted_text_list',
             inherit       => 0,
         },
-        condition =>
-            sub { !MT->instance->blog || MT->instance->blog->is_blog },
         template => File::Spec->catfile(
             plugin()->{full_path}, 'tmpl',
             'cms',                 'list_formatted_text.tmpl'

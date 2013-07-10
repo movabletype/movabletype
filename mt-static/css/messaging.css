@@ -134,3 +134,28 @@ p.zero-state {
 .debug-panel-inner li:hover {
     background-color: #f2a0a1;
 }
+
+#notification_dashboard .widget-content {
+    padding: 10px 0 0 0;
+}
+#notification_dashboard li {
+    display: block;
+    padding: 0 10px;
+}
+#notification_dashboard .item {
+    display: block;
+}
+#notification_dashboard .clickable:hover {
+    cursor: pointer;
+    color: #507ea4;
+}
+#notification_dashboard .detail {
+    display: block;
+    border-bottom: 1px solid #c0c6c9;
+    padding: 0.5em 0.5em 0.5em 14px;
+    color: #7b7c7d;
+}
+
+#notification_dashboard li:last-child .detail {
+    border-bottom: none;
+}

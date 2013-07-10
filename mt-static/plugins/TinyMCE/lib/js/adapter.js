@@ -1,7 +1,7 @@
 /*
- * Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
- * This program is distributed under the terms of the
- * GNU General Public License, version 2.
+ * Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+ * This code cannot be redistributed without permission from www.sixapart.com.
+ * For more information, consult your Movable Type license.
  *
  * $Id$
  */
@@ -164,10 +164,17 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             resize: 'none'
         });
         if (tinyMCE.isIE8) {
-            adapter.$editorTextarea.css({
-                'min-width': '100%',
-                padding: '0px'
-            });
+            // The workaround for IE8 textarea bug.
+            // The "width" value is overwrote by the "max-width" and the "min-width".
+            // But this workaround requires the "width" value.
+            adapter.$editorTextarea
+                .css({
+                    'width': '100px',
+                    'min-width': '100%',
+                    'max-width': '100%',
+                    padding: '0px'
+                })
+                .attr('cols', '5000');
         }
         adapter.$editorTextareaParent = adapter.$editorTextarea.parent();
         adapter.$editorElement = adapter.$editorTextarea;

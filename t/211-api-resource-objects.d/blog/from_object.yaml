@@ -1,0 +1,16 @@
+- 
+  note: A blog
+  from: 
+    id: 1
+    name: Test
+    site_url: http://test.example.com/
+    archive_url: http://test.example.com/archive/
+    description: Description Text
+    class: blog
+  to: 
+    id: 1
+    name: Test
+    url: http://test.example.com/
+    archiveUrl: http://test.example.com/archive/
+    description: Description Text
+    class: blog

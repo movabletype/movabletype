@@ -1,12 +1,24 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
 function smarty_function_mtwebsitedatelanguage($args, &$ctx) {
-    require_once('function.mtblogdatelanguage.php');
-    return smarty_function_mtblogdatelanguage($args, $ctx);
+    $blog = $ctx->stash('blog');
+    if (!empty($blog)) {
+        if ($blog->is_blog()) {
+            $website = $blog->website();
+            if (empty($website)) return '';
+        } else {
+            $website = $blog;
+        }
+    }
+    $date_language = empty($website)
+        ? $ctx->mt->config('DefaultLanguage')
+        : $website->blog_date_language;
+    return normalize_language( $date_language, $args['locale'],
+        $args['ietf'] );
 }
 ?>

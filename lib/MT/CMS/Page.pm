@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Page;
@@ -40,14 +40,17 @@ sub can_view {
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
-    unless ( ref $id ) {
+    if ( $id && !ref $id ) {
         $id = MT->model('page')->load($id)
             or return;
     }
-    return unless $id->isa('MT::Page');
+    if ($id) {
+        return unless $id->isa('MT::Page');
+    }
 
     my $author = $app->user;
-    return $author->permissions( $id->blog_id )->can_do('save_page');
+    my $blog_id = $id ? $id->blog_id : ( $app->blog ? $app->blog->id : 0 );
+    return $author->permissions($blog_id)->can_do('save_page');
 
 }
 
@@ -56,15 +59,18 @@ sub can_delete {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    unless ( ref $obj ) {
+    if ( $obj && !ref $obj ) {
         $obj = MT->model('page')->load($obj)
             or return;
     }
-    return unless $obj->isa('MT::Page');
+    if ($obj) {
+        return unless $obj->isa('MT::Page');
+    }
 
     my $perms = $app->permissions;
-    if ( !$perms || $perms->blog_id != $obj->blog_id ) {
-        $perms = $author->permissions( $obj->blog_id );
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
+    if ( !$perms || $perms->blog_id != $blog_id ) {
+        $perms = $author->permissions($blog_id);
     }
     return $perms && $perms->can_do('delete_page');
 }

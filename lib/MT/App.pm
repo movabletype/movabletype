@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -151,9 +151,8 @@ sub filter_conditional_list {
              # Return true if user has system level privilege for this action.
                         return 1
                             if $system_perms
-                                && $system_perms->can_do(
-                                    $action->{system_action}
-                                );
+                            && $system_perms->can_do(
+                            $action->{system_action} );
                     }
 
                     $include_all = $action->{include_all} || 0;
@@ -166,7 +165,8 @@ sub filter_conditional_list {
                 }
 
                 my $terms = {
-                    author_id => $app->user->id,
+                    author_id   => $app->user->id,
+                    permissions => \'is not null',
                     ( $blog_ids ? ( blog_id => $blog_ids ) : () ),
                 };
 
@@ -192,8 +192,8 @@ sub filter_conditional_list {
         else {
             return 0
                 if !$system_perms
-                    && $item->{system_permission}
-                    && !$item->{permission};
+                && $item->{system_permission}
+                && !$item->{permission};
 
             if ( $system_perms && ( my $sp = $item->{system_permission} ) ) {
                 my $allowed = 0;
@@ -203,9 +203,9 @@ sub filter_conditional_list {
                     my $perm = 'can_' . $sp_;
                     $allowed = 1, last
                         if $admin
-                            || (   $system_perms
-                                && $system_perms->can($perm)
-                                && $system_perms->$perm() );
+                        || ( $system_perms
+                        && $system_perms->can($perm)
+                        && $system_perms->$perm() );
                 }
                 return 0 unless $allowed;
             }
@@ -217,9 +217,9 @@ sub filter_conditional_list {
                         my $perm = 'can_' . $p_;
                         $allowed = 1, last
                             if $admin
-                                || (   $perms
-                                    && $perms->can($perm)
-                                    && $perms->$perm() );
+                            || ( $perms
+                            && $perms->can($perm)
+                            && $perms->$perm() );
                     }
                     return 0 unless $allowed;
                 }
@@ -382,7 +382,7 @@ sub listing {
     my ($opt) = @_;
 
     my $type = $opt->{type} || $opt->{Type} || $app->param('_type');
-    my $tmpl 
+    my $tmpl
         = $opt->{template}
         || $opt->{Template}
         || 'list_' . $type . '.tmpl';
@@ -713,7 +713,7 @@ sub send_http_header {
         }
         $app->{apache}->send_http_header($type);
         if ( $MT::DebugMode & 128 ) {
-            print "Status: " 
+            print "Status: "
                 . ( $app->response_code || 200 )
                 . (
                 $app->{response_message}
@@ -1368,7 +1368,7 @@ sub _commenter_state {
             my $can_comment = $banned ? 0 : 1;
             $can_comment = 0
                 unless $blog->allow_unreg_comments
-                    || $blog->allow_reg_comments;
+                || $blog->allow_reg_comments;
             $c->{can_comment} = $can_comment;
             $c->{can_post}
                 = ( $blog_perms && $blog_perms->can_create_post ) ? 1 : 0;
@@ -1419,6 +1419,7 @@ sub make_session {
     $sess->id( make_magic_token() );
     $sess->kind('US');    # US == User Session
     $sess->start(time);
+    $sess->name( $auth->id );
     $sess->set( 'author_id', $auth->id );
     $sess->set( 'remember', 1 ) if $remember;
     $sess->save;
@@ -1705,7 +1706,7 @@ sub unbake_user_state_cookie {
             $v =~ s/^'//;
             $v =~ s/'$//;
             ( $k, $v );
-            } split( ';', $value )
+        } split( ';', $value )
     };
 }
 
@@ -2491,7 +2492,7 @@ sub _send_comment_notification {
             To => $author->email,
             $from_addr ? ( From       => $from_addr ) : (),
             $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
-            Subject => '[' 
+            Subject => '['
                 . $blog->name . '] '
                 . $app->translate(
                 "New Comment Added to '[_1]'",
@@ -2567,7 +2568,7 @@ sub _send_comment_notification {
                     || (
                        $author->permissions( $blog->id )->can_manage_feedback
                     || $author->permissions( $blog->id )->can_publish_post )
-                ) ? 1 : 0,
+            ) ? 1 : 0,
         );
         my $body = MT->build_email( 'new-comment.tmpl', \%param );
         MT::Mail->send( \%head, $body )
@@ -2952,6 +2953,7 @@ sub pre_run {
     }
 
     MT->run_callbacks( ( ref $app ) . '::pre_run', $app );
+
     1;
 }
 
@@ -3116,7 +3118,7 @@ sub run {
                     $local_component = $meth_info->{component}
                         if $meth_info->{component};
 
-                    my $set 
+                    my $set
                         = $meth_info->{permission}
                         || $meth_info->{permit_action}
                         || undef;
@@ -3135,7 +3137,7 @@ sub run {
                             foreach my $p (@p) {
                                 $allowed = 1, last
                                     if $admin
-                                        || ( $perms && $perms->can_do($p) );
+                                    || ( $perms && $perms->can_do($p) );
                             }
                         }
                         unless ($allowed) {
@@ -3399,7 +3401,7 @@ sub l10n_filter { $_[0]->translate_templatized( $_[1] ) }
 
 sub load_widgets {
     my $app = shift;
-    my ( $page, $scope_type, $param, $default_widgets ) = @_;
+    my ( $page, $scope_type, $param ) = @_;
 
     my $user    = $app->user;
     my $blog    = $app->blog;
@@ -3407,7 +3409,7 @@ sub load_widgets {
     my $scope
         = $scope_type eq 'blog'
         || $scope_type eq 'website' ? 'blog:' . $blog_id
-        : $scope_type  eq 'user'    ? 'user:' . $user->id
+        : $scope_type eq 'user'     ? 'user:' . $user->id
         :                             'system';
     my $resave_widgets = 0;
     my $widget_set     = $page . ':' . $scope;
@@ -3417,7 +3419,7 @@ sub load_widgets {
 
     unless ($widgets) {
         $resave_widgets = 1;
-        $widgets        = $default_widgets;
+        $widgets        = $app->default_widgets_for_dashboard($scope_type);
     }
 
     my $reg_widgets = $app->registry("widgets");
@@ -3447,12 +3449,22 @@ sub load_widgets {
     my $order_num = 0;
     foreach my $widget_id ( keys %$widgets ) {
         my $widget_param = $widgets->{$widget_id} ||= {};
+        if ( my $order = $widget_param->{order} ) {
+            $order_num = $order_num < $order ? $order : $order_num;
+        }
+    }
+    foreach my $widget_id ( keys %$widgets ) {
+        my $widget_param = $widgets->{$widget_id} ||= {};
         my $order;
         if ( !( $order = $widget_param->{order} ) ) {
-            $order                 = $all_widgets->{$widget_id}{order};
-            $order                 = ++$order_num unless defined $order;
-            $widget_param->{order} = $order_num;
-            $resave_widgets        = 1;
+            $order = $all_widgets->{$widget_id}{order};
+            $order
+                = $order && ref $order eq 'HASH'
+                ? $all_widgets->{$widget_id}{order}{$scope_type}
+                : $order * 100;
+            $order = $order_num = $order_num + 100 unless defined $order;
+            $widget_param->{order} = $order;
+            $resave_widgets = 1;
         }
         push @ordered_list, $widget_id;
         $orders{$widget_id} = $order;
@@ -3614,6 +3626,26 @@ sub update_widget_prefs {
             $these_widgets->{$widget_inst} = { set   => $set };
             $these_widgets->{$widget_inst} = { param => $widget->{param} }
                 if exists $widget->{param};
+
+            # Renumbering widget order
+            my $widget_count = keys %$these_widgets;
+            foreach my $widget_id ( keys %$these_widgets ) {
+                if ( my $widget = $all_widgets->{$widget_id} ) {
+                    my @widget_scopes = split ':', $widget_scope;
+                    my $order = $widget->{order};
+                    $order
+                        = $order && ref $order eq 'HASH'
+                        ? $widget->{order}{ $widget_scopes[1] }
+                        : $order * 100;
+                    if ($order) {
+                        $these_widgets->{$widget_id} = { order => $order };
+                    }
+                    else {
+                        $these_widgets->{$widget_id}
+                            = { order => $widget_count++ * 100 };
+                    }
+                }
+            }
         }
         $resave_widgets = 1;
     }
@@ -3648,7 +3680,7 @@ sub update_widget_prefs {
 
 sub load_widget_list {
     my $app = shift;
-    my ( $page, $scope_type, $param, $default_set ) = @_;
+    my ( $page, $scope_type, $param ) = @_;
 
     my $blog    = $app->blog;
     my $blog_id = $blog->id if $blog;
@@ -3656,12 +3688,15 @@ sub load_widget_list {
     my $scope
         = $scope_type eq 'blog'
         || $scope_type eq 'website' ? 'blog:' . $blog_id
-        : $scope_type  eq 'user'    ? 'user:' . $user->id
+        : $scope_type eq 'user'     ? 'user:' . $user->id
         :                             'system';
     $scope = $page . ':' . $scope;
 
     my $user_widgets = $app->user->widgets || {};
-    $user_widgets = $user_widgets->{$scope} || $default_set || {};
+    $user_widgets
+        = $user_widgets->{$scope}
+        || $app->default_widgets_for_dashboard($scope_type)
+        || {};
     my %in_use;
     foreach my $uw ( keys %$user_widgets ) {
         $uw =~ s/-\d+$//;
@@ -3774,8 +3809,8 @@ sub validate_magic {
     my $app = shift;
     return 1
         if $app->param('username')
-            && $app->param('password')
-            && $app->request('fresh_login');
+        && $app->param('password')
+        && $app->request('fresh_login');
     $app->{login_again} = 1, return undef
         unless ( $app->current_magic || '' ) eq
         ( $app->param('magic_token') || '' );
@@ -4058,7 +4093,7 @@ sub redirect {
 
 sub is_valid_redirect_target {
     my $app = shift;
-    my $static 
+    my $static
         = $app->param('static')
         || $app->param('return_url')
         || $app->param('return_to')

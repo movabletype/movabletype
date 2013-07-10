@@ -91,6 +91,8 @@ body.has-dialog {
     background-image: url(../images/widget/widget-icons.png);
     background-position: -32px 0;
     background-repeat: no-repeat;
+    background-color: transparent;
+    border: 0 none transparent;
 }
 .alert .ui-dialog-titlebar-close,
 .save .ui-dialog-titlebar-close {

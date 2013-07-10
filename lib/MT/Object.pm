@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -1756,6 +1756,29 @@ sub inflate {
     }
 
     $obj;
+}
+
+sub assets {
+    my ($self) = @_;
+
+    if ( $self->has_summary('all_assets') ) {
+        my @assets = $self->get_summary_objs( 'all_assets' => 'MT::Asset' );
+        @assets && $assets[0] ? [@assets] : [];
+    }
+    else {
+        [   MT->model('asset')->load(
+                { class => '*' },
+                {   join => MT->model('objectasset')->join_on(
+                        undef,
+                        {   asset_id  => \'= asset_id',
+                            object_ds => $self->datasource,
+                            object_id => $self->id
+                        }
+                    )
+                }
+            )
+        ];
+    }
 }
 
 package MT::Object::Meta;

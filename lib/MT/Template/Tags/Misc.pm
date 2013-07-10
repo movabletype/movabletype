@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::Template::Tags::Misc;
@@ -240,6 +240,28 @@ sub _hdlr_captcha_fields {
         return $fields;
     }
     return q();
+}
+
+###########################################################################
+
+=head2 StatsSnippet
+
+Returns the html code snippet of information gathering for stats of current blog/site.
+If any stats provider was not found, this template tag will return blank string.
+
+=cut
+
+sub _hdlr_stats_snippet {
+    my ( $ctx, $args ) = @_;
+    my $blog_id = $ctx->stash('blog_id');
+    my $blog    = MT->model('blog')->load($blog_id);
+
+    require MT::Stats;
+    my $provider
+        = MT::Stats::readied_provider( MT->instance, $blog )
+        or return q();
+
+    $provider->snipet(@_);
 }
 
 1;

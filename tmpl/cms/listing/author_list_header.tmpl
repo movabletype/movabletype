@@ -42,6 +42,14 @@
             <__trans phrase="Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory." params="<mt:var name="unchanged">" escape="html">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:if name="request.not_enabled">
+        <mtapp:statusmsg
+            id="not_enabled"
+            class="error"
+            can_close="0">
+            <__trans phrase="Some ([_1]) of the selected user(s) could not be re-enabled bacause they had some invalid parameter(s). Please check activity log for more details." params="<mt:var name="request.not_enabled" escape="html">">
+        </mtapp:statusmsg>
+    </mt:if>
     <mt:if name="request.error">
         <mtapp:statusmsg
             id="error"
