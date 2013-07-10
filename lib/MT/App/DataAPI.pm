@@ -484,9 +484,12 @@ sub _compile_endpoints {
             if ( !exists( $e->{requires_login} ) ) {
                 $e->{requires_login} = 1;
             }
-            $e->{_vars} = [];
+
 
             next if $e->{version} > $version;
+
+
+            $e->{_vars} = [];
 
             my $cur = \%tree;
             ( my $route = $e->{route} ) =~ s#^/+##;
@@ -950,9 +953,10 @@ sub api {
     my ($app) = @_;
     my $path = $app->_path;
 
-    my ($version) = ( $path =~ s{\A/?v(\d+)}{} );
+    $path =~ s{\A/?v(\d+)}{};
     return $app->print_error( 'API Version is required', 400 )
-        unless defined($version);
+        unless defined($1);
+    my $version = $1;
 
     my $request_method = $app->_request_method
         or return;

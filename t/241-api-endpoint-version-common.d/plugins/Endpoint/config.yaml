@@ -1,0 +1,14 @@
+name: Endpoint
+version: 1.00
+
+applications:
+  data_api:
+    endpoints:
+      - id: get_endpoint_test
+        version: 1
+        route: /endpoint-test
+        handler: sub { +{version => 1} }
+      - id: get_endpoint_test
+        version: 2
+        route: /endpoint-test
+        handler: sub { +{version => 2} }
