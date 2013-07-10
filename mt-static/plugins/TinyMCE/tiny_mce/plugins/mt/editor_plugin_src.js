@@ -422,7 +422,7 @@
                     ed.windowManager.open({
                         file : url + '/insert_html.html',
                         width : 430,
-                        height : 335,
+                        height : 345,
                         inline : 1
                     }, {
                         plugin_url : url
