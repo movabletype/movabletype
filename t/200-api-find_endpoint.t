@@ -158,6 +158,17 @@ my @suite = (
             entry_id => 3,
         }
     },
+    {   request  => [ 'GET', 1, '/sites/0/entries/3' ],
+        id       => [ 1,     'get_entry' ],
+        endpoint => {
+            id      => 'get_entry',
+            version => 1,
+        },
+        params => {
+            site_id  => 0,
+            entry_id => 3,
+        }
+    },
 );
 
 note('find_endpoint_by_path');

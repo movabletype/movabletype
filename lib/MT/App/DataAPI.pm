@@ -7,6 +7,7 @@
 package MT::App::DataAPI;
 
 use strict;
+use warnings;
 use base qw( MT::App );
 
 use MT::DataAPI::Resource;
@@ -575,7 +576,8 @@ sub find_endpoint_by_path {
 
     $path =~ s#^/+##;
     my @paths = split m#(?=/|\.)|(?<=/|\.)#o, $path;
-    while ( my $p = shift @paths ) {
+    while (@paths) {
+        my $p = shift @paths;
         if ( $handler->{$p} ) {
             $handler = $handler->{$p};
         }

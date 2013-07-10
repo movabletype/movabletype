@@ -71,6 +71,10 @@ my @suite = (
             );
         },
     },
+    {   path      => '/v1/sites/1/entries/0',
+        method    => 'GET',
+        code      => 404,
+    },
     {   path      => '/v1/sites/1/entries/1',
         method    => 'GET',
         callbacks => [
