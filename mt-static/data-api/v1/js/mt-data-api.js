@@ -1154,7 +1154,7 @@ DataAPI.prototype = {
 
                 callbackResult = runCallback(response);
 
-                if (callbackResult !== false && response.error.code === 401) {
+                if (callbackResult !== false && response.error && response.error.code === 401) {
                     api.trigger('authorizationRequired', response);
                 }
 
