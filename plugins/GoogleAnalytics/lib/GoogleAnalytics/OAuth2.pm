@@ -142,7 +142,10 @@ sub effective_token {
     my $data       = $plugindata->data;
     my $token_data = $data->{token_data};
 
-    if ( time() - $token_data->{start} > $token_data->{data}{expires_in} ) {
+    if ( $token_data
+        && ( time() - $token_data->{start} )
+        > $token_data->{data}{expires_in} )
+    {
         my $new_token_data = refresh_access_token(
             $app, new_ua(),
             $token_data->{data}{refresh_token},
