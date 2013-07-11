@@ -24,6 +24,12 @@ function validate(f) {
         alert("<__trans phrase="You must select a blog to import." escape="js">");
         return false;
     }
+    if (jQuery('input[name="import_as_me"]:checked').val() === '0') {
+        if (!jQuery('input#password').val()) {
+            alert("<__trans phrase="Enter a default password for new users." escape="js">");
+            return false;
+        }
+    }
     return true;
 }
 function selectBlog() {
