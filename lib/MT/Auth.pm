@@ -90,7 +90,7 @@ sub validate_credentials {
             $res );
     }
 
-    $app->run_callbacks( 'post_signin.app', $app, $res );
+    $app->run_callbacks( 'post_signin.app', $app, $res, $ctx );
 
     $res;
 }
