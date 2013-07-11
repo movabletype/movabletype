@@ -435,7 +435,7 @@ function renderFilterList() {
   }
   jQuery('#new_filter').click(function() {
     jQuery('#filter-detail').show().parent('#filter').addClass('active');
-    jQuery('#item_list').attr('selectedIndex', 0);
+    jQuery('#item_list').attr('selectedIndex', 0).val('');
     resetFilterDetails();
     jQuery('input[name=filter_name]').mtUnvalidate().val('<__trans phrase="New Filter" escape="js">');
     jQuery('#opener').html('<__trans phrase="New Filter" escape="js">');
