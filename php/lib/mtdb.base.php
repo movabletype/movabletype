@@ -3457,6 +3457,20 @@ abstract class MTDatabase {
             if (($limit > 0) && (count($assets) >= $limit)) break;
         }
 
+        $no_resort = 0;
+        if (isset($args['sort_by']) && $asset->has_column($args['sort_by'])) {
+            $no_resort = 1;
+        }
+        if (isset($args['lastn'])) {
+            if (isset($args['sort_by'])) {
+                $no_resort = 0;
+            }
+        } else {
+            if (!isset($args['sort_by'])) {
+                $no_resort = 1;
+            }
+        }
+
         $order = 'desc';
         if (isset($args['sort_order'])) {
             if ($args['sort_order'] == 'ascend')
@@ -3464,6 +3478,8 @@ abstract class MTDatabase {
             else if ($args['sort_order'] == 'descend')
                 $order = 'desc';
         }
+
+        # Resort assets
         if (isset($args['sort_by']) && ('score' == $args['sort_by'])) {
             $assets_tmp = array();
             foreach ($assets as $a) {
@@ -3522,6 +3538,29 @@ abstract class MTDatabase {
             }
             $assets = $assets_sorted;
 
+        } elseif (!$no_resort) {
+            $sort_field = 'asset_created_on';
+            if (isset($args['sort_by']) && $asset->has_column($args['sort_by'])) {
+                if (preg_match('/^field[:\.](.+)$/', $args['sort_by'], $match)) {
+                    $sort_field = 'asset_field.' . $match[1];
+                } else {
+                    $sort_field = 'asset_' . $args['sort_by'];
+                }
+            }  
+            if (   $sort_field == 'asset_blog_id'
+                || $sort_field == 'asset_created_by'
+                || $sort_field == 'asset_created_on'
+                || $sort_field == 'asset_id'
+                || $sort_field == 'asset_parent'
+            ) {
+                $sort_fn = "if (\$a->$sort_field == \$b->$sort_field) return 0; return \$a->$sort_field < \$b->$sort_field ? -1 : 1;";
+            } else {
+                $sort_fn = "\$f = '" . addslashes($sort_field) . "'; return strcmp(\$a->\$f,\$b->\$f);";
+            }   
+            $sorter = create_function(
+                $order == 'asc' ? '$a,$b' : '$b,$a',
+            $sort_fn);
+            usort($assets, $sorter);
         }
         return $assets;
     }

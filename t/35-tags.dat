@@ -706,5 +706,9 @@
 { "r" : "1", "t" : "<MTWebsiteEntryCount site_ids='all'>", "e" : "6"}, #690
 { "r" : "1", "t" : "<MTWebsiteEntryCount site_ids='all' exclude_websites='1'>", "e" : "0"}, #691
 { "r" : "1", "t" : "<MTWebsiteEntryCount blog_ids='1' none='none' singular='singular' plural='plural:#'>", "e" : "plural:6"}, #692
-{ "r" : "1", "t" : "<MTWebsiteEntryCount blog_ids='2' none='none' singular='singular' plural='plural:#'>", "e" : "none"} #693
+{ "r" : "1", "t" : "<MTWebsiteEntryCount blog_ids='2' none='none' singular='singular' plural='plural:#'>", "e" : "none"}, #693
+{ "r" : "1", "t" : "<MTAssets sort_order='ascend' sort_by='created_on'><MTAssetID></MTAssets>", "e" : "21" }, #694
+{ "r" : "1", "t" : "<MTAssets sort_order='descend' sort_by='created_on'><MTAssetID></MTAssets>", "e" : "12" }, #695
+{ "r" : "1", "t" : "<MTAssets lastn='2' sort_order='ascend' sort_by='created_on'><MTAssetID></MTAssets>", "e" : "21" }, #696
+{ "r" : "1", "t" : "<MTAssets lastn='2' sort_order='descend' sort_by='created_on'><MTAssetID></MTAssets>", "e" : "12" } #697
 ]
