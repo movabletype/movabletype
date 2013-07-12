@@ -446,6 +446,7 @@ sub load_by_datasource {
             $jargs{not}{blog_id} = 1;
         }
     }
+    require MT::ObjectTag;
     $args->{'join'} ||= MT::ObjectTag->join_on(
         'tag_id',
         {   $blog_id ? ( blog_id => $blog_id ) : (),
