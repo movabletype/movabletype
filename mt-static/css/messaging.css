@@ -1,4 +1,31 @@
-/* Status Message */
+/*
+## ステータスメッセージ
+
+様々な状況をユーザーに伝えるためのコンポーネントです。メッセージをユーザーの任意で消すことができるためのインターフェースも用意します。状態に応じて様々なスタイルが用意されています。 .msg と一緒に状態を表すスタイルを追加することで変更できます。
+
+```
+<div class="msg msg-success">
+  <p class="msg-text">... タスクが成功した場合のメッセージ</p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">閉じる</span>
+</div>
+
+<div class="msg msg-alert">
+  <p class="msg-text">... 警告メッセージ </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">閉じる</span>
+</div>
+
+<div class="msg msg-error">
+  <p class="msg-text">... エラーが発生した場合のメッセージ </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">閉じる</span>
+</div>
+
+<div class="msg msg-info">
+  <p class="msg-text">... その他の情報を伝える場合のメッセージ </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">閉じる</span>
+</div>
+```
+
+*/
 .msg {
     position: relative;
     margin: 10px 0;

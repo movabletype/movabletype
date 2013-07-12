@@ -93,7 +93,19 @@ input[type=file] {
     padding: 0;
 }
 
-/* - Input */
+/*
+## インプットフィールド
+
+一覧.
+
+```
+<input type="text" class="text" placeholder=".text">
+<input type="text" class="text med" placeholder=".text .med">
+<input type="text" class="text short" placeholder=".text .short">
+<input type="text" class="text full" placeholder=".text .full">
+```
+*/
+
 .text {
     width: 75%;
     outline: 0;
@@ -211,7 +223,17 @@ select.error {
     width: 60%;
 }
 
-/* - Button */ 
+
+/*
+## ボタン
+```
+<a href="#" class="button">ブログを作成</a>
+<a href="#" class="button action">ブログを作成</a>
+<a href="#" class="button primary">ブログを作成</a>
+<a href="#" class="button action primary">ブログを作成</a>
+<a href="#" class="button disabled">ブログを作成</a>
+```
+*/
 .button {
     cursor: pointer;
     overflow: visible;

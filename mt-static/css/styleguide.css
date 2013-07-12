@@ -1,0 +1,47 @@
+/*
+# MT Style Guide
+
+Documentation for style sheet using MT
+
+## Frequently Used Style Sheets
+Most screens in MT import the following style sheet from mt-static/styles.css.
+
+* [reset.css](#/style/reset.css)
+* [structure.css](#/style/structure.css)
+* [form.css](#/style/form.css)
+* [listing.css](#/style/listing.css)
+* [sortable.css](#/style/sortable.css)
+* [dialog.css](#/style/dialog.css)
+* [messaging.css](#/style/messaging.css)
+* [utilities.css](#/style/utilities.css)
+* [icons.css](#/style/icons.css)
+
+*/
+
+/* ### Base ### */
+@import url("reset.css");
+@import url("structure.css");
+
+/* ### Form ### */
+@import url("form.css");
+
+/* ### Listing ### */
+@import url("listing.css");
+
+/* ### Editor ### */
+@import url("editor/common.css");
+@import url("editor/editor-content.css");
+@import url("editor/editor.css");
+
+/* ### Helpers ### */
+@import url("sortable.css");
+@import url("dialog.css");
+@import url("messaging.css");
+@import url("utilities.css");
+@import url("hacks/ie.css");
+
+/* ### Icon ### */
+@import url("icons.css");
+
+/* ### Chromeless Screen ### */
+@import url("chromeless.css");

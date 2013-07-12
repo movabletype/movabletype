@@ -1,4 +1,53 @@
-/* - Generic */
+/* # Structure CSS
+Structure CSS is for building layout structure and styling common UI
+
+## Base Style
+
+Structure CSS set the sorts of default styling for MT like the following.
+
+<h3>Font</h3>
+
+* Size: 13px
+* Color: <span style="color:#2b2b2b">#2b2b2b</span>
+* Family: 'Helvetica Neue', Helvetica, Arial, sans-serif
+
+```
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+```
+
+<h3>Background</h3>
+
+* Color: <span style="background-color:#fffffc">#fffffc</span>
+
+<h3>Link</h3>
+
+* Color: <span style="color:#507ea4">#507ea4</span>
+* Hover Color: <span style="color:#839b5c">#839b5c</span>
+* Active Color: <span style="color:#839b5c">#839b5c</span>
+
+```
+<a href="http://movabletype.jp/">MovableType</a>
+```
+
+<h3>Headings</h3>
+
+```
+<h1>Heading 1</h1>
+<h2>Heading 2</h2>
+<h3>Heading 3</h3>
+<h4>Heading 4</h4>
+<h5>Heading 5</h5>
+<h6>Heading 6</h6>
+```
+
+<h3>PRE</h3>
+```
+<pre>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+</pre>
+```
+*/
+
 html,
 body {
     height: 100%;
@@ -38,13 +87,38 @@ pre {
     color: #7b7c7d;
 }
 
-/* - Component */
+/* ##Hint
+
+.hint is used for the additional information of setting item.
+
+```
+<div>
+  <input />
+  <div class="hint">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+</div>
+```
+*/
 .hint {
     width: 75%;
     color: #a3a3a2;
     font-size: 95%;
     font-style: Italic;
 }
+
+/* ##Inline Warings
+
+.alert-warning-inline is styled for inline warnings
+
+```
+<div>
+  <input />
+  <p class="alert-warning-inline">
+    <img src="../images/status_icons/warning.gif" width="9" height="9" /> Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit ( <a href="#">read more details</a> ).
+  </p>
+</div>
+```
+
+*/
 .alert-warning-inline {
     margin: 5px 0 0;
     font-size: 95%;
@@ -53,6 +127,62 @@ pre {
 .alert-warning-inline a {
     color: #f39800;
 }
+
+/* ##Image
+Common styles for images
+
+<h3>.picture</h3>
+
+.picture adds margin to top and bottom and clear:both
+
+```
+<div>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+</div>
+<div class="picture">
+  <img src="../styleguide/images/sample.jpg" />
+</div>
+<div>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+</div>
+```
+
+<h3>.picture.small</h3>
+
+.picture.small is for small images like thumbnail
+
+```
+<div>
+<p>
+<span class="picture small">
+<img src="../styleguide/images/sample_small.jpg" />
+</span>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+</div>
+```
+
+<h3>.thumbnail</h3>
+
+.thumbnail adds border around image like the following
+
+```
+<div>
+<p>
+<span class="picture small thumbnail">
+<img src="../styleguide/images/sample_small.jpg" />
+</span>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+</div>
+```
+
+.thumbnail also adds background image to clarify transparent area like PhotoShop
+```
+<div class="picture small thumbnail">
+  <img src="../images/chromeless/mt_logo.png"/>
+</div>
+```
+
+*/
 
 .picture {
     clear: both;
@@ -93,7 +223,26 @@ pre {
     background: none;
 }
 
-/* -- Sticky Label */
+/* ## Sticky Label
+
+Adds sticky labels like the following
+
+```
+<span class="sticky-label">Label</span>
+<span class="sticky-label system">System</span>
+<span class="sticky-label website">WebSite</span>
+<span class="sticky-label blog">Blog</span>
+<span class="sticky-label required">Required</span>
+<span class="sticky-label inuse-userpic">UserPic</span>
+```
+
+If you want to add delete icon at the right side of label, add remove class
+```
+<div class="selected-items">
+<span class="sticky-label">Item<span class="remove">x</span></span>
+</div>
+```
+*/
 .sticky-label {
     display: inline-block;
     padding: 0.2em 0.5em;
@@ -134,7 +283,29 @@ pre {
     color: #fff;
 }
 
-/* -- Multiple Selection */
+/* ##Horizontal List
+
+.multiple-selection class positions list items horizontally.
+
+```
+<ul class="multiple-selection">
+  <li><input type="checkbox" /> Lorem ipsum dolor</li>
+  <li><input type="checkbox" /> sit amet</li>
+  <li><input type="checkbox" /> consectetur adipisicing elit</li>
+</ul>
+```
+
+If you want to separate each item with fixed width, use .fixed-width
+
+```
+<ul class="multiple-selection fixed-width">
+  <li><input type="checkbox" /> Lorem ipsum dolor</li>
+  <li><input type="checkbox" /> sit amet</li>
+  <li><input type="checkbox" /> consectetur adipisicing elit</li>
+</ul>
+```
+
+*/
 .multiple-selection {
     display: inline-block;
 }
@@ -147,7 +318,20 @@ pre {
     margin: 0 0 5px;
 }
 
-/* -- Overlay */
+/* ##Overlay
+
+.overlay and .ui-widget-overlay class styles the overlay for listing table in processing.
+
+Use #listing-table-overlay with .overlay element in the listing like the following.
+
+```
+<div>
+<div class="overlay" id="listing-table-overlay"></div>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+</div>
+```
+
+*/
 .overlay,
 .ui-widget-overlay {
     position: absolute;
@@ -159,7 +343,80 @@ pre {
     filter: alpha(opacity=70);
 }
 
-/* -- Toggle Button */
+/* ##Toggle Button
+
+.toggle-button class styles the toggle button with related UI styles.
+
+**Note**: toggle-button style is strongly depended on the parent position:relative element style (in especially width). You need to add the appreciate styles for it.
+
+<h3>with menu nav</h3>
+
+```
+<div style="width:150px">
+  <ul class="menu-nav">
+    <li class="item top-menu top-menu-open">
+      <div>
+        <a class="top-menu-link menu-link">
+          <span class="menu-label">Menu Item</span>
+        </a>
+        <a class="toggle-button">
+          <img src="../images/arrow/arrow-toggle-big.png">
+        </a>
+      </div>
+    </li>
+  </ul>
+</div>
+```
+
+<h3>with filter-header</h3>
+
+filter-header class is used in the listings header
+
+```
+<div class="filter-block">
+  <div id="filter-header">
+    <div class="mod filter-header">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      <a class="toggle-button">
+        <img src="../images/arrow/arrow-toggle-big.png">
+      </a>
+    </div>
+  </div>
+</div>
+```
+
+<h3>with selector-nav</h3>
+
+selector-nav class is used for button at the top left side of the header.
+
+```
+<div id="selector-nav">
+  <a class="toggle-button">
+    <img src="../images/arrow/arrow-toggle.png">
+  </a>
+</div>
+```
+
+<h3>with display-options</h3>
+
+
+```
+<div class="display-options">
+  <a class="toggle-link">
+    Display Options
+    <span class="toggle-button">
+      <img src="../images/arrow/arrow-toggle.png">
+    </span>
+  </a>
+  <div class="display-options-detail detail" style="display: block;">
+    <div class="field field-top-label">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+    </div>
+  </div>
+</div>
+```
+*/
+
 .toggle-button {
     cursor: pointer;
     position: absolute;
@@ -191,9 +448,11 @@ pre {
     left: 50%;
     margin: -2px 0 0 -4px;
 }
+
 .menu-nav .toggle-button {
     width: 20px;
 }
+
 .filter-header .toggle-button {
     width: 30px;
     border-radius: 0 3px 0 0;
@@ -1006,7 +1265,7 @@ ul.tabs li a {
     margin-bottom: 10px;
 }
 
-/* -- Action Link List */ 
+/* -- Action Link List */
 .action-link-list {
     margin-top: 5px;
 }
@@ -1080,7 +1339,75 @@ ul.tabs li a {
 }
 
 
-/* - Widget */
+/* ## Widget
+
+Widget is the component for MT Dashboard. It has some incredients, header, buttons and tabs.
+
+<h3>Basic Usage</h3>
+
+There are 3 classes we use in widgets, .widget-header, .widget-content and .widget-footer.
+
+```
+<div class="widget">
+  <div class="widget-header"><h2>Widget Header</h2></div>
+  <div class="widget-content">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+  </div>
+</div>
+```
+
+
+<h3>No Header</h3>
+
+You can hide header contents with .widget-no-header
+
+```
+<div class="widget widget-no-header">
+  <div class="widget-header"><h2>Widget Header</h2></div>
+  <div class="widget-content">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+  </div>
+</div>
+```
+
+
+<h3>Widget action</h3>
+
+You can add action menu at the right side of widget header with .widget-action.
+
+```
+<div class="widget">
+  <div class="widget-header">
+    <div class="widget-action"><a class="widget-close-link" title="close widget"><span class="first-child last-child">close</span></a></div>
+    <h2>Widget Header</h2>
+  </div>
+  <div class="widget-content">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+  </div>
+</div>
+```
+
+
+<h3>Tabs</h3>
+
+You can add tab links in widget content with ul.tabs and li.tab
+
+```
+<div class="widget">
+  <div class="widget-header"><h2>Widget Header</h2></div>
+  <div class="widget-content">
+    <ul class="tabs">
+        <li class="tab"><a>Item 1</a></li>
+        <li class="tab"><a>Item 2</a></li>
+    </ul>
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+  </div>
+  <div class="widget-footer last-child"></div>
+</div>
+```
+
+*/
+
 .widget {
     margin-bottom: 15px;
     border: 1px solid #c0c6c9;
@@ -1564,7 +1891,7 @@ ul.tabs li a {
 .sort-enabled:hover {
     border: 1px solid #adadad;
     border-top-color: #cfd0d0;
-    border-left-color: #cfd0d0; 
+    border-left-color: #cfd0d0;
 }
 .sort-enabled .field-header {
     margin-bottom: 10px;
@@ -2187,7 +2514,7 @@ ul#asset-list .asset-type-video {
     overflow: hidden;
     clear: left;
     margin-bottom: 10px;
-    padding-bottom: 5px; 
+    padding-bottom: 5px;
 }
 #related-assets .asset.last-child {
     margin-bottom: 0;

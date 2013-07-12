@@ -1,3 +1,43 @@
+/* # Reset CSS
+Reset CSS is reset UserAgent default style
+
+In most case, Reset CSS styles are overrided by other styles.
+
+## Headings
+
+reset Headings style as follows. [Structured CSS](#/style/structure.css) is overrided this styles.
+```
+<h1>Heading 1</h1>
+<h2>Heading 2</h2>
+<h3>Heading 3</h3>
+<h4>Heading 4</h4>
+<h5>Heading 5</h5>
+<h6>Heading 6</h6>
+```
+
+## Lists
+
+reset Listings style as follows (list-style-type is set 'none')
+```
+<ul>
+  <li>Item 1</li>
+  <li>Item 2</li>
+  <li>Item 3</li>
+</ul>
+```
+
+The order number is not displayed at the left side of list item.
+
+```
+<ol>
+  <li>Item 1</li>
+  <li>Item 2</li>
+  <li>Item 3</li>
+</ol>
+```
+
+*/
+
 html {
     font-size: 100%;
     -webkit-text-size-adjust: 100%;

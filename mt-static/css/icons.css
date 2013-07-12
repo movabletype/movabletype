@@ -1,4 +1,21 @@
-/* Icon */
+/*
+## 標準アイコン
+
+MT で活用されているアイコンは 14x14 標準的なアイコンです。
+HTML要素は限定していませんが、左側にアイコンを配置したい場合は .icon-left-wide を追記してください。
+
+```
+<table style="width:90%">
+<tr>
+<td><p class="icon-delete icon-left-wide">削除 <code>.icon-delete</code></p></td>
+<td><p class="icon-plus icon-left-wide">プラス <code>.icon-plus</code></p></td>
+<td><p class="icon-minus icon-left-wide">マイナス <code>.icon-minus</code></p></td>
+<td><p class="icon-remove icon-left-wide">取り除く <code>.icon-remove</code></p></td>
+</tr>
+</table>
+```
+*/
+
 .icon16 {
     display: inline-block;
     width: 16px;
@@ -19,8 +36,27 @@
     background-image: url(../images/status_icons/icon-minus.png);
 }
 .icon-remove {
-    background-image: url(../images/status_icons/icon-remove.png);    
+    background-image: url(../images/status_icons/icon-remove.png);
 }
+
+/*
+## アクションアイコン
+
+ラベルがないアクションを促すアイコンを作りたいときに .action-icon と .icon16 を追記します。
+&gt;a&lt;ようなインラインタグでも使用することができます。
+
+```
+<table style="width:90%">
+<tr>
+<td><a class="icon-delete icon16 action-icon">削除</a></td>
+<td><a class="icon-plus icon16 action-icon">プラス</a></td>
+<td><a class="icon-minus icon16 action-icon">マイナス</a></td>
+<td><a class="icon-remove icon16 action-icon">取り除く</a></td>
+</tr>
+</table>
+```
+*/
+
 .action-icon {
     border-radius: 8px;
     -moz-border-radius: 8px;
@@ -30,6 +66,34 @@
     background-color: #c0c6c9;
 }
 
+
+/*
+## アイコンの配置
+
+クラス名を変更するだけで様々な大きさのアイコンを好きな場所に配置することができます。
+
+- 左側（小アイコン）.icon-left-mini
+- 右側（小アイコン）.icon-right-mini
+- 左側（中アイコン）.icon-left
+- 右側（中アイコン）.icon-right
+- 左側（大アイコン）.icon-left-wide
+- 右側（大アイコン）.icon-right-wide
+- 左側（特大アイコン）.icon-left-xwide
+- 右側（特大アイコン）.icon-right-xwide
+
+```
+<ul>
+<li><span class="icon-success icon-mini-left">成功</span></li>
+<li><span class="icon-success icon-mini-right">成功</span></li>
+<li><span class="icon-feed icon-left">フィード</span></li>
+<li><span class="icon-feed icon-right">フィード</span></li>
+<li><span class="icon-delete icon-left-wide">削除</span></li>
+<li><span class="icon-delete icon-right-wide">削除</span></li>
+<li class="edit-template"><span class="website-tmpl icon-left-xwide">ウェブサイト</span></li>
+<li class="edit-template"><span class="website-tmpl icon-right-xwide">削除</span></li>
+</ul>
+```
+*/
 .icon-left {
     padding-left: 14px;
     background-repeat: no-repeat;
@@ -71,6 +135,53 @@
     background-position: right center;
 }
 
+/*
+## ステータスアイコン
+
+ステータスアイコンは 9x9 の小さなアイコンです。テキストに添えて表示させることを前提としています。
+HTML要素は限定していませんが、左側にアイコンを配置したい場合は .icon-left を追記してください。
+
+```
+<table style="width:90%">
+<tr>
+<td><p class="icon-batch icon-left">バッチ作業 <code>.icon-batch</code></p></td>
+<td><p class="icon-feed icon-left">フィード <code>.icon-feed</code></p></td>
+<td><p class="icon-feed-disabled icon-left">フィード（利用不可） <code>.icon-feed-disabled</code></p></td>
+</tr>
+<tr>
+<td><p class="icon-download icon-left">ダウンロード <code>.icon-download</code></p></td>
+<td><p class="icon-move icon-left">移動 <code>.icon-move</code></p></td>
+<td><p class="icon-create icon-left">作成 <code>.icon-create</code></p></td>
+</tr>
+<tr>
+<td><p class="icon-create-disabled icon-left">作成（不可） <code>.icon-create-disabled</code></p></td>
+<td><p class="icon-success icon-left">成功 <code>.icon-success</code></p></td>
+<td><p class="icon-error icon-left">エラー <code>.icon-error</code></p></td>
+</tr>
+<tr>
+<td><p class="icon-neutral icon-left">ニュートラル <code>.icon-nautral</code></p></td>
+<td><p class="icon-warning icon-left">警告 <code>.icon-warning</code></p></td>
+<td><p class="icon-trusted icon-left">信用できるユーザー <code>.icon-trusted</code></p></td>
+</tr>
+<tr>
+<td><p class="icon-banned icon-left">禁止ユーザー <code>.icon-banned</code></p></td>
+<td><p class="icon-authenticated icon-left">承認済ユーザー <code>.icon-authenticated</code></p></td>
+<td><p class="icon-related icon-left">関連 <code>.icon-related</code></p></td>
+</tr>
+<tr>
+<td><p class="icon-publish icon-left">公開 <code>.icon-publish</code></p></td>
+<td><p class="icon-draft icon-left">下書き <code>.icon-draft</code></p></td>
+<td><p class="icon-future icon-left">予定・予約 <code>.icon-spam</code></p></td>
+</tr>
+<tr>
+<td><p class="icon-pending icon-left">承認待ち <code>.icon-pending</code></p></td>
+<td><p class="icon-share icon-left">共有 <code>.icon-share</code></p></td>
+<td><p class="icon-spam icon-left">スパム <code>.icon-spam</code></p></td>
+</tr>
+</table>
+
+```
+*/
 .addnew { background-image: url(../images/status_icons/create.gif); }
 .icon-batch { background-image: url(../images/status_icons/batch.gif); }
 .icon-feed { background-image: url(../images/status_icons/feed.gif); }
@@ -95,6 +206,34 @@
 .icon-spam { background-image: url(../images/status_icons/warning.gif); }
 .icon-unpublish { background-image: url(../images/status_icons/unpublished.gif); }
 
+
+/*
+## テンプレート関連
+
+アイコンの中には <code>.edit-template</code> が親要素に記述されている必要があるので注意してください。
+
+```
+<table>
+<tr>
+<td><p class="icon-spinner icon-left">矢印 <code>.icon-spinner</code></p></td>
+<td class="active"><p class="icon-spinner icon-left">矢印（開） <code>.icon-spinner</code></p></td>
+</tr>
+<tr>
+<td class="edit-template"><p class="global-tmpl icon-left-wide">グローバルテンプレート <code>.global-tmpl</code></p></td>
+<td class="edit-template"><p class="website-tmpl icon-left-wide">Webサイトテンプレート <code>.website-tmpl</code></p></td>
+</tr>
+<tr>
+<td class="edit-template"><p class="blog-tmpl icon-left-wide">ブログテンプレート <code>.blog-tmpl</code></p></td>
+<td class="edit-template"><p class="global-tmpl error icon-left-wide">グローバルテンプレート エラー <code>.global-tmpl.error</code></p></td>
+</tr>
+<tr>
+<td class="edit-template"><p class="error-tmpl error icon-left-wide">エラーテンプレート <code>.error-tmpl.error</code></p></td>
+<td class="edit-template"><p class="blog-tmpl error icon-left-wide">ブログテンプレート エラー <code>.blog-tmpl.error</code></p></td>
+</tr>
+</table>
+```
+
+*/
 .icon-spinner { background-image: url(../images/arrow/spinner-right.png); }
 .active .icon-spinner { background-image: url(../images/arrow/spinner-bottom.png); }
 
@@ -106,6 +245,26 @@
 .edit-template .website-tmpl.error { background-image: url(../images/template/website-error.png); }
 .edit-template .blog-tmpl.error { background-image: url(../images/template/blog-error.png); }
 
+
+/*
+## ステータスウィジェット関連
+
+```
+<table class="edit-entry">
+<tr>
+<td class="stats-widget"><p class="icon-success icon-left">成功 <code>.icon-success</code></p></td>
+<td class="stats-widget"><p class="icon-view icon-left">ビュー（開） <code>.icon-view</code></p></td>
+<td class="stats-widget"><p class="icon-draft icon-left">下書き（開） <code>.icon-draft</code></p></td>
+</tr>
+<tr>
+<td class="stats-widget"><p class="icon-future icon-left">予約 <code>.icon-future</code></p></td>
+<td class="stats-widget"><p class="icon-pending icon-left">ペンディング（開） <code>.icon-pending</code></p></td>
+<td class="stats-widget"><p class="icon-spam icon-left">スパム（開） <code>.icon-spam</code></p></td>
+</tr>
+</table>
+```
+*/
+
 .edit-entry .stats-widget .icon-success { background-image: url(../images/status_icons/success-k.gif); }
 .edit-entry .stats-widget .icon-view { background-image: url(../images/status_icons/view-k.gif); }
 .edit-entry .stats-widget .icon-draft { background-image: url(../images/status_icons/draft-k.gif); }
@@ -113,6 +272,43 @@
 .edit-entry .stats-widget .icon-pending { background-image: url(../images/status_icons/warning-k.gif); }
 .edit-entry .stats-widget .icon-spam { background-image: url(../images/status_icons/warning-k.gif); }
 
+/*
+## その他のアイコン
+
+```
+<table>
+<tr>
+<td><p class="icon-plugins icon-left-wide">プラグイン <code>.icon-plugins</code></p></td>
+<td><p class="icon-search icon-left-wide">検索 <code>.icon-search</code></p></td>
+<td><p class="icon-trackbacks icon-left-wide">トラックバック <code>.icon-trackbacks</code></p></td>
+<td><p class="icon-comments icon-left-wide">コメント <code>.icon-comments</code></p></td>
+</tr>
+<tr>
+<td><p class="icon-log icon-left-wide">ログ <code>.icon-log</code></p></td>
+<td><p class="icon-import icon-left-wide">読み込み <code>.icon-import</code></p></td>
+<td><p class="icon-settings icon-left-wide">設定 <code>.icon-settings</code></p></td>
+<td><p class="icon-entry icon-left-wide">記事 <code>.icon-entry</code></p></td>
+</tr>
+<tr>
+<td><p class="icon-page icon-left-wide">ページ <code>.icon-page</code></p></td>
+<td><p class="icon-user icon-left-wide">ユーザー <code>.icon-user</code></p></td>
+<td><p class="icon-group icon-left-wide">グループ <code>.icon-group</code></p></td>
+<td><p class="icon-align-none icon-left-wide">寄せなし <code>.icon-align-none</code></p></td>
+</tr>
+<tr>
+<td><p class="icon-align-left icon-left-wide">左寄せ <code>.icon-align-left</code></p></td>
+<td><p class="icon-align-center icon-left-wide">中央寄せ <code>.icon-align-center</code></p></td>
+<td><p class="icon-align-right icon-left-wide">右寄せ <code>.icon-align-right</code></p></td>
+<td></td>
+</tr>
+<tr>
+<td><p class="icon-plugin-action icon-left-wide">プラグインアクション <code>.icon-plugin-action</code></p></td>
+<td><p class="icon-action icon-left-wide">アクション <code>.icon-action</code></p></td>
+<td class="action-link-list"><p class="icon-action icon-left-wide">アクション <code>.icon-action</code></p></td>
+</tr>
+</table>
+```
+*/
 .icon-plugins { background-image: url(../images/nav_icons/color/plugins.gif); }
 .icon-search { background-image: url(../images/nav_icons/color/search.gif); }
 .icon-trackbacks { background-image: url(../images/nav_icons/color/trackbacks.gif); }
@@ -142,6 +338,38 @@
     background-image: url(../images/status_icons/action.png);
 }
 
+/*
+## その他のミニアイコン
+
+```
+<table>
+<tr>
+<td><p class="icon-mini-view-site icon-left">サイト観覧 <code>.icon-mini-view-site</code></p></td>
+<td><p class="icon-mini-settings icon-left">設定 <code>.icon-mini-settings</code></p></td>
+<td><p class="icon-mini-delete icon-left">削除 <code>.icon-mini-delete</code></p></td>
+<td><p class="icon-mini-rebuild icon-left">再構築 <code>.icon-mini-rebuild</code></p></td>
+</tr>
+<tr>
+<td><p class="icon-mini-dashboard icon-left">ダッシュボード <code>.icon-mini-dashboard</code></p></td>
+<td><p class="icon-mini-templates icon-left">テンプレート <code>.icon-mini-templates</code></p></td>
+<td><p class="icon-mini-comments icon-left">コメント <code>.icon-mini-comments</code></p></td>
+<td><p class="icon-mini-docs icon-left">文書 <code>.icon-mini-docs</code></p></td>
+</tr>
+<tr>
+<td><p class="icon-mini-trackbacks icon-left">トラックバック <code>.icon-mini-trackbacks</code></p></td>
+<td><p class="icon-mini-entries icon-left">記事 <code>.icon-mini-entries</code></p></td>
+<td><p class="icon-mini-new-entry icon-left">新規記事 <code>.icon-mini-new-entry</code></p></td>
+<td><p class="icon-mini-pages icon-left">ページ <code>.icon-mini-pages</code></p></td>
+</tr>
+<tr>
+<td><p class="icon-mini-new-page icon-left">新規ページ <code>.icon-mini-new-page</code></p></td>
+<td><p class="icon-mini-assets icon-left">アセット <code>.icon-mini-assets</code></p></td>
+<td><p class="icon-mini-new-asset icon-left">新規アセット <code>.icon-mini-new-asset</code></p></td>
+<td></td>
+</tr>
+</table>
+```
+*/
 .icon-mini-view-site    { background-image: url(../images/nav_icons/mini/view-site.gif); }
 .icon-mini-settings     { background-image: url(../images/nav_icons/mini/settings.gif); }
 .icon-mini-delete       { background-image: url(../images/nav_icons/mini/delete.gif); }
@@ -159,7 +387,7 @@
 .icon-mini-new-asset    { background-image: url(../images/nav_icons/mini/asset-new.gif); }
 .icon-mini-delete span  { display: none; }
 
-.si img, 
+.si img,
 .view img  {
     background-repeat: no-repeat;
     background-position: center;
