@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '5.2', '5.0034' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '5.2', '5.0036' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '5.2.2',              '__PRODUCT_VERSION_ID__',
+        '5.2.6',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 1;
+        $RELEASE_NUMBER = 6;
     }
 
     $DebugMode = 0;
@@ -1628,11 +1628,9 @@ sub component {
 sub publisher {
     my $mt = shift;
     $mt = $mt->instance unless ref $mt;
-    unless ( $mt->{WeblogPublisher} ) {
-        require MT::WeblogPublisher;
-        $mt->{WeblogPublisher} = new MT::WeblogPublisher();
-    }
-    $mt->{WeblogPublisher};
+    require MT::WeblogPublisher;
+    $mt->request('WeblogPublisher')
+        || $mt->request( 'WeblogPublisher', new MT::WeblogPublisher() );
 }
 
 sub rebuild {
@@ -4223,7 +4221,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2012 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2013 Six Apart.
 All rights reserved.
 
 =cut

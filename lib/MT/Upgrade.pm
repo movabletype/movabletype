@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1118,7 +1118,7 @@ sub core_update_records {
     my $offset = $param{offset};
     my $count  = $param{count};
     if ( !$count ) {
-        $count = $class->count;
+        $count = $class->count( $param{terms} || undef );
     }
     return unless $count;
     if ($offset) {
@@ -1142,7 +1142,7 @@ sub core_update_records {
     return 1 if $DryRun;
 
     if ( !$sql || !$driver->sql($sql) ) {
-        my $iter = $class->load_iter( undef,
+        my $iter = $class->load_iter( $param{terms} || undef,
             { offset => $offset, limit => $MAX_ROWS + 1 } );
         my $start = time;
         my @list;

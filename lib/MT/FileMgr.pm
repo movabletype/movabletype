@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -34,6 +34,7 @@ sub can_write;
 sub mkpath;
 sub rename;
 sub delete;
+sub rmdir;
 sub content_is_updated {1}
 sub file_mod_time      {undef}
 sub file_size          {undef}

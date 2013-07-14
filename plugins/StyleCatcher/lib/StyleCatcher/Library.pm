@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,7 +12,7 @@ use base qw( MT::ErrorHandler Class::Accessor::Fast );
 use StyleCatcher::Util;
 
 my @KEYS = qw(description_label label order url class no_listify);
-__PACKAGE__->mk_accessors('key', @KEYS);
+__PACKAGE__->mk_accessors( 'key', @KEYS );
 
 sub new {
     my $pkg = shift;
@@ -20,19 +20,27 @@ sub new {
     return $pkg->new_default() unless $id;
     my $reg = MT->registry( stylecatcher_libraries => $id );
     if ( !defined $reg ) {
+
         # Possibly template set specified repository.
         # Will look for...
-        my $app  = MT->instance or return;
-        my $blog = $app->blog or return;
+        my $app  = MT->instance        or return;
+        my $blog = $app->blog          or return;
         my $set  = $blog->template_set or return;
-        $set     = MT->registry( template_sets => $set )
+        $set = MT->registry( template_sets => $set )
             if !ref $set;
+
+        require MT::Theme;
+        if ( my $theme = MT::Theme->load($id) ) {
+            $theme->__deep_localize_labels($set);
+        }
+
         $reg = $set->{stylecatcher_libraries}{$id}
             or return $pkg->new_default();
     }
     my $class = $reg && $reg->{class} ? $reg->{class} : 'Default';
     my $inst_class = 'StyleCatcher::Library::' . $class;
-    do { eval "require $inst_class"; 1; } or die $@;
+    do { eval "require $inst_class"; 1; }
+        or die $@;
     my $obj = bless { key => $id }, $inst_class;
     return $obj->init($reg);
 }

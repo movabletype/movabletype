@@ -314,6 +314,7 @@ tfoot .col.head{
     padding: 0 0 10px 10px;
 }
 #dialog_filter_content {
+    min-height: 85px;
     max-height: 420px;
     padding-top: 0;
     overflow: auto;

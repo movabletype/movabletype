@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -317,12 +317,13 @@ BEGIN {
                 },
                 float => {
                     base      => '__virtual.integer',
-                    condition => sub {0},
                     col_class => 'num',
+                    filter_tmpl => '<mt:Var name="filter_form_float">',
+                    data_format => '%.1f',
                     html      => sub {
                         my ( $prop, $obj ) = @_;
                         my $col = $prop->col;
-                        return sprintf "%0.1f", $obj->$col;
+                        return sprintf $prop->data_format, $obj->$col;
                     },
                     base_type => 'float',
                 },
@@ -954,6 +955,10 @@ BEGIN {
                     col         => 'id',
                     display     => 'none',
                     view_filter => [],
+                    condition => sub {
+                        my $prop = shift;
+                        return $prop->datasource->has_column('id') ? 1 : 0;
+                    },
                 },
                 pack => {
                     view  => [],
@@ -1669,7 +1674,10 @@ BEGIN {
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
                 { default => 'http://www.movabletype.org/update/', },
-            'CGIMaxUpload'          => { default => 20_480_000 },
+            'CGIMaxUpload' => {
+                handler => \&CGIMaxUpload,
+                default => 20_480_000,
+            },
             'DBUmask'               => { default => '0111', },
             'HTMLUmask'             => { default => '0111', },
             'UploadUmask'           => { default => '0111', },
@@ -1948,6 +1956,7 @@ BEGIN {
             'atom' => {
                 handler => 'MT::AtomServer',
                 script  => sub { MT->config->AtomScript },
+                type    => 'run_once',
             },
             'feeds' => {
                 handler => 'MT::App::ActivityFeeds',
@@ -2642,6 +2651,7 @@ sub load_core_permissions {
                 'handle_junk_for_all_trackbacks'        => 1,
                 'handle_not_junk'                       => 1,
                 'open_all_trackback_edit_screen'        => 1,
+                'open_all_comment_edit_screen'          => 1,
                 'open_blog_config_screen'               => 1,
                 'open_comment_edit_screen'              => 1,
                 'open_commenter_edit_screen'            => 1,
@@ -3113,6 +3123,19 @@ sub UserSessionCookiePath {
     }
 }
 
+sub CGIMaxUpload {
+    my $mgr = shift;
+    $mgr->set_internal( 'CGIMaxUpload', @_ ) if @_;
+
+    my $val = $mgr->get_internal('CGIMaxUpload');
+    return $mgr->default('CGIMaxUpload') unless $val;
+
+    require Scalar::Util;
+    return $mgr->default('CGIMaxUpload')
+        unless Scalar::Util::looks_like_number($val);
+    return $val;
+}
+
 1;
 __END__
 
@@ -3247,6 +3270,13 @@ C<SingleCommunity> setting. If C<SingleCommunity> is enabled, it
 returns a path that is the same for all blogs ('/'). If it is
 off, it returns a value that will yield the blog's relative
 URL path.
+
+=head2 CGIMaxUpload
+
+A L<MT::ConfigMgr> get/set method for the C<CGIMaxUpload>
+configuration setting. If the user sets invalid value for
+this directive, the system will be use a default value.
+
 
 =head1 LICENSE
 

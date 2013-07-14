@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -349,8 +349,11 @@ sub core_tags {
             TemplateNote => sub {''},
 
             ## System
-            Include     => \&MT::Template::Tags::System::_hdlr_include,
-            Link        => \&MT::Template::Tags::System::_hdlr_link,
+            Include      => \&MT::Template::Tags::System::_hdlr_include,
+            Link         => \&MT::Template::Tags::System::_hdlr_link,
+            CanonicalURL => \&MT::Template::Tags::System::_hdlr_canonical_url,
+            CanonicalLink =>
+                \&MT::Template::Tags::System::_hdlr_canonical_link,
             Date        => \&MT::Template::Tags::System::_hdlr_sys_date,
             AdminScript => \&MT::Template::Tags::System::_hdlr_admin_script,
             CommentScript =>
@@ -413,6 +416,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_description',
             BlogLanguage =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_language',
+            BlogDateLanguage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_date_language',
             BlogURL => '$Core::MT::Template::Tags::Blog::_hdlr_blog_url',
             BlogArchiveURL =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_archive_url',
@@ -445,6 +450,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Website::_hdlr_website_description',
             WebsiteLanguage =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_language',
+            WebsiteDateLanguage =>
+                '$Core::MT::Template::Tags::Website::_hdlr_website_date_language',
             WebsiteURL =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_url',
             WebsitePath =>
@@ -1112,7 +1119,7 @@ sub build_date {
     my $lang 
         = $args->{language}
         || $ctx->var('local_lang_id')
-        || ( $blog && $blog->language );
+        || ( $blog && $blog->date_language );
     if ( $args->{utc} ) {
         my ( $y, $mo, $d, $h, $m, $s )
             = $ts
@@ -1182,7 +1189,8 @@ EOT
         else {
             my $old_lang = MT->current_language;
             MT->set_language($lang) if $lang && ( $lang ne $old_lang );
-            my $date = relative_date( $ts, time, $blog, $args->{format}, $r );
+            my $date = relative_date( $ts, time, $blog, $args->{format}, $r,
+                $lang );
             MT->set_language($old_lang) if $lang && ( $lang ne $old_lang );
             if ($date) {
                 return $date;
@@ -1664,6 +1672,9 @@ sub _hdlr_if {
     if ( ( defined $value ) && $value ) {
         if ( ref($value) eq 'ARRAY' ) {
             return @$value ? 1 : 0;
+        }
+        elsif ( ref($value) eq 'HASH' ) {
+            return %$value ? 1 : 0;
         }
         return 1;
     }
@@ -2423,7 +2434,7 @@ sub _hdlr_set_var {
 
     my $existing = $ctx->var($name);
     $existing = '' unless defined $existing;
-    if ( 'HASH' eq ref($existing) ) {
+    if ( 'HASH' eq ref($existing) && defined $key ) {
         $existing = $existing->{$key};
     }
     elsif ( 'ARRAY' eq ref($existing) ) {
@@ -3923,7 +3934,7 @@ package MT::Template::Tags::System;
 use strict;
 
 use MT;
-use MT::Util qw( offset_time_list );
+use MT::Util qw( offset_time_list encode_html );
 use MT::Request;
 
 {
@@ -3980,7 +3991,7 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
         # the block (so any variables/context changes made in that template
         # affect the contained template code)
         my $tokens = $ctx->stash('tokens');
-        local $ctx->{__stash}{vars}{$name} = sub {
+        local $ctx->{__stash}{vars}{lc $name} = sub {
             my $builder = $ctx->stash('builder');
             my $html = $builder->build( $ctx, $tokens, $cond );
             return $ctx->error( $builder->errstr ) unless defined $html;
@@ -4267,17 +4278,16 @@ B<Example:> Passing Parameters to a Template Module
         # Try to read from cache
         my $enc               = MT->config->PublishCharset;
         my $cache_expire_type = 0;
-        my $cache_enabled 
-            = $blog
-            && $blog->include_cache
-            && (
-               ( $arg->{cache} && $arg->{cache} > 0 )
+        my $cache_enabled     = 0;
+
+        if ( $blog && $blog->include_cache ) {
+            $cache_expire_type = $tmpl->cache_expire_type || 0;
+            $cache_enabled = ( ( $arg->{cache} && $arg->{cache} > 0 )
             || $arg->{cache_key}
             || $arg->{key}
             || ( exists $arg->{ttl} )
-            || ( ( $cache_expire_type = ( $tmpl->cache_expire_type || 0 ) )
-                != 0 )
-            ) ? 1 : 0;
+            || ( $cache_expire_type != 0 ) ) ? 1 : 0;
+        }
         my $cache_key 
             = $arg->{cache_key}
             || $arg->{key}
@@ -4791,6 +4801,84 @@ sub _hdlr_link {
             unless $arg->{with_index};
         $link;
     }
+}
+
+###########################################################################
+
+=head2 CanonicalURL
+
+Generates the canonical URL to template built now.
+
+B<Attributes:>
+
+=over 4
+
+=item * current_mapping (optional; default "0")
+
+If not set to 1, use the URL of preferred mapping if current archive type
+has some mapping.
+
+=item * with_index (optional; default "0")
+
+If not set to 1, remove index filenames (by default, index.html)
+from resulting links.
+
+=back
+
+B<Examples:>
+    <link rel="canonical" href="<mt:CanonicalURL encode_html="1">" />
+
+=cut
+
+sub _hdlr_canonical_url {
+    my ( $ctx, $args ) = @_;
+
+    my $blog = $ctx->stash('blog')
+        or return '';
+    my $url
+        = (   !$args->{current_mapping}
+            && $ctx->stash('preferred_mapping_url') )
+        || $ctx->stash('current_mapping_url');
+    $url = $url->() if ref $url;
+
+    return '' unless $url;
+
+    $args->{with_index}
+        ? $url
+        : MT::Util::strip_index( $url, $blog );
+}
+
+###########################################################################
+
+=head2 CanonicalLink
+
+Generates a link tag of the canonical URL to template built now.
+
+B<Attributes:>
+
+=over 4
+
+=item * current_mapping (optional; default "0")
+
+If not set to 1, use the URL of preferred mapping if current archive type
+has some mapping.
+
+=item * with_index (optional; default "0")
+
+If not set to 1, remove index filenames (by default, index.html)
+from resulting links.
+
+=back
+
+=cut
+
+sub _hdlr_canonical_link {
+    my ( $ctx, $args ) = @_;
+
+    my $handler = $ctx->handler_for('canonicalurl');
+    my $url = $handler->invoke( $ctx, $args ) or return '';
+
+    '<link rel="canonical" href="' . encode_html($url) . '" />';
 }
 
 ###########################################################################
@@ -5681,7 +5769,11 @@ B<Example:>
             'p' =>
                 "<mt:PagerBlock><mt:IfCurrentPage><mt:Var name='__value__'></mt:IfCurrentPage></mt:PagerBlock>"
             ,                                        # current page number
+            '_Z' => "<MTArchiveDate format='%Y/%m'>"
+            ,    # year/month, used as default archive map
+
         );
+        $format =~ s!%y/%m!%_Z!g if defined $format;
         $format =~ s!%([_-]?[A-Za-z])!$f{$1}!g if defined $format;
 
         # now build this template and return result

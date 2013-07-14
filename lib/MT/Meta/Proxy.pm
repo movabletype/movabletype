@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -459,8 +459,18 @@ sub load_objects {
     my $pkg      = $proxy->{pkg};
     my $meta_pkg = $proxy->meta_pkg;
 
-    my @objs = $meta_pkg->search(
-        { %{ $proxy->{__pkeys} }, $col ? ( type => $col ) : () } );
+    my $pkeys;
+    foreach my $pkey ( keys %{ $proxy->{__pkeys} } ) {
+        next if ( $pkey eq 'type' );
+        $pkeys->{$pkey} = $proxy->{__pkeys}->{$pkey};
+    }
+    my @objs;
+    if ( keys %{$pkeys} ) {
+        $pkeys->{type} = $proxy->{__pkeys}->{type}
+            if exists $proxy->{__pkeys}->{type};
+        @objs = $meta_pkg->search(
+            { %{ $pkeys }, $col ? ( type => $col ) : () } )
+    }
 
     if ( !$col ) {
         $proxy->{__loaded_all_objects} = 1;

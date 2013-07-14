@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -163,6 +163,8 @@ sub delete_filters {
     return $app->errtrans('Invalid request')
         unless $app->validate_magic;
 
+    $app->setup_filtered_ids
+        if $app->param('all_selected');
     my @ids = $app->param('id');
 
     # handling either AJAX request and normal request

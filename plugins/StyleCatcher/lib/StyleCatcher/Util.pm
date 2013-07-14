@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -202,6 +202,27 @@ sub file_mgr {
     my $filemgr = MT::FileMgr->new('Local')
         or die MT::FileMgr->errstr;
     $filemgr;
+}
+
+sub load_meta_fields {
+
+    # Load blog_meta
+    my $blog = MT->model('blog');
+    $blog->install_meta(
+        {   column_defs => {
+                'current_style'  => 'string meta',
+            }
+        }
+    );
+
+    # Load website_meta
+    my $website = MT->model('website');
+    $website->install_meta(
+        {   column_defs => {
+                'current_style'  => 'string meta',
+            }
+        }
+    );
 }
 
 1;

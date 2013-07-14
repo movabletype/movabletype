@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -286,7 +286,7 @@ sub static_file_path_from_id {
 }
 
 sub static_file_url_from_id {
-    File::Spec->catdir( MT->app->support_directory_url,
+    MT::Util::caturl( MT->app->support_directory_url,
         'theme_static', $_[0] )
         . '/';
 }

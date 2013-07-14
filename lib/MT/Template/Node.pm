@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -245,7 +245,7 @@ sub upgrade {
     my $node = shift;
     my $i;
     for my $v (@$node) {
-        _upgrade( \$v );
+        _upgrade( \$v ) if defined($v);
         $i++;
         ## Don't decode parents.
         last if $i >= 5;
@@ -260,12 +260,12 @@ sub _upgrade {
     }
     elsif ( $ref eq 'HASH' ) {
         for my $v ( values %{ $_[0] } ) {
-            _upgrade( \$v );
+            _upgrade( \$v ) if defined($v);
         }
     }
     elsif ( $ref eq 'ARRAY' ) {
         for my $v ( @{ $_[0] } ) {
-            _upgrade( \$v );
+            _upgrade( \$v ) if defined($v);
         }
     }
     elsif ( $ref eq 'SCALAR' ) {

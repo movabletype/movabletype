@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -329,7 +329,7 @@ sub global_perms {
                     $cur_perm =~ s/'$perm',?// if defined $cur_perm;
 
                    # the "has no permission" status is NULL, not empty string.
-                    if ( $cur_perm eq '' ) {
+                    if ( ( $cur_perm || '' ) eq '' ) {
                         $cur_perm = undef;
                     }
                 }

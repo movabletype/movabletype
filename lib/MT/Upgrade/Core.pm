@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -188,6 +188,15 @@ sub seed_database {
         MT::Author->pack_external_id( $param{user_external_id} ) )
         if exists $param{user_external_id};
     $author->auth_type( MT->config->AuthenticationModule );
+    $author->save
+        or return $self->error(
+        $self->translate_escape(
+            "Error saving record: [_1].",
+            $author->errstr
+        )
+        );
+
+    $author->created_by( $author->id );
     $author->save
         or return $self->error(
         $self->translate_escape(

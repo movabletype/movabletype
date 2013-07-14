@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -122,6 +122,7 @@ sub thumbnail_file {
     return undef unless $i_h && $i_w;
 
     # Pretend the image is already square, for calculation purposes.
+    my $auto_size = 1;
     if ( $param{Square} ) {
         require MT::Image;
         my %square
@@ -133,19 +134,28 @@ sub thumbnail_file {
         elsif ( !$param{Width} && $param{Height} ) {
             $param{Width} = $param{Height};
         }
+        $auto_size = 0;
     }
     if ( my $scale = $param{Scale} ) {
         $param{Width}  = int( ( $i_w * $scale ) / 100 );
         $param{Height} = int( ( $i_h * $scale ) / 100 );
+        $auto_size     = 0;
     }
     if ( !exists $param{Width} && !exists $param{Height} ) {
         $param{Width}  = $i_w;
         $param{Height} = $i_h;
+        $auto_size     = 0;
     }
 
     # find the longest dimension of the image:
-    my ( $n_h, $n_w )
+    my ( $n_h, $n_w, $scaled )
         = _get_dimension( $i_h, $i_w, $param{Height}, $param{Width} );
+    if ( $auto_size && $scaled eq 'h' ) {
+        delete $param{Width} if exists $param{Width};
+    }
+    elsif ( $auto_size && $scaled eq 'w' ) {
+        delete $param{Height} if exists $param{Height};
+    }
 
     my $file = $asset->thumbnail_filename(%param) or return;
     my $thumbnail = File::Spec->catfile( $asset_cache_path, $file );
@@ -156,14 +166,18 @@ sub thumbnail_file {
             >= $fmgr->file_mod_time($file_path) )
         )
     {
-        require MT::Image;
-        my $img = new MT::Image( Filename => $thumbnail );
-        my ( $t_w, $t_h ) = ( $img->{width}, $img->{height} );
-        if (   ( $param{Square} && $t_h == $t_w )
-            or ( !$param{Square} && $t_h != $t_w ) )
-        {
-            return ( $thumbnail, $n_w, $n_h );
+        my $already_exists = 1;
+        if ( $asset->image_width != $asset->image_height ) {
+            require MT::Image;
+            my ( $t_w, $t_h )
+                = MT::Image->get_image_info( Filename => $thumbnail );
+            if (   ( $param{Square} && $t_h != $t_w )
+                || ( !$param{Square} && $t_h == $t_w ) )
+            {
+                $already_exists = 0;
+            }
         }
+        return ( $thumbnail, $n_w, $n_h ) if $already_exists;
     }
 
     # stale or non-existent thumbnail. let's create one!
@@ -257,7 +271,7 @@ sub _get_dimension {
     $n_h = 1 unless $n_h;
     $n_w = 1 unless $n_w;
 
-    return ( $n_h, $n_w );
+    return ( $n_h, $n_w, $scale );
 }
 
 sub thumbnail_filename {
@@ -497,8 +511,12 @@ sub on_upload {
         my ( $w, $h ) = map $param->{$_}, qw( thumb_width thumb_height );
         my ($pseudo_thumbnail_url)
             = $asset->thumbnail_url( Height => $h, Width => $w, Pseudo => 1 );
-        my $thumbnail
-            = $asset->thumbnail_filename( Height => $h, Width => $w );
+        ( my $thumbnail = $pseudo_thumbnail_url ) =~ s|^.*/||;
+        if ( !$thumbnail ) {
+            $thumbnail = $asset->thumbnail_file( Height => $h, Width => $w );
+            $thumbnail = File::Basename::basename($thumbnail);
+        }
+
         my $pseudo_thumbnail_path
             = File::Spec->catfile( $asset->_make_cache_path( undef, 1 ),
             $thumbnail );

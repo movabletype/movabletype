@@ -1031,3 +1031,5 @@ button,
     font-size: 90%; }
   .trackback p {
     margin: 0.809em 0 0; }
+
+.hidden { display: none; }

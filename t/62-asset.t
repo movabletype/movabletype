@@ -6,8 +6,11 @@ use File::Copy;
 
 use lib qw( t t/lib ./extlib ./lib);
 
-use Test::More tests => 60;
+use Test::More tests => 68;
 use MT::Test qw(:db :data);
+
+use Image::Size;
+$Image::Size::NO_CACHE = 1;
 
 use MT;
 use MT::Asset;
@@ -27,10 +30,34 @@ isa_ok($mt, 'MT', 'Is MT');
     my $cache_path = sprintf("%04d/%02d", $year + 1900, $mon + 1);
 #    is($asset->class, 'Image', 'class');
     is($asset->class_label, 'Image', 'class_label');
-    is(($asset->thumbnail_file({Height => 100, Width => 100}))[0], "t/site/assets_c/$cache_path/test-thumb-640x480-1.jpg", 'thumbnail');
+
+    {
+        note('Resize to 100 x 100 without square option');
+        is(($asset->thumbnail_file(Height => 100, Width => 100))[0], "t/site/assets_c/$cache_path/test-thumb-100x100-1.jpg", 'thumbnail file name');
+        my ($width, $height) = imgsize("t/site/assets_c/$cache_path/test-thumb-100x100-1.jpg");
+        is($width, 100, "resized image's width: 100");
+        is($height, 75, "resized image's height: 100");
+    }
+
+    {
+        note('Resize to 100 x 100 with square option');
+        is(($asset->thumbnail_file(Height => 100, Square => 1))[0], "t/site/assets_c/$cache_path/test-thumb-100x100-1.jpg", 'thumbnail file name');
+        my ($width, $height) = imgsize("t/site/assets_c/$cache_path/test-thumb-100x100-1.jpg");
+        is($width, 100, "resized image's width: 100");
+        is($height, 100, "resized image's height: 100");
+    }
+
+    {
+        note('Resize to 100 x 100 without square option again');
+        is(($asset->thumbnail_file(Height => 100, Width => 100))[0], "t/site/assets_c/$cache_path/test-thumb-100x100-1.jpg", 'thumbnail file name');
+        my ($width, $height) = imgsize("t/site/assets_c/$cache_path/test-thumb-100x100-1.jpg");
+        is($width, 100, "resized image's width: 100");
+        is($height, 75, "resized image's height: 100");
+    }
+
     is($asset->image_width, 640, 'image_width'); 
     is($asset->image_height, 480, 'height');
-    is($asset->as_html, '<a href="http://narnia.na/nana/images/test.jpg">View image</a>', 'as_html');
+    is($asset->as_html, '<a href="http://narnia.na/nana/images/test.jpg">Image photo</a>', 'as_html');
     is($asset->as_html({popup => 1, popup_asset_id => $asset->id, include => 1}), qq(<a href="http://narnia.na/nana/images/test.jpg" onclick="window.open('http://narnia.na/nana/images/test.jpg','popup','width=640,height=480,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">View image</a>), 'as_html_popup');
     is($asset->as_html({include => 1, wrap_text => 1, align => 'right'}), '<img alt="Image photo" src="http://narnia.na/nana/images/test.jpg" width="640" height="480" class="mt-image-right" style="float: right; margin: 0 0 20px 20px;" />', 'as_html_include');
 

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -588,9 +588,9 @@ sub rebuild_entry {
     }
     return 1 if $blog->is_dynamic;
 
-    my $categories_for_rebuild = $entry->categories;
+    my $categories_for_rebuild;
     if ( my $ids = $param{OldCategories} ) {
-        my %new_ids = map { $_->id => 1 } @$categories_for_rebuild;
+        my %new_ids = map { $_->id => 1 } @{$entry->categories};
         my @old_ids = grep { !$new_ids{$_} } split( ',', $ids );
 
         if (@old_ids) {
@@ -598,6 +598,7 @@ sub rebuild_entry {
                 MT::Category->load( { id => \@old_ids } ) );
         }
     }
+    push @$categories_for_rebuild, ( map { $_ } @{$entry->categories} );
 
     my $at
         = $param{PreferredArchiveOnly} ? $blog->archive_type_preferred
@@ -1170,11 +1171,12 @@ sub rebuild_file {
 #     die MT->translate('The same archive file exists. You should change the basename or the archive path. ([_1])', $file) if $fcount > 0;
 # }
 
-    my $url = $blog->archive_url;
-    $url = $blog->site_url
+    my $base_url = $blog->archive_url;
+    $base_url = $blog->site_url
         if $archiver->entry_based && $archiver->entry_class eq 'page';
-    $url .= '/' unless $url =~ m|/$|;
-    $url .= $map->{__saved_output_file};
+    $base_url .= '/' unless $base_url =~ m|/$|;
+    my $url = $base_url . $map->{__saved_output_file};
+    $url =~ s{(?<!:)//+}{/}g;
 
     my $tmpl_id = $map->template_id;
 
@@ -1200,7 +1202,6 @@ sub rebuild_file {
     }
 
     my ($rel_url) = ( $url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)| );
-    $rel_url =~ s|//+|/|g;
 
     # Clear out all the FileInfo records that might point at the page
     # we're about to create
@@ -1367,6 +1368,22 @@ sub rebuild_file {
         $ctx->stash( 'entry', $entry ) if $entry;
         $ctx->stash( '_basename',
             fileparse( $map->{__saved_output_file}, qr/\.[^.]*/ ) );
+        $ctx->stash( 'current_mapping_url', $url );
+
+        if ( !$map->is_preferred ) {
+            my $category = $ctx->{__stash}{archive_category};
+            my $author   = $ctx->{__stash}{author};
+            $ctx->stash(
+                'preferred_mapping_url',
+                sub {
+                    my $file = $mt->archive_file_for( $entry, $blog, $at,
+                        $category, undef, $start, $author );
+                    my $url = $base_url . $file;
+                    $url =~ s{(?<!:)//+}{/}g;
+                    $url;
+                }
+            );
+        }
 
         require MT::Request;
         MT::Request->instance->cache( 'build_template', $tmpl );
@@ -1584,13 +1601,13 @@ sub rebuild_indexes {
             )
         ) unless $file ne '';
         my $url = join( '/', $blog->site_url, $file );
+        $url =~ s{(?<!:)//+}{/}g;
         unless ( File::Spec->file_name_is_absolute($file) ) {
             $file = File::Spec->catfile( $site_root, $file );
         }
 
         # Everything from here out is identical with rebuild_file
         my ($rel_url) = ( $url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)| );
-        $rel_url =~ s|//+|/|g;
         ## Untaint. We have to assume that we can trust the user's setting of
         ## the site_path and the template outfile.
         ($file) = $file =~ /(.+)/s;
@@ -1683,7 +1700,8 @@ sub rebuild_indexes {
                 force        => $force,
             )
             );
-        $ctx->stash( 'blog', $blog );
+        $ctx->stash( 'blog',                $blog );
+        $ctx->stash( 'current_mapping_url', $url );
 
         require MT::Request;
         MT::Request->instance->cache( 'build_template', $tmpl );
@@ -1995,6 +2013,7 @@ sub remove_entry_archive_file {
     my $at    = $param{ArchiveType} || 'Individual';
     my $cat   = $param{Category};
     my $auth  = $param{Author};
+    my $force = exists $param{Force} ? $param{Force} : 1;
 
     require MT::TemplateMap;
     my $blog = $param{Blog};
@@ -2020,7 +2039,10 @@ sub remove_entry_archive_file {
         = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
 
     require File::Spec;
+    require MT::PublishOption;
     for my $map (@map) {
+        next if !$force && $map->build_type == MT::PublishOption::ASYNC();
+
         my $file
             = $mt->archive_file_for( $entry, $blog, $at, $cat, $map, undef,
             $auth );
@@ -2072,17 +2094,35 @@ sub _delete_archive_file {
         return '' unless $archiver;
 
         my $file;
+        my $cache_file = MT::Request->instance->cache('file');
+        unless ($cache_file) {
+            MT::Request->instance->cache( 'file', $cache_file = {} );
+        }
+        my $cache_key = join ':',
+            (
+            $entry     ? $entry->id  : '0',
+            $blog      ? $blog->id   : '0',
+            $at        ? $at         : 'None',
+            $cat       ? $cat->id    : '0',
+            $map       ? $map->id    : '0',
+            $timestamp ? $timestamp  : '0',
+            $author    ? $author->id : '0'
+            );
+        if ( $file = $cache_file->{$cache_key} ) {
+            return $file;
+        }
+
         if ( $blog->is_dynamic ) {
             require MT::TemplateMap;
             $map = MT::TemplateMap->new;
             $map->file_template( $archiver->dynamic_template );
         }
         unless ($map) {
-            my $cache = MT::Request->instance->cache('maps');
-            unless ($cache) {
-                MT::Request->instance->cache( 'maps', $cache = {} );
+            my $cache_map = MT::Request->instance->cache('maps');
+            unless ($cache_map) {
+                MT::Request->instance->cache( 'maps', $cache_map = {} );
             }
-            unless ( $map = $cache->{ $blog->id . $at } ) {
+            unless ( $map = $cache_map->{ $blog->id . $at } ) {
                 require MT::TemplateMap;
                 $map = MT::TemplateMap->load(
                     {   blog_id      => $blog->id,
@@ -2090,7 +2130,7 @@ sub _delete_archive_file {
                         is_preferred => 1
                     }
                 );
-                $cache->{ $blog->id . $at } = $map if $map;
+                $cache_map->{ $blog->id . $at } = $map if $map;
             }
         }
         my $file_tmpl;
@@ -2146,6 +2186,7 @@ sub _delete_archive_file {
             my $ext = $blog->file_extension;
             $file .= '.' . $ext if $ext;
         }
+        $cache_file->{$cache_key} = $file;
         $file;
     }
 }

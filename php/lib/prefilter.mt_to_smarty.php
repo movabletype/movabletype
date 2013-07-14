@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -274,6 +274,9 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                     if (count($args)) {
                         # else-if
                         $smart_source .= $ldelim.'if $elseif_conditional'.$rdelim;
+                    } else {
+                        # else
+                        $smart_source .= $ldelim.'if !$conditional'.$rdelim;
                     }
                 }
             } elseif ($open != '/' && $conditional && $close != '/') {

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -199,13 +199,13 @@ class Thumbnail {
         } elseif ($this->dest_w > 0 || $this->dest_h > 0) {
             $thumb_w_name = 'auto';
             $thumb_h_name = 'auto';
-            $x = $this->dest_w; if ($this->dest_w > 0) $thumb_w;
-            $y = $this->dest_h; if ($this->dest_h > 0) $thumb_h;
+            $x = $this->dest_w;
+            $y = $this->dest_h;
             $pct = $this->dest_w > 0 ? ($x / $thumb_w) : ($y / $thumb_h);
             $thumb_w = (int)($thumb_w * $pct);
             $thumb_h = (int)($thumb_h * $pct);
-            if ($this->dest_w > 0) $thumb_w_name = $this->dest_w;
-            if ($this->dest_h > 0) $thumb_h_name = $this->dest_h;
+            if ($this->dest_w > 0 && $thumb_w == $this->dest_w ) $thumb_w_name = $this->dest_w;
+            if ($this->dest_h > 0 && $thumb_h == $this->dest_h ) $thumb_h_name = $this->dest_h;
         }
 
         return array($thumb_w, $thumb_h, $thumb_w_name, $thumb_h_name);
@@ -292,11 +292,16 @@ class Thumbnail {
         # Generate
         $dest_file = $this->dest_file();
         if (file_exists($dest_file)) {
-            list ($tmp_w, $tmp_h) = getimagesize($dest_file);
-            $ds = $this->dest_square;
-            $compulsive_resize =
-                (($ds && $tmp_w != $tmp_h) || (!$ds && $tmp_w == $tmp_h))
-                ? 1 : 0 ;
+            if ($this->src_w == $this->src_h) {
+                $compulsive_resize = 0;
+            }
+            else {
+                list ($tmp_w, $tmp_h) = getimagesize($dest_file);
+                $ds = $this->dest_square;
+                $compulsive_resize =
+                    (($ds && $tmp_w != $tmp_h) || (!$ds && $tmp_w == $tmp_h))
+                    ? 1 : 0 ;
+            }
         }
         else {
             $compulsive_resize = 1;
@@ -326,8 +331,46 @@ class Thumbnail {
                 }
             }
 
-            # Create thumbnail
+            # Create dest image
             $this->dest_img = imagecreatetruecolor ( $thumb_w, $thumb_h );
+
+            # Check transparent color support
+            # Code from https://github.com/maxim/smart_resize_image/blob/master/smart_resize_image.function.php
+            if ( ( $this->src_type == 1) || ( $this->src_type == 3 ) ) {
+                $trnprt_indx = imagecolortransparent( $this->src_img );
+
+                // If we have a specific transparent color
+                if ($trnprt_indx >= 0) {
+
+                    // Get the original image's transparent color's RGB values
+                    $trnprt_color = imagecolorsforindex( $this->src_img, $trnprt_indx );
+
+                    // Allocate the same color in the new image resource
+                    $trnprt_indx = imagecolorallocate( $this->dest_img, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
+
+                    // Completely fill the background of the new image with allocated color.
+                    imagefill( $this->dest_img, 0, 0, $trnprt_indx );
+
+                    // Set the background color for new image to transparent
+                    imagecolortransparent( $this->dest_img, $trnprt_indx );
+                } elseif ( $this->src_type == 3 ) {
+                    // Always make a transparent background color for PNGs that don't have one allocated already
+
+                    // Turn off transparency blending (temporarily)
+                    imagealphablending( $this->dest_img, false );
+
+                    // Create a new transparent color for image
+                    $color = imagecolorallocatealpha( $this->dest_img, 0, 0, 0, 127 );
+
+                    // Completely fill the background of the new image with allocated color.
+                    imagefill( $this->dest_img, 0, 0, $color );
+
+                    // Restore transparency blending
+                    imagesavealpha( $this->dest_img, true );
+                }
+            }
+
+            # Create thumbnail
             $result = imagecopyresampled ( $this->dest_img, $this->src_img, 0, 0, $src_x, $src_y,
                     $thumb_w, $thumb_h, $target_w, $target_h);
 

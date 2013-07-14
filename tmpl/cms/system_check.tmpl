@@ -36,17 +36,6 @@
   </li>
 </ul>
 
-<mt:setVarBlock name="syscheck_script">
-<script type="text/javascript">
-jQuery(function() {
-jQuery('.msg-warning').mtToggleField({
-  detail_class: 'exception'
-});
-
-});
-</script>
-</mt:setVarBlock>
-
 <mtapp:setting
     id="system_check"
     label="System Info (MTCheck)"
@@ -62,5 +51,20 @@ jQuery('.msg-warning').mtToggleField({
         </mt:if>
     </div>
 </mtapp:setting>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  jQuery('.msg-warning').each( function(){
+    var $this = jQuery(this);
+    var $detail = $this.find('span.exception');
+    $detail.hide();
+    $this.find('.detail-link').bind( 'mousedown', function() {
+      if ( $detail.hasClass('active') ) {
+        $detail.hide().removeClass('active');
+      } else {
+        $detail.show().addClass('active').css('display', 'block');
+      }
+    });
+  });
+</mt:setVarBlock>
 
 <mt:include name="include/footer.tmpl">

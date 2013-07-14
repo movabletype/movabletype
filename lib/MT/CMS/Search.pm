@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1132,7 +1132,7 @@ sub do_search_replace {
                 ($obj) = grep { $_->id == $quicksearch_id } @data;
             }
 
-            if ($obj) {
+            if ( $obj && $type ne 'log' ) {
                 my %args = (
                     _type         => $type,
                     id            => $obj->id,
@@ -1277,8 +1277,7 @@ sub do_search_replace {
             = 'CODE' eq ref( $search_cols->{$field} )
             ? $search_cols->{$field}->()
             : exists( $search_api->{plugin} )
-            ? $search_api->{plugin}
-            ->translate( $search_cols->{$field} )
+            ? $search_api->{plugin}->translate( $search_cols->{$field} )
             : $app->translate( $search_cols->{$field} );
         push @search_cols, \%search_field;
     }

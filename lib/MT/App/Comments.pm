@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -918,15 +918,6 @@ sub post {
         "403 Throttled" );
 
     my $cfg = $app->config;
-    if ( my $state = $q->param('comment_state') ) {
-        require MT::Serialize;
-        my $ser = MT::Serialize->new( $cfg->Serializer );
-        $state = $ser->unserialize( pack 'H*', $state );
-        $state = $$state;
-        for my $f ( keys %$state ) {
-            $q->param( $f, $state->{$f} );
-        }
-    }
     unless ( $cfg->AllowComments && $entry->allow_comments eq '1' ) {
         return $app->handle_error(
             $app->translate("Comments are not allowed on this entry.") );
@@ -1321,7 +1312,7 @@ sub _make_comment {
     my $nick  = $q->param('author');
     my $email = $q->param('email');
     my ( $sess_obj, $commenter );
-    if ( $blog->accepts_registered_comments ) {
+    if ( $blog->accepts_registered_comments && !$app->param('bakecookie') ) {
         ( $sess_obj, $commenter ) = $app->_get_commenter_session();
     }
     if ( $commenter && ( 'do_reply' ne $app->mode ) ) {
@@ -1476,6 +1467,8 @@ sub handle_sign_in {
             }
         }
     }
+
+    $app->run_callbacks( 'post_signin.external', $app, $result );
 
     return $app->handle_error(
         $app->errstr() || $app->translate(
@@ -1801,6 +1794,10 @@ sub do_preview {
         $app->translate(
             "Somehow, the entry you tried to comment on does not exist")
         );
+    return $app->error(
+        $app->translate( "No such entry '[_1]'.", encode_html($entry_id) ) )
+        if $entry->status != RELEASE;
+
     my $ctx  = MT::Template::Context->new;
     my $blog = MT::Blog->load( $entry->blog_id );
 
@@ -1816,16 +1813,6 @@ sub do_preview {
     $comment->commenter_id( $commenter->id ) if $commenter;
 
     $ctx->stash( 'comment', $comment );
-
-    unless ($err) {
-        ## Serialize comment state, then hex-encode it.
-        require MT::Serialize;
-        my $ser   = MT::Serialize->new( $cfg->Serializer );
-        my $state = $comment->get_values;
-        $state->{static} = $q->param('static');
-        $ctx->stash( 'comment_state', unpack 'H*',
-            $ser->serialize( \$state ) );
-    }
     $ctx->stash( 'comment_is_static', $q->param('static') );
     $ctx->stash( 'entry',             $entry );
     $ctx->{current_timestamp} = $ts;
@@ -1983,13 +1970,18 @@ sub save_commenter_profile {
 
     $param{ 'auth_mode_' . $cmntr->auth_type } = 1;
 
+    return $app->error( $app->translate("Invalid request") )
+        if $cmntr->name ne $q->param('name');
+    return $app->error( $app->translate("Invalid request") )
+        if $q->param('id') && $cmntr->id ne $q->param('id');
+
     $app->user($cmntr);
     $app->{session} = $sess_obj;
 
-    my $original = $cmntr->clone();
-
     $app->validate_magic
         or return $app->handle_error( $app->translate('Invalid request') );
+
+    my $original = $cmntr->clone();
 
     if ( 'MT' eq $cmntr->auth_type ) {
         my $nickname = $param{nickname};

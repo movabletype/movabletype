@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -191,6 +191,53 @@ sub upgrade_functions {
                     $site->folder_order($folder_order);
                     $site->save;
                 },
+            },
+        },
+        'v5_assign_initial_user_ceated_by' => {
+            version_limit => 5.0035,
+            priority      => 3.0,
+            updater       => {
+                type  => 'author',
+                label => 'Assigning ID of user who created for initial user...',
+                code  => sub {
+                    $_[0]->created_by( $_[0]->id )
+                        if !defined $_[0]->created_by;
+                },
+                sql => 'update mt_author set author_created_by = author_id
+                         where author_created_by is null',
+            },
+        },
+        'v5_assign_blog_date_language' => {
+            version_limit => 5.0036,
+            priority      => 3.0,
+            updater => {
+                type  => 'blog',
+                terms => { class => '*' },
+                label =>
+                    'Assigning language of blog to use for formatting date...',
+                code => sub {
+                    my @supporteds
+                        = map { $_->{l_tag} } @{ MT::I18N::languages_list() };
+                    my $language = $_[0]->language;
+                    $_[0]->date_language($language);
+                    $_[0]->language( ( grep { $_ eq $language } @supporteds )
+                        ? $language
+                        : MT->config('DefaultLanguage') );
+                },
+                sql => <<__SQL__,
+UPDATE mt_blog SET
+    blog_date_language = blog_language,
+    blog_language = CASE
+        WHEN blog_language IN(
+            @{  [   join( ',',
+                        map { "'" . $_->{l_tag} . "'" }
+                            @{ MT::I18N::languages_list() } )
+                ]
+                }
+            )
+            THEN blog_language
+        ELSE '@{[ MT->config('DefaultLanguage') ]}' END;
+__SQL__
             },
         },
     };

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -176,8 +176,11 @@ function format_ts($format, $ts, $blog, $lang = null) {
     global $Languages;
     if (!isset($lang) || empty($lang)) { 
         $mt = MT::get_instance();
-        $lang = ($blog && $blog->blog_language ? $blog->blog_language : 
-                     $mt->config('DefaultLanguage'));
+        $lang = (
+              $blog && $blog->blog_date_language
+            ? $blog->blog_date_language
+            : $mt->config('DefaultLanguage')
+        );
     }
     if ($lang == 'jp') {
         $lang = 'ja';
@@ -1414,6 +1417,7 @@ function userpic_url($asset, $blog, $author) {
     $thumb->height($max_dim);
     $thumb->format($support_directory_path.DIRECTORY_SEPARATOR .$image_path.DIRECTORY_SEPARATOR.$format);
     $thumb->type('png');
+    $thumb->square( true );
     $thumb->id($asset->asset_id);
     if (!$thumb->get_thumbnail()) {
         return '';
@@ -1710,6 +1714,21 @@ function common_loop_vars() {
         '__key__',
         '__value__',
     );
+}
+
+function normalize_language($language, $locale, $ietf) {
+    $real_lang = array('cz' => 'cs', 'dk' => 'da', 'jp' => 'ja', 'si' => 'sl');
+
+    if ($real_lang[$language]) {
+        $language = $real_lang[$language];
+    }
+    if ($locale) {
+        $language = preg_replace('/^([A-Za-z][A-Za-z])([-_]([A-Za-z][A-Za-z]))?$/e', '\'$1\' . "_" . (\'$3\' ? strtoupper(\'$3\') : strtoupper(\'$1\'))', $language);
+    } elseif ($ietf) {
+        # http://www.ietf.org/rfc/rfc3066.txt
+        $language = preg_replace('/_/', '-', $language);
+    }
+    return $language;
 }
 
 ?>

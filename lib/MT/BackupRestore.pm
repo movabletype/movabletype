@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -513,7 +513,7 @@ sub restore_process_single_file {
 
     require MT::BackupRestore::BackupFileScanner;
     my $scanner = MT::BackupRestore::BackupFileScanner->new();
-    my $pos = tell($fh);
+    my $pos     = tell($fh);
     $parser->{Handler} = $scanner;
     eval { $parser->parse_file($fh); };
     if ( my $e = $@ ) {

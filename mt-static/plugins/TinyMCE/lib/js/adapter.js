@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+ * Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
  * This program is distributed under the terms of the
  * GNU General Public License, version 2.
  *
@@ -163,6 +163,12 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             'white-space': 'pre',
             resize: 'none'
         });
+        if (tinyMCE.isIE8) {
+            adapter.$editorTextarea.css({
+                'min-width': '100%',
+                padding: '0px'
+            });
+        }
         adapter.$editorTextareaParent = adapter.$editorTextarea.parent();
         adapter.$editorElement = adapter.$editorTextarea;
 
@@ -328,6 +334,21 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         };
 
         ed.execCommand('mtSetProxies', adapter.proxies, null, {skip_focus: true});
+
+        // Stop adding root blocks on key up for IE.
+        // Because if used with IME, this function will not work well.
+        if (tinyMCE.isIE) {
+            $.each(ed.onKeyUp.listeners, function(i, listener) {
+                if (! listener) {
+                    return;
+                }
+                var f = listener.cb;
+                if (f.toString().match(/^function addRootBlocks\(\)|^function\s+\w+\(\).*forced_root_block/)) {
+                    ed.onKeyUp.remove(f);
+                    return false;
+                }
+            });
+        }
 
         if (ed.getContent() == '') {
             // Browser compatibility

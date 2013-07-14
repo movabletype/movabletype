@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -438,6 +438,7 @@ sub init_data {
             server_offset        => '-3.5',
             children_modified_on => '20000101000000',
             language             => 'en_us',
+            date_language        => 'en_us',
             file_extension       => 'html',
             theme_id             => 'classic_website',
         }
@@ -479,6 +480,7 @@ sub init_data {
             server_offset        => '-3.5',
             children_modified_on => '20000101000000',
             language             => 'en_us',
+            date_language        => 'en_us',
             file_extension       => 'html',
             theme_id             => 'classic_blog',
         }
@@ -1497,8 +1499,7 @@ sub _run_app {
             my $location = $1;
             $location =~ s/\s*$//g;
             my @params = split( /&/, $location );
-            my %params
-                = map { my ( $k, $v ) = split( /=/, $_, 2 ); $k => $v }
+            my %params = map { my ( $k, $v ) = split( /=/, $_, 2 ); $k => $v }
                 @params;
 
             # carry over the test parameters

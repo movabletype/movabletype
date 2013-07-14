@@ -13853,7 +13853,15 @@ tinymce.create('tinymce.ui.Toolbar:tinymce.ui.Container', {
 
 				// Focus the window iframe
 				if (!contentEditable) {
-					self.getWin().focus();
+					if (!(
+							tinymce.isIE
+						 && doc
+						 && doc.documentMode >= 10
+						 && doc.hasFocus
+						 && doc.hasFocus()
+					)) {
+						self.getWin().focus();
+					}
 				}
 
 				// Focus the body as well since it's contentEditable

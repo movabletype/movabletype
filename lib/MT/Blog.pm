@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -50,6 +50,7 @@ __PACKAGE__->install_properties(
             'ping_weblogs'              => 'boolean',
             'mt_update_key'             => 'string(30)',
             'language'                  => 'string(5)',
+            'date_language'             => 'string(5)',
             'welcome_msg'               => 'text',
             'google_api_key'            => 'string(32)',
             'email_new_pings'           => 'boolean',
@@ -322,6 +323,7 @@ sub list_props {
                 words_in_excerpt         => 40,
                 sort_order_posts         => 'descend',
                 language                 => MT->config('DefaultLanguage'),
+                date_language            => MT->config('DefaultLanguage'),
                 sort_order_comments      => 'ascend',
                 file_extension           => 'html',
                 convert_paras            => $default_text_format,
@@ -643,7 +645,7 @@ sub site_path {
 }
 
 sub raw_archive_url {
-    my $blog        = shift;
+    my $blog = shift;
     my $archive_url = $blog->SUPER::archive_url || '';
     if ( my ( $subdomain, $path ) = split( '/::/', $archive_url ) ) {
         return ( $subdomain, $path );

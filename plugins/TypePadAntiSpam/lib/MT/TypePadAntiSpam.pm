@@ -1,4 +1,4 @@
-# MT::TypePadAntiSpam, (C) 2008-2012 Six Apart, Ltd.
+# MT::TypePadAntiSpam, (C) 2008-2013 Six Apart, Ltd.
 # Based on Akismet plugin by Tim Appnel
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.

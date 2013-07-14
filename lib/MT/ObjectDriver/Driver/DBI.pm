@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -81,10 +81,16 @@ sub dbh_handle {
             $dbh->{private_last_ping} = time if $dbh;
         }
         else {
-            my $orig_reuse = $driver->reuse_dbh;
-            $driver->reuse_dbh(0);
             $dbh = $driver->init_db() or die $driver->last_error;
-            $driver->reuse_dbh($orig_reuse);
+            my $orig_reuse = $driver->reuse_dbh;
+            if ( $orig_reuse && !$dbh->ping ) {
+
+                # A database connection has been reused,
+                # but this is probably already expired.
+                $driver->reuse_dbh(0);
+                $dbh = $driver->init_db() or die $driver->last_error;
+                $driver->reuse_dbh($orig_reuse);
+            }
             $dbh->{private_last_ping} = time;
             $driver->dbh($dbh);
         }
@@ -576,6 +582,7 @@ sub prepare_statement {
     my $major_stmt = $stmt;
 
     ## Implement `join` arg like MT::ObjectDriver, for compatibility.
+    my %joined_table = ();
     while ( my $join = shift @joins ) {
         my ( $j_class, $j_col, $j_terms, $j_args ) = @$join;
         my $j_unique;
@@ -687,10 +694,7 @@ sub prepare_statement {
                 },
             );
 
-            my @new_from = grep { $_ ne $j_table and $_ ne $to_table }
-                @{ $stmt->from };
-            $stmt->from( \@new_from );
-
+            $joined_table{$j_table} = $joined_table{$to_table} = 1;
         }
         else {
             ## Join across the given column(s).
@@ -715,6 +719,7 @@ sub prepare_statement {
             }
         }
     }
+    $stmt->from( [ grep { !$joined_table{$_} } @{ $stmt->from } ] );
 
     if ($start_val) {
         ## TODO: support complex primary keys

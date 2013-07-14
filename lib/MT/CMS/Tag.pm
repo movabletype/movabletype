@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -241,6 +241,7 @@ sub js_recent_entries_for_tag {
     my $ctx  = $tmpl->context;
     $ctx->stash( 'blog', MT::Blog->load($blog_id) ) if $blog_id;
     $ctx->stash( 'entries', \@entries );
+    $ctx->stash( 'blog_id', $blog_id ) if $blog_id;
     $tmpl->param( 'entry_count', scalar @entries );
     $tmpl->param( 'script_url',  $app->uri );
     $tmpl->param( 'tag',         $tag_name );

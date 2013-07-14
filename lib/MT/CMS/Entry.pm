@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -173,8 +173,11 @@ sub edit {
                 $app->user ? $app->user->preferred_language : undef );
         }
         if ( my $id = $obj->author_id ) {
-            $author = MT::Author->load($id);
-            $param->{authored_by} = $author->name;
+            my $obj_author = MT::Author->load($id);
+            $param->{authored_by}
+                = $obj_author
+                ? $obj_author->name
+                : MT->translate('*User deleted*');
         }
 
         $app->load_list_actions( $type, $param );
@@ -656,38 +659,79 @@ sub list {
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog;
 
+    my $perm_action
+        = $type eq 'page'
+        ? 'access_to_page_list'
+        : 'access_to_entry_list';
+    my $perm_action_all
+        = $type eq 'page'
+        ? 'edit_all_pages'
+        : 'edit_all_entries';
 PERMCHECK: {
-        my $action
-            = $type eq 'page'
-            ? 'access_to_page_list'
-            : 'access_to_entry_list';
         if ($blog_id) {
-            last PERMCHECK if $app->can_do($action);
+            last PERMCHECK if $app->can_do($perm_action);
         }
         else {
             last PERMCHECK
-                if $app->user->can_do( $action, at_least_one => 1 );
+                if $app->user->can_do( $perm_action, at_least_one => 1 );
         }
         return $app->permission_denied();
     }
 
     my %terms;
-    my $blog_ids = $app->_load_child_blog_ids($blog_id);
-    push @$blog_ids, $blog_id;
+    my $blog_ids;
+    if ($blog_id) {
+        $blog_ids = $app->_load_child_blog_ids($blog_id);
+        push @$blog_ids, $blog_id;
+    }
+    my $terms_ref = \%terms;
 
-    $terms{blog_id} = $blog_ids;
+    if ($app->user->is_superuser) {
+        $terms{blog_id} = $blog_ids;
+    }
+    else {
+        my @permissions = 
+            grep { $_->can_do($perm_action) }
+            $app->model('permission')->load( 
+                { 
+                    author_id => $app->user->id, 
+                    ( $blog_id ? ( blog_id => $blog_ids ) : () ),
+                } );
+        my @full_perms = 
+            grep { $_->can_do($perm_action_all) } 
+            @permissions;
+        my @self_perms = 
+            grep { not $_->can_do($perm_action_all) } 
+            @permissions;
+        if (0 == @self_perms) {
+            $terms{blog_id} = [ map { $_->blog_id } @full_perms ];
+        }
+        elsif (0 == @full_perms) {
+            $terms{blog_id} = [ map { $_->blog_id } @self_perms ];
+            $terms{author_id} = $app->user->id;
+        }
+        else {
+            $terms_ref = 
+                [ 
+                    \%terms, 
+                    '-and',
+                    [
+                        { 
+                            blog_id => [ map { $_->blog_id } @full_perms ],
+                        },
+                        '-or',
+                        {
+                            blog_id => [ map { $_->blog_id } @self_perms ],
+                            author_id => $app->user->id,
+                        }
+                    ],  
+                ];
+        }
+    }
+
     $terms{class}   = $type;
     my $limit = $list_pref->{rows};
     my $offset = $app->param('offset') || 0;
-
-    if ( !$blog_id && !$app->user->is_superuser ) {
-        require MT::Permission;
-        $terms{blog_id} = [
-            map      { $_->blog_id }
-                grep { $_->can_do('access_to_entry_list') }
-                MT::Permission->load( { author_id => $app->user->id } )
-        ];
-    }
 
     my %arg;
     $arg{'sort'} = $type eq 'page' ? 'modified_on' : 'authored_on';
@@ -871,7 +915,7 @@ PERMCHECK: {
     require MT::Category;
     require MT::Placement;
 
-    $total = $pkg->count( \%terms, \%arg ) || 0
+    $total = $pkg->count( $terms_ref, \%arg ) || 0
         unless defined $total;
     $arg{limit} = $limit + 1;
     if ( $total <= $limit ) {
@@ -882,7 +926,7 @@ PERMCHECK: {
         $arg{offset} = $offset if $offset;
     }
 
-    my $iter = $iter_method || $pkg->load_iter( \%terms, \%arg );
+    my $iter = $iter_method || $pkg->load_iter( $terms_ref, \%arg );
 
     my $is_power_edit = $q->param('is_power_edit');
     if ($is_power_edit) {
@@ -1167,12 +1211,13 @@ sub _build_entry_preview {
     $ctx->stash( 'category', $cat ) if $cat;
     $ctx->{current_timestamp}    = $ts;
     $ctx->{current_archive_type} = $at;
-    $ctx->var( 'entry_template',    1 );
-    $ctx->var( 'archive_template',  1 );
-    $ctx->var( 'entry_template',    1 );
-    $ctx->var( 'feedback_template', 1 );
-    $ctx->var( 'archive_class',     'entry-archive' );
-    $ctx->var( 'preview_template',  1 );
+    $ctx->var( 'preview_template', 1 );
+
+    my $archiver = MT->publisher->archiver($at);
+    if ( my $params = $archiver->template_params ) {
+        $ctx->var( $_, $params->{$_} ) for keys %$params;
+    }
+
     my $html = $tmpl->output;
 
     unless ( defined($html) ) {
@@ -1802,6 +1847,7 @@ sub save {
                     Entry       => $orig_obj,
                     ArchiveType => $archive_type,
                     Category    => $primary_category_old,
+                    Force       => 0,
                 );
             }
         }
@@ -2732,7 +2778,8 @@ sub update_entry_status {
                 : 'Individual';
             $app->publisher->remove_entry_archive_file(
                 Entry       => $entry,
-                ArchiveType => $archive_type
+                ArchiveType => $archive_type,
+                Force       => 0,
             );
         }
         my $original   = $entry->clone;

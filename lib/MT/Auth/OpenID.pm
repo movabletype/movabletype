@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -371,7 +371,7 @@ sub _asset_from_url {
     return undef unless $image;
     my $mimetype = $resp->header('Content-Type');
     return undef unless $mimetype;
-    my $def_ext = {
+    my $ext = {
         'image/jpeg' => '.jpg',
         'image/png'  => '.png',
         'image/gif'  => '.gif'
@@ -392,25 +392,23 @@ sub _asset_from_url {
     unless ( $fmgr->exists($local_path) ) {
         $fmgr->mkpath($local_path);
     }
-    my $filename = substr( $image_url, rindex( $image_url, '/' ) );
-    if ( $filename =~ m!\.\.|\0|\|! ) {
-        return undef;
+    require Digest::SHA1;
+    my $filename = Digest::SHA1::sha1_hex($image_url);
+    unless ($ext) { # trust content type higher than url extension
+        ($ext) = $image_url =~ m!(\.[^\.\\\/])$!;
     }
-    my ( $base, $uploaded_path, $ext )
-        = File::Basename::fileparse( $filename, '\.[^\.]*' );
-    $ext = $def_ext if $def_ext;    # trust content type higher than extension
 
     # Find unique name for the file.
     my $i         = 1;
-    my $base_copy = $base;
+    my $base_copy = $filename;
     while (
-        $fmgr->exists( File::Spec->catfile( $local_path, $base . $ext ) ) )
+        $fmgr->exists( File::Spec->catfile( $local_path, $filename . $ext ) ) )
     {
-        $base = $base_copy . '_' . $i++;
+        $filename = $base_copy . '_' . $i++;
     }
 
-    my $local_relative = File::Spec->catfile( $save_path,  $base . $ext );
-    my $local          = File::Spec->catfile( $local_path, $base . $ext );
+    my $local_relative = File::Spec->catfile( $save_path,  $filename . $ext );
+    my $local          = File::Spec->catfile( $local_path, $filename . $ext );
     $fmgr->put_data( $image, $local, 'upload' );
 
     require MT::Asset;
@@ -423,7 +421,7 @@ sub _asset_from_url {
     my $asset;
     $asset = $asset_pkg->new();
     $asset->file_path($local_relative);
-    $asset->file_name( $base . $ext );
+    $asset->file_name( $filename . $ext );
     my $ext_copy = $ext;
     $ext_copy =~ s/\.//;
     $asset->file_ext($ext_copy);

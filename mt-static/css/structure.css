@@ -1627,6 +1627,10 @@ ul.tabs li a {
     color: #9e3d3f;
 }
 
+#entry-publishing-widget .basename-text {
+    word-wrap: break-word;
+}
+
 /* ---- Publish Date Field */
 .edit-entry .date-time-fields .post-date {
     width: 7em;
@@ -1678,6 +1682,19 @@ ul.tabs li a {
     margin-left: 5px;
     overflow: hidden;
     white-space: nowrap;
+}
+/* take up the scrollbar space explicitly */
+.category-selector-list::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 11px;
+}
+.category-selector-list::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border: 2px solid #fff;
+    border-radius: 8px;
+}
+.category-selector-list::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0,0,0,0.5);
 }
 .list-item-hover {
     background: #dcdddd;
@@ -2442,12 +2459,19 @@ input#system_performance_logging_threshold {
 /* -- System Info */
 
 .exception {
-    height: 100px;
-    margin: 5px 0 0;
+    width: 100%;
+    max-width: 100%;
+    padding: 0.2em 0.25em;
+    margin: 10px 0 0;
+    border: 1px solid #c0c6c9;
+    overflow: auto;
     font-family: monospace;
     font-size: 95%;
     background-color: #f3f3f3;
     color: #7b7c7d;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
 }
 
 /* -- Edit Author */

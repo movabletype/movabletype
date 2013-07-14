@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2006-2012 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2006-2013 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -13,19 +13,22 @@ use warnings;
 
 use base qw( MT::Plugin );
 
-our $VERSION = '2.2';
-my $plugin = MT::Plugin::MultiBlog->new(
+our $VERSION = '2.3';
+my $plugin;
+$plugin = MT::Plugin::MultiBlog->new(
     {   id   => 'multiblog',
         name => 'MultiBlog',
         description =>
             '<MT_TRANS phrase="MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.">',
         version                => $VERSION,
+        schema_version         => $VERSION,
         author_name            => 'Six Apart, Ltd.',
         author_link            => 'http://www.movabletype.org/',
         system_config_template => 'system_config.tmpl',
-        doc_link               => 'http://www.movabletype.org/documentation/appendices/tags/multiblog.html',
-        blog_config_template   => 'blog_config.tmpl',
-        settings               => new MT::PluginSettings(
+        doc_link =>
+            'http://www.movabletype.org/documentation/appendices/tags/multiblog.html',
+        blog_config_template => 'blog_config.tmpl',
+        settings             => new MT::PluginSettings(
             [   [   'default_access_allowed',
                     { Default => 1, Scope => 'system' }
                 ],
@@ -87,6 +90,20 @@ my $plugin = MT::Plugin::MultiBlog->new(
                     'BlogEntryCount' => 'MultiBlog::preprocess_native_tags',
                     'BlogPingCount'  => 'MultiBlog::preprocess_native_tags',
                     'TagSearchLink'  => 'MultiBlog::preprocess_native_tags',
+                },
+            },
+            upgrade_functions => {
+                'fix_broken_trigger_cache' => {
+                    updater => {
+                        type  => 'blog',
+                        terms => { class => '*' },
+                        label => "Updating trigger cache of MultiBlog...",
+                        code  => sub {
+                            my $scope = 'blog:' . $_[0]->id;
+                            my $hash  = $plugin->get_config_hash($scope);
+                            $plugin->update_trigger_cache( $hash, $scope );
+                        },
+                    },
                 },
             },
         },
@@ -242,13 +259,11 @@ sub load_config {
         require MT::Blog;
 
         $args->{multiblog_trigger_loop} = trigger_loop();
-        my %triggers
-            = map { $_->{trigger_key} => $_->{trigger_name} }
+        my %triggers = map { $_->{trigger_key} => $_->{trigger_name} }
             @{ $args->{multiblog_trigger_loop} };
 
         $args->{multiblog_action_loop} = action_loop();
-        my %actions
-            = map { $_->{action_id} => $_->{action_name} }
+        my %actions = map { $_->{action_id} => $_->{action_name} }
             @{ $args->{multiblog_action_loop} };
 
         my $rebuild_triggers = $args->{rebuild_triggers};
@@ -295,11 +310,9 @@ sub load_config {
     }
 }
 
-sub save_config {
+sub update_trigger_cache {
     my $plugin = shift;
     my ( $args, $scope ) = @_;
-
-    $plugin->SUPER::save_config(@_);
 
     my ($blog_id);
     if ( $scope =~ /blog:(\d+)/ ) {
@@ -388,9 +401,25 @@ sub save_config {
     }
 }
 
-sub reset_config {
+sub save_config {
     my $plugin = shift;
     my ( $args, $scope ) = @_;
+
+    my $saved_hash = $plugin->get_config_hash($scope);
+
+    $plugin->SUPER::save_config(@_);
+
+    for my $k (qw(all_triggers blogs_in_website_triggers other_triggers)) {
+        $plugin->set_config_value( $k, $saved_hash->{$k}, $scope )
+            if exists $saved_hash->{$k};
+    }
+
+    $plugin->update_trigger_cache( $args, $scope );
+}
+
+sub reset_config {
+    my $plugin = shift;
+    my ($scope) = @_;
 
     if ( $scope =~ /blog:(\d+)/ ) {
         my $blog_id = $1;
@@ -429,7 +458,8 @@ sub reset_config {
         }
         $plugin->SUPER::reset_config(@_);
         $plugin->set_config_value( 'other_triggers', $other_triggers,
-            "blog:$blog_id" );
+            "blog:$blog_id" )
+            if ref($other_triggers) eq 'HASH';
     }
     else {
 
