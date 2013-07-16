@@ -37,6 +37,16 @@ body.has-dialog {
     display: none;
 }
 
+.dialog-screen .actions-bar-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px 20px;
+  background-color: #fff;
+  border-top: 1px solid #c0c6c9;
+}
+
 .ui-dialog.ui-draggable .ui-dialog-titlebar {
     cursor: move;
 }
