@@ -1939,8 +1939,15 @@ sub adjust_sitepath {
                 else {
                     my $files = $backups->{files};
                     for my $file (@$files) {
-                        my $fh = gensym;
                         my $filepath = File::Spec->catfile( $tmp_dir, $file );
+                        unlink $filepath;
+                    }
+                    my $assets = $backups->{assets};
+                    for my $asset (@$assets) {
+                        my $asset_name
+                            = $asset->{asset_id} . '-' . $asset->{name};
+                        my $filepath
+                            = File::Spec->catfile( $tmp_dir, $asset_name );
                         unlink $filepath;
                     }
                 }
