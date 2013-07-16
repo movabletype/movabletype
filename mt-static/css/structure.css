@@ -794,7 +794,177 @@ ul.tabs li a {
     border-radius: 2px;
 }
 
-/* - Layout */
+/* ## Base Layout
+
+<h3>Basic Building Blocks</h3>
+
+Base building blocks in MT are container, header(contains brand and menu-bar), content(contains main) and footer in the following structure.
+
+* Container has 980 width at minimum (so, overflow the styleguid's content block..)
+* Header block has 2 basic blocks, brand and menu-bar
+* Content Main block has 2 basic blocks, content-header and content-body which has main-content block (**main-content block is very important because all main content is placed here**
+)
+
+```
+<div>
+  <div id="container">
+    <div id="header">
+      <div id="brand"></div>
+      <div id="menu-bar"></div>
+    </div>
+    <div id="content">
+      <div id="main">
+        <div id="content-header">
+          <h1>CONTENT HEADER</h1>
+        </div>
+        <div id="content-body">
+          <div id="main-content">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer">
+    <ul id="footer-nav" class="inline-nav">
+      <li class="first-child"><a href="http://www.movabletype.org">MovableType.org</a></li>
+    </ul>
+  </div>
+</div>
+```
+
+<h3>Conetnt/Menu</h3>
+
+CMS screens usually have the menu block at the left side of content block and assign .has-menu-nav class at body element, like the flowing.
+
+```
+<div class="has-menu-nav">
+  <div id="container">
+    <div id="header">
+      <div id="brand"></div>
+      <div id="menu-bar"></div>
+    </div>
+    <div id="content">
+      <div id="menu">
+        MENU
+      </div>
+      <div id="main">
+        <div id="content-header">
+          CONTENT HEADER
+        </div>
+        <div id="content-body">
+          <div id="main-content">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer">
+    <ul id="footer-nav" class="inline-nav">
+      <li class="first-child"><a href="http://www.movabletype.org">MovableType.org</a></li>
+    </ul>
+  </div>
+</div>
+```
+(the top div emulates body element)
+
+<h3>Related Contents</h3>
+
+MT often shows the releted contents at the left side of content, like the following structure.
+
+```
+<div class="has-menu-nav has-related-content">
+  <div id="container">
+    <div id="header">
+      <div id="brand"></div>
+      <div id="menu-bar"></div>
+    </div>
+    <div id="content">
+      <div id="menu">
+        MENU
+      </div>
+      <div id="main">
+        <div id="content-header">
+          CONTENT HEADER
+        </div>
+        <div id="content-body">
+          <div id="main-content">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          </div>
+          <div id="related-content">
+            RELATED CONTENT
+          </div>
+        </div>
+    </div>
+  </div>
+  <div id="footer">
+    <ul id="footer-nav" class="inline-nav">
+      <li class="first-child"><a href="http://www.movabletype.org">MovableType.org</a></li>
+    </ul>
+  </div>
+</div>
+```
+(the top div emulates body element)
+
+
+<h3>Layout Example</h3>
+
+```
+<div class="has-menu-nav" style="background:white; border:1px solid #ddd">
+  <div id="container" style="min-width: 100%">
+    <div id="header">
+      <div id="brand"><a><span><img src="../../mt-static/images/logo/movable-type-logo.png"></span></a></div>
+      <div id="menu-bar">
+        <div id="selector-nav" class="unit size2of3 first-child">
+          <a hre="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle.png"></a>
+          <div id="current-scope">
+            <ol id="selector-nav-list" class="line">
+              <li id="current-website" class="current scope website">
+                <em class="scope-label"><a>First Website</a></em>
+              </li>
+              <li id="current-blog" class="current scope blog">
+                <em class="scope-label"><a>My Blog</a></em>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="content">
+      <div id="menu">
+          <ul id="blog-wide-menu" class="menu-nav">
+            <li id="menu-entry" class="item top-menu current top-menu-open active">
+              <div>
+                <a class="top-menu-link menu-link"><span class="menu-label">Entries</span></a>
+                <a href="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+              </div>
+              </li>
+            <li id="menu-tools" class="item top-menu last-child">
+                <div>
+                  <a class="top-menu-link menu-link"><span class="menu-label">Tools</span></a>
+                  <a href="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+                </div>
+            </li>
+          </ul>
+      </div>
+      <div id="main">
+        <div id="content-header">
+          <h1 id="page-title" class="title page">Manage Entries</h1>
+        </div>
+      </div>
+    </div>
+    <div id="footer">
+      <ul id="footer-nav" class="inline-nav">
+        <li class="first-child"><a href="http://www.movabletype.org">MovableType.org</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+```
+
+*/
+
 #container {
     position: relative;
     height: auto;
@@ -809,6 +979,7 @@ ul.tabs li a {
 .has-menu-nav #content {
     margin-left: 168px;
 }
+
 #content-body {
     margin-top: 15px;
 }
@@ -830,7 +1001,6 @@ ul.tabs li a {
     width: 100%;
 }
 
-/* -- Has Related Content */
 .has-related-content #content-body {
     margin-right: 218px;
 }
@@ -854,7 +1024,68 @@ ul.tabs li a {
     margin-right: -258px;
 }
 
-/* -- Grid */
+/* ##Grid
+
+You can easy build grid layout with the following styles.
+
+<h3>1 grid</h3>
+
+```
+<div class="unit size1of1">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+<h3>2 grids</h3>
+```
+<div class="unit size1of2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+<h3>3 grids</h3>
+```
+<div class="unit size1of3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+```
+<div class="unit size1of3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size2of3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+<h3>4 grids</h3>
+```
+<div class="unit size1of4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+```
+<div class="unit size1of4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size3of4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+<h3>5 grids</h3>
+```
+<div class="unit size1of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+```
+<div class="unit size1of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size4of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+```
+<div class="unit size2of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size3of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+
+*/
 .unit {
     float: left;
 }

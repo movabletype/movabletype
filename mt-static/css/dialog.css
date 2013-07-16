@@ -1,4 +1,23 @@
-/* Dialog */
+/* #Dialog
+## Base Layout
+
+In the dialog, content-body adds the margin between header and content appropriately
+
+```
+<div class="dialog">
+  <div id="container" style="border:1px solid #ccc">
+    <div id="content">
+      <div id="content-header">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </div>
+      <div id="content-body">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </div>
+    </div>
+  </div>
+</div>
+```
+*/
 body.has-dialog {
     overflow: hidden;
 }
