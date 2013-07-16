@@ -113,7 +113,7 @@ pre {
 <div>
   <input />
   <p class="alert-warning-inline">
-    <img src="../images/status_icons/warning.gif" width="9" height="9" /> Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit ( <a href="#">read more details</a> ).
+    <img src="../images/status_icons/warning.gif" width="9" height="9" /> Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit ( <a>read more details</a> ).
   </p>
 </div>
 ```
@@ -462,7 +462,17 @@ selector-nav class is used for button at the top left side of the header.
     margin: -3px 0 0 -5px;
 }
 
-/* -- Toggle Link */
+/* ##Toggle Link
+
+used the link like 'Change Password' link
+
+appearing cursor as pointer and show underline explicitly (underline disappeared on hover)
+
+```
+<a class="toggle-link">Change Password</a>
+```
+
+*/
 .toggle-link {
     cursor: pointer;
     background: transparent;
@@ -473,11 +483,26 @@ selector-nav class is used for button at the top left side of the header.
 .toggle-link:active {
     text-decoration: none;
 }
+
 .detail {
     clear: both;
 }
 
-/* -- Open Dialog Link */
+/* #Open Dialog Link
+
+This style is used for the link which opens the 'Select Filter' dialog at the header of the listing.
+
+```
+<div class="filter-block">
+  <div id="filter-header">
+    <div class="mod filter-header">
+      Filter: <a class="open-dialog-link">All Entries</a>
+    </div>
+  </div>
+</div>
+```
+
+*/
 .open-dialog-link {
     border-bottom: 1px dotted;
     color: #7b7c7d;
@@ -487,7 +512,27 @@ selector-nav class is used for button at the top left side of the header.
     border-bottom: 0;
 }
 
-/* -- Progress Bar */
+/* ##Progress Bar
+
+<h3>start processing</h3>
+
+.progressbar is style for progress bar. .indeterminate class is used for start processing (so, you usually use the both .progressbar and .indeterminate classes)
+
+```
+<div id="progressbar" class="progressbar indeterminate"></div>
+```
+
+<h3>on progress</h3>
+
+If you show the progress using jQuery UI progressbar, its style like the following (ui-* classes added by jQuery UI).
+
+```
+<div id="progressbar" class="progressbar ui-progressbar ui-widget ui-widget-content ui-corner-all">
+  <div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: 28%;"></div>
+</div>
+```
+
+*/
 .progressbar {
     height: 2em;
     border: 1px solid #c0c6c9;
@@ -497,6 +542,7 @@ selector-nav class is used for button at the top left side of the header.
 .progressbar.indeterminate {
     background: #c0c6c9 url(../images/progress-bar-indeterminate.gif) repeat;
 }
+
 .ui-progressbar .ui-progressbar-value {
     height:100%;
     background-color: #dcdddd;
@@ -522,7 +568,27 @@ selector-nav class is used for button at the top left side of the header.
     margin-right: 0.5em;
 }
 
-/* -- Tabs */
+/* ##Tabs
+
+.ui-tabs is the style for jQuery UI Tabs (MT custmizes its style). .ui-* classes are automatically added by jQuery UI.
+
+You can see the living example in the search-replace screen.
+
+```
+<div class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+  <ul class="search-tabs-list tabs ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all first-child">
+    <li class="tab ui-state-default ui-corner-top ui-tabs-active ui-state-active" ><a class="ui-tabs-anchor"><span>Entries</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>Comments</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>TrackBacks</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>Pages</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>Templates</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>Assets</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>Activity Log</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>Users</span></a></li>
+  </ul>
+</div>
+```
+*/
 .ui-tabs .ui-tabs-hide {
     display: none;
 }
@@ -566,7 +632,85 @@ ul.tabs li a {
     outline: 0;
 }
 
-/* -- Date Picker */
+/* ##Date Picker
+
+.ui-datepicker class is the style for jQuery UI Data Picker
+
+.ui-datepicker related classes automatically assigned by jQuery UI, so you might not assign this classes manually (All you have to do is calling jQeury UI Date Picker).
+
+```
+<div class="ui-datepicker" style="display:block">
+  <div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all">
+      <a class="ui-datepicker-prev ui-corner-all"><span class="ui-icon ui-icon-circle-triangle-w">&lt;</span></a>
+      <a class="ui-datepicker-next ui-corner-all"><span class="ui-icon ui-icon-circle-triangle-e">&gt;</span></a>
+      <div class="ui-datepicker-title">
+          <span class="ui-datepicker-year">2013</span>&nbsp;<span class="ui-datepicker-month">- 07</span>
+      </div>
+  </div>
+  <table class="ui-datepicker-calendar">
+  <thead>
+      <tr>
+          <th class="ui-datepicker-week-end"><span title="Sunday">S</span></th>
+          <th><span title="Monday">M</span></th>
+          <th><span title="Tuesday">T</span></th>
+          <th><span title="Wednesday">W</span></th>
+          <th><span title="Thursday">T</span></th>
+          <th><span title="Friday">F</span></th>
+          <th class="ui-datepicker-week-end"><span title="Saturday">S</span></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td class="ui-datepicker-week-end ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td>
+          <td><a class="ui-state-default">1</a></td>
+          <td><a class="ui-state-default">2</a></td>
+          <td><a class="ui-state-default">3</a></td>
+          <td><a class="ui-state-default">4</a></td>
+          <td><a class="ui-state-default">5</a></td>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">6</a></td>
+      </tr>
+      <tr>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">7</a></td>
+          <td><a class="ui-state-default">8</a></td>
+          <td><a class="ui-state-default">9</a></td>
+          <td><a class="ui-state-default">10</a></td>
+          <td><a class="ui-state-default">11</a></td>
+          <td><a class="ui-state-default">12</a></td>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">13</a></td>
+      </tr>
+      <tr>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">14</a></td>
+          <td><a class="ui-state-default">15</a></td>
+          <td class="ui-datepicker-days-cell-over ui-datepicker-today"><a class="ui-state-default ui-state-highlight ui-state-hover">16</a></td>
+          <td><a class="ui-state-default">17</a></td>
+          <td><a class="ui-state-default">18</a></td>
+          <td><a class="ui-state-default">19</a></td>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">20</a></td>
+      </tr>
+      <tr>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">21</a></td>
+          <td><a class="ui-state-default">22</a></td>
+          <td><a class="ui-state-default">23</a></td>
+          <td><a class="ui-state-default">24</a></td>
+          <td><a class="ui-state-default">25</a></td>
+          <td><a class="ui-state-default">26</a></td>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">27</a></td>
+      </tr>
+      <tr>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">28</a></td>
+          <td><a class="ui-state-default">29</a></td>
+          <td><a class="ui-state-default">30</a></td>
+          <td><a class="ui-state-default">31</a></td>
+          <td class=" ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td>
+          <td class=" ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td>
+          <td class=" ui-datepicker-week-end ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td>
+      </tr>
+  </tbody>
+  </table>
+</div>
+```
+
+*/
 .ui-datepicker {
     display: none;
     width: 200px;
@@ -1378,7 +1522,7 @@ You can add action menu at the right side of widget header with .widget-action.
 ```
 <div class="widget">
   <div class="widget-header">
-    <div class="widget-action"><a class="widget-close-link" title="close widget"><span class="first-child last-child">close</span></a></div>
+    <div class="widget-action"><a class="widget-close-link" title="close widget"><span>close</span></a></div>
     <h2>Widget Header</h2>
   </div>
   <div class="widget-content">
