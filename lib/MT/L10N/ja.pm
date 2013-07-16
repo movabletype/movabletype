@@ -5504,7 +5504,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog Activity' => 'アクティビティ',
 	'Professional Blog' => 'プロフェッショナルブログ',
 	'Blog Archives' => 'アーカイブ',
-	'A value' => '値',
+	'__CF_REQUIRED_VALUE__' => q{値},
 
 ## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
 	'Show' => '表示項目',
