@@ -11,7 +11,7 @@
   </div>
   <div class="left-column">
     <div class="stats-for">
-      <__trans phrase="Stats for [_1]", params="<mt:if name="object_loop"><select id="select_blog_id"><mt:loop name="object_loop"><option value="<mt:var name="id">"><mt:var name="name"></option></mt:loop></select><mt:else><mt:var name="name"></mt:if>">
+      <__trans phrase="Stats for [_1]", params="<mt:if name="object_loop"><select id="select_blog_id"><mt:loop name="object_loop"><option value="<mt:var name="id">"><mt:var name="name" escape="html"></option></mt:loop></select><mt:else><mt:var name="name" escape="html"></mt:if>">
     </div>
     <ul id="pv-counter" style="display: none; list-style-type: none;">
       <li><span class="count-title"><__trans phrase="Today:"> </span><span class="count-body" id="count-today"></span></li>
