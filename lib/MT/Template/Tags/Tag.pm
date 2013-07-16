@@ -41,6 +41,7 @@ sub _tags_for_blog {
 
     if ( !exists $tag_cache->{$cache_id}{min} ) {
         require MT::Entry;
+        require MT::ObjectTag;
         my $min = 0;
         my $max = 0;
         foreach my $tag (@tags) {

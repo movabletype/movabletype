@@ -545,7 +545,9 @@ sub compile_category_filter {
         my %cats_used;
         my $label_token
             = %cats_dir
-            ? join( '|', map { quotemeta($_) . '(?!/)' } keys %cats_dir )
+            ? join( '|',
+            map  { quotemeta($_) . '(?!/)' }
+            sort { $b cmp $a } keys %cats_dir )
             . '|'
             : '';
         my @split_expr = split /($label_token\bOR\b|\bAND\b|\bNOT\b|\(|\))/i,

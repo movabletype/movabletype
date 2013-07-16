@@ -208,6 +208,33 @@ tfoot .col.head{
     white-space: normal;
 }
 
+/* -- to get the space for title in the Entry/Page listing */
+.list-entry .col.author_name,
+.list-page .col.author_name {
+  width: 10%;
+}
+
+.list-entry .col.category,
+.list-page .col.category {
+  width: 10%;
+}
+
+.list-entry .col.folder,
+.list-page .col.folder {
+  width: 9%;
+}
+
+.list-entry .col.date,
+.list-page .col.date {
+    width: 11%;
+}
+
+.list-entry .col.comment_count,
+.list-page .col.comment_count {
+  width: 6%;
+}
+
+
 /* -- List Actions */
 .list-actions {
     float: left;
