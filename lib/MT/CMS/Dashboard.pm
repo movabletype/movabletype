@@ -1108,8 +1108,9 @@ sub site_stats_widget {
         }
     }
 
-    generate_site_stats_data( $app, $param ) or return
-            unless $param->{no_permission};
+    generate_site_stats_data( $app, $param )
+        or return
+        unless $param->{no_permission};
 
     $param;
 }
@@ -1227,22 +1228,22 @@ sub generate_site_stats_data {
         my $result;
         foreach my $date (@dates) {
             my %row1;
-            if ($param->{not_configured}) {
+            if ( $param->{not_configured} ) {
                 %row1 = (
                     x => $date,
-                    y => $counts{$date} * $rate || 0,
+                    y => defined $counts{$date} ? $counts{$date} * $rate : 0,
                 );
             }
             else {
                 %row1 = (
                     x  => $date,
-                    y  => $pvs{$date} || 0,
-                    y1 => $counts{$date} * $rate || 0,
+                    y  => defined $pvs{$date} ? $pvs{$date} : 0,
+                    y1 => defined $counts{$date} ? $counts{$date} * $rate : 0,
                 );
             }
             my %row2 = (
-                pv    => $pvs{$date}    || 0,
-                count => $counts{$date} || 0,
+                pv    => defined $pvs{$date}    ? $pvs{$date}    : 0,
+                count => defined $counts{$date} ? $counts{$date} : 0,
             );
             push @{ $result->{graph_data} }, \%row1;
             push @{ $result->{hover_data}{data} }, \%row2;
