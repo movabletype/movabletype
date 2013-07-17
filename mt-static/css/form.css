@@ -1,4 +1,72 @@
-/* - Fields */
+/* #From.css
+
+Form.css is the set of styles for form related elements
+
+## Base Structure
+
+.field class is the container block for form field. It has two main ingredients, field-header and field content.
+field-header is used for wrapping label element, field-content is used for wrapping form field like the following.
+
+```
+<div class="field">
+  <div class="field-header">
+    <label>Lorem ipsum</label>
+  </div>
+  <div class="field-content">
+    <input type="text" class="text short" placeholder="Lorem ipsum">
+  </div>
+</div>
+```
+
+.field-left-label class set field header and content in line horizontally.
+
+```
+<div class="field field-left-label ">
+  <div class="field-header">
+    <label>Lorem ipsum</label>
+  </div>
+  <div class="field-content">
+    <textarea class="text high">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</textarea>
+  </div>
+</div>
+```
+
+.field-top-label class set field header and content in line vertically.
+
+```
+<div class="field field-top-label">
+  <div class="field-header">
+    <label>Lorem ipsum</label>
+  </div>
+  <div class="field-content">
+    <input type="text" class="text short" placeholder="Lorem ipsum">
+  </div>
+</div>
+```
+
+If You want to set some fiel in one line, use .field-inline instead .field
+
+```
+<div class="field-inline">
+  <div class="field-header">
+    <label>Lorem ipsum</label>
+  </div>
+  <div class="field-content">
+    <input type="checkbox" placeholder="Lorem ipsum">
+  </div>
+</div>
+<div class="field-inline">
+  <div class="field-header">
+    <label>Lorem ipsum</label>
+  </div>
+  <div class="field-content">
+    <input type="checkbox" placeholder="Lorem ipsum">
+  </div>
+</div>
+```
+
+*/
+
 fieldset {
     margin-bottom: 3em;
 }
@@ -94,16 +162,70 @@ input[type=file] {
 }
 
 /*
-## インプットフィールド
+## Text Filed
 
-一覧.
+.text is for basic style for text field.
 
 ```
-<input type="text" class="text" placeholder=".text">
-<input type="text" class="text med" placeholder=".text .med">
-<input type="text" class="text short" placeholder=".text .short">
-<input type="text" class="text full" placeholder=".text .full">
+<p><input type="text" class="text" placeholder="text"></p>
 ```
+
+<h3>Options for Width Control</h3>
+
+You can choose optional classes from field width
+
+```
+<p><input type="text" class="text short" placeholder="short"></p>
+<p><input type="text" class="text med" placeholder="medium"></p>
+<p><input type="text" class="text full" placeholder="full"></p>
+```
+
+<h3>Options for Height Control</h3>
+
+You can also set filed height with preset classes
+
+```
+<p><input type="text" class="text low" placeholder="low"></p>
+<p><input type="text" class="text high" placeholder="high"></p>
+<p><input type="text" class="text highest" placeholder="highest"></p>
+```
+
+<h3>Options for Input Type</h3>
+
+You can choose optional classes from field type
+
+```
+<p><input type="text" class="text number" placeholder="number"></p>
+<p><input type="text" class="text days" placeholder="days"></p>
+<p>
+  <input type="text" class="text date" placeholder="date">
+  <input type="text" class="text time" placeholder="time">
+  <input type="text" class="text min" placeholder="min">
+</p>
+<p><input type="text" class="text datetime" placeholder="datetime"></p>
+<p><input type="text" class="text path" placeholder="path"></p>
+<p><input type="text" class="text title" placeholder="title"></p>
+<p><input type="text" class="text query" placeholder="query"></p>
+```
+
+<h3>On Error</h3>
+
+If you want to show error on text fields, use .error class
+
+```
+<p><input type="text" class="text error" placeholder="Error"></p>
+```
+
+<h3>Disabled/Read Only</h3>
+
+.disabled class is the style for text disabled (literally)
+
+<p><input type="text" class="text disabled" placeholder="disabled"></p>
+
+.readonly class is interchangeable with .disabled
+
+<p><input type="text" class="text readonly" placeholder="read only"></p>
+
 */
 
 .text {
@@ -199,6 +321,42 @@ input[type=file] {
     cursor: text;
 }
 
+/* ## Select List
+
+```
+<div class="field">
+  <div class="field-header">
+    <label>Lorem ipsum</label>
+  </div>
+  <div class="field-content">
+    <select>
+      <option>Lorem ipsum</option>
+    </select>
+  </div>
+</div>
+```
+
+<h3>On Error</h3>
+
+set .error class at the select element.
+
+```
+<div class="field">
+  <div class="field-header">
+    <label>Lorem ipsum</label>
+  </div>
+  <div class="field-content">
+    <select class="error">
+      <option>Lorem ipsum</option>
+    </select>
+  </div>
+</div>
+```
+
+*/
+
+
+
 select {
     height: 1.75em;
     border: 1px solid #c0c6c9;
@@ -225,15 +383,57 @@ select.error {
 
 
 /*
-## ボタン
+## Buttons
+
+.button class is the style for standard button UI.
+
 ```
-<a href="#" class="button">ブログを作成</a>
-<a href="#" class="button action">ブログを作成</a>
-<a href="#" class="button primary">ブログを作成</a>
-<a href="#" class="button action primary">ブログを作成</a>
-<a href="#" class="button disabled">ブログを作成</a>
+<butotn class="button">Lorem ipsum</button>
 ```
+
+You can set .button class to a link as well
+
+```
+<a class="button">Lorem ipsum</a>
+```
+
+<h3>Options for Type</h3>
+
+CMS buttons usually have one or two optional classes for button's action priority.
+
+```
+<button class="button action">Action</button>
+<button class="button action primary">Primary</button>
+```
+
+<h3>Disabled</h3>
+
+You can disable buttons adding disabled class.
+
+```
+<a class="button action disabled">Action</a>
+<a class="button action primary disabled">Primary</a>
+```
+
+<h3>Split button</h3>
+
+```
+<div class="split">
+  <a class="button action">Create New</a>
+  <a class="toggle-button button detail-link"><img src="../../mt-static/images/arrow/arrow-toggle-black.png"></a>
+  <div id="fav-actions" class="fav-actions detail" style="display: block;">
+    <ul id="fav-actions-list">
+      <li id="fav-action-entry" class="fav-action"><a class="fav-action-link">Entry</a></li>
+      <li id="fav-action-page" class="fav-action"><a class="fav-action-link">Page</a></li>
+      <li id="fav-action-asset" class="fav-action"><a class="fav-action-link">Asset</a></li>
+      <li id="fav-action-blog" class="fav-action"><a class="fav-action-link">Blog</a></li>
+    </ul>
+  </div>
+</div>
+```
+
 */
+
 .button {
     cursor: pointer;
     overflow: visible;
@@ -270,7 +470,6 @@ select.error {
     box-shadow: 0px 1px 0 0 rgba(255, 255, 255, 0.9), inset 0 0 1px 0 rgba(0, 0, 0, 0.3);
 }
 
-/* -- Large Button */
 .button.action {
     padding: 0 0.8em;
     border-color: #7b7c7d;
@@ -299,7 +498,6 @@ select.error {
     background-image: linear-gradient(#7b7c7d, #adadad);
 }
 
-/* -- Primary Button */
 .button.primary {
     border-color: #165e83;
     background-color: #2a83a2;
@@ -321,7 +519,6 @@ select.error {
     background-image: linear-gradient(#165e83, #2a83a2);
 }
 
-/* -- Disable Button */
 .button.disabled,
 .button.action.disabled,
 .button.primary.disabled {
@@ -332,18 +529,15 @@ select.error {
     box-shadow: none ! important;
 }
 
-/* -- Edit Field Button */
 .mt-edit-field-button {
     margin-left: 0.5em;
 }
 
-/* Inline Editor Button */
 .inline-editor .button,
 .inline-editor .ui-button {
     margin: 0 0 0 5px;
 }
 
-/* -- Split Button */
 .split .button {
     float: left;
     height: 22px;
@@ -382,7 +576,6 @@ select.error {
     margin: 0;
 }
 
-/* - Clearfix */
 .field {
     zoom: 1;
 }

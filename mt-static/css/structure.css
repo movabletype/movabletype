@@ -1127,7 +1127,6 @@ You can easy build grid layout with the following styles.
     position: relative;
 }
 
-/* - App Header */
 #header {
     position: relative;
     height: 60px;
@@ -1137,7 +1136,290 @@ You can easy build grid layout with the following styles.
     height: 90px;
 }
 
-/* -- Brand */
+/* ## Header
+
+Header contains 3 main blocks, brand, menu-bar and utility nav
+
+```
+  <div class="blog">
+    <div id="header">
+      <div id="brand"><a><span><img src="../../mt-static/images/logo/movable-type-logo.png"></span></a></div>
+      <div id="utility-nav">
+        <ul id="utility-nav-list">
+          <li id="user"><a><img src="../../mt-static/support/assets_c/userpics/userpic-1-36x36.png" width="18" height="18" class="userpic"> <span class="username">yyamaguchi</span></a></li>
+          <li id="help" class="help"><a>Help</a></li>
+          <li id="logout" class="last-child"><a>Sign out</a></li>
+        </ul>
+      </div>
+      <div id="menu-bar">
+        <div id="selector-nav" class="unit size2of3 first-child">
+          <a hre="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle.png"></a>
+          <div id="current-scope">
+            <ol id="selector-nav-list" class="line">
+              <li id="current-website" class="current scope website">
+                <em class="scope-label"><a>First Website</a></em>
+              </li>
+              <li id="current-blog" class="current scope blog">
+                <em class="scope-label"><a>My Blog</a></em>
+              </li>
+            </ol>
+          </div>
+        </div>
+        <div id="menu-bar-nav" class="unit size1of3">
+          <ul id="menu-bar-icons">
+            <li id="rebuild-site" class="nav-link">
+              <a class="mt-rebuild" title="Publish Site"><span>Publish</span></a>
+            </li>
+            <li id="view-site" class="nav-link">
+              <a><span>View Website</span></a>
+            </li>
+            <li id="cms-search" class="nav-link">
+              <a href="#" class="detail-link"><span>Search Entries</span></a>
+            </li>
+          </ul>
+          <div id="website-fav-actions-nav" class="fav-actions-nav split">
+            <a class="action button">Create New</a>
+            <a class="toggle-button button detail-link"><img src="../..//mt-static/images/arrow/arrow-toggle-black.png"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+```
+
+<h3>Brand</h3>
+
+```
+<div class="system">
+  <div id="header">
+    <div id="brand"><a></a></div>
+  </div>
+</div>
+```
+(the top div emulates body element)
+
+TIPS
+
+When mouse hovered the brand logo (a), tips displayed like the following
+
+```
+<div class="system">
+  <div id="header">
+    <div id="brand">
+      <a></a>
+      <span class="tips">Your Dashboard</span>
+    </div>
+  </div>
+</div>
+```
+(the top div emulates body element)
+
+
+<h3>Utility Nav</h3>
+
+Utitlity nav lists the sorts of global navigation. Navigation Items are positioned the top right side of header.
+
+```
+<div id="header">
+  <div id="brand"></div>
+  <div id="utility-nav">
+    <ul id="utility-nav-list">
+      <li id="user"><a><img src="../../mt-static/support/assets_c/userpics/userpic-1-36x36.png" width="18" height="18" class="userpic"> <span class="username">yyamaguchi</span></a></li>
+      <li id="help" class="help"><a>Help</a></li>
+      <li id="logout"><a>Sign out</a></li>
+    </ul>
+  </div>
+</div>
+```
+
+<h3>Menu Bar</h3>
+
+Menu Bar background color depends on body class is 'blog' or 'website'
+
+
+Blog
+
+```
+  <div class="blog">
+    <div id="header">
+      <div id="menu-bar">
+        <div id="selector-nav" class="unit size2of3 first-child">
+          <a hre="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle.png"></a>
+          <div id="current-scope">
+            <ol id="selector-nav-list" class="line">
+              <li id="current-website" class="current scope website">
+                <em class="scope-label"><a>First Website</a></em>
+              </li>
+              <li id="current-blog" class="current scope blog">
+                <em class="scope-label"><a>My Blog</a></em>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+```
+
+
+Website
+```
+  <div class="website">
+    <div id="header">
+      <div id="menu-bar">
+        <div id="selector-nav" class="unit size2of3 first-child">
+          <a hre="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle.png"></a>
+          <div id="current-scope">
+            <ol id="selector-nav-list" class="line">
+              <li id="current-website" class="current scope website">
+                <em class="scope-label"><a>First Website</a></em>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+```
+
+<h3>Scope Selector</h3>
+
+.scope-selector class is the style for the dialog opened with Menu Bar toggle button
+
+```
+<div style="height:250px">
+<div id="scope-selector" class="scope-selector" style="display:block">
+  <div id="system-scope-list" class="scope-list system first-child">
+    <ul class="first-child last-child">
+      <li class="user-dashboard">
+        <a class="scope-link">User Dashboard</a>
+      </li>
+      <li class="system-overview">
+        <a class="scope-link">System Overview</a>
+      </li>
+    </ul>
+  </div>
+  <div id="fav-website-list" class="scope-list website">
+    <span class="sticky-label scope-level website">Websites</span>
+    <ul>
+      <li><a class="scope-link">First Website</a></li>
+    </ul>
+  </div>
+  <div id="fav-blog-list" class="scope-list blog">
+    <span class="sticky-label scope-level blog">Blogs</span>
+      <ul>
+        <li><a class="scope-link">My Blog <span class="parent">(on First Website)</span></a></li>
+        <li id="select-blog" class="select-another"><a class="mt-open-dialog scope-link">Select another blog...</a></li>
+      </ul>
+    </div>
+    <div id="create-website-action">
+      <ul class="create-action">
+        <li id="create-website"><a class="create-link website">Create Website</a></li>
+      </ul>
+    </div>
+    <div id="create-blog-action">
+      <ul class="create-action">
+        <li id="create-blog">
+          <a class="create-link website">Create Blog (on First Website)</a>
+        </li>
+      </ul>
+    </div>
+</div>
+</div>
+```
+
+<h3>Favorite Action</h3>
+
+```
+<div class="fav-actions-nav split active">
+  <a class="action button">Create New</a>
+  <a hre="#" class="toggle-button button detail-link" style="position:relative; height:22px"><img src="../../mt-static/images/arrow/arrow-toggle-black.png"></a>
+  <div id="fav-actions" class="fav-actions detail last-child" style="display: block;">
+    <ul id="fav-actions-list">
+      <li id="fav-action-entry" class="fav-action"><a class="fav-action-link">Entry</a></li>
+      <li id="fav-action-page" class="fav-action"><a class="fav-action-link">Page</a></li>
+      <li id="fav-action-asset" class="fav-action"><a class="fav-action-link">Asset</a></li>
+      <li id="fav-action-blog" class="fav-action"><a class="fav-action-link">Blog</a></li>
+    </ul>
+  </div>
+</div>
+```
+
+<h3>Menu Bar Icons</h3>
+
+```
+<div class="website">
+  <div id="header">
+    <div id="menu-bar">
+      <div id="selector-nav" class="unit size2of3"></div>
+      <div id="menu-bar-nav" class="unit size1of3">
+        <ul id="menu-bar-icons">
+          <li id="rebuild-site" class="nav-link">
+            <a class="mt-rebuild" title="Publish Site"><span>Publish</span></a>
+          </li>
+          <li id="view-site" class="nav-link">
+            <a><span>View Website</span></a>
+          </li>
+          <li id="cms-search" class="nav-link">
+            <a href="#" class="detail-link"><span>Search Entries</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```
+<div clasfs="blog">
+  <div id="header">
+    <div id="menu-bar">
+      <div id="selector-nav" class="unit size2of3"></div>
+      <div id="menu-bar-nav" class="unit size1of3">
+        <ul id="menu-bar-icons">
+          <li id="rebuild-site" class="nav-link">
+            <a class="mt-rebuild" title="Publish Site"><span>Publish</span></a>
+          </li>
+          <li id="view-site" class="nav-link">
+            <a><span>View Website</span></a>
+          </li>
+          <li id="cms-search" class="nav-link">
+            <a href="#" class="detail-link"><span>Search Entries</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+
+<h3>Quick Seach Form</h3>
+
+```
+<div clasfs="blog">
+  <div id="header">
+    <div id="menu-bar" class="line">
+      <div id="selector-nav" class="unit size2of3"></div>
+      <div id="menu-bar-nav" class="unit size1of3">
+        <ul id="menu-bar-icons" class="first-child">
+          <li id="cms-search" class="nav-link last-child active">
+            <a href="#" class="detail-link"><span>Search Entries</span></a>
+            <div id="quick-search-form" class="detail search-form">
+              <form id="basic-search" class="basic-search">
+                <input accesskey="q" type="text" name="search" id="quick-search" autocomplete="off" class="search-query input-hint text" placeholder="Search Entries" value="" title="Search (q)">
+                <button type="submit" class="button">Search</button>
+              </form>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+```
+*/
+
 #brand {
     height: 32px;
     background-color: #2b2b2b;
@@ -1176,7 +1458,6 @@ You can easy build grid layout with the following styles.
     text-transform: uppercase;
 }
 
-/* - Utility Nav */
 #utility-nav {
     position: absolute;
     color: #9ea1a3;
@@ -1223,7 +1504,6 @@ You can easy build grid layout with the following styles.
     margin-right: 0.5em;
 }
 
-/* - Menu bar */
 #menu-bar {
     position: relative;
     height: 28px;
@@ -1237,7 +1517,6 @@ You can easy build grid layout with the following styles.
     background-color: #5c909b;
 }
 
-/* -- Selector Nav */
 #selector-nav {
     position: relative;
     z-index: 500;
@@ -1304,7 +1583,6 @@ You can easy build grid layout with the following styles.
     font-style: normal;
 }
 
-/* --- Scope Selector */
 .scope-selector {
     display: none;
     position: absolute;
@@ -1372,7 +1650,6 @@ You can easy build grid layout with the following styles.
     border-radius: 0 0 3px 3px;
 }
 
-/* --- Menu Bar list */
 #menu-bar-nav {
     top: 0;
     right: 0;
@@ -1383,7 +1660,6 @@ You can easy build grid layout with the following styles.
     outline: 0;
 }
 
-/* ---- Favorite Action */
 .fav-actions-nav {
     position: relative;
     top: 3px;
@@ -1440,7 +1716,6 @@ You can easy build grid layout with the following styles.
     border-radius: 0 0 2px 2px;
 }
 
-/* ---- Nav Icons */
 #menu-bar-icons {
     float: right;
     height: 100%;
@@ -1480,7 +1755,6 @@ You can easy build grid layout with the following styles.
     display: none;
 }
 
-/* --- Menu bar Search */
 #quick-search-form {
     position: absolute;
     top: 28px;
@@ -1502,19 +1776,102 @@ You can easy build grid layout with the following styles.
     width: 200px;
 }
 
-/* - Notification Indicator */
+/* ## Notification Indicator
+
+```
+<div clasfs="blog">
+  <div id="brand"></div>
+  <div id="header">
+    <div id="menu-bar" class="line"></div>
+    <div id="notification-indicator">
+      <div id="notification-indicator-content">
+        <p class="msg-text"><a>You have <strong>2 messages</strong> from the system.</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+```
+*/
+
 #notification-indicator {
     height: 30px;
     background-color: #e6eae3;
     width: 100%;
 }
 
-/* -- Notification Content */
 #notification-indicator-content {
     padding: 0.5em 0.75em;
 }
 
-/* - Navigation Menu */
+/* ##Left Side Menu
+
+```
+<div id="menu" style="margin-left:0">
+  <ul class="menu-nav">
+    <li class="item top-menu first-child top-menu-open active current">
+      <div>
+        <a class="top-menu-link menu-link"><span class="menu-label">Blogs</span></a>
+        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+      </div>
+      <ul class="sub-menu" style="display: block;">
+        <li class="item"><a class="sub-menu-link menu-link current"><span class="menu-label">Manage</span></a></li>
+        <li class="item"><a class="sub-menu-link menu-link"><span class="menu-label">New</span></a></li>
+      </ul>
+    </li>
+    <li class="item top-menu">
+      <div>
+        <a class="top-menu-link menu-link"><span class="menu-label">Entries</span></a>
+        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+      </div>
+    </li>
+    <li class="item top-menu last-child">
+      <div>
+        <a class="top-menu-link menu-link"><span class="menu-label">Tools</span></a>
+        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+      </div>
+    </li>
+  </ul>
+</div>
+```
+
+<h3>Current</h3>
+
+The menu item currently seeing is added 'current' class
+
+```
+<div id="menu" style="margin-left:0">
+  <ul class="menu-nav">
+    <li class="item top-menu first-child top-menu-open current">
+      <div>
+        <a class="top-menu-link menu-link"><span class="menu-label">Blogs</span></a>
+        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+      </div>
+    </li>
+  </ul>
+</div>
+```
+
+The sub menu also added 'current'
+
+```
+<div id="menu" style="margin-left:0">
+  <ul class="menu-nav">
+    <li class="item top-menu first-child top-menu-open current">
+      <div>
+        <a class="top-menu-link menu-link"><span class="menu-label">Blogs</span></a>
+        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+      </div>
+      <ul class="sub-menu" style="display: block;">
+        <li class="item"><a class="sub-menu-link menu-link current"><span class="menu-label">Manage</span></a></li>
+        <li class="item"><a class="sub-menu-link menu-link"><span class="menu-label">New</span></a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+```
+
+*/
+
 .menu-nav {
     position: relative;
     background-color: #ffffff;
@@ -1538,7 +1895,6 @@ You can easy build grid layout with the following styles.
     color: #2b2b2b;
 }
 
-/* -- topmenu */
 .top-menu-link {
     margin-right: 20px;
 }
@@ -1564,7 +1920,6 @@ You can easy build grid layout with the following styles.
     padding: 5px;
 }
 
-/* -- submenu */
 .sub-menu {
     display: none;
     background-color: #fbfbfb;
@@ -1628,7 +1983,6 @@ You can easy build grid layout with the following styles.
 }
 
 
-/* - Content Header */
 #content-header {
     position: relative;
 }
@@ -1640,7 +1994,6 @@ You can easy build grid layout with the following styles.
     margin-bottom: 10px;
 }
 
-/* -- Action Link List */
 .action-link-list {
     margin-top: 5px;
 }
@@ -1649,7 +2002,19 @@ You can easy build grid layout with the following styles.
     margin-right: 10px;
 }
 
-/* -- Object Nav */
+/* ##Object Navigation
+
+.object-nav class is the style for a Object(entry/comment etc)'s navigation like the following
+
+```
+<ul class="object-nav">
+  <li id="previous-link"><a>‹ Prev</a></li>
+  <li id="next-link"><span>Next ›</span></li>
+</ul>
+```
+
+*/
+
 .object-nav {
     position: absolute;
     top: 0;
@@ -1676,7 +2041,6 @@ You can easy build grid layout with the following styles.
     text-decoration: underline;
 }
 
-/* - Fields */
 #display_image-field {
     margin-top: 0;
 }
@@ -1684,7 +2048,16 @@ You can easy build grid layout with the following styles.
     margin-bottom: 10px;
 }
 
-/* -- Create Inline */
+/* ## Create Inline
+
+.create-inline and the related classes used for the inline link to craate object.
+
+```
+<a class="icon-left icon-create">Create Archive Mapping</a>
+```
+
+*/
+
 .create-inline {
     display: none;
     margin: 10px 0;
@@ -1693,7 +2066,37 @@ You can easy build grid layout with the following styles.
     background-color: #f3f3f3;
 }
 
-/* - Actions Bar */
+/* ##Actions Bar
+
+
+```
+<div class="actions-bar actions-bar-bottom line">
+  <div class="button-actions actions">
+    <a class="button">Publish</a>
+    <a class="button">Delete</a>
+  </div>
+</div>
+</div>
+```
+
+```
+<div class="actions-bar actions-bar-bottom line">
+  <div class="plugin-actions actions">
+    <select class="action_selector" name="plugin_action_selector">
+      <option>More actions...</option>
+      <option>Unpublish Entries</option>
+      <option>Add Tags...</option>
+      <option>Remove Tags...</option>
+      <option>Batch Edit Entries</option>
+    </select>
+    <button type="button" class="button mt-entry-listing-form-action">Go</button>
+  </div>
+</div>
+</div>
+```
+
+*/
+
 .widget .actions-bar {
     margin-bottom: 0;
 }
@@ -1708,7 +2111,6 @@ You can easy build grid layout with the following styles.
     margin: 3px 0 0;
 }
 
-/* -- Auto save message */
 .autosave-notification {
     margin-top: 1em;
 }
@@ -2145,6 +2547,7 @@ You can add tab links in widget content with ul.tabs and li.tab
 
 /* - Listing */
 /* -- List Asset (legacy) */
+
 #asset-listing-table .asset-thumb a span {
     display: none;
 }
@@ -3238,7 +3641,19 @@ input#system_performance_logging_threshold {
     margin: 15px 0 15px 135px;
 }
 
-/* -- System Info */
+/* ## System Information Class
+
+.exception class is used show the system exepction message like the following
+
+<div class="msg msg-warning active">
+  <p class="msg-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet
+    <span class="toggle-link detail-link">Details</span>
+    <span class="exception active" style="display: block;">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet
+    </span>
+  </p>
+</div>
+*/
 
 .exception {
     width: 100%;
@@ -3328,18 +3743,50 @@ div.template-group-content.active {
     display: block;
 }
 
-/* -- Default Category */
 #default_categories-table .display-name {
     width: 40%;
 }
 
-/* -- Default Folder */
 #default_folders-table .display-name {
     width: 35%;
 }
 
 
-/* - Search Replace */
+/* ##Search Replace
+
+```
+<div class="search-replace">
+<div id="search-bar" class="line">
+  <div id="search-bar-search-field" class="mod">
+    <div id="search-field" class="field field-top-label">
+    <div class="field-header"><label id="search-label" for="search">Search</label></div>
+    <div class="field-content"><input type="text" name="search" id="search" class="text query" value=""></div>
+  </div>
+  <ul id="search-bar-advanced-search" class="multiple-selection">
+      <li><label for="case"><input type="checkbox" id="case" name="case" value="1" class="cb checkbox"> Case Sensitive</label></li>
+      <li><label for="is_regex"><input type="checkbox" id="is_regex" name="is_regex" value="1" class="cb checkbox"> Regex Match</label></li>
+  </ul>
+  <div id="limited-fields" class="mod advanced-options">
+    <div id="entry-fields">
+      <ul class="multiple-selection">
+        <li><label for="search_cols-basename"><input type="checkbox" checked="checked" class="cb checkbox"> Basename</label></li>
+        <li><label for="search_cols-keywords"><input type="checkbox"checked="checked" class="cb checkbox"> Keywords</label></li>
+      </ul>
+    </div>
+  </div>
+  <div id="date-range" class="mod advanced-options">
+    <label for="datefrom">From:</label> <input type="text" name="from" id="from" class="text-date text date hasDatepicker" value="">
+    <label for="dateto">To:</label> <input type="text" name="to" id="to" class="text-date text date last-child hasDatepicker" value="">
+  </div>
+  <div class="actions-bar last-child">
+    <button id="search-button" class="search action primary button">Search</button>
+  </div>
+</div>
+</div>
+```
+(the top div emulates body element)
+
+*/
 .search-replace .ui-tabs-nav {
     margin-bottom: 0;
 }
@@ -3366,7 +3813,28 @@ div.template-group-content.active {
 }
 
 
-/* - Display Optins */
+/* ##Display Optins
+
+Display Options has two ingredients, toggle button and detailed contents.
+
+```
+<div class="display-options">
+  <a class="toggle-link">
+    Display Options
+    <span class="toggle-button">
+      <img src="../images/arrow/arrow-toggle.png">
+    </span>
+  </a>
+  <div class="display-options-detail detail" style="display: block;">
+    <div class="field field-top-label">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+    </div>
+  </div>
+</div>
+```
+
+*/
+
 .display-options {
     margin: 10px 0 0;
 }
@@ -3400,7 +3868,31 @@ div.template-group-content.active {
     border-radius: 2px 0 2px 2px;
 }
 
-/* - Footer */
+/* ##Footer
+
+MT has footer area at the bottom of screen which contains inline navigation, copyright and version string
+
+```
+<div id="footer">
+  <ul id="footer-nav" class="inline-nav">
+    <li><a href="http://www.movabletype.org" class="first-child last-child">MovableType.org</a></li>
+    <li><a href="http://plugins.movabletype.org/" class="first-child last-child">Plugins</a></li>
+    <li><a href="http://www.movabletype.org/documentation/" class="first-child last-child">Documentation</a></li>
+    <li><a href="http://wiki.movabletype.org/" class="first-child last-child">Wiki</a></li>
+    <li><a href="http://www.sixapart.jp/movabletype/support/" class="first-child last-child">Support</a></li>
+    <li><a href="http://forums.movabletype.org/" class="first-child last-child">Forums</a></li>
+    <li class="last-child"><a href="http://www.sixapart.jp/movabletype/feedback.html" class="first-child last-child">Send Us Feedback</a></li>
+  </ul>
+  <div id="copyright">Copyright © 2001 Six Apart. All Rights Reserved.</div>
+  <p id="version">
+    <strong class="first-child"><a href="http://www.movabletype.org/" class="first-child last-child">Movable Type</a> version 6.0</strong>
+    with: <a href="http://www.sixapart.com/movabletype/pack/enterprise/">Advanced Pack 2.21</a>
+  </p>
+</div>
+```
+
+*/
+
 #footer {
     border-top: 1px solid #c0c6c9;
     padding: 8px 0 1px;
@@ -3433,7 +3925,42 @@ div.template-group-content.active {
     margin-left: 20px;
 }
 
-/* - beta */
+/* ##Beta
+
+When MT is beta version one, .mt-beta class is added at body element.
+
+```
+<div class="mt-beta">
+  <div id="container">
+    <div id="header">
+      <div id="brand"><a></a><span class="tip">Your Dashboard</tip></div>
+      <div id="menu-bar"></div>
+    </div>
+    <div id="content">
+      <div id="main">
+        <div id="content-header">
+          <h1>CONTENT HEADER</h1>
+        </div>
+        <div id="content-body">
+          <div id="main-content">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer">
+    <div id="msg-beta"><p>Lorem ipsum dolor sit amet</p></div>
+    <ul id="footer-nav" class="inline-nav">
+      <li class="first-child"><a href="http://www.movabletype.org">MovableType.org</a></li>
+    </ul>
+  </div>
+</div>
+```
+(the top div emulates body element)
+
+*/
+
 .mt-beta #brand {
     background-image: url(../images/beta_icons/beta_icon.png);
     background-position: 152px center;
