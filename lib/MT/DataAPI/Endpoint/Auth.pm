@@ -12,6 +12,7 @@ use warnings;
 use MT::DataAPI::Endpoint::Common;
 
 use URI;
+use boolean ();
 use MT::Session;
 
 sub mt_data_api_login_magic_token_cookie_name {
@@ -94,6 +95,9 @@ sub authentication {
         sessionId   => $session->id,
         accessToken => $access_token->id,
         expiresIn   => MT::AccessToken::ttl(),
+        remember    => $session->get('remember')
+        ? boolean::true()
+        : boolean::false(),
     };
 
     my $magic_token_cookie
