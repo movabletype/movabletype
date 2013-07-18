@@ -1933,6 +1933,17 @@ sjcl.misc.cachedPbkdf2 = function (password, obj) {
 
 
 
+function cookieName(name) {
+    if (! window.location) {
+        return name;
+    }
+
+    var port = window.location.port ||
+        (window.location.protocol === 'https:' ? 443 : 80);
+
+    return name + '_' + port;
+}
+
 var localStorage = window.localStorage;
 
 if (! localStorage) {
@@ -1949,12 +1960,12 @@ else {
                 o       = this.o,
                 expires = remember ? new Date(new Date().getTime() + 315360000000) : undefined; // after 10 years
 
-            Cookie.bake(name, key, o.sessionDomain, o.sessionPath, expires);
+            Cookie.bake(cookieName(name), key, o.sessionDomain, o.sessionPath, expires);
             localStorage.setItem(name, sjcl.encrypt(key, data));
         },
         fetch: function(name) {
             try {
-                var key = Cookie.fetch(name).value;
+                var key = Cookie.fetch(cookieName(name)).value;
                 return sjcl.decrypt(key, localStorage.getItem(name));
             }
             catch (e) {
@@ -1963,7 +1974,7 @@ else {
         },
         remove: function(name) {
             var o = this.o;
-            Cookie.bake(name, '', o.sessionDomain, o.sessionPath, new Date(0));
+            Cookie.bake(cookieName(name), '', o.sessionDomain, o.sessionPath, new Date(0));
             localStorage.removeItem(name);
         }
     };
