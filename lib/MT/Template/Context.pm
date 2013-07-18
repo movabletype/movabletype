@@ -592,8 +592,7 @@ sub compile_category_filter {
 
         # replace any other 'thing' with '(0)' since it's a
         # category that doesn't even exist.
-        $cat_expr
-            =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
+        $cat_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/$2?'(0)':$1/ge;
 
         # strip out all the 'ok' stuff. if anything is left, we have
         # some invalid data in our expression:
