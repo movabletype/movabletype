@@ -44,7 +44,7 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit 
 ```
 <pre>
 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-</pre>
+</pre>.
 ```
 */
 
@@ -827,7 +827,7 @@ Base building blocks in MT are container, header(contains brand and menu-bar), c
   </div>
   <div id="footer">
     <ul id="footer-nav" class="inline-nav">
-      <li class="first-child"><a href="http://www.movabletype.org">MovableType.org</a></li>
+      <li><a href="http://www.movabletype.org">MovableType.org</a></li>
     </ul>
   </div>
 </div>
@@ -862,7 +862,7 @@ CMS screens usually have the menu block at the left side of content block and as
   </div>
   <div id="footer">
     <ul id="footer-nav" class="inline-nav">
-      <li class="first-child"><a href="http://www.movabletype.org">MovableType.org</a></li>
+      <li><a href="http://www.movabletype.org">MovableType.org</a></li>
     </ul>
   </div>
 </div>
@@ -900,7 +900,7 @@ MT often shows the releted contents at the left side of content, like the follow
   </div>
   <div id="footer">
     <ul id="footer-nav" class="inline-nav">
-      <li class="first-child"><a href="http://www.movabletype.org">MovableType.org</a></li>
+      <li><a href="http://www.movabletype.org">MovableType.org</a></li>
     </ul>
   </div>
 </div>
@@ -956,7 +956,7 @@ MT often shows the releted contents at the left side of content, like the follow
     </div>
     <div id="footer">
       <ul id="footer-nav" class="inline-nav">
-        <li class="first-child"><a href="http://www.movabletype.org">MovableType.org</a></li>
+        <li><a href="http://www.movabletype.org">MovableType.org</a></li>
       </ul>
     </div>
   </div>
@@ -1148,7 +1148,7 @@ Header contains 3 main blocks, brand, menu-bar and utility nav
         <ul id="utility-nav-list">
           <li id="user"><a><img src="../../mt-static/support/assets_c/userpics/userpic-1-36x36.png" width="18" height="18" class="userpic"> <span class="username">yyamaguchi</span></a></li>
           <li id="help" class="help"><a>Help</a></li>
-          <li id="logout" class="last-child"><a>Sign out</a></li>
+          <li id="logout"><a>Sign out</a></li>
         </ul>
       </div>
       <div id="menu-bar">
@@ -1290,7 +1290,7 @@ Website
 <div style="height:250px">
 <div id="scope-selector" class="scope-selector" style="display:block">
   <div id="system-scope-list" class="scope-list system first-child">
-    <ul class="first-child last-child">
+    <ul>
       <li class="user-dashboard">
         <a class="scope-link">User Dashboard</a>
       </li>
@@ -1402,7 +1402,7 @@ Website
     <div id="menu-bar" class="line">
       <div id="selector-nav" class="unit size2of3"></div>
       <div id="menu-bar-nav" class="unit size1of3">
-        <ul id="menu-bar-icons" class="first-child">
+        <ul id="menu-bar-icons">
           <li id="cms-search" class="nav-link last-child active">
             <a href="#" class="detail-link"><span>Search Entries</span></a>
             <div id="quick-search-form" class="detail search-form">
@@ -2120,9 +2120,9 @@ The sub menu also added 'current'
 
 Widget is the component for MT Dashboard. It has some incredients, header, buttons and tabs.
 
-<h3>Basic Usage</h3>
+<h3>Basic Structure</h3>
 
-There are 3 classes we use in widgets, .widget-header, .widget-content and .widget-footer.
+.widget class contains 2 main classes, .widget-header and .widget-content.
 
 ```
 <div class="widget">
@@ -2147,10 +2147,47 @@ You can hide header contents with .widget-no-header
 </div>
 ```
 
+<h3>Header with Tab</h3>
 
-<h3>Widget action</h3>
+If you want to add the tab bar in the widget header, add .tabbed class at the .widget element.
 
-You can add action menu at the right side of widget header with .widget-action.
+MT uses jQuery UI Tab for tab UI, you build like the following HTML blocks and execute jQuery('#my-widget').tabs() (.ui-* classes are automatically added with jQuery UI)
+
+```
+<div id="my-widget" class="widget tabbed ui-tabs ui-widget ui-widget-content ui-corner-all">
+  <div class="widget-header" style="padding-bottom: 0">
+    <div class="widget-action">
+      <a class="widget-close-link"><span>close</span></a>
+    </div>
+    <div class="widget-label">
+      <h2><span>Lorem ipsum dolor sit amet</span></h2>
+      <div style="margin: 0 -10px">
+        <ul class="tabs ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" style="margin-bottom:0;">
+          <li class="tab ui-state-default ui-corner-top ui-tabs-active ui-state-active first-child">
+            <a href="#lorem" class="ui-tabs-anchor">Lorem</a>
+          </li>
+          <li class="tab ui-state-default ui-corner-top">
+            <a href="#ipsum" class="ui-tabs-anchor">ipsum</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="widget-content">
+    <div id="lorem">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit.Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+    </div>
+    <div id="ipsum" style="display:none">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit.Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+    </div>
+  </div>
+</div>
+```
+
+
+<h3>Action Link</h3>
+
+You can add some action at the right side of widget header with .widget-action.
 
 ```
 <div class="widget">
@@ -2163,7 +2200,6 @@ You can add action menu at the right side of widget header with .widget-action.
   </div>
 </div>
 ```
-
 
 <h3>Tabs</h3>
 
@@ -2179,7 +2215,7 @@ You can add tab links in widget content with ul.tabs and li.tab
     </ul>
     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
   </div>
-  <div class="widget-footer last-child"></div>
+  <div class="widget-footer"></div>
 </div>
 ```
 
@@ -2241,12 +2277,10 @@ You can add tab links in widget content with ul.tabs and li.tab
     border: 0;
 }
 
-/* -- Status widget */
 .loaded-revision .status-widget {
     background-color: #f2f2b0;
 }
 
-/* -- Personal Stats Widget */
 .user .personal-stats-widget {
     clear: both;
     background-color: transparent;
@@ -2281,7 +2315,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     background-image: url(../images/nav_icons/mini/entry-new.gif);
 }
 
-/* -- Favorite Website, Blog Widget */
 #favorite_blogs .widget-header {
     padding-bottom: 0;
 }
@@ -2368,7 +2401,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     margin-right: 10px;
 }
 
-/* -- Blog Stats Widget */
 .blog-stats-widget {
     min-height: 480px;
 }
@@ -2411,7 +2443,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     text-align: right;
 }
 
-/* --- Blog Stats: Comments */
 #comment-panel .content {
     padding-top: 10px;
 }
@@ -2422,7 +2453,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     background-image: url(../images/status_icons/warning.gif);
 }
 
-/* --- Blog Stats: Entries */
 .blog-stats-widget .entry-status-publish {
     background-image: url(../images/status_icons/success.gif);
 }
@@ -2439,7 +2469,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     background-image: url(../images/status_icons/future.gif);
 }
 
-/* --- Blog Stats: Tags */
 .blog-stats-widget #tag-cloud {
     margin: 10px 0;
 }
@@ -2466,7 +2495,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     font-size: 14px;
 }
 
-/* --- Blog Stats: Registrations */
 .blog-stats-widget .author {
     padding: 10px;
 }
@@ -2478,7 +2506,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     margin-top: 5px;
 }
 
-/* -- New Blog Stats Widget */
 .site-stats-widget #widget-container {
     width: 100%;
     padding: 10px;
@@ -2523,7 +2550,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     text-align: right;
 }
 
-/* -- MT News */
 .news-widget #news-widget-tabs {
     margin: 0 -10px 15px;
 }
@@ -2534,7 +2560,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     margin-top: 10px;
 }
 
-/* -- Include Templates Widget */
 .include-from {
     display: block;
     margin-left: 20px;
@@ -2544,9 +2569,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     color: #9e3d3f;
 }
 
-
-/* - Listing */
-/* -- List Asset (legacy) */
 
 #asset-listing-table .asset-thumb a span {
     display: none;
@@ -2563,7 +2585,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     background-image: url(../images/asset-image.gif);
 }
 
-/* -- List Revision */
 #page-revison-listing,
 #entry-revision-listing,
 #template-revision-listing {
@@ -2580,13 +2601,10 @@ You can add tab links in widget content with ul.tabs and li.tab
     width: 18%;
 }
 
-/* -- List Template (legacy) */
 .tmpl-type-name {
     margin-bottom: 3px;
 }
 
-/* - Edit Screen */
-/* - Edit Comment, Ping, Author & Entry */
 .edit-comment #status-field,
 .edit-ping #status-field,
 .edit-author .user-status-disabled,
@@ -2602,7 +2620,30 @@ You can add tab links in widget content with ul.tabs and li.tab
     margin-bottom: 0;
 }
 
-/* -- Editor */
+/* ## Editor
+
+.editor-toolbar is used at Edit Template screen
+
+```
+<div id="template-body-field" class="field field-no-header ">
+    <div class="field-header">
+      <label id="template-body-label" for="template-body">Template Body</label>
+    </div>
+    <div class="field-content">
+
+    <div id="template-editor-toolbar" class="template editor-toolbar toolbar">
+      <button type="button" id="syntaxon" class="command-highlight-on toolbar button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" title="Syntax highlighting On" role="button" aria-disabled="false"><span class="ui-button-text"><span class="button-label">Syntax highlighting On</span></span></button><button type="button" id="syntaxoff" class="command-highlight-off toolbar button active ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" title="Syntax highlighting Off" role="button" aria-disabled="false"><span class="ui-button-text"><span class="button-label">Syntax highlighting Off</span></span></button>
+    </div>
+    <div id="textarea-enclosure" class="editor">
+      <textarea name="text" id="text" class="monospace text full" tabindex="3" style="display: inline-block;">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </textarea>
+    </div>
+    </div>
+</div>
+```
+*/
+
 #text-field {
     position: static;
 }
@@ -2652,13 +2693,29 @@ You can add tab links in widget content with ul.tabs and li.tab
     line-height: 1.3;
 }
 
-/* -- Edit Entry, Page */
 .edit-entry #title-field {
     padding: 0;
 }
 .edit-entry #permalink-field .field-content {
     color: #7b7c7d;
 }
+
+/* ##Sortable Fields
+
+.sort-enabled class adds handle UI for a sotable element.
+
+```
+<div id="tags-field" class="field field-top-label sort-enabled">
+    <div class="field-header">
+      <label>Lorem ipsum dolor sit amet</label>
+    </div>
+    <div class="field-content">
+      <input type="text" class="text full">
+    </div>
+</div>
+```
+*/
+
 .sort-enabled {
     margin-bottom: 15px;
     padding: 0;
@@ -2695,7 +2752,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     background-color: #fbfbfb;
 }
 
-/* -- Edit Template */
 #template-editor-toolbar {
     text-align: right;
 }
@@ -2704,7 +2760,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     border-radius: 0 0 2px 2px;
 }
 
-/* --- Toggle Highlight */
 .button.command-highlight-on,
 .button.command-highlight-off {
     margin: 0;
@@ -2728,7 +2783,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     display: none;
 }
 
-/* --- Line Numbers */
 .CodeMirror-gutter-text pre {
     padding: 0.4em 0.3em 0 0;
     overflow: hidden;
@@ -2738,7 +2792,33 @@ You can add tab links in widget content with ul.tabs and li.tab
     font-family: monospace;
 }
 
-/* -- Tags Field */
+/* ##Tags Field
+
+tags-field related classes are mainly used for tags field in Edit Entry screen
+
+```
+<div id="tags-field" class="field field-top-label sort-enabled" style="position: relative; opacity: 1; z-index: 0;">
+  <div class="field-header first-child">
+    <label id="tags-label">Tags</label>
+  </div>
+  <div class="field-content  last-child">
+    <input type="text" name="tags" id="tags" class="text full" value="L">
+    <div id="tags-suggestion">
+      <div id="tags_completion" style="display: block;"><div class="complete-highlight">Lorem</div></div>
+    </div>
+  </div>
+</div>
+```
+
+<h3>Suggestion Block</h3>
+
+```
+    <div id="tags-suggestion">
+      <div id="tags_completion" style="display: block;"><div class="complete-highlight">Lorem</div></div>
+    </div>
+```
+
+*/
 #tags-field {
     position: relative;
     height: auto;
@@ -2767,7 +2847,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     background-color: #dcdddd;
 }
 
-/* --- Status Widget */
 #entry-status-widget {
     position: relative;
 }
@@ -2777,10 +2856,105 @@ You can add tab links in widget content with ul.tabs and li.tab
     right: 10px;
 }
 
-/* --- Publishing Widget */
 #edit-page #basename {
     width: 180px;
 }
+
+/* ## Entry Publishing Widget
+
+```
+<div id="entry-publishing-widget" class="widget entry-publishing-widget" style="width:238px">
+  <div class="widget-header">
+    <div class="widget-action"></div>
+    <div class="widget-label"><h2><span>Publishing</span></h2></div>
+  </div>
+  <div class="widget-content">
+    <div id="status-field" class="field field-top-label ">
+      <div class="field-header">
+        <label id="status-label" for="status">Status</label>
+      </div>
+      <div class="field-content">
+        <select name="status" id="status" class="full">
+          <option value="1">Unpublished (Draft)</option>
+          <option value="2" selected="selected">Published</option>
+        </select>
+      </div>
+    </div>
+    <div id="authored_on-field" class="field field-top-label">
+      <div class="field-header">
+        <label id="authored_on-label" for="authored_on">Publish Date</label>
+      </div>
+      <div class="field-content">
+        <div class="date-time-fields">
+          <input type="text" id="created-on" class="text date text-date hasDatepicker" name="authored_on_date" value="2013-07-12">
+          <span class="separator"> @</span> <input type="text" class="text time " name="authored_on_time" value="14:02:33">
+        </div>
+      </div>
+    </div>
+
+    <div id="unpublished_on-field" class="field field-top-label">
+      <div class="field-header">
+        <label id="unpublished_on-label" for="unpublished_on">Unpublish Date</label>
+      </div>
+      <div class="field-content ">
+        <div class="date-time-fields">
+          <span class="unpublished-on-text">Not specified</span>
+          <div id="unpublished-on" class="mt-edit-inputblock" style="display:none">
+            <input type="text" id="unpublished-on-date" class="text date text-date hasDatepicker" name="unpublished_on_date" value="">
+            <span class="separator"> @</span> <input type="text" id="unpublished-on-time" class="text time" name="unpublished_on_time" value="">
+          </div>
+          <button type="button" id="mt-edit-unpublished-on" class="button mt-edit-field-button">Edit</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="basename-field" class="field field-top-label">
+      <div class="field-header">
+        <label id="basename-label" for="basename">Basename</label>
+      </div>
+      <div class="field-content">
+        <span class="basename">
+          <span class="basename-text">loremipsum</span>
+          <input type="text" name="basename" id="basename" class="text full" value="loremipsum" style="display: none;">
+        </span>
+        <button type="button" id="mt-set-basename" class="mt-edit-field-button button">Edit</button>
+        <p class="alert-warning-inline" id="basename-warning">
+          <img src="../../mt-static/images/status_icons/warning.gif" alt="Warning" width="9" height="9">
+          Warning: Changing this entry's basename may break inbound links.
+        </p>
+      </div>
+    </div>
+
+    <div id="revision-note-field" class="field field-top-label">
+      <div class="field-header">
+        <label id="revision-note-label" for="revision-note">Change note</label>
+      </div>
+      <div class="field-content">
+        <input type="text" name="revision-note" id="revision-note" class="text full" value="">
+      </div>
+    </div>
+
+    <div class="actions-bar">
+      <div class="save-action">
+        <button name="status" type="submit" title="Update this Entry" class="publish action primary button">Update</button>
+      </div>
+      <div class="preview-action">
+        <button name="preview_entry" type="submit" accesskey="v" title="Preview this entry (v)" class="preview action button">
+          Preview
+        </button>
+      </div>
+    </div>
+
+    <div class="delete-action">
+      <a class="delete" accesskey="x">
+        Delete
+      </a>
+    </div>
+  </div>
+</div>
+```
+*/
+
 #entry-publishing-widget .save-action,
 #entry-publishing-widget .preview-action {
     float: left;
@@ -2814,7 +2988,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     word-wrap: break-word;
 }
 
-/* ---- Publish Date Field */
 .edit-entry .date-time-fields .post-date {
     width: 7em;
 }
@@ -2825,7 +2998,72 @@ You can add tab links in widget content with ul.tabs and li.tab
     margin: 5px 0 0 0;
 }
 
-/* --- Categories Widget */
+/* ##Categories Widget
+
+```
+<div id="category-field" class="selector-active" style="width:238px">
+  <div id="entry-category-widget" class="widget entry-category-widget">
+    <div class="widget-header ">
+      <div class="widget-action">
+        <a class="category-toggle-link toggle-link hidden">edit</a>
+        <a class="category-toggle-link toggle-link">close</a>
+      </div>
+      <div class="widget-label">
+        <h2><span>Categories</span></h2>
+      </div>
+    </div>
+    <div class="widget-content">
+      <div id="category-field" class="field field-no-header">
+        <div class="field-header">
+          <label id="category-label" for="category">Category</label>
+        </div>
+        <div class="field-content">
+          <div id="category-selector" class="category-selector">
+            <div class="category-selector-header">
+              <a class="add-category-new-parent-link">Add</a>
+            </div>
+            <div id="add-category-form" class="add-category-form hidden">
+                <input id="add-category-input" class="add-category-input text" type="text" value="Add category">
+                <a class="add-category-save-link"><span>Add</span></a>
+                <a class="add-category-cancel-link"><span>Cancel</span></a>
+            </div>
+            <div id="category-selector-list" class="category-selector-list active-component">
+              <input autocomplete="off" style="display: block; position: absolute; left: 0px; top: 0px; width: 0px; height: 0px; margin: 0px; border: 0px; padding: 0px; font-size: 0.1px; line-height: 0; opacity: 0;">
+              <div class="list-item odd selected">
+                <div style="text-align:left; margin-left:0px">
+                  <a class="add-category-new-link"><span>Add</span>&nbsp;</a>
+                  <div style="width: 165px;">
+                    <input type="checkbox" name="add_category_id_6" class="add-category-checkbox"> Lorem ipsum
+                  </div>
+                </div>
+              </div>
+              <div class="list-item even">
+                <div style="text-align:left; margin-left:0px">
+                  <a class="add-category-new-link"><span>Add</span>&nbsp;</a>
+                  <div style="width: 165px;">
+                    <input type="checkbox" name="add_category_id_5" class="add-category-checkbox"> dolor sit amet
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="category-list">
+            <ul class="category-list">
+              <li class="primary"><strong>Lorem ipsum</strong>
+                <a class="delete">&nbsp;<span>Remove</span></a>
+              </li>
+            </ul>
+          </div>
+          <input id="category-ids" type="hidden" name="category_ids" value="6" class="hidden">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+*/
+
 #category-field {
     margin: 0;
 }
@@ -2866,7 +3104,7 @@ You can add tab links in widget content with ul.tabs and li.tab
     overflow: hidden;
     white-space: nowrap;
 }
-/* take up the scrollbar space explicitly */
+
 .category-selector-list::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 11px;
@@ -2913,7 +3151,19 @@ You can add tab links in widget content with ul.tabs and li.tab
     display: none;
 }
 
-/* ---- Add New Category Form */
+/* ##Add New Category Form
+
+```
+<div class="category-selector">
+  <div id="add-category-form" class="add-category-form">
+    <input id="add-category-input" class="add-category-input text" type="text" value="Add category">
+    <a class="add-category-save-link"><span>Add</span></a>
+    <a class="add-category-cancel-link"><span>Cancel</span></a>
+  </div>
+</div>
+```
+
+*/
 .add-category-form {
     white-space: nowrap;
 }
@@ -2974,13 +3224,11 @@ You can add tab links in widget content with ul.tabs and li.tab
     position: static;
 }
 
-/* ---- Page Folder */
 .change-folder-link {
     padding-left: 11px;
     background: url(../images/status_icons/create.gif) no-repeat left center;
 }
 
-/* --- Feedback Widget */
 #allow-feedback-field li {
     position: relative;
 }
@@ -3006,7 +3254,6 @@ You can add tab links in widget content with ul.tabs and li.tab
     margin-bottom: 0;
 }
 
-/* --- Asset List Widget */
 #asset_container .widget-content-inner {
    padding: 0px 10px 10px;
 }
@@ -3062,7 +3309,6 @@ ul#asset-list .asset-type-video {
     background-image: url(../images/asset/video.gif);
 }
 
-/* --- Asset Option */
 #asset_details {
     margin-bottom: 30px;
 }
@@ -3070,7 +3316,6 @@ ul#asset-list .asset-type-video {
     margin-bottom: 20px;
 }
 
-/* -- Edit Comment, Trackback */
 .settings-screen a#increase-threshold,
 .settings-screen a#decrease-threshold {
     color: #383c3c;
@@ -3129,7 +3374,86 @@ ul#asset-list .asset-type-video {
     background-image: linear-gradient(#f6bfbc, #fdeff2);
 }
 
-/* -- Edit Template  */
+/* ##Edit Template Screen
+
+<h3>Template Option</h3>
+
+```
+<div class="edit-template">
+<div id="template-options" class="active">
+  <div id="template-options-header" class="line">
+    <div class="template-options-toggle">
+        <a　class="icon-left icon-spinner">Template Options</a>
+      </div>
+      <div class="template-options-summary">Enabled Mappings: Entry</div>
+    </div>
+    <div id="template-options-content">
+      <div id="linked_file-field" class="field field-top-label">
+        <div class="field-header">
+          <label id="linked_file-label" for="linked_file">Link to File</label>
+        </div>
+        <div class="field-content">
+          <input type="text" name="linked_file" id="linked_file" class="text" tabindex="8" value="" maxlength="255">
+        </div>
+      </div>
+      <div id="archive_mapping-field" class="field field-top-label">
+        <div class="field-header">
+          <label id="archive_mapping-label" for="archive_mapping">Archive Mapping</label>
+        </div>
+        <div class="field-content field-content-text">
+        <p><a class="icon-left icon-create">Create Archive Mapping</a></p>
+        <div id="msg-block"></div>
+        <div class="create-inline" id="create-inline-mapping">
+          <label for="new_archive_type"><strong>Type</strong></label>
+          <select name="new_archive_type" id="new_archive_type" tabindex="9">
+            <option value="Individual">Entry</option>
+          </select>
+          &nbsp;
+          <span class="buttons">
+            <a class="button">Add</a>
+            <a class="button">Cancel</a>
+          </span>
+        </div>
+        <div id="template-maps">
+          <div id="templatemap-listing" class="listing  hide_actions">
+            <table id="templatemap-listing-table" class="legacy listing-table  hide_actions templatemap-listing-table compact">
+              <thead>
+                <tr>
+                  <th class="col head archive-type"><span class="col-label">Type</span></th>
+                  <th class="col head archive-path primary"><span class="col-label">Path</span></th>
+                  <th class="col head publish-options"><span class="col-label">Publishing</span></th>
+                  <th class="col head archive-delete si"><span>Delete</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="18" class="odd">
+                  <td class="col archive-type">Entry</td>
+                  <td class="col archive-path">
+                    <select id="archive_file_sel_18" class="tmpl-path">
+                      <option value="%y/%m/%-f">yyyy/mm/entry-basename.html</option>
+                    </select>
+                    <input type="text" class="tmpl-path tmpl-path-custom hidden text" value="%y/%m/%f">
+                  </td>
+                  <td class="col publish-options">
+                    <select name="map_build_type_18" id="build-type" class="half-width">
+                      <option value="1" selected="selected">Statically (default)</option>
+                    </select>
+                  </td>
+                  <td class="col archive-delete si"><a class="icon16 icon-delete">Delete</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hint">Learn more about <a>publishing settings</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+```
+
+*/
 .edit-template #title-field {
     padding: 0;
 }
@@ -3206,7 +3530,6 @@ ul#asset-list .asset-type-video {
     display: block;
 }
 
-/* --- Archive Mapping */
 #archive_mapping-field p {
     margin-bottom: 3px;
 }
@@ -3238,7 +3561,6 @@ ul#asset-list .asset-type-video {
     margin-top: 3px;
 }
 
-/* --- Edit Widget Set */
 #widget-manager {
     margin: 15px 0;
 }
@@ -3270,7 +3592,6 @@ ul#asset-list .asset-type-video {
     color: #fffffc;
 }
 
-/* -- Edit Asset */
 .asset-preview {
     margin-bottom: 30px;
 }
@@ -3287,7 +3608,6 @@ ul#asset-list .asset-type-video {
     clear: both;
 }
 
-/* --- Related Assets Widget */
 #related-assets .asset {
     overflow: hidden;
     clear: left;
@@ -3302,7 +3622,6 @@ ul#asset-list .asset-type-video {
     clear: both;
 }
 
-/* - Preview */
 .preview-content {
     margin: 1.2em 0;
 }
@@ -3352,7 +3671,6 @@ ul#asset-list .asset-type-video {
     border: 0;
 }
 
-/* - Settings */
 #system-check iframe {
     width: 758px;
     height: 400px;
@@ -3362,7 +3680,13 @@ ul#asset-list .asset-type-video {
     border-bottom: 0;
 }
 
-/* -- Contextual Help */
+/** ##Contextual Help
+
+```
+<a id="formatting-help-link">?</a>
+```
+
+*/
 .help-link {
     display: none;
 }
@@ -3385,7 +3709,6 @@ ul#asset-list .asset-type-video {
     display: none;
 }
 
-/* -- General Settings */
 #has-license-field p {
     margin: 5px 0 0;
 }
@@ -3401,7 +3724,6 @@ ul#asset-list .asset-type-video {
     color: #7b7c7d;
 }
 
-/* -- System General Settings */
 #system_email_address-field .field-content > div {
     position: relative;
     display: inline-block;
@@ -3423,12 +3745,150 @@ input#system_performance_logging_threshold {
     text-align: center;
 }
 
-/* -- Registration Settings */
 #setting-auth-status-field li ul {
     margin: 0.5em 0 1.5em 2em;
 }
 
-/* -- Plugin Settings */
+/* ## Plugin Settings
+
+```
+<div id="list-plugins">
+<div class="plugin-group">
+  <h2 class="plugin-group-name">Individual Plugins</h2>
+  <div class="plugin-list">
+    <div class="plugin first-child">
+      <div class="plugin-header">
+        <h4 class="plugin-name">
+          <a href="#" style="background-image: url('../../mt-static/images/plugin.gif')">Loem ipsum <span class="plugin-version">2.32</span></a>
+        </h4>
+        <div class="plugin-status">
+          <span class="icon-left icon-success">Enabled</span>
+          <a class="button">Disable</a>
+        </div>
+      </div>
+      <div class="plugin-content ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="plugin-tabs-list tabs ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+          <li class="tab ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a class="icon-mini-left icon-mini-comments ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-1">Info</a></li>
+          <li class="tab ui-state-default ui-corner-top"><a class="icon-mini-left icon-mini-templates ui-tabs-anchor">Resources</a></li>
+          <li class="tab ui-state-default ui-corner-top"><a class="icon-mini-left icon-mini-settings ui-tabs-anchor">Settings</a></li>
+        </ul>
+        <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+          <div class="plugin-metadata">
+            <ul class="plugin-metadata-list">
+              <li><a class="icon-mini-left icon-mini-docs">Documentation</a></li>
+              <li><a class="icon-mini-left icon-mini-view-site">Six Apart, Ltd.</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources ui-tabs-panel ui-widget-content ui-corner-bottom" style="display: none;">
+          <ul>
+            <li><strong>Tags:</strong>&lt;MTLoremIpsum&gt;</li>
+          </ul>
+        </div>
+        <div class="config ui-tabs-panel ui-widget-content ui-corner-bottom" style="display: none;">
+          <fieldset>
+            <div id="rebuild_for_action_stream_events-field" class="field field-left-label ">
+              <div class="field-header">
+                <label id="rebuild_for_action_stream_events-label" for="rebuild_for_action_stream_events">Rebuild Indexes</label>
+              </div>
+              <div class="field-content ">
+                <label><input type="checkbox" id="rebuild_for_action_stream_events" value="1" class="checkbox"> Enable rebuilding</label>
+                <div class="hint">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="actions-bar settings-actions-bar">
+            <button mt:mode="save_plugin_config" type="submit" class="save action primary button">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="plugin plugin-disabled disabled last-child">
+      <div class="plugin-header">
+        <h4 class="plugin-name">
+          <span class="plugin-name-disabled">DolorSitAmet </span>
+        </h4>
+
+        <div class="plugin-status">
+          <span class="icon-left icon-neutral">Disabled</span>
+          <a class="button">Enable</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+```
+
+<h3>Plugin expanded</h3>
+
+```
+<div id="list-plugins">
+<div class="plugin-group">
+  <h2 class="plugin-group-name">Individual Plugins</h2>
+  <div class="plugin-list">
+    <div class="plugin first-child last-child plugin-expanded">
+      <div class="plugin-header">
+        <h4 class="plugin-name">
+          <a href="#" style="background-image: url('../../mt-static/images/plugin.gif')">Loem ipsum <span class="plugin-version">2.32</span></a>
+        </h4>
+        <div class="plugin-status">
+          <span class="icon-left icon-success">Enabled</span>
+          <a class="button">Disable</a>
+        </div>
+      </div>
+      <div class="plugin-content ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="plugin-tabs-list tabs ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+          <li class="tab ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a class="icon-mini-left icon-mini-comments ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-1">Info</a></li>
+          <li class="tab ui-state-default ui-corner-top"><a class="icon-mini-left icon-mini-templates ui-tabs-anchor">Resources</a></li>
+          <li class="tab ui-state-default ui-corner-top"><a class="icon-mini-left icon-mini-settings ui-tabs-anchor">Settings</a></li>
+        </ul>
+        <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+          <div class="plugin-metadata">
+            <ul class="plugin-metadata-list">
+              <li><a class="icon-mini-left icon-mini-docs">Documentation</a></li>
+              <li><a class="icon-mini-left icon-mini-view-site">Six Apart, Ltd.</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources ui-tabs-panel ui-widget-content ui-corner-bottom" style="display: none;">
+          <ul>
+            <li><strong>Tags:</strong>&lt;MTLoremIpsum&gt;</li>
+          </ul>
+        </div>
+        <div class="config ui-tabs-panel ui-widget-content ui-corner-bottom" style="display: none;">
+          <fieldset>
+            <div id="rebuild_for_action_stream_events-field" class="field field-left-label ">
+              <div class="field-header">
+                <label id="rebuild_for_action_stream_events-label" for="rebuild_for_action_stream_events">Rebuild Indexes</label>
+              </div>
+              <div class="field-content ">
+                <label><input type="checkbox" id="rebuild_for_action_stream_events" value="1" class="checkbox"> Enable rebuilding</label>
+                <div class="hint">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="actions-bar settings-actions-bar">
+            <button mt:mode="save_plugin_config" type="submit" class="save action primary button">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+```
+*/
+
 #list-plugins .plugin .plugin-status a:link,
 #list-plugins .plugin .plugin-name a:link,
 #list-plugins .plugin .plugin-tabs a:link,
@@ -3529,7 +3989,138 @@ input#system_performance_logging_threshold {
     margin: 0;
 }
 
-/* -- Theme Setting */
+/* #Theme Setting
+
+```
+<div id="list-themes">
+<div id="website-theme-group" class="theme-group">
+  <h2 class="theme-group-name">Themes for Websites</h2>
+  <div class="theme-list">
+    <div class="theme first-child">
+      <div class="theme-status">
+        <span class="icon-left icon-success">In Use</span>
+      </div>
+      <div class="theme-thumbnail thumbnail picture small">
+        <img src="../../mt-static/support/theme_thumbnails/classic_website/thumb-small.png" width="120" height="90">
+      </div>
+      <div class="theme-meta">
+        <h3 class="theme-title"><a class="theme-detail-link toggle-link icon-left icon-spinner">Loem ipsum <span class="theme-version">1.2</span></a></h3>
+        <div class="theme-author">
+          Author: <a>Six Apart, Ltd.</a>
+        </div>
+        <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      </div>
+      <div class="theme-details ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="theme-tabs-list ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+         <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a class="ui-tabs-anchor">Info</a></li>
+        </ul>
+        <div class="theme-info ui-tabs-panel ui-widget-content ui-corner-bottom">
+          <h4 class="first-child">Theme Information</h4>
+          <ul>
+            <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="theme last-child">
+      <div class="theme-status">
+        <a class="button uninstall-theme-link">Uninstall</a>
+      </div>
+      <div class="theme-thumbnail thumbnail picture small">
+        <img src="../../mt-static/support/theme_thumbnails/professional_website/thumb-small.png" width="120" height="90" class="first-child">
+      </div>
+      <div class="theme-meta">
+        <h3 class="theme-title"><a class="theme-detail-link toggle-link icon-left icon-spinner">Loem ipsum <span class="theme-version">1.2</span></a></h3>
+        <div class="theme-author">
+          Author: <a>Six Apart, Ltd.</a>
+        </div>
+        <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      </div>
+      <div class="theme-details ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="theme-tabs-list ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+         <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a class="ui-tabs-anchor">Info</a></li>
+        </ul>
+        <div class="theme-info ui-tabs-panel ui-widget-content ui-corner-bottom">
+          <h4 class="first-child">Theme Information</h4>
+          <ul>
+            <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+```
+
+<h3>Expand</h3>
+
+```
+<div id="list-themes">
+<div id="website-theme-group" class="theme-group">
+  <h2 class="theme-group-name">Themes for Websites</h2>
+  <div class="theme-list">
+    <div class="theme theme-expanded first-child">
+      <div class="theme-status">
+        <span class="icon-left icon-success">In Use</span>
+      </div>
+      <div class="theme-thumbnail thumbnail picture small">
+        <img src="../../mt-static/support/theme_thumbnails/classic_website/thumb-small.png" width="120" height="90">
+      </div>
+      <div class="theme-meta">
+        <h3 class="theme-title"><a class="theme-detail-link toggle-link icon-left icon-spinner">Loem ipsum <span class="theme-version">1.2</span></a></h3>
+        <div class="theme-author">
+          Author: <a>Six Apart, Ltd.</a>
+        </div>
+        <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      </div>
+      <div class="theme-details ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="theme-tabs-list ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+         <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a class="ui-tabs-anchor">Info</a></li>
+        </ul>
+        <div class="theme-info ui-tabs-panel ui-widget-content ui-corner-bottom">
+          <h4 class="first-child">Theme Information</h4>
+          <ul>
+            <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="theme last-child">
+      <div class="theme-status">
+        <a class="button uninstall-theme-link">Uninstall</a>
+      </div>
+      <div class="theme-thumbnail thumbnail picture small">
+        <img src="../../mt-static/support/theme_thumbnails/professional_website/thumb-small.png" width="120" height="90" class="first-child">
+      </div>
+      <div class="theme-meta">
+        <h3 class="theme-title"><a class="theme-detail-link toggle-link icon-left icon-spinner">Loem ipsum <span class="theme-version">1.2</span></a></h3>
+        <div class="theme-author">
+          Author: <a>Six Apart, Ltd.</a>
+        </div>
+        <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      </div>
+      <div class="theme-details ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="theme-tabs-list ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+         <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a class="ui-tabs-anchor">Info</a></li>
+        </ul>
+        <div class="theme-info ui-tabs-panel ui-widget-content ui-corner-bottom">
+          <h4 class="first-child">Theme Information</h4>
+          <ul>
+            <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+```
+
+
+*/
+
+
 #list-themes .theme-group {
     margin-bottom: 25px;
 }
@@ -3620,7 +4211,6 @@ input#system_performance_logging_threshold {
     color: #f39800;
 }
 
-/* -- System User Settings */
 #new_user_theme_thumb {
     margin-bottom: 5px;
 }
@@ -3671,7 +4261,6 @@ input#system_performance_logging_threshold {
     -moz-box-sizing: border-box;
 }
 
-/* -- Edit Author */
 .edit-author #system_permissions-field li {
     display: inline-block;
     width: 225px;
@@ -3680,7 +4269,19 @@ input#system_performance_logging_threshold {
     white-space: nowrap;
 }
 
-/* - Backup & Restore */
+/* ##Process Log
+
+
+```
+<pre class="progress-log last-child">Backing up Movable Type
+<span id="field">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. </span>
+<span id="website">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. </span>
+<span id="blog">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. </span>
+</pre>
+```
+
+*/
+
 .progress-log {
     height: 300px;
     margin: 15px 0 10px;
@@ -3698,7 +4299,6 @@ input#system_performance_logging_threshold {
     list-style-type: disc;
 }
 
-/* - Export Theme */
 #template_set h3 {
     margin-bottom: 5px;
 }
@@ -3706,7 +4306,6 @@ input#system_performance_logging_threshold {
     margin-bottom: 30px;
 }
 
-/* -- Template Set */
 .template-group {
     position: relative;
     margin-bottom: 10px;
@@ -3875,17 +4474,17 @@ MT has footer area at the bottom of screen which contains inline navigation, cop
 ```
 <div id="footer">
   <ul id="footer-nav" class="inline-nav">
-    <li><a href="http://www.movabletype.org" class="first-child last-child">MovableType.org</a></li>
-    <li><a href="http://plugins.movabletype.org/" class="first-child last-child">Plugins</a></li>
-    <li><a href="http://www.movabletype.org/documentation/" class="first-child last-child">Documentation</a></li>
-    <li><a href="http://wiki.movabletype.org/" class="first-child last-child">Wiki</a></li>
-    <li><a href="http://www.sixapart.jp/movabletype/support/" class="first-child last-child">Support</a></li>
-    <li><a href="http://forums.movabletype.org/" class="first-child last-child">Forums</a></li>
-    <li class="last-child"><a href="http://www.sixapart.jp/movabletype/feedback.html" class="first-child last-child">Send Us Feedback</a></li>
+    <li><a href="http://www.movabletype.org">MovableType.org</a></li>
+    <li><a href="http://plugins.movabletype.org/">Plugins</a></li>
+    <li><a href="http://www.movabletype.org/documentation/">Documentation</a></li>
+    <li><a href="http://wiki.movabletype.org/">Wiki</a></li>
+    <li><a href="http://www.sixapart.jp/movabletype/support/">Support</a></li>
+    <li><a href="http://forums.movabletype.org/">Forums</a></li>
+    <li><a href="http://www.sixapart.jp/movabletype/feedback.html">Send Us Feedback</a></li>
   </ul>
   <div id="copyright">Copyright © 2001 Six Apart. All Rights Reserved.</div>
   <p id="version">
-    <strong class="first-child"><a href="http://www.movabletype.org/" class="first-child last-child">Movable Type</a> version 6.0</strong>
+    <strong><a href="http://www.movabletype.org/">Movable Type</a> version 6.0</strong>
     with: <a href="http://www.sixapart.com/movabletype/pack/enterprise/">Advanced Pack 2.21</a>
   </p>
 </div>
@@ -3952,7 +4551,7 @@ When MT is beta version one, .mt-beta class is added at body element.
   <div id="footer">
     <div id="msg-beta"><p>Lorem ipsum dolor sit amet</p></div>
     <ul id="footer-nav" class="inline-nav">
-      <li class="first-child"><a href="http://www.movabletype.org">MovableType.org</a></li>
+      <li><a href="http://www.movabletype.org">MovableType.org</a></li>
     </ul>
   </div>
 </div>
@@ -3989,7 +4588,6 @@ When MT is beta version one, .mt-beta class is added at body element.
     text-align: left;
 }
 
-/* - Clone */
 .process-msg {
     position: relative;
     overflow: auto;
@@ -4001,7 +4599,6 @@ When MT is beta version one, .mt-beta class is added at body element.
     height: 300px;
 }
 
-/* - Clearfix */
 #container,
 #content,
 .line,
