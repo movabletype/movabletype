@@ -762,7 +762,7 @@ sub compile_status_filter {
     }
 
     $status_expr =~ s/\bOR\b/||/gi;
-    $status_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
+    $status_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/$2?'(0)':$1/ge;
 
     my $test_expr = $status_expr;
     $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s|#\d+//g;
