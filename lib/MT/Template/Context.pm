@@ -740,7 +740,7 @@ sub compile_role_filter {
     $role_expr =~ s/\bOR\b/||/gi;
     $role_expr =~ s/\bAND\b/&&/gi;
     $role_expr =~ s/\bNOT\b/!/gi;
-    $role_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
+    $role_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/$2?'(0)':$1/ge;
 
     my $test_expr = $role_expr;
     $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s|#\d+//g;

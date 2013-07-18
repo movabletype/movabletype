@@ -718,5 +718,6 @@
 { "r" : "1", "t" : "<MTSetVarBlock name='cat'>def456</MTSetVarBlock><MTEntries categories='$cat'><MTEntryTitle></MTEntries>", "e" : "" }, #702
 { "r" : "1", "t" : "<MTMultiBlog include_blogs='all' mode='loop'><MTEntries category='1'><MTEntryTitle></MTEntries></MTMultiBlog>", "e" : "" }, #703
 { "r" : "1", "t" : "<MTMultiBlog include_blogs='all' mode='loop'><MTEntries categories='1'><MTEntryTitle></MTEntries></MTMultiBlog>", "e" : "" }, #704
-{ "r" : "1", "t" : "<MTAuthors need_entry='0' status='123'><MTAuthorID>,</MTAuthors>", "e" : "" } #705
+{ "r" : "1", "t" : "<MTAuthors need_entry='0' status='123'><MTAuthorID>,</MTAuthors>", "e" : "" }, #705
+{ "r" : "1", "t" : "<MTAuthors need_entry='0' role='123'><MTAuthorID>,</MTAuthors>", "e" : "" } #706
 ]
