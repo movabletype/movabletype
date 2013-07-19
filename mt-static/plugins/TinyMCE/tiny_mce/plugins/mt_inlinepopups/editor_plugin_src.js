@@ -41,6 +41,15 @@
                     $.each(sizes, function(k, v) {
                         if ((new RegExp(k + '$')).test(url)) {
                             f = $.extend({}, f, v);
+
+                            $.each([
+                                'width', 'height', 'min_width', 'min_height',
+                                'max_width', 'max_height', 'left', 'top'
+                            ], function(i, k) {
+                                if (f[k] && typeof f[k] === 'function') {
+                                    f[k] = f[k].call(ed);
+                                }
+                            });
                         }
                     });
                 }

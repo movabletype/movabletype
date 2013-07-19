@@ -70,6 +70,14 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
                 }
             },
             'template/template.htm': {
+                top: function() {
+                    var height = $(window).height() - 110,
+                        vp     = tinymce.DOM.getViewPort();
+                    return Math.round(Math.max(vp.y, vp.y + (vp.h / 2.0) - ((height+60) / 2.0)));
+                },
+                height: function() {
+                    return $(window).height() - 110;
+                },
                 onload: function(context) {
                     var window = context['iframe'].contentWindow;
                     var dialog = window.TemplateDialog;
