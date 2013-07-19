@@ -1,4 +1,902 @@
-/* Listing Framework */
+/* #Listing.css
+
+listing.css declare the style around the listing blocks
+
+The following example is copied from the entries listing blocks
+
+```
+<div id="listing" class="listing line has-filter">
+  <div class="unit size1of1">
+    <div id="actions-bar-top" class="actions-bar actions-bar-top line">
+      <div class="button-actions actions">
+        <a class="button">Publish</a>
+        <a class="button">Delete</a>
+      </div>
+      <div class="plugin-actions actions">
+        <select class="action_selector">
+          <option value="0">
+            Lorem ipsum
+          </option>
+          <options>
+            dolor sit amet
+          </options>
+        </select>
+        <button type="button" class="button mt-entry-listing-form-action">Go</button>
+      </div>
+      <div class="indicator" style="display: none;">
+        <img alt="Loading..." src="../../mt-static/images/indicator.white.gif" class="first-child"> Loading...
+      </div>
+      <div class="pagination" style="display: block;">
+        <span class="pagenav start disabled">« First</span>
+        <span class="pagenav to-start disabled">‹ Prev</span>
+        <span class="current-rows">1 - 25 of 455</span>
+        <a class="pagenav to-end">Next ›</a>
+        <a class="pagenav end">Last »</a>
+      </div>
+    </div>
+    <div id="filter" class="filter-block">
+      <div id="filter-header">
+        <input type="hidden" id="filter_name" value="My Entries" class="hidden">
+        <input type="hidden" id="filter_id" value="my_posts_on_this_context" class="hidden">
+        <div class="mod filter-header">
+          Filter: <a id="opener" class="open-dialog-link current-filter icon-right-wide">My Entries</a> <a id="allpass-filter">[ Remove Filter ]</a> <a id="toggle-filter-detail" class="toggle-button detail-link"><img src="../../mt-static/images/arrow/arrow-toggle-big.png" class="first-child"></a>
+        </div>
+      </div>
+      <div id="filter-detail" class="detail" style="display: none;">
+        <div id="filter-panel" class="mod selectfilter">
+          <select id="item_list" class="first-child">
+            <option value="">
+              Select Filter Item...
+            </option>
+            <option value="author_name">
+              Author Name
+            </option>
+          </select>
+        </div>
+        <div class="filteritem">
+          <div class="filtertype type-current_user base-hidden">
+            <div class="item-content">
+              <input type="hidden" class="prop-hidden current_user-value hidden" value="" id="input-0" name="input-0">
+              <input type="hidden" class="prop-hidden current_user-label hidden" value="" id="input-1" name="input-1">
+              My Entries
+            </div>
+          </div>
+          <span class="close-link clickable remove icon-remove icon16 action-icon">Remove item</span>
+        </div>
+        <div id="filter-action" class="mod">
+          <button type="submit" id="apply" class="button action primary">Apply</button> <button type="button" id="save" class="button action disabled" disabled="disabled">Save</button> <button type="button" id="saveas" class="button action">Save As</button>
+        </div>
+      </div>
+    </div>
+    <div id="listing-table" class="listing-table-block">
+      <div id="listing-table-overlay" class="overlay" style="display: none;"></div>
+      <table id="entry-table" class="listing-table list-entry">
+        <thead>
+          <tr class="first-child">
+            <th class="col head cb first-visible-child">
+              <input type="checkbox" class="checkbox">
+            </th>
+            <th class="col head id num" style="display: none;">
+              <a class="sort-link"><span class="col-label">ID</span></a>
+            </th>
+            <th class="col head title primary string">
+              <a class="sort-link"><span class="col-label">Title</span></a>
+            </th>
+            <th class="col head author_name string">
+              <a class="sort-link"><span class="col-label">Author</span></a>
+            </th>
+            <th class="col head category string">
+              <a class="sort-link"><span class="col-label">Primary Category</span></a>
+            </th>
+            <th class="col head authored_on date sorted">
+              <a class="sort-link"><span class="col-label">Publish Date</span></a>
+            </th>
+            <th class="col head modified_on date" style="display: none;">
+              <a class="sort-link"><span class="col-label">Date Modified</span></a>
+            </th>
+            <th class="col head unpublished_on date" style="display: none;">
+              <a class="sort-link"><span class="col-label">Unpublish Date</span></a>
+            </th>
+            <th class="col head comment_count num">
+              <a class="sort-link"><span class="col-label">Comments</span></a>
+            </th>
+            <th class="col head ping_count num" style="display: none;">
+              <a class="sort-link"><span class="col-label">Trackbacks</span></a>
+            </th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr class="first-child">
+            <th class="col head cb first-visible-child">
+              <input type="checkbox" class="checkbox">
+            </th>
+            <th class="col head id num" style="display: none;">
+              <a class="sort-link"><span class="col-label">ID</span></a>
+            </th>
+            <th class="col head title primary string">
+              <a class="sort-link"><span class="col-label">Title</span></a>
+            </th>
+            <th class="col head author_name string">
+              <a class="sort-link"><span class="col-label">Author</span></a>
+            </th>
+            <th class="col head category string">
+              <a class="sort-link"><span class="col-label">Primary Category</span></a>
+            </th>
+            <th class="col head authored_on date sorted">
+              <a class="sort-link"><span class="col-label">Publish Date</span></a>
+            </th>
+            <th class="col head modified_on date" style="display: none;">
+              <a class="sort-link"><span class="col-label">Date Modified</span></a>
+            </th>
+            <th class="col head unpublished_on date" style="display: none;">
+              <a class="sort-link"><span class="col-label">Unpublish Date</span></a>
+            </th>
+            <th class="col head comment_count num">
+              <a class="sort-link"><span class="col-label">Comments</span></a>
+            </th>
+            <th class="col head ping_count num" style="display: none;">
+              <a class="sort-link"><span class="col-label">Trackbacks</span></a>
+            </th>
+          </tr>
+        </tfoot>
+        <tbody class="ui-selectable">
+          <tr id="1081" class="even first-child">
+            <td class="cb col">
+              <input type="checkbox" name="id" value="1081">
+            </td>
+            <td class="col title string">
+              <span class="icon status published">
+                <a><img alt="Published" src="../../mt-static/images/status_icons/success.gif"></a>
+              </span> <span class="title">
+              <a>Lorem ipsum</a></span> <span class="view-link"><a target="_blank"><img src="../../mt-static/images/status_icons/view.gif"></a></span>
+            </td>
+            <td class="col author_name string">
+              yyamaguchi
+            </td>
+            <td class="col category string">
+              lorem
+            </td>
+            <td class="col authored_on date">
+              Jul 12
+            </td>
+            <td class="col comment_count num">
+              <a>0</a>
+            </td>
+          </tr>
+          <tr id="456" class="odd">
+            <td class="cb col">
+              <input type="checkbox" name="id" value="456">
+            </td>
+            <td class="col title string">
+              <span class="icon status published">
+                <a><img src="../../mt-static/images/status_icons/success.gif"></a>
+              </span> <span class="title"><a>consectetur adipisicing elit. </a></span> <span class="view-link"><a target="_blank"><img src="../../mt-static/images/status_icons/view.gif"></a></span>
+              <p class="excerpt description" style="display: none;">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit...
+              </p>
+            </td>
+            <td class="col author_name string">
+              yyamaguchi
+            </td>
+            <td class="col category string">
+              ipsum
+            </td>
+            <td class="col authored_on date">
+              Apr 28
+            </td>
+            <td class="col comment_count num">
+              <a>0</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
+      <div class="button-actions actions">
+        <a class="button">Publish</a> <a class="button">Delete</a>
+      </div>
+      <div class="plugin-actions actions">
+        <select class="action_selector" name="plugin_action_selector">
+          <option value="0">
+            More actions...
+          </option>
+        </select> <button type="button" class="button mt-entry-listing-form-action">Go</button>
+      </div>
+      <div class="indicator" style="display: none;">
+        <img src="../../mt-static/images/indicator.white.gif" class="first-child"> Loading...
+      </div>
+      <div class="pagination" style="display: block;">
+        <span class="pagenav start disabled">« First</span>
+        <span class="pagenav to-start disabled">‹ Prev</span>
+        <span class="current-rows">1 - 25 of 455</span>
+        <a class="pagenav to-end">Next ›</a><a class="pagenav end">Last »</a>
+      </div>
+    </div>
+    <div id="listing-footer" class="footer-links mod">
+      <ul>
+        <li class="footer-link-item">
+          <a class="icon-feed icon-left" title="" target="_blank">Entry Feed</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+```
+*/
+
+/* ## Listing Table
+
+.listing-table class is used for the main table.
+
+It has some common styles: fit width, round border, and white background.
+
+```
+<table class="listing-table">
+  <thead>
+    <tr>
+      <th class="col head cb first-visible-child">
+        <input type="checkbox" class="checkbox">
+      </th>
+      <th class="col head primary">
+        <span class="col-label">Lorem ipsum</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="even">
+      <td class="cb col">
+        <input type="checkbox" name="id">
+      </td>
+      <td class="col primary">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+    </tr>
+    <tr class="odd">
+      <td class="cb col">
+        <input type="checkbox" name="id">
+      </td>
+      <td class="col primary">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+    </tr>
+  </tbody>
+</table>
+```
+*/
+
+/* ## Listing Table Header
+
+.head class is styling the header row
+
+Different from the common column, .head class has no padding. So you should wrap header text with .col-label class like the following.
+
+```
+<table class="listing-table">
+  <thead>
+    <tr>
+      <th class="col head cb first-visible-child">
+        <input type="checkbox" class="checkbox">
+      </th>
+      <th class="col head primary">
+        <span class="col-label">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</span>
+      </th>
+    </tr>
+  </thead>
+</table>
+```
+
+Listings usually has tfoot element has same functionalities as thead, so typical listing table is like the following structure.
+
+```
+<table class="listing-table">
+  <thead>
+    <tr>
+      <th class="col head cb first-visible-child">
+        <input type="checkbox" class="checkbox">
+      </th>
+      <th class="col head primary">
+        <span class="col-label">Lorem ipsum</span>
+      </th>
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+      <th class="col head cb first-visible-child">
+        <input type="checkbox" class="checkbox">
+      </th>
+      <th class="col head primary">
+        <span class="col-label">Lorem ipsum</span>
+      </th>
+    </tr>
+  </tfoot>
+  <tbody>
+    <tr class="even">
+      <td class="cb col">
+        <input type="checkbox" name="id">
+      </td>
+      <td class="col primary">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+    </tr>
+    <tr class="odd">
+      <td class="cb col">
+        <input type="checkbox" name="id">
+      </td>
+      <td class="col primary">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+    </tr>
+  </tbody>
+</table>
+```
+*/
+
+/* ## Primary Column
+
+Primary column set with auto which means its cell occupied the remained space in the table
+
+```
+<table class="listing-table">
+  <thead>
+    <tr>
+      <th class="col head cb first-visible-child">
+        <input type="checkbox" class="checkbox">
+      </th>
+      <th class="col head">
+        <span class="col-label">Basic Column</span>
+      </th>
+      <th class="col head primary">
+        <span class="col-label">Primary Column</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="even">
+      <td class="cb col">
+        <input type="checkbox" name="id" value="1081">
+      </td>
+      <td class="col">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+      <td class="col primary">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br><br>
+<table class="listing-table">
+  <thead>
+    <tr>
+      <th class="col head cb first-visible-child">
+        <input type="checkbox" class="checkbox">
+      </th>
+      <th class="col head">
+        <span class="col-label">Basic Column</span>
+      </th>
+      <th class="col head">
+        <span class="col-label">Basic Column</span>
+      </th>
+      <th class="col head primary">
+        <span class="col-label">Primary Column</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="even">
+      <td class="cb col">
+        <input type="checkbox" name="id">
+      </td>
+      <td class="col">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+      <td class="col">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+      <td class="col primary">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+    </tr>
+  </tbody>
+</table>
+```
+*/
+
+/* ##Sortable Column
+
+If table column has capabillity of sorting table, use .sorted and .sm class for styling sorted state
+
+```
+<table class="listing-table">
+  <thead>
+    <tr>
+      <th class="col head cb first-visible-child">
+        <input type="checkbox" class="checkbox">
+      </th>
+      <th class="col head target sorted">
+        <a>
+          <span class="col-label">Sorted descendently</span>
+          <span class="sm desc"></span>
+        </a>
+      </th>
+      <th class="col head target sorted">
+        <a>
+          <span class="col-label">Sorted ascendently</span>
+          <span class="sm asc"></span>
+        </a>
+      </th>
+      <th class="col head target">
+        <a>
+          <span class="col-label">Sortable column</span>
+          <span class="sm"></span>
+        </a>
+      </th>
+      <th class="col head primary">
+          <span class="col-label">Sortable column</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="even">
+      <td class="cb col">
+        <input type="checkbox" name="id" value="1081">
+      </td>
+      <td class="col target">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+      <td class="col target">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+      <td class="col target">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+      <td class="col primary">
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+```
+*/
+
+/* ## Column Types
+
+You can adjust column width and some related styles with builtin classes like the following
+
+```
+<table class="listing-table">
+  <thead>
+    <tr>
+      <th class="col head cb first-visible-child">
+        <input type="checkbox" class="checkbox">
+      </th>
+      <th class="col head num">
+        <span class="col-label">num</span>
+      </th>
+      <th class="col head date">
+        <span class="col-label">date</span>
+      </th>
+      <th class="col head id">
+        <span class="col-label">id</span>
+      </th>
+      <th class="col head primary">
+        <span class="col-label">Lorem ipsum dolor sit amet</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="even">
+      <td class="cb col">
+        <input type="checkbox" name="id" value="1081">
+      </td>
+      <td class="col num">
+        9
+      </td>
+      <td class="col date">
+        2112/9/3
+      </td>
+      <td class="col id">
+        2112
+      </td>
+      <td class="col primary">
+        .cb class is for checkbox cell
+      </td>
+    </tr>
+  </tbody>
+</table>
+```
+
+```
+<table class="listing-table">
+  <thead>
+    <tr>
+      <th class="col head cb first-visible-child">
+        <input type="checkbox" class="checkbox">
+      </th>
+      <th class="col head target">
+        <span class="col-label">target</span>
+      </th>
+      <th class="col head primary">
+        <span class="col-label">Lorem ipsum dolor sit amet</span>
+      </th>
+      <th class="col head view">
+        <span class="col-label">view</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="even">
+      <td class="cb col">
+        <input type="checkbox" name="id" value="1081">
+      </td>
+      <td class="col target">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+      <td class="col primary">
+        primary column
+      </td>
+      <td class="col view">
+        view
+      </td>
+    </tr>
+  </tbody>
+</table>
+```
+
+```
+<table class="listing-table">
+  <thead>
+    <tr>
+      <th class="col head cb first-visible-child">
+        <input type="checkbox" class="checkbox">
+      </th>
+      <th class="col head output-file">
+        <span class="col-label">output-file</span>
+      </th>
+      <th class="col head publishing-method">
+        <span class="col-label">publishing-method</span>
+      </th>
+      <th class="col head primary">
+        <span class="col-label">Lorem ipsum dolor sit amet</span>
+      </th>
+      <th class="col head si">
+        <span class="col-label">si</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="even">
+      <td class="cb col">
+        <input type="checkbox" name="id" value="1081">
+      </td>
+      <td class="col output-file">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </td>
+      <td class="col publishing-method">
+        Lorem ipsum dolor sit amet
+      </td>
+      <td class="col primary">
+        primary column
+      </td>
+      <td class="col si">
+        si
+      </td>
+    </tr>
+  </tbody>
+</table>
+```
+*/
+
+/* ## Sub Classes
+
+Listing framework has varios classes used inside table cell.
+
+* .description
+* .user-info
+* .user-info-item
+* .context-text
+* .icon
+* .comment.status
+* .picture
+* .action-link
+* .role-item
+* .action-path-item
+* .log-metadata
+
+```
+<table class="listing-table">
+  <thead>
+    <tr>
+      <th class="col head cb first-visible-child">
+        <input type="checkbox" class="checkbox">
+      </th>
+      <th class="col head target">
+        <span class="col-label">with description</span>
+      </th>
+      <th class="col head target">
+        <span class="col-label">with icon</span>
+      </th>
+      <th class="col head target">
+        <span class="col-label">archive path item</span>
+      </th>
+      <th class="col head si">
+        <span class="col-label">si</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="even">
+      <td class="cb col">
+        <input type="checkbox" name="id" value="1081">
+      </td>
+      <td class="col target">
+        <p>Lorem ipsum dolor sit amet<p>
+        <p class="description">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit.  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+        </p>
+      </td>
+      <td class="col target">
+        <span class="icon status published"><a><img alt="Published" src="../../mt-static/images/status_icons/success.gif"></a></span>
+        <span class="title">Lorem ipsum</span>
+        <span class="view-link"><a target="_blank"><img src="../../mt-static/images/status_icons/view.gif"></a></span>
+      </td>
+      <td class="col target">
+        <p class="archive-path-item">lorem/ipsum/dolor/sit/amet/consectetur/adipisicing/elit.html</p>
+      </td>
+      <td class="col si">
+        si
+      </td>
+    </tr>
+  </tbody>
+</table>
+```
+*/
+
+/* ##List Actions
+
+If you add the buttons at the top or bottom of the listing, use .action-bar class
+
+```
+<div id="listing" class="listing line">
+  <div class="unit size1of1">
+    <div class="actions-bar line">
+      <div class="button-actions actions">
+        <a class="button">Publish</a>
+        <a class="button">Delete</a>
+      </div>
+      <div class="plugin-actions actions">
+        <select class="action_selector">
+          <option value="0">
+            More actions...
+          </option>
+        </select>
+        <button type="button" class="button">Go</button>
+      </div>
+      <div class="pagination" style="display: block;">
+        <span class="pagenav start disabled">« First</span>
+        <span class="pagenav to-start disabled">‹ Prev</span>
+        <span class="current-rows">1 - 25 of 455</span>
+        <a class="pagenav to-end">Next ›</a>
+        <a class="pagenav end">Last »</a>
+      </div>
+    </div>
+  </div>
+</div>
+```
+*/
+
+/* ##Select Filter Dialog
+
+```
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-draggable" style="height: auto; width: 380px; top: 0; left: 0; display: block; position:relative">
+  <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+    <span id="ui-id-1" class="ui-dialog-title">Select Filter</span>
+    <button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close"> <span class="ui-button-text">close</span></button>
+  </div>
+  <div id="dialog_filter" class="ui-dialog-content ui-widget-content" style="width: auto; min-height: 101px; max-height: none; height: auto;">
+    <div class="dialog-msg-block"></div>
+    <div id="dialog_filter_content">
+      <div class="filter-list-block">
+        <h3 class="filter-list-label">
+          My Filters
+        </h3>
+        <ul id="user-filters" class="editable">
+          <li class="filter line">
+            <a href="#" id="new_filter" class="icon-mini-left addnew create-new apply-link">Create New</a>
+          </li>
+        </ul>
+      </div>
+      <div class="filter-list-block">
+        <h3 class="filter-list-label">
+          Built in Filters
+        </h3>
+        <ul id="built-in-filters">
+          <li class="filter line">
+            <span class="filter-label"><a class="apply-link user-filter">Published Entries</a></span>
+          </li>
+          <li class="filter line">
+            <span class="filter-label"><a href="#1" class="apply-link user-filter">Draft Entries</a></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+```
+(ui-* classes automatically added with jQuery UI library)
+
+*/
+
+/* ##Filter Block
+
+Filter Block is at the top of listing table. User can filter the listing items with some conditions.
+
+```
+<div id="filter" class="filter-block">
+  <div id="filter-header">
+    <div class="mod filter-header">
+      Filter: <a id="opener" class="open-dialog-link current-filter icon-right-wide">All Entries</a>
+      <a id="toggle-filter-detail" class="toggle-button detail-link">
+        <img src="../../mt-static/images/arrow/arrow-toggle-big.png" class="first-child">
+      </a>
+    </div>
+  </div>
+</div>
+```
+
+When a filter applied, 'remove filter' appears at the right side of Filter Link. 'remove filter' link has allpass-filter id.
+```
+<div id="filter" class="filter-block">
+  <div id="filter-header">
+    <div class="mod filter-header">
+      Filter: <a id="opener" class="open-dialog-link current-filter icon-right-wide">My Filter</a> <a id="allpass-filter">[ Remove Filter ]</a> <a id="toggle-filter-detail" class="toggle-button detail-link"><img src="../../mt-static/images/arrow/arrow-toggle-big.png" class="first-child"></a>
+    </div>
+  </div>
+</div>
+```
+
+<h3>Filter Details</h3>
+
+Filter details block used for edit filter conditions. It has filter-deital id.
+
+```
+<div id="filter" class="filter-block active">
+  <div id="filter-header">
+    <div class="mod filter-header">
+      Filter: <a id="opener" class="open-dialog-link current-filter icon-right-wide">New Filter</a>
+      <a href="#" id="allpass-filter" style="display: inline-block;">[ Remove Filter ]</a>
+      <a href="#" id="toggle-filter-detail" class="toggle-button detail-link">
+        <img src="../..//mt-static/images/arrow/arrow-toggle-big.png">
+      </a>
+    </div>
+  </div>
+  <div id="filter-detail" class="detail" style="display: block;">
+    <div id="filter-panel" class="mod selectfilter">
+      <select id="item_list">
+        <option value="">
+          Select Filter Item...
+        </option>
+        <option disabled="disabled">
+          Author Name
+        </option>
+        <option>
+          Author Status
+        </option>
+      </select>
+    </div>
+    <div class="filteritem">
+      <div class="filtertype type-author_name base-string">
+        <div class="item-content">
+          Author Name <select class="author_name-option">
+            <option value="contains">
+              contains
+            </option>
+          </select>
+          <input type="text" class="prop-string author_name-string text med" value="" id="input-2" name="input-2">
+          <span class="item-ctrl">
+            <span class="item-action plus clickable icon-plus icon16 action-icon">Add</span>
+            <span class="item-action minus clickable icon-minus icon16 action-icon" style="display: none;">Remove</span>
+          </span>
+        </div>
+      </div>
+      <span class="close-link clickable remove icon-remove icon16 action-icon">Remove item</span>
+    </div>
+    <div id="filter-action" class="mod">
+      <button type="submit" id="apply" class="button action primary">Apply</button>
+      <button type="button" id="save" class="button action">Save</button>
+      <button type="button" id="saveas" class="button action" style="display: none;">Save As</button>
+    </div>
+  </div>
+</div>
+```
+
+*/
+
+/* ##Loading
+
+When some works like ajax request are processing, listing-table-overlay is displayed and overlayed with transparent white.
+
+```
+    <div id="listing-table" class="listing-table-block">
+      <div id="listing-table-overlay" class="overlay"></div>
+      <table id="entry-table" class="listing-table list-entry">
+        <thead>
+          <tr class="first-child">
+            <th class="col head cb first-visible-child">
+              <input type="checkbox" class="checkbox">
+            </th>
+            <th class="col head id num" style="display: none;">
+              <a class="sort-link"><span class="col-label">ID</span></a>
+            </th>
+            <th class="col head title primary string">
+              <a class="sort-link"><span class="col-label">Title</span></a>
+            </th>
+          </tr>
+        </thead>
+        <tfoot>
+          <tr class="first-child">
+            <th class="col head cb first-visible-child">
+              <input type="checkbox" class="checkbox">
+            </th>
+            <th class="col head id num" style="display: none;">
+              <a class="sort-link"><span class="col-label">ID</span></a>
+            </th>
+            <th class="col head title primary string">
+              <a class="sort-link"><span class="col-label">Title</span></a>
+            </th>
+          </tr>
+        </tfoot>
+        <tbody>
+          <tr id="1081" class="even">
+            <td class="cb col">
+              <input type="checkbox" name="id" value="1081">
+            </td>
+            <td class="col title string">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </td>
+          </tr>
+          <tr id="456" class="odd">
+            <td class="cb col">
+              <input type="checkbox" name="id">
+            </td>
+            <td class="col title string">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+```
+
+and .indicator class used for loading image like the following.
+
+```
+  <div class="indicator">
+    <img alt="Loading..." src="../../mt-static/images/indicator.white.gif" class="first-child"> Loading...
+  </div>
+```
+
+*/
+
+/* ## Bottom Footer
+
+listing-footer is the style for the footer beneath the listing table.
+
+```
+<div id="listing-footer" class="footer-links mod">
+  <ul>
+    <li class="footer-link-item">
+      <a>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</a>
+    </li>
+  </ul>
+</div>
+```
+*/
+
+/* ##Legacy Support
+
+.legacy class supports for the legacy listing style
+
+*/
+
 .listing {
     margin-bottom: 50px;
 }
@@ -11,7 +909,6 @@
     position: relative;
 }
 
-/* - Listing Table */
 #listing-table-overlay {
     z-index: 400;
     width: 100%;
@@ -119,6 +1016,7 @@ tfoot .col.head{
     background-image: -webkit-linear-gradient(#fafafa, #e9eaea);
     background-image: linear-gradient(#fafafa, #e9eaea);
 }
+
 .col.head.sorted,
 .col.head.sorted a:hover {
     background-color: #dcdddd;
@@ -158,7 +1056,6 @@ tfoot .col.head{
     background-image: url(../images/arrow/arrow-sort-bottom.gif);
 }
 
-/* -- Sub Columns */
 .col .description {
     margin: 0.75em 0 0;
     font-size: 90%;
@@ -208,7 +1105,6 @@ tfoot .col.head{
     white-space: normal;
 }
 
-/* -- to get the space for title in the Entry/Page listing */
 .list-entry .col.author_name,
 .list-page .col.author_name {
   width: 10%;
@@ -234,13 +1130,10 @@ tfoot .col.head{
   width: 6%;
 }
 
-
-/* -- List Actions */
 .list-actions {
     float: left;
 }
 
-/* -- Page Navigation */
 .listing .actions-bar {
     min-height: 22px;
 }
@@ -273,7 +1166,6 @@ tfoot .col.head{
     font-weight: bold;
 }
 
-/* -- Legacy Listing */
 .legacy.listing-table {
     border-radius: 3px;
 }
@@ -297,7 +1189,6 @@ tfoot .col.head{
     background: transparent url(../images/asset/audio-45.png) no-repeat;
 }
 
-/* - Filter */
 .filter-block {
     border: solid #c0c6c9;
     border-width: 1px 1px 0;
@@ -336,7 +1227,6 @@ tfoot .col.head{
     margin-left: 10px;
 }
 
-/* -- Select Filter */
 #dialog_filter {
     padding: 0 0 10px 10px;
 }
@@ -353,7 +1243,6 @@ tfoot .col.head{
     margin: 0 0 5px;
 }
 
-/* -- filter List */
 #dialog_filter .filter {
     margin: 0 10px 1px 0;
     padding: 0 5px;
@@ -407,13 +1296,13 @@ tfoot .col.head{
 #dialog_filter .indicator {
     margin-left: 5px;
 }
-/* - Asset Preview */
+
+
 .col .asset-preview {
     display: none;
     margin-top: 10px;
 }
 
-/* - Listing Panel */
 #modal-search {
     margin-bottom: 10px;
 }
@@ -430,7 +1319,6 @@ tfoot .col.head{
     min-height: 30px;
 }
 
-/* - Lisiting Footer */
 #listing-footer {
     margin-top: 30px;
     border: 1px solid #c0c6c9;
