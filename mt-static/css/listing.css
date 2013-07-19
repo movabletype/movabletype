@@ -1,4 +1,4 @@
-/* #Listing.css
+/* #Listing
 
 listing.css declare the style around the listing blocks
 
@@ -817,6 +817,8 @@ Filter details block used for edit filter conditions. It has filter-deital id.
 /* ##Loading
 
 When some works like ajax request are processing, listing-table-overlay is displayed and overlayed with transparent white.
+
+note: base overlay style is declared at [structure.css](#/style/structure.css)
 
 ```
     <div id="listing-table" class="listing-table-block">
