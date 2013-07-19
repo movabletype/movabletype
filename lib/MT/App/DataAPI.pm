@@ -908,7 +908,9 @@ sub show_error {
     my $error    = $app->request('data_api_error_detail');
 
     return $app->SUPER::show_error(@_)
-        if ( !$error && $endpoint && $endpoint->{format} eq 'html' );
+        if ( !$error
+        && $endpoint
+        && ( $endpoint->{format} || '' ) eq 'html' );
 
     if ( !$error ) {
         $error = {
