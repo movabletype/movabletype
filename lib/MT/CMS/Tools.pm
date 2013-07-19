@@ -1927,7 +1927,10 @@ sub adjust_sitepath {
                 if ( my $e = $@ ) {
                     die $e;
                 }
+                require MT::FileMgr;
+                my $fmgr    = MT::FileMgr->new('Local');
                 my $backups = $handler->{backups};
+                my $errors;
                 unless ($backups) {
                     return $app->error(
                         MT->translate(
@@ -1940,7 +1943,11 @@ sub adjust_sitepath {
                     my $files = $backups->{files};
                     for my $file (@$files) {
                         my $filepath = File::Spec->catfile( $tmp_dir, $file );
-                        unlink $filepath;
+                        $fmgr->delete($filepath)
+                            or $errors .= $app->translate(
+                            "Could not remove backup file [_1] from the filesystem: [_2]",
+                            $filepath, $fmgr->errstr
+                            ) . "\n";
                     }
                     my $assets = $backups->{assets};
                     for my $asset (@$assets) {
@@ -1948,10 +1955,31 @@ sub adjust_sitepath {
                             = $asset->{asset_id} . '-' . $asset->{name};
                         my $filepath
                             = File::Spec->catfile( $tmp_dir, $asset_name );
-                        unlink $filepath;
+                        $fmgr->delete($filepath)
+                            or $errors .= $app->translate(
+                            "Could not remove backup file [_1] from the filesystem: [_2]",
+                            $filepath, $fmgr->errstr
+                            ) . "\n";
                     }
                 }
-                unlink $manifest;
+                $fmgr->delete($manifest)
+                    or $errors .= $app->translate(
+                    "Could not remove backup file [_1] from the filesystem: [_2]",
+                    $manifest, $fmgr->errstr
+                    ) . "\n";
+                if ($errors) {
+                    my $message = $app->translate(
+                        'Some of the backup files could not be removed.');
+                    $app->log(
+                        {   message  => $message,
+                            level    => MT::Log::WARNING(),
+                            class    => 'system',
+                            category => 'restore',
+                            metadata => $errors,
+                        }
+                    );
+                    $error .= $message;
+                }
             }
         }
     }
