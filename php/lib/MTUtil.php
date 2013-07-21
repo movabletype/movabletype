@@ -1449,7 +1449,7 @@ function create_role_expr_function($expr, &$roles, $datasource = 'author') {
     $expr = preg_replace('/\bOR\b/i', '||', $expr);
     $expr = preg_replace('/\bAND\b/i', '&&', $expr);
     $expr = preg_replace('/\bNOT\b/i', '!', $expr);
-    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/', 'create_expr_exception', $expr);
+    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/', 'create_expr_exception', $expr);
 
     $test_expr = preg_replace('/!|&&|\|\||\(0\)|\(|\)|\s|#\d+/', '', $expr);
     if ($test_expr != '') {
@@ -1483,7 +1483,7 @@ function create_status_expr_function($expr, &$status, $datasource = 'author') {
     }
 
     $expr = preg_replace('/\bOR\b/i', '||', $expr);
-    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/', 'create_expr_exception', $expr);
+    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/', 'create_expr_exception', $expr);
 
     $test_expr = preg_replace('/!|&&|\|\||\(0\)|\(|\)|\s|#\d+/', '', $expr);
     if ($test_expr != '') {
