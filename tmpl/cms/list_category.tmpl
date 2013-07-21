@@ -766,13 +766,28 @@ function renderNestedList() {
 }
 
 jQuery('.add').click(function() {
-  var parent = jQuery(this).parent('#area-action').find('select').val();
-  var label = jQuery(this).parent('#area-action').find('input').val();
+  var $focusParent = jQuery(':focus').parent('div');
+  var parent = '';
+  var label = '';
+  if ( $focusParent.hasClass('add-form') ) {
+    // add a sub category by hitting enter key.
+    parent = $focusParent.prev().children('span.item-ctrl').parent('div').attr('id').slice(4);
+    label = $focusParent.find('input').val();
+  } else {
+    parent = jQuery(this).parent('#area-action').find('select').val();
+    label = jQuery(this).parent('#area-action').find('input').val();
+  }
   // sort of hack to do HTML escape.
   label = jQuery('<div />').text(label).html();
   if ( addItem(parent, label) ) {
-    fixInteractions();
-    jQuery(this).parent('#area-action').find('input').val('');
+    if ( $focusParent.hasClass('add-form') ) {
+      // add a sub category by hitting enter key.
+      $focusParent.remove();
+      fixInteractions({ closeInlineForms: false });
+    } else {
+      fixInteractions();
+      jQuery(this).parent('#area-action').find('input').val('');
+    }
   }
   return false;
 });
