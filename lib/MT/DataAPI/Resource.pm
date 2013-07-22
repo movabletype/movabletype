@@ -101,6 +101,7 @@ sub resource {
         : ($key)
         )
     {
+        next unless $k;
         $resource_key = $k;
         $res = $resources{$k} and last;
     }

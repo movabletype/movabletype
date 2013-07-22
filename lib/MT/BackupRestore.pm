@@ -1554,7 +1554,7 @@ sub backup_terms_args {
 
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
         return {
-            terms => { 'id' => $blog_ids },
+            terms => { 'blog_id' => $blog_ids },
             args  => { sort => 'type' },
         };
     }

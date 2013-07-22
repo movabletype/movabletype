@@ -49,7 +49,7 @@ sub fields {
                             my $p = $_;
                             !grep { $_ eq $p } @restrictions
                             } map { $_ =~ /'(.*)'/ } split ',',
-                        $objs->[$i]->permissions
+                        ( $objs->[$i]->permissions || '' )
                     ];
                 }
             },

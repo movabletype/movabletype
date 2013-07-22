@@ -110,8 +110,8 @@ sub _add_entries {
                 my $terms = {
                     blog_id  => $blog->id,
                     basename => $path,
+                    parent   => $parent ? $parent->id : 0,
                 };
-                $terms->{parent} = $parent->id if $parent;
                 $current = MT->model('folder')->load($terms);
                 if ( !$current ) {
                     unshift @paths, $path;

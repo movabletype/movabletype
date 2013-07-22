@@ -9,6 +9,8 @@ package MT::DataAPI::Resource::Category;
 use strict;
 use warnings;
 
+use MT::DataAPI::Resource::Common;
+
 sub updatable_fields {
     [   qw(
             label

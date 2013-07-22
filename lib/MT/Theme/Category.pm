@@ -70,6 +70,7 @@ sub _add_categories {
         my $cat   = MT->model($class)->load(
             {   blog_id  => $blog->id,
                 basename => $basename,
+                parent   => $parent ? $parent->id : 0
             }
         );
         unless ($cat) {

@@ -592,8 +592,7 @@ sub compile_category_filter {
 
         # replace any other 'thing' with '(0)' since it's a
         # category that doesn't even exist.
-        $cat_expr
-            =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
+        $cat_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/$2?'(0)':$1/ge;
 
         # strip out all the 'ok' stuff. if anything is left, we have
         # some invalid data in our expression:
@@ -741,7 +740,7 @@ sub compile_role_filter {
     $role_expr =~ s/\bOR\b/||/gi;
     $role_expr =~ s/\bAND\b/&&/gi;
     $role_expr =~ s/\bNOT\b/!/gi;
-    $role_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
+    $role_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/$2?'(0)':$1/ge;
 
     my $test_expr = $role_expr;
     $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s|#\d+//g;
@@ -763,7 +762,7 @@ sub compile_status_filter {
     }
 
     $status_expr =~ s/\bOR\b/||/gi;
-    $status_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
+    $status_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/$2?'(0)':$1/ge;
 
     my $test_expr = $status_expr;
     $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s|#\d+//g;
