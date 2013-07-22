@@ -20,26 +20,6 @@ sub fields {
         {   name             => 'permissions',
             bulk_from_object => sub {
                 my ( $objs, $hashs ) = @_;
-                my $app  = MT->instance;
-                my $user = $app->user;
-
-                if ( $user->is_superuser ) {
-                    my $blog_perms = [
-                        sort map { $_ =~ /'(.*?)'/ } split ',',
-                        MT::Permission::_all_perms('blog')
-                    ];
-                    my $system_perms = [
-                        sort map { $_ =~ /'(.*?)'/ } split ',',
-                        MT::Permission::_all_perms('system')
-                    ];
-                    for ( my $i = 0; $i < scalar @$objs; $i++ ) {
-                        $hashs->[$i]{permissions}
-                            = $objs->[$i]->blog_id
-                            ? $blog_perms
-                            : $system_perms;
-                    }
-                    return;
-                }
 
                 for ( my $i = 0; $i < scalar @$objs; $i++ ) {
                     my @restrictions = map { $_ =~ /'(.*?)'/ } split ',',

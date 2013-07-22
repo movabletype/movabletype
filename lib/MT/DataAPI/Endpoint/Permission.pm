@@ -16,9 +16,15 @@ sub list {
 
     my $user = get_target_user(@_)
         or return;
+    my $current_user = $app->user;
+
+    return $app->error(403)
+        if ( $user->id != $current_user->id && !$current_user->is_superuser );
 
     my $res;
     if ( $user->is_superuser ) {
+        require MT::Permission;
+
         my $offset = $app->param('offset');
         my $limit  = $app->param('limit');
 
@@ -41,11 +47,13 @@ sub list {
             }
         ) or return;
 
+        my $blog_perms       = MT::Permission::_all_perms('blog');
         my $permission_class = $app->model('permission');
         $res->{objects} = [
             map {
                 my $obj = $permission_class->new;
                 $obj->blog_id( $_->id );
+                $obj->permissions($blog_perms);
                 $obj;
             } @{ $res->{objects} }
         ];
@@ -56,7 +64,9 @@ sub list {
                     pop @{ $res->{objects} };
                 }
 
-                unshift @{ $res->{objects} }, $permission_class->new;
+                my $obj = $permission_class->new;
+                $obj->permissions( MT::Permission::_all_perms('system') );
+                unshift @{ $res->{objects} }, $obj;
 
             }
             $res->{count} += 1;
