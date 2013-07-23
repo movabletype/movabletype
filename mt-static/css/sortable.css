@@ -1,4 +1,207 @@
-/* Sortable Content */
+/* # Sortable.css
+
+sortable.css is the styles for sortable contents
+
+## Root
+
+The #root is container block for sortable items working as the draggable area.
+
+```
+<div id="root" class="sortable ui-sortable">
+  <div class="pcat-0 lv-0 sortable-item" style="margin-left: 0px;">
+    <span class="sort-tab"></span>
+    <span class="item-label"><a>Lorem ipsum</a>
+    </span>
+    <span class="item-basename">
+      <span class="item-basename-text">Lorem ipsum</span>
+    </span>
+    <span class="count"><a>27 entries</a>
+    </span>
+    <span class="item-ctrl"><a href="#" class="item-action edit-link clickable">Rename</a>
+      <span class="item-action plus clickable icon-plus icon16 action-icon">Add child Category</span>
+      <span class="item-action delete clickable icon-delete icon16 action-icon">Remove Categories</span>
+    </span>
+  </div>
+  <div id="cat-x1" class="pcat-5 pcat-0 lv-1 sortable-item" style="margin-left: 35px;">
+    <span class="sort-tab" style="display: block;"></span>
+    <span class="item-label">foobar</span>
+    <span class="item-basename">
+      <span class="item-basename-text">foobar</span>
+    </span>
+    <span class="count"></span>
+    <span class="item-ctrl"><a href="#" class="item-action edit-link clickable">Rename</a>
+      <span class="item-action plus clickable icon-plus icon16 action-icon">Add child Category</span>
+      <span class="item-action delete clickable icon-delete icon16 action-icon">Remove Categories</span>
+    </span>
+  </div>
+  <div id="cat-x2" class="pcat-x1 pcat-5 pcat-0 lv-2 sortable-item" style="margin-left: 70px;">
+    <span class="sort-tab"></span>
+    <span class="item-label">foobar</span>
+    <span class="item-basename">
+      <span class="item-basename-text">foobar</span>
+    </span>
+    <span class="count"></span>
+    <span class="item-ctrl"><a href="#" class="item-action edit-link clickable">Rename</a>
+      <span class="item-action plus clickable icon-plus icon16 action-icon">Add child Category</span>
+      <span class="item-action delete clickable icon-delete icon16 action-icon">Remove Categories</span>
+    </span>
+  </div>
+</div>
+```
+
+## Header
+
+Header is the like menu area at the above of the root block. In the category listing screen, you can add a new category item here.
+
+```
+<div id="area-action" class="mod sortable-header">
+  <select id="itemlist" name="itemlist">
+    <option id="opt-0" value="0">Root</option>
+  </select>
+  <input type="text" class="text short">
+  <button type="submit" class="add button">Add</button>
+</div>
+```
+
+## Sortable Item
+
+Sortable item is the sortable item literally. It has the follwing ingredients
+
+* sort-tab : handlebar image
+* item-label : item label
+* item-basename : item basename (wrapped with parenthesis)
+* item-ctrl: action menu container (defaultly invisible)
+* count
+
+The following code is the living example from category listing screen.
+
+```
+  <div class="pcat-0 lv-0 sortable-item" style="margin-left: 0px;">
+    <span class="sort-tab"></span>
+    <span class="item-label"><a>Lorem ipsum</a>
+    </span>
+    <span class="item-basename">
+      <span class="item-basename-text">Lorem ipsum</span>
+    </span>
+    <span class="count"><a>27 entries</a>
+    </span>
+    <span class="item-ctrl"><a href="#" class="item-action edit-link clickable">Rename</a>
+      <span class="item-action plus clickable icon-plus icon16 action-icon">Add child Category</span>
+      <span class="item-action delete clickable icon-delete icon16 action-icon">Remove Categories</span>
+    </span>
+  </div>
+```
+
+.on and highlight class added when sortable item is hovered. highlight class is used for the highlighting background and on class is used for displaying the control menu like the following.
+
+(highlight style is declared in utilities.css)
+
+```
+  <div class="pcat-0 lv-0 sortable-item highlight on" style="margin-left: 0px; background-color:#f8f4e6">
+    <span class="sort-tab"></span>
+    <span class="item-label"><a>Lorem ipsum</a>
+    </span>
+    <span class="item-basename">
+      <span class="item-basename-text">Lorem ipsum</span>
+    </span>
+    <span class="count"><a>27 entries</a>
+    </span>
+    <span class="item-ctrl"><a href="#" class="item-action edit-link clickable">Rename</a>
+      <span class="item-action plus clickable icon-plus icon16 action-icon">Add child Category</span>
+      <span class="item-action delete clickable icon-delete icon16 action-icon">Remove Categories</span>
+    </span>
+  </div>
+```
+
+<h3>Edit Form</h3>
+
+When user click Rename link, edit form is appeared like the following
+
+```
+<div class="pcat-0 lv-0 sortable-item" style="margin-left: 0px;">
+  <div class="edit-form">
+    <input type="text" name="category_label" class="text short label" placeholder="Label">
+    <input type="text" name="category_basename" class="text short basename" placeholder="Basename">
+    <button type="submit" class="rename button">Rename</button>
+    <button type="button" class="cancel button">Cancel</button>
+  </div>
+</div>
+```
+
+
+<h3>Add Form</h3>
+
+When user click add button (the plus icon), add form is appeared like the following
+
+```
+<div class="pcat-0 lv-0 sortable-item" style="margin-left: 0px;">
+  <span class="sort-tab"></span>
+  <span class="item-label"><a>Lorem ipsum</a>
+  </span>
+  <span class="item-basename">
+    <span class="item-basename-text">Lorem ipsum</span>
+  </span>
+  <span class="count"><a>27 entries</a>
+  </span>
+  <span class="item-ctrl"><a href="#" class="item-action edit-link clickable">Rename</a>
+    <span class="item-action plus clickable icon-plus icon16 action-icon">Add child Category</span>
+    <span class="item-action delete clickable icon-delete icon16 action-icon">Remove Categories</span>
+  </span>
+</div>
+<div class="mod add-form" style="margin-left: 35px;">
+  <input type="text" name="category_label" class="text short">
+  <button type="button" class="add button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+    <span class="ui-button-text">Add</span>
+  </button>
+  <button type="button" class="cancel button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+    <span class="ui-button-text">Cancel</span>
+  </button>
+</div>
+```
+
+<h3>Target Marker</h3>
+
+When the sortable item has been manipulated, target class is inserted in its position like the following.
+
+```
+<div id="root" class="sortable ui-sortable">
+  <div class="pcat-0 lv-0 sortable-item" style="margin-left: 0px;">
+    <span class="sort-tab"></span>
+    <span class="item-label"><a>Lorem ipsum</a>
+    </span>
+    <span class="item-basename">
+      <span class="item-basename-text">Lorem ipsum</span>
+    </span>
+    <span class="count"><a>27 entries</a>
+    </span>
+    <span class="item-ctrl"><a href="#" class="item-action edit-link clickable">Rename</a>
+      <span class="item-action plus clickable icon-plus icon16 action-icon">Add child Category</span>
+      <span class="item-action delete clickable icon-delete icon16 action-icon">Remove Categories</span>
+    </span>
+  </div>
+  <div class="ui-state-highlight">
+    <div class="target" style="width: 0px;">
+      <span class="marker"></span>
+    </div>
+  </div>
+  <div class="pcat-0 lv-0 sortable-item" style="margin-left: 0px;">
+    <span class="sort-tab" style="display: block;"></span>
+    <span class="item-label"><a href="/cgi-bin/mt/movabletype-internal/mt.cgi?__mode=view&amp;_type=category&amp;blog_id=2&amp;id=3">本</a>
+    </span>
+    <span class="item-basename">
+      <span class="item-basename-text">cat3</span>
+    </span>
+    <span class="count"><a href="/cgi-bin/mt/movabletype-internal/mt.cgi?__mode=list&amp;filter=category_id&amp;_type=entry&amp;blog_id=2&amp;filter_val=3">66 entries</a>
+    </span>
+    <span class="item-ctrl"><a href="#" class="item-action edit-link clickable">Rename</a>
+      <span class="item-action plus clickable icon-plus icon16 action-icon">Add child Category</span>
+      <span class="item-action delete clickable icon-delete icon16 action-icon">Remove Categories</span>
+    </span>
+  </div>
+</div>
+```
+
+*/
 .sortable-header {
     border: solid #c0c6c9;
     border-width: 1px;
@@ -89,8 +292,6 @@
     margin: 5px -10px;
     border-top: 2px solid #adadad;
 }
-
-/* - Sort Handle */
 .sort-tab {
     display: block;
     position: absolute;
@@ -102,7 +303,6 @@
     cursor: move ! important;
 }
 
-/* - Target Marker */
 #root .target {
     position: relative;
     display: inline-block;
@@ -117,7 +317,6 @@
     background: transparent url(../images/arrow-target-mark.png) center bottom no-repeat;
 }
 
-/* - Clearfix */
 .sortable-item,
 .add-form:after {
     zoom: 1;
