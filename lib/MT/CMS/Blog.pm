@@ -179,6 +179,7 @@ sub edit {
             $param->{'max_revisions_template'}
                 = (    $obj->max_revisions_template
                     || $MT::Revisable::MAX_REVISIONS );
+            $param->{publish_empty_archive} = $obj->publish_empty_archive;
         }
         elsif ( $output eq 'cfg_entry.tmpl' ) {
             ## load entry preferences for new/edit entry page of the blog

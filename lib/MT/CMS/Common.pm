@@ -295,6 +295,9 @@ sub save {
             my $url = $values{site_url};
             $values{site_url} = $url;
         }
+
+        $values{publish_empty_archive}
+            = $q->param('publish_empty_archive') ? 1 : 0;
     }
 
     if ( $type eq 'entry' || $type eq 'page' ) {

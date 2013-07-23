@@ -109,6 +109,7 @@ __PACKAGE__->install_properties(
             'theme_export_settings'    => 'hash meta',
             'category_order'           => 'text meta',
             'folder_order'             => 'text meta',
+            'publish_empty_archive'    => 'boolean meta',
 
         },
         meta    => 1,

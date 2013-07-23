@@ -163,6 +163,8 @@ sub does_publish_file {
     }
     return 0 unless $params{Category};
 
+    return 1 if $params{Blog}->publish_empty_archive;
+
     MT::ArchiveType::archive_entries_count( $obj, \%params );
 }
 

@@ -451,6 +451,12 @@ function setLicense() {
       <div class="hint"><__trans phrase="Used to generate URLs (permalinks) for this website's archived entries. Choose one of the archive type used in this website's archive templates."></div>
     </mt:if>
     </mtapp:setting>
+
+    <mtapp:setting
+       id="publish_empty_archive"
+       label="<__trans phrase="Publish With No Entries">">
+      <input id="publish_empty_archive" type="checkbox" name="publish_empty_archive" value="1"<mt:if name="publish_empty_archive"> checked="checked"</mt:if> /> <label for="publish_empty_archive"><__trans phrase="Publish category archive without entries"></label>
+    </mtapp:setting>
   </mtapp:settinggroup>
 
   <h2><__trans phrase="Module Settings"></h2>
