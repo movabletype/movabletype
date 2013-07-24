@@ -1,31 +1,95 @@
-/*
-## ステータスメッセージ
+/* #Message.css
 
-様々な状況をユーザーに伝えるためのコンポーネントです。メッセージをユーザーの任意で消すことができるためのインターフェースも用意します。状態に応じて様々なスタイルが用意されています。 .msg と一緒に状態を表すスタイルを追加することで変更できます。
+message.css is the set of styles for status message. User can remove messages with close link at the right side of it.
+
+## Message Type
+
+* msg-success
+* msg-alert
+* msg-error
+* msg-info
+* msg-publishing
 
 ```
 <div class="msg msg-success">
-  <p class="msg-text">... タスクが成功した場合のメッセージ</p>
-  <span class="action-icon icon16 action-icon icon-remove clickable close-link">閉じる</span>
+  <p class="msg-text">Success: Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
 </div>
 
 <div class="msg msg-alert">
-  <p class="msg-text">... 警告メッセージ </p>
-  <span class="action-icon icon16 action-icon icon-remove clickable close-link">閉じる</span>
+  <p class="msg-text">Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
 </div>
 
 <div class="msg msg-error">
-  <p class="msg-text">... エラーが発生した場合のメッセージ </p>
-  <span class="action-icon icon16 action-icon icon-remove clickable close-link">閉じる</span>
+  <p class="msg-text">Error: Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
 </div>
 
 <div class="msg msg-info">
-  <p class="msg-text">... その他の情報を伝える場合のメッセージ </p>
-  <span class="action-icon icon16 action-icon icon-remove clickable close-link">閉じる</span>
+  <p class="msg-text">Info: Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
+</div>
+
+<div class="msg msg-publishing">
+  <p class="msg-text">On Publishing: Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
 </div>
 ```
 
+## Close-Set
+msg class defaultly has margin top and bottom. If you want to remove margins, plus .full class
+
+```
+<div class="msg msg-success full">
+  <p class="msg-text">Success: Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
+</div>
+
+<div class="msg msg-alert full">
+  <p class="msg-text">Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
+</div>
+```
+
+# In-message List
+
+```
+<div class="msg msg-warning">
+  <ul>
+    <li><label>Lorem ipsum dolor sit amet, consectetur adipisicing elit. </label> <button class="button">Save</button></li>
+    <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. </li>
+  </ul>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
+</div>
+```
+
+# Validation Error
+
+<h3>Inline Error Message</h3>
+
+validate-error styles strings like the following.
+
+```
+<div class="field-content">
+  <input type="text" class="text med error">
+  <div>
+    <label class="validate-error msg-error">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </label>
+  </div>
+</div>
+```
+
+msg-balloon shows error message like balloon.
+
+```
+<span class="validate-error-wrapper" style="position: relative; white-space: nowrap;">
+  <input type="text" name="category_label" class="text short label error">
+  <label style="position: absolute; left: 171.5px; top: -21px; z-index: 200;" class="msg-error msg-balloon validate-error">Lorem ipsum dolor sit amet</label>
+</span>
+```
+
 */
+
 .msg {
     position: relative;
     margin: 10px 0;
@@ -76,17 +140,14 @@
     margin-top: -8px;
 }
 
-/* - for Permission Message */
 .msg .detail {
     margin: 10px 0 0;
 }
 
-/* - for Widget Content */
 p.zero-state {
     margin-bottom: 0;
 }
 
-/* - Generic Website Message */
 #is-generic-website {
     margin: 0;
     padding: 0.75em 0;
@@ -100,13 +161,11 @@ p.zero-state {
     font-size: 95%;
 }
 
-/* - Junk Message */
 #junk-message .junk-score {
     font-weight: bold;
     margin: 0 0 0.5em;
 }
 
-/* - Validation */
 .dialog-msg-error {
     display: block;
 }
@@ -129,7 +188,6 @@ p.zero-state {
     filter: alpha(opacity=80);
 }
 
-/* - Debug Panel Messages */
 .debug-panel {
     position: absolute;
     width: 100%;

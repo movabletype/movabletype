@@ -1,5 +1,119 @@
-/* Chromeless ------------------------------------------------------------ */
-/* - Generic */
+/* #Chromeless.css
+
+chromeless.css is used in the screen doesn't have standard header and footer, like login, error, upgrade screen.
+
+```
+<div class="chromeless">
+  <div id="container" style="min-width:0" style="color: #2b2b2b; background-color: #f3f3f3; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px;">
+    <div id="brand">
+      <img alt="Movable Type" src="../../mt-static/images/chromeless/mt_logo.png">
+    </div>
+    <div id="nav">
+      <div class="step"></div>
+      <div class="step_active"></div>
+      <div class="step"></div>
+    </div>
+
+    <h1 id="page-title">Lorem ipsum dolor sit amet</h1>
+    <div class="upgrade">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      <form>
+        <div class="actions-bar first-child last-child">
+          <button type="submit" class="action primary button first-child last-child">
+            Button
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+```
+(top div emulates body element)
+
+<h3>ready</h3>
+
+```
+<div class="ready">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+<h3>note</h3>
+
+```
+<div class="note">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+<h3>hint</h3>
+
+```
+<div class="hint">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+<h3>input hint</h3>
+
+```
+<input type="text">
+<p class="input-hint">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+```
+
+<h3>Navigation steps</h3>
+
+```
+<div id="nav">
+  <div class="step"></div>
+  <div class="step_active"></div>
+  <div class="step"></div>
+</div>
+```
+
+<h3>upgrade process</h3>
+
+```
+<div class="upgrade">
+  <div id="upgrade-container" class="upgrade-process">
+    <ul id="upgrade-progress">
+      <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+    </ul>
+  </div>
+</div>
+```
+
+<h3>progressbar</h3>
+
+```
+<div class="progressbar interminate"></div>
+```
+
+<h3>Packages List</h3>
+
+.packages-list class is used in install wizard to list the perl modules
+
+```
+<dl id="packages-list">
+  <dt><span class="module-name"><a target="cpan">Lorem::Ipsum</a></span></dt>
+  <dd>
+    <p class="module-description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  </dd>
+</dl>
+```
+
+<h3>Action Bar</h3>
+
+```
+<div class="actions-bar">
+  <button name="continue" type="submit" class="continue action primary button">
+    Continue
+  </button>
+  <button name="retry" type="submit" id="retry-btn" style="display: inline;" class="retry action button">
+    Retry
+  </button>
+  <button name="back" type="submit" class="goback action button">
+    Back
+  </button>
+</div>
+```
+
+*/
+
 body {
     color: #2b2b2b;
     background-color: #f3f3f3;
@@ -28,7 +142,6 @@ fieldset {
     margin: 0;
 }
 
-/* -- Hn */
 #page-title {
     margin-bottom: 10px;
     font-size: 18px;
@@ -42,7 +155,6 @@ h3 {
     margin-bottom: 20px;
 }
 
-/* - Component */
 .ready {
     font-weight: bold;
     color: #93b06b;
@@ -61,7 +173,6 @@ h3 {
     color:#a9a9a9;
 }
 
-/* - Actions Bar */
 .action-buttons {
     margin: 20px 0 15px;
 }
@@ -75,7 +186,6 @@ h3 {
     display: block;
 }
 
-/* - Layout */
 #container {
     position: relative;
     margin: 45px auto 30px;
@@ -86,17 +196,14 @@ h3 {
     -moz-border-radius: 5px;
 }
 
-/* -- chromeless */
 .chromeless #container {
     width: 550px;
 }
 
-/* -- sign-in */
 .sign-in #container {
     width: 320px;
 }
 
-/* -- chromeless-wide */
 .chromeless-wide #container {
     min-width: 360px;
     width: auto;
@@ -106,7 +213,6 @@ h3 {
     background-color: transparent;
 }
 
-/* - Header */
 #header {
     background: transparent #fff;
 }
@@ -121,7 +227,7 @@ h3 {
     font-size: 26px;
     background: #fff url(../images/chromeless/mt_logo.png) center no-repeat;
 }
-#brand img, 
+#brand img,
 #brand span {
     display: none;
 }
@@ -143,7 +249,6 @@ h3 {
     background: url('../images/chromeless/nav_on.png');
 }
 
-/* - Sign in Screen */
 #sign-in #page-title {
     display: none;
 }
@@ -169,13 +274,11 @@ h3 {
     font-size: 90%;
 }
 
-/* -- Reset Password, Change Password */
 #reset-password #container,
 #change-password #container {
     width: 320px;
 }
 
-/* - Upgrade */
 .upgrade .upgrade-process {
     position: relative;
     overflow: auto;
@@ -189,7 +292,7 @@ h3 {
 .upgrade #progressbar {
     margin: 25px 0 0;
 }
-/* - Profile */
+
 ul#profile-data li {
     margin-left: 0;
     padding-left: 0;
@@ -213,7 +316,6 @@ ul#profile-data li {
     margin-left: 0;
 }
 
-/* -- Start */
 .mt-config-file-path {
     overflow: auto;
     overflow-x: auto;
@@ -222,7 +324,6 @@ ul#profile-data li {
     font-weight:bold;
 }
 
-/* -- System Check */
 #packages-list dt {
     margin-bottom: 5px;
 }
@@ -244,7 +345,6 @@ ul#profile-data li {
     margin-bottom: 5px;
 }
 
-/* -- Database Setting */
 #db_hint {
     margin-top: -10px;
     margin-bottom: 10px;
@@ -253,13 +353,10 @@ ul#profile-data li {
     margin-bottom: 3px;
 }
 
-/* -- Complete */
 #config_settings {
     margin-bottom: 10px;
 }
 
-/* - Publush */
-/* -- Progress Bar */
 .progressbar {
     height: 25px;
     border: 1px solid #c0c6c9;
