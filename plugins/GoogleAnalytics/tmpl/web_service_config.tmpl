@@ -6,6 +6,16 @@
 
 <mtapp:settinggroup id="google-analytics-settings">
 
+<div id="use-parent-client" style="<mt:Unless name="parent_client">display: none</mt:Unless>">
+<mtapp:setting
+   id="setup_own_client_id"
+   label="<__trans phrase="OAuth2 settings">">
+<__trans phrase="This blog is using the settings of [_1]." params="<mt:If name="has_parent_client_permission"><a href="<mt:Var name="mt_url">?__mode=cfg_web_services&amp;_type=blog<mt:If name="parent_client_blog_id">&amp;blog_id=<mt:Var name="parent_client_blog_id" /></mt:If>"></mt:If><mt:If name="parent_client_blog_id"><mt:Var name="parent_client_blog_name" /><mt:Else><__trans phrase="System" /></mt:If><mt:If name="has_parent_client_permission"></a></mt:If>" />
+<a href="#" id="setup_own_client_id" class="button"><__trans phrase="Other Google account" /></a>
+</mtapp:setting>
+</div>
+
+<div id="use-own-client" style="<mt:If name="parent_client">display: none</mt:If>">
 <mt:SetVarBlock name="hint"><__trans phrase="Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://code.google.com/apis/console" target="_blank">Google APIs Console</a> before selecting profile." /></mt:SetVarBlock>
 <mtapp:setting
    id="ga_redirect_uri"
@@ -29,6 +39,7 @@
    show_hint="0">
     <input type="text" id="ga_client_secret" name="ga_client_secret" value="<mt:Var name="ga_client_secret" encode_html="1" />" />
 </mtapp:setting>
+</div>
 
 <mtapp:setting
    id="ga_profile"
@@ -45,6 +56,8 @@
 <input type="hidden" id="ga_configured_client_secret" value="<mt:Var name="configured_client_secret" encode_html="1" />" />
 <input type="hidden" id="ga_profile_name" name="ga_profile_name" value="<mt:Var name="ga_profile_name" encode_html="1" />" />
 <input type="hidden" id="ga_profile_web_property_id" name="ga_profile_web_property_id" value="<mt:Var name="ga_profile_web_property_id" encode_html="1" />" />
+<input type="hidden" id="ga_parent_profile_name" value="<mt:Var name="parent_profile_name" />" />
+<input type="hidden" id="ga_parent_profile_web_property_id" value="<mt:Var name="parent_profile_web_property_id" />" />
 <script type="text/javascript">
 jQuery(function($) {
     var redirectUri = $('#ga_redirect_uri').val();
@@ -57,12 +70,20 @@ jQuery(function($) {
 
 
     function updateProfile() {
-        var $profile = $('#ga_profile');
-        var $name    = $('#ga_profile_name');
+        var $profile     = $('#ga_profile');
+        var $name        = $('#ga_profile_name');
+        var $parent_name = $('#ga_parent_profile_name');
 
         $profile.empty();
         if ($name.val() == '') {
-            $profile.text('<__trans phrase="(No profile selected)" encode_js="1">');
+            if ($parent_name.val()) {
+                $profile.text(
+                    $parent_name.val() + ' (' + $('#ga_parent_profile_web_property_id').val() + ')'
+                );
+            }
+            else {
+                $profile.text('<__trans phrase="(No profile selected)" encode_js="1">');
+            }
         }
         else {
             var $label = $('<span class="sticky-label selected-item" />');
@@ -85,8 +106,8 @@ jQuery(function($) {
     $('#ga_client_id, #ga_client_secret')
         .on('input click keyup change', function() {
             if (
-                $('#ga_client_id').val() &&
-                $('#ga_client_secret').val()
+                ($('#ga_client_id').val() && $('#ga_client_secret').val()) ||
+                ($('#use-parent-client:visible').length === 1)
             ) {
                 $('#ga_select_profile').removeClass('disabled');
             }
@@ -97,6 +118,12 @@ jQuery(function($) {
         .triggerHandler('input');
 
     $('#ga_select_profile').click(function() {
+        if ($('#use-parent-client:visible').length === 1) {
+            $.fn.mtDialog.close();
+            $.fn.mtDialog.open($('#ga_dialog_url').val());
+            return false;
+        }
+
         var clientId     = $('#ga_client_id').val();
         var clientSecret = $('#ga_client_secret').val();
 
@@ -132,6 +159,18 @@ jQuery(function($) {
         ) {
             return window.confirm('<__trans phrase="Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?" encode_html="1">');
         }
+    });
+
+    $('#setup_own_client_id').on('click', function() {
+        $('#use-parent-client').hide();
+        $('#use-own-client').show();
+        $(
+            '#ga_profile_name, #ga_profile_web_property_id, #ga_profile_id,' +
+            '#ga_parent_profile_name, #ga_parent_profile_web_property_id'
+        ).val('');
+        updateProfile();
+        $('#ga_client_id').triggerHandler('input');
+        return false;
     });
 });
 </script>

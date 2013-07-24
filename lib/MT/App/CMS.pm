@@ -241,9 +241,11 @@ sub core_methods {
         'save_plugin_config'      => "${pkg}Plugin::save_config",
         'reset_plugin_config'     => "${pkg}Plugin::reset_config",
         'save_cfg_system_general' => "${pkg}Tools::save_cfg_system_general",
-        'save_cfg_system_users'   => "${pkg}User::save_cfg_system_users",
-        'update_welcome_message'  => "${pkg}Blog::update_welcome_message",
-        'upgrade'                 => {
+        'save_cfg_system_web_services' =>
+            "${pkg}Tools::save_cfg_system_web_services",
+        'save_cfg_system_users'  => "${pkg}User::save_cfg_system_users",
+        'update_welcome_message' => "${pkg}Blog::update_welcome_message",
+        'upgrade'                => {
             code           => "${pkg}Tools::upgrade",
             requires_login => 0,
         },
@@ -2289,6 +2291,13 @@ sub core_menus {
             args              => { _type => "association", },
             system_permission => 'administer',
             view              => "system",
+        },
+        'settings:system_web_services' => {
+            label             => "Web Services",
+            order             => 500,
+            mode              => 'cfg_web_services',
+            system_permission => 'administer',
+            view              => 'system',
         },
         'settings:view_role' => {
             order   => 10000,

@@ -298,6 +298,11 @@ sub save {
 
         $values{publish_empty_archive}
             = $q->param('publish_empty_archive') ? 1 : 0;
+
+        if ( $obj && ( $q->param('cfg_screen') || '' ) eq 'cfg_web_services' )
+        {
+            run_web_services_save_config_callbacks( $app, $obj );
+        }
     }
 
     if ( $type eq 'entry' || $type eq 'page' ) {
@@ -539,6 +544,22 @@ sub save {
     $app->add_return_arg(
         ( $original->id ? 'saved_changes' : 'saved_added' ) => 1 );
     $app->call_return;
+}
+
+sub run_web_services_save_config_callbacks {
+    my ($app) = @_;
+
+    my $web_services = $app->registry('web_services');
+    for my $k (%$web_services) {
+        my $callback = $web_services->{$k}{save_config}
+            or next;
+
+        if ( ref $callback eq 'HASH' ) {
+            $callback = MT->handler_to_coderef( $callback->{code} );
+        }
+
+        $callback->( $app, @_ );
+    }
 }
 
 sub edit {

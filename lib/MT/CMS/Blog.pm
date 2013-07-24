@@ -305,6 +305,9 @@ sub edit {
         $param->{nav_config} = 1;
         $param->{error} = $app->errstr if $app->errstr;
     }
+    elsif ($param->{output} eq 'cfg_web_services.tmpl') {
+        # System level web services settings.
+    }
     else {
         return $app->return_to_dashboard( redirect => 1 )
             if !$blog || ( $blog && $blog->is_blog() );
@@ -355,17 +358,19 @@ sub edit {
         $param->{site_path_absolute} = $obj->is_site_path_absolute;
     }
 
-    if ( !$blog->is_blog() ) {
-        $param->{website_path}
-            = File::Spec->catfile( $blog->column('site_path'), '' )
-            if $blog->column('site_path');
-        $param->{website_url} = $blog->column('site_url');
-    }
-    elsif ( my $website = $blog->website() ) {
-        $param->{website_path}
-            = File::Spec->catfile( $website->column('site_path'), '' )
-            if $website->column('site_path');
-        $param->{website_url} = $website->site_url;
+    if ($blog) {
+        if ( !$blog->is_blog() ) {
+            $param->{website_path}
+                = File::Spec->catfile( $blog->column('site_path'), '' )
+                if $blog->column('site_path');
+            $param->{website_url} = $blog->column('site_url');
+        }
+        elsif ( my $website = $blog->website() ) {
+            $param->{website_path}
+                = File::Spec->catfile( $website->column('site_path'), '' )
+                if $website->column('site_path');
+            $param->{website_url} = $website->site_url;
+        }
     }
     if ( exists $param->{website_path} ) {
         my $sep = MT::Util::dir_separator;
@@ -578,8 +583,6 @@ sub cfg_web_services {
     my $app     = shift;
     my $q       = $app->param;
     my $blog_id = scalar $q->param('blog_id');
-    return $app->return_to_dashboard( redirect => 1 )
-        unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
 

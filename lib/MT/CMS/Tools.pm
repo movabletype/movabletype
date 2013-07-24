@@ -811,6 +811,20 @@ sub save_cfg_system_general {
     );
 }
 
+sub save_cfg_system_web_services {
+    my $app = shift;
+    $app->validate_magic or return;
+    return $app->permission_denied()
+        unless $app->user->is_superuser();
+
+    require MT::CMS::Common;
+    MT::CMS::Common::run_web_services_save_config_callbacks($app);
+
+    $app->add_return_arg( 'saved'         => 1 );
+    $app->add_return_arg( 'saved_changes' => 1 );
+    return $app->call_return;
+}
+
 sub upgrade {
     my $app = shift;
 

@@ -55,7 +55,10 @@ sub get_token {
             MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) ),
     };
 
-    $app->session->set( 'ga_token_data_tmp', $token_data );
+    my $username = get_username( $app, $ua, $token_data )
+        or return;
+
+    $token_data->{username} = $username;
 
     $token_data;
 }
@@ -89,6 +92,34 @@ sub refresh_access_token {
     };
 
     $token_data;
+}
+
+sub get_username {
+    my ( $app, $ua, $token_data ) = @_;
+
+    my $uri
+        = URI->new(
+        'https://www.googleapis.com/analytics/v3/management/accounts' );
+    $uri->query_form(
+        access_token  => $token_data->{data}{access_token},
+        'max-results' => 1,
+        'start-index' => 1,
+    );
+
+    my $res = $ua->request( GET($uri) );
+
+    return $app->error(
+        translate(
+            'An error occurred when getting accounts: [_1]: [_2]',
+            GoogleAnalytics::extract_response_error($res)
+        ),
+        500
+    ) unless $res->is_success;
+
+    my $data
+        = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+
+    return $data->{username};
 }
 
 sub get_profiles {
@@ -143,7 +174,7 @@ sub effective_token {
     my $token_data = $data->{token_data};
 
     if ( $token_data
-        && ( time() - $token_data->{start} )
+        && ( time() - $token_data->{start} + 10 )
         > $token_data->{data}{expires_in} )
     {
         my $new_token_data = refresh_access_token(
@@ -158,11 +189,16 @@ sub effective_token {
         for my $k ( keys %{ $new_token_data->{data} } ) {
             $token_data->{data}{$k} = $new_token_data->{data}{$k};
         }
-        $plugindata->data($data);
-        $plugindata->save;
+
+        my $plugindata_to_update
+            = $app->model('plugindata')->load( { id => $plugindata->id } );
+        my $data_to_update = $plugindata_to_update->data;
+        $data_to_update->{token_data} = $token_data;
+        $plugindata_to_update->data($data_to_update);
+        $plugindata_to_update->save;
     }
 
-    $token_data->{data};
+    $token_data;
 }
 
 sub plugin_data_pre_save {

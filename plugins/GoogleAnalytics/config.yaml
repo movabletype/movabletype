@@ -13,6 +13,7 @@ settings:
     profile_web_property_id:
     profile_id:
     token_data:
+    parent_access_token_id:
 
 applications:
     cms:
@@ -20,13 +21,13 @@ applications:
             ga_oauth2callback: $GoogleAnalytics::GoogleAnalytics::App::oauth2callback
             ga_select_profile: $GoogleAnalytics::GoogleAnalytics::App::select_profile
             ga_select_profile_complete: $GoogleAnalytics::GoogleAnalytics::App::select_profile_complete
-        callbacks:
-            cms_pre_save.blog: $GoogleAnalytics::GoogleAnalytics::App::pre_save_blog
 
 web_services:
     GoogleAnalytics:
         config_template:
             code: $GoogleAnalytics::GoogleAnalytics::App::config_tmpl
+        save_config:
+            code: $GoogleAnalytics::GoogleAnalytics::App::save_config
 
 stats_providers:
     GoogleAnalytics:

@@ -90,7 +90,7 @@ sub _request {
     my $ua  = new_ua();
     my $res = $ua->request(
         GET($uri,
-            Authorization => "$token->{token_type} $token->{access_token}"
+            Authorization => "$token->{data}{token_type} $token->{data}{access_token}"
         )
     );
 

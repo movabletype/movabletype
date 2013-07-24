@@ -26,40 +26,46 @@
 
 <form name="cfg_form" method="post" action="<mt:var name="script_url">">
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
-  <input type="hidden" name="__mode" value="save" />
-  <input type="hidden" name="_type" value="blog" />
-  <input type="hidden" name="cfg_screen" value="cfg_web_services" />
-  <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+  <mt:if name="blog_id">
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="blog" />
+    <input type="hidden" name="cfg_screen" value="cfg_web_services" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+  <mt:else>
+    <input type="hidden" name="__mode" value="save_cfg_system_web_services" />
+  </mt:if>
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-  
-  <h2><__trans phrase="External Notifications"></h2>
-  <mtapp:settinggroup id="system-feedback-controls">
-    <mtapp:setting
-       id="ping_blogs"
-       label="<__trans phrase="Notify ping services of website updates">"
-       hint="<__trans phrase="When this website is updated, Movable Type will automatically notify the selected sites.">"
-       help_page="blog_settings_entry_defaults"
-       help_section="update_pings">
-    <mt:if name="system_disabled_notify_pings">
-      <p>
-        <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
-        <span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored because outbound notification pings are disabled system-wide."></span>
-      </p>
-    </mt:if>
-      <ul>
-      <mt:if name="pings_loop">
-      <mt:loop name="pings_loop">
-        <li><input type="checkbox" name="ping_<mt:var name="key" escape="html">" id="ping_<mt:var name="key" escape="html">" value="1"<mt:if name="selected"> checked="checked"</mt:if> class="cb" /> <label for="ping_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label></li>
-      </mt:loop>
-      </mt:if>
-      </ul>
-      <label for="ping_others"><__trans phrase="Others:"> <span class="hint"><__trans phrase="(Separate URLs with a carriage return.)"></span><br />
-      <textarea name="ping_others" id="ping_others" class="text low"><mt:var name="ping_others" escape="html"></textarea>
-      </label>
-    </mtapp:setting>
 
-  </mtapp:settinggroup>
+  <mt:if name="blog_id">
+    <h2><__trans phrase="External Notifications"></h2>
+    <mtapp:settinggroup id="system-feedback-controls">
+      <mtapp:setting
+         id="ping_blogs"
+         label="<__trans phrase="Notify ping services of website updates">"
+         hint="<__trans phrase="When this website is updated, Movable Type will automatically notify the selected sites.">"
+         help_page="blog_settings_entry_defaults"
+         help_section="update_pings">
+      <mt:if name="system_disabled_notify_pings">
+        <p>
+          <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
+          <span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored because outbound notification pings are disabled system-wide."></span>
+        </p>
+      </mt:if>
+        <ul>
+        <mt:if name="pings_loop">
+        <mt:loop name="pings_loop">
+          <li><input type="checkbox" name="ping_<mt:var name="key" escape="html">" id="ping_<mt:var name="key" escape="html">" value="1"<mt:if name="selected"> checked="checked"</mt:if> class="cb" /> <label for="ping_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label></li>
+        </mt:loop>
+        </mt:if>
+        </ul>
+        <label for="ping_others"><__trans phrase="Others:"> <span class="hint"><__trans phrase="(Separate URLs with a carriage return.)"></span><br />
+        <textarea name="ping_others" id="ping_others" class="text low"><mt:var name="ping_others" escape="html"></textarea>
+        </label>
+      </mtapp:setting>
+
+    </mtapp:settinggroup>
+  </mt:if>
 
   <mt:loop name="config_templates">
     <mt:var name="tmpl" />

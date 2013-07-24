@@ -9,7 +9,7 @@ package GoogleAnalytics;
 use strict;
 use warnings;
 
-our @EXPORT = qw( plugin translate new_ua );
+our @EXPORT = qw( plugin translate new_ua access_token_id );
 use base qw(Exporter);
 
 sub translate {
@@ -20,36 +20,99 @@ sub plugin {
     MT->component('GoogleAnalytics');
 }
 
+sub access_token_id {
+    my ($data) = @_;
+    if ( $data->{token_data} ) {
+        $data = $data->{token_data};
+    }
+    ( $data->{client_id} || '' ) . ( $data->{username} || '' );
+}
+
 sub _find_current_plugindata {
     my ( $app, $blog ) = @_;
 
-    my @keys = ( 'configuration:blog:' . $blog->id );
-    if ( $blog->parent_id ) {
-        push @keys, 'configuration:blog:' . $blog->parent_id;
-    }
+    my $result = {
+        client  => undef,
+        profile => undef,
+        merged  => undef,
+    };
 
-    my @objs = $app->model('plugindata')->load(
+    my @keys = ();
+    if ($blog) {
+        push @keys, 'configuration:blog:' . $blog->id;
+        if ( $blog->parent_id ) {
+            push @keys, 'configuration:blog:' . $blog->parent_id;
+        }
+    }
+    push @keys, 'configuration';
+
+    my @tmp = $app->model('plugindata')->load(
         {   plugin => plugin()->{name},
             key    => \@keys,
         }
-    ) or return undef;
+    ) or return $result;
 
-    # Blog's config has a priority higher than website's config.
-    @objs = reverse @objs
-        if ( scalar(@objs) == 2 && $objs[0]->key ne $keys[0] );
-
-    for my $o (@objs) {
-        my $data = $o->data();
-        if (   $data
-            && $data->{client_id}
-            && $data->{client_secret}
-            && $data->{profile_id} )
-        {
-            return $o;
+    my @objs = ();
+    for my $k (@keys) {
+        for my $o (@tmp) {
+            if ( $o->key eq $k ) {
+                push @objs, $o;
+            }
         }
     }
 
-    return undef;
+    for ( my $i = 0; $i <= $#objs; $i++ ) {
+        my ( $client, $profile, $merged );
+        my $o    = $objs[$i];
+        my $data = $o->data()
+            or next;
+
+        if ( !$profile && $data->{profile_id} ) {
+            $profile = $o;
+            if ( $data->{client_id} ) {
+                $client = $merged = $profile;
+            }
+        }
+
+        if ( $profile && !$client ) {
+            for ( my $j = $i + 1; $j <= $#objs; $j++ ) {
+                my $o    = $objs[$j];
+                my $data = $o->data()
+                    or next;
+
+                my $profile_data = $profile->data;
+                if (  !$profile_data->{client_id}
+                    && $data->{client_id}
+                    && access_token_id($data) eq
+                    ( $profile_data->{parent_access_token_id} || '' ) )
+                {
+                    $client = $o;
+                    $merged = $client->clone;
+
+                    my @keys
+                        = qw(profile_id profile_name profile_web_property_id);
+                    @$data{@keys} = @$profile_data{@keys};
+                    $merged->data($data);
+                }
+            }
+        }
+
+        if ($client) {
+            $result = {
+                client  => $client,
+                profile => $profile,
+                merged  => $merged,
+            };
+            last;
+        }
+    }
+
+    return $result;
+}
+
+sub current_plugindata_hash {
+    my ( $app, $blog ) = @_;
+    _find_current_plugindata(@_);
 }
 
 sub current_plugindata {
@@ -60,7 +123,7 @@ sub current_plugindata {
     my $hash = $app->request($key);
     defined($hash)
         ? $hash
-        : $app->request( $key, _find_current_plugindata(@_) );
+        : $app->request( $key, _find_current_plugindata(@_)->{merged} );
 }
 
 sub extract_response_error {
