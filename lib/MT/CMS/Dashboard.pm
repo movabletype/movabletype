@@ -1194,7 +1194,6 @@ sub generate_site_stats_data {
                 }
             }
         }
-        $param->{ylength} = @counts;
 
         my $max_sub = 0;
         for ( my $i; $i <= $#maxes; $i++ ) {
@@ -1255,7 +1254,6 @@ sub regenerate_site_stats_data {
     if ( $param->{not_configured} ) {
         $result->{not_configured} = 1;
     }
-    $result->{ylength} = $param->{ylength};
     return $app->json_result($result);
 }
 

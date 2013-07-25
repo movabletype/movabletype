@@ -67,22 +67,21 @@
           magic_token: '<mt:var name="magic_token">',
         },
         success: function(data) {
-          draw_graph(data.result.stat_url, data.result.ylength, data.result.not_configured);
+          draw_graph(data.result.stat_url, data.result.not_configured);
         },
         error: function(data) {
         }
       });
     });
 
-    draw_graph('<mt:var name="stat_url">', <mt:var name="ylength">, <mt:var name="not_configured" default="0">);
+    draw_graph('<mt:var name="stat_url">', <mt:var name="not_configured" default="0">);
 
-    function draw_graph(stat_url, ylength, not_configured) {
+    function draw_graph(stat_url, not_configured) {
       jQuery.getJSON(stat_url, function(data) {
         var hover_data = data.hover_data.data;
-        //var rate = data.hover_data.rate;
         var config = {
           type: 'morris.line',
-          yLength: ylength,
+          yLength: data.graph_data.length,
           autoResize: true,
           height: 200,
           lineWidth: 3,
