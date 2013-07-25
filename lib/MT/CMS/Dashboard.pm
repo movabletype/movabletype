@@ -1194,6 +1194,7 @@ sub generate_site_stats_data {
                 }
             }
         }
+        $param->{ylength} = @counts;
 
         my $max_sub = 0;
         for ( my $i; $i <= $#maxes; $i++ ) {
@@ -1232,7 +1233,6 @@ sub generate_site_stats_data {
             }
             push @{ $result->{graph_data} }, \%row1;
             push @{ $result->{hover_data}{data} }, \@row2;
-            $param->{ylength} = @counts;
         }
         $result->{pv_today}     = $pv_today;
         $result->{pv_yesterday} = $pv_yesterday;
