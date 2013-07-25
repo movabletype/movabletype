@@ -1136,14 +1136,6 @@ sub generate_site_stats_data {
     my $fmgr = MT::FileMgr->new('Local');
     my $time = $fmgr->file_mod_time($path) if -f $path;
 
-    # Get readied provider
-    require MT::App::DataAPI;
-    my $blog = $app->model('blog')->load($blog_id);
-    my $provider = readied_provider( $app, $blog );
-    unless ($provider) {
-        $param->{not_configured} = 1;
-    }
-
     if (( lc( MT->config('StatsCachePublishing') ) eq 'off' )
         || (   ( lc( MT->config('StatsCachePublishing') ) eq 'onload' )
             && ( !$time || ( time - $time > $cache_time ) ) )
@@ -1154,6 +1146,8 @@ sub generate_site_stats_data {
         my @ten_days_ago_tl
             = MT::Util::offset_time_list( time - ( 10 * 24 * 60 * 60 ),
             $blog_id );
+
+        # Preparing date array
         my @dates;
         for ( my $i = 9; $i >= 0; $i-- ) {
             my @timelist
@@ -1166,89 +1160,82 @@ sub generate_site_stats_data {
             push @dates, $date;
         }
 
-        # Get Entry Counts
-        my $entry_class = $app->model('entry');
-        my $terms       = { status => MT::Entry::RELEASE() };
-        my $args        = {
-            group => [
-                "extract(year from authored_on)",
-                "extract(month from authored_on)",
-                "extract(day from authored_on)"
-            ],
-        };
+        my $line_settings
+            = $app->registry( 'applications', 'cms', 'site_stats_lines' );
 
-        my $earliest = sprintf(
-            '%04d%02d%02d%02d%02d%02d',
-            $ten_days_ago_tl[5] + 1900,
-            $ten_days_ago_tl[4] + 1,
-            @ten_days_ago_tl[ 3, 2, 1, 0 ]
-        );
-        $terms->{authored_on} = [ $earliest, undef ];
-        $args->{range_incl}{authored_on} = 1;
+        my @maxes;
+        my @counts;
+        my @labels;
+        my $pv_today;
+        my $pv_yesterday;
 
-        $terms->{blog_id} = $blog_id;
-
-        my $entry_iter = $entry_class->count_group_by( $terms, $args );
-        my %counts;
-        my $max_count = 0;
-        while ( my ( $count, $y, $m, $d ) = $entry_iter->() ) {
-            my $date = sprintf( "%04d-%02d-%02d", $y, $m, $d );
-            $counts{$date} = $count;
-            $max_count = $count if $max_count < $count;
-        }
-
-        # Get PVs
-        my %pvs;
-        my $max_pv = 0;
-        if ($provider) {
-            my $ten_days_ago = sprintf( '%04d-%02d-%02d',
-                $ten_days_ago_tl[5] + 1900,
-                $ten_days_ago_tl[4] + 1,
-                @ten_days_ago_tl[ 3, 2, 1, 0 ] );
-            my @ts = MT::Util::offset_time_list( time, $blog_id );
-            my $today = sprintf( '%04d-%02d-%02d',
-                $ts[5] + 1900,
-                $ts[4] + 1,
-                @ts[ 3, 2, 1, 0 ] );
-            my $for_date = $provider->pageviews_for_date(
-                $app,
-                {   startDate => $ten_days_ago,
-                    endDate   => $today,
+        foreach my $key ( keys %$line_settings ) {
+            my $sub          = @counts;
+            my $line_setting = $line_settings->{$key};
+            if ( my $condition = $line_setting->{condition} ) {
+                $condition = MT->handler_to_coderef($condition);
+                next unless $condition->( $app, $param );
+            }
+            my $handler = $line_setting->{handler} || $line_setting->{code};
+            $handler = MT->handler_to_coderef($handler);
+            if ($handler) {
+                $counts[$sub] = $handler->( $app, \@ten_days_ago_tl, $param );
+                $maxes[$sub] = 0;
+                foreach my $key ( keys %{ $counts[$sub] } ) {
+                    $maxes[$sub] = $counts[$sub]->{$key}
+                        if $maxes[$sub] < $counts[$sub]->{$key};
                 }
-            );
+                $labels[$sub] = $line_setting->{hlabel}
+                    || $app->translate('Not configured');
 
-            my @items = @{ $for_date->{items} };
-            foreach my $item (@items) {
-                $pvs{ $item->{date} } = $item->{pageviews};
-                $max_pv = $item->{pageviews} if $max_pv < $item->{pageviews};
+                if ( $counts[$sub] && $key eq 'count_pageviews' ) {
+                    $pv_today     = $counts[$sub]->{ $dates[9] };
+                    $pv_yesterday = $counts[$sub]->{ $dates[8] };
+                }
             }
         }
 
-        my $rate = $max_pv && $max_count ? $max_pv / $max_count : 1;
-        my $result;
-        foreach my $date (@dates) {
-            my %row1;
-            if ( $param->{not_configured} ) {
-                %row1 = (
-                    x => $date,
-                    y => defined $counts{$date} ? $counts{$date} * $rate : 0,
-                );
+        my $max_sub = 0;
+        for ( my $i; $i <= $#maxes; $i++ ) {
+            $max_sub = $i if $maxes[$max_sub] < $maxes[$i];
+        }
+        my @rate;
+        for ( my $i; $i <= $#maxes; $i++ ) {
+            if ( $i == $max_sub ) {
+                push @rate, 1;
             }
             else {
-                %row1 = (
-                    x  => $date,
-                    y  => defined $pvs{$date} ? $pvs{$date} : 0,
-                    y1 => defined $counts{$date} ? $counts{$date} * $rate : 0,
-                );
+                my $rate = $maxes[$i] ? $maxes[$max_sub] / $maxes[$i] : 1;
+                push @rate, $rate;
             }
-            my %row2 = (
-                pv    => defined $pvs{$date}    ? $pvs{$date}    : 0,
-                count => defined $counts{$date} ? $counts{$date} : 0,
-            );
-            push @{ $result->{graph_data} }, \%row1;
-            push @{ $result->{hover_data}{data} }, \%row2;
         }
-        $result->{hover_data}{rate} = $rate;
+
+        my $result;
+        foreach my $date (@dates) {
+            my %row1 = ( x => $date );
+            my @row2;
+            for ( my $i; $i <= $#counts; $i++ ) {
+                my $count
+                    = $counts[$i]->{$date}
+                    ? $counts[$i]->{$date} * $rate[$i]
+                    : 0;
+                my $sub = $i ? $i : '';
+                $row1{ 'y' . $sub } = $count;
+
+                my %row = (
+                    label => $labels[$i],
+                    count => defined $counts[$i]->{$date}
+                    ? $counts[$i]->{$date}
+                    : 0,
+                );
+                push @row2, \%row;
+            }
+            push @{ $result->{graph_data} }, \%row1;
+            push @{ $result->{hover_data}{data} }, \@row2;
+            $param->{ylength} = @counts;
+        }
+        $result->{pv_today}     = $pv_today;
+        $result->{pv_yesterday} = $pv_yesterday;
 
         $fmgr->put_data( MT::Util::to_json($result), $path );
     }
@@ -1265,9 +1252,118 @@ sub regenerate_site_stats_data {
     generate_site_stats_data( $app, $param ) or return;
 
     my $result = { stat_url => $param->{stat_url} };
-    $result->{not_configured} = 1
-        if $param->{not_configured};
+    if ( $param->{not_configured} ) {
+        $result->{not_configured} = 1;
+    }
+    $result->{ylength} = $param->{ylength};
     return $app->json_result($result);
+}
+
+sub site_stats_widget_lines {
+    my $app = shift;
+    my $pkg = 'MT::CMS::Dashboard::';
+
+    my $site_stats_lines = {
+        count_entries => {
+            hlabel  => 'Entry',
+            handler => "${pkg}site_stats_widget_entrycount_lines",
+        },
+        count_pageviews => {
+            hlabel    => 'PV',
+            condition => "${pkg}site_stats_widget_pageview_condition",
+            handler   => "${pkg}site_stats_widget_pageview_lines",
+        },
+    };
+
+    return $site_stats_lines;
+}
+
+sub site_stats_widget_entrycount_lines {
+    my $app = shift;
+    my ( $ten_days_ago_tl, $param ) = @_;
+
+    # Get Entry Counts
+    my $entry_class = $app->model('entry');
+    my $terms       = { status => MT::Entry::RELEASE() };
+    my $args        = {
+        group => [
+            "extract(year from authored_on)",
+            "extract(month from authored_on)",
+            "extract(day from authored_on)"
+        ],
+    };
+
+    my $earliest = sprintf(
+        '%04d%02d%02d%02d%02d%02d',
+        $ten_days_ago_tl->[5] + 1900, $ten_days_ago_tl->[4] + 1,
+        $ten_days_ago_tl->[3],        $ten_days_ago_tl->[2],
+        $ten_days_ago_tl->[1],        $ten_days_ago_tl->[0],
+    );
+    $terms->{authored_on} = [ $earliest, undef ];
+    $args->{range_incl}{authored_on} = 1;
+
+    $terms->{blog_id} = $param->{blog_id};
+
+    my $entry_iter = $entry_class->count_group_by( $terms, $args );
+    my %counts;
+    while ( my ( $count, $y, $m, $d ) = $entry_iter->() ) {
+        my $date = sprintf( "%04d-%02d-%02d", $y, $m, $d );
+        $counts{$date} = $count;
+    }
+    return \%counts;
+}
+
+sub site_stats_widget_pageview_condition {
+    my $app = shift;
+    my ($param) = @_;
+
+    my $blog_id = $param->{blog_id};
+
+    # Get readied provider
+    require MT::App::DataAPI;
+    my $blog = $app->model('blog')->load($blog_id);
+    my $provider = readied_provider( $app, $blog );
+    unless ($provider) {
+        $param->{not_configured} = 1;
+    }
+    return $provider ? 1 : 0;
+}
+
+sub site_stats_widget_pageview_lines {
+    my $app = shift;
+    my ( $ten_days_ago_tl, $param ) = @_;
+
+    my $blog_id = $param->{blog_id};
+
+    # Get readied provider
+    require MT::App::DataAPI;
+    my $blog = $app->model('blog')->load($blog_id);
+    my $provider = readied_provider( $app, $blog );
+
+    # Get PVs
+    my $ten_days_ago = sprintf( '%04d-%02d-%02d',
+        $ten_days_ago_tl->[5] + 1900,
+        $ten_days_ago_tl->[4] + 1,
+        $ten_days_ago_tl->[3],
+    );
+    my @ts = MT::Util::offset_time_list( time, $blog_id );
+    my $today = sprintf( '%04d-%02d-%02d',
+        $ts[5] + 1900,
+        $ts[4] + 1,
+        @ts[ 3, 2, 1, 0 ] );
+    my $for_date = $provider->pageviews_for_date(
+        $app,
+        {   startDate => $ten_days_ago,
+            endDate   => $today,
+        }
+    );
+
+    my @items = @{ $for_date->{items} };
+    my %counts;
+    foreach my $item (@items) {
+        $counts{ $item->{date} } = $item->{pageviews};
+    }
+    return \%counts;
 }
 
 1;

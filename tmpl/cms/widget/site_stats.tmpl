@@ -28,6 +28,25 @@
 <script type="text/javascript">
 /* <![CDATA[ */
   jQuery(function() {
+    var chartColors = [
+      '#6AAC2B',
+      '#FFBE00',
+      '#CF6DD3',
+      '#8F2CFF',
+      '#2D85FF',
+      '#5584D4',
+      '#5ED2B8',
+      '#9CCF41',
+      '#F87085',
+      '#2C8087',
+      '#8EEC6A',
+      '#FFE700',
+      '#FF5E19',
+      '#FF4040',
+      '#976BD6',
+      '#503D99',
+      '#395595'
+    ];
     jQuery('select#select_blog_id').change( function() {
       jQuery('#msg_not_configured').remove();
       jQuery('#graph').empty();
@@ -48,20 +67,19 @@
           magic_token: '<mt:var name="magic_token">',
         },
         success: function(data) {
-          draw_graph(data.result.stat_url, data.result.not_configured);
+          draw_graph(data.result.stat_url, data.result.ylength, data.result.not_configured);
         },
         error: function(data) {
         }
       });
     });
 
-    draw_graph('<mt:var name="stat_url">', <mt:var name="not_configured" default="0">);
+    draw_graph('<mt:var name="stat_url">', <mt:var name="ylength">, <mt:var name="not_configured" default="0">);
 
-    function draw_graph(stat_url, not_configured) {
-      var ylength = not_configured ? 1 : 2;
+    function draw_graph(stat_url, ylength, not_configured) {
       jQuery.getJSON(stat_url, function(data) {
         var hover_data = data.hover_data.data;
-        var rate = data.hover_data.rate;
+        //var rate = data.hover_data.rate;
         var config = {
           type: 'morris.line',
           yLength: ylength,
@@ -71,14 +89,19 @@
           pointSize: 3,
           data: data.graph_data,
           hoverCallback: function (index, options, content) {
-            var row   = options.data[index];
-            var count = hover_data[index].count;
-            if (not_configured) {
-              return '<div class="morris-hover-row-label">' + row.x + '</div><div class="morris-hover-point" style="color: #6AAC2B;">Entry: ' + count + '</div>';
-            } else {
-              var pv    = hover_data[index].pv;
-              return '<div class="morris-hover-row-label">' + row.x + '</div><div class="morris-hover-point" style="color: #6AAC2B;">PV: ' + pv + '</div><div class="morris-hover-point" style="color: #FFBE00;">Entry: ' + count + '</div>';
+            var row  = options.data[index];
+            var data = hover_data[index];
+            var html = '<div class="morris-hover-row-label">' + row.x + '</div>';
+            for (var i = 0; i < data.length; i++) {
+              var colorSubscript = i;
+              if ( i > 16 ) {
+                var number = parseInt(i/17);
+                colorSubscript = i - ( 17 * number );
+              }
+              var color = chartColors[colorSubscript];
+              html += '<div class="morris-hover-point" style="color: ' + color + ';">' + data[i].label + ': ' + data[i].count + '</div>';
             }
+            return html;
           },
           yLabelFormat: function (y) {
               return '';
@@ -89,11 +112,11 @@
           length: 10
         }
         new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
-        var todays_count     = hover_data[9].pv;
-        var yesterdays_count = hover_data[8].pv;
-        var diff = todays_count - yesterdays_count;
-        var mark = diff > 0 ? '+' : '';
         if ( !not_configured ) {
+          var todays_count     = data.pv_today;
+          var yesterdays_count = data.pv_yesterday;
+          var diff = todays_count - yesterdays_count;
+          var mark = diff > 0 ? '+' : '';
           jQuery('#count-today').text(trans('[_1] PV ([_2][_3])', addComma(todays_count), mark, addComma(diff)));
           jQuery('#count-yesterday').text(trans('[_1] PV', addComma(yesterdays_count)));
           jQuery('#pv-counter').show();
