@@ -3298,7 +3298,7 @@ Cookie.prototype = {
      * @return <code>Cookie</code> The fetched cookie.
      */
     fetch: function() {
-        if (! window.document || ! window.document.cookie) {
+        if (! window.document) {
             return undefined;
         }
 
@@ -3322,7 +3322,7 @@ Cookie.prototype = {
      * @return <code>Cookie</code> The set and stored ("baked") cookie.
      */
     bake: function( value ) {
-        if (! window.document || ! window.document.cookie) {
+        if (! window.document) {
             return undefined;
         }
 
