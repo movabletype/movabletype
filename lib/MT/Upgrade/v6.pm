@@ -100,6 +100,11 @@ __SQL__
                 code  => \&_v6_renumbering_widget_orders,
             },
         },
+        'v6_remove_indexes' => {
+            version_limit => 6.008,
+            priority      => 3.2,
+            code          => \&_v6_remove_indexes,
+        },
     };
 }
 
@@ -183,5 +188,73 @@ sub _v6_renumbering_widget_orders {
     $user->widgets($widgets);
     $user->save;
 }
+
+sub _v6_remove_indexes {
+    my $self = shift;
+
+    $self->progress(
+        $self->translate_escape('Fixing TheSchwartz::Error table...') );
+
+    my $driver = MT::Object->driver;
+    my $dbh    = $driver->r_handle;
+
+    if ( $driver->dbd =~ m/::Pg$/ ) {
+
+        my $sth          = $dbh->prepare(<<SQL)
+SELECT cidx.relname as index_name, idx.indisunique, idx.indisprimary, idx.indnatts, idx.indkey, am.amname
+FROM pg_index idx
+INNER JOIN pg_class cidx ON idx.indexrelid = cidx.oid
+INNER JOIN pg_class ctbl ON idx.indrelid = ctbl.oid
+INNER JOIN pg_am am ON cidx.relam = am.oid
+WHERE ctbl.relname = 'mt_ts_error' and ( idx.indisprimary = 't' or idx.indisprimary = '1' )
+SQL
+            or return undef;
+        $sth->execute or return undef;
+        my $row = $sth->fetchrow_hashref;
+        return unless $row;
+        my $pkey = $row->{index_name};
+
+        $driver->sql(
+            [
+                "alter table mt_ts_error drop constraint $pkey",
+            ]
+        );
+    }
+    elsif ( $driver->dbd =~ m/::mysql$|::Oracle$/ ) {
+        $driver->sql(
+            [
+                'alter table mt_ts_error drop primary key',
+            ]
+        );
+    }
+    elsif ( $driver->dbd =~ m/::u?mssqlserver$/i ) {
+
+        my $sth          = $dbh->prepare(<<SQL)
+SELECT i.name AS index_name, i.type AS index_type, is_unique, is_primary_key, is_unique_constraint
+, c.name AS column_name
+, ic.key_ordinal AS key_ordinal
+FROM sys.indexes AS i 
+INNER JOIN sys.index_columns AS ic ON i.index_id = ic.index_id AND i.object_id = ic.object_id 
+INNER JOIN sys.columns AS c ON ic.column_id = c.column_id AND ic.object_id = c.object_id 
+WHERE is_hypothetical = 0 
+AND i.index_id <> 0 
+AND i.object_id = OBJECT_ID('mt_ts_error')
+AND i.is_primary_key = 1
+SQL
+            or return undef;
+        $sth->execute or return undef;
+        my $row = $sth->fetchrow_hashref;
+        return unless $row;
+        my $pkey = $row->{index_name};
+
+        $driver->sql(
+            [
+                "alter table mt_ts_error drop constraint $pkey",
+            ]
+        );
+    }
+    1;
+}
+
 1;
 __END__
