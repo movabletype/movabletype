@@ -155,6 +155,12 @@
           jQuery('#brand span').pngfix();
         }
       });
+      jQuery('#frame').load( function() {
+        jQuery(this).height( jQuery(window).height() - jQuery('#entry-preview-control-strip').height() );
+      });
+      jQuery(window).resize( function() {
+        jQuery('#frame').height( jQuery(window).height() - jQuery('#entry-preview-control-strip').height() );
+      });
       /* ]]> */
     </script>
   </body>
