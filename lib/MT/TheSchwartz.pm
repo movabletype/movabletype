@@ -239,7 +239,7 @@ sub work_until_done {
         while ( time() < $deadline ) {
             $client->work_once or last;
             last unless _has_enough_memory($mem_limit);
-            last unless _has_enough_memory($swap_limit);
+            last unless _has_enough_swap($swap_limit);
         }
     }
     else {
