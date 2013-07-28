@@ -1,4 +1,1912 @@
-/* - Generic */
+/* # Structure CSS
+Structure CSS is for building layout structure and styling common UI
+
+## Base Style
+
+Structure CSS set the sorts of default styling for MT like the following.
+
+<h3>Font</h3>
+
+* Size: 13px
+* Color: <span style="color:#2b2b2b">#2b2b2b</span>
+* Family: 'Helvetica Neue', Helvetica, Arial, sans-serif
+
+```
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+```
+
+<h3>Background</h3>
+
+* Color: <span style="background-color:#fffffc">#fffffc</span>
+
+<h3>Link</h3>
+
+* Color: <span style="color:#507ea4">#507ea4</span>
+* Hover Color: <span style="color:#839b5c">#839b5c</span>
+* Active Color: <span style="color:#839b5c">#839b5c</span>
+
+```
+<a href="http://movabletype.jp/">MovableType</a>
+```
+
+<h3>Headings</h3>
+
+```
+<h1>Heading 1</h1>
+<h2>Heading 2</h2>
+<h3>Heading 3</h3>
+<h4>Heading 4</h4>
+<h5>Heading 5</h5>
+<h6>Heading 6</h6>
+```
+
+<h3>PRE</h3>
+```
+<pre>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+</pre>.
+```
+*/
+
+/* ## Base Structure
+
+<h3>Basic Building Blocks</h3>
+
+Base building blocks in MT are container, header(contains brand and menu-bar), content(contains main) and footer in the following structure.
+
+* Container has 980 width at minimum (so, overflow the styleguid's content block..)
+* Header block has 2 basic blocks, brand and menu-bar
+* Content Main block has 2 basic blocks, content-header and content-body which has main-content block (**main-content block is very important because all main content is placed here**
+)
+
+```
+<div>
+  <div id="container">
+    <div id="header">
+      <div id="brand"></div>
+      <div id="menu-bar"></div>
+    </div>
+    <div id="content">
+      <div id="main">
+        <div id="content-header">
+          <h1>CONTENT HEADER</h1>
+        </div>
+        <div id="content-body">
+          <div id="main-content">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer">
+    <ul id="footer-nav" class="inline-nav">
+      <li><a href="http://www.movabletype.org">MovableType.org</a></li>
+    </ul>
+  </div>
+</div>
+```
+
+<h3>Conetnt/Menu</h3>
+
+CMS screens usually have the menu block at the left side of content block and assign .has-menu-nav class at body element, like the flowing.
+
+```
+<div class="has-menu-nav">
+  <div id="container">
+    <div id="header">
+      <div id="brand"></div>
+      <div id="menu-bar"></div>
+    </div>
+    <div id="content">
+      <div id="menu">
+        MENU
+      </div>
+      <div id="main">
+        <div id="content-header">
+          CONTENT HEADER
+        </div>
+        <div id="content-body">
+          <div id="main-content">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer">
+    <ul id="footer-nav" class="inline-nav">
+      <li><a href="http://www.movabletype.org">MovableType.org</a></li>
+    </ul>
+  </div>
+</div>
+```
+(the top div emulates body element)
+
+<h3>Related Contents</h3>
+
+MT often shows the releted contents at the left side of content, like the following structure.
+
+```
+<div class="has-menu-nav has-related-content">
+  <div id="container">
+    <div id="header">
+      <div id="brand"></div>
+      <div id="menu-bar"></div>
+    </div>
+    <div id="content">
+      <div id="menu">
+        MENU
+      </div>
+      <div id="main">
+        <div id="content-header">
+          CONTENT HEADER
+        </div>
+        <div id="content-body">
+          <div id="main-content">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          </div>
+          <div id="related-content">
+            RELATED CONTENT
+          </div>
+        </div>
+    </div>
+  </div>
+  <div id="footer">
+    <ul id="footer-nav" class="inline-nav">
+      <li><a href="http://www.movabletype.org">MovableType.org</a></li>
+    </ul>
+  </div>
+</div>
+```
+(the top div emulates body element)
+
+
+<h3>Layout Example</h3>
+
+```
+<div class="has-menu-nav" style="background:white; border:1px solid #ddd">
+  <div id="container" style="min-width: 100%">
+    <div id="header">
+      <div id="brand"><a><span><img src="../../mt-static/images/logo/movable-type-logo.png"></span></a></div>
+      <div id="menu-bar">
+        <div id="selector-nav" class="unit size2of3 first-child">
+          <a hre="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle.png"></a>
+          <div id="current-scope">
+            <ol id="selector-nav-list" class="line">
+              <li id="current-website" class="current scope website">
+                <em class="scope-label"><a>First Website</a></em>
+              </li>
+              <li id="current-blog" class="current scope blog">
+                <em class="scope-label"><a>My Blog</a></em>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="content">
+      <div id="menu">
+          <ul id="blog-wide-menu" class="menu-nav">
+            <li id="menu-entry" class="item top-menu current top-menu-open active">
+              <div>
+                <a class="top-menu-link menu-link"><span class="menu-label">Entries</span></a>
+                <a href="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+              </div>
+              </li>
+            <li id="menu-tools" class="item top-menu last-child">
+                <div>
+                  <a class="top-menu-link menu-link"><span class="menu-label">Tools</span></a>
+                  <a href="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+                </div>
+            </li>
+          </ul>
+      </div>
+      <div id="main">
+        <div id="content-header">
+          <h1 id="page-title" class="title page">Manage Entries</h1>
+        </div>
+      </div>
+    </div>
+    <div id="footer">
+      <ul id="footer-nav" class="inline-nav">
+        <li><a href="http://www.movabletype.org">MovableType.org</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+```
+*/
+
+/* ##Grid Class
+
+You can easy build grid layout with the following styles.
+
+<h3>1 grid</h3>
+
+```
+<div class="unit size1of1">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+<h3>2 grids</h3>
+```
+<div class="unit size1of2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of2">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+<h3>3 grids</h3>
+```
+<div class="unit size1of3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+```
+<div class="unit size1of3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size2of3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+<h3>4 grids</h3>
+```
+<div class="unit size1of4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+```
+<div class="unit size1of4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size3of4">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+<h3>5 grids</h3>
+```
+<div class="unit size1of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size1of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+```
+<div class="unit size1of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size4of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+
+```
+<div class="unit size2of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+<div class="unit size3of5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+```
+*/
+
+/* ## Global Header
+
+Header contains 3 main blocks, brand, menu-bar and utility nav
+
+```
+  <div class="blog">
+    <div id="header">
+      <div id="brand"><a><span><img src="../../mt-static/images/logo/movable-type-logo.png"></span></a></div>
+      <div id="utility-nav">
+        <ul id="utility-nav-list">
+          <li id="user"><a><img src="../../mt-static/support/assets_c/userpics/userpic-1-36x36.png" width="18" height="18" class="userpic"> <span class="username">yyamaguchi</span></a></li>
+          <li id="help" class="help"><a>Help</a></li>
+          <li id="logout"><a>Sign out</a></li>
+        </ul>
+      </div>
+      <div id="menu-bar">
+        <div id="selector-nav" class="unit size2of3 first-child">
+          <a hre="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle.png"></a>
+          <div id="current-scope">
+            <ol id="selector-nav-list" class="line">
+              <li id="current-website" class="current scope website">
+                <em class="scope-label"><a>First Website</a></em>
+              </li>
+              <li id="current-blog" class="current scope blog">
+                <em class="scope-label"><a>My Blog</a></em>
+              </li>
+            </ol>
+          </div>
+        </div>
+        <div id="menu-bar-nav" class="unit size1of3">
+          <ul id="menu-bar-icons">
+            <li id="rebuild-site" class="nav-link">
+              <a class="mt-rebuild" title="Publish Site"><span>Publish</span></a>
+            </li>
+            <li id="view-site" class="nav-link">
+              <a><span>View Website</span></a>
+            </li>
+            <li id="cms-search" class="nav-link">
+              <a href="#" class="detail-link"><span>Search Entries</span></a>
+            </li>
+          </ul>
+          <div id="website-fav-actions-nav" class="fav-actions-nav split">
+            <a class="action button">Create New</a>
+            <a class="toggle-button button detail-link"><img src="../..//mt-static/images/arrow/arrow-toggle-black.png"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+```
+
+<h3>Brand</h3>
+
+```
+<div class="system">
+  <div id="header">
+    <div id="brand"><a></a></div>
+  </div>
+</div>
+```
+(the top div emulates body element)
+
+TIPS
+
+When mouse hovered the brand logo (a), tips displayed like the following
+
+```
+<div class="system">
+  <div id="header">
+    <div id="brand">
+      <a></a>
+      <span class="tips">Your Dashboard</span>
+    </div>
+  </div>
+</div>
+```
+(the top div emulates body element)
+
+
+<h3>Utility Nav</h3>
+
+Utitlity nav lists the sorts of global navigation. Navigation Items are positioned the top right side of header.
+
+```
+<div id="header">
+  <div id="brand"></div>
+  <div id="utility-nav">
+    <ul id="utility-nav-list">
+      <li id="user"><a><img src="../../mt-static/support/assets_c/userpics/userpic-1-36x36.png" width="18" height="18" class="userpic"> <span class="username">yyamaguchi</span></a></li>
+      <li id="help" class="help"><a>Help</a></li>
+      <li id="logout"><a>Sign out</a></li>
+    </ul>
+  </div>
+</div>
+```
+
+<h3>Menu Bar</h3>
+
+Menu Bar background color depends on body class is 'blog' or 'website'
+
+
+Blog
+
+```
+  <div class="blog">
+    <div id="header">
+      <div id="menu-bar">
+        <div id="selector-nav" class="unit size2of3 first-child">
+          <a hre="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle.png"></a>
+          <div id="current-scope">
+            <ol id="selector-nav-list" class="line">
+              <li id="current-website" class="current scope website">
+                <em class="scope-label"><a>First Website</a></em>
+              </li>
+              <li id="current-blog" class="current scope blog">
+                <em class="scope-label"><a>My Blog</a></em>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+```
+
+
+Website
+```
+  <div class="website">
+    <div id="header">
+      <div id="menu-bar">
+        <div id="selector-nav" class="unit size2of3 first-child">
+          <a hre="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle.png"></a>
+          <div id="current-scope">
+            <ol id="selector-nav-list" class="line">
+              <li id="current-website" class="current scope website">
+                <em class="scope-label"><a>First Website</a></em>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+```
+
+<h3>Scope Selector</h3>
+
+.scope-selector class is the style for the dialog opened with Menu Bar toggle button
+
+```
+<div style="height:250px">
+<div id="scope-selector" class="scope-selector" style="display:block">
+  <div id="system-scope-list" class="scope-list system first-child">
+    <ul>
+      <li class="user-dashboard">
+        <a class="scope-link">User Dashboard</a>
+      </li>
+      <li class="system-overview">
+        <a class="scope-link">System Overview</a>
+      </li>
+    </ul>
+  </div>
+  <div id="fav-website-list" class="scope-list website">
+    <span class="sticky-label scope-level website">Websites</span>
+    <ul>
+      <li><a class="scope-link">First Website</a></li>
+    </ul>
+  </div>
+  <div id="fav-blog-list" class="scope-list blog">
+    <span class="sticky-label scope-level blog">Blogs</span>
+      <ul>
+        <li><a class="scope-link">My Blog <span class="parent">(on First Website)</span></a></li>
+        <li id="select-blog" class="select-another"><a class="mt-open-dialog scope-link">Select another blog...</a></li>
+      </ul>
+    </div>
+    <div id="create-website-action">
+      <ul class="create-action">
+        <li id="create-website"><a class="create-link website">Create Website</a></li>
+      </ul>
+    </div>
+    <div id="create-blog-action">
+      <ul class="create-action">
+        <li id="create-blog">
+          <a class="create-link website">Create Blog (on First Website)</a>
+        </li>
+      </ul>
+    </div>
+</div>
+</div>
+```
+
+<h3>Favorite Action</h3>
+
+```
+<div class="fav-actions-nav split active">
+  <a class="action button">Create New</a>
+  <a hre="#" class="toggle-button button detail-link" style="position:relative; height:22px"><img src="../../mt-static/images/arrow/arrow-toggle-black.png"></a>
+  <div id="fav-actions" class="fav-actions detail last-child" style="display: block;">
+    <ul id="fav-actions-list">
+      <li id="fav-action-entry" class="fav-action"><a class="fav-action-link">Entry</a></li>
+      <li id="fav-action-page" class="fav-action"><a class="fav-action-link">Page</a></li>
+      <li id="fav-action-asset" class="fav-action"><a class="fav-action-link">Asset</a></li>
+      <li id="fav-action-blog" class="fav-action"><a class="fav-action-link">Blog</a></li>
+    </ul>
+  </div>
+</div>
+```
+
+<h3>Menu Bar Icons</h3>
+
+```
+<div class="website">
+  <div id="header">
+    <div id="menu-bar">
+      <div id="selector-nav" class="unit size2of3"></div>
+      <div id="menu-bar-nav" class="unit size1of3">
+        <ul id="menu-bar-icons">
+          <li id="rebuild-site" class="nav-link">
+            <a class="mt-rebuild" title="Publish Site"><span>Publish</span></a>
+          </li>
+          <li id="view-site" class="nav-link">
+            <a><span>View Website</span></a>
+          </li>
+          <li id="cms-search" class="nav-link">
+            <a href="#" class="detail-link"><span>Search Entries</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```
+<div clasfs="blog">
+  <div id="header">
+    <div id="menu-bar">
+      <div id="selector-nav" class="unit size2of3"></div>
+      <div id="menu-bar-nav" class="unit size1of3">
+        <ul id="menu-bar-icons">
+          <li id="rebuild-site" class="nav-link">
+            <a class="mt-rebuild" title="Publish Site"><span>Publish</span></a>
+          </li>
+          <li id="view-site" class="nav-link">
+            <a><span>View Website</span></a>
+          </li>
+          <li id="cms-search" class="nav-link">
+            <a href="#" class="detail-link"><span>Search Entries</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+
+<h3>Quick Seach Form</h3>
+
+```
+<div clasfs="blog">
+  <div id="header">
+    <div id="menu-bar" class="line">
+      <div id="selector-nav" class="unit size2of3"></div>
+      <div id="menu-bar-nav" class="unit size1of3">
+        <ul id="menu-bar-icons">
+          <li id="cms-search" class="nav-link last-child active">
+            <a href="#" class="detail-link"><span>Search Entries</span></a>
+            <div id="quick-search-form" class="detail search-form">
+              <form id="basic-search" class="basic-search">
+                <input accesskey="q" type="text" name="search" id="quick-search" autocomplete="off" class="search-query input-hint text" placeholder="Search Entries" value="" title="Search (q)">
+                <button type="submit" class="button">Search</button>
+              </form>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+<h3>Notification Indicator</h3>
+
+When there are some notification messages from system, notification indicator is showed in the following structure.
+
+```
+<div clasfs="blog">
+  <div id="brand"></div>
+  <div id="header">
+    <div id="menu-bar" class="line"></div>
+    <div id="notification-indicator">
+      <div id="notification-indicator-content">
+        <p class="msg-text"><a>You have <strong>2 messages</strong> from the system.</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+```
+*/
+
+/* ##Global Footer
+
+MT has footer area at the bottom of screen which contains inline navigation, copyright and version string
+
+```
+<div id="footer">
+  <ul id="footer-nav" class="inline-nav">
+    <li><a href="http://www.movabletype.org">MovableType.org</a></li>
+    <li><a href="http://plugins.movabletype.org/">Plugins</a></li>
+    <li><a href="http://www.movabletype.org/documentation/">Documentation</a></li>
+    <li><a href="http://wiki.movabletype.org/">Wiki</a></li>
+    <li><a href="http://www.sixapart.jp/movabletype/support/">Support</a></li>
+    <li><a href="http://forums.movabletype.org/">Forums</a></li>
+    <li><a href="http://www.sixapart.jp/movabletype/feedback.html">Send Us Feedback</a></li>
+  </ul>
+  <div id="copyright">Copyright © 2001 Six Apart. All Rights Reserved.</div>
+  <p id="version">
+    <strong><a href="http://www.movabletype.org/">Movable Type</a> version 6.0</strong>
+    with: <a href="http://www.sixapart.com/movabletype/pack/enterprise/">Advanced Pack 2.21</a>
+  </p>
+</div>
+```
+
+*/
+
+/* ##Main Menu
+
+```
+<div id="menu" style="margin-left:0">
+  <ul class="menu-nav">
+    <li class="item top-menu first-child top-menu-open active current">
+      <div>
+        <a class="top-menu-link menu-link"><span class="menu-label">Blogs</span></a>
+        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+      </div>
+      <ul class="sub-menu" style="display: block;">
+        <li class="item"><a class="sub-menu-link menu-link current"><span class="menu-label">Manage</span></a></li>
+        <li class="item"><a class="sub-menu-link menu-link"><span class="menu-label">New</span></a></li>
+      </ul>
+    </li>
+    <li class="item top-menu">
+      <div>
+        <a class="top-menu-link menu-link"><span class="menu-label">Entries</span></a>
+        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+      </div>
+    </li>
+    <li class="item top-menu last-child">
+      <div>
+        <a class="top-menu-link menu-link"><span class="menu-label">Tools</span></a>
+        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+      </div>
+    </li>
+  </ul>
+</div>
+```
+
+<h3>Current</h3>
+
+The menu item currently seeing is added 'current' class
+
+```
+<div id="menu" style="margin-left:0">
+  <ul class="menu-nav">
+    <li class="item top-menu first-child top-menu-open current">
+      <div>
+        <a class="top-menu-link menu-link"><span class="menu-label">Blogs</span></a>
+        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+      </div>
+    </li>
+  </ul>
+</div>
+```
+
+The sub menu also added 'current'
+
+```
+<div id="menu" style="margin-left:0">
+  <ul class="menu-nav">
+    <li class="item top-menu first-child top-menu-open current">
+      <div>
+        <a class="top-menu-link menu-link"><span class="menu-label">Blogs</span></a>
+        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+      </div>
+      <ul class="sub-menu" style="display: block;">
+        <li class="item"><a class="sub-menu-link menu-link current"><span class="menu-label">Manage</span></a></li>
+        <li class="item"><a class="sub-menu-link menu-link"><span class="menu-label">New</span></a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+```
+*/
+
+/* ## Widget
+
+Widget is the component block using as side menu item, tips, sorts of additional information and so on.
+
+It has some incredients, header, buttons and tabs (some widgets has the footer named '.widget-footer', but no common styles for it).
+
+<h3>Basic Structure</h3>
+
+.widget class contains 2 main classes, .widget-header and .widget-content.
+
+```
+<div class="widget">
+  <div class="widget-header"><h2>Widget Header</h2></div>
+  <div class="widget-content">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+  </div>
+</div>
+```
+
+
+<h3>No Header</h3>
+
+You can hide header contents with .widget-no-header
+
+```
+<div class="widget widget-no-header">
+  <div class="widget-header"><h2>Widget Header</h2></div>
+  <div class="widget-content">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+  </div>
+</div>
+```
+
+<h3>Header with Tab</h3>
+
+If you want to add the tab bar in the widget header, add .tabbed class at the .widget element.
+
+MT uses jQuery UI Tab for tab UI, you build like the following HTML blocks and execute jQuery('#my-widget').tabs() (.ui-* classes are automatically added with jQuery UI)
+
+```
+<div id="my-widget" class="widget tabbed ui-tabs ui-widget ui-widget-content ui-corner-all">
+  <div class="widget-header" style="padding-bottom: 0">
+    <div class="widget-action">
+      <a class="widget-close-link"><span>close</span></a>
+    </div>
+    <div class="widget-label">
+      <h2><span>Lorem ipsum dolor sit amet</span></h2>
+      <div style="margin: 0 -10px">
+        <ul class="tabs ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" style="margin-bottom:0;">
+          <li class="tab ui-state-default ui-corner-top ui-tabs-active ui-state-active first-child">
+            <a href="#lorem" class="ui-tabs-anchor">Lorem</a>
+          </li>
+          <li class="tab ui-state-default ui-corner-top">
+            <a href="#ipsum" class="ui-tabs-anchor">ipsum</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="widget-content">
+    <div id="lorem">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit.Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+    </div>
+    <div id="ipsum" style="display:none">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit.Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+    </div>
+  </div>
+</div>
+```
+
+
+<h3>Action Link</h3>
+
+You can add some action at the right side of widget header with .widget-action.
+
+```
+<div class="widget">
+  <div class="widget-header">
+    <div class="widget-action"><a class="widget-close-link" title="close widget"><span>close</span></a></div>
+    <h2>Widget Header</h2>
+  </div>
+  <div class="widget-content">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+  </div>
+</div>
+```
+
+<h3>Tabs</h3>
+
+You can add tab links in widget content with ul.tabs and li.tab
+
+```
+<div class="widget">
+  <div class="widget-header"><h2>Widget Header</h2></div>
+  <div class="widget-content">
+    <ul class="tabs">
+        <li class="tab"><a>Item 1</a></li>
+        <li class="tab"><a>Item 2</a></li>
+    </ul>
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+  </div>
+  <div class="widget-footer"></div>
+</div>
+```
+
+<h3>Living Exapmles for Widgets</h3>
+
+**Entry Publishing Widget**
+
+```
+<div id="entry-publishing-widget" class="widget entry-publishing-widget" style="width:238px">
+  <div class="widget-header">
+    <div class="widget-action"></div>
+    <div class="widget-label"><h2><span>Publishing</span></h2></div>
+  </div>
+  <div class="widget-content">
+    <div id="status-field" class="field field-top-label ">
+      <div class="field-header">
+        <label id="status-label" for="status">Status</label>
+      </div>
+      <div class="field-content">
+        <select name="status" id="status" class="full">
+          <option value="1">Unpublished (Draft)</option>
+          <option value="2" selected="selected">Published</option>
+        </select>
+      </div>
+    </div>
+    <div id="authored_on-field" class="field field-top-label">
+      <div class="field-header">
+        <label id="authored_on-label" for="authored_on">Publish Date</label>
+      </div>
+      <div class="field-content">
+        <div class="date-time-fields">
+          <input type="text" id="created-on" class="text date text-date hasDatepicker" name="authored_on_date" value="2013-07-12">
+          <span class="separator"> @</span> <input type="text" class="text time " name="authored_on_time" value="14:02:33">
+        </div>
+      </div>
+    </div>
+
+    <div id="unpublished_on-field" class="field field-top-label">
+      <div class="field-header">
+        <label id="unpublished_on-label" for="unpublished_on">Unpublish Date</label>
+      </div>
+      <div class="field-content ">
+        <div class="date-time-fields">
+          <span class="unpublished-on-text">Not specified</span>
+          <div id="unpublished-on" class="mt-edit-inputblock" style="display:none">
+            <input type="text" id="unpublished-on-date" class="text date text-date hasDatepicker" name="unpublished_on_date" value="">
+            <span class="separator"> @</span> <input type="text" id="unpublished-on-time" class="text time" name="unpublished_on_time" value="">
+          </div>
+          <button type="button" id="mt-edit-unpublished-on" class="button mt-edit-field-button">Edit</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="basename-field" class="field field-top-label">
+      <div class="field-header">
+        <label id="basename-label" for="basename">Basename</label>
+      </div>
+      <div class="field-content">
+        <span class="basename">
+          <span class="basename-text">loremipsum</span>
+          <input type="text" name="basename" id="basename" class="text full" value="loremipsum" style="display: none;">
+        </span>
+        <button type="button" id="mt-set-basename" class="mt-edit-field-button button">Edit</button>
+        <p class="alert-warning-inline" id="basename-warning">
+          <img src="../../mt-static/images/status_icons/warning.gif" alt="Warning" width="9" height="9">
+          Warning: Changing this entry's basename may break inbound links.
+        </p>
+      </div>
+    </div>
+
+    <div id="revision-note-field" class="field field-top-label">
+      <div class="field-header">
+        <label id="revision-note-label" for="revision-note">Change note</label>
+      </div>
+      <div class="field-content">
+        <input type="text" name="revision-note" id="revision-note" class="text full" value="">
+      </div>
+    </div>
+
+    <div class="actions-bar">
+      <div class="save-action">
+        <button name="status" type="submit" title="Update this Entry" class="publish action primary button">Update</button>
+      </div>
+      <div class="preview-action">
+        <button name="preview_entry" type="submit" accesskey="v" title="Preview this entry (v)" class="preview action button">
+          Preview
+        </button>
+      </div>
+    </div>
+
+    <div class="delete-action">
+      <a class="delete" accesskey="x">
+        Delete
+      </a>
+    </div>
+  </div>
+</div>
+```
+
+**Categories Widget**
+
+```
+<div id="category-field" class="selector-active" style="width:238px">
+  <div id="entry-category-widget" class="widget entry-category-widget">
+    <div class="widget-header ">
+      <div class="widget-action">
+        <a class="category-toggle-link toggle-link hidden">edit</a>
+        <a class="category-toggle-link toggle-link">close</a>
+      </div>
+      <div class="widget-label">
+        <h2><span>Categories</span></h2>
+      </div>
+    </div>
+    <div class="widget-content">
+      <div id="category-field" class="field field-no-header">
+        <div class="field-header">
+          <label id="category-label" for="category">Category</label>
+        </div>
+        <div class="field-content">
+          <div id="category-selector" class="category-selector">
+            <div class="category-selector-header">
+              <a class="add-category-new-parent-link">Add</a>
+            </div>
+            <div id="add-category-form" class="add-category-form hidden">
+                <input id="add-category-input" class="add-category-input text" type="text" value="Add category">
+                <a class="add-category-save-link"><span>Add</span></a>
+                <a class="add-category-cancel-link"><span>Cancel</span></a>
+            </div>
+            <div id="category-selector-list" class="category-selector-list active-component">
+              <input autocomplete="off" style="display: block; position: absolute; left: 0px; top: 0px; width: 0px; height: 0px; margin: 0px; border: 0px; padding: 0px; font-size: 0.1px; line-height: 0; opacity: 0;">
+              <div class="list-item odd selected">
+                <div style="text-align:left; margin-left:0px">
+                  <a class="add-category-new-link"><span>Add</span>&nbsp;</a>
+                  <div style="width: 165px;">
+                    <input type="checkbox" name="add_category_id_6" class="add-category-checkbox"> Lorem ipsum
+                  </div>
+                </div>
+              </div>
+              <div class="list-item even">
+                <div style="text-align:left; margin-left:0px">
+                  <a class="add-category-new-link"><span>Add</span>&nbsp;</a>
+                  <div style="width: 165px;">
+                    <input type="checkbox" name="add_category_id_5" class="add-category-checkbox"> dolor sit amet
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="category-list">
+            <ul class="category-list">
+              <li class="primary"><strong>Lorem ipsum</strong>
+                <a class="delete">&nbsp;<span>Remove</span></a>
+              </li>
+            </ul>
+          </div>
+          <input id="category-ids" type="hidden" name="category_ids" value="6" class="hidden">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+*/
+
+/* ## Common UI
+
+<h3>Tabs</h3>
+
+.ui-tabs is the style for jQuery UI Tabs (MT custmizes its style). .ui-* classes are automatically added by jQuery UI.
+
+You can see the living example in the search-replace screen.
+
+```
+<div class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+  <ul class="search-tabs-list tabs ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all first-child">
+    <li class="tab ui-state-default ui-corner-top ui-tabs-active ui-state-active" ><a class="ui-tabs-anchor"><span>Entries</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>Comments</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>TrackBacks</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>Pages</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>Templates</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>Assets</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>Activity Log</span></a></li>
+    <li class="tab ui-state-default ui-corner-top"><a class="ui-tabs-anchor"><span>Users</span></a></li>
+  </ul>
+</div>
+```
+
+<h3>Date Picker</h3>
+
+.ui-datepicker class is the style for jQuery UI Data Picker
+
+.ui-datepicker related classes automatically assigned by jQuery UI, so you might not assign this classes manually (All you have to do is calling jQeury UI Date Picker).
+
+```
+<div class="ui-datepicker" style="display:block">
+  <div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all">
+      <a class="ui-datepicker-prev ui-corner-all"><span class="ui-icon ui-icon-circle-triangle-w">&lt;</span></a>
+      <a class="ui-datepicker-next ui-corner-all"><span class="ui-icon ui-icon-circle-triangle-e">&gt;</span></a>
+      <div class="ui-datepicker-title">
+          <span class="ui-datepicker-year">2013</span>&nbsp;<span class="ui-datepicker-month">- 07</span>
+      </div>
+  </div>
+  <table class="ui-datepicker-calendar">
+  <thead>
+      <tr>
+          <th class="ui-datepicker-week-end"><span title="Sunday">S</span></th>
+          <th><span title="Monday">M</span></th>
+          <th><span title="Tuesday">T</span></th>
+          <th><span title="Wednesday">W</span></th>
+          <th><span title="Thursday">T</span></th>
+          <th><span title="Friday">F</span></th>
+          <th class="ui-datepicker-week-end"><span title="Saturday">S</span></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td class="ui-datepicker-week-end ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td>
+          <td><a class="ui-state-default">1</a></td>
+          <td><a class="ui-state-default">2</a></td>
+          <td><a class="ui-state-default">3</a></td>
+          <td><a class="ui-state-default">4</a></td>
+          <td><a class="ui-state-default">5</a></td>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">6</a></td>
+      </tr>
+      <tr>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">7</a></td>
+          <td><a class="ui-state-default">8</a></td>
+          <td><a class="ui-state-default">9</a></td>
+          <td><a class="ui-state-default">10</a></td>
+          <td><a class="ui-state-default">11</a></td>
+          <td><a class="ui-state-default">12</a></td>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">13</a></td>
+      </tr>
+      <tr>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">14</a></td>
+          <td><a class="ui-state-default">15</a></td>
+          <td class="ui-datepicker-days-cell-over ui-datepicker-today"><a class="ui-state-default ui-state-highlight ui-state-hover">16</a></td>
+          <td><a class="ui-state-default">17</a></td>
+          <td><a class="ui-state-default">18</a></td>
+          <td><a class="ui-state-default">19</a></td>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">20</a></td>
+      </tr>
+      <tr>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">21</a></td>
+          <td><a class="ui-state-default">22</a></td>
+          <td><a class="ui-state-default">23</a></td>
+          <td><a class="ui-state-default">24</a></td>
+          <td><a class="ui-state-default">25</a></td>
+          <td><a class="ui-state-default">26</a></td>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">27</a></td>
+      </tr>
+      <tr>
+          <td class="ui-datepicker-week-end"><a class="ui-state-default">28</a></td>
+          <td><a class="ui-state-default">29</a></td>
+          <td><a class="ui-state-default">30</a></td>
+          <td><a class="ui-state-default">31</a></td>
+          <td class=" ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td>
+          <td class=" ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td>
+          <td class=" ui-datepicker-week-end ui-datepicker-other-month ui-datepicker-unselectable ui-state-disabled">&nbsp;</td>
+      </tr>
+  </tbody>
+  </table>
+</div>
+```
+
+<h3>Toggle Button</h3>
+
+.toggle-button class styles the toggle button with related UI styles.
+
+**Note**: toggle-button style is strongly depended on the parent position:relative element style (in especially width). You need to add the appreciate styles for it.
+
+**with menu nav**
+
+```
+<div style="width:150px">
+  <ul class="menu-nav">
+    <li class="item top-menu top-menu-open">
+      <div>
+        <a class="top-menu-link menu-link">
+          <span class="menu-label">Menu Item</span>
+        </a>
+        <a class="toggle-button">
+          <img src="../images/arrow/arrow-toggle-big.png">
+        </a>
+      </div>
+    </li>
+  </ul>
+</div>
+```
+
+**with filter-header**
+
+filter-header class is used in the listings header
+
+```
+<div class="filter-block">
+  <div id="filter-header">
+    <div class="mod filter-header">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      <a class="toggle-button">
+        <img src="../images/arrow/arrow-toggle-big.png">
+      </a>
+    </div>
+  </div>
+</div>
+```
+
+**with selector-nav**
+
+selector-nav class is used for button at the top left side of the header.
+
+```
+<div id="selector-nav">
+  <a class="toggle-button">
+    <img src="../images/arrow/arrow-toggle.png">
+  </a>
+</div>
+```
+
+<h3>Display Optins</h3>
+
+Display Options has two ingredients, toggle button and detailed contents.
+
+It's typically used with listing blocks, so more details at [listing.css](#/style/listing.css)
+
+```
+<div class="display-options">
+  <a class="toggle-link">
+    Display Options
+    <span class="toggle-button">
+      <img src="../images/arrow/arrow-toggle.png">
+    </span>
+  </a>
+  <div class="display-options-detail detail" style="display: block;">
+    <div class="field field-top-label">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+    </div>
+  </div>
+</div>
+```
+
+<h3>Sortable Fields</h3>
+
+.sort-enabled class adds handle UI for a sotable element.
+
+```
+<div id="tags-field" class="field field-top-label sort-enabled">
+    <div class="field-header">
+      <label>Lorem ipsum dolor sit amet</label>
+    </div>
+    <div class="field-content">
+      <input type="text" class="text full">
+    </div>
+</div>
+```
+
+<h3>Object Navigation</h3>
+
+.object-nav class is the style for a Object(entry/comment etc)'s navigation like the following
+
+```
+<ul class="object-nav">
+  <li id="previous-link"><a>‹ Prev</a></li>
+  <li id="next-link"><span>Next ›</span></li>
+</ul>
+```
+
+<h3>Progress Bar</h3>
+
+**start processing**
+
+.progressbar is style for progress bar. .indeterminate class is used for start processing (so, you usually use the both .progressbar and .indeterminate classes)
+
+```
+<div id="progressbar" class="progressbar indeterminate"></div>
+```
+
+**on progress**
+
+If you show the progress using jQuery UI progressbar, its style like the following (ui-* classes added by jQuery UI).
+
+```
+<div id="progressbar" class="progressbar ui-progressbar ui-widget ui-widget-content ui-corner-all">
+  <div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: 28%;"></div>
+</div>
+```
+*/
+
+/* ## Common Styles
+
+<h3>Images</h3>
+
+Common styles for images
+
+**picture**
+
+.picture adds margin to top and bottom and clear:both
+
+
+```
+<div>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+</div>
+<div class="picture">
+  <img src="../styleguide/images/sample.jpg" />
+</div>
+<div>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+</div>
+```
+
+
+**.picture.small**
+
+.picture.small is for small images like thumbnail
+
+```
+<div>
+<p>
+<span class="picture small">
+<img src="../styleguide/images/sample_small.jpg" />
+</span>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+</div>
+```
+
+**.thumbnail**
+
+.thumbnail adds border around image like the following
+
+```
+<div>
+<p>
+<span class="picture small thumbnail">
+<img src="../styleguide/images/sample_small.jpg" />
+</span>
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+</div>
+```
+
+.thumbnail also adds background image to clarify transparent area like PhotoShop
+
+```
+<div class="picture small thumbnail">
+  <img src="../images/chromeless/mt_logo.png"/>
+</div>
+```
+
+<h3>Sticky Label</h3>
+
+Adds sticky labels like the following
+
+```
+<span class="sticky-label">Label</span>
+<span class="sticky-label system">System</span>
+<span class="sticky-label website">WebSite</span>
+<span class="sticky-label blog">Blog</span>
+<span class="sticky-label required">Required</span>
+<span class="sticky-label inuse-userpic">UserPic</span>
+```
+
+If you want to add delete icon at the right side of label, add remove class
+```
+<div class="selected-items">
+<span class="sticky-label">Item<span class="remove">x</span></span>
+</div>
+```
+
+<h3>Horizontal List</h3>
+
+.multiple-selection class positions list items horizontally.
+
+```
+<ul class="multiple-selection">
+  <li><input type="checkbox" /> Lorem ipsum dolor</li>
+  <li><input type="checkbox" /> sit amet</li>
+  <li><input type="checkbox" /> consectetur adipisicing elit</li>
+</ul>
+```
+
+If you want to separate each item with fixed width, use .fixed-width
+
+```
+<ul class="multiple-selection fixed-width">
+  <li><input type="checkbox" /> Lorem ipsum dolor</li>
+  <li><input type="checkbox" /> sit amet</li>
+  <li><input type="checkbox" /> consectetur adipisicing elit</li>
+</ul>
+```
+
+<h3>Hint</h3>
+
+.hint is used for the additional information of setting item.
+
+```
+<div>
+  <input />
+  <div class="hint">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+</div>
+```
+
+<h3>Contextual Help</h3>
+
+```
+<a id="formatting-help-link">?</a>
+```
+
+<h3>Inline Warning</h3>
+
+.alert-warning-inline is styled for inline warnings
+
+```
+<div>
+  <input />
+  <p class="alert-warning-inline">
+    <img src="../images/status_icons/warning.gif" width="9" height="9" /> Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit ( <a>read more details</a> ).
+  </p>
+</div>
+```
+
+<h3>Toggle link</h3>
+
+used the link like 'Change Password' link
+
+appearing cursor as pointer and show underline explicitly (underline disappeared on hover)
+
+```
+<a class="toggle-link">Change Password</a>
+```
+
+<h3>Open Dialog Link</h3>
+
+This style is used for the link which opens the 'Select Filter' dialog at the header of the listing.
+
+More details about listing style, see [listing.css](#/style/listing.css)
+
+```
+<div class="filter-block">
+  <div id="filter-header">
+    <div class="mod filter-header">
+      Filter: <a class="open-dialog-link">All Entries</a>
+    </div>
+  </div>
+</div>
+```
+
+<h3>Create link</h3>
+
+.create-inline and the related classes used for the inline link to craate object.
+
+```
+<a class="icon-left icon-create">Create Archive Mapping</a>
+```
+
+
+<h3>System Information</h3>
+.exception class is used show the system exepction message like the following
+
+<div class="msg msg-warning active">
+  <p class="msg-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet
+    <span class="toggle-link detail-link">Details</span>
+    <span class="exception active" style="display: block;">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet
+    </span>
+  </p>
+</div>
+
+<h3>Process Log</h3>
+
+```
+<pre class="progress-log last-child">Backing up Movable Type
+<span id="field">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. </span>
+<span id="website">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. </span>
+<span id="blog">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. </span>
+</pre>
+```
+
+*/
+
+/* ## Plugin Settings
+
+```
+<div id="list-plugins">
+<div class="plugin-group">
+  <h2 class="plugin-group-name">Individual Plugins</h2>
+  <div class="plugin-list">
+    <div class="plugin first-child">
+      <div class="plugin-header">
+        <h4 class="plugin-name">
+          <a href="#" style="background-image: url('../../mt-static/images/plugin.gif')">Loem ipsum <span class="plugin-version">2.32</span></a>
+        </h4>
+        <div class="plugin-status">
+          <span class="icon-left icon-success">Enabled</span>
+          <a class="button">Disable</a>
+        </div>
+      </div>
+      <div class="plugin-content ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="plugin-tabs-list tabs ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+          <li class="tab ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a class="icon-mini-left icon-mini-comments ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-1">Info</a></li>
+          <li class="tab ui-state-default ui-corner-top"><a class="icon-mini-left icon-mini-templates ui-tabs-anchor">Resources</a></li>
+          <li class="tab ui-state-default ui-corner-top"><a class="icon-mini-left icon-mini-settings ui-tabs-anchor">Settings</a></li>
+        </ul>
+        <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+          <div class="plugin-metadata">
+            <ul class="plugin-metadata-list">
+              <li><a class="icon-mini-left icon-mini-docs">Documentation</a></li>
+              <li><a class="icon-mini-left icon-mini-view-site">Six Apart, Ltd.</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources ui-tabs-panel ui-widget-content ui-corner-bottom" style="display: none;">
+          <ul>
+            <li><strong>Tags:</strong>&lt;MTLoremIpsum&gt;</li>
+          </ul>
+        </div>
+        <div class="config ui-tabs-panel ui-widget-content ui-corner-bottom" style="display: none;">
+          <fieldset>
+            <div id="rebuild_for_action_stream_events-field" class="field field-left-label ">
+              <div class="field-header">
+                <label id="rebuild_for_action_stream_events-label" for="rebuild_for_action_stream_events">Rebuild Indexes</label>
+              </div>
+              <div class="field-content ">
+                <label><input type="checkbox" id="rebuild_for_action_stream_events" value="1" class="checkbox"> Enable rebuilding</label>
+                <div class="hint">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="actions-bar settings-actions-bar">
+            <button mt:mode="save_plugin_config" type="submit" class="save action primary button">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="plugin plugin-disabled disabled last-child">
+      <div class="plugin-header">
+        <h4 class="plugin-name">
+          <span class="plugin-name-disabled">DolorSitAmet </span>
+        </h4>
+
+        <div class="plugin-status">
+          <span class="icon-left icon-neutral">Disabled</span>
+          <a class="button">Enable</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+```
+
+<h3>Plugin expanded</h3>
+
+```
+<div id="list-plugins">
+<div class="plugin-group">
+  <h2 class="plugin-group-name">Individual Plugins</h2>
+  <div class="plugin-list">
+    <div class="plugin first-child last-child plugin-expanded">
+      <div class="plugin-header">
+        <h4 class="plugin-name">
+          <a href="#" style="background-image: url('../../mt-static/images/plugin.gif')">Loem ipsum <span class="plugin-version">2.32</span></a>
+        </h4>
+        <div class="plugin-status">
+          <span class="icon-left icon-success">Enabled</span>
+          <a class="button">Disable</a>
+        </div>
+      </div>
+      <div class="plugin-content ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="plugin-tabs-list tabs ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+          <li class="tab ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a class="icon-mini-left icon-mini-comments ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-1">Info</a></li>
+          <li class="tab ui-state-default ui-corner-top"><a class="icon-mini-left icon-mini-templates ui-tabs-anchor">Resources</a></li>
+          <li class="tab ui-state-default ui-corner-top"><a class="icon-mini-left icon-mini-settings ui-tabs-anchor">Settings</a></li>
+        </ul>
+        <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+          <div class="plugin-metadata">
+            <ul class="plugin-metadata-list">
+              <li><a class="icon-mini-left icon-mini-docs">Documentation</a></li>
+              <li><a class="icon-mini-left icon-mini-view-site">Six Apart, Ltd.</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="resources ui-tabs-panel ui-widget-content ui-corner-bottom" style="display: none;">
+          <ul>
+            <li><strong>Tags:</strong>&lt;MTLoremIpsum&gt;</li>
+          </ul>
+        </div>
+        <div class="config ui-tabs-panel ui-widget-content ui-corner-bottom" style="display: none;">
+          <fieldset>
+            <div id="rebuild_for_action_stream_events-field" class="field field-left-label ">
+              <div class="field-header">
+                <label id="rebuild_for_action_stream_events-label" for="rebuild_for_action_stream_events">Rebuild Indexes</label>
+              </div>
+              <div class="field-content ">
+                <label><input type="checkbox" id="rebuild_for_action_stream_events" value="1" class="checkbox"> Enable rebuilding</label>
+                <div class="hint">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="actions-bar settings-actions-bar">
+            <button mt:mode="save_plugin_config" type="submit" class="save action primary button">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+```
+*/
+
+/* #Theme Settings
+
+```
+<div id="list-themes">
+<div id="website-theme-group" class="theme-group">
+  <h2 class="theme-group-name">Themes for Websites</h2>
+  <div class="theme-list">
+    <div class="theme first-child">
+      <div class="theme-status">
+        <span class="icon-left icon-success">In Use</span>
+      </div>
+      <div class="theme-thumbnail thumbnail picture small">
+        <img src="../../mt-static/support/theme_thumbnails/classic_website/thumb-small.png" width="120" height="90">
+      </div>
+      <div class="theme-meta">
+        <h3 class="theme-title"><a class="theme-detail-link toggle-link icon-left icon-spinner">Loem ipsum <span class="theme-version">1.2</span></a></h3>
+        <div class="theme-author">
+          Author: <a>Six Apart, Ltd.</a>
+        </div>
+        <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      </div>
+      <div class="theme-details ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="theme-tabs-list ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+         <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a class="ui-tabs-anchor">Info</a></li>
+        </ul>
+        <div class="theme-info ui-tabs-panel ui-widget-content ui-corner-bottom">
+          <h4 class="first-child">Theme Information</h4>
+          <ul>
+            <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="theme last-child">
+      <div class="theme-status">
+        <a class="button uninstall-theme-link">Uninstall</a>
+      </div>
+      <div class="theme-thumbnail thumbnail picture small">
+        <img src="../../mt-static/support/theme_thumbnails/professional_website/thumb-small.png" width="120" height="90" class="first-child">
+      </div>
+      <div class="theme-meta">
+        <h3 class="theme-title"><a class="theme-detail-link toggle-link icon-left icon-spinner">Loem ipsum <span class="theme-version">1.2</span></a></h3>
+        <div class="theme-author">
+          Author: <a>Six Apart, Ltd.</a>
+        </div>
+        <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      </div>
+      <div class="theme-details ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="theme-tabs-list ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+         <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a class="ui-tabs-anchor">Info</a></li>
+        </ul>
+        <div class="theme-info ui-tabs-panel ui-widget-content ui-corner-bottom">
+          <h4 class="first-child">Theme Information</h4>
+          <ul>
+            <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+```
+
+<h3>Expand</h3>
+
+```
+<div id="list-themes">
+<div id="website-theme-group" class="theme-group">
+  <h2 class="theme-group-name">Themes for Websites</h2>
+  <div class="theme-list">
+    <div class="theme theme-expanded first-child">
+      <div class="theme-status">
+        <span class="icon-left icon-success">In Use</span>
+      </div>
+      <div class="theme-thumbnail thumbnail picture small">
+        <img src="../../mt-static/support/theme_thumbnails/classic_website/thumb-small.png" width="120" height="90">
+      </div>
+      <div class="theme-meta">
+        <h3 class="theme-title"><a class="theme-detail-link toggle-link icon-left icon-spinner">Loem ipsum <span class="theme-version">1.2</span></a></h3>
+        <div class="theme-author">
+          Author: <a>Six Apart, Ltd.</a>
+        </div>
+        <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      </div>
+      <div class="theme-details ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="theme-tabs-list ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+         <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a class="ui-tabs-anchor">Info</a></li>
+        </ul>
+        <div class="theme-info ui-tabs-panel ui-widget-content ui-corner-bottom">
+          <h4 class="first-child">Theme Information</h4>
+          <ul>
+            <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="theme last-child">
+      <div class="theme-status">
+        <a class="button uninstall-theme-link">Uninstall</a>
+      </div>
+      <div class="theme-thumbnail thumbnail picture small">
+        <img src="../../mt-static/support/theme_thumbnails/professional_website/thumb-small.png" width="120" height="90" class="first-child">
+      </div>
+      <div class="theme-meta">
+        <h3 class="theme-title"><a class="theme-detail-link toggle-link icon-left icon-spinner">Loem ipsum <span class="theme-version">1.2</span></a></h3>
+        <div class="theme-author">
+          Author: <a>Six Apart, Ltd.</a>
+        </div>
+        <p class="description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      </div>
+      <div class="theme-details ui-tabs ui-widget ui-widget-content ui-corner-all">
+        <ul class="theme-tabs-list ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+         <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a class="ui-tabs-anchor">Info</a></li>
+        </ul>
+        <div class="theme-info ui-tabs-panel ui-widget-content ui-corner-bottom">
+          <h4 class="first-child">Theme Information</h4>
+          <ul>
+            <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+```
+*/
+
+/* ##Beta
+
+When MT is beta version one, .mt-beta class is added at body element.
+
+```
+<div class="mt-beta">
+  <div id="container">
+    <div id="header">
+      <div id="brand"><a></a><span class="tip">Your Dashboard</tip></div>
+      <div id="menu-bar"></div>
+    </div>
+    <div id="content">
+      <div id="main">
+        <div id="content-header">
+          <h1>CONTENT HEADER</h1>
+        </div>
+        <div id="content-body">
+          <div id="main-content">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer">
+    <div id="msg-beta"><p>Lorem ipsum dolor sit amet</p></div>
+    <ul id="footer-nav" class="inline-nav">
+      <li><a href="http://www.movabletype.org">MovableType.org</a></li>
+    </ul>
+  </div>
+</div>
+```
+(the top div emulates body element)
+
+*/
+
+/* ##Other Styles
+structure.css has some other specific styles for some screens
+
+<h3>Tags Field</h3>
+
+tags-field related classes are mainly used for tags field in Edit Entry screen
+
+```
+<div id="tags-field" class="field field-top-label sort-enabled" style="position: relative; opacity: 1; z-index: 0;">
+  <div class="field-header first-child">
+    <label id="tags-label">Tags</label>
+  </div>
+  <div class="field-content  last-child">
+    <input type="text" name="tags" id="tags" class="text full" value="L">
+    <div id="tags-suggestion">
+      <div id="tags_completion" style="display: block;"><div class="complete-highlight">Lorem</div></div>
+    </div>
+  </div>
+</div>
+```
+
+**Suggestion Block**
+
+```
+    <div id="tags-suggestion">
+      <div id="tags_completion" style="display: block;"><div class="complete-highlight">Lorem</div></div>
+    </div>
+```
+
+
+<h3>Add New Category Form</h3>
+
+```
+<div class="category-selector">
+  <div id="add-category-form" class="add-category-form">
+    <input id="add-category-input" class="add-category-input text" type="text" value="Add category">
+    <a class="add-category-save-link"><span>Add</span></a>
+    <a class="add-category-cancel-link"><span>Cancel</span></a>
+  </div>
+</div>
+```
+
+<h3>Template Option</h3>
+
+```
+<div class="edit-template">
+<div id="template-options" class="active">
+  <div id="template-options-header" class="line">
+    <div class="template-options-toggle">
+        <a　class="icon-left icon-spinner">Template Options</a>
+      </div>
+      <div class="template-options-summary">Enabled Mappings: Entry</div>
+    </div>
+    <div id="template-options-content">
+      <div id="linked_file-field" class="field field-top-label">
+        <div class="field-header">
+          <label id="linked_file-label" for="linked_file">Link to File</label>
+        </div>
+        <div class="field-content">
+          <input type="text" name="linked_file" id="linked_file" class="text" tabindex="8" value="" maxlength="255">
+        </div>
+      </div>
+      <div id="archive_mapping-field" class="field field-top-label">
+        <div class="field-header">
+          <label id="archive_mapping-label" for="archive_mapping">Archive Mapping</label>
+        </div>
+        <div class="field-content field-content-text">
+        <p><a class="icon-left icon-create">Create Archive Mapping</a></p>
+        <div id="msg-block"></div>
+        <div class="create-inline" id="create-inline-mapping">
+          <label for="new_archive_type"><strong>Type</strong></label>
+          <select name="new_archive_type" id="new_archive_type" tabindex="9">
+            <option value="Individual">Entry</option>
+          </select>
+          &nbsp;
+          <span class="buttons">
+            <a class="button">Add</a>
+            <a class="button">Cancel</a>
+          </span>
+        </div>
+        <div id="template-maps">
+          <div id="templatemap-listing" class="listing  hide_actions">
+            <table id="templatemap-listing-table" class="legacy listing-table  hide_actions templatemap-listing-table compact">
+              <thead>
+                <tr>
+                  <th class="col head archive-type"><span class="col-label">Type</span></th>
+                  <th class="col head archive-path primary"><span class="col-label">Path</span></th>
+                  <th class="col head publish-options"><span class="col-label">Publishing</span></th>
+                  <th class="col head archive-delete si"><span>Delete</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="18" class="odd">
+                  <td class="col archive-type">Entry</td>
+                  <td class="col archive-path">
+                    <select id="archive_file_sel_18" class="tmpl-path">
+                      <option value="%y/%m/%-f">yyyy/mm/entry-basename.html</option>
+                    </select>
+                    <input type="text" class="tmpl-path tmpl-path-custom hidden text" value="%y/%m/%f">
+                  </td>
+                  <td class="col publish-options">
+                    <select name="map_build_type_18" id="build-type" class="half-width">
+                      <option value="1" selected="selected">Statically (default)</option>
+                    </select>
+                  </td>
+                  <td class="col archive-delete si"><a class="icon16 icon-delete">Delete</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hint">Learn more about <a>publishing settings</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+```
+
+<h3>Editor Toolbar</h3>
+
+.editor-toolbar is used at Edit Template screen
+
+```
+<div id="template-body-field" class="field field-no-header ">
+    <div class="field-header">
+      <label id="template-body-label" for="template-body">Template Body</label>
+    </div>
+    <div class="field-content">
+
+    <div id="template-editor-toolbar" class="template editor-toolbar toolbar">
+      <button type="button" id="syntaxon" class="command-highlight-on toolbar button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" title="Syntax highlighting On" role="button" aria-disabled="false"><span class="ui-button-text"><span class="button-label">Syntax highlighting On</span></span></button><button type="button" id="syntaxoff" class="command-highlight-off toolbar button active ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" title="Syntax highlighting Off" role="button" aria-disabled="false"><span class="ui-button-text"><span class="button-label">Syntax highlighting Off</span></span></button>
+    </div>
+    <div id="textarea-enclosure" class="editor">
+      <textarea name="text" id="text" class="monospace text full" tabindex="3" style="display: inline-block;">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </textarea>
+    </div>
+    </div>
+</div>
+```
+
+<h3>Search Replace</h3>
+
+```
+<div class="search-replace">
+<div id="search-bar" class="line">
+  <div id="search-bar-search-field" class="mod">
+    <div id="search-field" class="field field-top-label">
+    <div class="field-header"><label id="search-label" for="search">Search</label></div>
+    <div class="field-content"><input type="text" name="search" id="search" class="text query" value=""></div>
+  </div>
+  <ul id="search-bar-advanced-search" class="multiple-selection">
+      <li><label for="case"><input type="checkbox" id="case" name="case" value="1" class="cb checkbox"> Case Sensitive</label></li>
+      <li><label for="is_regex"><input type="checkbox" id="is_regex" name="is_regex" value="1" class="cb checkbox"> Regex Match</label></li>
+  </ul>
+  <div id="limited-fields" class="mod advanced-options">
+    <div id="entry-fields">
+      <ul class="multiple-selection">
+        <li><label for="search_cols-basename"><input type="checkbox" checked="checked" class="cb checkbox"> Basename</label></li>
+        <li><label for="search_cols-keywords"><input type="checkbox"checked="checked" class="cb checkbox"> Keywords</label></li>
+      </ul>
+    </div>
+  </div>
+  <div id="date-range" class="mod advanced-options">
+    <label for="datefrom">From:</label> <input type="text" name="from" id="from" class="text-date text date hasDatepicker" value="">
+    <label for="dateto">To:</label> <input type="text" name="to" id="to" class="text-date text date last-child hasDatepicker" value="">
+  </div>
+  <div class="actions-bar last-child">
+    <button id="search-button" class="search action primary button">Search</button>
+  </div>
+</div>
+</div>
+```
+(the top div emulates body element)
+
+*/
+
+/* ##System-wide tweaks
+
+structure.css also has system-wide tweaks to address various issues.
+
+<h3>Widgets Styles</h3>
+
+tweaks for the following widgets
+
+
+* news-widget (MT News)
+* include-form (Templates Widget)
+* entry-status-widget
+* entry-publishing-widget
+* category-selector (Categories widget)
+* Feedback Widget
+* Asset List Widget
+* available-column-items, installed-widgets (Edit Widget Set)
+
+
+<h3>Base Styles for specific features</h3>
+
+sorts of base styles for the following UI/features.
+
+* Action Bar ([listing.css](#/style/listing.css))
+* CodeMirror Line Numbers
+* Page Folder
+* Edit Comment screen (around commenter)
+* archive mapping
+* Preview Content
+* system-check
+* has-licence-field
+* system_email_address-field
+* new_user_theme_thumb
+* process-msg
+
+<h3>Width tweaks</h3>
+
+width tweaks for the following class
+
+* list-revision-dialog
+* date-time-fields
+* default_categories-table
+* default_folders-table
+
+<h3>Padding/Margin tweaks</h3>
+
+padding/margin tweaks for the following class
+
+* status field in edit comment/ping screen
+* asset_details (asset option)
+* asset-preview
+* related-assets
+* setting-auth-status-field
+* template_set (Export Theme)
+* template-group (Export Theme)
+
+<h3>Clearfix</h3>
+
+including Clearfix style
+
+<h3>Legacy Support</h3>
+
+legacy supports for the following class
+* asset-listing-table
+* tmpl-type-name
+
+*/
+
 html,
 body {
     height: 100%;
@@ -38,13 +1946,13 @@ pre {
     color: #7b7c7d;
 }
 
-/* - Component */
 .hint {
     width: 75%;
     color: #a3a3a2;
     font-size: 95%;
     font-style: Italic;
 }
+
 .alert-warning-inline {
     margin: 5px 0 0;
     font-size: 95%;
@@ -93,7 +2001,6 @@ pre {
     background: none;
 }
 
-/* -- Sticky Label */
 .sticky-label {
     display: inline-block;
     padding: 0.2em 0.5em;
@@ -134,7 +2041,6 @@ pre {
     color: #fff;
 }
 
-/* -- Multiple Selection */
 .multiple-selection {
     display: inline-block;
 }
@@ -147,7 +2053,6 @@ pre {
     margin: 0 0 5px;
 }
 
-/* -- Overlay */
 .overlay,
 .ui-widget-overlay {
     position: absolute;
@@ -159,7 +2064,6 @@ pre {
     filter: alpha(opacity=70);
 }
 
-/* -- Toggle Button */
 .toggle-button {
     cursor: pointer;
     position: absolute;
@@ -191,9 +2095,11 @@ pre {
     left: 50%;
     margin: -2px 0 0 -4px;
 }
+
 .menu-nav .toggle-button {
     width: 20px;
 }
+
 .filter-header .toggle-button {
     width: 30px;
     border-radius: 0 3px 0 0;
@@ -203,7 +2109,6 @@ pre {
     margin: -3px 0 0 -5px;
 }
 
-/* -- Toggle Link */
 .toggle-link {
     cursor: pointer;
     background: transparent;
@@ -214,11 +2119,11 @@ pre {
 .toggle-link:active {
     text-decoration: none;
 }
+
 .detail {
     clear: both;
 }
 
-/* -- Open Dialog Link */
 .open-dialog-link {
     border-bottom: 1px dotted;
     color: #7b7c7d;
@@ -228,7 +2133,6 @@ pre {
     border-bottom: 0;
 }
 
-/* -- Progress Bar */
 .progressbar {
     height: 2em;
     border: 1px solid #c0c6c9;
@@ -238,6 +2142,7 @@ pre {
 .progressbar.indeterminate {
     background: #c0c6c9 url(../images/progress-bar-indeterminate.gif) repeat;
 }
+
 .ui-progressbar .ui-progressbar-value {
     height:100%;
     background-color: #dcdddd;
@@ -263,7 +2168,6 @@ pre {
     margin-right: 0.5em;
 }
 
-/* -- Tabs */
 .ui-tabs .ui-tabs-hide {
     display: none;
 }
@@ -307,7 +2211,6 @@ ul.tabs li a {
     outline: 0;
 }
 
-/* -- Date Picker */
 .ui-datepicker {
     display: none;
     width: 200px;
@@ -391,7 +2294,6 @@ ul.tabs li a {
     border-radius: 2px;
 }
 
-/* - Layout */
 #container {
     position: relative;
     height: auto;
@@ -406,6 +2308,7 @@ ul.tabs li a {
 .has-menu-nav #content {
     margin-left: 168px;
 }
+
 #content-body {
     margin-top: 15px;
 }
@@ -427,7 +2330,6 @@ ul.tabs li a {
     width: 100%;
 }
 
-/* -- Has Related Content */
 .has-related-content #content-body {
     margin-right: 218px;
 }
@@ -451,7 +2353,6 @@ ul.tabs li a {
     margin-right: -258px;
 }
 
-/* -- Grid */
 .unit {
     float: left;
 }
@@ -493,7 +2394,6 @@ ul.tabs li a {
     position: relative;
 }
 
-/* - App Header */
 #header {
     position: relative;
     height: 60px;
@@ -503,7 +2403,6 @@ ul.tabs li a {
     height: 90px;
 }
 
-/* -- Brand */
 #brand {
     height: 32px;
     background-color: #2b2b2b;
@@ -542,7 +2441,6 @@ ul.tabs li a {
     text-transform: uppercase;
 }
 
-/* - Utility Nav */
 #utility-nav {
     position: absolute;
     color: #9ea1a3;
@@ -589,7 +2487,6 @@ ul.tabs li a {
     margin-right: 0.5em;
 }
 
-/* - Menu bar */
 #menu-bar {
     position: relative;
     height: 28px;
@@ -603,7 +2500,6 @@ ul.tabs li a {
     background-color: #5c909b;
 }
 
-/* -- Selector Nav */
 #selector-nav {
     position: relative;
     z-index: 500;
@@ -670,7 +2566,6 @@ ul.tabs li a {
     font-style: normal;
 }
 
-/* --- Scope Selector */
 .scope-selector {
     display: none;
     position: absolute;
@@ -738,7 +2633,6 @@ ul.tabs li a {
     border-radius: 0 0 3px 3px;
 }
 
-/* --- Menu Bar list */
 #menu-bar-nav {
     top: 0;
     right: 0;
@@ -749,7 +2643,6 @@ ul.tabs li a {
     outline: 0;
 }
 
-/* ---- Favorite Action */
 .fav-actions-nav {
     position: relative;
     top: 3px;
@@ -806,7 +2699,6 @@ ul.tabs li a {
     border-radius: 0 0 2px 2px;
 }
 
-/* ---- Nav Icons */
 #menu-bar-icons {
     float: right;
     height: 100%;
@@ -846,7 +2738,6 @@ ul.tabs li a {
     display: none;
 }
 
-/* --- Menu bar Search */
 #quick-search-form {
     position: absolute;
     top: 28px;
@@ -868,19 +2759,16 @@ ul.tabs li a {
     width: 200px;
 }
 
-/* - Notification Indicator */
 #notification-indicator {
     height: 30px;
     background-color: #e6eae3;
     width: 100%;
 }
 
-/* -- Notification Content */
 #notification-indicator-content {
     padding: 0.5em 0.75em;
 }
 
-/* - Navigation Menu */
 .menu-nav {
     position: relative;
     background-color: #ffffff;
@@ -904,7 +2792,6 @@ ul.tabs li a {
     color: #2b2b2b;
 }
 
-/* -- topmenu */
 .top-menu-link {
     margin-right: 20px;
 }
@@ -930,7 +2817,6 @@ ul.tabs li a {
     padding: 5px;
 }
 
-/* -- submenu */
 .sub-menu {
     display: none;
     background-color: #fbfbfb;
@@ -994,7 +2880,6 @@ ul.tabs li a {
 }
 
 
-/* - Content Header */
 #content-header {
     position: relative;
 }
@@ -1006,7 +2891,6 @@ ul.tabs li a {
     margin-bottom: 10px;
 }
 
-/* -- Action Link List */ 
 .action-link-list {
     margin-top: 5px;
 }
@@ -1015,7 +2899,6 @@ ul.tabs li a {
     margin-right: 10px;
 }
 
-/* -- Object Nav */
 .object-nav {
     position: absolute;
     top: 0;
@@ -1042,7 +2925,6 @@ ul.tabs li a {
     text-decoration: underline;
 }
 
-/* - Fields */
 #display_image-field {
     margin-top: 0;
 }
@@ -1050,7 +2932,6 @@ ul.tabs li a {
     margin-bottom: 10px;
 }
 
-/* -- Create Inline */
 .create-inline {
     display: none;
     margin: 10px 0;
@@ -1059,7 +2940,6 @@ ul.tabs li a {
     background-color: #f3f3f3;
 }
 
-/* - Actions Bar */
 .widget .actions-bar {
     margin-bottom: 0;
 }
@@ -1074,13 +2954,10 @@ ul.tabs li a {
     margin: 3px 0 0;
 }
 
-/* -- Auto save message */
 .autosave-notification {
     margin-top: 1em;
 }
 
-
-/* - Widget */
 .widget {
     margin-bottom: 15px;
     border: 1px solid #c0c6c9;
@@ -1137,12 +3014,10 @@ ul.tabs li a {
     border: 0;
 }
 
-/* -- Status widget */
 .loaded-revision .status-widget {
     background-color: #f2f2b0;
 }
 
-/* -- Personal Stats Widget */
 .user .personal-stats-widget {
     clear: both;
     background-color: transparent;
@@ -1177,7 +3052,6 @@ ul.tabs li a {
     background-image: url(../images/nav_icons/mini/entry-new.gif);
 }
 
-/* -- Favorite Website, Blog Widget */
 #favorite_blogs .widget-header {
     padding-bottom: 0;
 }
@@ -1264,7 +3138,6 @@ ul.tabs li a {
     margin-right: 10px;
 }
 
-/* -- Blog Stats Widget */
 .blog-stats-widget {
     min-height: 480px;
 }
@@ -1307,7 +3180,6 @@ ul.tabs li a {
     text-align: right;
 }
 
-/* --- Blog Stats: Comments */
 #comment-panel .content {
     padding-top: 10px;
 }
@@ -1318,7 +3190,6 @@ ul.tabs li a {
     background-image: url(../images/status_icons/warning.gif);
 }
 
-/* --- Blog Stats: Entries */
 .blog-stats-widget .entry-status-publish {
     background-image: url(../images/status_icons/success.gif);
 }
@@ -1335,7 +3206,6 @@ ul.tabs li a {
     background-image: url(../images/status_icons/future.gif);
 }
 
-/* --- Blog Stats: Tags */
 .blog-stats-widget #tag-cloud {
     margin: 10px 0;
 }
@@ -1362,7 +3232,6 @@ ul.tabs li a {
     font-size: 14px;
 }
 
-/* --- Blog Stats: Registrations */
 .blog-stats-widget .author {
     padding: 10px;
 }
@@ -1374,7 +3243,6 @@ ul.tabs li a {
     margin-top: 5px;
 }
 
-/* -- New Blog Stats Widget */
 .site-stats-widget #widget-container {
     width: 100%;
     padding: 10px;
@@ -1419,7 +3287,6 @@ ul.tabs li a {
     text-align: right;
 }
 
-/* -- MT News */
 .news-widget #news-widget-tabs {
     margin: 0 -10px 15px;
 }
@@ -1430,7 +3297,6 @@ ul.tabs li a {
     margin-top: 10px;
 }
 
-/* -- Include Templates Widget */
 .include-from {
     display: block;
     margin-left: 20px;
@@ -1441,8 +3307,6 @@ ul.tabs li a {
 }
 
 
-/* - Listing */
-/* -- List Asset (legacy) */
 #asset-listing-table .asset-thumb a span {
     display: none;
 }
@@ -1458,7 +3322,6 @@ ul.tabs li a {
     background-image: url(../images/asset-image.gif);
 }
 
-/* -- List Revision */
 #page-revison-listing,
 #entry-revision-listing,
 #template-revision-listing {
@@ -1475,13 +3338,10 @@ ul.tabs li a {
     width: 18%;
 }
 
-/* -- List Template (legacy) */
 .tmpl-type-name {
     margin-bottom: 3px;
 }
 
-/* - Edit Screen */
-/* - Edit Comment, Ping, Author & Entry */
 .edit-comment #status-field,
 .edit-ping #status-field,
 .edit-author .user-status-disabled,
@@ -1497,7 +3357,6 @@ ul.tabs li a {
     margin-bottom: 0;
 }
 
-/* -- Editor */
 #text-field {
     position: static;
 }
@@ -1547,13 +3406,13 @@ ul.tabs li a {
     line-height: 1.3;
 }
 
-/* -- Edit Entry, Page */
 .edit-entry #title-field {
     padding: 0;
 }
 .edit-entry #permalink-field .field-content {
     color: #7b7c7d;
 }
+
 .sort-enabled {
     margin-bottom: 15px;
     padding: 0;
@@ -1564,7 +3423,7 @@ ul.tabs li a {
 .sort-enabled:hover {
     border: 1px solid #adadad;
     border-top-color: #cfd0d0;
-    border-left-color: #cfd0d0; 
+    border-left-color: #cfd0d0;
 }
 .sort-enabled .field-header {
     margin-bottom: 10px;
@@ -1590,7 +3449,6 @@ ul.tabs li a {
     background-color: #fbfbfb;
 }
 
-/* -- Edit Template */
 #template-editor-toolbar {
     text-align: right;
 }
@@ -1599,7 +3457,6 @@ ul.tabs li a {
     border-radius: 0 0 2px 2px;
 }
 
-/* --- Toggle Highlight */
 .button.command-highlight-on,
 .button.command-highlight-off {
     margin: 0;
@@ -1623,7 +3480,6 @@ ul.tabs li a {
     display: none;
 }
 
-/* --- Line Numbers */
 .CodeMirror-gutter-text pre {
     padding: 0.4em 0.3em 0 0;
     overflow: hidden;
@@ -1633,7 +3489,6 @@ ul.tabs li a {
     font-family: monospace;
 }
 
-/* -- Tags Field */
 #tags-field {
     position: relative;
     height: auto;
@@ -1662,7 +3517,6 @@ ul.tabs li a {
     background-color: #dcdddd;
 }
 
-/* --- Status Widget */
 #entry-status-widget {
     position: relative;
 }
@@ -1672,10 +3526,10 @@ ul.tabs li a {
     right: 10px;
 }
 
-/* --- Publishing Widget */
 #edit-page #basename {
     width: 180px;
 }
+
 #entry-publishing-widget .save-action,
 #entry-publishing-widget .preview-action {
     float: left;
@@ -1709,7 +3563,6 @@ ul.tabs li a {
     word-wrap: break-word;
 }
 
-/* ---- Publish Date Field */
 .edit-entry .date-time-fields .post-date {
     width: 7em;
 }
@@ -1720,7 +3573,7 @@ ul.tabs li a {
     margin: 5px 0 0 0;
 }
 
-/* --- Categories Widget */
+
 #category-field {
     margin: 0;
 }
@@ -1761,7 +3614,7 @@ ul.tabs li a {
     overflow: hidden;
     white-space: nowrap;
 }
-/* take up the scrollbar space explicitly */
+
 .category-selector-list::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 11px;
@@ -1808,7 +3661,6 @@ ul.tabs li a {
     display: none;
 }
 
-/* ---- Add New Category Form */
 .add-category-form {
     white-space: nowrap;
 }
@@ -1869,13 +3721,11 @@ ul.tabs li a {
     position: static;
 }
 
-/* ---- Page Folder */
 .change-folder-link {
     padding-left: 11px;
     background: url(../images/status_icons/create.gif) no-repeat left center;
 }
 
-/* --- Feedback Widget */
 #allow-feedback-field li {
     position: relative;
 }
@@ -1901,7 +3751,6 @@ ul.tabs li a {
     margin-bottom: 0;
 }
 
-/* --- Asset List Widget */
 #asset_container .widget-content-inner {
    padding: 0px 10px 10px;
 }
@@ -1957,7 +3806,6 @@ ul#asset-list .asset-type-video {
     background-image: url(../images/asset/video.gif);
 }
 
-/* --- Asset Option */
 #asset_details {
     margin-bottom: 30px;
 }
@@ -1965,7 +3813,6 @@ ul#asset-list .asset-type-video {
     margin-bottom: 20px;
 }
 
-/* -- Edit Comment, Trackback */
 .settings-screen a#increase-threshold,
 .settings-screen a#decrease-threshold {
     color: #383c3c;
@@ -2024,7 +3871,6 @@ ul#asset-list .asset-type-video {
     background-image: linear-gradient(#f6bfbc, #fdeff2);
 }
 
-/* -- Edit Template  */
 .edit-template #title-field {
     padding: 0;
 }
@@ -2101,7 +3947,6 @@ ul#asset-list .asset-type-video {
     display: block;
 }
 
-/* --- Archive Mapping */
 #archive_mapping-field p {
     margin-bottom: 3px;
 }
@@ -2133,7 +3978,6 @@ ul#asset-list .asset-type-video {
     margin-top: 3px;
 }
 
-/* --- Edit Widget Set */
 #widget-manager {
     margin: 15px 0;
 }
@@ -2165,7 +4009,6 @@ ul#asset-list .asset-type-video {
     color: #fffffc;
 }
 
-/* -- Edit Asset */
 .asset-preview {
     margin-bottom: 30px;
 }
@@ -2182,12 +4025,11 @@ ul#asset-list .asset-type-video {
     clear: both;
 }
 
-/* --- Related Assets Widget */
 #related-assets .asset {
     overflow: hidden;
     clear: left;
     margin-bottom: 10px;
-    padding-bottom: 5px; 
+    padding-bottom: 5px;
 }
 #related-assets .asset.last-child {
     margin-bottom: 0;
@@ -2197,7 +4039,6 @@ ul#asset-list .asset-type-video {
     clear: both;
 }
 
-/* - Preview */
 .preview-content {
     margin: 1.2em 0;
 }
@@ -2247,7 +4088,6 @@ ul#asset-list .asset-type-video {
     border: 0;
 }
 
-/* - Settings */
 #system-check iframe {
     width: 758px;
     height: 400px;
@@ -2257,7 +4097,6 @@ ul#asset-list .asset-type-video {
     border-bottom: 0;
 }
 
-/* -- Contextual Help */
 .help-link {
     display: none;
 }
@@ -2280,7 +4119,6 @@ ul#asset-list .asset-type-video {
     display: none;
 }
 
-/* -- General Settings */
 #has-license-field p {
     margin: 5px 0 0;
 }
@@ -2296,7 +4134,6 @@ ul#asset-list .asset-type-video {
     color: #7b7c7d;
 }
 
-/* -- System General Settings */
 #system_email_address-field .field-content > div {
     position: relative;
     display: inline-block;
@@ -2318,12 +4155,10 @@ input#system_performance_logging_threshold {
     text-align: center;
 }
 
-/* -- Registration Settings */
 #setting-auth-status-field li ul {
     margin: 0.5em 0 1.5em 2em;
 }
 
-/* -- Plugin Settings */
 #list-plugins .plugin .plugin-status a:link,
 #list-plugins .plugin .plugin-name a:link,
 #list-plugins .plugin .plugin-tabs a:link,
@@ -2424,7 +4259,6 @@ input#system_performance_logging_threshold {
     margin: 0;
 }
 
-/* -- Theme Setting */
 #list-themes .theme-group {
     margin-bottom: 25px;
 }
@@ -2515,7 +4349,6 @@ input#system_performance_logging_threshold {
     color: #f39800;
 }
 
-/* -- System User Settings */
 #new_user_theme_thumb {
     margin-bottom: 5px;
 }
@@ -2536,8 +4369,6 @@ input#system_performance_logging_threshold {
     margin: 15px 0 15px 135px;
 }
 
-/* -- System Info */
-
 .exception {
     width: 100%;
     max-width: 100%;
@@ -2554,7 +4385,6 @@ input#system_performance_logging_threshold {
     -moz-box-sizing: border-box;
 }
 
-/* -- Edit Author */
 .edit-author #system_permissions-field li {
     display: inline-block;
     width: 225px;
@@ -2563,7 +4393,6 @@ input#system_performance_logging_threshold {
     white-space: nowrap;
 }
 
-/* - Backup & Restore */
 .progress-log {
     height: 300px;
     margin: 15px 0 10px;
@@ -2581,7 +4410,6 @@ input#system_performance_logging_threshold {
     list-style-type: disc;
 }
 
-/* - Export Theme */
 #template_set h3 {
     margin-bottom: 5px;
 }
@@ -2589,7 +4417,6 @@ input#system_performance_logging_threshold {
     margin-bottom: 30px;
 }
 
-/* -- Template Set */
 .template-group {
     position: relative;
     margin-bottom: 10px;
@@ -2626,18 +4453,14 @@ div.template-group-content.active {
     display: block;
 }
 
-/* -- Default Category */
 #default_categories-table .display-name {
     width: 40%;
 }
 
-/* -- Default Folder */
 #default_folders-table .display-name {
     width: 35%;
 }
 
-
-/* - Search Replace */
 .search-replace .ui-tabs-nav {
     margin-bottom: 0;
 }
@@ -2663,8 +4486,6 @@ div.template-group-content.active {
     margin-top: 30px;
 }
 
-
-/* - Display Optins */
 .display-options {
     margin: 10px 0 0;
 }
@@ -2698,7 +4519,6 @@ div.template-group-content.active {
     border-radius: 2px 0 2px 2px;
 }
 
-/* - Footer */
 #footer {
     border-top: 1px solid #c0c6c9;
     padding: 8px 0 1px;
@@ -2731,7 +4551,6 @@ div.template-group-content.active {
     margin-left: 20px;
 }
 
-/* - beta */
 .mt-beta #brand {
     background-image: url(../images/beta_icons/beta_icon.png);
     background-position: 152px center;
@@ -2760,7 +4579,6 @@ div.template-group-content.active {
     text-align: left;
 }
 
-/* - Clone */
 .process-msg {
     position: relative;
     overflow: auto;
@@ -2772,7 +4590,6 @@ div.template-group-content.active {
     height: 300px;
 }
 
-/* - Clearfix */
 #container,
 #content,
 .line,

@@ -1,3 +1,150 @@
+/* #Utilities.css
+
+utilities.css is the short circuit for the frequently used styles.
+
+<h3>hidden</h3>
+
+set display: none;
+
+```
+<div class="hidden" style="height: 200px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+<div class="visible" style="background-color:lightblue">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>visible</h3>
+
+```
+<div class="visible">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>invisible</h3>
+
+set visibility: hidden;
+
+```
+<div class="invisible" style="height: 200px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+<div class="visible" style="background-color:lightblue">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>clickable</h3>
+
+set cursor style to pointer
+
+```
+<div class="clickable">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+
+```
+
+<h3>overflow-auto</h3>
+
+You can scroll overflow block
+
+```
+<div style="height: 150px">
+  <div class="overflow-auto" style="width: 300px; position:absolute;">
+    <div style="width: 400px; background-color:lightblue">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+    </div>
+  </div>
+</div>
+```
+
+<h3>overflow-hidden</h3>
+
+You cannot scroll overflow block
+
+```
+<div style="height: 150px">
+  <div class="overflow-hidden" style="width: 300px; position:absolute;">
+    <div style="width: 400px; background-color:lightblue">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+    </div>
+  </div>
+</div>
+```
+
+<h3>inline</h3>
+
+```
+<div class="inline" style="background-color: lightblue">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+<div class="inline" style="background-color: lightgreen">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>float left</h3>
+
+```
+<div class="fl" style="background-color: lightblue">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+<div style="background-color: lightgreen">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>float right</h3>
+
+```
+<div class="fr" style="background-color: lightblue">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+<div style="background-color: lightgreen">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>border radius: all</h3>
+
+```
+<div class="rall" style="background-color: lightblue; padding: 10px; width: 300px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>border radius: rtop</h3>
+
+```
+<div class="rtop" style="background-color: lightblue; padding: 10px; width: 300px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>border radius: rleft</h3>
+
+```
+<div class="rleft" style="background-color: lightblue; padding: 10px; width: 300px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>border radius: rright</h3>
+
+```
+<div class="rright" style="background-color: lightblue; padding: 10px; width: 300px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>border radius: rbottom</h3>
+
+```
+<div class="rbottom" style="background-color: lightblue; padding: 10px; width: 300px">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>odd</h3>
+
+colors background to light grey
+
+```
+<div style="padding: 10px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+<div class="odd" style="padding: 10px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>highlight</h3>
+
+```
+<div class="highlight" style="padding: 10px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>disabled</h3>
+
+```
+<div class="disabled" style="padding: 10px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+<h3>code</h3>
+
+use monospace font
+
+```
+<div class="code" style="padding: 10px;">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </div>
+```
+
+*/
+
 .hidden {
     display: none !important;
 }
