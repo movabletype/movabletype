@@ -51,9 +51,9 @@ sub send_notify {
 
     my $cols = 72;
     my %params;
-    $params{blog}   = $blog;
-    $params{entry}  = $entry;
-    $params{author} = $author;
+    $params{blog}         = $blog;
+    $params{entry}        = $entry;
+    $params{entry_author} = $author ? 1 : 0;
 
     if ( $q->param('send_excerpt') ) {
         $params{send_excerpt} = 1;
