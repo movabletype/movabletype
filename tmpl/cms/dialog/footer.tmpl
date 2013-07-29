@@ -15,6 +15,11 @@ jQuery(function() {
     jQuery('input').each(function() {
         jQuery(this).addClass(jQuery(this).attr('type'));
     });
+    <mt:if name="mt_debug">
+    if(jQuery('.debug-panel').length && jQuery('.dialog .actions-bar').length){
+      jQuery('.debug-panel').addClass('dialog-with-actions-bar');
+    }
+    </mt:if>
 <mt:if name="insert_script">
     parent.jQuery.fn.mtDialog.close();
 </mt:if>

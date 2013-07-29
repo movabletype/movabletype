@@ -195,6 +195,10 @@ p.zero-state {
     background-color: #f6bfbc;
     text-align: left;
 }
+.debug-panel.dialog-with-actions-bar {
+    position: static;
+    padding-bottom: 45px;
+}
 .debug-panel h3 {
     padding: 5px;
     font-size: 12px;
