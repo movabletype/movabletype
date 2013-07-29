@@ -296,11 +296,14 @@ sub save {
             $values{site_url} = $url;
         }
 
-        $values{publish_empty_archive}
-            = $q->param('publish_empty_archive') ? 1 : 0;
+        my $cfg_screen = $app->param('cfg_screen') || '';
 
-        if ( $obj && ( $q->param('cfg_screen') || '' ) eq 'cfg_web_services' )
-        {
+        if ( $cfg_screen eq 'cfg_prefs' ) {
+            $values{publish_empty_archive}
+                = $q->param('publish_empty_archive') ? 1 : 0;
+        }
+
+        if ( $obj && $cfg_screen eq 'cfg_web_services' ) {
             run_web_services_save_config_callbacks( $app, $obj );
         }
     }
