@@ -719,5 +719,6 @@
 { "r" : "1", "t" : "<MTMultiBlog include_blogs='all' mode='loop'><MTEntries category='1'><MTEntryTitle></MTEntries></MTMultiBlog>", "e" : "" }, #703
 { "r" : "1", "t" : "<MTMultiBlog include_blogs='all' mode='loop'><MTEntries categories='1'><MTEntryTitle></MTEntries></MTMultiBlog>", "e" : "" }, #704
 { "r" : "1", "t" : "<MTAuthors need_entry='0' status='123'><MTAuthorID>,</MTAuthors>", "e" : "" }, #705
-{ "r" : "1", "t" : "<MTAuthors need_entry='0' role='123'><MTAuthorID>,</MTAuthors>", "e" : "" } #706
+{ "r" : "1", "t" : "<MTAuthors need_entry='0' role='123'><MTAuthorID>,</MTAuthors>", "e" : "" }, #706
+{ "r" : "1", "t" : "<MTSetVarTemplate name='tmpl'><MTEntriesHeader>!header!</MTEntriesHeader><MTEntryTitle>,<MTEntriesFooter>!footer!</MTEntriesFooter></MTSetVarTemplate><MTEntries><MTVar name='tmpl'></MTEntries>", "e" : "!header!A Rainy Day,Verse 5,Verse 4,Verse 3,Verse 2,Verse 1,!footer!" } #707
 ]

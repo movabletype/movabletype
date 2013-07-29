@@ -2844,7 +2844,7 @@ sub _hdlr_get_var {
                 push @var_names, lc $_ for @names;
                 local @{$vars}{@var_names};
                 $vars->{ lc($_) } = $args->{$_} for @names;
-                $value = $ctx->slurp($args) or return;
+                $value = $ctx->slurp( $args, $cond ) or return;
             }
         }
         if ( my $op = $args->{op} ) {
