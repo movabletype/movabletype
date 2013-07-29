@@ -48,9 +48,9 @@ $userpic->set_values(
     {   blog_id   => 0,
         class     => 'image',
         label     => 'Userpic',
-        file_path => './mt-static/images/logo/movable-type-logo-system.png',
-        file_name => 'movable-type-logo-system.png',
-        url       => '%s/images/logo/movable-type-logo-system.png',
+        file_path => './mt-static/images/logo/movable-type-logo.png',
+        file_name => 'movable-type-logo.png',
+        url       => '%s/images/logo/movable-type-logo.png',
     }
 );
 $userpic->save or die $mt->errstr;
