@@ -1660,15 +1660,10 @@ sub bake_commenter_cookie {
     $cookie_path = $build->($cookie_path)
         if $cookie_path =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
 
-    my $cookie_domain = MT->config->UserSessionCookieDomain;
-    $cookie_domain = $build->($cookie_domain)
-        if $cookie_domain =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
-
     my %user_session_kookee = (
         -name   => $app->commenter_session_cookie_name,
         -value  => $app->bake_user_state_cookie($state),
         -path   => $cookie_path,
-        -domain => $cookie_domain,
     );
     $app->bake_cookie(%user_session_kookee);
 }
@@ -1769,16 +1764,11 @@ sub _invalidate_commenter_session {
     $cookie_path = $build->($cookie_path)
         if $cookie_path =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
 
-    my $cookie_domain = MT->config->UserSessionCookieDomain;
-    $cookie_domain = $build->($cookie_domain)
-        if $cookie_domain =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
-
     my %user_session_kookee = (
         -name    => $app->commenter_session_cookie_name,
         -value   => '',
         -expires => "+${timeout}s",
         -path    => $cookie_path,
-        -domain  => $cookie_domain,
     );
     $app->bake_cookie(%user_session_kookee);
 }
