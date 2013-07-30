@@ -651,6 +651,10 @@ extend( Array.prototype, {
     
     
     indexOf: function( v, fi ) {
+        if (! this.fitIndex) {
+            return -1;
+        }
+
         fi = this.fitIndex( fi, 0 );
         for( var i = 0; i < this.length; i++ )
             if( this[ i ] === v )
