@@ -2374,10 +2374,10 @@ sub queue_build_file_filter {
         # Index pages are second in priority, if they are named 'index'
         # or 'default'
         if ( $fi->file_path =~ m!index|default|atom|feed!i ) {
-            $priority = 9;
+            $priority = 8;
         }
         else {
-            $priority = 8;
+            $priority = 9;
         }
     }
     elsif ( $at =~ m/Category|Author/ ) {

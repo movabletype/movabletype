@@ -79,10 +79,10 @@ foreach my $blog (@blogs) {
         }
         elsif ( $at eq 'index' ) {
             if ( $fi->file_path =~ m!index|default|atom|feed!i ) {
-                is( $priority, 9, "Priority is correct" );
+                is( $priority, 8, "Priority is correct" );
             }
             else {
-                is( $priority, 8, "Priority is correct" );
+                is( $priority, 9, "Priority is correct" );
             }
         }
         elsif ( $at =~ m/Category|Author/ ) {
