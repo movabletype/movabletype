@@ -1136,6 +1136,16 @@ sub generate_site_stats_data {
     my $fmgr = MT::FileMgr->new('Local');
     my $time = $fmgr->file_mod_time($path) if -f $path;
 
+    # Get readied provider
+    require MT::App::DataAPI;
+    my $blog = $app->model('blog')->load($blog_id);
+    my $provider = readied_provider( $app, $blog );
+    if ($provider) {
+        $param->{provider} = $provider;
+    } else {
+        $param->{not_configured} = 1;
+    }
+
     if (( lc( MT->config('StatsCachePublishing') ) eq 'off' )
         || (   ( lc( MT->config('StatsCachePublishing') ) eq 'onload' )
             && ( !$time || ( time - $time > $cache_time ) ) )
@@ -1238,6 +1248,9 @@ sub generate_site_stats_data {
 
         $fmgr->put_data( MT::Util::to_json($result), $path );
     }
+
+    delete $param->{provider};
+
     1;
 }
 
@@ -1315,16 +1328,7 @@ sub site_stats_widget_pageview_condition {
     my $app = shift;
     my ($param) = @_;
 
-    my $blog_id = $param->{blog_id};
-
-    # Get readied provider
-    require MT::App::DataAPI;
-    my $blog = $app->model('blog')->load($blog_id);
-    my $provider = readied_provider( $app, $blog );
-    unless ($provider) {
-        $param->{not_configured} = 1;
-    }
-    return $provider ? 1 : 0;
+    return $param->{provider} ? 1 : 0;
 }
 
 sub site_stats_widget_pageview_lines {
@@ -1334,9 +1338,7 @@ sub site_stats_widget_pageview_lines {
     my $blog_id = $param->{blog_id};
 
     # Get readied provider
-    require MT::App::DataAPI;
-    my $blog = $app->model('blog')->load($blog_id);
-    my $provider = readied_provider( $app, $blog );
+    my $provider = $param->{provider};
 
     # Get PVs
     my $ten_days_ago = sprintf( '%04d-%02d-%02d',
