@@ -652,8 +652,8 @@ sub rebuild_entry {
 
     return 1
         unless $param{BuildDependencies}
-            || $param{BuildIndexes}
-            || $param{BuildArchives};
+        || $param{BuildIndexes}
+        || $param{BuildArchives};
 
     if ( $param{BuildDependencies} ) {
         ## Rebuild previous and next entry archive pages.
@@ -708,7 +708,8 @@ sub rebuild_entry {
                 my $archiver = $mt->archiver($at);
                 if ( $archiver->category_based ) {
                     for my $cat (@$categories_for_rebuild) {
-                        if (my $prev_arch = $archiver->previous_archive_entry(
+                        if (my $prev_arch
+                            = $archiver->previous_archive_entry(
                                 {   entry    => $entry,
                                     category => $cat,
                                 }
@@ -1951,7 +1952,8 @@ sub publish_future_posts {
             $entry->modified_on($ts);
             $entry->save
                 or die $entry->errstr;
-            $this->post_scheduled( $entry, $original, MT->translate('Scheduled publishing.') );
+            $this->post_scheduled( $entry, $original,
+                MT->translate('Scheduled publishing.') );
 
             MT->run_callbacks( 'scheduled_post_published', $mt, $entry );
 
@@ -1968,8 +1970,7 @@ sub publish_future_posts {
             my %rebuilt_okay;
             my $rebuilt;
             eval {
-                foreach my $id ( keys %rebuild_queue )
-                {
+                foreach my $id ( keys %rebuild_queue ) {
                     my $entry = $rebuild_queue{$id};
                     $mt->rebuild_entry( Entry => $entry, Blog => $blog )
                         or die $mt->errstr;
@@ -2086,8 +2087,7 @@ sub unpublish_past_entries {
             my %rebuilt_okay;
             my $rebuilt;
             eval {
-                foreach my $id ( keys %rebuild_queue )
-                {
+                foreach my $id ( keys %rebuild_queue ) {
                     my $entry = $rebuild_queue{$id};
                     $mt->rebuild_entry( Entry => $entry, Blog => $site )
                         or die $mt->errstr;
@@ -2373,7 +2373,7 @@ sub queue_build_file_filter {
 
         # Index pages are second in priority, if they are named 'index'
         # or 'default'
-        if ( $fi->file_path =~ m!/(index|default|atom|feed)!i ) {
+        if ( $fi->file_path =~ m!index|default|atom|feed!i ) {
             $priority = 9;
         }
         else {
@@ -2397,7 +2397,7 @@ sub queue_build_file_filter {
     }
 
     $job->priority($priority);
-    $job->coalesce( ( $fi->blog_id || 0 ) . ':' 
+    $job->coalesce( ( $fi->blog_id || 0 ) . ':'
             . $$ . ':'
             . $priority . ':'
             . ( time - ( time % 10 ) ) );

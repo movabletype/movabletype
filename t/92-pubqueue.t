@@ -16,6 +16,20 @@ use MT::TemplateMap;
 use MT::Test qw( :db :data );
 use MT::TheSchwartz::Error;
 
+# Change file name from index.html into _index.html.
+my $fi = MT::FileInfo->load(
+    { archive_type => 'index', file_path => { like => '%index%' } } );
+my $file_path = $fi->file_path;
+$file_path =~ s!index!_index!;
+$fi->file_path($file_path);
+$fi->save or die $fi->errstr;
+
+my $tmpl    = MT::Template->load( $fi->template_id );
+my $outfile = $tmpl->outfile;
+$outfile =~ s!index!_index!;
+$tmpl->outfile($outfile);
+$tmpl->save or die $tmpl->errstr;
+
 my @blogs = MT::Blog->load();
 foreach my $blog (@blogs) {
 
@@ -64,7 +78,7 @@ foreach my $blog (@blogs) {
             }
         }
         elsif ( $at eq 'index' ) {
-            if ( $fi->file_path =~ m!/(index|default|atom|feed)!i ) {
+            if ( $fi->file_path =~ m!index|default|atom|feed!i ) {
                 is( $priority, 9, "Priority is correct" );
             }
             else {
