@@ -697,7 +697,7 @@ sub send_http_header {
     $type ||= $app->{response_content_type} || 'text/html';
     if ( my $charset = $app->charset ) {
         $type .= "; charset=$charset"
-            if ( $type =~ m!^text/! || $type =~ m!\+xml$! )
+            if $type =~ m!^text/|\+xml$|/json$!
             && $type !~ /\bcharset\b/;
     }
     if ( $ENV{MOD_PERL} ) {
