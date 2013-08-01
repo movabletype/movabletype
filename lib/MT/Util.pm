@@ -29,7 +29,7 @@ our @EXPORT_OK
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
-    realpath canonicalize_path );
+    realpath canonicalize_path clear_site_stats_widget_cache );
 
 {
     my $Has_Weaken;
@@ -2781,6 +2781,26 @@ sub normalize_language {
     $language;
 }
 
+sub clear_site_stats_widget_cache {
+    my ( $site_id, $user_id ) = @_;
+
+    my $low_dir = sprintf( "%03d", $user_id % 1000 );
+    my $sub_dir = sprintf( "%03d", $site_id % 1000 );
+    my $top_dir = $site_id > $sub_dir ? $site_id - $sub_dir : 0;
+    my $support_path = File::Spec->catdir( MT->app->support_directory_path,
+        'dashboard', 'stats', $top_dir, $sub_dir, $low_dir );
+    my $file = "data_" . $site_id . ".json";
+    my $path = File::Spec->catfile( $support_path, $file );
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+
+    if ( $fmgr->exists($path) ) {
+        $fmgr->delete($path) or return 0;
+    }
+
+    return 1;
+}
+
 package MT::Util::XML::SAX::LexicalHandler;
 
 sub start_dtd {
@@ -3030,6 +3050,10 @@ If true, will format the language in the style "language_LOCALE" (ie: "en_US", "
 
 If true, will change any '_' in the language code to a '-', conforming
 it to the IETF RFC # 3066.
+
+=head2 clear_site_stats_widget_cache($site_id, $user_id)
+
+Clear cache for site stats dashnoard widget.
 
 =back
 

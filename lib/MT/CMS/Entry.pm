@@ -1777,6 +1777,21 @@ sub save {
         )
         );
 
+    # Clear cache for site stats dashboard widget.
+    if (!$id
+        || ((   ( $obj->status || 0 ) == MT::Entry::RELEASE()
+                || $status_old eq MT::Entry::RELEASE()
+            )
+            && $status_old != $obj->status
+        )
+        )
+    {
+        require MT::Util;
+        MT::Util::clear_site_stats_widget_cache( $blog_id, $app->user->id )
+            or return $app->error(
+            translate('Removing stats cache was failed.') );
+    }
+
     ## look if any assets have been included/removed from this entry
     require MT::Asset;
     require MT::ObjectAsset;
@@ -3058,6 +3073,12 @@ sub delete {
         MT::__merge_hash( $child_hash, \%recipe );
         $rebuild_recipe{ $obj->blog->id } = $child_hash;
     }
+
+    # Clear cache for site stats dashboard widget.
+    require MT::Util;
+    MT::Util::clear_site_stats_widget_cache( $blog->id, $app->user->id )
+        or
+        return $app->error( translate('Removing stats cache was failed.') );
 
     $app->add_return_arg( saved_deleted => 1 );
     if ( $q->param('is_power_edit') ) {

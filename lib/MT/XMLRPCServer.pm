@@ -443,6 +443,13 @@ sub _new_entry {
 
     $entry->save;
 
+    # Clear cache for site stats dashboard widget.
+    require MT::Util;
+    MT::Util::clear_site_stats_widget_cache( $entry->blog_id,
+        $entry->author_id )
+        or die MT::XMLRPCServer::_fault(
+        MT->translate('Removing stats cache was failed.') );
+
     my $changed = $class->_save_placements( $entry, $item, \%param );
 
     my @types = ($obj_type);
@@ -472,6 +479,7 @@ sub _new_entry {
     if ($publish) {
         $class->_publish( $mt, $entry ) or die _fault( $class->errstr );
     }
+
     delete $ENV{SERVER_SOFTWARE};
     SOAP::Data->type( string => $entry->id );
 }
@@ -602,6 +610,20 @@ sub _edit_entry {
 
     $entry->save;
 
+    # Clear cache for site stats dashboard widget.
+    if ((      $orig_entry->status == MT::Entry::RELEASE()
+            || $entry->status == MT::Entry::RELEASE()
+        )
+        && $orig_entry->status != $entry->status
+        )
+    {
+        require MT::Util;
+        MT::Util::clear_site_stats_widget_cache( $entry->blog_id,
+            $entry->author_id )
+            or die MT::XMLRPCServer::_fault(
+            MT->translate('Removing stats cache was failed.') );
+    }
+
     my $old_categories = $entry->categories;
     $entry->clear_cache('categories');
     my $changed = $class->_save_placements( $entry, $item, \%param );
@@ -632,6 +654,7 @@ sub _edit_entry {
         $class->_publish( $mt, $entry, undef, $old_categories )
             or die _fault( $class->errstr );
     }
+
     SOAP::Data->type( boolean => 1 );
 }
 
@@ -874,6 +897,13 @@ sub _delete_entry {
 
     # Remove object
     $entry->remove;
+
+    # Clear cache for site stats dashboard widget.
+    require MT::Util;
+    MT::Util::clear_site_stats_widget_cache( $entry->blog_id,
+        $entry->author_id )
+        or die MT::XMLRPCServer::_fault(
+        MT->translate('Removing stats cache was failed.') );
 
     # Rebuild archives
     if (%recipe) {

@@ -200,6 +200,9 @@ sub save_config {
     my $scope = $obj ? ( 'blog:' . $obj->id ) : 'system';
     my $config = $plugin->get_config_hash($scope);
 
+    my $old_client_id  = $config->{client_id};
+    my $old_profile_id = $config->{profile_id};
+
     for my $k (
         qw(
         client_id client_secret
@@ -247,6 +250,16 @@ sub save_config {
     $plugin->save_config( $config, $scope );
 
     _clear_session_token_data($app);
+
+    # Clear cache for site stats dashnoard widget.
+    if (   $old_client_id ne $config->{client_id}
+        || $old_profile_id ne $config->{profile_id} )
+    {
+        require MT::Util;
+        MT::Util::clear_site_stats_widget_cache( $obj->id, $app->user->id )
+            or return $app->error(
+            translate('Removing stats cache was failed.') );
+    }
 
     1;
 }
