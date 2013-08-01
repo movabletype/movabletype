@@ -360,7 +360,10 @@ sub create_stats_directory {
     my $app = shift;
     my ($param) = @_;
 
-    my $blog_id = $app->blog ? $app->blog->id : 0;
+    my $blog_id
+        = $app->blog        ? $app->blog->id
+        : $param->{blog_id} ? $param->{blog_id}
+        :                     0;
     my $user    = $app->user;
     my $user_id = $user->id;
 
@@ -1142,7 +1145,8 @@ sub generate_site_stats_data {
     my $provider = readied_provider( $app, $blog );
     if ($provider) {
         $param->{provider} = $provider;
-    } else {
+    }
+    else {
         $param->{not_configured} = 1;
     }
 
