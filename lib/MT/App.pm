@@ -967,7 +967,7 @@ sub init_query {
         my $charset = $options->{charset} || $app->charset;
         require Encode;
         require MT::I18N::default;
-        $charset = 'UTF-8' if $charset =~ m/utf-?8/i;
+        $charset = 'utf-8' if $charset =~ m/utf-?8/i;
         my $request_charset = $charset;
         if ( my $content_type = $q->content_type() ) {
             if ( $content_type =~ m/;[ ]+charset=(.+)/i ) {
