@@ -37,4 +37,14 @@ subtest 'Check transencoding in validate_request_params().' => sub {
     );
 };
 
+subtest 'If Content-Type has multi paramters' => sub {
+    local $ENV{CONTENT_TYPE}
+        = 'multipart/form-data; charset=utf-8; boundary=0xKhTmLbOuNdArY-CAF30B04-D79D-4CD9-9B7D-57302B6F9649';
+    my $app = MT->app;
+    $app->param( 'dummy', 'ダミーパラメータ' );
+    eval { $app->validate_request_params };
+
+    is( scalar(@_), 0, 'No error occurs in validate_request_params().' );
+};
+
 done_testing;

@@ -970,7 +970,7 @@ sub init_query {
         $charset = 'utf-8' if $charset =~ m/utf-?8/i;
         my $request_charset = $charset;
         if ( my $content_type = $q->content_type() ) {
-            if ( $content_type =~ m/;[ ]+charset=(.+)/i ) {
+            if ( $content_type =~ m/;\s*charset=([^\s;]+)\s*;?/i ) {
                 $request_charset = lc $1;
                 $request_charset =~ s/^\s+|\s+$//gs;
             }
