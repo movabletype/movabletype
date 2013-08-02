@@ -1663,9 +1663,9 @@ sub bake_commenter_cookie {
         if $cookie_path =~ m/<\$?mt/i;    # hey, a MT tag! lets evaluate
 
     my %user_session_kookee = (
-        -name   => $app->commenter_session_cookie_name,
-        -value  => $app->bake_user_state_cookie($state),
-        -path   => $cookie_path,
+        -name  => $app->commenter_session_cookie_name,
+        -value => $app->bake_user_state_cookie($state),
+        -path  => $cookie_path,
     );
     $app->bake_cookie(%user_session_kookee);
 }
