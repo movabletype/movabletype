@@ -200,8 +200,8 @@ sub save_config {
     my $scope = $obj ? ( 'blog:' . $obj->id ) : 'system';
     my $config = $plugin->get_config_hash($scope);
 
-    my $old_client_id  = $config->{client_id};
-    my $old_profile_id = $config->{profile_id};
+    my $old_client_id  = $config->{client_id}  || '';
+    my $old_profile_id = $config->{profile_id} || '';
 
     for my $k (
         qw(
@@ -255,10 +255,19 @@ sub save_config {
     if (   $old_client_id ne $config->{client_id}
         || $old_profile_id ne $config->{profile_id} )
     {
+        my @site_ids = ( $obj ? $obj->id : 0 );
+        if ( $obj && !$obj->is_blog ) {
+            foreach my $blog ( @{ $obj->blogs } ) {
+                push @site_ids, $blog->id;
+            }
+        }
         require MT::Util;
-        MT::Util::clear_site_stats_widget_cache( $obj->id, $app->user->id )
-            or return $app->error(
-            translate('Removing stats cache was failed.') );
+        foreach my $site_id (@site_ids) {
+            MT::Util::clear_site_stats_widget_cache( $site_id,
+                $app->user->id )
+                or return $app->error(
+                translate('Removing stats cache was failed.') );
+        }
     }
 
     1;
