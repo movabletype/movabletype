@@ -690,6 +690,12 @@ sub new_post {
 
     $entry->save or return $app->error( 500, $entry->errstr );
 
+    # Clear cache for site stats dashboard widget.
+    require MT::Util;
+    MT::Util::clear_site_stats_widget_cache( $blog->id, $user->id )
+        or die _fault(
+        MT->translate('Removing stats cache was failed.') );
+
     require MT::Log;
     $app->log(
         {   message => $app->translate(
@@ -779,6 +785,19 @@ sub edit_post {
         MT->translate( "PreSave failed [_1]", MT->errstr ) );
 
     $entry->save or return $app->error( 500, "Entry not saved" );
+
+    # Clear cache for site stats dashboard widget.
+    if ((      $orig_entry->status == MT::Entry::RELEASE()
+            || $entry->status == MT::Entry::RELEASE()
+        )
+        && $orig_entry->status != $entry->status
+        )
+    {
+        require MT::Util;
+        MT::Util::clear_site_stats_widget_cache( $blog->id, $app->{user}->id )
+            or die _fault(
+            MT->translate('Removing stats cache was failed.') );
+    }
 
     require MT::Log;
     $app->log(
@@ -960,6 +979,12 @@ sub delete_post {
     # Remove object
     $entry->remove
         or return $app->error( 500, $entry->errstr );
+
+    # Clear cache for site stats dashboard widget.
+    require MT::Util;
+    MT::Util::clear_site_stats_widget_cache( $blog->id, $app->{user}->id )
+        or die _fault(
+        MT->translate('Removing stats cache was failed.') );
 
     # Rebuild archives
     if (%recipe) {
