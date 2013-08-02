@@ -1965,6 +1965,11 @@ sub publish_future_posts {
             $rebuild_queue{ $p->id } = $p if $p;
             $changed++;
             $total_changed++;
+
+            # Clear cache for site stats dashnoard widget.
+            MT::Util::clear_site_stats_widget_cache( $blog->id,
+                $entry->author_id )
+                or die translate('Removing stats cache was failed.');
         }
         if ($changed) {
             my %rebuilt_okay;
@@ -2082,6 +2087,11 @@ sub unpublish_past_entries {
             $rebuild_queue{ $p->id } = $p if $p;
             $changed++;
             $total_changed++;
+
+            # Clear cache for site stats dashnoard widget.
+            MT::Util::clear_site_stats_widget_cache( $site->id,
+                $entry->author_id )
+                or die translate('Removing stats cache was failed.');
         }
         if ($changed) {
             my %rebuilt_okay;
