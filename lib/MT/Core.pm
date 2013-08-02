@@ -2111,6 +2111,7 @@ BEGIN {
                 resources      => sub { MT::DataAPI::Resource->core_resources() },
                 formats        => sub { MT::DataAPI::Format->core_formats() },
                 default_format => 'json',
+                query_builder  => '$Core::MT::DataAPI::Endpoint::Common::query_builder',
             },
         },
         web_services    => undef,

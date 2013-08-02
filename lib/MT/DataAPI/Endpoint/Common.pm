@@ -18,6 +18,8 @@ our @EXPORT = qw(
     run_permission_filter filtered_list obj_promise
 );
 
+our $query_builder;
+
 sub save_object {
     my ( $app, $type, $obj, $original, $around_filter ) = @_;
     $original ||= $app->model($type)->new;
@@ -148,6 +150,34 @@ sub run_permission_filter {
     $app->run_callbacks( "$filter.$type", $app, @_ ) || $app->error(403);
 }
 
+sub query_parser {
+    [ grep $_, ( $_[0] =~ /\s*"([^"]+)"|\s*([^"\s]+)|\s*"([^"]+)/sg ) ];
+}
+
+sub query_builder {
+    my ( $app, $search, $fields, $filter ) = @_;
+    $fields = join ',', @$fields;
+
+    $filter->append_item(
+        {   type => 'pack',
+            args => {
+                op    => 'and',
+                items => [
+                    map {
+                        +{  type => 'content',
+                            args => {
+                                string => $_,
+                                option => 'contains',
+                                fields => $fields,
+                            },
+                        };
+                    } grep {$_} @{ query_parser($search) }
+                ],
+            },
+        }
+    );
+}
+
 sub filtered_list {
     my ( $app, $endpoint, $ds, $terms, $args, $options ) = @_;
 
@@ -247,28 +277,32 @@ sub filtered_list {
         $filteritems = [];
     }
 
-    if ( my $search = $app->param('search') ) {
-        my $fields = '';
-        if ( my $specified = $app->param('searchFields') ) {
-            $fields = join(
-                ',',
-                map {
-                    exists $resource_data->{field_name_map}{$_}
-                        ? $resource_data->{field_name_map}{$_}
-                        : ()
-                    } split ',',
-                $specified
-            );
+    my $filter = MT->model('filter')->new;
+    $filter->set_values(
+        {   object_ds => $ds,
+            items     => $filteritems,
+            author_id => $app->user->id,
+            blog_id   => $blog_id || 0,
         }
-        push @$filteritems,
-            {
-            type => 'content',
-            args => {
-                string => $search,
-                option => 'contains',
-                fields => $fields,
-            },
-            };
+    );
+
+    if ( my $search = $app->param('search') ) {
+        my @fields = ();
+        if ( my $specified = $app->param('searchFields') ) {
+            @fields = map {
+                exists $resource_data->{field_name_map}{$_}
+                    ? $resource_data->{field_name_map}{$_}
+                    : ()
+            } split ',', $specified;
+        }
+
+        my $handler
+            = $app->registry( 'applications', 'data_api' )->{query_builder};
+        if ( ref $handler eq 'ARRAY' ) {
+            $handler = $handler->[$#$handler];
+        }
+        $query_builder ||= MT->handler_to_coderef($handler);
+        $query_builder->( $app, $search, \@fields, $filter );
     }
 
     require MT::ListProperty;
@@ -279,23 +313,24 @@ sub filtered_list {
             ( my $obj_key = $key ) =~ s/([A-Z])/_\l$1/g;
             $obj_key =~ s/s\z// unless exists $props->{$obj_key};
 
-            push @$filteritems, {
-                type => 'pack',
-                args => {
-                    op    => 'or',
-                    items => [
-                        map {
-                            +{  type => $obj_key,
-                                args => {
-                                    option => 'equal',
-                                    value  => $_,
-                                },
-                            };
-                            } grep {$_}
-                            split( ',', scalar( $app->param($key) ) )
-                    ],
-                },
-            };
+            $filter->append_item(
+                {   type => 'pack',
+                    args => {
+                        op    => 'or',
+                        items => [
+                            map {
+                                +{  type => $obj_key,
+                                    args => {
+                                        option => 'equal',
+                                        value  => $_,
+                                    },
+                                };
+                                } grep {$_}
+                                split( ',', scalar( $app->param($key) ) )
+                        ],
+                    },
+                }
+            );
         }
     }
 
@@ -303,33 +338,26 @@ sub filtered_list {
         my ( $key, $op, $option ) = @$d;
 
         if ( my $ids = $app->param($key) ) {
-            push @$filteritems, {
-                type => 'pack',
-                args => {
-                    op    => $op,
-                    items => [
-                        map {
-                            +{  type => 'id',
-                                args => {
-                                    option => $option,
-                                    value  => $_,
-                                },
-                            };
-                        } grep {$_} split( ',', $ids )
-                    ],
-                },
-            };
+            $filter->append_item(
+                {   type => 'pack',
+                    args => {
+                        op    => $op,
+                        items => [
+                            map {
+                                +{  type => 'id',
+                                    args => {
+                                        option => $option,
+                                        value  => $_,
+                                    },
+                                };
+                            } grep {$_} split( ',', $ids )
+                        ],
+                    },
+                }
+            );
         }
     }
 
-    my $filter = MT->model('filter')->new;
-    $filter->set_values(
-        {   object_ds => $ds,
-            items     => $filteritems,
-            author_id => $app->user->id,
-            blog_id   => $blog_id || 0,
-        }
-    );
     my $limit  = $q->param('limit')  || 50;
     my $offset = $q->param('offset') || 0;
 
