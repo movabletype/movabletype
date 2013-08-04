@@ -994,6 +994,10 @@ BEGIN {
                         return $prop->datasource->has_column('id') ? 1 : 0;
                     },
                 },
+                pack_term => {
+                    view  => [],
+                    terms => \&MT::Filter::pack_terms,
+                },
                 pack => {
                     view  => [],
                     terms => \&MT::Filter::pack_terms,
