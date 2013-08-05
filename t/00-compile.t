@@ -131,6 +131,14 @@ use_ok('MT::FileMgr');
 use_ok('MT::FileMgr::Local');
 use_ok('MT::FileMgr::FTP');
 SKIP: {
+    if (eval{ require Net::FTPSSL }) {
+        use_ok('MT::FileMgr::FTPS');
+    }
+    else {
+        skip('Net::FTPSSL is not installed', 1);
+    }
+}
+SKIP: {
     if (eval{ require Net::SFTP }) {
         use_ok('MT::FileMgr::SFTP');
     }
@@ -319,6 +327,7 @@ use_ok('MT::Upgrade::v2');
 use_ok('MT::Upgrade::v3');
 use_ok('MT::Upgrade::v4');
 use_ok('MT::Upgrade::v5');
+use_ok('MT::Upgrade::v6');
 
 # Revision Management Framework
 use_ok('MT::Revisable');
@@ -343,6 +352,45 @@ use_ok('MT::Theme::TemplateSet');
 # Lockout
 use_ok('MT::FailedLogin');
 use_ok('MT::Lockout');
+
+# DataAPI
+use_ok('MT::App::DataAPI');
+use_ok('MT::App::CMS::Common');
+use_ok('MT::DataAPI::Callback::Comment');
+use_ok('MT::DataAPI::Callback::Entry');
+use_ok('MT::DataAPI::Callback::Permission');
+use_ok('MT::DataAPI::Callback::Trackback');
+use_ok('MT::DataAPI::Callback::User');
+use_ok('MT::DataAPI::Endpoint::Asset');
+use_ok('MT::DataAPI::Endpoint::Auth');
+use_ok('MT::DataAPI::Endpoint::Blog');
+use_ok('MT::DataAPI::Endpoint::Category');
+use_ok('MT::DataAPI::Endpoint::Comment');
+use_ok('MT::DataAPI::Endpoint::Common');
+use_ok('MT::DataAPI::Endpoint::Entry');
+use_ok('MT::DataAPI::Endpoint::Permission');
+use_ok('MT::DataAPI::Endpoint::Publish');
+use_ok('MT::DataAPI::Endpoint::Stats');
+use_ok('MT::DataAPI::Endpoint::Trackback');
+use_ok('MT::DataAPI::Endpoint::User');
+use_ok('MT::DataAPI::Endpoint::Util');
+use_ok('MT::DataAPI::Format');
+use_ok('MT::DataAPI::Format::JSON');
+use_ok('MT::DataAPI::Resource');
+use_ok('MT::DataAPI::Resource::Asset');
+use_ok('MT::DataAPI::Resource::Blog');
+use_ok('MT::DataAPI::Resource::Category');
+use_ok('MT::DataAPI::Resource::Comment');
+use_ok('MT::DataAPI::Resource::Common');
+use_ok('MT::DataAPI::Resource::Entry');
+use_ok('MT::DataAPI::Resource::Permission');
+use_ok('MT::DataAPI::Resource::Trackback');
+use_ok('MT::DataAPI::Resource::User');
+use_ok('MT::DataAPI::Resource::Website');
+use_ok('MT::AccessToken');
+use_ok('MT::Stats');
+use_ok('MT::Stats::Provider');
+
 use_ok('MT::PSGI');
 
 test_all_modules_are_checked();
