@@ -1309,6 +1309,8 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
+    var autoSaveTimer = undefined;
+
     jQuery('button.preview').click(function(event) {
         jQuery('form#entry_form input[name=__mode]').val('preview_entry');
     });
@@ -1382,7 +1384,15 @@
             $field_block.hide();
         }
         jQuery('#entry_prefs').val('Custom');
-        sendEntryPrefs();
+        if ( defined( autoSaveTimer ) ) {
+            return autoSaveTimer.reset();
+        }
+        autoSaveTimer = new Timer(
+            function() {
+                sendEntryPrefs();
+                autoSaveTimer = undefined;
+            }, 500, 1
+        );
     });
 
 </mt:setvarblock>
