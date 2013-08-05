@@ -14,7 +14,7 @@ use Test::More;
 
 ### Make test data
 my $mt = MT->instance;
-$mt->config('EnableAddressBook', 1, 1);
+$mt->config('EnableAddressBook', 1);
 
 # Website
 my $website = MT::Test::Permission->make_website();
