@@ -48,7 +48,7 @@ sub load_session {
 }
 
 sub ttl {
-    MT->config->AccessTokenTTL;
+    int(MT->config->AccessTokenTTL);
 }
 
 sub purge {
