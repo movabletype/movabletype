@@ -79,6 +79,7 @@ subtest 'Test in website scope' => sub {
             'System filter "Tags with Entries" exists'
         );
 
+        local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,

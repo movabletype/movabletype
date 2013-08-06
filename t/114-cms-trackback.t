@@ -122,6 +122,7 @@ plan tests => 2;
 subtest "Check filtered_list method of Trackback in a website" => sub {
     plan tests => 7;
 
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -171,6 +172,7 @@ subtest "Check filtered_list method of Trackback in a category of website" => su
     );
     my $json = MT::Util::to_json( \@param );
 
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,

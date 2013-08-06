@@ -294,6 +294,7 @@ subtest 'Test in website scope' => sub {
         $column = qr/$column/;
         like( $out, $column, '"Website/Blog Name" column exists' );
 
+        local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,
@@ -335,6 +336,7 @@ subtest 'Test in website scope' => sub {
     diag 'Filtered list check';
     subtest 'Filtered list check' => sub {
         diag 'Get filtered list by admin';
+        local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,
@@ -605,6 +607,7 @@ subtest 'Test in website scope' => sub {
             'System filter "Entries in This Website" exists'
         );
 
+        local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,

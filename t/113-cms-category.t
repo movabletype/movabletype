@@ -143,6 +143,7 @@ subtest 'Test on website' => sub {
         );
 
         # Do test
+        local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,
@@ -271,6 +272,7 @@ subtest 'Test on website' => sub {
         $json = $to_json->(\@params);
         $checksum = $make_checksum->();
 
+        local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,
