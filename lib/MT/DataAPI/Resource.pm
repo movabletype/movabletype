@@ -137,13 +137,21 @@ sub resource {
                     ( my $alias = $f ) =~ s/([A-Z])/_\l$1/g;
                     $f = { name => $f, alias => $alias };
                 }
-                elsif ( $ref eq 'HASH' && ( my $type = $f->{type} ) ) {
-                    $type = 'MT::DataAPI::Resource::DataType::' . $type
-                        unless $type =~ m/:/;
-                    eval "require $type;";
-                    for my $mtype (qw(from_object to_object)) {
-                        if ( my $method = $type->can($mtype) ) {
-                            $f->{ 'type_' . $mtype } = $method;
+                elsif ( $ref eq 'HASH' ) {
+                    if ( my $type = $f->{type} ) {
+                        $type = 'MT::DataAPI::Resource::DataType::' . $type
+                            unless $type =~ m/:/;
+                        eval "require $type;";
+                        for my $mtype (qw(from_object to_object)) {
+                            if ( my $method = $type->can($mtype) ) {
+                                $f->{ 'type_' . $mtype } = $method;
+                            }
+                        }
+                    }
+
+                    for my $k (qw(bulk_from_object from_object to_object)) {
+                        if ( my $handler = $f->{$k} ) {
+                            $f->{$k} = MT->handler_to_coderef($handler);
                         }
                     }
                 }

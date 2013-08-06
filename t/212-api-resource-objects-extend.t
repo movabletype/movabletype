@@ -30,6 +30,11 @@ use MT::DataAPI::Resource;
 my $app = MT::App::DataAPI->new;
 MT->set_instance($app);
 $app->user($app->model('author')->load(1));
+{
+    ( my $base = __FILE__ ) =~ s/\.t$/.d/;
+    $app->_init_plugins_core( {}, 1,
+        [ File::Spec->join( $base, 'plugins' ) ] );
+}
 
 
 ( my $spec_dir = __FILE__ ) =~ s/t$/d/;
