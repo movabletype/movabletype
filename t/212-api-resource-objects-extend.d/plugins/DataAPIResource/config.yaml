@@ -1,10 +1,6 @@
 name: DataAPIResource
 version: 1.00
 
-object_types:
-  entry:
-    test_field: "string meta"
-
 applications:
   data_api:
     resources:
