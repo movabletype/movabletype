@@ -876,16 +876,21 @@ sub print_error {
         $message = HTTP::Status::status_message($status);
     }
 
-    my $format = $app->current_error_format;
+    my $format             = $app->current_error_format;
+    my $http_response_code = $status;
+    my $mime_type          = $format->{mime_type};
 
     if ( $app->requires_plain_text_result ) {
-        $app->response_code(200);
-        $app->send_http_header('text/plain');
+        $http_response_code = 200;
+        $mime_type          = 'text/plain';
     }
-    else {
-        $app->response_code($status);
-        $app->send_http_header( $format->{mime_type} );
+    if ( $app->param('suppressResponseCodes') ) {
+        $http_response_code = 200;
     }
+
+    $app->response_code($http_response_code);
+    $app->send_http_header($mime_type);
+
     $app->{no_print_body} = 1;
     $app->print_encode(
         $format->{serialize}->(
