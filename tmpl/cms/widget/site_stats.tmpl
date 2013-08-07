@@ -81,7 +81,7 @@
         var hover_data = data.hover_data.data;
         var config = {
           type: 'morris.line',
-          yLength: data.graph_data.length,
+          yLength: hover_data[0].length,
           autoResize: true,
           height: 200,
           lineWidth: 3,
