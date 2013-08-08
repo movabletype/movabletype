@@ -1160,7 +1160,38 @@ sub generate_site_stats_data {
         $param->{not_configured} = 1;
     }
 
-    if (( lc( MT->config('StatsCachePublishing') ) eq 'off' )
+    # Get Registry
+    my $line_settings
+        = $app->registry( 'applications', 'cms', 'site_stats_lines' );
+
+    # Judge force purge cache
+    my $force_purge_cache = 0;
+    my $present_lines     = MT::Request->instance->cache('site_stats_lines');
+    unless ($present_lines) {
+        if ( $fmgr->exists($path) ) {
+            my $file = $fmgr->get_data( $path, 'output' );
+            my $data = MT::Util::from_json($file);
+            $present_lines = $data->{reg_keys} if $data;
+            MT::Request->instance->cache( 'site_stats_lines', $present_lines )
+                if $present_lines;
+        }
+    }
+    if ($present_lines) {
+        my $present_count = @$present_lines;
+        my $reg_count     = keys %$line_settings;
+        if ( $present_count != $reg_count ) {
+            $force_purge_cache = 1;
+        }
+        else {
+            foreach my $reg_key ( keys %$line_settings ) {
+                my $match = grep { $_ eq $reg_key } @$present_lines;
+                $force_purge_cache = 1 unless $match;
+            }
+        }
+    }
+
+    if (   $force_purge_cache
+        || ( lc( MT->config('StatsCachePublishing') ) eq 'off' )
         || (   ( lc( MT->config('StatsCachePublishing') ) eq 'onload' )
             && ( !$time || ( time - $time > $cache_time ) ) )
         )
@@ -1184,16 +1215,16 @@ sub generate_site_stats_data {
             push @dates, $date;
         }
 
-        my $line_settings
-            = $app->registry( 'applications', 'cms', 'site_stats_lines' );
-
         my @maxes;
         my @counts;
         my @labels;
         my $pv_today;
         my $pv_yesterday;
+        my @reg_keys;
 
         foreach my $key ( keys %$line_settings ) {
+            push @reg_keys, $key;
+
             my $sub          = @counts;
             my $line_setting = $line_settings->{$key};
             if ( my $condition = $line_setting->{condition} ) {
@@ -1259,6 +1290,7 @@ sub generate_site_stats_data {
         }
         $result->{pv_today}     = $pv_today;
         $result->{pv_yesterday} = $pv_yesterday;
+        $result->{reg_keys}     = \@reg_keys;
 
         $fmgr->put_data( MT::Util::to_json($result), $path );
     }
