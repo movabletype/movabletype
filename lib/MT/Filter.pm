@@ -408,7 +408,7 @@ sub count_objects {
     } @items;
     my @grep_items = grep {
               $_->{prop}->has('requires_grep')
-            ? $_->{prop}->requires_grep()
+            ? $_->{prop}->requires_grep( $_->{args} )
             : $_->{prop}->has('grep');
     } @items;
 
