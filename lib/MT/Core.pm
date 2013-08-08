@@ -994,14 +994,11 @@ BEGIN {
                         return $prop->datasource->has_column('id') ? 1 : 0;
                     },
                 },
-                pack_term => {
-                    view  => [],
-                    terms => \&MT::Filter::pack_terms,
-                },
                 pack => {
-                    view  => [],
-                    terms => \&MT::Filter::pack_terms,
-                    grep  => \&MT::Filter::pack_grep,
+                    view          => [],
+                    terms         => \&MT::Filter::pack_terms,
+                    grep          => \&MT::Filter::pack_grep,
+                    requires_grep => \&MT::Filter::pack_requires_grep,
                 },
                 blog_name => {
                     label        => 'Website/Blog Name',

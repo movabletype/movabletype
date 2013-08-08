@@ -159,7 +159,7 @@ sub query_builder {
     $fields = join ',', @$fields;
 
     $filter->append_item(
-        {   type => 'pack_term',
+        {   type => 'pack',
             args => {
                 op    => 'and',
                 items => [

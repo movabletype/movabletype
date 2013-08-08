@@ -260,7 +260,11 @@ sub load_objects {
     @items = sort {
         ( $a->{prop}->priority || 5 ) <=> ( $b->{prop}->priority || 5 )
     } @items;
-    my @grep_items = grep { $_->{prop}->has('grep') } @items;
+    my @grep_items = grep {
+              $_->{prop}->has('requires_grep')
+            ? $_->{prop}->requires_grep( $_->{args} )
+            : $_->{prop}->has('grep');
+    } @items;
 
     ## Prepare terms
     my @additional_terms;
@@ -402,7 +406,11 @@ sub count_objects {
     @items = sort {
         ( $a->{prop}->priority || 5 ) <=> ( $b->{prop}->priority || 5 )
     } @items;
-    my @grep_items = grep { $_->{prop}->has('grep') } @items;
+    my @grep_items = grep {
+              $_->{prop}->has('requires_grep')
+            ? $_->{prop}->requires_grep()
+            : $_->{prop}->has('grep');
+    } @items;
 
     ## Prepare terms
     my $update_terms = sub {
@@ -453,8 +461,7 @@ sub count_objects {
     }
     my @objs = $class->load( $terms, $args );
 
-    for my $item (@items) {
-        my $coderef = $item->{prop}->has('grep') or next;
+    for my $item (@grep_items) {
         @objs = $item->{prop}->grep( $item->{args}, \@objs, \%options );
     }
 
@@ -536,6 +543,25 @@ sub pack_grep {
         @objs = $prop->grep( $item->{args}, \@objs, $opts );
     }
     return @objs;
+}
+
+sub pack_requires_grep {
+    my $prop   = shift;
+    my ($args) = @_;
+    my $items  = $args->{items};
+    my $ds     = $prop->{class};
+
+    my @items;
+    require MT::ListProperty;
+
+    for my $item (@$items) {
+        my $id = $item->{type};
+        my $list_prop = MT::ListProperty->instance( $ds, $id )
+            or die "Invalid Filter $id";
+        return 1 if $list_prop->has('grep');
+    }
+
+    return 0;
 }
 
 sub _cb_restore_ids {
