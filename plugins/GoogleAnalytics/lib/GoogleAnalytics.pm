@@ -67,10 +67,15 @@ sub _find_current_plugindata {
         my $data = $o->data()
             or next;
 
-        if ( !$profile && $data->{profile_id} ) {
-            $profile = $o;
-            if ( $data->{client_id} ) {
-                $client = $merged = $profile;
+        if ( !$profile ) {
+            if ( $data->{profile_id} ) {
+                $profile = $o;
+                if ( $data->{client_id} ) {
+                    $client = $merged = $profile;
+                }
+            }
+            elsif ( $data->{client_id} && $data->{token_data} ) {
+                $client = $o;
             }
         }
 

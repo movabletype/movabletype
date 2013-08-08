@@ -213,13 +213,11 @@ sub save_config {
         $config->{$k} = $app->param( 'ga_' . $k );
     }
 
-    if ( $config->{profile_id} && $config->{client_id} ) {
-        my $token = _get_session_token_data($app);
-        if (   $token
-            && $token->{client_id} eq $config->{client_id} )
-        {
-            $config->{token_data} = $token;
-        }
+    my $token = _get_session_token_data($app);
+    if (   $token
+        && $token->{client_id} eq $config->{client_id} )
+    {
+        $config->{token_data} = $token;
     }
 
     my $current = GoogleAnalytics::current_plugindata_hash( $app, $obj );
