@@ -305,7 +305,8 @@ sub edit {
         $param->{nav_config} = 1;
         $param->{error} = $app->errstr if $app->errstr;
     }
-    elsif ($param->{output} eq 'cfg_web_services.tmpl') {
+    elsif ( $param->{output} && $param->{output} eq 'cfg_web_services.tmpl' )
+    {
         # System level web services settings.
     }
     else {
@@ -589,8 +590,8 @@ sub cfg_web_services {
     my @config_templates = ();
     my $web_services     = $app->registry('web_services');
     for my $k (%$web_services) {
-        my $plugin  = $web_services->{$k}{plugin};
-        my $tmpl    = $web_services->{$k}{config_template}
+        my $plugin = $web_services->{$k}{plugin};
+        my $tmpl   = $web_services->{$k}{config_template}
             or next;
 
         if ( ref $tmpl eq 'HASH' ) {
@@ -3381,8 +3382,8 @@ sub cms_pre_load_filtered_list {
             );
     }
 
-    if ($blog_ids && @$blog_ids) {
-        if ($terms->{class} eq '*' ) {
+    if ( $blog_ids && @$blog_ids ) {
+        if ( $terms->{class} eq '*' ) {
             delete $terms->{class};
             $load_options->{args}{no_class} = 1;
         }
