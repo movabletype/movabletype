@@ -191,7 +191,7 @@ sub favorite_blogs_widget {
 
     # Load favorite websites data
     $param->{website_object_loop}
-        = _build_favorite_websites_data( $app, { my_posts => 1 } );
+        = _build_favorite_websites_data( $app, { not_count => 1 } );
 
     require MT::Permission;
     require MT::Website;
@@ -203,7 +203,7 @@ sub favorite_blogs_widget {
 
     # Load favorite blogs data
     $param->{blog_object_loop}
-        = _build_favorite_blogs_data( $app, { my_posts => 1 } );
+        = _build_favorite_blogs_data( $app, { not_count => 1 } );
 
     require MT::Blog;
     %terms      = ();
@@ -748,62 +748,64 @@ sub _build_favorite_websites_data {
 
     # Object count
     my %data;
-    require MT::Blog;
-    my $iter = MT::Blog->count_group_by(
-        {   class     => 'blog',
-            parent_id => \@website_ids,
-        },
-        {   group => ['parent_id'],
-            join  => $app->model('permission')->join_on(
-                'blog_id',
-                {   author_id   => $user->id,
-                    permissions => { not => "'comment'" }
-                }
-            )
+    if ( !$param->{not_count} ) {
+        require MT::Blog;
+        my $iter = MT::Blog->count_group_by(
+            {   class     => 'blog',
+                parent_id => \@website_ids,
+            },
+            {   group => ['parent_id'],
+                join  => $app->model('permission')->join_on(
+                    'blog_id',
+                    {   author_id   => $user->id,
+                        permissions => { not => "'comment'" }
+                    }
+                )
+            }
+        );
+        while ( my ( $count, $parent_id ) = $iter->() ) {
+            $data{$parent_id}->{blog_count} = $count;
         }
-    );
-    while ( my ( $count, $parent_id ) = $iter->() ) {
-        $data{$parent_id}->{blog_count} = $count;
-    }
 
-    require MT::Entry;
-    my $entry_iter = MT::Entry->count_group_by(
-        {   class   => 'entry',
-            blog_id => \@website_ids,
-            $param->{my_posts} ? ( author_id => $user->id ) : (),
-        },
-        { group => ['blog_id'], }
-    );
-    while ( my ( $count, $blog_id ) = $entry_iter->() ) {
-        $data{$blog_id}->{entry_count} = $count;
-    }
-
-    require MT::Page;
-    my $page_iter = MT::Page->count_group_by(
-        {   class   => 'page',
-            blog_id => \@website_ids,
-            $param->{my_posts} ? ( author_id => $user->id ) : (),
-        },
-        { group => ['blog_id'], }
-    );
-    while ( my ( $count, $blog_id ) = $page_iter->() ) {
-        $data{$blog_id}->{page_count} = $count;
-    }
-
-    require MT::Comment;
-    my $commnet_iter = MT::Comment->count_group_by(
-        { blog_id => \@website_ids, },
-        {   group => ['blog_id'],
-            join  => $app->model('entry')->join_on(
-                undef,
-                {   id => \'=comment_entry_id',
-                    $param->{my_posts} ? ( author_id => $user->id ) : (),
-                },
-            ),
+        require MT::Entry;
+        my $entry_iter = MT::Entry->count_group_by(
+            {   class   => 'entry',
+                blog_id => \@website_ids,
+                $param->{my_posts} ? ( author_id => $user->id ) : (),
+            },
+            { group => ['blog_id'], }
+        );
+        while ( my ( $count, $blog_id ) = $entry_iter->() ) {
+            $data{$blog_id}->{entry_count} = $count;
         }
-    );
-    while ( my ( $count, $blog_id ) = $commnet_iter->() ) {
-        $data{$blog_id}->{comment_count} = $count;
+
+        require MT::Page;
+        my $page_iter = MT::Page->count_group_by(
+            {   class   => 'page',
+                blog_id => \@website_ids,
+                $param->{my_posts} ? ( author_id => $user->id ) : (),
+            },
+            { group => ['blog_id'], }
+        );
+        while ( my ( $count, $blog_id ) = $page_iter->() ) {
+            $data{$blog_id}->{page_count} = $count;
+        }
+
+        require MT::Comment;
+        my $commnet_iter = MT::Comment->count_group_by(
+            { blog_id => \@website_ids, },
+            {   group => ['blog_id'],
+                join  => $app->model('entry')->join_on(
+                    undef,
+                    {   id => \'=comment_entry_id',
+                        $param->{my_posts} ? ( author_id => $user->id ) : (),
+                    },
+                ),
+            }
+        );
+        while ( my ( $count, $blog_id ) = $commnet_iter->() ) {
+            $data{$blog_id}->{comment_count} = $count;
+        }
     }
 
     # Make object_loop data
@@ -843,11 +845,15 @@ sub _build_favorite_websites_data {
             = $website->theme
             ? $website->theme->thumbnail( size => 'small' )
             : MT::Theme->default_theme_thumbnail( size => 'small' );
-        $row->{website_blog_count}  = $data{ $website->id }->{blog_count};
-        $row->{website_entry_count} = $data{ $website->id }->{entry_count};
-        $row->{website_page_count}  = $data{ $website->id }->{page_count};
-        $row->{website_comment_count}
-            = $data{ $website->id }->{comment_count};
+
+        if ( !$param->{not_count} ) {
+            $row->{website_blog_count} = $data{ $website->id }->{blog_count};
+            $row->{website_entry_count}
+                = $data{ $website->id }->{entry_count};
+            $row->{website_page_count} = $data{ $website->id }->{page_count};
+            $row->{website_comment_count}
+                = $data{ $website->id }->{comment_count};
+        }
 
         my $perms = $user->permissions( $website->id );
         $row->{can_access_to_entry_list} = 1
@@ -945,47 +951,49 @@ sub _build_favorite_blogs_data {
 
     # Object count
     my %data;
-    require MT::Entry;
-    my $iter = MT::Entry->count_group_by(
-        {   class   => 'entry',
-            blog_id => \@blog_ids,
-            $param->{my_posts} ? ( author_id => $user->id ) : (),
-        },
-        { group => ['blog_id'], }
-    );
-    while ( my ( $count, $blog_id ) = $iter->() ) {
-        $data{$blog_id}->{entry_count} = $count;
-    }
-
-    require MT::Page;
-    my $page_iter = MT::Page->count_group_by(
-        {   class   => 'page',
-            blog_id => \@blog_ids,
-            $param->{my_posts} ? ( author_id => $user->id ) : (),
-        },
-        { group => ['blog_id'], }
-    );
-    while ( my ( $count, $blog_id ) = $page_iter->() ) {
-        $data{$blog_id}->{page_count} = $count;
-    }
-
-    require MT::Comment;
-    my $commnet_iter = MT::Comment->count_group_by(
-        { blog_id => \@blog_ids, },
-        {   group => ['blog_id'],
-            $param->{my_posts}
-            ? ( join => $app->model('entry')->join_on(
-                    undef,
-                    {   id        => \'=comment_entry_id',
-                        author_id => $user->id,
-                    },
-                )
-                )
-            : (),
+    if ( !$param->{not_count} ) {
+        require MT::Entry;
+        my $iter = MT::Entry->count_group_by(
+            {   class   => 'entry',
+                blog_id => \@blog_ids,
+                $param->{my_posts} ? ( author_id => $user->id ) : (),
+            },
+            { group => ['blog_id'], }
+        );
+        while ( my ( $count, $blog_id ) = $iter->() ) {
+            $data{$blog_id}->{entry_count} = $count;
         }
-    );
-    while ( my ( $count, $blog_id ) = $commnet_iter->() ) {
-        $data{$blog_id}->{comment_count} = $count;
+
+        require MT::Page;
+        my $page_iter = MT::Page->count_group_by(
+            {   class   => 'page',
+                blog_id => \@blog_ids,
+                $param->{my_posts} ? ( author_id => $user->id ) : (),
+            },
+            { group => ['blog_id'], }
+        );
+        while ( my ( $count, $blog_id ) = $page_iter->() ) {
+            $data{$blog_id}->{page_count} = $count;
+        }
+
+        require MT::Comment;
+        my $commnet_iter = MT::Comment->count_group_by(
+            { blog_id => \@blog_ids, },
+            {   group => ['blog_id'],
+                $param->{my_posts}
+                ? ( join => $app->model('entry')->join_on(
+                        undef,
+                        {   id        => \'=comment_entry_id',
+                            author_id => $user->id,
+                        },
+                    )
+                    )
+                : (),
+            }
+        );
+        while ( my ( $count, $blog_id ) = $commnet_iter->() ) {
+            $data{$blog_id}->{comment_count} = $count;
+        }
     }
 
     # Make object_loop data
@@ -1017,9 +1025,11 @@ sub _build_favorite_blogs_data {
             ? $blog->theme->thumbnail( size => 'small' )
             : MT::Theme->default_theme_thumbnail( size => 'small' );
 
-        $row->{blog_entry_count}   = $data{ $blog->id }->{entry_count};
-        $row->{blog_page_count}    = $data{ $blog->id }->{page_count};
-        $row->{blog_comment_count} = $data{ $blog->id }->{comment_count};
+        if ( !$param->{not_count} ) {
+            $row->{blog_entry_count}   = $data{ $blog->id }->{entry_count};
+            $row->{blog_page_count}    = $data{ $blog->id }->{page_count};
+            $row->{blog_comment_count} = $data{ $blog->id }->{comment_count};
+        }
 
         my $website = $blog->website;
         $row->{website_name} = $website->name;
