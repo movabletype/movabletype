@@ -15,58 +15,54 @@ use Test::More;
 ### Make test data
 
 # Website
-my $website = MT::Test::Permission->make_website();
+my $website       = MT::Test::Permission->make_website();
 my $other_website = MT::Test::Permission->make_website();
 
 # Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $other_blog = MT::Test::Permission->make_blog(
-    parent_id => $other_website->id,
-);
+my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+my $second_blog
+    = MT::Test::Permission->make_blog( parent_id => $website->id, );
+my $other_blog
+    = MT::Test::Permission->make_blog( parent_id => $other_website->id, );
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
+    name     => 'aikawa',
     nickname => 'Ichiro Aikawa',
 );
 
 my $ichikawa = MT::Test::Permission->make_author(
-    name => 'ichikawa',
+    name     => 'ichikawa',
     nickname => 'Jiro Ichikawa',
 );
 
 my $ukawa = MT::Test::Permission->make_author(
-    name => 'ukawa',
+    name     => 'ukawa',
     nickname => 'Saburo Ukawa',
 );
 
 my $egawa = MT::Test::Permission->make_author(
-    name => 'egawa',
+    name     => 'egawa',
     nickname => 'Shiro Egawa',
 );
 
 my $ogawa = MT::Test::Permission->make_author(
-    name => 'ogawa',
+    name     => 'ogawa',
     nickname => 'Goro Ogawa',
 );
 
 my $kagawa = MT::Test::Permission->make_author(
-    name => 'kagawa',
+    name     => 'kagawa',
     nickname => 'Ichiro Kagawa',
 );
 
 my $kikkawa = MT::Test::Permission->make_author(
-    name => 'kikkawa',
+    name     => 'kikkawa',
     nickname => 'Jiro Kikkawa',
 );
 
 my $kumekawa = MT::Test::Permission->make_author(
-    name => 'kumekawa',
+    name      => 'kumekawa',
     nicknamee => 'Saburo Kumekawa',
 );
 
@@ -74,49 +70,49 @@ my $admin = MT::Author->load(1);
 
 # Role
 my $edit_categories = MT::Test::Permission->make_role(
-   name  => 'Edit Categories',
-   permissions => "'edit_categories'",
+    name        => 'Edit Categories',
+    permissions => "'edit_categories'",
 );
 
 my $manage_pages = MT::Test::Permission->make_role(
-   name  => 'Manage Pages',
-   permissions => "'manage_pages'",
+    name        => 'Manage Pages',
+    permissions => "'manage_pages'",
 );
 
 my $create_post = MT::Test::Permission->make_role(
-   name  => 'Create Post',
-   permissions => "'create_post'",
+    name        => 'Create Post',
+    permissions => "'create_post'",
 );
 
-my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;
 MT::Association->link( $aikawa => $edit_categories => $blog );
-MT::Association->link( $ukawa => $designer => $blog );
-MT::Association->link( $egawa => $manage_pages => $blog );
+MT::Association->link( $ukawa  => $designer        => $blog );
+MT::Association->link( $egawa  => $manage_pages    => $blog );
 
 MT::Association->link( $ichikawa => $edit_categories => $second_blog );
-MT::Association->link( $ichikawa => $create_post => $blog );
+MT::Association->link( $ichikawa => $create_post     => $blog );
 
-MT::Association->link( $ogawa, $edit_categories, $website );
-MT::Association->link( $kumekawa, $designer, $website );
+MT::Association->link( $ogawa,    $edit_categories, $website );
+MT::Association->link( $kumekawa, $designer,        $website );
 
-MT::Association->link( $kagawa, $edit_categories, $other_website );
+MT::Association->link( $kagawa,  $edit_categories, $other_website );
 MT::Association->link( $kikkawa, $edit_categories, $other_blog );
 
 # Category
 my $cat = MT::Test::Permission->make_category(
-    blog_id => $blog->id,
+    blog_id   => $blog->id,
     author_id => $aikawa->id,
 );
 my $website_cat = MT::Test::Permission->make_category(
-    blog_id => $website->id,
+    blog_id   => $website->id,
     author_id => $ogawa->id,
 );
 
 # Folder
 my $folder = MT::Test::Permission->make_folder(
-    blog_id => $blog->id,
+    blog_id   => $blog->id,
     author_id => $egawa->id,
 );
 
@@ -134,7 +130,7 @@ subtest 'mode = category_do_add' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: category_do_add" );
+    ok( $out,                          "Request: category_do_add" );
     ok( $out !~ m!Permission denied!i, "category_do_add by admin" );
 
     $app = _run_app(
@@ -147,7 +143,7 @@ subtest 'mode = category_do_add' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: category_do_add" );
+    ok( $out,                          "Request: category_do_add" );
     ok( $out !~ m!Permission denied!i, "category_do_add by permitted user" );
 
     $app = _run_app(
@@ -160,7 +156,7 @@ subtest 'mode = category_do_add' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: category_do_add" );
+    ok( $out,                          "Request: category_do_add" );
     ok( $out =~ m!Permission denied!i, "category_do_add by other blog" );
 
     $app = _run_app(
@@ -174,7 +170,8 @@ subtest 'mode = category_do_add' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: category_do_add" );
-    ok( $out =~ m!Permission denied!i, "category_do_add by other permission" );
+    ok( $out =~ m!Permission denied!i,
+        "category_do_add by other permission" );
 
     done_testing();
 };
@@ -189,10 +186,10 @@ subtest 'mode = category_do_add (website)' => sub {
             label            => 'New Label',
         }
     );
-    $out = delete $app->{__test_output}; 
-    ok( $out, "Request: category_do_add" );
+    $out = delete $app->{__test_output};
+    ok( $out,                          "Request: category_do_add" );
     ok( $out !~ m!Permission denied!i, "category_do_add by admin" );
-    
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
@@ -200,10 +197,10 @@ subtest 'mode = category_do_add (website)' => sub {
             __mode           => 'category_do_add',
             blog_id          => $website->id,
             label            => 'New Label',
-        }   
-    );      
+        }
+    );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: category_do_add" );
+    ok( $out,                          "Request: category_do_add" );
     ok( $out !~ m!Permission denied!i, "category_do_add by permitted user" );
 
     $app = _run_app(
@@ -216,7 +213,7 @@ subtest 'mode = category_do_add (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: category_do_add" );
+    ok( $out,                          "Request: category_do_add" );
     ok( $out =~ m!Permission denied!i, "category_do_add by other website" );
 
     $app = _run_app(
@@ -226,10 +223,10 @@ subtest 'mode = category_do_add (website)' => sub {
             __mode           => 'category_do_add',
             blog_id          => $website->id,
             label            => 'New Label',
-        }   
-    );      
+        }
+    );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: category_do_add" );
+    ok( $out,                          "Request: category_do_add" );
     ok( $out =~ m!Permission denied!i, "category_do_add by child blog" );
 
     $app = _run_app(
@@ -239,10 +236,10 @@ subtest 'mode = category_do_add (website)' => sub {
             __mode           => 'category_do_add',
             blog_id          => $website->id,
             label            => 'New Label',
-        }   
-    );      
+        }
+    );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: category_do_add" );
+    ok( $out,                          "Request: category_do_add" );
     ok( $out =~ m!Permission denied!i, "category_do_add by other blog" );
 
     $app = _run_app(
@@ -256,7 +253,8 @@ subtest 'mode = category_do_add (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: category_do_add" );
-    ok( $out =~ m!Permission denied!i, "category_do_add by other permission" );
+    ok( $out =~ m!Permission denied!i,
+        "category_do_add by other permission" );
 
     done_testing();
 };
@@ -272,7 +270,7 @@ subtest 'mode = js_add_category' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_add_category" );
+    ok( $out,                          "Request: js_add_category" );
     ok( $out !~ m!Permission denied!i, "js_add_category by admin" );
 
     $app = _run_app(
@@ -285,7 +283,7 @@ subtest 'mode = js_add_category' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_add_category" );
+    ok( $out,                          "Request: js_add_category" );
     ok( $out !~ m!Permission denied!i, "js_add_category by permitted user" );
 
     $app = _run_app(
@@ -298,7 +296,7 @@ subtest 'mode = js_add_category' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_add_category" );
+    ok( $out,                          "Request: js_add_category" );
     ok( $out =~ m!Permission denied!i, "js_add_category by other blog" );
 
     $app = _run_app(
@@ -312,7 +310,8 @@ subtest 'mode = js_add_category' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_add_category" );
-    ok( $out =~ m!Permission denied!i, "js_add_category by other permission" );
+    ok( $out =~ m!Permission denied!i,
+        "js_add_category by other permission" );
 
     done_testing();
 };
@@ -327,10 +326,10 @@ subtest 'mode = js_add_category (website)' => sub {
             label            => 'New Label 1',
         }
     );
-    $out = delete $app->{__test_output}; 
-    ok( $out, "Request: js_add_category" );
+    $out = delete $app->{__test_output};
+    ok( $out,                          "Request: js_add_category" );
     ok( $out !~ m!Permission denied!i, "js_add_category by admin" );
-    
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
@@ -340,8 +339,8 @@ subtest 'mode = js_add_category (website)' => sub {
             label            => 'New Label 2',
         }
     );
-    $out = delete $app->{__test_output}; 
-    ok( $out, "Request: js_add_category" );
+    $out = delete $app->{__test_output};
+    ok( $out,                          "Request: js_add_category" );
     ok( $out !~ m!Permission denied!i, "js_add_category by permitted user" );
 
     $app = _run_app(
@@ -353,10 +352,10 @@ subtest 'mode = js_add_category (website)' => sub {
             label            => 'New Label 3',
         }
     );
-    $out = delete $app->{__test_output}; 
-    ok( $out, "Request: js_add_category" );
+    $out = delete $app->{__test_output};
+    ok( $out,                          "Request: js_add_category" );
     ok( $out =~ m!Permission denied!i, "js_add_category by other website" );
-    
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
@@ -367,7 +366,7 @@ subtest 'mode = js_add_category (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_add_category" );
+    ok( $out,                          "Request: js_add_category" );
     ok( $out =~ m!Permission denied!i, "js_add_category by child blog" );
 
     $app = _run_app(
@@ -380,7 +379,7 @@ subtest 'mode = js_add_category (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_add_category" );
+    ok( $out,                          "Request: js_add_category" );
     ok( $out =~ m!Permission denied!i, "js_add_category by other blog" );
 
     $app = _run_app(
@@ -394,7 +393,8 @@ subtest 'mode = js_add_category (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_add_category" );
-    ok( $out =~ m!Permission denied!i, "js_add_category by other permission" );
+    ok( $out =~ m!Permission denied!i,
+        "js_add_category by other permission" );
 
     done_testing();
 };
@@ -410,7 +410,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out !~ m!permission=1!i, "list by admin" );
 
     $app = _run_app(
@@ -423,7 +423,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out !~ m!permission=1!i, "list by permitted user" );
 
     $app = _run_app(
@@ -436,7 +436,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!permission=1!i, "list by other blog" );
 
     $app = _run_app(
@@ -449,7 +449,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!permission=1!i, "list by other permission" );
 
     done_testing();
@@ -466,9 +466,9 @@ subtest 'mode = list (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out !~ m!permission=1!i, "list by admin" );
-    
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
@@ -479,7 +479,7 @@ subtest 'mode = list (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out !~ m!permission=1!i, "list by permitted user" );
 
     $app = _run_app(
@@ -489,10 +489,10 @@ subtest 'mode = list (website)' => sub {
             __mode           => 'list',
             blog_id          => $website->id,
             _type            => 'category',
-        }   
-    );  
+        }
+    );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!permission=1!i, "list by other website" );
 
     $app = _run_app(
@@ -505,7 +505,7 @@ subtest 'mode = list (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!permission=1!i, "list by child blog" );
 
     $app = _run_app(
@@ -518,9 +518,9 @@ subtest 'mode = list (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!permission=1!i, "list by other blog" );
-    
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $kumekawa,
@@ -531,7 +531,7 @@ subtest 'mode = list (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!permission=1!i, "list by other permission" );
 
     done_testing();
@@ -548,7 +548,7 @@ subtest 'mode = save_cat' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cat" );
+    ok( $out,                     "Request: save_cat" );
     ok( $out !~ m!permission=1!i, "save_cat by admin" );
 
     $app = _run_app(
@@ -561,7 +561,7 @@ subtest 'mode = save_cat' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cat" );
+    ok( $out,                     "Request: save_cat" );
     ok( $out !~ m!permission=1!i, "save_cat by permitted user" );
 
     $app = _run_app(
@@ -574,7 +574,7 @@ subtest 'mode = save_cat' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cat" );
+    ok( $out,                     "Request: save_cat" );
     ok( $out =~ m!permission=1!i, "save_cat by other blog" );
 
     $app = _run_app(
@@ -587,7 +587,7 @@ subtest 'mode = save_cat' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cat" );
+    ok( $out,                     "Request: save_cat" );
     ok( $out =~ m!permission=1!i, "save_cat by other permission" );
 
     done_testing();
@@ -604,7 +604,7 @@ subtest 'mode = save_cat (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cat" );
+    ok( $out,                     "Request: save_cat" );
     ok( $out !~ m!permission=1!i, "save_cat by admin" );
 
     $app = _run_app(
@@ -617,7 +617,7 @@ subtest 'mode = save_cat (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cat" );
+    ok( $out,                     "Request: save_cat" );
     ok( $out !~ m!permission=1!i, "save_cat by permitted user" );
 
     $app = _run_app(
@@ -630,7 +630,7 @@ subtest 'mode = save_cat (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cat" );
+    ok( $out,                     "Request: save_cat" );
     ok( $out =~ m!permission=1!i, "save_cat by other website" );
 
     $app = _run_app(
@@ -643,7 +643,7 @@ subtest 'mode = save_cat (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cat" );
+    ok( $out,                     "Request: save_cat" );
     ok( $out =~ m!permission=1!i, "save_cat by child blog" );
 
     $app = _run_app(
@@ -656,7 +656,7 @@ subtest 'mode = save_cat (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cat" );
+    ok( $out,                     "Request: save_cat" );
     ok( $out =~ m!permission=1!i, "save_cat by other blog" );
 
     $app = _run_app(
@@ -669,13 +669,14 @@ subtest 'mode = save_cat (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_cat" );
+    ok( $out,                     "Request: save_cat" );
     ok( $out =~ m!permission=1!i, "save_cat by other permission" );
 
     done_testing();
 };
 
 subtest 'mode = bulk_update_category' => sub {
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -686,7 +687,7 @@ subtest 'mode = bulk_update_category' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: bulk_update_category" );
+    ok( $out,                          "Request: bulk_update_category" );
     ok( $out !~ m!permission denied!i, "bulk_update_category by admin" );
 
     $app = _run_app(
@@ -700,7 +701,8 @@ subtest 'mode = bulk_update_category' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: bulk_update_category" );
-    ok( $out !~ m!permission denied!i, "bulk_update_category by permitted user" );
+    ok( $out !~ m!permission denied!i,
+        "bulk_update_category by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -712,7 +714,7 @@ subtest 'mode = bulk_update_category' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: bulk_update_category" );
+    ok( $out,                          "Request: bulk_update_category" );
     ok( $out =~ m!permission denied!i, "bulk_update_category by other blog" );
 
     $app = _run_app(
@@ -726,9 +728,10 @@ subtest 'mode = bulk_update_category' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: bulk_update_category" );
-    ok( $out =~ m!permission denied!i, "bulk_update_category by other permission" );
+    ok( $out =~ m!permission denied!i,
+        "bulk_update_category by other permission" );
 
-    SKIP: {
+SKIP: {
         skip 'https://movabletype.fogbugz.com/default.asp?106815', 2;
         $app = _run_app(
             'MT::App::CMS',
@@ -741,13 +744,15 @@ subtest 'mode = bulk_update_category' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: bulk_update_category" );
-        ok( $out =~ m!permission denied!i, "bulk_update_category by type mismatch" );
-    };
+        ok( $out =~ m!permission denied!i,
+            "bulk_update_category by type mismatch" );
+    }
 
     done_testing();
 };
 
 subtest 'mode = bulk_update_category (website)' => sub {
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -755,12 +760,12 @@ subtest 'mode = bulk_update_category (website)' => sub {
             __mode           => 'bulk_update_category',
             blog_id          => $website->id,
             datasource       => 'category',
-        }   
-    );  
+        }
+    );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: bulk_update_category" );
+    ok( $out,                          "Request: bulk_update_category" );
     ok( $out !~ m!permission denied!i, "bulk_update_category by admin" );
-    
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
@@ -768,11 +773,12 @@ subtest 'mode = bulk_update_category (website)' => sub {
             __mode           => 'bulk_update_category',
             blog_id          => $website->id,
             datasource       => 'category',
-        }   
+        }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: bulk_update_category" );
-    ok( $out !~ m!permission denied!i, "bulk_update_category by permitted user" );
+    ok( $out !~ m!permission denied!i,
+        "bulk_update_category by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -785,7 +791,8 @@ subtest 'mode = bulk_update_category (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: bulk_update_category" );
-    ok( $out =~ m!permission denied!i, "bulk_update_category by other website" );
+    ok( $out =~ m!permission denied!i,
+        "bulk_update_category by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -797,7 +804,7 @@ subtest 'mode = bulk_update_category (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: bulk_update_category" );
+    ok( $out,                          "Request: bulk_update_category" );
     ok( $out =~ m!permission denied!i, "bulk_update_category by child blog" );
 
     $app = _run_app(
@@ -810,7 +817,7 @@ subtest 'mode = bulk_update_category (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: bulk_update_category" );
+    ok( $out,                          "Request: bulk_update_category" );
     ok( $out =~ m!permission denied!i, "bulk_update_category by other blog" );
 
     $app = _run_app(
@@ -824,9 +831,10 @@ subtest 'mode = bulk_update_category (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: bulk_update_category" );
-    ok( $out =~ m!permission denied!i, "bulk_update_category by other permission" );
+    ok( $out =~ m!permission denied!i,
+        "bulk_update_category by other permission" );
 
-    SKIP: {
+SKIP: {
         skip 'https://movabletype.fogbugz.com/default.asp?106815', 2;
         $app = _run_app(
             'MT::App::CMS',
@@ -839,8 +847,9 @@ subtest 'mode = bulk_update_category (website)' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: bulk_update_category" );
-        ok( $out =~ m!permission denied!i, "bulk_update_category by type mismatch" );
-    };
+        ok( $out =~ m!permission denied!i,
+            "bulk_update_category by type mismatch" );
+    }
 
     done_testing();
 };
@@ -857,7 +866,7 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!invalid request!i, "save (new) by admin" );
 
     $app = _run_app(
@@ -871,7 +880,7 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!invalid request!i, "save (new) by permitted user" );
 
     $app = _run_app(
@@ -885,7 +894,7 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!invalid request!i, "save (new) by other blog" );
 
     $app = _run_app(
@@ -899,7 +908,7 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!invalid request!i, "save (new) by other permission" );
 
     done_testing();
@@ -915,11 +924,11 @@ subtest 'mode = save (new, website)' => sub {
             _type            => 'category',
             label            => 'CategoryName',
         }
-    );  
+    );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!invalid request!i, "save (new) by admin" );
-            
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
@@ -931,7 +940,7 @@ subtest 'mode = save (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!invalid request!i, "save (new) by permitted user" );
 
     $app = _run_app(
@@ -945,7 +954,7 @@ subtest 'mode = save (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!invalid request!i, "save (new) by other website" );
 
     $app = _run_app(
@@ -959,7 +968,7 @@ subtest 'mode = save (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!invalid request!i, "save (new) by child blog" );
 
     $app = _run_app(
@@ -973,7 +982,7 @@ subtest 'mode = save (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!invalid request!i, "save (new) by other blog" );
 
     $app = _run_app(
@@ -987,7 +996,7 @@ subtest 'mode = save (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!invalid request!i, "save (new) by other permission" );
 
     done_testing();
@@ -1006,7 +1015,7 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out !~ m!permission=1!i, "save (edit) by admin" );
 
     $app = _run_app(
@@ -1021,7 +1030,7 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out !~ m!permission=1!i, "save (edit) by permitted user" );
 
     $app = _run_app(
@@ -1036,7 +1045,7 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!permission=1!i, "save (edit) by other blog" );
 
     $app = _run_app(
@@ -1051,7 +1060,7 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!permission=1!i, "save (edit) by other permission" );
 
     $app = _run_app(
@@ -1066,7 +1075,7 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!permission=1!i, "save (edit) by type mismatch" );
 
     done_testing();
@@ -1085,9 +1094,9 @@ subtest 'mode = save (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out !~ m!permission=1!i, "save (edit) by admin" );
-    
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
@@ -1100,7 +1109,7 @@ subtest 'mode = save (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out !~ m!permission=1!i, "save (edit) by permitted user" );
 
     $app = _run_app(
@@ -1115,7 +1124,7 @@ subtest 'mode = save (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!permission=1!i, "save (edit) by other website" );
 
     $app = _run_app(
@@ -1130,7 +1139,7 @@ subtest 'mode = save (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!permission=1!i, "save (edit) by child blog" );
 
     $app = _run_app(
@@ -1145,7 +1154,7 @@ subtest 'mode = save (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!permission=1!i, "save (edit) by other blog" );
 
     $app = _run_app(
@@ -1160,7 +1169,7 @@ subtest 'mode = save (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!permission=1!i, "save (edit) by other permission" );
 
     $app = _run_app(
@@ -1175,7 +1184,7 @@ subtest 'mode = save (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!permission=1!i, "save (edit) by type mismatch" );
 
     done_testing();
@@ -1193,7 +1202,7 @@ subtest 'mode = edit (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!invalid request!i, "edit (new) by admin" );
 
     $app = _run_app(
@@ -1207,7 +1216,7 @@ subtest 'mode = edit (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!invalid request!i, "edit (new) by permitted user" );
 
     $app = _run_app(
@@ -1221,7 +1230,7 @@ subtest 'mode = edit (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!invalid request!i, "edit (new) by other blog" );
 
     $app = _run_app(
@@ -1235,7 +1244,7 @@ subtest 'mode = edit (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!invalid request!i, "edit (new) by other permission" );
 
     done_testing();
@@ -1250,12 +1259,12 @@ subtest 'mode = edit (new, website)' => sub {
             blog_id          => $website->id,
             _type            => 'category',
             label            => 'CategoryName',
-        }   
-    );      
+        }
+    );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!invalid request!i, "edit (new) by admin" );
-    
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
@@ -1267,7 +1276,7 @@ subtest 'mode = edit (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!invalid request!i, "edit (new) by permitted user" );
 
     $app = _run_app(
@@ -1281,7 +1290,7 @@ subtest 'mode = edit (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!invalid request!i, "edit (new) by other website" );
 
     $app = _run_app(
@@ -1295,7 +1304,7 @@ subtest 'mode = edit (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!invalid request!i, "edit (new) by child blog" );
 
     $app = _run_app(
@@ -1309,7 +1318,7 @@ subtest 'mode = edit (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!invalid request!i, "edit (new) by other blog" );
 
     $app = _run_app(
@@ -1323,7 +1332,7 @@ subtest 'mode = edit (new, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!invalid request!i, "edit (new) by other permission" );
 
     done_testing();
@@ -1341,7 +1350,7 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out !~ m!permission=1!i, "edit (edit) by admin" );
 
     $app = _run_app(
@@ -1355,7 +1364,7 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out !~ m!permission=1!i, "edit (edit) by permitted user" );
 
     $app = _run_app(
@@ -1369,7 +1378,7 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit (edit) by other blog" );
 
     $app = _run_app(
@@ -1383,7 +1392,7 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit (edit) by other permission" );
 
     $app = _run_app(
@@ -1397,7 +1406,7 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit (edit) by type mismatch" );
 
     done_testing();
@@ -1415,9 +1424,9 @@ subtest 'mode = edit (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out !~ m!permission=1!i, "edit (edit) by admin" );
-    
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
@@ -1429,7 +1438,7 @@ subtest 'mode = edit (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out !~ m!permission=1!i, "edit (edit) by permitted user" );
 
     $app = _run_app(
@@ -1443,7 +1452,7 @@ subtest 'mode = edit (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit (edit) by other website" );
 
     $app = _run_app(
@@ -1457,7 +1466,7 @@ subtest 'mode = edit (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit (edit) by child blog" );
 
     $app = _run_app(
@@ -1471,7 +1480,7 @@ subtest 'mode = edit (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit (edit) by other blog" );
 
     $app = _run_app(
@@ -1485,7 +1494,7 @@ subtest 'mode = edit (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit (edit) by other permission" );
 
     $app = _run_app(
@@ -1499,7 +1508,7 @@ subtest 'mode = edit (edit, website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit (edit) by type mismatch" );
 
     done_testing();
@@ -1507,7 +1516,7 @@ subtest 'mode = edit (edit, website)' => sub {
 
 subtest 'mode = delete ' => sub {
     $cat = MT::Test::Permission->make_category(
-        blog_id => $blog->id,
+        blog_id   => $blog->id,
         author_id => $aikawa->id,
     );
     $app = _run_app(
@@ -1521,11 +1530,11 @@ subtest 'mode = delete ' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete  by admin" );
 
     $cat = MT::Test::Permission->make_category(
-        blog_id => $blog->id,
+        blog_id   => $blog->id,
         author_id => $aikawa->id,
     );
     $app = _run_app(
@@ -1539,11 +1548,11 @@ subtest 'mode = delete ' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete  by permitted user" );
 
     $cat = MT::Test::Permission->make_category(
-        blog_id => $blog->id,
+        blog_id   => $blog->id,
         author_id => $aikawa->id,
     );
     $app = _run_app(
@@ -1557,11 +1566,11 @@ subtest 'mode = delete ' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete  by other blog" );
 
     $cat = MT::Test::Permission->make_category(
-        blog_id => $blog->id,
+        blog_id   => $blog->id,
         author_id => $aikawa->id,
     );
     $app = _run_app(
@@ -1575,11 +1584,11 @@ subtest 'mode = delete ' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete  by other permission" );
 
     $folder = MT::Test::Permission->make_folder(
-        blog_id => $blog->id,
+        blog_id   => $blog->id,
         author_id => $egawa->id,
     );
     $app = _run_app(
@@ -1593,7 +1602,7 @@ subtest 'mode = delete ' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete  by type mismatch" );
 
     done_testing();
@@ -1601,7 +1610,7 @@ subtest 'mode = delete ' => sub {
 
 subtest 'mode = delete (website)' => sub {
     $website_cat = MT::Test::Permission->make_category(
-        blog_id => $website->id,
+        blog_id   => $website->id,
         author_id => $ogawa->id,
     );
     $app = _run_app(
@@ -1615,11 +1624,11 @@ subtest 'mode = delete (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete  by admin" );
-    
+
     $website_cat = MT::Test::Permission->make_category(
-        blog_id => $website->id,
+        blog_id   => $website->id,
         author_id => $ogawa->id,
     );
     $app = _run_app(
@@ -1633,11 +1642,11 @@ subtest 'mode = delete (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete  by permitted user" );
 
     $website_cat = MT::Test::Permission->make_category(
-        blog_id => $website->id,
+        blog_id   => $website->id,
         author_id => $ogawa->id,
     );
     $app = _run_app(
@@ -1651,11 +1660,11 @@ subtest 'mode = delete (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete  by other website" );
 
     $website_cat = MT::Test::Permission->make_category(
-        blog_id => $website->id,
+        blog_id   => $website->id,
         author_id => $ogawa->id,
     );
     $app = _run_app(
@@ -1666,14 +1675,14 @@ subtest 'mode = delete (website)' => sub {
             blog_id          => $website->id,
             _type            => 'category',
             id               => $website_cat->id,
-        }   
-    );      
+        }
+    );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete  by child blog" );
 
     $website_cat = MT::Test::Permission->make_category(
-        blog_id => $website->id,
+        blog_id   => $website->id,
         author_id => $ogawa->id,
     );
     $app = _run_app(
@@ -1684,14 +1693,14 @@ subtest 'mode = delete (website)' => sub {
             blog_id          => $website->id,
             _type            => 'category',
             id               => $website_cat->id,
-        }   
-    );      
+        }
+    );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete  by other blog" );
 
     $cat = MT::Test::Permission->make_category(
-        blog_id => $blog->id,
+        blog_id   => $blog->id,
         author_id => $aikawa->id,
     );
     $app = _run_app(
@@ -1705,11 +1714,11 @@ subtest 'mode = delete (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete  by other permission" );
 
     $folder = MT::Test::Permission->make_folder(
-        blog_id => $blog->id,
+        blog_id   => $blog->id,
         author_id => $egawa->id,
     );
     $app = _run_app(
@@ -1723,7 +1732,7 @@ subtest 'mode = delete (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete  by type mismatch" );
 
     done_testing();

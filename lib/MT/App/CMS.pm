@@ -2592,6 +2592,16 @@ sub core_disable_object_methods {
             delete => 1,
             edit   => 1,
         },
+        category => {
+            save => sub {
+                return 0 if $app->param('id');
+                return 1;
+            },
+            edit => sub {
+                return 0 if $app->param('id');
+                return 1;
+            },
+        },
         config => {
             save   => 1,
             delete => 1,
