@@ -35,11 +35,21 @@
  *     When using the cookie, this value is used as cookie domain.
  *   @param {String} [options.sessionPath] The session path
  *     When using the cookie, this value is used as cookie path.
- *   @param {String} [options.async] If true, use asynchronous
+ *   @param {Boolean} [options.async] If true, use asynchronous
  *      XMLHttpRequest. The default value is the true.
- *   @param {String} [options.cache] If false, add an additional
- *      parameter "_" to request to avoid cache. The default value is the true.
- *   @param {String} [options.disableFormData] If false, use FormData
+ *   @param {Boolean} [options.cache] If false, add an additional
+ *      parameter "_" to request to avoid cache. The default value
+ *      is the true.
+ *   @param {Boolean} [options.withoutAuthorization] If true,
+ *      the "X-MT-Authorization" request header is not sent even if
+ *      already got accessToken. The default value is the false.
+ *   @param {Boolean} [options.loadPluginEndpoints] If true, load
+ *      endpoint data extended by plugin and generate methods to
+ *      access that endpoint automatically. The default value is the true.
+ *   @param {Boolean} [options.suppressResponseCodes] If true, add
+ *      suppressResponseCodes parameter to each request.
+ *      The default value is the true.
+ *   @param {Boolean(} [options.disableFormData] If false,use FormData
  *      class when available that. The default value is the false.
  */
 var DataAPI = function(options) {
@@ -55,6 +65,9 @@ var DataAPI = function(options) {
         sessionPath: undefined,
         async: true,
         cache: true,
+        withoutAuthorization: false,
+        loadPluginEndpoints: true,
+        suppressResponseCodes: false,
         disableFormData: false
     };
     for (k in options) {
@@ -82,6 +95,12 @@ var DataAPI = function(options) {
     this.callbacks = {};
     this.tokenData = null;
     this.iframeId  = 0;
+
+    if (this.o.loadPluginEndpoints) {
+        this.loadEndpoints({
+            excludeComponents: 'core'
+        });
+    }
 
     this.trigger('initialize');
 };
@@ -208,9 +227,6 @@ var sjcl = {
 
   /** @namespace Hash functions.  Right now only SHA256 is implemented. */
   hash: {},
-
-  /** @namespace Key exchange functions.  Right now only SRP is implemented. */
-  keyexchange: {},
   
   /** @namespace Block cipher modes of operation. */
   mode: {},
@@ -256,10 +272,6 @@ var sjcl = {
     }
   }
 };
-
-if(typeof module != 'undefined' && module.exports){
-  module.exports = sjcl;
-}
 /** @fileOverview Low-level AES implementation.
  *
  * This file contains a low-level implementation of AES, optimized for
@@ -501,7 +513,7 @@ sjcl.cipher.aes.prototype = {
 sjcl.bitArray = {
   /**
    * Array slices in units of bits.
-   * @param {bitArray} a The array to slice.
+   * @param {bitArray a} The array to slice.
    * @param {Number} bstart The offset to the start of the slice, in bits.
    * @param {Number} bend The offset to the end of the slice, in bits.  If this is undefined,
    * slice until the end of the array.
@@ -510,27 +522,6 @@ sjcl.bitArray = {
   bitSlice: function (a, bstart, bend) {
     a = sjcl.bitArray._shiftRight(a.slice(bstart/32), 32 - (bstart & 31)).slice(1);
     return (bend === undefined) ? a : sjcl.bitArray.clamp(a, bend-bstart);
-  },
-
-  /**
-   * Extract a number packed into a bit array.
-   * @param {bitArray} a The array to slice.
-   * @param {Number} bstart The offset to the start of the slice, in bits.
-   * @param {Number} length The length of the number to extract.
-   * @return {Number} The requested slice.
-   */
-  extract: function(a, bstart, blength) {
-    // FIXME: this Math.floor is not necessary at all, but for some reason
-    // seems to suppress a bug in the Chromium JIT.
-    var x, sh = Math.floor((-bstart-blength) & 31);
-    if ((bstart + blength - 1 ^ bstart) & -32) {
-      // it crosses a boundary
-      x = (a[bstart/32|0] << (32 - sh)) ^ (a[bstart/32+1|0] >>> sh);
-    } else {
-      // within a single word
-      x = a[bstart/32|0] >>> sh;
-    }
-    return x & ((1<<blength) - 1);
   },
 
   /**
@@ -709,9 +700,8 @@ sjcl.codec.base64 = {
   _chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
   
   /** Convert from a bitArray to a base64 string. */
-  fromBits: function (arr, _noEquals, _url) {
+  fromBits: function (arr, _noEquals) {
     var out = "", i, bits=0, c = sjcl.codec.base64._chars, ta=0, bl = sjcl.bitArray.bitLength(arr);
-    if (_url) c = c.substr(0,62) + '-_';
     for (i=0; out.length * 6 < bl; ) {
       out += c.charAt((ta ^ arr[i]>>>bits) >>> 26);
       if (bits < 6) {
@@ -728,10 +718,9 @@ sjcl.codec.base64 = {
   },
   
   /** Convert from a base64 string to a bitArray */
-  toBits: function(str, _url) {
+  toBits: function(str) {
     str = str.replace(/\s|=/g,'');
     var out = [], i, bits=0, c = sjcl.codec.base64._chars, ta=0, x;
-    if (_url) c = c.substr(0,62) + '-_';
     for (i=0; i<str.length; i++) {
       x = c.indexOf(str.charAt(i));
       if (x < 0) {
@@ -751,11 +740,6 @@ sjcl.codec.base64 = {
     }
     return out;
   }
-};
-
-sjcl.codec.base64url = {
-  fromBits: function (arr) { return sjcl.codec.base64.fromBits(arr,1,1); },
-  toBits: function (str) { return sjcl.codec.base64.toBits(str,1); }
 };
 /** @fileOverview Javascript SHA-256 implementation.
  *
@@ -1191,10 +1175,9 @@ sjcl.misc.hmac = function (key, Hash) {
 
 /** HMAC with the specified hash function.  Also called encrypt since it's a prf.
  * @param {bitArray|String} data The data to mac.
- * @param {Codec} [encoding] the encoding function to use.
  */
-sjcl.misc.hmac.prototype.encrypt = sjcl.misc.hmac.prototype.mac = function (data, encoding) {
-  var w = new (this._hash)(this._baseHash[0]).update(data, encoding).finalize();
+sjcl.misc.hmac.prototype.encrypt = sjcl.misc.hmac.prototype.mac = function (data) {
+  var w = new (this._hash)(this._baseHash[0]).update(data).finalize();
   return new (this._hash)(this._baseHash[1]).update(w).finalize();
 };
 
@@ -1784,7 +1767,7 @@ sjcl.random = {
         if (!i.match(/^[a-z0-9]+$/i)) {
           throw new sjcl.exception.invalid("json encode: invalid property name");
         }
-        out += comma + '"' + i + '"' + ':';
+        out += comma + '"' + i + '":';
         comma = ',';
         
         switch (typeof obj[i]) {
@@ -1858,7 +1841,6 @@ sjcl.random = {
   
   /** Remove all elements of minus from plus.  Does not modify plus.
    * @private
-   */
   _subtract: function (plus, minus) {
     var out = {}, i;
     
@@ -1870,6 +1852,7 @@ sjcl.random = {
     
     return out;
   },
+  */
   
   /** Return only the specified elements of src.
    * @private
@@ -1909,8 +1892,8 @@ sjcl.decrypt = sjcl.json.decrypt;
 sjcl.misc._pbkdf2Cache = {};
 
 /** Cached PBKDF2 key derivation.
- * @param {String} password The password.
- * @param {Object} [params] The derivation params (iteration count and optional salt).
+ * @param {String} The password.  
+ * @param {Object} The derivation params (iteration count and optional salt).
  * @return {Object} The derived data in key, the salt in salt.
  */
 sjcl.misc.cachedPbkdf2 = function (password, obj) {
@@ -2552,8 +2535,7 @@ DataAPI.prototype = {
      * @category core
      */
     sendXMLHttpRequest: function(xhr, method, url, params, defaultHeaders) {
-        var k, headers, uk,
-            authHeader = this.getAuthorizationHeader('accessToken');
+        var k, headers, uk;
 
         xhr.open(method, url, this.o.async);
         for (k in defaultHeaders) {
@@ -2563,9 +2545,6 @@ DataAPI.prototype = {
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         }
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        if (authHeader && ! ('X-MT-Authorization' in defaultHeaders)) {
-            xhr.setRequestHeader('X-MT-Authorization', authHeader);
-        }
 
         function normalizeHeaderKey(all, prefix, letter) {
             return prefix + letter.toUpperCase();
@@ -2723,6 +2702,7 @@ DataAPI.prototype = {
             xhr        = null,
             viaXhr     = true,
             tokenData  = this.getTokenData(),
+            authHeader = this.getAuthorizationHeader('accessToken'),
             currentFormat     = this.getCurrentFormat(),
             originalMethod    = method,
             originalArguments = Array.prototype.slice.call(arguments),
@@ -2819,7 +2799,12 @@ DataAPI.prototype = {
             return base + api._serializeParams(params);
         }
 
-        if (tokenData && ! tokenData.accessToken && endpoint !== '/token') {
+        if (! this.o.withoutAuthorization &&
+            tokenData &&
+            ! tokenData.accessToken &&
+            endpoint !== '/token' &&
+            endpoint !== '/authentication'
+        ) {
             return retryWithAuthentication();
         }
 
@@ -2832,6 +2817,18 @@ DataAPI.prototype = {
                 defaultHeaders['X-MT-Authorization'] = '';
             }
             defaultParams.clientId = api.o.clientId;
+        }
+
+        if (! ('X-MT-Authorization' in defaultHeaders)) {
+            defaultHeaders['X-MT-Authorization'] = authHeader;
+        }
+
+        if (this.o.withoutAuthorization) {
+            delete defaultHeaders['X-MT-Authorization'];
+        }
+
+        if (this.o.suppressResponseCodes) {
+            defaultParams.suppressResponseCodes = true;
         }
 
         if (! this.o.cache) {
@@ -2974,8 +2971,7 @@ DataAPI.prototype = {
                     target     = api._getNextIframeName(),
                     doc        = window.document,
                     form       = doc.createElement('form'),
-                    iframe     = doc.createElement('iframe'),
-                    authHeader = api.getAuthorizationHeader('accessToken');
+                    iframe     = doc.createElement('iframe');
 
 
                 // Set up a form element
@@ -2995,9 +2991,6 @@ DataAPI.prototype = {
 
 
                 params = params || {};
-                if (authHeader) {
-                    params['X-MT-Authorization'] = authHeader;
-                }
                 for (k in defaultHeaders) {
                     params[k] = defaultHeaders[k];
                 }
@@ -3231,7 +3224,7 @@ DataAPI.prototype = {
     loadEndpoints: function(params) {
         var api = this;
 
-        api.withOptions({async: false}, function() {
+        api.withOptions({withoutAuthorization: true, async: false}, function() {
             api.request('GET', '/endpoints', params, function(response) {
                 if (response.error) {
                     return;
