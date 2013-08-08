@@ -20,7 +20,7 @@ my $mt = MT->instance;
 make_data();
 
 # Now, Ready to start test
-my $test_count = 140;
+my $test_count = 142;
 $test_count += 4
     if $mt->component('commercial');
 $test_count += 4
@@ -217,9 +217,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Create a new category" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Create a new Category: result" );
+ok( $out,                          "Create a new category" );
+ok( $out =~ m/Invalid request\./i, "Create a new Category: result" );
 
 # Delete Category
 # __mode=delete&_type=category&id=1&blog_id=1
@@ -1061,6 +1060,22 @@ if ( $mt->component('enterprise') ) {
 ### Other user
 $user = MT::Author->load(999);    #aikawa
 
+# Delete Filter owned by ichikawa
+# __mode=delete&_type=filter&blog_id=1&id=1
+$app = _run_app(
+    'MT::App::CMS',
+    {   __test_user      => $user,
+        __request_method => 'POST',
+        __mode           => 'delete',
+        _type            => 'filter',
+        blog_id          => 1,
+        id               => 1
+    }
+);
+$out = delete $app->{__test_output};
+ok( $out,                          "Delete filter" );
+ok( $out =~ m/Permission Denied/i, "Delete filter: result" );
+
 ### Different type
 $user = MT::Author->load(997);    #ukawa
 
@@ -1451,6 +1466,20 @@ sub make_data {
     $assoc->role_id( $editor_role->id );
     $assoc->type(1);
     $assoc->save();
+
+    ### Filter
+    require MT::Filter;
+    my $filter = MT::Filter->new();
+    $filter->set_values(
+        {   author_id => $ichikawa->id,
+            blog_id   => 1,
+            object_ds => 'entry',
+        }
+    );
+    $filter->save()
+        or die "Couldn't save filter record: 1" . $filter->errstr;
+
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     ### IPBanList
     require MT::IPBanList;
