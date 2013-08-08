@@ -2949,6 +2949,21 @@ sub update_entry_status {
         my $old_status = $entry->status;
         $entry->status($new_status);
         $entry->save() and $rebuild_these{$id} = 1;
+
+        # Clear cache for site stats dashboard widget.
+        if ((      $entry->status == MT::Entry::RELEASE()
+                || $old_status == MT::Entry::RELEASE()
+            )
+            && $old_status != $entry->status
+            )
+        {
+            require MT::Util;
+            MT::Util::clear_site_stats_widget_cache( $entry->blog_id,
+                $app->user->id )
+                or return $app->error(
+                translate('Removing stats cache was failed.') );
+        }
+
         my $message = $app->translate(
             "[_1] '[_2]' (ID:[_3]) status changed from [_4] to [_5]",
             $entry->class_label,
