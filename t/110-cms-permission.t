@@ -20,7 +20,7 @@ my $mt = MT->instance;
 make_data();
 
 # Now, Ready to start test
-my $test_count = 142;
+my $test_count = 140;
 $test_count += 4
     if $mt->component('commercial');
 $test_count += 4
@@ -46,8 +46,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Create a new asset" );
-ok( $out =~ m!__mode=dashboard&permission=1!i, "Create a new Asset: result" );
+ok( $out, "Create a new asset" );
+ok( $out =~ m!Permission denied!i, "Create a new Asset: result" );
 
 # Delete Asset
 # __mode=delete&_type=asset&blog_id=1&id=1
@@ -62,8 +62,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete asset" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete asset: result" );
+ok( $out, "Delete asset" );
+ok( $out =~ m/Permission denied/i, "Delete asset: result" );
 
 # Update an asset
 # __mode=save&_type=asset&blog_id=1&id=1
@@ -78,8 +78,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Update an asset" );
-ok( $out =~ m!__mode=dashboard&permission=1!i, "Update an asset: result" );
+ok( $out, "Update an asset" );
+ok( $out =~ m!Permission denied!i, "Update an asset: result" );
 
 # Create a new Author
 # __mode=save&_type=author&name=new_author&type=1
@@ -95,7 +95,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new author" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Create a new Author: result" );
 
 # Delete Author
@@ -110,8 +110,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete author" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete author: result" );
+ok( $out, "Delete author" );
+ok( $out =~ m/Permission denied/i, "Delete author: result" );
 
 # Create a new Association
 # __mode=save&_type=association&type=1
@@ -125,8 +125,10 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new association" );
-ok( $out =~ m/Invalid request\./i, "Create a new Association: result" );
+ok( $out, "Create a new association" );
+ok( $out =~ m/Permission denied/i,
+    "Create a new Association: result"
+);
 
 # Delete Association
 # __mode=delete&_type=association&id=1
@@ -140,8 +142,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete association" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete association: result" );
+ok( $out, "Delete association" );
+ok( $out =~ m/Permission denied/i, "Delete association: result" );
 
 # Create a new Blog
 # __mode=save&_type=blog&name=BlogName
@@ -155,8 +157,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Create a new blog" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Create a new Blog: result" );
+ok( $out, "Create a new blog" );
+ok( $out =~ m/Permission denied/i, "Create a new Blog: result" );
 
 # Delete Blog
 # __mode=delete&_type=blog&id=1
@@ -170,8 +172,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete blog" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete blog: result" );
+ok( $out, "Delete blog" );
+ok( $out =~ m/Permission denied/i, "Delete blog: result" );
 
 # Create a new Website
 # __mode=save&_type=website&name=WebsiteName
@@ -186,7 +188,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new website" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Create a new Website: result" );
 
 # Delete Website
@@ -201,8 +203,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete website" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete website: result" );
+ok( $out, "Delete website" );
+ok( $out =~ m/Permission denied/i, "Delete website: result" );
 
 # Create a new Category
 # __mode=save&_type=category&label=CategoryName&blog_id=1
@@ -218,7 +220,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new category" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Create a new Category: result" );
 
 # Delete Category
@@ -234,8 +236,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete category" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete category: result" );
+ok( $out, "Delete category" );
+ok( $out =~ m/Permission denied/i, "Delete category: result" );
 
 # Create a new Folder
 # __mode=save&_type=folder&label=FolderName&blog_id=1
@@ -250,8 +252,9 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new folder" );
-ok( $out =~ m/Invalid request\./i, "Create a new Folder: result" );
+ok( $out, "Create a new folder" );
+ok( $out =~ m/Permission denied/i,
+    "Create a new Folder: result" );
 
 # Delete Folder
 # __mode=delete&_type=folder&id=20&blog_id=1
@@ -266,8 +269,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete folder" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete folder: result" );
+ok( $out, "Delete folder" );
+ok( $out =~ m/Permission denied/i, "Delete folder: result" );
 
 # Update Folder
 # __mode=save&_type=folder&label=FolderName&blog_id=1
@@ -283,8 +286,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Update a  folder" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Update a Folder: result" );
+ok( $out, "Update a  folder" );
+ok( $out =~ m/Permission denied/i, "Update a Folder: result" );
 
 # Create a new Comment
 # __mode=save&_type=comment&&blog_id=1&entry_id=1
@@ -300,7 +303,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new comment" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Create a new Comment: result" );
 
 # Delete Comment
@@ -316,8 +319,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete comment" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete comment: result" );
+ok( $out, "Delete comment" );
+ok( $out =~ m/Permission denied/i, "Delete comment: result" );
 
 # Create a new Entry
 # __mode=save&_type=entry&&blog_id=1&author_id=1&status=1
@@ -333,8 +336,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Create a new entry" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Create a new Entry: result" );
+ok( $out, "Create a new entry" );
+ok( $out =~ m/Permission denied/i, "Create a new Entry: result" );
 
 # Delete Entry
 # __mode=delete&_type=entry&id=1&blog_id=1
@@ -349,8 +352,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete entry" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete entry: result" );
+ok( $out, "Delete entry" );
+ok( $out =~ m/Permission denied/i, "Delete entry: result" );
 
 # Update an Entry
 # __mode=save&_type=entry&&blog_id=1&author_id=1&status=1&id=1
@@ -367,8 +370,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Update an entry" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Update anEntry: result" );
+ok( $out, "Update an entry" );
+ok( $out =~ m/Permission denied/i, "Update anEntry: result" );
 
 # Create a new Page
 # __mode=save&_type=page&&blog_id=1&author_id=1&status=1
@@ -384,8 +387,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Create a new page" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Create a new Page: result" );
+ok( $out, "Create a new page" );
+ok( $out =~ m/Permission denied/i, "Create a new Page: result" );
 
 # Delete Page
 # __mode=delete&_type=page&id=20&blog_id=1
@@ -400,8 +403,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete page" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete page: result" );
+ok( $out, "Delete page" );
+ok( $out =~ m/Permission denied/i, "Delete page: result" );
 
 # Update a Page
 # __mode=save&_type=page&&blog_id=1&author_id=1&status=1&id=20
@@ -418,8 +421,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Update an page" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Update an Page: result" );
+ok( $out, "Update an page" );
+ok( $out =~ m/Permission denied/i, "Update an Page: result" );
 
 # Create a new Banlist
 # __mode=save&_type=banlist&&blog_id=1&ip=1.1.1.1
@@ -435,7 +438,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new banlist" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Create a new Banlist: result" );
 
 # Delete Banlist
@@ -451,8 +454,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete banlist" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete banlist: result" );
+ok( $out, "Delete banlist" );
+ok( $out =~ m/Permission denied/i, "Delete banlist: result" );
 
 # Create a new Notification
 # __mode=save&_type=notification&&blog_id=1
@@ -467,7 +470,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new notification" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Create a new Notification: result"
 );
 
@@ -485,7 +488,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete notification" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Delete notification: result" );
 
 # Create a new Role
@@ -500,8 +503,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Create a new role" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Create a new Role: result" );
+ok( $out, "Create a new role" );
+ok( $out =~ m/Permisison denied/i, "Create a new Role: result" );
 
 # Delete Role
 # __mode=delete&_type=role&id=1
@@ -515,8 +518,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete role" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete role: result" );
+ok( $out, "Delete role" );
+ok( $out =~ m/Permission denied/i, "Delete role: result" );
 
 # Create a new Config
 # __mode=save&_type=config
@@ -529,8 +532,9 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new config" );
-ok( $out =~ m/Invalid request\./i, "Create a new Config: result" );
+ok( $out, "Create a new config" );
+ok( $out =~ m/Permission denied/i,
+    "Create a new Config: result" );
 
 # Delete Config
 # __mode=delete&_type=config&id=1
@@ -544,8 +548,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete config" );
-ok( $out =~ m/Invalid request\./i, "Delete config: result" );
+ok( $out, "Delete config" );
+ok( $out =~ m/Permission denied/i, "Delete config: result" );
 
 # Create a new Fileinfo
 # __mode=save&_type=fileinfo&blog_id=1
@@ -559,8 +563,9 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new fileinfo" );
-ok( $out =~ m/Invalid request\./i, "Create a new Fileinfo: result" );
+ok( $out, "Create a new fileinfo" );
+ok( $out =~ m/Permission denied/i,
+    "Create a new Fileinfo: result" );
 
 # Delete Fileinfo
 # __mode=delete&_type=fileinfo&id=1
@@ -574,8 +579,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete fileinfo" );
-ok( $out =~ m/Invalid request\./i, "Delete fileinfo: result" );
+ok( $out, "Delete fileinfo" );
+ok( $out =~ m/Permission denied/i, "Delete fileinfo: result" );
 
 # Create a new Log
 # __mode=save&_type=log&blog_id=1
@@ -589,8 +594,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new log" );
-ok( $out =~ m/Invalid request\./i, "Create a new Log: result" );
+ok( $out, "Create a new log" );
+ok( $out =~ m/Permission denied/i, "Create a new Log: result" );
 
 # Delete Log
 # __mode=delete&_type=log&id=1
@@ -604,8 +609,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete log" );
-ok( $out =~ m/Invalid request\./i, "Delete log: result" );
+ok( $out, "Delete log" );
+ok( $out =~ m/Permission denied/i, "Delete log: result" );
 
 # Create a new ObjectAsset
 # __mode=save&_type=objectasset&asset_id=1&object_id=1&object_ds=entry
@@ -621,8 +626,10 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new objectasset" );
-ok( $out =~ m/Invalid request\./i, "Create a new Objectasset: result" );
+ok( $out, "Create a new objectasset" );
+ok( $out =~ m/Permission denied/i,
+    "Create a new Objectasset: result"
+);
 
 # Delete Objectasset
 # __mode=delete&_type=objectasset&id=1
@@ -636,8 +643,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete objectasset" );
-ok( $out =~ m/Invalid request\./i, "Delete objectasset: result" );
+ok( $out, "Delete objectasset" );
+ok( $out =~ m/Permission denied/i, "Delete objectasset: result" );
 
 # Create a new Objectscore
 # __mode=save&_type=objectscore&namespace=scope_name&object_ds=entry
@@ -652,8 +659,10 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new objectscore" );
-ok( $out =~ m/Invalid request\./i, "Create a new Objectscore: result" );
+ok( $out, "Create a new objectscore" );
+ok( $out =~ m/Permission denied/i,
+    "Create a new Objectscore: result"
+);
 
 # Delete Objectscore
 # __mode=delete&_type=objectscore&id=1
@@ -667,8 +676,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete objectscore" );
-ok( $out =~ m/Invalid request\./i, "Delete objectscore: result" );
+ok( $out, "Delete objectscore" );
+ok( $out =~ m/Permission denied/i, "Delete objectscore: result" );
 
 # Create a new Objecttag
 # __mode=save&_type=objecttag&tag_id=1&object_datasource=entry&object_id=1
@@ -684,8 +693,10 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new objecttag" );
-ok( $out =~ m/Invalid request\./i, "Create a new Objecttag: result" );
+ok( $out, "Create a new objecttag" );
+ok( $out =~ m/Permission denied/i,
+    "Create a new Objecttag: result"
+);
 
 # Delete Objecttag
 # __mode=delete&_type=objecttag&id=1
@@ -699,8 +710,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete objecttag" );
-ok( $out =~ m/Invalid request\./i, "Delete objecttag: result" );
+ok( $out, "Delete objecttag" );
+ok( $out =~ m/Permission denied/i, "Delete objecttag: result" );
 
 # Create a new Permission
 # __mode=save&_type=permission&blog_id=1&author_id=1
@@ -715,8 +726,10 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new permission" );
-ok( $out =~ m/Invalid request\./i, "Create a new Permission: result" );
+ok( $out, "Create a new permission" );
+ok( $out =~ m/Permission denied/i,
+    "Create a new Permission: result"
+);
 
 # Delete Permission
 # __mode=delete&_type=permission&id=1
@@ -730,8 +743,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete permission" );
-ok( $out =~ m/Invalid request\./i, "Delete permission: result" );
+ok( $out, "Delete permission" );
+ok( $out =~ m/Permission denied/i, "Delete permission: result" );
 
 # Create a new Placement
 # __mode=save&_type=placement&blog_id=1&category_id=1&entry_id=1&is_primary=1
@@ -748,8 +761,10 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new placement" );
-ok( $out =~ m/Invalid request\./i, "Create a new Placement: result" );
+ok( $out, "Create a new placement" );
+ok( $out =~ m/Permission denied/i,
+    "Create a new Placement: result"
+);
 
 # Delete Placement
 # __mode=delete&_type=placement&id=1
@@ -763,8 +778,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete placement" );
-ok( $out =~ m/Invalid request\./i, "Delete placement: result" );
+ok( $out, "Delete placement" );
+ok( $out =~ m/Permission denied/i, "Delete placement: result" );
 
 # Create a new Session
 # __mode=save&_type=session&id=THIS_IS_A_FAKE_SESSION_2&start=currenttime
@@ -779,8 +794,9 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new session" );
-ok( $out =~ m/Invalid request\./i, "Create a new Session: result" );
+ok( $out, "Create a new session" );
+ok( $out =~ m/Permisison denied/i,
+    "Create a new Session: result" );
 
 # Delete Session
 # __mode=delete&_type=session&id=THIS_IS_A_FAKE_SESSION
@@ -794,8 +810,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete session" );
-ok( $out =~ m/Invalid request\./i, "Delete session: result" );
+ok( $out, "Delete session" );
+ok( $out =~ m/Permission denied/i, "Delete session: result" );
 
 # Create a new Tag
 # __mode=save&_type=tag&name=NewTag
@@ -809,8 +825,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new tag" );
-ok( $out =~ m/Invalid request\./i, "Create a new Tag: result" );
+ok( $out, "Create a new tag" );
+ok( $out =~ m/Permission denied/i, "Create a new Tag: result" );
 
 # Delete Tag
 # __mode=delete&_type=tag&id=1
@@ -824,8 +840,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete tag" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete tag: result" );
+ok( $out, "Delete tag" );
+ok( $out =~ m/Permission denied/i, "Delete tag: result" );
 
 # Create a new Ping
 # __mode=save&_type=ping&blog_id=1&ip=1.1.1.1&tb_id=1
@@ -841,8 +857,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Create a new ping" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Create a new Ping: result" );
+ok( $out, "Create a new ping" );
+ok( $out =~ m/Permission denied/i, "Create a new Ping: result" );
 
 # Delete Ping
 # __mode=delete&_type=ping&id=1
@@ -856,8 +872,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete ping" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete ping: result" );
+ok( $out, "Delete ping" );
+ok( $out =~ m/Permission denied/i, "Delete ping: result" );
 
 # Create a new Touch
 # __mode=save&_type=touch
@@ -870,8 +886,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new touch" );
-ok( $out =~ m/Invalid request\./i, "Create a new Touch: result" );
+ok( $out, "Create a new touch" );
+ok( $out =~ m/Permission denied/i, "Create a new Touch: result" );
 
 # Delete Touch
 # __mode=delete&_type=touch&id=1
@@ -885,8 +901,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete touch" );
-ok( $out =~ m/Invalid request\./i, "Delete touch: result" );
+ok( $out, "Delete touch" );
+ok( $out =~ m/Permission denied/i, "Delete touch: result" );
 
 # Create a new Trackback
 # __mode=save&_type=trackback&blog_id=1
@@ -900,8 +916,10 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new trackback" );
-ok( $out =~ m/Invalid request\./i, "Create a new Trackback: result" );
+ok( $out, "Create a new trackback" );
+ok( $out =~ m/Permission denied/i,
+    "Create a new Trackback: result"
+);
 
 # Delete Trackback
 # __mode=delete&_type=trackback&id=1
@@ -915,8 +933,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete trackback" );
-ok( $out =~ m/Invalid request\./i, "Delete trackback: result" );
+ok( $out, "Delete trackback" );
+ok( $out =~ m/Permission denied/i, "Delete trackback: result" );
 
 # Create a new Template
 # __mode=save&_type=template&blog_id=1&name=NewTemplate&type=custom
@@ -934,7 +952,7 @@ $app  = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new template" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Create a new Template: result" );
 
 # Delete Template
@@ -949,8 +967,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete template" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete template: result" );
+ok( $out, "Delete template" );
+ok( $out =~ m/Permission denied/i, "Delete template: result" );
 
 # Create a new Templatemap
 # __mode=save&_type=templatemap&blog_id=1&archive_type=Author&template_id=1
@@ -966,8 +984,10 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new templatemap" );
-ok( $out =~ m/Invalid request\./i, "Create a new Templatemap: result" );
+ok( $out, "Create a new templatemap" );
+ok( $out =~ m/Permission denied/i,
+    "Create a new Templatemap: result"
+);
 
 # Delete Templatemap
 # __mode=delete&_type=templatemap&id=1
@@ -981,8 +1001,9 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete templatemap" );
-ok( $out =~ m/Invalid request\./i, "Delete templatemap: result" );
+ok( $out, "Delete templatemap" );
+ok( $out =~ m/Permission denied/i, "Delete templatemap: result" );
+
 
 ### Addons
 if ( $mt->component('commercial') ) {
@@ -1004,7 +1025,7 @@ if ( $mt->component('commercial') ) {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Create a new field" );
-    ok( $out =~ m/__mode=dashboard&permission=1/i,
+    ok( $out =~ m/Permission denied/i,
         "Create a new Field: result" );
 
     # Delete Field
@@ -1020,8 +1041,8 @@ if ( $mt->component('commercial') ) {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                                      "Delete field" );
-    ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete field: result" );
+    ok( $out, "Delete field" );
+    ok( $out =~ m/Permission denied/i, "Delete field: result" );
 }
 
 if ( $mt->component('enterprise') ) {
@@ -1039,7 +1060,7 @@ if ( $mt->component('enterprise') ) {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Create a new group" );
-    ok( $out =~ m/__mode=dashboard&permission=1/i,
+    ok( $out =~ m/Permission denied/i,
         "Create a new Group: result" );
 
     # Delete Group
@@ -1054,28 +1075,13 @@ if ( $mt->component('enterprise') ) {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                                      "Delete group" );
-    ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete group: result" );
+    ok( $out, "Delete group" );
+    ok( $out =~ m/Permission denied/i, "Delete group: result" );
 }
+
 
 ### Other user
 $user = MT::Author->load(999);    #aikawa
-
-# Delete Filter owned by ichikawa
-# __mode=delete&_type=filter&blog_id=1&id=1
-$app = _run_app(
-    'MT::App::CMS',
-    {   __test_user      => $user,
-        __request_method => 'POST',
-        __mode           => 'delete',
-        _type            => 'filter',
-        blog_id          => 1,
-        id               => 1
-    }
-);
-$out = delete $app->{__test_output};
-ok( $out,                          "Delete filter" );
-ok( $out =~ m/Permission Denied/i, "Delete filter: result" );
 
 ### Different type
 $user = MT::Author->load(997);    #ukawa
@@ -1093,7 +1099,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete website (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Delete website (different): result"
 );
 
@@ -1112,7 +1118,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete blog (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Delete blog (different): result"
 );
 
@@ -1133,7 +1139,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Update a category (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     " Update a category (different): result"
 );
 
@@ -1151,7 +1157,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete category (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Delete category (different): result"
 );
 
@@ -1172,7 +1178,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Update a folder (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     " Update a folder (different): result"
 );
 
@@ -1190,7 +1196,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete folfer (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Delete folder (different): result"
 );
 
@@ -1212,7 +1218,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Update an page (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Update an Page(different): result"
 );
 
@@ -1230,7 +1236,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete page (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Delete page (different): result"
 );
 
@@ -1252,7 +1258,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Update an entry (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Update an Entry(different): result"
 );
 
@@ -1270,7 +1276,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Delete entry (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
+ok( $out =~ m/Permission denied/i,
     "Delete entry (different): result"
 );
 
@@ -1467,20 +1473,6 @@ sub make_data {
     $assoc->role_id( $editor_role->id );
     $assoc->type(1);
     $assoc->save();
-
-    ### Filter
-    require MT::Filter;
-    my $filter = MT::Filter->new();
-    $filter->set_values(
-        {   author_id => $ichikawa->id,
-            blog_id   => 1,
-            object_ds => 'entry',
-        }
-    );
-    $filter->save()
-        or die "Couldn't save filter record: 1" . $filter->errstr;
-
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     ### IPBanList
     require MT::IPBanList;
