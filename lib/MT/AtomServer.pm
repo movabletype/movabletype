@@ -692,9 +692,8 @@ sub new_post {
 
     # Clear cache for site stats dashboard widget.
     require MT::Util;
-    MT::Util::clear_site_stats_widget_cache( $blog->id, $user->id )
-        or die _fault(
-        MT->translate('Removing stats cache was failed.') );
+    MT::Util::clear_site_stats_widget_cache( $blog->id )
+        or die _fault( MT->translate('Removing stats cache was failed.') );
 
     require MT::Log;
     $app->log(
@@ -794,9 +793,9 @@ sub edit_post {
         )
     {
         require MT::Util;
-        MT::Util::clear_site_stats_widget_cache( $blog->id, $app->{user}->id )
-            or die _fault(
-            MT->translate('Removing stats cache was failed.') );
+        MT::Util::clear_site_stats_widget_cache( $blog->id )
+            or
+            die _fault( MT->translate('Removing stats cache was failed.') );
     }
 
     require MT::Log;
@@ -982,9 +981,8 @@ sub delete_post {
 
     # Clear cache for site stats dashboard widget.
     require MT::Util;
-    MT::Util::clear_site_stats_widget_cache( $blog->id, $app->{user}->id )
-        or die _fault(
-        MT->translate('Removing stats cache was failed.') );
+    MT::Util::clear_site_stats_widget_cache( $blog->id )
+        or die _fault( MT->translate('Removing stats cache was failed.') );
 
     # Rebuild archives
     if (%recipe) {

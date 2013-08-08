@@ -1787,7 +1787,7 @@ sub save {
         )
     {
         require MT::Util;
-        MT::Util::clear_site_stats_widget_cache( $blog_id, $app->user->id )
+        MT::Util::clear_site_stats_widget_cache($blog_id)
             or return $app->error(
             translate('Removing stats cache was failed.') );
     }
@@ -2958,8 +2958,7 @@ sub update_entry_status {
             )
         {
             require MT::Util;
-            MT::Util::clear_site_stats_widget_cache( $entry->blog_id,
-                $app->user->id )
+            MT::Util::clear_site_stats_widget_cache( $entry->blog_id )
                 or return $app->error(
                 translate('Removing stats cache was failed.') );
         }
@@ -3091,7 +3090,7 @@ sub delete {
 
     # Clear cache for site stats dashboard widget.
     require MT::Util;
-    MT::Util::clear_site_stats_widget_cache( $blog->id, $app->user->id )
+    MT::Util::clear_site_stats_widget_cache( $blog->id )
         or
         return $app->error( translate('Removing stats cache was failed.') );
 

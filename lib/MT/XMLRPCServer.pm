@@ -445,8 +445,7 @@ sub _new_entry {
 
     # Clear cache for site stats dashboard widget.
     require MT::Util;
-    MT::Util::clear_site_stats_widget_cache( $entry->blog_id,
-        $entry->author_id )
+    MT::Util::clear_site_stats_widget_cache( $entry->blog_id )
         or die MT::XMLRPCServer::_fault(
         MT->translate('Removing stats cache was failed.') );
 
@@ -618,8 +617,7 @@ sub _edit_entry {
         )
     {
         require MT::Util;
-        MT::Util::clear_site_stats_widget_cache( $entry->blog_id,
-            $entry->author_id )
+        MT::Util::clear_site_stats_widget_cache( $entry->blog_id )
             or die MT::XMLRPCServer::_fault(
             MT->translate('Removing stats cache was failed.') );
     }
@@ -900,8 +898,7 @@ sub _delete_entry {
 
     # Clear cache for site stats dashboard widget.
     require MT::Util;
-    MT::Util::clear_site_stats_widget_cache( $entry->blog_id,
-        $entry->author_id )
+    MT::Util::clear_site_stats_widget_cache( $entry->blog_id )
         or die MT::XMLRPCServer::_fault(
         MT->translate('Removing stats cache was failed.') );
 

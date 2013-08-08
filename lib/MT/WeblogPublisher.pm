@@ -1967,8 +1967,7 @@ sub publish_future_posts {
             $total_changed++;
 
             # Clear cache for site stats dashnoard widget.
-            MT::Util::clear_site_stats_widget_cache( $blog->id,
-                $entry->author_id )
+            MT::Util::clear_site_stats_widget_cache( $blog->id )
                 or die translate('Removing stats cache was failed.');
         }
         if ($changed) {
@@ -2089,8 +2088,7 @@ sub unpublish_past_entries {
             $total_changed++;
 
             # Clear cache for site stats dashnoard widget.
-            MT::Util::clear_site_stats_widget_cache( $site->id,
-                $entry->author_id )
+            MT::Util::clear_site_stats_widget_cache( $site->id )
                 or die translate('Removing stats cache was failed.');
         }
         if ($changed) {
