@@ -1251,11 +1251,11 @@ sub generate_site_stats_data {
         }
 
         my $max_sub = 0;
-        for ( my $i; $i <= $#maxes; $i++ ) {
+        for ( my $i = 0; $i <= $#maxes; $i++ ) {
             $max_sub = $i if $maxes[$max_sub] < $maxes[$i];
         }
         my @rate;
-        for ( my $i; $i <= $#maxes; $i++ ) {
+        for ( my $i = 0; $i <= $#maxes; $i++ ) {
             if ( $i == $max_sub ) {
                 push @rate, 1;
             }
@@ -1269,7 +1269,7 @@ sub generate_site_stats_data {
         foreach my $date (@dates) {
             my %row1 = ( x => $date );
             my @row2;
-            for ( my $i; $i <= $#counts; $i++ ) {
+            for ( my $i = 0; $i <= $#counts; $i++ ) {
                 my $count
                     = $counts[$i]->{$date}
                     ? $counts[$i]->{$date} * $rate[$i]
