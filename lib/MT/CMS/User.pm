@@ -1027,8 +1027,7 @@ sub dialog_select_author {
             push @blog_ids, $_->id;
         }
     }
-    push @blog_ids, $blog->id
-        if ( !$blog->is_blog && $entry_type eq 'page' ) || ( $blog->is_blog );
+    push @blog_ids, $blog->id;
 
     if ( !$app->user->is_superuser ) {
         my @ids = map { $_->id } @{ $blog->blogs }
