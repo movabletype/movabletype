@@ -105,7 +105,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                         $quote = '';
                     }
                     if ($ctx->global_attr[$attr]) {
-                        $modargs .= '|';
+                        $modargs .= '|@';
                         if ($ctx->global_attr[$attr] != '1') {
                             $modargs .= $ctx->global_attr[$attr];
                         } else {
