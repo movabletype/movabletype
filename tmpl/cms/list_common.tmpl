@@ -1352,7 +1352,8 @@ jQuery('#dialog_filter').dialog({
     autoOpen: false,
     title: trans('Select Filter'),
     width: 380,
-    resizable: false
+    resizable: false,
+    close: function(){ cancelFilterRenameField() }
 });
 
 jQuery('#opener').click(function() {
