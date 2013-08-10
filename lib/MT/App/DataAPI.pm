@@ -562,6 +562,11 @@ sub endpoint_url {
     $url . $app->uri_params( args => $params );
 }
 
+sub find_endpoints_by_path {
+    my $app = shift;
+    $app->find_endpoint_by_path( '*', @_ );
+}
+
 sub find_endpoint_by_path {
     my ( $app, $verb, $version, $path ) = @_;
     $verb = lc($verb);
@@ -589,6 +594,10 @@ sub find_endpoint_by_path {
         else {
             return;
         }
+    }
+
+    if ( $verb eq '*' ) {
+        return $handler->{':e'};
     }
 
     my $e = $handler->{':e'}{$verb}
@@ -638,6 +647,14 @@ sub _path {
     my $path = $app->path_info;
     $path =~ s{.+(?=/v\d+/)}{};
     $path;
+}
+
+sub _version_path {
+    my ($app) = @_;
+    my $path = $app->_path;
+
+    $path =~ s{\A/?v(\d+)}{};
+    ( $1, $path );
 }
 
 sub resource_object {
@@ -865,6 +882,20 @@ sub send_http_header {
     return $app->SUPER::send_http_header(@_);
 }
 
+sub default_options_response {
+    my $app = shift;
+
+    my $endpoints = $app->find_endpoints_by_path( $app->_version_path )
+        || {};
+
+    $app->set_header( 'Allow' =>
+            join( ', ', sort( map { uc $_ } keys %$endpoints ), 'OPTIONS' ) );
+    $app->send_http_header();
+    $app->{no_print_body} = 1;
+
+    undef;
+}
+
 sub error {
     my $app  = shift;
     my @args = @_;
@@ -988,18 +1019,19 @@ sub load_default_page_prefs {
 
 sub api {
     my ($app) = @_;
-    my $path = $app->_path;
+    my ( $version, $path ) = $app->_version_path;
 
-    $path =~ s{\A/?v(\d+)}{};
     return $app->print_error( 'API Version is required', 400 )
-        unless defined($1);
-    my $version = $1;
+        unless defined $version;
 
     my $request_method = $app->_request_method
         or return;
     my ( $endpoint, $params )
         = $app->find_endpoint_by_path( $request_method, $version, $path )
-        or return $app->print_error( 'Unknown endpoint', 404 );
+        or return
+        lc($request_method) eq 'options'
+        ? $app->default_options_response
+        : $app->print_error( 'Unknown endpoint', 404 );
     my $user = $app->authenticate;
 
     if ( !$user || ( $endpoint->{requires_login} && $user->is_anonymous ) ) {
@@ -1067,6 +1099,11 @@ sub api {
 
         $app->{no_print_body} = 1;
         $app->print_encode($data);
+        undef;
+    }
+    elsif ( lc($request_method) eq 'options' && !$response ) {
+        $app->send_http_header();
+        $app->{no_print_body} = 1;
         undef;
     }
     else {
