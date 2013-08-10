@@ -486,9 +486,7 @@ sub _compile_endpoints {
                 $e->{requires_login} = 1;
             }
 
-
             next if $e->{version} > $version;
-
 
             $e->{_vars} = [];
 
@@ -829,11 +827,40 @@ sub purge_session_records {
     return '';
 }
 
+sub send_cors_http_header {
+    my $app    = shift;
+    my $config = $app->config;
+
+    my $origin       = $app->get_header('Origin');
+    my $allow_origin = $config->DataAPICORSAllowOrigin
+        or return;
+
+    if ( $allow_origin ne '*' ) {
+        return unless $origin;
+
+        my ($match_origin) = grep { $_ eq $origin } split /\s*,\s*/,
+            $allow_origin;
+        return unless $match_origin;
+        $allow_origin = $match_origin;
+    }
+
+    $app->set_header( 'Access-Control-Allow-Origin' => $allow_origin );
+    $app->set_header( 'XDomainRequestAllowed'       => 1 );
+    $app->set_header(
+        'Access-Control-Allow-Methods' => $config->DataAPICORSAllowMethods );
+    $app->set_header(
+        'Access-Control-Allow-Headers' => $config->DataAPICORSAllowHeaders );
+    $app->set_header( 'Access-Control-Expose-Headers' =>
+            $config->DataAPICORSExposeHeaders );
+}
+
 sub send_http_header {
     my $app = shift;
 
     $app->set_header( 'X-Content-Type' => 'nosniff' );
     $app->set_header( 'Cache-Control'  => 'no-cache' );
+
+    $app->send_cors_http_header(@_);
 
     return $app->SUPER::send_http_header(@_);
 }

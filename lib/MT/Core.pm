@@ -2012,7 +2012,13 @@ BEGIN {
             'LockoutNotifyTo'                => undef,
 
             # DataAPI
-            'AccessTokenTTL' => { default => 60 * 60, },
+            'AccessTokenTTL'          => { default => 60 * 60, },
+            'DataAPICORSAllowOrigin'  => { default => undef },
+            'DataAPICORSAllowMethods' => { default => '*' },
+            'DataAPICORSAllowHeaders' =>
+                { default => 'X-MT-Authorization, X-Requested-With' },
+            'DataAPICORSExposeHeaders' =>
+                { default => 'X-MT-Next-Phase-URL' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
