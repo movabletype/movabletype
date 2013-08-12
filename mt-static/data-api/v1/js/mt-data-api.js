@@ -4,7 +4,7 @@
  * Copyright (c) 2013 Six Apart, Ltd.
  * This program is distributed under the terms of the MIT license.
  *
- * Includes jQuery JavaScript Library to serialize a HTMLFormElement
+ * Includes jQuery JavaScript Library in some parts.
  * http://jquery.com/
  * Copyright 2005, 2013 jQuery Foundation, Inc. and other contributors
  * Released under the MIT license
@@ -37,6 +37,9 @@
  *     When using the cookie, this value is used as cookie path.
  *   @param {Boolean} [options.async] If true, use asynchronous
  *      XMLHttpRequest. The default value is the true.
+ *   @param {Boolean} [options.timeout] The number of milliseconds a
+ *      request can take before automatically being terminated.
+ *      The default value is not set up, browser's default is used.
  *   @param {Boolean} [options.cache] If false, add an additional
  *      parameter "_" to request to avoid cache. The default value
  *      is the true.
@@ -45,10 +48,16 @@
  *      already got accessToken. The default value is the false.
  *   @param {Boolean} [options.loadPluginEndpoints] If true, load
  *      endpoint data extended by plugin and generate methods to
- *      access that endpoint automatically. The default value is the true.
+ *      access that endpoint automatically. The default value is
+ *      the true.
  *   @param {Boolean} [options.suppressResponseCodes] If true, add
  *      suppressResponseCodes parameter to each request.
- *      The default value is the true.
+ *      The default value is the false when requested via XMLHttpRequest
+ *      or IFRAME. The default value is the true when requested via
+ *      XDomainRequest.
+ *   @param {Boolean} [options.crossDomain] If true, requests are sent as
+ *      a cross-domain request. The default value is assigned
+ *      automatically by document's URL and baseUrl.
  *   @param {Boolean(} [options.disableFormData] If false,use FormData
  *      class when available that. The default value is the false.
  */
@@ -64,10 +73,12 @@ var DataAPI = function(options) {
         sessionDomain: undefined,
         sessionPath: undefined,
         async: true,
+        timeout: undefined,
         cache: true,
         withoutAuthorization: false,
         loadPluginEndpoints: true,
-        suppressResponseCodes: false,
+        suppressResponseCodes: undefined,
+        crossDomain: undefined,
         disableFormData: false
     };
     for (k in options) {
@@ -95,6 +106,8 @@ var DataAPI = function(options) {
     this.callbacks = {};
     this.tokenData = null;
     this.iframeId  = 0;
+
+    this._initOptions();
 
     if (this.o.loadPluginEndpoints) {
         this.loadEndpoints({
@@ -2071,6 +2084,39 @@ DataAPI.getDefaultSessionStore = function() {
 DataAPI.prototype = {
     constructor: DataAPI.prototype.constructor,
 
+    _initOptions: function() {
+        this._initCrossDomainOption();
+    },
+
+    _initCrossDomainOption: function() {
+        var loc, locParts, baseUrl, baseParts,
+            urlRegexp = /^([\w.+-]+:)(?:\/\/([^\/?#:]*)(?::(\d+)|)|)/;
+
+        if ( window.document && typeof this.o.crossDomain === 'undefined') {
+            // IE may throw an exception when accessing
+            // a field from window.location if document.domain has been set
+            try {
+                loc = window.location.href;
+            } catch( e ) {
+                // Use the href attribute of an A element
+                // since IE will modify it given document.location
+                loc = window.document.createElement( "a" );
+                loc.href = "";
+                loc = loc.href;
+            }
+            locParts  = urlRegexp.exec( loc.toLowerCase() ) || [];
+
+            baseUrl   = this.o.baseUrl.replace(/^\/\//, locParts[1]).toLowerCase();
+            baseParts = urlRegexp.exec( baseUrl );
+
+            this.o.crossDomain = !!( baseParts &&
+                ( baseParts[ 1 ] !== locParts[ 1 ] || baseParts[ 2 ] !== locParts[ 2 ] ||
+                    ( baseParts[ 3 ] || ( baseParts[ 1 ] === "http:" ? "80" : "443" ) ) !==
+                        ( locParts[ 3 ] || ( locParts[ 1 ] === "http:" ? "80" : "443" ) ) )
+            );
+        }
+    },
+
     /**
      * Get authorization URL.
      * @method getAuthorizationUrl
@@ -2544,7 +2590,9 @@ DataAPI.prototype = {
         if (typeof params === 'string') {
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         }
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        if (! this.o.crossDomain) {
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        }
 
         function normalizeHeaderKey(all, prefix, letter) {
             return prefix + letter.toUpperCase();
@@ -2672,10 +2720,20 @@ DataAPI.prototype = {
         }
 
         this.o = o;
+        this._initOptions();
+
         result = func.apply(this);
+
         this.o = originalOption;
+        this._initOptions();
 
         return result;
+    },
+
+    _requestVia: function() {
+        return (window.XDomainRequest &&
+                this.o.crossDomain &&
+                /msie (8|9)\./i.test(window.navigator.appVersion)) ? 'xdr' : 'xhr';
     },
 
     /**
@@ -2700,7 +2758,8 @@ DataAPI.prototype = {
             params     = null,
             callback   = function(){},
             xhr        = null,
-            viaXhr     = true,
+            xdr        = null,
+            via        = this._requestVia(),
             tokenData  = this.getTokenData(),
             authHeader = this.getAuthorizationHeader('accessToken'),
             currentFormat     = this.getCurrentFormat(),
@@ -2739,7 +2798,7 @@ DataAPI.prototype = {
             }
 
             if (api._findFileInput(params)) {
-                viaXhr = false;
+                via = 'iframe';
 
                 data = {};
                 for (k in params) {
@@ -2808,26 +2867,28 @@ DataAPI.prototype = {
             return retryWithAuthentication();
         }
 
+        if (authHeader) {
+            defaultHeaders['X-MT-Authorization'] = authHeader;
+        }
+
         if (endpoint === '/token' || endpoint === '/authentication') {
             if (tokenData && tokenData.sessionId) {
                 defaultHeaders['X-MT-Authorization'] =
                     api.getAuthorizationHeader('sessionId');
             }
             else if (endpoint === '/token' && originalMethod.toLowerCase() === 'post') {
-                defaultHeaders['X-MT-Authorization'] = '';
+                delete defaultHeaders['X-MT-Authorization'];
             }
             defaultParams.clientId = api.o.clientId;
-        }
-
-        if (! ('X-MT-Authorization' in defaultHeaders)) {
-            defaultHeaders['X-MT-Authorization'] = authHeader;
         }
 
         if (this.o.withoutAuthorization) {
             delete defaultHeaders['X-MT-Authorization'];
         }
 
-        if (this.o.suppressResponseCodes) {
+        if (this.o.suppressResponseCodes ||
+            (typeof this.o.suppressResponseCodes === 'undefined' && via === 'xdr')
+        ) {
             defaultParams.suppressResponseCodes = true;
         }
 
@@ -2855,7 +2916,8 @@ DataAPI.prototype = {
                     v &&
                     ! v.nodeName &&
                     ((window.ActiveXObject && v instanceof window.ActiveXObject) ||
-                     (window.XMLHttpRequest && v instanceof window.XMLHttpRequest))
+                     (window.XMLHttpRequest && v instanceof window.XMLHttpRequest) ||
+                     (window.XDomainRequest && v instanceof window.XDomainRequest))
                 ) {
                     xhr = v;
                 }
@@ -2900,58 +2962,102 @@ DataAPI.prototype = {
         base = this.o.baseUrl.replace(/\/*$/, '/') + 'v' + this.getVersion();
         endpoint = endpoint.replace(/^\/*/, '/');
 
-        if (viaXhr) {
+
+        function responseCallback(contentType, responseText, status, statusText, cleanup) {
+            var response, mimeType, format, callbackResult;
+
+            try {
+                mimeType = contentType;
+                format   = api.findFormat(mimeType) || api.getCurrentFormat();
+                response = format.unserialize(responseText);
+            }
+            catch (e) {
+                response = {
+                    error: {
+                        code:    +status,
+                        message: statusText || 'Communication Error'
+                    }
+                };
+            }
+
+            if (needToRetry(response)) {
+                retryWithAuthentication();
+                if (cleanup) {
+                    cleanup();
+                }
+                return false;
+            }
+
+            if (endpoint === '/authentication' &&
+                originalMethod.toLowerCase() === 'delete' &&
+                ! response.error) {
+                api.removeSessionData(api.getAppKey());
+            }
+            else if (! response.error && (
+                (endpoint === '/authentication' &&
+                 originalMethod.toLowerCase() === 'post') ||
+                (endpoint === '/token' &&
+                 originalMethod.toLowerCase() === 'post'))) {
+                api.storeTokenData(response);
+            }
+
+            callbackResult = runCallback(response);
+
+            if (callbackResult !== false &&
+                response.error && response.error.code === 401 &&
+                endpoint !== '/authentication') {
+                api.trigger('authorizationRequired', response);
+            }
+        }
+
+        if (via === 'xdr') {
+            if (! this._isEmptyObject(defaultHeaders)) {
+                throw 'Cannot set request header when sending via XDomainRequest';
+            }
+
+            xdr = xhr || new window.XDomainRequest();
+            xdr.onload = function() {
+                responseCallback(xdr.contentType, xdr.responseText, 200);
+            };
+            xdr.onerror = function() {
+                responseCallback(xdr.contentType, xdr.responseText, 404);
+            };
+            xdr.onprogress = function(){};
+            xdr.ontimeout = function() {
+                responseCallback(xdr.contentType, xdr.responseText, 0);
+            };
+            if (typeof this.o.timeout !== 'undefined') {
+                xdr.timeout = this.o.timeout || Number.MAX_VALUE;
+            }
+            xdr.open( method, base + endpoint);
+            xdr.send( params || null );
+        }
+        else if (via === 'xhr') {
             xhr = xhr || this.newXMLHttpRequest();
+            if (typeof this.o.timeout !== 'undefined') {
+                xhr.timeout = this.o.timeout;
+            }
             xhr.onreadystatechange = function() {
+                var responseResult, url;
+
                 if (xhr.readyState !== 4) {
                     return;
-                }
-
-                var response, mimeType, format, url, callbackResult;
-
-                try {
-                    mimeType = xhr.getResponseHeader('Content-Type');
-                    format   = api.findFormat(mimeType) || api.getCurrentFormat();
-                    response = format.unserialize(xhr.responseText);
-                }
-                catch (e) {
-                    response = {
-                        error: {
-                            code:    parseInt(xhr.status, 10),
-                            message: xhr.statusText || 'Communication Error'
-                        }
-                    };
                 }
 
                 function cleanup() {
                     xhr.onreadystatechange = function(){};
                 }
 
-                if (needToRetry(response)) {
-                    retryWithAuthentication();
-                    cleanup();
+                responseResult = responseCallback(
+                    xhr.getResponseHeader('Content-Type'),
+                    xhr.responseText,
+                    xhr.status,
+                    xhr.statusText,
+                    cleanup
+                );
+
+                if (responseResult === false) {
                     return;
-                }
-
-                if (endpoint === '/authentication' &&
-                    originalMethod.toLowerCase() === 'delete' &&
-                    ! response.error) {
-                    api.removeSessionData(api.getAppKey());
-                }
-                else if (! response.error && (
-                    (endpoint === '/authentication' &&
-                     originalMethod.toLowerCase() === 'post') ||
-                    (endpoint === '/token' &&
-                     originalMethod.toLowerCase() === 'post'))) {
-                    api.storeTokenData(response);
-                }
-
-                callbackResult = runCallback(response);
-
-                if (callbackResult !== false &&
-                    response.error && response.error.code === 401 &&
-                    endpoint !== '/authentication') {
-                    api.trigger('authorizationRequired', response);
                 }
 
                 url = xhr.getResponseHeader('X-MT-Next-Phase-URL');
