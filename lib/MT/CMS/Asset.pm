@@ -260,6 +260,9 @@ sub dialog_list_asset {
     my ( $ext_from, $ext_to )
         = ( $app->param('ext_from'), $app->param('ext_to') );
 
+    # Check directory for thumbnail image
+    _check_thumbnail_dir( $app, \%carry_params );
+
     $app->listing(
         {   terms    => \%terms,
             args     => \%args,
@@ -433,6 +436,9 @@ sub start_upload {
 
     $param{search_label} = $app->translate('Assets');
     $param{search_type}  = 'asset';
+
+    # Check directory for thumbnail image
+    _check_thumbnail_dir( $app, \%param );
 
     $param{dialog} = $dialog;
     my $tmpl_file
@@ -1758,6 +1764,50 @@ sub cms_pre_load_filtered_list {
     $terms->{blog_id} = $blog_ids
         if $blog_ids;
     $load_options->{terms} = $terms;
+}
+
+sub template_param_list {
+    my $cb = shift;
+    my ( $app, $param, $tmpl ) = @_;
+
+    # Check directory for thumbnail image
+    _check_thumbnail_dir( $app, $param );
+}
+
+sub _check_thumbnail_dir {
+    my $app = shift;
+    my ($param) = @_;
+
+    require MT::FileMgr;
+    require File::Spec;
+    my $fmgr            = MT::FileMgr->new('Local');
+    my $path            = MT->config('AssetCacheDir');
+    my $site_path       = $app->blog->site_path;
+    my $site_thumb_path = File::Spec->catdir( $site_path, $path );
+    my @warnings;
+    if ( $fmgr->exists($site_thumb_path)
+        && !$fmgr->can_write($site_thumb_path) )
+    {
+        my %hash = (
+            key  => 'site',
+            path => $site_thumb_path,
+        );
+        push @warnings, \%hash;
+    }
+    if ( $app->blog->column('archive_path') ) {
+        my $archive_path = $app->blog->archive_path;
+        my $archive_thumb_path = File::Spec->catdir( $archive_path, $path );
+        if ( $fmgr->exists($archive_thumb_path)
+            && !$fmgr->can_write($archive_thumb_path) )
+        {
+            my %hash = (
+                key  => 'archive',
+                path => $archive_thumb_path,
+            );
+            push @warnings, \%hash;
+        }
+    }
+    $param->{thumb_dir_warnings} = \@warnings if @warnings;
 }
 
 1;

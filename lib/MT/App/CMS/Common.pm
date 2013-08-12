@@ -331,6 +331,7 @@ sub init_core_callbacks {
             $pkg
                 . 'pre_load_filtered_list.asset' =>
                 "${pfx}Asset::cms_pre_load_filtered_list",
+            'list_template_param.asset' => "${pfx}Asset::template_param_list",
 
             # log
             $pkg

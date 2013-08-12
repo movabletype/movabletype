@@ -849,9 +849,7 @@ sub _make_cache_path {
     if ( !-d $real_cache_path ) {
         require MT::FileMgr;
         my $fmgr = $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
-        $fmgr->mkpath($real_cache_path)
-            or die MT->translate( 'Failed to make asset directory: [_1]',
-            $fmgr->errstr );
+        $fmgr->mkpath($real_cache_path) or return undef;
     }
 
     my $asset_cache_path
