@@ -34,6 +34,7 @@ $ft->save or die $ft->errstr;
 
 my ( $app, $out );
 subtest 'In system scope' => sub {
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
     subtest 'Blog boilerplate' => sub {
         $app = _run_app(
             'MT::App::CMS',
