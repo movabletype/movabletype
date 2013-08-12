@@ -12,6 +12,7 @@
    label="<__trans phrase="OAuth2 settings">">
 <__trans phrase="This blog is using the settings of [_1]." params="<mt:If name="has_parent_client_permission"><a href="<mt:Var name="mt_url">?__mode=cfg_web_services&amp;_type=blog<mt:If name="parent_client_blog_id">&amp;blog_id=<mt:Var name="parent_client_blog_id" /></mt:If>"></mt:If><mt:If name="parent_client_blog_id"><mt:Var name="parent_client_blog_name" /><mt:Else><__trans phrase="System" /></mt:If><mt:If name="has_parent_client_permission"></a></mt:If>" />
 <a href="#" id="setup_own_client_id" class="button"><__trans phrase="Other Google account" /></a>
+<input type="hidden" id="ga_parent_client_id" value="<mt:Var name="parent_client_id" encode_html="1" />" />
 </mtapp:setting>
 </div>
 
@@ -118,34 +119,19 @@ jQuery(function($) {
         .triggerHandler('input');
 
     $('#ga_select_profile').click(function() {
-        if ($('#use-parent-client:visible').length === 1) {
-            $.fn.mtDialog.close();
-            $.fn.mtDialog.open($('#ga_dialog_url').val());
+        var clientId     = $('#ga_client_id').val() || $('#ga_parent_client_id').val();
+
+        if (! clientId) {
             return false;
         }
 
-        var clientId     = $('#ga_client_id').val();
-        var clientSecret = $('#ga_client_secret').val();
-
-        if (! clientId || ! clientSecret) {
-            return false;
-        }
-
-        if (clientId === $('#ga_configured_client_id').val()) {
-            var dialogUrl = $('#ga_dialog_url').val();
-
-            $.fn.mtDialog.close();
-            $.fn.mtDialog.open(dialogUrl + '&client_id=' + clientId);
-        }
-        else {
-            var url = '<mt:Var name="authorize_url" encode_js="1" />'
-                .replace('__client_id__', clientId)
-                .replace('__redirect_uri__', redirectUri);
-            window.open(
-                url, 'google_analytics_authorize',
-                'width=700, height=500, menubar=no, toolbar=no, scrollbars=yes'
-            );
-        }
+        var url = '<mt:Var name="authorize_url" encode_js="1" />'
+            .replace('__client_id__', clientId)
+            .replace('__redirect_uri__', redirectUri);
+        window.open(
+            url, 'google_analytics_authorize',
+            'width=700, height=500, menubar=no, toolbar=no, scrollbars=yes'
+        );
 
         return false;
     });
@@ -165,6 +151,7 @@ jQuery(function($) {
         $('#use-parent-client').hide();
         $('#use-own-client').show();
         $(
+            '#ga_parent_client_id,' +
             '#ga_profile_name, #ga_profile_web_property_id, #ga_profile_id,' +
             '#ga_parent_profile_name, #ga_parent_profile_web_property_id'
         ).val('');

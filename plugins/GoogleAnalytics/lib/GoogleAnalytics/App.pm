@@ -18,9 +18,9 @@ use GoogleAnalytics::OAuth2;
 sub _is_effective_plugindata {
     my ( $app, $plugindata, $client_id ) = @_;
 
-    my $result = $plugindata
-        && ( !$client_id
-        || $plugindata->data->{token_data}{client_id} eq $client_id )
+    my $result
+        = $plugindata
+        && $plugindata->data->{client_id}
         && effective_token( $app, $plugindata );
     $app->error(undef);
 
@@ -81,9 +81,10 @@ sub config_tmpl {
     my $configured
         = _is_effective_plugindata( $app, $plugin->get_config_obj($scope) );
     my $current = GoogleAnalytics::current_plugindata_hash( $app, $blog );
-    my ($parent_client_blog_id,  $parent_client_blog,
-        $parent_profile_blog_id, $parent_profile_blog,
-        $parent_profile,         $has_parent_client_permission
+    my ($parent_client_blog_id, $parent_client_blog,
+        $parent_client,         $parent_profile_blog_id,
+        $parent_profile_blog,   $parent_profile,
+        $has_parent_client_permission
     );
 
     if ($blog) {
@@ -91,6 +92,9 @@ sub config_tmpl {
             ( $parent_client_blog_id, $parent_client_blog )
                 = _extract_blog_from_plugindata( $app, $blog,
                 $current->{client} );
+            if ( defined $parent_client_blog_id ) {
+                $parent_client = $current->{client};
+            }
 
             ( $parent_profile_blog_id, $parent_profile_blog )
                 = _extract_blog_from_plugindata( $app, $blog,
@@ -110,8 +114,8 @@ sub config_tmpl {
 
                 if ( defined $parent_profile_blog_id ) {
                     if ($parent_client_blog_id != $parent_profile_blog_id
-                        && (access_token_id( $current->{client}->data ) ne (
-                                $parent->{profile}->data->{access_token_id}
+                        && ($current->{client}->data->{client_id} ne (
+                                $parent->{profile}->data->{parent_client_id}
                                     || ''
                             )
                         )
@@ -160,8 +164,11 @@ sub config_tmpl {
             ),
             redirect_uri => $app->uri( mode => 'ga_oauth2callback' ),
             (   !$config->{client_id}
-                ? ( parent_client         => defined($parent_client_blog_id),
-                    parent_client_blog_id => $parent_client_blog_id,
+                ? ( parent_client    => defined($parent_client_blog_id),
+                    parent_client_id => $parent_client
+                    ? $parent_client->data->{client_id}
+                    : '',
+                    parent_client_blog_id   => $parent_client_blog_id,
                     parent_client_blog_name => $parent_client_blog
                     ? $parent_client_blog->name
                     : '',
@@ -213,36 +220,35 @@ sub save_config {
         $config->{$k} = $app->param( 'ga_' . $k );
     }
 
-    my $token = _get_session_token_data($app);
-    if (   $token
-        && $token->{client_id} eq $config->{client_id} )
-    {
-        $config->{token_data} = $token;
-    }
-
     my $current = GoogleAnalytics::current_plugindata_hash( $app, $obj );
     if (   $obj
         && $config->{profile_id}
         && !$config->{client_id}
         && $current->{client} )
     {
-        $config->{parent_access_token_id}
-            = access_token_id( $current->{client}->data );
+        my $current_data = $current->{client}->data;
+        @$config{qw(parent_client_id parent_client_secret)}
+            = @$current_data{qw(client_id client_secret)};
     }
     else {
-        delete $config->{parent_access_token_id};
+        delete @$config{qw(parent_client_id parent_client_secret)};
     }
 
-    if ( !$config->{client_id} ) {
-        delete $config->{token_data};
-        if ( !$config->{parent_access_token_id} ) {
-            delete @$config{
-                qw(profile_name profile_web_property_id profile_id)};
-        }
+    my $token = _get_session_token_data($app);
+    if (   $token
+        && $token->{client_id} eq
+        ( $config->{client_id} || $config->{parent_client_id} || '' ) )
+    {
+        $config->{token_data} = $token;
     }
 
-    if ( !$config->{profile_id} ) {
-        delete $config->{parent_access_token_id};
+    if ( ( !$config->{client_id} && !$config->{parent_client_id} )
+        || !$config->{profile_id} )
+    {
+        delete @$config{
+            qw(token_data profile_name profile_web_property_id profile_id
+                parent_client_id)
+        };
     }
 
     $plugin->save_config( $config, $scope );
@@ -281,58 +287,32 @@ sub _render_api_error {
 sub select_profile {
     my $app = shift;
 
+    $app->validate_magic or return;
+
     my $blog = $app->blog;
     my $ua   = new_ua();
     my $token_data;
-    my $client_id = $app->param('client_id');
-    my $retry     = 0;
+    my $client_id = $app->param('client_id')
+        or
+        return $app->error( translate('You did not specify a client ID.') );
+    my $current = GoogleAnalytics::current_plugindata_hash( $app, $blog );
 
-    if ( !$client_id ) {
-        return unless $blog;
-        my $current = GoogleAnalytics::current_plugindata_hash( $app, $blog );
-        if ( $current->{client} ) {
-            if ( _is_effective_plugindata( $app, $current->{client} ) ) {
-                $token_data = effective_token( $app, $current->{client} );
-            }
-        }
+    my $client_secret = $app->param('client_secret')
+        || ( $current->{client}
+        && $current->{client}->data->{client_secret} );
 
-        return $app->error( translate('You did not specify a client ID.') )
-            unless $token_data;
-    }
-    elsif ( my $client_secret = $app->param('client_secret') ) {
-        $app->validate_magic or return;
+    my $code = $app->param('code')
+        or return $app->error( translate('You did not specify a code.') );
 
-        my $code = $app->param('code')
-            or return $app->error( translate('You did not specify a code.') );
+    $token_data
+        = get_token( $app, $ua, $client_id, $client_secret,
+        scalar $app->param('redirect_uri'), $code )
+        or return _render_api_error( $app, { error => $app->errstr } );
 
-        $token_data
-            = get_token( $app, $ua, $client_id, $client_secret,
-            scalar $app->param('redirect_uri'), $code )
-            or return _render_api_error( $app, { error => $app->errstr } );
-
-        _set_session_token_data( $app, $token_data );
-    }
-    else {
-        $token_data = _get_session_token_data($app);
-        if ( !$token_data || $token_data->{client_id} ne $client_id ) {
-            my $plugindata
-                = plugin()
-                ->get_config_obj(
-                $blog ? ( 'blog:' . $blog->id ) : 'system' );
-            if ( _is_effective_plugindata( $app, $plugindata, $client_id ) ) {
-                $token_data = effective_token( $app, $plugindata );
-            }
-        }
-
-        return _render_api_error( $app, { retry => 1 } )
-            unless $token_data;
-
-        $retry = 1;
-    }
+    _set_session_token_data( $app, $token_data );
 
     my $list = get_profiles( $app, $ua, $token_data )
-        or return _render_api_error( $app,
-        { error => $app->errstr, retry => $retry } );
+        or return _render_api_error( $app, { error => $app->errstr } );
 
     plugin()->load_tmpl(
         'select_profile.tmpl',

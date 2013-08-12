@@ -15,6 +15,7 @@ class GoogleAnalyticsProvider extends StatsBaseProvider {
         if ($blog->parent_id) {
             array_push($keys, 'configuration:blog:' . $blog->parent_id);
         }
+        array_push($keys, 'configuration');
 
         require_once('class.mt_plugindata.php');
         $class = new PluginData;
@@ -22,24 +23,39 @@ class GoogleAnalyticsProvider extends StatsBaseProvider {
             "plugindata_plugin = 'GoogleAnalytics' AND " .
             "plugindata_key IN ('" .  join("','", $keys) . "')";
 
-        $objs = $class->Find($where);
-        if (empty($objs)) {
+        $tmp_objs = $class->Find($where);
+        if (empty($tmp_objs)) {
             return null;
         }
-        if (sizeof($objs) == 2 && $objs[0]->key != $keys[0]) {
-            $objs = array_reverse($objs);
+        $objs = array();
+        foreach ($keys as $k) {
+            foreach ($tmp_objs as $o) {
+                if ($o->key == $k) {
+                    array_push($objs, $o);
+                }
+            }
         }
 
         $mt = MT::get_instance();
         $db = $mt->db();
-        foreach ($objs as $o) {
+        for ($i = 0; $i < sizeof($objs); $i++) {
+            $o    = $objs[$i];
             $data = $o->data();
-            if (   $data
-                && $data['client_id']
-                && $data['client_secret']
-                && $data['profile_id'] )
-            {
-                return $o;
+            if ($data && $data['profile_id']) {
+                if ($data['client_id'] && $data['client_secret']) {
+                    return $o;
+                }
+                else if ($data['parent_client_id']) {
+                    for ($j = 0; $j < sizeof($objs); $j++) {
+                        $parent_data = $objs[$j]->data();
+                        if ($parent_data &&
+                            $parent_data['client_id'] &&
+                            $parent_data['client_id'] == $data['parent_client_id'] &&
+                            $parent_data['client_secret']) {
+                            return $o;
+                        }
+                    }
+                }
             }
         }
     }

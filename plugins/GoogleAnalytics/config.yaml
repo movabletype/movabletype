@@ -13,7 +13,7 @@ settings:
     profile_web_property_id:
     profile_id:
     token_data:
-    parent_access_token_id:
+    parent_client_id:
 
 applications:
     cms:

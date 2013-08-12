@@ -9,7 +9,7 @@ package GoogleAnalytics;
 use strict;
 use warnings;
 
-our @EXPORT = qw( plugin translate new_ua access_token_id );
+our @EXPORT = qw( plugin translate new_ua );
 use base qw(Exporter);
 
 sub translate {
@@ -18,14 +18,6 @@ sub translate {
 
 sub plugin {
     MT->component('GoogleAnalytics');
-}
-
-sub access_token_id {
-    my ($data) = @_;
-    if ( $data->{token_data} ) {
-        $data = $data->{token_data};
-    }
-    ( $data->{client_id} || '' ) . ( $data->{username} || '' );
 }
 
 sub _find_current_plugindata {
@@ -67,38 +59,39 @@ sub _find_current_plugindata {
         my $data = $o->data()
             or next;
 
-        if ( !$profile ) {
+        if ( !$profile && !$client ) {
             if ( $data->{profile_id} ) {
                 $profile = $o;
                 if ( $data->{client_id} ) {
                     $client = $merged = $profile;
                 }
-            }
-            elsif ( $data->{client_id} && $data->{token_data} ) {
-                $client = $o;
+                else {
+                    for ( my $j = $i + 1; $j <= $#objs; $j++ ) {
+                        my $o    = $objs[$j];
+                        my $data = $o->data()
+                            or next;
+
+                        my $profile_data = $profile->data;
+                        if ( $data->{client_id} eq $profile_data->{parent_client_id} )
+                        {
+                            $client = $o;
+                            $merged = $profile->clone;
+
+                            my @keys = qw(client_id client_secret);
+                            @$profile_data{@keys} = @$data{@keys};
+                            $merged->data($profile_data);
+                            last;
+                        }
+                    }
+                    next unless $client;
+                }
             }
         }
 
-        if ( $profile && !$client ) {
-            for ( my $j = $i + 1; $j <= $#objs; $j++ ) {
-                my $o    = $objs[$j];
-                my $data = $o->data()
-                    or next;
-
-                my $profile_data = $profile->data;
-                if (  !$profile_data->{client_id}
-                    && $data->{client_id}
-                    && access_token_id($data) eq
-                    ( $profile_data->{parent_access_token_id} || '' ) )
-                {
-                    $client = $o;
-                    $merged = $client->clone;
-
-                    my @keys
-                        = qw(profile_id profile_name profile_web_property_id);
-                    @$data{@keys} = @$profile_data{@keys};
-                    $merged->data($data);
-                }
+        if ( !$client && $data->{client_id} ) {
+            $client = $o;
+            if ( $data->{profile_id} ) {
+                $profile = $merged = $client;
             }
         }
 

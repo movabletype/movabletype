@@ -16,7 +16,7 @@
     if (code) {
         var $ = window.opener.jQuery;
 
-        var clientId     = $('#ga_client_id').val();
+        var clientId     = $('#ga_client_id').val() || $('#ga_parent_client_id').val();
         var clientSecret = $('#ga_client_secret').val();
         var dialogUrl    = $('#ga_dialog_url').val();
         var redirectUri  = encodeURIComponent($('#ga_redirect_uri').val());
