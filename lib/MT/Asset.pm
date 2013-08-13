@@ -866,6 +866,33 @@ sub tagged_count {
     return $obj->SUPER::tagged_count( $tag_id, $terms );
 }
 
+sub can_create_thumbnail {
+    my $asset = shift;
+    my $blog  = $asset->blog;
+
+    require MT::FileMgr;
+    require File::Spec;
+
+    my $path            = MT->config('AssetCacheDir');
+    my $asset_file_path = $asset->SUPER::file_path();
+    my $root_path;
+    if ( !$blog ) {
+        $root_path = MT->instance->support_directory_path;
+    }
+    elsif ( $asset_file_path =~ m/^%a/ ) {
+        $root_path = $blog->archive_path;
+    }
+    else {
+        $root_path = $blog->site_path;
+    }
+
+    my $real_thumb_path = File::Spec->catdir( $root_path, $path );
+    my $fmgr = MT::FileMgr->new('Local');
+
+    return $fmgr->exists($real_thumb_path)
+        && !$fmgr->can_write($real_thumb_path) ? 0 : 1;
+}
+
 1;
 
 __END__
@@ -1042,6 +1069,10 @@ as explained in $asset->url
 
 Remove this asset from the database, the filesystem and any associated
 tags. also removes child assets and ObjectAsset records
+
+=head2 $asset->can_create_thumbnail()
+
+Write-in permission to thumbnail directory is investigated.
 
 =head1 AUTHORS & COPYRIGHT
 

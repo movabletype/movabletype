@@ -414,7 +414,8 @@ sub insert_options {
     my $perms = $app->{perms};
     my $blog  = $asset->blog or return;
 
-    $param->{do_thumb} = $asset->has_thumbnail ? 1 : 0;
+    $param->{do_thumb}
+        = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
 
     $param->{can_save_image_defaults}
         = $perms->can_do('save_image_defaults') ? 1 : 0;
