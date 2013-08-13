@@ -298,9 +298,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Create a new comment" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Create a new Comment: result" );
+ok( $out,                          "Create a new comment" );
+ok( $out =~ m/Invalid request\./i, "Create a new Comment: result" );
 
 # Delete Comment
 # __mode=delete&_type=comment&id=1&blog_id=1
