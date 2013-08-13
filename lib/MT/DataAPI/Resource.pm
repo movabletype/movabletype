@@ -120,10 +120,11 @@ sub resource {
             $tmp_res{$k} = [
                 map {
                     my $reg
-                        = $_->{plugin}->registry( 'applications', 'data_api',
-                        'resources', $_->{key}, $k );
+                        = $_->{plugin}
+                        ->registry( 'applications', 'data_api', 'resources',
+                        $_->{key}, $k );
                     $reg ? @$reg : ();
-                } @{ $res->{aliases} }
+                    } @{ $res->{aliases} }
             ];
         }
 
@@ -201,8 +202,7 @@ sub _is_condition_ok {
     return 1 unless exists $f->{condition};    # not specified
     return 0 unless $f->{condition};           # "0" had been specified
     if ( !ref( $f->{condition} ) ) {
-        $f->{condition}
-            = MT->handler_to_coderef( $f->{condition} );
+        $f->{condition} = MT->handler_to_coderef( $f->{condition} );
     }
     $f->{condition}->();
 }
@@ -485,8 +485,7 @@ sub to_object {
         else {
             $o->error(
                 MT->translate(
-                    'Cannot parse "[_1]" as ISO 8601 date-time',
-                    $o->$name
+                    'Cannot parse "[_1]" as an ISO 8601 datetime', $o->$name
                 )
             );
         }

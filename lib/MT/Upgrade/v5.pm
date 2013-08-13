@@ -121,8 +121,8 @@ sub upgrade_functions {
                     if ( $user->type == MT::Author::AUTHOR() ) {
                         return 1
                             if $App
-                            && UNIVERSAL::isa( $App, 'MT::App' )
-                            && ( $user->id == $App->user->id );
+                                && UNIVERSAL::isa( $App, 'MT::App' )
+                                && ( $user->id == $App->user->id );
                     }
                     return 0;
                 },
@@ -194,13 +194,13 @@ sub upgrade_functions {
                 },
             },
         },
-        'v5_assign_initial_user_ceated_by' => {
+        'v5_assign_initial_user_created_by' => {
             version_limit => 5.0035,
             priority      => 3.0,
             updater       => {
                 type => 'author',
                 label =>
-                    'Assigning ID of user who created for initial user...',
+                    "Setting the 'created by' ID for any user for whom this field is not defined...",
                 code => sub {
                     $_[0]->created_by( $_[0]->id )
                         if !defined $_[0]->created_by;
@@ -216,7 +216,7 @@ sub upgrade_functions {
                 type  => 'blog',
                 terms => { class => '*' },
                 label =>
-                    'Assigning language of blog to use for formatting date...',
+                    'Assigning a language to each blog to help choose appropriate display format for dates...',
                 code => sub {
                     my @supporteds
                         = map { $_->{l_tag} } @{ MT::I18N::languages_list() };
@@ -249,7 +249,7 @@ __SQL__
             priority      => 3.0,
             updater       => {
                 type  => 'author',
-                label => "Adding nortification dashboard widget...",
+                label => "Adding notification dashboard widget...",
                 code  => \&_v5_add_nortification_dashboard_widget,
             },
         },
@@ -716,7 +716,7 @@ sub _v5_generate_websites_place_blogs {
                 my $part = $blogs_dirs[0]->[$i];
                 last
                     unless scalar(@blogs_dirs) == grep { $part eq $_->[$i] }
-                    @blogs_dirs;
+                        @blogs_dirs;
                 push @built_path, $part;
             }
             unless ( grep length($_), @built_path ) {

@@ -116,8 +116,8 @@
           var yesterdays_count = data.pv_yesterday;
           var diff = todays_count - yesterdays_count;
           var mark = diff > 0 ? '+' : '';
-          jQuery('#count-today').text(trans('[_1] PV ([_2][_3])', addComma(todays_count), mark, addComma(diff)));
-          jQuery('#count-yesterday').text(trans('[_1] PV', addComma(yesterdays_count)));
+          jQuery('#count-today').text(trans('[_1] Page Views ([_2][_3])', addComma(todays_count), mark, addComma(diff)));
+          jQuery('#count-yesterday').text(trans('[_1] Page Views', addComma(yesterdays_count)));
           jQuery('#pv-counter').show();
         }
       });

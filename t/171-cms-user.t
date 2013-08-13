@@ -166,7 +166,7 @@ subtest 'Manage Users screen' => sub {
         );
         my $out = delete $app->{__test_output};
         my $msg = quotemeta
-            'the selected user(s) could not be re-enabled bacause they had some invalid parameter(s). Please check activity log for more details.';
+            'the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check activity log for more details.';
         ok( $out !~ m/$msg/, 'There is no system message.' );
 
         $app = _run_app(
@@ -180,7 +180,7 @@ subtest 'Manage Users screen' => sub {
         );
         $out = delete $app->{__test_output};
         $msg = quotemeta
-            'Some (1) of the selected user(s) could not be re-enabled bacause they had some invalid parameter(s). Please check activity log for more details.';
+            'Some (1) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check activity log for more details.';
         ok( $out =~ m/$msg/,
             'There is a system message: could not be re-enabled one user.' );
 
@@ -195,7 +195,7 @@ subtest 'Manage Users screen' => sub {
         );
         $out = delete $app->{__test_output};
         $msg = quotemeta
-            'Some (5) of the selected user(s) could not be re-enabled bacause they had some invalid parameter(s). Please check activity log for more details.';
+            'Some (5) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check activity log for more details.';
         ok( $out =~ m/$msg/,
             'There is a system message: could not be re-enabled five user.' );
     };

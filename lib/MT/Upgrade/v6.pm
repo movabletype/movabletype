@@ -16,9 +16,9 @@ sub upgrade_functions {
             updater       => {
                 type      => 'blog',
                 condition => sub { $_[0]->class eq 'blog' },
-                code      => sub { $_[0]->class('website') },
-                label     => "Migrating current blog to a website...",
-                sql       => <<__SQL__,
+                code => sub { $_[0]->class('website') },
+                label => "Migrating current blog to a website...",
+                sql   => <<__SQL__,
 UPDATE mt_blog
 SET    blog_class = 'website'
 WHERE  blog_class = 'blog'
@@ -36,8 +36,9 @@ __SQL__
                     $_[0]->favorite_websites( $_[0]->favorite_blogs );
                     $_[0]->favorite_blogs(undef);
                 },
-                label => "Migrating the record for recently accessed blogs...",
-                sql   => <<__SQL__,
+                label =>
+                    "Migrating the record for recently accessed blogs...",
+                sql => <<__SQL__,
 UPDATE mt_author_meta
 SET    author_meta_type = 'favorite_websites'
 WHERE  author_meta_type = 'favorite_blogs';
@@ -86,8 +87,8 @@ __SQL__
         },
         '_v6_enable_session_key_compat' => {
             version_limit => 6.0006,
-            priority => 3.1,
-            code => sub {
+            priority      => 3.1,
+            code          => sub {
                 MT->config( 'EnableSessionKeyCompat', 1, 1 );
             },
         },
@@ -96,7 +97,7 @@ __SQL__
             priority      => 3.2,
             updater       => {
                 type  => 'author',
-                label => "Renumbering dashboard widgets order...",
+                label => "Reordering dashboard widgets...",
                 code  => \&_v6_renumbering_widget_orders,
             },
         },
@@ -200,7 +201,7 @@ sub _v6_remove_indexes {
 
     if ( $driver->dbd =~ m/::Pg$/ ) {
 
-        my $sth          = $dbh->prepare(<<SQL)
+        my $sth = $dbh->prepare(<<SQL)
 SELECT cidx.relname as index_name, idx.indisunique, idx.indisprimary, idx.indnatts, idx.indkey, am.amname
 FROM pg_index idx
 INNER JOIN pg_class cidx ON idx.indexrelid = cidx.oid
@@ -214,22 +215,14 @@ SQL
         return unless $row;
         my $pkey = $row->{index_name};
 
-        $driver->sql(
-            [
-                "alter table mt_ts_error drop constraint $pkey",
-            ]
-        );
+        $driver->sql( [ "alter table mt_ts_error drop constraint $pkey", ] );
     }
     elsif ( $driver->dbd =~ m/::mysql$|::Oracle$/ ) {
-        $driver->sql(
-            [
-                'alter table mt_ts_error drop primary key',
-            ]
-        );
+        $driver->sql( [ 'alter table mt_ts_error drop primary key', ] );
     }
     elsif ( $driver->dbd =~ m/::u?mssqlserver$/i ) {
 
-        my $sth          = $dbh->prepare(<<SQL)
+        my $sth = $dbh->prepare(<<SQL)
 SELECT i.name AS index_name, i.type AS index_type, is_unique, is_primary_key, is_unique_constraint
 , c.name AS column_name
 , ic.key_ordinal AS key_ordinal
@@ -247,11 +240,7 @@ SQL
         return unless $row;
         my $pkey = $row->{index_name};
 
-        $driver->sql(
-            [
-                "alter table mt_ts_error drop constraint $pkey",
-            ]
-        );
+        $driver->sql( [ "alter table mt_ts_error drop constraint $pkey", ] );
     }
     1;
 }

@@ -1168,8 +1168,8 @@ use vars qw( @ISA %Lexicon );
 	'The system level settings for plugin \'[_1]\' already exist.  Skipping this record.' => '[_1]のシステムのプラグイン設定はすでに存在しています。このレコードはスキップします。',
 
 ## lib/MT/BackupRestore/BackupFileScanner.pm
-	'Cannot restore requested file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.' => 'Digest::SHAがインストールされていないため、このファイルを復元することが出来ません。システム管理者問い合わせてください。',
-	'Cannot restore requested file because a website was not found in either the system or backup data. A website must be created first.' => 'ウェブサイトのデータが含まれていないため、このファイルを復元することが出来ません。ウェブサイトを先に作成してください。',
+	'Cannot restore requested file because doing so requires the Digest::SHA Perl module. Please contact your Movable Type system administrator.' => 'Digest::SHAがインストールされていないため、このファイルを復元することが出来ません。システム管理者問い合わせてください。',
+	'Cannot restore requested file because a website was not found in either the existing Movable Type system or the backup data. A website must be created first.' => 'ウェブサイトのデータが含まれていないため、このファイルを復元することが出来ません。ウェブサイトを先に作成してください。',
 
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
 
@@ -1327,7 +1327,7 @@ use vars qw( @ISA %Lexicon );
 	'The parent comment id was not specified.' => '返信先のコメントが指定されていません。',
 	'The parent comment was not found.' => '返信先のコメントが見つかりません。',
 	'You cannot reply to unapproved comment.' => '未公開のコメントには返信できません。',
-	'You cannot create comment for unpublished entry.' => '公開されていない記事にはコメントできません。',
+	'You cannot create a comment for an unpublished entry.' => '公開されていない記事にはコメントできません。',
 	'You cannot reply to unpublished comment.' => '公開されていないコメントには返信できません。',
 	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => '\'[_3]\'がコメント\'[_1]\'(ID:[_2])を削除しました。',
 	'You do not have permission to approve this trackback.' => 'トラックバックを承認する権限がありません。',
@@ -1383,8 +1383,8 @@ use vars qw( @ISA %Lexicon );
 	'Invalid date \'[_1]\'; \'Published on\' dates should be real dates.' => '公開日: \'[_1]\'は不正な日付です。正しい日付を入力してください。',
 	'Invalid date \'[_1]\'; \'Unpublished on\' dates must be in the format YYYY-MM-DD HH:MM:SS.' => '公開終了日: \'[_1]\'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。',
 	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be real dates.' => '公開終了日: \'[_1]\'は不正な日付です。正しい日付を入力してください。',
-	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be future from now.' => '公開終了日は、未来の日時を指定してください。',
-	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be future from \'Published on\'.' => '公開終了日は、公開日より未来の日時を指定してください。',
+	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be dates in the future.' => '公開終了日は、未来の日時を指定してください。',
+	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be later than the corresponding \'Published on\' date.' => '公開終了日は、公開日より未来の日時を指定してください。',
 	'Saving placement failed: [_1]' => '記事とカテゴリの関連付けを設定できませんでした: [_1]',
 	'Invalid date \'[_1]\'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.' => '\'[_1]\'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。',
 	'Invalid date \'[_1]\'; [_2] dates should be real dates.' => '\'[_1]\'は不正な日付です。正しい日付を入力してください。',
@@ -1858,7 +1858,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Endpoint/Entry.pm
 
 ## lib/MT/DataAPI/Resource.pm
-	'Cannot parse "[_1]" as ISO 8601 date-time' => '"[_1]"は、ISO 8601形式のデータではありません',
+	'Cannot parse "[_1]" as an ISO 8601 datetime' => '"[_1]"は、ISO 8601形式のデータではありません',
 
 ## lib/MT/DefaultTemplates.pm
 	'Archive Index' => 'アーカイブインデックス',
@@ -2241,7 +2241,7 @@ use vars qw( @ISA %Lexicon );
 	'You used an \'[_1]\' tag outside of the context of a author; Perhaps you mistakenly placed it outside of an \'MTAuthors\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTAuthorsコンテナタグの外部で使っていませんか?',
 	'You used an \'[_1]\' tag outside of the context of an entry; Perhaps you mistakenly placed it outside of an \'MTEntries\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTEntriesコンテナタグの外部で使っていませんか?',
 	'You used an \'[_1]\' tag outside of the context of the website; Perhaps you mistakenly placed it outside of an \'MTWebsites\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTWebsitesコンテナタグの外部で使っていませんか?',
-	'You used an \'[_1]\' tag inside of the context of the blog which has no parent website; Perhaps your blog record has been broken?' => '[_1]をウェブサイトに属していないブログのコンテキストで利用しようとしています。',
+	'You used an \'[_1]\' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?' => '[_1]をウェブサイトに属していないブログのコンテキストで利用しようとしています。',
 	'You used an \'[_1]\' tag outside of the context of the blog; Perhaps you mistakenly placed it outside of an \'MTBlogs\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTBlogsコンテナタグの外部で使っていませんか?',
 	'You used an \'[_1]\' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an \'MTComments\' container tag?' => '[_1]をコメントのコンテキスト外で利用しようとしました。MTCommentsコンテナの外部に配置していませんか?',
 	'You used an \'[_1]\' tag outside of the context of a ping; Perhaps you mistakenly placed it outside of an \'MTPings\' container tag?' => '[_1]タグをトラックバックのコンテキスト外で利用しようとしました。MTPingsコンテナの外部に配置していませんか?',
@@ -2529,9 +2529,9 @@ use vars qw( @ISA %Lexicon );
 	'Removing widget from dashboard...' => 'ダッシュボードからウィジェットを削除しています...',
 	'Ordering Categories and Folders of Blogs...' => 'ブログのカテゴリとフォルダの順番を設定しています...',
 	'Ordering Folders of Websites...' => 'ウェブサイトのフォルダの順番を設定しています...',
-	'Assigning ID of user who created for initial user...' => '初期作成ユーザーの作成者IDを設定しています...',
-	'Assigning language of blog to use for formatting date...' => 'ブログに日付の言語を設定しています...',
-	'Adding nortification dashboard widget...' => '通知ウィジェットをダッシュボードに追加しています...',
+	'Setting the \'created by\' ID for any user for whom this field is not defined...' => '初期作成ユーザーの作成者IDを設定しています...',
+	'Assigning a language to each blog to help choose appropriate display format for dates...' => 'ブログに日付の言語を設定しています...',
+	'Adding notification dashboard widget...' => '通知ウィジェットをダッシュボードに追加しています...',
 
 ## lib/MT/Upgrade/v6.pm
 	'Migrating current blog to a website...' => '現在のブログをウェブサイトへ変換しています...',
@@ -2539,7 +2539,7 @@ use vars qw( @ISA %Lexicon );
 	'Adding Website Administrator role...' => 'ウェブサイト管理者のロールを追加しています...',
 	'Migrating "This is you" dashboard widget...' => '"This is you" ウィジェットを移行しています...',
 	'Adding "Site stats" dashboard widget...' => '"サイト情報"ウィジェットを追加しています...',
-	'Renumbering dashboard widgets order...' => 'ダッシュボードウィジェットの並び順を設定しています...',
+	'Reordering dashboard widgets...' => 'ダッシュボードウィジェットの並び順を設定しています...',
 
 ## lib/MT/Util.pm
 	'moments from now' => '今から',
@@ -3360,10 +3360,10 @@ use vars qw( @ISA %Lexicon );
 	'Select this option only if you need to publish your archives outside of your Blog Root.' => 'アーカイブをサイトパス以外で公開するときにこのオプションを選択してください。',
 	'Publish archives outside of [_1] Root' => 'アーカイブを[_1]パスとは別のパスで公開する',
 	'Archive URL' => 'アーカイブURL',
-	'Warning: Changing the archive URL can result in breaking all the links in your [_1].' => '警告: アーカイブURLを変更することで[_1]上のすべてのリンクがリンク切れとなる場合があります。',
+	'Warning: Changing the archive URL can result in breaking all links in your [_1].' => '警告: アーカイブURLを変更することで[_1]上のすべてのリンクがリンク切れとなる場合があります。',
 	'The URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'ブログのアーカイブのURLです。例: http://www.example.com/blog/archives/',
 	'The URL of the archives section of your website. Example: http://www.example.com/archives/' => 'ウェブサイトのアーカイブのURLです。例: http://www.example.com/archives/',
-	'Warning: Changing the archive path can result in breaking all the links in your [_1].' => '警告: アーカイブパスを変更すると[_1]上のすべてのリンクがリンク切れとなる場合があります。',
+	'Warning: Changing the archive path can result in breaking all links in your [_1].' => '警告: アーカイブパスを変更すると[_1]上のすべてのリンクがリンク切れとなる場合があります。',
 	q{The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{アーカイブのインデックスファイルが公開されるパスです。ウェブサイトからの相対パスを指定します。末尾には'/'や'\'を含めません。},
 	q{The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{アーカイブのインデックスファイルが公開されるパスです。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には'/'や'\'を含めません。例: /home/melody/public_html/blogやC:\www\public_html\blog},
 	'Dynamic Publishing Options' => 'ダイナミックパブリッシング設定',
@@ -3374,8 +3374,8 @@ use vars qw( @ISA %Lexicon );
 	'Preferred Archive' => '優先アーカイブタイプ',
 	'Choose archive type' => 'アーカイブタイプを選択してください',
 	'No archives are active' => '有効なアーカイブがありません。',
-	q{Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive type used in this blog's archive templates.} => q{記事にリンクするときのURLとして使われます。このブログで使われているアーカイブテンプレートの中から選択してください。},
-	q{Used to generate URLs (permalinks) for this website's archived entries. Choose one of the archive type used in this website's archive templates.} => q{記事にリンクするときのURLとして使われます。このウェブサイトで使われているアーカイブテンプレートの中から選択してください。},
+	q{Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive types used in this blog's archive templates.} => q{記事にリンクするときのURLとして使われます。このブログで使われているアーカイブテンプレートの中から選択してください。},
+	q{Used to generate URLs (permalinks) for this website's archived entries. Choose one of the archive types used in this website's archive templates.} => q{記事にリンクするときのURLとして使われます。このウェブサイトで使われているアーカイブテンプレートの中から選択してください。},
 	'Module Settings' => 'モジュール設定',
 	'Server Side Includes' => 'サーバーサイドインクルード',
 	'None (disabled)' => '無効',
@@ -3592,8 +3592,8 @@ use vars qw( @ISA %Lexicon );
 	'Exclude Categories/Folders' => 'カテゴリ/フォルダの除外',
 	'Clone' => '複製',
 	'Publish archives outside of Blog Root' => 'アーカイブをブログパスとは別のパスで公開する',
-	'Warning: Changing the archive URL can result in breaking all the links in your blog.' => '警告: アーカイブURLを変更することでブログ上のすべてのリンクがリンク切れとなる場合があります。',
-	'Warning: Changing the archive path can result in breaking all the links in your blog.' => '警告: アーカイブパスを変更するとブログ上のすべてのリンクがリンク切れとなる場合があります。',
+	'Warning: Changing the archive URL can result in breaking all links in your blog.' => '警告: アーカイブURLを変更することでブログ上のすべてのリンクがリンク切れとなる場合があります。',
+	'Warning: Changing the archive path can result in breaking all links in your blog.' => '警告: アーカイブパスを変更するとブログ上のすべてのリンクがリンク切れとなる場合があります。',
 	'Mark the settings that you want cloning to skip' => '複製を行わない設定にマークをつけてください',
 	'Entries/Pages' => '記事/ページ',
 	'Categories/Folders' => 'カテゴリ/フォルダ',
@@ -5006,8 +5006,8 @@ use vars qw( @ISA %Lexicon );
 	'Stats for [_1]' => 'サイト: [_1]',
 	'Today:' => '今日:',
 	'Yesterday:' => '昨日:',
-	'[_1] PV ([_2][_3])' => '[_1] PV ([_2][_3])',
-	'[_1] PV' => '[_1] PV',
+	'[_1] Page Views ([_2][_3])' => '[_1] Page Views ([_2][_3])',
+	'[_1] Page Views' => '[_1] Page Views',
 
 ## tmpl/comment/auth_aim.tmpl
 	'Your AIM or AOL Screen Name' => 'AIMまたはAOLのスクリーンネーム',
@@ -6468,7 +6468,7 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/GoogleAnalytics/lib/GoogleAnalytics/OAuth2.pm
 	'An error occurred when getting token: [_1]: [_2]' => 'トークンが取得できません: [_1]: [_2]',
-	'An error occurred when access token refreshing: [_1]: [_2]' => 'リフレッシュトークンが取得できません: [_1]: [_2]',
+	'An error occurred when refreshing access token: [_1]: [_2]' => 'リフレッシュトークンが取得できません: [_1]: [_2]',
 	'An error occurred when getting profiles: [_1]: [_2]' => 'プロファイルの取得ができません: [_1]: [_2]',
 
 ## plugins/GoogleAnalytics/lib/GoogleAnalytics/Provider.pm
@@ -6565,7 +6565,7 @@ use vars qw( @ISA %Lexicon );
 	'publishes a TrackBack' => 'トラックバックの公開時',
 	'rebuild indexes.' => 'インデックスを再構築する',
 	'rebuild indexes and send pings.' => 'インデックスを再構築して更新pingを送信する',
-	'Updating trigger cache of MultiBlog...' => 'トリガーの設定を更新しています...',
+	'Updating the MultiBlog trigger cache...' => 'トリガーの設定を更新しています...',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => ' ',

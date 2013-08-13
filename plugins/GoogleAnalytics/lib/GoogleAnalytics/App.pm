@@ -147,10 +147,12 @@ sub config_tmpl {
     }
 
     my $missing = undef;
-    $missing = $app->translate( 'missing required Perl modules: [_1]',
-        'Crypt::SSLeay' )
+    $missing = $app->translate(
+        'A Perl module required for using Google Analytics API is missing: [_1].',
+        'Crypt::SSLeay'
+        )
         unless eval { require IO::Socket::SSL }
-        || eval     { require Crypt::SSLeay };
+            || eval { require Crypt::SSLeay };
 
     $plugin->load_tmpl(
         'web_service_config.tmpl',
@@ -329,7 +331,7 @@ sub select_profile {
                         link        => $_->{websiteUrl},
                         description => $_->{webPropertyId},
                         }
-                } @$list
+                    } @$list
             ],
             complete_url => $app->uri(
                 mode => 'ga_select_profile_complete',

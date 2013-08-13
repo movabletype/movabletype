@@ -1099,7 +1099,7 @@ el protocolo de comunicación STARTTLS.',
 	'The system level settings for plugin \'[_1]\' already exist.  Skipping this record.' => 'Ya existe una configuración a nivel del sistema para la extensión \'[_1]\'. Se ignora este registro.',
 
 ## lib/MT/BackupRestore/BackupFileScanner.pm
-	'Cannot restore requested file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.' => 'No se pudo restaurar este fichero porque se necesita el módulo de Perl Digest::SHA. Por favor, contacto con el administrador de sistemas de Movable Type.',
+	'Cannot restore requested file because doing so requires the Digest::SHA Perl module. Please contact your Movable Type system administrator.' => 'No se pudo restaurar este fichero porque se necesita el módulo de Perl Digest::SHA. Por favor, contacto con el administrador de sistemas de Movable Type.',
 	'Cannot restore requested file because a website was not found in either the system or backup data. A website must be created first.' => 'No se pudo restaurar el fichero solicitado porque no se encontró un sitio web en el sistema o en la copia de seguridad. Primero debe crear un sitio web.', # Translate - New
 
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
@@ -3291,8 +3291,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Publish archives outside of Blog Root' => 'Publicar archivos fuera de la raíz del sitio.',
 	'Archive URL' => 'URL de archivos',
 	'The URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'La URL de la sección de archivos de tu blog. Ejemplo: http://www.ejemplo.com/blog/archivos/',
-	'Warning: Changing the archive URL can result in breaking all the links in your blog.' => 'Aviso: La modificación de la URL de archivos pueden romper todos los enlaces en el blog.',
-	'Warning: Changing the archive path can result in breaking all the links in your blog.' => 'Aviso: La modificación de la ruta de los archivos puede romper todos los enlaces en su blog.',
+	'Warning: Changing the archive URL can result in breaking all links in your blog.' => 'Aviso: La modificación de la URL de archivos pueden romper todos los enlaces en el blog.',
+	'Warning: Changing the archive path can result in breaking all links in your blog.' => 'Aviso: La modificación de la ruta de los archivos puede romper todos los enlaces en su blog.',
 	q{The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{La ruta de publicación de los ficheros índice de la sección de archivos. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html/blog o C:\www\public_html\blog},
 	q{The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{La ruta de publicación de los ficheros índice de la sección de archivos. Se recomienda una ruta absoluta (que en Linux comienza con '/' y en Windows con 'C:\'. No terminar con '/' o '\'. Ejemplo: /home/mt/public_html o C:\www\public_html},
 	'Dynamic Publishing Options' => 'Opciones de la publiación dinámica',
@@ -3301,7 +3301,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Archive Settings' => 'Configuración de archivos',
 	q{Enter the archive file extension. This can take the form of 'html', 'shtml', 'php', etc. Note: Do not enter the leading period ('.').} => q{Introduzca la extensión de los archivos. Puede ser 'html', 'shtml', 'php', etc. Nota: No introduzca el punto separador de la extensión ('.').},
 	'Preferred Archive' => 'Archivo preferido',
-	q{Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive type used in this blog's archive templates.} => q{Utilizado para generar las URLs (enlaces permanentes) de las entradas archivadas del blog. Seleccione uno de los tipos de archivos utilizandos en las plantillas de archivos del blog.},
+	q{Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive types used in this blog's archive templates.} => q{Utilizado para generar las URLs (enlaces permanentes) de las entradas archivadas del blog. Seleccione uno de los tipos de archivos utilizandos en las plantillas de archivos del blog.},
 	'Choose archive type' => 'Seleccione un tipo de archivo',
 	'No archives are active' => 'No hay archivos activos',
 	'Module Settings' => 'Configuración de módulos',

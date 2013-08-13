@@ -63,7 +63,7 @@ subtest 'Test cfg_prefs mode' => sub {
 
             my $description
                 = quotemeta(
-                "Used to generate URLs (permalinks) for this ${type}'s archived entries. Choose one of the archive type used in this ${type}'s archive templates."
+                "Used to generate URLs (permalinks) for this ${type}'s archived entries. Choose one of the archive types used in this ${type}'s archive templates."
                 );
             $description = qr/$description/;
             like( $out, qr/$description/,
@@ -94,7 +94,7 @@ subtest 'Test cfg_prefs mode' => sub {
             like( $out, qr/$archive_url_hint/, 'Has Archive URL hint.' );
 
             my $archive_url_warning = quotemeta
-                "Warning: Changing the archive URL can result in breaking all the links in your ${type}.";
+                "Warning: Changing the archive URL can result in breaking all links in your ${type}.";
             like( $out, qr/$archive_url_warning/,
                 'Has Archive URL warning.' );
 

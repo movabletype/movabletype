@@ -652,8 +652,8 @@ sub rebuild_entry {
 
     return 1
         unless $param{BuildDependencies}
-        || $param{BuildIndexes}
-        || $param{BuildArchives};
+            || $param{BuildIndexes}
+            || $param{BuildArchives};
 
     if ( $param{BuildDependencies} ) {
         ## Rebuild previous and next entry archive pages.
@@ -708,8 +708,7 @@ sub rebuild_entry {
                 my $archiver = $mt->archiver($at);
                 if ( $archiver->category_based ) {
                     for my $cat (@$categories_for_rebuild) {
-                        if (my $prev_arch
-                            = $archiver->previous_archive_entry(
+                        if (my $prev_arch = $archiver->previous_archive_entry(
                                 {   entry    => $entry,
                                     category => $cat,
                                 }
@@ -1968,13 +1967,14 @@ sub publish_future_posts {
 
             # Clear cache for site stats dashnoard widget.
             MT::Util::clear_site_stats_widget_cache( $blog->id )
-                or die translate('Removing stats cache was failed.');
+                or die translate('Removing stats cache failed.');
         }
         if ($changed) {
             my %rebuilt_okay;
             my $rebuilt;
             eval {
-                foreach my $id ( keys %rebuild_queue ) {
+                foreach my $id ( keys %rebuild_queue )
+                {
                     my $entry = $rebuild_queue{$id};
                     $mt->rebuild_entry( Entry => $entry, Blog => $blog )
                         or die $mt->errstr;
@@ -2089,13 +2089,14 @@ sub unpublish_past_entries {
 
             # Clear cache for site stats dashnoard widget.
             MT::Util::clear_site_stats_widget_cache( $site->id )
-                or die translate('Removing stats cache was failed.');
+                or die translate('Removing stats cache failed.');
         }
         if ($changed) {
             my %rebuilt_okay;
             my $rebuilt;
             eval {
-                foreach my $id ( keys %rebuild_queue ) {
+                foreach my $id ( keys %rebuild_queue )
+                {
                     my $entry = $rebuild_queue{$id};
                     $mt->rebuild_entry( Entry => $entry, Blog => $site )
                         or die $mt->errstr;
@@ -2405,7 +2406,7 @@ sub queue_build_file_filter {
     }
 
     $job->priority($priority);
-    $job->coalesce( ( $fi->blog_id || 0 ) . ':'
+    $job->coalesce( ( $fi->blog_id || 0 ) . ':' 
             . $$ . ':'
             . $priority . ':'
             . ( time - ( time % 10 ) ) );

@@ -2816,9 +2816,10 @@ sub core_commenter_authenticators {
                 eval { require Crypt::SSLeay; };
                 push @missing, 'Crypt::SSLeay' if $@;
                 return 1 unless @missing;
-                $$reason
-                    = MT->translate( 'missing required Perl modules: [_1]',
-                    join( ',', @missing ) );
+                $$reason = MT->translate(
+                    'A Perl module required for Google ID commenter authentication is missing: [_1].',
+                    join( ',', @missing )
+                );
                 return 0;
             },
             login_form_params => \&_commenter_auth_params,

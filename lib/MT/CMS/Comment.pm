@@ -614,7 +614,7 @@ sub can_do_reply {
 
         return $app->permission_denied()
             unless $perms->can_edit_entry( $entry, $user, 1 )
-            ;    # check for publish_post
+        ;    # check for publish_post
     }
 
     1;
@@ -647,7 +647,7 @@ sub do_reply {
         $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
         unless $blog;
 
-    can_do_reply($app, $entry)
+    can_do_reply( $app, $entry )
         or return;
 
     require MT::Sanitize;
@@ -844,7 +844,7 @@ sub save_filter {
                 && $obj->entry->allow_comments );
 
             return $app->errtrans(
-                'You cannot create comment for unpublished entry.')
+                'You cannot create a comment for an unpublished entry.')
                 if $obj->entry->status != MT::Entry::RELEASE();
 
             my $parent = $obj->parent;
@@ -893,10 +893,10 @@ sub can_save {
         return ( $c->entry->author_id == $app->user->id )
             && (
               $obj ? $obj->get_status_text eq $original->get_status_text
-            : $c->is_junk      ? 'junk' eq $app->param('status')
+            : $c->is_junk      ? 'junk'     eq $app->param('status')
             : $c->is_moderated ? 'moderate' eq $app->param('status')
-            : $c->is_published ? 'publish' eq $app->param('status')
-            :                    1
+            : $c->is_published ? 'publish'  eq $app->param('status')
+            : 1
             );
     }
     else {

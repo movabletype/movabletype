@@ -1,6 +1,6 @@
 <mt:If name="unapproved" trim="1">
     <mt:If tag="EntryClass" eq="entry">
-        <__trans phrase="An unapproved comment has been posted on your site '[_1]', for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site." params="<$mt:BlogName$>%%<$mt:EntryID$>%%<$mt:EntryTitle$>">
+        <__trans phrase="An unapproved comment has been posted on your site '[_1]', on entry #[_2] ([_3]). You need to approve this comment before it will appear on your site." params="<$mt:BlogName$>%%<$mt:EntryID$>%%<$mt:EntryTitle$>">
     <mt:Else>
         <__trans phrase="An unapproved comment has been posted on your site '[_1]', on page #[_2] ([_3]). You need to approve this comment before it will appear on your site." params="<$mt:BlogName$>%%<$mt:PageID$>%%<$mt:PageTitle$>">
     </mt:If>

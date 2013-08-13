@@ -44,7 +44,7 @@ sub start_element {
         my $pass = $attrs->{"{}password"}->{Value};
         if ( $pass =~ m/^\$6\$/ ) {
             die MT->translate(
-                "Cannot restore requested file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator."
+                "Cannot restore requested file because doing so requires the Digest::SHA Perl module. Please contact your Movable Type system administrator."
             );
         }
     }
@@ -69,14 +69,14 @@ sub end_document {
             { author_id => $user->id, permissions => { not => "'comment'" } }
             )
             if !$user->is_superuser
-            && !$user->permissions(0)->can_do('edit_templates')
-            && !$user->permissions(0)->can_do('create_blog');
+                && !$user->permissions(0)->can_do('edit_templates')
+                && !$user->permissions(0)->can_do('create_blog');
         $terms{class} = 'website';
         my $count = MT::Website->count( \%terms, \%args );
 
         unless ($count) {
             die MT->translate(
-                "Cannot restore requested file because a website was not found in either the system or backup data. A website must be created first."
+                "Cannot restore requested file because a website was not found in either the existing Movable Type system or the backup data. A website must be created first."
             );
         }
     }

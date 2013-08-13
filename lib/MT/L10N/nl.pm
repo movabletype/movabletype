@@ -1095,7 +1095,7 @@ use vars qw( @ISA %Lexicon );
 	'The system level settings for plugin \'[_1]\' already exist.  Skipping this record.' => 'De instellingen op systeemniveau voor plugin \'[_1]\' bestaan al.  Record wordt overgeslagen.',
 
 ## lib/MT/BackupRestore/BackupFileScanner.pm
-	'Cannot restore requested file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.' => 'Kan dit bestand niet terugzetten omdat hiervoor de Digest::SHA Perl module vereist is.  Neem contact op met uw Movable Type systeembeheerder.',
+	'Cannot restore requested file because doing so requires the Digest::SHA Perl module. Please contact your Movable Type system administrator.' => 'Kan dit bestand niet terugzetten omdat hiervoor de Digest::SHA Perl module vereist is.  Neem contact op met uw Movable Type systeembeheerder.',
 	'Cannot restore requested file because a website was not found in either the system or backup data. A website must be created first.' => 'Kan dit bestand niet terugzetten omdat er geen website werd gevonden in de systeemdata noch in de backupdata.  Er moet eerst een website aangemaakt worden.', # Translate - New
 
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
@@ -3287,8 +3287,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Publish archives outside of Blog Root' => 'Archieven buiten de siteroot publiceren',
 	'Archive URL' => 'Archief-URL',
 	'The URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'De URL van de archiefsectie van uw blog.  Voorbeeld: http://www.voorbeeld.com/blog/archief/',
-	'Warning: Changing the archive URL can result in breaking all the links in your blog.' => 'Waarschuwing: het aanpassen van de archief-URL kan ervoor zorgen dat alle links in uw weblog niet meer werken.',
-	'Warning: Changing the archive path can result in breaking all the links in your blog.' => 'Waarschuwing: het aanpassen van het archiefpad kan ervoor zorgen dat alle links in uw weblog niet meer werken.',
+	'Warning: Changing the archive URL can result in breaking all links in your blog.' => 'Waarschuwing: het aanpassen van de archief-URL kan ervoor zorgen dat alle links in uw weblog niet meer werken.',
+	'Warning: Changing the archive path can result in breaking all links in your blog.' => 'Waarschuwing: het aanpassen van het archiefpad kan ervoor zorgen dat alle links in uw weblog niet meer werken.',
 	q{The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Het pad waar de indexbestanden van uw archieven gepubliceerd zullen worden.  Gelieve niet af te sluiten met '/' of '\'. Voorbeeld: /home/mt/public_html/blog of C:\www\public_html\blog},
 	q{The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Het pad waar de indexbestanden van uw archieven gepubliceerd zullen worden. Een absoluut pad (beginnend met '/' voor Linux of 'C:' voor Windows) geniet de voorkeur. Gelieve niet af te sluiten met '/' of '\'. Voorbeeld /home/mt/public_html of C:\www\public_html},
 	'Dynamic Publishing Options' => 'Opties dynamische publicatie',
@@ -3297,7 +3297,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Archive Settings' => 'Archiefinstellingen',
 	q{Enter the archive file extension. This can take the form of 'html', 'shtml', 'php', etc. Note: Do not enter the leading period ('.').} => q{Voer de bestandsextensie voor het archief in. Dit kan zijn in de vorm van 'html', 'shtml', 'php', enz. Opmerking: voer het eerste punt niet in ('.').},
 	'Preferred Archive' => 'Voorkeursarchief',
-	q{Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive type used in this blog's archive templates.} => q{Gebruikt om URL's (permalinks) te genereren voor de gearchiveerde berichten van deze blog.  Kies één van de archieftypes gebruikt in de archiefsjablonen van deze blog. },
+	q{Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive types used in this blog's archive templates.} => q{Gebruikt om URL's (permalinks) te genereren voor de gearchiveerde berichten van deze blog.  Kies één van de archieftypes gebruikt in de archiefsjablonen van deze blog. },
 	'Choose archive type' => 'Kies archieftype',
 	'No archives are active' => 'Geen archieven actief',
 	'Module Settings' => 'Instellingen module',

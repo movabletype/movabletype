@@ -97,7 +97,7 @@ $plugin = MT::Plugin::MultiBlog->new(
                     updater => {
                         type  => 'blog',
                         terms => { class => '*' },
-                        label => "Updating trigger cache of MultiBlog...",
+                        label => "Updating the MultiBlog trigger cache...",
                         code  => sub {
                             my $scope = 'blog:' . $_[0]->id;
                             my $hash  = $plugin->get_config_hash($scope);

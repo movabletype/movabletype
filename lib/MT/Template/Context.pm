@@ -124,7 +124,7 @@ sub init_handlers {
                     my $modifier = lc $orig_mod;
                     next
                         if exists $f->{$modifier}
-                        && ( $mod->{plugin}{id} || '' ) eq 'core';
+                            && ( $mod->{plugin}{id} || '' ) eq 'core';
                     $f->{$modifier} = $mod->{$orig_mod};
                 }
             }
@@ -356,7 +356,7 @@ sub set_blog_load_context {
     $col ||= 'blog_id';
 
     # Grab specified blog IDs
-    my $blog_ids
+    my $blog_ids 
         = $attr->{blog_ids}
         || $attr->{include_blogs}
         || $attr->{site_ids}
@@ -419,7 +419,7 @@ sub set_blog_load_context {
         push @$blog_ids, $website->id if $attr->{include_with_website};
         $blog_ids = -1
             unless scalar @$blog_ids
-            ; # We should use non-existing blog id when calculated blog_ids is empty
+        ; # We should use non-existing blog id when calculated blog_ids is empty
         $terms->{$col} = $blog_ids;
 
         # Blogs are specified in include_blogs so set the terms
@@ -844,8 +844,8 @@ sub _no_parent_website_error {
     $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
     return $_[0]->error(
         MT->translate(
-            "You used an '[_1]' tag inside of the context of the blog which has no parent website; "
-                . "Perhaps your blog record has been broken?",
+            "You used an \'[_1]\' tag inside of the context of a blog which has no parent website; "
+                . "Perhaps your blog record is broken?",
             $tag_name
         )
     );

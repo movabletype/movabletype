@@ -79,7 +79,7 @@ sub refresh_access_token {
 
     return $app->error(
         translate(
-            'An error occurred when access token refreshing: [_1]: [_2]',
+            'An error occurred when refreshing access token: [_1]: [_2]',
             GoogleAnalytics::extract_response_error($res)
         ),
         500
@@ -97,9 +97,8 @@ sub refresh_access_token {
 sub get_username {
     my ( $app, $ua, $token_data ) = @_;
 
-    my $uri
-        = URI->new(
-        'https://www.googleapis.com/analytics/v3/management/accounts' );
+    my $uri = URI->new(
+        'https://www.googleapis.com/analytics/v3/management/accounts');
     $uri->query_form(
         access_token  => $token_data->{data}{access_token},
         'max-results' => 1,

@@ -285,7 +285,7 @@ sub iso2ts {
     my ( $ts, $target_zone ) = @_;
     return
         unless $ts
-        =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|([+-]\d{2}:\d{2}))?)?)?)?/;
+            =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|([+-]\d{2}:\d{2}))?)?)?)?/;
     my ( $y, $mo, $d, $h, $m, $s, $zone )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
     if ($zone) {
@@ -314,7 +314,7 @@ sub iso2epoch {
     my ($ts) = @_;
     return
         unless $ts
-        =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|([+-]\d{2}:\d{2}))?)?)?)?/;
+            =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|([+-]\d{2}:\d{2}))?)?)?)?/;
     my ( $y, $mo, $d, $h, $m, $s, $zone )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
 
@@ -693,7 +693,7 @@ sub new_post {
     # Clear cache for site stats dashboard widget.
     require MT::Util;
     MT::Util::clear_site_stats_widget_cache( $blog->id )
-        or die _fault( MT->translate('Removing stats cache was failed.') );
+        or die _fault( MT->translate('Removing stats cache failed.') );
 
     require MT::Log;
     $app->log(
@@ -794,8 +794,7 @@ sub edit_post {
     {
         require MT::Util;
         MT::Util::clear_site_stats_widget_cache( $blog->id )
-            or
-            die _fault( MT->translate('Removing stats cache was failed.') );
+            or die _fault( MT->translate('Removing stats cache failed.') );
     }
 
     require MT::Log;
@@ -982,7 +981,7 @@ sub delete_post {
     # Clear cache for site stats dashboard widget.
     require MT::Util;
     MT::Util::clear_site_stats_widget_cache( $blog->id )
-        or die _fault( MT->translate('Removing stats cache was failed.') );
+        or die _fault( MT->translate('Removing stats cache failed.') );
 
     # Rebuild archives
     if (%recipe) {
@@ -1085,14 +1084,13 @@ sub _upload_to_asset {
         my $fh;
         my $data = $content->body;
         open( $fh, "+<", \$data );
-        close($fh),
-            return $app->error(
+        close($fh), return $app->error(
             500,
             MT->translate(
                 "Saving [_1] failed: [_2]", $base,
                 MT->translate("Invalid image file format.")
             )
-            ) unless MT::Image::is_valid_image($fh);
+        ) unless MT::Image::is_valid_image($fh);
         close($fh);
     }
 
@@ -1271,8 +1269,8 @@ sub get_weblogs {
     my $uri = URI->new($base);
     if ($uri) {
         my $created
-            = MT::Util::format_ts( '%Y-%m-%d', $user->created_on, undef,
-            'en', 0 );
+            = MT::Util::format_ts( '%Y-%m-%d', $user->created_on, undef, 'en',
+            0 );
         my $id
             = 'tag:'
             . $uri->host . ','
@@ -1501,8 +1499,8 @@ sub get_blog_comments {
     my $site_uri = URI->new( $blog->site_url );
     if ($site_uri) {
         my $blog_created
-            = MT::Util::format_ts( '%Y-%m-%d', $blog->created_on, $blog,
-            'en', 0 );
+            = MT::Util::format_ts( '%Y-%m-%d', $blog->created_on, $blog, 'en',
+            0 );
         my $id
             = 'tag:'
             . $site_uri->host . ','
