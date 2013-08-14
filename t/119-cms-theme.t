@@ -44,8 +44,8 @@ subtest 'Check visibility' => sub {
             blog_id => $website->id,
             like    => [
                 'Current Theme',
-                'Available Themes for Websites',
-                'Available Themes for Blogs',
+                'Available Website Themes',
+                'Available Blog Themes',
             ],
         },
         {   scope   => 'Blog',
@@ -73,14 +73,14 @@ subtest 'Check visibility' => sub {
                             = quotemeta( '<h2 class="theme-group-name">'
                                 . $like
                                 . '</h2>' );
-                        like( $out, qr/$like_quotemeta/, $like );
+                        ok( $out =~ m/$like_quotemeta/, $like );
                     }
                 }
                 else {
                     my $like = '<h2 class="theme-group-name">'
                         . $data->{like} . '</h2>';
                     my $like_quotemeta = quotemeta $like;
-                    like( $out, qr/$like_quotemeta/, $like );
+                    ok( $out =~ m/$like_quotemeta/, $like );
                 }
             }
         };
