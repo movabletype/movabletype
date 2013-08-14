@@ -1952,7 +1952,7 @@ subtest 'action = ban_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ban_commenter" );
-    ok( $out =~ m!not implemented!i,
+    ok( $out !~ m!not implemented!i,
         "ban_commenter by permitted user (SC1)" );
 
     $app = _run_app(
@@ -1972,7 +1972,7 @@ subtest 'action = ban_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                        "Request: ban_commenter" );
-    ok( $out =~ m!not implemented!i, "ban_commenter by other blog (SC1)" );
+    ok( $out !~ m!not implemented!i, "ban_commenter by other blog (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2144,7 +2144,7 @@ subtest 'action = unban_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unban_commenter" );
-    ok( $out =~ m!not implemented!i,
+    ok( $out !~ m!not implemented!i,
         "unban_commenter by permitted user (SC1)" );
 
     $app = _run_app(
@@ -2164,7 +2164,7 @@ subtest 'action = unban_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                        "Request: unban_commenter" );
-    ok( $out =~ m!not implemented!i, "unban_commenter by other blog (SC1)" );
+    ok( $out !~ m!not implemented!i, "unban_commenter by other blog (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
