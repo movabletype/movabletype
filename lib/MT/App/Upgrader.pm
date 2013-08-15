@@ -639,7 +639,11 @@ sub run_actions {
 
 sub json_response {
     my $app = shift;
-    $app->print_encode( ' JSON:' . MT::Util::to_json( $app->response ) );
+
+    my $json_text = MT::Util::to_json( $app->response );
+    $json_text =~ s/([<>\+])/sprintf("\\u%04x",ord($1))/eg;
+
+    $app->print_encode( ' JSON:' . $json_text );
 }
 
 sub response {
