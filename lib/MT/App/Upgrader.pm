@@ -158,7 +158,7 @@ sub login {
             }
             else {
                 $process_login_result->( MT::Auth::INVALID_PASSWORD() );
-                return undef;    # error message?
+                return $app->error( $app->translate('Invalid login.') );
             }
         }
     }
