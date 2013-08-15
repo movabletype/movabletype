@@ -9,6 +9,7 @@ use strict;
 
 use MT::App;
 use base qw( MT::App );
+use MT::Auth;
 use MT::BasicAuthor;
 use MT::Util;
 use JSON;
@@ -84,6 +85,19 @@ sub login {
         $crypted    = 0;
     }
     return unless $user && ( $pass || $cookie_middle );
+
+    my $process_login_result = sub {
+        require MT::Lockout;
+        eval {
+            MT::Lockout->process_login_result( $app, $app->remote_ip, $user,
+                $_[0] );
+        };
+    };
+
+    return
+        if
+        eval { MT::Lockout->is_locked_out( $app, $app->remote_ip, $user ) };
+
     if ( my @author = MT::BasicAuthor->load( { name => $user } ) ) {
         foreach my $author (@author) {
 
@@ -139,9 +153,11 @@ sub login {
                     );
                     $app->bake_cookie(%arg);
                 }
+                $process_login_result->( MT::Auth::NEW_LOGIN() );
                 return ( $author, $first_time );
             }
             else {
+                $process_login_result->( MT::Auth::INVALID_PASSWORD() );
                 return undef;    # error message?
             }
         }
@@ -154,6 +170,7 @@ sub login {
         -expires => '-1y',
         -path    => $app->config('CookiePath') || $app->mt_path
     ) unless $first_time;
+    $process_login_result->( MT::Auth::UNKNOWN() );
     return $app->error( $app->translate('Invalid login.') );
 }
 
