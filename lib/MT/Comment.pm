@@ -541,11 +541,12 @@ sub list_props {
                 my @users = MT->model('author')->load( { email => $query, },
                     { fetchonly => { id => 1 }, } );
                 my @ids = map { $_->id } @users;
-                return [
-                    { commenter_id => \@ids },
-                    '-or',
-                    { 'email' => $query },
-                ];
+                my $terms;
+                if (@ids) {
+                    $terms = [ { commenter_id => \@ids }, '-or', ];
+                }
+                push @$terms, { 'email' => $query };
+                return $terms;
             },
         },
         url => {
