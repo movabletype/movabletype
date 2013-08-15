@@ -1,11 +1,18 @@
 # $Id: 14-archive.t 2562 2008-06-12 05:12:23Z bchoate $
 
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More tests => 10;
+use Test::More;
 use Cwd;
 use MT;
 use MT::Test;
 use strict;
+
+if ( eval { require Archive::Tar } ) {
+    plan tests => 10;
+}
+else {
+    plan skip_all => 'Archive::Tar is not installed';
+}
 
 my $mt = MT->new;
 use MT::Util::Archive;

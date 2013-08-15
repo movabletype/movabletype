@@ -178,7 +178,14 @@ use_ok('MT::ListProperty');
 
 use_ok('MT::Util');
 use_ok('MT::Util::Archive');
-use_ok('MT::Util::Archive::Tgz');
+SKIP: {
+    if ( eval { require Archive::Tar } ) {
+        use_ok('MT::Util::Archive::Tgz');
+    }
+    else {
+        skip( 'Archive::Tar is not installed', 1 );
+    }
+}
 SKIP: {
     if ( eval { require Archive::Zip } ) {
         use_ok('MT::Util::Archive::Zip');
