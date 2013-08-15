@@ -561,8 +561,22 @@ sub finish {
     }
 }
 
+sub needs_upgrade {
+    my $app = shift;
+
+    return 1 if MT->schema_version > ( $app->{cfg}->SchemaVersion || 0 );
+
+    foreach my $plugin (@MT::Components) {
+        return 1 if $plugin->needs_upgrade;
+    }
+
+    return 0;
+}
+
 sub run_actions {
     my $app = shift;
+
+    return $app->main(@_) unless $app->needs_upgrade;
 
     $| = 1;
 
