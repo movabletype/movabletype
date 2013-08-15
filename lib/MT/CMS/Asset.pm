@@ -969,59 +969,6 @@ sub _process_post_upload {
     return asset_insert_text( $app, \%param );
 }
 
-# FIXME: need to make this work
-sub save {
-    my $app   = shift;
-    my $q     = $app->param;
-    my $perms = $app->permissions;
-    my $type  = $q->param('_type');
-    my $class = $app->model($type)
-        or return $app->errtrans("Invalid request.");
-
-    $app->validate_magic() or return;
-    return $app->permission_denied()
-        unless $app->can_do('save_asset');
-
-    my $blog_id = $q->param('blog_id');
-    my $id      = $q->param('id');
-    my $obj     = $id ? $class->load($id) : $class->new;
-    return unless $obj;
-    my $original = $obj->clone();
-
-    $obj->set_values_from_query($q);
-
-    my $filter_result
-        = $app->run_callbacks( 'cms_save_filter.' . $type, $app );
-    if ( !$filter_result ) {
-        my %param = ();
-        $param{error}       = $app->errstr;
-        $param{return_args} = $app->param('return_args');
-        return $app->forward( "view", \%param );
-    }
-
-    $app->run_callbacks( 'cms_pre_save.' . $type, $app, $obj, $original )
-        || return $app->errtrans( "Saving [_1] failed: [_2]", $type,
-        $app->errstr );
-
-    $obj->save
-        or return $app->error(
-        $app->translate( "Saving [_1] failed: [_2]", $type, $obj->errstr ) );
-
-    $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $original );
-
-    $app->redirect(
-        $app->uri(
-            'mode' => 'view',
-            args   => {
-                _type   => $type,
-                blog_id => $blog_id,
-                id      => $obj->id,
-                saved   => 1,
-            }
-        )
-    );
-}
-
 sub cms_save_filter {
     my ( $cb, $app ) = @_;
     if ( $app->param('file_name') || $app->param('file_path') ) {

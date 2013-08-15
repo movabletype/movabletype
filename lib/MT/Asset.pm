@@ -787,23 +787,6 @@ sub edit_template_param {
     return;
 }
 
-sub set_values_from_query {
-    my $asset = shift;
-    my ($q) = @_;
-
-    # Set the known columns from the form, if they're set. Subclasses can
-    # opt out or decorate this behavior by overriding the method.
-    my $names = $asset->column_names;
-    my %values;
-    for my $field (@$names) {
-        $values{$field} = $q->param($field)
-            if defined $q->param($field);
-    }
-    $asset->set_values( \%values );
-
-    1;
-}
-
 # $pseudo parameter causes function to return '%r' as
 # root instead of blog site path
 sub _make_cache_path {
@@ -1041,13 +1024,6 @@ subclasses can process the file, create thumbnails and so on.
 
 Called before the template rendering, and gives an asset a chance
 to add parameters. Default behavior is to do nothing
-
-=head2 $asset->set_values_from_query( $q )
-
-The Asset will collect from a query's parameters any data that it 
-finds relevant. By default search if any of it's data fields 
-exists in the query, and if they do saves them. Subclasses can
-opt out or decorate this behavior by overriding the method
 
 =head2 $asset->remove_cached_files()
 
