@@ -99,8 +99,10 @@ sub login {
     }
     return unless $user && ( $pass || $cookie_middle );
 
+
+    require MT::Lockout;
+
     my $process_login_result = sub {
-        require MT::Lockout;
         eval {
             MT::Lockout->process_login_result( $app, $app->remote_ip, $user,
                 $_[0] );
@@ -111,6 +113,9 @@ sub login {
         if
         eval { MT::Lockout->is_locked_out( $app, $app->remote_ip, $user ) };
 
+
+    my $driver = $MT::Object::DRIVER;
+    $driver->clear_cache if $driver && $driver->can('clear_cache');
     if ( my @author = MT::BasicAuthor->load( { name => $user } ) ) {
         foreach my $author (@author) {
 
