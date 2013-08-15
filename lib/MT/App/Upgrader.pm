@@ -46,6 +46,18 @@ sub core_methods {
     };
 }
 
+sub needs_upgrade {
+    my $app = shift;
+
+    return 1 if MT->schema_version > ( $app->{cfg}->SchemaVersion || 0 );
+
+    foreach my $plugin (@MT::Components) {
+        return 1 if $plugin->needs_upgrade;
+    }
+
+    return 0;
+}
+
 sub init_request {
     my $app = shift;
     $app->SUPER::init_request(@_);
@@ -53,7 +65,8 @@ sub init_request {
     $app->{default_mode} = 'install';
     delete $app->{response};
     my $mode = $app->mode || $app->{default_mode};
-    $app->{requires_login} = ( $mode eq 'upgrade' ) || ( $mode eq 'main' );
+    $app->{requires_login} = $app->needs_upgrade && ( $mode eq 'upgrade' )
+        || ( $mode eq 'main' );
 }
 
 sub login {
@@ -182,6 +195,8 @@ sub current_magic {
 
 sub upgrade {
     my $app = shift;
+
+    return $app->main(@_) unless $app->needs_upgrade;
 
     my $install_mode;
     my %param;
@@ -559,18 +574,6 @@ sub finish {
         $response->{cookie}
             = { map { $_ => $cookie_obj->{$_} } ( keys %$cookie_obj ) };
     }
-}
-
-sub needs_upgrade {
-    my $app = shift;
-
-    return 1 if MT->schema_version > ( $app->{cfg}->SchemaVersion || 0 );
-
-    foreach my $plugin (@MT::Components) {
-        return 1 if $plugin->needs_upgrade;
-    }
-
-    return 0;
 }
 
 sub run_actions {
