@@ -73,6 +73,9 @@ sub edit {
 
     $param->{can_view_trackbacks} = $app->can_do('access_to_trackback_list');
 
+    ## author_id parameter of the author currently logged in.
+    delete $param->{'author_id'};
+
     1;
 }
 

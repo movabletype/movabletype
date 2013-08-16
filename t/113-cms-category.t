@@ -528,5 +528,54 @@ subtest 'Test on website' => sub {
 
     done_testing();
 };
+
+subtest 'Edit Category screen check' => sub {
+    my $website_category = MT::Test::Permission->make_category(
+        blog_id   => $website->id,
+        author_id => $aikawa->id,
+    );
+    my $blog_category = MT::Test::Permission->make_category(
+        blog_id   => $blog->id,
+        author_id => $ukawa->id,
+    );
+    ok( $website_category, 'Created a website category' );
+    ok( $blog_category,    'Created a blog category' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user => $admin,
+            __mode      => 'edit',
+            _type       => 'category',
+            blog_id     => $website->id,
+            id          => $website_category->id,
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, 'Request: edit(category)' );
+
+    my $link
+        = quotemeta
+        '<li id="user"><a href="/cgi-bin/mt.cgi?__mode=view&amp;_type=author&amp;id='
+        . $admin->id . '">';
+    ok( $out =~ m/$link/, 'Link to Edit Profile in website scope is ok' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user => $admin,
+            __mode      => 'edit',
+            _type       => 'category',
+            blog_id     => $blog->id,
+            id          => $blog_category->id,
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, 'Request: edit(category)' );
+
+    $link
+        = quotemeta
+        '<li id="user"><a href="/cgi-bin/mt.cgi?__mode=view&amp;_type=author&amp;id='
+        . $admin->id . '">';
+    ok( $out =~ m/$link/, 'Link to Edit Profile in blog scope is ok' );
+};
 done_testing();
 
