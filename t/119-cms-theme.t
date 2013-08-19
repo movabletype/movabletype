@@ -38,15 +38,11 @@ subtest 'Check visibility' => sub {
     my @suite = (
         {   scope   => 'System',
             blog_id => 0,
-            like    => [ 'Themes for Blogs', 'Themes for Websites', ],
+            like    => [ 'Themes in used', 'Installed Themes', ],
         },
         {   scope   => 'Website',
             blog_id => $website->id,
-            like    => [
-                'Current Theme',
-                'Available Website Themes',
-                'Available Blog Themes',
-            ],
+            like    => [ 'Current Theme', 'Available Themes', ],
         },
         {   scope   => 'Blog',
             blog_id => $blog->id,

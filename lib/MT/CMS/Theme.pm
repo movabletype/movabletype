@@ -22,39 +22,31 @@ sub list {
 
     if ( !$blog ) {
         ## System wide screen.
-        $param{website_theme_loop}
-            = _build_theme_table( classes => { website => 1 } );
-        $param{blog_theme_loop}
-            = _build_theme_table( classes => { blog => 1 } );
-        $param{both_theme_loop}
-            = _build_theme_table( classes => { both => 1 } );
+        $param{theme_in_used_loop} = _build_theme_table(
+            classes => { website => 1, blog => 1, both => 1 },
+            in_used => 1,
+        );
+        $param{installed_theme_loop} = _build_theme_table(
+            classes => { website => 1, blog => 1, both => 1 },
+            in_used => 0,
+        );
     }
     else {
         my $current_theme = $blog->theme;
         $param{current_theme_loop} = _build_theme_table(
             current => $current_theme,
-            classes => { current => 1, },
+            classes => { current => 1 },
             blog    => $blog,
         );
-        if ( $blog->is_blog ) {
-            $param{theme_loop} = _build_theme_table(
-                current => $current_theme,
-                classes => { blog => 1, both => 1 },
-                blog    => $blog,
-            );
-        }
-        else {
-            $param{website_theme_loop} = _build_theme_table(
-                current => $current_theme,
-                classes => { website => 1, both => 1 },
-                blog    => $blog,
-            );
-            $param{blog_theme_loop} = _build_theme_table(
-                current => $current_theme,
-                classes => { blog => 1, both => 1 },
-                blog    => $blog,
-            );
-        }
+        $param{available_theme_loop} = _build_theme_table(
+            current => $current_theme,
+            classes => {
+                $blog->is_blog ? () : ( website => 1 ),
+                blog => 1,
+                both => 1,
+            },
+            blog => $blog,
+        );
         $param{current_theme_name} = $current_theme->label if $current_theme;
     }
     $param{nav_config}   = 1;
@@ -117,6 +109,10 @@ sub _build_theme_table {
         $theme{description} = $theme->description;
         $theme{blog_count}
             = MT::Blog->count( { class => '*', theme_id => $theme->id } );
+
+        if ( exists $opts{in_used} ) {
+            next if $opts{in_used} xor $theme{blog_count};
+        }
 
         if ( $theme{current} ) {
             $current_theme = \%theme;
