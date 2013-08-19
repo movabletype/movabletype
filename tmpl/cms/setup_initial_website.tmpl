@@ -49,15 +49,8 @@
          hint="<__trans phrase="Select the theme you wish to use for this new website.">"
          label_class="top-label">
         <select name="website_theme">
-        <mt:loop name="website_theme_loop">
-          <mt:if name="__first__"><optgroup label="<__trans phrase="Website">"></mt:if>
+        <mt:loop name="theme_loop">
           <option value="<mt:var name="key" escape="html">"<mt:if name="website_theme"><mt:if name="key" eq="$website_theme"> selected="selected"</mt:if><mt:else><mt:if name="key" eq="$config.DefaultWebsiteTheme"> selected="selected"</mt:if></mt:if>><mt:var name="label" escape="html"></option>
-          <mt:if name="__last__"></optgroup></mt:if>
-        </mt:loop>
-        <mt:loop name="blog_theme_loop">
-          <mt:if name="__first__"><optgroup label="<__trans phrase="Blog">"></mt:if>
-          <option value="<mt:var name="key" escape="html">"<mt:if name="website_theme"><mt:if name="key" eq="$website_theme"> selected="selected"</mt:if><mt:else><mt:if name="key" eq="$config.DefaultWebsiteTheme"> selected="selected"</mt:if></mt:if>><mt:var name="label" escape="html"></option>
-          <mt:if name="__last__"></optgroup></mt:if>
         </mt:loop>
         </select>
       </mtapp:setting>

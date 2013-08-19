@@ -15,51 +15,6 @@ use Test::More;
 
 my ( $app, $out );
 
-subtest 'Check displaying both website and blog themes in install view' =>
-    sub {
-    $app = _run_app(
-        'MT::App::Upgrader',
-        {   __request_method       => 'POST',
-            __mode                 => 'init_user',
-            admin_username         => 'admin',
-            admin_nickname         => 'admin',
-            admin_email            => 'miuchi+test@sixapart.com',
-            use_system_email       => 'on',
-            preferred_language     => 'en-us',
-            admin_password         => 'password',
-            admin_password_confirm => 'password',
-            continue               => 1,
-        },
-    );
-    $out = delete $app->{__test_output};
-
-    my $title = '<title>Create Your First Website | Movable Type</title>';
-    like( $out, qr/$title/, '"Create Website" view is displayed.' );
-
-    my $themes = MT::Theme->load_all_themes;
-
-SKIP: {
-        my $has_website_theme
-            = grep { ( $_->{class} || '' ) eq 'website' } values %$themes;
-        skip 'Website themes have not been installed.', 1
-            unless $has_website_theme;
-
-        my $optgrp_website = quotemeta '<optgroup label="Website">';
-        like( $out, qr/$optgrp_website/,
-            '"Create Website" view has website\'s optgroup tag.' );
-    }
-
-SKIP: {
-        my $has_blog_theme
-            = grep { ( $_->{class} || '' ) ne 'website' } values %$themes;
-        skip 'Blog themes have not been installed.', 1 unless $has_blog_theme;
-
-        my $optgrp_blog = quotemeta '<optgroup label="Blog">';
-        like( $out, qr/$optgrp_blog/,
-            '"Create Website" view has blog\'s optgroup tag.' );
-    }
-    };
-
 subtest 'Upgrade from MT4 to MT6' => sub {
     MT::Test->init_db;
     MT::Website->remove_all;
