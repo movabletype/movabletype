@@ -69,7 +69,7 @@ function init() {
         help_section="blog_theme">
         <select name="blog_theme">
         <mt:loop name="theme_loop">
-          <option value="<mt:var name="key" escape="html">"<mt:if name="key" eq='$config.DefaultBlogTheme'> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+          <option value="<mt:var name="value" escape="html">"<mt:if name="value" eq='$config.DefaultBlogTheme'> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
         </mt:loop>
         </select>
     </mtapp:setting>

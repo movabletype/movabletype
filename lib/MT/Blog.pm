@@ -270,15 +270,7 @@ sub list_props {
             single_select_options => sub {
                 my $prop = shift;
                 require MT::Theme;
-                my $themes = MT::Theme->load_all_themes;
-                return [
-                    map { { label => $_->label, value => $_->id } }
-                        sort { $a->label cmp $b->label }
-                        grep {
-                               $_->{class} eq 'blog'
-                            || $_->{class} eq 'both'
-                        } values %$themes
-                ];
+                return MT::Theme->load_theme_loop('blog');
             },
         },
         modified_on => {

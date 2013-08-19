@@ -114,19 +114,7 @@ sub list_props {
             single_select_options => sub {
                 my $prop = shift;
                 require MT::Theme;
-                my $themes = MT::Theme->load_all_themes;
-                return [
-                    map { { label => $_->label, value => $_->id } } (
-                        (   sort     { $a->label cmp $b->label }
-                                grep { $_->{class} eq 'website' }
-                                values %$themes
-                        ),
-                        (   sort     { $a->label cmp $b->label }
-                                grep { $_->{class} ne 'website' }
-                                values %$themes
-                        )
-                    )
-                ];
+                return MT::Theme->load_theme_loop;
             },
         },
         created_on  => { base => 'blog.created_on' },

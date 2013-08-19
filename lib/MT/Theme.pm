@@ -107,8 +107,8 @@ sub load_theme_loop {
         next if @$errors;
 
         my %hash = (
-            key   => $theme->{id},
             label => $theme->label,
+            value => $theme->id,
             @$warnings ? ( warnings => $warnings ) : (),
         );
         if ( $theme->{class} eq 'website' ) {
