@@ -405,21 +405,9 @@ sub init_website {
     $param{$param_name} = 1;
 
     require MT::Theme;
-    my $themes = MT::Theme->load_all_themes;
-    my @theme_loop;
-    foreach my $theme ( values %$themes ) {
-        my ( $errors, $warnings ) = $theme->validate_versions;
-        next if @$errors;
-        push @theme_loop,
-            {
-            key   => $theme->{id},
-            label => $theme->label,
-            @$warnings ? ( warnings => $warnings ) : (),
-            };
-    }
-    @theme_loop = sort { $a->{label}() cmp $b->{label}() } @theme_loop;
-    $param{'theme_loop'}  = \@theme_loop;
-    $param{'theme_index'} = scalar @theme_loop;
+    my $theme_loop = MT::Theme->load_theme_loop;
+    $param{'theme_loop'}  = $theme_loop;
+    $param{'theme_index'} = scalar @$theme_loop;
     if ( my $b_path = $app->config->BaseSitePath ) {
         $param{'sitepath_limited'} = $b_path;
 

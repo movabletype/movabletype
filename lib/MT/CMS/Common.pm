@@ -758,25 +758,7 @@ sub edit {
 
     if ( $type eq 'website' || $type eq 'blog' ) {
         require MT::Theme;
-        my $themes = MT::Theme->load_all_themes;
-        $param{theme_loop} = [
-            sort { $a->{label}() cmp $b->{label}() }
-                map {
-                my ( $errors, $warnings ) = $_->validate_versions;
-                {   key      => $_->{id},
-                    label    => $_->label,
-                    warnings => @$warnings ? $warnings : undef,
-                };
-                }
-                grep {
-                my ( $errors, $warnings ) = $_->validate_versions;
-                (     $type eq 'blog' ? ( $_->{class} || '' ) ne 'website'
-                    : $type eq 'website' ? 1
-                    :                      undef
-                    )
-                    && !@$errors;
-                } values %$themes
-        ];
+        $param{theme_loop} = MT::Theme->load_theme_loop($type);
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
         my $limit = File::Spec->catdir( $cfg->BaseSitePath, 'PATH' );
         $limit =~ s/PATH$//;

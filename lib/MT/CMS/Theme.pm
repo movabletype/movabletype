@@ -69,7 +69,7 @@ sub list {
 sub _build_theme_table {
     my (%opts) = @_;
     my $classes = $opts{classes};
-    my @data;
+    my ( @website_data, @blog_data );
     my $current = $opts{current} || '';
     $current = $current->{id} if ref $current;
     my $current_theme;
@@ -118,10 +118,18 @@ sub _build_theme_table {
             $current_theme = \%theme;
         }
         else {
-            push @data, \%theme;
+            if ( $theme->{class} eq 'website' ) {
+                push @website_data, \%theme;
+            }
+            else {
+                push @blog_data, \%theme;
+            }
         }
     }
-    @data = sort { $a->{label} cmp $b->{label} } @data;
+    my @data = (
+        ( sort { $a->{label} cmp $b->{label} } @website_data ),
+        ( sort { $a->{label} cmp $b->{label} } @blog_data ),
+    );
     unshift @data, $current_theme if $current_theme;
     return \@data;
 }
