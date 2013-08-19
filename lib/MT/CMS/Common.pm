@@ -758,35 +758,25 @@ sub edit {
 
     if ( $type eq 'website' || $type eq 'blog' ) {
         require MT::Theme;
-        my $themes         = MT::Theme->load_all_themes;
-        my $get_theme_loop = sub {
-            my $type = shift;
-            [   sort { $a->{label}() cmp $b->{label}() }
-                    map {
-                    my ( $errors, $warnings ) = $_->validate_versions;
-                    {   key      => $_->{id},
-                        label    => $_->label,
-                        warnings => @$warnings ? $warnings : undef,
-                    };
-                    }
-                    grep {
-                    my ( $errors, $warnings ) = $_->validate_versions;
-                    (     $type eq 'blog' ? ( $_->{class} || '' ) ne 'website'
-                        : $type eq 'website'
-                        ? ( $_->{class} || '' ) eq 'website'
-                        : undef
-                        )
-                        && !@$errors;
-                    } values %$themes
-            ];
-        };
-        if ( $type eq 'blog' ) {
-            $param{theme_loop} = $get_theme_loop->('blog');
-        }
-        elsif ( $type eq 'website' ) {
-            $param{website_theme_loop} = $get_theme_loop->('website');
-            $param{blog_theme_loop}    = $get_theme_loop->('blog');
-        }
+        my $themes = MT::Theme->load_all_themes;
+        $param{theme_loop} = [
+            sort { $a->{label}() cmp $b->{label}() }
+                map {
+                my ( $errors, $warnings ) = $_->validate_versions;
+                {   key      => $_->{id},
+                    label    => $_->label,
+                    warnings => @$warnings ? $warnings : undef,
+                };
+                }
+                grep {
+                my ( $errors, $warnings ) = $_->validate_versions;
+                (     $type eq 'blog' ? ( $_->{class} || '' ) ne 'website'
+                    : $type eq 'website' ? 1
+                    :                      undef
+                    )
+                    && !@$errors;
+                } values %$themes
+        ];
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
         my $limit = File::Spec->catdir( $cfg->BaseSitePath, 'PATH' );
         $limit =~ s/PATH$//;
@@ -1477,7 +1467,7 @@ sub filtered_list {
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
     my @cols = grep {/^[^\.]+$/} split( ',', $cols );
     my @subcols = grep {/\./} split( ',', $cols );
-    my $class = MT->model( $setting->{object_type}) || MT->model($ds);
+    my $class = MT->model( $setting->{object_type} ) || MT->model($ds);
     if ( $class->has_column('id') ) {
         unshift @cols,    '__id';
         unshift @subcols, '__id';
