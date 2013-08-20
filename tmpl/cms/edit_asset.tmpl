@@ -11,14 +11,6 @@
     <mt:var name="error">
   </mtapp:statusmsg>
 </mt:if>
-<mt:unless name="has_thumbnail">
-  <mtapp:statusmsg
-    id="warning-has-no-thumbnail"
-    class="warning"
-    can_close="0">
-    <__trans phrase="Error creating thumbnail file.">
-  </mtapp:statusmsg>
-</mt:unless>
 <mt:if name="saved">
   <mt:if name="can_rebuild">
   <mtapp:statusmsg
@@ -191,6 +183,13 @@ TC.attachLoadEvent( init );
           <img src="<mt:var name="thumbnail_url" escape="html">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
         </div>
       </div>
+      <mt:elseif name="asset_type" eq="image">
+        <mtapp:statusmsg
+          id="warning-has-no-thumbnail"
+          class="warning"
+          can_close="0">
+          <__trans phrase="Error creating thumbnail file.">
+        </mtapp:statusmsg>
       </mt:if>
     </mt:if>
     <div class="asset-metadata">
