@@ -101,17 +101,17 @@ msg-balloon shows error message like balloon.
     border-radius: 0;
 }
 .msg-success {
-    background-color: #cee4ae;
+    background-color: #a1cfb5;
 }
 .msg-alert,
 .msg-warning {
-    background-color: #fef263;
+    background-color: #e6eaa8;
 }
 .msg-error {
-    background-color: #f6bfbc;
+    background-color: #dea899;
 }
 .msg-info {
-    background-color: #e6eae3;
+    background-color: #cae5f8;
 }
 .msg-publishing {
     margin: 15px 0 0;

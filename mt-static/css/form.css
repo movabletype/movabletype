@@ -152,7 +152,7 @@ input[type=file] {
 }
 .text,
 .button {
-    height: 1.75em;
+    /* height: 1.75em; */
     line-height: normal;
 }
 .text::-moz-focus-inner,
@@ -232,7 +232,7 @@ If you want to show error on text fields, use .error class
     width: 75%;
     outline: 0;
     border: 1px solid #adadad;
-    border-top-color: #a3a3a2;
+    border-top-color: #323232;
     line-height: 1.3;
     background-color: #ffffff;
     color: #2b2b2b;
@@ -295,12 +295,14 @@ If you want to show error on text fields, use .error class
 }
 .text:focus {
     outline: 0;
-    border-color: #2a83a2;
+    border-color: #0076BF;
 }
 
-.text.error,
-.text.error:focus {
-    border-color: #c53d43;
+.text.error{
+    border-color: #bf241f;
+}
+.text.error:focus{
+    border-color: #6d1418;
 }
 
 
@@ -440,91 +442,84 @@ You can disable buttons adding disabled class.
     display: inline-block;
     outline: none;
     margin-right: 5px;
-    padding: 0 0.5em;
-    border: 1px solid #c0c6c9;
-    line-height: 1.75em;
-    background-color: #f3f3f3;
-    background-image: -moz-linear-gradient(#f3f3f3, #dcdddd);
-    background-image: -webkit-linear-gradient(#f3f3f3, #dcdddd);
-    background-image: linear-gradient(#f3f3f3, #dcdddd);
-    color: #2b2b2b;
+    padding: 0.5em 1em;
+    vertical-align: middle;
+    white-space: nowrap;
+    border: 1px solid #666666;
+    background-color: #ffffff;
+    color: #1A1A1A;
     font-size: 12px;
-    font-family: Helvetica, Arial, sans-serif;
-    text-align: center;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: normal;
     text-decoration: none;
-    border-radius: 2px;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.4);
+    border-radius: 5px;
 }
 .button:focus {
-    border-color: #2a83a2;
+    border-color: #0076BF;
 }
 .button:hover {
-    border-color: #adadad;
-    color: #2b2b2b;
+    border-color: #323232;
+    color: #000000;
+    text-shadow: none;
     box-shadow: 0px 1px 0 0 rgba(255, 255, 255, 0.9), inset 0 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 .button:active {
-    background-color: #dcdddd;
-    background-image: -moz-linear-gradient(#dcdddd, #f3f3f3);
-    background-image: -webkit-linear-gradient(#dcdddd, #f3f3f3);
-    background-image: linear-gradient(#dcdddd, #f3f3f3);
-    box-shadow: 0px 1px 0 0 rgba(255, 255, 255, 0.9), inset 0 0 1px 0 rgba(0, 0, 0, 0.3);
+    background-color: #eeefef;
+    background-image: -moz-linear-gradient(#eeefef, #f7f7f7);
+    background-image: -webkit-linear-gradient(#eeefef, #f7f7f7);
+    background-image: linear-gradient(#eeefef, #f7f7f7);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.2);
+    color: #323232;
 }
 
 .button.action {
-    padding: 0 0.8em;
     border-color: #7b7c7d;
-    background-color: #adadad;
-    background-image: -moz-linear-gradient(#adadad, #7b7c7d);
-    background-image: -webkit-linear-gradient(#adadad, #7b7c7d);
-    background-image: linear-gradient(#adadad, #7b7c7d);
+    background-color: #666666;
     color: #fffffc;
-    text-shadow: 1px 1px 1px #383c3c;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
     font-size: 14px;
     font-weight: bold;
-    vertical-align: baseline;
+    vertical-align: middle;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 1px 0 rgba(255,255,255,0.4);
 }
 .button.action:hover {
-    border-color: #595857;
-    background-color: #bababa;
-    background-image: -moz-linear-gradient(#bababa, #88898a);
-    background-image: -webkit-linear-gradient(#bababa, #88898a);
-    background-image: linear-gradient(#bababa, #88898a);
-    box-shadow: none;
+    border-color: #323232;
+    background-color: #b2b2b2;
 }
 .button.action:active {
-    background-color: #7d7c7d;
-    background-image: -moz-linear-gradient(#7b7c7d, #adadad);
-    background-image: -webkit-linear-gradient(#7b7c7d, #adadad);
-    background-image: linear-gradient(#7b7c7d, #adadad);
+    background-color: #999999;
+    background-image: -moz-linear-gradient(#999999, #8c8c8c);
+    background-image: -webkit-linear-gradient(#999999, #8c8c8c);
+    background-image: linear-gradient(#999999, #8c8c8c);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.4);
 }
 
 .button.primary {
-    border-color: #165e83;
-    background-color: #2a83a2;
-    background-image: -moz-linear-gradient(#2a83a2, #165e83);
-    background-image: -webkit-linear-gradient(#2a83a2, #165e83);
-    background-image: linear-gradient(#2a83a2, #165e83);
+    border-color: #004B9A;
+    background-color: #0076BF;
+    background-image: -moz-linear-gradient(#0076BF, #006ea5);
+    background-image: -webkit-linear-gradient(#0076BF, #006ea5);
+    background-image: linear-gradient(#0076BF, #006ea5);
 }
 .button.primary:hover {
-    border-color: #274a78;
-    background-color: #2f93b6;
-    background-image: -moz-linear-gradient(#2f93b6, #1a6e99);
-    background-image: -webkit-linear-gradient(#2f93b6, #1a6e99);
-    background-image: linear-gradient(#2f93b6, #1a6e99);
+    border-color: #00437F;
+    background: #008FD6;
 }
 .button.primary:active {
-    background-color: #165e83;
-    background-image: -moz-linear-gradient(#165e83, #2a83a2);
-    background-image: -webkit-linear-gradient(#165e83, #2a83a2);
-    background-image: linear-gradient(#165e83, #2a83a2);
+    background-color: #006DA3;
+    background-image: -moz-linear-gradient(#005B88, #006DA3);
+    background-image: -webkit-linear-gradient(#005B88, #006DA3);
+    background-image: linear-gradient(#005B88, #006DA3);
 }
 
 .button.disabled,
 .button.action.disabled,
 .button.primary.disabled {
-    border-color: #c0c6c9 ! important;
+    border-color: #e6e6e6 ! important;
     cursor: default ! important;
-    background: #f3f3f3 ! important;
+    background: #f7f7f7 ! important;
+    color: #e6e6e6 ! important;
     text-shadow: none ! important;
     box-shadow: none ! important;
 }

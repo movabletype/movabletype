@@ -80,7 +80,7 @@ chromeless.css is used in the screen doesn't have standard header and footer, li
 <h3>progressbar</h3>
 
 ```
-<div class="progressbar interminate"></div>
+<div class="progressbar indeterminate ui-progressbar"><div class="ui-progressbar-value" style="width:50%"></div></div>
 ```
 
 <h3>Packages List</h3>
@@ -157,7 +157,7 @@ h3 {
 
 .ready {
     font-weight: bold;
-    color: #93b06b;
+    color: #31b176;
 }
 .note {
     clear: both;
@@ -368,10 +368,11 @@ ul#profile-data li {
 }
 .ui-progressbar .ui-progressbar-value {
     height:100%;
-    background-color: #dcdddd;
-    background-image: -webkit-linear-gradient(#58bee3, #32789e);
-    background-image: -moz-linear-gradient(#58bee3, #32789e);
-    background-image: linear-gradient(#58bee3, #32789e);
+    background-color: #0076BF;
+    background-image: -webkit-linear-gradient(#008ee5, #0076BF);
+    background-image: -moz-linear-gradient(#008ee5, #0076BF);
+    background-image: linear-gradient(#008ee5, #0076BF);
     border-radius: 3px 0 0 3px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
 }
 

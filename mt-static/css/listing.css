@@ -70,7 +70,7 @@ The following example is copied from the entries listing blocks
     </div>
     <div id="listing-table" class="listing-table-block">
       <div id="listing-table-overlay" class="overlay" style="display: none;"></div>
-      <table id="entry-table" class="listing-table list-entry">
+      <table id="entry-table" class="listing-table list-entry" cellpadding="0" cellspacing="0">
         <thead>
           <tr class="first-child">
             <th class="col head cb first-visible-child">
@@ -407,7 +407,7 @@ Primary column set with auto which means its cell occupied the remained space in
 If table column has capabillity of sorting table, use .sorted and .sm class for styling sorted state
 
 ```
-<table class="listing-table">
+<table class="listing-table" cellpadding="0" cellspacing="0">
   <thead>
     <tr>
       <th class="col head cb first-visible-child">
@@ -946,10 +946,10 @@ tbody tr:first-child .col {
     border-color: #c0c6c9;
     border-width: 0 0 1px 1px;
     line-height: 1;
-    background-color: #f3f3f3;
-    background-image: -moz-linear-gradient(#f3f3f3, #dcdddd);
-    background-image: -webkit-linear-gradient(#f3f3f3, #dcdddd);
-    background-image: linear-gradient(#f3f3f3, #dcdddd);
+    background-color: #e6e6e6;
+    background-image: -moz-linear-gradient(#eeefef, #e6e6e6);
+    background-image: -webkit-linear-gradient(#eeefef, #e6e6e6);
+    background-image: linear-gradient(#eeefef, #e6e6e6);
     font-size: 85%;
     font-weight: bold;
     text-shadow: 0 1px 0 #f8fbf8;
@@ -1009,22 +1009,22 @@ tfoot .col.head{
     display: block;
     position: relative;
     width: 100%;
-    color: #2b2b2b;
+    color: #1A1A1A;
     text-decoration: none;
 }
 .col.head a:hover {
-    background-color: #fafafa;
-    background-image: -moz-linear-gradient(#fafafa, #e9eaea);
-    background-image: -webkit-linear-gradient(#fafafa, #e9eaea);
-    background-image: linear-gradient(#fafafa, #e9eaea);
+    background-color: #eeefef;
+    background-image: -moz-linear-gradient(#f7f7f7, #eeefef);
+    background-image: -webkit-linear-gradient(#f7f7f7, #eeefef);
+    background-image: linear-gradient(#f7f7f7, #eeefef);
 }
 
-.col.head.sorted,
-.col.head.sorted a:hover {
-    background-color: #dcdddd;
-    background-image: -moz-linear-gradient(#dcdddd, #f3f3f3);
-    background-image: -webkit-linear-gradient(#dcdddd, #f3f3f3);
-    background-image: linear-gradient(#dcdddd, #f3f3f3);
+.col.head.sorted {
+    background: #e3f3fc;
+}
+.col.head.sorted:hover, 
+.col.head.sorted a:hover{
+    background: #cae5f8;
 }
 .col-label {
     display: block;
@@ -1036,10 +1036,10 @@ tfoot .col.head{
     text-overflow: ellipsis;
 }
 .col.head a:hover .col-label {
-    color: #2b2b2b;
+    color: #1A1A1A;
 }
 .sorted .col-label {
-    color: #2b2b2b;
+    color: #1A1A1A;
 }
 .sm {
     position: absolute;
@@ -1194,7 +1194,7 @@ tfoot .col.head{
 .filter-block {
     border: solid #c0c6c9;
     border-width: 1px 1px 0;
-    background-color: #f3f3f3;
+    background-color: #eeefef;
     border-radius: 3px 3px 0 0;
 }
 .filter-header #allpass-filter {
@@ -1324,7 +1324,7 @@ tfoot .col.head{
 #listing-footer {
     margin-top: 30px;
     border: 1px solid #c0c6c9;
-    background-color: #f3f3f3;
+    background-color: #eeefef;
     border-radius: 3px;
 }
 .footer-link-item {

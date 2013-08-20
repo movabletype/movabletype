@@ -8,7 +8,7 @@ Structure CSS set the sorts of default styling for MT like the following.
 <h3>Font</h3>
 
 * Size: 13px
-* Color: <span style="color:#2b2b2b">#2b2b2b</span>
+* Color: <span style="color:#1A1A1A">#1A1A1A</span>
 * Family: 'Helvetica Neue', Helvetica, Arial, sans-serif
 
 ```
@@ -21,9 +21,9 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit 
 
 <h3>Link</h3>
 
-* Color: <span style="color:#507ea4">#507ea4</span>
-* Hover Color: <span style="color:#839b5c">#839b5c</span>
-* Active Color: <span style="color:#839b5c">#839b5c</span>
+* Color: <span style="color:#0076BF">#0076BF</span>
+* Hover Color: <span style="color:#379794">#379794</span>
+* Active Color: <span style="color:#04634f">#04634f</span>
 
 ```
 <a href="http://movabletype.jp/">MovableType</a>
@@ -168,10 +168,10 @@ MT often shows the releted contents at the left side of content, like the follow
 <div class="has-menu-nav" style="background:white; border:1px solid #ddd">
   <div id="container" style="min-width: 100%">
     <div id="header">
-      <div id="brand"><a><span><img src="../../mt-static/images/logo/movable-type-logo.png"></span></a></div>
+      <div id="brand"><a><span><img src="../images/logo/movable-type-logo-mono.png"></span></a></div>
       <div id="menu-bar">
         <div id="selector-nav" class="unit size2of3 first-child">
-          <a hre="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle.png"></a>
+          <a hre="#" class="toggle-button"><img src="../images/arrow/arrow-toggle.png"></a>
           <div id="current-scope">
             <ol id="selector-nav-list" class="line">
               <li id="current-website" class="current scope website">
@@ -191,13 +191,13 @@ MT often shows the releted contents at the left side of content, like the follow
             <li id="menu-entry" class="item top-menu current top-menu-open active">
               <div>
                 <a class="top-menu-link menu-link"><span class="menu-label">Entries</span></a>
-                <a href="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+                <a href="#" class="toggle-button"><img src="../images/arrow/arrow-toggle-big.png"></a>
               </div>
               </li>
             <li id="menu-tools" class="item top-menu last-child">
                 <div>
                   <a class="top-menu-link menu-link"><span class="menu-label">Tools</span></a>
-                  <a href="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+                  <a href="#" class="toggle-button"><img src="../images/arrow/arrow-toggle-big.png"></a>
                 </div>
             </li>
           </ul>
@@ -286,7 +286,7 @@ Header contains 3 main blocks, brand, menu-bar and utility nav
 ```
   <div class="blog">
     <div id="header">
-      <div id="brand"><a><span><img src="../../mt-static/images/logo/movable-type-logo.png"></span></a></div>
+      <div id="brand"><a><span><img src="../images/logo/movable-type-logo-mono.png"></span></a></div>
       <div id="utility-nav">
         <ul id="utility-nav-list">
           <li id="user"><a><img src="../../mt-static/support/assets_c/userpics/userpic-1-36x36.png" width="18" height="18" class="userpic"> <span class="username">yyamaguchi</span></a></li>
@@ -296,7 +296,7 @@ Header contains 3 main blocks, brand, menu-bar and utility nav
       </div>
       <div id="menu-bar">
         <div id="selector-nav" class="unit size2of3 first-child">
-          <a hre="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle.png"></a>
+          <a hre="#" class="toggle-button"><img src="../images/arrow/arrow-toggle.png"></a>
           <div id="current-scope">
             <ol id="selector-nav-list" class="line">
               <li id="current-website" class="current scope website">
@@ -387,7 +387,7 @@ Blog
     <div id="header">
       <div id="menu-bar">
         <div id="selector-nav" class="unit size2of3 first-child">
-          <a hre="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle.png"></a>
+          <a hre="#" class="toggle-button"><img src="../images/arrow/arrow-toggle.png"></a>
           <div id="current-scope">
             <ol id="selector-nav-list" class="line">
               <li id="current-website" class="current scope website">
@@ -411,7 +411,7 @@ Website
     <div id="header">
       <div id="menu-bar">
         <div id="selector-nav" class="unit size2of3 first-child">
-          <a hre="#" class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle.png"></a>
+          <a hre="#" class="toggle-button"><img src="../images/arrow/arrow-toggle.png"></a>
           <div id="current-scope">
             <ol id="selector-nav-list" class="line">
               <li id="current-website" class="current scope website">
@@ -476,7 +476,7 @@ Website
 ```
 <div class="fav-actions-nav split active">
   <a class="action button">Create New</a>
-  <a hre="#" class="toggle-button button detail-link" style="position:relative; height:22px"><img src="../../mt-static/images/arrow/arrow-toggle-black.png"></a>
+  <a hre="#" class="toggle-button button detail-link" style="position:relative; height:22px"><img src="../images/arrow/arrow-toggle-black.png"></a>
   <div id="fav-actions" class="fav-actions detail last-child" style="display: block;">
     <ul id="fav-actions-list">
       <li id="fav-action-entry" class="fav-action"><a class="fav-action-link">Entry</a></li>
@@ -614,7 +614,7 @@ MT has footer area at the bottom of screen which contains inline navigation, cop
     <li class="item top-menu first-child top-menu-open active current">
       <div>
         <a class="top-menu-link menu-link"><span class="menu-label">Blogs</span></a>
-        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+        <a class="toggle-button"><img src="../images/arrow/arrow-toggle-big-open.png"></a>
       </div>
       <ul class="sub-menu" style="display: block;">
         <li class="item"><a class="sub-menu-link menu-link current"><span class="menu-label">Manage</span></a></li>
@@ -624,13 +624,13 @@ MT has footer area at the bottom of screen which contains inline navigation, cop
     <li class="item top-menu">
       <div>
         <a class="top-menu-link menu-link"><span class="menu-label">Entries</span></a>
-        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+        <a class="toggle-button"><img src="../images/arrow/arrow-toggle-big.png"></a>
       </div>
     </li>
     <li class="item top-menu last-child">
       <div>
         <a class="top-menu-link menu-link"><span class="menu-label">Tools</span></a>
-        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+        <a class="toggle-button"><img src="../images/arrow/arrow-toggle-big.png"></a>
       </div>
     </li>
   </ul>
@@ -647,7 +647,7 @@ The menu item currently seeing is added 'current' class
     <li class="item top-menu first-child top-menu-open current">
       <div>
         <a class="top-menu-link menu-link"><span class="menu-label">Blogs</span></a>
-        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+        <a class="toggle-button"><img src="../images/arrow/arrow-toggle-big.png"></a>
       </div>
     </li>
   </ul>
@@ -659,10 +659,10 @@ The sub menu also added 'current'
 ```
 <div id="menu" style="margin-left:0">
   <ul class="menu-nav">
-    <li class="item top-menu first-child top-menu-open current">
+    <li class="item top-menu first-child top-menu-open active current">
       <div>
         <a class="top-menu-link menu-link"><span class="menu-label">Blogs</span></a>
-        <a class="toggle-button"><img src="../../mt-static/images/arrow/arrow-toggle-big.png"></a>
+        <a class="toggle-button"><img src="../images/arrow/arrow-toggle-big-open.png"></a>
       </div>
       <ul class="sub-menu" style="display: block;">
         <li class="item"><a class="sub-menu-link menu-link current"><span class="menu-label">Manage</span></a></li>
@@ -840,7 +840,7 @@ You can add tab links in widget content with ul.tabs and li.tab
         </span>
         <button type="button" id="mt-set-basename" class="mt-edit-field-button button">Edit</button>
         <p class="alert-warning-inline" id="basename-warning">
-          <img src="../../mt-static/images/status_icons/warning.gif" alt="Warning" width="9" height="9">
+          <img src="../images/status_icons/warning.gif" alt="Warning" width="9" height="9">
           Warning: Changing this entry's basename may break inbound links.
         </p>
       </div>
@@ -1366,7 +1366,7 @@ More details about listing style, see [listing.css](#/style/listing.css)
     <div class="plugin first-child">
       <div class="plugin-header">
         <h4 class="plugin-name">
-          <a href="#" style="background-image: url('../../mt-static/images/plugin.gif')">Loem ipsum <span class="plugin-version">2.32</span></a>
+          <a href="#" style="background-image: url('../images/plugin.gif')">Loem ipsum <span class="plugin-version">2.32</span></a>
         </h4>
         <div class="plugin-status">
           <span class="icon-left icon-success">Enabled</span>
@@ -1442,7 +1442,7 @@ More details about listing style, see [listing.css](#/style/listing.css)
     <div class="plugin first-child last-child plugin-expanded">
       <div class="plugin-header">
         <h4 class="plugin-name">
-          <a href="#" style="background-image: url('../../mt-static/images/plugin.gif')">Loem ipsum <span class="plugin-version">2.32</span></a>
+          <a href="#" style="background-image: url('../images/plugin.gif')">Loem ipsum <span class="plugin-version">2.32</span></a>
         </h4>
         <div class="plugin-status">
           <span class="icon-left icon-success">Enabled</span>
@@ -1912,19 +1912,22 @@ body {
     height: 100%;
 }
 body {
-    color: #2b2b2b;
+    color: #1A1A1A;
     background-color: #fffffc;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 13px;
 }
 
-a {
-    color: #507ea4;
+a, a:link, a:visited{
+    color: #0076BF;
     outline: 0;
 }
-a:hover,
-a:active {
-    color: #839b5c;
+a:hover{
+    color: #379794;
+    text-decoration: none;
+}
+a:active{
+    color: #04634f;
     text-decoration: none;
 }
 
@@ -1943,7 +1946,7 @@ pre {
     margin: 10px 0 0;
     border: 1px solid #c0c6c9;
     background-color: #f3f3f3;
-    color: #7b7c7d;
+    color: #666666;
 }
 
 .hint {
@@ -2016,13 +2019,13 @@ pre {
 }
 
 .sticky-label.system {
-    background-color: #7b7c7d;
+    background-color: #666666;
 }
 .sticky-label.website {
-    background-color: #839b5c;
+    background-color: #379794;
 }
 .sticky-label.blog {
-    background-color: #5c909b;
+    background-color: #0076BF;
 }
 .selected-items .sticky-label {
     margin-bottom: 1px;
@@ -2034,10 +2037,10 @@ pre {
     padding: 0 0.3em;
     margin: 0 0.3em;
     background-color: #dcdddd;
-    color: #2b2b2b;
+    color: #1A1A1A;
 }
 .selected-items .sticky-label .remove:hover {
-    background-color: #2b2b2b;
+    background-color: #1A1A1A;
     color: #fff;
 }
 
@@ -2070,10 +2073,10 @@ pre {
     top: 0;
     right: 0;
     height: 100%;
-    background-color: #f3f3f3;
-    background-image: -webkit-linear-gradient(#f3f3f3, #dcdddd);
-    background-image: -moz-linear-gradient(#f3f3f3, #dcdddd);
-    background-image: linear-gradient(#f3f3f3, #dcdddd);
+    background-color: #e6e6e6;
+    background-image: -moz-linear-gradient(#eeefef, #e6e6e6);
+    background-image: -webkit-linear-gradient(#eeefef, #e6e6e6);
+    background-image: linear-gradient(#eeefef, #e6e6e6);
     border-left: 1px solid #c0c6c9;
     text-align: center;
 }
@@ -2084,10 +2087,10 @@ pre {
     background-image: linear-gradient(#fafafa, #e9eaea);
 }
 .active .toggle-button {
-    background-color: #dcdddd;
-    background-image: -webkit-linear-gradient(#dcdddd, #f3f3f3);
-    background-image: -moz-linear-gradient(#dcdddd, #f3f3f3);
-    background-image: linear-gradient(#dcdddd, #f3f3f3);
+    background-color: #eeefef;
+    background-image: -moz-linear-gradient(#e6e6e6, #eeefef);
+    background-image: -webkit-linear-gradient(#e6e6e6, #eeefef);
+    background-image: linear-gradient(#e6e6e6, #eeefef);
 }
 .toggle-button img {
     position: absolute;
@@ -2112,7 +2115,7 @@ pre {
 .toggle-link {
     cursor: pointer;
     background: transparent;
-    color: #7b7c7d;
+    color: #666666;
     text-decoration: underline;
 }
 .toggle-link:hover,
@@ -2126,7 +2129,7 @@ pre {
 
 .open-dialog-link {
     border-bottom: 1px dotted;
-    color: #7b7c7d;
+    color: #666666;
     text-decoration: none;
 }
 .open-dialog-link:hover {
@@ -2145,11 +2148,12 @@ pre {
 
 .ui-progressbar .ui-progressbar-value {
     height:100%;
-    background-color: #dcdddd;
-    background-image: -webkit-linear-gradient(#58bee3, #32789e);
-    background-image: -moz-linear-gradient(#58bee3, #32789e);
-    background-image: linear-gradient(#58bee3, #32789e);
+    background-color: #0076BF;
+    background-image: -webkit-linear-gradient(#008ee5, #0076BF);
+    background-image: -moz-linear-gradient(#008ee5, #0076BF);
+    background-image: linear-gradient(#008ee5, #0076BF);
     border-radius: 3px 0 0 3px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
 }
 
 .item-action {
@@ -2206,7 +2210,7 @@ ul.tabs li.active-tab {
 ul.tabs li a {
     display: block;
     padding: 5px 10px;
-    color: #2b2b2b;
+    color: #1A1A1A;
     text-decoration: none;
     outline: 0;
 }
@@ -2220,7 +2224,7 @@ ul.tabs li a {
 }
 .ui-datepicker .ui-datepicker-header {
     position: relative;
-    background-color: #5c909b;
+    background-color: #0076BF;
 }
 .ui-datepicker .ui-datepicker-title {
     line-height: 22px;
@@ -2257,7 +2261,7 @@ ul.tabs li a {
     font-family: monospace;
 }
 .ui-datepicker thead .ui-datepicker-week-end {
-    color: #7b7c7d;
+    color: #666666;
 }
 .ui-datepicker thead span[title=sunday] {
     color: #f55;
@@ -2273,7 +2277,7 @@ ul.tabs li a {
     background-color: #f3f3f3;
 }
 .ui-datepicker .ui-state-hover {
-    border-color: #7b7c7d;
+    border-color: #666666;
     background-color: #c0c6c9;
 }
 .ui-datepicker .ui-state-highlight {
@@ -2405,7 +2409,7 @@ ul.tabs li a {
 
 #brand {
     height: 32px;
-    background-color: #2b2b2b;
+    background-color: #1A1A1A;
 }
 #brand img {
     visibility: hidden;
@@ -2420,24 +2424,24 @@ ul.tabs li a {
     width: 128px;
     height: 32px;
     text-decoration: none;
-    background: #2b2b2b url(../images/logo/movable-type-logo.png) center 3px no-repeat;
+    background: #1A1A1A url(../images/logo/movable-type-logo-mono.png) center 3px no-repeat;
     outline: 0;
 }
 .website #brand a,
 .website.preview-screen #brand,
 .system #brand a,
 .system.preview-screen #brand {
-    background-image: url(../images/logo/movable-type-logo.png);
+    background-image: url(../images/logo/movable-type-logo-mono.png);
 }
-#brand a:hover {
-    background-color: #383c3c;
+#brand a:hover{
+    opacity: 0.75;
 }
 #brand span.tips {
     display: block;
     position: absolute;
     top: 8px;
     left: 152px;
-    color: #7b7c7d;
+    color: #666666;
     text-transform: uppercase;
 }
 
@@ -2470,7 +2474,7 @@ ul.tabs li a {
 }
 #utility-nav #user a {
     padding-right: 10px;
-    border-right: 1px solid #7b7c7d;
+    border-right: 1px solid #666666;
 }
 #utility-nav #user a:hover {
     text-decoration: none;
@@ -2491,13 +2495,13 @@ ul.tabs li a {
     position: relative;
     height: 28px;
     width: 100%;
-    background-color: #7b7c7d;
+    background-color: #666666;
 }
 .website #menu-bar {
-    background-color: #839b5c;
+    background-color: #379794;
 }
 .blog #menu-bar {
-    background-color: #5c909b;
+    background-color: #0076BF;
 }
 
 #selector-nav {
@@ -2535,7 +2539,7 @@ ul.tabs li a {
     max-width: 70%;
 }
 .scope.website {
-    background-color: #839b5c;
+    background-color: #379794;
 }
 .blog .scope.website {
     max-width: 30%;
@@ -2550,7 +2554,7 @@ ul.tabs li a {
     float: left;
     width: 20px;
     height: 28px;
-    background: transparent url(../images/selector-nav-separator_blog.gif) left center no-repeat;
+    background: transparent url(../images/selector-nav-separator_blog.png) left center no-repeat;
 }
 .scope a {
     outline: 0;
@@ -2600,14 +2604,14 @@ ul.tabs li a {
     padding: 5px 8px 5px 15px;
     line-height: 15px;
     overflow: hidden;
-    color: #2b2b2b;
+    color: #1A1A1A;
     text-decoration: none;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 .scope-selector a:hover {
     text-decoration: none;
-    background-color: #7b7c7d;
+    background-color: #666666;
     color: #fff;
     opacity: 1;
     -ms-filter: 'alpha(opacity=100)';
@@ -2615,10 +2619,10 @@ ul.tabs li a {
 
 }
 .scope-list.website a:hover {
-    background-color: #839b5c;
+    background-color: #379794;
 }
 .scope-list.blog a:hover {
-    background-color: #5c909b;
+    background-color: #0076BF;
 }
 .parent {
     display: inline;
@@ -2651,12 +2655,13 @@ ul.tabs li a {
 }
 .fav-actions-nav .action.button,
 .fav-actions-nav .toggle-button {
+  padding: 0 0.5em;
     border-color: #f8b500;
     background-color: #ffd900;
     background-image: -moz-linear-gradient(#ffd900, #f8b500);
     background-image: -webkit-linear-gradient(#ffd900, #f8b500);
     background-image: linear-gradient(#ffd900, #f8b500);
-    color: #2b2b2b;
+    color: #1A1A1A;
     text-shadow: none;
     box-shadow: 1px 1px 2px #666666;
 }
@@ -2693,7 +2698,7 @@ ul.tabs li a {
 }
 .fav-action-link:hover {
     background-color: #f3f3f3;
-    color: #2b2b2b;
+    color: #1A1A1A;
 }
 .fav-action.last-child .fav-action-link {
     border-radius: 0 0 2px 2px;
@@ -2789,26 +2794,26 @@ ul.tabs li a {
     outline: 0;
 }
 .menu-link:hover {
-    color: #2b2b2b;
+    color: #1A1A1A;
 }
 
 .top-menu-link {
     margin-right: 20px;
 }
 .current .top-menu-link {
-    background-color: #f3f3f3;
-    background-image: -moz-linear-gradient(#f3f3f3, #dcdddd);
-    background-image: -webkit-linear-gradient(#f3f3f3, #dcdddd);
-    background-image: linear-gradient(#f3f3f3, #dcdddd);
-    color: #2b2b2b;
+    background-color: #e6e6e6;
+    background-image: -moz-linear-gradient(#eeefef, #e6e6e6);
+    background-image: -webkit-linear-gradient(#eeefef, #e6e6e6);
+    background-image: linear-gradient(#eeefef, #e6e6e6);
+    color: #1A1A1A;
     font-weight: bold;
     text-shadow: 0 1px 0 #f8fbf8;
 }
 .current .top-menu-link:hover {
-    background-color: #fafafa;
-    background-image: -moz-linear-gradient(#fafafa, #e9eaea);
-    background-image: -webkit-linear-gradient(#fafafa, #e9eaea);
-    background-image: linear-gradient(#fafafa, #e9eaea);
+    background-color: #eeefef;
+    background-image: -moz-linear-gradient(#f7f7f7, #eeefef);
+    background-image: -webkit-linear-gradient(#f7f7f7, #eeefef);
+    background-image: linear-gradient(#f7f7f7, #eeefef);
 }
 .top-menu div {
     position: relative;
@@ -2829,8 +2834,8 @@ ul.tabs li a {
     background-color: #f3f3f3;
 }
 .sub-menu-link.current {
-    background-color: #e7e7eb;
-    color: #2b2b2b;
+    background-color: #e3f3fc;
+    color: #1A1A1A;
 }
 .sub-menu .menu-label {
     padding: 3px 5px;
@@ -2968,10 +2973,10 @@ ul.tabs li a {
     position: relative;
     padding: 5px 8px;
     line-height: 15px;
-    background-color: #f3f3f3;
-    background-image: -moz-linear-gradient(#f3f3f3, #dcdddd);
-    background-image: -webkit-linear-gradient(#f3f3f3, #dcdddd);
-    background-image: linear-gradient(#f3f3f3, #dcdddd);
+    background-color: #e6e6e6;
+    background-image: -moz-linear-gradient(#eeefef, #e6e6e6);
+    background-image: -webkit-linear-gradient(#eeefef, #e6e6e6);
+    background-image: linear-gradient(#eeefef, #e6e6e6);
     border-radius: 3px 3px 0 0;
 }
 .widget-no-header .widget-header {
@@ -3099,7 +3104,7 @@ ul.tabs li a {
     white-space: pre;
 }
 .favorite-blogs-widget .blog-link a {
-    color: #7b7c7d;
+    color: #666666;
 }
 .favorite-blogs-widget .blog-description {
     margin-bottom: 10px;
@@ -3393,7 +3398,7 @@ ul.tabs li a {
     padding: 0;
 }
 .edit-entry #permalink-field .field-content {
-    color: #7b7c7d;
+    color: #666666;
 }
 
 .sort-enabled {
@@ -3496,7 +3501,7 @@ ul.tabs li a {
     padding: 2px 5px;
 }
 #tags_completion .complete-highlight {
-    color: #2b2b2b;
+    color: #1A1A1A;
     background-color: #dcdddd;
 }
 
@@ -3535,7 +3540,7 @@ ul.tabs li a {
     line-height: 20px;
     padding-left: 17px;
     background: transparent url(../images/delete.gif) left bottom no-repeat;
-    color: #7b7c7d;
+    color: #666666;
 }
 #entry-publishing-widget a.delete:hover {
     background-position: left top;
@@ -3674,7 +3679,7 @@ ul.tabs li a {
 }
 #category-list a.primary {
     padding-left: 13px;
-    color: #5c909b;
+    color: #0076BF;
 }
 #category-list .focus a.primary {
     background: url(../images/status_icons/primary-disabled.png) no-repeat 0 50%;
@@ -3773,7 +3778,7 @@ ul#asset-list li img.list-image {
     left: -115px;
     top: -5px;
     padding: 5px;
-    background-color: #7b7c7d;
+    background-color: #666666;
     border-radius: 3px;
 }
 ul#asset-list .asset-type-file {
@@ -3913,13 +3918,13 @@ ul#asset-list .asset-type-video {
     font-weight: bold;
 }
 .template-options-toggle a {
-    color: #2b2b2b;
+    color: #1A1A1A;
 }
 .template-options-summary {
     float: right;
     height: 30px;
     line-height: 30px;
-    color: #7b7c7d;
+    color: #666666;
     font-size: 90%;
 }
 .active .template-options-summary,
@@ -3986,9 +3991,9 @@ ul#asset-list .asset-type-video {
 }
 #installed-widgets > .widget-header {
     background-color: #adadad;
-    background-image: -moz-linear-gradient(#adadad, #7b7c7d);
-    background-image: -webkit-linear-gradient(#adadad, #7b7c7d);
-    background-image: linear-gradient(#adadad, #7b7c7d);
+    background-image: -moz-linear-gradient(#adadad, #666666);
+    background-image: -webkit-linear-gradient(#adadad, #666666);
+    background-image: linear-gradient(#adadad, #666666);
     color: #fffffc;
 }
 
@@ -4050,7 +4055,7 @@ ul#asset-list .asset-type-video {
     position: relative;
     padding: 1px 0;
     border-bottom: 1px solid #dcdddd;
-    background-color: #2b2b2b;
+    background-color: #1A1A1A;
 }
 .preview-label {
     margin: 10px 20px 20px;
@@ -4087,15 +4092,15 @@ ul#asset-list .asset-type-video {
     display: inline;
     text-align: center;
     padding: 0 3px;
-    border: 1px solid #7b7c7d;
+    border: 1px solid #666666;
     margin: 0 3px 0 0;
-    color: #7b7c7d;
+    color: #666666;
     background-color: #dcdddd;
     font-weight: bold;
     text-decoration: none;
 }
 #formatting-help-link:hover {
-    background-color: #7b7c7d;
+    background-color: #666666;
     color: #fff;
 }
 #formatting-help-link.disabled {
@@ -4114,7 +4119,7 @@ ul#asset-list .asset-type-video {
     font-weight: bold;
 }
 .path-text {
-    color: #7b7c7d;
+    color: #666666;
 }
 
 #system_email_address-field .field-content > div {
@@ -4148,7 +4153,7 @@ input#system_performance_logging_threshold {
 #list-plugins .plugin .plugin-status a:visited,
 #list-plugins .plugin .plugin-name a:visited,
 #list-plugins .plugin .plugin-tabs a:visited {
-    color: #2b2b2b;
+    color: #1A1A1A;
     text-decoration: none;
 }
 #list-plugins .plugin-group {
@@ -4214,7 +4219,7 @@ input#system_performance_logging_threshold {
 }
 #list-plugins .plugin-tabs-list li.ui-tabs-selected,
 #list-plugins .plugin-tabs-list li.ui-tabs-active {
-    border-bottom: 3px solid #7b7c7d;
+    border-bottom: 3px solid #666666;
     background-color: transparent;
 }
 #list-plugins .plugin-tabs-list li a {
@@ -4275,7 +4280,7 @@ input#system_performance_logging_threshold {
     margin: 0 0 0 0.5em;
 }
 #list-themes .theme-status .alert-warning a {
-    color: #2b2b2b;
+    color: #1A1A1A;
 }
 #list-themes .theme .picture.small {
     margin-bottom: 0;
@@ -4302,7 +4307,7 @@ input#system_performance_logging_threshold {
 }
 #list-themes .theme-tabs-list li.ui-tabs-selected,
 #list-themes .theme-tabs-list li.ui-tabs-active {
-    border-bottom: 3px solid #7b7c7d;
+    border-bottom: 3px solid #666666;
     background-color: transparent;
 }
 #list-themes .theme-tabs-list li a {
@@ -4316,7 +4321,7 @@ input#system_performance_logging_threshold {
     display: none;
     clear: both;
     padding-top: 20px;
-    color: #2b2b2b;
+    color: #1A1A1A;
 }
 #list-themes .theme-expanded .theme-details {
     display: block;
@@ -4362,7 +4367,7 @@ input#system_performance_logging_threshold {
     font-family: monospace;
     font-size: 95%;
     background-color: #f3f3f3;
-    color: #7b7c7d;
+    color: #666666;
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -4413,7 +4418,7 @@ input#system_performance_logging_threshold {
     text-shadow: none;
 }
 .template-group-header h3 a {
-    color: #2b2b2b;
+    color: #1A1A1A;
 }
 .template-group-summary {
     position: absolute;
@@ -4503,17 +4508,17 @@ div.template-group-content.active {
 }
 
 #footer {
-    border-top: 1px solid #c0c6c9;
+    border-top: 1px solid #b2b2b2;
     padding: 8px 0 1px;
-    background-color: #dcdddd;
+    background-color: #e6e6e6;
     font-size: 85%;
 }
 #footer a {
-    color: #7b7c7d;
+    color: #666666;
 }
 #footer a:hover,
 #footer a:active {
-    color: #2b2b2b;
+    color: #1A1A1A;
 }
 #footer .inline-nav {
     margin: 0 20px 10px;
@@ -4551,7 +4556,7 @@ div.template-group-content.active {
 .mt-beta #footer #msg-beta {
     margin-bottom: 10px;
     border-bottom: 1px solid #c0c6c9;
-    background-color: #fef263;
+    background-color: #e6eaa8;
     text-align: center;
 }
 .mt-beta #footer #msg-beta p {
