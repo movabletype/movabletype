@@ -11,6 +11,14 @@
     <mt:var name="error">
   </mtapp:statusmsg>
 </mt:if>
+<mt:unless name="has_thumbnail">
+  <mtapp:statusmsg
+    id="warning-has-no-thumbnail"
+    class="warning"
+    can_close="0">
+    <__trans phrase="Error creating thumbnail file.">
+  </mtapp:statusmsg>
+</mt:unless>
 <mt:if name="saved">
   <mt:if name="can_rebuild">
   <mtapp:statusmsg

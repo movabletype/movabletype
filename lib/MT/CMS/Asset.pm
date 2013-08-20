@@ -830,7 +830,7 @@ sub build_asset_hasher {
             || $row->{file_name}
             || $app->translate('Untitled');
 
-        if ( $obj->has_thumbnail ) {
+        if ( $obj->has_thumbnail && $obj->can_create_thumbnail ) {
             $row->{has_thumbnail} = 1;
             my $height = $thumb_height || $default_thumb_height || 45;
             my $width  = $thumb_width  || $default_thumb_width  || 45;
