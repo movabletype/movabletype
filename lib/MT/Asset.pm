@@ -112,7 +112,9 @@ sub list_props {
                             . 'images/asset/'
                             . $class_type
                             . '-45.png';
-                        if ( $obj->has_thumbnail ) {
+                        if (   $obj->has_thumbnail
+                            && $obj->can_create_thumbnail )
+                        {
                             my ( $orig_width, $orig_height )
                                 = ( $obj->image_width, $obj->image_height );
                             my ( $thumbnail_url, $thumbnail_width,
@@ -160,6 +162,19 @@ sub list_props {
                                 <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
                                 <div class="thumbnail picture small">
                                   <img alt="" src="$thumbnail_url" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                                </div>
+                            };
+                        }
+                        elsif ( $class_type eq 'image' ) {
+                            my $img
+                                = MT->static_path
+                                . 'images/asset/'
+                                . $class_type
+                                . '-warning-45.png';
+                            push @rows, qq{
+                                <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                <div class="file-type missing picture small">
+                                  <img alt="$class_type" src="$img" class="asset-type-icon asset-type-$class_type" />
                                 </div>
                             };
                         }
@@ -461,7 +476,7 @@ sub file_path {
                 my $root
                     = !$blog
                     || $1 eq 's' ? MT->instance->support_directory_path
-                    : $1  eq 'r' ? $blog->site_path
+                    : $1 eq 'r'  ? $blog->site_path
                     :              $blog->archive_path;
                 $root =~ s!(/|\\)$!!;
                 $path =~ s!^\%[ras]!$root!;
@@ -487,10 +502,10 @@ sub url {
                 my $root
                     = !$blog
                     || $1 eq 's' ? MT->instance->support_directory_url
-                    : $1  eq 'r' ? $blog->site_url
+                    : $1 eq 'r'  ? $blog->site_url
                     :              $blog->archive_url;
                 $root =~ s!/$!!;
-                $url  =~ s!^\%[ras]!$root!;
+                $url =~ s!^\%[ras]!$root!;
             }
             return $url;
         },
@@ -609,8 +624,8 @@ sub blog {
     my $blog_id = $asset->blog_id or return undef;
     return $asset->{__blog}
         if $blog_id
-            && $asset->{__blog}
-            && ( $asset->{__blog}->id == $blog_id );
+        && $asset->{__blog}
+        && ( $asset->{__blog}->id == $blog_id );
     require MT::Blog;
     return $asset->{__blog} = MT::Blog->load($blog_id)
         or return $asset->error("Failed to load blog for file");
