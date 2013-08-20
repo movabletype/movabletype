@@ -7,7 +7,8 @@ package MT::CMS::Asset;
 
 use strict;
 use Symbol;
-use MT::Util qw( epoch2ts encode_url format_ts relative_date perl_sha1_digest_hex);
+use MT::Util
+    qw( epoch2ts encode_url format_ts relative_date perl_sha1_digest_hex);
 
 sub edit {
     my $cb = shift;
@@ -823,8 +824,8 @@ sub build_asset_hasher {
             $row->{file_is_missing} = 1 if $file_path;
         }
         $meta->{file_name} = MT::Util::encode_html( $row->{file_name} );
-        $row->{file_label} 
-            = $row->{label} 
+        $row->{file_label}
+            = $row->{label}
             = $obj->label
             || $row->{file_name}
             || $app->translate('Untitled');
@@ -1114,14 +1115,16 @@ sub _upload_file {
         extra_path   => scalar( $q->param('extra_path') ),
         upload_mode  => $app->mode,
     );
-    return $eh->( $app, %param,
-        error => $app->translate("Please select a file to upload.") )
-        if !$fh && !$has_overwrite;
+    return $eh->(
+        $app, %param,
+        error => $app->translate("Please select a file to upload.")
+    ) if !$fh && !$has_overwrite;
     my $basename = $q->param('file') || $q->param('fname');
     $basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
     $basename =~ s!^.*/!!;    ## Get rid of full directory paths
     if ( $basename =~ m!\.\.|\0|\|! ) {
-        return $eh->( $app, %param,
+        return $eh->(
+            $app, %param,
             error => $app->translate( "Invalid filename '[_1]'", $basename )
         );
     }
@@ -1214,7 +1217,7 @@ sub _upload_file {
                 = ( $root_path, $relative_path, $basename );
 
             if ( $q->param('auto_rename_if_exists') ) {
-                _rename_if_exists($app, $fmgr, $path_info);
+                _rename_if_exists( $app, $fmgr, $path_info );
             }
 
             $app->run_callbacks( $app_id . '_asset_upload_path',
@@ -1285,7 +1288,8 @@ sub _upload_file {
                 my $tmp_file = File::Spec->catfile( $tmp_dir, $tmp );
                 if ( $q->param('overwrite_yes') ) {
                     $fh = gensym();
-                    open $fh, '<', $tmp_file
+                    open $fh, '<',
+                        $tmp_file
                         or return $app->error(
                         $app->translate(
                             "Error opening '[_1]': [_2]",
@@ -1491,8 +1495,8 @@ sub _upload_file {
     ## Also, get rid of a slash at the front, if present.
     $relative_path =~ s!\\!/!g;
     $relative_path =~ s!^/!!;
-    $relative_url  =~ s!\\!/!g;
-    $relative_url  =~ s!^/!!;
+    $relative_url =~ s!\\!/!g;
+    $relative_url =~ s!^/!!;
     my $url = $base_url;
     $url .= '/' unless $url =~ m!/$!;
     $url .= $relative_url;
@@ -1518,8 +1522,8 @@ sub _upload_file {
     }
     return $app->errtrans('Uploaded file is not an image.')
         if !$is_image
-            && exists( $upload_param{require_type} )
-            && $upload_param{require_type} eq 'image';
+        && exists( $upload_param{require_type} )
+        && $upload_param{require_type} eq 'image';
     my ( $asset, $original );
     if (!(  $asset = $asset_pkg->load(
                 {   class     => '*',
@@ -1565,7 +1569,8 @@ sub _upload_file {
     }
 
     $asset->mime_type($mimetype) if $mimetype;
-    $app->run_callbacks( $app_id . '_pre_save.asset', $app, $asset, $original )
+    $app->run_callbacks( $app_id . '_pre_save.asset',
+        $app, $asset, $original )
         || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
         $app->errstr );
 
@@ -1724,6 +1729,8 @@ sub template_param_list {
 sub _check_thumbnail_dir {
     my $app = shift;
     my ($param) = @_;
+
+    return unless $app->blog;
 
     require MT::FileMgr;
     require File::Spec;
