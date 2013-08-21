@@ -56,8 +56,10 @@ sub cms_pre_load_filtered_list {
         push @f,
             [
             { status => MT::Entry::RELEASE(), },
-            '-or',
-            { author_id => $user->id, }
+            (   $user->is_anonymous
+                ? ()
+                : ( '-or', { author_id => $user->id, } )
+            ),
             ];
 
         \@f;
