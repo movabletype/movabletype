@@ -70,25 +70,27 @@ sub cms_pre_load_filtered_list {
         $filters{ $id || 0 } = $make_week_perm_filter->($id);
     }
 
-    require MT::Permission;
-    my $iter = MT::Permission->load_iter(
-        {   author_id => $user->id,
-            (   $blog_ids
-                ? ( blog_id => $blog_ids )
-                : ( blog_id => { 'not' => 0 } )
-            ),
-        }
-    );
+    if ( !$user->is_anonymous ) {
+        require MT::Permission;
+        my $iter = MT::Permission->load_iter(
+            {   author_id => $user->id,
+                (   $blog_ids
+                    ? ( blog_id => $blog_ids )
+                    : ( blog_id => { 'not' => 0 } )
+                ),
+            }
+        );
 
-    while ( my $perm = $iter->() ) {
-        my $blog_id = $perm->blog_id;
-        if (   $perm->can_do('publish_all_entry')
-            || $perm->can_do('edit_all_entries') )
-        {
-            $filters{$blog_id} = { blog_id => $blog_id, };
-        }
-        else {
-            $filters{$blog_id} = $make_week_perm_filter->($blog_id);
+        while ( my $perm = $iter->() ) {
+            my $blog_id = $perm->blog_id;
+            if (   $perm->can_do('publish_all_entry')
+                || $perm->can_do('edit_all_entries') )
+            {
+                $filters{$blog_id} = { blog_id => $blog_id, };
+            }
+            else {
+                $filters{$blog_id} = $make_week_perm_filter->($blog_id);
+            }
         }
     }
 
