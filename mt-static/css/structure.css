@@ -3244,47 +3244,30 @@ ul.tabs li a {
 }
 
 .site-stats-widget #widget-container {
-    width: 100%;
     padding: 10px;
 }
 .site-stats-widget #select_blog_id {
     margin-left: 3px;
-    width: 120px;
+    max-width: 450px;
 }
-.site-stats-widget .left-column {
+.site-stats-widget .up-left-column {
     float: left;
-    width: 200px;
-    height: 200px;
-    margin-right: -200px;
 }
-.site-stats-widget .right-column {
+.site-stats-widget .up-right-column {
     float: right;
-    width: 100%;
 }
-.site-stats-widget .right-column-contents {
-    margin-left: 200px;
+.site-stats-widget .down-column {
+    height: 200px;
 }
 .site-stats-widget .clear {
     clear: both;
 }
 .site-stats-widget .stats-for {
     margin-bottom: 10px;
-    max-width: 250px;
+    max-width: 500px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.site-stats-widget .count-title {
-    display: inline-block;
-    text-align: right;
-    width: 5em;
-    padding-right: 3px;
-}
-
-.site-stats-widget .count-body {
-    display: inline-block;
-    text-align: right;
 }
 
 .news-widget #news-widget-tabs {

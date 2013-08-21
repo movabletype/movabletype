@@ -4,21 +4,22 @@
   label="<__trans phrase="Site Stats">"
   can_close="1">
 <div id="widget-container">
-  <div class="right-column">
-    <div class="right-column-contents">
-      <div id="graph"></div>
-    </div>
-  </div>
-  <div class="left-column">
+  <div class="up-left-column">
     <div class="stats-for">
       <__trans phrase="Stats for [_1]", params="<mt:if name="object_loop"><select id="select_blog_id"><mt:loop name="object_loop"><option value="<mt:var name="id">"><mt:var name="name" escape="html"></option></mt:loop></select><mt:else><mt:var name="name" escape="html"></mt:if>">
     </div>
-    <ul id="pv-counter" style="display: none; list-style-type: none;">
-      <li><span class="count-title"><__trans phrase="Today:"> </span><span class="count-body" id="count-today"></span></li>
-      <li><span class="count-title"><__trans phrase="Yesterday:"> </span><span class="count-body" id="count-yesterday"></span></li>
-    </ul>
+  </div>
+  <div class="up-right-column">
+    <div id="statistics_settings_link" class="hide">
+      <a href=""><__trans phrase="Statistics Settings"></a>
+    </div>
   </div>
   <div class="clear"></div>
+  <div class="down-column">
+    <div class="down-column-contents">
+      <div id="graph"></div>
+    </div>
+  </div>
 </div>
 </mtapp:widget>
 
@@ -48,12 +49,8 @@
       '#395595'
     ];
     jQuery('select#select_blog_id').change( function() {
-      jQuery('#msg_not_configured').remove();
+      jQuery('#statistics_settings_link').hide();
       jQuery('#graph').empty();
-      jQuery('#pv-counter').hide();
-      jQuery('#count-today').text('');
-      jQuery('#count-yesterday').text('');
-      jQuery('#count-diff').text('');
       var select_blog_id = jQuery('select#select_blog_id').val();
       jQuery.ajax({
         type: 'POST',
@@ -67,16 +64,16 @@
           magic_token: '<mt:var name="magic_token">',
         },
         success: function(data) {
-          draw_graph(data.result.stat_url, data.result.not_configured);
+          draw_graph(data.result.stat_url);
         },
         error: function(data) {
         }
       });
     });
 
-    draw_graph('<mt:var name="stat_url">', <mt:var name="not_configured" default="0">);
+    draw_graph('<mt:var name="stat_url">');
 
-    function draw_graph(stat_url, not_configured) {
+    function draw_graph(stat_url) {
       jQuery.getJSON(stat_url, function(data) {
         var hover_data = data.hover_data.data;
         var config = {
@@ -111,14 +108,10 @@
           length: 10
         }
         new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
-        if ( !not_configured ) {
-          var todays_count     = data.pv_today;
-          var yesterdays_count = data.pv_yesterday;
-          var diff = todays_count - yesterdays_count;
-          var mark = diff > 0 ? '+' : '';
-          jQuery('#count-today').text(trans('[_1] Page Views ([_2][_3])', addComma(todays_count), mark, addComma(diff)));
-          jQuery('#count-yesterday').text(trans('[_1] Page Views', addComma(yesterdays_count)));
-          jQuery('#pv-counter').show();
+        if (data.can_edit_config) {
+          var select_blog_id = jQuery('select#select_blog_id').val();
+          jQuery('#statistics_settings_link a').attr('href', '<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id='+select_blog_id);
+          jQuery('#statistics_settings_link').show();
         }
       });
     }
