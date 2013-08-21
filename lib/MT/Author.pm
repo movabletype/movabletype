@@ -1083,7 +1083,7 @@ sub permissions {
     return $p if $p;
 
     require MT::Permission;
-    my @perm = MT::Permission->load($terms);
+    my @perm = $author->is_anonymous ? () : MT::Permission->load($terms);
     my $perm;
     if ($obj) {
         if ( @perm == 2 ) {
