@@ -2031,6 +2031,8 @@ BEGIN {
                 type    => 'HASH',
                 default => {}
             },
+            'DisableDataAPIResourceCache'    => { default => 0, },
+            'DataAPIResourceCacheSerializer' => { default => 'MTS', },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

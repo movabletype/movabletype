@@ -981,7 +981,11 @@ sub core_finish {
     {
         $cfg->MTReleaseNumber( $cur_rel, 1 );
     }
-    $cfg->save_config unless $DryRun;
+    if ( !$DryRun ) {
+        $cfg->save_config;
+        require MT::Touch;
+        MT::Touch->touch( 0, 'config' );
+    }
 
     # do one last thing....
     if ( ( ref $App ) && ( $App->can('finish') ) ) {

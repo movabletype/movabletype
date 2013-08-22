@@ -139,7 +139,7 @@ sub fields {
         },
         {   name        => 'comments',
             from_object => sub {
-                my ($obj) = @_;
+                my ( $obj, $hash, $field, $stash, $opts ) = @_;
                 my $app = MT->instance;
                 my $max = _int_param( $app, 'maxComments' )
                     or return [];
@@ -147,11 +147,14 @@ sub fields {
 
                 my $terms = undef;
                 if ( !$user->is_superuser ) {
-                    my $perm = $app->model('permission')->load(
+                    my $perm
+                        = $user->is_anonymous
+                        ? undef
+                        : $app->model('permission')->load(
                         {   author_id => $user->id,
                             blog_id   => $obj->blog_id,
                         },
-                    );
+                        );
                     if (!$perm
                         || !(
                             $perm->can_do('view_all_comments')
@@ -197,16 +200,28 @@ sub fields {
                 @comments = map { $_->[2] } @comments;
 
                 MT::DataAPI::Resource->from_object(
-                    [     @comments > $max
+                    [   ( !$opts->{cache} && @comments > $max )
                         ? @comments[ 0 .. $max - 1 ]
                         : @comments
                     ]
                 );
             },
+            filter_cache => sub {
+                my ( $resource, $hash, $field ) = @_;
+                my $app    = MT->instance;
+                my $result = $resource->{ $field->{name} };
+                my $max    = _int_param( $app, 'maxComments' );
+                if ( defined($max) && scalar(@$result) > $max ) {
+                    [ @$result[ 0 .. $max - 1 ] ];
+                }
+                else {
+                    $result;
+                }
+            },
         },
         {   name        => 'trackbacks',
             from_object => sub {
-                my ($obj) = @_;
+                my ( $obj, $hash, $field, $stash, $opts ) = @_;
                 my $app = MT->instance;
                 my $max = _int_param( $app, 'maxTrackbacks' )
                     or return [];
@@ -214,11 +229,14 @@ sub fields {
 
                 my $terms = undef;
                 if ( !$user->is_superuser ) {
-                    my $perm = $app->model('permission')->load(
+                    my $perm
+                        = $user->is_anonymous
+                        ? undef
+                        : $app->model('permission')->load(
                         {   author_id => $user->id,
                             blog_id   => $obj->blog_id,
                         },
-                    );
+                        );
                     if (!$perm
                         || !(
                                $perm->can_do('manage_feedback')
@@ -239,10 +257,24 @@ sub fields {
                 my $args = {
                     sort      => 'id',
                     direction => 'ascend',
-                    limit     => $max
                 };
+                if ( !$opts->{cache} ) {
+                    $args->{limit} = $max;
+                }
                 MT::DataAPI::Resource->from_object(
                     $obj->pings( $terms, $args ) || [] );
+            },
+            filter_cache => sub {
+                my ( $resource, $hash, $field ) = @_;
+                my $app    = MT->instance;
+                my $result = $resource->{ $field->{name} };
+                my $max    = _int_param( $app, 'maxTrackbacks' );
+                if ( defined($max) && scalar(@$result) > $max ) {
+                    [ @$result[ 0 .. $max - 1 ] ];
+                }
+                else {
+                    $result;
+                }
             },
         },
         {   name        => 'assets',

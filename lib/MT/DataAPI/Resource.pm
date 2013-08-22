@@ -9,6 +9,8 @@ package MT::DataAPI::Resource;
 use strict;
 use warnings;
 
+use MT::Cache::Negotiate;
+
 our %resources = ();
 
 sub core_resources {
@@ -67,6 +69,8 @@ sub resource {
         for my $reg (@$regs) {
             for my $k ( keys %$reg ) {
                 if ( ref $reg->{$k} ) {
+                    next unless $reg->{$k}{plugin};
+
                     $resources{$k} ||= { aliases => [], };
 
                     push @{ $resources{$k}{aliases} },
@@ -130,8 +134,16 @@ sub resource {
                         ->registry( 'applications', 'data_api', 'resources',
                         $_->{key}, $k );
                     $reg ? @$reg : ();
-                    } @{ $res->{aliases} }
+                } @{ $res->{aliases} }
             ];
+        }
+
+        for my $k (qw(disable_cache)) {
+            $res->{$k} = undef;
+            $res->{$k}
+                ||= $_->{plugin}->registry( 'applications', 'data_api',
+                'resources', $_->{key}, $k )
+                for @{ $res->{aliases} };
         }
 
         $res->{fields} = [];
@@ -156,7 +168,10 @@ sub resource {
                         }
                     }
 
-                    for my $k (qw(bulk_from_object from_object to_object)) {
+                    for my $k (
+                        qw(bulk_from_object from_object to_object bulk_filter_cache filter_cache)
+                        )
+                    {
                         if ( my $handler = $f->{$k} ) {
                             $f->{$k} = MT->handler_to_coderef($handler);
                         }
@@ -229,10 +244,30 @@ sub _is_condition_ok {
     $f->{condition}->();
 }
 
+sub _from_object_fields {
+    my $class = shift;
+    my ( $obj, $fields_specified ) = @_;
+
+    my $resource_data = $class->resource($obj)
+        or return;
+
+    [   grep { _is_condition_ok($_) } do {
+            if ($fields_specified) {
+                my %keys = map { $_ => 1 } @$fields_specified;
+                grep { $keys{ $_->{name} } } @{ $resource_data->{fields} };
+            }
+            else {
+                @{ $resource_data->{fields} };
+            }
+            }
+    ];
+}
+
 sub from_object {
     my $class = shift;
-    my ( $objs, $fields_specified ) = @_;
+    my ( $objs, $fields_specified, $opts ) = @_;
     my $is_list = 1;
+    $opts ||= {};
 
     if ( UNIVERSAL::isa( $objs, 'MT::Object' ) ) {
         $is_list = 0;
@@ -249,26 +284,15 @@ sub from_object {
 
     return [] unless @$objs;
 
-    my $resource_data = $class->resource( $objs->[0] )
-        or return;
-
-    my @fields = grep { _is_condition_ok($_) } do {
-        if ($fields_specified) {
-            my %keys = map { $_ => 1 } @$fields_specified;
-            grep { $keys{ $_->{name} } } @{ $resource_data->{fields} };
-        }
-        else {
-            @{ $resource_data->{fields} };
-        }
-    };
+    my $fields = $class->_from_object_fields( $objs->[0], $fields_specified );
 
     my $objs_count = scalar(@$objs);
     my @hashs      = map { +{} } 0 .. $#$objs;
     my $stash      = {};
 
-    for my $f (@fields) {
+    for my $f (@$fields) {
         if ( $f->{bulk_from_object} ) {
-            $f->{bulk_from_object}->( $objs, \@hashs, $f, $stash );
+            $f->{bulk_from_object}->( $objs, \@hashs, $f, $stash, $opts );
         }
         else {
             my $i;
@@ -280,7 +304,8 @@ sub from_object {
             my $method = do {
                 if ( exists $f->{from_object} ) {
                     sub {
-                        $f->{from_object}->( $_[0], $hashs[$i], $f, $stash );
+                        $f->{from_object}
+                            ->( $_[0], $hashs[$i], $f, $stash, $opts );
                     };
                 }
                 else {
@@ -299,19 +324,146 @@ sub from_object {
         }
     }
 
-    for my $f (@fields) {
+    for my $f (@$fields) {
         if ( ref $f && $f->{type_from_object} ) {
-            $f->{type_from_object}->( $objs, \@hashs, $f, $stash );
+            $f->{type_from_object}->( $objs, \@hashs, $f, $stash, $opts );
         }
     }
 
     $is_list ? \@hashs : $hashs[0];
 }
 
+sub from_object_with_cache {
+    my $class = shift;
+    my ( $objs, $fields_specified ) = @_;
+    my $app     = MT->instance;
+    my $is_list = 1;
+
+    if ( UNIVERSAL::isa( $objs, 'MT::Object' ) ) {
+        $is_list = 0;
+        $objs    = [$objs];
+    }
+    elsif (
+        UNIVERSAL::isa( $objs, 'MT::DataAPI::Resource::Type::ObjectList' ) )
+    {
+        $objs = $objs->content;
+    }
+
+    return [] unless @$objs;
+
+    my $datasource   = $objs->[0]->datasource;
+    my $latest_touch = $app->model('touch')->load(
+        { $app->blog ? ( blog_id => [ 0, $app->blog->id ] ) : (), },
+        { sort => 'modified_on', direction => 'descend' }
+    );
+    my $driver = MT::Cache::Negotiate->new(
+        ttl => (
+            $latest_touch
+            ? time()
+                - MT::Util::ts2epoch( undef, $latest_touch->modified_on, 1 )
+            : 0
+        ),
+        expirable => 1,
+    );
+    my @load_ids = ();
+    my @results  = ();
+    my @keys     = map { $class->cache_key($_) } @$objs;
+    my $cached   = $driver->get_multi(@keys);
+    my $serializer
+        = MT::Serialize->new( MT->config->DataAPIResourceCacheSerializer );
+
+    # Rebuild cache always, in DebugMode
+    $cached = {} if $MT::DebugMode;
+
+    for ( my $i = 0; $i < scalar @$objs; $i++ ) {
+        my $r  = $objs->[$i];
+        my $ck = $keys[$i];
+        if ( my $c = $cached->{$ck} ) {
+            push @results, ${ $serializer->unserialize($c) };
+        }
+        else {
+            push @load_ids, [ $i, $ck, $r->id ];
+        }
+    }
+
+    if (@load_ids) {
+        my @tmp = $app->model($datasource)
+            ->load( { id => [ map { $_->[2] } @load_ids ] } );
+        my @load_objs = map {
+            my $id_set = $_;
+            grep { $id_set->[2] == $_->id } @tmp;
+        } @load_ids;
+
+        my $converteds
+            = $class->from_object( \@load_objs, undef, { cache => 1, } );
+        for ( my $i = 0; $i < scalar @load_ids; $i++ ) {
+            splice @results, $load_ids[$i]->[0], 0, $converteds->[$i];
+
+            $driver->set( $load_ids[$i]->[1],
+                $serializer->serialize( \$converteds->[$i] ) );
+        }
+    }
+
+    my $hashs
+        = $class->filter_cache( \@results, $objs->[0], $fields_specified );
+
+    $is_list ? $hashs : $hashs->[0];
+}
+
+sub filter_cache {
+    my $class = shift;
+    my ( $resources, $obj, $fields_specified ) = @_;
+
+    return [] unless @$resources;
+
+    my $fields = $class->_from_object_fields( $obj, $fields_specified );
+
+    my $resources_count = scalar(@$resources);
+    my @hashs           = map { +{} } 0 .. $#$resources;
+    my $stash           = {};
+
+    for my $f (@$fields) {
+        if ( $f->{bulk_filter_cache} ) {
+            $f->{bulk_filter_cache}->( $resources, \@hashs, $f, $stash );
+        }
+        elsif ( $f->{filter_cache} ) {
+            for ( my $i = 0; $i < $resources_count; $i++ ) {
+                my @vals = $f->{filter_cache}
+                    ->( $resources->[$i], $hashs[$i], $f, $stash );
+                if (@vals) {
+                    $hashs[$i]{ $f->{name} } = $vals[0];
+                }
+            }
+        }
+        else {
+            for ( my $i = 0; $i < $resources_count; $i++ ) {
+                $hashs[$i]{ $f->{name} } = $resources->[$i]{ $f->{name} };
+            }
+        }
+    }
+
+    \@hashs;
+}
+
+sub cache_key {
+    my $self = shift;
+    'data_api_resource_' . $_[0]->datasource . '_' . $_[0]->id;
+}
+
+sub expire_cache {
+    my $self       = shift;
+    my ($obj)      = @_;
+    my $datasource = $obj->datasource;
+
+    my $driver = MT::Cache::Negotiate->new;
+    $driver->delete( $self->cache_key(@_) );
+}
+
 sub to_object {
     my $class = shift;
-    my ( $name, $hashs, $originals ) = @_;
+    my ( $name, $hashs, $originals, $opts ) = @_;
     my $is_list = 1;
+    $opts ||= {};
 
     if ( ref $hashs eq 'HASH' ) {
         $is_list = 0;
@@ -359,7 +511,7 @@ sub to_object {
                 # Do nothing
             }
             elsif ( exists $f->{to_object} ) {
-                @vals = $f->{to_object}->( $hash, $obj, $f, $stash );
+                @vals = $f->{to_object}->( $hash, $obj, $f, $stash, $opts );
             }
             else {
                 @vals = ( $hash->{$name} );
@@ -374,7 +526,7 @@ sub to_object {
 
     for my $f (@fields) {
         if ( ref $f && $f->{type_to_object} ) {
-            $f->{type_to_object}->( $hashs, \@objs, $f, $stash );
+            $f->{type_to_object}->( $hashs, \@objs, $f, $stash, $opts );
         }
     }
 
@@ -401,6 +553,12 @@ use base qw(MT::DataAPI::Resource::Type);
 package MT::DataAPI::Resource::Type::ObjectList;
 
 use base qw(MT::DataAPI::Resource::Type);
+
+sub datasource {
+    my $self    = shift;
+    my $content = $self->content;
+    @$content ? $content->[0]->datasource : '';
+}
 
 # MT::DataAPI::Resource::DataType
 package MT::DataAPI::Resource::DataType::Object;
@@ -514,7 +672,8 @@ sub to_object {
         else {
             $o->error(
                 MT->translate(
-                    'Cannot parse "[_1]" as an ISO 8601 datetime', $o->$name
+                    'Cannot parse "[_1]" as an ISO 8601 datetime',
+                    $o->$name
                 )
             );
         }
