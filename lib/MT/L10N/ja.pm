@@ -2748,6 +2748,9 @@ use vars qw( @ISA %Lexicon );
 	'Indent' => '字下げを増やす',
 	'Outdent' => '字下げを減らす',
 
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/core.js
+	'Class Name' => 'クラス名',
+
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/insert_html.js
 	'Insert HTML' => 'HTMLの挿入',
 	'Source' => 'HTML',

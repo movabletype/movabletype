@@ -6,7 +6,7 @@
  * $Id$
  */
 ;(function($) {
-    $.each(['plugin', 'advanced'], function() {
+    $.each(['plugin', 'advanced', 'core'], function() {
         tinymce
             .ScriptLoader
             .add(tinymce.PluginManager.urls['mt'] + '/langs/' + this + '.js');
