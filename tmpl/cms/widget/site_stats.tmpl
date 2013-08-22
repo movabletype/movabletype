@@ -11,7 +11,7 @@
   </div>
   <div class="up-right-column">
     <div id="statistics_settings_link" class="hide">
-      <a href=""><__trans phrase="Statistics Settings"></a>
+      <a href="<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Statistics Settings"></a>
     </div>
   </div>
   <div class="clear"></div>
@@ -109,8 +109,10 @@
         }
         new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
         if (data.can_edit_config) {
+          <mt:if name="object_loop">
           var select_blog_id = jQuery('select#select_blog_id').val();
           jQuery('#statistics_settings_link a').attr('href', '<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id='+select_blog_id);
+          </mt:if>
           jQuery('#statistics_settings_link').show();
         }
       });
