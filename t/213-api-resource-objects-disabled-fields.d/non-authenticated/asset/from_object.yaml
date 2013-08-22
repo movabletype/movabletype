@@ -1,0 +1,13 @@
+- 
+  note: An asset
+  from: 1
+  to: 
+    id: 1
+    label: Image photo
+    url: http://narnia.na/nana/images/test.jpg
+    filename: test.jpg
+    mimeType: image/jpeg
+    tags:
+      - alpha
+      - beta
+      - gamma

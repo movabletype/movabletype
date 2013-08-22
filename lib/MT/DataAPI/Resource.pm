@@ -115,6 +115,12 @@ sub resource {
     return unless $res;
 
     if ( !$res->{fields} ) {
+        my @disabled_fields = do {
+            my $all_fields = MT->config->DisableResourceField;
+            map { split ',', ( $all_fields->{ $_->{key} } || '' ) }
+                @{ $res->{aliases} };
+        };
+
         my %tmp_res = ();
         for my $k (qw(fields updatable_fields)) {
             $tmp_res{$k} = [
@@ -154,6 +160,25 @@ sub resource {
                         if ( my $handler = $f->{$k} ) {
                             $f->{$k} = MT->handler_to_coderef($handler);
                         }
+                    }
+
+                    if ( $f->{condition} ) {
+                        $f->{condition}
+                            = MT->handler_to_coderef( $f->{condition} );
+                    }
+                }
+
+                if ( grep { $_ eq $f->{name} } @disabled_fields ) {
+                    if ( my $cond = $f->{condition} ) {
+                        $f->{condition} = sub {
+                            $cond->()
+                                && $app->user
+                                && !$app->user->is_anonymous;
+                        };
+                    }
+                    else {
+                        $f->{condition}
+                            = sub { $app->user && !$app->user->is_anonymous };
                     }
                 }
 
@@ -201,9 +226,6 @@ sub _is_condition_ok {
     my ($f) = @_;
     return 1 unless exists $f->{condition};    # not specified
     return 0 unless $f->{condition};           # "0" had been specified
-    if ( !ref( $f->{condition} ) ) {
-        $f->{condition} = MT->handler_to_coderef( $f->{condition} );
-    }
     $f->{condition}->();
 }
 
