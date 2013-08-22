@@ -447,14 +447,18 @@ sub filter_cache {
 
 sub cache_key {
     my $self = shift;
-    'data_api_resource_' . $_[0]->datasource . '_' . $_[0]->id;
+    my ($datasource, $id);
+    if (ref $_[0]) {
+        ($datasource, $id) = $_[0]->datasource, $_[0]->id
+    }
+    else {
+        ($datasource, $id) = @_;
+    }
+    'data_api_resource_' . $datasource . '_' . $id;
 }
 
 sub expire_cache {
-    my $self       = shift;
-    my ($obj)      = @_;
-    my $datasource = $obj->datasource;
-
+    my $self   = shift;
     my $driver = MT::Cache::Negotiate->new;
     $driver->delete( $self->cache_key(@_) );
 }
