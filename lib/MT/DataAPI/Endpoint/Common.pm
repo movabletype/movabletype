@@ -421,6 +421,11 @@ sub filtered_list {
         MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $ds,
             $app, $filter, \%load_options, \@cols );
 
+        if ( $app->use_resource_cache($ds) ) {
+            $load_options{args} ||= {};
+            $load_options{args}{fetchonly} ||= ['id'];
+        }
+
         $objs = $filter->load_objects(%load_options);
         if ( !defined $objs ) {
             return $app->error(

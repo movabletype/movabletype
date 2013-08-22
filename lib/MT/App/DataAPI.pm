@@ -676,6 +676,23 @@ sub resource_object {
     $obj;
 }
 
+sub use_resource_cache {
+    my $app = shift;
+    my ($datasource) = @_;
+    if ( UNIVERSAL::can( $datasource, 'datasource' ) ) {
+        $datasource = $datasource->datasource;
+    }
+
+    return 0 unless $datasource;
+
+    my $resource = MT::DataAPI::Resource->resource($datasource)
+        or return 0;
+
+    !$resource->{disable_cache}
+        && $app->user->is_anonymous
+        && !$app->config->DisableDataAPIResourceCache;
+}
+
 sub object_to_resource {
     my ( $app, $res, $fields ) = @_;
     my $ref = ref $res;
@@ -686,7 +703,12 @@ sub object_to_resource {
     elsif ( UNIVERSAL::isa( $res, 'MT::Object' )
         || $ref eq 'MT::DataAPI::Resource::Type::ObjectList' )
     {
-        MT::DataAPI::Resource->from_object( $res, $fields );
+        if ( $app->use_resource_cache($res) ) {
+            MT::DataAPI::Resource->from_object_with_cache( $res, $fields );
+        }
+        else {
+            MT::DataAPI::Resource->from_object( $res, $fields );
+        }
     }
     elsif ( $ref eq 'MT::DataAPI::Resource::Type::Raw' ) {
         $res->content;
