@@ -4573,6 +4573,10 @@ div.template-group-content.active {
     height: 300px;
 }
 
+#content .morris-hover {
+    z-index: 400;
+}
+
 #container,
 #content,
 .line,
