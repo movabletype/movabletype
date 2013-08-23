@@ -2104,6 +2104,7 @@ PERMCHECK: {
                     $5, $s;
 
                 if ( $col eq 'authored_on' ) {
+                    require MT::DateTime;
                     return $app->error(
                         $app->translate(
                             "Invalid date '[_1]'; 'Published on' dates should be earlier than the corresponding 'Unpublished on' date '[_2]'.",
