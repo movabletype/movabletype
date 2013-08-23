@@ -17,10 +17,11 @@ sub cfg_plugins {
         my $blog = $app->model('blog')->load($blog_id);
         return $app->permission_denied()
             if $blog
-                && ($blog->is_blog
-                    ? !$app->can_do('administer_blog')
-                    : !$app->can_do('administer_website')
-                );
+            && (
+            $blog->is_blog
+            ? !$app->can_do('administer_blog')
+            : !$app->can_do('administer_website')
+            );
 
         $q->param( '_type', 'blog' );
         $q->param( 'id',    $blog_id );
@@ -195,12 +196,11 @@ sub build_plugin_table {
 
     my $last_fld = '*';
     my $next_is_first;
-    my $id = 0;
     ( my $cgi_path = $cfg->AdminCGIPath || $cfg->CGIPath ) =~ s|/$||;
     for my $list_key ( sort keys %list ) {
-        $id++;
         my $plugin_sig = $list{$list_key};
         next if $plugin_sig =~ m/^[^A-Za-z0-9]/;
+        my $id      = MT::Util::perl_sha1_digest_hex($plugin_sig);
         my $profile = $MT::Plugins{$plugin_sig};
         my ($plg);
         ($plg) = $plugin_sig =~ m!(?:.*)/(.*)!;
