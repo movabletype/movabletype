@@ -1120,8 +1120,119 @@ MT::App::DataAPI
 
 =head1 SYNOPSIS
 
+    use MT::App::DataAPI;
+    MT::DataAPI->current_endpoint;
+
+=head1 DESCRIPTION
+
 The I<MT::App::DataAPI> module is the application module for providing Data API.
 This module provide the REST interface that is used to
 manage blogs, entries, comments, trackbacks, templates, etc.
+
+=head1 METHODS
+
+=head2 MT::App::DataAPI->endpoints($version)
+
+Returns the compiled endpoints data for specified $version.
+The compiled endpoints data contains the following three type of values.
+
+=over 4
+
+=item hash
+
+A hash map of ID-endpoint.
+
+=item tree
+
+A data of a tree structure built with the path of the I<route>
+
+=item list
+
+A list.
+
+=back
+
+=head2 MT::App::DataAPI->current_endpoint
+
+Returns an endpoint of current request.
+
+=head2 MT::App::DataAPI->current_api_version
+
+Returns API version of current request.
+
+=head2 MT::App::DataAPI->find_endpoint_by_id($version, $id)
+
+Returns an endpoint whose ID is $id.
+
+=head2 MT::App::DataAPI->find_endpoints_by_path($version, $path)
+
+Returns all endpoints related to C<$path>.
+
+=head2 MT::App::DataAPI->find_endpoint_by_path($verb, $version, $path)
+
+Returns an endpoints related to C<$path> and C<$verb>.
+
+=head2 MT::App::DataAPI->endpoint_url($endpoint[, $params])
+
+Returns an URL for specified endpoint.
+
+Both endpoint data and ID can be specified as C<$endpoint>.
+If ID is specified, find endpoint by L<MT::App::DataAPI-E<gt>find_endpoint_by_id> with L<MT::App::DataAPI-E<gt>current_api_version>.
+
+C<$params> is query parameter to a endpoint.
+
+=head2 MT::App::DataAPI->current_format
+
+Returns a format of current request.
+
+=head2 MT::App::DataAPI->current_error_format
+
+Returns a format to return error of current request.
+
+=head2 MT::App::DataAPI->resource_object($name[, $original])
+
+Returns an object that restored from request data.
+
+C<$original> is optional parameter. The result object is cloned from C<$original>, then be overwritten by data that is restored from request.
+
+=head2 MT::App::DataAPI->object_to_resource($objects[, $fields]);
+
+Any data can be specified as C<$objects>.
+If C<$objects> is a L<MT::Object>, converted to resource via L<MT::DataAPI::Resource-E<gt>from_object>.
+
+=head2 $app->mt_authorization_data
+
+Returns a hash map which extracted I<X-MT-Authorization> request header.
+
+=head2 MT::App::DataAPI->current_client_id
+
+Returns a client ID of current request.
+
+=head2 MT::App::DataAPI->purge_session_records
+
+Purge DataAPI's session records.
+
+=head2 $app->error($message[, $code])
+
+Set a error message and status code.
+
+If only C<$message> is specified, simplly will be set error message to C<$app>,
+If C<$code> is specified with C<$message>, will be set status code for response.
+If only C<$code> is specified, will be set status code for response .
+
+    $app->error( 'Invalid request'Bad Request', 400 );
+    $app->error( 400 );
+
+=head2 $app->print_error($message, $status[, $data]])
+
+Print error message immediately.
+
+If C<$message> is empty, C<$message> is automatically set up by C<$status>.
+
+If C<$data> is specifyed, C<$data> will be printed as an optional data.
+
+=head2 $app->set_next_phase_url($url)
+
+Set an URL for redirecting to next phase.
 
 =cut
