@@ -542,7 +542,9 @@ sub find_endpoint_by_id {
 
 sub endpoint_url {
     my ( $app, $endpoint, $params ) = @_;
-    $endpoint = $app->find_endpoint_by_id($endpoint) unless ref $endpoint;
+    $endpoint
+        = $app->find_endpoint_by_id( $app->current_api_version, $endpoint )
+        unless ref $endpoint;
     return '' unless $endpoint;
 
     my $replace = sub {
@@ -559,7 +561,7 @@ sub endpoint_url {
     my $url = $endpoint->{route};
     $url =~ s{(?:(?<=^)|(?<=/|\.))(:([a-zA-Z_-]+))}{$replace->($1, $2)}ge;
 
-    $url . $app->uri_params( args => $params );
+    $url . $app->uri_params( args => $params || {} );
 }
 
 sub find_endpoints_by_path {
