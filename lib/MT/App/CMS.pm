@@ -307,8 +307,10 @@ sub core_methods {
             code     => "${pkg}Tools::login_json",
             app_mode => 'JSON',
         },
-        'regenerate_site_stats_data' =>
-            "${pkg}Dashboard::regenerate_site_stats_data",
+        'regenerate_site_stats_data' => {
+            code     => "${pkg}Dashboard::regenerate_site_stats_data",
+            app_mode => 'JSON',
+        },
 
         # declared in MT::App
         'update_widget_prefs' =>

@@ -1229,7 +1229,8 @@ sub generate_site_stats_data {
             my $handler = $line_setting->{handler} || $line_setting->{code};
             $handler = MT->handler_to_coderef($handler);
             if ($handler) {
-                $counts[$sub] = $handler->( $app, \@ten_days_ago_tl, $param );
+                $counts[$sub] = $handler->( $app, \@ten_days_ago_tl, $param )
+                    or return;
                 $maxes[$sub] = 0;
                 foreach my $key ( keys %{ $counts[$sub] } ) {
                     $maxes[$sub] = $counts[$sub]->{$key}
@@ -1399,7 +1400,7 @@ sub site_stats_widget_pageview_lines {
         {   startDate => $ten_days_ago,
             endDate   => $today,
         }
-    );
+    ) or return undef;
 
     my @items = @{ $for_date->{items} };
     my %counts;

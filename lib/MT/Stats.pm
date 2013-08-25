@@ -47,8 +47,8 @@ MT::Stats - Movable Type class for managing access stats provider.
 
     use MT::Stats;
 
-    my $app      = MT->instance;
-    my $blog     = $app->model('blog')->load(1);
+    my $app  = MT->instance;
+    my $blog = $app->model('blog')->load(1);
     if (my $provider = MT::Stats->readied_provider($app, $blog)) {
         $provider->isa('MT::Stats::Provider'); # true
     }

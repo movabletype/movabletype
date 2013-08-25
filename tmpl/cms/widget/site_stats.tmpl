@@ -64,17 +64,26 @@
           magic_token: '<mt:var name="magic_token">',
         },
         success: function(data) {
-          draw_graph(data.result.stat_url);
+          if (data.error) {
+            jQuery('#graph')
+                .append(jQuery('<div class="msg msg-error"/>').text(data.error));
+            jQuery('.site-stats-widget .down-column').css('height', 'auto');
+          }
+          else {
+            draw_graph(data.result.stat_url, false);
+          }
         },
         error: function(data) {
         }
       });
     });
 
-    draw_graph('<mt:var name="stat_url">');
+    draw_graph('<mt:var name="stat_url">', true);
 
-    function draw_graph(stat_url) {
+    function draw_graph(stat_url, retry) {
       jQuery.getJSON(stat_url, function(data) {
+        jQuery('.site-stats-widget .down-column').css('height', '');
+
         var hover_data = data.hover_data.data;
         var config = {
           type: 'morris.line',
@@ -114,6 +123,11 @@
           jQuery('#statistics_settings_link a').attr('href', '<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id='+select_blog_id);
           </mt:if>
           jQuery('#statistics_settings_link').show();
+        }
+      })
+      .error(function(xhr) {
+        if (retry && xhr.status === 404) {
+          jQuery('select#select_blog_id').triggerHandler('change');
         }
       });
     }
