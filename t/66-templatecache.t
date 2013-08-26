@@ -44,7 +44,7 @@ ok( $out1 eq "hello", "Test template successfully built" );
 
 my @ts = offset_time_list( time, $blog->id );
 my $ts = sprintf '%04d%02d%02d%02d%02d%02d', $ts[5] + 1900, $ts[4] + 1,
-    @ts[ 3, 2, 1 ], $ts[0] + 1;
+    @ts[ 3, 2 ], $ts[1] + 1, $ts[0];
 MT::Request->instance->reset;
 $include->text('hello yay');
 $include->modified_on($ts);
