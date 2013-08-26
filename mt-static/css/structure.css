@@ -22,7 +22,7 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Lorem ipsum dolor sit 
 <h3>Link</h3>
 
 * Color: <span style="color:#0076BF">#0076BF</span>
-* Hover Color: <span style="color:#379794">#379794</span>
+* Hover Color: <span style="color:#52A437">#52A437</span>
 * Active Color: <span style="color:#04634f">#04634f</span>
 
 ```
@@ -1923,7 +1923,7 @@ a, a:link, a:visited{
     outline: 0;
 }
 a:hover{
-    color: #379794;
+    color: #52A437;
     text-decoration: none;
 }
 a:active{
@@ -2022,7 +2022,7 @@ pre {
     background-color: #666666;
 }
 .sticky-label.website {
-    background-color: #379794;
+    background-color: #52A437;
 }
 .sticky-label.blog {
     background-color: #0076BF;
@@ -2498,7 +2498,7 @@ ul.tabs li a {
     background-color: #666666;
 }
 .website #menu-bar {
-    background-color: #379794;
+    background-color: #52A437;
 }
 .blog #menu-bar {
     background-color: #0076BF;
@@ -2539,7 +2539,7 @@ ul.tabs li a {
     max-width: 70%;
 }
 .scope.website {
-    background-color: #379794;
+    background-color: #52A437;
 }
 .blog .scope.website {
     max-width: 30%;
@@ -2619,7 +2619,7 @@ ul.tabs li a {
 
 }
 .scope-list.website a:hover {
-    background-color: #379794;
+    background-color: #52A437;
 }
 .scope-list.blog a:hover {
     background-color: #0076BF;
