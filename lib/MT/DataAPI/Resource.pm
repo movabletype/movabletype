@@ -348,6 +348,9 @@ sub from_object_with_cache {
     {
         $objs = $objs->content;
     }
+    elsif ( UNIVERSAL::isa( $objs, 'MT::DataAPI::Resource::Type::Raw' ) ) {
+        return $objs->content;
+    }
 
     return [] unless @$objs;
 
