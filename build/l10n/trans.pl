@@ -194,7 +194,6 @@ do {
             }
         }
         while ($text =~ /\s*(?:["'])?label(?:_plural)?(?:["'])?\s*=>\s*(["'])(.*?)([^\\])\1/gs) {
-            next if $1 =~ m/^$1/;
             my($msg, %args);
             my $trans = '';
             $args{phrase} = $2.$3;
