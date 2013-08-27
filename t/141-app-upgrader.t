@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 BEGIN {
-    $ENV{MT_CONFIG} = 'upgrader-test.cfg';
+    $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
 use lib 'lib', 'extlib', 't/lib', '../lib', '../extlib';
