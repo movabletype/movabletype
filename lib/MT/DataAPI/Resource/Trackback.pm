@@ -162,3 +162,15 @@ sub fields {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Resource::Trackback - Movable Type class for resources definitions of the MT::TBPing.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

@@ -243,6 +243,9 @@ sub from_object {
     {
         $objs = $objs->content;
     }
+    elsif ( UNIVERSAL::isa( $objs, 'MT::DataAPI::Resource::Type::Raw' ) ) {
+        return $objs->content;
+    }
 
     return [] unless @$objs;
 
@@ -393,7 +396,15 @@ sub content {
 
 package MT::DataAPI::Resource::Type::ObjectList;
 
-use base qw(MT::DataAPI::Resource::Type::Raw);
+sub new {
+    my $self = [ $_[1] ];
+    bless $self, $_[0];
+    $self;
+}
+
+sub content {
+    $_[0]->[0];
+}
 
 # MT::DataAPI::Resource::DataType
 package MT::DataAPI::Resource::DataType::Object;
@@ -515,3 +526,124 @@ sub to_object {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Resource - Movable Type class for managing Data API's resources.
+
+=head1 SYNOPSIS
+
+    use MT::DataAPI::Resource;
+
+    my $obj      = MT->model('entry')->load(1);
+    my $resource = MT::DataAPI::Resource->from_object($obj);
+
+=head1 METHODS
+
+=head2 MT::DataAPI::Resource->resource($key)
+
+Returns a specification of the resource if found for C<$key>.
+If C<$key> is object, C<$key-E<gt>datasource> is used as a key.
+
+=head2 MT::DataAPI::Resource->from_object($objs[, $fields_specified])
+
+Returns a resource data which converted C<$objs>.
+
+If C<$fields_specified> is given, returned data only contains specified keys.
+
+C<$objs> can take an instance of these class.
+
+=over 4
+
+=item MT::Object
+
+    Return value is a hash.
+
+=item MT::DataAPI::Resource::Type::Raw
+
+    Returns C<$objs-E<gt>content> immediately.
+
+=item MT::DataAPI::Resource::Type::ObjectList
+
+    Return value is a reference of the array.
+
+=back
+
+=head2 MT::DataAPI::Resource->to_object($name, $hashs[, $originals])
+
+Returns an instance (or instances) which converted C<$hashs>.
+
+C<$name> should be a key that can pass to L<MT::DataAPI::Resource-E<gt>resource>.
+
+C<$hashs> can take a reference of the array or a hash.
+If a reference of the array is given to C<$hashs>, return value is a reference of the array.
+If a hash is given to C<$hashs>, return value is an instance.
+
+If C<$originals> is given, The result object is cloned from C<$original>, then be overwritten by C<$hashs>.
+
+=head1 MT::DataAPI::Resource::Type INTERNAL PACKAGES
+
+These classes can wrap data that is passed to L<MT::DataAPI::Resource-E<gt>from_object>.
+
+=over 4
+
+=item MT::DataAPI::Resource::Type::Raw
+
+If a converted data has been wrapped by this class, L<MT::DataAPI::Resource-E<gt>from_object> returns raw data immediately. You can use this class in order to return simple data that is not an instance of MT::Object.
+
+    use MT::DataAPI::Resource;
+
+    my $obj = MT::DataAPI::Resource::Type::Raw->new( $converted_data )
+    my $resource = MT::DataAPI::Resource->from_object($obj);
+
+    $converted_data == $obj # true
+
+=item MT::DataAPI::Resource::Type::ObjectList
+
+If an object list has been wrapped by this class, L<MT::DataAPI::Resource-E<gt>from_object> returns a reference of array. The MT expects all the objects contained in array are the instances of the same class. You can use this class in order to convert object list.
+
+    use MT::DataAPI::Resource;
+
+    my $objs = MT::DataAPI::Resource::Type::ObjectList
+        ->new([ $app->model('entry')->load ]);
+    my $resources = MT::DataAPI::Resource->from_object($objs);
+
+=back
+
+=head1 MT::DataAPI::Resource::DataType INTERNAL PACKAGES
+
+These classes can specify to the type of the resource.
+
+=over 4
+
+=item MT::DataAPI::Resource::DataType::Object
+
+If this package is specified to the type, the value will be converted by L<MT::DataAPI::Resource-E<gt>from_object>.
+
+    {   name   => 'author',
+        fields => [qw(id displayName userpicUrl)],
+        type   => 'MT::DataAPI::Resource::DataType::Object',
+    }
+
+=item MT::DataAPI::Resource::DataType::Integer
+
+If this package is specified to the type, the value will be converted to an integer.
+If C<field> was given, this value passed to L<MT::DataAPI::Resource-E<gt>from_object> as a second argument.
+
+=item MT::DataAPI::Resource::DataType::Boolean
+
+If this package is specified to the type, the value will be converted to an boolean.
+
+=item MT::DataAPI::Resource::DataType::ISO8601
+
+If this package is specified to the type, the value will be converted to an ISO8601 datetime format.
+
+=back
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

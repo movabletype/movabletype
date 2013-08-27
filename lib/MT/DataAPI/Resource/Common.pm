@@ -46,3 +46,31 @@ our %fields = (
 );
 
 1;
+
+=head1 NAME
+
+MT::DataAPI::Resource::Common - Movable Type common definitions for Data API's resources.
+
+=head1 FIELDS
+
+=over 4
+
+=item blog
+
+    A blog field. $obj should have the "blog_id" field.
+
+=item tags
+
+    A tags field. $obj should an instance of MT::Taggable.
+
+=item status
+
+    A status field. $obj should have the "set_status_by_text" method and the "get_status_text" method.
+
+=back
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

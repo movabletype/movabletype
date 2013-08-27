@@ -74,3 +74,50 @@ sub find_format {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Format - Movable Type class for managing Data API's formats to serialize.
+
+=head1 SYNOPSIS
+
+    use MT::DataAPI::Format;
+
+    if ($my $format = MT::DataAPI::Format->find_format($key)) {
+        $format->{serialize}->($data);
+    }
+
+=head1 METHODS
+
+=head2 MT::DataAPI::Format->find_format([$key])
+
+Returns a format data if found.
+This method looks for a format for a key in following order.
+
+=over 4
+
+=item C<$key>
+
+Given C<$key>.
+
+=item $app->current_endpoint->{format}
+
+The format key of current endpoint.
+
+=item $app->param('format')
+
+The format parameter of this request.
+
+=item $app->registry( 'applications', 'data_api' )->{default_format}
+
+The default format of the system.
+
+=back
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut
