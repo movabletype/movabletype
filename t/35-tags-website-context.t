@@ -22,6 +22,8 @@ my $app    = MT->instance;
 my $config = $app->config;
 $config->AllowComments(1);
 $config->StaticFilePath('./mt-static');
+$config->CommenterRegistration( { Allow => 1 } );
+$config->save_config;
 delete $app->{__static_file_path};
 
 my $blog_id       = 1;                                        # First Website
