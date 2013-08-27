@@ -45,3 +45,15 @@ sub endpoints {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Endpoint::Util - Movable Type class for utility endpoint.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

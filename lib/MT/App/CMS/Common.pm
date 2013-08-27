@@ -351,3 +351,16 @@ sub init_core_callbacks {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::App::CMS::Common
+
+=head1 DESCRIPTION
+
+The I<MT::App::CMS::Common> module is the common parts of CMS element applications.
+This module is used by both CMS.pm and DataAPI.pm.
+
+=cut

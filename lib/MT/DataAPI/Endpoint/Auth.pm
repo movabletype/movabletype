@@ -210,3 +210,15 @@ sub revoke_token {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Endpoint::Auth - Movable Type class for endpoint definitions about authentication.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

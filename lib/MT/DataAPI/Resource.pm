@@ -382,7 +382,7 @@ sub to_object {
 }
 
 # MT::DataAPI::Resource::Type
-package MT::DataAPI::Resource::Type::Raw;
+package MT::DataAPI::Resource::Type;
 
 sub new {
     my $self = [ $_[1] ];
@@ -393,18 +393,14 @@ sub new {
 sub content {
     $_[0]->[0];
 }
+
+package MT::DataAPI::Resource::Type::Raw;
+
+use base qw(MT::DataAPI::Resource::Type);
 
 package MT::DataAPI::Resource::Type::ObjectList;
 
-sub new {
-    my $self = [ $_[1] ];
-    bless $self, $_[0];
-    $self;
-}
-
-sub content {
-    $_[0]->[0];
-}
+use base qw(MT::DataAPI::Resource::Type);
 
 # MT::DataAPI::Resource::DataType
 package MT::DataAPI::Resource::DataType::Object;

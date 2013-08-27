@@ -440,3 +440,127 @@ sub filtered_list {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Endpoint::Common - Movable Type utilities for endpoint definitions.
+
+=head1 METHODS
+
+=head2 MT::DataAPI::Endpoint::Common::obj_promise($obj)
+
+Just call L<MT::Promise::delay> internally.
+
+=head2 MT::DataAPI::Endpoint::Common::save_object($app, $type, $obj[, $original[, $around_filter]]);
+
+Save C<$obj> with permission checking and callbacks.
+
+C<$around_filter> is optional. C<$around_filter> has the following signature:
+
+    sub {
+        my $save = shift;
+        # Do stuff before save
+        $save->();
+        # Do stuff after save
+    }
+
+This method will call these callbacks.
+
+=over 4
+
+=item data_api_save_permission_filter.$type
+
+    A permission-filter callback.
+    Returns 1 if current user can save this object.
+
+=item data_api_save_filter.$type
+
+    A filter callback.
+    Returns 1 if the MT can save this object.
+
+=item data_api_pre_save.$type
+
+    A filter callback.
+    Returns 1 if the MT can save this object.
+    
+=item data_api_post_save.$type
+
+    A post-save callback.
+
+=back
+
+=head2 MT::DataAPI::Endpoint::Common::remove_object($app, $type, $obj)
+
+Remove C<$obj> with permission checking and callbacks.
+This method will call these callbacks.
+
+=over 4
+
+=item data_api_delete_permission_filter.$type
+
+    A permission-filter callback.
+    Returns 1 if current user can remove this object.
+    
+=item data_api_post_delete.$type
+
+    A post-remove callback.
+
+=back
+
+=head2 MT::DataAPI::Endpoint::Common::context_objects($app, $endpoint)
+
+Returns all the objects referred from URL, only if all the objects can be loaded.
+Returns empty list, if some object cannot be loaded.
+
+    # If current endpoint is "/sites/:site_id/entries/:entry_id/action",
+    # and current URL is "/sites/1/entries/1/action".
+    my ($site, $entry) = context_objects($app, $endpoint);
+    $site->id;  # 1
+    $entry->id; # 1
+
+    # Parent object ID is checked in loading.
+    # Therefore this value is 1 or cannot load entry.
+    $entry->blog_id;
+
+=head2 MT::DataAPI::Endpoint::Common::resource_objects($app, $endpoint)
+
+Returns all the objects extracted from request data, only if all the objects can be obtained. 
+All the key of objects should be specified by endpoint definitions, before request.
+
+    # $endpoint->{resources} is ['entry']
+    my ($entry) = resource_objects($app, $endpoint)
+        or $app->error(400);
+
+=head2 MT::DataAPI::Endpoint::Common::get_target_user
+
+Returns the current target user.
+
+=head2 MT::DataAPI::Endpoint::Common::run_permission_filter($filter, $type)
+
+Call "$Filter.$type" as a permission filter.
+
+If the current user is superuser, pass to calling filter.
+
+If a permission filter returns 0, this method returns empty list with setting permission error to $app.
+
+=head2 MT::DataAPI::Endpoint::Common::filtered_list($app, $endpoint, $ds[, $terms[, $args[, $options]]])
+
+Returns a filtered list by using filter of listing framework.
+This method will call these callbacks.
+
+=over 4
+
+=item data_api_list_permission_filter.$type
+
+    A permission-filter callback.
+    Returns 1 if current user can retrieve a list of this C<$ds>.
+    
+=back
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

@@ -90,3 +90,15 @@ sub delete {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Endpoint::Trackback - Movable Type class for endpoint definitions about the MT::TBPing.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut
