@@ -197,6 +197,10 @@ sub config_tmpl {
                     )
                 : ()
             ),
+            (   $blog
+                ? ( scope_label => $blog->class_label, )
+                    : ()
+            ),
         }
     )->build;
 }

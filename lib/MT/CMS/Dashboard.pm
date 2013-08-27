@@ -1324,7 +1324,7 @@ sub site_stats_widget_lines {
             handler => "${pkg}site_stats_widget_entrycount_lines",
         },
         count_pageviews => {
-            hlabel    => 'PV',
+            hlabel    => 'Page Views',
             condition => "${pkg}site_stats_widget_pageview_condition",
             handler   => "${pkg}site_stats_widget_pageview_lines",
         },
