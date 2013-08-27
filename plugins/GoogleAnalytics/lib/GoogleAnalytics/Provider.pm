@@ -193,3 +193,13 @@ sub visits_for_date {
 }
 
 1;
+
+=head1 NAME
+
+GoogleAnalytics::Provider - An implementation class of L<MT::Stats::Provider> for Google Analytics.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

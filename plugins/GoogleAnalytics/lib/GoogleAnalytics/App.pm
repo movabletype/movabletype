@@ -360,3 +360,13 @@ sub oauth2callback {
 }
 
 1;
+
+=head1 NAME
+
+GoogleAnalytics::App - Application module for Google Analytics.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

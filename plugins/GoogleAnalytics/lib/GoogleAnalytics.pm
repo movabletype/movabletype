@@ -156,3 +156,34 @@ sub new_ua {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+GoogleAnalytics - Utility methods for Google Analytics.
+
+=head1 METHODS
+
+=head2 GoogleAnalytics::plugin
+
+    Returns a plugin object.
+
+=head2 GoogleAnalytics::translate(@params)
+
+    Just call L<plugin()-E<gt>translate(@_)> internally.
+
+=head2 GoogleAnalytics::new_ua
+
+    Returns new user ageent set with ssl_opts.
+
+=head2 GoogleAnalytics::current_plugindata($app, $blog)
+
+    Returns current effective plugindata for C<$blog>.
+    As for plugindata returned from this method, client_id and profile_id are set up. 
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut
