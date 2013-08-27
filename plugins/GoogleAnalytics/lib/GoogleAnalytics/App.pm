@@ -272,7 +272,7 @@ sub save_config {
             MT::Util::clear_site_stats_widget_cache( $site_id,
                 $app->user->id )
                 or return $app->error(
-                translate('Removing stats cache was failed.') );
+                translate('Removing stats cache failed.') );
         }
     }
 

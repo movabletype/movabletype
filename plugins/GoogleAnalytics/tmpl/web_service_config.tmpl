@@ -10,7 +10,7 @@
 <mtapp:setting
    id="setup_own_client_id"
    label="<__trans phrase="OAuth2 settings">">
-<__trans phrase="This blog is using the settings of [_1]." params="<mt:If name="has_parent_client_permission"><a href="<mt:Var name="mt_url">?__mode=cfg_web_services&amp;_type=blog<mt:If name="parent_client_blog_id">&amp;blog_id=<mt:Var name="parent_client_blog_id" /></mt:If>"></mt:If><mt:If name="parent_client_blog_id"><mt:Var name="parent_client_blog_name" /><mt:Else><__trans phrase="System" /></mt:If><mt:If name="has_parent_client_permission"></a></mt:If>" />
+<__trans phrase="This [_2] is using the settings of [_1]." params="<mt:If name="has_parent_client_permission"><a href="<mt:Var name="mt_url">?__mode=cfg_web_services&amp;_type=blog<mt:If name="parent_client_blog_id">&amp;blog_id=<mt:Var name="parent_client_blog_id" /></mt:If>"></mt:If><mt:If name="parent_client_blog_id"><mt:Var name="parent_client_blog_name" /><mt:Else><__trans phrase="System" /></mt:If><mt:If name="has_parent_client_permission"></a></mt:If>%%<mt:var name="scope_label" escape="html">" />
 <a href="#" id="setup_own_client_id" class="button"><__trans phrase="Other Google account" /></a>
 <input type="hidden" id="ga_parent_client_id" value="<mt:Var name="parent_client_id" encode_html="1" />" />
 </mtapp:setting>
