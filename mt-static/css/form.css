@@ -152,7 +152,6 @@ input[type=file] {
 }
 .text,
 .button {
-    /* height: 1.75em; */
     line-height: normal;
 }
 .text::-moz-focus-inner,
@@ -229,6 +228,7 @@ If you want to show error on text fields, use .error class
 */
 
 .text {
+    height: 1.75em;
     width: 75%;
     outline: 0;
     border: 1px solid #adadad;
