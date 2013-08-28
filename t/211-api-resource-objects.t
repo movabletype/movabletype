@@ -31,6 +31,16 @@ my $app = MT::App::DataAPI->new;
 MT->set_instance($app);
 $app->user($app->model('author')->load(1));
 
+if ( !$app->model('placement')->load( { entry_id => 6, category_id => 2 } ) )
+{
+    my $place = $app->model('placement')->new;
+    $place->entry_id(6);
+    $place->blog_id(1);
+    $place->category_id(2);
+    $place->is_primary(0);
+    $place->save
+        or die "Couldn't save placement record: " . $place->errstr;
+}
 
 ( my $spec_dir = __FILE__ ) =~ s/t$/d/;
 for my $d ( glob( File::Spec->catfile( $spec_dir, '*' ) ) ) {

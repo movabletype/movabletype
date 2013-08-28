@@ -56,8 +56,8 @@ sub fields {
                     [ map { $_->[0] } @$rows ] );
 
                 [   map { $_->category_label_path } sort {
-                              $a->id == $primary ? 1
-                            : $b->id == $primary ? -1
+                              $a->id == $primary ? -1
+                            : $b->id == $primary ? 1
                             : $a->label cmp $b->label
                     } @$cats
                 ];
