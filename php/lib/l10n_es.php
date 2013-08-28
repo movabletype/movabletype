@@ -8,9 +8,6 @@
 global $Lexicon_es;
 $Lexicon_es = array(
 
-## php/lib/MTUtil.php
-	'userpic-[_1]-%wx%h%x' => 'avatar-[_1]-%wx%h%x',
-
 ## php/lib/archive_lib.php
 	'Individual' => 'Inidivual',
 	'Page' => 'Página',
@@ -71,10 +68,10 @@ $Lexicon_es = array(
 
 ## php/lib/function.mtauthordisplayname.php
 
-## php/lib/function.mtcommentauthor.php
+## php/lib/function.mtcommentauthorlink.php
 	'Anonymous' => 'Anónimo',
 
-## php/lib/function.mtcommentauthorlink.php
+## php/lib/function.mtcommentauthor.php
 
 ## php/lib/function.mtcommenternamethunk.php
 	'The \'[_1]\' tag has been deprecated. Please use the \'[_2]\' tag in its place.' => 'La etiqueta \'[_1]\' está obsoleta. Por favor, utilice en su lugar la etiqueta \'[_2]\'.',
@@ -83,8 +80,6 @@ $Lexicon_es = array(
 	'Reply' => 'Responder',
 
 ## php/lib/function.mtentryclasslabel.php
-	'page' => 'página',
-	'entry' => 'entrada',
 	'Entry' => 'Entrada',
 
 ## php/lib/function.mtinclude.php
@@ -119,11 +114,11 @@ $Lexicon_es = array(
 	'\'[_1]\' is not a valid function for a hash.' => '\'[_1]\' no es una función válida para un hash.',
 	'\'[_1]\' is not a valid function for an array.' => '\'[_1]\' no es una función válida para un array.',
 
-## php/lib/function.mtwidgetmanager.php
-	'Error compiling widget set [_1]' => 'Error compilando el conjunto de widgets [_1]',
-
 ## php/lib/mtdb.base.php
 	'When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them.' => 'Cuando se usan juntos los atributos exclude_blogs y include_blogs, no deben indicarse los mismos identificadores de blogs como parámetros de ambos.',
+
+## php/lib/MTUtil.php
+	'userpic-[_1]-%wx%h%x' => 'avatar-[_1]-%wx%h%x',
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Página no encontrada - [_1]',

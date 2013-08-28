@@ -18,6 +18,8 @@ use vars qw( %Lexicon );
 	'MT 4 Style Library' => 'Librería de estilos de MT 4',
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Una colección de estilos compatible con las plantillas predefinidas de Movable Type.',
 	'Styles' => 'Estilos',
+	'Moving current style to blog_meta for website...' => 'Migrando el estilo actual a blog_meta para el sitio web...', # Translate - New
+	'Moving current style to blog_meta for blog...' => 'Migrando el estilo actual a blog_meta para el blog...', # Translate - New
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'No se encontró el directorio mt-static. Por favor, configure el \'StaticFilePath\' para continuar.',

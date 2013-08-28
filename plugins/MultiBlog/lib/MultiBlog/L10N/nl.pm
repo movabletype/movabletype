@@ -39,6 +39,7 @@ use vars qw( %Lexicon );
 	'publishes a TrackBack' => 'een TrackBack publiceert',
 	'rebuild indexes.' => 'indexen opnieuw opbouwt.',
 	'rebuild indexes and send pings.' => 'indexen opnieuw opbouwt en pings verstuurt.',
+	'Updating the MultiBlog trigger cache...' => 'Bezig de trigger cache van MultiBlog bij te werken', # Translate - New
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => 'Wanneer',

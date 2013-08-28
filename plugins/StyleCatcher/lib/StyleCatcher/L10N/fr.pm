@@ -18,6 +18,8 @@ use vars qw( %Lexicon );
 	'MT 4 Style Library' => 'Bibliothèque MT4',
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Une gamme de styles compatibles avec les gabarits MT4 par défaut',
 	'Styles' => 'Habillages',
+	'Moving current style to blog_meta for website...' => 'Déplacement du style courant du site web vers blog_meta...', # Translate - New
+	'Moving current style to blog_meta for blog...' => 'Déplacement du style courant du blog vers blog_meta...', # Translate - New
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Le répertoire mt-static n\'a pas pu être trouvé. Veuillez configurer le \'StaticFilePath\' pour continuer.',
@@ -25,7 +27,7 @@ use vars qw( %Lexicon );
 	'Successfully applied new theme selection.' => 'Le nouveau thème sélectionné a été appliqué avec succès.',
 
 ## plugins/StyleCatcher/lib/StyleCatcher/Library/Default.pm
-	'Invalid URL: [_1]' => 'URL invalide : [_1]',
+	'Invalid URL: [_1]' => 'URL invalide : [_1]',
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Impossible de créer le dossier [_1] - Vérifiez que votre dossier \'themes\' et en mode webserveur/écriture.',
 
 ## plugins/StyleCatcher/lib/StyleCatcher/Library/Local.pm
@@ -49,10 +51,10 @@ use vars qw( %Lexicon );
 	q{Apply Design} => q{Appliquer l'habillage},
 	q{Error applying theme: } => q{Erreur en appliquant l'habillage :},
 	q{The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.} => q{L'habillage sélectionné a été appliqué. Vous devez republier votre blog afin d'appliquer la nouvelle mise en page.},
-	q{The selected theme has been applied!} => q{L'habillage sélectionné a été appliqué !},
-	'Error loading themes! -- [_1]' => 'Erreur lors du chargement des habillages ! -- [_1]',
+	q{The selected theme has been applied!} => q{L'habillage sélectionné a été appliqué !},
+	'Error loading themes! -- [_1]' => 'Erreur lors du chargement des habillages ! -- [_1]',
 	'Stylesheet or Repository URL' => 'URL de la feuille de style ou du répertoire',
-	'Stylesheet or Repository URL:' => 'URL de la feuille de style ou du répertoire :',
+	'Stylesheet or Repository URL:' => 'URL de la feuille de style ou du répertoire :',
 	'Download Styles' => 'Télécharger des habillages',
 	'Current theme for your weblog' => 'Thème actuel de votre weblog',
 	'Current Style' => 'Habillage actuel',
@@ -63,7 +65,6 @@ use vars qw( %Lexicon );
 	q{More Styles} => q{Plus d'habillages},
 	'Selected Design' => 'Habillage sélectionné',
 	'Layout' => 'Mise en page',
-
 );
 
 1;
