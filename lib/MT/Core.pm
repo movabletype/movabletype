@@ -612,7 +612,7 @@ BEGIN {
                                 {   id => \"=${ds}_${parent}_id",
                                     $c => $value
                                 },
-                            );
+                                );
                             return;
                         }
                         else {
@@ -1140,9 +1140,9 @@ BEGIN {
                     singleton => 1,
                 },
                 content => {
-                    base  => '__virtual.hidden',
+                    base            => '__virtual.hidden',
                     filter_editable => 0,
-                    terms => sub {
+                    terms           => sub {
                         my ( $prop, $args, $db_terms, $db_args ) = @_;
                         my $defaults = $prop->{fields};
                         my $option   = $args->{option};
@@ -1844,6 +1844,7 @@ BEGIN {
             'SearchCacheTTL'            => { default => 20, },
             'SearchThrottleSeconds'     => { default => 5 },
             'SearchThrottleIPWhitelist' => undef,
+            'CMSSearchLimit'            => { default => 125 },
             'OneHourMaxPings'           => { default => 10, },
             'OneDayMaxPings'            => { default => 50, },
             'SupportURL'                => {
@@ -1893,6 +1894,7 @@ BEGIN {
             'UsePlugins'               => { default => 1, },
             'PluginSwitch'             => { type    => 'HASH', },
             'PluginSchemaVersion'      => { type    => 'HASH', },
+            'YAMLModule'               => { default => 'YAML::Syck' },
             'OutboundTrackbackLimit'   => { default => 'any', },
             'OutboundTrackbackDomains' => { type    => 'ARRAY', },
             'IndexBasename'            => { default => 'index', },
@@ -1921,6 +1923,7 @@ BEGIN {
                 { handler => \&NewUserAutoProvisioning, },
             'NewUserBlogTheme'        => { default => 'rainier' },
             'NewUserDefaultWebsiteId' => undef,
+            'NewUserTemplateBlogId'   => undef,
             'DefaultSiteURL'          => undef,    ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
@@ -1973,6 +1976,7 @@ BEGIN {
                 { handler => \&PerformanceLoggingPath },
             'PerformanceLoggingThreshold' => { default => 0.1 },
             'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
+            'PublishCommenterIcon' => { default => 1 },
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
@@ -2115,14 +2119,15 @@ BEGIN {
                 type    => 'run_once',
             },
             'data_api' => {
-                handler        => 'MT::App::DataAPI',
-                script         => sub { MT->config->DataAPIScript },
-                methods        => sub { MT->app->core_methods() },
-                endpoints      => sub { MT->app->core_endpoints() },
-                resources      => sub { MT::DataAPI::Resource->core_resources() },
-                formats        => sub { MT::DataAPI::Format->core_formats() },
+                handler   => 'MT::App::DataAPI',
+                script    => sub { MT->config->DataAPIScript },
+                methods   => sub { MT->app->core_methods() },
+                endpoints => sub { MT->app->core_endpoints() },
+                resources => sub { MT::DataAPI::Resource->core_resources() },
+                formats   => sub { MT::DataAPI::Format->core_formats() },
                 default_format => 'json',
-                query_builder  => '$Core::MT::DataAPI::Endpoint::Common::query_builder',
+                query_builder =>
+                    '$Core::MT::DataAPI::Endpoint::Common::query_builder',
             },
         },
         web_services    => undef,
