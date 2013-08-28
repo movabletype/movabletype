@@ -2012,8 +2012,10 @@ BEGIN {
             'IPLockoutLimit'                 => { default => 10 },
             'IPLockoutInterval'              => { default => 1800 },
             'FailedLoginExpirationFrequency' => { default => 86400 },
-            'LockoutIPWhitelist'             => undef,
-            'LockoutNotifyTo'                => undef,
+            'LockoutExpireFrequency' =>
+                { alias => 'FailedLoginExpirationFrequency' },
+            'LockoutIPWhitelist' => undef,
+            'LockoutNotifyTo'    => undef,
 
             # DataAPI
             'AccessTokenTTL'          => { default => 60 * 60, },
