@@ -55,3 +55,15 @@ sub upload {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Endpoint::Asset - Movable Type class for endpoint definitions about the MT::Asset.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

@@ -2161,14 +2161,7 @@ DataAPI.prototype = {
         return this.constructor.accessTokenKey + '_' + this.o.clientId;
     },
 
-    /**
-     * Get format by MIME Type.
-     * @method findFormat
-     * @param {String} mimeType MIME Type
-     * @return {Object|null} Format. Return null if any format is not found.
-     * @category core
-     */
-    findFormat: function(mimeType) {
+    _findFormatInternal: function(mimeType) {
         if (! mimeType) {
             return null;
         }
@@ -2180,6 +2173,22 @@ DataAPI.prototype = {
         }
 
         return null;
+    },
+
+    /**
+     * Get format by MIME Type.
+     * @method findFormat
+     * @param {String} mimeType MIME Type
+     * @return {Object|null} Format. Return null if any format is not found.
+     * @category core
+     */
+    findFormat: function(mimeType) {
+        var format = this._findFormatInternal(mimeType);
+        if (! format && mimeType.indexOf(';')) {
+            format = this._findFormatInternal(mimeType.replace(/\s*;.*/, ''));
+        }
+
+        return format;
     },
 
     /**

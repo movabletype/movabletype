@@ -15,3 +15,15 @@ sub can_view {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Callback::User - Movable Type class for Data API's callbacks about the MT::Author.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

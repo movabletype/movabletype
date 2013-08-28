@@ -213,3 +213,34 @@ sub plugin_data_pre_save {
 }
 
 1;
+
+=head1 NAME
+
+GoogleAnalytics::OAuth2 - OAuth2 request methods for Google Analytics.
+
+=head1 METHODS
+
+=head2 GoogleAnalytics::OAuth2::authorize_url($app, $client_id, $redirect_uri)
+
+    Returns authorization URL embedded with C<$client_id> and C<$redirect_uri>.
+
+=head2 GoogleAnalytics::OAuth2::get_token($app, $ua, $client_id, $client_secret, $redirect_uri, $code)
+
+    Try to get new token.
+    Returns new token if succeeded.
+
+=head2 GoogleAnalytics::OAuth2::get_profiles($app, $ua, $token_data)
+
+    Try to get profiles by useing C<$token_data>.
+    Returns all the profiles which are related to a user of C<$token_data>.
+
+=head2 GoogleAnalytics::OAuth2::effective_token($app, $plugindata)
+    Extract an effective access token from C<$plugindata>.
+    Update an access token by a refresh token if current access token was expired.
+    Returns an access effective token if it can.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

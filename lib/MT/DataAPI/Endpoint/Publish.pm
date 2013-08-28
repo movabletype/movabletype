@@ -102,3 +102,15 @@ sub entries {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Endpoint::Publish - Movable Type class for endpoint definitions about rebuilding static archive.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

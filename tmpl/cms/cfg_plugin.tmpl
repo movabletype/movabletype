@@ -182,7 +182,7 @@ function activatePlugin(flag, plugin_sig) {
     <div id="plugin-<mt:var name="plugin_id">" class="plugin<mt:if name="plugin_disabled"> plugin-disabled disabled</mt:if>">
       <script type="text/javascript">
       /* <![CDATA[ */
-      plugin_ids.push(<mt:var name="plugin_id">);
+      plugin_ids.push('<mt:var name="plugin_id">');
       /* ]]> */
       </script>
       <div class="plugin-header">
@@ -248,15 +248,15 @@ function activatePlugin(flag, plugin_sig) {
         </mtapp:statusmsg>
       </mt:if>
 
-      <div id="plugin<mt:var name="plugin_id">-content" class="plugin-content">
+      <div id="plugin-<mt:var name="plugin_id">-content" class="plugin-content">
         <ul class="plugin-tabs-list tabs"> <!-- Plugin Tab -->
-          <li class="tab"><a href="#plugin<mt:var name="plugin_id">-info" class="icon-mini-left icon-mini-comments"><__trans phrase="Info"></a></li>
+          <li class="tab"><a href="#plugin-<mt:var name="plugin_id">-info" class="icon-mini-left icon-mini-comments"><__trans phrase="Info"></a></li>
       <mt:if name="plugin_resources">
-          <li class="tab"><a href="#plugin<mt:var name="plugin_id">-resources" class="icon-mini-left icon-mini-templates"><__trans phrase="Resources"></a></li>
+          <li class="tab"><a href="#plugin-<mt:var name="plugin_id">-resources" class="icon-mini-left icon-mini-templates"><__trans phrase="Resources"></a></li>
       </mt:if>
       <mt:if name="can_config">
         <mt:if name="plugin_config_html">
-          <li class="tab"><a href="#plugin<mt:var name="plugin_id">-config" class="icon-mini-left icon-mini-settings"><__trans phrase="Settings"></a></li>
+          <li class="tab"><a href="#plugin-<mt:var name="plugin_id">-config" class="icon-mini-left icon-mini-settings"><__trans phrase="Settings"></a></li>
         </mt:if>
         <mt:if name="plugin_config_link">
           <mt:if name="plugin_config_html">
@@ -269,7 +269,7 @@ function activatePlugin(flag, plugin_sig) {
         </ul>
         
       <mt:if name="plugin_desc">
-        <div id="plugin<mt:var name="plugin_id">-info">
+        <div id="plugin-<mt:var name="plugin_id">-info">
           <p><mt:var name="plugin_desc"></p>
           <div class="plugin-metadata">
             <ul class="plugin-metadata-list">
@@ -288,7 +288,7 @@ function activatePlugin(flag, plugin_sig) {
       </mt:if>
 
       <mt:if name="plugin_resources">
-        <div id="plugin<mt:var name="plugin_id">-resources" class="resources">
+        <div id="plugin-<mt:var name="plugin_id">-resources" class="resources">
           <ul>
         <mt:if name="plugin_tags">
             <li><strong><__trans phrase="Tags:"></strong>
@@ -324,7 +324,7 @@ function activatePlugin(flag, plugin_sig) {
 
       <mt:if name="can_config">
         <mt:if name="plugin_config_html">
-        <div id="plugin<mt:var name="plugin_id">-config" class="config">
+        <div id="plugin-<mt:var name="plugin_id">-config" class="config">
           <form method="post" action="<mt:var name="script_url">" id="plugin-<mt:var name="plugin_id">-form">
             <input type="hidden" name="__mode" value="save_plugin_config" />
           <mt:if name="blog_id">
@@ -391,8 +391,19 @@ function activatePlugin(flag, plugin_sig) {
     });
 
     jQuery.each(plugin_ids, function() {
-        jQuery('#plugin'+this+'-content').tabs();
+        jQuery('#plugin-'+this+'-content').tabs();
     });
+
+    if ( location.hash ) {
+        // Open plugin contents.
+        jQuery('div'+location.hash+' .plugin-name').trigger('click');
+
+        // If there is Settings tab, open it.
+        if ( jQuery('a'+location.hash+'-config') ) {
+            var last_tab_index = jQuery(location.hash+'-content li.tab').length - 1;
+            jQuery(location.hash+'-content').tabs( 'option', 'active', last_tab_index );
+        }
+    }
 </mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">

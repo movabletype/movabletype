@@ -3069,7 +3069,7 @@ it to the IETF RFC # 3066.
 
 =head2 clear_site_stats_widget_cache($site_id, $user_id)
 
-Clear cache for site stats dashnoard widget.
+Clear caches for site stats dashboard widget.
 
 =back
 

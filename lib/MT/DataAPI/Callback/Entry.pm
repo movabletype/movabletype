@@ -101,3 +101,15 @@ sub cms_pre_load_filtered_list {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Callback::Entry - Movable Type class for Data API's callbacks about the MT::Entry.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

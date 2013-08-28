@@ -22,3 +22,25 @@ sub unserialize {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Format::JSON - Movable Type class for Data API's data formatter useing JSON.
+
+=head1 METHODS
+
+=head2 MT::DataAPI::Format::JSON::serialize($data)
+
+Returns a JSON text which serialized C<$data>.
+
+=head2 MT::DataAPI::Format::JSON::unserialize($json_text)
+
+Returns a data which unserialized C<$json_text>.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

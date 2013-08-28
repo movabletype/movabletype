@@ -1135,8 +1135,6 @@ sub generate_site_stats_data {
     my $blog_id = $param->{blog_id};
     my $perms   = $app->user->permissions($blog_id)
         or return $app->error( $app->translate("No permissions") );
-    $param->{can_edit_config} = 1
-        if $perms->can_do('edit_config');
 
     my $cache_time = 60 * MT->config('StatsCacheTTL');   # cache for x minutes
     my $stats_static_path = create_stats_directory( $app, $param ) or return;
@@ -1155,9 +1153,6 @@ sub generate_site_stats_data {
     my $provider = readied_provider( $app, $blog );
     if ($provider) {
         $param->{provider} = $provider;
-    }
-    else {
-        $param->{not_configured} = 1;
     }
 
     # Get Registry
@@ -1234,7 +1229,8 @@ sub generate_site_stats_data {
             my $handler = $line_setting->{handler} || $line_setting->{code};
             $handler = MT->handler_to_coderef($handler);
             if ($handler) {
-                $counts[$sub] = $handler->( $app, \@ten_days_ago_tl, $param );
+                $counts[$sub] = $handler->( $app, \@ten_days_ago_tl, $param )
+                    or return;
                 $maxes[$sub] = 0;
                 foreach my $key ( keys %{ $counts[$sub] } ) {
                     $maxes[$sub] = $counts[$sub]->{$key}
@@ -1288,9 +1284,14 @@ sub generate_site_stats_data {
             push @{ $result->{graph_data} }, \%row1;
             push @{ $result->{hover_data}{data} }, \@row2;
         }
-        $result->{pv_today}     = $pv_today;
-        $result->{pv_yesterday} = $pv_yesterday;
-        $result->{reg_keys}     = \@reg_keys;
+        $result->{pv_today}        = $pv_today;
+        $result->{pv_yesterday}    = $pv_yesterday;
+        $result->{reg_keys}        = \@reg_keys;
+        $result->{can_edit_config} = 1
+            if $perms->can_do('edit_config')
+            || $perms->can_do('set_publish_paths')
+            || $perms->can_do('administer_blog')
+            || $perms->can_do('administer');
 
         $fmgr->put_data( MT::Util::to_json($result), $path );
     }
@@ -1310,9 +1311,6 @@ sub regenerate_site_stats_data {
     generate_site_stats_data( $app, $param ) or return;
 
     my $result = { stat_url => $param->{stat_url} };
-    if ( $param->{not_configured} ) {
-        $result->{not_configured} = 1;
-    }
     return $app->json_result($result);
 }
 
@@ -1326,7 +1324,7 @@ sub site_stats_widget_lines {
             handler => "${pkg}site_stats_widget_entrycount_lines",
         },
         count_pageviews => {
-            hlabel    => 'PV',
+            hlabel    => 'Page Views',
             condition => "${pkg}site_stats_widget_pageview_condition",
             handler   => "${pkg}site_stats_widget_pageview_lines",
         },
@@ -1402,7 +1400,7 @@ sub site_stats_widget_pageview_lines {
         {   startDate => $ten_days_ago,
             endDate   => $today,
         }
-    );
+    ) or return undef;
 
     my @items = @{ $for_date->{items} };
     my %counts;

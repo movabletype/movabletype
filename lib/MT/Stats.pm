@@ -37,3 +37,31 @@ sub readied_provider {
 
 1;
 
+__END__
+
+=head1 NAME
+
+MT::Stats - Movable Type class for managing access stats provider.
+
+=head1 SYNOPSIS
+
+    use MT::Stats;
+
+    my $app  = MT->instance;
+    my $blog = $app->model('blog')->load(1);
+    if (my $provider = MT::Stats->readied_provider($app, $blog)) {
+        $provider->isa('MT::Stats::Provider'); # true
+    }
+
+=head1 METHODS
+
+=head2 MT::Stats->readied_provider($app, $blog)
+
+If C<$blog> is associated to a some provider, returns an instance of an implementation class, that is a subclass of L<MT::Stats::Provider>.
+If C<$blog> is not associated to any provider, returns undef.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

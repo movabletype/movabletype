@@ -129,3 +129,15 @@ sub fill_in_archive_info {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Endpoint::Stats - Movable Type class for endpoint definitions about access stats.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

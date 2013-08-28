@@ -2102,6 +2102,32 @@ PERMCHECK: {
                 # FIXME: Should be assigning the publish_date field here
                 my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4,
                     $5, $s;
+
+                if ( $col eq 'authored_on' ) {
+                    require MT::DateTime;
+                    return $app->error(
+                        $app->translate(
+                            "Invalid date '[_1]'; 'Published on' dates should be earlier than the corresponding 'Unpublished on' date '[_2]'.",
+                            $val,
+                            format_ts(
+                                "%Y-%m-%d %H:%M:%S",
+                                $entry->unpublished_on,
+                                $blog,
+                                $app->user
+                                ? $app->user->preferred_language
+                                : undef
+                            )
+                        )
+                        )
+                        if (
+                        MT::DateTime->compare(
+                            blog => $blog,
+                            a    => $ts,
+                            b    => $entry->unpublished_on
+                        ) > 0
+                        );
+                }
+
                 $entry->$col($ts);
             };
 

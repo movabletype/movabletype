@@ -47,7 +47,7 @@
             id="not_enabled"
             class="error"
             can_close="0">
-            <__trans phrase="Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check activity log for more details." params="<mt:var name="request.not_enabled" escape="html">">
+            <__trans phrase="Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='[_2]'>activity log</a> for more details." params="<mt:var name="request.not_enabled" escape="html">%%<mt:var name="script_url">?__mode=view_log">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="request.error">

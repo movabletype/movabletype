@@ -67,7 +67,7 @@ use vars qw( %Lexicon );
 	'More Styles' => 'その他のスタイル',
 	'Selected Design' => '選択されたデザイン',
 	'Layout' => 'レイアウト',
- 
+
 );
 
 1;

@@ -197,6 +197,10 @@ sub config_tmpl {
                     )
                 : ()
             ),
+            (   $blog
+                ? ( scope_label => $blog->class_label, )
+                    : ()
+            ),
         }
     )->build;
 }
@@ -272,7 +276,7 @@ sub save_config {
             MT::Util::clear_site_stats_widget_cache( $site_id,
                 $app->user->id )
                 or return $app->error(
-                translate('Removing stats cache was failed.') );
+                translate('Removing stats cache failed.') );
         }
     }
 
@@ -356,3 +360,13 @@ sub oauth2callback {
 }
 
 1;
+
+=head1 NAME
+
+GoogleAnalytics::App - Application module for Google Analytics.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut
