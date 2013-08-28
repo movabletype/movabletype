@@ -37,7 +37,7 @@
  *     When using the cookie, this value is used as cookie path.
  *   @param {Boolean} [options.async] If true, use asynchronous
  *      XMLHttpRequest. The default value is the true.
- *   @param {Boolean} [options.timeout] The number of milliseconds a
+ *   @param {Number} [options.timeout] The number of milliseconds a
  *      request can take before automatically being terminated.
  *      The default value is not set up, browser's default is used.
  *   @param {Boolean} [options.cache] If false, add an additional
@@ -50,12 +50,16 @@
  *      endpoint data extended by plugin and generate methods to
  *      access that endpoint automatically. The default value is
  *      the true.
+ *      (However even if this option's value is false, you are able
+ *      to use all the methods to access to core endpoint.)
  *   @param {Boolean} [options.suppressResponseCodes] If true, add
- *      suppressResponseCodes parameter to each request.
+ *      suppressResponseCodes parameter to each request. As a result,
+ *      the Data API always returns 200 as HTTP response code.
+ *      The default value is not set up.
  *      The default value is the false when requested via XMLHttpRequest
  *      or IFRAME. The default value is the true when requested via
  *      XDomainRequest.
- *   @param {Boolean} [options.crossDomain] If true, requests are sent as
+ *   @param {Boolean} [options.crossOrigin] If true, requests are sent as
  *      a cross-domain request. The default value is assigned
  *      automatically by document's URL and baseUrl.
  *   @param {Boolean(} [options.disableFormData] If false,use FormData
@@ -78,7 +82,7 @@ var DataAPI = function(options) {
         withoutAuthorization: false,
         loadPluginEndpoints: true,
         suppressResponseCodes: undefined,
-        crossDomain: undefined,
+        crossOrigin: undefined,
         disableFormData: false
     };
     for (k in options) {
@@ -2092,7 +2096,7 @@ DataAPI.prototype = {
         var loc, locParts, baseUrl, baseParts,
             urlRegexp = /^([\w.+-]+:)(?:\/\/([^\/?#:]*)(?::(\d+)|)|)/;
 
-        if ( window.document && typeof this.o.crossDomain === 'undefined') {
+        if ( window.document && typeof this.o.crossOrigin === 'undefined') {
             // IE may throw an exception when accessing
             // a field from window.location if document.domain has been set
             try {
@@ -2109,7 +2113,7 @@ DataAPI.prototype = {
             baseUrl   = this.o.baseUrl.replace(/^\/\//, locParts[1]).toLowerCase();
             baseParts = urlRegexp.exec( baseUrl );
 
-            this.o.crossDomain = !!( baseParts &&
+            this.o.crossOrigin = !!( baseParts &&
                 ( baseParts[ 1 ] !== locParts[ 1 ] || baseParts[ 2 ] !== locParts[ 2 ] ||
                     ( baseParts[ 3 ] || ( baseParts[ 1 ] === "http:" ? "80" : "443" ) ) !==
                         ( locParts[ 3 ] || ( locParts[ 1 ] === "http:" ? "80" : "443" ) ) )
@@ -2599,7 +2603,7 @@ DataAPI.prototype = {
         if (typeof params === 'string') {
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         }
-        if (! this.o.crossDomain) {
+        if (! this.o.crossOrigin) {
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         }
 
@@ -2741,7 +2745,7 @@ DataAPI.prototype = {
 
     _requestVia: function() {
         return (window.XDomainRequest &&
-                this.o.crossDomain &&
+                this.o.crossOrigin &&
                 /msie (8|9)\./i.test(window.navigator.appVersion)) ? 'xdr' : 'xhr';
     },
 
