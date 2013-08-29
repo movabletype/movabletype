@@ -436,13 +436,14 @@ You can disable buttons adding disabled class.
 
 */
 
-.button {
+.button, 
+a.button{
     cursor: pointer;
     overflow: visible;
     display: inline-block;
     outline: none;
     margin-right: 5px;
-    padding: 0.5em 1em;
+    padding: 0.2em 1em;
     vertical-align: middle;
     white-space: nowrap;
     border: 1px solid #666666;
@@ -453,7 +454,7 @@ You can disable buttons adding disabled class.
     font-weight: normal;
     text-decoration: none;
     box-shadow: inset 0 -1px 0 rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.4);
-    border-radius: 5px;
+    border-radius: 3px;
 }
 .button:focus {
     border-color: #0076BF;
