@@ -1913,7 +1913,7 @@ body {
 }
 body {
     color: #1A1A1A;
-    background-color: #fff;
+    background-color: #ffffff;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 13px;
 }
@@ -2510,14 +2510,18 @@ ul.tabs li a {
     height: 28px;
 }
 #selector-nav .toggle-button {
+    background: transparent;
     position: absolute;
     top: 50%;
     left: 15px;
     width: 16px;
     height: 16px;
-    border: 1px solid #c0c6c9;
+    border: none;
     margin: -9px 10px 0 0;
-    border-radius: 2px;
+}
+#selector-nav .toggle-button:hover{
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(0,0,0,0.1);
 }
 .scope {
     float: left;
@@ -3132,6 +3136,7 @@ ul.tabs li a {
 .favorite-blogs-widget .blog-action a.button {
     width: 100px;
     margin: 0;
+    text-align: center;
 }
 .favorite-blogs-widget .select-website,
 .favorite-blogs-widget .select-blog {
