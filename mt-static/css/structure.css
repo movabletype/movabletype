@@ -2112,7 +2112,8 @@ pre {
     margin: -3px 0 0 -5px;
 }
 
-.toggle-link {
+.toggle-link, 
+a.toggle-link {
     cursor: pointer;
     background: transparent;
     color: #666666;
@@ -2409,7 +2410,7 @@ ul.tabs li a {
 
 #brand {
     height: 32px;
-    background-color: #1A1A1A;
+    background: #1A1A1A url(../images/logo/movable-type-logo-mark.png) 50% 50% no-repeat;
 }
 #brand img {
     visibility: hidden;
@@ -2424,14 +2425,14 @@ ul.tabs li a {
     width: 128px;
     height: 32px;
     text-decoration: none;
-    background: #1A1A1A url(../images/logo/movable-type-logo-mono.png) center 3px no-repeat;
+    background: #1A1A1A url(../images/logo/movable-type-logo-word.png) center 3px no-repeat;
     outline: 0;
 }
 .website #brand a,
 .website.preview-screen #brand,
 .system #brand a,
 .system.preview-screen #brand {
-    background-image: url(../images/logo/movable-type-logo-mono.png);
+    background-image: url(../images/logo/movable-type-logo-word.png);
 }
 #brand a:hover{
     opacity: 0.75;
@@ -2738,7 +2739,7 @@ ul.tabs li a {
 }
 #menu-bar-icons li.active a,
 #menu-bar-icons li a:hover {
-    background-color: #9ea1a3;
+    background-color: #333333;
 }
 #rebuild-site a span,
 #view-site a span,
