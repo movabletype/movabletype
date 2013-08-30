@@ -436,8 +436,7 @@ You can disable buttons adding disabled class.
 
 */
 
-.button, 
-a.button{
+.button {
     cursor: pointer;
     overflow: visible;
     display: inline-block;
@@ -459,6 +458,10 @@ a.button{
 }
 .button:focus {
     border-color: #0076BF;
+}
+.button:link,
+.button:visited {
+    color: #1A1A1A;
 }
 .button:hover {
     border-color: #323232;

@@ -2112,13 +2112,18 @@ pre {
     margin: -3px 0 0 -5px;
 }
 
-.toggle-link, 
-a.toggle-link {
+.toggle-link {
     cursor: pointer;
     background: transparent;
     color: #666666;
     text-decoration: underline;
 }
+
+.toggle-link:link,
+.toggle-link:visited {
+    color: #666666;
+}
+
 .toggle-link:hover,
 .toggle-link:active {
     text-decoration: none;
@@ -2133,6 +2138,12 @@ a.toggle-link {
     color: #666666;
     text-decoration: none;
 }
+
+.open-dialog-link:link,
+.open-dialog-link:visited {
+    color: #666666;
+}
+
 .open-dialog-link:hover {
     border-bottom: 0;
 }
