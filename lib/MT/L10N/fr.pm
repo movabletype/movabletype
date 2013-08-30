@@ -7236,7 +7236,19 @@ use vars qw( @ISA %Lexicon );
 	'Download attachments' => 'Télécharger les fichiers attachés',
 	q{Requires the use of a cron job to download attachments from WordPress powered blog in the background.} => q{L'utilisation d'un cron job est requis pour télécharger en arrière plan les fichiers attachés à un blog WordPress.},
 	q{Download attachments (images and files) from the imported WordPress powered blog.} => q{Télécharger les fichiers attachés d'un blog WordPress (images et autres documents).},
-
+ 
+	'Page Views' => 'Page vues', # Translate - New
+	'Invalid date \'[_1]\'; \'Published on\' dates should be earlier than the corresponding \'Unpublished on\' date \'[_2]\'.' => 'Date invalide \'[_1]\'. La date \'Publié le\' doit être antérieure à la date \'Dépublié le\' \'[_2]\' correspondante.', # Translate - New
+	'Class Name' => 'Nom de la classe', # Translate - New
+	q{Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='[_2]'>activity log</a> for more details.} => q{Certains ([_1]) des utilisateurs sélectionnés n'ont pu être réactivés à cause de paramètres invalides. Veuillez vérifier le <a href='[_2]'>journal d'activité</a> pour plus de détails.}, # Translate - New
+	'Statistics Settings' => 'Paramètres des statistiques', # Translate - New
+	'This [_2] is using the settings of [_1].' => 'Ce [_2] utilise les paramètres de [_1].', # Translate - New
+	'Loupe settings has been successfully. You can send invitation email to users via <a href="[_1]">Loupe Plugin Settings</a>.' => 'Le paramétrage de Loupe est correct. Vous pouvez envoyer un e-mail d\'invitation via les <a href="[_1]">réglages du plugin Loupe</a>.', # Translate - New
+	'Error saving Loupe settings: [_1]' => 'Impossible de sauvegarder les réglages de Loupe : [_1]', # Translate - New
+	'Send invitation email' => 'Envoyer un e-mail d\'invitation', # Translate - New
+	q{The URL of Loupe's HTML file.} => q{L'URL du fichier HTML de Loupe.}, # Translate - New
+	'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/beta/60/loupe.html" target="_blank">See more details.</a>' => 'Loupe est une console alternative de Movable Type conçue pour mobiles, permettant aux utilisateurs d\'approuver notes et commentaires, charger des photos, et voir les statistiques des sites et des blogs. <a href="http://www.movabletype.org/beta/60/loupe.html" target="_blank">En savoir plus</a>.', # Translate - New
+	
 );
 
 ## New words: 1221

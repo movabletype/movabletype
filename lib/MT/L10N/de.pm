@@ -7364,6 +7364,18 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Download attachments' => 'Anhänge herunterladen',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Lädt Anhänge von Wordpress-Blogs im Hintergrund herunter. Cronjob erforderlich.',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Anhänge (Bilder und Dateien) des importierten Wordpress-Blogs herunterladen.',
+	'Page Views' => 'Seitenaufrufe', # Translate - New # OK
+        'Invalid date \'[_1]\'; \'Published on\' dates should be earlier than the corresponding \'Unpublished on\' date \'[_2]\'.' => 'Datum &#8222;[_1]&#8220; ungültig. Das Datum der Veröffentlichung muss vor dem Zeitpunkt liegen, ab dem der Eintrag nicht mehr veröffentlicht werden soll (derzeit [_2]).', # Translate - New
+        'Class Name' => 'Name der Klasse', # Translate - New # OK
+        q{Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='[_2]'>activity log</a> for more details.} => q{Einige ([_1]) der gewählten Benutzerkonten konnten nicht reaktiviert werden, da sie ungültige Parameter enthalten. Nähere Informationen finden Sie im <a href='[_2]'>Aktivitätsprotokoll</a>.}, # Translate - New # OK
+        'Statistics Settings' => 'Statistik-Einstellungen', # Translate - New # OK
+        'This [_2] is using the settings of [_1].' => 'In diesem [_2] werden die Einstellungen von [_1] verwendet.', # Translate - New # OK
+        'Loupe settings has been successfully. You can send invitation email to users via <a href="[_1]">Loupe Plugin Settings</a>.' => 'Loupe ist jetzt eingerichtet. Laden Sie auch Ihre Benutzer zu Loupe ein. Einladungen können Sie in den <a href="[_1]">Loupe-Einstellungen</a> verschicken.', # Translate - New # OK
+        'Error saving Loupe settings: [_1]' => 'Konnte Loupe-Einstellungen nicht sichern: [_1]', # Translate - New # OK
+        'Send invitation email' => 'Einladungs-Mail verschicken', # Translate - New # OK
+        q{The URL of Loupe's HTML file.} => q{Adresse (URL) der Loupe-HTML-Datei.}, # Translate - New # OK
+        'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/beta/60/loupe.html" target="_blank">See more details.</a>' => 'Loupe ist die benutzerfreundliche Lösung für Movable Type auf Mobilgeräten, mit der Sie Einträge und Kommentare freischalten, Fotos hochladen und Ihre Zugriffszahlen aufrufen können. <a href="http://www.movabletype.org/beta/60/loupe.html" target="_blank">Weitere Informationen in englischer Sprache</a>.', # Translate - New # OK
+	
 
 );
 

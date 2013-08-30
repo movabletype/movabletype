@@ -7218,6 +7218,17 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Download attachments' => 'Descargar adjuntos',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Necesita el uso de una tarea del cron para descargar los adjuntos de un blog de WordPress en segundo plano.',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Descargar adjuntos (imágenes y ficheros) de un blog importado de WordPress.',
+         'Page Views' => 'Páginas vistas', # Translate - New
+        'Invalid date \'[_1]\'; \'Published on\' dates should be earlier than the corresponding \'Unpublished on\' date \'[_2]\'.' => 'Fecha no válida: \'[_1]\'. Las fechas de publicación debe ser anteriores a la fecha de despublicación \'[_2]\'.', # Translate - New
+        'Class Name' => 'Nombre de la clase', # Translate - New
+        q{Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='[_2]'>activity log</a> for more details.} => q{Algunos ([_1] de los usuarios seleccionados no se pudieron rehabilitar debido a algún parámetro no válido. Por favor, compruebe el <a href='[_2]'>historial de actividad</a> para más detalles.}, # Translate - New
+        'Statistics Settings' => 'Configuración de estadísticas', # Translate - New
+        'This [_2] is using the settings of [_1].' => 'Este [_2] está usando la configuración de [_1].', # Translate - New
+        'Error saving Loupe settings: [_1]' => 'Error guardando la configuración de Loupe', # Translate - New
+        'Send invitation email' => 'Enviar correo de invitación', # Translate - New
+        q{The URL of Loupe's HTML file.} => q{La URL del fichero HTML de Loupe.}, # Translate - New
+        'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/beta/60/loupe.html" target="_blank">See more details.</a>' => 'Loupe es una consola alternativa para Movable Type especialmente diseñada para dispositivos móviles, que permite aprobar entradas y comentarios pendientes, subir fotografías, y consultar las estadísticas de los blogs y los sitios web. Consulta <a href="http://www.movabletype.org/beta/60/loupe.html target="_blank">más información</a>.', # Translate - New
+
 
 );
 

@@ -54,6 +54,7 @@ use vars qw( %Lexicon );
 	'Select Google Analytics profile' => 'Sélectionnez le profil Google Analytics', # Translate - New
 	'(No profile selected)' => '(Aucun profil sélectionné)', # Translate - New
 	'Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?' => 'L\'ID ou le secret client de l\'application OAuth2 a été modifié mais le profil n\'a pas été mis à jour. Êtes-vous sûr de vouloir sauvegarder ces paramètres ?', # Translate - New
+	'This [_2] is using the settings of [_1].' => 'Ce [_2] utilise les paramètres de [_1].', # Translate - New
 
 
 );

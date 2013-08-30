@@ -7204,6 +7204,17 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Download attachments' => 'Attachments downloaden',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Vereist het gebruik van een cronjob om attachments van een WordPress blog te downloaden op de achtergrond.',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Attachments (afbeeldingen en bestanden) downloaden van de geïmporteerde WordPress blog.',
+        'Page Views' => 'pageviews', # Translate - New
+        'Invalid date \'[_1]\'; \'Published on\' dates should be earlier than the corresponding \'Unpublished on\' date \'[_2]\'.' => 'Ongeldige datum \'[_1]\; Publicatiedatums moeten vallen voor de corresponderende \'Einddatum\' \'[_2]\'.', # Translate - New
+        'Class Name' => 'naam klasse', # Translate - New
+        q{Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='[_2]'>activity log</a> for more details.} => q{Sommige ([_1]) van de geselecteerde gebruikers konden niet opnieuw geactiveerd worden omdat ze ongeldige instelling(en) hadden. Kijk in het <a href='[_2]'>activiteitenlog</a> voor meer details.}, # Translate - New
+        'Statistics Settings' => 'Instellingen voor statistieken', # Translate - New
+        'This [_2] is using the settings of [_1].' => 'Deze [_2] gebruikt de instellingen van [_1].', # Translate - New
+        'Loupe settings has been successfully. You can send invitation email to users via <a href="[_1]">Loupe Plugin Settings</a>.' => 'Instellen van Loupe voltooid.  U kunt uitnodigingsmails sturen naar gebruikers via de <a href="[_1]">Loupe Plugin instellingen</a>.', # Translate - New
+        'Error saving Loupe settings: [_1]' => 'Fout bij opslaan Loupe instellingen:', # Translate - New
+        'Send invitation email' => 'Uitnodigingsmail sturen', # Translate - New
+        q{The URL of Loupe's HTML file.} => q{De URL van het HTML bestand van Loupe.}, # Translate - New
+        'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/beta/60/loupe.html" target="_blank">See more details.</a>' => 'Loupe is een mobiel-vriendelijke alternatieve console voor Movable Type waarmee gebruikers berichten en reacties kunnen goedkeuren, foto\'s kunnen uploaden en website- en blogstatistieken mee kunnen bekijken. <a href="http://www.movabletype.org/beta/60/loupe.html" target="_blank">Meer details lezen.</a>', # Translate - New	
 
 );
 
