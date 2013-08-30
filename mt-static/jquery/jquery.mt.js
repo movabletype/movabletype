@@ -55,7 +55,7 @@ $.mtMenu = function(options) {
  */
 $.mtSelector = function(options) {
     var defaults = {
-        arrow_image: StaticURI+'images/arrow/arrow-toggle.png'
+        arrow_image: StaticURI+'images/arrow/arrow-toggle-white.png'
     },
     opts = $.extend(defaults, options);
     $('#selector-nav').prepend('<a hre="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');

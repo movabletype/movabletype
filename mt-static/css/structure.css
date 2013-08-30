@@ -1913,7 +1913,7 @@ body {
 }
 body {
     color: #1A1A1A;
-    background-color: #fffffc;
+    background-color: #ffffff;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 13px;
 }
@@ -2118,6 +2118,12 @@ pre {
     color: #666666;
     text-decoration: underline;
 }
+
+.toggle-link:link,
+.toggle-link:visited {
+    color: #666666;
+}
+
 .toggle-link:hover,
 .toggle-link:active {
     text-decoration: none;
@@ -2132,6 +2138,12 @@ pre {
     color: #666666;
     text-decoration: none;
 }
+
+.open-dialog-link:link,
+.open-dialog-link:visited {
+    color: #666666;
+}
+
 .open-dialog-link:hover {
     border-bottom: 0;
 }
@@ -2409,7 +2421,7 @@ ul.tabs li a {
 
 #brand {
     height: 32px;
-    background-color: #1A1A1A;
+    background: #1A1A1A url(../images/logo/movable-type-logo-mark.png) 50% 50% no-repeat;
 }
 #brand img {
     visibility: hidden;
@@ -2424,14 +2436,14 @@ ul.tabs li a {
     width: 128px;
     height: 32px;
     text-decoration: none;
-    background: #1A1A1A url(../images/logo/movable-type-logo-mono.png) center 3px no-repeat;
+    background: #1A1A1A url(../images/logo/movable-type-logo-word.png) center 3px no-repeat;
     outline: 0;
 }
 .website #brand a,
 .website.preview-screen #brand,
 .system #brand a,
 .system.preview-screen #brand {
-    background-image: url(../images/logo/movable-type-logo-mono.png);
+    background-image: url(../images/logo/movable-type-logo-word.png);
 }
 #brand a:hover{
     opacity: 0.75;
@@ -2510,14 +2522,18 @@ ul.tabs li a {
     height: 28px;
 }
 #selector-nav .toggle-button {
+    background: transparent;
     position: absolute;
     top: 50%;
     left: 15px;
     width: 16px;
     height: 16px;
-    border: 1px solid #c0c6c9;
+    border: none;
     margin: -9px 10px 0 0;
-    border-radius: 2px;
+}
+#selector-nav .toggle-button:hover{
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(0,0,0,0.1);
 }
 .scope {
     float: left;
@@ -2734,7 +2750,7 @@ ul.tabs li a {
 }
 #menu-bar-icons li.active a,
 #menu-bar-icons li a:hover {
-    background-color: #9ea1a3;
+    background-color: #333333;
 }
 #rebuild-site a span,
 #view-site a span,
@@ -3132,6 +3148,7 @@ ul.tabs li a {
 .favorite-blogs-widget .blog-action a.button {
     width: 100px;
     margin: 0;
+    text-align: center;
 }
 .favorite-blogs-widget .select-website,
 .favorite-blogs-widget .select-blog {

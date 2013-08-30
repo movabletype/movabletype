@@ -442,8 +442,9 @@ You can disable buttons adding disabled class.
     display: inline-block;
     outline: none;
     margin-right: 5px;
-    padding: 0.5em 1em;
+    padding: 0 0.5em;
     vertical-align: middle;
+    line-height: 1.75em;
     white-space: nowrap;
     border: 1px solid #666666;
     background-color: #ffffff;
@@ -453,10 +454,14 @@ You can disable buttons adding disabled class.
     font-weight: normal;
     text-decoration: none;
     box-shadow: inset 0 -1px 0 rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.4);
-    border-radius: 5px;
+    border-radius: 3px;
 }
 .button:focus {
     border-color: #0076BF;
+}
+.button:link,
+.button:visited {
+    color: #1A1A1A;
 }
 .button:hover {
     border-color: #323232;

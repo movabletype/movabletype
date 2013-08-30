@@ -1298,6 +1298,14 @@ sub _build_entry_preview {
             );
             $sess_obj->start(time);
             $sess_obj->save;
+
+            # In the preview screen, in order to use the site URL of the blog,
+            # there is likely to be mixed-contents.(http and https)
+            # If MT is configured to do 'PreviewOnNewWindow', MT will open preview
+            # screen on the new window/tab.
+            if ( $app->config('PreviewOnNewWindow') ) {
+                return $app->redirect( $preview_url );
+            }
         }
         else {
             $fullscreen = 1;

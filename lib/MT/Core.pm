@@ -1797,6 +1797,7 @@ BEGIN {
             'GenerateTrackBackRSS'        => { default => 0, },
             'DBIRaiseError'               => { default => 0, },
             'SearchAlwaysAllowTemplateID' => { default => 0, },
+            'PreviewOnNewWindow'          => { default => 0, },
 
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
@@ -1894,7 +1895,7 @@ BEGIN {
             'UsePlugins'               => { default => 1, },
             'PluginSwitch'             => { type    => 'HASH', },
             'PluginSchemaVersion'      => { type    => 'HASH', },
-            'YAMLModule'               => { default => 'YAML::Syck' },
+            'YAMLModule'               => { default => undef },
             'OutboundTrackbackLimit'   => { default => 'any', },
             'OutboundTrackbackDomains' => { type    => 'ARRAY', },
             'IndexBasename'            => { default => 'index', },
@@ -2012,8 +2013,10 @@ BEGIN {
             'IPLockoutLimit'                 => { default => 10 },
             'IPLockoutInterval'              => { default => 1800 },
             'FailedLoginExpirationFrequency' => { default => 86400 },
-            'LockoutIPWhitelist'             => undef,
-            'LockoutNotifyTo'                => undef,
+            'LockoutExpireFrequency' =>
+                { alias => 'FailedLoginExpirationFrequency' },
+            'LockoutIPWhitelist' => undef,
+            'LockoutNotifyTo'    => undef,
 
             # DataAPI
             'AccessTokenTTL'          => { default => 60 * 60, },

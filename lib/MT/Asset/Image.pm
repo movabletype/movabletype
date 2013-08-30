@@ -430,7 +430,7 @@ sub insert_options {
     $param->{ 'unit_w' . $_ }
         = ( $blog->image_default_wunits || 'pixels' ) eq $_ ? 1 : 0
         for qw(percent pixels);
-    $param->{thumb_width} 
+    $param->{thumb_width}
         = $blog->image_default_width
         || $asset->image_width
         || 0;
@@ -512,11 +512,8 @@ sub on_upload {
         my ( $w, $h ) = map $param->{$_}, qw( thumb_width thumb_height );
         my ($pseudo_thumbnail_url)
             = $asset->thumbnail_url( Height => $h, Width => $w, Pseudo => 1 );
-        ( my $thumbnail = $pseudo_thumbnail_url ) =~ s|^.*/||;
-        if ( !$thumbnail ) {
-            $thumbnail = $asset->thumbnail_file( Height => $h, Width => $w );
-            $thumbnail = File::Basename::basename($thumbnail);
-        }
+        my $thumbnail
+            = $asset->thumbnail_filename( Height => $h, Width => $w );
 
         my $pseudo_thumbnail_path
             = File::Spec->catfile( $asset->_make_cache_path( undef, 1 ),
