@@ -1894,7 +1894,7 @@ BEGIN {
             'UsePlugins'               => { default => 1, },
             'PluginSwitch'             => { type    => 'HASH', },
             'PluginSchemaVersion'      => { type    => 'HASH', },
-            'YAMLModule'               => { default => 'YAML::Syck' },
+            'YAMLModule'               => { default => undef },
             'OutboundTrackbackLimit'   => { default => 'any', },
             'OutboundTrackbackDomains' => { type    => 'ARRAY', },
             'IndexBasename'            => { default => 'index', },
