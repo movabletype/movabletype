@@ -517,6 +517,26 @@ the group_id property is undefined.
 Returns the L<MT::Role> object tied to this association. Returns undef if
 the role_id property is undefined.
 
+=head2 $assoc->save()
+
+Saves this association and rebuilds its permission.
+
+=head2 $assoc->remove([\%terms])
+
+Removes this association and optionally, constrains the set with I<%terms>.
+
+=head2 MT::Association->class_label
+
+Returns the localized descriptive name for this class.
+
+=head2 MT::Association->class_label_plural
+
+Returns the localized, plural descriptive name for this class.
+
+=head2 MT::Association->list_props
+
+Returns the list_properties registry of this class.
+
 =head2 MT::Association->objects_to_terms(@things)
 
 Utility method that takes an array containing user, group, role, blog

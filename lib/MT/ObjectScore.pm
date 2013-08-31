@@ -88,6 +88,14 @@ This class is used by L<MT::Scorable>, and not to be used directly
 
 =head1 METHODS
 
+=head2 MT::ObjectScore->class_label
+
+Returns the localized descriptive name for this class.
+
+=head2 MT::ObjectScore->class_label_plural
+
+Returns the localized, plural descriptive name for this class.
+
 =head2 MT::ObjectScore->scored_by($namespace, $user)
 
 returns an iterator for all the scores made by $user. $user should be a MT::Author object,

@@ -256,6 +256,10 @@ Set the I<var> to I<val> and set the session I<__dirty> flag.
 
 Return the session data and unset the I<__dirty> flag.
 
+=head2 MT::Session->class_label
+
+Returns the localized descriptive name for this class.
+
 =head2 MT::Session->purge($kind, $ttl)
 
 Purges stale session records.  I<$kind> and I<$ttl> are both optional.
