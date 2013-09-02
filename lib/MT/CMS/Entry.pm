@@ -2111,7 +2111,7 @@ PERMCHECK: {
                 my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4,
                     $5, $s;
 
-                if ( $col eq 'authored_on' ) {
+                if ( $col eq 'authored_on' && $entry->unpublished_on ) {
                     require MT::DateTime;
                     return $app->error(
                         $app->translate(
