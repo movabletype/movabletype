@@ -4397,9 +4397,9 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/import_start.tmpl
 	'Importing...' => 'インポートを開始します...',
-	'Importing entries into blog' => '記事をブログにインポートしています',
+	'Importing entries into [_1]' => '記事を[_1]にインポートしています',
 	q{Importing entries as user '[_1]'} => q{ユーザー[_1]として記事をインポートしています},
-	'Creating new users for each user found in the blog' => 'ブログのユーザーを新規ユーザーとして作成',
+	'Creating new users for each user found in the [_1]' => '[_1]のユーザーを新規ユーザーとして作成',
 
 ## tmpl/cms/include/itemset_action_widget.tmpl
 	'More actions...' => 'アクション...',

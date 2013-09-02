@@ -4609,9 +4609,9 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## tmpl/cms/include/import_start.tmpl
 	'Importing...' => 'Importando...',
-	'Importing entries into blog' => 'Importando entradas en el blog',
+	'Importing entries into [_1]' => 'Importando entradas en el [_1]',
 	q{Importing entries as user '[_1]'} => q{Importando entradas como usuario '[_1]'},
-	'Creating new users for each user found in the blog' => 'Creando nuevos usuarios para cada usuario encontrado en el blog',
+	'Creating new users for each user found in the [_1]' => 'Creando nuevos usuarios para cada usuario encontrado en el [_1]',
 
 ## tmpl/cms/include/itemset_action_widget.tmpl
 	'More actions...' => 'Más acciones...',
