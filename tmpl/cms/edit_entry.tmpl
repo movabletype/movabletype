@@ -231,7 +231,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="form_header">
-<form name="entry_form" id="entry_form" method="post" action="<$mt:var name="script_url"$>"<mt:unless name="config.previewonnewwindow"> mt:once="1"</mt:unless> mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
+<form name="entry_form" id="entry_form" method="post" action="<$mt:var name="script_url"$>"<mt:unless name="config.previewinnewwindow"> mt:once="1"</mt:unless> mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
 <mt:if name="new_object">
   <input type="hidden" name="author_id" value="<$mt:var name="author_id" escape="html"$>" />
 <mt:else>
@@ -1311,11 +1311,11 @@
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('button.preview').click(function(event) {
         jQuery('form#entry_form input[name=__mode]').val('preview_entry');
-  <mt:if name="config.previewonnewwindow">
+  <mt:if name="config.previewinnewwindow">
         jQuery('form#entry_form').attr('target', '_brank');
   </mt:if>
     });
-  <mt:if name="config.previewonnewwindow">
+  <mt:if name="config.previewinnewwindow">
     jQuery('button.publish').click(function(event) {
         jQuery('form#entry_form input[name=__mode]').val('save_entry');
         jQuery('form#entry_form').removeAttr('target');
