@@ -7236,3 +7236,14 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## New words: 1802
 
 1;
+__END__
+
+=head1 NAME
+
+MT::L10N::de - German localization support for Movable Type
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut

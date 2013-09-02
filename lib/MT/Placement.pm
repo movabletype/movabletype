@@ -96,6 +96,12 @@ hence whether it represents the entry's primary category.
 
 =back
 
+=head1 METHODS
+
+=head2 MT::Placement->class_label
+
+Returns the localized descriptive name for this class.
+
 =head1 DATA LOOKUP
 
 In addition to numeric ID lookup, you can look up or sort records by any

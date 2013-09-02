@@ -7235,3 +7235,15 @@ No se pudo escribir el fichero. Disco lleno.",
 ## New words: 1221
 
 1;
+__END__
+
+=head1 NAME
+
+MT::L10N::es - Spanish localization support for Movable Type
+
+=head1 AUTHOR & COPYRIGHT
+
+Pleasese see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut
+

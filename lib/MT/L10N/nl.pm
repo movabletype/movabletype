@@ -7221,3 +7221,15 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## New words: 1221
 
 1;
+__END__
+
+=head1 NAME
+
+MT::L10N::nl - Dutch localization support for Movable Type
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut
+

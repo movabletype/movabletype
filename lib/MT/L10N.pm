@@ -41,15 +41,23 @@ MT::L10N
 
 =head2 $obj->language_name($code)
 
-Return the value of L<I18N::LangTags::List/name> for the given I<code>.
+Returns the value of L<I18N::LangTags::List/name> for the given I<code>.
 
 =head2 encoding
 
-Return 'iso-8859-1' (Latin-1).
+Returns 'iso-8859-1' (Latin-1).
 
 =head2 ascii_only
 
-Return zero.
+Returns zero.
+
+=head2 lc($str)
+
+Returns a lowercased version of $str.
+
+=head2 uc($str)
+
+Returns a uppercased version of $str.
 
 =head1 AUTHOR & COPYRIGHT
 

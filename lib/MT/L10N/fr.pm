@@ -7254,3 +7254,15 @@ use vars qw( @ISA %Lexicon );
 ## New words: 1221
 
 1;
+__END__
+
+=head1 NAME
+
+MT::L10N::fr - French localization support for Movable Type
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut
+
