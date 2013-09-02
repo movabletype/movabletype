@@ -1979,6 +1979,7 @@ BEGIN {
             'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
             'PublishCommenterIcon' => { default => 1 },
             'EnableAddressBook'    => { default => 0 },
+            'EnableBlogStats'      => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
             'DefaultWebsiteTheme'  => { default => 'rainier' },
