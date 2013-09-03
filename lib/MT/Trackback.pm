@@ -82,6 +82,14 @@ MT::Trackback
 
 =head1 METHODS
 
+=head2 MT::Trackback->class_label
+
+Returns the localized descriptive name for this class.
+
+=head2 MT::Trackback->class_label_plural
+
+Returns the localized, plural descriptive name for this class.
+
 =head2 $tb->remove()
 
 Call L<MT::Object/remove> for the trackback.

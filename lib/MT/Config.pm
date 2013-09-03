@@ -33,6 +33,16 @@ __END__
 
 MT::Config - Installation-wide configuration data.
 
+=head1 METHODS
+
+=head2 MT::Config->class_label
+
+Returns the localized descriptive name for this class.
+
+=head2 MT::Config->class_label_plural
+
+Returns the localized, plural descriptive name for this class.
+
 =head1 AUTHOR & COPYRIGHT
 
 Please see L<MT/AUTHOR & COPYRIGHT>.

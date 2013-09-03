@@ -581,6 +581,18 @@ from the database).
 Returns a localized string identifying the kind of log record the class is
 for.
 
+=head2 MT::Log->class_label_plural
+
+Returns the localized, plural descriptive name for this class.
+
+=head2 MT::Log->list_props
+
+Returns the list_properties registry of this class.
+
+=head2 MT::Log->system_filters
+
+Returns the system_filters registry of this class.
+
 =head2 $log->description
 
 Provides an extended view of the log data; this may contain HTML.

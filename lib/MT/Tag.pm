@@ -987,6 +987,22 @@ Save the literal as well as a normalized copy if one does not exist.
 Remove the tag and all its children unless it is referenced by another
 entry.
 
+=head2 MT::Tag->class_label
+
+Returns the localized descriptive name for this class.
+
+=head2 MT::Tag->class_label_plural
+
+Returns the localized, plural descriptive name for this class.
+
+=head2 MT::Tag->list_props
+
+Returns the list_properties registry of this class.
+
+=head2 MT::Tag->system_filters
+
+Returns the system_filters registry of this class.
+
 =head1 NOTES
 
 =over 4

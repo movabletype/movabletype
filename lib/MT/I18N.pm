@@ -230,9 +230,22 @@ Convert the given I<text> from "high ASCII" encoding.
 
 Decode UTF-8 in the given I<text>.
 
+=head2 is_utf8($text)
+
+Tests whether the UTF8 flag is turned on in the $text. Returns true
+if successful, false otherwise.
+
 =head2 utf8_off($text)
 
 Turn off UTF-8 encoding in the given I<text>
+
+=head2 lowercase($text)
+
+Returns an lowercased version of $text.
+
+=head2 uppercase($text)
+
+Returns an uppercased version of $text.
 
 =head2 const($id)
 
