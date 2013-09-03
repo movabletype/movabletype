@@ -1077,12 +1077,8 @@ sub site_stats_widget {
                     permissions => { not => "'comment'" }
                 }
             );
-            if ($perm) {
-                $param->{name} = $app->blog->name;
-            }
-            else {
-                $param->{no_permission} = 1;
-            }
+            $param->{no_permission} = 1
+                unless $perm;
         }
     }
     else {
