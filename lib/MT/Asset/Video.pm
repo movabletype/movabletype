@@ -42,6 +42,20 @@ __END__
 
 MT::Asset::Video
 
+=head1 METHODS
+
+=head2 MT::Asset::Video->extensions
+
+An internal function used by can_handle to decide if this module can handle a specific file.
+
+=head2 MT::Asset::Video->class_label
+
+Returns the localized descriptive name for this class.
+
+=head2 MT::Asset::Video->class_label_plural
+
+Returns the localized, plural descriptive name for this class.
+
 =head1 AUTHOR & COPYRIGHT
 
 Please see the L<MT/"AUTHOR & COPYRIGHT"> for author, copyright, and

@@ -293,6 +293,14 @@ archive type.
 
 =over 4
 
+=item * MT::TemplateMap->class_label()
+
+Returns the localized descriptive name for this class.
+
+=item * MT::TemplateMap->class_label_plural()
+
+Returns the localized, plural descriptive name for this class.
+
 =item * save()
 
 Saves the object.  It also rearranges blog's archive type.  If the saved

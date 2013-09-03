@@ -268,6 +268,14 @@ pages (ie: "Folder").
 Returns the string "folder", which is the MT type identifier for
 the L<MT::Folder> class.
 
+=head2 MT::Page->list_props
+
+Returns the list_properties registry of this class.
+
+=head2 MT::Page->system_filters
+
+Returns the system_filters registry of this class.
+
 =head2 $page->folder
 
 Returns the L<MT::Folder> the page is assigned to.
