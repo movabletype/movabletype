@@ -317,23 +317,16 @@ sub list_props {
                     push @{ $db_args->{joins} },
                         MT->model('objecttag')->join_on(
                         undef,
-                        [   [   { tag_id => { not => $tag->id }, },
-                                '-or',
-                                {   tag_id => \'IS NULL',    # FOR-EDITOR ',
-                                },
-                            ],
-                            '-and',
-                            [   {   object_datasource => MT::Asset->datasource
-                                },
-                                '-or',
-                                {   object_datasource => \
-                                        'IS NULL'            # FOR-EDITOR ',
-                                },
-                            ],
+                        [   { tag_id => { not => $tag->id }, },
+                            '-or',
+                            { tag_id => \'IS NULL', },
                         ],
                         {   unique    => 1,
                             type      => 'left',
-                            condition => 'object_id',
+                            condition => {
+                                'object_id' => \'=asset_id',   # FOR-EDITOR ',
+                                'object_datasource' => 'asset',
+                            },
                         }
                         );
                 }
@@ -476,7 +469,7 @@ sub file_path {
                 my $root
                     = !$blog
                     || $1 eq 's' ? MT->instance->support_directory_path
-                    : $1 eq 'r'  ? $blog->site_path
+                    : $1  eq 'r' ? $blog->site_path
                     :              $blog->archive_path;
                 $root =~ s!(/|\\)$!!;
                 $path =~ s!^\%[ras]!$root!;
@@ -502,10 +495,10 @@ sub url {
                 my $root
                     = !$blog
                     || $1 eq 's' ? MT->instance->support_directory_url
-                    : $1 eq 'r'  ? $blog->site_url
+                    : $1  eq 'r' ? $blog->site_url
                     :              $blog->archive_url;
                 $root =~ s!/$!!;
-                $url =~ s!^\%[ras]!$root!;
+                $url  =~ s!^\%[ras]!$root!;
             }
             return $url;
         },
@@ -624,8 +617,8 @@ sub blog {
     my $blog_id = $asset->blog_id or return undef;
     return $asset->{__blog}
         if $blog_id
-        && $asset->{__blog}
-        && ( $asset->{__blog}->id == $blog_id );
+            && $asset->{__blog}
+            && ( $asset->{__blog}->id == $blog_id );
     require MT::Blog;
     return $asset->{__blog} = MT::Blog->load($blog_id)
         or return $asset->error("Failed to load blog for file");

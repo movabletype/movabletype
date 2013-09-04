@@ -1797,7 +1797,7 @@ BEGIN {
             'GenerateTrackBackRSS'        => { default => 0, },
             'DBIRaiseError'               => { default => 0, },
             'SearchAlwaysAllowTemplateID' => { default => 0, },
-            'PreviewOnNewWindow'          => { default => 0, },
+            'PreviewInNewWindow'          => { default => 0, },
 
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.

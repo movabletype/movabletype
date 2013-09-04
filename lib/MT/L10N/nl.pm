@@ -4608,9 +4608,9 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## tmpl/cms/include/import_start.tmpl
 	'Importing...' => 'Importeren...',
-	'Importing entries into blog' => 'Berichten worden geïmporteerd in de blog',
+	'Importing entries into [_1]' => 'Berichten worden geïmporteerd in de [_1]',
 	q{Importing entries as user '[_1]'} => q{Berichten worden geïmporteerd als gebruiker '[_1]'},
-	'Creating new users for each user found in the blog' => 'Nieuwe gebruikers worden aangemaakt voor elke gebruiker gevonden in de weblog',
+	'Creating new users for each user found in the [_1]' => 'Nieuwe gebruikers worden aangemaakt voor elke gebruiker gevonden in de [_1]',
 
 ## tmpl/cms/include/itemset_action_widget.tmpl
 	'More actions...' => 'Meer mogelijkheden...',

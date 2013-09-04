@@ -512,8 +512,9 @@ sub on_upload {
         my ( $w, $h ) = map $param->{$_}, qw( thumb_width thumb_height );
         my ($pseudo_thumbnail_url)
             = $asset->thumbnail_url( Height => $h, Width => $w, Pseudo => 1 );
-        my $thumbnail
-            = $asset->thumbnail_filename( Height => $h, Width => $w );
+        my ($thumbnail)
+            = File::Basename::basename(
+            $asset->thumbnail_file( Height => $h, Width => $w ) );
 
         my $pseudo_thumbnail_path
             = File::Spec->catfile( $asset->_make_cache_path( undef, 1 ),

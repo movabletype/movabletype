@@ -4616,9 +4616,9 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/import_start.tmpl
 	'Importing...' => 'Importation...',
-	'Importing entries into blog' => 'Importation de notes dans le blog',
+	'Importing entries into [_1]' => 'Importation de notes dans le [_1]',
 	q{Importing entries as user '[_1]'} => q{Importation des notes en tant qu'utilisateur '[_1]'},
-	'Creating new users for each user found in the blog' => 'Création de nouveaux utilisateur correspondant à chaque utilisateur trouvé dans le blog',
+	'Creating new users for each user found in the [_1]' => 'Création de nouveaux utilisateur correspondant à chaque utilisateur trouvé dans le [_1]',
 
 ## tmpl/cms/include/itemset_action_widget.tmpl
 	q{More actions...} => q{Plus d'actions...},

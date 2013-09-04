@@ -542,7 +542,7 @@ function toggleCache(id) {
 
 <mt:include name="include/header.tmpl">
 
-<form name="template-listing-form" id="template-listing-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewonnewwindow"> mt:once="1"</mt:unless> mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
+<form name="template-listing-form" id="template-listing-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewinnewwindow"> mt:once="1"</mt:unless> mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html" default="0">" />
   <input type="hidden" name="type" value="<mt:var name="type" escape="html">" />
@@ -881,7 +881,7 @@ function saveTemplatePrefs( sync ) {
     jQuery('button.save, button.publish').click(function() {
         syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('save');
-  <mt:if name="config.previewonnewwindow">
+  <mt:if name="config.previewinnewwindow">
         jQuery('form#template-listing-form').removeAttr('target');
         jQuery('button.save').attr('disabled', 'disabled');
         jQuery('button.publish').attr('disabled', 'disabled');
@@ -891,7 +891,7 @@ function saveTemplatePrefs( sync ) {
     jQuery('button.preview').click(function() {
         syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('preview_template');
-  <mt:if name="config.previewonnewwindow">
+  <mt:if name="config.previewinnewwindow">
         jQuery('form#template-listing-form').attr('target', '_brank');
   </mt:if>
     });

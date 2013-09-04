@@ -1070,17 +1070,15 @@ sub site_stats_widget {
     my ( $tmpl, $param ) = @_;
 
     if ( $param->{blog_id} ) {
-        my $perm = MT::Permission->load(
-            {   author_id   => $app->user->id,
-                blog_id     => $param->{blog_id},
-                permissions => { not => "'comment'" }
-            }
-        );
-        if ($perm) {
-            $param->{name} = $app->blog->name;
-        }
-        else {
-            $param->{no_permission} = 1;
+        if ( !$app->user->is_superuser ) {
+            my $perm = MT::Permission->load(
+                {   author_id   => $app->user->id,
+                    blog_id     => $param->{blog_id},
+                    permissions => { not => "'comment'" }
+                }
+            );
+            $param->{no_permission} = 1
+                unless $perm;
         }
     }
     else {

@@ -4397,9 +4397,9 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/import_start.tmpl
 	'Importing...' => 'インポートを開始します...',
-	'Importing entries into blog' => '記事をブログにインポートしています',
+	'Importing entries into [_1]' => '記事を[_1]にインポートしています',
 	q{Importing entries as user '[_1]'} => q{ユーザー[_1]として記事をインポートしています},
-	'Creating new users for each user found in the blog' => 'ブログのユーザーを新規ユーザーとして作成',
+	'Creating new users for each user found in the [_1]' => '[_1]のユーザーを新規ユーザーとして作成',
 
 ## tmpl/cms/include/itemset_action_widget.tmpl
 	'More actions...' => 'アクション...',
@@ -4658,7 +4658,7 @@ use vars qw( @ISA %Lexicon );
 	'The deleted user(s) still exist in the external directory. As such, they will still be able to login to Movable Type Advanced.' => '削除されたユーザーが外部ディレクトリ上にまだ存在するので、このままではユーザーは再度サインインできてしまいます。',
 	q{You have successfully synchronized users' information with the external directory.} => q{外部のディレクトリとユーザーの情報を同期しました。},
 	'Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory.' => '選択されたユーザーのうち[_1]人は外部ディレクトリ上に存在しないので有効にできませんでした。',
-	q{Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='[_2]'>activity log</a> for more details.} => q{選択されたユーザーのうち[_1]人を有効にできませんでした。エラーの詳細を<a href='[_2]'>ログ</a>で確認して>ください。},
+	q{Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='[_2]'>activity log</a> for more details.} => q{選択されたユーザーのうち[_1]人を有効にできませんでした。エラーの詳細を<a href='[_2]'>ログ</a>で確認してください。},
 	q{An error occured during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information.} => q{同期中にエラーが発生しました。エラーの詳細を<a href='[_1]'>ログ</a>で確認して>ください。},
 
 ## tmpl/cms/listing/banlist_list_header.tmpl
