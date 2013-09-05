@@ -44,7 +44,6 @@ subtest 'from_object with $fields_specified' => sub {
             },
             to => {
                 id          => 1,
-                name        => undef,
                 displayName => 'Test',
                 userpicUrl =>
                     'http://narnia.na/nana/assets_c/userpics/userpic-1-100x100.png',
@@ -83,7 +82,16 @@ subtest 'from_object with $fields_specified' => sub {
         $user->set_values( $d->{from} );
         my $hash = MT::DataAPI::Resource->from_object( $user,
             ( defined( $d->{fields} ) ? $d->{fields} : () ) );
-        is_deeply( $hash, $d->{to}, 'converted data' );
+        is_deeply(
+            $hash,
+            $d->{to},
+            'converted data'
+                . (
+                $d->{fields}
+                ? ( ' fields:' . join( ',', @{ $d->{fields} } ) )
+                : ''
+                )
+        );
     }
 
     {
