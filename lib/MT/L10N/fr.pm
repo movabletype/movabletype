@@ -7247,7 +7247,7 @@ use vars qw( @ISA %Lexicon );
 	'Error saving Loupe settings: [_1]' => 'Impossible de sauvegarder les réglages de Loupe : [_1]', # Translate - New
 	'Send invitation email' => 'Envoyer un e-mail d\'invitation', # Translate - New
 	q{The URL of Loupe's HTML file.} => q{L'URL du fichier HTML de Loupe.}, # Translate - New
-	'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/beta/60/loupe.html" target="_blank">See more details.</a>' => 'Loupe est une console alternative de Movable Type conçue pour mobiles, permettant aux utilisateurs d\'approuver notes et commentaires, charger des photos, et voir les statistiques des sites et des blogs. <a href="http://www.movabletype.org/beta/60/loupe.html" target="_blank">En savoir plus</a>.', # Translate - New
+	'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">See more details.</a>' => 'Loupe est une console alternative de Movable Type conçue pour mobiles, permettant aux utilisateurs d\'approuver notes et commentaires, charger des photos, et voir les statistiques des sites et des blogs. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">En savoir plus</a>.', # Translate - New
 	
 );
 

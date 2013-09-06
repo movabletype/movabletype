@@ -7214,7 +7214,7 @@ Kan bestand niet schrijven.  Schijf vol.",
         'Error saving Loupe settings: [_1]' => 'Fout bij opslaan Loupe instellingen:', # Translate - New
         'Send invitation email' => 'Uitnodigingsmail sturen', # Translate - New
         q{The URL of Loupe's HTML file.} => q{De URL van het HTML bestand van Loupe.}, # Translate - New
-        'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/beta/60/loupe.html" target="_blank">See more details.</a>' => 'Loupe is een mobiel-vriendelijke alternatieve console voor Movable Type waarmee gebruikers berichten en reacties kunnen goedkeuren, foto\'s kunnen uploaden en website- en blogstatistieken mee kunnen bekijken. <a href="http://www.movabletype.org/beta/60/loupe.html" target="_blank">Meer details lezen.</a>', # Translate - New	
+        'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">See more details.</a>' => 'Loupe is een mobiel-vriendelijke alternatieve console voor Movable Type waarmee gebruikers berichten en reacties kunnen goedkeuren, foto\'s kunnen uploaden en website- en blogstatistieken mee kunnen bekijken. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">Meer details lezen.</a>', # Translate - New	
 
 );
 

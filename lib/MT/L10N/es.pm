@@ -7227,7 +7227,7 @@ No se pudo escribir el fichero. Disco lleno.",
         'Error saving Loupe settings: [_1]' => 'Error guardando la configuración de Loupe', # Translate - New
         'Send invitation email' => 'Enviar correo de invitación', # Translate - New
         q{The URL of Loupe's HTML file.} => q{La URL del fichero HTML de Loupe.}, # Translate - New
-        'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/beta/60/loupe.html" target="_blank">See more details.</a>' => 'Loupe es una consola alternativa para Movable Type especialmente diseñada para dispositivos móviles, que permite aprobar entradas y comentarios pendientes, subir fotografías, y consultar las estadísticas de los blogs y los sitios web. Consulta <a href="http://www.movabletype.org/beta/60/loupe.html target="_blank">más información</a>.', # Translate - New
+        'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">See more details.</a>' => 'Loupe es una consola alternativa para Movable Type especialmente diseñada para dispositivos móviles, que permite aprobar entradas y comentarios pendientes, subir fotografías, y consultar las estadísticas de los blogs y los sitios web. Consulta <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">más información</a>.', # Translate - New
 
 
 );
