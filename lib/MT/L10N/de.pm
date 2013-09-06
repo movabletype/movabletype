@@ -6678,7 +6678,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Loupe cannot be used now. Please contact your Movable Type System Administrator.' => 'Loupe steht derzeit nicht zur Verfügung. Bitte wenden Sie sich an Ihren Movable-Type-Administrator.', # Translate - New # OK
 	'The email address that should receive an invitation email from Movable Type.' => 'Begrüßungsmail an diese Adresse schicken:', # Translate - New # OK
 	'Send Invitation Mail' => 'Begrüßungsmail abschicken', # Translate - New # OK
-	'Sent the invitation email containing the access URL for Loupe to \'[_1]\'.' => 'Begrüßungsmail mit der Loupe-URL an \'[_1}\' schicken.', # Translate - New # OK
+	'Sent the invitation email containing the access URL for Loupe to \'[_1]\'.' => 'Begrüßungsmail mit der Loupe-URL an \'[_1]\' schicken.', # Translate - New # OK
 
 ## plugins/Markdown/Markdown.pl
 	'A plain-text-to-HTML formatting plugin.' => 'Ein Plugin, mit dem HTML wie normaler Text eingegeben werden kann.',

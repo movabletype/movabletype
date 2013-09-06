@@ -419,10 +419,10 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/monthly_entry_listing.mtml
 
 ## default_templates/new-comment.mtml
-	q{An unapproved comment has been posted on your site '[_1]', on entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Een niet goedgekeurde reactie werd achtergelaten op uw site '[_1]', op bericht #[[_2] ([_3]).  U moet deze reactie eerst goedkeuren voor ze op uw site verschijnt.}, # Translate - New
-	q{An unapproved comment has been posted on your site '[_1]', on page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Een niet goedgekeurde reactie werd achtergelaten op uw site '[_1]', op pagina #[[_2] ([_3]).  U moet deze reactie eerst goedkeuren voor ze op uw site verschijnt.}, # Translate - New
-	q{A new comment has been posted on your site '[_1]', on entry #[_2] ([_3]).} => q{Een nieuwe reactie werd achtergelaten op uw site '[_1]', op bericht #[[_2] ([_3]).}, # Translate - New
-	q{A new comment has been posted on your site '[_1]', on page #[_2] ([_3]).} => q{Een nieuwe reactie werd achtergelaten op uw site '[_1]', op pagina #[[_2] ([_3]).}, # Translate - New
+	q{An unapproved comment has been posted on your site '[_1]', on entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Een niet goedgekeurde reactie werd achtergelaten op uw site '[_1]', op bericht #[_2] ([_3]).  U moet deze reactie eerst goedkeuren voor ze op uw site verschijnt.}, # Translate - New
+	q{An unapproved comment has been posted on your site '[_1]', on page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{Een niet goedgekeurde reactie werd achtergelaten op uw site '[_1]', op pagina #[_2] ([_3]).  U moet deze reactie eerst goedkeuren voor ze op uw site verschijnt.}, # Translate - New
+	q{A new comment has been posted on your site '[_1]', on entry #[_2] ([_3]).} => q{Een nieuwe reactie werd achtergelaten op uw site '[_1]', op bericht #[_2] ([_3]).}, # Translate - New
+	q{A new comment has been posted on your site '[_1]', on page #[_2] ([_3]).} => q{Een nieuwe reactie werd achtergelaten op uw site '[_1]', op pagina #[_2] ([_3]).}, # Translate - New
 	'Commenter name: [_1]' => 'Naam reageerder: [_1]',
 	'Commenter email address: [_1]' => 'E-mail adres reageerder: [_1]',
 	'Commenter URL: [_1]' => 'URL reageerder: [_1]',
@@ -433,12 +433,12 @@ use vars qw( @ISA %Lexicon );
 	'Report the comment as spam:' => 'Reactie als spam melden:',
 
 ## default_templates/new-ping.mtml
-	q{An unapproved TrackBack has been posted on your site '[_1]', on entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet goedgekeurde TrackBack werd achtergelaten op uw site '[_1]', op bericht #[[_2] ([_3]).  U moet deze TrackBack eerst goedkeuren voor hij op uw site verschijnt.}, # Translate - New
-	q{An unapproved TrackBack has been posted on your site '[_1]', on page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet goedgekeurde TrackBack werd achtergelaten op uw site '[_1]', op pagina #[[_2] ([_3]).  U moet deze TrackBack eerst goedkeuren voor hij op uw site verschijnt.}, # Translate - New
-	q{An unapproved TrackBack has been posted on your site '[_1]', on category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet goedgekeurde TrackBack werd achtergelaten op uw site '[_1]', op categorie #[[_2] ([_3]).  U moet deze TrackBack eerst goedkeuren voor hij op uw site verschijnt.}, # Translate - New
-	q{A new TrackBack has been posted on your site '[_1]', on entry #[_2] ([_3]).} => q{Een nieuwe TrackBack werd achtergelaten op uw site '[_1]', op bericht #[[_2] ([_3]).}, # Translate - New
-	q{A new TrackBack has been posted on your site '[_1]', on page #[_2] ([_3]).} => q{Een nieuwe TrackBack werd achtergelaten op uw site '[_1]', op pagina #[[_2] ([_3]).}, # Translate - New
-	q{A new TrackBack has been posted on your site '[_1]', on category #[_2] ([_3]).} => q{Een nieuwe TrackBack werd achtergelaten op uw site '[_1]', op categorie #[[_2] ([_3]).}, # Translate - New
+	q{An unapproved TrackBack has been posted on your site '[_1]', on entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet goedgekeurde TrackBack werd achtergelaten op uw site '[_1]', op bericht #[_2] ([_3]).  U moet deze TrackBack eerst goedkeuren voor hij op uw site verschijnt.}, # Translate - New
+	q{An unapproved TrackBack has been posted on your site '[_1]', on page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet goedgekeurde TrackBack werd achtergelaten op uw site '[_1]', op pagina #[_2] ([_3]).  U moet deze TrackBack eerst goedkeuren voor hij op uw site verschijnt.}, # Translate - New
+	q{An unapproved TrackBack has been posted on your site '[_1]', on category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{Een niet goedgekeurde TrackBack werd achtergelaten op uw site '[_1]', op categorie #[_2] ([_3]).  U moet deze TrackBack eerst goedkeuren voor hij op uw site verschijnt.}, # Translate - New
+	q{A new TrackBack has been posted on your site '[_1]', on entry #[_2] ([_3]).} => q{Een nieuwe TrackBack werd achtergelaten op uw site '[_1]', op bericht #[_2] ([_3]).}, # Translate - New
+	q{A new TrackBack has been posted on your site '[_1]', on page #[_2] ([_3]).} => q{Een nieuwe TrackBack werd achtergelaten op uw site '[_1]', op pagina #[_2] ([_3]).}, # Translate - New
+	q{A new TrackBack has been posted on your site '[_1]', on category #[_2] ([_3]).} => q{Een nieuwe TrackBack werd achtergelaten op uw site '[_1]', op categorie #[_2] ([_3]).}, # Translate - New
 	'Excerpt' => 'Uittreksel',
 	'Title' => 'Titel',
 	'Blog' => 'Blog',
@@ -1830,7 +1830,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## lib/MT/DataAPI/Endpoint/Entry.pm
 
 ## lib/MT/DataAPI/Resource.pm
-	'Cannot parse "[_1]" as an ISO 8601 datetime' => 'Kan "[_]" niet parsen als een IS0 8601 datetime', # Translate - New
+	'Cannot parse "[_1]" as an ISO 8601 datetime' => 'Kan "[_1]" niet parsen als een IS0 8601 datetime', # Translate - New
 
 ## lib/MT/DefaultTemplates.pm
 	'Archive Index' => 'Archiefindex',
@@ -6476,7 +6476,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
 	'Set up Facebook Commenters plugin' => 'Facebook Reageerders plugin instellen',
-	'Authentication failure: [_1], reason:[_2]' => 'Authenticatie mislukt: [_1], reden: [2_]',
+	'Authentication failure: [_1], reason:[_2]' => 'Authenticatie mislukt: [_1], reden: [_2]',
 	'Failed to created commenter.' => 'Aanmaken reageerder mislukt.',
 	'Failed to create a session.' => 'Aanmaken sessie mislukt.',
 	'Facebook Commenters needs either Crypt::SSLeay or IO::Socket::SSL installed to communicate with Facebook.' => 'Facebook Commenters vereist dat ofwel Crypt::SSLeay of IO::Socket::SSL geïnstalleerd zijn om met Facebook te kunnen communiceren.',
@@ -6632,7 +6632,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## plugins/Loupe/tmpl/welcome_mail_html.tmpl
 	'Your MT blog status at a glance' => 'De status van uw MT blog in een oogopslag', # Translate - New
-	'Dear [_1], ' => 'Beste [1_]', # Translate - New
+	'Dear [_1], ' => 'Beste [_1]', # Translate - New
 	'With Loupe, you can check the status of your blog without having to sign in to your Movable Type account.' => 'Met Loupe kunt u de staus van uw blog zien zonder u te moeten aanmelden met uw Movable Type account.', # Translate - New
 	'View Access Analysis' => 'Toegangsanalyse bekijken', # Translate - New
 	'Approve Entries' => 'Berichten goedkeuren', # Translate - New
@@ -6745,7 +6745,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## plugins/Motion/templates/Motion/actions_local.mtml
 	'[_1] commented on [_2]' => '[_1] reageerde op [_2]',
-	'[_1] favorited [_2]' => '[1] markeerde [_2] als favoriet',
+	'[_1] favorited [_2]' => '[_1] markeerde [_2] als favoriet',
 	'No recent actions.' => 'Geen recente acties.',
 
 ## plugins/Motion/templates/Motion/actions.mtml
@@ -6942,7 +6942,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## plugins/Motion/templates/Motion/widget_tag_cloud.mtml
 
 ## plugins/Motion/templates/Motion/widget_user_archives.mtml
-	'Recenty entries from [_1]' => 'Recente berichten van [_]',
+	'Recenty entries from [_1]' => 'Recente berichten van [_1]',
 
 ## plugins/Motion/tmpl/edit_linkpost.tmpl
 
