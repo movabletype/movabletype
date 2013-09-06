@@ -1586,12 +1586,22 @@ ChartAPI.Graph.morris.Base.prototype.build_ = function (Morris, data, config, ra
   // shows percentage as Y label when graph method is donut
   if (method === 'donut') {
     var totalCount = this.getTotalCount_(data, i);
+
     graphConfig.formatter = function (y) {
       var str = y = (y + '').replace(/,/g, '');
       if (!config.noCommaOnYLabel) {
         while (str != (str = str.replace(/^(-?\d+)(\d{3})/, '$1,$2')));
       }
-      return str + '(' + Math.ceil((y / totalCount * 10000)) / 100 + '%)';
+      var percent = Math.ceil((y / totalCount * 10000)) / 100;
+
+      var ret;
+      if (config.donutsFormatter && typeof config.donutsFormatter === 'function') {
+        ret = config.donutsFormatter(str, percent + '%', y);
+      } else {
+        ret = str + '(' + percent + '%)';
+      }
+
+      return ret;
     };
   }
 
