@@ -103,6 +103,14 @@ Constructs a new I<MT::ErrorHandler> instance.
 Sets the error message for either the class I<Class> or the object
 I<$object> to the message I<$message>. Returns C<undef>.
 
+=head2 Class->trans_error($message)
+
+=head2 $object->trans_error($message)
+
+Sets the error message for either the class I<Class> or the object
+I<$object> to the message I<$message> after translating into the currently-set
+language. Returns C<undef>.
+
 =head2 Class->errstr
 
 =head2 $object->errstr
