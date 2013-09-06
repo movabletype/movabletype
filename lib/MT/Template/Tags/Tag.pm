@@ -300,6 +300,8 @@ sub _hdlr_tags {
     local $ctx->{__stash}{include_blogs} = $args->{include_blogs};
     local $ctx->{__stash}{exclude_blogs} = $args->{exclude_blogs};
     local $ctx->{__stash}{blog_ids}      = $args->{blog_ids};
+    local $ctx->{__stash}{include_with_website}
+        = $args->{include_with_website};
     local $ctx->{__stash}{tag_min_count} = $min;
     local $ctx->{__stash}{tag_max_count} = $max;
     local $ctx->{__stash}{class_type}    = $type;
@@ -814,9 +816,10 @@ sub _hdlr_tag_search_link {
         || $args->{include_blogs}
         || $args->{exclude_blogs} )
     {
-        $args->{include_blogs} = $ctx->stash('include_blogs');
-        $args->{exclude_blogs} = $ctx->stash('exclude_blogs');
-        $args->{blog_ids}      = $ctx->stash('blog_ids');
+        $args->{include_blogs}        = $ctx->stash('include_blogs');
+        $args->{exclude_blogs}        = $ctx->stash('exclude_blogs');
+        $args->{blog_ids}             = $ctx->stash('blog_ids');
+        $args->{include_with_website} = $ctx->stash('include_with_website');
     }
     $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
         or return $ctx->error( $ctx->errstr );
@@ -839,14 +842,15 @@ sub _hdlr_tag_search_link {
                 : $blog->id;
         }
     }
+    else {
+        if ( my $blog = $ctx->stash('blog') ) {
+            $template_blog_id = $blog->id
+                if !$blog->is_blog;
+        }
+    }
 
     if ($blogs) {
         if ( ref $blogs eq 'ARRAY' ) {
-            if ( my $blog = $ctx->stash('blog') ) {
-                if ( !$blog->is_blog ) {
-                    unshift @$blogs, $blog->id;
-                }
-            }
             if ( $blog_args{not}{blog_id} ) {
                 $param .= 'ExcludeBlogs=' . join( ',', @$blogs );
             }
@@ -915,9 +919,10 @@ sub _hdlr_tag_rank {
         || $args->{include_blogs}
         || $args->{exclude_blogs} )
     {
-        $args->{include_blogs} = $ctx->stash('include_blogs');
-        $args->{exclude_blogs} = $ctx->stash('exclude_blogs');
-        $args->{blog_ids}      = $ctx->stash('blog_ids');
+        $args->{include_blogs}        = $ctx->stash('include_blogs');
+        $args->{exclude_blogs}        = $ctx->stash('exclude_blogs');
+        $args->{blog_ids}             = $ctx->stash('blog_ids');
+        $args->{include_with_website} = $ctx->stash('include_with_website');
     }
     my ( %blog_terms, %blog_args );
     $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
