@@ -1317,6 +1317,8 @@
     });
   <mt:if name="config.previewinnewwindow">
     jQuery('button.publish').click(function(event) {
+        app.clearDirty();
+        app.stopAutoSave();
         jQuery('form#entry_form input[name=__mode]').val('save_entry');
         jQuery('form#entry_form').removeAttr('target');
         jQuery(this).attr('disabled', 'disabled');
