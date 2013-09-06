@@ -1790,7 +1790,11 @@ ChartAPI.Graph.morris.Base.prototype.build_ = function (Morris, data, config, ra
   if (method === 'donut') {
     var totalCount = this.getTotalCount_(data, i);
     graphConfig.formatter = function (y) {
-      return y + '(' + Math.ceil((y / totalCount * 10000)) / 100 + '%)';
+      var str = y = (y + '').replace(/,/g, '');
+      if (!config.noCommaOnYLabel) {
+        while (str != (str = str.replace(/^(-?\d+)(\d{3})/, '$1,$2')));
+      }
+      return str + '(' + Math.ceil((y / totalCount * 10000)) / 100 + '%)';
     };
   }
 
@@ -1906,9 +1910,14 @@ ChartAPI.Graph.morris.Base.prototype.getNumLines_ = function (maxY, height) {
  */
 ChartAPI.Graph.morris.Base.prototype.getTotalCount_ = function (data, index) {
   var total = 0,
-    str = 'y' + (index || '');
+    str = 'y' + (index || ''),
+    num;
   $.each(data, function (i, v) {
-    total = total + (v[str] || v.value || 0);
+    num = v[str] || v.value || 0;
+    if (typeof num === 'string') {
+      num = parseFloat(num.replace(/,/g, ''), 10);
+    }
+    total = total + num;
   });
   return total;
 };
