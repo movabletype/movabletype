@@ -42,7 +42,7 @@ sub LoadFile {
         return MT->error( MT->translate( 'File not found: [_1]', $file ) );
     }
     my $yaml = $fmgr->get_data( $file, 'output' );
-    return MT::Util::YAML::Tiny::Load($yaml);
+    return MT::Util::YAML::Tiny::Load( Encode::encode_utf8($yaml) );
 }
 
 1;
