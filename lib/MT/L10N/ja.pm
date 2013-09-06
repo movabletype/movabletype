@@ -5239,6 +5239,7 @@ use vars qw( @ISA %Lexicon );
 	'Full Restore' => '環境のリストア',
 	'SSL Certifications' => 'サーバー証明書',
 	'Config Directives' => 'MT環境変数',
+	'Disk Usage' => 'ディスクの使用量',
 	'Sync' => 'サーバー配信',
 	'Contents Sync' => 'サーバー配信',
 
@@ -5290,6 +5291,15 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/lib/MT/Worker/ContentsSync.pm
 	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバー配信の処理に成功したことを通知するメールです。',
 	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
+
+## addons/Cloud.pack/tmpl/cfg_disk_usage.tmpl
+	'User Contents Files' => 'コンテンツファイル',
+	'Buckup Files' => 'バックアップファイル',
+	'Free Disk Space' => '空き容量',
+	'User Contents' => 'コンテンツファイル',
+	'Others' => 'その他',
+	'System Data' => 'システムファイル',
+	'Free' => '空き容量',
 
 ## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
 	'Manage Basic Authentication' => 'Basic認証の管理',
