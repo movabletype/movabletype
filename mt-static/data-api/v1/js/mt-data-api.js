@@ -66,7 +66,7 @@
  *      class when available that. The default value is the false.
  */
 var DataAPI = function(options) {
-    var i, k, l,
+    var i, k,
         requireds = ['clientId', 'baseUrl'];
 
     this.o = {
@@ -87,14 +87,7 @@ var DataAPI = function(options) {
     };
     for (k in options) {
         if (k in this.o) {
-            if (typeof this.o[k] === 'object' && this.o[k] !== null) {
-                for (l in this.o[k]) {
-                   this.o[k][l] = options[k][l];
-                }
-            }
-            else {
-                this.o[k] = options[k];
-            }
+            this.o[k] = options[k];
         }
         else {
             throw 'Unkown option: ' + k;
@@ -213,7 +206,8 @@ DataAPI.sessionStores['cookie'] = {
         Cookie.bake(name, data, o.sessionDomain, o.sessionPath, expires);
     },
     fetch: function(name) {
-        return Cookie.fetch(name).value;
+        var cookie = Cookie.fetch(name);
+        return cookie ? cookie.value : null;
     },
     remove: function(name) {
         var o = this.o;
@@ -2390,7 +2384,7 @@ DataAPI.prototype = {
         for (k in params) {
             v = params[k];
             if (typeof v === 'object') {
-                if (typeof v === 'function') {
+                if (typeof v.id === 'function') {
                     v = v.id();
                 }
                 else {
@@ -2851,7 +2845,8 @@ DataAPI.prototype = {
         function retryWithAuthentication() {
             api.request('POST', '/token', function(response) {
                 if (response.error) {
-                    return true;
+                    parseArguments(originalArguments);
+                    return runCallback(response);
                 }
                 else {
                     api.storeTokenData(response);
@@ -2869,6 +2864,39 @@ DataAPI.prototype = {
                 base += '&';
             }
             return base + api._serializeParams(params);
+        }
+
+        function parseArguments(args) {
+            for (i = 2; i < args.length; i++) {
+                v = args[i];
+                switch (typeof v) {
+                case 'function':
+                    callback = v;
+                    break;
+                case 'object':
+                    if (
+                        v &&
+                        ! v.nodeName &&
+                        ((window.ActiveXObject && v instanceof window.ActiveXObject) ||
+                         (window.XMLHttpRequest && v instanceof window.XMLHttpRequest) ||
+                         (window.XDomainRequest && v instanceof window.XDomainRequest))
+                    ) {
+                        if (window.XDomainRequest && v instanceof window.XDomainRequest) {
+                            xdr = v;
+                        }
+                        else {
+                            xhr = v;
+                        }
+                    }
+                    else {
+                        paramsList.push(v);
+                    }
+                    break;
+                case 'string':
+                    paramsList.push(api._unserializeParams(v));
+                    break;
+                }
+            }
         }
 
         if (! this.o.withoutAuthorization &&
@@ -2918,36 +2946,7 @@ DataAPI.prototype = {
             method = 'POST';
         }
 
-        for (i = 2; i < arguments.length; i++) {
-            v = arguments[i];
-            switch (typeof v) {
-            case 'function':
-                callback = v;
-                break;
-            case 'object':
-                if (
-                    v &&
-                    ! v.nodeName &&
-                    ((window.ActiveXObject && v instanceof window.ActiveXObject) ||
-                     (window.XMLHttpRequest && v instanceof window.XMLHttpRequest) ||
-                     (window.XDomainRequest && v instanceof window.XDomainRequest))
-                ) {
-                    if (window.XDomainRequest && v instanceof window.XDomainRequest) {
-                        xdr = v;
-                    }
-                    else {
-                        xhr = v;
-                    }
-                }
-                else {
-                    paramsList.push(v);
-                }
-                break;
-            case 'string':
-                paramsList.push(this._unserializeParams(v));
-                break;
-            }
-        }
+        parseArguments(arguments);
 
         if (paramsList.length && (method.toLowerCase() === 'get' || paramsList.length >= 2)) {
             endpoint = appendParamsToURL(endpoint, paramsList.shift());
@@ -3048,7 +3047,7 @@ DataAPI.prototype = {
                 xdr.timeout = this.o.timeout || Number.MAX_VALUE;
             }
             xdr.open( method, base + endpoint);
-            xdr.send( params || null );
+            xdr.send( api._serializeParams(params) || null );
         }
         else if (via === 'xhr') {
             xhr = xhr || this.newXMLHttpRequest();
