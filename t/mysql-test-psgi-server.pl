@@ -20,6 +20,7 @@ eval(
     ? "use MT::Test;"
     : "use MT::Test qw(:db :data);"
 );
+die $@ if $@;
 
 
 my $port         = 5000;
@@ -35,6 +36,8 @@ $mt->_init_plugins_core( {}, 1, \@plugin_paths ) if @plugin_paths;
 
 
 eval "use MT::PSGI;";
+die $@ if $@;
+
 my $app = MT::PSGI->new()->to_app();
 my $loader = Plack::Loader->load(
     'Starman',
