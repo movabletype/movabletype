@@ -30,6 +30,8 @@ my ($true_val, $false_val, $bool_vals);
 
 BEGIN {
     my $have_readonly = eval { require Readonly };
+    # If both JSON::XS and Readonly::XS are used, an error will occur.
+    $have_readonly &&= !eval { require Readonly::XS };
 
     my $t = 1;
     my $f = 0;
