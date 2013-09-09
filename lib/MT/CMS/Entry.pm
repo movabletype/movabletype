@@ -3119,12 +3119,13 @@ sub delete {
         my $child_hash = $rebuild_recipe{ $obj->blog->id } || {};
         MT::__merge_hash( $child_hash, \%recipe );
         $rebuild_recipe{ $obj->blog->id } = $child_hash;
-    }
 
-    # Clear cache for site stats dashboard widget.
-    require MT::Util;
-    MT::Util::clear_site_stats_widget_cache( $blog->id )
-        or return $app->error( translate('Removing stats cache failed.') );
+        # Clear cache for site stats dashboard widget.
+        require MT::Util;
+        MT::Util::clear_site_stats_widget_cache( $obj->blog->id )
+            or
+            return $app->error( translate('Removing stats cache failed.') );
+    }
 
     $app->add_return_arg( saved_deleted => 1 );
     if ( $q->param('is_power_edit') ) {
