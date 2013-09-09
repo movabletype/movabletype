@@ -107,6 +107,9 @@ available methods.
 
 In addition, this class defines the following:
 
+
+=head2 MT::Memcached->new
+
 =head2 MT::Memcached->instance
 
 Returns the singleton object (a I<MT::Memcached> object).
@@ -120,6 +123,10 @@ configuration and if the I<Cache::Memcached> module can be loaded.
 
 Removes the singleton instance of the class, and disconnects any open
 connections to I<memcached>.
+
+=head2 MT::Memcached->purge_stale
+
+This is a method for MT::Cache interface. Do nothing.
 
 =head1 AUTHOR & COPYRIGHT
 
