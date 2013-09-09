@@ -319,4 +319,11 @@ Example (for CGIs in a plugin subdirectory, ie MT/plugins/plugin_x):
     use lib "lib", ($ENV{MT_HOME} ? "$ENV{MT_HOME}/lib" : "../../lib");
     use MT::Bootstrap App => 'MyApp';
 
+=head1 METHODS
+
+=head2 fcgi_sig_handler($sig)
+
+This is a signal handler for the FastCGI mode. Waits to complete a request
+in processing and terminates the FastCGI process.
+
 =cut
