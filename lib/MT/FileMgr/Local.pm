@@ -104,8 +104,16 @@ sub _write_file {
 
     $to = _local($to);
 
+    ## By default we write all data to temp files, then rename
+    ## the temp files to the real files (an atomic
+    ## operation). Some users don't like this (requires too
+    ## liberal directory permissions). So we have a config
+    ## option to turn it off (NoTempFiles).
+    my $use_temp_files = !$cfg->NoTempFiles;
+    my $temp_file = $use_temp_files ? "$to.new" : $to;
+
     my $old = umask( oct $umask );
-    sysopen FH, $to, O_RDWR | O_CREAT | O_TRUNC, oct $perms
+    sysopen FH, $temp_file, O_RDWR | O_CREAT | O_TRUNC, oct $perms
         or return $fmgr->error(
         MT->translate(
             "Opening local file '[_1]' failed: [_2]",
@@ -132,6 +140,16 @@ sub _write_file {
         $from = Encode::encode( $enc, $from ) if Encode::is_utf8($from);
         print FH $from;
         $bytes = length($from);
+    }
+    if ($use_temp_files) {
+        if ( !$fmgr->rename( $temp_file, $to ) ) {
+            return $fmgr->error(
+            MT->translate(
+                "Renaming tempfile '[_1]' failed: [_2]",
+                $temp_file, $fmgr->errstr
+            )
+            );
+        }
     }
     close FH;
     umask($old);

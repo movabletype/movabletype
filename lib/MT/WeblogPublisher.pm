@@ -31,9 +31,6 @@ sub new {
     if ( !exists $this->{start_time} ) {
         $this->{start_time} = time;
     }
-    if ( !exists $this->{NoTempFiles} ) {
-        $this->{NoTempFiles} = $cfg->NoTempFiles;
-    }
     if ( !exists $this->{PublishCommenterIcon} ) {
         $this->{PublishCommenterIcon} = $cfg->PublishCommenterIcon;
     }
@@ -1470,25 +1467,11 @@ sub rebuild_file {
             }
         }
 
-        ## By default we write all data to temp files, then rename
-        ## the temp files to the real files (an atomic
-        ## operation). Some users don't like this (requires too
-        ## liberal directory permissions). So we have a config
-        ## option to turn it off (NoTempFiles).
-        my $use_temp_files = !$mt->{NoTempFiles};
-        my $temp_file = $use_temp_files ? "$file.new" : $file;
-        unless ( defined $fmgr->put_data( $html, $temp_file ) ) {
+        ## Update the published file.
+        unless ( defined $fmgr->put_data( $html, $file ) ) {
             $timer->unpause if $timer;
             return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
-                $temp_file, $fmgr->errstr );
-        }
-        if ($use_temp_files) {
-            if ( !$fmgr->rename( $temp_file, $file ) ) {
-                $timer->unpause if $timer;
-                return $mt->trans_error(
-                    "Renaming tempfile '[_1]' failed: [_2]",
-                    $temp_file, $fmgr->errstr );
-            }
+                $file, $fmgr->errstr );
         }
         MT->run_callbacks(
             'build_file',
@@ -1759,20 +1742,10 @@ sub rebuild_indexes {
         }
 
         ## Update the published file.
-        my $use_temp_files = !$mt->{NoTempFiles};
-        my $temp_file = $use_temp_files ? "$file.new" : $file;
-        unless ( defined( $fmgr->put_data( $html, $temp_file ) ) ) {
+        unless ( defined $fmgr->put_data( $html, $file ) ) {
             $timer->unpause if $timer;
             return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
-                $temp_file, $fmgr->errstr );
-        }
-        if ($use_temp_files) {
-            if ( !$fmgr->rename( $temp_file, $file ) ) {
-                $timer->unpause if $timer;
-                return $mt->trans_error(
-                    "Renaming tempfile '[_1]' failed: [_2]",
-                    $temp_file, $fmgr->errstr );
-            }
+                $file, $fmgr->errstr );
         }
         MT->run_callbacks(
             'build_file',
@@ -2464,8 +2437,8 @@ MT::WeblogPublisher - Express weblog templates and content into a specific URL s
 =head2 MT::WeblogPublisher->new()
 
 Return a new C<MT::WeblogPublisher>. Additionally, call
-L<MT::ConfigMgr/instance> and set the I<NoTempFiles> and
-I<PublishCommenterIcon> attributes, if not already set.
+L<MT::ConfigMgr/instance> and set the I<PublishCommenterIcon>
+attribute, if not already set.
 
 =head2 $mt->rebuild( %args )
 
