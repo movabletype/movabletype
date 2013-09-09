@@ -27,6 +27,9 @@ class Blog extends BaseObject
     }
 
     function website() {
+        if (! $this->is_blog())
+            return $this;
+
         $website_id = $this->parent_id;
         if (empty($website_id))
             return null;
