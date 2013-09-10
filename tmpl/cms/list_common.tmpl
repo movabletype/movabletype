@@ -1469,6 +1469,7 @@ jQuery('#allpass-filter').click( function() {
   jQuery('#filter-detail').hide();
   jQuery('#filter').removeClass('active');
   doApplyFilter(allpass_filter);
+  jQuery('#item_list').attr('selectedIndex', 0).val('');
   return false;
 });
 
