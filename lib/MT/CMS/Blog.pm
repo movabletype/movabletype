@@ -2109,6 +2109,7 @@ sub build_blog_table {
     my $blog_class    = $app->model('blog');
     my $tbp_class     = $app->model('ping');
     my $entry_class   = $app->model('entry');
+    my $page_class    = $app->model('page');
     my $comment_class = $app->model('comment');
 
     my $iter;
@@ -2129,7 +2130,7 @@ sub build_blog_table {
     my $can_edit_authors = $app->can_do('edit_authors');
     my @data;
     my $i;
-    my ( $entry_count, $ping_count, $comment_count );
+    my ( $entry_count, $page_count, $ping_count, $comment_count );
     while ( my $blog = $iter->() ) {
         my $blog_id = $blog->id;
         my $row     = {
@@ -2155,7 +2156,14 @@ sub build_blog_table {
                   $entry_count
                 ? $entry_count->{$blog_id}
                 : $entry_count->{$blog_id}
-                    = MT::Entry->count( { blog_id => $blog_id } )
+                    = $entry_class->count( { blog_id => $blog_id } )
+                )
+                || 0;
+            $row->{num_pages} = (
+                  $page_count
+                ? $page_count->{$blog_id}
+                : $page_count->{$blog_id}
+                    = $page_class->count( { blog_id => $blog_id } )
                 )
                 || 0;
             $row->{num_comments} = (
@@ -2182,6 +2190,7 @@ sub build_blog_table {
             if ( $author->is_superuser ) {
                 $row->{can_create_post}       = 1;
                 $row->{can_edit_entries}      = 1;
+                $row->{can_edit_pages}        = 1;
                 $row->{can_edit_templates}    = 1;
                 $row->{can_edit_config}       = 1;
                 $row->{can_set_publish_paths} = 1;
@@ -2191,6 +2200,7 @@ sub build_blog_table {
                 my $perms = $author->permissions($blog_id);
                 $row->{can_create_post}    = $perms->can_do('create_post');
                 $row->{can_edit_entries}   = $perms->can_do('create_post');
+                $row->{can_edit_pages}     = $perms->can_do('manage_pages');
                 $row->{can_edit_templates} = $perms->can_do('edit_templates');
                 $row->{can_edit_config}    = $perms->can_do('edit_config');
                 $row->{can_set_publish_paths}

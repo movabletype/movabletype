@@ -586,6 +586,7 @@ sub build_website_table {
     my $tbp_class     = $app->model('ping');
     my $blog_class    = $app->model('blog');
     my $comment_class = $app->model('comment');
+    my $entry_class   = $app->model('entry');
     my $page_class    = $app->model('page');
 
     my $iter;
@@ -606,7 +607,9 @@ sub build_website_table {
     my $can_edit_authors = $app->can_do('edit_authors');
     my @data;
     my $i;
-    my ( $blog_count, $ping_count, $comment_count, $page_count );
+    my ($blog_count, $entry_count, $page_count,
+        $ping_count, $comment_count
+    );
     while ( my $blog = $iter->() ) {
         my $blog_id = $blog->id;
         my $row     = {
@@ -626,6 +629,20 @@ sub build_website_table {
                 || 0;
 
             # we should use count by group here...
+            $row->{num_entries} = (
+                  $entry_count
+                ? $entry_count->{$blog_id}
+                : $entry_count->{$blog_id}
+                    = $entry_class->count( { blog_id => $blog_id } )
+                )
+                || 0;
+            $row->{num_pages} = (
+                  $page_count
+                ? $page_count->{$blog_id}
+                : $page_count->{$blog_id}
+                    = $page_class->count( { blog_id => $blog_id } )
+                )
+                || 0;
             $row->{num_comments} = (
                   $comment_count
                 ? $comment_count->{$blog_id}
@@ -666,14 +683,6 @@ sub build_website_table {
                 $row->{can_list_blogs}
                     = $perms->can_do('open_blog_listing_screen');
             }
-
-            $row->{num_pages} = (
-                  $page_count
-                ? $page_count->{$blog_id}
-                : $page_count->{$blog_id}
-                    = $page_class->count( { blog_id => $blog_id } )
-                )
-                || 0;
         }
         $row->{object} = $blog;
         push @data, $row;
