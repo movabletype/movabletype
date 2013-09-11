@@ -101,14 +101,14 @@ msg-balloon shows error message like balloon.
     border-radius: 0;
 }
 .msg-success {
-    background-color: #a1cfb5;
+    background-color: #d8f8cd;
 }
 .msg-alert,
 .msg-warning {
-    background-color: #e6eaa8;
+    background-color: #f3fcaf;
 }
 .msg-error {
-    background-color: #dea899;
+    background-color: #ffd4d1;
 }
 .msg-info {
     background-color: #cae5f8;
