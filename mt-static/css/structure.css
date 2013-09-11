@@ -2421,7 +2421,7 @@ ul.tabs li a {
 
 #brand {
     height: 32px;
-    background: #1A1A1A url(../images/logo/movable-type-logo-mark.png) 50% 50% no-repeat;
+    background: #1A1A1A;
 }
 #brand img {
     visibility: hidden;
