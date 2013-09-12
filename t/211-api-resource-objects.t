@@ -71,6 +71,10 @@ sub from_object {
 
     for my $d (@$suite) {
         note( $d->{note} ) if $d->{note};
+        if (my $params = $d->{params}) {
+            $app->param($_ => $params->{$_}) for keys %$params;
+        }
+
         my $obj = do {
             if ( ref $d->{from} ) {
                 my $obj = $model_class->new;
@@ -94,6 +98,9 @@ sub to_object {
 
     for my $d (@$suite) {
         note( $d->{note} ) if $d->{note};
+        if (my $params = $d->{params}) {
+            $app->param($_ => $params->{$_}) for keys %$params;
+        }
 
         my ( $original, $expected_values );
         if ( $d->{original} ) {
