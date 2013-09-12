@@ -451,11 +451,14 @@ sub rebuild_deleted_entry {
         if ( $archiver->category_based() ) {
             my $categories = $entry->categories();
             for my $cat (@$categories) {
-                if (( $archiver->can('archive_entries_count') )
-                    && ($archiver->archive_entries_count( $blog, $at, $entry,
-                            $cat ) == 1
-                    )
-                    )
+                if (!$archiver->does_publish_file(
+                    {   Blog        => $blog,
+                        ArchiveType => $at,
+                        Entry       => $entry,
+                        Category    => $cat,
+                    }
+                )
+                )
                 {
                     $mt->remove_fileinfo(
                         ArchiveType => $at,
