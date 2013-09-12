@@ -36,6 +36,15 @@ sub updatable_fields {
     ];
 }
 
+sub _int_param {
+    my ( $app, $key ) = @_;
+
+    return undef unless $app->can('param');
+
+    my $value = $app->param('maxComments');
+    ( defined($value) && $value =~ m/^\d+$/ ) ? int($value) : undef;
+}
+
 sub fields {
     [   {   name   => 'author',
             fields => [qw(id displayName userpicUrl)],
@@ -131,8 +140,10 @@ sub fields {
         {   name        => 'comments',
             from_object => sub {
                 my ($obj) = @_;
-                my $app   = MT->instance;
-                my $user  = $app->user;
+                my $app = MT->instance;
+                my $max = _int_param( $app, 'maxComments' )
+                    or return [];
+                my $user = $app->user;
 
                 my $terms = undef;
                 if ( !$user->is_superuser ) {
@@ -157,21 +168,49 @@ sub fields {
                     }
                 }
 
-                my $args = undef;
-                if ( $app->can('param')
-                    && defined( $app->param('maxComments') ) )
-                {
-                    $args = { limit => int( $app->param('maxComments') ), };
+                my $args = {
+                    sort      => 'id',
+                    direction => 'ascend',
+                };
+                my ( @comments, @children );
+                for my $c ( @{ $obj->comments( $terms, $args ) || [] } ) {
+                    $c->parent
+                        ? push( @children, $c )
+                        : push( @comments, [ $c->id, $c->parent, $c ] );
                 }
+                for my $c (@children) {
+                    my $parent = $c->parent;
+                    my $i      = 0;
+                    my $found  = 0;
+                    for ( ; $i < scalar(@comments); $i++ ) {
+                        if ( !$found ) {
+                            if ( $comments[$i][0] == $c->parent ) {
+                                $found = 1;
+                            }
+                        }
+                        elsif ( $comments[$i][1] != $c->parent ) {
+                            last;
+                        }
+                    }
+                    splice @comments, $i, 0, [ $c->id, $c->parent, $c ];
+                }
+                @comments = map { $_->[2] } @comments;
+
                 MT::DataAPI::Resource->from_object(
-                    $obj->comments( $terms, $args ) );
+                    [     @comments > $max
+                        ? @comments[ 0 .. $max - 1 ]
+                        : @comments
+                    ]
+                );
             },
         },
         {   name        => 'trackbacks',
             from_object => sub {
                 my ($obj) = @_;
-                my $app   = MT->instance;
-                my $user  = $app->user;
+                my $app = MT->instance;
+                my $max = _int_param( $app, 'maxTrackbacks' )
+                    or return [];
+                my $user = $app->user;
 
                 my $terms = undef;
                 if ( !$user->is_superuser ) {
@@ -197,12 +236,11 @@ sub fields {
                     }
                 }
 
-                my $args = undef;
-                if ( $app->can('param')
-                    && defined( $app->param('maxTrackbacks') ) )
-                {
-                    $args = { limit => int( $app->param('maxTrackbacks') ), };
-                }
+                my $args = {
+                    sort      => 'id',
+                    direction => 'ascend',
+                    limit     => $max
+                };
                 MT::DataAPI::Resource->from_object(
                     $obj->pings( $terms, $args ) || [] );
             },
