@@ -385,7 +385,7 @@ sub from_object_with_cache {
             push @results, ${ $serializer->unserialize($c) };
         }
         else {
-            push @load_ids, [ $i, $ck, $r->id ];
+            push @load_ids, [ $i, $ck, $r->id, $r ];
         }
     }
 
@@ -394,7 +394,7 @@ sub from_object_with_cache {
             ->load( { id => [ map { $_->[2] } @load_ids ] } );
         my @load_objs = map {
             my $id_set = $_;
-            grep { $id_set->[2] == $_->id } @tmp;
+            ( grep { $id_set->[2] == $_->id } @tmp )[0] || $id_set->[3];
         } @load_ids;
 
         my $converteds
