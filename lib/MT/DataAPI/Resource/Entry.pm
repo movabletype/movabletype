@@ -210,8 +210,9 @@ sub fields {
                 my ( $resource, $hash, $field ) = @_;
                 my $app    = MT->instance;
                 my $result = $resource->{ $field->{name} };
-                my $max    = _int_param( $app, 'maxComments' );
-                if ( defined($max) && scalar(@$result) > $max ) {
+                my $max    = _int_param( $app, 'maxComments' )
+                    or return [];
+                if ( scalar(@$result) > $max ) {
                     [ @$result[ 0 .. $max - 1 ] ];
                 }
                 else {
@@ -268,8 +269,9 @@ sub fields {
                 my ( $resource, $hash, $field ) = @_;
                 my $app    = MT->instance;
                 my $result = $resource->{ $field->{name} };
-                my $max    = _int_param( $app, 'maxTrackbacks' );
-                if ( defined($max) && scalar(@$result) > $max ) {
+                my $max    = _int_param( $app, 'maxTrackbacks' )
+                    or return [];
+                if ( scalar(@$result) > $max ) {
                     [ @$result[ 0 .. $max - 1 ] ];
                 }
                 else {
