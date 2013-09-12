@@ -732,26 +732,9 @@ sub _sync_asset_id {
     my $new_text = $text;
 
     $new_text
-        =~ s!<form([^>]*?\s)mt:asset-id=(["'])(\d+)(["'])([^>]*?)>(.+?)</form>!
-        my $old_id = $3;
-        my $result = '';
-        if ( my $asset = $related->{$old_id} ) {
-            $result = '<form' . $1 . 'mt:asset-id=' . $2 . $asset->id . $4 . $5 . '>';
-            my $html = $6;
-            my $filename = quotemeta(encode_url($asset->file_name));
-            my $url = $asset->url;
-            my @children = MT->model('asset')->load(
-                { parent => $asset->id, blog_id => $asset->blog_id, class => '*' }
-            );
-            my %children = map {
-                $_->id => {
-                    'filename' => quotemeta(encode_url($_->file_name)),
-                    'url' => $_->url
-                }
-            } @children;
-            $result .= $html . '</form>';
-        }
-        $result;
+        =~ s!<form[^>]*?\s\Kmt:asset-id=(["'])(\d+)(["'])(?=[^>]*?>.+?</form>)!
+        my $asset = $related->{$2};
+        $asset ? ('mt:asset-id=' . $1 . $asset->id . $3) : ' ';
     !igem;
     return $new_text ? $new_text : $text;
 }
