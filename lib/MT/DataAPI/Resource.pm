@@ -450,12 +450,12 @@ sub filter_cache {
 
 sub cache_key {
     my $self = shift;
-    my ($datasource, $id);
-    if (ref $_[0]) {
-        ($datasource, $id) = $_[0]->datasource, $_[0]->id
+    my ( $datasource, $id );
+    if ( ref $_[0] ) {
+        ( $datasource, $id ) = ( $_[0]->datasource, $_[0]->id );
     }
     else {
-        ($datasource, $id) = @_;
+        ( $datasource, $id ) = @_;
     }
     'data_api_resource_' . $datasource . '_' . $id;
 }
