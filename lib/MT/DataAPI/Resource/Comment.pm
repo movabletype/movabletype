@@ -40,10 +40,7 @@ sub fields {
                 my $size = scalar(@$objs);
                 for ( my $i = 0; $i < $size; $i++ ) {
                     my $c = $objs->[$i];
-                    my $a
-                        = $commenter_ids[$i]
-                        ? $authors{ $commenter_ids[$i] }
-                        : undef;
+                    my $a = $authors{ $c->commenter_id || 0 };
                     if ($a) {
                         $hashs->[$i]{author}
                             = MT::DataAPI::Resource->from_object( $a,
