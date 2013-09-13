@@ -153,6 +153,12 @@ body.has-dialog {
   border-top: 1px solid #c0c6c9;
 }
 
+.dialog-screen .actions-bar-bottom.has-pagination {
+  position: static;
+  padding: 0;
+  border: none;
+}
+
 .ui-dialog.ui-draggable .ui-dialog-titlebar {
     cursor: move;
 }

@@ -3852,6 +3852,7 @@ sub _hdlr_app_action_bar {
         = $args->{hide_pager}
         ? ''
         : qq{\n        <mt:include name="include/pagination.tmpl" bar_position="$pos">};
+    my $pager_class = $pager ? 'has-pagination' : '';
     my $buttons = $ctx->var('action_buttons') || '';
     my $buttons_html
         = $buttons =~ /\S/
@@ -3860,7 +3861,7 @@ sub _hdlr_app_action_bar {
 
     return $ctx->build(<<EOT);
 $form_id
-<div id="actions-bar-$pos" class="actions-bar actions-bar-$pos">
+<div id="actions-bar-$pos" class="actions-bar actions-bar-$pos $pager_class">
     $pager
     $buttons_html
 <mt:include name="include/itemset_action_widget.tmpl">
