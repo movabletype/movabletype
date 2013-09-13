@@ -174,25 +174,25 @@ sub fields {
                 };
                 my ( @comments, @children );
                 for my $c ( @{ $obj->comments( $terms, $args ) || [] } ) {
-                    $c->parent
+                    $c->parent_id
                         ? push( @children, $c )
-                        : push( @comments, [ $c->id, $c->parent, $c ] );
+                        : push( @comments, [ $c->id, $c->parent_id, $c ] );
                 }
                 for my $c (@children) {
-                    my $parent = $c->parent;
-                    my $i      = 0;
-                    my $found  = 0;
+                    my $parent_id = $c->parent_id;
+                    my $i         = 0;
+                    my $found     = 0;
                     for ( ; $i < scalar(@comments); $i++ ) {
                         if ( !$found ) {
-                            if ( $comments[$i][0] == $c->parent ) {
+                            if ( $comments[$i][0] == $parent_id ) {
                                 $found = 1;
                             }
                         }
-                        elsif ( $comments[$i][1] != $c->parent ) {
+                        elsif ( $comments[$i][1] != $parent_id ) {
                             last;
                         }
                     }
-                    splice @comments, $i, 0, [ $c->id, $c->parent, $c ];
+                    splice @comments, $i, 0, [ $c->id, $c->parent_id, $c ];
                 }
                 @comments = map { $_->[2] } @comments;
 
