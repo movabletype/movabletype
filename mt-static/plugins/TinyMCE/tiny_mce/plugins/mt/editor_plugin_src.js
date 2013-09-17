@@ -470,6 +470,15 @@
                 }
             });
 
+            ed.addMTButton('mt_source_underline', {
+                title : 'mt.source_underline',
+                text : 'underline',
+                mtButtonClass: 'text',
+                onclickFunctions : {
+                    source: 'underline'
+                }
+            });
+
             ed.addMTButton('mt_source_blockquote', {
                 title : 'mt.source_blockquote',
                 text : 'blockquote',
