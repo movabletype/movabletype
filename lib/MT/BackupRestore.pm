@@ -732,9 +732,9 @@ sub _sync_asset_id {
     my $new_text = $text;
 
     $new_text
-        =~ s!<form[^>]*?\s\Kmt:asset-id=(["'])(\d+)(["'])(?=[^>]*?>.+?</form>)!
-        my $asset = $related->{$2};
-        $asset ? ('mt:asset-id=' . $1 . $asset->id . $3) : ' ';
+        =~ s!(<form[^>]*?\s)mt:asset-id=(["'])(\d+)(["'])(?=[^>]*?>.+?</form>)!
+        my $asset = $related->{$3};
+        $1 . ( $asset ? ( 'mt:asset-id=' . $2 . $asset->id . $4 ) : ' ' );
     !igem;
     return $new_text ? $new_text : $text;
 }
