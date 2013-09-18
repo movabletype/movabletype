@@ -365,6 +365,13 @@ sub _hdlr_entries {
         $use_stash = 0;
     }
 
+    if ( $ctx->stash('inside_blogs') || $ctx->stash('multiblog_context') ) {
+
+        # In mt:Blogs or mt:Multiblog context; 
+        #   we can't use stashed entries
+        $use_stash = 0;
+    }
+
     my $entries;
     if ($use_stash) {
         $entries = $ctx->stash('entries');
@@ -380,11 +387,6 @@ sub _hdlr_entries {
         if ( !$entry->isa($class) ) {
 
             # class types do not match; we can't use stashed entries
-            undef $entries;
-        }
-        elsif ( $blog_id != $entry->blog_id ) {
-
-            # Blog ID do not match; we can't use stashed entries
             undef $entries;
         }
     }
