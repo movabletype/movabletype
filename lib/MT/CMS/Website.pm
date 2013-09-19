@@ -437,6 +437,7 @@ sub dialog_select_website {
     if ($favorites) {
         my $auth = $app->user or return;
         if ( my @favs = @{ $auth->favorite_websites || [] } ) {
+            @favs = @favs[ 0 .. 4 ] if scalar @favs > 5;
             $terms = { id => { not => \@favs }, };
         }
         $confirm_js = 'saveFavorite';
