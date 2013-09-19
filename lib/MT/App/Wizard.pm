@@ -330,7 +330,7 @@ sub init_core_registry {
                     'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.',
             },
             'XML::Parser' => {
-                link  => 'http://search.cpan.org/dist/Text-Balanced',
+                link  => 'http://search.cpan.org/dist/XML-Parser',
                 label => 'This module required for action streams.',
             },
         },
