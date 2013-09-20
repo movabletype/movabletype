@@ -36,6 +36,8 @@ $app->user($app->model('author')->load(1));
         [ File::Spec->join( $base, 'plugins' ) ] );
 }
 
+MT::DataAPI::Resource->resource('asset');
+MT::DataAPI::Format::find_format;
 
 ( my $spec_dir = __FILE__ ) =~ s/t$/d/;
 for my $d ( glob( File::Spec->catfile( $spec_dir, '*' ) ) ) {
