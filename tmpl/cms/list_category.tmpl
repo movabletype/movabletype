@@ -212,7 +212,7 @@ function createItem(id, parent, label, basename, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
   if ( basename )
-    line += '<span class="item-basename"><span class="item-basename-text">'+basename+'</span></span>';
+    line += '<span class="item-basename"><span class="item-basename-text-container"><span class="item-basename-text">'+basename+'</span></span></span>';
   line += ' <span class="item-ctrl"></span>';
   line += ' <span class="count">'+number+'</span>';
   var $item = jQuery('<div id="cat-'+id+'" class="pcat-'+parent+'" />').append(line);
