@@ -3000,3 +3000,21 @@ function removeAssetFromList(assetId) {
     }
     document.getElementById("include_asset_ids").value = NewAssetList;
 }
+
+function isIE11() {
+  return /Trident\/7/.test(navigator.userAgent);
+}
+
+function createSessionHistoryFallback(url) {
+  if (isIE11()) {
+    history.pushState(null, null, url);
+  }
+}
+
+function backSessionHistoryFallback() {
+  if (isIE11()) {
+    window.addEventListener('popstate', function () {
+      location.replace(location.href);
+    });
+  }
+}
