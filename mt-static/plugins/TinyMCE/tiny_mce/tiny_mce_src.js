@@ -9538,8 +9538,23 @@ window.tinymce.dom.Sizzle = Sizzle;
 			}
 
 			// Handle simple range
-			if (type)
-				return {rng : t.getRng()};
+			if (type) {
+				rng = t.getRng();
+
+				if (rng && rng.startContainer) {
+					return {
+						startContainer : rng.startContainer,
+						startOffset : rng.startOffset,
+						endContainer : rng.endContainer,
+						endOffset : rng.endOffset
+					};
+				}
+				else {
+					return {
+						rng : rng
+					};
+				}
+			}
 
 			rng = t.getRng();
 			id = dom.uniqueId();
@@ -9735,6 +9750,11 @@ window.tinymce.dom.Sizzle = Sizzle;
 					}
 				} else if (bookmark.name) {
 					t.select(dom.select(bookmark.name)[bookmark.index]);
+				} else if (bookmark.startContainer) {
+					rng = t.editor.getDoc().createRange();
+					rng.setStart(bookmark.startContainer, bookmark.startOffset);
+					rng.setEnd(bookmark.endContainer, bookmark.endOffset);
+					t.setRng(rng);
 				} else if (bookmark.rng)
 					t.setRng(bookmark.rng);
 			}
