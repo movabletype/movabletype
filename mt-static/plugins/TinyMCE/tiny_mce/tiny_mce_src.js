@@ -13890,7 +13890,11 @@ tinymce.create('tinymce.ui.Toolbar:tinymce.ui.Container', {
 
 					// Check for setActive since it doesn't scroll to the element
 					if (body.setActive) {
-						body.setActive();
+						try {
+							body.setActive();
+						} catch (ex) {
+							// Ignore
+						}
 					} else {
 						body.focus();
 					}
