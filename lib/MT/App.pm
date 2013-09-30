@@ -2963,6 +2963,22 @@ sub do_reboot {
     if ( $ENV{FAST_CGI} ) {
         require MT::Touch;
         MT::Touch->touch( 0, 'config' );
+
+        if ( my $watchfile = MT->config->IISFastCGIMonitoringFilePath ) {
+            require MT::FileMgr;
+            my $fmgr = MT::FileMgr->new('Local');
+            my $res = $fmgr->put_data( '', $watchfile );
+            if ( $res == undef ) {
+                $app->log(
+                    $app->translate(
+                        "Failed to open IIS FastCGI monitoring file [_1]: [_2]",
+                        $watchfile,
+                        $fmgr->errstr,
+                    )
+                );
+                return 1;
+            }
+        }
     }
     if ( my $pidfile = MT->config->PIDFilePath ) {
         require MT::FileMgr;
