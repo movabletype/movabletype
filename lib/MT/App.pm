@@ -807,7 +807,7 @@ sub init {
             sub { $app->post_run_debug } );
     }
     $app->{vtbl} = $app->registry("methods");
-    $app->init_request(@_);
+    $app->init_request(@_) unless $ENV{FAST_CGI};
     return $app;
 }
 
