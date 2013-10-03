@@ -113,6 +113,7 @@ sub import {
                 $SIG{PIPE} = 'IGNORE';
 
                 $app = $class->new(%param) or die $class->errstr;
+                delete $app->{init_request};
 
            # we set the "handling request" flag so the signal handler can exit
            # immediately when requests aren't being handled.
