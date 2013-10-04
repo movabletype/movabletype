@@ -27,7 +27,7 @@ our @EXPORT_OK
     extract_urls extract_domain extract_domains is_valid_date
     epoch2ts ts2epoch escape_unicode unescape_unicode
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
-    weaken log_time make_string_csv browser_language sanitize_embed
+    weaken log_time make_string_csv browser_language sanitize_embed untainted_param
     extract_url_path break_up_text dir_separator deep_do deep_copy realpath canonicalize_path);
 
 {
@@ -2484,6 +2484,16 @@ sub sanitize_embed {
     $sanitized =~ s!(<script[^>]*>)(?:.+?)(</script>)!$1$2!igs;
 
     return $sanitized;
+}
+
+sub untainted_param {
+    my ( $app, $k ) = @_;
+    my $v = $app->param($k);
+    local $app->{login_again};
+    require MT::Sanitize;
+    ( $v && !$app->validate_magic )
+        ? MT::Sanitize->sanitize( $v, $app->config->GlobalSanitizeSpec )
+        : $v;
 }
 
 sub log_time {
