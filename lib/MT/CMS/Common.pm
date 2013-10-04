@@ -729,6 +729,17 @@ sub edit {
         }
     }
 
+    {
+        # If any column value is overridden by $q->param,
+        # the MT (especially WYSISYG editor) will be working in tainted mode.
+        $param{tainted_input} = 0;
+        local $app->{login_again};
+        unless ( $app->validate_magic ) {
+            $param{tainted_input} ||= ( $q->param($_) || '' ) !~ /^\d*$/
+                for @$cols;
+        }
+    }
+
     if ( $type eq 'website' || $type eq 'blog' ) {
         require MT::Theme;
         my $themes = MT::Theme->load_all_themes;

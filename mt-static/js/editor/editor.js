@@ -23,7 +23,8 @@ $.extend(MT.Editor, {
 
     defaultCommonOptions: {
         body_class_list: [],
-        content_css_list: []
+        content_css_list: [],
+        tainted_input: false
     },
 
     updateDefaultCommonOptions: function(options) {
