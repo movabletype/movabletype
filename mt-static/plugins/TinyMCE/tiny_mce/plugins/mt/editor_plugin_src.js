@@ -374,6 +374,118 @@
                 ed.theme.resizeBy(0, 0);
             });
 
+            ed.onPreInit.add(function() {
+                var attrPrefix  = 'data-mce-mt-',
+                    attrRegExp  = new RegExp('^' + attrPrefix),
+                    placeholder = 'javascript:void("mce-mt-event-placeholer");return false';
+
+                // Save/Restore event handler of the node.
+                ed.parser.addAttributeFilter([/^on|action/], function(nodes, name) {
+                    var i, node,
+                        internalName = attrPrefix + name;
+
+                    for (i = 0; i < nodes.length; i++) {
+                        node = nodes[i];
+
+                        node.attr(internalName, node.attr(name));
+                        node.attr(name, placeholder);
+                    }
+                });
+
+                ed.serializer.addAttributeFilter([attrRegExp], function(nodes, internalName) {
+                    var i, node, savedValue, attrValue,
+                        name = internalName.substring(attrPrefix.length);
+
+                    for (i = 0; i < nodes.length; i++) {
+                        node       = nodes[i];
+                        attrValue  = node.attr(name)
+                        savedValue = node.attr(internalName);
+
+                        if (attrValue === placeholder) {
+                            if (! (savedValue && savedValue.length > 0)) {
+                                savedValue = null;
+                            }
+                            node.attr(name, savedValue);
+                        }
+                        node.attr(internalName, null);
+                    }
+                });
+
+                // Escape/Unescape comment/cdata for security
+                ed.parser.addNodeFilter('#comment,#cdata', function(nodes, name) {
+                    var i, node;
+
+                    for (i = 0; i < nodes.length; i++) {
+                        node = nodes[i];
+                        node.value = escape(node.value);
+                    }
+                });
+
+                ed.serializer.addNodeFilter('#comment', function(nodes, name) {
+                    var i, node;
+
+                    for (i = 0; i < nodes.length; i++) {
+                        node = nodes[i];
+                        node.value = unescape(node.value);
+                        if (node.value.indexOf('[CDATA[') === 0) {
+                            node.name = '#cdata';
+                            node.type = 4;
+                            node.value = node.value.replace(/^\[CDATA\[|\]\]$/g, '');
+                        }
+                    }
+                });
+            });
+
+            if (ed.settings['plugin_mt_tainted_input'] && tinymce.isIE) {
+                ed.onPreInit.add(function() {
+                    var typePrefix = 'mce-mt-',
+                        typeRegExp = new RegExp('^' + typePrefix);
+
+                    // Save/Restore CSS
+                    ed.parser.addNodeFilter('link', function(nodes, name) {
+                        var i, node, value;
+
+                        for (i = 0; i < nodes.length; i++) {
+                            node = nodes[i];
+                            value = node.attr('type');
+                            if (value) {
+                                node.attr('type', typePrefix + value);
+                            }
+                        }
+                    });
+
+                    ed.parser.addNodeFilter('style', function(nodes, name) {
+                        var i, node;
+
+                        for (i = 0; i < nodes.length; i++) {
+                            node = nodes[i];
+                            node.attr('type', typePrefix + (node.attr('type') || 'text/css'));
+                        }
+                    });
+
+                    ed.serializer.addNodeFilter('link,style', function(nodes, name) {
+                        var i, node, value;
+
+                        for (i = 0; i < nodes.length; i++) {
+                            node  = nodes[i];
+                            value = node.attr('type');
+                            if (value) {
+                                node.attr('type', value.replace(typeRegExp, ''));
+                            }
+                        }
+                    });
+
+                    ed.parser.addAttributeFilter('style', function(nodes, name) {
+                        var i, node;
+
+                        for (i = 0; i < nodes.length; i++) {
+                            node = nodes[i];
+                            node.attr(name, '');
+                        }
+                    });
+                });
+            }
+
             this._setupExplicitButtonActivation(ed);
             this._setupIframeStatus(ed);
 
