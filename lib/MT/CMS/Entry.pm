@@ -2,13 +2,18 @@ package MT::CMS::Entry;
 
 use strict;
 use MT::Util qw( format_ts relative_date remove_html encode_html encode_js
-    encode_url archive_file_for offset_time_list );
+    encode_url archive_file_for offset_time_list untainted_param );
 use MT::I18N qw( substr_text const length_text wrap_text encode_text
     break_up_text first_n_text guess_encoding );
 
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
+
+    for my $k (qw(text text_more)) {
+        next unless $app->param($k);
+        $param->{$k} = untainted_param( $app, $k );
+    }
 
     my $q          = $app->param;
     my $type       = $q->param('_type');
