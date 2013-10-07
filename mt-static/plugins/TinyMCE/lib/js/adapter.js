@@ -200,7 +200,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             .replace(/^,+|,+$/g, '').replace(/"/g, '&qquot;');
         config['body_class'] =
             config['body_class'] + ' ' + adapter.commonOptions['body_class_list'].join(' ')
-        if (! 'plugin_mt_tainted_input' in config) {
+        if (! ('plugin_mt_tainted_input' in config)) {
             config['plugin_mt_tainted_input'] = adapter.commonOptions['tainted_input'];
         }
 
