@@ -831,8 +831,7 @@ sub upgrade {
     if ( $ENV{FAST_CGI} ) {
 
         # don't enter the FCGI loop.
-        require MT::Bootstrap;
-        MT::Bootstrap::fcgi_sig_handler('Upgrade');
+        $app->reboot;
     }
 
     # check for an empty database... no author table would do it...
@@ -1909,7 +1908,8 @@ sub adjust_sitepath {
             File::Path::rmtree($tmp_dir);
         }
         else {
-            opendir my $dh, $tmp_dir
+            opendir my $dh,
+                $tmp_dir
                 or return $app->error(
                 MT->translate(
                     "Cannot open directory '[_1]': [_2]",

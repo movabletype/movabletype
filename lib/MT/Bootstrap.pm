@@ -87,8 +87,8 @@ sub import {
 
             # line __LINE__ __FILE__
             require MT;
-            eval "# line " 
-                . __LINE__ . " " 
+            eval "# line "
+                . __LINE__ . " "
                 . __FILE__
                 . "\nrequire $class; 1;"
                 or die $@;
@@ -112,13 +112,13 @@ sub import {
                 $SIG{TERM} = \&fcgi_sig_handler;
                 $SIG{PIPE} = 'IGNORE';
 
+                $app = $class->new(%param) or die $class->errstr;
+                delete $app->{init_request};
+
            # we set the "handling request" flag so the signal handler can exit
            # immediately when requests aren't being handled.
                 while ( $fcgi_handling_request = ( my $cgi = new CGI::Fast ) )
                 {
-                    $app = $class->new( %param, CGIObject => $cgi )
-                        or die $class->errstr;
-
                     $ENV{FAST_CGI} = 1;
                     $app->{fcgi_startup_time} ||= time;
                     $app->{fcgi_request_count}
@@ -214,7 +214,7 @@ sub import {
                         my $cgipath = "$prot://$host";
                         $cgipath .= ":$port"
                             unless $port == 443
-                                or $port == 80;
+                            or $port == 80;
                         $cgipath .= $uri;
                         print "Status: 302 Moved\n";
                         print "Location: " . $cgipath . "\n\n";
