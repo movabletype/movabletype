@@ -108,7 +108,7 @@ sub import {
         # exiting.
         # TODO: handle SIGPIPE more gracefully.
                 $SIG{HUP}  = \&fcgi_sig_handler;
-                $SIG{USR1} = \&fcgi_sig_handler;
+                $SIG{USR1} = \&fcgi_sig_handler unless $^O eq 'MSWin32';
                 $SIG{TERM} = \&fcgi_sig_handler;
                 $SIG{PIPE} = 'IGNORE';
 
