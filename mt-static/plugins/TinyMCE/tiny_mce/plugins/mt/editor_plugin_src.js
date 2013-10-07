@@ -438,19 +438,23 @@
 
             if (ed.settings['plugin_mt_tainted_input'] && tinymce.isIE) {
                 ed.onPreInit.add(function() {
-                    var typePrefix = 'mce-mt-',
-                        typeRegExp = new RegExp('^' + typePrefix);
+                    var attrPrefix  = 'data-mce-mtie-',
+                        placeholder = '-mt-placeholder:auto;',
+                        valuePrefix = 'mce-mt-',
+                        valueRegExp = new RegExp('^' + valuePrefix);
 
                     // Save/Restore CSS
                     ed.parser.addNodeFilter('link', function(nodes, name) {
-                        var i, node, value;
+                        var i, node;
 
                         for (i = 0; i < nodes.length; i++) {
                             node = nodes[i];
-                            value = node.attr('type');
-                            if (value) {
-                                node.attr('type', typePrefix + value);
-                            }
+                            $.each(['type', 'rel'], function(i, k) {
+                                var value = node.attr(k);
+                                if (value) {
+                                    node.attr(k, valuePrefix + value);
+                                }
+                            });
                         }
                     });
 
@@ -459,7 +463,7 @@
 
                         for (i = 0; i < nodes.length; i++) {
                             node = nodes[i];
-                            node.attr('type', typePrefix + (node.attr('type') || 'text/css'));
+                            node.attr('type', valuePrefix + (node.attr('type') || 'text/css'));
                         }
                     });
 
@@ -468,19 +472,42 @@
 
                         for (i = 0; i < nodes.length; i++) {
                             node  = nodes[i];
-                            value = node.attr('type');
-                            if (value) {
-                                node.attr('type', value.replace(typeRegExp, ''));
-                            }
+                            $.each(['type', 'rel'], function(i, k) {
+                                var value = node.attr(k);
+                                if (value) {
+                                    node.attr(k, value.replace(valueRegExp, ''));
+                                }
+                            });
                         }
                     });
 
                     ed.parser.addAttributeFilter('style', function(nodes, name) {
-                        var i, node;
+                        var i, node,
+                            internalName = attrPrefix + name;
 
                         for (i = 0; i < nodes.length; i++) {
                             node = nodes[i];
-                            node.attr(name, '');
+                            node.attr(internalName, node.attr(name));
+                            node.attr(name, placeholder);
+                        }
+                    });
+
+                    ed.serializer.addAttributeFilter(attrPrefix + 'style', function(nodes, internalName) {
+                        var i, node, savedValue, attrValue,
+                            name = internalName.substring(attrPrefix.length);
+
+                        for (i = 0; i < nodes.length; i++) {
+                            node       = nodes[i];
+                            attrValue  = node.attr(name)
+                            savedValue = node.attr(internalName);
+
+                            if (attrValue === placeholder) {
+                                if (! (savedValue && savedValue.length > 0)) {
+                                    savedValue = null;
+                                }
+                                node.attr(name, savedValue);
+                            }
+                            node.attr(internalName, null);
                         }
                     });
                 });
