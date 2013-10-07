@@ -102,7 +102,7 @@ __SQL__
             },
         },
         'v6_remove_indexes' => {
-            version_limit => 6.008,
+            version_limit => 6.0008,
             priority      => 3.2,
             code          => \&_v6_remove_indexes,
         },
