@@ -12,7 +12,7 @@
     </div>
   </div>
   <div class="up-right-column">
-    <div id="statistics_settings_link" class="hide">
+    <div id="statistics_settings_link">
       <a href="<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Statistics Settings"></a>
     </div>
   </div>
@@ -50,8 +50,8 @@
       '#503D99',
       '#395595'
     ];
+
     jQuery('select#select_blog_id').change( function() {
-      jQuery('#statistics_settings_link').hide();
       jQuery('#graph').empty();
       var select_blog_id = jQuery('select#select_blog_id').val();
       jQuery.ajax({
@@ -79,6 +79,8 @@
         }
       });
     });
+
+    jQuery('#statistics_settings_link').hide();
 
     draw_graph('<mt:var name="stat_url">', true);
 
