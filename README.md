@@ -22,9 +22,9 @@ if they are not, [how to install them](http://www.cpan.org/misc/cpan-faq.html#Ho
 
 Upgrading Movable Type
 --------
-If you are upgrading to Movable Type 5 from a previous version, we recommend that you first back up your old installation.
+If you are upgrading to Movable Type 6 from a previous version, we recommend that you first back up your old installation.
 Database backup is especially important to restore your system in case of any trouble during the upgrade process.
-Upload Movable Type 5's files over the same files from the previous version of Movable Type.
+Upload Movable Type 6's files over the same files from the previous version of Movable Type.
 Access Movable Type as you normally do, and you will be taken through the upgrade process.
 
 Installing Movable Type
