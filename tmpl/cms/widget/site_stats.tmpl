@@ -52,6 +52,7 @@
     ];
 
     jQuery('select#select_blog_id').change( function() {
+      jQuery('#statistics_settings_link').hide();
       jQuery('#graph').empty();
       var select_blog_id = jQuery('select#select_blog_id').val();
       jQuery.ajax({
