@@ -1779,9 +1779,9 @@ sub _hdlr_comment_replies_recurse {
     my %entries;
     my $blog = $ctx->stash('blog');
     my $so 
-        = lc( $args->{sort_order} )
-        || ( $blog ? $blog->sort_order_comments : undef )
-        || 'ascend';
+        = $args->{sort_order}
+        ? lc( $args->{sort_order} )
+        : ( $blog ? $blog->sort_order_comments : undef ) || 'ascend';
     my $n = $args->{lastn};
     my @comments;
 
