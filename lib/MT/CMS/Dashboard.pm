@@ -713,8 +713,13 @@ sub _build_favorite_websites_data {
     my $class        = $app->model('website');
     my @fav_websites = @{ $user->favorite_websites || [] };
     my $fav_count    = scalar @fav_websites;
+    my %args;
+    $args{join}
+        = MT::Permission->join_on( 'blog_id',
+        { author_id => $user->id, permissions => { not => "'comment'" } } )
+        if !$user->is_superuser && $param->{remove_no_perms};
     my @websites;
-    @websites = $class->load( { id => \@fav_websites } )
+    @websites = $class->load( { id => \@fav_websites }, \%args )
         if $fav_count;
 
     @websites = grep sub {
@@ -724,6 +729,7 @@ sub _build_favorite_websites_data {
         }
         return 0;
     }, @websites;
+    $fav_count = @websites;
 
     # Append accessible websites if user has 4 or more blogs.
     if ( scalar @websites < 10 ) {
@@ -1083,8 +1089,8 @@ sub site_stats_widget {
     }
     else {
         # Load favorite websites data
-        my $websites
-            = _build_favorite_websites_data( $app, { my_posts => 1 } );
+        my $websites = _build_favorite_websites_data( $app,
+            { not_count => 1, remove_no_perms => 1 } );
         foreach my $website (@$websites) {
             my $row;
             $row->{id}   = $website->{website_id};
@@ -1093,7 +1099,7 @@ sub site_stats_widget {
         }
 
         # Load favorite blogs data
-        my $blogs = _build_favorite_blogs_data( $app, { my_posts => 1 } );
+        my $blogs = _build_favorite_blogs_data( $app, { not_count => 1 } );
         foreach my $blog (@$blogs) {
             my $row;
             $row->{id}   = $blog->{blog_id};
