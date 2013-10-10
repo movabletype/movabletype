@@ -262,7 +262,13 @@ function format_ts($format, $ts, $blog, $lang = null) {
         $format = preg_replace('!%b %e!', '%e %b', $format);
     }
     if (isset($format)) {
-        $format = preg_replace('!%(\w)!e', '\$f[\'\1\']', $format);
+        $keys = array();
+        $values = array();
+        foreach ($f as $k => $v) {
+            $keys[] = '%' . $k;
+            $values[] = $v;
+        }
+        $format = str_replace($keys, $values, $format);
     }
     return $format;
 }
