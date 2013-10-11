@@ -1766,6 +1766,8 @@ sub save {
 
     my $error_string = MT::callback_errstr();
 
+    my $placements_updated;
+
     ## Now that the object is saved, we can be certain that it has an
     ## ID. So we can now add/update/remove the primary placement.
     require MT::Placement;
@@ -1782,15 +1784,15 @@ sub save {
         $place->save;
         my $cat = $cat_class->load($cat_id);
         $obj->cache_property( 'category', undef, $cat );
+        $placements_updated = 1;
     }
     else {
         if ($place) {
             $place->remove;
             $obj->cache_property( 'category', undef, undef );
+            $placements_updated = 1;
         }
     }
-
-    my $placements_updated;
 
     # save secondary placements...
     my @place = MT::Placement->load(
@@ -1826,7 +1828,6 @@ sub save {
     if ($placements_updated) {
         unshift @add_cat_obj, $obj->cache_property('category')
             if $obj->cache_property('category');
-        $obj->cache_property( 'categories', undef, [] );
         $obj->cache_property( 'categories', undef, \@add_cat_obj );
     }
 
