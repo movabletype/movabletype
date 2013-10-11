@@ -17,9 +17,9 @@ class MTDatabasemysql extends MTDatabase {
                 // Connection by unix socket
                 $dsn = "unix_socket=$sock";
             } else {
-                $dsn = "host=$host";
                 if (!empty($port))
                     $host .= ";port=$port";
+                $dsn = "host=$host";
             }
             $dsn = "mysql:$dsn";
             $this->conn->Connect($dsn, $user, $password, $dbname);
@@ -29,9 +29,9 @@ class MTDatabasemysql extends MTDatabase {
                 // Connection by unix socket
                 $dsn = ":$sock";
             } else {
-                $dsn = "$host";
                 if (!empty($port))
                     $host .= ":$port";
+                $dsn = "$host";
             }
             $this->conn->Connect($dsn, $user, $password, $dbname);
         }
