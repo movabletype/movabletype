@@ -1653,7 +1653,9 @@ function normalize_language($language, $locale, $ietf) {
         $language = $real_lang[$language];
     }
     if ($locale) {
-        $language = preg_replace('/^([A-Za-z][A-Za-z])([-_]([A-Za-z][A-Za-z]))?$/e', '\'$1\' . "_" . (\'$3\' ? strtoupper(\'$3\') : strtoupper(\'$1\'))', $language);
+        if (preg_match('/^([A-Za-z][A-Za-z])([-_]([A-Za-z][A-Za-z]))?$/', $language, $matches)) {
+            $language = $matches[1] . '_' . strtoupper( $matches[3] ? $matches[3] : $matches[1] );
+        }
     } elseif ($ietf) {
         # http://www.ietf.org/rfc/rfc3066.txt
         $language = preg_replace('/_/', '-', $language);
