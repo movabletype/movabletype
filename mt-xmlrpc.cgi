@@ -43,7 +43,10 @@ use vars qw($server);
     $server
         = $not_fast_cgi
         ? XMLRPC::Transport::HTTP::CGI->new
-        : XMLRPC::Transport::HTTP::FCGI->new;
+        : do {
+        MT::XMLRPCServer::Util::mt_new;
+        XMLRPC::Transport::HTTP::FCGI->new;
+        };
     $server->dispatch_to( 'blogger', 'metaWeblog', 'mt', 'wp' );
     $server->handle;
 }
