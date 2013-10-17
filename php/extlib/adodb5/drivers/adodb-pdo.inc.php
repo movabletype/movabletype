@@ -1,6 +1,6 @@
 <?php
 /* 
-V5.10 10 Nov 2009   (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved.
+V5.18 3 Sep 2012  (c) 2000-2012 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -130,9 +130,10 @@ class ADODB_pdo extends ADOConnection {
 		if ($argDatabasename) {
 			$argDSN .= ';dbname='.$argDatabasename;
 		}
-        if ( $this->port )
+        if ( $this->port ) {
             $argDSN .= ';port=' . $this->port;
-
+        }
+        
 		try {
 			$this->_connectionID = new PDO($argDSN, $argUsername, $argPassword);
 		} catch (Exception $e) {
@@ -244,7 +245,7 @@ class ADODB_pdo extends ADOConnection {
 		
 		if ($arr) {
 		 	if (sizeof($arr)<2) return '';
-			if ((integer)$arr[1]) return $arr[2];
+			if ((integer)$arr[0]) return $arr[2];
 			else return '';
 		} else return '-1';
 	}

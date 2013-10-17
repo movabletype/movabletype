@@ -23,6 +23,17 @@ class MTDatabasemysql extends MTDatabase {
             }
             $dsn = "mysql:$dsn";
             $this->conn->Connect($dsn, $user, $password, $dbname);
+        } elseif (extension_loaded('mysqli')) {
+            $this->conn = ADONewConnection('mysqli');
+            if ( !empty($sock) ) {
+                // Connection by unix socket
+                $dsn = ":$sock";
+            } else {
+                $dsn = "$host";
+                if (!empty($port))
+                    $host .= ":$port";
+            }
+            $this->conn->Connect($dsn, $user, $password, $dbname);
         } else {
             $this->conn = ADONewConnection('mysql');
             if ( !empty($sock) ) {
