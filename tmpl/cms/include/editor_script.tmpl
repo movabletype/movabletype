@@ -26,7 +26,8 @@ MT.EditorManager.updateMap({
 MT.App.setDefaultEditorStrategy('<mt:var name="editor_strategy" escape="js" />');
 
 var opts = {
-    body_class_list: ['wysiwyg', '<mt:var name="object_type" escape="js" />']
+    body_class_list: ['wysiwyg', '<mt:var name="object_type" escape="js" />'],
+    tainted_input: <mt:If name="tainted_input">true<mt:Else>false</mt:If>
 };
 <mt:if name="content_css">
 opts['content_css_list'] = ['<mt:var name="content_css" escape="js" />'];
