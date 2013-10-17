@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -112,7 +112,9 @@ sub list_props {
                             . 'images/asset/'
                             . $class_type
                             . '-45.png';
-                        if ( $obj->has_thumbnail ) {
+                        if (   $obj->has_thumbnail
+                            && $obj->can_create_thumbnail )
+                        {
                             my ( $orig_width, $orig_height )
                                 = ( $obj->image_width, $obj->image_height );
                             my ( $thumbnail_url, $thumbnail_width,
@@ -160,6 +162,19 @@ sub list_props {
                                 <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
                                 <div class="thumbnail picture small">
                                   <img alt="" src="$thumbnail_url" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                                </div>
+                            };
+                        }
+                        elsif ( $class_type eq 'image' ) {
+                            my $img
+                                = MT->static_path
+                                . 'images/asset/'
+                                . $class_type
+                                . '-warning-45.png';
+                            push @rows, qq{
+                                <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                <div class="file-type missing picture small">
+                                  <img alt="$class_type" src="$img" class="asset-type-icon asset-type-$class_type" />
                                 </div>
                             };
                         }
@@ -302,23 +317,16 @@ sub list_props {
                     push @{ $db_args->{joins} },
                         MT->model('objecttag')->join_on(
                         undef,
-                        [   [   { tag_id => { not => $tag->id }, },
-                                '-or',
-                                {   tag_id => \'IS NULL',    # FOR-EDITOR ',
-                                },
-                            ],
-                            '-and',
-                            [   {   object_datasource => MT::Asset->datasource
-                                },
-                                '-or',
-                                {   object_datasource => \
-                                        'IS NULL'            # FOR-EDITOR ',
-                                },
-                            ],
+                        [   { tag_id => { not => $tag->id }, },
+                            '-or',
+                            { tag_id => \'IS NULL', },
                         ],
                         {   unique    => 1,
                             type      => 'left',
-                            condition => 'object_id',
+                            condition => {
+                                'object_id' => \'=asset_id',   # FOR-EDITOR ',
+                                'object_datasource' => 'asset',
+                            },
                         }
                         );
                 }
@@ -787,23 +795,6 @@ sub edit_template_param {
     return;
 }
 
-sub set_values_from_query {
-    my $asset = shift;
-    my ($q) = @_;
-
-    # Set the known columns from the form, if they're set. Subclasses can
-    # opt out or decorate this behavior by overriding the method.
-    my $names = $asset->column_names;
-    my %values;
-    for my $field (@$names) {
-        $values{$field} = $q->param($field)
-            if defined $q->param($field);
-    }
-    $asset->set_values( \%values );
-
-    1;
-}
-
 # $pseudo parameter causes function to return '%r' as
 # root instead of blog site path
 sub _make_cache_path {
@@ -864,6 +855,33 @@ sub tagged_count {
     $terms ||= {};
     $terms->{class} = '*';
     return $obj->SUPER::tagged_count( $tag_id, $terms );
+}
+
+sub can_create_thumbnail {
+    my $asset = shift;
+    my $blog  = $asset->blog;
+
+    require MT::FileMgr;
+    require File::Spec;
+
+    my $path            = MT->config('AssetCacheDir');
+    my $asset_file_path = $asset->SUPER::file_path();
+    my $root_path;
+    if ( !$blog ) {
+        $root_path = MT->instance->support_directory_path;
+    }
+    elsif ( $asset_file_path =~ m/^%a/ ) {
+        $root_path = $blog->archive_path;
+    }
+    else {
+        $root_path = $blog->site_path;
+    }
+
+    my $real_thumb_path = File::Spec->catdir( $root_path, $path );
+    my $fmgr = MT::FileMgr->new('Local');
+
+    return $fmgr->exists($real_thumb_path)
+        && !$fmgr->can_write($real_thumb_path) ? 0 : 1;
 }
 
 1;
@@ -1015,13 +1033,6 @@ subclasses can process the file, create thumbnails and so on.
 Called before the template rendering, and gives an asset a chance
 to add parameters. Default behavior is to do nothing
 
-=head2 $asset->set_values_from_query( $q )
-
-The Asset will collect from a query's parameters any data that it 
-finds relevant. By default search if any of it's data fields 
-exists in the query, and if they do saves them. Subclasses can
-opt out or decorate this behavior by overriding the method
-
 =head2 $asset->remove_cached_files()
 
 Remove all the thumbnails generated for $asset
@@ -1042,6 +1053,10 @@ as explained in $asset->url
 
 Remove this asset from the database, the filesystem and any associated
 tags. also removes child assets and ObjectAsset records
+
+=head2 $asset->can_create_thumbnail()
+
+Write-in permission to thumbnail directory is investigated.
 
 =head1 AUTHORS & COPYRIGHT
 

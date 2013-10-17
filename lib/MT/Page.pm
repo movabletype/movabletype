@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -35,8 +35,11 @@ MT->add_callback( 'api_post_save.' . 'page',
 MT->add_callback( 'cms_post_save.' . 'page',
     9, undef, \&MT::Revisable::mt_postsave_obj );
 
-__PACKAGE__->add_callback( 'post_remove', 0, MT->component('core'),
-    \&MT::Revisable::mt_postremove_obj );
+__PACKAGE__->add_callback(
+    'post_remove', 0,
+    MT->component('core'),
+    \&MT::Revisable::mt_postremove_obj
+);
 
 sub list_props {
     return {
@@ -53,50 +56,9 @@ sub list_props {
             label            => 'Folder',
             filter_label     => 'Folder',
             display          => 'default',
-            view_filter      => [ 'blog', 'website' ],
             order            => 500,
             category_class   => 'folder',
             zero_state_label => '(root)',
-            terms            => sub {
-                my ( $prop, $args, $db_terms, $db_args ) = @_;
-                my $blog = MT->app->blog;
-                my $blog_id
-                    = $blog->is_blog
-                    ? MT->app->blog->id
-                    : [ MT->app->blog->id, map { $_->id } @{ $blog->blogs } ];
-                my $app    = MT->instance;
-                my $option = $args->{option};
-                my $query  = $args->{string};
-                if ( 'contains' eq $option ) {
-                    $query = { like => "%$query%" };
-                }
-                elsif ( 'not_contains' eq $option ) {
-                    $query = { not_like => "%$query%" };
-                }
-                elsif ( 'beginning' eq $option ) {
-                    $query = { like => "$query%" };
-                }
-                elsif ( 'end' eq $option ) {
-                    $query = { like => "%$query" };
-                }
-                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
-                    undef,
-                    {   entry_id => \'= entry_id',
-                        ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                    },
-                    {   unique => 1,
-                        join   => MT->model( $prop->category_class )->join_on(
-                            undef,
-                            {   label => $query,
-                                id    => \'= placement_category_id',
-                                ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                            },
-                            { unique => 1, }
-                        ),
-                    },
-                );
-                return;
-            },
         },
         folder_id => {
             base             => 'entry.category_id',
@@ -126,7 +88,8 @@ sub list_props {
             base    => 'entry.modified_on',
             display => 'default',
         },
-        comment_count => {
+        unpublished_on => { base => 'entry.unpublished_on', },
+        comment_count  => {
             display => 'optional',
             base    => 'entry.comment_count',
             order   => 800,
@@ -147,9 +110,10 @@ sub list_props {
         status => {
             base                  => 'entry.status',
             single_select_options => [
-                { label => MT->translate('Draft'),     value => 1, },
-                { label => MT->translate('Published'), value => 2, },
-                { label => MT->translate('Scheduled'), value => 4, },
+                { label => MT->translate('Draft'),             value => 1, },
+                { label => MT->translate('Published'),         value => 2, },
+                { label => MT->translate('Scheduled'),         value => 4, },
+                { label => MT->translate('Unpublished (End)'), value => 6, },
             ],
         },
         basename     => { base => 'entry.basename' },
@@ -179,9 +143,14 @@ sub system_filters {
             order => 200,
         },
         draft => {
-            label => 'Unpublished Pages',
+            label => 'Draft Pages',
             items => [ { type => 'status', args => { value => '1' }, }, ],
             order => 300,
+        },
+        unpublished => {
+            label => 'Unpublished Pages',
+            items => [ { type => 'status', args => { value => '6' }, }, ],
+            order => 350,
         },
         future => {
             label => 'Scheduled Pages',
@@ -298,6 +267,14 @@ pages (ie: "Folder").
 
 Returns the string "folder", which is the MT type identifier for
 the L<MT::Folder> class.
+
+=head2 MT::Page->list_props
+
+Returns the list_properties registry of this class.
+
+=head2 MT::Page->system_filters
+
+Returns the system_filters registry of this class.
 
 =head2 $page->folder
 

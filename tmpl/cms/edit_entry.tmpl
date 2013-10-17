@@ -231,7 +231,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="form_header">
-<form name="entry_form" id="entry_form" method="post" action="<$mt:var name="script_url"$>" mt:once="1" mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
+<form name="entry_form" id="entry_form" method="post" action="<$mt:var name="script_url"$>"<mt:unless name="config.previewinnewwindow"> mt:once="1"</mt:unless> mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
 <mt:if name="new_object">
   <input type="hidden" name="author_id" value="<$mt:var name="author_id" escape="html"$>" />
 <mt:else>
@@ -245,6 +245,7 @@
   <input type="hidden" name="action_name" value="" />
   <input type="hidden" name="itemset_action_input" value="" />
   <input type="hidden" name="dirty" value="" />
+  <input type="hidden" name="old_status" id="old_status" value="<mt:var name="status">" />
 <mt:if name="use_revision">
   <input type="hidden" name="save_revision" id="save_revision" value="1" />
 </mt:if>
@@ -334,6 +335,8 @@
     <span class="icon-left-wide icon-success"><__trans phrase="Published"></span>
     <mt:else name="status_spam">
     <span class="icon-left-wide icon-spam"><__trans phrase="Unpublished (Spam)"></span>
+    <mt:else name="status_unpublish">
+    <span class="icon-left-wide icon-unpublish"><__trans phrase="Unpublished (End)"></span>
     </mt:if>
   </mt:unless>
   </div>
@@ -434,6 +437,9 @@
       <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>><__trans phrase="Scheduled"></option>
       </mt:unless>
     </mt:if>
+    <mt:if name="status_unpublish">
+      <option value="6" selected="selected"><__trans phrase="Unpublished (End)"></option>
+    </mt:if>
     </select>
     <mt:else>
       <mt:if name="new_object">
@@ -449,6 +455,8 @@
     <input type="hidden" name="status" id="status" value="3" /><span><__trans phrase="Unpublished (Review)"></span>
         <mt:else name="status_spam">
     <input type="hidden" name="status" id="status" value="5" /><span><__trans phrase="Unpublished (Spam)"></span>
+        <mt:else name="status_unpublish">
+    <input type="hidden" name="status" id="status" value="6" /><span><__trans phrase="Unpublished (End)"></span>
         </mt:if>
       </mt:if>
     </mt:if>
@@ -469,6 +477,21 @@
      help_section="date">
     <div class="date-time-fields">
       <input type="text" id="created-on" class="text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" /><span class="separator"> <__trans phrase="@"></span> <input type="text" class="text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>" />
+    </div>
+  </mtapp:setting>
+
+  <mt:setvar name="unpublished_on_label" value="<__trans phrase="Unpublish Date">">
+
+  <mtapp:setting
+     id="unpublished_on"
+     label="$unpublished_on_label"
+     label_class="top-label"
+     help_page="entries"
+     help_section="date">
+    <div class="date-time-fields">
+      <div id="unpublished-on" class="mt-edit-inputblock<$mt:if name="show_input_unpublished_on"> show-input</mt:if>">
+        <input type="text" id="unpublished-on-date" class="text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" /><span class="separator"> <__trans phrase="@"></span> <input type="text" id="unpublished-on-time" class="text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" />
+      </div>
     </div>
   </mtapp:setting>
 
@@ -861,11 +884,11 @@
           for (i = 0; i < customizable_fields.length; i++) {
               val = customizable_fields[i];
               if ( jQuery.inArray( val, default_fields ) > -1 ) {
-                  jQuery('#custom-prefs-'+val).attr('checked', true);
+                  jQuery('#custom-prefs-'+val).prop('checked', true);
                   jQuery('div#'+val+'-field').removeClass('hidden');
                   jQuery('div#'+val+'-field').show();
               } else {
-                  jQuery('#custom-prefs-'+val).attr('checked', false);
+                  jQuery('#custom-prefs-'+val).prop('checked', false);
                   jQuery('div#'+val+'-field').addClass('hidden');
                   jQuery('div#'+val+'-field').hide();
               }
@@ -1099,7 +1122,7 @@
      label_class="display-options">
     <ul id="entry-pref-field-list" class="multiple-selection">
     <mt:loop name="field_loop">
-      <mt:unless name="system_field"><mt:unless name="lock_field"><li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li><mt:else><li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li></mt:unless></mt:unless>
+      <mt:unless name="system_field"><mt:unless name="lock_field"><li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li><mt:else><li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li></mt:unless></mt:unless>
     </mt:loop>
     </ul>
   </mtapp:setting>
@@ -1174,7 +1197,7 @@
       <a class="button" href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View"></a>
         </mt:if>
         <mt:if name="can_send_notifications">
-      <a href="<mt:var name="script_url">?__mode=entry_notify&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;entry_id=<mt:var name="id" escape="url">" class="button mt-open-dialog"><__trans phrase="Share"></a>
+      <a href="<mt:var name="script_url">?__mode=entry_notify&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;entry_id=<mt:var name="id" escape="url">" class="button<mt:unless name="from_email"> disabled<mt:else> mt-open-dialog</mt:unless>"<mt:unless name="from_email"> onclick="return false;"</mt:unless>><__trans phrase="Share"></a>
         </mt:if>
       </mt:if>
   </mtapp:setting>
@@ -1288,6 +1311,23 @@
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('button.preview').click(function(event) {
         jQuery('form#entry_form input[name=__mode]').val('preview_entry');
+  <mt:if name="config.previewinnewwindow">
+        jQuery('form#entry_form').attr('target', '_brank');
+  </mt:if>
+    });
+  <mt:if name="config.previewinnewwindow">
+    jQuery('button.publish').click(function(event) {
+        app.clearDirty();
+        app.stopAutoSave();
+        jQuery('form#entry_form input[name=__mode]').val('save_entry');
+        jQuery('form#entry_form').removeAttr('target');
+        jQuery(this).attr('disabled', 'disabled');
+        jQuery('form#entry_form').submit();
+    });
+  </mt:if>
+    jQuery('div.mt-edit-inputblock').mtEditInputBlock({
+        edit: '<__trans phrase="Edit">',
+        text: '<$mt:if name="unpublished_on_date"><$mt:var name="unpublished_on_date" escape="html"$> <__trans phrase="@"> <$mt:var name="unpublished_on_time" escape="html"$><mt:else><__trans phrase="Not specified"></mt:if>'
     });
     jQuery('input#title').mtRebasename({
         edit: '<__trans phrase="Edit">',
@@ -1298,7 +1338,10 @@
         jQuery('input#revision-note').toggle();
     });
 
-    jQuery('select#status').change( setSaveButtonText );
+    jQuery('select#status').change(function() {
+        setSaveButtonText();
+        clearUnpublishDate();
+    });
     function setSaveButtonText () {
         var selectedStatus = jQuery('select#status').val();
         if (selectedStatus == 2) {
@@ -1310,6 +1353,14 @@
         } else {
             jQuery('button.publish').text('<mt:var name="draft_button_text">');
             jQuery('button.publish').attr('title', '<mt:var name="draft_button_title">');
+        }
+    }
+    function clearUnpublishDate () {
+        var oldStatus = jQuery('input#old_status').val();
+        if (oldStatus == 6) {
+            jQuery('input#unpublished-on-date').val('');
+            jQuery('input#unpublished-on-time').val('');
+            jQuery('span.unpublished-on-text').text('<__trans phrase="Not specified">');
         }
     }
     setSaveButtonText();

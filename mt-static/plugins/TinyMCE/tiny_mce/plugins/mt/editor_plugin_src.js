@@ -1,12 +1,12 @@
 /*
- * Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
- * This program is distributed under the terms of the
- * GNU General Public License, version 2.
+ * Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+ * This code cannot be redistributed without permission from www.sixapart.com.
+ * For more information, consult your Movable Type license.
  *
  * $Id$
  */
 ;(function($) {
-    $.each(['plugin', 'advanced'], function() {
+    $.each(['plugin', 'advanced', 'core'], function() {
         tinymce
             .ScriptLoader
             .add(tinymce.PluginManager.urls['mt'] + '/langs/' + this + '.js');
@@ -374,6 +374,145 @@
                 ed.theme.resizeBy(0, 0);
             });
 
+            ed.onPreInit.add(function() {
+                var attrPrefix  = 'data-mce-mt-',
+                    attrRegExp  = new RegExp('^' + attrPrefix),
+                    placeholder = 'javascript:void("mce-mt-event-placeholer");return false';
+
+                // Save/Restore event handler of the node.
+                ed.parser.addAttributeFilter([/^on|action/], function(nodes, name) {
+                    var i, node,
+                        internalName = attrPrefix + name;
+
+                    for (i = 0; i < nodes.length; i++) {
+                        node = nodes[i];
+
+                        node.attr(internalName, node.attr(name));
+                        node.attr(name, placeholder);
+                    }
+                });
+
+                ed.serializer.addAttributeFilter([attrRegExp], function(nodes, internalName) {
+                    var i, node, savedValue, attrValue,
+                        name = internalName.substring(attrPrefix.length);
+
+                    for (i = 0; i < nodes.length; i++) {
+                        node       = nodes[i];
+                        attrValue  = node.attr(name)
+                        savedValue = node.attr(internalName);
+
+                        if (attrValue === placeholder) {
+                            if (! (savedValue && savedValue.length > 0)) {
+                                savedValue = null;
+                            }
+                            node.attr(name, savedValue);
+                        }
+                        node.attr(internalName, null);
+                    }
+                });
+
+                // Escape/Unescape comment/cdata for security
+                ed.parser.addNodeFilter('#comment,#cdata', function(nodes, name) {
+                    var i, node;
+
+                    for (i = 0; i < nodes.length; i++) {
+                        node = nodes[i];
+                        node.value = escape(node.value);
+                    }
+                });
+
+                ed.serializer.addNodeFilter('#comment', function(nodes, name) {
+                    var i, node;
+
+                    for (i = 0; i < nodes.length; i++) {
+                        node = nodes[i];
+                        node.value = unescape(node.value);
+                        if (node.value.indexOf('[CDATA[') === 0) {
+                            node.name = '#cdata';
+                            node.type = 4;
+                            node.value = node.value.replace(/^\[CDATA\[|\]\]$/g, '');
+                        }
+                    }
+                });
+            });
+
+            if (ed.settings['plugin_mt_tainted_input'] && tinymce.isIE) {
+                ed.onPreInit.add(function() {
+                    var attrPrefix  = 'data-mce-mtie-',
+                        placeholder = '-mt-placeholder:auto;',
+                        valuePrefix = 'mce-mt-',
+                        valueRegExp = new RegExp('^' + valuePrefix);
+
+                    // Save/Restore CSS
+                    ed.parser.addNodeFilter('link', function(nodes, name) {
+                        var i, node;
+
+                        for (i = 0; i < nodes.length; i++) {
+                            node = nodes[i];
+                            $.each(['type', 'rel'], function(i, k) {
+                                var value = node.attr(k);
+                                if (value) {
+                                    node.attr(k, valuePrefix + value);
+                                }
+                            });
+                        }
+                    });
+
+                    ed.parser.addNodeFilter('style', function(nodes, name) {
+                        var i, node;
+
+                        for (i = 0; i < nodes.length; i++) {
+                            node = nodes[i];
+                            node.attr('type', valuePrefix + (node.attr('type') || 'text/css'));
+                        }
+                    });
+
+                    ed.serializer.addNodeFilter('link,style', function(nodes, name) {
+                        var i, node, value;
+
+                        for (i = 0; i < nodes.length; i++) {
+                            node  = nodes[i];
+                            $.each(['type', 'rel'], function(i, k) {
+                                var value = node.attr(k);
+                                if (value) {
+                                    node.attr(k, value.replace(valueRegExp, ''));
+                                }
+                            });
+                        }
+                    });
+
+                    ed.parser.addAttributeFilter('style', function(nodes, name) {
+                        var i, node,
+                            internalName = attrPrefix + name;
+
+                        for (i = 0; i < nodes.length; i++) {
+                            node = nodes[i];
+                            node.attr(internalName, node.attr(name));
+                            node.attr(name, placeholder);
+                        }
+                    });
+
+                    ed.serializer.addAttributeFilter(attrPrefix + 'style', function(nodes, internalName) {
+                        var i, node, savedValue, attrValue,
+                            name = internalName.substring(attrPrefix.length);
+
+                        for (i = 0; i < nodes.length; i++) {
+                            node       = nodes[i];
+                            attrValue  = node.attr(name)
+                            savedValue = node.attr(internalName);
+
+                            if (attrValue === placeholder) {
+                                if (! (savedValue && savedValue.length > 0)) {
+                                    savedValue = null;
+                                }
+                                node.attr(name, savedValue);
+                            }
+                            node.attr(internalName, null);
+                        }
+                    });
+                });
+            }
+
             this._setupExplicitButtonActivation(ed);
             this._setupIframeStatus(ed);
 
@@ -422,7 +561,7 @@
                     ed.windowManager.open({
                         file : url + '/insert_html.html',
                         width : 430,
-                        height : 335,
+                        height : 345,
                         inline : 1
                     }, {
                         plugin_url : url

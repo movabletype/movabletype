@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><__trans phrase="Import Blog Entries"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Import [_1] Entries" params="<mt:var name="scope_label">"></mt:setvarblock>
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="import" value="1">
 
@@ -23,6 +23,12 @@ function validate(f) {
     if (!f['blog_id'].value) {
         alert("<__trans phrase="You must select a blog to import." escape="js">");
         return false;
+    }
+    if (jQuery('input[name="import_as_me"]:checked').val() === '0') {
+        if (!jQuery('input#password').val()) {
+            alert("<__trans phrase="Enter a default password for new users." escape="js">");
+            return false;
+        }
     }
     return true;
 }
@@ -108,7 +114,9 @@ function selectBlog() {
 
     <mtapp:setting
        id="convert_breaks"
-       label="<__trans phrase="Text Formatting">">
+       label="<__trans phrase="Text Formatting">"
+       show_hint="1"
+       hint="<__trans phrase="Apply this formatting if text format is not set on each entry.">">
       <select name="convert_breaks" id="convert_breaks">
       <mt:loop name="text_filters">
         <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>

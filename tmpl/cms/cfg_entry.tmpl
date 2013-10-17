@@ -158,7 +158,6 @@
     </mt:unless>
     </mtapp:setting>
 
-  <mt:if name="scope_type" eq="blog">
     <mt:setvarblock name="entry_fields" id="entry_fields"></mt:setvarblock>
     <mtapp:setting
        id="entry_prefs"
@@ -167,16 +166,15 @@
       <ul class="fixed-width multiple-selection">
         <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-title"><__trans phrase="Title"></label></li>
         <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-body" value="text" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-body"><__trans phrase="Body"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-category" value="category" <mt:if name="entry_disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-category"><__trans phrase="Categories"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-excerpt" value="excerpt" <mt:if name="entry_disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-excerpt"><__trans phrase="Excerpt"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-keywords" value="keywords" <mt:if name="entry_disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-keywords"><__trans phrase="Keywords"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-tags" value="tags" <mt:if name="entry_disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-tags"><__trans phrase="Tags"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-feedback" value="feedback" <mt:if name="entry_disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-feedback"><__trans phrase="Comments"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-assets" value="assets" <mt:if name="entry_disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-assets"><__trans phrase="Assets"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-category" value="category"<mt:if name="entry_disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-category"><__trans phrase="Categories"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-excerpt" value="excerpt"<mt:if name="entry_disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-excerpt"><__trans phrase="Excerpt"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-keywords" value="keywords"<mt:if name="entry_disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-keywords"><__trans phrase="Keywords"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-tags" value="tags"<mt:if name="entry_disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-tags"><__trans phrase="Tags"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-feedback" value="feedback"<mt:if name="entry_disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-feedback"><__trans phrase="Comments"></label></li>
+        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-assets" value="assets"<mt:if name="entry_disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-assets"><__trans phrase="Assets"></label></li>
         <mt:var name="entry_fields">
       </ul>
     </mtapp:setting>
-  </mt:if>
 
   <mt:setvarblock name="page_fields" id="page_fields"></mt:setvarblock>
   <mtapp:setting
@@ -221,9 +219,9 @@ jQuery('#cfg_entry').submit(function(eventObject) {
        id="nwc_smart_replace"
        label="<__trans phrase="Punctuation Replacement">">
       <ul>
-        <li><input type="radio" value="2" name="nwc_smart_replace" id="nwc_replace_none" onclick="DOM.addClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_2"> checked="checked"</mt:if>> <label for="nwc_replace_none"><__trans phrase="No substitution"></label></li>
-        <li><input type="radio" value="1" name="nwc_smart_replace" id="nwc_replace_entities" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_1"> checked="checked"</mt:if>> <label for="nwc_replace_entities"><__trans phrase="Character entities (&amp#8221;, &amp#8220;, etc.)"></label></li>
-        <li><input type="radio" value="0" name="nwc_smart_replace" id="nwc_replace_ascii" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_0"> checked="checked"</mt:if>> <label for="nwc_replace_ascii"><__trans phrase="ASCII equivalents (&quot;, ', ..., -, --)"></label></li>
+        <li><input type="radio" value="2" name="nwc_smart_replace" id="nwc_replace_none" onclick="DOM.addClassName(DOM.getElement('replace-fields-field'), 'hidden');"<mt:if name="nwc_smart_replace_2"> checked="checked"</mt:if>> <label for="nwc_replace_none"><__trans phrase="No substitution"></label></li>
+        <li><input type="radio" value="1" name="nwc_smart_replace" id="nwc_replace_entities" onclick="DOM.removeClassName(DOM.getElement('replace-fields-field'), 'hidden');"<mt:if name="nwc_smart_replace_1"> checked="checked"</mt:if>> <label for="nwc_replace_entities"><__trans phrase="Character entities (&amp#8221;, &amp#8220;, etc.)"></label></li>
+        <li><input type="radio" value="0" name="nwc_smart_replace" id="nwc_replace_ascii" onclick="DOM.removeClassName(DOM.getElement('replace-fields-field'), 'hidden');"<mt:if name="nwc_smart_replace_0"> checked="checked"</mt:if>> <label for="nwc_replace_ascii"><__trans phrase="ASCII equivalents (&quot;, ', ..., -, --)"></label></li>
       </ul>
     </mtapp:setting>
 

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -29,7 +29,7 @@ our @EXPORT_OK
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
-    realpath canonicalize_path );
+    realpath canonicalize_path clear_site_stats_widget_cache );
 
 {
     my $Has_Weaken;
@@ -110,13 +110,34 @@ sub iso2ts {
 }
 
 sub ts2iso {
-    my ( $blog, $ts ) = @_;
+    my ( $blog, $ts, $with_timezone ) = @_;
     my ( $yr, $mo, $dy, $hr, $mn, $sc ) = unpack( 'A4A2A2A2A2A2', $ts );
-    $ts = Time::Local::timegm_nocheck( $sc, $mn, $hr, $dy, $mo - 1, $yr );
-    ( $sc, $mn, $hr, $dy, $mo, $yr ) = offset_time_list( $ts, $blog, '-' );
-    $yr += 1900;
-    $mo += 1;
-    sprintf( "%04d-%02d-%02dT%02d:%02d:%02dZ", $yr, $mo, $dy, $hr, $mn, $sc );
+
+    if ($with_timezone) {
+        if ( $blog && !ref($blog) ) {
+            require MT::Blog;
+            $blog = MT::Blog->load($blog);
+        }
+        my $offset
+            = ref $blog ? $blog->server_offset : MT->config->TimeOffset;
+
+        my ( $off_hour, $off_min ) = split( /\./, $offset );
+        $off_min = int( 6 * ( $off_min || 0 ) );
+        sprintf(
+            '%04d-%02d-%02dT%02d:%02d:%02d%s%02d:%02d',
+            $yr, $mo, $dy, $hr, $mn, $sc, $off_hour >= 0 ? '+' : '-',
+            abs($off_hour), $off_min
+        );
+    }
+    else {
+        $ts = Time::Local::timegm_nocheck( $sc, $mn, $hr, $dy, $mo - 1, $yr );
+        ( $sc, $mn, $hr, $dy, $mo, $yr )
+            = offset_time_list( $ts, $blog, '-' );
+        $yr += 1900;
+        $mo += 1;
+        sprintf( "%04d-%02d-%02dT%02d:%02d:%02dZ",
+            $yr, $mo, $dy, $hr, $mn, $sc );
+    }
 }
 
 sub ts2epoch {
@@ -2619,6 +2640,12 @@ sub to_json {
     return JSON::to_json( $value, $args );
 }
 
+sub from_json {
+    my ( $value, $args ) = @_;
+    require JSON;
+    return JSON::from_json( $value, $args );
+}
+
 sub break_up_text {
     my ( $text, $length ) = @_;
     return '' unless defined $text;
@@ -2752,6 +2779,42 @@ sub normalize_language {
         $language =~ s/_/-/;
     }
     $language;
+}
+
+sub clear_site_stats_widget_cache {
+    my ($site_id) = @_;
+
+    my $path;
+    if ($site_id) {
+        my @perms = MT::Permission->load( { blog_id => $site_id } );
+        foreach my $perm (@perms) {
+            my $user_id = $perm->author_id;
+            my $low_dir = sprintf( "%03d", $user_id % 1000 );
+            my $sub_dir = sprintf( "%03d", $site_id % 1000 );
+            my $top_dir = $site_id > $sub_dir ? $site_id - $sub_dir : 0;
+            my $support_path
+                = File::Spec->catdir( MT->app->support_directory_path,
+                'dashboard', 'stats', $top_dir, $sub_dir, $low_dir );
+            my $file = "data_" . $site_id . ".json";
+            my $path = File::Spec->catfile( $support_path, $file );
+            require MT::FileMgr;
+            my $fmgr = MT::FileMgr->new('Local');
+
+            if ( $fmgr->exists($path) ) {
+                $fmgr->delete($path) or return 0;
+            }
+        }
+    }
+    else {
+        my $dir = File::Spec->catdir( MT->app->support_directory_path,
+            'dashboard', 'stats' );
+        if ( -d $dir ) {
+            require File::Path;
+            File::Path::rmtree($dir);
+        }
+    }
+
+    return 1;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;
@@ -2966,6 +3029,10 @@ in I<reference> to UTF-8 strings as JSON::to_json requires.
 It then encodes back to the charset specified in PublishCharset
 for MT to render json strings properly.
 
+=head2 from_json($json_text)
+
+Wrapper method to JSON::from_json.
+
 =head2 dir_separator
 
 Returns the character of directory separator.
@@ -2999,6 +3066,10 @@ If true, will format the language in the style "language_LOCALE" (ie: "en_US", "
 
 If true, will change any '_' in the language code to a '-', conforming
 it to the IETF RFC # 3066.
+
+=head2 clear_site_stats_widget_cache($site_id, $user_id)
+
+Clear caches for site stats dashboard widget.
 
 =back
 

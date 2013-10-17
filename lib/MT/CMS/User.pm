@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::User;
@@ -407,7 +407,8 @@ sub set_object_status {
         if $app->param('all_selected');
 
     my @sync;
-    my $saved = 0;
+    my $saved       = 0;
+    my $not_enabled = 0;
     for my $id ( $q->param('id') ) {
         next unless $id;    # avoid 'empty' ids
         my $obj = $class->load($id);
@@ -422,6 +423,24 @@ sub set_object_status {
                 && $app->config->NewUserAutoProvisioning
                 && $obj->status == MT::Author::PENDING() ) ? 1 : 0;
         $obj->status($new_status);
+        if ( $new_status == MT::Author::ACTIVE() ) {
+            my $eh = MT::ErrorHandler->new;
+            if ( !save_filter( $eh, $app, $obj ) ) {
+                $app->log(
+                    {   message => $app->translate(
+                            "User '[_1]' (ID:[_2]) could not be re-enabled by '[_3]'",
+                            $obj->name, $obj->id, $app->user->name,
+                        ),
+                        metadata => $eh->errstr,
+                        level    => MT::Log::ERROR(),
+                        class    => 'author',
+                        category => 'not_enabled',
+                    }
+                );
+                $not_enabled++;
+                next;
+            }
+        }
         $obj->save;
         $saved++;
         if ( $type eq 'author' ) {
@@ -444,7 +463,7 @@ sub set_object_status {
             }
         }
     }
-    if ( $saved && ( $saved > $unchanged ) ) {
+    if ( $saved && ( $saved > $unchanged ) && !$not_enabled ) {
         $app->add_return_arg(
             saved_status => ( $new_status == MT::Author::ACTIVE() )
             ? 'enabled'
@@ -455,6 +474,8 @@ sub set_object_status {
         if $q->param('is_power_edit');
     $app->add_return_arg( unchanged => $unchanged )
         if $unchanged;
+    $app->add_return_arg( not_enabled => $not_enabled )
+        if $not_enabled;
     $app->call_return;
 }
 
@@ -816,8 +837,8 @@ sub remove_user_assoc {
             { blog_id => $blog_id, author_id => $id } );
         next
             if !$can_remove_administrator
-                && $perm
-                && $perm->can_administer_blog;
+            && $perm
+            && $perm->can_administer_blog;
 
         MT::Association->remove( { blog_id => $blog_id, author_id => $id } );
 
@@ -856,7 +877,7 @@ sub revoke_role {
         unless $blog && $role && $author;
     return $app->permission_denied()
         if !$app->can_do('revoke_administer_role')
-            && $role->has('administer_blog');
+        && $role->has('administer_blog');
 
     MT::Association->unlink( $blog => $role => $author );
 
@@ -1006,8 +1027,7 @@ sub dialog_select_author {
             push @blog_ids, $_->id;
         }
     }
-    push @blog_ids, $blog->id
-        if ( !$blog->is_blog && $entry_type eq 'page' ) || ( $blog->is_blog );
+    push @blog_ids, $blog->id;
 
     if ( !$app->user->is_superuser ) {
         my @ids = map { $_->id } @{ $blog->blogs }
@@ -1017,7 +1037,7 @@ sub dialog_select_author {
         foreach (@ids) {
             $ok = 1
                 if $app->user->permissions($_)
-                    ->can_do('open_select_author_dialog');
+                ->can_do('open_select_author_dialog');
         }
         return $app->permission_denied
             unless $ok;
@@ -1143,8 +1163,8 @@ PERMCHECK: {
             if $app->can_do('grant_role_for_all_blogs');
         last PERMCHECK
             if $blog_id
-                && $this_user->permissions($blog_id)
-                ->can_do('grant_role_for_blog');
+            && $this_user->permissions($blog_id)
+            ->can_do('grant_role_for_blog');
         return $app->permission_denied();
     }
 
@@ -1164,11 +1184,11 @@ PERMCHECK: {
         $row->{description} = $row->{nickname} if exists $row->{nickname};
         $row->{disabled}    = 1
             if UNIVERSAL::isa( $obj, 'MT::Role' )
-                && (   $obj->has('administer_blog')
-                    || $obj->has('administer_website') )
-                && !$app->can_do('grant_role_for_all_blogs')
-                && !$this_user->permissions($blog_id)
-                ->can_do('grant_role_for_blog');
+            && ( $obj->has('administer_blog')
+            || $obj->has('administer_website') )
+            && !$app->can_do('grant_role_for_all_blogs')
+            && !$this_user->permissions($blog_id)
+            ->can_do('grant_role_for_blog');
         if (   $app->param('type')
             && $app->param('type') eq 'blog'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
@@ -1364,8 +1384,8 @@ PERMCHECK: {
             if $app->can_do('grant_role_for_all_blogs');
         last PERMCHECK
             if $blog_id
-                && $this_user->permissions($blog_id)
-                ->can_do('grant_role_for_blog');
+            && $this_user->permissions($blog_id)
+            ->can_do('grant_role_for_blog');
         return $app->permission_denied();
     }
 
@@ -1477,29 +1497,56 @@ sub can_delete {
     if ( !( $obj->created_by && $obj->created_by == $author->id ) ) {
         return $eh->error(
             MT->translate(
-                "You have no permission to delete the user [_1].", $obj->name
+                "You have no permission to delete the user [_1].",
+                $obj->name
             )
         );
     }
 }
 
 sub save_filter {
-    my ( $eh, $app ) = @_;
+    my ( $eh, $app, $obj, $original ) = @_;
+    my $accessor = sub {
+        if ($obj) {
+            my $k = shift;
+            $obj->$k(@_);
+        }
+        else {
+            $app->param(@_);
+        }
+    };
 
-    my $status = $app->param('status');
+    my $name = $accessor->('name');
+    if ($name) {
+        require MT::Author;
+        my $existing = MT::Author->load(
+            {   name => $name,
+                type => MT::Author::AUTHOR()
+            }
+        );
+        my $id = $accessor->('id');
+        if ( $existing
+            && ( ( $id && $existing->id ne $id ) || !$id ) )
+        {
+            return $eh->error(
+                $app->translate("A user with the same name already exists.")
+            );
+        }
+    }
+
+    my $status = $accessor->('status');
     return 1 if $status and $status == MT::Author::INACTIVE();
 
     require MT::Auth;
     my $auth_mode = $app->config('AuthenticationModule');
     my ($pref) = split /\s+/, $auth_mode;
 
-    my $name     = $app->param('name');
-    my $nickname = $app->param('nickname');
+    my $nickname = $accessor->('nickname');
 
     if ( $pref eq 'MT' ) {
         if ( defined $name ) {
             $name =~ s/(^\s+|\s+$)//g;
-            $app->param( 'name', $name );
+            $accessor->( 'name', $name );
         }
         return $eh->error( $app->translate("User requires username") )
             if ( !$name );
@@ -1520,7 +1567,7 @@ sub save_filter {
     # undefined. Only check requirement if the value is defined.
     if ( defined $nickname ) {
         $nickname =~ s/(^\s+|\s+$)//g;
-        $app->param( 'nickname', $nickname );
+        $accessor->( 'nickname', $nickname );
         return $eh->error( $app->translate("User requires display name") )
             if ( !length($nickname) );
 
@@ -1533,18 +1580,6 @@ sub save_filter {
                 )
             );
         }
-    }
-
-    require MT::Author;
-    my $existing = MT::Author->load(
-        {   name => $name,
-            type => MT::Author::AUTHOR()
-        }
-    );
-    my $id = $app->param('id');
-    if ( $existing && ( ( $id && $existing->id ne $id ) || !$id ) ) {
-        return $eh->error(
-            $app->translate("A user with the same name already exists.") );
     }
 
     require MT::Auth;
@@ -1562,11 +1597,11 @@ sub save_filter {
     }
 
     return 1 if ( $pref ne 'MT' );
-    if ( !$app->param('id') ) {    # it's a new object
+    if ( !$accessor->('id') ) {    # it's a new object
         return $eh->error( $app->translate("User requires password") )
             if ( 0 == length( scalar $app->param('pass') ) );
     }
-    my $email = $app->param('email');
+    my $email = $accessor->('email');
     return $eh->error(
         MT->translate("Email Address is required for password reset.") )
         unless $email;
@@ -1584,8 +1619,8 @@ sub save_filter {
         );
     }
 
-    if ( $app->param('url') ) {
-        my $url = $app->param('url');
+    if ( $accessor->('url') ) {
+        my $url = $accessor->('url');
         return $eh->error( MT->translate("URL is invalid.") )
             if !is_url($url) || ( $url =~ m/[<>]/ );
     }
@@ -1673,6 +1708,16 @@ sub post_save {
             $app->run_callbacks( 'new_user_provisioning', $obj );
         }
     }
+
+    if (    $app->user->id eq $obj->id
+        and $obj->password ne $original->password )
+    {
+        my $current_session = $app->session;
+
+        MT::Auth->invalidate_credentials( { app => $app } );
+        $app->start_session( $obj, $current_session->get('remember') || 0 );
+    }
+
     1;
 }
 

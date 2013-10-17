@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Common;
@@ -151,8 +151,8 @@ sub save {
 
             $values{site_path} = $app->param('site_path_absolute')
                 if !$app->config->BaseSitePath
-                    && $app->param('use_absolute')
-                    && $app->param('site_path_absolute');
+                && $app->param('use_absolute')
+                && $app->param('site_path_absolute');
         }
 
         unless ( $author->is_superuser
@@ -294,6 +294,17 @@ sub save {
         unless ( $values{site_url} =~ m!/$! ) {
             my $url = $values{site_url};
             $values{site_url} = $url;
+        }
+
+        my $cfg_screen = $app->param('cfg_screen') || '';
+
+        if ( $cfg_screen eq 'cfg_prefs' ) {
+            $values{publish_empty_archive}
+                = $q->param('publish_empty_archive') ? 1 : 0;
+        }
+
+        if ( $obj && $cfg_screen eq 'cfg_web_services' ) {
+            run_web_services_save_config_callbacks( $app, $obj );
         }
     }
 
@@ -538,6 +549,22 @@ sub save {
     $app->call_return;
 }
 
+sub run_web_services_save_config_callbacks {
+    my ($app) = @_;
+
+    my $web_services = $app->registry('web_services');
+    for my $k (%$web_services) {
+        my $callback = $web_services->{$k}{save_config}
+            or next;
+
+        if ( ref $callback eq 'HASH' ) {
+            $callback = MT->handler_to_coderef( $callback->{code} );
+        }
+
+        $callback->( $app, @_ );
+    }
+}
+
 sub edit {
     my $app = shift;
 
@@ -729,24 +756,20 @@ sub edit {
         }
     }
 
+    {
+        # If any column value is overridden by $q->param,
+        # the MT (especially WYSISYG editor) will be working in tainted mode.
+        $param{tainted_input} = 0;
+        local $app->{login_again};
+        unless ( $app->validate_magic ) {
+            $param{tainted_input} ||= ( $q->param($_) || '' ) !~ /^\d*$/
+                for @$cols;
+        }
+    }
+
     if ( $type eq 'website' || $type eq 'blog' ) {
         require MT::Theme;
-        my $themes = MT::Theme->load_all_themes;
-        $param{theme_loop} = [
-            map {
-                my ( $errors, $warnings ) = $_->validate_versions;
-                {   key      => $_->{id},
-                    label    => $_->label,
-                    errors   => @$errors ? $errors : undef,
-                    warnings => @$warnings ? $warnings : undef,
-                }
-                }
-                grep {
-                       !defined $_->{class}
-                    || $_->{class} eq 'both'
-                    || $_->{class} eq $type
-                } values %$themes
-        ];
+        $param{theme_loop} = MT::Theme->load_theme_loop($type);
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
         my $limit = File::Spec->catdir( $cfg->BaseSitePath, 'PATH' );
         $limit =~ s/PATH$//;
@@ -837,9 +860,8 @@ sub list {
     } MT::Component->select;
 
     my @list_headers;
-    my $core_include
-        = File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
-        'listing', $type . '_list_header.tmpl' );
+    my $core_include = File::Spec->catfile( MT->config->TemplatePath,
+        $app->{template_dir}, 'listing', $type . '_list_header.tmpl' );
     push @list_headers,
         {
         filename  => $core_include,
@@ -900,7 +922,8 @@ sub list {
             }
         }
         foreach my $p (@act) {
-            $allowed = 1, last
+            $allowed = 1,
+                last
                 if $app->user->can_do(
                 $p,
                 at_least_one => 1,
@@ -1044,9 +1067,9 @@ sub list {
         my $id = $prop->id;
         my $disp = $prop->display || 'optional';
         my $show
-            = $disp eq 'force' ? 1
-            : $disp eq 'none'  ? 0
-            : scalar %cols ? $cols{$id}
+            = $disp eq 'force'   ? 1
+            : $disp eq 'none'    ? 0
+            : scalar %cols       ? $cols{$id}
             : $disp eq 'default' ? 1
             :                      0;
 
@@ -1060,8 +1083,8 @@ sub list {
                 push @subfields,
                     {
                       display => $sdisp eq 'force' ? 1
-                    : $sdisp eq 'none' ? 0
-                    : scalar %cols ? $cols{ $id . '.' . $sub->{class} }
+                    : $sdisp eq 'none'    ? 0
+                    : scalar %cols        ? $cols{ $id . '.' . $sub->{class} }
                     : $sdisp eq 'default' ? 1
                     : 0,
                     class      => $sub->{class},
@@ -1437,7 +1460,7 @@ sub filtered_list {
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
     my @cols = grep {/^[^\.]+$/} split( ',', $cols );
     my @subcols = grep {/\./} split( ',', $cols );
-    my $class = MT->model( $setting->{object_type}) || MT->model($ds);
+    my $class = MT->model( $setting->{object_type} ) || MT->model($ds);
     if ( $class->has_column('id') ) {
         unshift @cols,    '__id';
         unshift @subcols, '__id';

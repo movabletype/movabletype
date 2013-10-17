@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2006-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2006-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -39,6 +39,7 @@ use vars qw( %Lexicon );
 	'publishes a TrackBack' => 'een TrackBack publiceert',
 	'rebuild indexes.' => 'indexen opnieuw opbouwt.',
 	'rebuild indexes and send pings.' => 'indexen opnieuw opbouwt en pings verstuurt.',
+	'Updating the MultiBlog trigger cache...' => 'Bezig de trigger cache van MultiBlog bij te werken', # Translate - New
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => 'Wanneer',

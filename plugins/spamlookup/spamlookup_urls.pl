@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2004-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2004-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -16,7 +16,7 @@ use vars qw($VERSION);
 
 sub BEGIN {
     @MT::Plugin::SpamLookup::Link::ISA = ('MT::Plugin');
-    $VERSION                           = '2.11';
+    $VERSION                           = '2.2';
     my $plugin;
     $plugin = new MT::Plugin::SpamLookup::Link(
         {   name    => 'SpamLookup - Link',

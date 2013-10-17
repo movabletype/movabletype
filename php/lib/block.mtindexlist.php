@@ -1,12 +1,12 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
 function smarty_block_mtindexlist($args, $content, &$ctx, &$repeat) {
-    $localvars = array('index_templates', 'index_templates_counter');
+    $localvars = array(array('index_templates', 'index_templates_counter'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
         $tmpl = $ctx->mt->db()->fetch_templates(array(
@@ -20,6 +20,11 @@ function smarty_block_mtindexlist($args, $content, &$ctx, &$repeat) {
         $counter = $ctx->stash('index_templates_counter') + 1;
     }
     if ($counter < count($tmpl)) {
+        $ctx->__stash['vars']['__counter__'] = $counter + 1;
+        $ctx->__stash['vars']['__odd__'] = ($counter % 2) == 0;
+        $ctx->__stash['vars']['__even__'] = ($counter % 2) == 1;
+        $ctx->__stash['vars']['__first__'] = $counter == 0;
+        $ctx->__stash['vars']['__last__'] = count($tmpl) == $counter + 1;
         $ctx->stash('index_templates_counter', $counter);
         $repeat = true;
     } else {

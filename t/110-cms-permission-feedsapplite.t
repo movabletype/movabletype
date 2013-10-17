@@ -12,37 +12,37 @@ use MT::Test qw( :app :db );
 use MT::Test::Permission;
 use Test::More;
 
+plan skip_all => 'Feeds.App Lite plugin does not installed.'
+    unless MT->instance->component('FeedsAppLite');
+
 ### Make test data
 
 # Website
 my $website = MT::Test::Permission->make_website();
 
 # Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+my $second_blog
+    = MT::Test::Permission->make_blog( parent_id => $website->id, );
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
+    name     => 'aikawa',
     nickname => 'Ichiro Aikawa',
 );
 
 my $ichikawa = MT::Test::Permission->make_author(
-    name => 'ichikawa',
+    name     => 'ichikawa',
     nickname => 'Jiro Ichikawa',
 );
 
 my $ukawa = MT::Test::Permission->make_author(
-    name => 'ukawa',
+    name     => 'ukawa',
     nickname => 'Saburo Ukawa',
 );
 
 my $egawa = MT::Test::Permission->make_author(
-    name => 'egawa',
+    name     => 'egawa',
     nickname => 'Shiro Egawa',
 );
 
@@ -50,24 +50,24 @@ my $admin = MT::Author->load(1);
 
 # Role
 my $create_post = MT::Test::Permission->make_role(
-   name  => 'Create Post',
-   permissions => "'create_post'",
+    name        => 'Create Post',
+    permissions => "'create_post'",
 );
 my $edit_templates = MT::Test::Permission->make_role(
-   name  => 'Edit Templates',
-   permissions => "'edit_templates'",
+    name        => 'Edit Templates',
+    permissions => "'edit_templates'",
 );
 
 require MT::Association;
-MT::Association->link( $aikawa => $edit_templates => $blog );
-MT::Association->link( $ichikawa => $create_post => $blog );
-MT::Association->link( $ukawa => $edit_templates => $second_blog );
+MT::Association->link( $aikawa   => $edit_templates => $blog );
+MT::Association->link( $ichikawa => $create_post    => $blog );
+MT::Association->link( $ukawa    => $edit_templates => $second_blog );
 
 require MT::Permission;
 my $p = MT::Permission->new;
-$p->blog_id( 0);
+$p->blog_id(0);
 $p->author_id( $egawa->id );
-$p->permissions( "'edit_templates'" );
+$p->permissions("'edit_templates'");
 $p->save;
 
 # Run
@@ -83,7 +83,7 @@ subtest 'mode = feedswidget_start' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_start" );
+    ok( $out,                     "Request: feedswidget_start" );
     ok( $out !~ m!permission=1!i, "feedswidget_start by admin" );
 
     $app = _run_app(
@@ -95,7 +95,7 @@ subtest 'mode = feedswidget_start' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_start" );
+    ok( $out,                     "Request: feedswidget_start" );
     ok( $out !~ m!permission=1!i, "feedswidget_start by permitted user" );
 
     $app = _run_app(
@@ -108,7 +108,8 @@ subtest 'mode = feedswidget_start' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_start" );
-    ok( $out !~ m!permission=1!i, "feedswidget_start by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i,
+        "feedswidget_start by permitted user (sys)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -119,7 +120,7 @@ subtest 'mode = feedswidget_start' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_start" );
+    ok( $out,                     "Request: feedswidget_start" );
     ok( $out =~ m!permission=1!i, "feedswidget_start by other blog" );
 
     $app = _run_app(
@@ -131,7 +132,7 @@ subtest 'mode = feedswidget_start' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_start" );
+    ok( $out,                     "Request: feedswidget_start" );
     ok( $out =~ m!permission=1!i, "feedswidget_start by other permission" );
 };
 
@@ -145,7 +146,7 @@ subtest 'mode = feedswidget_select' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_select" );
+    ok( $out,                     "Request: feedswidget_select" );
     ok( $out !~ m!permission=1!i, "feedswidget_select by admin" );
 
     $app = _run_app(
@@ -157,7 +158,7 @@ subtest 'mode = feedswidget_select' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_select" );
+    ok( $out,                     "Request: feedswidget_select" );
     ok( $out !~ m!permission=1!i, "feedswidget_select by permitted user" );
 
     $app = _run_app(
@@ -170,7 +171,8 @@ subtest 'mode = feedswidget_select' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_select" );
-    ok( $out !~ m!permission=1!i, "feedswidget_select by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i,
+        "feedswidget_select by permitted user (sys)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -181,7 +183,7 @@ subtest 'mode = feedswidget_select' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_select" );
+    ok( $out,                     "Request: feedswidget_select" );
     ok( $out =~ m!permission=1!i, "feedswidget_select by other blog" );
 
     $app = _run_app(
@@ -193,7 +195,7 @@ subtest 'mode = feedswidget_select' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_select" );
+    ok( $out,                     "Request: feedswidget_select" );
     ok( $out =~ m!permission=1!i, "feedswidget_select by other permission" );
 };
 
@@ -207,7 +209,7 @@ subtest 'mode = feedswidget_config' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_config" );
+    ok( $out,                     "Request: feedswidget_config" );
     ok( $out !~ m!permission=1!i, "feedswidget_config by admin" );
 
     $app = _run_app(
@@ -219,7 +221,7 @@ subtest 'mode = feedswidget_config' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_config" );
+    ok( $out,                     "Request: feedswidget_config" );
     ok( $out !~ m!permission=1!i, "feedswidget_config by permitted user" );
 
     $app = _run_app(
@@ -232,7 +234,8 @@ subtest 'mode = feedswidget_config' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_config" );
-    ok( $out !~ m!permission=1!i, "feedswidget_config by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i,
+        "feedswidget_config by permitted user (sys)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -243,7 +246,7 @@ subtest 'mode = feedswidget_config' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_config" );
+    ok( $out,                     "Request: feedswidget_config" );
     ok( $out =~ m!permission=1!i, "feedswidget_config by other blog" );
 
     $app = _run_app(
@@ -255,7 +258,7 @@ subtest 'mode = feedswidget_config' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_config" );
+    ok( $out,                     "Request: feedswidget_config" );
     ok( $out =~ m!permission=1!i, "feedswidget_config by other permission" );
 };
 
@@ -270,7 +273,7 @@ subtest 'mode = feedswidget_save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_save" );
+    ok( $out,                     "Request: feedswidget_save" );
     ok( $out !~ m!permission=1!i, "feedswidget_save by admin" );
 
     $app = _run_app(
@@ -283,7 +286,7 @@ subtest 'mode = feedswidget_save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_save" );
+    ok( $out,                     "Request: feedswidget_save" );
     ok( $out !~ m!permission=1!i, "feedswidget_save by permitted user" );
 
     $app = _run_app(
@@ -297,7 +300,8 @@ subtest 'mode = feedswidget_save' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: feedswidget_save" );
-    ok( $out !~ m!permission=1!i, "feedswidget_save by permitted user (sys)" );
+    ok( $out !~ m!permission=1!i,
+        "feedswidget_save by permitted user (sys)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -309,7 +313,7 @@ subtest 'mode = feedswidget_save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_save" );
+    ok( $out,                     "Request: feedswidget_save" );
     ok( $out =~ m!permission=1!i, "feedswidget_save by other blog" );
 
     $app = _run_app(
@@ -322,7 +326,7 @@ subtest 'mode = feedswidget_save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: feedswidget_save" );
+    ok( $out,                     "Request: feedswidget_save" );
     ok( $out =~ m!permission=1!i, "feedswidget_save by other permission" );
 };
 

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::AddressBook;
@@ -51,9 +51,9 @@ sub send_notify {
 
     my $cols = 72;
     my %params;
-    $params{blog}   = $blog;
-    $params{entry}  = $entry;
-    $params{author} = $author;
+    $params{blog}         = $blog;
+    $params{entry}        = $entry;
+    $params{entry_author} = $author ? 1 : 0;
 
     if ( $q->param('send_excerpt') ) {
         $params{send_excerpt} = 1;

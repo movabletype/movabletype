@@ -1,7 +1,7 @@
 /*
- * Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
- * This program is distributed under the terms of the
- * GNU General Public License, version 2.
+ * Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+ * This code cannot be redistributed without permission from www.sixapart.com.
+ * For more information, consult your Movable Type license.
  *
  * $Id$
  */
@@ -31,8 +31,8 @@ $.mtAddEdgeClass = function() {
 $.mtMenu = function(options) {
     var defaults = {
         arrow_image: StaticURI+'images/arrow/arrow-toggle-big.png'
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     $('.top-menu > div a').after('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
     $('.top-menu .toggle-button')
         .mousedown(function(event) {
@@ -41,7 +41,7 @@ $.mtMenu = function(options) {
             return false;
         })
         .click(function(event) {
-            return false;            
+            return false;
         });
 };
 
@@ -55,9 +55,9 @@ $.mtMenu = function(options) {
  */
 $.mtSelector = function(options) {
     var defaults = {
-        arrow_image: StaticURI+'images/arrow/arrow-toggle.png'
-    };
-    var opts = $.extend(defaults, options);
+        arrow_image: StaticURI+'images/arrow/arrow-toggle-white.png'
+    },
+    opts = $.extend(defaults, options);
     $('#selector-nav').prepend('<a hre="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
 
     $('#selector-nav .toggle-button ')
@@ -69,7 +69,7 @@ $.mtSelector = function(options) {
             return false;
         });
     $(document).mousedown(function(event) {
-        if ($(event.target).parents('#selector-nav').length == 0) {
+        if ($(event.target).parents('#selector-nav').length === 0) {
             $('#selector-nav').removeClass('show-selector active');
         }
     });
@@ -94,9 +94,9 @@ $.mtUseSubdomain = function(options) {
     });
     $checkboxes.click(function() {
         if (this.checked) {
-            $(this).attr('checked', true).parents('.field-content').find('.subdomain').show();
+            $(this).prop('checked',true).parents('.field-content').find('.subdomain').show();
         } else {
-            $(this).removeAttr('checked').parents('.field-content').find('.subdomain').hide();
+            $(this).prop('checked',false).parents('.field-content').find('.subdomain').hide();
         }
     });
 };
@@ -111,14 +111,14 @@ $.mtUseSubdomain = function(options) {
 $.mtEditSiteUrl = function(options) {
     var defaults = {
         edit: 'Edit'
-    };
-    var opts = $.extend(defaults, options);
-    var ids = ['site', 'archive'];
+    },
+    opts = $.extend(defaults, options),
+    ids = ['site', 'archive'];
     $.each(ids, function() {
-        var id = this;
-        var $subdomain = $('input#'+this+'_url_subdomain');
-        var $path = $('input#'+this+'_url_path');
-        var subdomain = $subdomain.val();
+        var id = this,
+            $subdomain = $('input#'+this+'_url_subdomain'),
+            $path = $('input#'+this+'_url_path'),
+            subdomain = $subdomain.val();
         if (subdomain) {
             $subdomain
                 .parent('.subdomain')
@@ -141,7 +141,7 @@ $.mtEditSiteUrl = function(options) {
             $subdomain.parents('.field-content').find('.use-subdomain').hide().end()
                 .find('span.archive-url-domain').hide()
                 .before('<span class="'+this+'_url_path-text path-text">'+$subdomain.val()+'</span>');
-            if ($('button#mt-set-'+this+'_url_path').length == 0) {
+            if ($('button#mt-set-'+this+'_url_path').length === 0) {
                 $path
                     .after('<button type="button" id="mt-set-'+this+'_url_path" class="button mt-edit-field-button">'+opts.edit+'</button>')
                     .hide();
@@ -177,14 +177,15 @@ $.mtEditSiteUrl = function(options) {
 $.mtUseAbsolute = function() {
     var $checkboxes = $('.site-path-field :checkbox');
     $checkboxes.each(function() {
+        var $obj;
         if (!this.checked) {
-            var $obj = $(this).parents('.field-content');
+            $obj = $(this).parents('.field-content');
             $obj.find('.relative-site_path').show();
             $obj.find('.absolute-site_path').hide();
             $obj.find('.relative-site_path-hint').show();
             $obj.find('.absolute-site_path-hint').hide();
         } else {
-            var $obj = $(this).parents('.field-content');
+            $obj = $(this).parents('.field-content');
             $obj.find('.relative-site_path').hide();
             $obj.find('.absolute-site_path').show();
             $obj.find('.relative-site_path-hint').hide();
@@ -192,8 +193,9 @@ $.mtUseAbsolute = function() {
         }
     });
     $checkboxes.click(function() {
+        var $obj;
         if (this.checked) {
-            var $obj = $(this).attr('checked', true).parents('.field-content');
+            $obj = $(this).prop('checked', true).parents('.field-content');
             $obj.find('.relative-site_path').hide();
             $obj.find('.absolute-site_path').show();
             $obj.find('.relative-site_path-hint').hide();
@@ -201,7 +203,7 @@ $.mtUseAbsolute = function() {
             $obj.find('.absolute-site_path').find(':input').removeClass('ignore-validate');
             $obj.find('.relative-site_path').find(':input').addClass('ignore-validate');
         } else {
-            var $obj = $(this).removeAttr('checked').parents('.field-content');
+            $obj = $(this).prop('checked', false).parents('.field-content');
             $obj.find('.relative-site_path').show();
             $obj.find('.absolute-site_path').hide();
             $obj.find('.relative-site_path-hint').show();
@@ -223,14 +225,12 @@ $.mtUseAbsolute = function() {
 $.mtEditSitePath = function(options) {
     var defaults = {
         edit: 'Edit'
-    };
-
-    var opts = $.extend(defaults, options);
-    var ids = ['site', 'archive'];
+    },
+    opts = $.extend(defaults, options),
+    ids = ['site', 'archive'];
     $.each(ids, function() {
-        var id = this;
-
-        var $absolute_path = $('input#'+id+'_path_absolute');
+        var id = this, $path,
+            $absolute_path = $('input#'+id+'_path_absolute');
         if ( !$absolute_path.hasClass('show-input') ) {
             $absolute_path
                 .before('<span class="'+id+'_path_absolute-text path-text"></span>')
@@ -239,7 +239,7 @@ $.mtEditSitePath = function(options) {
             $('span.'+id+'_path_absolute-text').text($absolute_path.val());
         }
 
-        var $path = $('input#'+id+'_path');
+        $path = $('input#'+id+'_path');
         if ( !$path.hasClass('show-input') ) {
             $path
                 .before('<span class="'+id+'_path-text path-text"></span>')
@@ -289,18 +289,18 @@ $.mtCheckbox = function() {
     function verify_all_checked($table) {
         var n = $table.find('tbody input:checked').length;
         if ($table.find('tbody :checkbox').length === n) {
-            $table.find('thead :checkbox, tfoot :checkbox').attr('checked', true);
+            $table.find('thead :checkbox, tfoot :checkbox').prop('checked', true);
         } else {
-            $table.find('thead :checkbox, tfoot :checkbox').removeAttr('checked');
+            $table.find('thead :checkbox, tfoot :checkbox').prop('checked',false);
         }
     }
 
     $('thead :checkbox, tfoot :checkbox').click(function() {
         var $checkboxes = $(this).parents('table').find(':checkbox');
         if (this.checked) {
-            $checkboxes.attr('checked', true).parents('tr').addClass('selected').next('.slave').addClass('selected');
+            $checkboxes.prop('checked', true).parents('tr').addClass('selected').next('.slave').addClass('selected');
         } else {
-            $checkboxes.removeAttr('checked').parents('tr').removeClass('selected').next('.slave').removeClass('selected');
+            $checkboxes.prop('checked', false).parents('tr').removeClass('selected').next('.slave').removeClass('selected');
         }
     });
 
@@ -358,8 +358,8 @@ $.fn.mtDialog = function(options) {
     var defaults = {
         loadingimage: StaticURI+'images/indicator.gif',
         esckeyclose: true
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     init_dialog();
     return this.each(function() {
         $(this).click(function() {
@@ -381,20 +381,21 @@ function init_dialog() {
             close_dialog();
         });
     }
-};
+}
 
 function resize_dialog() {
-    var $dialog = $('.mt-dialog');
-    var height = $(window).height();
+    var $dialog = $('.mt-dialog'),
+        height = $(window).height();
     if ($dialog.length) {
         $dialog.height(height - 60);
         $('#mt-dialog-iframe').height(height - 60);
     }
-};
+}
 
 function open_dialog(href, opts) {
     if ( opts.form ) {
-        var param = opts.param;
+        var param = opts.param,
+            form;
         $('<iframe />')
             .attr({
                 id: 'mt-dialog-iframe',
@@ -413,7 +414,7 @@ function open_dialog(href, opts) {
             })
             .addClass('loading')
             .appendTo($('.mt-dialog'));
-        var form = $('<form />')
+        form = $('<form />')
             .attr({
                 'id': 'mt-dialog-post-form',
                 'method': 'post',
@@ -430,7 +431,7 @@ function open_dialog(href, opts) {
                     'name': key,
                     'value': val
                 })
-                .appendTo( form )
+                .appendTo( form );
         });
         form.submit();
         form.remove();
@@ -475,7 +476,7 @@ function open_dialog(href, opts) {
         if ($.fn.bgiframe) $('.mt-dialog-overlay').bgiframe();
         if ($.fn.exFixed) $('.mt-dialog').exFixed();
     }
-};
+}
 
 function close_dialog(url, fn) {
     $('body').removeClass('has-dialog');
@@ -499,14 +500,14 @@ function close_dialog(url, fn) {
     if (url) {
         window.location = url;
     }
-};
+}
 
 $.fn.mtDialog.open = function(url, options) {
     var defaults = {
         loadingimage: StaticURI+'images/indicator.gif',
         esckeyclose: true
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     init_dialog();
     open_dialog(url, opts);
 };
@@ -539,8 +540,8 @@ $.fn.mtDialogReady = function(options) {
  *
  */
 $.fn.mtRebuild = function(options) {
-    var defaults = {};
-    var opts = $.extend(defaults, options);
+    var defaults = {},
+        opts = $.extend(defaults, options);
     $(this).click(function() {
         window.open($(this).attr('href'), 'rebuild_blog_'+opts.blog_id, 'width=400,height=400,resizable=yes');
         return false;
@@ -559,8 +560,8 @@ $.fn.mtRebuild = function(options) {
 $.fn.mtSetTip = function(options) {
     var defaults = {
         tip_color: '#aaaaaa'
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     return this.each(function() {
         var text = $(this).attr('title');
         $(this).val(text).css('color', opts.tip_color);
@@ -588,8 +589,8 @@ $.fn.mtPublishItems = function(options) {
     var defaults = {
         name: null,
         args: {}
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     return this.each(function() {
         $(this).click(function() {
             doForMarkedInThisWindow($('#'+opts.id)[0], opts.singular, opts.plural, opts.name, opts.mode, opts.args, opts.phrase);
@@ -603,8 +604,8 @@ $.fn.mtPublishItems = function(options) {
  *
  */
 $.fn.mtSubmitItems = function(options) {
-    var defaults = {};
-    var opts = $.extend(defaults, options);
+    var defaults = {},
+        opts = $.extend(defaults, options);
     return this.each(function() {
         $(this).click(function() {
             $('form#'+opts.id+' > input[name=__mode]').val('save_entries');
@@ -619,8 +620,8 @@ $.fn.mtSubmitItems = function(options) {
 $.fn.mtDeleteItems = function(options) {
     var defaults = {
         args: {}
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     return this.each(function() {
         $(this).click(function() {
             doRemoveItems($('#'+opts.id)[0], opts.singular, opts.plural, '', opts.args);
@@ -636,8 +637,8 @@ $.fn.mtDeleteItems = function(options) {
 $.fn.mtEnableUsers = function(options) {
     var defaults = {
         args: {}
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     return this.each(function() {
         $(this).click(function() {
             setObjectStatus($('#'+opts.id)[0], opts.plural, opts.phrase, 1, '', opts.args);
@@ -653,8 +654,8 @@ $.fn.mtEnableUsers = function(options) {
 $.fn.mtDisableUsers = function(options) {
     var defaults = {
         args: {}
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     return this.each(function() {
         $(this).click(function() {
             var sysadmin = $('#sysadmin')[0];
@@ -676,8 +677,8 @@ $.fn.mtDisableUsers = function(options) {
 $.fn.mtDoPluginAction = function(options) {
     var defaults = {
         args: {}
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     return this.each(function() {
         $(this).click(function() {
             doPluginAction($('#'+opts.id)[0], opts.plural, opts.args, opts.phrase);
@@ -693,8 +694,8 @@ $.fn.mtDoPluginAction = function(options) {
 $.fn.mtSetObjectStatus = function(options) {
     var defaults = {
         args: {}
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     return this.each(function() {
         $(this).click(function() {
             setObjectStatus($('#'+opts.id)[0], opts.singular, opts.plural, opts.status, '', opts.args);
@@ -710,11 +711,11 @@ $.fn.mtSetObjectStatus = function(options) {
 $.fn.mtRebasename = function(options) {
     var defaults = {
         text: '...'
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     return this.each(function() {
-        var $input = $('input#basename');
-        var dirify_text = $input.hide().val();
+        var $input = $('input#basename'),
+            dirify_text = $input.hide().val();
         $input.hide().before('<span class="basename-text"></span>');
         $input.parent('span.basename').after('<button type="button" id="mt-set-basename" class="mt-edit-field-button button">'+opts.edit+'</button>');
         if (opts.basename) {
@@ -753,11 +754,11 @@ $.fn.mtRebasename = function(options) {
 $.fn.mtEditInput = function(options) {
     var defaults = {
         save: 'Save'
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     return this.each(function() {
-        var id = $(this).attr('id');
-        var $input = $('input#'+id);
+        var id = $(this).attr('id'),
+            $input = $('input#'+id);
         if ($input.val() && !$input.hasClass('show-input')) {
             $input
                 .before('<span class="'+id+'-text"></span>')
@@ -790,9 +791,9 @@ $.fn.mtEditInput = function(options) {
  */
 $.fn.mtCheckboxOption = function() {
     return this.each(function() {
-        var $checkbox = $(this).find(':checkbox');
-        var id = $checkbox.attr('id');
-        if (!$checkbox.attr('checked')) {
+        var $checkbox = $(this).find(':checkbox'),
+            id = $checkbox.attr('id');
+        if (!$checkbox.prop('checked')) {
             $('div#'+id+'-option').hide();
         }
         $checkbox.click(function() {
@@ -815,8 +816,8 @@ $.fn.mtToggleField = function(options) {
         detail_class: 'detail',
         hide_clicked: false,
         default_hide: true
-    };
-    var opts = $.extend(defaults, options);
+    },
+    opts = $.extend(defaults, options);
     return this.each(function() {
         var $field = $(this);
         if (opts.default_hide)
@@ -832,7 +833,7 @@ $.fn.mtToggleField = function(options) {
 
         if (opts.hide_clicked) {
             $(document).mousedown(function(event) {
-                if ($(event.target).parents('.active').length == 0) {
+                if ($(event.target).parents('.active').length === 0) {
                     $field.removeClass('active').find('.'+opts.detail_class).hide();
                 }
             });
@@ -881,9 +882,9 @@ $.mtValidator = function ( ns, options ) {
 $.extend( $.mtValidator.prototype, {
     options: {},
     validateElement: function ( $elem, additionalRules ) {
-        var validator  = this;
+        var validator  = this, rules;
         if ( undefined === additionalRules ) additionalRules = {};
-        var rules = $.extend( {}, $.mtValidateRules, additionalRules );
+        rules = $.extend( {}, $.mtValidateRules, additionalRules );
         validator.error  = false;
         validator.errstr = undefined;
         $.each ( rules, function( selector, fn ) {
@@ -952,7 +953,7 @@ $.mtValidator('top', {
     },
     removeError: function( $target, $error_block ) {
         $error_block.remove();
-        if ( $('div#msg-block ul li').length == 0 ) {
+        if ( $('div#msg-block ul li').length === 0 ) {
             $('div#msg-block').text('');
         }
     },
@@ -1031,8 +1032,8 @@ $.mtValidator('default', {
             .text(msg);
     },
     showError: function( $target, $error_block ) {
-        var focus = function () { $error_block.show(); };
-        var blur  = function () { $error_block.hide(); };
+        var focus = function () { $error_block.show(); },
+            blur  = function () { $error_block.hide(); };
         jQuery.data( $target.get(0), 'validate_focus', focus );
         jQuery.data( $target.get(0), 'validate_blur',  blur );
         $target
@@ -1060,8 +1061,8 @@ $.mtValidator('default', {
     },
     removeError: function( $target, $error_block ) {
         $error_block.remove();
-        var focus = jQuery.data( $target.get(0), 'validate_focus');
-        var blur  = jQuery.data( $target.get(0), 'validate_blur');
+        var focus = jQuery.data( $target.get(0), 'validate_focus'),
+            blur  = jQuery.data( $target.get(0), 'validate_blur');
         $target
             .unbind('focus', focus)
             .unbind('blur', blur);
@@ -1138,17 +1139,19 @@ $.fn.extend({
         return $.mtValidator(ns);
     },
     mtValid: function(opts) {
-        var errors = 0;
-        var error_elements = [];
-        var successes = 0;
-        var defaults = { focus: true };
+        var errors = 0,
+            error_elements = [],
+            successes = 0,
+            defaults = { focus: true };
         opts = $.extend( defaults, opts );
         this.each( function () {
-            var $this = $(this);
-            var validator = $this.mtValidator();
+            var $this = $(this),
+                validator = $this.mtValidator(),
+                $current_error,rules,res,msg,last_error,$error_block;
             if ( !validator ) return true;
-            if ( typeof $this.attr('data-showing-placeholder') !== 'undefined' )
+            if ( typeof $this.attr('data-showing-placeholder') !== 'undefined' ) {
                 $this.val('');
+            }
             var rules = $.data( this, 'mtValidateRules' );
             var res = validator.validateElement($this, rules);
             if ( res ) {
@@ -1165,14 +1168,15 @@ $.fn.extend({
             else {
                 var $current_error = $.data( this, 'mtValidateError' );
                 errors++;
-                if ( validator.doFocus )
+                if ( validator.doFocus ) {
                     error_elements.push($this);
-                var msg = validator.errstr;
+                }
+                msg = validator.errstr;
                 if ( $current_error ) {
                     validator.updateError( $this, $current_error, msg );
                 }
                 else {
-                    var $error_block = validator.wrapError( $this, msg );
+                    $error_block = validator.wrapError( $this, msg );
                     validator.showError( $this, $error_block );
                     $.data( this, 'mtValidateError', $error_block );
                     $.data( this, 'mtValidateLastError', msg );
@@ -1189,9 +1193,10 @@ $.fn.extend({
     },
     mtUnvalidate: function() {
         this.each( function () {
-            var validator = $(this).mtValidator();
+            var validator = $(this).mtValidator(),
+                $current_error;
             if ( validator ) {
-                var $current_error = $.data( this, 'mtValidateError' );
+                $current_error = $.data( this, 'mtValidateError' );
                 if ( $current_error ) {
                     validator.removeError( $(this), $current_error );
                 }
@@ -1206,13 +1211,13 @@ $.fn.extend({
     }
 });
 
-$('input, textarea').live('keyup focusin focusout', function () {
+$(document).on('keyup focusin focusout','input, textarea',function () {
     var ns = $.data( this, 'mtValidator' );
     if ( !ns ) return true;
     $(this).mtValid({ focus: false });
 });
 
-$('select').live('change', function () {
+$(document).on('change','select',function () {
     var ns = $.data( this, 'mtValidator' );
     if ( !ns ) return true;
     $(this).mtValid({ focus: false });
@@ -1229,9 +1234,9 @@ $('select').live('change', function () {
 $.fn.mtPlaceholder = function() {
     if ( 'placeholder' in $('<input />').get(0) ) return this;
     this.each( function () {
-        var that = this;
-        var $that = $(that);
-        var placeholder_text = $that.attr('placeholder');
+        var that = this,
+            $that = $(that),
+            placeholder_text = $that.attr('placeholder');
         if ( 1 > $that.val().length ) {
             $that
                 .val(placeholder_text)
@@ -1262,6 +1267,40 @@ $.fn.mtPlaceholder = function() {
             });
     });
     return this;
+};
+
+/*
+ * mtEditInputBlock
+ *
+ */
+$.fn.mtEditInputBlock = function(options) {
+    var defaults = {
+        edit: 'Edit',
+        text: 'Not specified'
+    },
+    opts = $.extend(defaults, options);
+    return this.each(function() {
+      var id    = $(this).attr('id'),
+          $div  = $('div#'+id),
+          $date = $('input#'+id),
+          $time = $('input#'+id);
+      if (!$div.hasClass('show-input')) {
+          $div
+              .before('<span class="'+id+'-text"></span>')
+              .after('<button type="button" id="mt-edit-'+id+'" class="button mt-edit-field-button">'+opts.edit+'</button>')
+              .hide();
+          $('span.'+id+'-text').text(opts.text);
+          $div.hide();
+      } else {
+          $div.show();
+      }
+      $('button#mt-edit-'+id).click(function() {
+          $(this).hide();
+          $('span.'+id+'-text').hide();
+          $div.show();
+          return false;
+      });
+    });
 };
 
 })(jQuery);

@@ -3118,7 +3118,7 @@ tinymce.html.Styles = function(settings, schema) {
 
 			// Precompile RegExps and map objects
 			tokenRegExp = new RegExp('<(?:' +
-				'(?:!--([\\w\\W]*?)-->)|' + // Comment
+				'(?:!---?>|!--([\\w\\W]*?)-->)|' + // Comment
 				'(?:!\\[CDATA\\[([\\w\\W]*?)\\]\\]>)|' + // CDATA
 				'(?:!DOCTYPE([\\w\\W]*?)>)|' + // DOCTYPE
 				'(?:\\?([^\\s\\/<>]+) ?([\\w\\W]*?)[?/]>)|' + // PI
@@ -3962,6 +3962,15 @@ tinymce.html.Styles = function(settings, schema) {
 						while (attrFiltersLen--) {
 							attrName = attributeFilters[attrFiltersLen].name;
 
+							if (attrName instanceof RegExp) {
+								tinymce.each(attrs.map, function(v, k) {
+									if (attrName.test(k)) {
+										attrName = k;
+										return false;
+									}
+								});
+							}
+
 							if (attrName in attrs.map) {
 								list = matchedAttributes[attrName];
 
@@ -4129,6 +4138,21 @@ tinymce.html.Styles = function(settings, schema) {
 				// Run attribute filters
 				for (i = 0, l = attributeFilters.length; i < l; i++) {
 					list = attributeFilters[i];
+
+					if (list.name instanceof RegExp) {
+						tinymce.each(matchedAttributes, function(v, k) {
+							if (list.name.test(k)) {
+								list = tinymce.extend({}, list, {
+									name: k
+								});
+
+								return false;
+							}
+						});
+						if (list.name instanceof RegExp) {
+							continue;
+						}
+					}
 
 					if (list.name in matchedAttributes) {
 						nodes = matchedAttributes[list.name];

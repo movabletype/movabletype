@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -230,9 +230,22 @@ Convert the given I<text> from "high ASCII" encoding.
 
 Decode UTF-8 in the given I<text>.
 
+=head2 is_utf8($text)
+
+Tests whether the UTF8 flag is turned on in the $text. Returns true
+if successful, false otherwise.
+
 =head2 utf8_off($text)
 
 Turn off UTF-8 encoding in the given I<text>
+
+=head2 lowercase($text)
+
+Returns an lowercased version of $text.
+
+=head2 uppercase($text)
+
+Returns an uppercased version of $text.
 
 =head2 const($id)
 

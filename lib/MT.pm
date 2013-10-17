@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '5.2', '5.0036' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.0', '6.0008' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '5.2.7',              '__PRODUCT_VERSION_ID__',
+        '6.0',                '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 7;
+        $RELEASE_NUMBER = 0;
     }
 
     $DebugMode = 0;
@@ -2599,11 +2599,15 @@ sub new_ua {
     }
 
     my $ua = $lwp_class->new;
+    eval "require Mozilla::CA;";
+    $ua->ssl_opts( verify_hostname => 0 )
+        if $@;   # Should not verify hostname if Mozilla::CA was not installed
     $ua->max_size($max_size) if ( defined $max_size ) && $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
     eval { require HTML::HeadParser; };
     $ua->parse_head(0) if $@;
+
     if ( defined $proxy ) {
         $ua->proxy( http => $proxy );
         my @domains = split( /,\s*/, $no_proxy ) if $no_proxy;
@@ -2812,9 +2816,10 @@ sub core_commenter_authenticators {
                 eval { require Crypt::SSLeay; };
                 push @missing, 'Crypt::SSLeay' if $@;
                 return 1 unless @missing;
-                $$reason
-                    = MT->translate( 'missing required Perl modules: [_1]',
-                    join( ',', @missing ) );
+                $$reason = MT->translate(
+                    'A Perl module required for Google ID commenter authentication is missing: [_1].',
+                    join( ',', @missing )
+                );
                 return 0;
             },
             login_form_params => \&_commenter_auth_params,
@@ -2853,6 +2858,7 @@ sub core_commenter_authenticators {
             order             => 16,
         },
         'TypeKey' => {
+            disable           => 1,
             class             => 'MT::Auth::TypeKey',
             label             => 'TypePad',
             login_form        => 'comment/auth_typepad.tmpl',
@@ -3314,6 +3320,16 @@ Completes the initialization of the Movable Type schema following the
 loading of plugins. After this method runs, any MT object class may
 safely be used.
 
+=head2 $mt->init_lang_defaults()
+
+Sets appropriate values to some config directives, according to the
+DefaultLanguage config directive. If DefaultLanguage is not set, uses "en_US".
+
+=head2 $mt->i18n_default_settings()
+
+Returns the hash reference of some config directives depending on
+the DefaultLanugage config directive.
+
 =head2 $class->construct
 
 Constructs a new instance of the MT subclass identified by C<$class>.
@@ -3358,6 +3374,11 @@ Reads any MT configuration settings from the MT database (L<MT::Config>).
 
 The C<$params> parameter is a reference to the hash of settings passed to
 the MT constructor.
+
+=head2 $mt->init_debug_mode()
+
+Sets the I<DebugMode> config directive value to a package variable C<$MT::DebugMode>
+and prepares the debug mode. If C<$MT::DebugMode> is false, do nothing.
 
 =head2 $mt->init_addons(%param)
 
@@ -3425,6 +3446,10 @@ used by the application.
 Specifying the C<$setting> parameter will return the value for that setting.
 When passing the C<$value> parameter, this will update the config object,
 assigning that value for the named C<$setting>.
+
+=head2 MT->unplug
+
+This subroutine was abolished.
 
 =head2 $mt->user_class
 
@@ -3838,6 +3863,11 @@ return C<2.5>.
 
 Returns the version of the MT database schema.
 
+=head2 MT->release_number
+
+Returns the release number of MT. For example, if I<version_id> returned C<5.2.7>,
+I<release_number> would return C<7>.
+
 =head2 $mt->id
 
 Provides an identifier for the application, one that relates to the
@@ -3853,6 +3883,11 @@ For example: MT::App::CMS => cms; Foo::Bar => foo/bar
 
 Returns a string of text that is appended to emails sent through the
 C<build_email> method.
+
+=head2 MT->build_id
+
+Returns the build id of MT. When MT has been built, the build id is same as
+C<product_version>. Before building MT, the build id is empty string.
 
 =head2 $mt->publisher
 

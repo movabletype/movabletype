@@ -1,7 +1,6 @@
-# Movable Type (r) Open Source (C) 2005-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
-#
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id:$
 
@@ -21,7 +20,7 @@ use vars qw( @ISA %Lexicon );
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
 
 ## php/lib/archive_lib.php
-	'Individual' => 'ブログ記事',
+	'Individual' => '記事',
 	'Page' => 'ウェブページ',
 	'Yearly' => '年別',
 	'Monthly' => '月別',
@@ -92,9 +91,7 @@ use vars qw( @ISA %Lexicon );
 	'Reply' => '返信',
 
 ## php/lib/function.mtentryclasslabel.php
-	'page' => 'ウェブページ',
-	'entry' => 'ブログ記事',
-	'Entry' => 'ブログ記事',
+	'Entry' => '記事',
 
 ## php/lib/function.mtinclude.php
 	'\'parent\' modifier cannot be used with \'[_1]\'' => '\'parent\'属性を[_1]属性と同時に指定することは出来ません。',
@@ -216,22 +213,22 @@ use vars qw( @ISA %Lexicon );
 	'unknown' => '不明',
 
 ## default_templates/about_this_page.mtml
-	'About this Entry' => 'このブログ記事について',
+	'About this Entry' => 'この記事について',
 	'About this Archive' => 'このアーカイブについて',
 	'About Archives' => 'このページについて',
 	'This page contains links to all of the archived content.' => 'このページには過去に書かれたすべてのコンテンツが含まれています。',
-	'This page contains a single entry by [_1] published on <em>[_2]</em>.' => 'このページは、[_1]が[_2]に書いたブログ記事です。',
-	'<a href="[_1]">[_2]</a> was the previous entry in this blog.' => 'ひとつ前のブログ記事は「<a href="[_1]">[_2]</a>」です。',
-	'<a href="[_1]">[_2]</a> is the next entry in this blog.' => '次のブログ記事は「<a href="[_1]">[_2]</a>」です。',
-	'This page is an archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>.' => 'このページには、<strong>[_2]</strong>以降に書かれたブログ記事のうち<strong>[_1]</strong>カテゴリに属しているものが含まれています。',
+	'This page contains a single entry by [_1] published on <em>[_2]</em>.' => 'このページは、[_1]が[_2]に書いた記事です。',
+	'<a href="[_1]">[_2]</a> was the previous entry in this blog.' => 'ひとつ前の記事は「<a href="[_1]">[_2]</a>」です。',
+	'<a href="[_1]">[_2]</a> is the next entry in this blog.' => '次の記事は「<a href="[_1]">[_2]</a>」です。',
+	'This page is an archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>.' => 'このページには、<strong>[_2]</strong>以降に書かれた記事のうち<strong>[_1]</strong>カテゴリに属しているものが含まれています。',
 	'<a href="[_1]">[_2]</a> is the previous archive.' => '前のアーカイブは<a href="[_1]">[_2]</a>です。',
 	'<a href="[_1]">[_2]</a> is the next archive.' => '次のアーカイブは<a href="[_1]">[_2]</a>です。',
-	'This page is an archive of recent entries in the <strong>[_1]</strong> category.' => 'このページには、過去に書かれたブログ記事のうち<strong>[_1]</strong>カテゴリに属しているものが含まれています。',
+	'This page is an archive of recent entries in the <strong>[_1]</strong> category.' => 'このページには、過去に書かれた記事のうち<strong>[_1]</strong>カテゴリに属しているものが含まれています。',
 	'<a href="[_1]">[_2]</a> is the previous category.' => '前のカテゴリは<a href="[_1]">[_2]</a>です。',
 	'<a href="[_1]">[_2]</a> is the next category.' => '次のカテゴリは<a href="[_1]">[_2]</a>です。',
-	'This page is an archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>.' => 'このページには、<strong>[_1]</strong>が<strong>[_2]</strong>に書いたブログ記事が含まれています。',
-	'This page is an archive of recent entries written by <strong>[_1]</strong>.' => 'このページには、<strong>[_1]</strong>が最近書いたブログ記事が含まれています。',
-	'This page is an archive of entries from <strong>[_2]</strong> listed from newest to oldest.' => 'このページには、<strong>[_2]</strong>に書かれたブログ記事が新しい順に公開されています。',
+	'This page is an archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>.' => 'このページには、<strong>[_1]</strong>が<strong>[_2]</strong>に書いた記事が含まれています。',
+	'This page is an archive of recent entries written by <strong>[_1]</strong>.' => 'このページには、<strong>[_1]</strong>が最近書いた記事が含まれています。',
+	'This page is an archive of entries from <strong>[_2]</strong> listed from newest to oldest.' => 'このページには、<strong>[_2]</strong>に書かれた記事が新しい順に公開されています。',
 	'Find recent content on the <a href="[_1]">main index</a>.' => '最近のコンテンツは<a href="[_1]">インデックスページ</a>で見られます。',
 	'Find recent content on the <a href="[_1]">main index</a> or look in the <a href="[_2]">archives</a> to find all content.' => '最近のコンテンツは<a href="[_1]">インデックスページ</a>で見られます。過去に書かれたものは<a href="[_2]">アーカイブのページ</a>で見られます。',
 
@@ -281,8 +278,8 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/category_entry_listing.mtml
 	'[_1] Archives' => '[_1]アーカイブ',
-	'Recently in <em>[_1]</em> Category' => '<em>[_1]</em>の最近のブログ記事',
-	'Entry Summary' => 'ブログ記事の概要',
+	'Recently in <em>[_1]</em> Category' => '<em>[_1]</em>の最近の記事',
+	'Entry Summary' => '記事の概要',
 	'Main Index' => 'メインページ',
 
 ## default_templates/comment_detail.mtml
@@ -409,7 +406,7 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/main_index_widgets_group.mtml
 	'This is a custom set of widgets that only appear on the homepage (or "main_index"). More info: [_1]' => 'main_indexのテンプレートだけに表示されるように設定されているウィジェットのセットです。詳細: [_1]',
 	'Recent Comments' => '最近のコメント',
-	'Recent Entries' => '最近のブログ記事',
+	'Recent Entries' => '最近の記事',
 	'Recent Assets' => 'アイテム',
 	'Tag Cloud' => 'タグクラウド',
 
@@ -422,12 +419,10 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/monthly_entry_listing.mtml
 
 ## default_templates/new-comment.mtml
-	q{An unapproved comment has been posted on your blog '[_1]', for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{未公開のコメントがブログ '[_1]' のブログ記事 '[_3]' (ID:[_2]) に投稿されました。公開するまでこのコメントはブログに表示されません。},
-	q{An unapproved comment has been posted on your blog '[_1]', on page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{未公開のコメントがブログ '[_1]' のウェブページ '[_3]' (ID:[_2]) に投稿されました。公開するまでこのコメントはブログに表示されません。},
-	q{An unapproved comment has been posted on your website '[_1]', on page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{未公開のコメントがウェブサイト '[_1]' のウェブページ '[_3]' (ID:[_2]) に投稿されました。公開するまでこのコメントはウェブサイトに表示されません。},
-	q{A new comment has been posted on your blog '[_1]', on entry #[_2] ([_3]).} => q{ブログ '[_1]' のブログ記事 '[_3]' (ID:[_2]) に新しいコメントが投稿されました。},
-	q{A new comment has been posted on your blog '[_1]', on page #[_2] ([_3]).} => q{ブログ '[_1]' のウェブページ '[_3]' (ID:[_2]) に新しいコメントが投稿されました。},
-	q{A new comment has been posted on your website '[_1]', on page #[_2] ([_3]).} => q{ウェブサイト '[_1]' のウェブページ '[_3]' (ID:[_2]) に新しいコメントが投稿されました。},
+	q{An unapproved comment has been posted on your site '[_1]', on entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{未公開のコメントがサイト '[_1]' の記事 '[_3]' (ID:[_2]) に投稿されました。公開するまでこのコメントはサイトに表示されません。},
+	q{An unapproved comment has been posted on your site '[_1]', on page #[_2] ([_3]). You need to approve this comment before it will appear on your site.} => q{未公開のコメントがサイト '[_1]' のウェブページ '[_3]' (ID:[_2]) に投稿されました。公開するまでこのコメントはサイトに表示されません。},
+	q{A new comment has been posted on your site '[_1]', on entry #[_2] ([_3]).} => q{サイト '[_1]' の記事 '[_3]' (ID:[_2]) に新しいコメントが投稿されました。},
+	q{A new comment has been posted on your site '[_1]', on page #[_2] ([_3]).} => q{サイト '[_1]' のウェブページ '[_3]' (ID:[_2]) に新しいコメントが投稿されました。},
 	'Commenter name: [_1]' => 'コメント投稿者: [_1]',
 	'Commenter email address: [_1]' => 'メールアドレス: [_1]',
 	'Commenter URL: [_1]' => 'URL: [_1]',
@@ -438,14 +433,12 @@ use vars qw( @ISA %Lexicon );
 	'Report the comment as spam:' => 'コメントをスパムとして報告する:',
 
 ## default_templates/new-ping.mtml
-	q{An unapproved TrackBack has been posted on your blog '[_1]', on entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{ブログ '[_1]' のブログ記事 '[_3]' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。},
-	q{An unapproved TrackBack has been posted on your blog '[_1]', on page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{ブログ '[_1]' のウェブページ '[_3]' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。},
-	q{An unapproved TrackBack has been posted on your blog '[_1]', on category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{ブログ '[_1]' のカテゴリ '[_3]' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。},
-	q{An unapproved TrackBack has been posted on your website '[_1]', on page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{ウェブサイト '[_1]' のウェブページ '[_3]' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはウェブサイトに表示されません。},
-	q{A new TrackBack has been posted on your blog '[_1]', on entry #[_2] ([_3]).} => q{ブログ '[_1]' のブログ記事 '[_3]' (ID:[_2]) に新しいトラックバックがあります。},
-	q{A new TrackBack has been posted on your blog '[_1]', on page #[_2] ([_3]).} => q{ブログ '[_1]' のウェブページ '[_3]' (ID:[_2]) に新しいトラックバックがあります。},
-	q{A new TrackBack has been posted on your blog '[_1]', on category #[_2] ([_3]).} => q{ブログ '[_1]' のカテゴリ '[_3]' (ID:[_2]) に新しいトラックバックがあります。},
-	q{A new TrackBack has been posted on your website '[_1]', on page #[_2] ([_3]).} => q{ウェブサイト '[_1]' のウェブページ '[_3]' (ID:[_2]) に新しいトラックバックがあります。},
+	q{An unapproved TrackBack has been posted on your site '[_1]', on entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{サイト '[_1]' の記事 '[_3]' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはサイトに表示されません。},
+	q{An unapproved TrackBack has been posted on your site '[_1]', on page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{サイト '[_1]' のウェブページ '[_3]' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはサイトに表示されません。},
+	q{An unapproved TrackBack has been posted on your site '[_1]', on category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.} => q{サイト '[_1]' のカテゴリ '[_3]' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはサイトに表示されません。},
+	q{A new TrackBack has been posted on your site '[_1]', on entry #[_2] ([_3]).} => q{サイト '[_1]' の記事 '[_3]' (ID:[_2]) に新しいトラックバックがあります。},
+	q{A new TrackBack has been posted on your site '[_1]', on page #[_2] ([_3]).} => q{サイト '[_1]' のウェブページ '[_3]' (ID:[_2]) に新しいトラックバックがあります。},
+	q{A new TrackBack has been posted on your site '[_1]', on category #[_2] ([_3]).} => q{サイト '[_1]' のカテゴリ '[_3]' (ID:[_2]) に新しいトラックバックがあります。},
 	'Excerpt' => '概要',
 	'Title' => 'タイトル',
 	'Blog' => 'ブログ',
@@ -566,7 +559,7 @@ use vars qw( @ISA %Lexicon );
 	'Loading template \'[_1]\' failed.' => 'テンプレート「[_1]」のロードに失敗しました。',
 	'Error while creating email: [_1]' => 'メールの再構築中にエラーが発生しました: [_1]',
 	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
-	'missing required Perl modules: [_1]' => '必要なPerlモジュールが見つかりません: [_1]',
+	'A Perl module required for Google ID commenter authentication is missing: [_1].' => 'Google ID認証を利用するのに必要なPerlモジュールのうちいくつがありません: [_1]',
 	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.jp/documentation/',
 	'An error occurred: [_1]' => 'エラーが発生しました: [_1]',
 	'OpenID' => 'OpenID',
@@ -581,6 +574,9 @@ use vars qw( @ISA %Lexicon );
 	'livedoor' => 'ライブドア',
 	'Hatena' => 'はてな',
 	'Movable Type default' => 'Movable Type 既定',
+
+## lib/MT/AccessToken.pm
+	'AccessToken' => 'アクセストークン',
 
 ## lib/MT/App.pm
 	'Invalid request' => '不正な要求です。',
@@ -630,7 +626,7 @@ use vars qw( @ISA %Lexicon );
 	'Unknown action [_1]' => '不明なアクション: [_1]',
 	'Warnings and Log Messages' => '警告とメッセージ',
 	'Removed [_1].' => '[_1]を削除しました。',
-	'Cannot load entry #[_1].' => 'ブログ記事: [_1]をロードできませんでした。',
+	'Cannot load entry #[_1].' => '記事: [_1]をロードできませんでした。',
 	'You did not have permission for this action.' => '権限がありません。',
 
 ## lib/MT/App/ActivityFeeds.pm
@@ -642,8 +638,8 @@ use vars qw( @ISA %Lexicon );
 	'All TrackBacks' => 'すべてのトラックバック',
 	'[_1] Comments' => '[_1]へのコメント',
 	'All Comments' => 'すべてのコメント',
-	'[_1] Entries' => '[_1]のブログ記事',
-	'All Entries' => 'すべてのブログ記事',
+	'[_1] Entries' => '[_1]の記事',
+	'All Entries' => 'すべての記事',
 	'[_1] Activity' => '[_1]のログ',
 	'All Activity' => 'すべてのログ',
 	'Movable Type System Activity' => 'Movable Typeのシステムログ',
@@ -657,24 +653,32 @@ use vars qw( @ISA %Lexicon );
 	'Add a user to this [_1]' => 'この[_1]にユーザーを追加',
 	'Are you sure you want to reset the activity log?' => 'ログを消去してもよろしいですか?',
 	'_WARNING_PASSWORD_RESET_MULTI' => '選択されたユーザーのパスワードを再設定しようとしています。パスワード再設定用のリンクが直接それぞれのメールアドレスに送られます。実行しますか?',
-	'_WARNING_DELETE_USER_EUM' => 'ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化してシステムにアクセスできないようにしたい場合は、アカウントを無効化してください。本当にユーザーを削除してもよろしいですか？LDAPディレクトリ上にユーザーがまだ残っている場合、いつでも再作成されてしまいます。',
-	'_WARNING_DELETE_USER' => 'ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化するのが正しい方法です。本当にユーザーを削除してもよろしいですか?',
+	'_WARNING_DELETE_USER_EUM' => 'ユーザーを削除すると、そのユーザーの書いた記事はユーザー不明となり、後で取り消せません。ユーザーを無効化してシステムにアクセスできないようにしたい場合は、アカウントを無効化してください。本当にユーザーを削除してもよろしいですか？LDAPディレクトリ上にユーザーがまだ残っている場合、いつでも再作成されてしまいます。',
+	'_WARNING_DELETE_USER' => 'ユーザーを削除すると、そのユーザーの書いた記事はユーザー不明となり、後で取り消せません。ユーザーを無効化するのが正しい方法です。本当にユーザーを削除してもよろしいですか?',
 	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => '選択されたブログのテンプレートを、各ブログの利用しているテーマの初期状態に戻します。テンプレートを初期化してもよろしいですか?',
-	'Some websites were not deleted. You need to delete blogs under the website first.' => '削除できないウェブサイトがありました。ウェブサイト内のブログを先に削除する必要があります。',
 	'You are not authorized to log in to this blog.' => 'ブログにサインインする権限がありません。',
 	'No such blog [_1]' => '[_1]というブログはありません。',
 	'Invalid parameter' => '不正なパラメータです。',
 	'Edit Template' => 'テンプレートの編集',
 	'Unknown object type [_1]' => '[_1]というオブジェクトはありません。',
+	'entry' => '記事',
 	'None' => 'なし',
 	'Error during publishing: [_1]' => '公開中にエラーが発生しました: [_1]',
-	'This is You' => 'This is You',
+	'The support directory is not writable.' => 'サポートディレクトリに書き込めません。',
+	'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.' => 'サポートディレクトリに書き込みできません。[_1]にディレクトリを作成して、ウェブサーバーから書き込みできるパーミッションを与えてください。',
+	'Please contact your Movable Type system administrator.' => 'システム管理者に問い合わせてください。',
+	'ImageDriver is not configured.' => 'イメージドライバーが設定されていません。',
+	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'ImageDriverに設定された画像処理ツールが存在しないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Image::Magick、NetPBM、GD、Imagerのいずれかをインストールする必要があります。',
+	'The System Email Address is used in the \'From:\' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events. Please confirm your <a href="[_1]">settings.</a>' => 'このメールアドレスはMovable Typeから送られるメールの\'From:\'アドレスに利用されます。メールはパスワードの再設定、コメント投稿者の登録、コメントやトラックバックの通知、ユーザーまたはIPアドレスのロックアウト、その他の場合に送信されます。<a href="[_1]">設定</a>を確認してください。',
+	'Personal Stats' => 'ユーザー情報',
 	'Movable Type News' => 'Movable Typeニュース',
-	'Blog Stats' => 'Blog Stats',
 	'Websites' => 'ウェブサイト',
 	'Blogs' => 'ブログ',
 	'Websites and Blogs' => 'ウェブサイトとブログ',
-	'Entries' => 'ブログ記事',
+	'Notification Dashboard' => 'Notification Dashboard',
+	'Site Stats' => 'サイト情報',
+	'Blog Stats' => 'Blog Stats',
+	'Entries' => '記事',
 	'Refresh Templates' => 'テンプレート初期化',
 	'Use Publishing Profile' => '公開プロファイルを設定',
 	'Delete all Spam trackbacks' => '全てのスパムトラックバックを削除する',
@@ -686,12 +690,12 @@ use vars qw( @ISA %Lexicon );
 	'Add IP Address' => 'IPアドレスの追加',
 	'Add Contact' => '連絡先の追加',
 	'Download Address Book (CSV)' => 'アドレス帳をダウンロード(CSV)',
-	'Unpublish Entries' => 'ブログ記事の公開を取り消し',
+	'Unpublish Entries' => '記事の公開を取り消し',
 	'Add Tags...' => 'タグの追加',
 	'Tags to add to selected entries' => '追加するタグを入力',
 	'Remove Tags...' => 'タグの削除',
 	'Tags to remove from selected entries' => '削除するタグを入力',
-	'Batch Edit Entries' => 'ブログ記事の一括編集',
+	'Batch Edit Entries' => '記事の一括編集',
 	'Publish' => '公開',
 	'Delete' => '削除',
 	'Unpublish Pages' => 'ウェブページの公開を取り消し',
@@ -754,6 +758,9 @@ use vars qw( @ISA %Lexicon );
 	'Website' => 'ウェブサイト',
 	'Profile' => 'ユーザー情報',
 
+## lib/MT/App/CMS/Common.pm
+	'Some websites were not deleted. You need to delete blogs under the website first.' => '削除できないウェブサイトがありました。ウェブサイト内のブログを先に削除する必要があります。',
+
 ## lib/MT/App/Comments.pm
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => '\'[_1]\' (ID:[_2])にブログ\'[_3]\'(ID:[_2])へのコメント権限を与えられませんでした。コメント権限を与えるためのロールが見つかりません。',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => '[_1]がブログ[_2](ID:[_3])にサインインしようとしましたが、このブログではMovable Type認証が有効になっていません。',
@@ -775,10 +782,10 @@ use vars qw( @ISA %Lexicon );
 	'No such comment' => 'コメントがありません。',
 	'IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.' => '[_1]からのコメントが[_2]秒間に8個続いたため、このIPアドレスを禁止リストに登録しました。',
 	'IP Banned Due to Excessive Comments' => '大量コメントによるIP禁止',
-	'No entry_id' => 'ブログ記事のIDがありません。',
-	'No such entry \'[_1]\'.' => 'ブログ記事\'[_1]\'がありません。',
+	'No entry_id' => '記事のIDがありません。',
+	'No such entry \'[_1]\'.' => '記事\'[_1]\'がありません。',
 	'_THROTTLED_COMMENT' => '短い期間にコメントを大量に送りすぎです。しばらくたってからやり直してください。',
-	'Comments are not allowed on this entry.' => 'このブログ記事にはコメントできません。',
+	'Comments are not allowed on this entry.' => 'この記事にはコメントできません。',
 	'Comment text is required.' => 'コメントを入力していません。',
 	'Registration is required.' => '登録しなければなりません。',
 	'Name and E-mail address are required.' => '名前とメールアドレスは必須です。',
@@ -791,9 +798,9 @@ use vars qw( @ISA %Lexicon );
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'まだ登録を完了していないユーザー\'[_1]\'がコメントしようとしました。',
 	'Registered User' => '登録ユーザー',
 	'You are trying to redirect to external resources. If you trust the site, please click the link: [_1]' => '外部のサイトへリダイレクトしようとしています。あなたがそのサイトを信頼できる場合、リンクをクリックしてください。[_1]',
-	'No entry was specified; perhaps there is a template problem?' => 'ブログ記事が指定されていません。テンプレートに問題があるかもしれません。',
-	'Somehow, the entry you tried to comment on does not exist' => 'コメントしようとしたブログ記事がありません。',
-	'Invalid entry ID provided' => 'ブログ記事のIDが不正です。',
+	'No entry was specified; perhaps there is a template problem?' => '記事が指定されていません。テンプレートに問題があるかもしれません。',
+	'Somehow, the entry you tried to comment on does not exist' => 'コメントしようとした記事がありません。',
+	'Invalid entry ID provided' => '記事のIDが不正です。',
 	'For improved security, please change your password' => 'セキュリティを向上させるために、パスワードを変更してください。',
 	'All required fields must be populated.' => '必須フィールドのすべてに正しい値を設定してください。',
 	'Failed to verify the current password.' => '現在のパスワードを確認できません。',
@@ -826,7 +833,7 @@ use vars qw( @ISA %Lexicon );
 	'template_id cannot refer to a global template' => 'template_idにグローバルテンプレートを指定することは出来ません',
 	'Output file cannot be of the type asp or php' => 'aspやphpの出力ファイルにはできません',
 	'You must pass a valid archive_type with the template_id' => '正しいアーカイブタイプとテンプレートidを指定してください',
-	'Template must be an entry_listing for non-Index archive types' => 'テンプレートはインデックスではないアーカイブタイプのブログ記事リストでなければなりません',
+	'Template must be an entry_listing for non-Index archive types' => 'テンプレートはインデックスではないアーカイブタイプの記事リストでなければなりません',
 	'Filename extension cannot be asp or php for these archives' => 'ファイル拡張子がaspやphpに設定されているため、指定されてtemplate_idを利用することが出来ません',
 	'Template must be a main_index for Index archive type' => 'テンプレートはmain_indexでなれければなりません',
 	'The search you conducted has timed out.  Please simplify your query and try again.' => 'タイムアウトしました。お手数ですが検索をやり直してください。',
@@ -843,7 +850,7 @@ use vars qw( @ISA %Lexicon );
 	'TagSearch works with MT::App::Search.' => 'TagSearchはMT::App::Searchと一緒に使います。',
 
 ## lib/MT/App/Trackback.pm
-	'Invalid entry ID \'[_1]\'' => 'ブログ記事のIDが不正です: [_1]',
+	'Invalid entry ID \'[_1]\'' => '記事のIDが不正です: [_1]',
 	'You must define a Ping template in order to display pings.' => '表示するにはトラックバックテンプレートを定義する必要があります。',
 	'Trackback pings must use HTTP POST' => 'Trackback pings must use HTTP POST',
 	'TrackBack ID (tb_id) is required.' => 'トラックバックIDが必要です。',
@@ -877,7 +884,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot load template [_1]' => 'テンプレートを読み込めませんでした [_1]',
 	'Archive publishing failed: [_1]' => 'アーカイブの公開に失敗しました: [_1]',
 	'Invalid entry ID [_1].' => 'エントリーIDが不正です: [_1]',
-	'Entry [_1] was not published.' => 'ブログ記事 [_1] は公開されていません',
+	'Entry [_1] was not published.' => '記事 [_1] は公開されていません',
 	'Invalid category ID \'[_1]\'' => 'カテゴリのIDが不正です: [_1]',
 	'Invalid author ID \'[_1]\'' => 'ユーザーIDが不正です: [_1]',
 
@@ -965,7 +972,7 @@ use vars qw( @ISA %Lexicon );
 	'yyyy/mm/dd/index.html' => 'yyyy/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/Individual.pm
-	'INDIVIDUAL_ADV' => 'ブログ記事',
+	'INDIVIDUAL_ADV' => '記事',
 	'yyyy/mm/entry-basename.html' => 'yyyy/mm/entry-basename.html',
 	'yyyy/mm/entry_basename.html' => 'yyyy/mm/entry_basename.html',
 	'yyyy/mm/entry-basename/index.html' => 'yyyy/mm/entry-basename/index.html',
@@ -1053,9 +1060,10 @@ use vars qw( @ISA %Lexicon );
 	'__WEBSITE_BLOG_NAME' => 'ウェブサイト/ブログ名',
 
 ## lib/MT/AtomServer.pm
-	'[_1]: Entries' => '[_1]: ブログ記事一覧',
+	'[_1]: Entries' => '[_1]: 記事一覧',
 	'Invalid blog ID \'[_1]\'' => 'ブログIDが不正です([_1])。',
 	'PreSave failed [_1]' => 'PreSaveでエラーがありました: [_1]',
+	'Removing stats cache failed.' => 'アクセス統計データのキャッシュを削除できませんでした。',
 	'User \'[_1]\' (user #[_2]) added [lc,_4] #[_3]' => '[_1] (ID: [_2])が[_4] (ID: [_3])を追加しました。',
 	'User \'[_1]\' (user #[_2]) edited [lc,_4] #[_3]' => '[_1] (ID: [_2])が[_4] (ID: [_3])を編集しました。',
 	'Entry \'[_1]\' ([lc,_5] #[_2]) deleted by \'[_3]\' (user #[_4]) from atom api' => '[_1]記事([lc,_5]#[_2])は[_3](ID: [_4])によって削除されました。',
@@ -1101,7 +1109,7 @@ use vars qw( @ISA %Lexicon );
 	'The approval could not be committed: [_1]' => '公開できませんでした: [_1]',
 	'Userpic' => 'プロフィール画像',
 	'User Info' => '詳細情報',
-	'__ENTRY_COUNT' => 'ブログ記事数',
+	'__ENTRY_COUNT' => '記事数',
 	'__COMMENT_COUNT' => 'コメント数',
 	'Created by' => '作成者',
 	'Status' => 'ステータス',
@@ -1136,10 +1144,10 @@ use vars qw( @ISA %Lexicon );
 	'Failed: ' => '失敗: ',
 	'Done.' => '完了',
 	'Restoring asset associations ... ( [_1] )' => 'アイテムの関連付けを復元しています...( [_1] )',
-	'Restoring asset associations in entry ... ( [_1] )' => 'ブログ記事とアイテムの関連付けを復元しています...( [_1] )',
+	'Restoring asset associations in entry ... ( [_1] )' => '記事とアイテムの関連付けを復元しています...( [_1] )',
 	'Restoring asset associations in page ... ( [_1] )' => 'ウェブページとアイテムの関連付けを復元しています...( [_1] )',
 	'Restoring url of the assets ( [_1] )...' => 'アイテムのURLを復元しています... ( [_1] )',
-	'Restoring url of the assets in entry ( [_1] )...' => 'ブログ記事に含まれるアイテムのURLを復元しています... ( [_1] )',
+	'Restoring url of the assets in entry ( [_1] )...' => '記事に含まれるアイテムのURLを復元しています... ( [_1] )',
 	'Restoring url of the assets in page ( [_1] )...' => 'ウェブページに含まれるアイテムのURLを復元しています... ( [_1] )',
 	'ID for the file was not set.' => 'ファイルにIDが設定されていませんでした。',
 	'The file ([_1]) was not restored.' => 'ファイル([_1])は復元されませんでした。',
@@ -1161,8 +1169,8 @@ use vars qw( @ISA %Lexicon );
 	'The system level settings for plugin \'[_1]\' already exist.  Skipping this record.' => '[_1]のシステムのプラグイン設定はすでに存在しています。このレコードはスキップします。',
 
 ## lib/MT/BackupRestore/BackupFileScanner.pm
-	'Cannot restore requested file because doing so requires the Digest::SHA Perl language module. Please contact your Movable Type system administrator.' => 'Digest::SHAがインストールされていないため、このファイルを復元することが出来ません。システム管理者問い合わせてください。',
-	'Cannot restore requested file because a website was not found in either the system or backup data. A website must be created first.' => 'ウェブサイトのデータが含まれていないため、このファイルを復元することが出来ません。ウェブサイトを先に作成してください。',
+	'Cannot restore requested file because doing so requires the Digest::SHA Perl module. Please contact your Movable Type system administrator.' => 'Digest::SHAがインストールされていないため、このファイルを復元することが出来ません。システム管理者問い合わせてください。',
+	'Cannot restore requested file because a website was not found in either the existing Movable Type system or the backup data. A website must be created first.' => 'ウェブサイトのデータが含まれていないため、このファイルを復元することが出来ません。ウェブサイトを先に作成してください。',
 
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
 
@@ -1179,9 +1187,9 @@ use vars qw( @ISA %Lexicon );
 	'[_1] records processed...' => '[_1]レコードを処理しました...',
 	'[_1] records processed.' => '[_1]レコードを処理しました。',
 	'Cloning associations for blog:' => '関連付けを複製しています:',
-	'Cloning entries and pages for blog...' => 'ブログ記事とウェブページを複製しています',
+	'Cloning entries and pages for blog...' => '記事とウェブページを複製しています',
 	'Cloning categories for blog...' => 'カテゴリを複製しています...',
-	'Cloning entry placements for blog...' => 'ブログ記事とカテゴリの関連付けを複製しています...',
+	'Cloning entry placements for blog...' => '記事とカテゴリの関連付けを複製しています...',
 	'Cloning comments for blog...' => 'コメントを複製しています...',
 	'Cloning entry tags for blog...' => 'タグを複製しています...',
 	'Cloning TrackBacks for blog...' => 'トラックバックを複製しています...',
@@ -1206,8 +1214,8 @@ use vars qw( @ISA %Lexicon );
 	'Unknown tag found: [_1]' => '不明なタグです: [_1]',
 
 ## lib/MT/CMS/AddressBook.pm
-	'No entry ID was provided' => 'ブログ記事のIDが指定されていません。',
-	'No such entry \'[_1]\'' => '「[_1]」というブログ記事は存在しません。',
+	'No entry ID was provided' => '記事のIDが指定されていません。',
+	'No such entry \'[_1]\'' => '「[_1]」という記事は存在しません。',
 	'No valid recipients were found for the entry notification.' => '通知するメールアドレスがありません。',
 	'[_1] Update: [_2]' => '更新通知: [_1] - [_2]',
 	'Error sending mail ([_1]): Try another MailTransfer setting?' => 'メールを送信できませんでした。MailTransferの設定を見直してください: [_1]',
@@ -1320,12 +1328,13 @@ use vars qw( @ISA %Lexicon );
 	'The parent comment id was not specified.' => '返信先のコメントが指定されていません。',
 	'The parent comment was not found.' => '返信先のコメントが見つかりません。',
 	'You cannot reply to unapproved comment.' => '未公開のコメントには返信できません。',
+	'You cannot create a comment for an unpublished entry.' => '公開されていない記事にはコメントできません。',
+	'You cannot reply to unpublished comment.' => '公開されていないコメントには返信できません。',
 	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => '\'[_3]\'がコメント\'[_1]\'(ID:[_2])を削除しました。',
 	'You do not have permission to approve this trackback.' => 'トラックバックを承認する権限がありません。',
-	'The entry corresponding to this comment is missing.' => '存在しないブログ記事に対してコメントしています。',
+	'The entry corresponding to this comment is missing.' => '存在しない記事に対してコメントしています。',
 	'You do not have permission to approve this comment.' => 'コメントを公開する権限がありません。',
-	'You cannot reply to unpublished comment.' => '公開されていないコメントには返信できません。',
-	'Orphaned comment' => 'ブログ記事のないコメント',
+	'Orphaned comment' => '記事のないコメント',
 
 ## lib/MT/CMS/Common.pm
 	'The Template Name and Output File fields are required.' => 'テンプレートの名前と出力ファイル名は必須です。',
@@ -1355,6 +1364,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Dashboard.pm
 	'Error: This blog does not have a parent website.' => 'エラー: このブログにはウェブサイトがありません。',
+	'Not configured' => '未設定',
+	'Page Views' => 'ページビュー',
 
 ## lib/MT/CMS/Entry.pm
 	'*User deleted*' => '*削除されました*',
@@ -1371,25 +1382,30 @@ use vars qw( @ISA %Lexicon );
 	'No such [_1].' => '[_1]が存在しません。',
 	'This basename has already been used. You should use an unique basename.' => 'ファイル名はすでに使用されています。一意の名前を指定してください。',
 	'Your blog has not been configured with a site path and URL. You cannot publish entries until these are defined.' => 'サイトパスとサイトURLを設定していません。設定するまで公開できません。',
-	'Invalid date \'[_1]\'; \'Published on\' dates must be in the format YYYY-MM-DD HH:MM:SS.' => '\'[_1]\'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。',
-	'Invalid date \'[_1]\'; \'Published on\' dates should be real dates.' => '\'[_1]\'は不正な日付です。正しい日付を入力してください。',
-	'[_1] \'[_2]\' (ID:[_3]) added by user \'[_4]\'' => '[_4]が[_1]「[_2]」(ID:[_3])を追加しました。',
-	'[_1] \'[_2]\' (ID:[_3]) edited and its status changed from [_4] to [_5] by user \'[_6]\'' => '[_6]が[_1]「[_2]」(ID:[_3])を更新し、公開の状態を[_4]から[_5]に変更しました。',
-	'[_1] \'[_2]\' (ID:[_3]) edited by user \'[_4]\'' => '[_4]が[_1]「[_2]」(ID:[_3])を更新しました。',
-	'Saving placement failed: [_1]' => 'ブログ記事とカテゴリの関連付けを設定できませんでした: [_1]',
+	'Invalid date \'[_1]\'; \'Published on\' dates must be in the format YYYY-MM-DD HH:MM:SS.' => '公開日: \'[_1]\'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。',
+	'Invalid date \'[_1]\'; \'Published on\' dates should be real dates.' => '公開日: \'[_1]\'は不正な日付です。正しい日付を入力してください。',
+	'Invalid date \'[_1]\'; \'Unpublished on\' dates must be in the format YYYY-MM-DD HH:MM:SS.' => '公開終了日: \'[_1]\'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。',
+	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be real dates.' => '公開終了日: \'[_1]\'は不正な日付です。正しい日付を入力してください。',
+	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be dates in the future.' => '公開終了日は、未来の日時を指定してください。',
+	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be later than the corresponding \'Published on\' date.' => '公開終了日は、公開日より未来の日時を指定してください。',
+	'Saving placement failed: [_1]' => '記事とカテゴリの関連付けを設定できませんでした: [_1]',
 	'Invalid date \'[_1]\'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.' => '\'[_1]\'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。',
 	'Invalid date \'[_1]\'; [_2] dates should be real dates.' => '\'[_1]\'は不正な日付です。正しい日付を入力してください。',
+	'Invalid date \'[_1]\'; \'Published on\' dates should be earlier than the corresponding \'Unpublished on\' date \'[_2]\'.' => '公開日: \'[_1]\'は、公開終了日: \'[_2]\'より前の日時を指定してください',
 	'authored on' => '公開日',
 	'modified on' => '更新日',
-	'Saving entry \'[_1]\' failed: [_2]' => 'ブログ記事「[_1]」を保存できませんでした: [_2]',
-	'Removing placement failed: [_1]' => 'ブログ記事とカテゴリの関連付けを削除できませんでした: [_1]',
+	'Saving entry \'[_1]\' failed: [_2]' => '記事「[_1]」を保存できませんでした: [_2]',
+	'Removing placement failed: [_1]' => '記事とカテゴリの関連付けを削除できませんでした: [_1]',
+	'[_1] \'[_2]\' (ID:[_3]) edited and its status changed from [_4] to [_5] by user \'[_6]\'' => '[_6]が[_1]「[_2]」(ID:[_3])を更新し、公開の状態を[_4]から[_5]に変更しました。',
+	'[_1] \'[_2]\' (ID:[_3]) edited by user \'[_4]\'' => '[_4]が[_1]「[_2]」(ID:[_3])を更新しました。',
 	'Ping \'[_1]\' failed: [_2]' => '[_1]へトラックバックできませんでした: [_2]',
 	'(user deleted - ID:[_1])' => '(削除されたユーザー - ID:[_1])',
 	'<a href="[_1]">QuickPost to [_2]</a> - Drag this bookmarklet to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.' => '<a href="[_1]">クイック投稿</a>: このリンクをブラウザのツールバーにドラッグし、興味のあるウェブページでクリックすると、ブログへ簡単に投稿できます。',
+	'[_1] \'[_2]\' (ID:[_3]) added by user \'[_4]\'' => '[_4]が[_1]「[_2]」(ID:[_3])を追加しました。',
 	'[_1] \'[_2]\' (ID:[_3]) deleted by \'[_4]\'' => '\'[_4]\'が[_1]\'[_2]\'(ID:[_3])を削除しました。',
-	'Need a status to update entries' => 'ブログ記事を更新するにはまず公開状態を設定してください。',
-	'Need entries to update status' => '公開状態を設定するにはブログ記事が必要です。',
-	'One of the entries ([_1]) did not exist' => 'ブログ記事(ID:[_1])は存在しませんでした。',
+	'Need a status to update entries' => '記事を更新するにはまず公開状態を設定してください。',
+	'Need entries to update status' => '公開状態を設定するには記事が必要です。',
+	'One of the entries ([_1]) did not exist' => '記事(ID:[_1])は存在しませんでした。',
 	'[_1] \'[_2]\' (ID:[_3]) status changed from [_4] to [_5]' => '[_1]「[_2] (ID:[_3])」の公開状態が[_4]から[_5]に変更されました。',
 
 ## lib/MT/CMS/Export.pm
@@ -1456,8 +1472,8 @@ use vars qw( @ISA %Lexicon );
 	'A new name for the tag must be specified.' => 'タグの名前を指定してください。',
 	'No such tag' => 'タグが存在しません。',
 	'The tag was successfully renamed' => 'タグの名前が変更されました。',
-	'Error saving entry: [_1]' => 'ブログ記事を保存できませんでした: [_1]',
-	'Successfully added [_1] tags for [_2] entries.' => '[_2]件のブログ記事に[_1]件のタグを追加しました。',
+	'Error saving entry: [_1]' => '記事を保存できませんでした: [_1]',
+	'Successfully added [_1] tags for [_2] entries.' => '[_2]件の記事に[_1]件のタグを追加しました。',
 	'Error saving file: [_1]' => 'ファイルを保存できませんでした: [_1]',
 	'Tag \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がタグ\'[_1]\'(ID:[_2])を削除しました。',
 
@@ -1477,7 +1493,7 @@ use vars qw( @ISA %Lexicon );
 	'Global' => 'グローバル',
 	'You must specify a template type when creating a template' => 'テンプレートを作成するためのtypeパラメータが指定されていません。',
 	'Archive' => 'アーカイブ',
-	'Entry or Page' => 'ブログ記事/ウェブページ',
+	'Entry or Page' => '記事/ウェブページ',
 	'New Template' => '新しいテンプレート',
 	'Index Templates' => 'インデックステンプレート',
 	'Archive Templates' => 'アーカイブテンプレート',
@@ -1491,7 +1507,7 @@ use vars qw( @ISA %Lexicon );
 	'Lorem ipsum' => 'いろはにほへと',
 	'LOREM_IPSUM_TEXT' => 'いろはにほへと ちりぬるを わかよたれそ つねならむ うゐのおくやま けふこえて あさきゆめみし ゑひもせす',
 	'LORE_IPSUM_TEXT_MORE' => '色は匂へど 散りぬるを 我が世誰ぞ 常ならむ 有為の奥山 今日越えて 浅き夢見し 酔ひもせず',
-	'sample, entry, preview' => 'サンプル、ブログ記事、プレビュー',
+	'sample, entry, preview' => 'サンプル、記事、プレビュー',
 	'Populating blog with default templates failed: [_1]' => 'ブログに既定のテンプレートを設定できませんでした: [_1]',
 	'Setting up mappings failed: [_1]' => 'テンプレートマップを作成できませんでした: [_1]',
 	'Cannot load templatemap' => 'テンプレートマップをロードできませんでした',
@@ -1568,7 +1584,6 @@ use vars qw( @ISA %Lexicon );
 	'Backup & Restore' => 'バックアップ/復元',
 	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'バックアップするにはテンポラリディレクトリに書き込みできなければなりません。TempDirの設定を確認してください。',
 	'Temporary directory needs to be writable for restore to work correctly.  Please check TempDir configuration directive.' => '復元するにはテンポラリディレクトリに書き込みできなければなりません。TempDirの設定を確認してください。',
-	'No website could be found. You must create a website first.' => 'ウェブサイトがありません。最初にウェブサイトを作成してください。',
 	'[_1] is not a number.' => '[_1]は数値ではありません。',
 	'Copying file [_1] to [_2] failed: [_3]' => 'ファイル: [_1]を[_2]にコピーできませんでした: [_3]',
 	'Specified file was not found.' => '指定されたファイルが見つかりませんでした。',
@@ -1585,6 +1600,8 @@ use vars qw( @ISA %Lexicon );
 	'Changing Archive Path for the blog \'[_1]\' (ID:[_2])...' => '\'[_1]\'(ID:[_2])のアーカイブパスを変更しています...',
 	'Removing Archive Path for the blog \'[_1]\' (ID:[_2])...' => '\'[_1]\'(ID:[_2])のアーカイブパスを消去しています...',
 	'Changing file path for the asset \'[_1]\' (ID:[_2])...' => 'アイテム\'[_1]\'(ID:[_2])のパスを変更しています...',
+	'Could not remove backup file [_1] from the filesystem: [_2]' => 'バックアップファイル(\'[_1]\')をファイルシステムから削除できませんでした: [_2]',
+	'Some of the backup files could not be removed.' => '削除できなかったバックアップファイルがあります。',
 	'Please upload [_1] in this page.' => '[_1]をアップロードしてください。',
 	'File was not uploaded.' => 'ファイルがアップロードされませんでした。',
 	'Restoring a file failed: ' => 'ファイルから復元できませんでした。',
@@ -1621,7 +1638,7 @@ use vars qw( @ISA %Lexicon );
 	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => '\'[_3]\'が\'[_2]\'のトラックバック(ID:[_1])を削除しました。',
 	'No Excerpt' => '抜粋なし',
 	'No Title' => 'タイトルなし',
-	'Orphaned TrackBack' => '対応するブログ記事のないトラックバック',
+	'Orphaned TrackBack' => '対応する記事のないトラックバック',
 	'category' => 'カテゴリ',
 
 ## lib/MT/CMS/User.pm
@@ -1631,11 +1648,12 @@ use vars qw( @ISA %Lexicon );
 	'Another role already exists by that name.' => '同名のロールが既に存在します。',
 	'You cannot define a role without permissions.' => '権限のないロールは作成できません。',
 	'Invalid type' => 'typeが不正です。',
+	'User \'[_1]\' (ID:[_2]) could not be re-enabled by \'[_3]\'' => 'ユーザー \'[_1]\' (ID:[_2])を有効にできません',
 	'Invalid ID given for personal blog theme.' => '個人用ブログテーマのIDが不正です。',
 	'Invalid ID given for personal blog clone location ID.' => '個人用ブログの複製先のIDが不正です。',
 	'Minimum password length must be an integer and greater than zero.' => 'パスワードの最低文字数は0以上の整数でなければなりません。',
 	'If personal blog is set, the personal blog location are required.' => '個人用ブログの設定にはウェブサイトの選択が必要です。',
-	'Select a entry author' => 'ブログ記事の投稿者を選択',
+	'Select a entry author' => '記事の投稿者を選択',
 	'Select a page author' => 'ページの投稿者を選択',
 	'Selected author' => '選択された投稿者',
 	'Type a username to filter the choices below.' => 'ユーザー名を入力して絞り込み',
@@ -1693,15 +1711,16 @@ use vars qw( @ISA %Lexicon );
 	'Reported as spam' => 'スパム',
 	'All comments by [_1] \'[_2]\'' => '[_1]\'[_2]\'のコメント',
 	'Commenter' => 'コメント投稿者',
-	'Loading entry \'[_1]\' failed: [_2]' => 'ブログ記事\'[_1]\'をロードできませんでした: [_1]',
-	'Entry/Page' => 'ブログ記事/ウェブページ',
-	'Comments on My Entries/Pages' => '自分のブログ記事/ウェブページへのコメント',
+	'Loading entry \'[_1]\' failed: [_2]' => '記事\'[_1]\'をロードできませんでした: [_1]',
+	'Entry/Page' => '記事/ウェブページ',
+	'Comments on My Entries/Pages' => '自分の記事/ウェブページへのコメント',
 	'Commenter Status' => 'コメント投稿者の状態',
+	'Comments in This Website' => 'ウェブサイトのコメント',
 	'Non-spam comments' => 'スパムでないコメント',
 	'Non-spam comments on this website' => 'ウェブサイトのスパムでないコメント',
 	'Pending comments' => '保留中のコメント',
 	'Published comments' => '公開されているコメント',
-	'Comments on my entries/pages' => '自分のブログ記事/ウェブページへのコメント',
+	'Comments on my entries/pages' => '自分の記事/ウェブページへのコメント',
 	'Comments in the last 7 days' => '最近7日間以内のコメント',
 	'Spam comments' => 'スパムコメント',
 
@@ -1788,7 +1807,7 @@ use vars qw( @ISA %Lexicon );
 	'Adds Summarize workers to queue.' => 'キューにワーカーサマリーを追加します。',
 	'zip' => 'zip',
 	'tar.gz' => 'tar.gz',
-	'Entries List' => 'ブログ記事の一覧',
+	'Entries List' => '記事の一覧',
 	'Blog URL' => 'ブログURL',
 	'Blog ID' => 'ブログID',
 	'Entry Excerpt' => '概要',
@@ -1803,11 +1822,13 @@ use vars qw( @ISA %Lexicon );
 	'Set Variable' => '変数のSet',
 	'Set Variable Block' => '変数ブロックのSet',
 	'Widget Set' => 'ウィジェットセット',
-	'Publish Scheduled Entries' => '日時指定されたブログ記事を再構築',
+	'Publish Scheduled Entries' => '日時指定された記事を再構築',
+	'Unpublish Past Entries' => '公開期限が過ぎた記事の公開を終了',
 	'Add Summary Watcher to queue' => 'サマリー監視タスクをキューに追加',
 	'Junk Folder Expiration' => 'スパムコメント/トラックバックの廃棄',
 	'Remove Temporary Files' => 'テンポラリファイルの削除',
 	'Purge Stale Session Records' => '古いセッションレコードの消去',
+	'Purge Stale DataAPI Session Records' => '古いData APIのセッションレコードの消去',
 	'Remove expired lockout data' => '古いサインインの失敗レコードの消去',
 	'Purge Unused FileInfo Records' => '古いファイル情報レコードの消去',
 	'Manage Website' => 'ウェブサイトの管理',
@@ -1815,7 +1836,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Website with Blogs' => 'ウェブサイトと所属ブログの管理',
 	'Post Comments' => 'コメントの投稿',
 	'Create Entries' => '記事の作成',
-	'Edit All Entries' => 'すべてのブログ記事の編集',
+	'Edit All Entries' => 'すべての記事の編集',
 	'Manage Assets' => 'アイテムの管理',
 	'Manage Categories' => 'カテゴリの管理',
 	'Change Settings' => '設定の変更',
@@ -1835,14 +1856,25 @@ use vars qw( @ISA %Lexicon );
 	'Manage Plugins' => 'プラグインの管理',
 	'View System Activity Log' => 'システムログの閲覧',
 
+## lib/MT/DataAPI/Endpoint/Auth.pm
+
+## lib/MT/DataAPI/Endpoint/Comment.pm
+
+## lib/MT/DataAPI/Endpoint/Common.pm
+
+## lib/MT/DataAPI/Endpoint/Entry.pm
+
+## lib/MT/DataAPI/Resource.pm
+	'Cannot parse "[_1]" as an ISO 8601 datetime' => '"[_1]"は、ISO 8601形式のデータではありません',
+
 ## lib/MT/DefaultTemplates.pm
 	'Archive Index' => 'アーカイブインデックス',
 	'Stylesheet' => 'スタイルシート',
 	'JavaScript' => 'JavaScript',
 	'Feed - Recent Entries' => '最新記事のフィード',
 	'RSD' => 'RSD',
-	'Monthly Entry Listing' => '月別ブログ記事リスト',
-	'Category Entry Listing' => 'カテゴリ別ブログ記事リスト',
+	'Monthly Entry Listing' => '月別記事リスト',
+	'Category Entry Listing' => 'カテゴリ別記事リスト',
 	'Comment Listing' => 'コメント一覧',
 	'Improved listing of comments.' => 'コメント表示を改善します。',
 	'Comment Response' => 'コメント完了',
@@ -1873,21 +1905,23 @@ use vars qw( @ISA %Lexicon );
 	'Commenter Notify' => 'コメントの通知',
 	'New Comment' => '新しいコメント',
 	'New Ping' => '新しいトラックバック',
-	'Entry Notify' => 'ブログ記事の共有',
+	'Entry Notify' => '記事の共有',
 	'Subscribe Verify' => '購読の確認',
 	'User Lockout' => 'ユーザーアカウントのロック通知',
 	'IP Address Lockout' => 'IPアドレスのロック通知',
 
 ## lib/MT/Entry.pm
+	'View [_1]' => '[_1]を見る',
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] ( id:[_2] ) が見つかりません。',
-	'Entries from category: [_1]' => 'カテゴリ \'[_1]\'のブログ記事',
+	'Entries from category: [_1]' => 'カテゴリ \'[_1]\'の記事',
 	'NONE' => 'なし',
 	'Draft' => '下書き',
 	'Published' => '公開',
 	'Reviewing' => '承認待ち',
 	'Scheduled' => '日時指定',
 	'Junk' => 'スパム',
-	'Entries by [_1]' => '[_1]のブログ記事',
+	'Unpublished (End)' => '非公開（公開終了）',
+	'Entries by [_1]' => '[_1]の記事',
 	'record does not exist.' => 'ブログがありません。',
 	'Review' => '承認待ち',
 	'Future' => '日時指定',
@@ -1898,17 +1932,20 @@ use vars qw( @ISA %Lexicon );
 	'Format' => 'フォーマット',
 	'Accept Trackbacks' => 'トラックバックを許可',
 	'Publish Date' => '公開日',
+	'Unpublish Date' => '公開終了日',
 	'Link' => 'リンク',
 	'Primary Category' => 'メインカテゴリ',
 	'-' => '-',
 	'__PING_COUNT' => 'トラックバック数',
 	'Date Commented' => 'コメント日',
 	'Author ID' => 'ユーザーID',
-	'My Entries' => '自分のブログ記事',
-	'Published Entries' => '公開されているブログ記事',
-	'Unpublished Entries' => '未公開のブログ記事',
-	'Scheduled Entries' => '日時指定されているブログ記事',
-	'Entries with Comments Within the Last 7 Days' => '最近7日間以内にコメントされたブログ記事',
+	'My Entries' => '自分の記事',
+	'Entries in This Website' => 'ウェブサイトの記事',
+	'Published Entries' => '公開されている記事',
+	'Draft Entries' => '下書きの記事',
+	'Unpublished Entries' => '公開終了にされている記事',
+	'Scheduled Entries' => '日時指定されている記事',
+	'Entries with Comments Within the Last 7 Days' => '最近7日間以内にコメントされた記事',
 
 ## lib/MT/FileMgr/DAV.pm
 	'DAV connection failed: [_1]' => 'DAV connectionに失敗しました: [_1]',
@@ -1981,23 +2018,23 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ImportExport.pm
 	'No Blog' => 'ブログがありません。',
-	'Need either ImportAs or ParentAuthor' => '「自分のブログ記事としてインポートする」か「ブログ記事の著者を変更しない」のどちらかを選択してください。',
+	'Need either ImportAs or ParentAuthor' => '「自分の記事としてインポートする」か「記事の著者を変更しない」のどちらかを選択してください。',
 	'Creating new user (\'[_1]\')...' => 'ユーザー([_1])を作成しています...',
 	'Saving user failed: [_1]' => 'ユーザーを作成できませんでした: [_1]',
 	'Creating new category (\'[_1]\')...' => 'カテゴリ([_1])を作成しています...',
 	'Saving category failed: [_1]' => 'カテゴリを保存できませんでした: [_1]',
 	'Invalid status value \'[_1]\'' => '状態[_1]は正しくありません',
 	'Invalid allow pings value \'[_1]\'' => 'トラックバックの受信設定が不正です。',
-	'Cannot find existing entry with timestamp \'[_1]\'... skipping comments, and moving on to next entry.' => 'タイムスタンプ\'[_1]\'に合致するブログ記事が見つかりません。コメントの処理を中止して次のブログ記事へ進みます。',
-	'Importing into existing entry [_1] (\'[_2]\')' => '既存のブログ記事[_1]([_2])にインポートしています。',
-	'Saving entry (\'[_1]\')...' => 'ブログ記事([_1])を保存しています...',
+	'Cannot find existing entry with timestamp \'[_1]\'... skipping comments, and moving on to next entry.' => 'タイムスタンプ\'[_1]\'に合致する記事が見つかりません。コメントの処理を中止して次の記事へ進みます。',
+	'Importing into existing entry [_1] (\'[_2]\')' => '既存の記事[_1]([_2])にインポートしています。',
+	'Saving entry (\'[_1]\')...' => '記事([_1])を保存しています...',
 	'ok (ID [_1])' => '完了 (ID [_1])',
-	'Saving entry failed: [_1]' => 'ブログ記事を保存できませんでした: [_1]',
+	'Saving entry failed: [_1]' => '記事を保存できませんでした: [_1]',
 	'Creating new comment (from \'[_1]\')...' => '\'[_1]\'からのコメントをインポートしています...',
 	'Saving comment failed: [_1]' => 'コメントを保存できませんでした: [_1]',
 	'Creating new ping (\'[_1]\')...' => '\'[_1]\'のトラックバックをインポートしています...',
 	'Saving ping failed: [_1]' => 'トラックバックを保存できませんでした: [_1]',
-	'Export failed on entry \'[_1]\': [_2]' => 'エクスポートに失敗しました。ブログ記事\'[_1]\': [_2]',
+	'Export failed on entry \'[_1]\': [_2]' => 'エクスポートに失敗しました。記事\'[_1]\': [_2]',
 	'Invalid date format \'[_1]\'; must be \'MM/DD/YYYY HH:MM:SS AM|PM\' (AM|PM is optional)' => '日付の形式が正しくありません。\'MM/DD/YYYY HH:MM:SS AM|PM\' (AM|PMは任意)でなければなりません。',
 
 ## lib/MT/JunkFilter.pm
@@ -2034,7 +2071,7 @@ use vars qw( @ISA %Lexicon );
 	'Debug/error' => 'デバッグ/エラー',
 	'Showing only ID: [_1]' => 'ID:[_1]のログ',
 	'Page # [_1] not found.' => 'ID:[_1]のウェブページが見つかりませんでした。',
-	'Entry # [_1] not found.' => 'ID:[_1]のブログ記事が見つかりませんでした。',
+	'Entry # [_1] not found.' => 'ID:[_1]の記事が見つかりませんでした。',
 	'Comment # [_1] not found.' => 'ID:[_1]のコメントが見つかりませんでした。',
 	'TrackBack # [_1] not found.' => 'ID:[_1]のトラックバックが見つかりませんでした。',
 	'blog' => 'ブログ',
@@ -2088,6 +2125,7 @@ use vars qw( @ISA %Lexicon );
 	'My Pages' => '自分のウェブページ',
 	'Pages in This Website' => 'ウェブサイトのウェブページ',
 	'Published Pages' => '公開されているウェブページ',
+	'Draft Pages' => '下書きのウェブページ',
 	'Unpublished Pages' => '未公開のウェブページ',
 	'Scheduled Pages' => '日時指定されているウェブページ',
 	'Pages with comments in the last 7 days' => '最近7日間以内にコメントされたウェブページ',
@@ -2125,7 +2163,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog Administrator' => 'ブログ管理者',
 	'Can administer the blog.' => 'ブログの管理者です。',
 	'Editor' => '編集者',
-	'Can upload files, edit all entries(categories), pages(folders), tags and publish the site.' => 'ファイルをアップロードし、ブログ記事(カテゴリ)、ウェブページ(フォルダ)、タグを編集して公開できます。',
+	'Can upload files, edit all entries(categories), pages(folders), tags and publish the site.' => 'ファイルをアップロードし、記事(カテゴリ)、ウェブページ(フォルダ)、タグを編集して公開できます。',
 	'Can create entries, edit their own entries, upload files and publish.' => '記事を作成し、各自の記事の編集とファイルのアップロード、およびそれらを公開できます。',
 	'Designer' => 'デザイナ',
 	'Can edit, manage, and publish blog templates and themes.' => 'テンプレートとテーマの編集と管理、及びそれらの公開ができます。',
@@ -2155,12 +2193,12 @@ use vars qw( @ISA %Lexicon );
 	'From' => '送信元',
 	'Source Site' => '送信元のサイト',
 	'Source Title' => '送信元記事のタイトル',
-	'Trackbacks on My Entries/Pages' => '自分のブログ記事/ウェブページへのトラックバック',
+	'Trackbacks on My Entries/Pages' => '自分の記事/ウェブページへのトラックバック',
 	'Non-spam trackbacks' => 'スパムでないトラックバック',
 	'Non-spam trackbacks on this website' => 'ウェブサイトのスパムでないトラックバック',
 	'Pending trackbacks' => '保留中のトラックバック',
 	'Published trackbacks' => '公開されているトラックバック',
-	'Trackbacks on my entries/pages' => '自分のブログ記事/ウェブページへのトラックバック',
+	'Trackbacks on my entries/pages' => '自分の記事/ウェブページへのトラックバック',
 	'Trackbacks in the last 7 days' => '最近7日間以内のトラックバック',
 	'Spam trackbacks' => 'スパムトラックバック',
 
@@ -2169,7 +2207,7 @@ use vars qw( @ISA %Lexicon );
 	'Not Private' => 'プライベートではない',
 	'Tag must have a valid name' => 'タグの名前が不正です。',
 	'This tag is referenced by others.' => 'このタグは他のタグから参照されています。',
-	'Tags with Entries' => 'ブログ記事のタグ',
+	'Tags with Entries' => '記事のタグ',
 	'Tags with Pages' => 'ウェブページのタグ',
 	'Tags with Assets' => 'アイテムのタグ',
 
@@ -2210,6 +2248,7 @@ use vars qw( @ISA %Lexicon );
 	'You used an \'[_1]\' tag outside of the context of a author; Perhaps you mistakenly placed it outside of an \'MTAuthors\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTAuthorsコンテナタグの外部で使っていませんか?',
 	'You used an \'[_1]\' tag outside of the context of an entry; Perhaps you mistakenly placed it outside of an \'MTEntries\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTEntriesコンテナタグの外部で使っていませんか?',
 	'You used an \'[_1]\' tag outside of the context of the website; Perhaps you mistakenly placed it outside of an \'MTWebsites\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTWebsitesコンテナタグの外部で使っていませんか?',
+	'You used an \'[_1]\' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?' => '[_1]をウェブサイトに属していないブログのコンテキストで利用しようとしています。',
 	'You used an \'[_1]\' tag outside of the context of the blog; Perhaps you mistakenly placed it outside of an \'MTBlogs\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTBlogsコンテナタグの外部で使っていませんか?',
 	'You used an \'[_1]\' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an \'MTComments\' container tag?' => '[_1]をコメントのコンテキスト外で利用しようとしました。MTCommentsコンテナの外部に配置していませんか?',
 	'You used an \'[_1]\' tag outside of the context of a ping; Perhaps you mistakenly placed it outside of an \'MTPings\' container tag?' => '[_1]タグをトラックバックのコンテキスト外で利用しようとしました。MTPingsコンテナの外部に配置していませんか?',
@@ -2242,7 +2281,7 @@ use vars qw( @ISA %Lexicon );
 	'Recursion attempt on file: [_1]' => '[_1]でお互いがお互いを参照している状態になっています。',
 	'Cannot load user.' => 'ユーザーをロードできませんでした。',
 	'Cannot find template \'[_1]\'' => '\'[_1]\'というテンプレートが見つかりませんでした。',
-	'Cannot find entry \'[_1]\'' => '\'[_1]\'というブログ記事が見つかりませんでした。',
+	'Cannot find entry \'[_1]\'' => '\'[_1]\'という記事が見つかりませんでした。',
 	'Unspecified archive template' => 'アーカイブテンプレートが指定されていません。',
 	'Error in file template: [_1]' => 'ファイルテンプレートでエラーが発生しました: [_1]',
 
@@ -2251,7 +2290,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] can be used only with Daily, Weekly, or Monthly archives.' => '[_1]は日別、週別、月別の各アーカイブでのみ利用できます。',
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => '[_2]アーカイブにリンクするために[_1]タグを使っていますが、アーカイブを出力していません。',
 	'You used an [_1] tag outside of the proper context.' => '[_1]タグを不正なコンテキストで利用しようとしました。',
-	'Could not determine entry' => 'ブログ記事を取得できませんでした。',
+	'Could not determine entry' => '記事を取得できませんでした。',
 
 ## lib/MT/Template/Tags/Asset.pm
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score"を指定するときはnamespaceも指定しなければなりません。',
@@ -2286,7 +2325,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template/Tags/Entry.pm
 	'You used <$MTEntryFlag$> without a flag.' => '<$MTEntryFlag$>をフラグなしで利用しようとしました。',
-	'Could not create atom id for entry [_1]' => 'ブログ記事のAtom IDを作成できませんでした。',
+	'Could not create atom id for entry [_1]' => '記事のAtom IDを作成できませんでした。',
 
 ## lib/MT/Template/Tags/Folder.pm
 
@@ -2396,7 +2435,7 @@ use vars qw( @ISA %Lexicon );
 	'Creating template maps...' => 'テンプレートマップを作成しています...',
 	'Mapping template ID [_1] to [_2] ([_3]).' => 'テンプレート(ID:[_1])を[_2]([_3])にマッピングしています...',
 	'Mapping template ID [_1] to [_2].' => 'テンプレート(ID:[_1])を[_2]にマッピングしています...',
-	'Creating entry category placements...' => 'ブログ記事とカテゴリの関連付けを作成しています...',
+	'Creating entry category placements...' => '記事とカテゴリの関連付けを作成しています...',
 
 ## lib/MT/Upgrade/v2.pm
 	'Updating category placements...' => 'カテゴリの関連付けを更新しています...',
@@ -2415,12 +2454,12 @@ use vars qw( @ISA %Lexicon );
 	'Assigning blog administration permissions...' => 'ブログの管理権限を適用しています...',
 	'Setting blog allow pings status...' => 'ブログのトラックバック受信設定を適用しています...',
 	'Updating blog comment email requirements...' => 'コメントのメール必須設定を適用しています...',
-	'Assigning entry basenames for old entries...' => '既存のブログ記事に出力ファイル名を設定しています...',
+	'Assigning entry basenames for old entries...' => '既存の記事に出力ファイル名を設定しています...',
 	'Updating user web services passwords...' => 'ユーザーのWebサービスパスワードを更新しています...',
 	'Updating blog old archive link status...' => 'ブログのアーカイブリンクの状態を更新しています...',
-	'Updating entry week numbers...' => 'ブログ記事の週番号を更新しています...',
+	'Updating entry week numbers...' => '記事の週番号を更新しています...',
 	'Updating user permissions for editing tags...' => 'タグを編集する権限を適用しています...',
-	'Setting new entry defaults for blogs...' => 'ブログにブログ記事の初期設定を適用しています...',
+	'Setting new entry defaults for blogs...' => 'ブログに記事の初期設定を適用しています...',
 	'Migrating any "tag" categories to new tags...' => '"tag"カテゴリをタグに移行しています...',
 	'Assigning basename for categories...' => 'カテゴリに出力ファイル/フォルダ名を設定しています...',
 	'Assigning user status...' => 'ユーザーの状態を設定しています...',
@@ -2445,10 +2484,10 @@ use vars qw( @ISA %Lexicon );
 	'Updating password recover email template...' => 'パスワードの再設定(メール テンプレート)を更新しています...',
 	'Assigning junk status for comments...' => 'コメントにスパム状態を設定しています...',
 	'Assigning junk status for TrackBacks...' => 'トラックバックにスパム状態を設定しています...',
-	'Populating authored and published dates for entries...' => 'ブログ記事の作成日と公開日を設定しています...',
+	'Populating authored and published dates for entries...' => '記事の作成日と公開日を設定しています...',
 	'Updating widget template records...' => 'ウィジェットテンプレートを更新しています...',
 	'Classifying category records...' => 'カテゴリのデータにクラスを設定しています...',
-	'Classifying entry records...' => 'ブログ記事のデータにクラスを設定しています...',
+	'Classifying entry records...' => '記事のデータにクラスを設定しています...',
 	'Merging comment system templates...' => 'コメント関連のシステムテンプレートをマージしています...',
 	'Populating default file template for templatemaps...' => 'テンプレートマップにテンプレートを設定しています...',
 	'Removing unused template maps...' => '使用されていないテンプレートマップを削除しています...',
@@ -2497,8 +2536,18 @@ use vars qw( @ISA %Lexicon );
 	'Removing widget from dashboard...' => 'ダッシュボードからウィジェットを削除しています...',
 	'Ordering Categories and Folders of Blogs...' => 'ブログのカテゴリとフォルダの順番を設定しています...',
 	'Ordering Folders of Websites...' => 'ウェブサイトのフォルダの順番を設定しています...',
-	'Assigning ID of user who created for initial user...' => '初期作成ユーザーの作成者IDを設定しています...',
-	'Assigning language of blog to use for formatting date...' => 'ブログに日付の言語を設定しています...',
+	q{Setting the 'created by' ID for any user for whom this field is not defined...} => q{初期作成ユーザーの作成者IDを設定しています...},
+	'Assigning a language to each blog to help choose appropriate display format for dates...' => 'ブログに日付の言語を設定しています...',
+	'Adding notification dashboard widget...' => '通知ウィジェットをダッシュボードに追加しています...',
+
+## lib/MT/Upgrade/v6.pm
+	'Fixing TheSchwartz::Error table...' => 'TheSchwartz::Errorテーブルを更新しています...',
+	'Migrating current blog to a website...' => '現在のブログをウェブサイトへ変換しています...',
+	'Migrating the record for recently accessed blogs...' => '最近利用したブログのデータを移行しています...',
+	'Adding Website Administrator role...' => 'ウェブサイト管理者のロールを追加しています...',
+	'Migrating "This is you" dashboard widget...' => '"This is you" ウィジェットを移行しています...',
+	'Adding "Site stats" dashboard widget...' => '"サイト情報"ウィジェットを追加しています...',
+	'Reordering dashboard widgets...' => 'ダッシュボードウィジェットの並び順を設定しています...',
 
 ## lib/MT/Util.pm
 	'moments from now' => '今から',
@@ -2560,7 +2609,9 @@ use vars qw( @ISA %Lexicon );
 	'Renaming tempfile \'[_1]\' failed: [_2]' => 'テンポラリファイル\'[_1]\'の名前を変更できませんでした: [_2]',
 	'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID, またはTemplateのいずれかを指定してください。',
 	'Template \'[_1]\' does not have an Output File.' => 'テンプレート\'[_1]\'には出力ファイルの設定がありません。',
-	'An error occurred while publishing scheduled entries: [_1]' => '日時指定されたブログ記事の再構築中にエラーが発生しました: [_1]',
+	'Scheduled publishing.' => '指定日公開',
+	'An error occurred while publishing scheduled entries: [_1]' => '日時指定された記事の再構築中にエラーが発生しました: [_1]',
+	'An error occurred while unpublishing past entries: [_1]' => '公開終了日を過ぎた記事の処理中にエラーが発生しました: [_1]',
 
 ## lib/MT/Website.pm
 	'__BLOG_COUNT' => 'ブログ数',
@@ -2589,9 +2640,9 @@ use vars qw( @ISA %Lexicon );
 	'Saving folder failed: [_1]' => 'フォルダを保存できませんでした: [_1]',
 	'No blog_id' => 'No blog_id',
 	'Value for \'mt_[_1]\' must be either 0 or 1 (was \'[_2]\')' => 'mt_[_1]の値は0か1です([_2]を設定しようとしました)。',
-	'Not allowed to edit entry' => 'ブログ記事を編集する権限がありません。',
+	'Not allowed to edit entry' => '記事を編集する権限がありません。',
 	'Entry \'[_1]\' ([lc,_5] #[_2]) deleted by \'[_3]\' (user #[_4]) from xml-rpc' => '\'[_3]\'(ID:[_4])がXMLRPC経由で[_5]\'[_1]\'(ID:[_2])を削除しました。',
-	'Not allowed to get entry' => 'ブログ記事を取得する権限がありません。',
+	'Not allowed to get entry' => '記事を取得する権限がありません。',
 	'Not allowed to set entry categories' => 'カテゴリを設定する権限がありません。',
 	'Not allowed to upload files' => 'ファイルをアップロードする権限がありません。',
 	'No filename provided' => 'ファイル名がありません。',
@@ -2677,6 +2728,8 @@ use vars qw( @ISA %Lexicon );
 	'Boilerplate' => '定型文',
 	'Select Boilerplate' => '定型文を選択...',
 
+## mt-static/plugins/Loupe/js/vendor.js
+
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
 	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
 	'Italic (Ctrl+I)' => '斜体 (Ctrl+I)',
@@ -2698,6 +2751,9 @@ use vars qw( @ISA %Lexicon );
 	'Align Right' => '右揃え',
 	'Indent' => '字下げを増やす',
 	'Outdent' => '字下げを減らす',
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/core.js
+	'Class Name' => 'クラス名',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/insert_html.js
 	'Insert HTML' => 'HTMLの挿入',
@@ -2821,10 +2877,24 @@ use vars qw( @ISA %Lexicon );
 	'A traditional blogging design that comes with plenty of styles and a selection of 2 column / 3 column layouts. Best for use in standard blog publishing applications.' => 'たくさんの2カラムや3カラムレイアウトをもつ一般的なブログ用デザインです。全ブログユーザーに最適です。',
 
 ## themes/classic_website/templates/about_this_page.mtml
+	'<a href="[_1]">[_2]</a> was the previous entry in this website.' => 'ひとつ前の記事は「<a href="[_1]">[_2]</a>」です。',
+	'<a href="[_1]">[_2]</a> is the next entry in this website.' => '次の記事は「<a href="[_1]">[_2]</a>」です。',
+
+## themes/classic_website/templates/archive_index.mtml
+
+## themes/classic_website/templates/archive_widgets_group.mtml
+
+## themes/classic_website/templates/author_archive_list.mtml
 
 ## themes/classic_website/templates/banner_footer.mtml
 
 ## themes/classic_website/templates/blogs.mtml
+
+## themes/classic_website/templates/calendar.mtml
+
+## themes/classic_website/templates/category_archive_list.mtml
+
+## themes/classic_website/templates/category_entry_listing.mtml
 
 ## themes/classic_website/templates/comment_detail.mtml
 
@@ -2838,6 +2908,14 @@ use vars qw( @ISA %Lexicon );
 
 ## themes/classic_website/templates/creative_commons.mtml
 
+## themes/classic_website/templates/current_author_monthly_archive_list.mtml
+
+## themes/classic_website/templates/current_category_monthly_archive_list.mtml
+
+## themes/classic_website/templates/date_based_author_archives.mtml
+
+## themes/classic_website/templates/date_based_category_archives.mtml
+
 ## themes/classic_website/templates/dynamic_error.mtml
 
 ## themes/classic_website/templates/entry.mtml
@@ -2849,6 +2927,12 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/templates/main_index.mtml
 
 ## themes/classic_website/templates/main_index_widgets_group.mtml
+
+## themes/classic_website/templates/monthly_archive_dropdown.mtml
+
+## themes/classic_website/templates/monthly_archive_list.mtml
+
+## themes/classic_website/templates/monthly_entry_listing.mtml
 
 ## themes/classic_website/templates/openid.mtml
 
@@ -2888,7 +2972,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/pico/templates/about_this_page.mtml
 
 ## themes/pico/templates/archive_index.mtml
-	'Navigation' => 'ナビゲーション',
 	'Related Content' => '関連コンテンツ',
 
 ## themes/pico/templates/archive_widgets_group.mtml
@@ -2927,7 +3010,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/pico/templates/dynamic_error.mtml
 
 ## themes/pico/templates/entry.mtml
-	'Home' => 'ホーム',
 
 ## themes/pico/templates/entry_summary.mtml
 
@@ -2978,96 +3060,6 @@ use vars qw( @ISA %Lexicon );
 	'Pico Styles' => 'Picoスタイル',
 	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
 
-## themes/rainier/templates/banner_footer.mtml
-	'This blog is licensed under a <a rel="license" href="[_1]">Creative Commons License</a>.' => 'このブログは<a rel="license" href="[_1]">クリエイティブ・コモンズ</a>でライセンスされています。',
-
-## themes/rainier/templates/category_archive_list.mtml
-
-## themes/rainier/templates/category_entry_listing.mtml
-	'Pagination' => 'ページネーション',
-	'Related Contents' => '関連コンテンツ',
-
-## themes/rainier/templates/comment_detail.mtml
-
-## themes/rainier/templates/comment_form.mtml
-	'Post a Comment' => 'コメントの投稿',
-	'Reply to comment' => 'コメントの返信',
-
-## themes/rainier/templates/comment_preview.mtml
-
-## themes/rainier/templates/comment_response.mtml
-
-## themes/rainier/templates/comments.mtml
-
-## themes/rainier/templates/dynamic_error.mtml
-
-## themes/rainier/templates/entry.mtml
-	'Posted on [_1]' => '投稿日:[_1]',
-	'by [_1]' => 'by [_1]',
-	'in [_1]' => 'カテゴリ: [_1]',
-	'Previous entry' => '前の記事',
-	'Next entry' => '次の記事',
-	'Zenback' => 'Zenback',
-
-## themes/rainier/templates/entry_summary.mtml
-	'Continue reading' => 'ブログ記事を読む',
-
-## themes/rainier/templates/javascript.mtml
-
-## themes/rainier/templates/javascript_theme.mtml
-	'Menu' => 'メニュー',
-
-## themes/rainier/templates/main_index.mtml
-
-## themes/rainier/templates/monthly_archive_dropdown.mtml
-
-## themes/rainier/templates/monthly_archive_list.mtml
-
-## themes/rainier/templates/monthly_entry_listing.mtml
-
-## themes/rainier/templates/navigation.mtml
-	'About' => 'アバウト',
-
-## themes/rainier/templates/page.mtml
-	'Last update' => '更新日',
-
-## themes/rainier/templates/pages_list.mtml
-
-## themes/rainier/templates/pagination.mtml
-	'Older entries' => '過去の記事',
-	'Newer entries' => '新しい記事',
-
-## themes/rainier/templates/recent_comments.mtml
-	'[_1] on <a href="[_2]" title="full comment on: [_3]">[_3]</a>' => '[_1] から <a href="[_2]" title="[_3] のコメントを見る">[_3]</a>',
-
-## themes/rainier/templates/recent_entries.mtml
-
-## themes/rainier/templates/search.mtml
-
-## themes/rainier/templates/search_results.mtml
-
-## themes/rainier/templates/syndication.mtml
-
-## themes/rainier/templates/tag_cloud.mtml
-
-## themes/rainier/templates/trackbacks.mtml
-	'<a href="[_1]">[_2]</a> - [_3]</a>' => '<a href="[_1]">[_2]</a> - [_3]</a>',
-
-## themes/rainier/templates/zenback.mtml
-	'Please paste Zenback script code here.' => 'ここに Zenback の Script コードは貼り付けてください。',
-
-## themes/rainier/theme.yaml
-	'"Rainier" is a customizable Responsive Web Design theme, designed for blogs. In addition to multi-device viewing support, provided via Media Query (CSS), Movable Type functions make customizing navigational contents as well as image elements, such as logos, headers, very simple.' => 'Rainier はレスポンシブ Web デザインを採用したブログテーマです。Media Query (CSS) を利用したマルチデバイス対応に加え、Movable Type の機能を使ってロゴやナビゲーションの内容を簡単にカスタマイズできます。',
-	'About Page' => 'アバウトページ',
-	'_ABOUT_PAGE_BODY' => '<p>このページはアバウトページ (自己紹介や会社概要など、プロフィール用のページ) として利用するウエブページの例です。</p><p>作成したウェブページに <code>@ABOUT_PAGE</code> というタグを設定すると、ページのヘッダ、フッタにあるナビゲーションにリンクが追加されます。</p>',
-	'Example page' => 'ウェブページの例',
-	'_SAMPLE_PAGE_BODY' => '<p>このページはウェブページの例です。</p><p>作成したウェブページに <code>@ADD_TO_SITE_NAV</code> というタグを設定すると、ページのヘッダ、フッタにあるナビゲーションにリンクが追加されます。</p>',
-	'Rainier' => 'Rainier',
-	'Styles for Rainier' => 'Rainier スタイル',
-	'A collection of styles compatible with Rainier themes.' => 'Rainier のデフォルトテンプレートと互換性のあるスタイルです。',
-	'Stylesheet for IE (8 or lower)' => 'スタイルシート (IE8 以下用)',
-	'JavaScript - Theme' => 'JavaScript - テーマ',
-
 ## search_templates/comments.tmpl
 	'Search for new comments from:' => 'コメントを検索:',
 	'the beginning' => '最初から',
@@ -3095,18 +3087,18 @@ use vars qw( @ISA %Lexicon );
 	'Match case' => '大文字小文字を区別する',
 	'SEARCH RESULTS DISPLAY' => '検索結果表示',
 	'Matching entries from [_1]' => 'ブログ[_1]での検索結果',
-	q{Entries from [_1] tagged with '[_2]'} => q{ブログ[_1]の'[_2]'タグのブログ記事},
+	q{Entries from [_1] tagged with '[_2]'} => q{ブログ[_1]の'[_2]'タグの記事},
 	'Posted <MTIfNonEmpty tag="EntryAuthorDisplayName">by [_1] </MTIfNonEmpty>on [_2]' => '<MTIfNonEmpty tag="EntryAuthorDisplayName">[_1]</MTIfNonEmpty> - ([_2])',
 	'Showing the first [_1] results.' => '最初の[_1]件の結果を表示',
 	'NO RESULTS FOUND MESSAGE' => '検索結果がないときのメッセージ',
-	q{Entries matching '[_1]'} => q{'[_1]'で検索されたブログ記事},
-	q{Entries tagged with '[_1]'} => q{'[_1]'タグのブログ記事},
+	q{Entries matching '[_1]'} => q{'[_1]'で検索された記事},
+	q{Entries tagged with '[_1]'} => q{'[_1]'タグの記事},
 	q{No pages were found containing '[_1]'.} => q{'[_1]'が含まれるページはありません。},
 	'END OF ALPHA SEARCH RESULTS DIV' => '検索結果のDIV(ALPHA)ここまで',
 	'BEGINNING OF BETA SIDEBAR FOR DISPLAY OF SEARCH INFORMATION' => 'ここから検索情報を表示するBETA SIDEBAR',
 	'SET VARIABLES FOR SEARCH vs TAG information' => '検索またはタグ情報を変数に代入',
-	q{If you use an RSS reader, you can subscribe to a feed of all future entries tagged '[_1]'.} => q{RSSリーダーを使うと、'[_1]'タグのすべてのブログ記事のフィードを購読することができます。},
-	q{If you use an RSS reader, you can subscribe to a feed of all future entries matching '[_1]'.} => q{RSSリーダーを使うと、'[_1]'を含むすべてのブログ記事のフィードを購読することができます。},
+	q{If you use an RSS reader, you can subscribe to a feed of all future entries tagged '[_1]'.} => q{RSSリーダーを使うと、'[_1]'タグのすべての記事のフィードを購読することができます。},
+	q{If you use an RSS reader, you can subscribe to a feed of all future entries matching '[_1]'.} => q{RSSリーダーを使うと、'[_1]'を含むすべての記事のフィードを購読することができます。},
 	'SEARCH/TAG FEED SUBSCRIPTION INFORMATION' => '検索/タグのフィード購読情報',
 	'Feed Subscription' => '購読',
 	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.jp/about/feeds.html',
@@ -3130,7 +3122,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/backup.tmpl
 	'Backup [_1]' => '[_1]のバックアップ',
 	'What to Backup' => 'バックアップ対象',
-	'This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.' => 'このオプションでユーザー、ロール、アソシエーション、ブログ、ブログ記事、カテゴリ、テンプレート、タグをバックアップできます。',
+	'This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.' => 'このオプションでユーザー、ロール、アソシエーション、ブログ、記事、カテゴリ、テンプレート、タグをバックアップできます。',
 	'Everything' => 'すべて',
 	'Reset' => 'リセット',
 	'Choose websites...' => 'ウェブサイトを選択...',
@@ -3148,11 +3140,11 @@ use vars qw( @ISA %Lexicon );
 	'Your preferences have been saved.' => '設定を保存しました。',
 	'Publishing Defaults' => '公開の既定値',
 	'Listing Default' => '表示される記事数',
-	'Select the number of days of entries or the exact number of entries you would like displayed on your blog.' => '指定した日数分のブログ記事またはブログ記事数を表示します。',
+	'Select the number of days of entries or the exact number of entries you would like displayed on your blog.' => '指定した日数分の記事または記事数を表示します。',
 	'Days' => '日分',
 	'Posts' => '投稿',
 	'Order' => '順番',
-	'Select whether you want your entries displayed in ascending (oldest at top) or descending (newest at top) order.' => 'ブログ記事の表示順を昇順 (古いものを一番上にして時系列に並べる) か、降順 (最新のブログ記事が常に上に来るように逆順で並べるか) か選んでください。',
+	'Select whether you want your entries displayed in ascending (oldest at top) or descending (newest at top) order.' => '記事の表示順を昇順 (古いものを一番上にして時系列に並べる) か、降順 (最新の記事が常に上に来るように逆順で並べるか) か選んでください。',
 	'Ascending' => '昇順',
 	'Descending' => '降順',
 	'Excerpt Length' => '概要の文字数',
@@ -3180,7 +3172,7 @@ use vars qw( @ISA %Lexicon );
 	'Basename Length' => 'ファイル名の文字数',
 	'Specifies the default length of an auto-generated basename. The range for this setting is 15 to 250.' => '自動作成される出力ファイル名のデフォルトの文字数を決めます。15文字から250文字の範囲で設定してください。',
 	'Compose Defaults' => '作成の既定値',
-	'Specifies the default Post Status when creating a new entry.' => '新規ブログ記事を作成時の公開状態の規定値を指定します。',
+	'Specifies the default Post Status when creating a new entry.' => '新規記事を作成時の公開状態の規定値を指定します。',
 	'Unpublished' => '下書き',
 	'Text Formatting' => 'テキストフォーマット',
 	'Specifies the default Text Formatting option when creating a new entry.' => 'テキストフォーマットの既定値を指定します。',
@@ -3191,7 +3183,7 @@ use vars qw( @ISA %Lexicon );
 	'Accept TrackBacks' => 'トラックバック許可',
 	'Note: This option is currently ignored since TrackBacks are disabled either blog or system-wide.' => '注: ブログまたはシステム全体の設定でトラックバックが無効なためこのオプションは無視されます。',
 	'Entry Fields' => '記事フィールド',
-	'_USAGE_ENTRYPREFS' => 'ブログ記事の編集画面で表示する項目のセットを選択してください。',
+	'_USAGE_ENTRYPREFS' => '記事の編集画面で表示する項目のセットを選択してください。',
 	'Page Fields' => 'ページフィールド',
 	'WYSIWYG Editor Setting' => 'WYSIWYGエディタの設定',
 	'Content CSS' => 'コンテンツCSSファイル',
@@ -3268,7 +3260,7 @@ use vars qw( @ISA %Lexicon );
 	'Specify when Movable Type should notify you of new TrackBacks.' => '新しいトラックバックの通知を指定します。',
 	'TrackBack Options' => 'トラックバックオプション',
 	'TrackBack Auto-Discovery' => '自動検知',
-	'When auto-discovery is turned on, any external HTML links in new entries will be extracted and the appropriate sites will automatically be sent a TrackBack ping.' => '自動検出を有効にすると、新しいブログ記事を書いたときに、外部へのリンクが抽出されて、自動的にトラックバックを送信します。',
+	'When auto-discovery is turned on, any external HTML links in new entries will be extracted and the appropriate sites will automatically be sent a TrackBack ping.' => '自動検出を有効にすると、新しい記事を書いたときに、外部へのリンクが抽出されて、自動的にトラックバックを送信します。',
 	'Enable External TrackBack Auto-Discovery' => '外部リンクに対するトラックバック自動検知を有効にする',
 	'Setting Notice' => '注:',
 	'Note: This option may be affected since outbound pings are constrained system-wide.' => '備考: システムレベルのみの外部pingオプションは有効になっているようです。',
@@ -3373,11 +3365,12 @@ use vars qw( @ISA %Lexicon );
 	q{The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{インデックスファイルが公開されるパスです。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には'/'や'\'を含めません。例: /home/melody/public_html/blogやC:\www\public_html\blog},
 	'Advanced Archive Publishing' => '高度な公開の設定',
 	'Select this option only if you need to publish your archives outside of your Blog Root.' => 'アーカイブをサイトパス以外で公開するときにこのオプションを選択してください。',
-	'Publish archives outside of Blog Root' => 'アーカイブをブログパスとは別のパスで公開する',
+	'Publish archives outside of [_1] Root' => 'アーカイブを[_1]パスとは別のパスで公開する',
 	'Archive URL' => 'アーカイブURL',
+	'Warning: Changing the archive URL can result in breaking all links in your [_1].' => '警告: アーカイブURLを変更することで[_1]上のすべてのリンクがリンク切れとなる場合があります。',
 	'The URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'ブログのアーカイブのURLです。例: http://www.example.com/blog/archives/',
-	'Warning: Changing the archive URL can result in breaking all the links in your blog.' => '警告: アーカイブURLを変更することでブログ上のすべてのリンクがリンク切れとなる場合があります。',
-	'Warning: Changing the archive path can result in breaking all the links in your blog.' => '警告: アーカイブパスを変更するとブログ上のすべてのリンクがリンク切れとなる場合があります。',
+	'The URL of the archives section of your website. Example: http://www.example.com/archives/' => 'ウェブサイトのアーカイブのURLです。例: http://www.example.com/archives/',
+	'Warning: Changing the archive path can result in breaking all links in your [_1].' => '警告: アーカイブパスを変更すると[_1]上のすべてのリンクがリンク切れとなる場合があります。',
 	q{The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{アーカイブのインデックスファイルが公開されるパスです。ウェブサイトからの相対パスを指定します。末尾には'/'や'\'を含めません。},
 	q{The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{アーカイブのインデックスファイルが公開されるパスです。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には'/'や'\'を含めません。例: /home/melody/public_html/blogやC:\www\public_html\blog},
 	'Dynamic Publishing Options' => 'ダイナミックパブリッシング設定',
@@ -3386,9 +3379,12 @@ use vars qw( @ISA %Lexicon );
 	'Archive Settings' => 'アーカイブ設定',
 	q{Enter the archive file extension. This can take the form of 'html', 'shtml', 'php', etc. Note: Do not enter the leading period ('.').} => q{アーカイブファイルの拡張子を指定してください。html、shtml、phpなどを指定できます。ピリオドは入力しないでください。},
 	'Preferred Archive' => '優先アーカイブタイプ',
-	q{Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive type used in this blog's archive templates.} => q{ブログ記事にリンクするときのURLとして使われます。このブログで使われているアーカイブテンプレートの中から選択してください。},
 	'Choose archive type' => 'アーカイブタイプを選択してください',
 	'No archives are active' => '有効なアーカイブがありません。',
+	q{Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive types used in this blog's archive templates.} => q{記事にリンクするときのURLとして使われます。このブログで使われているアーカイブテンプレートの中から選択してください。},
+	q{Used to generate URLs (permalinks) for this website's archived entries. Choose one of the archive types used in this website's archive templates.} => q{記事にリンクするときのURLとして使われます。このウェブサイトで使われているアーカイブテンプレートの中から選択してください。},
+	'Publish With No Entries' => '記事がないアーカイブの公開',
+	'Publish category archive without entries' => '記事が含まれない場合でも、カテゴリ アーカイブを公開する',
 	'Module Settings' => 'モジュール設定',
 	'Server Side Includes' => 'サーバーサイドインクルード',
 	'None (disabled)' => '無効',
@@ -3403,7 +3399,6 @@ use vars qw( @ISA %Lexicon );
 	'Revision history' => '更新履歴',
 	'Enable revision history' => '更新履歴を有効にする',
 	'Number of revisions per entry/page' => '記事/ページ更新履歴数',
-	'Number of revisions per page' => 'ページ更新履歴数',
 	'Number of revisions per template' => 'テンプレート更新履歴数',
 	'You must set your Blog Name.' => 'ブログ名を設定してください。',
 	'You did not select a time zone.' => 'タイムゾーンが選択されていません。',
@@ -3429,10 +3424,7 @@ use vars qw( @ISA %Lexicon );
 	'Select roles' => 'ロール選択',
 	'Authentication Methods' => '認証方式',
 	'Please select authentication methods to accept comments.' => 'コメント投稿者の認証方式を選択してください。',
-	'Require E-mail Address for Comments via TypePad' => 'TypePad経由のコメントにメールアドレスを要求する',
-	'Visitors must allow their TypePad account to share their e-mail address when commenting.' => 'ビジターはコメント時にメールアドレスを共有するのにTypePadアカウントが許可されています。',
 	'One or more Perl modules may be missing to use this authentication method.' => '認証を利用するのに必要なPerlモジュールが見つかりませんでした。',
-	'Setup TypePad token' => 'TypePadの設定',
 
 ## tmpl/cms/cfg_system_general.tmpl
 	'Your settings have been saved.' => '設定を保存しました。',
@@ -3525,35 +3517,19 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/cfg_web_services.tmpl
 	'Web Services Settings' => 'Webサービス設定',
-	'Web Services from Six Apart' => 'シックス・アパート提供Webサービス',
-	'Your TypePad token is used to access services from Six Apart like TypePad Connect and TypePad AntiSpam.' => 'TypePadのトークンは、TypePad ConnectやTypePad AntiSpamなどのシックス・アパートが提供するサービスにアクセスするために利用されます。',
-	'TypePad is enabled.' => 'TypePadは有効です。',
-	'TypePad token:' => 'TypePadのトークン:',
-	'Clear TypePad Token' => 'TypePadのトークンを削除',
-	'Please click the Save Changes button below to disable authentication.' => '保存ボタンをクリックして認証を無効にしてください。',
-	'TypePad is not enabled.' => 'TypePadは有効ではありません。',
-	'&nbsp;or&nbsp;[_1]obtain a TypePad token[_2] from TypePad.com.' => '&nbsp;TypePad.comで[_1]TypePadトークンを取得[_2]',
-	q{Please click the 'Save Changes' button below to enable TypePad.} => q{TypePadを利用するために'保存'ボタンをクリックしてください。},
 	'External Notifications' => '更新通知',
 	'Notify ping services of website updates' => 'ウェブサイト更新pingサービス通知',
 	'When this website is updated, Movable Type will automatically notify the selected sites.' => 'ウェブサイトを更すると、選択したサイトに自動通知します。',
 	'Note: This option is currently ignored because outbound notification pings are disabled system-wide.' => '備考: システム外部ping通知がシステムレベルで無効のため、このオプションは現在無効となっています。',
 	'Others:' => 'その他:',
 	'(Separate URLs with a carriage return.)' => '(URLは改行で区切ってください)',
-	'Recently Updated Key' => 'Recently Updated Key',
-	'If you received a Recently Updated Key with the purchase of a Movable Type license, enter it here.' => 'Recently Updated Key をお持ちの場合は入力してください。',
 
 ## tmpl/cms/dashboard.tmpl
 	'Dashboard' => 'ダッシュボード',
 	'System Overview' => 'システム',
-	'Hi, [_1]' => 'こんにちは、[_1]さん',
 	'Select a Widget...' => 'ウィジェットの選択...',
 	'Add' => '追加',
 	'Your Dashboard has been updated.' => 'ダッシュボードを更新しました。',
-	'The support directory is not writable.' => 'サポートディレクトリに書き込めません。',
-	q{Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.} => q{サポートディレクトリに書き込みできません。[_1]にディレクトリを作成して、ウェブサーバーから書き込みできるパーミッションを与えてください。},
-	'ImageDriver is not configured.' => 'イメージドライバーが設定されていません。',
-	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'ImageDriverに設定された画像処理ツールが存在しないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Image::Magick、NetPBM、GD、Imagerのいずれかをインストールする必要があります。',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
 	'Confirm Publishing Configuration' => '公開設定',
@@ -3591,8 +3567,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'ファイルオプション',
-	'Create entry using this uploaded file' => 'アップロードしたファイルを使ってブログ記事を作成する',
-	'Create a new entry using this uploaded file.' => 'アップロードしたファイルを使ってブログ記事を作成する',
+	'Create entry using this uploaded file' => 'アップロードしたファイルを使って記事を作成する',
+	'Create a new entry using this uploaded file.' => 'アップロードしたファイルを使って記事を作成する',
 	'Finish (s)' => '完了 (s)',
 	'Finish' => '完了',
 
@@ -3624,6 +3600,9 @@ use vars qw( @ISA %Lexicon );
 	'Exclude Trackbacks' => 'トラックバックの除外',
 	'Exclude Categories/Folders' => 'カテゴリ/フォルダの除外',
 	'Clone' => '複製',
+	'Publish archives outside of Blog Root' => 'アーカイブをブログパスとは別のパスで公開する',
+	'Warning: Changing the archive URL can result in breaking all links in your blog.' => '警告: アーカイブURLを変更することでブログ上のすべてのリンクがリンク切れとなる場合があります。',
+	'Warning: Changing the archive path can result in breaking all links in your blog.' => '警告: アーカイブパスを変更するとブログ上のすべてのリンクがリンク切れとなる場合があります。',
 	'Mark the settings that you want cloning to skip' => '複製を行わない設定にマークをつけてください',
 	'Entries/Pages' => '記事/ページ',
 	'Categories/Folders' => 'カテゴリ/フォルダ',
@@ -3673,7 +3652,7 @@ use vars qw( @ISA %Lexicon );
 	'Background Publishing' => 'バックグラウンドパブリッシング',
 	'All templates published statically via Publish Que.' => 'すべてのテンプレートを公開キュー経由でスタティックパブリッシングします。',
 	'High Priority Static Publishing' => '一部アーカイブのみ非同期スタティックパブリッシング',
-	'Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'メインページ、ブログ記事アーカイブ、ウェブページアーカイブをスタティックパブリッシングし、他のテンプレートは公開キューを経由してスタティックパブリッシングします。',
+	'Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'メインページ、記事アーカイブ、ウェブページアーカイブをスタティックパブリッシングし、他のテンプレートは公開キューを経由してスタティックパブリッシングします。',
 	'Immediately publish Main Index template, Page archives statically. Use Publish Queue to publish all other templates statically.' => 'メインページ、ウェブページアーカイブをスタティックパブリッシングし、他のテンプレートは公開キューを経由してスタティックパブリッシングします。',
 	'Dynamic Publishing' => 'ダイナミックパブリッシング',
 	'Publish all templates dynamically.' => 'すべてのテンプレートをダイナミックパブリッシングします。',
@@ -3751,6 +3730,7 @@ use vars qw( @ISA %Lexicon );
 	'This asset has been used by other users.' => 'このアイテムは、他のユーザーにより利用されています。',
 	'Related Assets' => '関連するアイテム',
 	'[_1] is missing' => '[_1]がありません。',
+	'Error creating thumbnail file.' => 'サムネイルを作成できませんでした。',
 	'Embed Asset' => 'アイテムの埋め込み',
 	'Save changes to this asset (s)' => 'アイテムへの変更を保存 (s)',
 	'You must specify a name for the asset.' => 'アイテムに名前を設定してください。',
@@ -3792,7 +3772,7 @@ use vars qw( @ISA %Lexicon );
 	'Preferences' => '設定',
 	'Display language for the Movable Type interface.' => '管理画面で使用する言語です。',
 	'Text Format' => 'テキスト形式',
-	'Default text formatting filter when creating new entries and new pages.' => 'ブログ記事とウェブページを作成する際のテキスト形式を指定します。',
+	'Default text formatting filter when creating new entries and new pages.' => '記事とウェブページを作成する際のテキスト形式を指定します。',
 	'(Use Website/Blog Default)' => '(ウェブサイト/ブログの既定値を利用)',
 	'Date Format' => '日付',
 	'Default date formatting in the Movable Type interface.' => '管理画面で使用する日付の表示フォーマットです。',
@@ -3826,7 +3806,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_category.tmpl
 	'Edit Category' => 'カテゴリの編集',
 	'Useful links' => 'ショートカット',
-	'Manage entries in this category' => 'このカテゴリに属するブログ記事の一覧',
+	'Manage entries in this category' => 'このカテゴリに属する記事の一覧',
 	'You must specify a label for the category.' => 'カテゴリ名を設定してください。',
 	'You must specify a basename for the category.' => '出力ファイル/フォルダ名を設定して下さい。',
 	'Please enter a valid basename.' => '有効な出力ファイル/フォルダ名を入力してください。',
@@ -3837,11 +3817,11 @@ use vars qw( @ISA %Lexicon );
 	'If enabled, TrackBacks will be accepted for this category from any source.' => '有効にした場合、このカテゴリへのすべてのトラックバックを許可します。',
 	'View TrackBacks' => 'トラックバックを見る',
 	'TrackBack URL for this category' => 'このカテゴリのトラックバックURL',
-	'_USAGE_CATEGORY_PING_URL' => 'トラックバックを受信するURLです。このカテゴリに関連するブログ記事から広くトラックバックを受け付けたいときは、このURLを公開してください。知り合いにだけこのURLを教えることで、トラックバックの送信元を限定することもできます。受信したトラックバックを公開したい場合は、トラックバック関連のテンプレートタグに関するドキュメントを参照してください。',
+	'_USAGE_CATEGORY_PING_URL' => 'トラックバックを受信するURLです。このカテゴリに関連する記事から広くトラックバックを受け付けたいときは、このURLを公開してください。知り合いにだけこのURLを教えることで、トラックバックの送信元を限定することもできます。受信したトラックバックを公開したい場合は、トラックバック関連のテンプレートタグに関するドキュメントを参照してください。',
 	'Passphrase Protection' => 'パスワード保護',
 	'Outbound TrackBacks' => 'トラックバック送信',
 	'Trackback URLs' => 'トラックバックURL',
-	'Enter the URL(s) of the websites that you would like to send a TrackBack to each time you create an entry in this category. (Separate URLs with a carriage return.)' => 'このカテゴリでブログ記事を作成したときにトラックバックを送信したいウェブサイトのURLを入力してください。',
+	'Enter the URL(s) of the websites that you would like to send a TrackBack to each time you create an entry in this category. (Separate URLs with a carriage return.)' => 'このカテゴリで記事を作成したときにトラックバックを送信したいウェブサイトのURLを入力してください。',
 	'Save changes to this category (s)' => 'カテゴリへの変更を保存 (s)',
 
 ## tmpl/cms/edit_comment.tmpl
@@ -3927,27 +3907,27 @@ use vars qw( @ISA %Lexicon );
 	'Preview this page (v)' => 'ウェブページをプレビュー (v)',
 	'Delete this page (x)' => 'ウェブページを削除 (x)',
 	'View Page' => 'ウェブページを表示',
-	'Edit Entry' => 'ブログ記事の編集',
-	'Create Entry' => 'ブログ記事の作成',
+	'Edit Entry' => '記事の編集',
+	'Create Entry' => '記事の作成',
 	'Add category' => 'カテゴリを追加',
 	'Add category name' => 'カテゴリ名を追加',
 	'Add new category parent' => '親カテゴリを追加',
-	'Manage Entries' => 'ブログ記事の管理',
-	'Preview this entry (v)' => 'ブログ記事をプレビュー (v)',
-	'Delete this entry (x)' => 'ブログ記事を削除 (x)',
-	'View Entry' => 'ブログ記事を見る',
-	'A saved version of this entry was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>' => 'ブログ記事は自動保存されています([_2])。<a href="[_1]">自動保存された内容を元に戻す</a>',
+	'Manage Entries' => '記事の管理',
+	'Preview this entry (v)' => '記事をプレビュー (v)',
+	'Delete this entry (x)' => '記事を削除 (x)',
+	'View Entry' => '記事を見る',
+	'A saved version of this entry was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>' => '記事は自動保存されています([_2])。<a href="[_1]">自動保存された内容を元に戻す</a>',
 	'A saved version of this page was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>' => 'ウェブページは自動保存されています([_2])。<a href="[_1]">自動保存された内容を元に戻す</a>',
-	'This entry has been saved.' => 'ブログ記事を保存しました。',
+	'This entry has been saved.' => '記事を保存しました。',
 	'This page has been saved.' => 'ウェブページを保存しました。',
 	'One or more errors occurred when sending update pings or TrackBacks.' => '更新通知かトラックバック送信でひとつ以上のエラーが発生しました。',
 	'_USAGE_VIEW_LOG' => 'エラーの場合は、<a href="[_1]">ログ</a>をチェックしてください。',
 	'Your customization preferences have been saved, and are visible in the form below.' => 'カスタマイズ設定を保存しました。下のフォームで確認できます。',
 	'Your changes to the comment have been saved.' => 'コメントの変更を保存しました。',
 	'Your notification has been sent.' => '通知を送信しました。',
-	'You have successfully recovered your saved entry.' => 'ブログ記事を元に戻しました。',
+	'You have successfully recovered your saved entry.' => '記事を元に戻しました。',
 	'You have successfully recovered your saved page.' => 'ウェブページを元に戻しました。',
-	'An error occurred while trying to recover your saved entry.' => 'ブログ記事を元に戻す際にエラーが発生しました。',
+	'An error occurred while trying to recover your saved entry.' => '記事を元に戻す際にエラーが発生しました。',
 	'An error occurred while trying to recover your saved page.' => 'ウェブページを元に戻す際にエラーが発生しました。',
 	'You have successfully deleted the checked comment(s).' => '選択したコメントを削除しました。',
 	'You have successfully deleted the checked TrackBack(s).' => '選択したトラックバックを削除しました。',
@@ -3973,12 +3953,12 @@ use vars qw( @ISA %Lexicon );
 	'Update this [_1]' => '[_1]の更新',
 	'Unpublish this [_1]' => '[_1]の公開取り消し',
 	'Save this [_1]' => 'この[_1]を保存する',
-	'You must configure this blog before you can publish this entry.' => 'ブログ記事を公開する前にブログの設定を行ってください。',
+	'You must configure this blog before you can publish this entry.' => '記事を公開する前にブログの設定を行ってください。',
 	'You must configure this blog before you can publish this page.' => 'ページを公開する前にブログの設定を行ってください。',
 	'Publish On' => '公開する',
 	'@' => '@',
-	'Warning: If you set the basename manually, it may conflict with another entry.' => '警告: 出力ファイル名を手動で設定すると、他のブログ記事と衝突を起こす可能性があります。',
-	q{Warning: Changing this entry's basename may break inbound links.} => q{警告: このブログ記事の出力ファイル名の変更は、内部のリンク切れの原因となります。},
+	'Warning: If you set the basename manually, it may conflict with another entry.' => '警告: 出力ファイル名を手動で設定すると、他の記事と衝突を起こす可能性があります。',
+	q{Warning: Changing this entry's basename may break inbound links.} => q{警告: この記事の出力ファイル名の変更は、内部のリンク切れの原因となります。},
 	'Change note' => '変更メモ',
 	'edit' => '編集',
 	'close' => '閉じる',
@@ -3989,7 +3969,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Assets' => '[_1]アイテム',
 	'Remove this asset.' => 'アイテム削除',
 	'No assets' => 'アイテムはありません',
-	'You have unsaved changes to this entry that will be lost.' => '保存されていないブログ記事への変更は失われます。',
+	'You have unsaved changes to this entry that will be lost.' => '保存されていない記事への変更は失われます。',
 	'Enter the link address:' => 'リンクするURLを入力:',
 	'Enter the text to link to:' => 'リンクのテキストを入力:',
 	'Converting to rich text may result in changes to your current document.' => 'リッチテキストに変換すると、現在のHTML構造に変更が生じる可能性があります。',
@@ -4003,6 +3983,7 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '(カンマ区切りリスト)',
 	'(space-delimited list)' => '(スペース区切りリスト)',
 	q{(delimited by '[_1]')} => q{([_1]で区切る)},
+	'Not specified' => '指定されていません',
 	'None selected' => '選択されていません',
 	'Auto-saving...' => '自動保存中...',
 	'Last auto-save at [_1]:[_2]:[_3]' => '[_1]:[_2]:[_3]に自動保存済み',
@@ -4026,16 +4007,15 @@ use vars qw( @ISA %Lexicon );
 	'Save changes to this TrackBack (s)' => 'トラックバックへの変更を保存 (s)',
 	'Delete this TrackBack (x)' => 'トラックバックを削除 (x)',
 	'Manage TrackBacks' => 'トラックバックの管理',
-	'View [_1]' => '[_1]を見る',
 	'Update the status of this TrackBack' => 'トラックバックの状態を更新する',
 	'View all TrackBacks with this status' => 'このステータスのトラックバックを全て表示',
 	'Search for other TrackBacks from this site' => 'このサイトのその他のトラックバックを検索する',
 	'Search for other TrackBacks with this title' => 'このタイトルのその他のトラックバックを検索する',
 	'Search for other TrackBacks with this status' => 'このステータスのその他のトラックバックを検索する',
 	'Target [_1]' => '宛先[_1]',
-	'Entry no longer exists' => 'ブログ記事が存在しません',
+	'Entry no longer exists' => '記事が存在しません',
 	'No title' => 'タイトルなし',
-	'View all TrackBacks on this entry' => 'このブログ記事で受信した全てのトラックバックを見る',
+	'View all TrackBacks on this entry' => 'この記事で受信した全てのトラックバックを見る',
 	'Target Category' => 'トラックバック送信するカテゴリ',
 	'Category no longer exists' => 'このカテゴリは存在しません。',
 	'View all TrackBacks on this category' => 'このカテゴリの全てのトラックバックを見る',
@@ -4149,15 +4129,10 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred' => 'エラーが発生しました。',
 
 ## tmpl/cms/export.tmpl
-	'Export Blog Entries' => 'ブログ記事のエクスポート',
-	'You must select a blog to export.' => 'エクスポートするブログを選択してください。',
-	'_USAGE_EXPORT_1' => 'Movable Typeからブログ記事をエクスポートして、基本的なデータ(記事、コメント、トラックバック)を保存できます。',
-	'Blog to Export' => 'エクスポートするブログ',
-	'Select a blog for exporting.' => 'エクスポートするブログを選択してください。',
-	'Change blog' => 'ブログを変更',
-	'Select blog' => 'ブログを選択',
-	'Export Blog (s)' => 'ブログをエクスポート (s)',
-	'Export Blog' => 'ブログをエクスポート',
+	'Export [_1] Entries' => '[_1]の記事をエクスポート',
+	'[_1] to Export' => 'エクスポートする[_1]',
+	'_USAGE_EXPORT_1' => 'Movable Typeから記事をエクスポートして、基本的なデータ(記事、コメント、トラックバック)を保存できます。',
+	'Export [_1]' => '[_1]をエクスポート',
 
 ## tmpl/cms/export_theme.tmpl
 	'Export [_1] Themes' => '[_1]テーマのエクスポート',
@@ -4181,27 +4156,30 @@ use vars qw( @ISA %Lexicon );
 	'Theme version may only contain letters, numbers, and the dash or underscore character.' => 'バージョンにはアルファベット、数字、ダッシュ(-)、アンダースコア(_)が利用できます。',
 
 ## tmpl/cms/import.tmpl
-	'Import Blog Entries' => 'ブログ記事のインポート',
+	'Import [_1] Entries' => '[_1]に記事をインポート',
 	'You must select a blog to import.' => 'インポート先のブログを選択してください。',
-	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => '他のMovable Typeやブログツールからブログ記事を移行したり、ブログ記事のコピーを作成します。',
+	'Enter a default password for new users.' => '新しいユーザーの初期パスワード入力してください。',
+	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => '他のMovable Typeやブログツールから記事を移行したり、記事のコピーを作成します。',
 	'Import data into' => 'インポート先',
 	'Select a blog to import.' => 'インポート先のブログを選択してください。',
+	'Select blog' => 'ブログを選択',
 	'Importing from' => 'インポート元',
-	'Ownership of imported entries' => 'インポートしたブログ記事の所有者',
-	'Import as me' => '自分のブログ記事としてインポートする',
-	'Preserve original user' => 'ブログ記事の著者を変更しない',
+	'Ownership of imported entries' => 'インポートした記事の所有者',
+	'Import as me' => '自分の記事としてインポートする',
+	'Preserve original user' => '記事の著者を変更しない',
 	'If you choose to preserve the ownership of the imported entries and any of those users must be created in this installation, you must define a default password for those new accounts.' => '所有者を変更しない場合には、存在しないユーザーをシステムが自動で作成します。新しいユーザーの初期パスワードを設定してください。',
 	'Default password for new users:' => '新しいユーザーの初期パスワード',
-	'You will be assigned the user of all imported entries.  If you wish the original user to keep ownership, you must contact your MT system administrator to perform the import so that new users can be created if necessary.' => 'あなたがインポートしたブログ記事を作成したことになります。元の著者を変更せずにインポートしたい場合には、システム管理者がインポート作業を行ってください。その場合には必要に応じて新しいユーザーを作成できます。',
+	'You will be assigned the user of all imported entries.  If you wish the original user to keep ownership, you must contact your MT system administrator to perform the import so that new users can be created if necessary.' => 'あなたがインポートした記事を作成したことになります。元の著者を変更せずにインポートしたい場合には、システム管理者がインポート作業を行ってください。その場合には必要に応じて新しいユーザーを作成できます。',
 	'Upload import file (optional)' => 'インポートファイルをアップロード(オプション)',
 	q{If your import file is located on your computer, you can upload it here.  Otherwise, Movable Type will automatically look in the 'import' folder of your Movable Type directory.} => q{インポートするファイルがローカルのコンピュータ内にある場合にはここにアップロードしてください。アップロードしない場合には、Movable Typeは自動的にアプリケーションディレクトリのimportフォルダ内から探します。},
+	'Apply this formatting if text format is not set on each entry.' => '記事に、テキストフォーマットが指定されていない場合に、適用されます。',
 	'Import File Encoding' => 'インポートするファイルの文字コード',
 	'By default, Movable Type will attempt to automatically detect the character encoding of your import file.  However, if you experience difficulties, you can set it explicitly.' => 'Movable Typeはインポートするファイルの文字コードを自動的に検出します。問題が起きたときには、明示的に文字コードを指定することもできます。',
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',
-	'Default category for entries (optional)' => 'ブログ記事の既定カテゴリ(オプション)',
-	'You can specify a default category for imported entries which have none assigned.' => 'カテゴリが設定されていないブログ記事に既定のカテゴリを設定できます。',
+	'Default category for entries (optional)' => '記事の既定カテゴリ(オプション)',
+	'You can specify a default category for imported entries which have none assigned.' => 'カテゴリが設定されていない記事に既定のカテゴリを設定できます。',
 	'Select a category' => 'カテゴリを選択',
-	'Import Entries (s)' => 'ブログ記事をインポート (s)',
+	'Import Entries (s)' => '記事をインポート (s)',
 
 ## tmpl/cms/import_others.tmpl
 	'Start title HTML (optional)' => 'タイトルとなるHTMLの開始地点(任意)',
@@ -4260,6 +4238,7 @@ use vars qw( @ISA %Lexicon );
 	'Upload Destination' => 'アップロード先',
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]公開パスの設定[_3]して、[_1]を再構築してください。},
 	'Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator.' => 'ファイルアップロードができるように、システム、または[_1]管理者が[_1]を再構築する必要があります。システム、または[_1]管理者に連絡してください。',
+	q{Cannot write to '[_1]'. Image upload is possible, but thumbnail is not created.} => q{ファイルのアップロードは可能ですが、'[_1]'への書き込みが行えないため、画像ファイルのサムネイルを作成する事ができません。},
 	q{Asset file('[_1]') has been uploaded.} => q{アイテム('[_1]')がアップロードされました。},
 	'Select File to Upload' => 'アップロードするファイルを選択',
 	'_USAGE_UPLOAD' => 'アップロード先には、サブディレクトリを指定することが出来ます。指定されたディレクトリが存在しない場合は、作成されます。',
@@ -4331,7 +4310,7 @@ use vars qw( @ISA %Lexicon );
 	'Blocked' => '禁止中',
 	'Edit this [_1] commenter' => 'このコメント投稿者([_1])を編集',
 	'Search for comments by this commenter' => 'このコメント投稿者のコメントを検索',
-	'View this entry' => 'ブログ記事を表示',
+	'View this entry' => '記事を表示',
 	'View this page' => 'ウェブページを表示',
 	'Search for all comments from this IP address' => 'このIPアドレスからのすべてのコメントを検索',
 	'to republish' => '再構築',
@@ -4375,7 +4354,7 @@ use vars qw( @ISA %Lexicon );
 	'Republish selected [_1] (r)' => '選択した[_1]の再構築',
 	'Last Modified' => '最終更新',
 	'Created' => '作成',
-	'View entry' => 'ブログ記事を見る',
+	'View entry' => '記事を見る',
 	'View page' => 'ウェブページを表示',
 	'No entries could be found.' => '記事がありません。',
 	'<a href="[_1]">Create an entry</a> now.' => '<a href="[_1]">記事を作成</a>する。',
@@ -4401,13 +4380,13 @@ use vars qw( @ISA %Lexicon );
 	'Your Dashboard' => 'ユーザーダッシュボード',
 
 ## tmpl/cms/include/header.tmpl
-	'Signed in as [_1]' => 'ユーザー: [_1]',
 	'Help' => 'ヘルプ',
 	'Sign out' => 'サインアウト',
 	'View Site' => 'サイトの表示',
 	'Search (q)' => '検索 (q)',
 	'Create New' => '新規作成',
 	'Select an action' => 'アクションを選択',
+	'You have <strong>[quant,_1,message,messages]</strong> from the system.' => 'システムからのメッセージが[quant,_1,件,件]あります。',
 	q{This website was created during the upgrade from a previous version of Movable Type. 'Site Root' and 'Site URL' are left blank to retain 'Publishing Paths' compatibility for blogs that were created in a previous version. You can post and publish on existing blogs, but you cannot publish this website itself because of the blank 'Site Root' and 'Site URL'.} => q{このウェブサイトは、以前のバージョンのMovable Typeからのバージョンアップ時に作成されました。バージョンアップ前に作成されたブログの公開設定の互換性を保持するために、ウェブサイトのサイト URLとサイトパスは空白になっています。そのため、既存のブログに投稿、公開はできますが、ウェブサイト自体にコンテンツを投稿することはできません。},
 	'from Revision History' => '履歴データ',
 
@@ -4418,9 +4397,9 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/import_start.tmpl
 	'Importing...' => 'インポートを開始します...',
-	'Importing entries into blog' => 'ブログ記事をブログにインポートしています',
-	q{Importing entries as user '[_1]'} => q{ユーザー[_1]としてブログ記事をインポートしています},
-	'Creating new users for each user found in the blog' => 'ブログのユーザーを新規ユーザーとして作成',
+	'Importing entries into [_1]' => '記事を[_1]にインポートしています',
+	q{Importing entries as user '[_1]'} => q{ユーザー[_1]として記事をインポートしています},
+	'Creating new users for each user found in the [_1]' => '[_1]のユーザーを新規ユーザーとして作成',
 
 ## tmpl/cms/include/itemset_action_widget.tmpl
 	'More actions...' => 'アクション...',
@@ -4484,7 +4463,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/template_table.tmpl
 	'Create Archive Template:' => 'アーカイブテンプレートの作成:',
-	'Entry Listing' => 'ブログ記事リスト',
+	'Entry Listing' => '記事リスト',
 	'Create template module' => 'テンプレートモジュールの作成',
 	'Create index template' => 'インデックステンプレートの作成',
 	'Publish selected templates (a)' => '選択されたテンプレートを公開 (a)',
@@ -4577,7 +4556,7 @@ use vars qw( @ISA %Lexicon );
 	'act upon' => '対象に',
 	'Are you sure you want to remove the filter \'[_1]\'?' => 'フィルタ\'[_1]\'を削除してよろしいですか?',
 	'Label "[_1]" is already in use.' => '"[_1]というラベルは既に使用されています。"',
-	'Communication Error ([_1])' => '通信エラー ([_1])',
+	'Communication Error (HTTP status code: [_1]. Message: [_2])' => '通信エラー ([_2]) HTTP ステータス コード:[_1]',
 	'[_1] - [_2] of [_3]' => '[_1] - [_2] / [_3]',
 	'Select all [_1] items' => '全[_1]件を選択する',
 	'All [_1] items are selected' => '全[_1]件が選択されています',
@@ -4588,9 +4567,9 @@ use vars qw( @ISA %Lexicon );
 	'Select Filter' => 'フィルタを選択',
 
 ## tmpl/cms/list_entry.tmpl
-	'Entries Feed' => 'ブログ記事フィード',
+	'Entries Feed' => '記事フィード',
 	'Pages Feed' => 'ウェブページフィード',
-	'The entry has been deleted from the database.' => 'ブログ記事をデータベースから削除しました。',
+	'The entry has been deleted from the database.' => '記事をデータベースから削除しました。',
 	'The page has been deleted from the database.' => 'ウェブページをデータベースから削除しました。',
 	'Quickfilters' => 'クイックフィルタ',
 	'[_1] (Disabled)' => '[_1] (無効)',
@@ -4598,7 +4577,7 @@ use vars qw( @ISA %Lexicon );
 	'Remove filter' => 'フィルタしない',
 	'change' => '絞り込み',
 	'[_1] where [_2] is [_3]' => '[_2]が[_3]の[_1]',
-	'Show only entries where' => 'ブログ記事を表示: ',
+	'Show only entries where' => '記事を表示: ',
 	'Show only pages where' => 'ウェブページを表示: ',
 	'status' => 'ステータス',
 	'tag (exact match)' => 'タグ (完全一致)',
@@ -4636,7 +4615,6 @@ use vars qw( @ISA %Lexicon );
 	'Failed' => '失敗',
 	'[quant,_1,warning,warnings]' => '警告: [quant,_1,,,]',
 	'Reapply' => '再適用',
-	'In Use' => '利用中',
 	'Uninstall' => 'アンインストール',
 	'Author: ' => '作者: ',
 	'This theme cannot be applied to the website due to [_1] errors' => '次の理由により、テーマを適用できませんでした。',
@@ -4649,9 +4627,8 @@ use vars qw( @ISA %Lexicon );
 	'No themes are installed.' => 'テーマがインストールされていません。',
 	'Current Theme' => '現在のテーマ',
 	'Available Themes' => '利用可能なテーマ',
-	'Themes for Both Blogs and Websites' => 'ウェブサイト、およびブログ用のテーマ',
-	'Themes for Blogs' => 'ブログ用テーマ',
-	'Themes for Websites' => 'ウェブサイト用テーマ',
+	'Themes in used' => '利用しているテーマ',
+	'Installed Themes' => 'インストールされているテーマ',
 
 ## tmpl/cms/list_widget.tmpl
 	'Manage [_1] Widgets' => '[_1]ウィジェットの管理',
@@ -4667,6 +4644,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/listing/asset_list_header.tmpl
 	'You have successfully deleted the asset(s).' => 'アイテムを削除しました。',
+	q{Cannot write to '[_1]'. Thumbnail of items may not be displayed.} => q{サムネイル画像を表示できません: '[_1]'へ書き込みができません。},
 
 ## tmpl/cms/listing/association_list_header.tmpl
 	'You have successfully revoked the given permission(s).' => '権限を削除しました。',
@@ -4680,6 +4658,7 @@ use vars qw( @ISA %Lexicon );
 	'The deleted user(s) still exist in the external directory. As such, they will still be able to login to Movable Type Advanced.' => '削除されたユーザーが外部ディレクトリ上にまだ存在するので、このままではユーザーは再度サインインできてしまいます。',
 	q{You have successfully synchronized users' information with the external directory.} => q{外部のディレクトリとユーザーの情報を同期しました。},
 	'Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory.' => '選択されたユーザーのうち[_1]人は外部ディレクトリ上に存在しないので有効にできませんでした。',
+	q{Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='[_2]'>activity log</a> for more details.} => q{選択されたユーザーのうち[_1]人を有効にできませんでした。エラーの詳細を<a href='[_2]'>ログ</a>で確認してください。},
 	q{An error occured during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information.} => q{同期中にエラーが発生しました。エラーの詳細を<a href='[_1]'>ログ</a>で確認して>ください。},
 
 ## tmpl/cms/listing/banlist_list_header.tmpl
@@ -4776,18 +4755,18 @@ use vars qw( @ISA %Lexicon );
 	'Preview [_1] Content' => '[_1]のプレビュー',
 	'Return to the compose screen' => '作成画面に戻る',
 	'Return to the compose screen (e)' => '作成画面に戻る',
-	'Save this entry' => 'このブログ記事を保存する',
-	'Save this entry (s)' => 'このブログ記事を保存する (s)',
-	'Re-Edit this entry' => 'このブログ記事を編集する',
-	'Re-Edit this entry (e)' => 'このブログ記事を編集する (e)',
+	'Save this entry' => 'この記事を保存する',
+	'Save this entry (s)' => 'この記事を保存する (s)',
+	'Re-Edit this entry' => 'この記事を編集する',
+	'Re-Edit this entry (e)' => 'この記事を編集する (e)',
 	'Save this page' => 'このウェブページを保存する',
 	'Save this page (s)' => 'このウェブページを保存する (s)',
 	'Re-Edit this page' => 'このウェブページを編集する',
 	'Re-Edit this page (e)' => 'このウェブページを編集する (e)',
 
 ## tmpl/cms/preview_strip.tmpl
-	'Publish this entry' => 'このブログ記事を公開する',
-	'Publish this entry (s)' => 'このブログ記事を公開する (s)',
+	'Publish this entry' => 'この記事を公開する',
+	'Publish this entry (s)' => 'この記事を公開する (s)',
 	'Publish this page' => 'このウェブページを公開する',
 	'Publish this page (s)' => 'このウェブページを公開する (s)',
 	'You are previewing the entry entitled &ldquo;[_1]&rdquo;' => 'プレビュー中: 記事「[_1]」',
@@ -4800,7 +4779,7 @@ use vars qw( @ISA %Lexicon );
 	'Save this template' => 'このテンプレートを保存する',
 	'Re-Edit this template (e)' => 'このテンプレートを編集する (e)',
 	'Re-Edit this template' => 'このテンプレートを編集する',
-	'There are no categories in this blog.  Limited preview of category archive templates is possible with a virtual category displayed.  Normal, non-preview output cannot be generated by this template unless at least one category is created.' => 'このブログにはカテゴリが存在しないため、仮カテゴリーを利用しています。正しいプレビューを表示したい場合は、カテゴリを作成して下さい。',
+	'There are no categories in this blog.  Limited preview of category archive templates is possible with a virtual category displayed.  Normal, non-preview output cannot be generated by this template unless at least one category is created.' => 'このブログにはカテゴリが存在しないため、仮のカテゴリを利用しています。正しいプレビューを表示したい場合は、カテゴリを作成して下さい。',
 
 ## tmpl/cms/rebuilding.tmpl
 	'Publishing...' => '再構築中...',
@@ -4933,8 +4912,8 @@ use vars qw( @ISA %Lexicon );
 	'Showing all Schwartz errors' => '全Schwartzエラー参照',
 
 ## tmpl/cms/widget/blog_stats.tmpl
-	'Error retrieving recent entries.' => '最近のブログ記事を取得できませんでした。',
-	'Loading recent entries...' => '最近のブログ記事を読み込んでいます...',
+	'Error retrieving recent entries.' => '最近の記事を取得できませんでした。',
+	'Loading recent entries...' => '最近の記事を読み込んでいます...',
 	'Jan.' => '1月',
 	'Feb.' => '2月',
 	'March' => '3月',
@@ -4949,7 +4928,7 @@ use vars qw( @ISA %Lexicon );
 	'Dec.' => '12月',
 	'[_1] [_2] - [_3] [_4]' => '[_1][_2]日 - [_3][_4]',
 	'You have <a href=\'[_3]\'>[quant,_1,comment,comments] from [_2]</a>' => '[_2]日に<a href=\'[_3]\'>[quant,_1,件,件]のコメント</a>があります。',
-	'You have <a href=\'[_3]\'>[quant,_1,entry,entries] from [_2]</a>' => '[_2]日に<a href=\'[_3]\'>[quant,_1,件,件]のブログ記事</a>を作成しています。',
+	'You have <a href=\'[_3]\'>[quant,_1,entry,entries] from [_2]</a>' => '[_2]日に<a href=\'[_3]\'>[quant,_1,件,件]の記事</a>を作成しています。',
 
 ## tmpl/cms/widget/blog_stats_comment.tmpl
 	'Most Recent Comments' => '最近のコメント',
@@ -4958,16 +4937,16 @@ use vars qw( @ISA %Lexicon );
 	'No comments available.' => 'コメントはありません。',
 
 ## tmpl/cms/widget/blog_stats_entry.tmpl
-	'Most Recent Entries' => '最近のブログ記事',
+	'Most Recent Entries' => '最近の記事',
 	'Posted by [_1] [_2] in [_3]' => '[_2] [_1] カテゴリ: [_3]',
 	'Posted by [_1] [_2]' => '[_2] [_1]',
 	'Tagged: [_1]' => 'タグ: [_1]',
-	'View all entries' => 'すべてのブログ記事を表示',
+	'View all entries' => 'すべての記事を表示',
 	'No entries have been created in this blog. <a href="[_1]">Create a entry</a>' => 'このブログには記事が見つかりません。<a href="[_1]">記事を作成</a>する。',
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
-	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => 'タグ&ldquo;[_2]&rdquo;の付いたブログ記事([quant,_1,件,件])',
-	'No entries available.' => 'ブログ記事がありません。',
+	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => 'タグ&ldquo;[_2]&rdquo;の付いた記事([quant,_1,件,件])',
+	'No entries available.' => '記事がありません。',
 
 ## tmpl/cms/widget/blog_stats_tag_cloud.tmpl
 
@@ -4985,70 +4964,43 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/favorite_blogs.tmpl
 	'Your recent websites and blogs' => '最近利用したウェブサイト/ブログ',
-	'[quant,_1,blog,blogs]' => 'ブログ[quant,_1,件,件]',
-	'[quant,_1,page,pages]' => 'ページ[quant,_1,件,件]',
-	'[quant,_1,comment,comments]' => 'コメント[quant,_1,件,件]',
 	'No website could be found. [_1]' => 'ウェブサイトがありません。[_1]',
 	'Create a new' => '新規作成',
-	'[quant,_1,entry,entries]' => '記事[quant,_1,件,件]',
 	'No blogs could be found.' => 'ブログがありません。',
 
 ## tmpl/cms/widget/mt_news.tmpl
 	'News' => 'ニュース',
-	'MT News' => 'MT ニュース',
-	'Learning MT' => 'Learning MT',
-	'Hacking MT' => 'Hacking MT',
-	'Pronet' => 'ProNet',
 	'No Movable Type news available.' => 'Movable Typeニュースはありません。',
-	'No Learning Movable Type news available.' => 'Learning Movable Typeに新着ブログ記事はありません。',
 
 ## tmpl/cms/widget/mt_shortcuts.tmpl
 	'Handy Shortcuts' => 'ショートカット',
 	'Import Content' => 'インポート',
 	'Blog Preferences' => 'ブログの設定',
 
-## tmpl/cms/widget/new_install.tmpl
-	'Thank you for installing Movable Type' => 'Movable Type をご利用いただき、ありがとうございます。',
-	'You are now ready to:' => '次の方法で、ウェブサイトにコンテンツを公開できます。',
-	'Create a new page on your website' => 'ウェブサイトに新しいページを作成',
-	'Create a blog on your website' => 'ウェブサイトにブログを作成',
-	'Create a blog (many blogs can exist in one website) to start posting.' => 'ブログを作成して(ひとつのウェブサイト内に複数のブログを作成できます)、ブログ記事を投稿します。',
-	'Movable Type Online Manual' => 'Movable Typeオンラインマニュアル',
-	q{Whether you're new to Movable Type or using it for the first time, learn more about what this tool can do for you.} => q{Movable Typeで何ができるか、詳しくはこちら。},
+## tmpl/cms/widget/notification_dashboard.tmpl
+	'Messages from the system' => 'システムからのお知らせ',
 
-## tmpl/cms/widget/new_user.tmpl
-	q{Welcome to Movable Type, the world's most powerful blogging, publishing and social media platform:} => q{世界で最もパワフルなブログ、ウェブサイト、ソーシャルメディアプラットフォームであるMovable Typeへようこそ:},
-
-## tmpl/cms/widget/new_version.tmpl
-	q{What's new in Movable Type [_1]} => q{Movable Type [_1] の新機能},
+## tmpl/cms/widget/personal_stats.tmpl
+	'Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>.' => '最後に記事を書いたのは[_2]です(ブログ: <a href="[_3]">[_4]</a> - <a href="[_1]">編集</a>)。',
+	'Your last entry was [_1] in <a href="[_2]">[_3]</a>.' => '最後に記事を書いたのは[_1]です(ブログ: <a href="[_2]">[_3]</a>)',
+	'<a href="[_1]">[quant,_2,entry,entries]</a>' => '<a href="[_1]">[quant,_2,記事,記事]</a>',
+	'[quant,_1,entry,entries]' => '記事[quant,_1,件,件]',
+	'<a href="[_1]">[quant,_2,page,pages]</a>' => '<a href="[_1]">[quant,_2,ページ,ページ]</a>',
+	'[quant,_1,page,pages]' => 'ページ[quant,_1,件,件]',
+	'<a href="[_1]">[quant,_2,comment,comments]</a>' => '<a href="[_1]">[quant,_2,コメント,コメント]</a>',
+	'[quant,_1,comment,comments]' => 'コメント[quant,_1,件,件]',
+	'<a href="[_1]">[quant,_2,draft,drafts]</a>' => '<a href="[_1]">[quant,_2,下書き,下書き]</a>',
+	'[quant,_1,draft,drafts]' => '[quant,_1,件,件]',
 
 ## tmpl/cms/widget/recent_blogs.tmpl
 	'No blogs could be found. [_1]' => 'ブログがありません。[_1]',
 
 ## tmpl/cms/widget/recent_websites.tmpl
+	'[quant,_1,blog,blogs]' => 'ブログ[quant,_1,件,件]',
 
-## tmpl/cms/widget/this_is_you.tmpl
-	'Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>.' => '最後にブログ記事を書いたのは[_2]です(ブログ: <a href="[_3]">[_4]</a> - <a href="[_1]">編集</a>)。',
-	'Your last entry was [_1] in <a href="[_2]">[_3]</a>.' => '最後にブログ記事を書いたのは[_1]です(ブログ: <a href="[_2]">[_3]</a>)',
-	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => '下書きが<a href="[_1]">[quant,_2,件,件]</a>あります。',
-	'You have [quant,_1,draft,drafts].' => '下書きが[quant,_1,件,件]あります。',
-	q{You've written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a> with <a href="[_5]">[quant,_6,comment,comments]</a>.} => q{記事が<a href="[_1]">[quant,_2,件,件]</a>、ページが<a href="[_3]">[quant,_4,件,件]</a>、コメントが<a href="[_5]">[quant,_6,件,件]</a>あります。},
-	q{You've written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a> with [quant,_5,comment,comments].} => q{記事が<a href="[_1]">[quant,_2,件,件]</a>、ページが<a href="[_3]">[quant,_4,件,件]</a>、コメント[quant,_5,件,件]あります。},
-	q{You've written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages] with <a href="[_4]">[quant,_5,comment,comments]</a>.} => q{記事が<a href="[_1]">[quant,_2,件,件]</a>、ページが[quant,_3,件,件]、コメントが<a href="[_4]">[quant,_5,件,件]</a>あります。},
-	q{You've written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages] with [quant,_4,comment,comments].} => q{記事が<a href="[_1]">[quant,_2,件,件]</a>、ページが[quant,_3,件,件]、コメントが[quant,_4,件,件]あります。},
-	q{You've written [quant,_1,entry,entries], <a href="[_2]">[quant,_3,page,pages]</a> with <a href="[_4]">[quant,_5,comment,comments]</a>.} => q{記事が[quant,_1,件,件]、ページが<a href="[_2]">[quant,_3,件,件]</a>、コメントが<a href="[_4]">[quant,_5,件,件]</a>あります。},
-	q{You've written [quant,_1,entry,entries], <a href="[_2]">[quant,_3,page,pages]</a> with [quant,_4,comment,comments].} => q{記事が[quant,_1,件,件]、ページが<a href="[_2]">[quant,_3,件,件]</a>、コメント[quant,_4,件,件]あります。},
-	q{You've written [quant,_1,entry,entries], [quant,_2,page,pages] with <a href="[_3]">[quant,_4,comment,comments]</a>.} => q{記事が[quant,_1,件,件]、ページが[quant,_2,件,件]、コメントが<a href="[_3]">[quant,_4,件,件]</a>あります。},
-	q{You've written [quant,_1,entry,entries], [quant,_2,page,pages] with [quant,_3,comment,comments].} => q{記事[quant,_1,件,件], ページ[quant,_2,件,件] コメント[quant,_3,件,件]あります。},
-	q{You've written <a href="[_1]">[quant,_2,entry,entries]</a>, <a href="[_3]">[quant,_4,page,pages]</a>.} => q{記事が<a href="[_1]">[quant,_2,件,件]</a>、ページが<a href="[_3]">[quant,_4,件,件]</a>あります。},
-	q{You've written <a href="[_1]">[quant,_2,entry,entries]</a>, [quant,_3,page,pages].} => q{記事が<a href="[_1]">[quant,_2,件,件]</a>、ページが[quant,_3,件,件]あります。},
-	q{You've written [quant,_1,entry,entries], <a href="[_2]">[quant,_3,page,pages]</a>.} => q{記事が[quant,_1,entry,entries]、ページが<a href="[_2]">[quant,_3,件,件]</a>あります。},
-	q{You've written [quant,_1,entry,entries], [quant,_2,page,pages].} => q{記事が[quant,_1,件,件]、ページが[quant,_2,件,件]あります。},
-	q{You've written <a href="[_1]">[quant,_2,page,pages]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>.} => q{ページが<a href="[_1]">[quant,_2,件,件]</a>、コメントが<a href="[_3]">[quant,_4,件,件]</a>あります。},
-	q{You've written <a href="[_1]">[quant,_2,page,pages]</a> with [quant,_3,comment,comments].} => q{ページが<a href="[_1]">[quant,_2,件,件]</a>、コメントが[quant,_3,件,件]あります。},
-	q{You've written [quant,_1,page,pages] with <a href="[_2]">[quant,_3,comment,comments]</a>.} => q{ページが[quant,_1,件,件]、コメントが<a href="[_2]">[quant,_3,件,件]</a>あります。},
-	q{You've written [quant,_1,page,pages] with [quant,_2,comment,comments].} => q{ページが[quant,_1,件,件]、コメントが[quant,_2,件,件]あります。},
-	'Edit your profile' => 'ユーザー情報の編集',
+## tmpl/cms/widget/site_stats.tmpl
+	'Stats for [_1]' => 'サイト: [_1]',
+	'Statistics Settings' => 'アクセス統計を設定する',
 
 ## tmpl/comment/auth_aim.tmpl
 	'Your AIM or AOL Screen Name' => 'AIMまたはAOLのスクリーンネーム',
@@ -5120,8 +5072,12 @@ use vars qw( @ISA %Lexicon );
 	'Before you can leave a comment you must first complete the registration process by confirming your account. An email has been sent to [_1].' => 'コメントを投稿する前にアカウントを確認して登録を完了する必要があります。[_1]にメールを送信しました。',
 	'To complete the registration process you must first confirm your account. An email has been sent to [_1].' => '登録を完了するためにまずアカウントを確認する必要があります。[_1]にメールを送信しました。',
 	'To confirm and activate your account please check your inbox and click on the link found in the email we just sent you.' => 'メールを確認して、メールに書かれたリンクをクリックすることで、アカウントを確認して有効化できます。',
-	'Return to the original entry.' => '元のブログ記事に戻る',
+	'Return to the original entry.' => '元の記事に戻る',
 	'Return to the original page.' => '元のウェブページに戻る',
+
+## tmpl/data_api/include/login_mt.tmpl
+
+## tmpl/data_api/login.tmpl
 
 ## tmpl/error.tmpl
 	'Missing Configuration File' => '環境設定ファイルが見つかりません。',
@@ -5138,7 +5094,7 @@ use vars qw( @ISA %Lexicon );
 	'Unpublish' => '公開取り消し',
 	'More like this' => '他にも...',
 	'From this blog' => 'このブログから',
-	'On this entry' => 'このブログ記事に対する',
+	'On this entry' => 'この記事に対する',
 	'By commenter identity' => 'コメント投稿者のID',
 	'By commenter name' => 'コメント投稿者の名前',
 	'By commenter email' => 'コメント投稿者のメールアドレス',
@@ -5153,7 +5109,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/feeds/feed_ping.tmpl
 	'Source blog' => '送信元のブログ',
 	'By source blog' => '送信元のブログ',
-	'By source title' => '送信元ブログ記事のタイトル',
+	'By source title' => '送信元記事のタイトル',
 	'By source URL' => '送信元のURL',
 
 ## tmpl/feeds/login.tmpl
@@ -5283,6 +5239,7 @@ use vars qw( @ISA %Lexicon );
 	'Full Restore' => '環境のリストア',
 	'SSL Certifications' => 'サーバー証明書',
 	'Config Directives' => 'MT環境変数',
+	'Disk Usage' => 'ディスクの使用量',
 	'Sync' => 'サーバー配信',
 	'Contents Sync' => 'サーバー配信',
 
@@ -5332,8 +5289,17 @@ use vars qw( @ISA %Lexicon );
 	'Sync settings' => 'サーバー配信の設定',
 
 ## addons/Cloud.pack/lib/MT/Worker/ContentsSync.pm
-	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
 	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバー配信の処理に成功したことを通知するメールです。',
+	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
+
+## addons/Cloud.pack/tmpl/cfg_disk_usage.tmpl
+	'User Contents Files' => 'コンテンツファイル',
+	'Buckup Files' => 'バックアップファイル',
+	'Free Disk Space' => '空き容量',
+	'User Contents' => 'コンテンツファイル',
+	'Others' => 'その他',
+	'System Data' => 'システムファイル',
+	'Free' => '空き容量',
 
 ## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
 	'Manage Basic Authentication' => 'Basic認証の管理',
@@ -5455,19 +5421,19 @@ use vars qw( @ISA %Lexicon );
 	'Professional Styles' => 'プロフェッショナルスタイル',
 	'A collection of styles compatible with Professional themes.' => 'プロフェッショナルテーマと互換のあるスタイルです。',
 	'Professional Website' => 'プロフェッショナル ウェブサイト',
-	'Blog Index' => 'ブログのメインページ',
 	'Header' => 'ヘッダー',
 	'Footer' => 'フッター',
-	'Entry Metadata' => 'ブログ記事のメタデータ',
+	'Entry Detail' => '記事の詳細',
+	'Entry Metadata' => '記事のメタデータ',
 	'Page Detail' => 'ウェブページの詳細',
 	'Footer Links' => 'フッターのリンク',
 	'Powered By (Footer)' => 'Powered By (フッター)',
-	'Recent Entries Expanded' => '最近のブログ記事 (拡張)',
+	'Recent Entries Expanded' => '最近の記事 (拡張)',
 	'Main Sidebar' => 'メインサイドバー',
 	'Blog Activity' => 'アクティビティ',
 	'Professional Blog' => 'プロフェッショナルブログ',
-	'Entry Detail' => 'ブログ記事の詳細',
 	'Blog Archives' => 'アーカイブ',
+	'__CF_REQUIRED_VALUE__' => q{値},
 
 ## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
 	'Show' => '表示項目',
@@ -5490,7 +5456,7 @@ use vars qw( @ISA %Lexicon );
 	'The basename \'[_1]\' is already in use. It must be unique within this [_2].' => '[_1]というベースネームはすでに使われています。[_2]内で重複しない値を入力してください。',
 	'You must select other type if object is the comment.' => 'コメントでない場合、他の種類を選択する必要があります。',
 	'type' => '種類',
-	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => 'ブログ記事、ウェブページ、フォルダ、カテゴリ、ユーザーのフォームとフィールドをカスタマイズして、必要な情報を格納することができます。',
+	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => '記事、ウェブページ、フォルダ、カテゴリ、ユーザーのフォームとフィールドをカスタマイズして、必要な情報を格納することができます。',
 	' ' => ' ',
 	'Single-Line Text' => 'テキスト',
 	'Multi-Line Text' => 'テキスト(複数行)',
@@ -5575,7 +5541,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/blog/entry_detail.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/entry_listing.mtml
-	'Recently by <em>[_1]</em>' => '<em>[_1]</em>の最近のブログ記事',
+	'Recently by <em>[_1]</em>' => '<em>[_1]</em>の最近の記事',
 
 ## addons/Commercial.pack/templates/professional/blog/entry_metadata.mtml
 
@@ -5584,7 +5550,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/blog/footer.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/footer_links.mtml
-	'Links' => 'リンク',
 
 ## addons/Commercial.pack/templates/professional/blog/header.mtml
 
@@ -5631,10 +5596,14 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Commercial.pack/templates/professional/blog/trackbacks.mtml
 
+## addons/Commercial.pack/templates/professional/website/archive_index.mtml
+
 ## addons/Commercial.pack/templates/professional/website/blog_index.mtml
 
 ## addons/Commercial.pack/templates/professional/website/blogs.mtml
 	'Entries ([_1]) Comments ([_2])' => '記事([_1]) コメント([_2])',
+
+## addons/Commercial.pack/templates/professional/website/categories.mtml
 
 ## addons/Commercial.pack/templates/professional/website/comment_detail.mtml
 
@@ -5649,6 +5618,12 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/website/comments.mtml
 
 ## addons/Commercial.pack/templates/professional/website/dynamic_error.mtml
+
+## addons/Commercial.pack/templates/professional/website/entry.mtml
+
+## addons/Commercial.pack/templates/professional/website/entry_detail.mtml
+
+## addons/Commercial.pack/templates/professional/website/entry_listing.mtml
 
 ## addons/Commercial.pack/templates/professional/website/entry_metadata.mtml
 
@@ -5681,7 +5656,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/website/search.mtml
 
 ## addons/Commercial.pack/templates/professional/website/search_results.mtml
-	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'すべての単語が順序に関係なく検索されます。フレーズで検索したいときは引用符で囲んでください。',
 
 ## addons/Commercial.pack/templates/professional/website/sidebar.mtml
 
@@ -5749,11 +5723,11 @@ use vars qw( @ISA %Lexicon );
 	'Followed by' => 'フォロワー',
 	'Followers' => '被注目',
 	'Following' => '注目',
-	'Pending Entries' => '承認待ちのブログ記事',
-	'Spam Entries' => 'スパムブログ記事',
-	'Recently Scored' => '最近評価されたブログ記事',
+	'Pending Entries' => '承認待ちの記事',
+	'Spam Entries' => 'スパム記事',
+	'Recently Scored' => '最近評価された記事',
 	'Recent Submissions' => '最近の投稿',
-	'Most Popular Entries' => '評価の高いブログ記事',
+	'Most Popular Entries' => '評価の高い記事',
 	'Registrations' => '登録数',
 	'Login Form' => 'ログインフォーム',
 	'Registration Form' => '登録フォーム',
@@ -5773,25 +5747,25 @@ use vars qw( @ISA %Lexicon );
 	'GlobalJavaScript' => 'GlobalJavaScript',
 	'Email verification' => 'メールアドレスの確認',
 	'Registration notification' => '登録通知',
-	'New entry notification' => 'ブログ記事の投稿通知',
+	'New entry notification' => '記事の投稿通知',
 	'Community Styles' => 'コミュニティースタイル',
 	'A collection of styles compatible with Community themes.' => 'コミュニティーテーマ互換のスタイルです。',
 	'Community Blog' => 'コミュニティブログ',
 	'Atom ' => 'Atom',
 	'Entry Response' => '投稿完了',
 	'Displays error, pending or confirmation message when submitting an entry.' => '投稿時のエラー、保留、確認メッセージを表示します。',
-	'Entry Detail' => 'ブログ記事の詳細',
-	'Entry Metadata' => 'ブログ記事のメタデータ',
+	'Entry Detail' => '記事の詳細',
+	'Entry Metadata' => '記事のメタデータ',
 	'Page Detail' => 'ウェブページの詳細',
-	'Entry Form' => 'ブログ記事フォーム',
+	'Entry Form' => '記事フォーム',
 	'Content Navigation' => 'コンテンツのナビゲーション',
 	'Activity Widgets' => 'アクティビティウィジェット',
 	'Archive Widgets' => 'アーカイブウィジェット',
 	'Community Forum' => 'コミュニティ掲示板',
-	'Entry Feed' => 'ブログ記事のフィード',
+	'Entry Feed' => '記事のフィード',
 	'Displays error, pending or confirmation message when submitting a entry.' => '投稿エラー、保留、確認メッセージを表示します。',
-	'Popular Entry' => '人気のブログ記事',
-	'Entry Table' => 'ブログ記事一覧',
+	'Popular Entry' => '人気の記事',
+	'Entry Table' => '記事一覧',
 	'Content Header' => 'コンテンツヘッダー',
 	'Category Groups' => 'カテゴリグループ',
 	'Default Widgets' => '既定のウィジェット',
@@ -5808,12 +5782,12 @@ use vars qw( @ISA %Lexicon );
 	'Login required' => 'サインインしてください。',
 	'Title or Content is required.' => '本文とタイトルを入力してください。',
 	'Publish failed: [_1]' => '公開できませんでした: [_1]',
-	'System template entry_response not found in blog: [_1]' => 'ブログ記事の確認テンプレートがありません。',
-	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'ブログ「[_2]」に新しいブログ記事「[_1]」が投稿されました。',
+	'System template entry_response not found in blog: [_1]' => '記事の確認テンプレートがありません。',
+	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'ブログ「[_2]」に新しい記事「[_1]」が投稿されました。',
 	'Id or Username is required' => 'IDまたはユーザー名が必要です。',
 	'Unknown user' => 'ユーザーが不明です。',
 	'All required fields must have valid values.' => '必須フィールドのすべてに正しい値を設定してください。',
-	'Recent Entries from [_1]' => '[_1]の最近のブログ記事',
+	'Recent Entries from [_1]' => '[_1]の最近の記事',
 	'Responses to Comments from [_1]' => '[_1]のコメントへの返信',
 	'Actions from [_1]' => '[_1]のアクション',
 
@@ -5829,7 +5803,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/php/function.mtentryrecommendvotelink.php
 
 ## addons/Community.pack/templates/blog/about_this_page.mtml
-	'This page contains a single entry by <a href="[_1]">[_2]</a> published on <em>[_3]</em>.' => 'このページは、<a href="[_1]">[_2]</a>が<em>[_3]</em>に書いたブログ記事です。',
+	'This page contains a single entry by <a href="[_1]">[_2]</a> published on <em>[_3]</em>.' => 'このページは、<a href="[_1]">[_2]</a>が<em>[_3]</em>に書いた記事です。',
 
 ## addons/Community.pack/templates/blog/archive_index.mtml
 
@@ -5870,11 +5844,11 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/blog/entry_form.mtml
 	'In order to create an entry on this blog you must first register.' => 'ブログに投稿するには、Movable Typeにユーザー登録してください。',
 	q{You don't have permission to post.} => q{投稿する権限がありません。},
-	'Sign in to create an entry.' => 'サインインしてブログ記事を投稿してください。',
+	'Sign in to create an entry.' => 'サインインして記事を投稿してください。',
 	'Select Category...' => 'カテゴリを選択...',
 
 ## addons/Community.pack/templates/blog/entry_listing.mtml
-	'Recently by <em>[_1]</em>' => '<em>[_1]</em>による最近のブログ記事',
+	'Recently by <em>[_1]</em>' => '<em>[_1]</em>による最近の記事',
 
 ## addons/Community.pack/templates/blog/entry_metadata.mtml
 	'Vote' => '票',
@@ -5882,9 +5856,9 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/blog/entry_response.mtml
 	'Thank you for posting an entry.' => '投稿を受け付けました。',
-	'Entry Pending' => 'ブログ記事を受け付けました。',
+	'Entry Pending' => '記事を受け付けました。',
 	'Your entry has been received and held for approval by the blog owner.' => '投稿はブログの管理者が公開するまで保留されています。',
-	'Entry Posted' => 'ブログ記事投稿完了',
+	'Entry Posted' => '記事投稿完了',
 	'Your entry has been posted.' => '投稿を公開しました。',
 	'Your entry has been received.' => '投稿を受け付けました。',
 	q{Return to the <a href="[_1]">blog's main index</a>.} => q{<a href="[_1]">ホームぺージ</a>に戻る},
@@ -5918,7 +5892,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/blog/search.mtml
 
 ## addons/Community.pack/templates/blog/search_results.mtml
-	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'すべての単語が順序に関係なく検索されます。フレーズで検索したいときは引用符で囲んでください。',
 
 ## addons/Community.pack/templates/blog/sidebar.mtml
 
@@ -6062,7 +6035,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/global/navigation.mtml
 
 ## addons/Community.pack/templates/global/new_entry_email.mtml
-	q{A new entry '[_1]([_2])' has been posted on your blog [_3].} => q{ブログ「[_3]」に新しいブログ記事「[_1]」(ID: [_2])が投稿されました。},
+	q{A new entry '[_1]([_2])' has been posted on your blog [_3].} => q{ブログ「[_3]」に新しい記事「[_1]」(ID: [_2])が投稿されました。},
 	'Author name: [_1]' => 'ユーザー: [_1]',
 	'Author nickname: [_1]' => 'ユーザーの表示名: [_1]',
 	'Title: [_1]' => 'タイトル: [_1]',
@@ -6128,7 +6101,7 @@ use vars qw( @ISA %Lexicon );
 	'Check to allow anonymous users (users not logged in) to recommend discussion.  IP address is recorded and used to identify each user.' => 'サインインしていないユーザーでもお気に入りに登録できるようにします。IPアドレスを記録して重複を防ぎます。',
 	'Allow anonymous user to recommend' => '匿名での投票を許可する',
 	'Junk Filter' => 'スパムフィルター',
-	'If enabled, all moderated entries will be filtered by Junk Filter.' => 'すべてのブログ記事をスパムフィルターの対象にします。',
+	'If enabled, all moderated entries will be filtered by Junk Filter.' => 'すべての記事をスパムフィルターの対象にします。',
 	'Save changes to blog (s)' => 'ブログへの変更を保存 (s)',
 
 ## addons/Community.pack/tmpl/widget/blog_stats_registration.mtml
@@ -6137,12 +6110,12 @@ use vars qw( @ISA %Lexicon );
 	'You have [quant,_1,registration,registrations] from [_2]' => '[_2]日に[quant,_1,件,件]の登録がありました。',
 
 ## addons/Community.pack/tmpl/widget/most_popular_entries.mtml
-	'There are no popular entries.' => '目立ったブログ記事はありません。',
+	'There are no popular entries.' => '目立った記事はありません。',
 
 ## addons/Community.pack/tmpl/widget/recent_submissions.mtml
 
 ## addons/Community.pack/tmpl/widget/recently_scored.mtml
-	'There are no recently favorited entries.' => '最近お気に入り登録されたブログ記事はありません。',
+	'There are no recently favorited entries.' => '最近お気に入り登録された記事はありません。',
 
 ## addons/Enterprise.pack/app-cms.yaml
 	'Groups ([_1])' => 'グループ([_1])',
@@ -6487,6 +6460,107 @@ use vars qw( @ISA %Lexicon );
 ## plugins/FormattedTextForTinyMCE/tmpl/extension.tmpl
 	'Select a Boilerplate' => '定型文を選択...',
 
+## plugins/GoogleAnalytics/config.yaml
+	'Site statistics plugin using Google Analytics.' => 'Google Analyticsからアクセス統計データを取得します。',
+
+## plugins/GoogleAnalytics/lib/GoogleAnalytics/App.pm
+	'A Perl module required for using Google Analytics API is missing: [_1].' => 'Google アナリティクス APIを利用するのに必要なPerlモジュールのうちいくつかがありません: [_1]',
+	'You did not specify a client ID.' => 'Client IDが指定されていません。',
+	'You did not specify a code.' => 'codeが指定されていません。',
+	'The name of the profile' => 'プロファイル名',
+	'The web property ID of the profile' => 'ウェブ プロパティ ID',
+
+## plugins/GoogleAnalytics/lib/GoogleAnalytics/OAuth2.pm
+	'An error occurred when getting token: [_1]: [_2]' => 'トークンが取得できません: [_1]: [_2]',
+	'An error occurred when refreshing access token: [_1]: [_2]' => 'リフレッシュトークンが取得できません: [_1]: [_2]',
+	'An error occurred when getting accounts: [_1]: [_2]' => 'アカウントの取得ができません: [_1]: [_2]',
+	'An error occurred when getting profiles: [_1]: [_2]' => 'プロファイルの取得ができません: [_1]: [_2]',
+
+## plugins/GoogleAnalytics/lib/GoogleAnalytics/Provider.pm
+	'An error occurred when retrieving statistics data: [_1]: [_2]' => '統計データの取得ができません: [_1]: [_2]',
+
+## plugins/GoogleAnalytics/tmpl/api_error.tmpl
+	'API error' => 'APIエラー',
+
+## plugins/GoogleAnalytics/tmpl/select_profile.tmpl
+	'Select profile' => 'プロファイルを選択してください',
+
+## plugins/GoogleAnalytics/tmpl/web_service_config.tmpl
+	'Google Analytics' => 'Google Analytics',
+	'OAuth2 settings' => 'OAuth2の設定',
+	'This [_2] is using the settings of [_1].' => 'この[_2]は、[_1]の設定を利用しています。',
+	'Other Google account' => '別のアカウントを利用する',
+	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://code.google.com/apis/console" target="_blank">Google APIs Console</a> before selecting profile.} => q{プロファイルを選択するために、<a href="https://code.google.com/apis/console" target="_blank">Google APIs Console</a>でウェブアプリケーション向けのClient IDを作成してください。},
+	'Redirect URI of the OAuth2 application' => 'Authorized URI',
+	'Client ID of the OAuth2 application' => 'Client ID',
+	'Client secret of the OAuth2 application' => 'Client secret',
+	'Google Analytics profile' => '使用するGoogle Analyticsのプロファイル',
+	'Select Google Analytics profile' => 'Google Analyticsのプロファイルを選択する',
+	'(No profile selected)' => '（プロファイルが選択されていません）',
+	'Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?' => 'Client IDあるいはClient secretが更新されていますが、プロファイルを選択し直していませんが。設定を保存してもよろしいですか？',
+
+## plugins/Loupe/Loupe.pl
+	'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics.' => 'Loupe は、スマートフォンに最適化された、まったく新しい Movable Type への入り口です。Loupe を使えば、Movable Type へログインをすることなく、承認待ちの記事やコメントを承認したり、画像のアップロードを行ったり、あなたのサイトの状態を即座に確認することが出来ます。',
+
+## plugins/Loupe/lib/Loupe.pm
+	'Loupe\'s HTML file name must not be blank.' => 'HTMLファイル名は必須です。',
+	'The URL should not include any directory name: [_1]' => 'URLにはディレクトリ名を含めることはできません: [_1]',
+	'Could not create Loupe directory: [_1]' => 'loupeディレクトリを作成することができません: [_1]',
+	'Loupe HTML file has been created: [_1]' => 'LoupeのHTMLファイルを作成しました: [_1]',
+	'Could not create Loupe HTML file: [_1]' => 'LoupeのHTMLファイルを作成することができませんでした: [_1]',
+	'Loupe HTML file has been deleted: [_1]' => 'LoupeのHTMLファイルを削除しました: [_1]',
+	'Could not delete Loupe HTML file: [_1]' => 'LoupeのHTMLファイルを削除することができませんでした: [_1]',
+
+## plugins/Loupe/lib/Loupe/App.pm
+	'Loupe settings has been successfully. You can send invitation email to users via <a href="[_1]">Loupe Plugin Settings</a>.' => 'Loupeの設定を保存しました。Loupeの<a href="[_1]">設定画面</a>から、LoupeのURLが記載された招待状を、ユーザーにメールで送ることができます。',
+	'Error saving Loupe settings: [_1]' => 'Loupeの設定を保存できませんでした: [_1]',
+	'Send invitation email' => 'ユーザーに招待状をメールで送信する',
+	'Could not send a invitation mail because Loupe is not enabled.' => 'Loupeが無効になっているため、招待状を送信できません。',
+	'Are you sure you want to send an invitation email to selected users?' => 'Loupeの招待状を選択されたユーザーに送信してもよろしいですか？',
+	'Welcome to Loupe' => 'ようこそ、Loupeへ',
+	'Send Loupe invitation email' => 'Loupeの招待状を送信する',
+
+## plugins/Loupe/lib/Loupe/Mail.pm
+	'Loupe invitation mail has been sent to [_3] for user \'[_1]\' (user #[_2]).' => 'Loupeの招待状をユーザー\'[_1]\'(ID: [_2])のメールアドレス \'[_3]\'に送信しました。',
+
+## plugins/Loupe/lib/Loupe/Upgrade.pm
+	'Adding Loupe dashboard widget...' => 'Loupeの紹介ウィジェットを追加しています...',
+
+## plugins/Loupe/tmpl/dialog/welcome_mail_result.tmpl
+	'Send Loupe welcome email' => 'Loupeの招待状を送信する',
+
+## plugins/Loupe/tmpl/system_config.tmpl
+	'Enable Loupe' => 'Loupeを利用する',
+	q{The URL of Loupe's HTML file.} => q{LoupeのアクセスURLとなるHTMLファイルを指定してください。},
+
+## plugins/Loupe/tmpl/welcome_mail_html.tmpl
+	'Your MT blog status at a glance' => 'あなたの MT の状態をサッと確認',
+	'Dear [_1], ' => '[_1]さん、',
+	'With Loupe, you can check the status of your blog without having to sign in to your Movable Type account.' => 'Loupe を使えば、Movable Type へログインをしなくても、あなたのブログの状態を即座に確認することができます。',
+	'View Access Analysis' => 'アクセス解析',
+	'Approve Entries' => '記事承認',
+	'Reply to Comments' => 'コメント返信',
+	'Loupe is best used with a smartphone (iPhone or Android 4.0 or higher)' => 'スマートフォン（iPhone 又は Android 4.0 以上）からご利用ください。',
+	'Try Loupe' => 'Loupeを使ってみる',
+	'Perfect for Mini-tasking' => '小さいけど使えます',
+	'_LOUPE_BRIEF' => '「今人気がある記事ってなに？」「今、承認しておきたい記事はどれ？」「コメントを即座に返信したい」そんな小さなタスクをスマートフォンですぐにできる。あなたのブログの状況をルーペを使って覗いているようなイメージで作りました。',
+	'Use Loupe to help manage your Movable Type blogs no matter where you are!' => 'いつでもどこでも Movable Type が覗ける Loupe を、ぜひお試しください。',
+	'Social Media' => 'ソーシャルメディア',
+	'https://twitter.com/movabletype' => 'https://twitter.com/movabletypejp',
+	'Contact Us' => 'お問い合わせ',
+	'http://www.movabletype.org/' => 'http://www.movabletype.jp/',
+	'http://plugins.movabletype.org' => 'http://plugins.movabletype.jp',
+
+## plugins/Loupe/tmpl/welcome_mail_plain.tmpl
+	'Loupe is ready for use!' => 'Loupeの準備が整いました。',
+
+## plugins/Loupe/tmpl/welcome_mail_result.tmpl
+
+## plugins/Loupe/tmpl/widget/welcome_to_loupe.tmpl
+	'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">See more details.</a>' => 'Loupe は、スマートフォンに最適化された、まったく新しい Movable Type への入り口です。Loupe を使えば、Movable Type へログインをすることなく、承認待ちの記事やコメントを承認したり、画像のアップロードを行ったり、あなたのサイトの状態を即座に確認することが出来ます。詳しい情報は<a href="http://www.movabletype.jp/documentation/loupe/">こちら</a>をご覧ください。',
+	'Loupe can be used without complex configuration, you can get started immediately.' => 'Loupeは、難しい設定をしなくても簡単に、すぐに利用することができます。',
+	'Configure Loupe' => 'Loupeの設定',
+
 ## plugins/Markdown/Markdown.pl
 	'A plain-text-to-HTML formatting plugin.' => 'テキストをHTMLに整形するプラグインです。',
 	'Markdown' => 'Markdown',
@@ -6512,13 +6586,13 @@ use vars qw( @ISA %Lexicon );
 	'Select to apply this trigger to all blogs in this website.' => 'ウェブサイト内のすべてのブログでトリガーを有効にする。',
 	'(All websites and blogs in this system)' => '(システム内のすべてのウェブサイトとブログ)',
 	'Select to apply this trigger to all websites and blogs in this system.' => 'システム内のすべてのウェブサイトとブログでトリガーを有効にする。',
-	'saves an entry/page' => 'ブログ記事とウェブページの保存時',
-	'publishes an entry/page' => 'ブログ記事とウェブページの公開時',
+	'saves an entry/page' => '記事とウェブページの保存時',
+	'publishes an entry/page' => '記事とウェブページの公開時',
 	'publishes a comment' => 'コメントの公開時',
 	'publishes a TrackBack' => 'トラックバックの公開時',
 	'rebuild indexes.' => 'インデックスを再構築する',
 	'rebuild indexes and send pings.' => 'インデックスを再構築して更新pingを送信する',
-	'Updating trigger cache of MultiBlog...' => 'トリガーの設定を更新しています...',
+	'Updating the MultiBlog trigger cache...' => 'トリガーの設定を更新しています...',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => ' ',
@@ -6545,6 +6619,43 @@ use vars qw( @ISA %Lexicon );
 	'Default system aggregation policy' => '既定のアグリゲーションポリシー',
 	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で許可されます。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを制限できます。',
 	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で不許可になります。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを許可することもできます。',
+
+## plugins/SmartphoneOption/config.yaml
+	'Provides an iPhone, iPad and Android touch-friendly UI for Movable Type. Once enabled, navigate to your MT installation from your mobile to use this interface.' => 'iPhone, iPad, Android などのタッチ操作に適したMovable Typeのユーザーインターフェースを提供します。プラグインを有効にして、端末からアクセスしてください。',
+	'iPhone' => 'iPhone',
+	'iPad' => 'iPad',
+	'Android' => 'Android',
+	'Desktop' => 'PC',
+
+## plugins/SmartphoneOption/extlib/Image/ExifTool/MIFF.pm
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS.pm
+	'This function is not supported by [_1].' => 'この機能は、[_1]に対応していません。',
+	'This function is not supported by your browser.' => 'この機能は、お使いのブラウザに対応していません。',
+	'Mobile Dashboard' => 'モバイルダッシュボード',
+	'Rich text editor is not supported by your browser. Continue with  HTML editor ?' => 'この機能は、お使いのブラウザに対応していません。',
+	'Syntax highlight is not supported by your browser. Disable to continue ?' => 'お使いのブラウザは、コードのハイライト表示に対応していません。無効にして編集しますか？',
+	'[_1] View' => '[_1]表示',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Entry.pm
+	'Re-Edit' => '再編集する',
+	'Re-Edit (e)' => '再編集する (e)',
+	'Rich Text(HTML mode)' => 'リッチテキスト(HTMLモード)',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Listing.pm
+	'All' => '全て',
+	'Filters which you created from PC.' => 'PCで作成したフィルタが表示されます',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Search.pm
+	'Search [_1]' => '[_1]の検索',
+
+## plugins/SmartphoneOption/smartphone.yaml
+	'to [_1]' => 'to [_1]',
+	'Smartphone Main' => 'Smartphone Main',
+	'Smartphone Sub' => 'Smartphone Sub',
+
+## plugins/SmartphoneOption/tmpl/cms/dialog/select_formatted_text.tmpl
+	'No boilerplate could be found.' => '定型文が見つかりません。',
 
 ## plugins/StyleCatcher/config.yaml
 	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcherを使うと、ウェブサイトやブログのスタイルを探して、数クリックで変更することができます。',
@@ -6607,37 +6718,6 @@ use vars qw( @ISA %Lexicon );
 	'Default WYSIWYG editor.' => '既定のWYSIWYGエディタ',
 	'TinyMCE' => 'TinyMCE',
 
-## plugins/TypePadAntiSpam/config.yaml
-	'TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."' => '<a href="http://antispam.typepad.jp/" target="_blank">TypePad AntiSpam</a>はSix Apartから無償で提供される、コメントとトラックバックスパムからあなたのブログを守るためのサービスです。TypePad AntiSpamプラグインは、あなたのブログに宛てられたすべてのコメントとトラックバックを、評価のためにサービスに送信し、TypePad AntiSpamがスパムであると判断した場合には、Movable Typeがそれをフィルタリングします。TypePad AntiSpamによる判定に誤りがあった場合は、コメントの一覧画面でそれをスパムにする、あるいはスパムではないと指定すれば、TypePad AntiSpamはそれを学習します。このようなユーザーからのレポートによってTypePad AntiSpamによる評価の精度がさらに高まります。そのため、アイテムをスパムにしたり、スパムから解除する場合には、少し気をつけてください。',
-	'"TypePad AntiSpam"' => '"TypePad AntiSpam"',
-
-## plugins/TypePadAntiSpam/lib/MT/TypePadAntiSpam.pm
-	'API key is a required parameter.' => 'APIキーを設定してください。',
-
-## plugins/TypePadAntiSpam/lib/TypePadAntiSpam.pm
-	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.' => 'これまでのところ、TypePad AntiSpamはこのブログに対するスパムを[quant,_1,件,件]ブロックしました。システム全体では[quant,_2,件,件]ブロックしました。',
-	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.' => 'これまでのところ、TypePad AntiSpamはこのシステム全体に対するスパムを[quant,_1,件,件]ブロックしました。',
-	'Failed to verify your TypePad AntiSpam API key: [_1]' => 'TypePad AntiSpam APIキーの検証に失敗しました: [_1]',
-	'The TypePad AntiSpam API key provided is invalid.' => '不正なTypePad AntiSpam APIキーです。',
-
-## plugins/TypePadAntiSpam/tmpl/config.tmpl
-	'Junk Score Weight' => 'スコアの重みづけ',
-	'Least Weight' => '緩い',
-	'Most Weight' => '厳しい',
-	'Comments and TrackBacks receive a junk score between -10 (definitely spam) and +10 (definitely not spam). This setting allows you to control the weight of the TypePad AntiSpam rating relative to other filters you may have installed to help you filter comments and TrackBacks.' => 'コメントおよびトラックバックには-10(間違いなくスパム)から+10(スパムではありえない)までの範囲で点数が付けられます。この設定を変更すると、TypePad AntiSpamによる判定を、インストールされている他のスパムフィルタの判定との関連で高くしたり低くしたりすることで、コメントとトラックバックのスパムフィルタリングの設定を調整できます。',
-
-## plugins/TypePadAntiSpam/tmpl/stats_widget.tmpl
-	'TypePad AntiSpam' => 'TypePad AntiSpam',
-	'Spam Blocked' => 'ブロックしたスパム',
-	'on this blog' => 'ブログレベル',
-	'on this system' => 'システム全体',
-
-## plugins/TypePadAntiSpam/tmpl/system.tmpl
-	'API Key' => 'APIキー',
-	q{To enable this plugin, you'll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below.} => q{このプラグインを利用するには、TypePad AntiSpam APIキー(無償)が必要です。APIキーは<strong>[_1]antispam.typepad.com[_2]</strong>から無償で取得できます。取得したら、このページに戻ってキーを入力してください。詳しくは<a href="http://antispam.typepad.jp/info/how-to-get-api-key.html" target="_blank">こちら</a>。},
-	'Service Host' => 'サービスのホスト',
-	'The default service host for TypePad AntiSpam is api.antispam.typepad.com. You should only change this if you are using a different service that is compatible with the TypePad AntiSpam API.' => 'TypePad AntiSpamの既定のホストはapi.antispam.typepad.comです。TypePad AntiSpam APIと互換性を持つ他のサービスを利用する場合に限って、この設定を変更してください。',
-
 ## plugins/WXRImporter/config.yaml
 	'Import WordPress exported RSS into MT.' => 'WordPressからエクスポートされたRSSをMTにインポートします。',
 	'"WordPress eXtended RSS (WXR)"' => 'WordPress eXtended RSS (WXR)',
@@ -6652,9 +6732,9 @@ use vars qw( @ISA %Lexicon );
 	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'アイテム「[_1]」は既にインポートされているのでスキップします。',
 	'Saving asset (\'[_1]\')...' => 'アイテム(\'[_1]\')を保存しています...',
 	' and asset will be tagged (\'[_1]\')...' => 'アイテムにタグ([_1])を付けています...',
-	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'ブログ記事「[_1]」は既にインポートされているのでスキップします。',
+	'Duplicate entry (\'[_1]\') found.  Skipping.' => '記事「[_1]」は既にインポートされているのでスキップします。',
 	'Saving page (\'[_1]\')...' => 'ウェブページ(\'[_1]\')を保存しています...',
-	'Entry has no MT::Trackback object!' => 'ブログ記事にトラックバックの設定がありません',
+	'Entry has no MT::Trackback object!' => '記事にトラックバックの設定がありません',
 	'Assigning permissions for new user...' => '新しいユーザーに権限を追加しています...',
 	'Saving permission failed: [_1]' => '権限の保存中にエラーが発生しました: [_1]',
 
@@ -6801,3 +6881,15 @@ use vars qw( @ISA %Lexicon );
 );
 
 1;
+__END__
+
+=head1 NAME
+
+MT::L10N::ja - Japanese localization support for Movable Type
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut
+

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -414,7 +414,8 @@ sub insert_options {
     my $perms = $app->{perms};
     my $blog  = $asset->blog or return;
 
-    $param->{do_thumb} = $asset->has_thumbnail ? 1 : 0;
+    $param->{do_thumb}
+        = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
 
     $param->{can_save_image_defaults}
         = $perms->can_do('save_image_defaults') ? 1 : 0;
@@ -429,7 +430,7 @@ sub insert_options {
     $param->{ 'unit_w' . $_ }
         = ( $blog->image_default_wunits || 'pixels' ) eq $_ ? 1 : 0
         for qw(percent pixels);
-    $param->{thumb_width} 
+    $param->{thumb_width}
         = $blog->image_default_width
         || $asset->image_width
         || 0;
@@ -511,11 +512,9 @@ sub on_upload {
         my ( $w, $h ) = map $param->{$_}, qw( thumb_width thumb_height );
         my ($pseudo_thumbnail_url)
             = $asset->thumbnail_url( Height => $h, Width => $w, Pseudo => 1 );
-        ( my $thumbnail = $pseudo_thumbnail_url ) =~ s|^.*/||;
-        if ( !$thumbnail ) {
-            $thumbnail = $asset->thumbnail_file( Height => $h, Width => $w );
-            $thumbnail = File::Basename::basename($thumbnail);
-        }
+        my ($thumbnail)
+            = File::Basename::basename(
+            $asset->thumbnail_file( Height => $h, Width => $w ) );
 
         my $pseudo_thumbnail_path
             = File::Spec->catfile( $asset->_make_cache_path( undef, 1 ),
@@ -730,6 +729,60 @@ sub edit_template_param {
     $param->{image_width}  = $asset->image_width;
 }
 
+sub normalize_orientation {
+    my $obj = shift;
+
+    require Image::ExifTool;
+
+    my $exif_tool = new Image::ExifTool;
+    my $file_path = $obj->file_path;
+    my $fmgr = $obj->blog ? $obj->blog->file_mgr : MT::FileMgr->new('Local');
+    my $img_data = $fmgr->get_data( $file_path, 'upload' );
+
+    $exif_tool->ExtractInfo( \$img_data );
+    my $o = $exif_tool->GetInfo('Orientation')->{'Orientation'};
+    if ( $o && ( $o ne 'Horizontal (normal)' && $o !~ /^Unknown/i ) ) {
+        $exif_tool->SetNewValue(
+            Orientation => $o,
+            DelValue    => 1
+        );
+        $exif_tool->WriteInfo( \$img_data );
+
+        my $img = MT::Image->new( Data => $img_data, Type => $obj->file_ext );
+
+        my ( $blob, $width, $height ) = do {
+            if ( $o eq 'Mirror horizontal' ) {
+                $img->flipVertical();
+            }
+            elsif ( $o eq 'Rotate 180' ) {
+                $img->rotate( Degrees => 180 );
+            }
+            elsif ( $o eq 'Mirror vertical' ) {
+                $img->flipHorizontal();
+            }
+            elsif ( $o eq 'Mirror horizontal and rotate 270 CW' ) {
+                $img->flipVertical();
+                $img->rotate( Degrees => 270 );
+            }
+            elsif ( $o eq 'Rotate 90 CW' ) {
+                $img->rotate( Degrees => 90 );
+            }
+            elsif ( $o eq 'Mirror horizontal and rotate 90 CW' ) {
+                $img->flipVertical();
+                $img->rotate( Degrees => 90 );
+            }
+            elsif ( $o eq 'Rotate 270 CW' ) {
+                $img->rotate( Degrees => 270 );
+            }
+        };
+        $fmgr->put_data( $blob, $file_path, 'upload' );
+        $obj->image_width($width);
+        $obj->image_height($height);
+    }
+
+    1;
+}
+
 1;
 
 __END__
@@ -774,6 +827,10 @@ undef.
 =head2 $asset->as_html
 
 Return the HTML I<IMG> element with the image asset attributes.
+
+=head2 $asset->normalize_orientation
+
+Normalize orientation if an image has a "Orientation" in Exif information.
 
 =head1 AUTHOR & COPYRIGHT
 

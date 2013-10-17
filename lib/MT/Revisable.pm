@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -183,11 +183,13 @@ sub gather_changed_cols {
         @{ $obj->columns_of_type( 'datetime', 'timestamp' ) };
 
     foreach my $col (@$revisioned_cols) {
-        next if $orig && $obj->$col eq $orig->$col;
+        my $obj_col  = defined $obj->$col  ? $obj->$col  : '';
+        my $orig_col = defined $orig->$col ? $orig->$col : '';
+        next if $orig && $obj_col eq $orig_col;
         next
             if $orig
                 && exists $date_cols{$col}
-                && $orig->$col eq MT::Object::_db2ts( $obj->$col );
+                && $orig_col eq MT::Object::_db2ts($obj_col);
 
         push @changed_cols, $col;
     }

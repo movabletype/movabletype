@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -349,8 +349,6 @@ sub _new_entry {
     my $blog
         = MT::Blog->load( { id => $blog_id, class => [ 'blog', 'website' ] } )
         or die _fault( MT->translate( "Invalid blog ID '[_1]'", $blog_id ) );
-    die _fault( MT->translate( "Invalid blog ID '[_1]'", $blog_id ) )
-        if !$blog->is_blog && !$param{page};
     my ( $author, $perms ) = $class->_login( $user, $pass, $blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Permission denied.") )
@@ -445,6 +443,12 @@ sub _new_entry {
 
     $entry->save;
 
+    # Clear cache for site stats dashboard widget.
+    require MT::Util;
+    MT::Util::clear_site_stats_widget_cache( $entry->blog_id )
+        or die MT::XMLRPCServer::_fault(
+        MT->translate('Removing stats cache failed.') );
+
     my $changed = $class->_save_placements( $entry, $item, \%param );
 
     my @types = ($obj_type);
@@ -474,6 +478,7 @@ sub _new_entry {
     if ($publish) {
         $class->_publish( $mt, $entry ) or die _fault( $class->errstr );
     }
+
     delete $ENV{SERVER_SOFTWARE};
     SOAP::Data->type( string => $entry->id );
 }
@@ -604,10 +609,23 @@ sub _edit_entry {
 
     $entry->save;
 
+    # Clear cache for site stats dashboard widget.
+    if ((      $orig_entry->status == MT::Entry::RELEASE()
+            || $entry->status == MT::Entry::RELEASE()
+        )
+        && $orig_entry->status != $entry->status
+        )
+    {
+        require MT::Util;
+        MT::Util::clear_site_stats_widget_cache( $entry->blog_id )
+            or die MT::XMLRPCServer::_fault(
+            MT->translate('Removing stats cache failed.') );
+    }
+
     my $old_categories = $entry->categories;
     $entry->clear_cache('categories');
-    my $changed        = $class->_save_placements( $entry, $item, \%param );
-    my @types          = ($obj_type);
+    my $changed = $class->_save_placements( $entry, $item, \%param );
+    my @types = ($obj_type);
     if ($changed) {
         push @types, 'folder';    # folders are the only type that can be
                                   # created in _save_placements
@@ -634,6 +652,7 @@ sub _edit_entry {
         $class->_publish( $mt, $entry, undef, $old_categories )
             or die _fault( $class->errstr );
     }
+
     SOAP::Data->type( boolean => 1 );
 }
 
@@ -689,11 +708,11 @@ sub getUsersBlogs {
 
     my $iter;
     if ( $author->is_superuser ) {
-        $iter = MT::Blog->load_iter();
+        $iter = MT::Blog->load_iter( { class => '*' } );
     }
     else {
         $iter = MT::Blog->load_iter(
-            {},
+            { class => '*' },
             {   join => MT::Permission->join_on(
                     'blog_id', { author_id => $author->id, }, {}
                 )
@@ -876,6 +895,12 @@ sub _delete_entry {
 
     # Remove object
     $entry->remove;
+
+    # Clear cache for site stats dashboard widget.
+    require MT::Util;
+    MT::Util::clear_site_stats_widget_cache( $entry->blog_id )
+        or die MT::XMLRPCServer::_fault(
+        MT->translate('Removing stats cache failed.') );
 
     # Rebuild archives
     if (%recipe) {

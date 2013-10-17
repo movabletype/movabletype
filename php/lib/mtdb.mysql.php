@@ -1,7 +1,7 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -17,9 +17,9 @@ class MTDatabasemysql extends MTDatabase {
                 // Connection by unix socket
                 $dsn = "unix_socket=$sock";
             } else {
-                $dsn = "host=$host";
                 if (!empty($port))
                     $host .= ";port=$port";
+                $dsn = "host=$host";
             }
             $dsn = "mysql:$dsn";
             $this->conn->Connect($dsn, $user, $password, $dbname);
@@ -29,9 +29,9 @@ class MTDatabasemysql extends MTDatabase {
                 // Connection by unix socket
                 $dsn = ":$sock";
             } else {
-                $dsn = "$host";
                 if (!empty($port))
                     $host .= ":$port";
+                $dsn = "$host";
             }
             $this->conn->Connect($dsn, $user, $password, $dbname);
         }

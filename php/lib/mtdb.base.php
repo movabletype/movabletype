@@ -1,7 +1,7 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -151,12 +151,23 @@ abstract class MTDatabase {
 
         $incl = null;
         $excl = null;
-        if (isset($args['blog_ids']) || isset($args['include_blogs']) || isset($args['include_websites'])) {
+        if ( isset($args['blog_ids'])
+          || isset($args['include_blogs'])
+          || isset($args['site_ids'])
+          || isset($args['include_websites']) )
+        {
             // The following are aliased
-            $args['blog_ids'] and $args['include_blogs'] = $args['blog_ids'];
-            $args['include_websites'] and $args['include_blogs'] = $args['include_websites'];
-            $incl = $args['include_blogs'];
+            if ($args['blog_ids'])
+                $incl = $args['blog_ids'];
+            elseif ($args['include_blogs'])
+                $incl = $args['include_blogs'];
+            elseif ($args['site_ids'])
+                $incl = $args['site_ids'];
+            elseif ($args['include_websites'])
+                $incl = $args['include_websites'];
+            $args['include_blogs'] = $incl;
             unset($args['blog_ids']);
+            unset($args['site_ids']);
             unset($args['include_websites']);
         }
         else if (isset($args['blog_id'])) {
@@ -178,7 +189,9 @@ abstract class MTDatabase {
         if ( !empty($incl) )
             $incl = $this->parse_blog_ids( $incl, $include_with_website );
         if ( isset( $args['allows'] ) ) {
-            if ( !empty( $incl ) )
+            if ( empty( $incl ) )
+                $incl = $args['allows'];
+            else
                 $incl = array_intersect($incl, $args['allows']);
         }
 
@@ -229,8 +242,23 @@ abstract class MTDatabase {
                 $mt = MT::get_instance();
                 $ctx = $mt->context();
                 $blog = $ctx->stash('blog');
-                if ( !empty( $blog ) )
-                    return " = " . $blog->id;
+                if ( !empty( $blog ) ) {
+                    $tag = $ctx->_tag_stack[count($ctx->_tag_stack)-1][0];
+                    if ( !empty($tag)
+                      && ( $tag === 'mtwebsitepingcount'
+                        || $tag === 'mtwebsiteentrycount'
+                        || $tag === 'mtwebsitepagecount'
+                        || $tag === 'mtwebsitecommentcount' ) )
+                    {
+                        $website = $blog->is_blog() ? $blog->website() : $blog;
+                        if (empty($website))
+                            return " = -1";
+                        else
+                            return " = " . $website->id;
+                    } else {
+                        return " = " . $blog->id;
+                    }
+                }
                 else
                     return " > 0";
             }
@@ -556,7 +584,7 @@ abstract class MTDatabase {
                 $entry = $this->fetch_entry($eid);
             }
 
-            $ts = $entry->entry_authored_on;
+            $ts = $this->db2ts($entry->entry_authored_on);
             if (preg_match('/Monthly$/', $at)) {
                 $ts = substr($ts, 0, 6) . '01000000';
             } elseif (preg_match('/Daily$/', $at)) {
@@ -570,7 +598,7 @@ abstract class MTDatabase {
             } elseif ($at == 'Individual' || $at == 'Page') {
                 $filter .= " and fileinfo_entry_id = $eid";
             }
-            if ($ts != $entry->entry_authored_on) {
+            if (preg_match('/(Monthly|Daily|Weekly|Yearly)$/', $at)) {
                 $filter .= " and fileinfo_startdate = '$ts'";
             }
             if (preg_match('/Author/', $at)) {
@@ -2390,16 +2418,23 @@ abstract class MTDatabase {
             return;
 
         $query = "
-            select fileinfo_entry_id, fileinfo_url, A.blog_site_url as blog_site_url, A.blog_file_extension as blog_file_extension, A.blog_archive_url as blog_archive_url, B.blog_site_url as website_url
+            select fileinfo_entry_id, fileinfo_url, A.blog_site_url as blog_site_url, A.blog_file_extension as blog_file_extension, A.blog_archive_url as blog_archive_url, B.blog_site_url as website_url, A.blog_parent_id as blog_parent_id
             from mt_fileinfo, mt_templatemap, mt_blog A, mt_blog B
             where fileinfo_entry_id in ($id_list)
             and fileinfo_archive_type = 'Individual'
             and A.blog_id = fileinfo_blog_id
             and templatemap_id = fileinfo_templatemap_id
             and templatemap_is_preferred = 1
-            and A.blog_parent_id = B.blog_id
-            and B.blog_class = 'website'
-            and A.blog_class = 'blog'
+            and (
+             (
+              A.blog_parent_id = B.blog_id
+               and B.blog_class = 'website'
+               and A.blog_class = 'blog'
+             ) or (
+              ( A.blog_parent_id is null or A.blog_parent_id = 0 )
+               and A.blog_class = 'website'
+             )
+            )
         ";
 
         $results = $this->db()->Execute($query);
@@ -2409,16 +2444,20 @@ abstract class MTDatabase {
                 if (empty($blog_url))
                     $blog_url = $row['blog_site_url'];
 
-                preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
-                if ( count($matches > 1 ) ) {
-                    $site_url = preg_split( '/\/::\//', $blog_url );
-                    if ( count($site_url > 0 ) )
-                        $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
-                    else
-                        $path = $row['website_url'] . $this->blog_url;
-                }
-                else {
-                    $path = $row['website_url'] . $blog_url;
+                if ($row['blog_parent_id'] > 0) {
+                    preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
+                    if ( count($matches > 1 ) ) {
+                        $site_url = preg_split( '/\/::\//', $blog_url );
+                        if ( count($site_url > 0 ) )
+                            $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
+                        else
+                            $path = $row['website_url'] . $this->blog_url;
+                    }
+                    else {
+                        $path = $row['website_url'] . $blog_url;
+                    }
+                } else {
+                    $path = $row['blog_site_url'];
                 }
 
                 $blog_url = $path;
@@ -2447,16 +2486,23 @@ abstract class MTDatabase {
             return;
 
         $query = "
-            select fileinfo_category_id, fileinfo_url, A.blog_site_url as blog_site_url, A.blog_file_extension as blog_file_extension, A.blog_archive_url as blog_archive_url, B.blog_site_url as website_url
+            select fileinfo_category_id, fileinfo_url, A.blog_site_url as blog_site_url, A.blog_file_extension as blog_file_extension, A.blog_archive_url as blog_archive_url, B.blog_site_url as website_url, A.blog_parent_id as blog_parent_id
               from mt_fileinfo, mt_templatemap, mt_blog A, mt_blog B
              where fileinfo_category_id in ($id_list)
                and fileinfo_archive_type = 'Category'
               and A.blog_id = fileinfo_blog_id
                and templatemap_id = fileinfo_templatemap_id
                and templatemap_is_preferred = 1
-               and A.blog_parent_id = B.blog_id
-               and B.blog_class = 'website'
-               and A.blog_class = 'blog'
+               and (
+                (
+                 A.blog_parent_id = B.blog_id
+                  and B.blog_class = 'website'
+                  and A.blog_class = 'blog'
+                ) or (
+                 ( A.blog_parent_id is null or A.blog_parent_id = 0 )
+                  and A.blog_class = 'website'
+                )
+               )
         ";
         $results = $this->db()->Execute($query);
         if ($results) {
@@ -2464,16 +2510,20 @@ abstract class MTDatabase {
                 $blog_url = $row['blog_archive_url'];
                 $blog_url or $blog_url = $row['blog_site_url'];
 
-                preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
-                if ( count($matches > 1 ) ) {
-                    $site_url = preg_split( '/\/::\//', $blog_url );
-                    if ( count($site_url > 0 ) )
-                        $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
-                    else
-                        $path = $row['website_url'] . $this->blog_url;
-                }
-                else {
-                    $path = $row['website_url'] . $blog_url;
+                if ($row['blog_parent_id'] > 0 ) {
+                    preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
+                    if ( count($matches > 1 ) ) {
+                        $site_url = preg_split( '/\/::\//', $blog_url );
+                        if ( count($site_url > 0 ) )
+                            $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
+                        else
+                            $path = $row['website_url'] . $this->blog_url;
+                    }
+                    else {
+                        $path = $row['website_url'] . $blog_url;
+                    }
+                } else {
+                    $path = $row['blog_site_url'];
                 }
 
                 $blog_url = $path;
@@ -3409,6 +3459,20 @@ abstract class MTDatabase {
             if (($limit > 0) && (count($assets) >= $limit)) break;
         }
 
+        $no_resort = 0;
+        if (isset($args['sort_by']) && $asset->has_column($args['sort_by'])) {
+            $no_resort = 1;
+        }
+        if (isset($args['lastn'])) {
+            if (isset($args['sort_by'])) {
+                $no_resort = 0;
+            }
+        } else {
+            if (!isset($args['sort_by'])) {
+                $no_resort = 1;
+            }
+        }
+
         $order = 'desc';
         if (isset($args['sort_order'])) {
             if ($args['sort_order'] == 'ascend')
@@ -3416,6 +3480,8 @@ abstract class MTDatabase {
             else if ($args['sort_order'] == 'descend')
                 $order = 'desc';
         }
+
+        # Resort assets
         if (isset($args['sort_by']) && ('score' == $args['sort_by'])) {
             $assets_tmp = array();
             foreach ($assets as $a) {
@@ -3474,6 +3540,29 @@ abstract class MTDatabase {
             }
             $assets = $assets_sorted;
 
+        } elseif (!$no_resort) {
+            $sort_field = 'asset_created_on';
+            if (isset($args['sort_by']) && $asset->has_column($args['sort_by'])) {
+                if (preg_match('/^field[:\.](.+)$/', $args['sort_by'], $match)) {
+                    $sort_field = 'asset_field.' . $match[1];
+                } else {
+                    $sort_field = 'asset_' . $args['sort_by'];
+                }
+            }  
+            if (   $sort_field == 'asset_blog_id'
+                || $sort_field == 'asset_created_by'
+                || $sort_field == 'asset_created_on'
+                || $sort_field == 'asset_id'
+                || $sort_field == 'asset_parent'
+            ) {
+                $sort_fn = "if (\$a->$sort_field == \$b->$sort_field) return 0; return \$a->$sort_field < \$b->$sort_field ? -1 : 1;";
+            } else {
+                $sort_fn = "\$f = '" . addslashes($sort_field) . "'; return strcmp(\$a->\$f,\$b->\$f);";
+            }   
+            $sorter = create_function(
+                $order == 'asc' ? '$a,$b' : '$b,$a',
+            $sort_fn);
+            usort($assets, $sorter);
         }
         return $assets;
     }

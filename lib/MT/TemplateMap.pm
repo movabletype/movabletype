@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -292,6 +292,14 @@ archive type.
 =head1 METHODS
 
 =over 4
+
+=item * MT::TemplateMap->class_label()
+
+Returns the localized descriptive name for this class.
+
+=item * MT::TemplateMap->class_label_plural()
+
+Returns the localized, plural descriptive name for this class.
 
 =item * save()
 

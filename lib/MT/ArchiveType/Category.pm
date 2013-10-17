@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -162,6 +162,8 @@ sub does_publish_file {
         $params{Category} = $params{Entry}->category;
     }
     return 0 unless $params{Category};
+
+    return 1 if $params{Blog}->publish_empty_archive;
 
     MT::ArchiveType::archive_entries_count( $obj, \%params );
 }

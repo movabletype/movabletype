@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -133,6 +133,7 @@ BEGIN {
             'user'            => 'MT::Author',
             'commenter'       => 'MT::Author',
             'blog'            => 'MT::Blog',
+            'site'            => 'MT::Blog',
             'blog.website'    => 'MT::Website',
             'website'         => 'MT::Website',
             'template'        => 'MT::Template',
@@ -165,6 +166,7 @@ BEGIN {
             'filter'          => 'MT::Filter',
             'touch'           => 'MT::Touch',
             'failedlogin'     => 'MT::FailedLogin',
+            'accesstoken'     => 'MT::AccessToken',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
@@ -192,10 +194,11 @@ BEGIN {
                                 return;
                                 }
                                 unless $prop->has('sort')
-                                    || $prop->has('bulk_sort')
-                                    || $prop->has('sort_method');
+                                || $prop->has('bulk_sort')
+                                || $prop->has('sort_method');
                         }
                     },
+                    label => '',
                 },
                 hidden => {
                     base  => '__virtual.base',
@@ -316,11 +319,11 @@ BEGIN {
                     default_sort_order => 'descend',
                 },
                 float => {
-                    base      => '__virtual.integer',
-                    col_class => 'num',
+                    base        => '__virtual.integer',
+                    col_class   => 'num',
                     filter_tmpl => '<mt:Var name="filter_form_float">',
                     data_format => '%.1f',
-                    html      => sub {
+                    html        => sub {
                         my ( $prop, $obj ) = @_;
                         my $col = $prop->col;
                         return sprintf $prop->data_format, $obj->$col;
@@ -362,7 +365,7 @@ BEGIN {
                                     return $prop->error(
                                         MT->translate(q{Invalid date.}) )
                                         unless $date
-                                            =~ m/^\d{4}\-\d{2}\-\d{2}$/;
+                                        =~ m/^\d{4}\-\d{2}\-\d{2}$/;
                                 }
                             }
                             else {
@@ -384,8 +387,8 @@ BEGIN {
                         my $from   = $args->{from}   || undef;
                         my $to     = $args->{to}     || undef;
                         my $origin = $args->{origin} || undef;
-                        $from   =~ s/\D//g;
-                        $to     =~ s/\D//g;
+                        $from =~ s/\D//g;
+                        $to =~ s/\D//g;
                         $origin =~ s/\D//g;
                         $from .= '000000' if $from;
                         $to   .= '235959' if $to;
@@ -440,9 +443,9 @@ BEGIN {
                         if ( $val =~ m/\-/ ) {
                             my ( $from, $to ) = split /-/, $val;
                             $from = undef unless $from =~ m/^\d{8}$/;
-                            $to   = undef unless $to   =~ m/^\d{8}$/;
+                            $to   = undef unless $to =~ m/^\d{8}$/;
                             $from =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
-                            $to   =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
+                            $to =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
                             $param
                                 = $from && $to
                                 ? {
@@ -473,7 +476,7 @@ BEGIN {
                         if ( $val =~ m/\-/ ) {
                             my ( $from, $to ) = split /-/, $val;
                             $from = undef unless $from =~ m/^\d{8}$/;
-                            $to   = undef unless $to   =~ m/^\d{8}$/;
+                            $to   = undef unless $to =~ m/^\d{8}$/;
                             my $format = '%x';
                             $from = MT::Util::format_ts(
                                 $format, $from . '000000',
@@ -577,15 +580,44 @@ BEGIN {
                     default_sort_order => 'descend',
                 },
                 single_select => {
-                    base      => '__virtual.base',
-                    sort      => 0,
-                    singleton => 1,
-                    terms     => sub {
-                        my $prop   = shift;
-                        my ($args) = @_;
-                        my $col    = $prop->col || $prop->type or die;
-                        my $value  = $args->{value};
-                        return { $col => $value };
+                    base             => '__virtual.base',
+                    sort             => 0,
+                    singleton        => 1,
+                    normalized_value => sub {
+                        my $prop     = shift;
+                        my ($args)   = @_;
+                        my $lc_value = lc $args->{value};
+
+                        for my $o ( @{ $prop->single_select_options } ) {
+                            if ( $o->{text} && lc $o->{text} eq $lc_value ) {
+                                return $o->{value};
+                            }
+                        }
+
+                        return $args->{value};
+                    },
+                    terms => sub {
+                        my $prop = shift;
+                        my ( $args, $db_terms, $db_args ) = @_;
+                        my $col = $prop->col || $prop->type or die;
+                        my $value = $prop->normalized_value(@_);
+
+                        if ( $col =~ /\./ ) {
+                            my ( $parent, $c ) = split /\./, $col;
+                            $db_args->{joins} ||= [];
+                            my $ds = $prop->datasource->datasource;
+                            push @{ $db_args->{joins} },
+                                MT->model($parent)->join_on(
+                                undef,
+                                {   id => \"=${ds}_${parent}_id",
+                                    $c => $value
+                                },
+                                );
+                            return;
+                        }
+                        else {
+                            return { $col => $value };
+                        }
                     },
                     label_via_param => sub {
                         my $prop = shift;
@@ -860,7 +892,8 @@ BEGIN {
                             ? $prop->count_args($opts)
                             : {};
                         my $iter
-                            = MT->model( $prop->count_class )->count_group_by(
+                            = MT->model( $prop->count_class )
+                            ->count_group_by(
                             $count_terms,
                             {   %$count_args,
                                 sort      => 'cnt',
@@ -892,7 +925,8 @@ BEGIN {
                             ? $prop->count_args($opts)
                             : {};
                         my $iter
-                            = MT->model( $prop->count_class )->count_group_by(
+                            = MT->model( $prop->count_class )
+                            ->count_group_by(
                             $count_terms,
                             {   %$count_args,
                                 direction => 'descend',
@@ -955,15 +989,16 @@ BEGIN {
                     col         => 'id',
                     display     => 'none',
                     view_filter => [],
-                    condition => sub {
+                    condition   => sub {
                         my $prop = shift;
                         return $prop->datasource->has_column('id') ? 1 : 0;
                     },
                 },
                 pack => {
-                    view  => [],
-                    terms => \&MT::Filter::pack_terms,
-                    grep  => \&MT::Filter::pack_grep,
+                    view          => [],
+                    terms         => \&MT::Filter::pack_terms,
+                    grep          => \&MT::Filter::pack_grep,
+                    requires_grep => \&MT::Filter::pack_requires_grep,
                 },
                 blog_name => {
                     label        => 'Website/Blog Name',
@@ -1104,6 +1139,44 @@ BEGIN {
                     },
                     singleton => 1,
                 },
+                content => {
+                    base            => '__virtual.hidden',
+                    filter_editable => 0,
+                    terms           => sub {
+                        my ( $prop, $args, $db_terms, $db_args ) = @_;
+                        my $defaults = $prop->{fields};
+                        my $option   = $args->{option};
+                        my $query    = $args->{string};
+                        my $and_or;
+                        if ( 'contains' eq $option ) {
+                            $query = { like => "%$query%" };
+                            $and_or = '-or';
+                        }
+                        elsif ( 'not_contains' eq $option ) {
+                            $query = { not_like => "%$query%" };
+                            $and_or = '-and';
+                        }
+
+                        my @fields;
+                        if ( my $specifieds = $args->{fields} ) {
+                            @fields = grep {
+                                my $f = $_;
+                                grep { $_ eq $f } @$defaults
+                            } split ',', $specifieds;
+                        }
+                        else {
+                            @fields = @$defaults;
+                        }
+
+                        my @terms;
+                        for my $c (@fields) {
+                            push @terms, ( @terms ? $and_or : () ),
+                                { $c => $query, };
+                        }
+
+                        \@terms;
+                    },
+                },
             },
             website      => '$Core::MT::Website::list_props',
             blog         => '$Core::MT::Blog::list_props',
@@ -1124,6 +1197,7 @@ BEGIN {
             notification => '$Core::MT::Notification::list_props',
             log          => '$Core::MT::Log::list_props',
             filter       => '$Core::MT::Filter::list_props',
+            permission   => '$Core::MT::Permission::list_props',
         },
         system_filters => {
             entry     => '$Core::MT::Entry::system_filters',
@@ -1160,15 +1234,17 @@ BEGIN {
                     require MT::CMS::Blog;
                     return MT::CMS::Blog::can_view_blog_list( MT->instance );
                 },
+                data_api_condition => undef,
             },
             entry => {
-                object_label     => 'Entry',
-                primary          => 'title',
-                default_sort_key => 'authored_on',
-                permission       => "access_to_entry_list",
-                feed_link        => sub {
+                object_label        => 'Entry',
+                primary             => 'title',
+                default_sort_key    => 'authored_on',
+                data_api_scope_mode => 'this',
+                permission          => "access_to_entry_list",
+                data_api_permission => undef,
+                feed_link           => sub {
                     my ($app) = @_;
-                    return 0 if $app->blog && !$app->blog->is_blog;
                     return 1 if $app->user->is_superuser;
 
                     if ( $app->blog ) {
@@ -1190,34 +1266,6 @@ BEGIN {
                         return $cond ? 1 : 0;
                     }
                     0;
-                },
-                condition => sub {
-                    my $app = MT->instance;
-                    return 1 if $app->user->is_superuser;
-
-                    my $blog = $app->blog;
-                    my $blog_ids
-                        = !$blog         ? undef
-                        : $blog->is_blog ? [ $blog->id ]
-                        :   [ map { $_->id } @{ $blog->blogs } ];
-
-                    require MT::Permission;
-                    my $iter = MT::Permission->load_iter(
-                        {   author_id => $app->user->id,
-                            (   $blog_ids
-                                ? ( blog_id => $blog_ids )
-                                : ( blog_id => { not => 0 } )
-                            ),
-                        }
-                    );
-
-                    my $cond;
-                    while ( my $p = $iter->() ) {
-                        $cond = 1, last
-                            if $p->can_do('access_to_entry_list')
-                                and $p->blog->is_blog;
-                    }
-                    return $cond ? 1 : 0;
                 },
             },
             page => {
@@ -1340,10 +1388,14 @@ BEGIN {
                 template              => 'list_category.tmpl',
                 contents_label        => 'Entry',
                 contents_label_plural => 'Entries',
-                permission            => 'access_to_category_list',
-                view                  => 'blog',
-                scope_mode            => 'this',
-                condition             => sub {
+                permission            => {
+                    permit_action => 'access_to_category_list',
+                    inherit       => 0,
+                },
+                data_api_permission => undef,
+                view                => [ 'website', 'blog' ],
+                scope_mode          => 'this',
+                condition           => sub {
                     my $app = shift;
                     ( $app->param('_type') || '' ) ne 'filter';
                 },
@@ -1355,20 +1407,25 @@ BEGIN {
                 search_type           => 'page',
                 contents_label        => 'Page',
                 contents_label_plural => 'Pages',
-                permission            => 'access_to_folder_list',
-                view                  => [ 'website', 'blog' ],
-                scope_mode            => 'this',
-                condition             => sub {
+                permission            => {
+                    permit_action => 'access_to_folder_list',
+                    inherit       => 0,
+                },
+                view       => [ 'website', 'blog' ],
+                scope_mode => 'this',
+                condition  => sub {
                     my $app = shift;
                     ( $app->param('_type') || '' ) ne 'filter';
                 },
             },
             comment => {
-                object_label     => 'Comment',
-                default_sort_key => 'created_on',
-                permission       => 'access_to_comment_list',
-                primary          => 'comment',
-                feed_link        => sub {
+                object_label        => 'Comment',
+                default_sort_key    => 'created_on',
+                data_api_scope_mode => 'this',
+                permission          => 'access_to_comment_list',
+                data_api_permission => undef,
+                primary             => 'comment',
+                feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 
@@ -1394,11 +1451,13 @@ BEGIN {
                 },
             },
             ping => {
-                primary          => 'excerpt',
-                object_label     => 'Trackback',
-                default_sort_key => 'created_on',
-                permission       => 'access_to_trackback_list',
-                feed_link        => sub {
+                primary             => 'excerpt',
+                object_label        => 'Trackback',
+                default_sort_key    => 'created_on',
+                data_api_scope_mode => 'this',
+                permission          => 'access_to_trackback_list',
+                data_api_permission => undef,
+                feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 
@@ -1527,6 +1586,10 @@ BEGIN {
                 default_sort_key => 'created_on',
                 scope_mode       => 'none',
             },
+            permission => {
+                condition          => sub {0},
+                data_api_condition => sub {1},
+            },
         },
         summaries => {
             'author' => {
@@ -1588,6 +1651,7 @@ BEGIN {
             'MTVersion'              => undef,
             'MTReleaseNumber'        => undef,
             'RequiredCompatibility'  => { default => 0 },
+            'EnableSessionKeyCompat' => { default => 0 },
             'NotifyUpgrade'          => { default => 1 },
             'Database'               => undef,
             'DBHost'                 => undef,
@@ -1599,9 +1663,8 @@ BEGIN {
             'DefaultLanguage'        => { default => 'en_US', },
             'LocalPreviews'          => { default => 0 },
             'EnableAutoRewriteOnIIS' => { default => 1 },
-            'DefaultCommenterAuth' =>
-                { default => 'MovableType,LiveJournal' },
-            'TemplatePath' => {
+            'DefaultCommenterAuth'   => { default => 'MovableType' },
+            'TemplatePath'           => {
                 default => 'tmpl',
                 path    => 1,
             },
@@ -1723,6 +1786,7 @@ BEGIN {
             'UpgradeScript'         => { default => 'mt-upgrade.cgi', },
             'CheckScript'           => { default => 'mt-check.cgi', },
             'NotifyScript'          => { default => 'mt-add-notify.cgi', },
+            'DataAPIScript'         => { default => 'mt-data-api.cgi', },
             'PublishCharset'        => { default => 'utf-8', },
             'SafeMode'              => { default => 1, },
             'AllowFileInclude'      => { default => 0, },
@@ -1733,6 +1797,7 @@ BEGIN {
             'GenerateTrackBackRSS'        => { default => 0, },
             'DBIRaiseError'               => { default => 0, },
             'SearchAlwaysAllowTemplateID' => { default => 0, },
+            'PreviewInNewWindow'          => { default => 0, },
 
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
@@ -1780,6 +1845,7 @@ BEGIN {
             'SearchCacheTTL'            => { default => 20, },
             'SearchThrottleSeconds'     => { default => 5 },
             'SearchThrottleIPWhitelist' => undef,
+            'CMSSearchLimit'            => { default => 125 },
             'OneHourMaxPings'           => { default => 10, },
             'OneDayMaxPings'            => { default => 50, },
             'SupportURL'                => {
@@ -1829,6 +1895,7 @@ BEGIN {
             'UsePlugins'               => { default => 1, },
             'PluginSwitch'             => { type    => 'HASH', },
             'PluginSchemaVersion'      => { type    => 'HASH', },
+            'YAMLModule'               => { default => undef },
             'OutboundTrackbackLimit'   => { default => 'any', },
             'OutboundTrackbackDomains' => { type    => 'ARRAY', },
             'IndexBasename'            => { default => 'index', },
@@ -1857,6 +1924,7 @@ BEGIN {
                 { handler => \&NewUserAutoProvisioning, },
             'NewUserBlogTheme'        => { default => 'rainier' },
             'NewUserDefaultWebsiteId' => undef,
+            'NewUserTemplateBlogId'   => undef,
             'DefaultSiteURL'          => undef,    ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
@@ -1872,6 +1940,7 @@ BEGIN {
             'DefaultAssignments'     => { default => '' },
             'AutoSaveFrequency'      => { default => 5 },
             'FuturePostFrequency'    => { default => 1 },
+            'UnpublishPostFrequency' => { default => 1 },
             'AssetCacheDir'          => { default => 'assets_c', },
             'IncludesDir'            => { default => 'includes_c', },
             'MemcachedServers'       => { type    => 'ARRAY', },
@@ -1908,10 +1977,12 @@ BEGIN {
                 { handler => \&PerformanceLoggingPath },
             'PerformanceLoggingThreshold' => { default => 0.1 },
             'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
+            'PublishCommenterIcon' => { default => 1 },
             'EnableAddressBook'    => { default => 0 },
+            'EnableBlogStats'      => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
-            'DefaultWebsiteTheme'  => { default => 'classic_website' },
+            'DefaultWebsiteTheme'  => { default => 'rainier' },
             'DefaultBlogTheme'     => { default => 'rainier' },
             'ThemeStaticFileExtensions' => {
                 default => 'html jpg jpeg gif png js css ico flv swf otf ttf'
@@ -1943,8 +2014,23 @@ BEGIN {
             'IPLockoutLimit'                 => { default => 10 },
             'IPLockoutInterval'              => { default => 1800 },
             'FailedLoginExpirationFrequency' => { default => 86400 },
-            'LockoutIPWhitelist'             => undef,
-            'LockoutNotifyTo'                => undef,
+            'LockoutExpireFrequency' =>
+                { alias => 'FailedLoginExpirationFrequency' },
+            'LockoutIPWhitelist' => undef,
+            'LockoutNotifyTo'    => undef,
+
+            # DataAPI
+            'AccessTokenTTL'          => { default => 60 * 60, },
+            'DataAPICORSAllowOrigin'  => { default => undef },
+            'DataAPICORSAllowMethods' => { default => '*' },
+            'DataAPICORSAllowHeaders' =>
+                { default => 'X-MT-Authorization, X-Requested-With' },
+            'DataAPICORSExposeHeaders' =>
+                { default => 'X-MT-Next-Phase-URL' },
+            'DisableResourceField' => {
+                type    => 'HASH',
+                default => {}
+            },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2027,6 +2113,8 @@ BEGIN {
                 user_menus    => sub { MT->app->core_user_menus() },
                 disable_object_methods =>
                     sub { MT->app->core_disable_object_methods() },
+                site_stats_lines =>
+                    sub { MT::CMS::Dashboard->site_stats_widget_lines() },
             },
             upgrade => {
                 handler => 'MT::App::Upgrader',
@@ -2034,10 +2122,23 @@ BEGIN {
                 script  => sub { MT->config->UpgradeScript },
                 type    => 'run_once',
             },
+            'data_api' => {
+                handler   => 'MT::App::DataAPI',
+                script    => sub { MT->config->DataAPIScript },
+                methods   => sub { MT->app->core_methods() },
+                endpoints => sub { MT->app->core_endpoints() },
+                resources => sub { MT::DataAPI::Resource->core_resources() },
+                formats   => sub { MT::DataAPI::Format->core_formats() },
+                default_format => 'json',
+                query_builder =>
+                    '$Core::MT::DataAPI::Endpoint::Common::query_builder',
+            },
         },
-        archive_types => \&load_archive_types,
-        tags          => \&load_core_tags,
-        text_filters  => {
+        web_services    => undef,
+        stats_providers => undef,
+        archive_types   => \&load_archive_types,
+        tags            => \&load_core_tags,
+        text_filters    => {
             '__default__' => {
                 label   => 'Convert Line Breaks',
                 handler => 'MT::Util::html_text_transform',
@@ -2229,6 +2330,13 @@ sub load_core_tasks {
                 MT->instance->publisher->publish_future_posts;
                 }
         },
+        'UnpublishingPost' => {
+            label     => 'Unpublish Past Entries',
+            frequency => $cfg->UnpublishPostFrequency * 60,  # once per minute
+            code      => sub {
+                MT->instance->publisher->unpublish_past_entries;
+                }
+        },
         'AddSummaryWatcher' => {
             label     => 'Add Summary Watcher to queue',
             frequency => 2 * 60,                          # every other minute
@@ -2262,6 +2370,14 @@ sub load_core_tasks {
             frequency => 60,     # * 60 * 24,   # once a day
             code      => sub {
                 MT::Core->purge_session_records;
+                }
+        },
+        'PurgeExpiredDataAPISessionRecords' => {
+            label => 'Purge Stale DataAPI Session Records',
+            frequency => 60,     # * 60 * 24,   # once a day
+            code      => sub {
+                require MT::App::DataAPI;
+                MT::App::DataAPI->purge_session_records;
                 }
         },
         'CleanExpiredFailedLogin' => {
@@ -2302,9 +2418,11 @@ sub remove_temporary_files {
 }
 
 sub purge_user_session_records {
+    my ( $kind, $timeout ) = @_;
+
     my $iter = MT::Session->load_iter(
-        {   kind  => 'US',
-            start => [ undef, time - MT->config->UserSessionTimeout ],
+        {   kind  => $kind,
+            start => [ undef, time - $timeout ],
         },
         { range => { start => 1 } }
     );
@@ -2322,7 +2440,7 @@ sub purge_session_records {
     require MT::Session;
 
     # remove expired user sessions
-    purge_user_session_records();
+    purge_user_session_records( 'US', MT->config->UserSessionTimeout );
 
     # remove stale search cache
     MT::Session->remove( { kind => 'CS', start => [ undef, time - 60 * 60 ] },
@@ -2491,6 +2609,7 @@ sub load_core_permissions {
                 'add_tags_to_entry_via_list'              => 1,
                 'remove_tags_from_entry_via_list'         => 1,
                 'edit_entry_authored_on'                  => 1,
+                'edit_entry_unpublished_on'               => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2713,6 +2832,7 @@ sub load_core_permissions {
                 'insert_asset'                    => 1,
                 'edit_page_basename'              => 1,
                 'edit_page_authored_on'           => 1,
+                'edit_page_unpublished_on'        => 1,
             }
         },
         'blog.manage_users' => {

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -484,7 +484,7 @@ sub get_weblogs {
     my $user = $app->{user};
     my $iter
         = $user->is_superuser
-        ? MT::Blog->load_iter()
+        ? MT::Blog->load_iter( { class => '*' } )
         : MT::Permission->load_iter( { author_id => $user->id } );
     my $base = $app->base . $app->uri;
     my $enc  = $app->config->PublishCharset;
@@ -590,7 +590,7 @@ sub new_post {
             "Invalid blog ID '[_1]'",
             ( $blog ? ( $blog->id ) : ('') )
         )
-    ) if !$blog || !$blog->is_blog;
+    ) if !$blog;
     my $user  = $app->{user};
     my $perms = $app->{perms};
     my $enc   = $app->config('PublishCharset');
@@ -690,6 +690,11 @@ sub new_post {
 
     $entry->save or return $app->error( 500, $entry->errstr );
 
+    # Clear cache for site stats dashboard widget.
+    require MT::Util;
+    MT::Util::clear_site_stats_widget_cache( $blog->id )
+        or die _fault( MT->translate('Removing stats cache failed.') );
+
     require MT::Log;
     $app->log(
         {   message => $app->translate(
@@ -779,6 +784,18 @@ sub edit_post {
         MT->translate( "PreSave failed [_1]", MT->errstr ) );
 
     $entry->save or return $app->error( 500, "Entry not saved" );
+
+    # Clear cache for site stats dashboard widget.
+    if ((      $orig_entry->status == MT::Entry::RELEASE()
+            || $entry->status == MT::Entry::RELEASE()
+        )
+        && $orig_entry->status != $entry->status
+        )
+    {
+        require MT::Util;
+        MT::Util::clear_site_stats_widget_cache( $blog->id )
+            or die _fault( MT->translate('Removing stats cache failed.') );
+    }
 
     require MT::Log;
     $app->log(
@@ -960,6 +977,11 @@ sub delete_post {
     # Remove object
     $entry->remove
         or return $app->error( 500, $entry->errstr );
+
+    # Clear cache for site stats dashboard widget.
+    require MT::Util;
+    MT::Util::clear_site_stats_widget_cache( $blog->id )
+        or die _fault( MT->translate('Removing stats cache failed.') );
 
     # Rebuild archives
     if (%recipe) {
@@ -1239,7 +1261,7 @@ sub get_weblogs {
     my $user = $app->{user};
     my $iter
         = $user->is_superuser
-        ? MT::Blog->load_iter()
+        ? MT::Blog->load_iter( { class => '*' } )
         : MT::Permission->load_iter( { author_id => $user->id } );
     my $feed = $app->new_feed();
     my $base = $app->base . $app->uri;

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -136,7 +136,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '_USAGE_IMPORT' =>
         'You can import entries for your weblog from a file in the <code>import</code> directory where Movable Type is installed, or uploaded by following forms. Entries can be imported from other Movable Type installations or other applications.',
     '_USAGE_EXPORT_1' =>
-        'Export the entries, comments and TrackBacks of a blog. An export is not considered a <em>complete</em> backup of a blog.',
+        'Export the entries, comments and TrackBacks of a [_1]. An export is not considered a <em>complete</em> backup of a [_1].',
     '_USAGE_EXPORT_2' =>
         'To export your entries, click on the link below ("Export Entries From [_1]"). To save the exported data to a file, you can hold down the <code>option</code> key on the Macintosh, or the <code>Shift</code> key on a PC, while clicking on the link. Alternatively, you can select all of the data, then copy it into another document. (<a href="javascript:void(0)" onclick="openManual(\'importing\', \'export_ie\');return false;">Exporting from Internet Explorer?</a>)',
     '_USAGE_EXPORT_3' =>
@@ -266,6 +266,25 @@ the address you provided is correct and belongs to you.',
         '<p>This is an example "about" page. (Typically, an "about" page features a summary about an individual or corporation.)</p><p>If the <code>@ABOUT_PAGE</code> tag is used on a web page, the “about” page will be added to the navigation list in both the header and footer.</p>',
     '_SAMPLE_PAGE_BODY' =>
         '<p>This is an example web page.</p><p>If the <code>@ADD_TO_SITE_NAV</code> tag is used on a web page, that page will be added to the navigation list in both the header and footer.</p>',
+    '__CF_REQUIRED_VALUE__' => q{Value},
 );
 
 1;
+__END__
+
+=head1 NAME
+
+MT::L10N::en_us - English localization support for Movable Type
+
+=head1 METHODS
+
+=head2 ascii_only
+
+Judges whether this language consists of only ASCII codes. Returns 1.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut
+

@@ -33,10 +33,10 @@ isa_ok($mt, 'MT', 'Is MT');
 
     {
         note('Resize to 100 x 100 without square option');
-        is(($asset->thumbnail_file(Height => 100, Width => 100))[0], "t/site/assets_c/$cache_path/test-thumb-100x100-1.jpg", 'thumbnail file name');
-        my ($width, $height) = imgsize("t/site/assets_c/$cache_path/test-thumb-100x100-1.jpg");
+        is(($asset->thumbnail_file(Height => 100, Width => 100))[0], "t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg", 'thumbnail file name');
+        my ($width, $height) = imgsize("t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
         is($width, 100, "resized image's width: 100");
-        is($height, 75, "resized image's height: 100");
+        is($height, 75, "resized image's height: 75");
     }
 
     {
@@ -49,10 +49,10 @@ isa_ok($mt, 'MT', 'Is MT');
 
     {
         note('Resize to 100 x 100 without square option again');
-        is(($asset->thumbnail_file(Height => 100, Width => 100))[0], "t/site/assets_c/$cache_path/test-thumb-100x100-1.jpg", 'thumbnail file name');
-        my ($width, $height) = imgsize("t/site/assets_c/$cache_path/test-thumb-100x100-1.jpg");
+        is(($asset->thumbnail_file(Height => 100, Width => 100))[0], "t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg", 'thumbnail file name');
+        my ($width, $height) = imgsize("t/site/assets_c/$cache_path/test-thumb-100xauto-1.jpg");
         is($width, 100, "resized image's width: 100");
-        is($height, 75, "resized image's height: 100");
+        is($height, 75, "resized image's height: 75");
     }
 
     is($asset->image_width, 640, 'image_width'); 

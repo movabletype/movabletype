@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -102,6 +102,14 @@ Constructs a new I<MT::ErrorHandler> instance.
 
 Sets the error message for either the class I<Class> or the object
 I<$object> to the message I<$message>. Returns C<undef>.
+
+=head2 Class->trans_error($message)
+
+=head2 $object->trans_error($message)
+
+Sets the error message for either the class I<Class> or the object
+I<$object> to the message I<$message> after translating into the currently-set
+language. Returns C<undef>.
 
 =head2 Class->errstr
 

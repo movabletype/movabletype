@@ -1,7 +1,7 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -1449,7 +1449,7 @@ function create_role_expr_function($expr, &$roles, $datasource = 'author') {
     $expr = preg_replace('/\bOR\b/i', '||', $expr);
     $expr = preg_replace('/\bAND\b/i', '&&', $expr);
     $expr = preg_replace('/\bNOT\b/i', '!', $expr);
-    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/', 'create_expr_exception', $expr);
+    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/', 'create_expr_exception', $expr);
 
     $test_expr = preg_replace('/!|&&|\|\||\(0\)|\(|\)|\s|#\d+/', '', $expr);
     if ($test_expr != '') {
@@ -1483,7 +1483,7 @@ function create_status_expr_function($expr, &$status, $datasource = 'author') {
     }
 
     $expr = preg_replace('/\bOR\b/i', '||', $expr);
-    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/', 'create_expr_exception', $expr);
+    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/', 'create_expr_exception', $expr);
 
     $test_expr = preg_replace('/!|&&|\|\||\(0\)|\(|\)|\s|#\d+/', '', $expr);
     if ($test_expr != '') {

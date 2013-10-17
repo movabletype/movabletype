@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -87,6 +87,14 @@ MT::ObjectScore - A backend for MT::Scorable, An interface for any MT::Object th
 This class is used by L<MT::Scorable>, and not to be used directly
 
 =head1 METHODS
+
+=head2 MT::ObjectScore->class_label
+
+Returns the localized descriptive name for this class.
+
+=head2 MT::ObjectScore->class_label_plural
+
+Returns the localized, plural descriptive name for this class.
 
 =head2 MT::ObjectScore->scored_by($namespace, $user)
 

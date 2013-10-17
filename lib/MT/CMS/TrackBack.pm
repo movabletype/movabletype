@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::TrackBack;
@@ -156,7 +156,7 @@ sub can_view {
 }
 
 sub can_save {
-    my ( $eh, $app, $id ) = @_;
+    my ( $eh, $app, $id, $obj, $original ) = @_;
     return 0 unless $id;    # Can't create new pings here
     return 1 if $app->user->is_superuser();
 
@@ -171,9 +171,10 @@ sub can_save {
             if $tbitem->author_id != $app->user->id;
 
         my $status_is_changed
-            = $p->is_junk      ? ( 'junk'     ne $app->param('status') )
+            = $obj ? $obj->get_status_text ne $original->get_status_text
+            : $p->is_junk      ? ( 'junk' ne $app->param('status') )
             : $p->is_moderated ? ( 'moderate' ne $app->param('status') )
-            : $p->is_published ? ( 'publish'  ne $app->param('status') )
+            : $p->is_published ? ( 'publish' ne $app->param('status') )
             :                    1;
 
         return $status_is_changed

@@ -129,6 +129,7 @@ for my $lang (@languages) {
         ? $stamp
         : $orig . '-' . $long_lang;
 
+
     print "---------------- Building $lang ----------------\n";
     verbose_command("$make clean");    # to clean MT.pm
     verbose_command("$make lib/MT.pm");
@@ -175,10 +176,6 @@ for my $lang (@languages) {
         verbose_command(
             "zip $options $distname.zip $distname -x $distname/extras/\*.gz");
     }
-
-    chdir($distname);
-    verbose_command("zip $options ../$distname-nd.zip ./* -x extras/\*.gz");
-    chdir( '..' );
 
     verbose_command("rm -rf $distname");
     unlink("MANIFEST");

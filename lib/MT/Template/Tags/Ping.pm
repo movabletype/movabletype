@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::Template::Tags::Ping;
@@ -161,9 +161,17 @@ sub _hdlr_pings_sent {
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
     my $res     = '';
+    my $i       = 1;
+    my $vars    = $ctx->{__stash}{vars} ||= {};
     my $pings   = $e->pinged_url_list;
     for my $url (@$pings) {
         $ctx->stash( 'ping_sent_url', $url );
+        local $vars->{__first__}   = $i == 1;
+        local $vars->{__last__}    = $i == scalar @$pings;
+        local $vars->{__odd__}     = ( $i % 2 ) == 1;
+        local $vars->{__even__}    = ( $i % 2 ) == 0;
+        local $vars->{__counter__} = $i;
+        $i++;
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $out;

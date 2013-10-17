@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -41,15 +41,23 @@ MT::L10N
 
 =head2 $obj->language_name($code)
 
-Return the value of L<I18N::LangTags::List/name> for the given I<code>.
+Returns the value of L<I18N::LangTags::List/name> for the given I<code>.
 
 =head2 encoding
 
-Return 'iso-8859-1' (Latin-1).
+Returns 'iso-8859-1' (Latin-1).
 
 =head2 ascii_only
 
-Return zero.
+Returns zero.
+
+=head2 lc($str)
+
+Returns a lowercased version of $str.
+
+=head2 uc($str)
+
+Returns a uppercased version of $str.
 
 =head1 AUTHOR & COPYRIGHT
 

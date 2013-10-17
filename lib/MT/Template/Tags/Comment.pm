@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::Template::Tags::Comment;
@@ -1426,10 +1426,10 @@ sub _hdlr_comment_link {
     my ($ctx) = @_;
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
-    return '#' unless $c->id;
-    my $entry = $c->entry
-        or return $ctx->error( "No entry exists for comment #" . $c->id );
-    return $entry->archive_url . '#comment-' . $c->id;
+    return $ctx->error( "No entry exists for comment #" . $c->id )
+        if ( $c->id && !$c->entry );
+
+    return $c->permalink;
 }
 
 ###########################################################################

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::Theme;
@@ -92,6 +92,37 @@ sub load_all_themes {
         $installed->{$id} = $theme if $theme;
     }
     return $installed;
+}
+
+sub load_theme_loop {
+    my ( $pkg, $type ) = @_;
+    $type ||= '';
+    my $all_themes = load_all_themes($pkg);
+    my ( @website_loop, @blog_loop );
+    foreach my $theme ( values %$all_themes ) {
+        next if !$theme->{class};
+        next if $type eq 'blog' && $theme->{class} eq 'website';
+
+        my ( $errors, $warnings ) = $theme->validate_versions;
+        next if @$errors;
+
+        my %hash = (
+            label => $theme->label,
+            value => $theme->id,
+            @$warnings ? ( warnings => $warnings ) : (),
+        );
+        if ( $theme->{class} eq 'website' ) {
+            push @website_loop, \%hash;
+        }
+        else {
+            push @blog_loop, \%hash;
+        }
+
+    }
+    return [
+        ( sort { $a->{label}() cmp $b->{label}() } @website_loop ),
+        ( sort { $a->{label}() cmp $b->{label}() } @blog_loop ),
+    ];
 }
 
 sub _theme_packages {
@@ -220,7 +251,7 @@ sub _load_pseudo_theme_from_template_set {
     my $set = $sets->{$id}
         or return;
     my $plugin = $set->{plugin} || undef;
-    my $label 
+    my $label
         = $set->{label}
         || ( $plugin && $plugin->registry('name') )
         || $id;
@@ -286,8 +317,7 @@ sub static_file_path_from_id {
 }
 
 sub static_file_url_from_id {
-    MT::Util::caturl( MT->app->support_directory_url,
-        'theme_static', $_[0] )
+    MT::Util::caturl( MT->app->support_directory_url, 'theme_static', $_[0] )
         . '/';
 }
 
@@ -315,10 +345,10 @@ sub apply {
     for my $element (@elements) {
         next
             if $element->{class}
-                && ( $element->{class} ne $blog->class_type );
+            && ( $element->{class} ne $blog->class_type );
         next
             if $importer_filter
-                && !$importer_filter->{ $element->{importer} };
+            && !$importer_filter->{ $element->{importer} };
         my $result = $element->apply( $blog, $opts{ $element->{importer} } );
         if ( !$result ) {
             if ( $element->{require} ) {

@@ -109,7 +109,7 @@ function closeTagEditor() {
   jQuery('.edit-tag').show();
 }
 
-jQuery('a.edit-tag').live('click', function() { 
+jQuery('#tag-table').on('click','a.edit-tag',function(){
   var $anchor = jQuery(this);
   $anchor.attr('href').match(/#tagid\-(\d+)/);
   var id = RegExp.$1;

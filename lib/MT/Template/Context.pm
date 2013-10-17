@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -379,7 +379,20 @@ sub set_blog_load_context {
     # If no blog IDs specified, use the current blog
     if ( !$blog_ids ) {
         if ( my $blog = $ctx->stash('blog') ) {
-            $terms->{$col} = $blog_id if $blog_id && $col eq 'blog_id';
+            my $tag = lc $ctx->stash('tag');
+            if (   $tag eq 'websitepingcount'
+                || $tag eq 'websiteentrycount'
+                || $tag eq 'websitepagecount'
+                || $tag eq 'websitecommentcount' )
+            {
+                my $website = $blog->website
+                    or return $ctx->_no_parent_website_error();
+                $terms->{$col} = $website->id
+                    if $website->id && $col eq 'blog_id';
+            }
+            else {
+                $terms->{$col} = $blog_id if $blog_id && $col eq 'blog_id';
+            }
         }
 
         # include_blogs="all" removes the blog_id/id constraint
@@ -532,7 +545,9 @@ sub compile_category_filter {
         my %cats_used;
         my $label_token
             = %cats_dir
-            ? join( '|', map { quotemeta($_) . '(?!/)' } keys %cats_dir )
+            ? join( '|',
+            map  { quotemeta($_) . '(?!/)' }
+            sort { $b cmp $a } keys %cats_dir )
             . '|'
             : '';
         my @split_expr = split /($label_token\bOR\b|\bAND\b|\bNOT\b|\(|\))/i,
@@ -577,8 +592,7 @@ sub compile_category_filter {
 
         # replace any other 'thing' with '(0)' since it's a
         # category that doesn't even exist.
-        $cat_expr
-            =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
+        $cat_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/$2?'(0)':$1/ge;
 
         # strip out all the 'ok' stuff. if anything is left, we have
         # some invalid data in our expression:
@@ -726,7 +740,7 @@ sub compile_role_filter {
     $role_expr =~ s/\bOR\b/||/gi;
     $role_expr =~ s/\bAND\b/&&/gi;
     $role_expr =~ s/\bNOT\b/!/gi;
-    $role_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
+    $role_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/$2?'(0)':$1/ge;
 
     my $test_expr = $role_expr;
     $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s|#\d+//g;
@@ -748,7 +762,7 @@ sub compile_status_filter {
     }
 
     $status_expr =~ s/\bOR\b/||/gi;
-    $status_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/$2?'(0)':$1/ge;
+    $status_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/$2?'(0)':$1/ge;
 
     my $test_expr = $status_expr;
     $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s|#\d+//g;
@@ -819,6 +833,19 @@ sub _no_website_error {
         MT->translate(
             "You used an '[_1]' tag outside of the context of the website; "
                 . "Perhaps you mistakenly placed it outside of an 'MTWebsites' container tag?",
+            $tag_name
+        )
+    );
+}
+
+sub _no_parent_website_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $_[0]->error(
+        MT->translate(
+            "You used an \'[_1]\' tag inside of the context of a blog which has no parent website; "
+                . "Perhaps your blog record is broken?",
             $tag_name
         )
     );

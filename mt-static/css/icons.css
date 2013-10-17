@@ -1,4 +1,137 @@
-/* Icon */
+/* # Icons.css
+
+## Basic Usage
+icons.css has two main type of classes. One is to set background image, another is to allocate space for icon. The both types are usually used in combination.
+
+```
+<p class="icon-delete icon-left-wide">Lorem ipsum dolor sit amet</p>
+```
+
+## Use Icon as a Aciton Button
+
+If you want to use icon as a button, use .action-icon and .icon16.
+
+```
+<a class="icon-delete icon16 action-icon">Delete</a>
+<a class="icon-plus icon16 action-icon">Plus</a>
+<a class="icon-minus icon16 action-icon">Minus</a>
+<a class="icon-remove icon16 action-icon">Remove</a>
+```
+
+## Icon Positioning
+
+These classes are to allocate space(padding) and to set position for icon
+
+```
+<p><span class="icon-delete icon-mini-left">Lorem ipsum dolor sit amet</span></p>
+<p><span class="icon-delete icon-left">Lorem ipsum dolor sit amet</span></p>
+<p><span class="icon-delete icon-left-wide">Lorem ipsum dolor sit amet</span></p>
+<p><span class="icon-delete icon-left-xwide">Lorem ipsum dolor sit amet</span></p>
+
+<p><span class="icon-delete icon-mini-right">Lorem ipsum dolor sit amet</span></p>
+<p><span class="icon-delete icon-right">Lorem ipsum dolor sit amet</span></p>
+<p><span class="icon-delete icon-right-wide">Lorem ipsum dolor sit amet</span></p>
+<p><span class="icon-delete icon-right-xwide">Lorem ipsum dolor sit amet</span></p>
+```
+
+## Standard Icons
+
+14 x 14 pixel icon
+
+```
+<p class="icon-delete icon-left-xwide">Delete (.icon-delete)</p>
+<p class="icon-plus icon-left-xwide">Plus (.icon-plus)</p>
+<p class="icon-minus icon-left-xwide">Minus (.icon-minus)</p>
+<p class="icon-remove icon-left-xwide">Remove (.icon-remove)</p>
+<p class="icon-plugins icon-left-xwide">Plugin (.icon-plugins)</p>
+<p class="icon-plugin-action icon-left-xwide">Plugin Action (.icon-plugin-action)</p>
+<p class="icon-search icon-left-xwide">Seach (.icon-search)</p>
+<p class="icon-trackbacks icon-left-xwide">Trackbacks (.icon-trackbacks)</p>
+<p class="icon-comments icon-left-xwide">Comments (.icon-comments)</p>
+<p class="icon-log icon-left-xwide">Log (.icon-log)</p>
+<p class="icon-import icon-left-xwide">Import (.icon-import)</p>
+<p class="icon-settings icon-left-xwide">Settings (.icon-settings)</p>
+<p class="icon-entry icon-left-xwide">Entry (.icon-entry)</p>
+<p class="icon-page icon-left-xwide">Page (.icon-page)</p>
+<p class="icon-user icon-left-xwide">User (.icon-user)</p>
+<p class="icon-group icon-left-xwide">Group (.icon-group)</p>
+<p class="icon-align-none icon-left-xwide">Align None (.icon-align-none)</p>
+<p class="icon-align-left icon-left-xwide">Align Left (.icon-align-left)</p>
+<p class="icon-align-center icon-left-xwide">Align Center (.icon-align-center)</p>
+<p class="icon-align-right icon-left-xwide">Align Right (.icon-align-right)</p>
+<p class="icon-action icon-left-xwide">Action (.icon-action)</p>
+```
+
+## Status Icons
+
+9 x 9 pixel icon. They are used as an inline icon with text.
+
+```
+<p class="icon-batch icon-left-wide">Batch (.icon-batch)</p>
+<p class="icon-feed icon-left-wide">Feed (.icon-feed)</p>
+<p class="icon-feed-disabled icon-left-wide">Feed Disabled (.icon-feed-disabled)</p>
+<p class="icon-download icon-left-wide">Download (.icon-download)</p>
+<p class="icon-move icon-left-wide">Move (.icon-move)</p>
+<p class="icon-create icon-left-wide">Create (.icon-create)</p>
+<p class="icon-create-disabled icon-left-wide">Create Disabled (.icon-create-disabled)</p>
+<p class="icon-success icon-left-wide">Success (.icon-success)</p>
+<p class="icon-error icon-left-wide">Error (.icon-error)</p>
+<p class="icon-neutral icon-left-wide">Neutral (.icon-nautral)</p>
+<p class="icon-warning icon-left-wide">Warning (.icon-warning)</p>
+<p class="icon-trusted icon-left-wide">Trusted User (.icon-trusted)</p>
+<p class="icon-banned icon-left-wide">Banned User (.icon-banned)</p>
+<p class="icon-authenticated icon-left-wide">Authenticated User (.icon-authenticated)</p>
+<p class="icon-related icon-left-wide">Related Item (.icon-related)</p>
+<p class="icon-publish icon-left-wide">Publish Status (.icon-publish)</p>
+<p class="icon-draft icon-left-wide">Draft Status (.icon-draft)</p>
+<p class="icon-future icon-left-wide">Futer Status (.icon-spam)</p>
+<p class="icon-pending icon-left-wide">Pending Status (.icon-pending)</p>
+<p class="icon-share icon-left-wide">Share (.icon-share)</p>
+<p class="icon-spam icon-left-wide">Spam (.icon-spam)</p>
+```
+
+## Mini Icons
+
+another 9 x 9 pixel icon.
+
+```
+<p><span class="icon-mini-view-site icon-left-wide">View Site (.icon-mini-view-site)</span></p>
+<p><span class="icon-mini-settings icon-left-wide">Settings (.icon-mini-settings)</span></p>
+<p><span class="icon-mini-delete icon-left-wide">Delete (.icon-mini-delete)</span></p>
+<p><span class="icon-mini-rebuild icon-left-wide">Rebuild (.icon-mini-rebuild)</span></p>
+<p><span class="icon-mini-dashboard icon-left-wide">Dashboard (.icon-mini-dashboard)</span></p>
+<p><span class="icon-mini-templates icon-left-wide">Templates (.icon-mini-templates)</span></p>
+<p><span class="icon-mini-trackbacks icon-left-wide">Trackbacks (.icon-mini-trackbacks)</span></p>
+<p><span class="icon-mini-comments icon-left-wide">Comments (.icon-mini-comments)</span></p>
+<p><span class="icon-mini-docs icon-left-wide">Document (.icon-mini-docs)</span></p>
+<p><span class="icon-mini-entries icon-left-wide">Entries (.icon-mini-entries)</span></p>
+<p><span class="icon-mini-new-entry icon-left-wide">Entry (.icon-mini-new-entry)</span></p>
+<p><span class="icon-mini-pages icon-left-wide">Pages (.icon-mini-pages)</span></p>
+<p><span class="icon-mini-new-page icon-left-wide">New Page (.icon-mini-new-page)</span></p>
+<p><span class="icon-mini-assets icon-left-wide">Asset (.icon-mini-assets)</span></p>
+<p><span class="icon-mini-new-asset icon-left-wide">New Asset (.icon-mini-new-asset)</span></p>
+<p class="action-link-list"><span class="icon-action icon-left-wide">Action (.action-link-list .icon-action)</span></p>
+```
+
+## Edit Template Icons
+
+Some icons are used inside .edit-template class only
+
+```
+<div class="edit-template">
+<p><span class="icon-spinner icon-left-xwide">Spinner (.icon-spinner)</span></p>
+<p class="active"><span class="icon-spinner icon-left-xwide">Spinner on Active (.active .icon-spinner)</span></p>
+<p><span class="global-tmpl icon-left-xwide">Global Template (.global-tmpl)</span></p>
+<p><span class="global-tmpl error icon-left-xwide">Global Template with Error (.global-tmpl.error)</span></p>
+<p><span class="website-tmpl icon-left-xwide">Web Site Template (.website-tmpl)</span></p>
+<p><span class="website-tmpl error icon-left-xwide">Web Site Template with Error (.website-tmpl.error)</span></p>
+<p><span class="blog-tmpl icon-left-xwide">Blog Template (.blog-tmpl)</span></p>
+<p><span class="blog-tmpl error icon-left-xwide">Blog Template with Error (.blog-tmpl.error)</span></p>
+<p><span class="error-tmpl error icon-left-xwide">Error Template (.error-tmpl.error)</span></p>
+</div>
+```
+*/
+
 .icon16 {
     display: inline-block;
     width: 16px;
@@ -19,8 +152,9 @@
     background-image: url(../images/status_icons/icon-minus.png);
 }
 .icon-remove {
-    background-image: url(../images/status_icons/icon-remove.png);    
+    background-image: url(../images/status_icons/icon-remove.png);
 }
+
 .action-icon {
     border-radius: 8px;
     -moz-border-radius: 8px;
@@ -93,6 +227,8 @@
 .icon-pending { background-image: url(../images/status_icons/warning.gif); }
 .icon-share { background-image: url(../images/status_icons/share.gif);}
 .icon-spam { background-image: url(../images/status_icons/warning.gif); }
+.icon-unpublish { background-image: url(../images/status_icons/unpublished.gif); }
+
 
 .icon-spinner { background-image: url(../images/arrow/spinner-right.png); }
 .active .icon-spinner { background-image: url(../images/arrow/spinner-bottom.png); }
@@ -141,6 +277,7 @@
     background-image: url(../images/status_icons/action.png);
 }
 
+
 .icon-mini-view-site    { background-image: url(../images/nav_icons/mini/view-site.gif); }
 .icon-mini-settings     { background-image: url(../images/nav_icons/mini/settings.gif); }
 .icon-mini-delete       { background-image: url(../images/nav_icons/mini/delete.gif); }
@@ -158,7 +295,7 @@
 .icon-mini-new-asset    { background-image: url(../images/nav_icons/mini/asset-new.gif); }
 .icon-mini-delete span  { display: none; }
 
-.si img, 
+.si img,
 .view img  {
     background-repeat: no-repeat;
     background-position: center;
@@ -169,6 +306,7 @@
 .listing .status-future img { background-image: url(../images/status_icons/future.gif); }
 .listing .status-pending img { background-image: url(../images/status_icons/warning.gif); }
 .listing .status-spam img { background-image: url(../images/status_icons/warning.gif); }
+.listing .status-unpublish img { background-image: url(../images/status_icons/unpublished.gif); }
 .listing .status-review img { background-image: url(../images/status_icons/warning.gif); }
 .listing .status-trusted img { background-image: url(../images/status_icons/trusted.gif); }
 .listing .status-banned img { background-image: url(../images/status_icons/banned.gif); }

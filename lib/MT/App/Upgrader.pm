@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -9,6 +9,7 @@ use strict;
 
 use MT::App;
 use base qw( MT::App );
+use MT::Auth;
 use MT::BasicAuthor;
 use MT::Util;
 use JSON;
@@ -45,6 +46,18 @@ sub core_methods {
     };
 }
 
+sub needs_upgrade {
+    my $app = shift;
+
+    return 1 if MT->schema_version > ( $app->{cfg}->SchemaVersion || 0 );
+
+    foreach my $plugin (@MT::Components) {
+        return 1 if $plugin->needs_upgrade;
+    }
+
+    return 0;
+}
+
 sub init_request {
     my $app = shift;
     $app->SUPER::init_request(@_);
@@ -52,7 +65,8 @@ sub init_request {
     $app->{default_mode} = 'install';
     delete $app->{response};
     my $mode = $app->mode || $app->{default_mode};
-    $app->{requires_login} = ( $mode eq 'upgrade' ) || ( $mode eq 'main' );
+    $app->{requires_login} = $app->needs_upgrade && ( $mode eq 'upgrade' )
+        || ( $mode eq 'main' );
 }
 
 sub login {
@@ -84,6 +98,22 @@ sub login {
         $crypted    = 0;
     }
     return unless $user && ( $pass || $cookie_middle );
+
+    require MT::Lockout;
+
+    my $process_login_result = sub {
+        eval {
+            MT::Lockout->process_login_result( $app, $app->remote_ip, $user,
+                $_[0] );
+        };
+    };
+
+    return
+        if
+        eval { MT::Lockout->is_locked_out( $app, $app->remote_ip, $user ) };
+
+    my $driver = $MT::Object::DRIVER;
+    $driver->clear_cache if $driver && $driver->can('clear_cache');
     if ( my @author = MT::BasicAuthor->load( { name => $user } ) ) {
         foreach my $author (@author) {
 
@@ -139,10 +169,12 @@ sub login {
                     );
                     $app->bake_cookie(%arg);
                 }
+                $process_login_result->( MT::Auth::NEW_LOGIN() );
                 return ( $author, $first_time );
             }
             else {
-                return undef;    # error message?
+                $process_login_result->( MT::Auth::INVALID_PASSWORD() );
+                return $app->error( $app->translate('Invalid login.') );
             }
         }
     }
@@ -154,6 +186,7 @@ sub login {
         -expires => '-1y',
         -path    => $app->config('CookiePath') || $app->mt_path
     ) unless $first_time;
+    $process_login_result->( MT::Auth::UNKNOWN() );
     return $app->error( $app->translate('Invalid login.') );
 }
 
@@ -165,6 +198,8 @@ sub current_magic {
 
 sub upgrade {
     my $app = shift;
+
+    return $app->main(@_) unless $app->needs_upgrade;
 
     my $install_mode;
     my %param;
@@ -370,14 +405,9 @@ sub init_website {
     $param{$param_name} = 1;
 
     require MT::Theme;
-    my $themes = MT::Theme->load_all_themes;
-    my @theme_loop = map { { key => $_->id, label => $_->label, } }
-        grep {
-               ( $_->{class} || '' ) eq 'both'
-            || ( $_->{class} || '' ) eq 'website'
-        } values %$themes;
-    $param{'theme_loop'}  = \@theme_loop;
-    $param{'theme_index'} = scalar @theme_loop;
+    my $theme_loop = MT::Theme->load_theme_loop;
+    $param{'theme_loop'}  = $theme_loop;
+    $param{'theme_index'} = scalar @$theme_loop;
     if ( my $b_path = $app->config->BaseSitePath ) {
         $param{'sitepath_limited'} = $b_path;
 
@@ -530,6 +560,8 @@ sub finish {
 sub run_actions {
     my $app = shift;
 
+    return $app->main(@_) unless $app->needs_upgrade;
+
     $| = 1;
 
     $app->{no_print_body} = 1;
@@ -573,8 +605,8 @@ sub run_actions {
             if (@$new_steps) {
                 push @steps, @$new_steps;
                 @steps = sort {
-                    $fn->{ $a->[0] }->{priority} <=> $fn->{ $b->[0] }
-                        ->{priority}
+                    $fn->{ $a->[0] }->{priority}
+                        <=> $fn->{ $b->[0] }->{priority}
                 } @steps;
                 $app->response->{steps} = [];
             }
@@ -605,7 +637,11 @@ sub run_actions {
 
 sub json_response {
     my $app = shift;
-    $app->print_encode( ' JSON:' . MT::Util::to_json( $app->response ) );
+
+    my $json_text = MT::Util::to_json( $app->response );
+    $json_text =~ s/([<>\+])/sprintf("\\u%04x",ord($1))/eg;
+
+    $app->print_encode( ' JSON:' . $json_text );
 }
 
 sub response {

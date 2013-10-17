@@ -32,12 +32,12 @@ function changeParent (ws) {
     jQuery.each(ids,  function () {
         var obj = jQuery('#'+this+'_path'+blog_id+'-field');
         if ( obj.find('.use-absolute').hasClass('default-absolute') ) {
-            obj.find('.use-absolute :checkbox').attr('checked', 'checked');
+            obj.find('.use-absolute :checkbox').prop('checked', true);
             obj.find('.relative-site_path').hide();
             obj.find('.absolute-site_path').show();
         } else {
             obj.find('.absolute-site_path :input').attr('value', new_path);
-            obj.find('.use-absolute :checkbox').removeAttr('checked');
+            obj.find('.use-absolute :checkbox').prop('checked', false);
             obj.find('.relative-site_path').show();
             obj.find('.absolute-site_path').hide();
         }

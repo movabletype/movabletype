@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id: Blog.pm 4532 2009-10-02 02:25:27Z fumiakiy $
 
@@ -109,6 +109,7 @@ __PACKAGE__->install_properties(
             'theme_export_settings'    => 'hash meta',
             'category_order'           => 'text meta',
             'folder_order'             => 'text meta',
+            'publish_empty_archive'    => 'boolean meta',
 
         },
         meta    => 1,
@@ -269,15 +270,7 @@ sub list_props {
             single_select_options => sub {
                 my $prop = shift;
                 require MT::Theme;
-                my $themes = MT::Theme->load_all_themes;
-                return [
-                    map { { label => $_->label, value => $_->id } }
-                        sort { $a->label cmp $b->label }
-                        grep {
-                               $_->{class} eq 'blog'
-                            || $_->{class} eq 'both'
-                        } values %$themes
-                ];
+                return MT::Theme->load_theme_loop('blog');
             },
         },
         modified_on => {
@@ -667,25 +660,23 @@ sub archive_url {
     }
     else {
         my $url = $blog->site_url;
-        if ( $blog->is_blog() ) {
-            if ( my $website = $blog->website() ) {
-                $url = $website->SUPER::site_url;
+        if ( my $website = $blog->website() ) {
+            $url = $website->SUPER::site_url;
+        }
+        my $archive_url = $blog->SUPER::archive_url;
+        return $blog->site_url unless $archive_url;
+        return $archive_url if $archive_url =~ m!^https?://!;
+        my @paths = $blog->raw_archive_url;
+        if ( 2 == @paths ) {
+            if ( $paths[0] ) {
+                $url =~ s!^(https?)://(.+)/$!$1://$paths[0]$2/!;
             }
-            my $archive_url = $blog->SUPER::archive_url;
-            return $blog->site_url unless $archive_url;
-            return $archive_url if $archive_url =~ m!^https?://!;
-            my @paths = $blog->raw_archive_url;
-            if ( 2 == @paths ) {
-                if ( $paths[0] ) {
-                    $url =~ s!^(https?)://(.+)/$!$1://$paths[0]$2/!;
-                }
-                if ( $paths[1] ) {
-                    $url = MT::Util::caturl( $url, $paths[1] );
-                }
+            if ( $paths[1] ) {
+                $url = MT::Util::caturl( $url, $paths[1] );
             }
-            else {
-                $url = MT::Util::caturl( $url, $paths[0] );
-            }
+        }
+        else {
+            $url = MT::Util::caturl( $url, $paths[0] );
         }
         return $url;
     }
@@ -1534,8 +1525,8 @@ sub clone_with_children {
                     my $global_widget = MT::Template->load($_);
                     push @new_widgets, $_
                         if $global_widget
-                            && $global_widget->blog_id == 0
-                            && $global_widget->type eq 'widget';
+                        && $global_widget->blog_id == 0
+                        && $global_widget->type eq 'widget';
                 }
             }
             $new_tmpl->modulesets( join( ',', @new_widgets ) );

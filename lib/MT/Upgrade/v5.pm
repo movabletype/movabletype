@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -64,11 +64,12 @@ sub upgrade_functions {
                               or ( blog_class = '0' )",
             },
         },
-        'v5_generate_websites_place_blogs' => {
-            version_limit => 5.0015,
-            priority      => 3.4,
-            code          => \&_v5_generate_websites_place_blogs,
-        },
+
+        #'v5_generate_websites_place_blogs' => {
+        #    version_limit => 5.0015,
+        #    priority      => 3.4,
+        #    code          => \&_v5_generate_websites_place_blogs,
+        #},
         'v5_rebuild_permissions' => {
             version_limit => 5.0016,
             priority      => 3.0,
@@ -193,13 +194,14 @@ sub upgrade_functions {
                 },
             },
         },
-        'v5_assign_initial_user_ceated_by' => {
+        'v5_assign_initial_user_created_by' => {
             version_limit => 5.0035,
             priority      => 3.0,
             updater       => {
-                type  => 'author',
-                label => 'Assigning ID of user who created for initial user...',
-                code  => sub {
+                type => 'author',
+                label =>
+                    "Setting the 'created by' ID for any user for whom this field is not defined...",
+                code => sub {
                     $_[0]->created_by( $_[0]->id )
                         if !defined $_[0]->created_by;
                 },
@@ -210,19 +212,21 @@ sub upgrade_functions {
         'v5_assign_blog_date_language' => {
             version_limit => 5.0036,
             priority      => 3.0,
-            updater => {
+            updater       => {
                 type  => 'blog',
                 terms => { class => '*' },
                 label =>
-                    'Assigning language of blog to use for formatting date...',
+                    'Assigning a language to each blog to help choose appropriate display format for dates...',
                 code => sub {
                     my @supporteds
                         = map { $_->{l_tag} } @{ MT::I18N::languages_list() };
                     my $language = $_[0]->language;
                     $_[0]->date_language($language);
-                    $_[0]->language( ( grep { $_ eq $language } @supporteds )
+                    $_[0]->language(
+                        ( grep { $_ eq $language } @supporteds )
                         ? $language
-                        : MT->config('DefaultLanguage') );
+                        : MT->config('DefaultLanguage')
+                    );
                 },
                 sql => <<__SQL__,
 UPDATE mt_blog SET
@@ -238,6 +242,15 @@ UPDATE mt_blog SET
             THEN blog_language
         ELSE '@{[ MT->config('DefaultLanguage') ]}' END;
 __SQL__
+            },
+        },
+        'v5_add_nortification_dashboard_widget' => {
+            version_limit => 5.0037,
+            priority      => 3.0,
+            updater       => {
+                type  => 'author',
+                label => "Adding notification dashboard widget...",
+                code  => \&_v5_add_nortification_dashboard_widget,
             },
         },
     };
@@ -859,6 +872,30 @@ sub _v5_recover_auth_type {
         $author->type( MT::Author::COMMENTER() );
         $author->save;
     }
+}
+
+sub _v5_add_nortification_dashboard_widget {
+    my $user    = shift;
+    my $widgets = $user->widgets;
+    return 1 unless $widgets;
+
+    foreach my $key ( keys %$widgets ) {
+        if ( $key eq 'dashboard:user:' . $user->id ) {
+            my @widget_keys = keys %{ $widgets->{$key} };
+            unless ( grep { $_ eq 'notification_dashboard' } @widget_keys ) {
+                foreach my $widget_key (@widget_keys) {
+                    $widgets->{$key}->{$widget_key}->{order} += 1;
+                }
+                $widgets->{$key}->{'notification_dashboard'} = {
+                    order => 1,
+                    set   => 'main',
+                };
+            }
+        }
+    }
+
+    $user->widgets($widgets);
+    $user->save;
 }
 
 1;

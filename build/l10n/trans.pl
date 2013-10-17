@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
-# Movable Type (r) Open Source (C) 2005-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -194,6 +194,7 @@ do {
             }
         }
         while ($text =~ /\s*(?:["'])?label(?:_plural)?(?:["'])?\s*=>\s*(["'])(.*?)([^\\])\1/gs) {
+            next if $2 =~ /^$1/;
             my($msg, %args);
             my $trans = '';
             $args{phrase} = $2.$3;

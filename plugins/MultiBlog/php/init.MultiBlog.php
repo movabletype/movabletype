@@ -1,7 +1,7 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -117,21 +117,31 @@ function multiblog_function_wrapper($tag, $args, &$ctx) {
     $ctx->localize($localvars);
     
     # Load multiblog access control list
-    $acl = multiblog_load_acl($ctx);
-    if ( !empty($acl) && !empty($acl['allow']) )
-        $args['allows'] = $acl['allow'];
-    elseif ( !empty($acl) && !empty($acl['deny']) )
-        $args['denies'] = $acl['deny'];
+    $incl = $args['include_blogs']
+         || $args['include_websites']
+         || $args['blog_id']
+         || $args['blog_ids']
+         || $tag == 'mtblogs'
+         || $tag == 'mtwebsites';
+    $excl = $args['exclude_blogs']
+         || $args['exclude_websites'];
+    if ( $incl || $excl ) {
+        $acl = multiblog_load_acl($ctx);
+        if ( !empty($acl) && !empty($acl['allow']) )
+            $args['allows'] = $acl['allow'];
+        elseif ( !empty($acl) && !empty($acl['deny']) )
+            $args['denies'] = $acl['deny'];
+    }
 
     # Set multiblog tag context if applicable
     if ($ctx->stash('multiblog_context')) {
-        $incl = $ctx->stash('multiblog_include_blog_ids');
-        if (isset($incl))
-            $args['include_blogs'] = $incl;
+        $include_blogs = $ctx->stash('multiblog_include_blog_ids');
+        if (isset($include_blogs))
+            $args['include_blogs'] = $include_blogs;
         
-        $excl = $ctx->stash('multiblog_exclude_blog_ids');
-        if (isset($excl))
-            $args['exclude_blogs'] = $excl;
+        $exclude_blogs = $ctx->stash('multiblog_exclude_blog_ids');
+        if (isset($exclude_blogs))
+            $args['exclude_blogs'] = $exclude_blogs;
     }
 
     # Call original tag handler with new multiblog args
@@ -163,11 +173,21 @@ function multiblog_block_wrapper(&$args, $content, &$ctx, &$repeat) {
         }
 
         # Load multiblog access control list
-        $acl = multiblog_load_acl($ctx);
-        if ( !empty($acl) && !empty($acl['allow']) )
-            $args['allows'] = $acl['allow'];
-        elseif ( !empty($acl) && !empty($acl['deny']) )
-            $args['denies'] = $acl['deny'];
+        $incl = $args['include_blogs']
+             || $args['include_websites']
+             || $args['blog_id']
+             || $args['blog_ids']
+             || $tag == 'mtblogs'
+             || $tag == 'mtwebsites';
+        $excl = $args['exclude_blogs']
+             || $args['exclude_websites'];
+        if ( $incl || $excl ) {
+            $acl = multiblog_load_acl($ctx);
+            if ( !empty($acl) && !empty($acl['allow']) )
+                $args['allows'] = $acl['allow'];
+            elseif ( !empty($acl) && !empty($acl['deny']) )
+                $args['denies'] = $acl['deny'];
+        }
 
         # Fix for MTMultiBlogIfLocalBlog which should never return
         # true with MTTags block because tags are cross-blog

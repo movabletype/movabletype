@@ -85,14 +85,10 @@
 </div>
 
 <mt:setvarblock name="jq_js_include" append="1">
-jQuery('div.indicator')
-  .hide()
-  .bind('ajaxStart', function() {
-    jQuery(this).show();
-  })
-  .bind('ajaxStop', function() {
-    jQuery(this).hide();
-  });
+var indicator = jQuery('div.indicator').hide();
+jQuery(document)
+  .ajaxStart(function(){ indicator.show(); })
+  .ajaxStop(function(){ indicator.hide(); });
 
 var dummy = 1;
 var checksum = '';
@@ -415,7 +411,7 @@ function addItem(parent, label) {
   return true;
 }
 
-jQuery('input[name=<mt:var name="object_type">_label]').live('keypress', function (e) {
+jQuery('#area-action input').on('keypress',function(e){
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
         jQuery(this).siblings('button.add').click();
         return false;
@@ -770,13 +766,28 @@ function renderNestedList() {
 }
 
 jQuery('.add').click(function() {
-  var parent = jQuery(this).parent('#area-action').find('select').val();
-  var label = jQuery(this).parent('#area-action').find('input').val();
+  var $focusParent = jQuery(':focus').parent('div');
+  var parent = '';
+  var label = '';
+  if ( $focusParent.hasClass('add-form') ) {
+    // add a sub category by hitting enter key.
+    parent = $focusParent.prev().children('span.item-ctrl').parent('div').attr('id').slice(4);
+    label = $focusParent.find('input').val();
+  } else {
+    parent = jQuery(this).parent('#area-action').find('select').val();
+    label = jQuery(this).parent('#area-action').find('input').val();
+  }
   // sort of hack to do HTML escape.
   label = jQuery('<div />').text(label).html();
   if ( addItem(parent, label) ) {
-    fixInteractions();
-    jQuery(this).parent('#area-action').find('input').val('');
+    if ( $focusParent.hasClass('add-form') ) {
+      // add a sub category by hitting enter key.
+      $focusParent.remove();
+      fixInteractions({ closeInlineForms: false });
+    } else {
+      fixInteractions();
+      jQuery(this).parent('#area-action').find('input').val('');
+    }
   }
   return false;
 });

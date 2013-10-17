@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -330,7 +330,7 @@ sub init_core_registry {
                     'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.',
             },
             'XML::Parser' => {
-                link  => 'http://search.cpan.org/dist/Text-Balanced',
+                link  => 'http://search.cpan.org/dist/XML-Parser',
                 label => 'This module required for action streams.',
             },
         },

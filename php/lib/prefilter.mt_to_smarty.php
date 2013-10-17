@@ -1,7 +1,7 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -105,7 +105,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                         $quote = '';
                     }
                     if ($ctx->global_attr[$attr]) {
-                        $modargs .= '|';
+                        $modargs .= '|@';
                         if ($ctx->global_attr[$attr] != '1') {
                             $modargs .= $ctx->global_attr[$attr];
                         } else {

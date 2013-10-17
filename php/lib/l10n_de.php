@@ -1,15 +1,12 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
 global $Lexicon_de;
 $Lexicon_de = array(
-## php/lib/MTUtil.php
-	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
-
 ## php/lib/archive_lib.php
 	'Individual' => 'Individuell',
 	'Page' => 'Seite',
@@ -70,10 +67,10 @@ $Lexicon_de = array(
 
 ## php/lib/function.mtauthordisplayname.php
 
-## php/lib/function.mtcommentauthor.php
+## php/lib/function.mtcommentauthorlink.php
 	'Anonymous' => 'Anonym',
 
-## php/lib/function.mtcommentauthorlink.php
+## php/lib/function.mtcommentauthor.php
 
 ## php/lib/function.mtcommenternamethunk.php
 	'The \'[_1]\' tag has been deprecated. Please use the \'[_2]\' tag in its place.' => 'Der Befehl &#8222;[_1]&#8220; ist veraltet. Bitte verwenden Sie stattdessen \'[_2]\'',
@@ -82,8 +79,6 @@ $Lexicon_de = array(
 	'Reply' => 'Antworten',
 
 ## php/lib/function.mtentryclasslabel.php
-	'page' => 'Seite',
-	'entry' => 'Eintrag',
 	'Entry' => 'Eintrag',
 
 ## php/lib/function.mtinclude.php
@@ -118,11 +113,11 @@ $Lexicon_de = array(
 	'\'[_1]\' is not a valid function for a hash.' => '&#8222;[_1]&#8220; ist keine gültige Hash-Funktion.',
 	'\'[_1]\' is not a valid function for an array.' => '&#8222;[_1]&#8220; ist keine gültige Array-Funktion.',
 
-## php/lib/function.mtwidgetmanager.php
-	'Error compiling widget set [_1]' => 'Fehler bei Vearbeitung der Widget-Gruppe [_1]',
-
 ## php/lib/mtdb.base.php
 	'When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them.' => 'Wenn die Attribute exclude_blogs und include_blogs gemeinsam verwendet werden, geben Sie die gleichen Blog-IDs nicht gleichzeitig für beide an. ',
+
+## php/lib/MTUtil.php
+	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Seite nicht gefunden - [_1]',

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -16,7 +16,6 @@ __PACKAGE__->install_properties(
             message    => 'string(255) not null',  # varchar(255) not null
             error_time => 'integer not null',      # integer unsigned not null
         },
-        primary_key => [ 'jobid', 'funcid' ],
         datasource  => 'ts_error',
         indexes     => {
             jobid       => 1,

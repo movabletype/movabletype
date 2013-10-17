@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -239,7 +239,7 @@ sub work_until_done {
         while ( time() < $deadline ) {
             $client->work_once or last;
             last unless _has_enough_memory($mem_limit);
-            last unless _has_enough_memory($swap_limit);
+            last unless _has_enough_swap($swap_limit);
         }
     }
     else {

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2005-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2005-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -18,6 +18,8 @@ use vars qw( %Lexicon );
 	'MT 4 Style Library' => 'MT 4-Designs',
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Mit den Standardvorlagen von MT 3.3+  kompatible Designvorlagen',
 	'Styles' => 'Designs',
+	'Moving current style to blog_meta for website...' => 'Verschiebe aktuelle Designvorlage der Website nach blog_meta...', # Translate - New # OK
+	'Moving current style to blog_meta for blog...' => 'Verschiebe aktuelle Designvorlage des Blogs nach blog_meta...', # Translate - New # OK
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Ihr mt-static-Ordner konnte nicht gefunden werden. Bitte konfigurieren Sie \'StaticFilePath\' um fortzufahren.',
@@ -63,6 +65,7 @@ use vars qw( %Lexicon );
 	'More Styles' => 'Weitere Designs',
 	'Selected Design' => 'Gewähltes Design',
 	'Layout' => 'Layout',
+
 
 );
 

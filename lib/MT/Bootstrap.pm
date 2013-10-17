@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -318,5 +318,12 @@ Example (for CGIs in a plugin subdirectory, ie MT/plugins/plugin_x):
     use strict;
     use lib "lib", ($ENV{MT_HOME} ? "$ENV{MT_HOME}/lib" : "../../lib");
     use MT::Bootstrap App => 'MyApp';
+
+=head1 METHODS
+
+=head2 fcgi_sig_handler($sig)
+
+This is a signal handler for the FastCGI mode. Waits to complete a request
+in processing and terminates the FastCGI process.
 
 =cut

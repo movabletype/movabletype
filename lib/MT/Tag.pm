@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -64,13 +64,14 @@ sub list_props {
                 my ( $prop, $args, $db_terms, $db_args, $opts ) = @_;
                 my $blog_id = $opts->{blog_ids};
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('objecttag')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('objecttag')->join_on(
                     undef,
                     {   blog_id => $blog_id,
                         tag_id  => \'= tag_id',
                     },
                     { unique => 1, },
-                );
+                    );
                 return;
             },
         },
@@ -82,7 +83,7 @@ sub list_props {
             order       => 200,
             col         => 'id',
             entry_class => 'entry',
-            view        => 'blog',
+            view        => [ 'website', 'blog' ],
             view_filter => 'none',
             raw         => sub {
                 my ( $prop, $obj ) = @_;
@@ -150,7 +151,7 @@ sub list_props {
             label       => 'Tags with Entries',
             display     => 'none',
             entry_class => 'entry',
-            view        => 'blog',
+            view        => [ 'website', 'blog' ],
             singleton   => '1',
             terms       => sub {
                 my $prop = shift;
@@ -266,13 +267,14 @@ sub list_props {
                 my ( $args, $db_terms, $db_args, $options ) = @_;
                 my $blog_id = $options->{blog_ids};
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('objecttag')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('objecttag')->join_on(
                     'tag_id',
                     { object_datasource => 'asset', },
                     {   group  => ['tag_id'],
                         unique => 1,
                     }
-                );
+                    );
                 return;
             },
         },
@@ -284,7 +286,7 @@ sub system_filters {
     return {
         entry => {
             label => 'Tags with Entries',
-            view  => ['blog'],
+            view  => [ 'website', 'blog' ],
             items => [ { type => 'for_entry', } ],
             order => 100,
         },
@@ -444,6 +446,7 @@ sub load_by_datasource {
             $jargs{not}{blog_id} = 1;
         }
     }
+    require MT::ObjectTag;
     $args->{'join'} ||= MT::ObjectTag->join_on(
         'tag_id',
         {   $blog_id ? ( blog_id => $blog_id ) : (),
@@ -878,8 +881,10 @@ sub tagged_count {
     }
     $jterms->{object_datasource} = $pkg->datasource;
     $jterms->{tag_id} = $tag_id if $tag_id;
-    my $args = {
-        join => [ 'MT::ObjectTag', 'object_id', $jterms, { unique => 1 } ] };
+    my $args
+        = {
+        join => [ 'MT::ObjectTag', 'object_id', $jterms, { unique => 1 } ]
+        };
     require MT::ObjectTag;
     $pkg->count( $terms, $args );
 }
@@ -981,6 +986,22 @@ Save the literal as well as a normalized copy if one does not exist.
 
 Remove the tag and all its children unless it is referenced by another
 entry.
+
+=head2 MT::Tag->class_label
+
+Returns the localized descriptive name for this class.
+
+=head2 MT::Tag->class_label_plural
+
+Returns the localized, plural descriptive name for this class.
+
+=head2 MT::Tag->list_props
+
+Returns the list_properties registry of this class.
+
+=head2 MT::Tag->system_filters
+
+Returns the system_filters registry of this class.
 
 =head1 NOTES
 

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Category;
@@ -54,7 +54,7 @@ sub edit {
         }
     }
 
-    my $type 
+    my $type
         = $app->param('type')
         || $app->param('_type')
         || MT::Category->class_type;
@@ -72,6 +72,9 @@ sub edit {
     $param->{search_type}  = $entry_type;
 
     $param->{can_view_trackbacks} = $app->can_do('access_to_trackback_list');
+
+    ## author_id parameter of the author currently logged in.
+    delete $param->{'author_id'};
 
     1;
 }
@@ -516,11 +519,13 @@ sub can_view {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    unless ( ref $obj ) {
+    if ( $obj && !ref $obj ) {
         $obj = MT->model('category')->load($obj)
             or return;
     }
-    return unless $obj->is_category;
+    if ($obj) {
+        return unless $obj->is_category;
+    }
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)
@@ -532,11 +537,13 @@ sub can_save {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    unless ( ref $obj ) {
+    if ( $obj && !ref $obj ) {
         $obj = MT->model('category')->load($obj)
             or return;
     }
-    return unless $obj->is_category;
+    if ($obj) {
+        return unless $obj->is_category;
+    }
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)->can_do('save_category');
@@ -547,13 +554,15 @@ sub can_delete {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    unless ( ref $obj ) {
+    if ( $obj && !ref $obj ) {
         $obj = MT->model('category')->load($obj)
             or return;
     }
-    return unless $obj->is_category;
+    if ($obj) {
+        return unless $obj->is_category;
+    }
 
-    my $blog_id = $obj->blog_id;
+    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)->can_do('delete_category');
 }
 

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2006-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2006-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -13,7 +13,7 @@ use warnings;
 
 use base qw( MT::Plugin );
 
-our $VERSION = '2.3';
+our $VERSION = '2.4';
 my $plugin;
 $plugin = MT::Plugin::MultiBlog->new(
     {   id   => 'multiblog',
@@ -97,7 +97,7 @@ $plugin = MT::Plugin::MultiBlog->new(
                     updater => {
                         type  => 'blog',
                         terms => { class => '*' },
-                        label => "Updating trigger cache of MultiBlog...",
+                        label => "Updating the MultiBlog trigger cache...",
                         code  => sub {
                             my $scope = 'blog:' . $_[0]->id;
                             my $hash  = $plugin->get_config_hash($scope);

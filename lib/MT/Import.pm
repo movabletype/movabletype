@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -259,10 +259,35 @@ MT::Import
 
 =head1 METHODS
 
+=head2 new
+
+Returns a new MT::Import instance.
+
+=head2 init
+
+Loads the import_formats registry to the C<%Importers> package variable. This is
+an internal subroutine.
+
+=head2 core_import_formats
+
+Returns the import_formats registry.
+
+=head2 importer($format_name)
+
+Returns the import_formats registry specified by C<$format_name>.
+
+=head2 importer_keys
+
+Returns all key values of the import_formats registry.
+
 =head2 import_contents(%param)
 
 This method is called from CMS when user decided to import files in a selected format.
 This method calls selected importer's method to do actual imports.
+
+=head2 get_options_html( $key, $blog_id )
+
+Generates a part of HTML specified by C<$key> and C<$blog_id>, for "Import Website/Blog Entries" screen.
 
 =head2 register_importer($importer)
 

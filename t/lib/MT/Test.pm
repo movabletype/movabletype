@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 
 package MT::Test;
@@ -75,7 +75,7 @@ our $CORE_TIME;
 BEGIN {
     *CORE::GLOBAL::time
         = sub { my ($a) = @_; $a ? CORE::time + $_[0] : CORE::time };
-    *CORE::GLOBAL::sleep = sub {CORE::sleep};
+    *CORE::GLOBAL::sleep = sub { CORE::sleep };
 }
 
 sub import {
@@ -336,14 +336,17 @@ sub init_newdb {
         map      { $_ . ':meta' }
         grep     { MT->model($_)->meta_pkg }
         sort keys %$types;
+    foreach my $key (qw( entry user )) {
+        $types->{ $key . ':summary' } = $types->{$key} . '::Summary';
+    }
     my @classes = map { $types->{$_} } grep { $_ !~ /\./ } sort keys %$types;
     foreach my $class (@classes) {
         if ( ref($class) eq 'ARRAY' ) {
             next;    #TODO for now - it won't hurt when we do driver-tests.
         }
         elsif ( !defined *{ $class . '::__properties' } ) {
-            eval '# line ' 
-                . __LINE__ . ' ' 
+            eval '# line '
+                . __LINE__ . ' '
                 . __FILE__ . "\n"
                 . 'require '
                 . $class
@@ -452,6 +455,7 @@ sub init_data {
     $classic_website->apply($website);
     $website->save() or die "Couldn't save blog 1: " . $website->errstr;
 
+    require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     require MT::Blog;
@@ -1436,7 +1440,12 @@ sub _run_app {
     my $cgi              = CGI->new;
     my $follow_redirects = 0;
     my $max_redirects    = 10;
+    my %app_hash_values = qw(
+        __request_method request_method
+        __path_info __path_info
+    );
     while ( my ( $k, $v ) = each(%$params) ) {
+        next if grep { $_ eq $k } keys %app_hash_values;
         if ( ref($v) eq 'ARRAY' && $k ne '__test_upload' ) {
             $cgi->param( $k, @$v );
         }
@@ -1483,8 +1492,10 @@ sub _run_app {
     # seems to be hanging around when it doesn't need to be
     $app->{init_request} = 0;    # gotta set this to force the init request
     $app->init_request( CGIObject => $cgi );
-    $app->{request_method} = $params->{__request_method}
-        if ( $params->{__request_method} );
+    while ( my ( $params_key, $app_key ) = each %app_hash_values ) {
+        $app->{$app_key} = $params->{$params_key}
+            if exists $params->{$params_key};
+    }
     $app->run;
 
     my $out = $app->{__test_output};

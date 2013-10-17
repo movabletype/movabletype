@@ -1,12 +1,13 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Dashboard;
 
 use strict;
 use MT::Util qw( epoch2ts encode_html );
+use MT::Stats qw(readied_provider);
 
 sub dashboard {
     my $app = shift;
@@ -24,43 +25,6 @@ sub dashboard {
     $param->{no_breadcrumbs} = 1;
     $param->{screen_class}   = "dashboard";
     $param->{screen_id}      = "dashboard";
-
-    my $default_widgets = {
-        'system' => {
-            'recent_websites' => {
-                order => 1,
-                set   => 'main',
-            },
-        },
-        'user' => {
-            'this_is_you-1' => {
-                order => 1,
-                set   => 'main'
-            },
-            'mt_news' => {
-                order => 3,
-                set   => 'sidebar'
-            },
-            'favorite_blogs' => {
-                param => { tab => 'website' },
-                order => 2,
-                set   => 'main'
-            },
-        },
-        'website' => {
-            'recent_blogs' => {
-                order => 1,
-                set   => 'main',
-            },
-        },
-        'blog' => {
-            'blog_stats' => {
-                param => { tab => 'entry' },
-                order => 1,
-                set   => 'main'
-            },
-        },
-    };
 
     my $blog  = $app->blog;
     my $scope = $app->view;
@@ -116,37 +80,22 @@ sub dashboard {
         if ( !$fmgr->exists( $param->{support_path} ) ) {
             $fmgr->mkpath( $param->{support_path} );
         }
-        if (   $fmgr->exists( $param->{support_path} )
-            && $fmgr->can_write( $param->{support_path} ) )
-        {
-            $param->{has_uploads_path} = 1;
-        }
-        else {
-            $param->{has_uploads_path} = 0;
-            last;
-        }
     }
-    unless ( exists $param->{has_uploads_path} ) {
-        unless ( $fmgr->exists( $param->{support_path} ) ) {
+    unless ( $fmgr->exists( $param->{support_path} ) ) {
 
-            # the path didn't exist - change the warning a little
-            $param->{support_path} = $app->support_directory_path;
-        }
+        # the path didn't exist - change the warning a little
+        $param->{support_path} = $app->support_directory_path;
     }
-    eval { require MT::Image; MT::Image->new or die; };
-    $param->{can_use_userpic} = $@ ? 0 : 1;
 
     # We require that the determination of the 'single blog mode'
     # state be done PRIOR to the generation of the widgets
     $app->build_blog_selector($param);
-    $app->load_widget_list( 'dashboard', $scope, $param,
-        $default_widgets->{$scope} );
-    $param = $app->load_widgets( 'dashboard', $scope, $param,
-        $default_widgets->{$scope} );
+    $app->load_widget_list( 'dashboard', $scope, $param );
+    $param = $app->load_widgets( 'dashboard', $scope, $param );
     return $app->load_tmpl( "dashboard.tmpl", $param );
 }
 
-sub this_is_you_widget {
+sub personal_stats_widget {
     my $app = shift;
     my ( $tmpl, $param ) = @_;
 
@@ -220,7 +169,7 @@ sub this_is_you_widget {
             = $perms && $perms->can_edit_entry( $last_post, $app->user );
     }
 
-    if ( my ($url) = $user->userpic_url() ) {
+    if ( my ($url) = $user->userpic_url( Width => 50, Height => 50 ) ) {
         $param->{author_userpic_url} = $url;
     }
     $param->{author_userpic_width}  = 50;
@@ -242,7 +191,7 @@ sub favorite_blogs_widget {
 
     # Load favorite websites data
     $param->{website_object_loop}
-        = _build_favorite_websites_data( $app, { my_posts => 1 } );
+        = _build_favorite_websites_data( $app, { not_count => 1 } );
 
     require MT::Permission;
     require MT::Website;
@@ -254,7 +203,7 @@ sub favorite_blogs_widget {
 
     # Load favorite blogs data
     $param->{blog_object_loop}
-        = _build_favorite_blogs_data( $app, { my_posts => 1 } );
+        = _build_favorite_blogs_data( $app, { not_count => 1 } );
 
     require MT::Blog;
     %terms      = ();
@@ -411,7 +360,10 @@ sub create_stats_directory {
     my $app = shift;
     my ($param) = @_;
 
-    my $blog_id = $app->blog ? $app->blog->id : 0;
+    my $blog_id
+        = $app->blog        ? $app->blog->id
+        : $param->{blog_id} ? $param->{blog_id}
+        :                     0;
     my $user    = $app->user;
     my $user_id = $user->id;
 
@@ -782,8 +734,8 @@ sub _build_favorite_websites_data {
             { author_id => $user->id, permissions => { not => "'comment'" } }
             )
             if !$auth->is_superuser
-                && !$auth->permissions(0)->can_do('edit_templates')
-                && !$auth->permissions(0)->can_do('create_blog');
+            && !$auth->permissions(0)->can_do('edit_templates')
+            && !$auth->permissions(0)->can_do('create_blog');
         $args{limit}  = 10 - $fav_count;
         $terms{class} = 'website';
         $terms{id}    = { not => \@fav_websites } if $fav_count;
@@ -796,51 +748,64 @@ sub _build_favorite_websites_data {
 
     # Object count
     my %data;
-    require MT::Blog;
-    my $iter = MT::Blog->count_group_by(
-        {   class     => 'blog',
-            parent_id => \@website_ids,
-        },
-        {   group => ['parent_id'],
-            join  => $app->model('permission')->join_on(
-                'blog_id',
-                {   author_id   => $user->id,
-                    permissions => { not => "'comment'" }
-                }
-            )
+    if ( !$param->{not_count} ) {
+        require MT::Blog;
+        my $iter = MT::Blog->count_group_by(
+            {   class     => 'blog',
+                parent_id => \@website_ids,
+            },
+            {   group => ['parent_id'],
+                join  => $app->model('permission')->join_on(
+                    'blog_id',
+                    {   author_id   => $user->id,
+                        permissions => { not => "'comment'" }
+                    }
+                )
+            }
+        );
+        while ( my ( $count, $parent_id ) = $iter->() ) {
+            $data{$parent_id}->{blog_count} = $count;
         }
-    );
-    while ( my ( $count, $parent_id ) = $iter->() ) {
-        $data{$parent_id}->{blog_count} = $count;
-    }
 
-    require MT::Page;
-    my $entry_iter = MT::Page->count_group_by(
-        {   class   => 'page',
-            blog_id => \@website_ids,
-            $param->{my_posts} ? ( author_id => $user->id ) : (),
-        },
-        { group => ['blog_id'], }
-    );
-    while ( my ( $count, $blog_id ) = $entry_iter->() ) {
-        $data{$blog_id}->{page_count} = $count;
-    }
-
-    require MT::Comment;
-    my $commnet_iter = MT::Comment->count_group_by(
-        { blog_id => \@website_ids, },
-        {   group => ['blog_id'],
-            join  => $app->model('entry')->join_on(
-                undef,
-                {   id    => \'=comment_entry_id',
-                    class => 'page',
-                    $param->{my_posts} ? ( author_id => $user->id ) : (),
-                },
-            ),
+        require MT::Entry;
+        my $entry_iter = MT::Entry->count_group_by(
+            {   class   => 'entry',
+                blog_id => \@website_ids,
+                $param->{my_posts} ? ( author_id => $user->id ) : (),
+            },
+            { group => ['blog_id'], }
+        );
+        while ( my ( $count, $blog_id ) = $entry_iter->() ) {
+            $data{$blog_id}->{entry_count} = $count;
         }
-    );
-    while ( my ( $count, $blog_id ) = $commnet_iter->() ) {
-        $data{$blog_id}->{comment_count} = $count;
+
+        require MT::Page;
+        my $page_iter = MT::Page->count_group_by(
+            {   class   => 'page',
+                blog_id => \@website_ids,
+                $param->{my_posts} ? ( author_id => $user->id ) : (),
+            },
+            { group => ['blog_id'], }
+        );
+        while ( my ( $count, $blog_id ) = $page_iter->() ) {
+            $data{$blog_id}->{page_count} = $count;
+        }
+
+        require MT::Comment;
+        my $commnet_iter = MT::Comment->count_group_by(
+            { blog_id => \@website_ids, },
+            {   group => ['blog_id'],
+                join  => $app->model('entry')->join_on(
+                    undef,
+                    {   id => \'=comment_entry_id',
+                        $param->{my_posts} ? ( author_id => $user->id ) : (),
+                    },
+                ),
+            }
+        );
+        while ( my ( $count, $blog_id ) = $commnet_iter->() ) {
+            $data{$blog_id}->{comment_count} = $count;
+        }
     }
 
     # Make object_loop data
@@ -880,18 +845,27 @@ sub _build_favorite_websites_data {
             = $website->theme
             ? $website->theme->thumbnail( size => 'small' )
             : MT::Theme->default_theme_thumbnail( size => 'small' );
-        $row->{website_blog_count} = $data{ $website->id }->{blog_count};
-        $row->{website_page_count} = $data{ $website->id }->{page_count};
-        $row->{website_comment_count}
-            = $data{ $website->id }->{comment_count};
+
+        if ( !$param->{not_count} ) {
+            $row->{website_blog_count} = $data{ $website->id }->{blog_count};
+            $row->{website_entry_count}
+                = $data{ $website->id }->{entry_count};
+            $row->{website_page_count} = $data{ $website->id }->{page_count};
+            $row->{website_comment_count}
+                = $data{ $website->id }->{comment_count};
+        }
 
         my $perms = $user->permissions( $website->id );
+        $row->{can_access_to_entry_list} = 1
+            if ( $perms && $perms->can_do('access_to_entry_list') );
         $row->{can_access_to_template_list} = 1
             if ( $perms && $perms->can_do('access_to_template_list') );
         $row->{can_access_to_page_list} = 1
             if ( $perms && $perms->can_do('access_to_page_list') );
         $row->{can_access_to_blog_setting_screen} = 1
             if ( $perms && $perms->can_do('access_to_blog_config_screen') );
+        $row->{can_create_new_entry} = 1
+            if ( $perms && $perms->can_do('create_new_entry') );
         $row->{can_create_new_page} = 1
             if ( $perms && $perms->can_do('create_new_page') );
         $row->{can_apply_theme} = 1
@@ -917,7 +891,7 @@ sub _build_favorite_websites_data {
             if $blog_perms_cnt;
 
         my @num_vars = qw(
-            website_blog_count website_page_count website_comment_count
+            website_entry_count website_blog_count website_page_count website_comment_count
         );
         map { $row->{$_} = 0 if !defined $row->{$_} } @num_vars;
         push @param, $row;
@@ -977,47 +951,49 @@ sub _build_favorite_blogs_data {
 
     # Object count
     my %data;
-    require MT::Entry;
-    my $iter = MT::Entry->count_group_by(
-        {   class   => 'entry',
-            blog_id => \@blog_ids,
-            $param->{my_posts} ? ( author_id => $user->id ) : (),
-        },
-        { group => ['blog_id'], }
-    );
-    while ( my ( $count, $blog_id ) = $iter->() ) {
-        $data{$blog_id}->{entry_count} = $count;
-    }
-
-    require MT::Page;
-    my $page_iter = MT::Page->count_group_by(
-        {   class   => 'page',
-            blog_id => \@blog_ids,
-            $param->{my_posts} ? ( author_id => $user->id ) : (),
-        },
-        { group => ['blog_id'], }
-    );
-    while ( my ( $count, $blog_id ) = $page_iter->() ) {
-        $data{$blog_id}->{page_count} = $count;
-    }
-
-    require MT::Comment;
-    my $commnet_iter = MT::Comment->count_group_by(
-        { blog_id => \@blog_ids, },
-        {   group => ['blog_id'],
-            $param->{my_posts}
-            ? ( join => $app->model('entry')->join_on(
-                    undef,
-                    {   id        => \'=comment_entry_id',
-                        author_id => $user->id,
-                    },
-                )
-                )
-            : (),
+    if ( !$param->{not_count} ) {
+        require MT::Entry;
+        my $iter = MT::Entry->count_group_by(
+            {   class   => 'entry',
+                blog_id => \@blog_ids,
+                $param->{my_posts} ? ( author_id => $user->id ) : (),
+            },
+            { group => ['blog_id'], }
+        );
+        while ( my ( $count, $blog_id ) = $iter->() ) {
+            $data{$blog_id}->{entry_count} = $count;
         }
-    );
-    while ( my ( $count, $blog_id ) = $commnet_iter->() ) {
-        $data{$blog_id}->{comment_count} = $count;
+
+        require MT::Page;
+        my $page_iter = MT::Page->count_group_by(
+            {   class   => 'page',
+                blog_id => \@blog_ids,
+                $param->{my_posts} ? ( author_id => $user->id ) : (),
+            },
+            { group => ['blog_id'], }
+        );
+        while ( my ( $count, $blog_id ) = $page_iter->() ) {
+            $data{$blog_id}->{page_count} = $count;
+        }
+
+        require MT::Comment;
+        my $commnet_iter = MT::Comment->count_group_by(
+            { blog_id => \@blog_ids, },
+            {   group => ['blog_id'],
+                $param->{my_posts}
+                ? ( join => $app->model('entry')->join_on(
+                        undef,
+                        {   id        => \'=comment_entry_id',
+                            author_id => $user->id,
+                        },
+                    )
+                    )
+                : (),
+            }
+        );
+        while ( my ( $count, $blog_id ) = $commnet_iter->() ) {
+            $data{$blog_id}->{comment_count} = $count;
+        }
     }
 
     # Make object_loop data
@@ -1049,9 +1025,11 @@ sub _build_favorite_blogs_data {
             ? $blog->theme->thumbnail( size => 'small' )
             : MT::Theme->default_theme_thumbnail( size => 'small' );
 
-        $row->{blog_entry_count}   = $data{ $blog->id }->{entry_count};
-        $row->{blog_page_count}    = $data{ $blog->id }->{page_count};
-        $row->{blog_comment_count} = $data{ $blog->id }->{comment_count};
+        if ( !$param->{not_count} ) {
+            $row->{blog_entry_count}   = $data{ $blog->id }->{entry_count};
+            $row->{blog_page_count}    = $data{ $blog->id }->{page_count};
+            $row->{blog_comment_count} = $data{ $blog->id }->{comment_count};
+        }
 
         my $website = $blog->website;
         $row->{website_name} = $website->name;
@@ -1085,6 +1063,349 @@ sub _build_favorite_blogs_data {
     }
 
     return \@param;
+}
+
+sub site_stats_widget {
+    my $app = shift;
+    my ( $tmpl, $param ) = @_;
+
+    if ( $param->{blog_id} ) {
+        if ( !$app->user->is_superuser ) {
+            my $perm = MT::Permission->load(
+                {   author_id   => $app->user->id,
+                    blog_id     => $param->{blog_id},
+                    permissions => { not => "'comment'" }
+                }
+            );
+            $param->{no_permission} = 1
+                unless $perm;
+        }
+    }
+    else {
+        # Load favorite websites data
+        my $websites
+            = _build_favorite_websites_data( $app, { my_posts => 1 } );
+        foreach my $website (@$websites) {
+            my $row;
+            $row->{id}   = $website->{website_id};
+            $row->{name} = $website->{website_name};
+            push @{ $param->{object_loop} }, $row;
+        }
+
+        # Load favorite blogs data
+        my $blogs = _build_favorite_blogs_data( $app, { my_posts => 1 } );
+        foreach my $blog (@$blogs) {
+            my $row;
+            $row->{id}   = $blog->{blog_id};
+            $row->{name} = $blog->{blog_name};
+            push @{ $param->{object_loop} }, $row;
+        }
+
+        my $loop_count
+            = defined $param->{object_loop} ? @{ $param->{object_loop} } : 0;
+        if ( $loop_count > 1 ) {
+            @{ $param->{object_loop} }
+                = sort { $a->{name} cmp $b->{name} }
+                @{ $param->{object_loop} };
+            $param->{blog_id} = $param->{object_loop}->[0]->{id};
+        }
+        elsif ( $loop_count >= 1 ) {
+            $param->{blog_id} = $param->{object_loop}->[0]->{id};
+            $param->{name}    = $param->{object_loop}->[0]->{name};
+            delete $param->{object_loop};
+        }
+        else {
+            $param->{no_permission} = 1;
+        }
+    }
+
+    generate_site_stats_data( $app, $param )
+        or return
+        unless $param->{no_permission};
+
+    $param;
+}
+
+sub generate_site_stats_data {
+    my $app     = shift;
+    my ($param) = @_;
+    my $user    = $app->user;
+    my $blog_id = $param->{blog_id};
+    my $perms   = $app->user->permissions($blog_id)
+        or return $app->error( $app->translate("No permissions") );
+
+    my $cache_time = 60 * MT->config('StatsCacheTTL');   # cache for x minutes
+    my $stats_static_path = create_stats_directory( $app, $param ) or return;
+
+    my $file = "data_" . $blog_id . ".json";
+    $param->{stat_url} = $stats_static_path . '/' . $file;
+    my $path = File::Spec->catfile( $param->{support_path}, $file );
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    my $time = $fmgr->file_mod_time($path) if -f $path;
+
+    # Get readied provider
+    require MT::App::DataAPI;
+    my $blog = $app->model('blog')->load($blog_id);
+    my $provider = readied_provider( $app, $blog );
+    if ($provider) {
+        $param->{provider} = $provider;
+    }
+
+    # Get Registry
+    my $line_settings
+        = $app->registry( 'applications', 'cms', 'site_stats_lines' );
+
+    # Judge force purge cache
+    my $force_purge_cache = 0;
+    my $present_lines     = MT::Request->instance->cache('site_stats_lines');
+    unless ($present_lines) {
+        if ( $fmgr->exists($path) ) {
+            my $file = $fmgr->get_data( $path, 'output' );
+            my $data = MT::Util::from_json($file);
+            $present_lines = $data->{reg_keys} if $data;
+            MT::Request->instance->cache( 'site_stats_lines', $present_lines )
+                if $present_lines;
+        }
+    }
+    if ($present_lines) {
+        my $present_count = @$present_lines;
+        my $reg_count     = keys %$line_settings;
+        if ( $present_count != $reg_count ) {
+            $force_purge_cache = 1;
+        }
+        else {
+            foreach my $reg_key ( keys %$line_settings ) {
+                my $match = grep { $_ eq $reg_key } @$present_lines;
+                $force_purge_cache = 1 unless $match;
+            }
+        }
+    }
+
+    if (   $force_purge_cache
+        || ( lc( MT->config('StatsCachePublishing') ) eq 'off' )
+        || (   ( lc( MT->config('StatsCachePublishing') ) eq 'onload' )
+            && ( !$time || ( time - $time > $cache_time ) ) )
+        )
+    {
+        # Preparing dates of ten days ago.
+        require MT::Util;
+        my @ten_days_ago_tl
+            = MT::Util::offset_time_list( time - ( 10 * 24 * 60 * 60 ),
+            $blog_id );
+
+        # Preparing date array
+        my @dates;
+        for ( my $i = 9; $i >= 0; $i-- ) {
+            my @timelist
+                = MT::Util::offset_time_list( time - ( $i * 24 * 60 * 60 ),
+                $blog_id );
+            my $date = sprintf( '%04d-%02d-%02d',
+                $timelist[5] + 1900,
+                $timelist[4] + 1,
+                @timelist[ 3, 2, 1, 0 ] );
+            push @dates, $date;
+        }
+
+        my @maxes;
+        my @counts;
+        my @labels;
+        my $pv_today;
+        my $pv_yesterday;
+        my @reg_keys;
+
+        foreach my $key ( keys %$line_settings ) {
+            push @reg_keys, $key;
+
+            my $sub          = @counts;
+            my $line_setting = $line_settings->{$key};
+            if ( my $condition = $line_setting->{condition} ) {
+                $condition = MT->handler_to_coderef($condition);
+                next unless $condition->( $app, $param );
+            }
+            my $handler = $line_setting->{handler} || $line_setting->{code};
+            $handler = MT->handler_to_coderef($handler);
+            if ($handler) {
+                $counts[$sub] = $handler->( $app, \@ten_days_ago_tl, $param )
+                    or return;
+                $maxes[$sub] = 0;
+                foreach my $key ( keys %{ $counts[$sub] } ) {
+                    $maxes[$sub] = $counts[$sub]->{$key}
+                        if $maxes[$sub] < $counts[$sub]->{$key};
+                }
+                $labels[$sub] = $line_setting->{hlabel}
+                    || $app->translate('Not configured');
+
+                if ( $counts[$sub] && $key eq 'count_pageviews' ) {
+                    $pv_today     = $counts[$sub]->{ $dates[9] };
+                    $pv_yesterday = $counts[$sub]->{ $dates[8] };
+                }
+            }
+        }
+
+        my $max_sub = 0;
+        for ( my $i = 0; $i <= $#maxes; $i++ ) {
+            $max_sub = $i if $maxes[$max_sub] < $maxes[$i];
+        }
+        my @rate;
+        for ( my $i = 0; $i <= $#maxes; $i++ ) {
+            if ( $i == $max_sub ) {
+                push @rate, 1;
+            }
+            else {
+                my $rate = $maxes[$i] ? $maxes[$max_sub] / $maxes[$i] : 1;
+                push @rate, $rate;
+            }
+        }
+
+        my $result;
+        foreach my $date (@dates) {
+            my %row1 = ( x => $date );
+            my @row2;
+            for ( my $i = 0; $i <= $#counts; $i++ ) {
+                my $count
+                    = $counts[$i]->{$date}
+                    ? $counts[$i]->{$date} * $rate[$i]
+                    : 0;
+                my $sub = $i ? $i : '';
+                $row1{ 'y' . $sub } = $count;
+
+                my %row = (
+                    label => $labels[$i],
+                    count => defined $counts[$i]->{$date}
+                    ? $counts[$i]->{$date}
+                    : 0,
+                );
+                push @row2, \%row;
+            }
+            push @{ $result->{graph_data} }, \%row1;
+            push @{ $result->{hover_data}{data} }, \@row2;
+        }
+        $result->{pv_today}        = $pv_today;
+        $result->{pv_yesterday}    = $pv_yesterday;
+        $result->{reg_keys}        = \@reg_keys;
+        $result->{can_edit_config} = 1
+            if $perms->can_do('edit_config')
+            || $perms->can_do('set_publish_paths')
+            || $perms->can_do('administer_blog')
+            || $perms->can_do('administer');
+
+        $fmgr->put_data( MT::Util::to_json($result), $path );
+    }
+
+    delete $param->{provider};
+
+    1;
+}
+
+sub regenerate_site_stats_data {
+    my $app = shift;
+    $app->validate_magic() or return;
+
+    my $param;
+    $param->{blog_id} = $app->param('blog_id');
+
+    generate_site_stats_data( $app, $param ) or return;
+
+    my $result = { stat_url => $param->{stat_url} };
+    return $app->json_result($result);
+}
+
+sub site_stats_widget_lines {
+    my $app = shift;
+    my $pkg = 'MT::CMS::Dashboard::';
+
+    my $site_stats_lines = {
+        count_entries => {
+            hlabel  => 'Entry',
+            handler => "${pkg}site_stats_widget_entrycount_lines",
+        },
+        count_pageviews => {
+            hlabel    => 'Page Views',
+            condition => "${pkg}site_stats_widget_pageview_condition",
+            handler   => "${pkg}site_stats_widget_pageview_lines",
+        },
+    };
+
+    return $site_stats_lines;
+}
+
+sub site_stats_widget_entrycount_lines {
+    my $app = shift;
+    my ( $ten_days_ago_tl, $param ) = @_;
+
+    # Get Entry Counts
+    my $entry_class = $app->model('entry');
+    my $terms       = { status => MT::Entry::RELEASE() };
+    my $args        = {
+        group => [
+            "extract(year from authored_on)",
+            "extract(month from authored_on)",
+            "extract(day from authored_on)"
+        ],
+    };
+
+    my $earliest = sprintf(
+        '%04d%02d%02d%02d%02d%02d',
+        $ten_days_ago_tl->[5] + 1900, $ten_days_ago_tl->[4] + 1,
+        $ten_days_ago_tl->[3],        $ten_days_ago_tl->[2],
+        $ten_days_ago_tl->[1],        $ten_days_ago_tl->[0],
+    );
+    $terms->{authored_on} = [ $earliest, undef ];
+    $args->{range_incl}{authored_on} = 1;
+
+    $terms->{blog_id} = $param->{blog_id};
+
+    my $entry_iter = $entry_class->count_group_by( $terms, $args );
+    my %counts;
+    while ( my ( $count, $y, $m, $d ) = $entry_iter->() ) {
+        my $date = sprintf( "%04d-%02d-%02d", $y, $m, $d );
+        $counts{$date} = $count;
+    }
+    return \%counts;
+}
+
+sub site_stats_widget_pageview_condition {
+    my $app = shift;
+    my ($param) = @_;
+
+    return $param->{provider} ? 1 : 0;
+}
+
+sub site_stats_widget_pageview_lines {
+    my $app = shift;
+    my ( $ten_days_ago_tl, $param ) = @_;
+
+    my $blog_id = $param->{blog_id};
+
+    # Get readied provider
+    my $provider = $param->{provider};
+
+    # Get PVs
+    my $ten_days_ago = sprintf( '%04d-%02d-%02d',
+        $ten_days_ago_tl->[5] + 1900,
+        $ten_days_ago_tl->[4] + 1,
+        $ten_days_ago_tl->[3],
+    );
+    my @ts = MT::Util::offset_time_list( time, $blog_id );
+    my $today = sprintf( '%04d-%02d-%02d',
+        $ts[5] + 1900,
+        $ts[4] + 1,
+        @ts[ 3, 2, 1, 0 ] );
+    my $for_date = $provider->pageviews_for_date(
+        $app,
+        {   startDate => $ten_days_ago,
+            endDate   => $today,
+        }
+    ) or return undef;
+
+    my @items = @{ $for_date->{items} };
+    my %counts;
+    foreach my $item (@items) {
+        $counts{ $item->{date} } = $item->{pageviews};
+    }
+    return \%counts;
 }
 
 1;

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id: Search.pm 4464 2009-09-29 12:06:58Z fumiakiy $
 package MT::CMS::Search;
@@ -115,12 +115,12 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1
                     if $author->permissions( $_[0]->blog_id )
-                        ->can_do('manage_feedback');
+                    ->can_do('manage_feedback');
 
                 my $entry = MT->model('entry')->load( $_[0]->entry_id );
                 return 1
                     if $author->permissions( $entry->blog_id )
-                        ->can_edit_entry( $entry, $author );
+                    ->can_edit_entry( $entry, $author );
 
                 return 0;
             },
@@ -186,14 +186,14 @@ sub core_search_apis {
                     my $entry = MT->model('entry')->load( $tb->entry_id );
                     return 1
                         if $author->permissions( $entry->blog_id )
-                            ->can_do('manage_feedback')
-                            || $author->permissions( $entry->blog_id )
-                            ->can_edit_entry( $entry, $author );
+                        ->can_do('manage_feedback')
+                        || $author->permissions( $entry->blog_id )
+                        ->can_edit_entry( $entry, $author );
                 }
                 elsif ( $tb->category_id ) {
                     return 1
                         if $author->permissions( $tb->blog_id )
-                            ->can_do('search_category_trackbacks');
+                        ->can_do('search_category_trackbacks');
                 }
                 return 0;
             },
@@ -301,7 +301,7 @@ sub core_search_apis {
                     unless $obj->blog_id;
                 return 1
                     if $author->permissions( $obj->blog_id )
-                        ->can_do('search_templates');
+                    ->can_do('search_templates');
 
                 return 0;
             },
@@ -508,7 +508,7 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1
                     if $author->is_superuser
-                        || $author->permissions(0)->can_do('edit_templates');
+                    || $author->permissions(0)->can_do('edit_templates');
                 my ($obj) = @_;
                 my $perm = $author->permissions( $obj->id );
                 return $perm && ( $perm->blog_id == $obj->id ) ? 1 : 0;
@@ -792,7 +792,10 @@ sub do_search_replace {
 
     # type-specific directives override global CMSSearchLimit
     my $directive = 'CMSSearchLimit' . ucfirst($type);
-    $limit = MT->config->$directive || MT->config->CMSSearchLimit || 125;
+    $limit
+        = MT->config->$directive
+        || MT->config->CMSSearchLimit
+        || MT->config->default('CMSSearchLimit');
 
     # don't allow passed limit to be higher than config limit
     if ( $q->param('limit') && ( $q->param('limit') < $limit ) ) {
@@ -833,7 +836,7 @@ sub do_search_replace {
                     if (   $blog
                         && !$blog->is_blog
                         && ( $author->permissions($blog_id)
-                               ->has('manage_member_blogs')
+                            ->has('manage_member_blogs')
                             || $author->is_superuser )
                         )
                     {
@@ -1015,9 +1018,9 @@ sub do_search_replace {
                         foreach my $iter (@streams) {
                             next
                                 if !exists $iter->{head}
-                                    || !$which
-                                    || !${$which}->{head}
-                                    || !defined( $iter->{head} );
+                                || !$which
+                                || !${$which}->{head}
+                                || !defined( $iter->{head} );
                             if ( $iter->{head}->created_on
                                 > ${$which}->{head}->created_on )
                             {
@@ -1067,7 +1070,7 @@ sub do_search_replace {
         while ( my $obj = $iter->() ) {
             next
                 unless $author->is_superuser
-                    || $app->handler_to_coderef( $api->{perm_check} )->($obj);
+                || $app->handler_to_coderef( $api->{perm_check} )->($obj);
             my $match = 0;
             unless ($show_all) {
                 for my $col (@cols) {
@@ -1216,7 +1219,7 @@ sub do_search_replace {
     my %res = (
         error => $q->param('error') || '',
         limit => $limit,
-        limit_all => $limit eq 'all',
+        limit_all           => $limit eq 'all',
         count_matches       => $matches,
         replace_count       => $replace_count,
         "search_$type"      => 1,

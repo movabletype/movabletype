@@ -52,7 +52,7 @@ jQuery(function() {
      help_section="website_theme">
     <select name="website_theme">
     <mt:loop name="theme_loop">
-      <option value="<mt:var name="key" escape="html">"<mt:if name="key" eq='$config.DefaultWebsiteTheme'> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+      <option value="<mt:var name="value" escape="html">"<mt:if name="value" eq='$config.DefaultWebsiteTheme'> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
     </mt:loop>
     </select>
   </mtapp:setting>

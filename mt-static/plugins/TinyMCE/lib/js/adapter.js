@@ -1,7 +1,7 @@
 /*
- * Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
- * This program is distributed under the terms of the
- * GNU General Public License, version 2.
+ * Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+ * This code cannot be redistributed without permission from www.sixapart.com.
+ * For more information, consult your Movable Type license.
  *
  * $Id$
  */
@@ -70,6 +70,14 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
                 }
             },
             'template/template.htm': {
+                top: function() {
+                    var height = $(window).height() - 110,
+                        vp     = tinymce.DOM.getViewPort();
+                    return Math.round(Math.max(vp.y, vp.y + (vp.h / 2.0) - ((height+60) / 2.0)));
+                },
+                height: function() {
+                    return $(window).height() - 110;
+                },
                 onload: function(context) {
                     var window = context['iframe'].contentWindow;
                     var dialog = window.TemplateDialog;
@@ -164,10 +172,17 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             resize: 'none'
         });
         if (tinyMCE.isIE8) {
-            adapter.$editorTextarea.css({
-                'min-width': '100%',
-                padding: '0px'
-            });
+            // The workaround for IE8 textarea bug.
+            // The "width" value is overwrote by the "max-width" and the "min-width".
+            // But this workaround requires the "width" value.
+            adapter.$editorTextarea
+                .css({
+                    'width': '100px',
+                    'min-width': '100%',
+                    'max-width': '100%',
+                    padding: '0px'
+                })
+                .attr('cols', '5000');
         }
         adapter.$editorTextareaParent = adapter.$editorTextarea.parent();
         adapter.$editorElement = adapter.$editorTextarea;
@@ -185,6 +200,10 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             .replace(/^,+|,+$/g, '').replace(/"/g, '&qquot;');
         config['body_class'] =
             config['body_class'] + ' ' + adapter.commonOptions['body_class_list'].join(' ')
+        if (! ('plugin_mt_tainted_input' in config)) {
+            config['plugin_mt_tainted_input'] = adapter.commonOptions['tainted_input'];
+        }
+
         if (! config['body_id']) {
             config['body_id'] = adapter.id;
         }
@@ -410,6 +429,10 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                     target: adapter.$editorTextarea.get(0)
                 });
             });
+        });
+
+        ed.onSaveContent.add(function(ed, o) {
+            o.content = o.content.replace(/\u00a0/g, '\u0020');
         });
 
         ed.addCommand('mtSetFormat', function(format) {

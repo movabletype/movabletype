@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2006-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2006-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -34,13 +34,13 @@ use vars qw( %Lexicon );
 	'Select to apply this trigger to all blogs in this website.' => 'ウェブサイト内のすべてのブログでトリガーを有効にする。',
 	'(All websites and blogs in this system)' => '(システム内のすべてのウェブサイトとブログ)',
 	'Select to apply this trigger to all websites and blogs in this system.' => 'システム内のすべてのウェブサイトとブログでトリガーを有効にする。',
-	'saves an entry/page' => 'ブログ記事とウェブページの保存時',
-	'publishes an entry/page' => 'ブログ記事とウェブページの公開時',
+	'saves an entry/page' => '記事とウェブページの保存時',
+	'publishes an entry/page' => '記事とウェブページの公開時',
 	'publishes a comment' => 'コメントの公開時',
 	'publishes a TrackBack' => 'トラックバックの公開時',
 	'rebuild indexes.' => 'インデックスを再構築する',
 	'rebuild indexes and send pings.' => 'インデックスを再構築して更新pingを送信する',
-	'Updating trigger cache of MultiBlog...' => 'トリガーの設定を更新しています...',
+	'Updating the MultiBlog trigger cache...' => 'トリガーの設定を更新しています...',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => ' ',

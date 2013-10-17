@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -139,6 +139,10 @@ On error, returns C<undef>; see L<ERROR HANDLING>, below.
 
 Returns true if the file or directory I<$path> exists, false otherwise.
 
+=head2 $fmgr->can_write($path)
+
+Returns true if user can write into I<$path>, false otherwise.
+
 =head2 $fmgr->mkpath($path)
 
 Creates the path I<$path> recursively; in other words, if any of the
@@ -153,6 +157,18 @@ Renames the file or directory I<$src> to I<$dest>. Returns true on success.
 
 On error, returns C<undef>; see L<ERROR HANDLING>, below.
 
+=head2 $fmgr->delete($path)
+
+Removes the file I<$path>. Returns true on success.
+
+On error, returns C<undef>; see L<ERROR HANDLING>, below.
+
+=head2 $fmgr->rmdir($path)
+
+Removes the directory I<$path>. Returns true on success.
+
+On error, returns C<undef>; see L<ERROR HANDLING>, below.
+
 =head2 content_is_updated($file, $content)
 
 Returns true if the contents of I<$file> differs from the value in
@@ -161,6 +177,10 @@ I<$content>.
 =head2 $fmgr->file_mod_time($file)
 
 Returns the modification timestamp for I<$file>.
+
+=head2 $fmgr->file_size($file)
+
+Returns the size for I<$file>.
 
 =head2 $fmgr->is_handle($file)
 

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Blog;
@@ -179,6 +179,7 @@ sub edit {
             $param->{'max_revisions_template'}
                 = (    $obj->max_revisions_template
                     || $MT::Revisable::MAX_REVISIONS );
+            $param->{publish_empty_archive} = $obj->publish_empty_archive;
         }
         elsif ( $output eq 'cfg_entry.tmpl' ) {
             ## load entry preferences for new/edit entry page of the blog
@@ -304,6 +305,10 @@ sub edit {
         $param->{nav_config} = 1;
         $param->{error} = $app->errstr if $app->errstr;
     }
+    elsif ( $param->{output} && $param->{output} eq 'cfg_web_services.tmpl' )
+    {
+        # System level web services settings.
+    }
     else {
         return $app->return_to_dashboard( redirect => 1 )
             if !$blog || ( $blog && $blog->is_blog() );
@@ -354,17 +359,19 @@ sub edit {
         $param->{site_path_absolute} = $obj->is_site_path_absolute;
     }
 
-    if ( !$blog->is_blog() ) {
-        $param->{website_path}
-            = File::Spec->catfile( $blog->column('site_path'), '' )
-            if $blog->column('site_path');
-        $param->{website_url} = $blog->column('site_url');
-    }
-    elsif ( my $website = $blog->website() ) {
-        $param->{website_path}
-            = File::Spec->catfile( $website->column('site_path'), '' )
-            if $website->column('site_path');
-        $param->{website_url} = $website->site_url;
+    if ($blog) {
+        if ( !$blog->is_blog() ) {
+            $param->{website_path}
+                = File::Spec->catfile( $blog->column('site_path'), '' )
+                if $blog->column('site_path');
+            $param->{website_url} = $blog->column('site_url');
+        }
+        elsif ( my $website = $blog->website() ) {
+            $param->{website_path}
+                = File::Spec->catfile( $website->column('site_path'), '' )
+                if $website->column('site_path');
+            $param->{website_url} = $website->site_url;
+        }
     }
     if ( exists $param->{website_path} ) {
         my $sep = MT::Util::dir_separator;
@@ -399,30 +406,28 @@ sub cfg_prefs {
         or return $app->error(
         $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
-    if ( $blog->is_blog() ) {
-        my @data;
-        for my $at ( split /\s*,\s*/, $blog->archive_type ) {
-            my $archiver = $app->publisher->archiver($at);
-            next unless $archiver;
-            next if 'entry' ne $archiver->entry_class;
-            my $archive_label = $archiver->archive_label;
-            $archive_label = $at unless $archive_label;
-            $archive_label = $archive_label->()
-                if ( ref $archive_label ) eq 'CODE';
-            push @data,
-                {
-                archive_type_translated => $archive_label,
-                archive_type            => $at,
-                archive_type_is_preferred =>
-                    ( $blog->archive_type_preferred eq $at ? 1 : 0 ),
-                };
-        }
-        @data = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @data;
-        unless ( grep $_->{archive_type_is_preferred}, @data ) {
-            $param{no_preferred_archive_type} = 1;
-        }
-        $param{entry_archive_types} = \@data;
+    my @data;
+    for my $at ( split /\s*,\s*/, $blog->archive_type ) {
+        my $archiver = $app->publisher->archiver($at);
+        next unless $archiver;
+        next if 'entry' ne $archiver->entry_class;
+        my $archive_label = $archiver->archive_label;
+        $archive_label = $at unless $archive_label;
+        $archive_label = $archive_label->()
+            if ( ref $archive_label ) eq 'CODE';
+        push @data,
+            {
+            archive_type_translated => $archive_label,
+            archive_type            => $at,
+            archive_type_is_preferred =>
+                ( $blog->archive_type_preferred eq $at ? 1 : 0 ),
+            };
     }
+    @data = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @data;
+    unless ( grep $_->{archive_type_is_preferred}, @data ) {
+        $param{no_preferred_archive_type} = 1;
+    }
+    $param{entry_archive_types} = \@data;
 
     $param{saved_deleted}    = 1 if $q->param('saved_deleted');
     $param{saved_added}      = 1 if $q->param('saved_added');
@@ -579,16 +584,37 @@ sub cfg_web_services {
     my $app     = shift;
     my $q       = $app->param;
     my $blog_id = scalar $q->param('blog_id');
-    return $app->return_to_dashboard( redirect => 1 )
-        unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
+
+    my @config_templates = ();
+    my $web_services     = $app->registry('web_services');
+    for my $k (%$web_services) {
+        my $plugin = $web_services->{$k}{plugin};
+        my $tmpl   = $web_services->{$k}{config_template}
+            or next;
+
+        if ( ref $tmpl eq 'HASH' ) {
+            $tmpl = MT->handler_to_coderef( $tmpl->{code} );
+        }
+
+        push @config_templates,
+            {
+            tmpl => (
+                  ref $tmpl eq 'CODE' ? $tmpl->( $plugin, @_ )
+                : $plugin             ? $plugin->load_tmpl($tmpl)
+                :                       $app->load_tmpl($tmpl)
+            )
+            };
+    }
+
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward(
         "view",
-        {   output       => 'cfg_web_services.tmpl',
-            screen_class => 'settings-screen web-services-settings'
+        {   output           => 'cfg_web_services.tmpl',
+            screen_class     => 'settings-screen web-services-settings',
+            config_templates => \@config_templates,
         }
     );
 }
@@ -713,7 +739,7 @@ sub rebuild_pages {
             return $app->errtrans( 'Cannot load template #[_1].', $tmpl_id );
         return $app->permission_denied()
             unless $app->user->permissions( $tmpl_saved->blog_id )
-                ->can_do('rebuild');
+            ->can_do('rebuild');
 
         $app->rebuild_indexes(
             BlogID   => $blog_id,
@@ -728,7 +754,7 @@ sub rebuild_pages {
         my $entry = MT::Entry->load($entry_id);
         return $app->permission_denied()
             if !$perms->can_edit_entry( $entry, $app->user )
-                && !$perms->can_republish_entry( $entry, $app->user );
+            && !$perms->can_republish_entry( $entry, $app->user );
         $app->rebuild_entry(
             Entry             => $entry,
             BuildDependencies => 1,
@@ -747,7 +773,7 @@ sub rebuild_pages {
                 $template_id );
             return $app->permission_denied()
                 unless $app->user->permissions( $tmpl->blog_id )
-                    ->can_do('rebuild');
+                ->can_do('rebuild');
         }
         elsif ($map_id) {
             my $map = MT->model('templatemap')->load($map_id)
@@ -755,7 +781,7 @@ sub rebuild_pages {
                 $map_id );
             return $app->permission_denied()
                 unless $app->user->permissions( $map->blog_id )
-                    ->can_do('rebuild');
+                ->can_do('rebuild');
         }
 
         $offset = $q->param('offset') || 0;
@@ -817,7 +843,7 @@ sub rebuild_pages {
                     $template_id );
                 return $app->permission_denied()
                     unless $app->user->permissions( $tmpl->blog_id )
-                        ->can_do('rebuild');
+                    ->can_do('rebuild');
             }
             elsif ($map_id) {
                 my $map = MT->model('templatemap')->load($map_id)
@@ -825,7 +851,7 @@ sub rebuild_pages {
                     $map_id );
                 return $app->permission_denied()
                     unless $app->user->permissions( $map->blog_id )
-                        ->can_do('rebuild');
+                    ->can_do('rebuild');
             }
 
             $offset = $q->param('offset') || 0;
@@ -1578,7 +1604,7 @@ sub pre_save {
                 = 1;
             $param{words_in_excerpt} = 40
                 unless defined $param{words_in_excerpt}
-                    && $param{words_in_excerpt} ne '';
+                && $param{words_in_excerpt} ne '';
             if ( $app->param('days_or_posts') eq 'days' ) {
                 $obj->days_on_index( $app->param('list_on_index') );
                 $obj->entries_on_index(0);
@@ -1659,11 +1685,12 @@ sub post_save {
     my $perms = $app->permissions;
     return 1
         unless $app->user->is_superuser
-            || (  $obj->is_blog
-                ? $app->user->can_create_blog
-                : $app->user->can_create_website
-            )
-            || ( $perms && $perms->can_edit_config );
+        || (
+          $obj->is_blog
+        ? $app->user->can_create_blog
+        : $app->user->can_create_website
+        )
+        || ( $perms && $perms->can_edit_config );
 
     # check to see what changed and add a flag to meta_messages
     my @meta_messages = ();
@@ -1976,8 +2003,8 @@ sub save_filter {
         return $eh->error(
             MT->translate("Please choose a preferred archive type.") )
             if $app->blog->is_blog
-                && (   !$app->param('no_archives_are_active')
-                    && !$app->param('preferred_archive_type') );
+            && ( !$app->param('no_archives_are_active')
+            && !$app->param('preferred_archive_type') );
     }
     return 1;
 }
@@ -2082,6 +2109,7 @@ sub build_blog_table {
     my $blog_class    = $app->model('blog');
     my $tbp_class     = $app->model('ping');
     my $entry_class   = $app->model('entry');
+    my $page_class    = $app->model('page');
     my $comment_class = $app->model('comment');
 
     my $iter;
@@ -2102,7 +2130,7 @@ sub build_blog_table {
     my $can_edit_authors = $app->can_do('edit_authors');
     my @data;
     my $i;
-    my ( $entry_count, $ping_count, $comment_count );
+    my ( $entry_count, $page_count, $ping_count, $comment_count );
     while ( my $blog = $iter->() ) {
         my $blog_id = $blog->id;
         my $row     = {
@@ -2117,8 +2145,8 @@ sub build_blog_table {
             $row->{website_id}            = $website->id;
             $row->{can_access_to_website} = 1
                 if $website
-                    && (   $author->is_superuser
-                        || $author->permissions( $website->id ) );
+                && ( $author->is_superuser
+                || $author->permissions( $website->id ) );
         }
 
         if ( $app->mode ne 'dialog_select_weblog' ) {
@@ -2128,7 +2156,14 @@ sub build_blog_table {
                   $entry_count
                 ? $entry_count->{$blog_id}
                 : $entry_count->{$blog_id}
-                    = MT::Entry->count( { blog_id => $blog_id } )
+                    = $entry_class->count( { blog_id => $blog_id } )
+                )
+                || 0;
+            $row->{num_pages} = (
+                  $page_count
+                ? $page_count->{$blog_id}
+                : $page_count->{$blog_id}
+                    = $page_class->count( { blog_id => $blog_id } )
                 )
                 || 0;
             $row->{num_comments} = (
@@ -2155,6 +2190,7 @@ sub build_blog_table {
             if ( $author->is_superuser ) {
                 $row->{can_create_post}       = 1;
                 $row->{can_edit_entries}      = 1;
+                $row->{can_edit_pages}        = 1;
                 $row->{can_edit_templates}    = 1;
                 $row->{can_edit_config}       = 1;
                 $row->{can_set_publish_paths} = 1;
@@ -2164,6 +2200,7 @@ sub build_blog_table {
                 my $perms = $author->permissions($blog_id);
                 $row->{can_create_post}    = $perms->can_do('create_post');
                 $row->{can_edit_entries}   = $perms->can_do('create_post');
+                $row->{can_edit_pages}     = $perms->can_do('manage_pages');
                 $row->{can_edit_templates} = $perms->can_do('edit_templates');
                 $row->{can_edit_config}    = $perms->can_do('edit_config');
                 $row->{can_set_publish_paths}
@@ -2217,13 +2254,13 @@ sub cfg_prefs_save {
         }
         $blog->site_path( $app->param('site_path_absolute') )
             if !$app->config->BaseSitePath
-                && $app->param('use_absolute')
-                && $app->param('site_path_absolute');
+            && $app->param('use_absolute')
+            && $app->param('site_path_absolute');
         $blog->archive_path( $app->param('archive_path_absolute') )
             if !$app->config->BaseSitePath
-                && $app->param('enable_archive_paths')
-                && $app->param('use_absolute_archive')
-                && $app->param('archive_path_absolute');
+            && $app->param('enable_archive_paths')
+            && $app->param('use_absolute_archive')
+            && $app->param('archive_path_absolute');
     }
 
     require MT::PublishOption;
@@ -2682,10 +2719,10 @@ sub prepare_dynamic_publishing {
     ## Don't re-create when files are there in callback.
     return 1
         if !defined($cache)
-            && !defined($conditional)
-            && ( 'MT::Callback' eq ref($cb) )
-            && ( -f $htaccess_path )
-            && ( -f $mtview_path );
+        && !defined($conditional)
+        && ( 'MT::Callback' eq ref($cb) )
+        && ( -f $htaccess_path )
+        && ( -f $mtview_path );
 
     require URI;
     my $mtview_server_url = new URI($site_url);
@@ -2882,7 +2919,7 @@ sub clone {
 
     return $app->permission_denied()
         unless $app->user->permissions( $blog->website->id )
-            ->can_do('clone_blog');
+        ->can_do('clone_blog');
 
     $param->{'id'}            = $blog->id;
     $param->{'new_blog_name'} = $app->param('new_blog_name')
@@ -3052,7 +3089,8 @@ sub clone {
     require File::Spec;
     $param->{parent_id} = $website->id;
     $param->{parent_path}
-        = File::Spec->catfile( $website->site_path ) . MT::Util->dir_separator
+        = File::Spec->catfile( $website->site_path )
+        . MT::Util->dir_separator
         if $website->site_path;
     $param->{blog_id} = $app->param('blog_id');
 
@@ -3329,9 +3367,9 @@ sub cms_pre_load_filtered_list {
     my $terms = $load_options->{terms};
     $terms->{parent_id} = $load_options->{blog_id}
         if $app->blog;
-    $terms->{class} = 'blog';
+    $terms->{class} = 'blog' unless $terms->{class} eq '*';
 
-    my $user = $app->user;
+    my $user = $load_options->{user} || $app->user;
     return   if $user->is_superuser;
     return 1 if $user->permissions(0)->can_do('edit_templates');
 
@@ -3342,13 +3380,23 @@ sub cms_pre_load_filtered_list {
         }
     );
 
-    my $blog_ids;
+    my $blog_ids = [];
     while ( my $perm = $iter->() ) {
-        my $blog = $perm->blog;
-        push @$blog_ids, $perm->blog_id
-            if $blog && $blog->class eq 'blog';
+        push @$blog_ids, $perm->blog_id if $perm->blog_id;
     }
-    if ($blog_ids) {
+    if ( $terms->{class} eq '*' ) {
+        push @$blog_ids,
+            map { $_->parent_id } $app->model('blog')->load(
+            { class     => 'blog', id => $blog_ids },
+            { fetchonly => ['parent_id'] }
+            );
+    }
+
+    if ( $blog_ids && @$blog_ids ) {
+        if ( $terms->{class} eq '*' ) {
+            delete $terms->{class};
+            $load_options->{args}{no_class} = 1;
+        }
         $terms->{id} = $blog_ids;
     }
     else {

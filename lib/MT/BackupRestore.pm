@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -52,7 +52,6 @@ sub core_backup_instructions {
         'placement'   => { 'order' => 510 },
         'trackback'   => { 'order' => 510 },
         'objecttag'   => { 'order' => 510 },
-        'objectscore' => { 'order' => 510 },
         'objectasset' => { 'order' => 510 },
         'filter'      => { 'order' => 510 },
 
@@ -65,6 +64,9 @@ sub core_backup_instructions {
         # because saving a comment ultimately triggers
         # MT::TBPing::save.
         'comment' => { 'order' => 530 },
+
+        # ObjetScore should be backed up after Comment.
+        'objectscore' => { 'order' => 540 },
 
         # Session, config and TheSchwartz packages are never backed up.
         'session'       => { 'skip' => 1 },
@@ -114,8 +116,8 @@ sub _populate_obj_to_backup {
         next if $class eq $key;    # FIXME: to remove plugin object_classes
         next
             if exists( $instructions->{$key} )
-                && exists( $instructions->{$key}{skip} )
-                && $instructions->{$key}{skip};
+            && exists( $instructions->{$key}{skip} )
+            && $instructions->{$key}{skip};
         next if exists $populated{$class};
         my $order
             = exists( $instructions->{$key} )
@@ -241,8 +243,8 @@ sub _create_obj_to_backup {
             next if exists $populated->{$p_class};
             next
                 if exists( $instructions->{$parent} )
-                    && exists( $instructions->{$parent}{skip} )
-                    && $instructions->{$parent}{skip};
+                && exists( $instructions->{$parent}{skip} )
+                && $instructions->{$parent}{skip};
             my $p_order
                 = exists( $instructions->{$parent} )
                 && exists( $instructions->{$parent}{order} )
@@ -574,7 +576,8 @@ sub restore_directory {
 
     my $manifest;
     my @files;
-    opendir my $dh, $dir
+    opendir my $dh,
+        $dir
         or push( @$errors,
         MT->translate( "Cannot open directory '[_1]': [_2]", $dir, "$!" ) ),
         return undef;
@@ -692,7 +695,7 @@ sub restore_asset {
         else {
             $voldir =~ s|/$||
                 unless $voldir eq
-                    '/';    ## OS X doesn't like / at the end in mkdir().
+                '/';    ## OS X doesn't like / at the end in mkdir().
             unless ( $fmgr->exists($voldir) ) {
                 $fmgr->mkpath($voldir)
                     or $errors->{$id}
@@ -729,26 +732,9 @@ sub _sync_asset_id {
     my $new_text = $text;
 
     $new_text
-        =~ s!<form([^>]*?\s)mt:asset-id=(["'])(\d+)(["'])([^>]*?)>(.+?)</form>!
-        my $old_id = $3;
-        my $result = '';
-        if ( my $asset = $related->{$old_id} ) {
-            $result = '<form' . $1 . 'mt:asset-id=' . $2 . $asset->id . $4 . $5 . '>';
-            my $html = $6;
-            my $filename = quotemeta(encode_url($asset->file_name));
-            my $url = $asset->url;
-            my @children = MT->model('asset')->load(
-                { parent => $asset->id, blog_id => $asset->blog_id, class => '*' }
-            );
-            my %children = map {
-                $_->id => {
-                    'filename' => quotemeta(encode_url($_->file_name)),
-                    'url' => $_->url
-                }
-            } @children;
-            $result .= $html . '</form>';
-        }
-        $result;
+        =~ s!(<form[^>]*?\s)mt:asset-id=(["'])(\d+)(["'])(?=[^>]*?>.+?</form>)!
+        my $asset = $related->{$3};
+        $1 . ( $asset ? ( 'mt:asset-id=' . $2 . $asset->id . $4 ) : ' ' );
     !igem;
     return $new_text ? $new_text : $text;
 }
@@ -878,7 +864,8 @@ sub cb_restore_objects {
         if ( $entry->class == 'entry' ) {
             $callback->(
                 MT->translate(
-                    "Restoring asset associations in entry ... ( [_1] )", $i++
+                    "Restoring asset associations in entry ... ( [_1] )",
+                    $i++
                 ),
                 'cb-restore-entry-asset'
             );
@@ -1226,8 +1213,8 @@ sub restore_parent_ids {
                 $result = 1 if exists( $val->{optional} ) && $val->{optional};
                 $data->{$key} = -1
                     if !$result
-                        && ( exists( $val->{orphanize} )
-                            && $val->{orphanize} );
+                    && ( exists( $val->{orphanize} )
+                    && $val->{orphanize} );
                 $done += $result;
             }
         }
@@ -1544,6 +1531,24 @@ sub parents {
 
 package MT::Template;
 
+sub backup_terms_args {
+    my $class = shift;
+    my ($blog_ids) = @_;
+
+    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
+        return {
+            terms => { 'blog_id' => $blog_ids },
+            args  => { sort => 'type' },
+        };
+    }
+    else {
+        return {
+            terms => undef,
+            args  => { sort => 'type' },
+        };
+    }
+}
+
 sub parents {
     my $obj = shift;
     { blog_id => [ MT->model('blog'), MT->model('website') ], };
@@ -1598,6 +1603,14 @@ sub restore_parent_ids {
         }
     }
     $result;
+}
+
+sub parents {
+    my $obj = shift;
+    {   blog_id     => [ MT->model('blog'),     MT->model('website') ],
+        entry_id    => [ MT->model('entry'),    MT->model('page') ],
+        category_id => [ MT->model('category'), MT->model('folder') ],
+    };
 }
 
 package MT::ObjectAsset;

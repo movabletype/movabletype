@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Entry;
@@ -27,7 +27,7 @@ sub edit {
         my $blog_class = $app->model('blog');
         my $blog       = $blog_class->load($blog_id);
         return $app->return_to_dashboard( redirect => 1 )
-            if ( !$blog || ( !$blog->is_blog && $type eq 'entry' ) );
+            if !$blog;
     }
 
     # to trigger autosave logic in main edit routine
@@ -126,6 +126,12 @@ sub edit {
         $param->{'authored_on_time'} = $q->param('authored_on_time')
             || format_ts( "%H:%M:%S", $obj->authored_on, $blog,
             $app->user ? $app->user->preferred_language : undef );
+        $param->{'unpublished_on_date'} = $q->param('unpublished_on_date')
+            || format_ts( "%Y-%m-%d", $obj->unpublished_on, $blog,
+            $app->user ? $app->user->preferred_language : undef );
+        $param->{'unpublished_on_time'} = $q->param('unpublished_on_time')
+            || format_ts( "%H:%M:%S", $obj->unpublished_on, $blog,
+            $app->user ? $app->user->preferred_language : undef );
 
         $param->{num_comments} = $id ? $obj->comment_count : 0;
         $param->{num_pings}    = $id ? $obj->ping_count    : 0;
@@ -178,6 +184,9 @@ sub edit {
                 = $obj_author
                 ? $obj_author->name
                 : MT->translate('*User deleted*');
+            $param->{from_email} = 1
+                if ( ( $obj_author && $obj_author->email )
+                || $app->config('EmailAddressMain') );
         }
 
         $app->load_list_actions( $type, $param );
@@ -255,6 +264,8 @@ sub edit {
             || POSIX::strftime( "%Y-%m-%d", @now );
         $param->{authored_on_time} = $q->param('authored_on_time')
             || POSIX::strftime( "%H:%M:%S", @now );
+        $param->{unpublished_on_date} = $q->param('unpublished_on_date');
+        $param->{unpublished_on_time} = $q->param('unpublished_on_time');
     }
 
     ## show the necessary associated assets
@@ -668,6 +679,7 @@ sub list {
         ? 'edit_all_pages'
         : 'edit_all_entries';
 PERMCHECK: {
+
         if ($blog_id) {
             last PERMCHECK if $app->can_do($perm_action);
         }
@@ -686,50 +698,42 @@ PERMCHECK: {
     }
     my $terms_ref = \%terms;
 
-    if ($app->user->is_superuser) {
+    if ( $app->user->is_superuser ) {
         $terms{blog_id} = $blog_ids;
     }
     else {
-        my @permissions = 
-            grep { $_->can_do($perm_action) }
-            $app->model('permission')->load( 
-                { 
-                    author_id => $app->user->id, 
-                    ( $blog_id ? ( blog_id => $blog_ids ) : () ),
-                } );
-        my @full_perms = 
-            grep { $_->can_do($perm_action_all) } 
-            @permissions;
-        my @self_perms = 
-            grep { not $_->can_do($perm_action_all) } 
-            @permissions;
-        if (0 == @self_perms) {
+        my @permissions
+            = grep { $_->can_do($perm_action) }
+            $app->model('permission')->load(
+            {   author_id => $app->user->id,
+                ( $blog_id ? ( blog_id => $blog_ids ) : () ),
+            }
+            );
+        my @full_perms = grep { $_->can_do($perm_action_all) } @permissions;
+        my @self_perms
+            = grep { not $_->can_do($perm_action_all) } @permissions;
+        if ( 0 == @self_perms ) {
             $terms{blog_id} = [ map { $_->blog_id } @full_perms ];
         }
-        elsif (0 == @full_perms) {
+        elsif ( 0 == @full_perms ) {
             $terms{blog_id} = [ map { $_->blog_id } @self_perms ];
             $terms{author_id} = $app->user->id;
         }
         else {
-            $terms_ref = 
-                [ 
-                    \%terms, 
-                    '-and',
-                    [
-                        { 
-                            blog_id => [ map { $_->blog_id } @full_perms ],
-                        },
-                        '-or',
-                        {
-                            blog_id => [ map { $_->blog_id } @self_perms ],
-                            author_id => $app->user->id,
-                        }
-                    ],  
-                ];
+            $terms_ref = [
+                \%terms,
+                '-and',
+                [   { blog_id => [ map { $_->blog_id } @full_perms ], },
+                    '-or',
+                    {   blog_id => [ map { $_->blog_id } @self_perms ],
+                        author_id => $app->user->id,
+                    }
+                ],
+            ];
         }
     }
 
-    $terms{class}   = $type;
+    $terms{class} = $type;
     my $limit = $list_pref->{rows};
     my $offset = $app->param('offset') || 0;
 
@@ -1149,11 +1153,17 @@ sub _build_entry_preview {
         $entry->{__tag_objects} = \@tags;
     }
 
-    my $date = $q->param('authored_on_date');
-    my $time = $q->param('authored_on_time');
-    my $ts   = $date . $time;
-    $ts =~ s/\D//g;
-    $entry->authored_on($ts);
+    my $ao_date = $q->param('authored_on_date');
+    my $ao_time = $q->param('authored_on_time');
+    my $ao_ts   = $ao_date . $ao_time;
+    $ao_ts =~ s/\D//g;
+    $entry->authored_on($ao_ts);
+
+    my $uo_date = $q->param('unpublished_on_date');
+    my $uo_time = $q->param('unpublished_on_time');
+    my $uo_ts   = $uo_date . $uo_time;
+    $uo_ts =~ s/\D//g;
+    $entry->unpublished_on($uo_ts);
 
     my $preview_basename = $app->preview_object_basename;
     $entry->basename( $q->param('basename') || $preview_basename );
@@ -1209,7 +1219,7 @@ sub _build_entry_preview {
     $ctx->stash( 'entry',    $entry );
     $ctx->stash( 'blog',     $blog );
     $ctx->stash( 'category', $cat ) if $cat;
-    $ctx->{current_timestamp}    = $ts;
+    $ctx->{current_timestamp}    = $ao_ts;
     $ctx->{current_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );
 
@@ -1288,6 +1298,14 @@ sub _build_entry_preview {
             );
             $sess_obj->start(time);
             $sess_obj->save;
+
+            # In the preview screen, in order to use the site URL of the blog,
+            # there is likely to be mixed-contents.(http and https)
+            # If MT is configured to do 'PreviewInNewWindow', MT will open preview
+            # screen on the new window/tab.
+            if ( $app->config('PreviewInNewWindow') ) {
+                return $app->redirect( $preview_url );
+            }
         }
         else {
             $fullscreen = 1;
@@ -1319,6 +1337,7 @@ sub _build_entry_preview {
                 || $col eq 'modified_by'
                 || $col eq 'authored_on'
                 || $col eq 'author_id'
+                || $col eq 'unpublished_on'
                 || $col eq 'pinged_urls'
                 || $col eq 'tangent_cache'
                 || $col eq 'template_id'
@@ -1334,7 +1353,7 @@ sub _build_entry_preview {
             };
     }
     for my $data (
-        qw( authored_on_date authored_on_time basename_manual basename_old category_ids tags include_asset_ids save_revision revision-note )
+        qw( authored_on_date authored_on_time unpublished_on_date unpublished_on_time basename_manual basename_old category_ids tags include_asset_ids save_revision revision-note )
         )
     {
         push @data,
@@ -1544,6 +1563,8 @@ sub save {
             || $app->param('allow_pings') eq '';
     my $ao_d = $app->param('authored_on_date');
     my $ao_t = $app->param('authored_on_time');
+    my $uo_d = $app->param('unpublished_on_date');
+    my $uo_t = $app->param('unpublished_on_time');
 
     if ( !$id ) {
 
@@ -1665,6 +1686,81 @@ sub save {
             ( $6 || 0 );
         $obj->authored_on($ts);
     }
+    if (   $perms->can_do("edit_${type}_unpublished_on")
+        && $obj->status != MT::Entry::UNPUBLISH() )
+    {
+        if ( $uo_d || $uo_t ) {
+            my %param = ();
+            my $uo    = $uo_d . ' ' . $uo_t;
+            $param{error} = $app->translate(
+                "Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.",
+                $uo
+                )
+                unless ( $uo
+                =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
+                );
+            unless ( $param{error} ) {
+                my $s = $6 || 0;
+                $param{error} = $app->translate(
+                    "Invalid date '[_1]'; 'Unpublished on' dates should be real dates.",
+                    $uo
+                    )
+                    if (
+                       $s > 59
+                    || $s < 0
+                    || $5 > 59
+                    || $5 < 0
+                    || $4 > 23
+                    || $4 < 0
+                    || $2 > 12
+                    || $2 < 1
+                    || $3 < 1
+                    || ( MT::Util::days_in( $2, $1 ) < $3
+                        && !MT::Util::leap_day( $0, $1, $2 ) )
+                    );
+            }
+            my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5,
+                ( $6 || 0 );
+            require MT::DateTime;
+            unless ( $param{error} ) {
+                $param{error} = $app->translate(
+                    "Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.",
+                    $uo
+                    )
+                    if (
+                    MT::DateTime->compare(
+                        blog => $blog,
+                        a    => { value => time(), type => 'epoch' },
+                        b    => $ts
+                    ) > 0
+                    );
+            }
+            if ( !$param{error} && $obj->authored_on ) {
+                $param{error} = $app->translate(
+                    "Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.",
+                    $uo
+                    )
+                    if (
+                    MT::DateTime->compare(
+                        blog => $blog,
+                        a    => $obj->authored_on,
+                        b    => $ts
+                    ) > 0
+                    );
+            }
+            $param{show_input_unpublished_on} = 1 if $param{error};
+            $param{return_args} = $app->param('return_args');
+            return $app->forward( "view", \%param ) if $param{error};
+            if ( $obj->unpublished_on ) {
+                $previous_old = $obj->previous(1);
+                $next_old     = $obj->next(1);
+            }
+            $obj->unpublished_on($ts);
+        }
+        else {
+            $obj->unpublished_on(undef);
+        }
+    }
     my $is_new = $obj->id ? 0 : 1;
 
     MT::Util::translate_naughty_words($obj);
@@ -1688,6 +1784,21 @@ sub save {
             $class->class_label, $obj->errstr
         )
         );
+
+    # Clear cache for site stats dashboard widget.
+    if (!$id
+        || ((   ( $obj->status || 0 ) == MT::Entry::RELEASE()
+                || $status_old eq MT::Entry::RELEASE()
+            )
+            && $status_old != $obj->status
+        )
+        )
+    {
+        require MT::Util;
+        MT::Util::clear_site_stats_widget_cache($blog_id)
+            or
+            return $app->error( translate('Removing stats cache failed.') );
+    }
 
     ## look if any assets have been included/removed from this entry
     require MT::Asset;
@@ -1731,40 +1842,9 @@ sub save {
         }
     }
 
-    my $message;
-    if ($is_new) {
-        $message
-            = $app->translate( "[_1] '[_2]' (ID:[_3]) added by user '[_4]'",
-            $class->class_label, $obj->title, $obj->id, $author->name );
-    }
-    elsif ( $orig_obj->status ne $obj->status ) {
-        $message = $app->translate(
-            "[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'",
-            $class->class_label,
-            $obj->title,
-            $obj->id,
-            $app->translate( MT::Entry::status_text( $orig_obj->status ) ),
-            $app->translate( MT::Entry::status_text( $obj->status ) ),
-            $author->name
-        );
-
-    }
-    else {
-        $message
-            = $app->translate( "[_1] '[_2]' (ID:[_3]) edited by user '[_4]'",
-            $class->class_label, $obj->title, $obj->id, $author->name );
-    }
-    require MT::Log;
-    $app->log(
-        {   message => $message,
-            level   => MT::Log::INFO(),
-            class   => $type,
-            $is_new ? ( category => 'new' ) : ( category => 'edit' ),
-            metadata => $obj->id
-        }
-    );
-
     my $error_string = MT::callback_errstr();
+
+    my $placements_updated;
 
     ## Now that the object is saved, we can be certain that it has an
     ## ID. So we can now add/update/remove the primary placement.
@@ -1782,15 +1862,15 @@ sub save {
         $place->save;
         my $cat = $cat_class->load($cat_id);
         $obj->cache_property( 'category', undef, $cat );
+        $placements_updated = 1;
     }
     else {
         if ($place) {
             $place->remove;
             $obj->cache_property( 'category', undef, undef );
+            $placements_updated = 1;
         }
     }
-
-    my $placements_updated;
 
     # save secondary placements...
     my @place = MT::Placement->load(
@@ -1826,7 +1906,6 @@ sub save {
     if ($placements_updated) {
         unshift @add_cat_obj, $obj->cache_property('category')
             if $obj->cache_property('category');
-        $obj->cache_property( 'categories', undef, [] );
         $obj->cache_property( 'categories', undef, \@add_cat_obj );
     }
 
@@ -1941,23 +2020,17 @@ PERMCHECK: {
                 last PERMCHECK if $app->can_do($action);
             }
             else {
-                my $blogs = $blog->blogs;
-                my $blog_ids;
-                my @map = map { $_->id } @$blogs;
+                my $blogs    = $blog->blogs;
+                my $blog_ids = [ $blog->id ];
+                my @map      = map { $_->id } @$blogs;
                 push @$blog_ids, map { $_->id } @{ $blog->blogs };
 
-                my $terms = {
-                    author_id => $app->user->id,
-                    ( $blog_ids ? ( blog_id => $blog_ids ) : () ),
-                };
-                my $iter = MT->model('permission')->load_iter($terms);
-                if ($iter) {
-                    my $cond = 1;
-                    while ( my $p = $iter->() ) {
-                        last if !$p->can_do($action);
-                    }
-                    last PERMCHECK if $cond;
-                }
+                last PERMCHECK
+                    if $app->user->can_do(
+                    $action,
+                    blog_id      => $blog_ids,
+                    at_least_one => 1,
+                    );
             }
         }
         else {
@@ -2038,6 +2111,32 @@ PERMCHECK: {
                 # FIXME: Should be assigning the publish_date field here
                 my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4,
                     $5, $s;
+
+                if ( $col eq 'authored_on' && $entry->unpublished_on ) {
+                    require MT::DateTime;
+                    return $app->error(
+                        $app->translate(
+                            "Invalid date '[_1]'; 'Published on' dates should be earlier than the corresponding 'Unpublished on' date '[_2]'.",
+                            $val,
+                            format_ts(
+                                "%Y-%m-%d %H:%M:%S",
+                                $entry->unpublished_on,
+                                $blog,
+                                $app->user
+                                ? $app->user->preferred_language
+                                : undef
+                            )
+                        )
+                        )
+                        if (
+                        MT::DateTime->compare(
+                            blog => $blog,
+                            a    => $ts,
+                            b    => $entry->unpublished_on
+                        ) > 0
+                        );
+                }
+
                 $entry->$col($ts);
             };
 
@@ -2049,6 +2148,13 @@ PERMCHECK: {
             $date_closure->(
                 $co, 'modified_on', MT->translate('modified on')
             ) or return;
+
+            # Clear Unpublish Date
+            if (   $old_status == MT::Entry::UNPUBLISH()
+                && $entry->status == MT::Entry::RELEASE() )
+            {
+                $entry->unpublished_on(undef);
+            }
         }
         $app->run_callbacks( 'cms_pre_save.' . $type,
             $app, $entry, $orig_obj )
@@ -2151,15 +2257,15 @@ PERMCHECK: {
     $app->call_return;
 }
 
-sub send_pings {
+sub do_send_pings {
     my $app = shift;
-    my $q   = $app->param;
-    $app->validate_magic() or return;
+    my ( $blog_id, $entry_id, $old_status, $callback ) = @_;
+
     require MT::Entry;
     require MT::Blog;
-    my $blog = MT::Blog->load( scalar $q->param('blog_id') )
+    my $blog = MT::Blog->load($blog_id)
         or return $app->errtrans('Invalid request');
-    my $entry = MT::Entry->load( scalar $q->param('entry_id') )
+    my $entry = MT::Entry->load($entry_id)
         or return $app->errtrans('Invalid request');
 
     return $app->permission_denied()
@@ -2174,7 +2280,7 @@ sub send_pings {
     my $results = $app->ping_and_save(
         Blog      => $blog,
         Entry     => $entry,
-        OldStatus => scalar $q->param('old_status')
+        OldStatus => $old_status,
     ) or return;
     my $has_errors = 0;
     require MT::Log;
@@ -2191,8 +2297,29 @@ sub send_pings {
             }
             ) unless $res->{good};
     }
-    _finish_rebuild_ping( $app, $entry, scalar $q->param('is_new'),
-        $has_errors );
+
+    $callback->($has_errors);
+}
+
+sub send_pings {
+    my $app = shift;
+    my $q   = $app->param;
+    $app->validate_magic() or return;
+
+    my $entry_id = $q->param('entry_id');
+
+    do_send_pings(
+        $app,
+        scalar $q->param('blog_id'),
+        $entry_id,
+        scalar $q->param('old_status'),
+        sub {
+            my ($has_errors) = @_;
+            my $entry = $app->model('entry')->load($entry_id);
+            _finish_rebuild_ping( $app, $entry, scalar $q->param('is_new'),
+                $has_errors );
+        }
+    );
 }
 
 sub pinged_urls {
@@ -2310,8 +2437,7 @@ sub open_batch_editor {
     else {
         my $blogs = $blog->blogs;
         @blog_ids = map { $_->id } @$blogs;
-        push @blog_ids, $blog->id
-            if $type eq 'page';
+        push @blog_ids, $blog->id;
     }
 
     if ( !$app->user->is_superuser ) {
@@ -2634,6 +2760,37 @@ sub quickpost_js {
     );
 }
 
+sub can_save {
+    my ( $eh, $app, $id, $obj, $original ) = @_;
+
+    my $perms = $app->permissions
+        or return 0;
+
+    if ($id) {
+        $original
+            ||= MT->model('entry')->load( { class => 'entry', id => $id } )
+            or return 0;
+
+        return 0
+            unless $perms->can_edit_entry( $original, $app->user );
+        return 0
+            if ( ( $obj && $obj->status != $original->status )
+            || ( !$obj && $original->status ne $app->param('status') ) )
+            && !( $perms->can_edit_entry( $original, $app->user, 1 ) );
+    }
+    else {
+        return 0
+            unless $perms->can_do('create_new_entry');
+        return 0
+            if $obj
+                && $obj->status != MT::Entry::HOLD()
+                && !$perms->can_do('publish_own_entry')
+                && !$perms->can_do('publish_all_entry');
+    }
+
+    1;
+}
+
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
     my $perms = $app->permissions;
@@ -2714,9 +2871,49 @@ sub pre_save {
 
 sub post_save {
     my $eh = shift;
-    my ( $app, $obj ) = @_;
-    my $sess_obj = $app->autosave_session_obj;
-    $sess_obj->remove if $sess_obj;
+    my ( $app, $obj, $orig_obj ) = @_;
+    if ( $app->can('autosave_session_obj') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        $sess_obj->remove if $sess_obj;
+    }
+
+    return 1 unless $orig_obj;
+
+    my $author = $app->user;
+
+    my $message;
+    if ( !$orig_obj->id ) {
+        $message
+            = $app->translate( "[_1] '[_2]' (ID:[_3]) added by user '[_4]'",
+            $obj->class_label, $obj->title, $obj->id, $author->name );
+    }
+    elsif ( $orig_obj->status ne $obj->status ) {
+        $message = $app->translate(
+            "[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'",
+            $obj->class_label,
+            $obj->title,
+            $obj->id,
+            $app->translate( MT::Entry::status_text( $orig_obj->status ) ),
+            $app->translate( MT::Entry::status_text( $obj->status ) ),
+            $author->name
+        );
+
+    }
+    else {
+        $message
+            = $app->translate( "[_1] '[_2]' (ID:[_3]) edited by user '[_4]'",
+            $obj->class_label, $obj->title, $obj->id, $author->name );
+    }
+    require MT::Log;
+    $app->log(
+        {   message => $message,
+            level   => MT::Log::INFO(),
+            class   => $obj->class,
+            $orig_obj->id ? ( category => 'edit' ) : ( category => 'new' ),
+            metadata => $obj->id
+        }
+    );
+
     1;
 }
 
@@ -2786,6 +2983,20 @@ sub update_entry_status {
         my $old_status = $entry->status;
         $entry->status($new_status);
         $entry->save() and $rebuild_these{$id} = 1;
+
+        # Clear cache for site stats dashboard widget.
+        if ((      $entry->status == MT::Entry::RELEASE()
+                || $old_status == MT::Entry::RELEASE()
+            )
+            && $old_status != $entry->status
+            )
+        {
+            require MT::Util;
+            MT::Util::clear_site_stats_widget_cache( $entry->blog_id )
+                or return $app->error(
+                translate('Removing stats cache failed.') );
+        }
+
         my $message = $app->translate(
             "[_1] '[_2]' (ID:[_3]) status changed from [_4] to [_5]",
             $entry->class_label,
@@ -2909,6 +3120,12 @@ sub delete {
         my $child_hash = $rebuild_recipe{ $obj->blog->id } || {};
         MT::__merge_hash( $child_hash, \%recipe );
         $rebuild_recipe{ $obj->blog->id } = $child_hash;
+
+        # Clear cache for site stats dashboard widget.
+        require MT::Util;
+        MT::Util::clear_site_stats_widget_cache( $obj->blog->id )
+            or
+            return $app->error( translate('Removing stats cache failed.') );
     }
 
     $app->add_return_arg( saved_deleted => 1 );
@@ -2959,12 +3176,20 @@ sub cms_pre_load_filtered_list {
     my $user = $app->user;
     return if $user->is_superuser;
 
-    my $blog_id = $app->param('blog_id') || 0;
-    my $blog = $blog_id ? $app->blog : undef;
-    my $blog_ids
-        = !$blog         ? undef
-        : $blog->is_blog ? [$blog_id]
-        :                  [ map { $_->id } @{ $blog->blogs } ];
+    my $terms = $load_options->{terms} || {};
+    my $blog_ids = delete $terms->{blog_id}
+        if exists $terms->{blog_id};
+    delete $terms->{author_id}
+        if exists $terms->{author_id};
+
+    if ( !$blog_ids ) {
+        my $blog_id = $app->param('blog_id') || 0;
+        my $blog = $blog_id ? $app->blog : undef;
+        $blog_ids
+            = !$blog         ? undef
+            : $blog->is_blog ? [$blog_id]
+            :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
+    }
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
@@ -2988,16 +3213,10 @@ sub cms_pre_load_filtered_list {
         push @$filters, ( '-or', $user_filter );
     }
 
-    my $terms = $load_options->{terms} || {};
-    delete $terms->{blog_id}
-        if exists $terms->{blog_id};
-    delete $terms->{author_id}
-        if exists $terms->{author_id};
-
     my $new_terms;
     push @$new_terms, ($terms)
         if ( keys %$terms );
-    push @$new_terms, ( '-and', $filters );
+    push @$new_terms, ( '-and', $filters || { blog_id => 0 } );
     $load_options->{terms} = $new_terms;
 }
 

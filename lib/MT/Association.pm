@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -516,6 +516,26 @@ the group_id property is undefined.
 
 Returns the L<MT::Role> object tied to this association. Returns undef if
 the role_id property is undefined.
+
+=head2 $assoc->save()
+
+Saves this association and rebuilds its permission.
+
+=head2 $assoc->remove([\%terms])
+
+Removes this association and optionally, constrains the set with I<%terms>.
+
+=head2 MT::Association->class_label
+
+Returns the localized descriptive name for this class.
+
+=head2 MT::Association->class_label_plural
+
+Returns the localized, plural descriptive name for this class.
+
+=head2 MT::Association->list_props
+
+Returns the list_properties registry of this class.
 
 =head2 MT::Association->objects_to_terms(@things)
 

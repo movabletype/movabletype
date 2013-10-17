@@ -40,8 +40,15 @@ sub _new_socket
 
     unless ($sock) {
 	# IO::Socket::INET leaves additional error messages in $@
-	$@ =~ s/^.*?: //;
-	die "Can't connect to $host:$port ($@)";
+	my $status = "Can't connect to $host:$port";
+	if ($@ =~ /\bconnect: (.*)/ ||
+	    $@ =~ /\b(Bad hostname)\b/ ||
+	    $@ =~ /\b(certificate verify failed)\b/ ||
+	    $@ =~ /\b(Crypt-SSLeay can't verify hostnames)\b/
+	) {
+	    $status .= " ($1)";
+	}
+	die "$status\n\n$@";
     }
 
     # perl 5.005's IO::Socket does not have the blocking method.
@@ -127,9 +134,9 @@ sub request
     # check method
     my $method = $request->method;
     unless ($method =~ /^[A-Za-z0-9_!\#\$%&\'*+\-.^\`|~]+$/) {  # HTTP token
-	return new HTTP::Response &HTTP::Status::RC_BAD_REQUEST,
+	return HTTP::Response->new( &HTTP::Status::RC_BAD_REQUEST,
 				  'Library does not allow method ' .
-				  "$method for 'http:' URLs";
+				  "$method for 'http:' URLs");
     }
 
     my $url = $request->uri;
@@ -153,6 +160,16 @@ sub request
 
     # connect to remote site
     my $socket = $self->_new_socket($host, $port, $timeout);
+
+    my $http_version = "";
+    if (my $proto = $request->protocol) {
+	if ($proto =~ /^(?:HTTP\/)?(1.\d+)$/) {
+	    $http_version = $1;
+	    $socket->http_version($http_version);
+	    $socket->send_te(0) if $http_version eq "1.0";
+	}
+    }
+
     $self->_check_sock($request, $socket);
 
     my @h;
@@ -237,7 +254,15 @@ sub request
 	my $eof;
 	my $wbuf;
 	my $woffset = 0;
-	if (ref($content_ref) eq 'CODE') {
+      INITIAL_READ:
+	if ($write_wait) {
+	    # skip filling $wbuf when waiting for 100-continue
+	    # because if the response is a redirect or auth required
+	    # the request will be cloned and there is no way
+	    # to reset the input stream
+	    # return here via the label after the 100-continue is read
+	}
+	elsif (ref($content_ref) eq 'CODE') {
 	    my $buf = &$content_ref();
 	    $buf = "" unless defined($buf);
 	    $buf = sprintf "%x%s%s%s", length($buf), $CRLF, $buf, $CRLF
@@ -260,7 +285,7 @@ sub request
 	vec($fbits, fileno($socket), 1) = 1;
 
       WRITE:
-	while ($woffset < length($$wbuf)) {
+	while ($write_wait || $woffset < length($$wbuf)) {
 
 	    my $sel_timeout = $timeout;
 	    if ($write_wait) {
@@ -316,6 +341,7 @@ sub request
 		    if ($code eq "100") {
 			$write_wait = 0;
 			undef($code);
+			goto INITIAL_READ;
 		    }
 		    else {
 			$drop_connection++;
@@ -419,43 +445,6 @@ sub request
 
 #-----------------------------------------------------------
 package LWP::Protocol::http::SocketMethods;
-
-sub sysread {
-    my $self = shift;
-    if (my $timeout = ${*$self}{io_socket_timeout}) {
-	die "read timeout" unless $self->can_read($timeout);
-    }
-    else {
-	# since we have made the socket non-blocking we
-	# use select to wait for some data to arrive
-	$self->can_read(undef) || die "Assert";
-    }
-    sysread($self, $_[0], $_[1], $_[2] || 0);
-}
-
-sub can_read {
-    my($self, $timeout) = @_;
-    my $fbits = '';
-    vec($fbits, fileno($self), 1) = 1;
-  SELECT:
-    {
-        my $before;
-        $before = time if $timeout;
-        my $nfound = select($fbits, undef, undef, $timeout);
-        if ($nfound < 0) {
-            if ($!{EINTR} || $!{EAGAIN}) {
-                # don't really think EAGAIN can happen here
-                if ($timeout) {
-                    $timeout -= time - $before;
-                    $timeout = 0 if $timeout < 0;
-                }
-                redo SELECT;
-            }
-            die "select failed: $!";
-        }
-        return $nfound > 0;
-    }
-}
 
 sub ping {
     my $self = shift;

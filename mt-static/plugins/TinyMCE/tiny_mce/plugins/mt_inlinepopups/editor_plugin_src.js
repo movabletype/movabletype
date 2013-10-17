@@ -1,7 +1,7 @@
 /*
- * Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
- * This program is distributed under the terms of the
- * GNU General Public License, version 2.
+ * Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+ * This code cannot be redistributed without permission from www.sixapart.com.
+ * For more information, consult your Movable Type license.
  *
  * $Id$
  */
@@ -41,6 +41,15 @@
                     $.each(sizes, function(k, v) {
                         if ((new RegExp(k + '$')).test(url)) {
                             f = $.extend({}, f, v);
+
+                            $.each([
+                                'width', 'height', 'min_width', 'min_height',
+                                'max_width', 'max_height', 'left', 'top'
+                            ], function(i, k) {
+                                if (f[k] && typeof f[k] === 'function') {
+                                    f[k] = f[k].call(ed);
+                                }
+                            });
                         }
                     });
                 }

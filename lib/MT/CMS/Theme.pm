@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Theme;
@@ -22,34 +22,31 @@ sub list {
 
     if ( !$blog ) {
         ## System wide screen.
-        $param{website_theme_loop}
-            = _build_theme_table( classes => { website => 1 } );
-        $param{blog_theme_loop}
-            = _build_theme_table( classes => { blog => 1 } );
-        $param{both_theme_loop}
-            = _build_theme_table( classes => { both => 1 } );
+        $param{theme_in_used_loop} = _build_theme_table(
+            classes => { website => 1, blog => 1, both => 1 },
+            in_used => 1,
+        );
+        $param{installed_theme_loop} = _build_theme_table(
+            classes => { website => 1, blog => 1, both => 1 },
+            in_used => 0,
+        );
     }
     else {
         my $current_theme = $blog->theme;
         $param{current_theme_loop} = _build_theme_table(
             current => $current_theme,
-            classes => { current => 1, },
+            classes => { current => 1 },
             blog    => $blog,
         );
-        if ( $blog->is_blog ) {
-            $param{theme_loop} = _build_theme_table(
-                current => $current_theme,
-                classes => { blog => 1, both => 1 },
-                blog    => $blog,
-            );
-        }
-        else {
-            $param{theme_loop} = _build_theme_table(
-                current => $current_theme,
-                classes => { website => 1, both => 1 },
-                blog    => $blog,
-            );
-        }
+        $param{available_theme_loop} = _build_theme_table(
+            current => $current_theme,
+            classes => {
+                $blog->is_blog ? () : ( website => 1 ),
+                blog => 1,
+                both => 1,
+            },
+            blog => $blog,
+        );
         $param{current_theme_name} = $current_theme->label if $current_theme;
     }
     $param{nav_config}   = 1;
@@ -72,7 +69,7 @@ sub list {
 sub _build_theme_table {
     my (%opts) = @_;
     my $classes = $opts{classes};
-    my @data;
+    my ( @website_data, @blog_data );
     my $current = $opts{current} || '';
     $current = $current->{id} if ref $current;
     my $current_theme;
@@ -113,14 +110,26 @@ sub _build_theme_table {
         $theme{blog_count}
             = MT::Blog->count( { class => '*', theme_id => $theme->id } );
 
+        if ( exists $opts{in_used} ) {
+            next if $opts{in_used} xor $theme{blog_count};
+        }
+
         if ( $theme{current} ) {
             $current_theme = \%theme;
         }
         else {
-            push @data, \%theme;
+            if ( $theme->{class} eq 'website' ) {
+                push @website_data, \%theme;
+            }
+            else {
+                push @blog_data, \%theme;
+            }
         }
     }
-    @data = sort { $a->{label} cmp $b->{label} } @data;
+    my @data = (
+        ( sort { $a->{label} cmp $b->{label} } @website_data ),
+        ( sort { $a->{label} cmp $b->{label} } @blog_data ),
+    );
     unshift @data, $current_theme if $current_theme;
     return \@data;
 }
@@ -156,7 +165,7 @@ sub dialog_select_theme {
                 thumb_w     => $_->{thumb_w},
                 thumb_h     => $_->{thumb_h},
                 }
-            } @$list
+        } @$list
     };
     $app->load_tmpl( 'dialog/select_theme.tmpl', \%param );
 }
@@ -284,7 +293,7 @@ sub export {
     );
 
     for my $param (@save_params) {
-        my $val 
+        my $val
             = $saved_core_values->{$param}
             || $param_default{$param}
             || '';
@@ -427,7 +436,7 @@ sub do_export {
     my $q    = $app->param;
     my $cfg  = $app->config;
     my $blog = $app->blog;
-    my $theme_id 
+    my $theme_id
         = dirify( $q->param('theme_id') )
         || dirify( $q->param('theme_name') )
         || 'theme_from_' . dirify( $blog->name )

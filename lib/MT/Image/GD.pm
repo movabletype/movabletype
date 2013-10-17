@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id: Image.pm 5319 2010-02-22 00:07:51Z auno $
 
@@ -16,6 +16,7 @@ sub load_driver {
     if ( my $err = $@ ) {
         return $image->error( MT->translate( "Cannot load GD: [_1]", $err ) );
     }
+    GD::Image->trueColor(1);
     1;
 }
 
@@ -65,6 +66,8 @@ sub scale {
     my ( $w, $h ) = $image->get_dimensions(@_);
     my $src = $image->{gd};
     my $gd = GD::Image->new( $w, $h, 1 );    # True color image (24 bit)
+    $gd->alphaBlending(0);
+    $gd->saveAlpha(1);
     $gd->copyResampled( $src, 0, 0, 0, 0, $w, $h, $image->{width},
         $image->{height} );
     ( $image->{gd}, $image->{width}, $image->{height} ) = ( $gd, $w, $h );
@@ -77,7 +80,13 @@ sub crop {
     my ( $size, $x, $y ) = @param{qw( Size X Y )};
     my $src = $image->{gd};
     my $gd = GD::Image->new( $size, $size, 1 );    # True color image (24 bit)
-    $gd->copy( $src, 0, 0, $x, $y, $size, $size );
+    $gd->alphaBlending(0);
+    $gd->saveAlpha(1);
+
+    # Use copyResampled() instead of copy(),
+    # because copy() with libgd 2.0.35 or lower does not work correctly.
+    # $gd->copy( $src, 0, 0, $x, $y, $size, $size );
+    $gd->copyResampled( $src, 0, 0, $x, $y, $size, $size, $size, $size );
     ( $image->{gd}, $image->{width}, $image->{height} )
         = ( $gd, $size, $size );
     wantarray ? ( $image->blob, $size, $size ) : $image->blob;
