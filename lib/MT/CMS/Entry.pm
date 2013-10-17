@@ -7,12 +7,15 @@ package MT::CMS::Entry;
 
 use strict;
 use MT::Util qw( format_ts relative_date remove_html encode_html encode_js
-    encode_url archive_file_for offset_time_list break_up_text first_n_words );
+    encode_url archive_file_for offset_time_list break_up_text first_n_words
+    untainted_param );
 use MT::I18N qw( const wrap_text );
 
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
+
+    $param->{$_} = untainted_param( $app, $_ ) for qw(text text_more);
 
     my $q          = $app->param;
     my $type       = $q->param('_type');
