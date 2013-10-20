@@ -330,7 +330,7 @@ sub global_perms {
                 else {
 
                     # arg == 0 - remove it
-                    $cur_perm =~ s/'$perm',?// if defined $cur_perm;
+                    $cur_perm =~ s/,'$perm'$|'$perm',?// if defined $cur_perm;
 
                    # the "has no permission" status is NULL, not empty string.
                     if ( ( $cur_perm || '' ) eq '' ) {
@@ -363,9 +363,9 @@ sub global_perms {
             # test for global-level permission
             return 1
                 if $_[0]->author_id
-                    && $_[0]->blog_id
-                    && $_[0]->global_perms
-                    && $_[0]->global_perms->has($perm);
+                && $_[0]->blog_id
+                && $_[0]->global_perms
+                && $_[0]->global_perms->has($perm);
             return undef;
         };
     }
