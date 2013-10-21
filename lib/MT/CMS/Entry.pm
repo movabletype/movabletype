@@ -15,7 +15,10 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    $param->{$_} = untainted_param( $app, $_ ) for qw(text text_more);
+    for my $k (qw(text text_more)) {
+        next unless $app->param($k);
+        $param->{$k} = untainted_param( $app, $k );
+    }
 
     my $q          = $app->param;
     my $type       = $q->param('_type');
