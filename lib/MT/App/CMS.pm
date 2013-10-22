@@ -4901,6 +4901,37 @@ sub setup_editor_param {
     }
 }
 
+sub archetype_editor_is_enabled {
+    my ( $app, $param ) = @_;
+
+    if ( !( $param->{editors} || $param->{rich_editor} ) ) {
+        $param = {};
+        $app->setup_editor_param($param);
+    }
+
+    return !$param->{editors}
+        && lc( $app->config('RichTextEditor') ) eq 'archetype';
+}
+
+sub sanitize_tainted_param {
+    my ( $app, $param, $keys ) = @_;
+
+    die '$param->{tainted_input} does not exist'
+        unless exists $param->{tainted_input};
+
+    return 1 unless $param->{tainted_input};
+
+    require MT::Sanitize;
+    for my $k (@$keys) {
+        die '$param->{' . $k . '} does not exist' unless exists $param->{$k};
+
+        if ( my $v = $app->param($k) ) {
+            $param->{$k} = MT::Sanitize->sanitize( $v,
+                $app->config->GlobalSanitizeSpec );
+        }
+    }
+}
+
 sub pre_run {
     my $app = shift;
     $app->SUPER::pre_run(@_) or return;
