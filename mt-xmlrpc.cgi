@@ -25,6 +25,7 @@ sub BEGIN {
 }
 
 use XMLRPC::Transport::HTTP;
+use XMLRPC::Transport::HTTP::FCGI;
 use MT::XMLRPCServer;
 
 $MT::XMLRPCServer::MT_DIR = $MT_DIR;
@@ -35,7 +36,29 @@ use vars qw($server);
     ## unitialized value warnings that seem to be connected to
     ## the soap->action
     local $SIG{__WARN__} = sub { };
-    $server = XMLRPC::Transport::HTTP::CGI->new;
+
+    my $not_fast_cgi = 0;
+    $not_fast_cgi ||= exists $ENV{$_}
+        for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
+    $server
+        = $not_fast_cgi
+        ? XMLRPC::Transport::HTTP::CGI->new
+        : do {
+
+        # Avoid imitating nph- cgi for IIS in SOAP::Transport::HTTP::CGI,
+        # because imitating makes some HTTP status code incorrect.
+        {
+            my $handle = \&SOAP::Transport::HTTP::CGI::handle;
+            no warnings;
+            *SOAP::Transport::HTTP::CGI::handle = sub {
+                local $ENV{SERVER_SOFTWARE};
+                $handle->(@_);
+            };
+        }
+
+        MT::XMLRPCServer::Util::mt_new;
+        XMLRPC::Transport::HTTP::FCGI->new;
+        };
     $server->dispatch_to( 'blogger', 'metaWeblog', 'mt', 'wp' );
     $server->handle;
 }
