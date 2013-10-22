@@ -44,6 +44,18 @@ use vars qw($server);
         = $not_fast_cgi
         ? XMLRPC::Transport::HTTP::CGI->new
         : do {
+
+        # Avoid imitating nph- cgi for IIS in SOAP::Transport::HTTP::CGI,
+        # because imitating makes some HTTP status code incorrect.
+        {
+            my $handle = \&SOAP::Transport::HTTP::CGI::handle;
+            no warnings;
+            *SOAP::Transport::HTTP::CGI::handle = sub {
+                local $ENV{SERVER_SOFTWARE};
+                $handle->(@_);
+            };
+        }
+
         MT::XMLRPCServer::Util::mt_new;
         XMLRPC::Transport::HTTP::FCGI->new;
         };
