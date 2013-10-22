@@ -522,6 +522,9 @@ sub edit {
     }
 
     $app->setup_editor_param($param);
+    if ( $app->archetype_editor_is_enabled ) {
+        $app->sanitize_tainted_param( $param, [qw(text text_more)] );
+    }
 
     $param->{object_type}  = $type;
     $param->{object_label} = $class->class_label;
