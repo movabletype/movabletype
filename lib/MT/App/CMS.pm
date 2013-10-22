@@ -614,6 +614,13 @@ sub init_request {
         $app->{requires_login} = 0;
         $app->mode('upgrade');
     }
+
+    # Check ImageDriver here because GD cannot be loaded
+    # when using IIS and FastCGI.
+    eval { require MT::Image; MT::Image->new or die; };
+    if ($@) {
+        $app->request( 'image_driver_error', 1 );
+    }
 }
 
 sub core_content_actions {
@@ -4950,8 +4957,7 @@ sub pre_run {
         push @messages, $message;
     }
 
-    eval { require MT::Image; MT::Image->new or die; };
-    if ($@) {
+    if ( $app->request('image_driver_error') ) {
         my $message = {
             level => 'warning',
             text  => $app->translate('ImageDriver is not configured.'),
