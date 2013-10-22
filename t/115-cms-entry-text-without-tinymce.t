@@ -7,6 +7,12 @@ BEGIN {
     $ENV{MT_CONFIG} = 'mysql-without-tinymce-test.cfg';
 }
 
+BEGIN {
+    use Test::More;
+    eval { require Test::MockModule }
+        or plan skip_all => 'Test::MockModule is not installed';
+}
+
 use lib 't/lib', 'lib', 'extlib', '../lib', '../extlib';
 use MT::Test qw( :app :db :data );
 use Test::More;
@@ -14,6 +20,15 @@ use Test::More;
 my $app  = MT->instance;
 my $user = $app->model('author')->load(1);
 my $blog = $app->model('blog')->load(1);
+
+my $mock_app = Test::MockModule->new('MT::App');
+$mock_app->mock( 'validate_magic', 0 );
+
+{
+    my $entry = $app->model('entry')->load(1);
+    $entry->text('Some Entry Text With IMG Tag <img src="src_via_entry" />');
+    $entry->save or die;
+}
 
 my @suite = (
     {
@@ -26,7 +41,7 @@ my @suite = (
         param => {
             id => 1,
         },
-        like => qr/On a drizzly day last weekend/,
+        like => qr{Some Entry Text With IMG Tag &lt;img src=&quot;src_via_entry&quot; /&gt;},
     },
     {
         param => {
