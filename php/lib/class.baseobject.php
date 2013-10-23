@@ -310,7 +310,7 @@ abstract class BaseObject extends ADOdb_Active_Record
 
 
         foreach ($objs as &$obj) {
-            $meta_info =& $obj->$meta_table;
+            $meta_info = $obj->$meta_table;
             if (! $meta_info) {
                 continue;
             }
