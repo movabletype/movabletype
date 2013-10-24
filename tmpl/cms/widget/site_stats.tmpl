@@ -119,7 +119,8 @@
         }
         var range = {
           unit: 'daily',
-          length: 10
+          length: 10,
+          end: data.graph_data[9].x
         }
         new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
         if (data.can_edit_config) {
