@@ -1470,6 +1470,12 @@ jQuery('#allpass-filter').click( function() {
   jQuery('#filter').removeClass('active');
   doApplyFilter(allpass_filter);
   jQuery('#item_list').attr('selectedIndex', 0).val('');
+  var $retargs = jQuery('input[name=return_args]');
+  if ($retargs.length) {
+    var val = $retargs.val();
+    val = val.replace(/&filter(_val)?=[^&]*/g, "");
+    $retargs.val(val);
+  }
   return false;
 });
 
