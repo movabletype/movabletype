@@ -70,7 +70,7 @@ function clearNotifyUsers() {
        label="<__trans phrase="Allow Registration">"
        hint="<__trans phrase="Select a system administrator you wish to notify when commenters successfully registered themselves.">">
       <input type="hidden" id="notify_user_id" name="notify_user_id" value="<mt:var name="notify_user_id" escape="html">" />
-      <input type="checkbox" id="registration" name="registration"<mt:if name="registration"> checked="checked"</mt:if> /> <label for="registration"><__trans phrase="Allow commenters to register with blogs on this system."></label>
+      <input type="checkbox" id="registration" name="registration"<mt:if name="registration"> checked="checked"</mt:if> /> <label for="registration"><__trans phrase="Allow commenters to register on this system."></label>
       <p><__trans phrase="Notify the following system administrators when a commenter registers:"></p>
       <span id="notify_user_name">
       <mt:if name="notify_user_id">
