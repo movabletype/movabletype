@@ -24,7 +24,7 @@
      id="no-cachedir"
      class="error"
      can_close="0">
-    <__trans phrase="Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory." params="templates_c">
+    <__trans phrase="Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your site directory." params="templates_c">
   </mtapp:statusmsg>
   <mt:else>
     <mt:if name="no_writecache">
@@ -32,7 +32,7 @@
      id="no-writecache"
      class="error"
      can_close="0">
-    <__trans phrase="Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory." params="templates_c">
+    <__trans phrase="Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your site directory." params="templates_c">
   </mtapp:statusmsg>
     <mt:else>
       <mt:if name="no_cache_path">
@@ -40,7 +40,7 @@
      id="no-cache-path"
      class="error"
      can_close="0">
-    <__trans phrase="Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory." params="cache">
+    <__trans phrase="Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your site directory." params="cache">
   </mtapp:statusmsg>
       <mt:else>
         <mt:if name="no_write_cache_path">
@@ -48,7 +48,7 @@
      id="no-write-cache-path"
      class="error"
      can_close="0">
-    <__trans phrase="Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory." params="cache">
+    <__trans phrase="Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your site directory." params="cache">
   </mtapp:statusmsg>
         <mt:else>
           <mt:if name="saved">
@@ -186,11 +186,24 @@ function setLicense() {
       <mt:if name="cc_license">
         <a href="<mt:var name="cc_license_url">"><img src="<mt:var name="cc_license_image_url">" /></a>
       </mt:if>
-        <p><__trans phrase="Your blog is currently licensed under:"> <strong id="cc-license-name"><mt:var name="cc_license_name"></strong></p>
+        <p>
+      <mt:if name="is_blog">
+          <__trans phrase="Your blog is currently licensed under:">
+      <mt:else>
+          <__trans phrase="Your website is currently licensed under:">
+      </mt:if>
+          <strong id="cc-license-name"><mt:var name="cc_license_name"></strong>
+        </p>
         <span class="actions-link"><a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Change license"></a> | <a href="javascript:void(0);" onclick="return doRemoveLicense();"><__trans phrase="Remove license"></a></span>
       </div>
       <div id="no-license" style="display: none;">
-        <p><__trans phrase="Your blog does not have an explicit Creative Commons license."></p>
+        <p>
+      <mt:if name="is_blog">
+          <__trans phrase="Your blog does not have an explicit Creative Commons license.">
+      <mt:else>
+          <__trans phrase="Your website does not have an explicit Creative Commons license.">
+      </mt:if>
+        </p>
         <a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Select a license"></a>
       </div>
       <script type="text/javascript">
