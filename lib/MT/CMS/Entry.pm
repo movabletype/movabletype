@@ -1796,8 +1796,7 @@ sub save {
     {
         require MT::Util;
         MT::Util::clear_site_stats_widget_cache($blog_id)
-            or
-            return $app->error( translate('Removing stats cache failed.') );
+            or return $app->errtrans('Removing stats cache failed.');
     }
 
     ## look if any assets have been included/removed from this entry
@@ -2993,8 +2992,7 @@ sub update_entry_status {
         {
             require MT::Util;
             MT::Util::clear_site_stats_widget_cache( $entry->blog_id )
-                or return $app->error(
-                translate('Removing stats cache failed.') );
+                or return $app->errtrans('Removing stats cache failed.');
         }
 
         my $message = $app->translate(
@@ -3124,8 +3122,7 @@ sub delete {
         # Clear cache for site stats dashboard widget.
         require MT::Util;
         MT::Util::clear_site_stats_widget_cache( $obj->blog->id )
-            or
-            return $app->error( translate('Removing stats cache failed.') );
+            or return $app->errtrans('Removing stats cache failed.');
     }
 
     $app->add_return_arg( saved_deleted => 1 );
