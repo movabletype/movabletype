@@ -142,7 +142,16 @@
        hint="<__trans phrase="Specifies the default Accept Comments setting when creating a new entry.">">
       <input type="checkbox" name="allow_comments_default" id="allow_comments_default" value="1"<mt:if name="ALLOW_COMMENTS_DEFAULT_1"> checked="checked"</mt:if> /> <label for="allow_comments_default"><__trans phrase="Accept Comments"></label>
     <mt:unless name="system_allow_comments">
-      <p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" /><span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored since comments are disabled either blog or system-wide."></span></p>
+      <p>
+        <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
+        <span class="alert-warning-inline">
+      <mt:if name="is_blog">
+          <__trans phrase="Note: This option is currently ignored since comments are disabled either blog or system-wide.">
+      <mt:else>
+          <__trans phrase="Note: This option is currently ignored since comments are disabled either website or system-wide.">
+      </mt:if>
+        </span>
+      </p>
     </mt:unless>
     </mtapp:setting>
 
@@ -154,7 +163,16 @@
        hint="<__trans phrase="Specifies the default Accept TrackBacks setting when creating a new entry.">">
       <input type="checkbox" value="1" name="allow_pings_default" id="allow_pings_default"<mt:if name="allow_pings_default"> checked="checked"</mt:if> /> <label for="allow_pings_default"><__trans phrase="Accept TrackBacks"></label>
     <mt:unless name="system_allow_pings">
-      <p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" /> <span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored since TrackBacks are disabled either blog or system-wide."></span></p>
+      <p>
+        <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
+        <span class="alert-warning-inline">
+      <mt:if name="is_blog">
+          <__trans phrase="Note: This option is currently ignored since TrackBacks are disabled either blog or system-wide.">
+      <mt:else>
+          <__trans phrase="Note: This option is currently ignored since TrackBacks are disabled either website or system-wide.">
+      </mt:if>
+        </span>
+      </p>
     </mt:unless>
     </mtapp:setting>
 
