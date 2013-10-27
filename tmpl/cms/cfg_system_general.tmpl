@@ -142,14 +142,14 @@ function validate (f) {
      id="comment-disable"
      label="<__trans phrase="Prohibit Comments">"
      hint="<__trans phrase="This will override all individual blog settings.">">
-    <input type="checkbox" name="comment_disable" id="comment-disable"<mt:if name="comment_disable"> checked="checked"</mt:if> /> <label for="comment_disable"><__trans phrase="Disable comments for all blogs."></label>
+    <input type="checkbox" name="comment_disable" id="comment-disable"<mt:if name="comment_disable"> checked="checked"</mt:if> /> <label for="comment_disable"><__trans phrase="Disable comments for all websites and blogs."></label>
   </mtapp:setting>
 
   <mtapp:setting
      id="ping-disable"
      label="<__trans phrase="Prohibit TrackBacks">"
      hint="<__trans phrase="This will override all individual blog settings.">">
-    <input type="checkbox" name="ping_disable" id="ping-disable" <mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <label for="ping_disable"><__trans phrase="Disable receipt of TrackBacks for all blogs."></label>
+    <input type="checkbox" name="ping_disable" id="ping-disable" <mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <label for="ping_disable"><__trans phrase="Disable receipt of TrackBacks for all websites and blogs."></label>
   </mtapp:setting>
 </mtapp:settinggroup>
 
@@ -159,7 +159,7 @@ function validate (f) {
      id="disable-notify-ping"
      label="<__trans phrase="Prohibit Notification Pings">"
      hint="<__trans phrase="Disable sending notification pings when a new entry is created in any blog on the system.">">
-    <input type="checkbox" name="disable_notify_ping" id="disable-notify-ping" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" /> <label for="disable_notify_ping"><__trans phrase="Disable notification pings for all blogs."></label>
+    <input type="checkbox" name="disable_notify_ping" id="disable-notify-ping" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" /> <label for="disable_notify_ping"><__trans phrase="Disable notification pings for all websites and blogs."></label>
   </mtapp:setting>
 
   <mtapp:setting
