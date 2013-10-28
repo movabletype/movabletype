@@ -1631,6 +1631,19 @@ sub pre_save {
             }
         }
     }
+    elsif ( !$obj->id ) {
+        my $site_path = $obj->site_path;
+        my $fmgr      = $obj->file_mgr;
+        unless ( $fmgr->exists($site_path) ) {
+            my @dirs = File::Spec->splitdir( $site_path );
+            pop @dirs;
+            $site_path = File::Spec->catdir(@dirs);
+        }
+        return $app->errtrans(
+            "The 'Blog Root' provided is not writable by the web server.  Change the ownership or permissions on this directory, then try again."
+            )
+            unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
+    }
     else {
 
        #$obj->is_dynamic(0) unless defined $app->{query}->param('is_dynamic');

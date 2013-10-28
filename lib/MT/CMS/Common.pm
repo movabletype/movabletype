@@ -517,19 +517,10 @@ sub save {
         }
     }
     elsif ( $type eq 'blog' || $type eq 'website' ) {
-        my $site_path = $obj->site_path;
-        my $fmgr      = $obj->file_mgr;
-        unless ( $fmgr->exists($site_path) ) {
-            $fmgr->mkpath($site_path);
-        }
-        my %args;
-        $args{no_writedir} = 1
-            unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
-
         return $app->redirect(
             $app->uri(
                 'mode' => 'cfg_prefs',
-                args   => { blog_id => $blog_id, saved => 1, %args }
+                args   => { blog_id => $blog_id, saved => 1 }
             )
         );
     }

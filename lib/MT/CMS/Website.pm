@@ -334,6 +334,25 @@ sub edit {
     1;
 }
 
+sub pre_save {
+    my $eh = shift;
+    my ( $app, $obj ) = @_;
+    if ( !$obj->id ) {
+        my $site_path = $obj->site_path;
+        my $fmgr      = $obj->file_mgr;
+        unless ( $fmgr->exists($site_path) ) {
+            my @dirs = File::Spec->splitdir( $site_path );
+            pop @dirs;
+            $site_path = File::Spec->catdir(@dirs);
+        }
+        return $app->errtrans(
+            "The 'Website Root' provided is not writable by the web server.  Change the ownership or permissions on this directory, then try again."
+            )
+            unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
+    }
+    return 1;
+}
+
 sub post_save {
     MT::CMS::Blog::post_save(@_);
 }

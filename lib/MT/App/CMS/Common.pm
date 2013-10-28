@@ -143,6 +143,7 @@ sub init_core_callbacks {
 
             # website callbacks
             $pkg . 'post_save.website'   => "${pfx}Website::post_save",
+            $pkg . 'pre_save.website'    => "${pfx}Website::pre_save",
             $pkg . 'edit.website'        => "${pfx}Website::edit",
             $pkg . 'post_delete.website' => "${pfx}Website::post_delete",
             $pkg
