@@ -55,8 +55,8 @@ require MT;
 
 my $mt = MT->new() or die MT->errstr;
 if ( defined(MT->config('RPTProcessCap')) && $proc_process_table ) {
-    my $t = new Proc::ProcessTable;
-    my $rpt_count;
+    my $t         = new Proc::ProcessTable;
+    my $rpt_count = 0;
     foreach my $p ( @{ $t->table } ) {
         my $cmd = $p->cmndline;
         if ( $cmd =~ /^perl/ && $cmd =~ /run-periodic-tasks/ ) {
