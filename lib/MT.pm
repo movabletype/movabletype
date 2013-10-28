@@ -407,6 +407,12 @@ sub all_models {
 sub registry {
     my $pkg = shift;
 
+    # TODO: Should be able to get registry without arguments.
+    if (!@_) {
+        warn MT->translate('MT::registry needs arguments.');
+        return;
+    }
+
     require MT::Component;
     my $regs = MT::Component->registry(@_);
     my $r;
