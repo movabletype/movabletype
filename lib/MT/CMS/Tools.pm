@@ -614,8 +614,8 @@ sub save_cfg_system_general {
             $app->param('system_email_address')
         )
         )
-        unless (
-        $app->param('system_email_address') eq $cfg->EmailAddressMain );
+        if ( defined $app->param('system_email_address')
+        && $app->param('system_email_address') ne $cfg->EmailAddressMain );
     push(
         @meta_messages,
         $app->translate(
