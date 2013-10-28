@@ -423,7 +423,7 @@ sub set_object_status {
                 && $app->config->NewUserAutoProvisioning
                 && $obj->status == MT::Author::PENDING() ) ? 1 : 0;
         $obj->status($new_status);
-        if ( $new_status == MT::Author::ACTIVE() ) {
+        if ( $type ne 'group' and $new_status == MT::Author::ACTIVE() ) {
             my $eh = MT::ErrorHandler->new;
             if ( !save_filter( $eh, $app, $obj ) ) {
                 $app->log(
