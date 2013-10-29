@@ -346,8 +346,8 @@ sub pre_save {
             $site_path = File::Spec->catdir(@dirs);
         }
         return $app->errtrans(
-            "The 'Website Root' provided is not writable by the web server.  Change the ownership or permissions on this directory, then try again."
-            )
+            "The '[_1]' provided is not writable by the web server.  Change the ownership or permissions on this directory, then try again.",
+            $app->translate('Website Root'))
             unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
     }
     return 1;

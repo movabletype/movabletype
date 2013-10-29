@@ -1631,7 +1631,12 @@ sub pre_save {
             }
         }
     }
-    elsif ( !$obj->id ) {
+    else {
+
+       #$obj->is_dynamic(0) unless defined $app->{query}->param('is_dynamic');
+    }
+
+    if ( !$obj->id or ($app->param('cfg_screen') || '') eq 'cfg_prefs' ) {
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
         unless ( $fmgr->exists($site_path) ) {
@@ -1640,13 +1645,9 @@ sub pre_save {
             $site_path = File::Spec->catdir(@dirs);
         }
         return $app->errtrans(
-            "The 'Blog Root' provided is not writable by the web server.  Change the ownership or permissions on this directory, then try again."
-            )
+            "The '[_1]' provided is not writable by the web server.  Change the ownership or permissions on this directory, then try again.",
+            $obj->class eq 'blog' ? $app->translate('Blog Root') : $app->translate('Website Root'))
             unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
-    }
-    else {
-
-       #$obj->is_dynamic(0) unless defined $app->{query}->param('is_dynamic');
     }
 
     if ( ( $obj->sanitize_spec || '' ) eq '1' ) {
