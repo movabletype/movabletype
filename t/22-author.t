@@ -7,7 +7,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-use Test::More tests => 70;
+use Test::More tests => 76;
 
 use MT;
 use MT::Author;
