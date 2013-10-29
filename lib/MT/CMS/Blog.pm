@@ -1637,6 +1637,9 @@ sub pre_save {
     }
 
     if ( !$obj->id or ($app->param('cfg_screen') || '') eq 'cfg_prefs' ) {
+        if (!$obj->id and $obj->class eq 'blog') {
+            $obj->parent_id($app->param('blog_id'));
+        }
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
         unless ( $fmgr->exists($site_path) ) {
