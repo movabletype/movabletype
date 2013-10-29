@@ -3964,20 +3964,27 @@ tinymce.html.Styles = function(settings, schema) {
 
 							if (attrName instanceof RegExp) {
 								tinymce.each(attrs.map, function(v, k) {
-									if (attrName.test(k)) {
-										attrName = k;
-										return false;
+									if (! attrName.test(k)) {
+										return;
 									}
+
+									list = matchedAttributes[k];
+
+									if (list)
+										list.push(newNode);
+									else
+										matchedAttributes[k] = [newNode];
 								});
 							}
+							else {
+								if (attrName in attrs.map) {
+									list = matchedAttributes[attrName];
 
-							if (attrName in attrs.map) {
-								list = matchedAttributes[attrName];
-
-								if (list)
-									list.push(newNode);
-								else
-									matchedAttributes[attrName] = [newNode];
+									if (list)
+										list.push(newNode);
+									else
+										matchedAttributes[attrName] = [newNode];
+								}
 							}
 						}
 
@@ -4141,31 +4148,41 @@ tinymce.html.Styles = function(settings, schema) {
 
 					if (list.name instanceof RegExp) {
 						tinymce.each(matchedAttributes, function(v, k) {
-							if (list.name.test(k)) {
-								list = tinymce.extend({}, list, {
-									name: k
-								});
-
-								return false;
+							if (! list.name.test(k)) {
+								return;
 							}
+
+							var l = tinymce.extend({}, list, {
+								name: k
+							});
+
+							nodes = matchedAttributes[l.name];
+
+							// Remove already removed children
+							fi = nodes.length;
+							while (fi--) {
+								if (!nodes[fi].parent)
+									nodes.splice(fi, 1);
+							}
+
+							for (fi = 0, fl = l.callbacks.length; fi < fl; fi++)
+								l.callbacks[fi](nodes, l.name, args);
 						});
-						if (list.name instanceof RegExp) {
-							continue;
-						}
 					}
+					else {
+						if (list.name in matchedAttributes) {
+							nodes = matchedAttributes[list.name];
 
-					if (list.name in matchedAttributes) {
-						nodes = matchedAttributes[list.name];
+							// Remove already removed children
+							fi = nodes.length;
+							while (fi--) {
+								if (!nodes[fi].parent)
+									nodes.splice(fi, 1);
+							}
 
-						// Remove already removed children
-						fi = nodes.length;
-						while (fi--) {
-							if (!nodes[fi].parent)
-								nodes.splice(fi, 1);
+							for (fi = 0, fl = list.callbacks.length; fi < fl; fi++)
+								list.callbacks[fi](nodes, list.name, args);
 						}
-
-						for (fi = 0, fl = list.callbacks.length; fi < fl; fi++)
-							list.callbacks[fi](nodes, list.name, args);
 					}
 				}
 			}
