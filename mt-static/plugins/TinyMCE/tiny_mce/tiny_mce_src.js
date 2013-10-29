@@ -3944,6 +3944,17 @@ tinymce.html.Styles = function(settings, schema) {
 				start: function(name, attrs, empty) {
 					var newNode, attrFiltersLen, elementRule, textNode, attrName, text, sibling, parent;
 
+					function addNodeToMatchedAttributes(name, node) {
+						var list = matchedAttributes[name];
+						if (list) {
+							if (list[list.length-1] !== node) {
+								list.push(node);
+							}
+						} else {
+							matchedAttributes[name] = [newNode];
+						}
+					}
+
 					elementRule = validate ? schema.getElementRule(name) : {};
 					if (elementRule) {
 						newNode = createNode(elementRule.outputName || name, 1);
@@ -3964,26 +3975,14 @@ tinymce.html.Styles = function(settings, schema) {
 
 							if (attrName instanceof RegExp) {
 								tinymce.each(attrs.map, function(v, k) {
-									if (! attrName.test(k)) {
-										return;
+									if (attrName.test(k)) {
+										addNodeToMatchedAttributes(k, newNode);
 									}
-
-									list = matchedAttributes[k];
-
-									if (list)
-										list.push(newNode);
-									else
-										matchedAttributes[k] = [newNode];
 								});
 							}
 							else {
 								if (attrName in attrs.map) {
-									list = matchedAttributes[attrName];
-
-									if (list)
-										list.push(newNode);
-									else
-										matchedAttributes[attrName] = [newNode];
+									addNodeToMatchedAttributes(attrName, newNode);
 								}
 							}
 						}
