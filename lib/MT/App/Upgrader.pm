@@ -416,6 +416,9 @@ sub init_website {
         $b_path =~ s/PATH$//;
         $param{'sitepath_limited_trail'} = $b_path;
     }
+    if (!-w $app->support_directory_path()) {
+        $param{'support_unwritable'} = 1;
+    }
 
     if ( $app->param('back') ) {
         return $app->init_user;

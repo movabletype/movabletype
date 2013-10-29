@@ -13,6 +13,14 @@
       <mt:var name="error">
     </mtapp:statusmsg>
   </mt:if>
+  <mt:if name="support_unwritable">
+    <mtapp:statusmsg
+       id="support_unwritable"
+       class="info"
+       can_close="0">
+      <__trans phrase="Support directory does not exists or not writable by the web server. Change the ownership or permissions on this directory">
+    </mtapp:statusmsg>
+  </mt:if>
 
     <form id="website_form" method="post" action="<mt:var name="script_url">">
       <input type="hidden" name="__mode" value="init_website" />
