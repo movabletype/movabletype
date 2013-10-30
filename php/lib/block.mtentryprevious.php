@@ -16,13 +16,16 @@ function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
                 $prev_entry = $_prev_cache[$entry_id];
             } else {
                 $mt = MT::get_instance();
-                $ts = $mt->db()->db2ts($entry->entry_authored_on);
                 $blog_id = $entry->entry_blog_id;
                 if (isset($args['class'])) {
                     $class = $args['class'];
                 } else {
                     $class = 'entry';
                 }
+                $ts = $mt->db()->db2ts( ($class == 'entry')
+                    ? $entry->entry_authored_on
+                    : $entry->entry_modified_on
+                );
                 $args = array('not_entry_id' => $entry_id,
                               'current_timestamp_end' => $ts,
                               'lastn' => 1,

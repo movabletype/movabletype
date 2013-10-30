@@ -17,13 +17,16 @@ function smarty_block_mtentrynext($args, $content, &$ctx, &$repeat) {
                 $next_entry = $_next_cache[$entry_id];
             } else {
                 $mt = MT::get_instance();
-                $ts = $mt->db()->db2ts($entry->entry_authored_on);
                 $blog_id = $entry->entry_blog_id;
                 if (isset($args['class'])) {
                     $class = $args['class'];
                 } else {
                     $class = 'entry';
                 }
+                $ts = $mt->db()->db2ts( ($class == 'entry')
+                    ? $entry->entry_authored_on
+                    : $entry->entry_modified_on
+                );
                 $args = array('not_entry_id' => $entry->entry_id,
                               'blog_id' => $blog_id,
                               'lastn' => 1,

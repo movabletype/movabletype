@@ -1030,16 +1030,19 @@ abstract class MTDatabase {
             ? $args['current_timestamp'] : null;
         $end = isset($args['current_timestamp_end'])
             ? $args['current_timestamp_end'] : null;
+        if ($start || $end) {
+            $timestamp_field = ($args['class'] == 'page') ? 'entry_modified_on' : 'entry_authored_on';
+        }
         if ($start and $end) {
             $start = $this->ts2db($start);
             $end = $this->ts2db($end);
-            $date_filter = "and entry_authored_on between '$start' and '$end'";
+            $date_filter = "and $timestamp_field between '$start' and '$end'";
         } elseif ($start) {
             $start = $this->ts2db($start);
-            $date_filter = "and entry_authored_on >= '$start'";
+            $date_filter = "and $timestamp_field >= '$start'";
         } elseif ($end) {
             $end = $this->ts2db($end);
-            $date_filter = "and entry_authored_on <= '$end'";
+            $date_filter = "and $timestamp_field <= '$end'";
         } else {
             $date_filter = '';
         }
@@ -1169,7 +1172,7 @@ abstract class MTDatabase {
                 if ($args['base_sort_order'] == 'ascend')
                     $base_order = 'asc';
             }
-            $sort_field ='entry_authored_on'; 
+            $sort_field = isset($timestamp_field) ? $timestamp_field : 'entry_authored_on'; 
             $no_resort = 0;
         }
 
