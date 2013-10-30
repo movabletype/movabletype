@@ -1,4 +1,11 @@
-(function($) {
+/*
+ * Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+ * This code cannot be redistributed without permission from www.sixapart.com.
+ * For more information, consult your Movable Type license.
+ *
+ * $Id$
+ */
+;(function($) {
 
 var config  = MT.Editor.TinyMCE.config;
 var wisiwyg_buttons = config.plugin_mt_wysiwyg_buttons1 + ',|,template';
@@ -27,38 +34,34 @@ $.extend(config, {
 
 tinymce.create('tinymce.plugins.MTFormattedText', {
     init : function(ed, url) {
-        ed.onInit.add(function() {
-            ed.windowManager.onOpen.add(function(windowManager, window) {
-                var popup = window.tinyMCEPopup;
-                if (! popup || ! popup.params['plugin_url']) {
-                    return;
-                }
+        var _open = ed.windowManager.open;
+        ed.windowManager.open = function(args, params) {
+            if (args.title === 'Insert template') {
+                args.title = 'Insert Boilerplate';
 
-                if (! popup.params['plugin_url'].match(/\/template$/)) {
-                    return;
-                }
+                args.body[0]['label'] = 'Boilerplate Name';
+                args.body[1]['label'] = 'Boilerplate Description';
 
+                args.body[2]['minHeight'] = tinymce.DOM.getViewPort().h - 300;
+            }
 
-                // Overwrite messages for the template dialog.
+            var window = _open.apply(this, arguments);
 
-                window.trans = window.parent.trans;
+            if (args.title === 'Insert Boilerplate') {
+                window.find('iframe').each(function(obj) {
+                    var $iframe = $('#' + obj._id);
+                    $iframe.outerHeight($iframe.outerHeight()-2);
+                });
+            }
 
-                var requireLangPack = popup.requireLangPack;
-                popup.requireLangPack = function() {
-                    requireLangPack.apply(this, arguments);
-
-                    var url = StaticURI + 'plugins/FormattedTextForTinyMCE/langs/template.js';
-			        if (! tinymce.ScriptLoader.isDone(url)) {
-				        window.document.write('<script type="text/javascript" src="' + url + '"></script>');
-				        tinymce.ScriptLoader.markDone(url);
-			        }
-                };
-            });
-        });
+            return window;
+        };
 
         // Overwrite description for the template button.
-        tinyMCE.addI18n(tinyMCE.settings.language + '.template', {
-            desc: trans('Insert Boilerplate')
+        tinyMCE.addI18n(tinyMCE.settings.language, {
+            "Insert Boilerplate": trans('Insert Boilerplate'),
+            "Boilerplate Name": trans("Name"),
+            "Boilerplate Description": trans("Description")
         });
     }
 }); 
