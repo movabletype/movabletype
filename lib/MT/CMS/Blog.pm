@@ -1636,7 +1636,11 @@ sub pre_save {
        #$obj->is_dynamic(0) unless defined $app->{query}->param('is_dynamic');
     }
 
-    if ( !$obj->id or ($app->param('cfg_screen') || '') eq 'cfg_prefs' ) {
+    # assumation: if the it is a blog and its site path is relative, then 
+    # it is probably writeable. 
+    if ( ( !$obj->id or ($app->param('cfg_screen') || '') eq 'cfg_prefs' ) and 
+         ( $obj->class ne 'blog' or $obj->is_site_path_absolute() ) ) 
+    {
         if (!$obj->id and $obj->class eq 'blog') {
             $obj->parent_id($app->param('blog_id'));
         }
