@@ -944,9 +944,9 @@ function spam_protect($str) {
 
 function offset_time($ts, $blog = null, $dir = null) {
     if (isset($blog)) {
-        if (!is_array($blog)) {
+        if (!is_object($blog)) {
             global $mt;
-            $blog = $mt->db()->fetch_blog($blog->id);
+            $blog = $mt->db()->fetch_blog($blog);
         }
         $offset = $blog->blog_server_offset;
     } else {
