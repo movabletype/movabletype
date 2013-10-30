@@ -33,6 +33,7 @@ Some styles for textarea are used in no Rich Text mode (Rich Text mode uses ifra
 */
 .editor-header {
     position: relative;
+    z-index: 2;
 }
 
 .editor-header .tab {
