@@ -425,7 +425,7 @@ sub _pre_search_scope_terms_to_class {
         if ( ref $terms eq 'HASH' )
         && ( exists( $terms->{id} )
         && ( ref $terms->{id} ne 'HASH' || !exists( $terms->{id}{not} ) ) )
-        && !exists( $args->{not} );
+        && !exists( $args->{not}{id} );
 
     my $props = $class->properties;
     my $col   = $props->{class_column}
