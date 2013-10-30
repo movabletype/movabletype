@@ -2730,7 +2730,7 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/plugins/Loupe/js/vendor.js
 
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/core.js
 	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
 	'Italic (Ctrl+I)' => '斜体 (Ctrl+I)',
 	'Underline (Ctrl+U)' => '下線 (Ctrl+U)',
@@ -2751,13 +2751,9 @@ use vars qw( @ISA %Lexicon );
 	'Align Right' => '右揃え',
 	'Indent' => '字下げを増やす',
 	'Outdent' => '字下げを減らす',
-
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/core.js
-	'Class Name' => 'クラス名',
-
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/insert_html.js
-	'Insert HTML' => 'HTMLの挿入',
-	'Source' => 'HTML',
+	'Preformatted' => '整形済み',
+    'Boilerplate Name' => '名前',
+    'Boilerplate Description' => '説明',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/plugin.js
 	'Insert Link' => 'リンクの挿入',
@@ -2768,6 +2764,7 @@ use vars qw( @ISA %Lexicon );
 	'Strong Emphasis' => '太字',
 	'Emphasis' => '斜体',
 	'List Item' => 'リスト要素',
+	'Insert HTML' => 'HTMLの挿入',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
 	'Fullscreen' => '全画面表示',
