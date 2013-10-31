@@ -66,7 +66,7 @@ sub get_syscheck_content {
         . '&language='
         . MT->current_language;
 
-    my $ua = $app->new_ua( { timeout => 20 } );
+    my $ua = $app->new_ua();
     return unless $ua;
     $ua->max_size(undef) if $ua->can('max_size');
 
