@@ -429,11 +429,8 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             });
         });
 
-        ed.on('SaveContent', function(ed, o) {
-            /*
-             * TODO: TinyMCE4
+        ed.on('SaveContent', function(o) {
             o.content = o.content.replace(/\u00a0/g, '\u0020');
-            */
         });
 
         ed.addCommand('mtSetFormat', function(format) {
