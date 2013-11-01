@@ -983,7 +983,7 @@ $.mtValidator('simple2', {
             );
     },
     showError: function( $target, $error_block ) {
-        var id = $target.parents().find('div.field-content').first().parent().attr('id');
+        var id = $target.parents('div.field-content').first().parent().attr('id');
         var ins = true;
         if ( $('div#'+id+'-msg-block ul').length == 0 ) {
             var $block = $('<div/>')
