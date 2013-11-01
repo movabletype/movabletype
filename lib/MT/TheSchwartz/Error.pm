@@ -21,6 +21,7 @@ __PACKAGE__->install_properties(
             jobid       => 1,
             error_time  => 1,
             funcid_time => { columns => [ 'funcid', 'error_time' ], },
+            clustered   => { columns => [ 'jobid', 'funcid' ], ms_clustered => 1, },
         },
         defaults  => { funcid => 0, },
         cacheable => 0,

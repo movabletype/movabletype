@@ -290,6 +290,10 @@ sub index_table_sql {
         undef $pk if ref $pk;    # ignore complex key
         foreach my $name ( keys %$indexes ) {
             next if $pk && $name eq $pk;
+            next
+                if 'HASH' eq ref $indexes->{$name}
+                    && $indexes->{$name}
+                    ->{ms_clustered}; # This index is only for Clustered index on SQLAzure
             push @stmts, $ddl->index_column_sql( $class, $name );
         }
     }
