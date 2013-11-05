@@ -45,16 +45,7 @@ tinymce.create('tinymce.plugins.MTFormattedText', {
                 args.body[2]['minHeight'] = tinymce.DOM.getViewPort().h - 300;
             }
 
-            var window = _open.apply(this, arguments);
-
-            if (args.title === 'Insert Boilerplate') {
-                window.find('iframe').each(function(obj) {
-                    var $iframe = $('#' + obj._id);
-                    $iframe.outerHeight($iframe.outerHeight()-2);
-                });
-            }
-
-            return window;
+            return _open.apply(this, arguments);
         };
 
         // Overwrite description for the template button.
