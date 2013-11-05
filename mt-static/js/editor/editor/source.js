@@ -138,7 +138,13 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
         if ( !select_inserted_content ) {
             this.saveSelection();
         }
-        this.focus();
+
+        if (! (/MSIE/.test(navigator.userAgent) || isIE11())) {
+            var self = this;
+            setTimeout(function() {
+                self.focus();
+            }, 0);
+        }
     },
 
     saveSelection: function() {

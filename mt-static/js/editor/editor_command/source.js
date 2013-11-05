@@ -88,7 +88,10 @@ $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
         this.e.setSelection( close );
 
         if ( selection ) {
-            this.e.restoreSelection( selection );
+            var self = this;
+            setTimeout(function() {
+                self.e.restoreSelection( selection );
+            }, 0);
         }
     },
 
