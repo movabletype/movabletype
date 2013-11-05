@@ -59,6 +59,7 @@ tinymce.create('tinymce.plugins.MTFormattedText', {
 
         // Overwrite description for the template button.
         tinyMCE.addI18n(tinyMCE.settings.language, {
+            "Insert template": trans('Insert Boilerplate'),
             "Insert Boilerplate": trans('Insert Boilerplate'),
             "Boilerplate Name": trans("Name"),
             "Boilerplate Description": trans("Description")
