@@ -317,39 +317,6 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
         ed.execCommand('mtSetProxies', adapter.proxies, null, {skip_focus: true});
 
-        // Stop adding root blocks on key up for IE.
-        // Because if used with IME, this function will not work well.
-        if (tinyMCE.isIE) {
-            /*
-             * TODO: TinyMCE4
-            $.each(ed.onKeyUp.listeners, function(i, listener) {
-                if (! listener) {
-                    return;
-                }
-                var f = listener.cb;
-                if (f.toString().match(/^function addRootBlocks\(\)|^function\s+\w+\(\).*forced_root_block/)) {
-                    ed.onKeyUp.remove(f);
-                    return false;
-                }
-            });
-            */
-        }
-
-        if (ed.getContent() == '') {
-            // Browser compatibility
-            // Set the "formatselect" to default value for empty content.
-            /*
-             * TODO: TinyMCE4
-            var formatselect;
-            if (formatselect = ed.controlManager.get('formatselect')) {
-                setTimeout(function() {
-                    formatselect.select('');
-                }, 0);
-            }
-            */
-        }
-
-
         ed.theme.panel
             .items().filter('#statusbar')[0]
             .items().filter('resizehandle')[0]
