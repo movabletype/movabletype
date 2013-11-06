@@ -206,7 +206,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                 setTimeout(function() {
                     adapter.$editorTextarea.show();
                     adapter.$editorIframe.hide();
-                    adapter.$editorPathRow.hide();
+                    adapter.$editorPathRow.css('visibility', 'hidden');
                 }, 0);
 
                 this.editor = this.source;
