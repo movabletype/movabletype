@@ -2851,7 +2851,6 @@ sub init_core_callbacks {
             $pkg . 'pre_save.template'    => "${pfx}Template::pre_save",
             $pkg . 'post_save.template'   => "${pfx}Template::post_save",
             $pkg . 'post_delete.template' => "${pfx}Template::post_delete",
-            'restore' => "${pfx}Template::restore_widgetmanagers",
 
             # tags
             $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",

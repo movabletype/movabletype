@@ -1489,8 +1489,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Widget Template' => 'Gabarit de widget',
 	'Widget Templates' => 'Gabarits de widget',
 	'template' => 'gabarit',
-	'Restoring widget set [_1]... ' => 'Restauration du groupe de widgets [_1] en cours...',
-	'Failed.' => 'Échec.',
 
 ## lib/MT/CMS/Theme.pm
 	'Theme not found' => 'Thème introuvable',
