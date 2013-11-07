@@ -15,13 +15,12 @@
         </mt:section>';
         Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
 <mt:if name="object_type" eq="entry">
-        [# div.className="add-category-form hidden" #]<input id="add-category-input-movable" class="add-category-input input-hint" type="text" value="[#|h trans( "Add sub category" ) #]" mt:default="[#|h trans( "Add sub category" ) #]" mt:delegate="default-value" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
+        [# div.className="add-category-form hidden" #]<input id="add-category-input-movable" class="add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
 <mt:else>
-        [# div.className="add-category-form hidden" #]<input id="add-category-input-movable" class="add-category-input input-hint" type="text" value="[#|h trans( "Add sub folder" ) #]" mt:default="[#|h trans( "Add sub folder" ) #]" mt:delegate="default-value" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
+        [# div.className="add-category-form hidden" #]<input id="add-category-input-movable" class="add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
 </mt:if>
         </mt:section>';
     <mt:ignore>
-        <__trans phrase="Add sub category">
         <__trans phrase="Cancel">
     </mt:ignore>
     /* ]]> */
@@ -38,7 +37,7 @@
 </mt:if>
 <mt:if name="can_edit_categories">
     <div id="add-category-form" class="add-category-form hidden">
-        <input id="add-category-input" class="add-category-input input-hint" type="text" value="<$mt:var name="add_container_label"$>" mt:default="<$mt:var name="add_container_label_name"$>" mt:delegate="default-value" />
+        <input id="add-category-input" class="add-category-input input-hint" type="text" value="" placeholder="<$mt:var name="container_label_name"$>" />
         <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span></a>
         <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>Cancel</span></a>
     </div>
