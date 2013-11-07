@@ -1538,13 +1538,13 @@ sub backup_terms_args {
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
         return {
             terms => { 'blog_id' => $blog_ids },
-            args => { sort => [ { column => 'type' }, { column => 'id' } ] },
+            args  => { sort => 'type' },
         };
     }
     else {
         return {
             terms => undef,
-            args  => { sort => [ { column => 'type' }, { column => 'id' } ] },
+            args  => { sort => 'type' },
         };
     }
 }
