@@ -61,6 +61,8 @@ sub install_properties {
 
     # Callbacks: clean list of changed columns to only
     # include versioned columns
+    MT->add_callback( 'data_api_pre_save.' . $datasource,
+        9, undef, \&mt_presave_obj );
     MT->add_callback( 'api_pre_save.' . $datasource,
         9, undef, \&mt_presave_obj );
     MT->add_callback( 'cms_pre_save.' . $datasource,
@@ -69,6 +71,8 @@ sub install_properties {
     # Callbacks: object-level callbacks could not be
     # prioritized and thus caused problems with plugins
     # registering a post_save and saving
+    MT->add_callback( 'data_api_post_save.' . $datasource,
+        9, undef, \&mt_postsave_obj );
     MT->add_callback( 'api_post_save.' . $datasource,
         9, undef, \&mt_postsave_obj );
     MT->add_callback( 'cms_post_save.' . $datasource,
