@@ -1490,6 +1490,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Widget Template' => 'Plantilla de widget',
 	'Widget Templates' => 'Plantillas de widget',
 	'template' => 'plantilla',
+	'Restoring widget set [_1]... ' => 'Restaurando el conjunto de widgets [_1]... ',
+	'Failed.' => 'Fallo.',
 
 ## lib/MT/CMS/Theme.pm
 	'Theme not found' => 'Tema no encontrado',

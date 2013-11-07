@@ -1484,6 +1484,8 @@ use vars qw( @ISA %Lexicon );
 	'Widget Template' => 'Widgetvorlage',
 	'Widget Templates' => 'Widgetvorlagen',
 	'template' => 'Vorlage',
+	'Restoring widget set [_1]... ' => 'Stelle Widgetgruppe [_1] wieder her...',
+	'Failed.' => 'Fehlgeschlagen.',
 
 ## lib/MT/CMS/Theme.pm
 	'Theme not found' => 'Thema nicht gefunden',

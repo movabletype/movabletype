@@ -1486,6 +1486,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Widget Template' => 'Widgetsjabloon',
 	'Widget Templates' => 'Widgetsjablonen',
 	'template' => 'sjabloon',
+	'Restoring widget set [_1]... ' => 'Widgetset [_1] aan het terugzetten...',
+	'Failed.' => 'Mislukt.',
 
 ## lib/MT/CMS/Theme.pm
 	'Theme not found' => 'Thema niet gevonden',

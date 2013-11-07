@@ -1514,6 +1514,8 @@ use vars qw( @ISA %Lexicon );
 	'Widget Template' => 'ウィジェットテンプレート',
 	'Widget Templates' => 'ウィジェットテンプレート',
 	'template' => 'テンプレート',
+	'Restoring widget set [_1]... ' => 'ウィジェットセット「[_1]」を復元しています...',
+	'Failed.' => '失敗',
 
 ## lib/MT/CMS/Theme.pm
 	'Theme not found' => 'テーマがみつかりませんでした。',
