@@ -721,5 +721,9 @@
 { "r" : "1", "t" : "<MTAuthors need_entry='0' status='123'><MTAuthorID>,</MTAuthors>", "e" : "" }, #705
 { "r" : "0", "t" : "<MTAuthors need_entry='0' role='123'><MTAuthorID>,</MTAuthors>", "e" : "" }, #706
 { "r" : "1", "t" : "<MTSetVarTemplate name='tmpl'><MTEntriesHeader>!header!</MTEntriesHeader><MTEntryTitle>,<MTEntriesFooter>!footer!</MTEntriesFooter></MTSetVarTemplate><MTEntries><MTVar name='tmpl'></MTEntries>", "e" : "!header!A Rainy Day,Verse 5,Verse 4,Verse 3,Verse 2,Verse 1,!footer!" }, #707
-{ "r" : "1", "t" : "<MTSetHashVar name='test'><MTSetVar name='test1' value='1'><MTSetVar name='test2' value='2'><MTSetVar name='test3' value='3'></MTSetHashVar><MTSetVar name='list[0]' value='$test' /><MTGetVar name='list[0]' setvar='rec' /><MTLoop name='rec' sort_by='value' glue=','><MTGetVar name='__key__'>:<MTGetVar name='__value__' /></MTLoop>", "e" : "test1:1,test2:2,test3:3" } #708
+{ "r" : "1", "t" : "<MTSetHashVar name='test'><MTSetVar name='test1' value='1'><MTSetVar name='test2' value='2'><MTSetVar name='test3' value='3'></MTSetHashVar><MTSetVar name='list[0]' value='$test' /><MTGetVar name='list[0]' setvar='rec' /><MTLoop name='rec' sort_by='value' glue=','><MTGetVar name='__key__'>:<MTGetVar name='__value__' /></MTLoop>", "e" : "test1:1,test2:2,test3:3" }, #708
+{ "r" : "1", "t" : "<MTEntries limit='1' offset='3'><MTEntryNext by_author='1'><MTEntryID></MTEntryNext></MTEntries>", "e" : "" }, #709
+{ "r" : "1", "t" : "<MTEntries limit='1' offset='3'><MTEntryPrevious by_author='1'><MTEntryID></MTEntryPrevious></MTEntries>", "e" : "" }, #710
+{ "r" : "1", "t" : "<MTPages limit='1' offset='1'><MTPageNext by_author='1'><MTPageID></MTPageNext></MTPages>", "e" : "" }, #711
+{ "r" : "1", "t" : "<MTPages limit='1'><MTPagePrevious by_author='1'><MTPageID></MTPagePrevious></MTPages>", "e" : "" } #712
 ]

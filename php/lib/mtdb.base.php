@@ -1024,6 +1024,8 @@ abstract class MTDatabase {
             $extras['join']['mt_author'] = array(
                     'condition' => "entry_author_id = author_id"
                     );
+        } elseif (isset($args['author_id']) && preg_match('/^\d+$/', $args['author_id']) && $args['author_id'] > 0) {
+            $author_filter = "and entry_author_id = '" . $args['author_id'] . "'";
         }
 
         $start = isset($args['current_timestamp'])
