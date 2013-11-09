@@ -16,6 +16,10 @@ function smarty_block_mtentrynext($args, $content, &$ctx, &$repeat) {
             if (isset($args['by_author'])) {
                 $label .= ':author=' . $entry->entry_author_id;
             }
+            if (isset($args['by_category'])) {
+                $cat_id = $entry->category ? $entry->category->id : 0;
+                $label .= ':category=' . $cat_id;
+            }
 
             if (isset($_next_cache[$label])) {
                 $next_entry = $_next_cache[$label];
@@ -40,6 +44,10 @@ function smarty_block_mtentrynext($args, $content, &$ctx, &$repeat) {
                 if (isset($args['by_author'])) {
                     $eargs['author_id'] = $entry->entry_author_id;
                 }
+                if (isset($args['by_category'])) {
+                    $eargs['category_id'] = $cat_id;
+                }
+                
                 list($next_entry) = $ctx->mt->db()->fetch_entries($eargs);
                 if ($next_entry) $_next_cache[$label] = $next_entry;
             }

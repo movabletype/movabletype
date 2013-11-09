@@ -919,6 +919,9 @@ abstract class MTDatabase {
                     # this category have no entries (or pages)
                     return null;
                 }
+            } else {
+                # this category have no entries (or pages)
+                return null;
             }
         }
         if ((0 == count($filters)) && (isset($args['show_empty']) && (1 == $args['show_empty']))) {
