@@ -1285,7 +1285,7 @@ sub _hdlr_entry_nextprev {
         or return $ctx->_no_entry_error();
     my $terms = { status => MT::Entry::RELEASE() };
     $terms->{by_author}   = 1 if $args->{by_author};
-    $terms->{by_category} = 1 if $args->{by_category};
+    $terms->{by_category} = 1 if $args->{by_category} || $args->{by_folder};
     my $entry = $e->$meth($terms);
     my $res   = '';
     if ($entry) {

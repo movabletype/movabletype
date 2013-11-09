@@ -15,7 +15,7 @@ function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
             if (isset($args['by_author'])) {
                 $label .= ':author=' . $entry->entry_author_id;
             }
-            if (isset($args['by_category'])) {
+            if (isset($args['by_category']) || isset($args['by_folder'])) {
                 $cat_id = $entry->category ? $entry->category->id : 0;
                 $label .= ':category=' . $cat_id;
             }
@@ -42,7 +42,7 @@ function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
                 if (isset($args['by_author'])) {
                     $eargs['author_id'] = $entry->entry_author_id;
                 }
-                if (isset($args['by_category'])) {
+                if (isset($args['by_category']) || isset($args['by_folder'])) {
                     $eargs['category_id'] = $cat_id;
                 }
                 list($prev_entry) = $ctx->mt->db()->fetch_entries($eargs);
