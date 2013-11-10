@@ -409,7 +409,7 @@ sub registry {
 
     # TODO: Should be able to get registry without arguments.
     if (!@_) {
-        warn MT->translate('MT::registry needs arguments.');
+        warn MT->translate('Should not call MT::registry() without argument.');
         return;
     }
 

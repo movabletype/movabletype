@@ -124,6 +124,7 @@ $Lexicon_ja = array(
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
 
 );
+
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_ja;
     $l10n_str = isset($Lexicon_ja[$str]) ? $Lexicon_ja[$str] : (isset($Lexicon[$str]) ? $Lexicon[$str] : $str);

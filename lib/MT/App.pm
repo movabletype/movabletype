@@ -2971,7 +2971,7 @@ sub do_reboot {
             if ( $res == undef ) {
                 $app->log(
                     $app->translate(
-                        "Failed to open IIS FastCGI monitoring file [_1]: [_2]",
+                        "Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive '[_1]': [_2]",
                         $watchfile,
                         $fmgr->errstr,
                     )

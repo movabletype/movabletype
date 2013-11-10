@@ -542,6 +542,7 @@ use vars qw( @ISA %Lexicon );
 	'Hello, world' => 'Hello, world',
 	'Hello, [_1]' => '[_1]',
 	'Got an error: [_1]' => 'エラーが発生しました: [_1]',
+	'Should not call MT::registry() without argument.' => 'MT::registory は、引数を指定して呼び出す必要があります。',
 	'Message: [_1]' => 'メッセージ: [_1]',
 	'If it is present, the third argument to add_callback must be an object of type MT::Component or MT::Plugin' => 'add_callbackの第3引数を指定する場合は、MT::ComponentまたはMT::Pluginオブジェクトでなければなりません。',
 	'Fourth argument to add_callback must be a CODE reference.' => 'add_callbackの第4引数はCODEへの参照でなければなりません。',
@@ -620,6 +621,7 @@ use vars qw( @ISA %Lexicon );
 	'New Comment Added to \'[_1]\'' => '\'[_1]\'にコメントがありました',
 	'System Email Address is not configured.' => 'システムで利用するメールアドレスが設定されていません。',
 	'Close' => '閉じる',
+	'Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive \'[_1]\': [_2]' => 'IISFastCGIMonitoringFilePath で指定されたモニタリングファイル ([_1]) が開けません: [_2]',
 	'Failed to open pid file [_1]: [_2]' => 'PIDファイルを開くことができません。',
 	'Failed to send reboot signal: [_1]' => 'プロセス再起動シグナルを送信することができませんでした。',
 	'The file you uploaded is too large.' => 'アップロードしたファイルは大きすぎます。',
@@ -1279,6 +1281,9 @@ use vars qw( @ISA %Lexicon );
 	'Selected Blog' => '選択されたブログ',
 	'Type a blog name to filter the choices below.' => 'ブログ名を入力して絞り込み',
 	'Blog Name' => 'ブログ名',
+	'The \'[_1]\' provided below is not writable by the web server. Change the directory ownership or permissions and try again.' => 'ブログパスにウェブサーバーから書き込めません。ウェブサイトパスの書き込み権限を確認してから、もう一度実行してください。',
+	'Blog Root' => 'ブログパス',
+	'Website Root' => 'ウェブサイトパス',
 	'[_1] changed from [_2] to [_3]' => '[_1]は[_2]から[_3]に変更されました',
 	'Saved [_1] Changes' => '[_1]の変更が保存されました',
 	'Saving permissions failed: [_1]' => '権限を保存できませんでした: [_1]',
@@ -2534,7 +2539,7 @@ use vars qw( @ISA %Lexicon );
 	'Removing widget from dashboard...' => 'ダッシュボードからウィジェットを削除しています...',
 	'Ordering Categories and Folders of Blogs...' => 'ブログのカテゴリとフォルダの順番を設定しています...',
 	'Ordering Folders of Websites...' => 'ウェブサイトのフォルダの順番を設定しています...',
-	q{Setting the 'created by' ID for any user for whom this field is not defined...} => q{初期作成ユーザーの作成者IDを設定しています...},
+	q{Setting the 'created by' ID for any user for whom this field is not defined...} => '初期作成ユーザーの作成者IDを設定しています...',
 	'Assigning a language to each blog to help choose appropriate display format for dates...' => 'ブログに日付の言語を設定しています...',
 	'Adding notification dashboard widget...' => '通知ウィジェットをダッシュボードに追加しています...',
 
@@ -2663,6 +2668,14 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/addons/Cloud.pack/js/cms.js
 	'Continue' => '次へ',
 	'You have unsaved changes to this page that will be lost.' => '保存されていない変更は失われます。',
+
+## mt-static/addons/Sync.pack/js/cms.js
+
+## mt-static/chart-api/deps/raphael-min.js
+
+## mt-static/chart-api/mtchart.js
+
+## mt-static/chart-api/mtchart.min.js
 
 ## mt-static/jquery/jquery.mt.js
 	'Invalid value' => '入力された値が正しくありません',
@@ -3177,9 +3190,11 @@ use vars qw( @ISA %Lexicon );
 	'Specifies the default Accept Comments setting when creating a new entry.' => '既定でコメントを許可する',
 	'Setting Ignored' => '設定は無視されます',
 	'Note: This option is currently ignored since comments are disabled either blog or system-wide.' => '注: ブログまたはシステム全体でコメントが無効なためこのオプションは無視されます。',
+	'Note: This option is currently ignored since comments are disabled either website or system-wide.' => '注: ウェブサイトまたはシステム全体でコメントが無効なためこのオプションは無視されます。',
 	'Specifies the default Accept TrackBacks setting when creating a new entry.' => '既定でトラックバックを許可する',
 	'Accept TrackBacks' => 'トラックバック許可',
 	'Note: This option is currently ignored since TrackBacks are disabled either blog or system-wide.' => '注: ブログまたはシステム全体の設定でトラックバックが無効なためこのオプションは無視されます。',
+	'Note: This option is currently ignored since TrackBacks are disabled either website or system-wide.' => '注: ウェブサイトまたはシステム全体の設定でトラックバックが無効なためこのオプションは無視されます。',
 	'Entry Fields' => '記事フィールド',
 	'_USAGE_ENTRYPREFS' => '記事の編集画面で表示する項目のセットを選択してください。',
 	'Page Fields' => 'ページフィールド',
@@ -3222,7 +3237,7 @@ use vars qw( @ISA %Lexicon );
 	'Immediately approve comments from' => '即時公開する条件',
 	'Specify what should happen to comments after submission. Unapproved comments are held for moderation.' => '受け付けたコメントを公開する条件を選んでください。未公開のコメントは認証待ちのものです。',
 	'No one' => '自動的に公開しない',
-	'Trusted commenters only' => 'ブログで承認されたコメント投稿者のみ',
+	'Trusted commenters only' => '承認されたコメント投稿者のみ',
 	'Any authenticated commenters' => '認証サービスで認証されたコメント投稿者のみ',
 	'Anyone' => 'すべて自動的に公開する',
 	'Allow HTML' => 'HTMLを許可',
@@ -3306,6 +3321,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/cfg_prefs.tmpl
 	'Error: Movable Type was not able to create a directory for publishing your [_1]. If you create this directory yourself, grant write permission to the web server.' => 'エラー: [_1]公開用のディレクトリを作成できません。自分でディレクトリが作成できる場合は、ウェブサーバーに書きこみ権限を与えてください。',
+	'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your site directory.' => 'テンプレートをキャッシュするディレクトリを作成できません。サイトパスの下に<code>[_1]</code>ディレクトリを作成してください。',
+	'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your site directory.' => 'テンプレートをキャッシュするディレクトリに書き込めません。サイトパスの下にある<code>[_1]</code>ディレクトリのパーミッションを確認してください。',
 	'[_1] Settings' => '[_1]設定',
 	'Name your blog. The name can be changed at any time.' => 'ブログ名。ブログ名はいつでも変更できます。',
 	'Enter a description for your blog.' => 'ブログの説明を入力してください。',
@@ -3346,9 +3363,11 @@ use vars qw( @ISA %Lexicon );
 	'If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.' => 'グローバルなDefaultLanguage設定と異なる言語を選んだ場合、グローバルテンプレートの名称が異なるため、テンプレート内で読み込むモジュール名の変更が必要な場合があります。',
 	'License' => 'ライセンス',
 	'Your blog is currently licensed under:' => 'このブログは、次のライセンスで保護されています:',
+	'Your website is currently licensed under:' => 'このウェブサイトは、次のライセンスで保護されています:',
 	'Change license' => 'ライセンスの変更',
 	'Remove license' => 'ライセンスの削除',
 	'Your blog does not have an explicit Creative Commons license.' => 'クリエイティブ・コモンズライセンスを指定していません。',
+	'Your website does not have an explicit Creative Commons license.' => 'クリエイティブ・コモンズライセンスを指定していません。',
 	'Select a license' => 'ライセンスの選択',
 	'Publishing Paths' => '公開パス',
 	'[_1] URL' => '[_1]URL',
@@ -3411,6 +3430,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/cfg_registration.tmpl
 	'Registration Settings' => '登録/認証の設定',
 	'Your blog preferences have been saved.' => 'ブログの設定を保存しました。',
+	'Your website preferences have been saved.' => 'ウェブサイトの設定を保存しました。',
 	'User Registration' => 'ユーザー登録',
 	'Allow registration for this website.' => 'ウェブサイトへの登録を許可します。',
 	'Registration Not Enabled' => 'ユーザー登録は無効です。',
@@ -3448,13 +3468,13 @@ use vars qw( @ISA %Lexicon );
 	'System-wide Feedback Controls' => 'システムレベルフィードバック制御',
 	'Prohibit Comments' => 'コメント',
 	'This will override all individual blog settings.' => 'ここでの設定は、ブログでの設定より優先されます。',
-	'Disable comments for all blogs.' => 'コメントを無効にする',
+	'Disable comments for all websites and blogs.' => 'コメントを無効にする',
 	'Prohibit TrackBacks' => 'トラックバック',
-	'Disable receipt of TrackBacks for all blogs.' => 'トラックバックを無効にする',
+	'Disable receipt of TrackBacks for all websites and blogs.' => 'トラックバックを無効にする',
 	'Outbound Notifications' => '更新通知',
 	'Prohibit Notification Pings' => 'Ping通知禁止',
 	'Disable sending notification pings when a new entry is created in any blog on the system.' => 'ブログに新しい記事が作成された時に、ping通知を送るのを無効にします。',
-	'Disable notification pings for all blogs.' => '全ブログでping通知を無効にする',
+	'Disable notification pings for all websites and blogs.' => 'ping通知を無効にする',
 	'Send Outbound TrackBacks to' => '外部トラックバック送信',
 	'Do not send outbound TrackBacks or use TrackBack auto-discovery if your installation is intended to be private.' => 'プライベートに設定する場合は、トラックバックを送信したりトラックバックの自動発見機能は利用しないようにしましょう。',
 	'Any site' => '任意のサイト',
@@ -3482,7 +3502,7 @@ use vars qw( @ISA %Lexicon );
 	'Select website' => 'ウェブサイト選択',
 	'Allow Registration' => '登録',
 	'Select a system administrator you wish to notify when commenters successfully registered themselves.' => 'コメント投稿者が登録したことを知らせたいシステム管理者を選択してください。',
-	'Allow commenters to register with blogs on this system.' => 'コメント投稿者がMovable Typeに登録することを許可する',
+	'Allow commenters to register on this system.' => 'コメント投稿者がMovable Typeに登録することを許可する',
 	'Notify the following system administrators when a commenter registers:' => '以下のシステム管理者に登録を通知する:',
 	'Select system administrators' => 'システム管理者選択',
 	'Note: System Email Address is not set in System > General Settings. Emails will not be sent.' => 'システムのメールアドレスが設定されていないため、メールは送信されません。「設定 &gt; 全般」から設定してください。',
@@ -3535,7 +3555,6 @@ use vars qw( @ISA %Lexicon );
 	'Parent Website' => '上位ウェブサイト',
 	'Please choose parent website.' => '上位ウェブサイトを選択してください。',
 	q{Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/blog/} => q{新しいブログURLを入力してください。末尾は'/'で終わります。例: http://www.example.com/blog/},
-	'Blog Root' => 'ブログパス',
 	q{Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{新しくインデックスファイルを公開するパスを入力して下さい。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog or C:\www\public_html\blog},
 	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{新しくインデックスファイルを公開するパスを入力して下さい。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨します。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog or C:\www\public_html\blog},
 	'Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => '新しいブログのアーカイブURLを入力してください。例: http://www.example.com/blog/archives/',
@@ -3899,14 +3918,13 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_entry.tmpl
 	'Edit Page' => 'ウェブページの編集',
 	'Create Page' => 'ウェブページの作成',
-	'Add folder' => 'フォルダを追加',
 	'Add new folder parent' => '親フォルダを追加',
 	'Preview this page (v)' => 'ウェブページをプレビュー (v)',
 	'Delete this page (x)' => 'ウェブページを削除 (x)',
 	'View Page' => 'ウェブページを表示',
 	'Edit Entry' => '記事の編集',
 	'Create Entry' => '記事の作成',
-	'Add category' => 'カテゴリを追加',
+	'Category Name' => 'カテゴリ名',
 	'Add new category parent' => '親カテゴリを追加',
 	'Manage Entries' => '記事の管理',
 	'Preview this entry (v)' => '記事をプレビュー (v)',
@@ -3932,6 +3950,7 @@ use vars qw( @ISA %Lexicon );
 	'Some [_1] in the revision could not be loaded because they have been removed.' => '履歴データ内に、削除されたために読み込めなかった[_1]があります。',
 	'This post was held for review, due to spam filtering.' => 'この投稿はスパムフィルタリングにより承認待ちになっています。',
 	'This post was classified as spam.' => 'この投稿はスパムと判定されました。',
+	'Add folder' => 'フォルダを追加',
 	'Change Folder' => 'フォルダの変更',
 	'Unpublished (Draft)' => '未公開(原稿)',
 	'Unpublished (Review)' => '未公開(承認待ち)',
@@ -3956,6 +3975,7 @@ use vars qw( @ISA %Lexicon );
 	'Warning: If you set the basename manually, it may conflict with another entry.' => '警告: 出力ファイル名を手動で設定すると、他の記事と衝突を起こす可能性があります。',
 	q{Warning: Changing this entry's basename may break inbound links.} => q{警告: この記事の出力ファイル名の変更は、内部のリンク切れの原因となります。},
 	'Change note' => '変更メモ',
+	'Add category' => 'カテゴリを追加',
 	'edit' => '編集',
 	'close' => '閉じる',
 	'Accept' => '受信設定',
@@ -4103,7 +4123,6 @@ use vars qw( @ISA %Lexicon );
 	'Select the theme you wish to use for this website.' => 'ウェブサイトで利用したいテーマを選択してください。',
 	'Name your website. The website name can be changed at any time.' => 'ウェブサイト名。ウェブサイト名はいつでも変更できます。',
 	'Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/' => 'ウェブサイトを公開するURLを入力してください。ファイル名(index.htmlなど)は含めないでください。例: http://www.example.com/',
-	'Website Root' => 'ウェブサイトパス',
 	q{Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/ or C:\www\public_html} => q{インデックスファイルが公開されるパスを入力してください。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には'/'や'\'を含めません。例: /home/melody/public_html/blogやC:\www\public_html\blog},
 	'Create Website (s)' => 'ウェブサイト作成',
 	'This field is required.' => 'このフィールドは必須です。',
@@ -4475,7 +4494,6 @@ use vars qw( @ISA %Lexicon );
 	'to publish' => '公開',
 
 ## tmpl/cms/include/theme_exporters/category.tmpl
-	'Category Name' => 'カテゴリ名',
 
 ## tmpl/cms/include/theme_exporters/folder.tmpl
 	'Folder Name' => 'フォルダ名',
@@ -4841,6 +4859,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/setup_initial_website.tmpl
 	'Create Your First Website' => '最初のウェブサイトを作成',
 	q{In order to properly publish your website, you must provide Movable Type with your website's URL and the filesystem path where its files should be published.} => q{ウェブサイトを構築するには、ウェブサイトURLとファイルパスが正しく設定しなければなりません。},
+	'Support directory does not exists or not writable by the web server. Change the ownership or permissions on this directory' => 'サポートディレクトリが存在しないか、ウェブサーバーから書き込めません。サポートディレクトリの書き込み権限を確認してから、もう一度実行してください。',
 	'My First Website' => 'First Website',
 	q{The 'Website Root' is the directory in your web server's filesystem where Movable Type will publish the files for your website. The web server must have write access to this directory.} => q{'ウェブサイトパス'はウェブサーバーがウェブサイトの構築時に使うディレクトリです。ディレクトリにはウェブサーバーの書き込み権限が必要です。},
 	'Select the theme you wish to use for this new website.' => '新しいウェブサイトで利用するテーマを選んでください。',
@@ -5236,11 +5255,9 @@ use vars qw( @ISA %Lexicon );
 	'SSL Certifications' => 'サーバー証明書',
 	'Config Directives' => 'MT環境変数',
 	'Disk Usage' => 'ディスクの使用量',
-	'Sync' => 'サーバー配信',
-	'Contents Sync' => 'サーバー配信',
 
 ## addons/Cloud.pack/lib/Cloud/App/CMS.pm
-	'Owner' => 'ブログ管理者',
+	'Owner' => '管理者',
 	'Creator' => '制作者',
 	'Unable to reset [_1] FTPS password.' => 'FTPSパスワードのリセットが出来ませんでした。',
 	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => 'いくつかの[_2]がすでに更新されていたため、[_1]の更新に失敗しました。',
@@ -5263,39 +5280,11 @@ use vars qw( @ISA %Lexicon );
 	'Cannot copy default secret file.' => '既定のサーバーキーのコピーに失敗しました。',
 	'Unable to update SSL certification.' => 'サーバー証明書の更新をする事が出来ませんでした。',
 	'Config Directive' => '環境変数',
-	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
 	'Restoring Backup Data' => 'バックアップデータの復元',
 	'backup data' => 'バックアップデータ',
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
 	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
 	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
-
-## addons/Cloud.pack/lib/MT/FileSynchronizer.pm
-	'Synchronization with an external server has been successfully finished.' => 'サーバー配信が正常に処理されました',
-	'Failed to sync with an external server.' => 'サーバー配信に失敗しました',
-
-## addons/Cloud.pack/lib/MT/FileSynchronizer/FTPBase.pm
-	'Cannot access to remote directory \'[_1]\'' => 'リモートディレクトリ\'[_1]\'にアクセスできません。',
-	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
-	'Deleting file \'[_1]\' failed.' => 'ファイル\'[_1]\'を削除できませんでした。',
-	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
-	'Unable to write remote file ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
-
-## addons/Cloud.pack/lib/MT/SyncSetting.pm
-	'Sync settings' => 'サーバー配信の設定',
-
-## addons/Cloud.pack/lib/MT/Worker/ContentsSync.pm
-	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバー配信の処理に成功したことを通知するメールです。',
-	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
-
-## addons/Cloud.pack/tmpl/cfg_disk_usage.tmpl
-	'User Contents Files' => 'コンテンツファイル',
-	'Buckup Files' => 'バックアップファイル',
-	'Free Disk Space' => '空き容量',
-	'User Contents' => 'コンテンツファイル',
-	'Others' => 'その他',
-	'System Data' => 'システムファイル',
-	'Free' => '空き容量',
 
 ## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
 	'Manage Basic Authentication' => 'Basic認証の管理',
@@ -5316,31 +5305,19 @@ use vars qw( @ISA %Lexicon );
 	'Configuration value' => '設定値',
 	'Remove Config Directive' => '環境変数の削除',
 
-## addons/Cloud.pack/tmpl/cfg_contents_sync.tmpl
-	'Contents Sync Setting' => 'サーバー配信設定',
-	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
-	'An error occured while trying to connect to the FTP server. Check the settings and try again.' => 'FTPサーバーに接続できませんでした。設定を見直してもう一度接続してください。',
-	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
-	'Enable contents synchronization' => 'サーバー配信を有効にする',
-	'Sync Settings' => 'サーバー配信の設定',
-	'Sync Date' => 'サーバー配信日時',
-	'Sync Now!' => '今すぐ配信',
-	'Recipient for Notification' => '配信結果の通知先メールアドレス',
-	'Receive only error notification' => '配信に失敗したときだけ受け取る',
-	'FTP Settings' => 'FTPの設定',
-	'FTP Server' => 'FTPサーバー',
-	'Port' => 'FTPサーバーのポート',
-	'SSL' => 'SSL',
-	'Enable SSL' => 'SSLで接続する',
-	'Start Directory' => '開始ディレクトリ',
-	'The sync date must be in the future.' => 'サーバー配信日時は、未来の日時を指定してください。',
-	'Invalid time.' => '無効な時刻指定です。',
-	'Do you want to synchronize the contents just now?' => 'いますぐ配信を実行しますか？',
+## addons/Cloud.pack/tmpl/cfg_disk_usage.tmpl
+	'User Contents Files' => 'コンテンツファイル',
+	'Buckup Files' => 'バックアップファイル',
+	'Free Disk Space' => '空き容量',
+	'User Contents' => 'コンテンツファイル',
+	'Others' => 'その他',
+	'System Data' => 'システムファイル',
+	'Free' => '空き容量',
 
 ## addons/Cloud.pack/tmpl/cfg_ftps_password.tmpl
 	'Reset FTPS Password' => 'FTPSパスワードのリセット',
 	'Please select the account for which you want to reset the password.' => 'FTPSパスワードのリセットを行うアカウントを選択してください。',
-	'Owner Password' => 'ブログ管理者のパスワード',
+	'Owner Password' => '管理者のパスワード',
 	'Saved' => '保存しました',
 	'Creater Password' => '制作者のパスワード',
 
@@ -5369,12 +5346,6 @@ use vars qw( @ISA %Lexicon );
 	'Server Certification' => '証明書 (server.crt)',
 	'Secret Key' => '秘密鍵 (server.key)',
 	'Remove SSL Certification' => 'サーバー証明書の削除',
-
-## addons/Cloud.pack/tmpl/dialog/contents_sync_now.tmpl
-	'Preparing...' => 'サーバー配信の準備をしています...',
-	'Synchronizing...' => '配信中です...',
-	'Finish!' => 'ファイルが配信されました!',
-	'The synchronization was interrupted. Unable to resume.' => 'サーバー配信が中断されました。再開できません。',
 
 ## addons/Cloud.pack/tmpl/full_restore.tmpl
 	'Restoring Full Backup Data' => 'バックアップデータからの復元',
@@ -5429,7 +5400,6 @@ use vars qw( @ISA %Lexicon );
 	'Blog Activity' => 'アクティビティ',
 	'Professional Blog' => 'プロフェッショナルブログ',
 	'Blog Archives' => 'アーカイブ',
-	'__CF_REQUIRED_VALUE__' => q{値},
 
 ## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
 	'Show' => '表示項目',
@@ -6156,6 +6126,7 @@ use vars qw( @ISA %Lexicon );
 	'ODBC Driver' => 'ODBCドライバ',
 	'External Directory Synchronization' => '外部ディレクトリと同期',
 	'Populating author\'s external ID to have lower case user name...' => '小文字のユーザー名を外部IDに設定しています...',
+	q{Specify 'SQL Native Client 11.0' for SQL Server 2012 or 'SQL Native Client 10.0' for SQL Server 2008.} => q{利用するODCBドライバを指定します。SQL Server 2012 を利用する場合は、'SQL Native Client 11.0'、SQL Server 2008では、'SQL Native Client 10.0'と入力してください。},
 
 ## addons/Enterprise.pack/lib/MT/Auth/LDAP.pm
 	'User [_1]([_2]) not found.' => 'ユーザー[_1]([_2])が見つかりませんでした。',
@@ -6405,6 +6376,86 @@ use vars qw( @ISA %Lexicon );
 	'Some ([_1]) of the selected users could not be re-enabled because they are no longer found in LDAP.' => '選択されたユーザーのうち[_1]人は外部ディレクトリ上に存在しないので有効にできませんでした。',
 	'You successfully removed the users from this group.' => 'グループからユーザーを削除しました。',
 
+## addons/Sync.pack/config.yaml
+	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
+	'Sync' => 'サーバー配信',
+	'Contents Sync' => 'サーバー配信',
+	'Updating MT::SyncSetting table...' => 'サーバー配信設定テーブルを更新しています...',
+	'Migrating settings of contents sync on website...' => 'ウェブサイトのサーバー配信の設定を移行しています...',
+	'Migrating settings of contents sync on blog...' => 'ブログのサーバー配信の設定を移行しています...',
+
+## addons/Sync.pack/lib/MT/FileSynchronizer.pm
+	'Error switching directory.' => 'ディレクトリの切り替えができません。',
+	'Synchronization with an external server has been successfully finished.' => 'サーバー配信が正常に処理されました',
+	'Failed to sync with an external server.' => 'サーバー配信に失敗しました',
+
+## addons/Sync.pack/lib/MT/FileSynchronizer/FTPBase.pm
+	'Cannot access to remote directory \'[_1]\'' => 'リモートディレクトリ\'[_1]\'にアクセスできません。',
+	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
+	'Deleting file \'[_1]\' failed.' => 'ファイル\'[_1]\'を削除できませんでした。',
+	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
+	'Unable to write remote file ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
+
+## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
+	'Temp Directory [_1] is not writable.' => 'テンポラリディレクトリ ([_1]) に書き込めません。',
+	'Error during rsync: Command (exit code [_1]): [_2]' => 'rsync コマンドでエラーが起きました (終了コード: [_1]): [_2]',
+	'[Rsync Error] removing temporary directory: [_1]' => 'テンポラリディレクトリ ([_1]) を削除できません。',
+	'An error occured while copying the directory.' => 'ファイルのコピー中にエラーが発生しました。',
+
+## addons/Sync.pack/lib/MT/SyncSetting.pm
+	'Sync settings' => 'サーバー配信の設定',
+
+## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
+	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバー配信の処理に成功したことを通知するメールです。',
+	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
+
+## addons/Sync.pack/lib/Sync/App/CMS.pm
+	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
+	'Cannot connect to the FTP server.' => 'FTPサーバーに接続できません。',
+	'Cannot retrieve current directory.' => 'カレントディレクトリを取得できません。',
+	'Cannot retrieve directory list.' => 'ディレクトリの一覧を取得できません。',
+
+## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
+	'Contents Sync Setting' => 'サーバー配信設定',
+	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
+	'An error occured while trying to connect to the FTP server. Check the settings and try again.' => 'FTPサーバーに接続できませんでした。設定を見直してもう一度接続してください。',
+	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
+	'Enable contents synchronization' => 'サーバー配信を有効にする',
+	'Sync Settings' => 'サーバー配信の設定',
+	'Sync Date' => 'サーバー配信日時',
+	'Recipient for Notification' => '配信結果の通知先メールアドレス',
+	'Receive only error notification' => '配信に失敗したときだけ受け取る',
+	'Destinations' => '配信先',
+	'Add destination' => '配信先を追加する',
+	'Sync Type' => '配信方法',
+	'Sync type not selected' => '', # Translate - New
+	'FTP' => 'FTP',
+	'Rsync' => 'rsync',
+	'FTP Server' => 'FTPサーバー',
+	'Port' => 'FTPサーバーのポート',
+	'SSL' => 'SSL',
+	'Enable SSL' => 'SSLで接続する',
+	'Start Directory' => '開始ディレクトリ',
+	'Rsync Destination' => 'rsync 先のディレクトリ',
+	'Delete file' => 'ファイルの削除',
+	'Delete files from the destination that does not exist.' => '配信先に存在しないファイルを削除する。',
+	'Start synchronization now (n)' => '今すぐ同期を開始する (n)',
+	'Sync Now' => '今すぐ同期する',
+	'Please select a sync type.' => '配信方法を指定してください。',
+	'' => '', # Translate - New
+	'The sync date must be in the future.' => 'サーバー配信日時は、未来の日時を指定してください。',
+	'Invalid time.' => '無効な時刻指定です。',
+	'You must make one or more destination settings.' => 'サーバー配信先が設定されていません。',
+	'Are you sure you want to run synchronization?' => 'いますぐ配信を実行しますか？',
+	'Are you sure you want to remove this settings?' => 'この設定を削除しますか？',
+
+## addons/Sync.pack/tmpl/dialog/contents_sync_now.tmpl
+	'Sync Now!' => '今すぐ配信',
+	'Preparing...' => 'サーバー配信の準備をしています...',
+	'Synchronizing...' => '配信中です...',
+	'Finish!' => 'ファイルが配信されました!',
+	'The synchronization was interrupted. Unable to resume.' => 'サーバー配信が中断されました。再開できません。',
+
 ## plugins/FacebookCommenters/config.yaml
 	'Provides commenter registration through Facebook Connect.' => 'Facebookコネクトを利用したコメント投稿者の登録機能を提供します。',
 	'Facebook' => 'Facebook',
@@ -6512,9 +6563,7 @@ use vars qw( @ISA %Lexicon );
 	'Error saving Loupe settings: [_1]' => 'Loupeの設定を保存できませんでした: [_1]',
 	'Send invitation email' => 'ユーザーに招待状をメールで送信する',
 	'Could not send a invitation mail because Loupe is not enabled.' => 'Loupeが無効になっているため、招待状を送信できません。',
-	'Are you sure you want to send an invitation email to selected users?' => 'Loupeの招待状を選択されたユーザーに送信してもよろしいですか？',
 	'Welcome to Loupe' => 'ようこそ、Loupeへ',
-	'Send Loupe invitation email' => 'Loupeの招待状を送信する',
 
 ## plugins/Loupe/lib/Loupe/Mail.pm
 	'Loupe invitation mail has been sent to [_3] for user \'[_1]\' (user #[_2]).' => 'Loupeの招待状をユーザー\'[_1]\'(ID: [_2])のメールアドレス \'[_3]\'に送信しました。',
@@ -6549,8 +6598,6 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/Loupe/tmpl/welcome_mail_plain.tmpl
 	'Loupe is ready for use!' => 'Loupeの準備が整いました。',
-
-## plugins/Loupe/tmpl/welcome_mail_result.tmpl
 
 ## plugins/Loupe/tmpl/widget/welcome_to_loupe.tmpl
 	'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">See more details.</a>' => 'Loupe は、スマートフォンに最適化された、まったく新しい Movable Type への入り口です。Loupe を使えば、Movable Type へログインをすることなく、承認待ちの記事やコメントを承認したり、画像のアップロードを行ったり、あなたのサイトの状態を即座に確認することが出来ます。詳しい情報は<a href="http://www.movabletype.jp/documentation/loupe/">こちら</a>をご覧ください。',
@@ -6745,6 +6792,7 @@ use vars qw( @ISA %Lexicon );
 ## plugins/WidgetManager/WidgetManager.pl
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager version 1.1; このプラグインは、古いバージョンのWidget ManagerのデータをMovable Typeのコアへ統合してアップグレードするために提供されています。アップグレード以外の機能はありません。最新のMovable Typeへアップグレードし終わった後は、このプラグインを削除してください。',
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
+	'Failed.' => '失敗',
 
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードが使用されます。[_2]のHTTPステータスが返されました。',
@@ -6876,16 +6924,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
+## New words: 277
+
 1;
-__END__
-
-=head1 NAME
-
-MT::L10N::ja - Japanese localization support for Movable Type
-
-=head1 AUTHOR & COPYRIGHT
-
-Please see L<MT/AUTHOR & COPYRIGHT>.
-
-=cut
-

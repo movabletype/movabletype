@@ -200,7 +200,7 @@ sub upgrade_functions {
             updater       => {
                 type => 'author',
                 label =>
-                    "Setting the 'created by' ID for any user for whom this field is not defined...",
+                    q{Setting the 'created by' ID for any user for whom this field is not defined...},
                 code => sub {
                     $_[0]->created_by( $_[0]->id )
                         if !defined $_[0]->created_by;
