@@ -3977,7 +3977,12 @@ sub app_path {
     }
     elsif ( $app->{query} ) {
         local $ENV{PATH_INFO} = q()
-            if ( exists( $ENV{PERLXS} ) && $ENV{PERLXS} eq "PerlIS" );
+            if (
+            ( exists( $ENV{PERLXS} ) && $ENV{PERLXS} eq "PerlIS" )
+            || (   defined( $ENV{SERVER_SOFTWARE} )
+                && $ENV{SERVER_SOFTWARE} =~ /IIS/
+                && $ENV{FAST_CGI} )
+            );
         $path = $app->{query}->url;
         $path =~ s!/[^/]*$!!;
 
