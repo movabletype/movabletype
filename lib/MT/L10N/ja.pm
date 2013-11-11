@@ -6428,7 +6428,7 @@ use vars qw( @ISA %Lexicon );
 	'Destinations' => '配信先',
 	'Add destination' => '配信先を追加する',
 	'Sync Type' => '配信方法',
-	'Sync type not selected' => '', # Translate - New
+	'Sync Type *' => '配信方法 *',
 	'FTP' => 'FTP',
 	'Rsync' => 'rsync',
 	'FTP Server' => 'FTPサーバー',
@@ -6442,7 +6442,6 @@ use vars qw( @ISA %Lexicon );
 	'Start synchronization now (n)' => '今すぐ同期を開始する (n)',
 	'Sync Now' => '今すぐ同期する',
 	'Please select a sync type.' => '配信方法を指定してください。',
-	'' => '', # Translate - New
 	'The sync date must be in the future.' => 'サーバー配信日時は、未来の日時を指定してください。',
 	'Invalid time.' => '無効な時刻指定です。',
 	'You must make one or more destination settings.' => 'サーバー配信先が設定されていません。',
