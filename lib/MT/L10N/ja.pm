@@ -1281,7 +1281,7 @@ use vars qw( @ISA %Lexicon );
 	'Selected Blog' => '選択されたブログ',
 	'Type a blog name to filter the choices below.' => 'ブログ名を入力して絞り込み',
 	'Blog Name' => 'ブログ名',
-	'The \'[_1]\' provided below is not writable by the web server. Change the directory ownership or permissions and try again.' => 'ブログパスにウェブサーバーから書き込めません。ウェブサイトパスの書き込み権限を確認してから、もう一度実行してください。',
+	'The \'[_1]\' provided below is not writable by the web server. Change the directory ownership or permissions and try again.' => '[_1]にウェブサーバーから書き込めません。[_1]の書き込み権限を確認してから、もう一度実行してください。',
 	'Blog Root' => 'ブログパス',
 	'Website Root' => 'ウェブサイトパス',
 	'[_1] changed from [_2] to [_3]' => '[_1]は[_2]から[_3]に変更されました',
