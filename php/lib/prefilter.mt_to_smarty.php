@@ -287,7 +287,9 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
 
             // extra newline is eaten by PHP but will cause any actual
             // newline from user to be preserved:
-            $smart_source .= "\n";
+            if ($close_mod_args == '') {
+                $smart_source .= "\n";
+            }
         }
     } else {
         $smart_source = $tpl_source;

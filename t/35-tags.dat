@@ -731,5 +731,6 @@
 { "r" : "1", "t" : "<MTPages><MTPageNext by_category='1'><MTPageID></MTPageNext></MTPages>", "e" : "" }, #715
 { "r" : "1", "t" : "<MTPages><MTPagePrevious by_category='1'><MTPageID></MTPagePrevious></MTPages>", "e" : "" }, #716
 { "r" : "1", "t" : "<MTPages><MTPageNext by_folder='1'><MTPageID></MTPageNext></MTPages>", "e" : "" }, #717
-{ "r" : "1", "t" : "<MTPages><MTPagePrevious by_folder='1'><MTPageID></MTPagePrevious></MTPages>", "e" : "" } #718
+{ "r" : "1", "t" : "<MTPages><MTPagePrevious by_folder='1'><MTPageID></MTPagePrevious></MTPages>", "e" : "" }, #718
+{ "r" : "1", "t" : "foo<MTFor decode_html='1'>bar</MTFor>baz", "e" : "foobarbaz" } #719
 ]
