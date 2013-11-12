@@ -125,7 +125,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             'white-space': 'pre',
             resize: 'none'
         });
-        if (tinyMCE.isIE8) {
+        if (tinyMCE.Env.ie == 8) {
             // The workaround for IE8 textarea bug.
             // The "width" value is overwrote by the "max-width" and the "min-width".
             // But this workaround requires the "width" value.
@@ -189,7 +189,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                 this.tinymce.execCommand('mtFullScreenIsEnabled', returnValue);
                 if (! returnValue['enabled']) {
                     var h = this.$editorIframe.height();
-                    if (tinyMCE.isIE) {
+                    if (tinyMCE.Env.ie) {
                         this.$editorTextarea.data('base-height-adjustment', h);
                     }
                     else {
@@ -207,6 +207,17 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                     adapter.$editorTextarea.show();
                     adapter.$editorIframe.hide();
                     adapter.$editorPathRow.css('visibility', 'hidden');
+
+                    if (tinyMCE.Env.ie == 8) {
+                        // The workaround for IE8 selection issue.
+                        (function() {
+                            var x = window.scrollX,
+                                y = window.scrollY;
+                            adapter.$editorTextarea.focus();
+                            window.scrollTo(x, y);
+                            adapter.source.saveSelection();
+                        })();
+                    }
                 }, 0);
 
                 this.editor = this.source;
