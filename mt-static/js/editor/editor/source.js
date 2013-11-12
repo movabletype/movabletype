@@ -93,7 +93,7 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
     getSelectedText: function() {
         var selection = this.getSelection();
         if ( selection.createRange ) {
-            // ie
+            // ie8
             var range = this.range;
             if (! range) {
                 this.focus();
@@ -101,10 +101,16 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
             }
             return range.text;
         } else {
-            var length = this.textarea.textLength;
-            var start = this.selectionStart || this.textarea.selectionStart;
-            var end = this.selectionEnd || this.textarea.selectionEnd;
-            return this.textarea.value.substring( start, end );
+            try {
+                var length = this.textarea.textLength;
+                var start = this.selectionStart || this.textarea.selectionStart;
+                var end = this.selectionEnd || this.textarea.selectionEnd;
+                return this.textarea.value.substring( start, end );
+            }
+            catch(e) {
+                // May not be initialized
+                return '';
+            }
         }
     },
 
