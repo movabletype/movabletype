@@ -6416,7 +6416,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot retrieve directory list.' => 'ディレクトリの一覧を取得できません。',
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
-	'Contents Sync Setting' => 'サーバー配信設定',
+	'Contents Sync Settings' => 'サーバー配信設定',
 	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
 	'An error occured while trying to connect to the FTP server. Check the settings and try again.' => 'FTPサーバーに接続できませんでした。設定を見直してもう一度接続してください。',
 	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
