@@ -204,6 +204,9 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                 }
 
                 setTimeout(function() {
+                    var placeholder, contentBody,
+                        tinymce = adapter.tinymce;
+
                     adapter.$editorTextarea.show();
                     adapter.$editorIframe.hide();
                     adapter.$editorPathRow.css('visibility', 'hidden');
@@ -217,6 +220,13 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                             window.scrollTo(x, y);
                             adapter.source.saveSelection();
                         })();
+                    }
+
+                    contentBody = tinymce.dom.select('body')[0];
+                    if (contentBody.firstChild) {
+                        placeholder = tinymce.dom.create('br', {'data-mce-bogus': 1});
+                        contentBody.insertBefore(placeholder, contentBody.firstChild);
+                        tinymce.selection.select(placeholder);
                     }
                 }, 0);
 
