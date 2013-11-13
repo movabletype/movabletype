@@ -621,6 +621,7 @@
                                                          : ''
                                         }
                                     );
+                                args.isDefaultPrevented = function(){return true};
 
                                 ed.off('BeforeExecCommand', createLink);
                             }
@@ -647,7 +648,7 @@
                                     .source
                                     .editor
                                     .insertContent(args.value);
-                                args.isDefaultPrevented = function(){return false};
+                                args.isDefaultPrevented = function(){return true};
 
                                 ed.off('BeforeExecCommand', insertContent);
                             }
