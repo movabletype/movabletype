@@ -97,6 +97,7 @@ sub init_core_callbacks {
             $pkg . 'pre_load_filtered_list.member' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 my $terms = $opts->{terms};
+                delete $terms->{blog_id};
                 my $args  = $opts->{args};
                 $args->{joins} ||= [];
                 if ( MT->config->SingleCommunity ) {
