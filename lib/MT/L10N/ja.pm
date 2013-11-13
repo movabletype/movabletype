@@ -6447,6 +6447,7 @@ use vars qw( @ISA %Lexicon );
 	'You must make one or more destination settings.' => 'サーバー配信先が設定されていません。',
 	'Are you sure you want to run synchronization?' => 'いますぐ配信を実行しますか？',
 	'Are you sure you want to remove this settings?' => 'この設定を削除しますか？',
+	'Run synchronization now' => '今すぐ配信する',
 
 ## addons/Sync.pack/tmpl/dialog/contents_sync_now.tmpl
 	'Sync Now!' => '今すぐ配信',
