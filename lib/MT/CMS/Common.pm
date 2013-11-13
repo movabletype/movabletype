@@ -10,9 +10,16 @@ use strict;
 use MT::Util qw( format_ts offset_time_list relative_date remove_html);
 
 sub save {
-    my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $app             = shift;
+    my $q               = $app->param;
+    my $type            = $q->param('_type');
+    my $id              = $q->param('id');
+    my @types_for_event = ($type);
+
+    if ( $id && $type eq 'website' ) {
+        $type = 'blog';
+        unshift @types_for_event, $type;
+    }
 
     return $app->errtrans("Invalid request.")
         unless $type;
@@ -26,10 +33,11 @@ sub save {
         return $app->forward($save_mode);
     }
 
-    return $app->errtrans("Invalid request.")
-        if is_disabled_mode( $app, 'save', $type );
+    for my $t (@types_for_event) {
+        return $app->errtrans("Invalid request.")
+            if is_disabled_mode( $app, 'save', $t );
+    }
 
-    my $id = $q->param('id');
     $q->param( 'allow_pings', 0 )
         if ( $type eq 'category' ) && !defined( $q->param('allow_pings') );
 
@@ -46,9 +54,12 @@ sub save {
                 if !$perms && $id;
         }
 
-        $app->run_callbacks( 'cms_save_permission_filter.' . $type,
-            $app, $id )
-            || return $app->permission_denied();
+        for my $t (@types_for_event) {
+            return $app->permission_denied()
+                unless $app->run_callbacks(
+                'cms_save_permission_filter.' . $t,
+                $app, $id );
+        }
     }
 
     my $param = {};
@@ -71,8 +82,11 @@ sub save {
         }
     }
 
-    my $filter_result
-        = $app->run_callbacks( 'cms_save_filter.' . $type, $app );
+    my $filter_result = 1;
+    for my $t (@types_for_event) {
+        $filter_result
+            &&= $app->run_callbacks( 'cms_save_filter.' . $t, $app );
+    }
 
     if ( !$filter_result ) {
         my %param = (%$param);
@@ -339,10 +353,12 @@ sub save {
         $obj->modified_by( $author->id ) if $obj->id;
     }
 
-    unless (
-        $app->run_callbacks( 'cms_pre_save.' . $type, $app, $obj, $original )
-        )
-    {
+    $filter_result = 1;
+    for my $t (@types_for_event) {
+        $filter_result &&= $app->run_callbacks( 'cms_pre_save.' . $t,
+            $app, $obj, $original );
+    }
+    unless ($filter_result) {
         if ( 'blog' eq $type ) {
             my $meth = $q->param('cfg_screen');
             if ( $meth && $app->handlers_for_mode($meth) ) {
@@ -369,8 +385,11 @@ sub save {
         $app->translate( "Saving object failed: [_1]", $obj->errstr ) );
 
     # Now post-process it.
-    $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $original )
-        or return $app->error( $app->errstr() );
+    for my $t (@types_for_event) {
+        return $app->error( $app->errstr() )
+            unless $app->run_callbacks( 'cms_post_save.' . $t,
+            $app, $obj, $original );
+    }
 
     # Save NWC settings and revision settings
     my $screen = $q->param('cfg_screen') || '';
@@ -568,8 +587,15 @@ sub run_web_services_save_config_callbacks {
 sub edit {
     my $app = shift;
 
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $q               = $app->param;
+    my $type            = $q->param('_type');
+    my $id              = $q->param('id');
+    my @types_for_event = ($type);
+
+    if ( $id && $type eq 'website' ) {
+        $type = 'blog';
+        unshift @types_for_event, $type;
+    }
 
     return $app->errtrans("Invalid request.")
         unless $type;
@@ -583,8 +609,10 @@ sub edit {
         return $app->forward( $edit_mode, @_ );
     }
 
-    return $app->errtrans("Invalid request.")
-        if is_disabled_mode( $app, 'edit', $type );
+    for my $t (@types_for_event) {
+        return $app->errtrans("Invalid request.")
+            if is_disabled_mode( $app, 'edit', $t );
+    }
 
     my %param = eval { $_[0] ? %{ $_[0] } : (); };
     die Carp::longmess if $@;
@@ -625,7 +653,6 @@ sub edit {
 
     $param{autosave_frequency} = $app->config->AutoSaveFrequency;
 
-    my $id     = $q->param('id');
     my $perms  = $app->permissions;
     my $author = $app->user;
     my $cfg    = $app->config;
@@ -657,13 +684,19 @@ sub edit {
         }
     );
 
-    $app->run_callbacks( 'cms_object_scope_filter.' . $type, $app, $id )
-        || return $app->return_to_dashboard( redirect => 1 );
+    for my $t (@types_for_event) {
+        return $app->return_to_dashboard( redirect => 1 )
+            unless $app->run_callbacks( 'cms_object_scope_filter.' . $t,
+            $app, $id );
+    }
 
     if ( !$author->is_superuser ) {
-        $app->run_callbacks( 'cms_view_permission_filter.' . $type,
-            $app, $id, $obj_promise )
-            || return $app->permission_denied();
+        for my $t (@types_for_event) {
+            return $app->permission_denied()
+                unless $app->run_callbacks(
+                'cms_view_permission_filter.' . $t,
+                $app, $id, $obj_promise );
+        }
     }
     my $obj;
     my $blog;
@@ -777,8 +810,11 @@ sub edit {
         $param{'sitepath_limited'}       = $cfg->BaseSitePath;
     }
 
-    my $res = $app->run_callbacks( 'cms_edit.' . $type, $app, $id, $obj,
-        \%param );
+    my $res = 1;
+    for my $t (@types_for_event) {
+        $res &&= $app->run_callbacks( 'cms_edit.' . $t, $app, $id, $obj,
+            \%param );
+    }
     if ( !$res ) {
         return $app->error( $app->callback_errstr() );
     }

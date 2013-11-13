@@ -1433,7 +1433,7 @@ sub cfg_entry {
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
-    $q->param( '_type', 'blog' );
+    $q->param( '_type', $app->blog->class );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward(
         "view",

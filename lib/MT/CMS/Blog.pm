@@ -479,7 +479,7 @@ sub cfg_feedback {
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
-    $q->param( '_type', 'blog' );
+    $q->param( '_type', $app->blog->class );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward(
         "view",
@@ -577,6 +577,8 @@ sub cfg_registration {
     $param{new_roles} = \@roles;
     $param{new_created_user_role} = join( ',', @role_ids );
 
+    $param{is_website} = $blog->class eq 'website';
+
     $app->load_tmpl( 'cfg_registration.tmpl', \%param );
 }
 
@@ -608,7 +610,7 @@ sub cfg_web_services {
             };
     }
 
-    $q->param( '_type', 'blog' );
+    $q->param( '_type', $app->blog->class );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward(
         "view",

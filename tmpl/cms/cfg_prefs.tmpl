@@ -95,7 +95,8 @@ function setLicense() {
 /* ]]> */
 </script>
 
-<mtapp:form id="cfg_form" name="cfg_form" mode="save" object_type="blog">
+<mt:setvarblock name="o"><mt:if name="is_website">website<mt:else>blog</mt:if></mt:setvarblock>
+<mtapp:form id="cfg_form" name="cfg_form" mode="save" object_type="$o">
   <input type="hidden" name="cfg_screen" value="cfg_prefs" />
 
   <mtapp:settinggroup id="blog-settings">
