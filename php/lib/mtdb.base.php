@@ -493,6 +493,9 @@ abstract class MTDatabase {
             require_once('class.mt_fileinfo.php');
             $finfo = new FileInfo;
             $finfos = $finfo->Find($where);
+            if (empty($finfos))
+                return null;
+
             $found = false;
             foreach($finfos as $fi) {
                 $tmap = $fi->TemplateMap();
