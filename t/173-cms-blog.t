@@ -27,7 +27,8 @@ use Test::More;
 MT->instance;
 my $user        = MT::Author->load(1);
 my $mock_author = Test::MockModule->new('MT::Author');
-$mock_author->mock( 'is_superuser', sub {0} );
+our $is_superuser = 0;
+$mock_author->mock( 'is_superuser', sub {$is_superuser} );
 my $website = MT::Website->load(2);
 is( !!$website->is_blog, '', 'Is a website' );
 
@@ -78,7 +79,7 @@ subtest 'Check callbacks for each config screens' => sub {
             my %param = (
                 __test_user => $user,
                 __mode      => $s->{__mode},
-                blog_id     => $website->id,
+                blog_id     => $website->id
             );
             my $app = _run_app( 'MT::App::CMS', \%param );
             my $out = delete $app->{__test_output};
@@ -99,6 +100,51 @@ subtest 'Check callbacks for each config screens' => sub {
                 qr/name="__mode"\s*value="save"(?:(?!form).)*name="_type"\s*value="website"/sm,
                 '"website" is specified for "_type"'
             );
+
+            done_testing;
+        };
+    }
+
+    done_testing;
+};
+
+subtest 'Check callbacks for each config screens for global level' => sub {
+    local $is_superuser = 1;
+
+    my @screens = (
+        {   __mode => 'cfg_web_services',
+            name   => 'Web Services Settings',
+            like   => qr/__mode" value="save_cfg_system_web_services"/,
+        },
+    );
+
+    for my $s (@screens) {
+        subtest $s->{name} . ' screen' => sub {
+            %callbacks = ();
+
+            plan skip_all => 'This test is skip for this screen'
+                if $s->{skip};
+
+            my %param = (
+                __test_user => $user,
+                __mode      => $s->{__mode},
+                blog_id     => 0,
+            );
+            my $app = _run_app( 'MT::App::CMS', \%param );
+            my $out = delete $app->{__test_output};
+
+            for my $t (qw(blog)) {
+                for my $name (
+                    qw(cms_edit)
+                    )
+                {
+                    my $cb = 'MT::App::CMS::' . $name . '.' . $t;
+                    is( scalar @{ $callbacks{$cb} || [] },
+                        1, $cb . ' has been called once' );
+                }
+            }
+
+            like( $out, $s->{like}, 'output' );
 
             done_testing;
         };

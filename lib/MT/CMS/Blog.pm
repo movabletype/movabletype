@@ -479,7 +479,7 @@ sub cfg_feedback {
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
-    $q->param( '_type', $app->blog->class );
+    $q->param( '_type', $app->blog ? $app->blog->class : 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward(
         "view",
@@ -610,7 +610,7 @@ sub cfg_web_services {
             };
     }
 
-    $q->param( '_type', $app->blog->class );
+    $q->param( '_type', $app->blog ? $app->blog->class : 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward(
         "view",
