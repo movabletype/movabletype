@@ -1169,6 +1169,7 @@ sub generate_site_stats_data {
     unless ($present_lines) {
         if ( $fmgr->exists($path) ) {
             my $file = $fmgr->get_data( $path, 'output' );
+            $file =~ s/widget_site_stats_draw_graph\((.*)\);/$1/;
             my $data = MT::Util::from_json($file);
             $present_lines = $data->{reg_keys} if $data;
             MT::Request->instance->cache( 'site_stats_lines', $present_lines )
@@ -1297,7 +1298,11 @@ sub generate_site_stats_data {
             || $perms->can_do('administer_blog')
             || $perms->can_do('administer');
 
-        $fmgr->put_data( MT::Util::to_json($result), $path );
+        $fmgr->put_data(
+            'widget_site_stats_draw_graph('
+                . MT::Util::to_json($result) . ');',
+            $path
+        );
     }
 
     delete $param->{provider};

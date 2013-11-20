@@ -28,7 +28,7 @@
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
   <mt:if name="blog_id">
     <input type="hidden" name="__mode" value="save" />
-    <input type="hidden" name="_type" value="blog" />
+    <input type="hidden" name="_type" value="<mt:if name="is_website">website<mt:else>blog</mt:if>" />
     <input type="hidden" name="cfg_screen" value="cfg_web_services" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
   <mt:else>

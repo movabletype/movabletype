@@ -46,7 +46,7 @@ use vars qw( %Lexicon );
 	'OAuth2 settings' => 'Configuración OAuth2', # Translate - New
 	'This blog is using the settings of [_1].' => 'Este blog está utilizando la configuración de [_2].', # Translate - New
 	'Other Google account' => 'Otra cuenta de Google', # Translate - New
-	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://code.google.com/apis/console" target="_blank">Google APIs Console</a> before selecting profile.} => q{Cree un ID de cliente OAuth2 para las aplicaciones web en este enlace a la <a href="https://code.google.com/apis/console" target="_blank">Consola de Google APIs</a> antes de seleccionar el perfil.}, # Translate - New
+	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a> before selecting profile.} => q{Cree un ID de cliente OAuth2 para las aplicaciones web en este enlace a la <a href="https://cloud.google.com/console" target="_blank">Consola de Google APIs</a> antes de seleccionar el perfil.}, # Translate - New
 	'Redirect URI of the OAuth2 application' => 'URI de redirección de la aplicación OAuth2', # Translate - New
 	'Client ID of the OAuth2 application' => 'ID de cliente de la aplicación OAuth2', # Translate - New
 	'Client secret of the OAuth2 application' => 'Secreto de cliente de la aplicación OAuth2', # Translate - New

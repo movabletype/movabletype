@@ -24,6 +24,9 @@ legend {
     color: #2b2b2b;
     font-weight: bold;
 }
+label {
+    white-space: nowrap;	
+}
 label.msg { 
     display: none;
 }

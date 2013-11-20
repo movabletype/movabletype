@@ -73,7 +73,7 @@
             jQuery('.site-stats-widget .down-column').css('height', 'auto');
           }
           else {
-            draw_graph(data.result.stat_url, false);
+            get_graph_data(data.result.stat_url, false);
           }
         },
         error: function(data) {
@@ -83,53 +83,10 @@
 
     jQuery('#statistics_settings_link').hide();
 
-    draw_graph('<mt:var name="stat_url">', true);
+    get_graph_data('<mt:var name="stat_url">', true);
 
-    function draw_graph(stat_url, retry) {
-      jQuery.getJSON(stat_url, function(data) {
-        jQuery('.site-stats-widget .down-column').css('height', '');
-
-        var hover_data = data.hover_data.data;
-        var config = {
-          type: 'morris.line',
-          yLength: hover_data[0].length,
-          autoResize: true,
-          height: 200,
-          lineWidth: 3,
-          pointSize: 3,
-          data: data.graph_data,
-          hoverCallback: function (index, options, content) {
-            var row  = options.data[index];
-            var data = hover_data[index];
-            var html = '<div class="morris-hover-row-label">' + row.x + '</div>';
-            for (var i = 0; i < data.length; i++) {
-              var colorSubscript = i;
-              if ( i > 16 ) {
-                var number = parseInt(i/17);
-                colorSubscript = i - ( 17 * number );
-              }
-              var color = chartColors[colorSubscript];
-              html += '<div class="morris-hover-point" style="color: ' + color + ';">' + data[i].label + ': ' + data[i].count + '</div>';
-            }
-            return html;
-          },
-          yLabelFormat: function (y) {
-              return '';
-          }
-        }
-        var range = {
-          unit: 'daily',
-          length: 10,
-          end: data.graph_data[9].x
-        }
-        new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
-        if (data.can_edit_config) {
-          <mt:if name="object_loop">
-          var select_blog_id = jQuery('select#select_blog_id').val();
-          jQuery('#statistics_settings_link a').attr('href', '<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id='+select_blog_id);
-          </mt:if>
-          jQuery('#statistics_settings_link').show();
-        }
+    function get_graph_data(stat_url, retry) {
+      jQuery.getJSON(stat_url+"?callback=?", function(data) {
       })
       .error(function(xhr) {
         if (retry && xhr.status === 404) {
@@ -145,6 +102,52 @@
     }
 
   });
+
+  function widget_site_stats_draw_graph(data) {
+      jQuery('.site-stats-widget .down-column').css('height', '');
+
+      var hover_data = data.hover_data.data;
+      var config = {
+        type: 'morris.line',
+        yLength: hover_data[0].length,
+        autoResize: true,
+        height: 200,
+        lineWidth: 3,
+        pointSize: 3,
+        data: data.graph_data,
+        hoverCallback: function (index, options, content) {
+          var row  = options.data[index];
+          var data = hover_data[index];
+          var html = '<div class="morris-hover-row-label">' + row.x + '</div>';
+          for (var i = 0; i < data.length; i++) {
+            var colorSubscript = i;
+            if ( i > 16 ) {
+              var number = parseInt(i/17);
+              colorSubscript = i - ( 17 * number );
+            }
+            var color = chartColors[colorSubscript];
+            html += '<div class="morris-hover-point" style="color: ' + color + ';">' + data[i].label + ': ' + data[i].count + '</div>';
+          }
+          return html;
+        },
+        yLabelFormat: function (y) {
+            return '';
+        }
+      }
+      var range = {
+        unit: 'daily',
+        length: 10,
+        end: data.graph_data[9].x
+      }
+      new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
+      if (data.can_edit_config) {
+        <mt:if name="object_loop">
+        var select_blog_id = jQuery('select#select_blog_id').val();
+        jQuery('#statistics_settings_link a').attr('href', '<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id='+select_blog_id);
+        </mt:if>
+        jQuery('#statistics_settings_link').show();
+      }
+  }
   /* ]]> */
 </script>
 </mt:setvarblock>

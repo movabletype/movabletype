@@ -262,8 +262,8 @@ sub save_config {
     _clear_session_token_data($app);
 
     # Clear cache for site stats dashnoard widget.
-    if (   $old_client_id ne $config->{client_id}
-        || $old_profile_id ne $config->{profile_id} )
+    if (   $old_client_id ne ( $config->{client_id} || '' )
+        || $old_profile_id ne ( $config->{profile_id} || '' ) )
     {
         my @site_ids = ( $obj ? $obj->id : 0 );
         if ( $obj && !$obj->is_blog ) {

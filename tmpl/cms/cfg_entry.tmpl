@@ -32,7 +32,8 @@
 
 <mt:include name="include/header.tmpl" id="header_include">
 
-<mtapp:form id="cfg_entry" name="cfg_entry" mode="save" object_type="blog">
+<mt:setvarblock name="o"><mt:if name="is_website">website<mt:else>blog</mt:if></mt:setvarblock>
+<mtapp:form id="cfg_entry" name="cfg_entry" mode="save" object_type="$o">
   <input type="hidden" name="cfg_screen" value="cfg_entry" />
   <h2><__trans phrase="Publishing Defaults"></h2>
   <mtapp:settinggroup id="display-settings">

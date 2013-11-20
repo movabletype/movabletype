@@ -533,6 +533,9 @@ sub edit {
     }
 
     $app->setup_editor_param($param);
+    if ( $app->archetype_editor_is_enabled ) {
+        $app->sanitize_tainted_param( $param, [qw(text text_more)] );
+    }
 
     $param->{object_type}  = $type;
     $param->{object_label} = $class->class_label;
@@ -1433,7 +1436,7 @@ sub cfg_entry {
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
-    $q->param( '_type', 'blog' );
+    $q->param( '_type', $app->blog->class );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward(
         "view",
