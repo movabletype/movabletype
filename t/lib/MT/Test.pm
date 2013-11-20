@@ -1,5 +1,5 @@
 #############################################################################
-# Copyright © 2008-2012 Six Apart Ltd.
+# Copyright © 2008-2013 Six Apart Ltd.
 # $Id$
 
 package MT::Test;
