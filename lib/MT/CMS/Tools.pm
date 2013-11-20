@@ -2181,7 +2181,8 @@ sub dialog_restore_upload {
     }
 
     my @files = split( ',', $files );
-    my $file_next = shift @files if scalar(@files);
+    my $file_next;
+    $file_next = shift @files if scalar(@files);
     if ( !defined($file_next) ) {
         if ( scalar(@$assets) ) {
             $asset             = $assets->[0];
@@ -2721,9 +2722,10 @@ sub restore_upload_manifest {
         "Uploaded file was not a valid Movable Type backup manifest file.")
         if !defined($backups);
 
-    my $files     = $backups->{files};
-    my $assets    = $backups->{assets};
-    my $file_next = shift @$files if defined($files) && scalar(@$files);
+    my $files  = $backups->{files};
+    my $assets = $backups->{assets};
+    my $file_next;
+    $file_next = shift @$files if defined($files) && scalar(@$files);
     my $assets_json;
     my $param = {};
 
