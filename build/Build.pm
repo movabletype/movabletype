@@ -294,7 +294,7 @@ sub make {
         );
     }
     else {
-        $self->verbose_command('make');
+        $self->verbose_command($ENV{MAKE}? $ENV{MAKE}: 'make');
     }
 
     if ( !$self->{'debug'} && $self->{'workspace!'} ) {

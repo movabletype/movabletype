@@ -184,7 +184,7 @@ dist:
 	perl build/exportmt.pl --local
 
 me:
-	perl build/exportmt.pl --make
+	/usr/bin/env MAKE=${MAKE} perl build/exportmt.pl --make
 
 clean:
 	-rm -rf $(local_js)
