@@ -16531,6 +16531,49 @@ tinymce.ForceBlocks = function(editor) {
 					}
 				};
 
+				function isDescendant(container, node) {
+					if (! node || ! node.parentNode) {
+						return false;
+					}
+					node = node.parentNode;
+
+					while (node) {
+						if (container === node) {
+							return true;
+						}
+						node = node.parentNode;
+					}
+
+					return false;
+				}
+
+				function findNonZeroOffsetParent(node) {
+					if (! node || ! node.parentNode) {
+						return {
+							parent: null,
+							offset: null
+						};
+					}
+					var parent = node.parentNode;
+
+					while (parent && parent.childNodes[0] === node) {
+						node = parent;
+						parent = parent.parentNode;
+					}
+
+					var offset = 0;
+					if (parent) {
+						while (parent.childNodes[offset] && parent.childNodes[offset] !== node) {
+							offset++;
+						}
+					}
+
+					return {
+						parent: parent,
+						offset: offset
+					};
+				}
+
 				// Adjust selection so that a end container with a end offset of zero is not included in the selection
 				// as this isn't visible to the user.
 				var rng = ed.selection.getRng();
@@ -16538,10 +16581,19 @@ tinymce.ForceBlocks = function(editor) {
 				var end = rng.endContainer;
 
 				if (start != end && rng.endOffset === 0) {
-					var newEnd = findSelectionEnd(start, end);
-					var endOffset = newEnd.nodeType == 3 ? newEnd.length : newEnd.childNodes.length;
+					if (isDescendant(start, end)) {
+						var data = findNonZeroOffsetParent(end);
+						var newEnd = data.parent;
+						var endOffset = data.offset;
+					}
+					else {
+						var newEnd = findSelectionEnd(start, end);
+						var endOffset = newEnd.nodeType == 3 ? newEnd.length : newEnd.childNodes.length;
+					}
 
-					rng.setEnd(newEnd, endOffset);
+					if (newEnd) {
+						rng.setEnd(newEnd, endOffset);
+					}
 				}
 
 				return rng;
