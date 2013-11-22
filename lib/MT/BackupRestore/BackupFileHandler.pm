@@ -14,6 +14,8 @@ use File::Spec;
 
 @MT::BackupRestore::BackupFileHandler::ISA = qw(XML::SAX::Base);
 
+my $is_mswin32 = $^O eq 'MSWin32' ? 1 : 0;
+
 sub new {
     my $class   = shift;
     my (%param) = @_;
@@ -117,6 +119,20 @@ sub start_element {
                 my %column_data
                     = map { $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value} }
                     keys(%$attrs);
+
+                # Replace directory separators in $asset->file_path properly.
+                if ( $class =~ /^MT::Asset/ ) {
+                    my ($separator) = ( $column_data{file_path} =~ m!^%\w(/|\\)! );
+                    if ( $separator eq '/' && $is_mswin32 ) {
+                        # *nix => Windows
+                        $column_data{file_path} =~ s!/!\\!g;
+                    }
+                    elsif ( $separator eq '\\' && !$is_mswin32 ) {
+                        # Windows => *nix
+                        $column_data{file_path} =~ s!\\!/!g;
+                    }
+                }
+
                 my $obj;
                 if ( 'author' eq $name ) {
                     $obj = $class->load( { name => $column_data{name} } );
