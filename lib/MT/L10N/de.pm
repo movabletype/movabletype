@@ -6691,7 +6691,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'OAuth2 settings' => 'OAuth2-Einstellungen',
 	'This [_2] is using the settings of [_1].' => 'In diesem [_2] werden die Einstellungen von [_1] verwendet.',
 	'Other Google account' => 'Anderes Google-Konto',
-	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://code.google.com/apis/console" target="_blank">Google APIs Console</a> before selecting profile.} => q{Bevor Sie in Profil wählen, legen Sie bitte mit der <a href="https://code.google.com/apis/console" target="_blank">Google API-Konsole</a> eine Client ID für die OAuth2-Anwendung an dieser URI an.},
+	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a> before selecting profile.} => q{Bevor Sie in Profil wählen, legen Sie bitte mit der <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a> eine Client ID für die OAuth2-Anwendung an dieser URI an.},
 	'Redirect URI of the OAuth2 application' => 'Redirect URI der OAuth2-Anwendung',
 	'Client ID of the OAuth2 application' => 'Client ID der OAuth2-Anwendung',
 	'Client secret of the OAuth2 application' => 'Client Secret der OAuth2-Anwendung',
