@@ -268,7 +268,7 @@ List = new Class( Component, {
     getItemIds: function() {
         var ids = [];
         for ( var i = 0; i < this.items.length; i++ )
-            ids.push( this.items[ i ].itemId );
+            ids.push( this.items[ i ].item_id );
         
         return ids;
     },
@@ -312,7 +312,7 @@ List = new Class( Component, {
                 list: this,
                 index: pos
             } );
-            div.itemId = items[ i ].id;
+            div.item_id = items[ i ].id;
             
             /* add the class before the replace, and avoid a split second flash */
             if ( selected ) {
@@ -356,7 +356,7 @@ List = new Class( Component, {
             list: this,
             index: pos 
         } );
-        div.itemId = item.id;
+        div.item_id = item.id;
 
         /* fixme special case for chooser, lets fix this */
         if ( defined( item.type ) )
@@ -383,7 +383,7 @@ List = new Class( Component, {
     },
     
 
-    /* xxx this should accept an itemId or dom element */
+    /* xxx this should accept an item_id or dom element */
     removeItem: function( itemid ) {
         if ( !defined( this.itempos[ itemid ] ) )
             return;
@@ -402,7 +402,7 @@ List = new Class( Component, {
                 continue;
             
             /* extra check */
-            if ( this.items[ idx ].itemId != items[ i ] )
+            if ( this.items[ idx ].item_id != items[ i ] )
                 continue;
             
             this.content.removeChild( this.items[ idx ] );
@@ -413,7 +413,7 @@ List = new Class( Component, {
             // recalculate the position index
             var len = this.items.length;
             for ( var j = idx + 1; j < len; j++ )
-                this.itempos[ this.items[ j ].itemId ] = ( j - 1 );
+                this.itempos[ this.items[ j ].item_id ] = ( j - 1 );
         
             this.selected.remove( items[ i ] );
             delete this.itempos[ items[ i ] ];
@@ -466,7 +466,7 @@ List = new Class( Component, {
             idx = this.itempos[ ids[ i ] ];
             if ( defined( idx ) ) {
                 e = this.items[ idx ];
-                selected.push( e.itemId );
+                selected.push( e.item_id );
                 DOM.addClassName( e, "selected" );
                 if ( this.checkboxSelection )
                     this.toggleCheckbox( e, true );
@@ -497,7 +497,7 @@ List = new Class( Component, {
                 continue;
                 
             e = this.items[ idx ];
-            selected.push( e.itemId );
+            selected.push( e.item_id );
             DOM.removeClassName( e, "selected" );
             if ( this.checkboxSelection )
                 this.toggleCheckbox( e, false );
@@ -543,7 +543,7 @@ List = new Class( Component, {
     getItemIdFromTarget: function( target ) {
         var item = this.getListElementFromTarget( target );
         if ( item )
-            return item.itemId;
+            return item.item_id;
         else
             return undefined;  
     },
@@ -619,10 +619,10 @@ List = new Class( Component, {
             this.cacheObject = app.assetCache;
                 
         /* don't reset the timer on remouse over */
-        if ( this.magnifyItemId && this.magnifyItemId == element.itemId )
+        if ( this.magnifyItemId && this.magnifyItemId == element.item_id )
             return;
         
-        this.magnifyItemId = element.itemId;
+        this.magnifyItemId = element.item_id;
         
         var item = this.cacheObject.getItem( this.magnifyItemId );
         if ( !item )
@@ -735,7 +735,7 @@ List = new Class( Component, {
                 this.resetSelection();
             return;
         }
-        var itemId = ancestor.itemId;
+        var item_id = ancestor.item_id;
 
         if ( !this.singleSelect && event.shiftKey ) {
             var sel = [];
@@ -748,7 +748,7 @@ List = new Class( Component, {
             // locate start and end of selection in list
             var start = this.itempos[ this.lastselected ] || 0
             //var end = this.items.indexOf( ancestor );
-            var end = this.itempos[ itemId ];
+            var end = this.itempos[ item_id ];
             
             if ( start > end ) {
                 var tmp = end;
@@ -762,52 +762,52 @@ List = new Class( Component, {
              */
             for ( var i = start; i <= end; i++ ) {
                 if ( this.selectLimit && ( this.selected.length + sel.length ) >= this.selectLimit ) {
-                    this.unsetSelection( [ this.items[ i ].itemId ] );
+                    this.unsetSelection( [ this.items[ i ].item_id ] );
                     continue;
                 }
-                if ( this.selected.indexOf( this.items[ i ].itemId ) == -1 
-                    && !this.unselectable[ this.items[ i ].itemId ] )
-                    sel.push( this.items[ i ].itemId );
+                if ( this.selected.indexOf( this.items[ i ].item_id ) == -1 
+                    && !this.unselectable[ this.items[ i ].item_id ] )
+                    sel.push( this.items[ i ].item_id );
             }
             
             this.setSelection( sel );
             
             return;
         } else if ( !this.singleSelect && ( event.ctrlKey || event.metaKey ) ) {
-            if ( this.selected.indexOf( itemId ) != -1 && !this.unselectable[ itemId ] ) {
-                this.lastselected = itemId;
-                this.unsetSelection( [ itemId ] );
+            if ( this.selected.indexOf( item_id ) != -1 && !this.unselectable[ item_id ] ) {
+                this.lastselected = item_id;
+                this.unsetSelection( [ item_id ] );
                 return;
             }
         } else {
-            if ( this.selected.length == 1 && this.selected[ 0 ] == itemId ) {
+            if ( this.selected.length == 1 && this.selected[ 0 ] == item_id ) {
                 /* selected item that is already selected */
-                this.lastselected = itemId;
+                this.lastselected = item_id;
                 if ( this.toggleSelect )
-                    this.unsetSelection( [ itemId ] );
+                    this.unsetSelection( [ item_id ] );
                 return;
             } else {
                 if ( !this.toggleSelect && !this.disableUnSelect )
                     this.resetSelection();
             }
         }
-        if ( defined( this.unselectable[ itemId ] ) )
+        if ( defined( this.unselectable[ item_id ] ) )
             return;
 
-        this.lastselected = itemId;
+        this.lastselected = item_id;
         if ( this.toggleSelect ) {
-            if ( this.selected.indexOf( itemId ) != -1 ) {
-                log("unselecting " + itemId);
-                this.unsetSelection( [ itemId ] );
+            if ( this.selected.indexOf( item_id ) != -1 ) {
+                log("unselecting " + item_id);
+                this.unsetSelection( [ item_id ] );
                 return;
             }
         }
         
         if ( this.selectLimit && this.selected.length >= this.selectLimit )
-            return this.unsetSelection( [ itemId ] );
+            return this.unsetSelection( [ item_id ] );
         
-        log("selecting " + itemId);
-        this.setSelection( [ itemId ] );
+        log("selecting " + item_id);
+        this.setSelection( [ item_id ] );
     },
 
 

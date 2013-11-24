@@ -169,6 +169,8 @@ lang-it
 #plugins/feeds-app-lite
 plugins/feeds-app-lite/tools/
 plugins/feeds-app-lite/t/
+^plugins/TypePadAntiSpam
+^plugins/zemanta
 
 # 'Extras'
 ^extras/
