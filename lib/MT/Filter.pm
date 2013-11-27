@@ -273,7 +273,7 @@ sub load_objects {
         $prop->has('terms') or next;
         my $filter_terms
             = $prop->terms( $item->{args}, $terms, $args, \%options );
-        if ( $item->{args}{option} eq 'not_contains' ) {
+        if ( ( $item->{args}{option} || q{} ) eq 'not_contains' ) {
             $filter_terms
                 = [ $filter_terms, '-or', { $item->{type} => \'IS NULL' } ];
         }
