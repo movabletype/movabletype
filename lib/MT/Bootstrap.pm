@@ -187,6 +187,7 @@ sub import {
                 $CGI::Fast::Ext_Request->Finish();
             }
             else {
+                $ENV{FAST_CGI} = 0;
                 $app = $class->new(%param) or die $class->errstr;
                 local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
                 $app->run;

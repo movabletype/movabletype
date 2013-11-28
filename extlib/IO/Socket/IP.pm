@@ -32,6 +32,35 @@ use Errno qw( EINVAL EINPROGRESS EISCONN );
 
 use constant HAVE_MSWIN32 => ( $^O eq "MSWin32" );
 
+{
+    # A patch for Movable Type:
+    # Override the built-in function when using both Windows and FastCGI,
+    # because getprotobyname may return invalid values in this environment.
+    use subs qw( getprotobyname );
+
+    # If using both Windows and FastCGI, this variable is true.
+    my $_is_windows_fastcgi = sub {
+        return unless HAVE_MSWIN32;
+        return $ENV{FAST_CGI} if defined $ENV{FAST_CGI};
+
+        my $not_fast_cgi = 0;
+        $not_fast_cgi ||= exists $ENV{$_}
+            for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
+        my $fast_cgi = !$not_fast_cgi;
+        if ($fast_cgi) {
+            eval 'require CGI::Fast;';
+            $fast_cgi = 0 if $@;
+        }
+        $fast_cgi;
+    }->();
+
+    # If argument is 'tcp', return hard-coded value.
+    sub getprotobyname {
+        return 6 if $_is_windows_fastcgi && $_[0] eq 'tcp';
+        CORE::getprotobyname($_[0]);
+    }
+}
+
 my $IPv6_re = do {
    # translation of RFC 3986 3.2.2 ABNF to re
    my $IPv4address = do {
