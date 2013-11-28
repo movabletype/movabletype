@@ -33,6 +33,7 @@ use Errno qw( EINVAL EINPROGRESS EISCONN );
 use constant HAVE_MSWIN32 => ( $^O eq "MSWin32" );
 
 {
+    # bugid: 111073
     # A patch for Movable Type:
     # Override the built-in function when using both Windows and FastCGI,
     # because getprotobyname may return invalid values in this environment.
