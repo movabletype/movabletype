@@ -173,17 +173,8 @@ sub run_app {
     # When running under FastCGI, the initial invocation of the
     # script has a bare environment. We can use this to test
     # for FastCGI.
-    my $not_fast_cgi = 0;
-    $not_fast_cgi ||= exists $ENV{$_}
-        for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
-    my $fast_cgi
-        = defined $param->{FastCGI}
-        ? $param->{FastCGI}
-        : ( not $not_fast_cgi );
-    if ($fast_cgi) {
-        eval { require CGI::Fast; };
-        $fast_cgi = 0 if $@;
-    }
+    require MT::Util;
+    my $fast_cgi = MT::Util::check_fast_cgi( $param->{FastCGI} );
 
     # ready to run now... run inside an eval block so we can gracefully
     # die if something bad happens

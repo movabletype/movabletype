@@ -29,7 +29,7 @@ our @EXPORT_OK
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
-    realpath canonicalize_path clear_site_stats_widget_cache );
+    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi );
 
 {
     my $Has_Weaken;
@@ -2817,6 +2817,29 @@ sub clear_site_stats_widget_cache {
     return 1;
 }
 
+{
+    my $is_fast_cgi;
+
+    sub check_fast_cgi {
+        my ($param) = shift;
+
+        return $is_fast_cgi if defined $is_fast_cgi;
+        return $is_fast_cgi = $ENV{FAST_CGI} if defined $ENV{FAST_CGI};
+
+        my $not_fast_cgi = 0;
+        $not_fast_cgi ||= exists $ENV{$_}
+            for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
+        $is_fast_cgi
+            = defined $param ? $param : ( !$not_fast_cgi );
+        if ($is_fast_cgi) {
+            eval 'require CGI::Fast;';
+            $is_fast_cgi = 0 if $@;
+        }
+
+        return $is_fast_cgi;
+    }
+}
+
 package MT::Util::XML::SAX::LexicalHandler;
 
 sub start_dtd {
@@ -3070,6 +3093,12 @@ it to the IETF RFC # 3066.
 =head2 clear_site_stats_widget_cache($site_id, $user_id)
 
 Clear caches for site stats dashboard widget.
+
+=head2 check_fast_cgi($param)
+
+Check whether MT runs under FastCGI. The result is kept while the process runs. If $ENV{FAST_CGI}
+is defined, the result is determined based on this value. If $param is defined, the result is
+determined by reference to this value.
 
 =back
 
