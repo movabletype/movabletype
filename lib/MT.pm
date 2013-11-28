@@ -1233,6 +1233,17 @@ sub init {
     require MT::Log;
 
     $mt->run_callbacks( 'post_init', $mt, \%param );
+
+    # bugid:111075
+    # If using both Windows and FastCGI, load Net::SSLeay module here
+    # for avoiding module load error in Facebook plugin setting.
+    if ( $^O eq 'MSWin32' ) {
+        require MT::Util;
+        if ( MT::Util::check_fast_cgi() ) {
+            eval { require Net::SSLeay };
+        }
+    }
+
     return $mt;
 }
 
