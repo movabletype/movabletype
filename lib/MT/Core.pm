@@ -396,8 +396,8 @@ BEGIN {
                         if ( 'range' eq $option ) {
                             $query = [
                                 '-and',
-                                { op => '>', value => $from },
-                                { op => '<', value => $to },
+                                { op => '>=', value => $from },
+                                { op => '<=', value => $to },
                             ];
                         }
                         elsif ( 'days' eq $option ) {
