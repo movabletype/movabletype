@@ -11,13 +11,25 @@ BEGIN {
 
 use Test::More;
 
-#use MT::Test qw(:db :data);
-use MT::Test;
+eval(
+    $ENV{SKIP_REINITIALIZE_DATABASE}
+    ? "use MT::Test qw(); 1;"
+    : "use MT::Test qw(:db :data); 1;"
+) or die $@;
 
 use MT;
 use MT::Filter;
 
 my $mt = MT->new();
+
+sub setupFilter {
+    my ( $id, $items ) = @_;
+
+    my $filter = MT->model('filter')->load($id) || MT->model('filter')->new;
+    $filter->set_values( { id => $id, author_id => 1, blog_id => 1 } );
+    $filter->items($items);
+    $filter->save or die;
+}
 
 my @count_specs = (
     {   name       => 'pack with terms items',
@@ -79,14 +91,15 @@ my @count_specs = (
 $Data::ObjectDriver::PROFILE = 1;
 for my $spec (@count_specs) {
     diag( $spec->{name} );
+    $spec->{setup}->($spec) if $spec->{setup};
 
     my $filter = MT::Filter->new;
     $filter->object_ds( $spec->{datasource} || 'entry' );
     Data::ObjectDriver->profiler->reset;
     $filter->items( $spec->{items} );
-    my @objs = $filter->load_objects( %{ $spec->{options} } );
+    my $objs = $filter->load_objects( %{ $spec->{options} } );
     if ( my $complete = $spec->{complete} ) {
-        $complete->($spec);
+        $complete->($spec, $objs);
     }
 }
 
