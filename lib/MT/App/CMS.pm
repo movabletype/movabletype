@@ -4945,6 +4945,9 @@ sub pre_run {
     $app->SUPER::pre_run(@_) or return;
     my $user = $app->user;
 
+    # Return if mode was 'upgrade' or 'filtered_list',
+    return if $app->mode eq 'upgrade' or $app->mode eq 'filtered_list';
+
     # Message Center
     my @messages;
 
