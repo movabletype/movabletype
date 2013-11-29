@@ -806,7 +806,7 @@ BEGIN {
                             my @ids = map( $_->object_id,
                                 MT->model('objecttag')
                                     ->load(@objecttag_terms_args) );
-                            { id => { not => \@ids } };
+                            @ids ? { id => { not => \@ids } } : ();
                         }
                         else {
                             $base_args->{joins} ||= [];
