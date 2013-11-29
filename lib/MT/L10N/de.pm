@@ -1712,7 +1712,6 @@ use vars qw( @ISA %Lexicon );
 	'This is often \'localhost\'.' => 'Meistens \'localhost\'.',
 	'The physical file path for your SQLite database. ' => 'Physischer Pfad zur SQLite-Datenbank',
 	'[_1] in [_2]: [_3]' => '[_1] in [_2]: [_3]',
-	'option is required' => 'Option erforderlich.',
 	'Days must be a number.' => 'Tage müssen als Zahl angegeben werden.',
 	'Invalid date.' => 'Ungültiges Datum',
 	'[_1] [_2] between [_3] and [_4]' => '[_1] [_2] zwischen [_3] und [_4]',

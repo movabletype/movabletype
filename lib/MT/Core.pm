@@ -227,7 +227,7 @@ BEGIN {
                         my ( $args, $db_terms, $db_args ) = @_;
                         my $col    = $prop->col or die;
                         my $option = $args->{option};
-                        my $query  = $args->{string};
+                        my $query  = $args->{string} || $args->{value};
                         if ( 'contains' eq $option ) {
                             $query = { like => "%$query%" };
                         }
@@ -282,7 +282,7 @@ BEGIN {
                         my $col    = $prop->col or die;
                         my $option = $args->{option};
                         my $value  = $args->{value};
-                        my $query;
+                        my $query  = $value;
                         if ( 'equal' eq $option ) {
                             $query = $value;
                         }
@@ -338,14 +338,13 @@ BEGIN {
                         my $prop   = shift;
                         my ($item) = @_;
                         my $args   = $item->{args};
-                        my $option = $args->{option}
-                            or return $prop->error(
-                            MT->translate('option is required') );
+                        my $option = $args->{option} || '_default';
                         my %params = (
-                            range  => { from   => 1, to => 1 },
-                            before => { origin => 1 },
-                            after  => { origin => 1 },
-                            days   => { days   => 1 },
+                            _default => { value  => 1 },
+                            range    => { from   => 1, to => 1 },
+                            before   => { origin => 1 },
+                            after    => { origin => 1 },
+                            days     => { days   => 1 },
                         );
 
                         my $using = $params{$option};
@@ -361,11 +360,10 @@ BEGIN {
                                     ) if $args->{days} =~ /\D/;
                                 }
                                 elsif ( $key ne 'option' ) {
-                                    my $date = $args->{$key};
                                     return $prop->error(
                                         MT->translate(q{Invalid date.}) )
-                                        unless $date
-                                        =~ m/^\d{4}\-\d{2}\-\d{2}$/;
+                                        unless MT::Util::iso2ts( undef,
+                                        $args->{$key} );
                                 }
                             }
                             else {
@@ -381,29 +379,53 @@ BEGIN {
                         my $col    = $prop->col;
                         my $option = $args->{option};
                         my $query;
-                        my $blog = MT->app ? MT->app->blog : undef;
+                        my $blog
+                            = ( MT->app && MT->app->can('blog') )
+                            ? MT->app->blog
+                            : undef;
                         require MT::Util;
                         my $now = MT::Util::epoch2ts( $blog, time() );
-                        my $from   = $args->{from}   || undef;
-                        my $to     = $args->{to}     || undef;
-                        my $origin = $args->{origin} || undef;
-                        $from =~ s/\D//g;
-                        $to =~ s/\D//g;
-                        $origin =~ s/\D//g;
-                        $from .= '000000' if $from;
-                        $to   .= '235959' if $to;
+                        my $from   = $args->{from};
+                        my $to     = $args->{to};
+                        my $origin = $args->{origin};
+                        my $value  = $args->{value};
+
+                        my $normalize = sub {
+                            my ( $dt, $suffix ) = @_;
+                            if ( $dt =~ /^\d{4}\-\d{2}\-\d{2}$/ ) {
+                                $dt =~ s/\D//g;
+                                $dt . $suffix;
+                            }
+                            else {
+                                MT::Util::iso2ts( $blog, $dt );
+                            }
+                        };
+
+                        if (! $option) {
+                            if (! $from && ! $to && $value) {
+                                $from = $to = $value;
+                            }
+
+                            if ($from && $to) {
+                                $option = 'range';
+                            }
+                        }
 
                         if ( 'range' eq $option ) {
                             $query = [
                                 '-and',
-                                { op => '>', value => $from },
-                                { op => '<', value => $to },
+                                {   op    => '>=',
+                                    value => $normalize->( $from, '000000' )
+                                },
+                                {   op    => '<=',
+                                    value => $normalize->( $to, '235959' )
+                                },
                             ];
                         }
                         elsif ( 'days' eq $option ) {
                             my $days   = $args->{days};
                             my $origin = MT::Util::epoch2ts( $blog,
-                                time - $days * 60 * 60 * 24 );
+                                time() - $days * 60 * 60 * 24 );
                             $query = [
                                 '-and',
                                 { op => '>', value => $origin },
@@ -413,13 +435,13 @@ BEGIN {
                         elsif ( 'before' eq $option ) {
                             $query = {
                                 op    => '<',
-                                value => $origin . '000000'
+                                value => $normalize->( $origin, '000000' ),
                             };
                         }
                         elsif ( 'after' eq $option ) {
                             $query = {
                                 op    => '>',
-                                value => $origin . '235959'
+                                value => $normalize->( $origin, '235959' ),
                             };
                         }
                         elsif ( 'future' eq $option ) {
@@ -753,7 +775,7 @@ BEGIN {
                         my $prop = shift;
                         my ( $args, $base_terms, $base_args, $opts ) = @_;
                         my $option  = $args->{option};
-                        my $query   = $args->{string};
+                        my $query   = $args->{string} || $args->{value};
                         my $blog_id = $opts->{blog_ids};
                         if ( 'contains' eq $option ) {
                             $query = { like => "%$query%" };
@@ -806,7 +828,7 @@ BEGIN {
                             my @ids = map( $_->object_id,
                                 MT->model('objecttag')
                                     ->load(@objecttag_terms_args) );
-                            { id => { not => \@ids } };
+                            @ids ? { id => { not => \@ids } } : ();
                         }
                         else {
                             $base_args->{joins} ||= [];
@@ -1146,7 +1168,7 @@ BEGIN {
                         my ( $prop, $args, $db_terms, $db_args ) = @_;
                         my $defaults = $prop->{fields};
                         my $option   = $args->{option};
-                        my $query    = $args->{string};
+                        my $query    = $args->{string} || $args->{value};
                         my $and_or;
                         if ( 'contains' eq $option ) {
                             $query = { like => "%$query%" };

@@ -501,7 +501,7 @@ sub list_props {
                     : 0;
                 my $app    = MT->instance;
                 my $option = $args->{option};
-                my $query  = $args->{string};
+                my $query  = $args->{string} || $args->{value};
                 if ( 'contains' eq $option ) {
                     $query = { like => "%$query%" };
                 }

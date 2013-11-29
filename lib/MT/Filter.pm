@@ -272,13 +272,15 @@ sub load_objects {
         my $prop = $item->{prop};
         $prop->has('terms') or next;
         my $filter_terms
-            = $prop->terms( $item->{args}, $terms, $args, \%options );
-        if ( ( $item->{args}{option} || q{} ) eq 'not_contains' ) {
+            = $prop->terms( $item->{args}, $terms, $args, \%options )
+            or next;
+        if ( ( $item->{args}{option} || q{} ) eq 'not_contains'
+            && $class->has_column( $item->{type} ) )
+        {
             $filter_terms
                 = [ $filter_terms, '-or', { $item->{type} => \'IS NULL' } ];
         }
-        if ( $filter_terms
-            && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
+        if (   ( 'HASH' eq ref $filter_terms && scalar %$filter_terms )
             || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
         {
             push @additional_terms, ( '-and', $filter_terms );
