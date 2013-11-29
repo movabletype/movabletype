@@ -2411,56 +2411,8 @@ DataAPI.prototype = {
         return route;
     },
 
-    _isElement: function(e, name) {
-        if (! e || typeof e !== 'object') {
-            return false;
-        }
-        var n = e.nodeName;
-        return n && n.toLowerCase() === name;
-    },
-
-    _isFormElement: function(e) {
-        return this._isElement(e, 'form');
-    },
-
-    _isInputElement: function(e) {
-        return this._isElement(e, 'input');
-    },
-
-    _isFileInputElement: function(e) {
-        return this._isInputElement(e) && e.type.toLowerCase() === 'file';
-    },
-
     _serializeObject: function(v) {
-        function f(n) {
-            return n < 10 ? '0' + n : n;
-        }
-
-        function iso8601Date(v) {
-            if (! isFinite(v.valueOf())) {
-                return '';
-            }
-
-            var off,
-                tz = v.getTimezoneOffset();
-            if(tz === 0) {
-                off = 'Z';
-            }
-            else {
-                off  = (tz > 0 ? '-': '+');
-                tz   = Math.abs(tz);
-                off += f(Math.floor(tz / 60)) + ':' + f(tz % 60);
-            }
-
-            return v.getFullYear()     + '-' +
-                f(v.getMonth() + 1) + '-' +
-                f(v.getDate())      + 'T' +
-                f(v.getHours())     + ':' +
-                f(v.getMinutes())   + ':' +
-                f(v.getSeconds())   + off;
-        }
-
-        if (this._isFormElement(v)) {
+        if (DataAPI.Util.isFormElement(v)) {
             v = this._serializeFormElementToObject(v);
         }
 
@@ -2472,18 +2424,21 @@ DataAPI.prototype = {
             return v ? '1' : '';
         }
         else if (v instanceof Date) {
-            return iso8601Date(v);
+            return DataAPI.Util.toIso8601Date(v);
+        }
+        else if (v instanceof this.constructor.SearchCondition) {
+            return v.serialize();
         }
         else if (window.File && v instanceof window.File) {
             return v;
         }
-        else if (this._isFileInputElement(v)) {
+        else if (DataAPI.Util.isFileInputElement(v)) {
             return v.files[0];
         }
         else if (type === 'object') {
             return this.serializeData(v, function(key, value) {
                 if (this[key] instanceof Date) {
-                    return iso8601Date(this[key]);
+                    return DataAPI.Util.toIso8601Date(this[key]);
                 }
                 return value;
             });
@@ -2500,7 +2455,7 @@ DataAPI.prototype = {
         if (typeof params === 'string') {
             return params;
         }
-        if (this._isFormElement(params)) {
+        if (DataAPI.Util.isFormElement(params)) {
             params = this._serializeFormElementToObject(params);
         }
 
@@ -2568,7 +2523,7 @@ DataAPI.prototype = {
         }
 
         for (var k in params) {
-            if (this._isFileInputElement(params[k])) {
+            if (DataAPI.Util.isFileInputElement(params[k])) {
                 return params[k];
             }
         }
@@ -2650,62 +2605,15 @@ DataAPI.prototype = {
                 continue;
             }
 
-            if (this._isFileInputElement(e)) {
+            if (DataAPI.Util.isFileInputElement(e)) {
                 data[e.name] = e;
             }
             else {
-                data[e.name] = this._elementValue(e);
+                data[e.name] = DataAPI.Util.elementValue(e);
             }
         }
 
         return data;
-    },
-
-    _elementValue: function(e) {
-        if (e.nodeName.toLowerCase() === 'select') {
-            var value, option,
-                options = e.options,
-                index = e.selectedIndex,
-                one = e.type === "select-one" || index < 0,
-                values = one ? null : [],
-                max = one ? index + 1 : options.length,
-                i = index < 0 ?
-                    max :
-                    one ? index : 0;
-
-            // Loop through all the selected options
-            for ( ; i < max; i++ ) {
-                option = options[ i ];
-
-                // oldIE doesn't update selected after form reset (#2551)
-                if ( ( option.selected || i === index ) &&
-                        // Don't return options that are disabled or in a disabled optgroup
-                        ( !option.parentNode.disabled || option.parentNode.nodeName.toLowerCase() !== "optgroup" ) ) {
-
-                    // Get the specific value for the option
-                    value = option.attributes.value;
-                    if (!value || value.specified) {
-                        value = option.value;
-                    }
-                    else {
-                        value = e.text;
-                    }
-
-                    // We don't need an array for one selects
-                    if ( one ) {
-                        return value;
-                    }
-
-                    // Multi-Selects return an array
-                    values.push( value );
-                }
-            }
-
-            return values;
-        }
-        else {
-            return e.value;
-        }
     },
 
     /**
@@ -2794,7 +2702,7 @@ DataAPI.prototype = {
                 if (params instanceof window.FormData) {
                     return params;
                 }
-                else if (api._isFormElement(params)) {
+                else if (DataAPI.Util.isFormElement(params)) {
                     return new window.FormData(params);
                 }
                 else if (window.FormData && typeof params === 'object') {
@@ -2807,7 +2715,7 @@ DataAPI.prototype = {
             }
 
 
-            if (api._isFormElement(params)) {
+            if (DataAPI.Util.isFormElement(params)) {
                 params = api._serializeFormElementToObject(params);
                 for (k in params) {
                     if (params[k] instanceof Array) {
@@ -2899,6 +2807,11 @@ DataAPI.prototype = {
                         else {
                             xhr = v;
                         }
+                    }
+                    else if (v instanceof api.constructor.SearchCondition) {
+                        paramsList.push({
+                            searchConditions: v.serialize()
+                        });
                     }
                     else {
                         paramsList.push(v);
@@ -3408,6 +3321,372 @@ DataAPI.prototype = {
  *       location.href = api.getAuthorizationUrl(location.href);
  *     });
  **/
+
+/**
+ * @namespace MT.DataAPI
+ */
+;(function() {
+
+    /**
+     * The MT.DataAPI.Util is a package of utility methods.
+     * @class Util
+     */
+    var Util = {
+
+        /**
+         * Detect whether an object is an HTML element
+         * @method isElement
+         * @param {Object} e Object to detect
+         * @param {String} name Element name
+         * @return {Boolean} Returns true, if object is a element of specified name
+         */
+        isElement: function(e, name) {
+            if (! e || typeof e !== 'object') {
+                return false;
+            }
+            var n = e.nodeName;
+            return n && n.toLowerCase() === name;
+        },
+
+        /**
+         * Detect whether an object is an HTML FORM element
+         * @method isFormElement
+         * @param {Object} e Object to detect
+         * @return {Boolean} Returns true, if object is a FORM element
+         */
+        isFormElement: function(e) {
+            return this.isElement(e, 'form');
+        },
+
+        /**
+         * Detect whether an object is an HTML INPUT element
+         * @method isInputElement
+         * @param {Object} e Object to detect
+         * @return {Boolean} Returns true, if object is a INPUT element
+         */
+        isInputElement: function(e) {
+            return this.isElement(e, 'input');
+        },
+
+        /**
+         * Detect whether an object is an HTML INPUT element whose type is "file".
+         * @method isFileInputElement
+         * @param {Object} e Object to detect
+         * @return {Boolean} Returns true, if object is a INPUT element
+         */
+        isFileInputElement: function(e) {
+            return this.isInputElement(e) && e.type.toLowerCase() === 'file';
+        },
+
+        /**
+         * Get a value of the element.
+         * @method elementValue
+         * @param {Object} e Element
+         * @return {String} Returns a value of the element.
+         */
+        elementValue: function(e) {
+            if (e.nodeName.toLowerCase() === 'select') {
+                var value, option,
+                    options = e.options,
+                    index = e.selectedIndex,
+                    one = e.type === "select-one" || index < 0,
+                    values = one ? null : [],
+                    max = one ? index + 1 : options.length,
+                    i = index < 0 ?
+                        max :
+                        one ? index : 0;
+
+                // Loop through all the selected options
+                for ( ; i < max; i++ ) {
+                    option = options[ i ];
+
+                    // oldIE doesn't update selected after form reset (#2551)
+                    if ( ( option.selected || i === index ) &&
+                            // Don't return options that are disabled or in a disabled optgroup
+                            ( !option.parentNode.disabled || option.parentNode.nodeName.toLowerCase() !== "optgroup" ) ) {
+
+                        // Get the specific value for the option
+                        value = option.attributes.value;
+                        if (!value || value.specified) {
+                            value = option.value;
+                        }
+                        else {
+                            value = e.text;
+                        }
+
+                        // We don't need an array for one selects
+                        if ( one ) {
+                            return value;
+                        }
+
+                        // Multi-Selects return an array
+                        values.push( value );
+                    }
+                }
+
+                return values;
+            }
+            else {
+                return e.value;
+            }
+        },
+
+        /**
+         * Convert to a string in ISO 8601 format from Date object.
+         * @method elementValue
+         * @param {Date} date Date object
+         * @return {String} Returns a string.
+         */
+        toIso8601Date: function(date) {
+            function f(n) {
+                return n < 10 ? '0' + n : n;
+            }
+
+            if (! isFinite(date.valueOf())) {
+                return '';
+            }
+
+            var off,
+                tz = date.getTimezoneOffset();
+            if(tz === 0) {
+                off = 'Z';
+            }
+            else {
+                off  = (tz > 0 ? '-': '+');
+                tz   = Math.abs(tz);
+                off += f(Math.floor(tz / 60)) + ':' + f(tz % 60);
+            }
+
+            return date.getFullYear()     + '-' +
+                f(date.getMonth() + 1) + '-' +
+                f(date.getDate())      + 'T' +
+                f(date.getHours())     + ':' +
+                f(date.getMinutes())   + ':' +
+                f(date.getSeconds())   + off;
+        }
+    };
+
+    DataAPI.Util = Util;
+})();
+
+/**
+ * @namespace MT.DataAPI
+ */
+;(function() {
+
+    /**
+     * The MT.DataAPI.SearchCondition is a object to build search queries for the DataAPI.
+     * @class SearchCondition
+     * @constructor
+     * @param {Object} options Options.
+     *   @param {String} options.type Type
+     *     All conditions added will be joined by this value.
+     *     "and" or "or" is allowed to this parameter. The default value is "and".
+     */
+    var SearchCondition = function(options) {
+        var k;
+
+        this.o = {
+            type: "and"
+        };
+        for (k in options) {
+            if (k in this.o) {
+                this.o[k] = options[k];
+            }
+            else {
+                throw "Unkown option: " + k;
+            }
+        }
+
+        this.searchConditions = [];
+    };
+
+    SearchCondition.prototype = {
+        constructor: SearchCondition.prototype.constructor,
+
+        /**
+         * Add a condition
+         * @method add
+         * @param {String|SearchCondition|Function} type|conditon Type of the value or sub condtion
+         * @param {String|Number|HTMLInputElement|Object} value value
+         * @return {SearchCondition} Return myself to build method chain.
+         * @example
+         *     var cond = new MT.DataAPI.SearchCondition();
+         *     cond
+         *       .add("id", 1)
+         *       .add("title", "Title")
+         *       .add("title", {
+         *         option: "contains",
+         *         value: "Title"
+         *       })
+         *       .add("title", {
+         *         option: "contains",
+         *         value: function() {
+         *           return title
+         *         }
+         *       })
+         *       .add("authored_on", {
+         *         option: "after",
+         *         origin: new Date(2013, 10, 29, 10, 10, 10)
+         *       })
+         *       .add("id", document.getElementById("id"))
+         *       .add(new MT.DataAPI.SearchCondition().add("id", 1))
+         *       .add(function() {
+         *         return {
+         *           type: "id",
+         *           args: {
+         *             value: id,
+         *           }
+         *         };
+         *       })
+         *       .add(function() {
+         *         return {
+         *           type: "id",
+         *           args: {
+         *             value: function() {
+         *               return id;
+         *             }
+         *           }
+         *         };
+         *       });
+         */
+        add: function(type, value) {
+            function toValue(t, v) {
+                if (
+                    (t instanceof SearchCondition) ||
+                    (typeof t === "function")
+                ) {
+                    return t;
+                }
+
+                var type = typeof v;
+
+                if (
+                    type === "number" ||
+                    type === "string" ||
+                    DataAPI.Util.isInputElement(v)
+                ) {
+                    return {
+                        type: t,
+                        args: {
+                            value: v
+                        }
+                    };
+                }
+                else {
+                    return {
+                        type: t,
+                        args: v
+                    };
+                }
+            }
+
+            this.searchConditions.push(toValue(type, value));
+
+            return this;
+        },
+
+        _expandObject: function(obj) {
+            var k, tmp = {};
+
+            for (k in obj) {
+                if (! obj.hasOwnProperty(k)) {
+                    continue;
+                }
+
+                if (typeof obj[k] === "function") {
+                    tmp[k] = obj[k]();
+                }
+                else if (obj[k] instanceof Date) {
+                    tmp[k] = DataAPI.Util.toIso8601Date(obj[k]);
+                }
+                else {
+                    tmp[k] = obj[k];
+                }
+
+                if (tmp[k] && typeof tmp[k] === "object") {
+                    if (DataAPI.Util.isInputElement(tmp[k])) {
+                        tmp[k] = DataAPI.Util.elementValue(tmp[k]);
+                    }
+                    else {
+                        tmp[k] = this._expandObject(tmp[k]);
+                    }
+                }
+            }
+
+            return tmp;
+        },
+
+        _expandConditions: function() {
+            var i, c, conds = [];
+
+            for (i = 0; i < this.searchConditions.length; i++) {
+                c = this.searchConditions[i];
+                if (c instanceof SearchCondition) {
+                    c = c._packConditions();
+                }
+                else {
+                    if (typeof c === "function") {
+                        c = c();
+                    }
+
+                    if (c && typeof c === "object") {
+                        c = this._expandObject(c);
+                    }
+                }
+
+                if (c.type && c.args) {
+                    conds.push(c);
+                }
+            }
+
+            return conds;
+        },
+
+        _packConditions: function() {
+            var conds = this._expandConditions();
+
+            if (conds.length === 1) {
+                return conds[0];
+            }
+            else if (this.o.type === "or") {
+                return {
+                    type: "pack",
+                    args: {
+                        op: "or",
+                        items: conds
+                    }
+                };
+            }
+            else {
+                return {
+                    type: "pack",
+                    args: {
+                        op: "and",
+                        items: conds
+                    }
+                };
+            }
+        },
+
+        _getConditions: function() {
+            return (this.o.type === "or") ?
+                [this._packConditions()] :
+                this._expandConditions();
+        },
+
+        /**
+         * Serialize all conditions added
+         * @method serialize
+         * @return {String} Return a string serialized in JSON format
+         */
+        serialize: function() {
+            return JSON.stringify(this._getConditions());
+        }
+    };
+
+    DataAPI.SearchCondition = SearchCondition;
+})();
 
 var Cookie = function( name, value, domain, path, expires, secure ) {
     this.name = name;
