@@ -4857,6 +4857,7 @@ sub setup_editor_param {
                 $tmpls->{config}
                     = { %{ $tmpls->{config} }, %{ $reg->{'config'} } }
                     if $reg->{'config'};
+                delete $tmpls->{config}{plugin};
             }
         }
 
