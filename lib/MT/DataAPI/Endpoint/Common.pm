@@ -262,12 +262,7 @@ sub filtered_list {
     my $class = $setting->{datasource} || MT->model($ds);
     my $filteritems;
     my $allpass = 0;
-    if ( my $items = $q->param('items') ) {
-        if ( $items =~ /^".*"$/ ) {
-            $items =~ s/^"//;
-            $items =~ s/"$//;
-            $items = MT::Util::decode_js($items);
-        }
+    if ( my $items = $q->param('searchConditions') ) {
         require JSON;
         my $json = JSON->new->utf8(0);
         $filteritems = $json->decode($items);
