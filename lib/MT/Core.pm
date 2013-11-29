@@ -1022,6 +1022,17 @@ BEGIN {
                     grep          => \&MT::Filter::pack_grep,
                     requires_grep => \&MT::Filter::pack_requires_grep,
                 },
+                filter => {
+                    view     => [],
+                    children => sub {
+                        my $prop   = shift;
+                        my ($args) = @_;
+                        my $value  = $args->{value};
+                        my $filter
+                            = MT->model('filter')->load( scalar $value );
+                        $filter ? $filter->items : [];
+                    },
+                },
                 blog_name => {
                     label        => 'Website/Blog Name',
                     filter_label => '__WEBSITE_BLOG_NAME',

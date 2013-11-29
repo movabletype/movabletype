@@ -249,13 +249,26 @@ sub load_objects {
     require MT::ListProperty;
 
     ## Prepare properties
-    for my $item (@$items) {
+    my $load_items;
+    $load_items = sub {
+        my ($item) = @_;
+
         my $id = $item->{type};
         my $prop = MT::ListProperty->instance( $ds, $id )
             or return $self->error(
             MT->translate( 'Invalid filter type [_1]:[_2]', $ds, $id ) );
-        $item->{prop} = $prop;
-        push @items, $item;
+
+        if ( $prop->has('children') ) {
+            map { $load_items->($_) }
+                ( @{ $prop->children( $item->{args} ) } );
+        }
+        else {
+            $item->{prop} = $prop;
+            $item;
+        }
+    };
+    for my $item (@$items) {
+        push @items, $load_items->($item);
     }
     @items = sort {
         ( $a->{prop}->priority || 5 ) <=> ( $b->{prop}->priority || 5 )
@@ -401,13 +414,26 @@ sub count_objects {
     my @items;
 
     ## Prepare properties
-    for my $item (@$items) {
+    my $load_items;
+    $load_items = sub {
+        my ($item) = @_;
+
         my $id = $item->{type};
         my $prop = MT::ListProperty->instance( $ds, $id )
             or return $self->error(
             MT->translate( 'Invalid filter type [_1]:[_2]', $ds, $id ) );
-        $item->{prop} = $prop;
-        push @items, $item;
+
+        if ( $prop->has('children') ) {
+            map { $load_items->($_) }
+                ( @{ $prop->children( $item->{args} ) } );
+        }
+        else {
+            $item->{prop} = $prop;
+            $item;
+        }
+    };
+    for my $item (@$items) {
+        push @items, $load_items->($item);
     }
     @items = sort {
         ( $a->{prop}->priority || 5 ) <=> ( $b->{prop}->priority || 5 )
