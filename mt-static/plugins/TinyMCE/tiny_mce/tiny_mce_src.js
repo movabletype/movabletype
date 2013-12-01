@@ -3118,7 +3118,7 @@ tinymce.html.Styles = function(settings, schema) {
 
 			// Precompile RegExps and map objects
 			tokenRegExp = new RegExp('<(?:' +
-				'(?:!--([\\w\\W]*?)-->)|' + // Comment
+				'(?:!---?>|!--([\\w\\W]*?)-->)|' + // Comment
 				'(?:!\\[CDATA\\[([\\w\\W]*?)\\]\\]>)|' + // CDATA
 				'(?:!DOCTYPE([\\w\\W]*?)>)|' + // DOCTYPE
 				'(?:\\?([^\\s\\/<>]+) ?([\\w\\W]*?)[?/]>)|' + // PI
@@ -3944,6 +3944,17 @@ tinymce.html.Styles = function(settings, schema) {
 				start: function(name, attrs, empty) {
 					var newNode, attrFiltersLen, elementRule, textNode, attrName, text, sibling, parent;
 
+					function addNodeToMatchedAttributes(name, node) {
+						var list = matchedAttributes[name];
+						if (list) {
+							if (list[list.length-1] !== node) {
+								list.push(node);
+							}
+						} else {
+							matchedAttributes[name] = [newNode];
+						}
+					}
+
 					elementRule = validate ? schema.getElementRule(name) : {};
 					if (elementRule) {
 						newNode = createNode(elementRule.outputName || name, 1);
@@ -3962,13 +3973,17 @@ tinymce.html.Styles = function(settings, schema) {
 						while (attrFiltersLen--) {
 							attrName = attributeFilters[attrFiltersLen].name;
 
-							if (attrName in attrs.map) {
-								list = matchedAttributes[attrName];
-
-								if (list)
-									list.push(newNode);
-								else
-									matchedAttributes[attrName] = [newNode];
+							if (attrName instanceof RegExp) {
+								tinymce.each(attrs.map, function(v, k) {
+									if (attrName.test(k)) {
+										addNodeToMatchedAttributes(k, newNode);
+									}
+								});
+							}
+							else {
+								if (attrName in attrs.map) {
+									addNodeToMatchedAttributes(attrName, newNode);
+								}
 							}
 						}
 
@@ -4130,18 +4145,43 @@ tinymce.html.Styles = function(settings, schema) {
 				for (i = 0, l = attributeFilters.length; i < l; i++) {
 					list = attributeFilters[i];
 
-					if (list.name in matchedAttributes) {
-						nodes = matchedAttributes[list.name];
+					if (list.name instanceof RegExp) {
+						tinymce.each(matchedAttributes, function(v, k) {
+							if (! list.name.test(k)) {
+								return;
+							}
 
-						// Remove already removed children
-						fi = nodes.length;
-						while (fi--) {
-							if (!nodes[fi].parent)
-								nodes.splice(fi, 1);
+							var l = tinymce.extend({}, list, {
+								name: k
+							});
+
+							nodes = matchedAttributes[l.name];
+
+							// Remove already removed children
+							fi = nodes.length;
+							while (fi--) {
+								if (!nodes[fi].parent)
+									nodes.splice(fi, 1);
+							}
+
+							for (fi = 0, fl = l.callbacks.length; fi < fl; fi++)
+								l.callbacks[fi](nodes, l.name, args);
+						});
+					}
+					else {
+						if (list.name in matchedAttributes) {
+							nodes = matchedAttributes[list.name];
+
+							// Remove already removed children
+							fi = nodes.length;
+							while (fi--) {
+								if (!nodes[fi].parent)
+									nodes.splice(fi, 1);
+							}
+
+							for (fi = 0, fl = list.callbacks.length; fi < fl; fi++)
+								list.callbacks[fi](nodes, list.name, args);
 						}
-
-						for (fi = 0, fl = list.callbacks.length; fi < fl; fi++)
-							list.callbacks[fi](nodes, list.name, args);
 					}
 				}
 			}
