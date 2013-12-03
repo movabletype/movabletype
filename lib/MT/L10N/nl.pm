@@ -6771,7 +6771,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## plugins/Motion/templates/Motion/actions_local.mtml
 	'[_1] commented on [_2]' => '[_1] reageerde op [_2]',
-	'[_1] favorited [_2]' => '[1] markeerde [_2] als favoriet',
+	'[_1] favorited [_2]' => '[_1] markeerde [_2] als favoriet',
 	'No recent actions.' => 'Geen recente acties.',
 
 ## plugins/Motion/templates/Motion/actions.mtml
