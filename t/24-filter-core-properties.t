@@ -19,6 +19,7 @@ eval(
 
 use MT;
 use MT::Filter;
+use MT::ListProperty;
 
 my $mt = MT->new();
 my $entries_count = MT->model('entry')->count;
@@ -675,13 +676,87 @@ my @count_specs = (
         ],
         complete => sub {
             my ( $spec, $objs ) = @_;
+            ok(!$objs, 'Any objects are not loaded');
+        },
+    },
+    {   name       => 'date : future : if match',
+        datasource => 'entry',
+        setup      => sub {
+            require Time::Local;
+            $MT::Test::CORE_TIME
+                = Time::Local::timegm( 0, 44, 7, 31, 0, 1978 );
+        },
+        items => [
+            {   type => 'authored_on',
+                args => { option => 'future', },
+            }
+        ],
+        complete => sub {
+            my ( $spec, $objs ) = @_;
             my $count = MT->model('entry')->count(
-                { authored_on => [ '30000131074510', undef ] },
+                { authored_on => [ '19780131074400', undef ] },
                 {   range => { authored_on => 1 },
 
                 }
             );
-            ok(!$objs, 'Any objects are not loaded');
+            is( scalar @$objs, $count, 'Loaded count' );
+        },
+    },
+    {
+        name       => 'date : future : if not match',
+        datasource => 'entry',
+        setup      => sub {
+            require Time::Local;
+            $MT::Test::CORE_TIME = Time::Local::timegm( 0, 0, 0, 1, 0, 3000 );
+        },
+        items => [
+            {   type => 'authored_on',
+                args => { option => 'future', },
+            }
+        ],
+        complete => sub {
+            my ( $spec, $objs ) = @_;
+            ok( !$objs, 'Any objects are not loaded' );
+        },
+    },
+    {   name       => 'date : past : if match',
+        datasource => 'entry',
+        setup      => sub {
+            require Time::Local;
+            $MT::Test::CORE_TIME
+                = Time::Local::timegm( 0, 44, 7, 31, 0, 1978 );
+        },
+        items => [
+            {   type => 'authored_on',
+                args => { option => 'past', },
+            }
+        ],
+        complete => sub {
+            my ( $spec, $objs ) = @_;
+            my $count = MT->model('entry')->count(
+                { authored_on => [ undef, '19780131074400' ] },
+                {   range => { authored_on => 1 },
+
+                }
+            );
+            is( scalar @$objs, $count, 'Loaded count' );
+        },
+    },
+    {
+        name       => 'date : past : if not match',
+        datasource => 'entry',
+        setup      => sub {
+            require Time::Local;
+            $MT::Test::CORE_TIME = Time::Local::timegm( 0, 0, 0, 1, 0, 1000 );
+        },
+        items => [
+            {   type => 'authored_on',
+                args => { option => 'past', },
+            }
+        ],
+        complete => sub {
+            my ( $spec, $objs ) = @_;
+            ok( !$objs, 'Any objects are not loaded' );
         },
     },
     {   name       => 'tag : equal (without option) : if match',
@@ -846,6 +921,20 @@ for my $spec (@count_specs) {
         my $filter = MT::Filter->new;
         $filter->object_ds( $spec->{datasource} || 'entry' );
         Data::ObjectDriver->profiler->reset;
+
+        if ( $spec->{items} ) {
+            for my $item ( @{ $spec->{items} } ) {
+                my $prop
+                    = MT::ListProperty->instance( $spec->{datasource}
+                        || 'entry',
+                    $item->{type} );
+                if ( $prop->has('validate_item') ) {
+                    ok( $prop->validate_item($item),
+                        'validated:' . MT::Util::to_json($item) );
+                }
+            }
+        }
+
         $filter->items( $spec->{items} );
         my $objs = $filter->load_objects(
             terms => {},
