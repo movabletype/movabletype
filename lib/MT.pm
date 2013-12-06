@@ -849,12 +849,11 @@ sub init_config {
         $mt->{app_dir} = $ENV{PWD} || "";
         $mt->{app_dir} = dirname($0)
             if !$mt->{app_dir}
-                || !File::Spec->file_name_is_absolute( $mt->{app_dir} );
+            || !File::Spec->file_name_is_absolute( $mt->{app_dir} );
         $mt->{app_dir} = dirname( $ENV{SCRIPT_FILENAME} )
             if $ENV{SCRIPT_FILENAME}
-                && ( !$mt->{app_dir}
-                    || (!File::Spec->file_name_is_absolute( $mt->{app_dir} ) )
-                );
+            && ( !$mt->{app_dir}
+            || ( !File::Spec->file_name_is_absolute( $mt->{app_dir} ) ) );
         $mt->{app_dir} ||= $mt->{mt_dir};
         $mt->{app_dir} = File::Spec->rel2abs( $mt->{app_dir} );
     }
@@ -1150,8 +1149,8 @@ sub init_paths {
         if !$APP_DIR || !File::Spec->file_name_is_absolute($APP_DIR);
     $APP_DIR = dirname( $ENV{SCRIPT_FILENAME} )
         if $ENV{SCRIPT_FILENAME}
-            && ( !$APP_DIR
-                || ( !File::Spec->file_name_is_absolute($APP_DIR) ) );
+        && ( !$APP_DIR
+        || ( !File::Spec->file_name_is_absolute($APP_DIR) ) );
     $APP_DIR ||= $MT_DIR;
     $APP_DIR = File::Spec->rel2abs($APP_DIR);
 
@@ -1234,13 +1233,26 @@ sub init {
 
     $mt->run_callbacks( 'post_init', $mt, \%param );
 
-    # bugid:111075
-    # If using both Windows and FastCGI, load Net::SSLeay module here
-    # for avoiding module load error in Facebook plugin setting.
     if ( $^O eq 'MSWin32' ) {
         require MT::Util;
         if ( MT::Util::check_fast_cgi() ) {
+
+            # bugid:111075
+            # If using both Windows and FastCGI, load Net::SSLeay module here
+            # for avoiding module load error in Facebook plugin setting.
             eval { require Net::SSLeay };
+
+            # bugid:111140
+            # Shorten the time of process which uses OpenSSL when using Azure and FastCGI.
+            # This hack makes the starting time of FastCGI process long.
+            eval { require IO::Socket::SSL };
+
+            require Net::HTTPS;
+            Net::HTTPS->new( Host => 'https://dummy' );
+
+            if ( $mt->config->SMTPAuth eq 'starttls' ) {
+                eval { require Net::SMTP::TLS; Net::SMTP::TLS->new };
+            }
         }
     }
 
@@ -1372,7 +1384,7 @@ sub init_plugins {
             "You cannot register multiple plugin objects from a single script. $plugin_sig"
             )
             if exists( $Plugins{$plugin_sig} )
-                && ( exists $Plugins{$plugin_sig}{object} );
+            && ( exists $Plugins{$plugin_sig}{object} );
 
         $Components{ lc $id } = $plugin if $id;
         $Plugins{$plugin_sig}{object} = $plugin;
@@ -1829,7 +1841,8 @@ sub ping_and_save {
             if ( !$res->{good} ) {
                 $still_ping{ $res->{url} } = 1;
             }
-            push @$pinged, $res->{url}
+            push @$pinged,
+                $res->{url}
                 . (
                 $res->{good}
                 ? ''
@@ -2966,7 +2979,7 @@ sub init_captcha_providers {
     foreach my $provider ( keys %$providers ) {
         delete $providers->{$provider}
             if exists( $providers->{$provider}->{condition} )
-                && !( $providers->{$provider}->{condition}->() );
+            && !( $providers->{$provider}->{condition}->() );
     }
     %Captcha_Providers = %$providers;
     $Captcha_Providers{$_}{key} ||= $_ for keys %Captcha_Providers;
@@ -3040,8 +3053,8 @@ sub handler_to_coderef {
         if ($delayed) {
             if ($method) {
                 return sub {
-                    eval "# line " 
-                        . __LINE__ . " " 
+                    eval "# line "
+                        . __LINE__ . " "
                         . __FILE__
                         . "\nrequire $hdlr_pkg;"
                         or Carp::confess(
@@ -3055,8 +3068,8 @@ sub handler_to_coderef {
             }
             else {
                 return sub {
-                    eval "# line " 
-                        . __LINE__ . " " 
+                    eval "# line "
+                        . __LINE__ . " "
                         . __FILE__
                         . "\nrequire $hdlr_pkg;"
                         or Carp::confess(
@@ -3073,8 +3086,8 @@ sub handler_to_coderef {
             }
         }
         else {
-            eval "# line " 
-                . __LINE__ . " " 
+            eval "# line "
+                . __LINE__ . " "
                 . __FILE__
                 . "\nrequire $hdlr_pkg;"
                 or Carp::confess(
