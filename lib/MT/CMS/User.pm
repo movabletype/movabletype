@@ -1715,6 +1715,7 @@ sub post_save {
         my $current_session = $app->session;
 
         MT::Auth->invalidate_credentials( { app => $app } );
+        $app->user( $obj );
         $app->start_session( $obj, $current_session->get('remember') || 0 );
     }
 
