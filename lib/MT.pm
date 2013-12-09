@@ -1237,10 +1237,20 @@ sub init {
         require MT::Util;
         if ( MT::Util::check_fast_cgi() ) {
 
-            # bugid:111075
-            # If using both Windows and FastCGI, load Net::SSLeay module here
-            # for avoiding module load error in Facebook plugin setting.
-            eval { require Net::SSLeay };
+            eval {
+
+                # bugid:111075
+                # If using both Windows and FastCGI, load Net::SSLeay module here
+                # for avoiding module load error in Facebook plugin setting.
+                require Net::SSLeay;
+
+                # bugid: 111212
+                # Make Net::SSLeay::RAND_poll run only once
+                # for avoiding a timeout in Contents Sync Settings.
+                Net::SSLeay::RAND_poll();
+                no warnings 'redefine';
+                *Net::SSLeay::RAND_poll = sub { 1 };
+            };
 
             # bugid:111140
             # Shorten the time of process which uses OpenSSL when using Azure and FastCGI.
