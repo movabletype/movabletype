@@ -1625,7 +1625,7 @@ BEGIN {
             },
             'entry' => {
                 all_assets => {
-                    type => 'string',
+                    type => 'text',
                     code => '$Core::MT::Summary::Entry::summarize_all_assets',
                     expires => {
                         'MT::ObjectAsset' => {
