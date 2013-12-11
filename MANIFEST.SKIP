@@ -116,8 +116,6 @@ themes/broken_blog_theme
 #?package=MTA ^mt-static/addons/Cloud.pack
 #?package=MTA ^mt-hb.cgi
 #?package=MTA ^VERSIONS
-#?package=MTA ^lib/MT/FileMgr/FTP.pm
-#?package=MTA ^lib/MT/FileMgr/FTPS.pm
 
 #?package=MTCLOUD ^COPYING
 #?package=MTCLOUD ^COPYRIGHT
