@@ -50,7 +50,7 @@ RETRY_CONN:
         my $to   = $cfg->PublishCharset           || 'utf-8';
         Encode::from_to( $err, $from, $to );
 
-        if ( ++$retry < $retry_max ) {
+        if ( $retry++ < $retry_max ) {
             warn $err if $cfg->DebugMode;
             sleep $retry_int;
             goto RETRY_CONN;
