@@ -542,8 +542,10 @@ sub _edit_entry {
         die _fault( MT->translate( "Invalid entry ID '[_1]'", $entry_id ) );
     }
     require MT::Blog;
+    $blog_id ||= $entry->blog_id;
     my $blog = MT::Blog->load($blog_id)
         or die _fault( MT->translate( "Invalid blog ID '[_1]'", $blog_id ) );
+
     my ( $author, $perms ) = $class->_login( $user, $pass, $entry->blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
     die _fault( MT->translate("Not allowed to edit entry") )
