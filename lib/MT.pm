@@ -1037,6 +1037,14 @@ sub get_timer {
         if ( MT->config('PerformanceLogging') ) {
             my $uri;
             if ( $mt->isa('MT::App') ) {
+                local $mt->{qw(__path __mt_path)};
+                delete $mt->{qw(__path __mt_path)};
+
+                local $mt->{is_admin}
+                    = exists( $mt->{is_admin} )
+                    ? $mt->{is_admin}
+                    : $mt->isa('MT::App::CMS');
+
                 $uri = $mt->uri( args => { $mt->param_hash } );
             }
             require MT::Util::ReqTimer;
