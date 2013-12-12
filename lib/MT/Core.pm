@@ -1659,6 +1659,8 @@ BEGIN {
             'DBPort'                       => undef,
             'DBUser'                       => undef,
             'DBPassword'                   => undef,
+            'DBMaxRetries'                 => 3,
+            'DBRetryInterval'              => 1,
             'PIDFilePath'                  => undef,
             'DefaultLanguage'              => { default => 'en_US', },
             'LocalPreviews'                => { default => 0 },

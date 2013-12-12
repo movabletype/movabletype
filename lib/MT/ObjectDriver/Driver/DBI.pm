@@ -30,24 +30,37 @@ sub init {
 }
 
 sub init_db {
+
     my $driver = shift;
     my $dbh;
+
+    require MT;
+    my $mt = MT->instance;
+    my $cfg = $mt->config;
+    my $retry_max = $cfg->DBMaxRetries || 0;
+    my $retry_int = $cfg->DBRetryInterval || 0;
+    my $retry = 0;
+
+RETRY_CONN:
     eval { $dbh = $driver->SUPER::init_db(@_); };
 
     if ( my $err = $@ ) {
-        require MT;
-        my $mt  = MT->instance;
-        my $cfg = $mt->config;
-
         require MT::I18N;
         my $from = MT::I18N::guess_encoding($err) || 'utf-8';
         my $to   = $cfg->PublishCharset           || 'utf-8';
         Encode::from_to( $err, $from, $to );
-        Carp::croak($err);
+
+        if ( ++$retry < $retry_max ) {
+            warn $err if $cfg->DebugMode;
+            sleep $retry_int;
+            goto RETRY_CONN;
+        }
+        else {
+            Carp::croak($err);
+        }
     }
     return $dbh;
 }
-
 sub start_query {
     my $driver = shift;
     my ( $sql, $bind ) = @_;

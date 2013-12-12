@@ -38,9 +38,20 @@ abstract class MTDatabase {
 
 
     // Construction
-    public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '') {
+    public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
         $this->id = md5(uniqid('MTDatabase',true));
-        $this->connect($user, $password, $dbname, $host, $port, $sock);
+        $retry_cnt = 0;
+        while ( ( empty($this->conn) || ( !empty($this->conn) && !$this->conn->IsConnected() ) ) && $retry_cnt++ < $retry ) {
+            try {
+                $this->connect($user, $password, $dbname, $host, $port, $sock);
+            } catch (Exception $e ) {
+                sleep( $retry_int );
+            }
+        }
+        if ( empty($this->conn) || ( !empty($this->conn) && !$this->conn->IsConnected() ) ) {
+            throw new MTDBException( $this->conn->ErrorMsg() , 0);
+        }
+
         ADOdb_Active_Record::SetDatabaseAdapter($this->conn);
 #        $this->conn->debug = true;
     }

@@ -217,7 +217,9 @@ class MT {
                 $this->config('Database'),
                 $this->config('DBHost'),
                 $this->config('DBPort'),
-                $this->config('DBSocket'));
+                $this->config('DBSocket'),
+                $this->config('DBMaxRetries'),
+                $this->config('DBRetryInterval'));
         }
         return $this->db;
     }
@@ -434,6 +436,10 @@ class MT {
             $cfg['userpasswordminlength'] = 8;
         isset($cfg['bulkloadmetaobjectslimit']) or
             $cfg['bulkloadmetaobjectslimit'] = 100;
+        isset($cfg['dbmaxretries']) or
+            $cfg['dbmaxretries'] = 3;
+        isset($cfg['dbretryintercal']) or
+            $cfg['dbretryinterval'] = 1;
     }
 
     function configure_paths($blog_site_path) {
