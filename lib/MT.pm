@@ -1242,6 +1242,17 @@ sub init {
     $mt->run_callbacks( 'post_init', $mt, \%param );
 
     if ( $^O eq 'MSWin32' ) {
+
+        # bugid:111222
+        # Disable IPv6 in Net::LDAP because LDAP authentication does not work on Windows.
+        if ( $mt->config->AuthenticationModule eq 'LDAP' ) {
+            {
+                package Net::LDAP;
+                use constant::override substitute => { CAN_IPV6 => 0 };
+            }
+            require Net::LDAP;
+        }
+
         require MT::Util;
         if ( MT::Util::check_fast_cgi() ) {
 
