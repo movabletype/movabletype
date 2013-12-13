@@ -1253,7 +1253,7 @@ sub init {
                 }
                 require Net::LDAP;
             }
-        }
+        };
 
         require MT::Util;
         if ( MT::Util::check_fast_cgi() ) {
