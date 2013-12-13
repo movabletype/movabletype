@@ -1245,15 +1245,15 @@ sub init {
 
         # bugid:111222
         # Disable IPv6 in Net::LDAP because LDAP authentication does not work on Windows.
-        eval {
-            if ( $mt->config->AuthenticationModule eq 'LDAP' ) {
-                {
-                    package Net::LDAP;
-                    use constant::override substitute => { CAN_IPV6 => 0 };
-                }
-                require Net::LDAP;
+        if ( $mt->config->AuthenticationModule eq 'LDAP' ) {
+            eval <<'__END_OF_EVAL__';
+            {
+                package Net::LDAP;
+                use constant::override substitute => { CAN_IPV6 => 0 };
             }
-        };
+            require Net::LDAP;
+__END_OF_EVAL__
+        }
 
         require MT::Util;
         if ( MT::Util::check_fast_cgi() ) {
@@ -1286,12 +1286,9 @@ sub init {
                 );
             };
 
-            eval {
-                if ( $mt->config->SMTPAuth eq 'starttls' ) {
-                    require Net::SMTP::TLS;
-                    Net::SMTP::TLS->new;
-                }
-            };
+            if ( $mt->config->SMTPAuth eq 'starttls' ) {
+                eval { require Net::SMTP::TLS; Net::SMTP::TLS->new };
+            }
         }
     }
 
