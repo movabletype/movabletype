@@ -1245,12 +1245,14 @@ sub init {
 
         # bugid:111222
         # Disable IPv6 in Net::LDAP because LDAP authentication does not work on Windows.
-        if ( $mt->config->AuthenticationModule eq 'LDAP' ) {
-            {
-                package Net::LDAP;
-                use constant::override substitute => { CAN_IPV6 => 0 };
+        eval {
+            if ( $mt->config->AuthenticationModule eq 'LDAP' ) {
+                {
+                    package Net::LDAP;
+                    use constant::override substitute => { CAN_IPV6 => 0 };
+                }
+                require Net::LDAP;
             }
-            require Net::LDAP;
         }
 
         require MT::Util;
@@ -1276,15 +1278,20 @@ sub init {
             # This hack makes the starting time of FastCGI process long.
             eval { require IO::Socket::SSL };
 
-            require Net::HTTPS;
-            Net::HTTPS->new(
-                Host            => 'https://dummy',
-                SSL_verify_mode => 0,  # SSL_VERIFY_NONE
-            );
+            eval {
+                require Net::HTTPS;
+                Net::HTTPS->new(
+                    Host            => 'https://dummy',
+                    SSL_verify_mode => 0,  # SSL_VERIFY_NONE
+                );
+            };
 
-            if ( $mt->config->SMTPAuth eq 'starttls' ) {
-                eval { require Net::SMTP::TLS; Net::SMTP::TLS->new };
-            }
+            eval {
+                if ( $mt->config->SMTPAuth eq 'starttls' ) {
+                    require Net::SMTP::TLS;
+                    Net::SMTP::TLS->new;
+                }
+            };
         }
     }
 
