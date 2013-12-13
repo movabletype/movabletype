@@ -1268,7 +1268,7 @@ sub init {
                 # for avoiding a timeout in Contents Sync Settings.
                 Net::SSLeay::RAND_poll();
                 no warnings 'redefine';
-                *Net::SSLeay::RAND_poll = sub { 1 };
+                *Net::SSLeay::RAND_poll = sub () { 1 };
             };
 
             # bugid:111140
@@ -1277,7 +1277,10 @@ sub init {
             eval { require IO::Socket::SSL };
 
             require Net::HTTPS;
-            Net::HTTPS->new( Host => 'https://dummy' );
+            Net::HTTPS->new(
+                Host            => 'https://dummy',
+                SSL_verify_mode => 0,  # SSL_VERIFY_NONE
+            );
 
             if ( $mt->config->SMTPAuth eq 'starttls' ) {
                 eval { require Net::SMTP::TLS; Net::SMTP::TLS->new };
