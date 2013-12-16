@@ -2968,7 +2968,7 @@ sub do_reboot {
             require MT::FileMgr;
             my $fmgr = MT::FileMgr->new('Local');
             my $res = $fmgr->put_data( '', $watchfile );
-            if ( $res == undef ) {
+            if ( !defined($res) ) {
                 $app->log(
                     $app->translate(
                         "Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive '[_1]': [_2]",
