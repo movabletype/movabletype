@@ -1582,8 +1582,11 @@ sub save_filter {
         }
     }
 
+    my $ori_name = $app->param( 'name' );
+    $app->param( 'name', $accessor->('name') );
     require MT::Auth;
     my $error = MT::Auth->sanity_check($app);
+    $app->param( 'name', $ori_name );
     if ($error) {
         require MT::Log;
         $app->log(
