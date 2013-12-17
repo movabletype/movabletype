@@ -26,6 +26,17 @@ sub BEGIN {
     }
 }
 
+# bugid: 111237
+# Net::SSLeay::RAND_poll() takes much time on Windows environment.
+# So, make this subroutine does nothing in mt-check.cgi.
+if ( $^O eq 'MSWin32' ) {
+    eval {
+        require Net::SSLeay;
+        no warnings;
+        *Net::SSLeay::RAND_poll = sub () { 1 };
+    };
+}
+
 my $cfg_exist;
 my $mt_static_path = q();
 my $mt_cgi_path;
