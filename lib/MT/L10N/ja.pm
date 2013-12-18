@@ -542,7 +542,6 @@ use vars qw( @ISA %Lexicon );
 	'Hello, world' => 'Hello, world',
 	'Hello, [_1]' => '[_1]',
 	'Got an error: [_1]' => 'エラーが発生しました: [_1]',
-	'Should not call MT::registry() without argument.' => 'MT::registory は、引数を指定して呼び出す必要があります。',
 	'Message: [_1]' => 'メッセージ: [_1]',
 	'If it is present, the third argument to add_callback must be an object of type MT::Component or MT::Plugin' => 'add_callbackの第3引数を指定する場合は、MT::ComponentまたはMT::Pluginオブジェクトでなければなりません。',
 	'Fourth argument to add_callback must be a CODE reference.' => 'add_callbackの第4引数はCODEへの参照でなければなりません。',
@@ -2539,7 +2538,6 @@ use vars qw( @ISA %Lexicon );
 	'Removing widget from dashboard...' => 'ダッシュボードからウィジェットを削除しています...',
 	'Ordering Categories and Folders of Blogs...' => 'ブログのカテゴリとフォルダの順番を設定しています...',
 	'Ordering Folders of Websites...' => 'ウェブサイトのフォルダの順番を設定しています...',
-	q{Setting the 'created by' ID for any user for whom this field is not defined...} => '初期作成ユーザーの作成者IDを設定しています...',
 	'Assigning a language to each blog to help choose appropriate display format for dates...' => 'ブログに日付の言語を設定しています...',
 	'Adding notification dashboard widget...' => '通知ウィジェットをダッシュボードに追加しています...',
 
@@ -6126,7 +6124,6 @@ use vars qw( @ISA %Lexicon );
 	'ODBC Driver' => 'ODBCドライバ',
 	'External Directory Synchronization' => '外部ディレクトリと同期',
 	'Populating author\'s external ID to have lower case user name...' => '小文字のユーザー名を外部IDに設定しています...',
-	q{Specify 'SQL Native Client 11.0' for SQL Server 2012 or 'SQL Native Client 10.0' for SQL Server 2008.} => q{利用するODCBドライバを指定します。SQL Server 2012 を利用する場合は、'SQL Native Client 11.0'、SQL Server 2008では、'SQL Native Client 10.0'と入力してください。},
 
 ## addons/Enterprise.pack/lib/MT/Auth/LDAP.pm
 	'User [_1]([_2]) not found.' => 'ユーザー[_1]([_2])が見つかりませんでした。',
@@ -6411,24 +6408,25 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
 	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
-	'Cannot connect to the FTP server.' => 'FTPサーバーに接続できません。',
-	'Cannot retrieve current directory.' => 'カレントディレクトリを取得できません。',
-	'Cannot retrieve directory list.' => 'ディレクトリの一覧を取得できません。',
+	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'FTPサーバー \'[_1]\' への接続中にエラーが発生しました: [_2]',
+	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'FTPサーバーのカレントディレクトリが取得できませんでした。',
+	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした。',
+	'Check the settings and try again.' => '設定を見直してもう一度お試しください。',
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'サーバー配信設定',
 	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
-	'An error occured while trying to connect to the FTP server. Check the settings and try again.' => 'FTPサーバーに接続できませんでした。設定を見直してもう一度接続してください。',
 	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
+	'Run synchronization now' => '今すぐ配信する',
 	'Enable contents synchronization' => 'サーバー配信を有効にする',
 	'Sync Settings' => 'サーバー配信の設定',
 	'Sync Date' => 'サーバー配信日時',
 	'Recipient for Notification' => '配信結果の通知先メールアドレス',
-	'Receive only error notification' => '配信に失敗したときだけ受け取る',
+	'Receive only error notification' => '配信に失敗したときだけ受け取る。',
 	'Destinations' => '配信先',
 	'Add destination' => '配信先を追加する',
 	'Sync Type' => '配信方法',
-	'Sync Type *' => '配信方法 *',
+	'Sync type not selected' => '配信方法を指定してください',
 	'FTP' => 'FTP',
 	'Rsync' => 'rsync',
 	'FTP Server' => 'FTPサーバー',
@@ -6437,17 +6435,13 @@ use vars qw( @ISA %Lexicon );
 	'Enable SSL' => 'SSLで接続する',
 	'Start Directory' => '開始ディレクトリ',
 	'Rsync Destination' => 'rsync 先のディレクトリ',
-	'Delete file' => 'ファイルの削除',
-	'Delete files from the destination that does not exist.' => '配信先に存在しないファイルを削除する。',
-	'Start synchronization now (n)' => '今すぐ同期を開始する (n)',
-	'Sync Now' => '今すぐ同期する',
+	'Sync Type *' => '配信方法 *',
 	'Please select a sync type.' => '配信方法を指定してください。',
 	'The sync date must be in the future.' => 'サーバー配信日時は、未来の日時を指定してください。',
 	'Invalid time.' => '無効な時刻指定です。',
 	'You must make one or more destination settings.' => 'サーバー配信先が設定されていません。',
 	'Are you sure you want to run synchronization?' => 'いますぐ配信を実行しますか？',
 	'Are you sure you want to remove this settings?' => 'この設定を削除しますか？',
-	'Run synchronization now' => '今すぐ配信する',
 
 ## addons/Sync.pack/tmpl/dialog/contents_sync_now.tmpl
 	'Sync Now!' => '今すぐ配信',
@@ -6537,7 +6531,7 @@ use vars qw( @ISA %Lexicon );
 	'OAuth2 settings' => 'OAuth2の設定',
 	'This [_2] is using the settings of [_1].' => 'この[_2]は、[_1]の設定を利用しています。',
 	'Other Google account' => '別のアカウントを利用する',
-	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://code.google.com/apis/console" target="_blank">Google APIs Console</a> before selecting profile.} => q{プロファイルを選択するために、<a href="https://code.google.com/apis/console" target="_blank">Google APIs Console</a>でウェブアプリケーション向けのClient IDを作成してください。},
+	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a> before selecting profile.} => q{プロファイルを選択するために、<a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a>でウェブアプリケーション向けのClient IDを作成してください。},
 	'Redirect URI of the OAuth2 application' => 'Authorized URI',
 	'Client ID of the OAuth2 application' => 'Client ID',
 	'Client secret of the OAuth2 application' => 'Client secret',
@@ -6922,8 +6916,9 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Moderate' => '公開を保留するキーワード',
 	'Keywords to Junk' => 'スパムにするキーワード',
 
+
 );
 
-## New words: 277
+## New words: 259
 
 1;
