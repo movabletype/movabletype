@@ -311,22 +311,6 @@
         updatable: 1
       -
         author:
-          displayName: Comment 12
-          id: ~
-          userpicUrl: ~
-        blog:
-          id: 1
-        body: Comment reply for comment 11
-        date: 2004-08-10T18:30:00-03:30
-        entry:
-          id: 1
-        id: 12
-        link: http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-12
-        parent: 11
-        status: Approved
-        updatable: 1
-      -
-        author:
           displayName: Comment 11
           id: ~
           userpicUrl: ~
@@ -339,6 +323,22 @@
         id: 11
         link: http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-11
         parent: 1
+        status: Approved
+        updatable: 1
+      -
+        author:
+          displayName: Comment 12
+          id: ~
+          userpicUrl: ~
+        blog:
+          id: 1
+        body: Comment reply for comment 11
+        date: 2004-08-10T18:30:00-03:30
+        entry:
+          id: 1
+        id: 12
+        link: http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-12
+        parent: 11
         status: Approved
         updatable: 1
     trackbacks:
@@ -408,8 +408,24 @@
     comments:
       -
         author:
-          displayName: Dylan
-          id: 3
+          displayName: Comment 3
+          id: ~
+          userpicUrl: ~
+        blog:
+          id: 1
+        body: Comment for entry 6, visible
+        date: 2004-09-11T18:28:00-03:30
+        entry:
+          id: 6
+        id: 3
+        link: http://narnia.na/nana/archives/1963/01/verse-3.html#comment-3
+        parent: ~
+        status: Approved
+        updatable: 1
+      -
+        author:
+          displayName: Comment 4
+          id: ~
           userpicUrl: ~
         blog:
           id: 1
@@ -424,25 +440,9 @@
         updatable: 1
       -
         author:
+          displayName: Chucky Dee
           id: 2
-          displayName: Chucky Dee
           userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
-        blog:
-          id: 1
-        body: All your comments are belonged to us MT Authors.
-        date: 2004-09-10T18:28:00-03:30
-        entry:
-          id: 6
-        id: 15
-        link: http://narnia.na/nana/archives/1963/01/verse-3.html#comment-15
-        parent: ~
-        status: Approved
-        updatable: 1
-      -
-        author:
-          displayName: Chucky Dee
-          id: ~
-          userpicUrl: ~
         blog:
           id: 1
         body: All your comments are belonged to me.
@@ -456,17 +456,17 @@
         updatable: 1
       -
         author:
-          displayName: Comment 3
-          id: ~
+          id: 3
+          displayName: Dylan
           userpicUrl: ~
         blog:
           id: 1
-        body: Comment for entry 6, visible
-        date: 2004-09-11T18:28:00-03:30
+        body: All your comments are belonged to us MT Authors.
+        date: 2004-09-10T18:28:00-03:30
         entry:
           id: 6
-        id: 3
-        link: http://narnia.na/nana/archives/1963/01/verse-3.html#comment-3
+        id: 15
+        link: http://narnia.na/nana/archives/1963/01/verse-3.html#comment-15
         parent: ~
         status: Approved
         updatable: 1
