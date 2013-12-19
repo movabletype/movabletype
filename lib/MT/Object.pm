@@ -1132,7 +1132,7 @@ sub _assign_audited_fields {
     my ( $obj, $orig_obj ) = @_;
     if ( $obj->properties->{audit} ) {
         my $blog_id;
-        if ( $obj->has_column('blog_id') ) {
+        if ( $obj->can('blog_id') ) {
             $blog_id = $obj->blog_id;
         }
         my @ts = offset_time_list( time, $blog_id );

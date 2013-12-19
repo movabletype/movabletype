@@ -75,6 +75,7 @@ sub init_revisioning {
         return 1;
     }
 
+    my $class_name = ref $class || $class;
     my $base_class = 'MT::Object';
 
     my $subclass_src = "
@@ -82,6 +83,15 @@ sub init_revisioning {
         package $subclass;
         our \$VERSION = 1.0;
         use base qw($base_class);
+
+        sub blog_id {
+            my \$self = shift;
+            return undef unless $class_name->has_column('blog_id');
+            my \$parent = $class_name->load( \$self->${datasource}_id )
+                or return undef;
+
+            return \$parent->blog_id;
+        }
 
         1;
     ";
