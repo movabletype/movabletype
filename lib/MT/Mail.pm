@@ -240,7 +240,7 @@ sub _send_mt_smtp {
             Port     => $port,
             User     => $user,
             Password => $pass,
-            Timeout  => 60,
+            Timeout  => $mgr->SMTPTimeout,
             Hello    => $localhost,
             ( $MT::DebugMode ? ( Debug => 1 ) : () ),
             )
@@ -255,7 +255,7 @@ sub _send_mt_smtp {
         $smtp = Net::SMTP::SSL->new(
             $host,
             Port    => $port,
-            Timeout => 60,
+            Timeout => $mgr->SMTPTimeout,
             Hello   => $localhost,
             ( $MT::DebugMode ? ( Debug => 1 ) : () ),
             )
@@ -270,7 +270,7 @@ sub _send_mt_smtp {
         $smtp = Net::SMTP->new(
             $host,
             Port    => $port,
-            Timeout => 60,
+            Timeout => $mgr->SMTPTimeout,
             Hello   => $localhost,
             ( $MT::DebugMode ? ( Debug => 1 ) : () ),
             )

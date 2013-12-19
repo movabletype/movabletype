@@ -1736,6 +1736,7 @@ BEGIN {
             'SMTPUser'                      => undef,
             'SMTPPassword'                  => undef,
             'SMTPPort'                      => undef,
+            'SMTPTimeout'                   => 10,
             'DebugEmailAddress'             => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
