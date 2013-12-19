@@ -3201,6 +3201,11 @@ sub refresh_cache {
     $cache_driver->flush_all();
 }
 
+sub current_time_offset {
+    my $self = shift;
+    $self->request('time_offset') || $self->config->TimeOffset;
+}
+
 sub DESTROY { }
 
 1;

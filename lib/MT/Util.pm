@@ -119,7 +119,9 @@ sub ts2iso {
             $blog = MT::Blog->load($blog);
         }
         my $offset
-            = ref $blog ? $blog->server_offset : MT->config->TimeOffset;
+            = ref $blog
+            ? $blog->server_offset
+            : MT->current_time_offset;
 
         my ( $off_hour, $off_min ) = split( /\./, $offset );
         $off_min = int( 6 * ( $off_min || 0 ) );
@@ -639,14 +641,9 @@ sub offset_time {
             $offset
                 = $blog && $blog->server_offset ? $blog->server_offset : 0;
         }
-        else {
-            $offset = MT->config->TimeOffset;
-        }
-    }
-    else {
-        $offset = MT->config->TimeOffset;
     }
 
+    $offset = MT->current_time_offset unless defined $offset;
     $offset += 1 if $blog && ( localtime $ts )[8];
     $offset *= -1 if $dir && $dir eq '-';
     $ts += $offset * 3600;

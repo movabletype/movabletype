@@ -332,7 +332,7 @@ sub build {
             $ctx->stash( 'local_blog_id', $blog->id )
                 unless $ctx->stash('local_blog_id');
         }
-        MT->config->TimeOffset( $blog->server_offset );
+        MT->request( 'time_offset', $blog->server_offset );
         $page_layout = $blog->page_layout;
     }
     my $type = $tmpl->type;

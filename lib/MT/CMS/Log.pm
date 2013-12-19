@@ -122,7 +122,7 @@ PERMCHECK: {
         $so = $blog->server_offset;
     }
     else {
-        $so = $app->config('TimeOffset');
+        $so = $app->current_time_offset;
     }
     if ($so) {
         my $partial_hour_offset = 60 * abs( $so - int($so) );
@@ -532,7 +532,7 @@ sub template_param_list {
         $so = $blog->server_offset;
     }
     else {
-        $so = $app->config('TimeOffset');
+        $so = $app->current_time_offset;
     }
     if ($so) {
         my $partial_hour_offset = 60 * abs( $so - int($so) );
