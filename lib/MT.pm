@@ -4312,7 +4312,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2013 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2014 Six Apart.
 All rights reserved.
 
 =cut
