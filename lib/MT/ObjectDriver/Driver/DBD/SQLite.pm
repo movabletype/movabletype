@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -163,7 +163,7 @@ sub _load_iter {
     my $result = $orig_load_iter->( $class, @_ );
     return $result
         if 'CODE' ne ref($result)
-            && 'Data::ObjectDriver::Iterator' ne ref($result);
+        && 'Data::ObjectDriver::Iterator' ne ref($result);
 
     my @ids;
     while ( my $o = $result->() ) {

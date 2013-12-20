@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -35,11 +35,11 @@ sub init_db {
     my $dbh;
 
     require MT;
-    my $mt = MT->instance;
-    my $cfg = $mt->config;
+    my $mt        = MT->instance;
+    my $cfg       = $mt->config;
     my $retry_max = $cfg->DBMaxRetries || 0;
     my $retry_int = $cfg->DBRetryInterval || 0;
-    my $retry = 0;
+    my $retry     = 0;
 
 RETRY_CONN:
     eval { $dbh = $driver->SUPER::init_db(@_); };
@@ -61,6 +61,7 @@ RETRY_CONN:
     }
     return $dbh;
 }
+
 sub start_query {
     my $driver = shift;
     my ( $sql, $bind ) = @_;

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1582,7 +1582,7 @@ sub save_filter {
         }
     }
 
-    my $ori_name = $app->param( 'name' );
+    my $ori_name = $app->param('name');
     $app->param( 'name', $accessor->('name') );
     require MT::Auth;
     my $error = MT::Auth->sanity_check($app);
@@ -1718,7 +1718,7 @@ sub post_save {
         my $current_session = $app->session;
 
         MT::Auth->invalidate_credentials( { app => $app } );
-        $app->user( $obj );
+        $app->user($obj);
         $app->start_session( $obj, $current_session->get('remember') || 0 );
     }
 

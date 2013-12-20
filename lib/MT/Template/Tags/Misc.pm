@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -175,7 +175,7 @@ sub _hdlr_widget_manager {
     }
     elsif ( my $text = $tmpl->text ) {
         my @widget_names = $text =~ /widget\=\"([^"]+)\"/g;
-        my @objs = MT->model('template')->load(
+        my @objs         = MT->model('template')->load(
             {   name    => \@widget_names,
                 blog_id => [ $blog_id, 0 ],
             }
@@ -257,8 +257,7 @@ sub _hdlr_stats_snippet {
     my $blog    = MT->model('blog')->load($blog_id);
 
     require MT::Stats;
-    my $provider
-        = MT::Stats::readied_provider( MT->instance, $blog )
+    my $provider = MT::Stats::readied_provider( MT->instance, $blog )
         or return q();
 
     $provider->snipet(@_);

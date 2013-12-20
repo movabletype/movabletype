@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,9 +16,9 @@ sub upgrade_functions {
             updater       => {
                 type      => 'blog',
                 condition => sub { $_[0]->class eq 'blog' },
-                code => sub { $_[0]->class('website') },
-                label => "Migrating current blog to a website...",
-                sql   => <<__SQL__,
+                code      => sub { $_[0]->class('website') },
+                label     => "Migrating current blog to a website...",
+                sql       => <<__SQL__,
 UPDATE mt_blog
 SET    blog_class = 'website'
 WHERE  blog_class = 'blog'

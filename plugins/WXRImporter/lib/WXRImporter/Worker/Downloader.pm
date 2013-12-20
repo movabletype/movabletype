@@ -56,7 +56,7 @@ sub work {
                 my $path = File::Basename::dirname($asset_file);
                 $path =~ s!/$!!
                     unless $path eq
-                        '/';    ## OS X doesn't like / at the end in mkdir().
+                    '/';    ## OS X doesn't like / at the end in mkdir().
                 unless ( $filemgr->exists($path) ) {
                     $filemgr->mkpath($path);
                 }

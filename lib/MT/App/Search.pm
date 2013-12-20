@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -181,13 +181,13 @@ sub init_request {
             my $blog_list = $app->create_blog_list(%no_override);
             $app->{searchparam}{IncludeBlogs} = $blog_list->{IncludeBlogs}
                 if $blog_list
-                    && %$blog_list
-                    && $blog_list->{IncludeBlogs}
-                    && @{ $blog_list->{IncludeBlogs} };
+                && %$blog_list
+                && $blog_list->{IncludeBlogs}
+                && @{ $blog_list->{IncludeBlogs} };
             return $app->error( $app->translate('Invalid request.') )
                 if !$processed
-                    && (   !exists $app->{searchparam}{IncludeBlogs}
-                        || !@{ $app->{searchparam}{IncludeBlogs} } );
+                && ( !exists $app->{searchparam}{IncludeBlogs}
+                || !@{ $app->{searchparam}{IncludeBlogs} } );
         }
     }
     else {

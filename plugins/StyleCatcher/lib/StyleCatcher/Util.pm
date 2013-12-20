@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2005-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2005-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -209,20 +209,12 @@ sub load_meta_fields {
     # Load blog_meta
     my $blog = MT->model('blog');
     $blog->install_meta(
-        {   column_defs => {
-                'current_style'  => 'string meta',
-            }
-        }
-    );
+        { column_defs => { 'current_style' => 'string meta', } } );
 
     # Load website_meta
     my $website = MT->model('website');
     $website->install_meta(
-        {   column_defs => {
-                'current_style'  => 'string meta',
-            }
-        }
-    );
+        { column_defs => { 'current_style' => 'string meta', } } );
 }
 
 1;

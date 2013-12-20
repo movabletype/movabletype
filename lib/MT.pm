@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1243,8 +1243,8 @@ sub init {
 
     if ( $^O eq 'MSWin32' ) {
 
-        # bugid:111222
-        # Disable IPv6 in Net::LDAP because LDAP authentication does not work on Windows.
+# bugid:111222
+# Disable IPv6 in Net::LDAP because LDAP authentication does not work on Windows.
         if ( $mt->config->AuthenticationModule eq 'LDAP' ) {
             eval <<'__END_OF_EVAL__';
             {
@@ -1260,9 +1260,9 @@ __END_OF_EVAL__
 
             eval {
 
-                # bugid:111075
-                # If using both Windows and FastCGI, load Net::SSLeay module here
-                # for avoiding module load error in Facebook plugin setting.
+             # bugid:111075
+             # If using both Windows and FastCGI, load Net::SSLeay module here
+             # for avoiding module load error in Facebook plugin setting.
                 require Net::SSLeay;
 
                 # bugid: 111212
@@ -1270,19 +1270,19 @@ __END_OF_EVAL__
                 # for avoiding a timeout in Contents Sync Settings.
                 Net::SSLeay::RAND_poll();
                 no warnings 'redefine';
-                *Net::SSLeay::RAND_poll = sub () { 1 };
+                *Net::SSLeay::RAND_poll = sub () {1};
             };
 
-            # bugid:111140
-            # Shorten the time of process which uses OpenSSL when using Azure and FastCGI.
-            # This hack makes the starting time of FastCGI process long.
+# bugid:111140
+# Shorten the time of process which uses OpenSSL when using Azure and FastCGI.
+# This hack makes the starting time of FastCGI process long.
             eval { require IO::Socket::SSL };
 
             eval {
                 require Net::HTTPS;
                 Net::HTTPS->new(
                     Host            => 'https://dummy',
-                    SSL_verify_mode => 0,  # SSL_VERIFY_NONE
+                    SSL_verify_mode => 0,                 # SSL_VERIFY_NONE
                 );
             };
 

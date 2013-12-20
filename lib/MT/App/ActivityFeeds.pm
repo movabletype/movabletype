@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -861,7 +861,7 @@ sub _filter_comment {
 
     $item->{'log.comment.can_edit'} = 1
         if $own && $perm->can_do('edit_own_entry_comment_without_status')
-            || $perm->can_do('view_all_comments');
+        || $perm->can_do('view_all_comments');
     $item->{'log.comment.can_change_status'}
         = $perm->can_do('edit_comment_status') ? 1 : 0;
 
@@ -888,7 +888,7 @@ sub _filter_ping {
 
     $item->{'log.tbping.can_edit'} = 1
         if $own && $perm->can_do('edit_own_entry_trackback_without_status')
-            || $perm->can_do('view_all_trackback');
+        || $perm->can_do('view_all_trackback');
     $item->{'log.tbping.can_change_status'}
         = $perm->can_do('edit_trackback_status') ? 1 : 0;
 

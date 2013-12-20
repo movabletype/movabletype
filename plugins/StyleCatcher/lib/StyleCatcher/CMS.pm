@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2005-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2005-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -289,8 +289,8 @@ EOT
         my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d", $ts[5] + 1900,
             $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
         my $backup = $tmpl->clone;
-        delete $backup->{column_values}
-            {id};    # make sure we don't overwrite original
+        delete $backup->{column_values}{id}
+            ;    # make sure we don't overwrite original
         delete $backup->{changed_cols}{id};
         $backup->name( $backup->name . ' (Backup from ' . $ts . ')' );
         $backup->outfile('');

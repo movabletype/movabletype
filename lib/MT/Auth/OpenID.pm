@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -388,13 +388,13 @@ sub _asset_from_url {
         'uploads' );
     $local_path =~ s|/$||
         unless $local_path eq
-            '/';    ## OS X doesn't like / at the end in mkdir().
+        '/';    ## OS X doesn't like / at the end in mkdir().
     unless ( $fmgr->exists($local_path) ) {
         $fmgr->mkpath($local_path);
     }
     require Digest::SHA1;
     my $filename = Digest::SHA1::sha1_hex($image_url);
-    unless ($ext) { # trust content type higher than url extension
+    unless ($ext) {    # trust content type higher than url extension
         ($ext) = $image_url =~ m!(\.[^\.\\\/])$!;
     }
 
@@ -402,7 +402,8 @@ sub _asset_from_url {
     my $i         = 1;
     my $base_copy = $filename;
     while (
-        $fmgr->exists( File::Spec->catfile( $local_path, $filename . $ext ) ) )
+        $fmgr->exists( File::Spec->catfile( $local_path, $filename . $ext ) )
+        )
     {
         $filename = $base_copy . '_' . $i++;
     }

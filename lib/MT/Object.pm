@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -175,8 +175,8 @@ sub install_properties {
         my @classes = grep { !ref($_) } @$more_props;
         foreach my $isa_class (@classes) {
             next if UNIVERSAL::isa( $class, $isa_class );
-            eval "# line " 
-                . __LINE__ . " " 
+            eval "# line "
+                . __LINE__ . " "
                 . __FILE__
                 . "\nno warnings 'all';require $isa_class;"
                 or die;
@@ -343,7 +343,7 @@ sub install_properties {
             for my $col (@$cols) {
                 $is_blob{$col} = 1
                     if $col_defs->{$col}
-                        && $col_defs->{$col}{type} =~ /\bblob\b/;
+                    && $col_defs->{$col}{type} =~ /\bblob\b/;
             }
             foreach ( keys %$data ) {
                 my $v = $data->{$_};
@@ -474,9 +474,9 @@ sub _pre_search_scope_terms_to_class {
                         foreach my $t ( keys %$term ) {
                             push @$array, { $t => $term->{$t} }
                                 if lc $t ne lc $col
-                                    || (   lc $t eq lc $col
-                                        && !$no_class
-                                        && $term->{$t} ne '*' );
+                                || ( lc $t eq lc $col
+                                && !$no_class
+                                && $term->{$t} ne '*' );
                         }
                         push @$new_terms, $array;
                     }
@@ -1346,7 +1346,8 @@ sub column_as_datetime {
         if ($blog) {
             $four_digit_offset = sprintf( '%.02d%.02d',
                 int( $blog->server_offset ),
-                60 * abs( $blog->server_offset - int( $blog->server_offset ) )
+                60 *
+                    abs( $blog->server_offset - int( $blog->server_offset ) )
             );
         }
         return new MT::DateTime(

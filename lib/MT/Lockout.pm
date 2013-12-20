@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -84,7 +84,7 @@ sub recover_token {
 
     return undef
         unless $user->locked_out
-            && $user->lockout_recover_salt;
+        && $user->lockout_recover_salt;
 
     my $sha256_hex;
     if ( eval { require Digest::SHA } ) {

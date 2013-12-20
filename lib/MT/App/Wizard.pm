@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -50,10 +50,10 @@ sub init_request {
 
     my $mode = $app->mode;
     return
-        unless $mode eq 'previous_step'
-            || $mode eq 'next_step'
-            || $mode eq 'retry'
-            || $mode eq 'test';
+           unless $mode eq 'previous_step'
+        || $mode eq 'next_step'
+        || $mode eq 'retry'
+        || $mode eq 'test';
 
     my $step = $app->param('step') || '';
 
@@ -1002,8 +1002,8 @@ sub optional {
                 if $param{mail_transfer};
             $cfg->SendMailPath( $param{sendmail_path} )
                 if $param{mail_transfer}
-                    && ( $param{mail_transfer} eq 'sendmail' )
-                    && $param{sendmail_path};
+                && ( $param{mail_transfer} eq 'sendmail' )
+                && $param{sendmail_path};
             $cfg->EmailAddressMain( $param{email_address_main} )
                 if $param{email_address_main};
 

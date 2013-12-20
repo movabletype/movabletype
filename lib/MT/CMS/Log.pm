@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -266,7 +266,7 @@ sub reset {
             foreach my $b ( @{ $blog->blogs } ) {
                 push @$blogs, $b
                     if $author->permissions( $b->id )
-                        ->can_do('reset_blog_log');
+                    ->can_do('reset_blog_log');
             }
         }
         return $app->permission_denied()
@@ -358,7 +358,7 @@ PERMCHECK: {
                 foreach my $b ( @{ $blog->blogs } ) {
                     push @$blog_ids, $b->id
                         if $user->permissions( $b->id )
-                            ->can_do('export_blog_log');
+                        ->can_do('export_blog_log');
                 }
             }
             last PERMCHECK if $blog_ids;
@@ -388,7 +388,7 @@ PERMCHECK: {
                     filter_val => $q->param('filter_val')
                 }
             )
-            };
+        };
     }
 
     # all classes of log objects
@@ -421,7 +421,7 @@ PERMCHECK: {
 
     my $file = '';
     $file = dirify( $blog->name ) . '-' if $blog;
-    $file = "Blog-" . $blog->id . '-' if $file eq '-';
+    $file = "Blog-" . $blog->id . '-'   if $file eq '-';
     my @ts = gmtime(time);
     my $ts = sprintf "%04d-%02d-%02d-%02d-%02d-%02d", $ts[5] + 1900,
         $ts[4] + 1,

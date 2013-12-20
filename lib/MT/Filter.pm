@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -130,12 +130,13 @@ sub list_props {
                         ? MT::Author::ACTIVE()
                         : MT::Author::INACTIVE();
                     $db_args->{joins} ||= [];
-                    push @{ $db_args->{joins} }, MT->model('author')->join_on(
+                    push @{ $db_args->{joins} },
+                        MT->model('author')->join_on(
                         undef,
                         {   id     => \'= filter_author_id',
                             status => $status,
                         },
-                    );
+                        );
                 }
             },
         },
@@ -288,7 +289,7 @@ sub load_objects {
     }
     if ( scalar @additional_terms ) {
         if (   !$terms
-            || ( 'HASH'  eq ref $terms && !scalar %$terms )
+            || ( 'HASH' eq ref $terms  && !scalar %$terms )
             || ( 'ARRAY' eq ref $terms && !scalar @$terms ) )
         {
             shift @additional_terms;
@@ -428,7 +429,7 @@ sub count_objects {
             my $filter_terms
                 = $prop->terms( $item->{args}, $terms, $args, \%options );
             if ( $filter_terms
-                && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
+                && ( 'HASH' eq ref $filter_terms  && scalar %$filter_terms )
                 || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
             {
                 push @additional_terms, ( '-and', $filter_terms );
@@ -436,7 +437,7 @@ sub count_objects {
         }
         if ( scalar @additional_terms ) {
             if (   !$terms
-                || ( 'HASH'  eq ref $terms && !scalar %$terms )
+                || ( 'HASH' eq ref $terms  && !scalar %$terms )
                 || ( 'ARRAY' eq ref $terms && !scalar @$terms ) )
             {
                 shift @additional_terms;
@@ -511,7 +512,7 @@ sub pack_terms {
             = $prop->terms( $item->{args}, $load_terms, $load_args,
             $options );
         if ( $filter_terms
-            && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
+            && ( 'HASH' eq ref $filter_terms  && scalar %$filter_terms )
             || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
         {
             push @terms, $op if scalar @terms > 0;

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -280,8 +280,8 @@ sub mount_applications {
     my $static = $staticpath;
     $static .= '/' unless $static =~ m!/$!;
     my $favicon = $static . 'images/favicon.ico';
-    $urlmap->map(
-        '/favicon.ico' => Plack::App::File->new( { file => $favicon } )->to_app );
+    $urlmap->map( '/favicon.ico' =>
+            Plack::App::File->new( { file => $favicon } )->to_app );
 
     $self->_app( $urlmap->to_app );
 }

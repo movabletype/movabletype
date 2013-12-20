@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -146,9 +146,8 @@ sub add_trigger {
 
     return $plugin->translate("Permission denied.")
         unless $app->user->is_superuser()
-            || (   $app->blog
-                && $app->user->permissions( $app->blog->id )
-                ->can_administer_blog() );
+        || ( $app->blog
+        && $app->user->permissions( $app->blog->id )->can_administer_blog() );
 
     my $blog_id = $app->blog->id;
 

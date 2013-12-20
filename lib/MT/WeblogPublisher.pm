@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -452,13 +452,13 @@ sub rebuild_deleted_entry {
             my $categories = $entry->categories();
             for my $cat (@$categories) {
                 if (!$archiver->does_publish_file(
-                    {   Blog        => $blog,
-                        ArchiveType => $at,
-                        Entry       => $entry,
-                        Category    => $cat,
-                    }
-                )
-                )
+                        {   Blog        => $blog,
+                            ArchiveType => $at,
+                            Entry       => $entry,
+                            Category    => $cat,
+                        }
+                    )
+                    )
                 {
                     $mt->remove_fileinfo(
                         ArchiveType => $at,
@@ -655,8 +655,8 @@ sub rebuild_entry {
 
     return 1
         unless $param{BuildDependencies}
-            || $param{BuildIndexes}
-            || $param{BuildArchives};
+        || $param{BuildIndexes}
+        || $param{BuildArchives};
 
     if ( $param{BuildDependencies} ) {
         ## Rebuild previous and next entry archive pages.
@@ -711,7 +711,8 @@ sub rebuild_entry {
                 my $archiver = $mt->archiver($at);
                 if ( $archiver->category_based ) {
                     for my $cat (@$categories_for_rebuild) {
-                        if (my $prev_arch = $archiver->previous_archive_entry(
+                        if (my $prev_arch
+                            = $archiver->previous_archive_entry(
                                 {   entry    => $entry,
                                     category => $cat,
                                 }
@@ -1976,8 +1977,7 @@ sub publish_future_posts {
             my %rebuilt_okay;
             my $rebuilt;
             eval {
-                foreach my $id ( keys %rebuild_queue )
-                {
+                foreach my $id ( keys %rebuild_queue ) {
                     my $entry = $rebuild_queue{$id};
                     $mt->rebuild_entry( Entry => $entry, Blog => $blog )
                         or die $mt->errstr;
@@ -2098,8 +2098,7 @@ sub unpublish_past_entries {
             my %rebuilt_okay;
             my $rebuilt;
             eval {
-                foreach my $id ( keys %rebuild_queue )
-                {
+                foreach my $id ( keys %rebuild_queue ) {
                     my $entry = $rebuild_queue{$id};
                     $mt->rebuild_entry( Entry => $entry, Blog => $site )
                         or die $mt->errstr;
@@ -2409,7 +2408,7 @@ sub queue_build_file_filter {
     }
 
     $job->priority($priority);
-    $job->coalesce( ( $fi->blog_id || 0 ) . ':' 
+    $job->coalesce( ( $fi->blog_id || 0 ) . ':'
             . $$ . ':'
             . $priority . ':'
             . ( time - ( time % 10 ) ) );

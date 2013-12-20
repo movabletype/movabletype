@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1300,7 +1300,7 @@ sub preview {
         # If MT is configured to do 'PreviewInNewWindow', MT will open preview
         # screen on the new window/tab.
         if ( $app->config('PreviewInNewWindow') ) {
-            return $app->redirect( $preview_url );
+            return $app->redirect($preview_url);
         }
     }
     else {

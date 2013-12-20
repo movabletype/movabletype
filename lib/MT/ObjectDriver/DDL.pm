@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -292,8 +292,8 @@ sub index_table_sql {
             next if $pk && $name eq $pk;
             next
                 if 'HASH' eq ref $indexes->{$name}
-                    && $indexes->{$name}
-                    ->{ms_clustered}; # This index is only for Clustered index on SQLAzure
+                && $indexes->{$name}->{ms_clustered}
+                ;    # This index is only for Clustered index on SQLAzure
             push @stmts, $ddl->index_column_sql( $class, $name );
         }
     }
@@ -406,8 +406,8 @@ sub column_sql {
         : ref $class->properties->{primary_key} ? q{}
         :                                         ' PRIMARY KEY';
     return
-          $field_prefix . '_' 
-        . $name . ' ' 
+          $field_prefix . '_'
+        . $name . ' '
         . $type
         . $nullable
         . $default

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -162,9 +162,7 @@ sub upgrade_functions {
                     $_[0]->file_template(
                         $default_template{ $_[0]->archive_type } )
                         if !defined $_[0]->file_template
-                            && exists(
-                                $default_template{ $_[0]->archive_type }
-                            );
+                        && exists( $default_template{ $_[0]->archive_type } );
                 },
             },
         },
@@ -210,8 +208,8 @@ sub upgrade_functions {
                     if ( $user->type == MT::Author::AUTHOR() ) {
                         return 1
                             if $App
-                                && UNIVERSAL::isa( $App, 'MT::App' )
-                                && ( $user->id == $App->user->id );
+                            && UNIVERSAL::isa( $App, 'MT::App' )
+                            && ( $user->id == $App->user->id );
                     }
                     return 0;
                 },
@@ -587,10 +585,10 @@ sub migrate_system_privileges {
         push @perms, 'administer' if $author->column('is_superuser');
         push @perms, 'create_blog'
             if $author->column('can_create_blog')
-                || $author->column('is_superuser');
+            || $author->column('is_superuser');
         push @perms, 'view_log'
             if $author->column('can_view_log')
-                || $author->column('is_superuser');
+            || $author->column('is_superuser');
         push @perms, 'manage_plugins' if $author->column('is_superuser');
         if (@perms) {
             my $perm = MT::Permission->load(
@@ -951,7 +949,7 @@ sub core_upgrade_meta {
 TYPE: while ( my ( $registry_type, $reg_class ) = each %$types ) {
         next TYPE
             if $registry_type eq 'plugin'
-                && ref $reg_class;    # plugin reference
+            && ref $reg_class;    # plugin reference
 
         my $class = MT->model($registry_type);
         next TYPE if !$class->has_meta();    # nothing to upgrade
@@ -1373,8 +1371,8 @@ sub core_update_password_recover_template {
         { type => 'email', identifier => 'recover-password' } );
     for my $tmpl (@tmpls) {
         my $backup = $tmpl->clone;
-        delete $backup->{column_values}
-            ->{id};    # make sure we don't overwrite original
+        delete $backup->{column_values}->{id}
+            ;    # make sure we don't overwrite original
         delete $backup->{changed_cols}->{id};
         $backup->name(
             $backup->name . ' (Backup during upgrade to version 4.24)' );

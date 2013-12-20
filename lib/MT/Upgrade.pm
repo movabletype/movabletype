@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -820,8 +820,7 @@ sub run_statements {
             )
         );
         eval {
-            foreach my $stmt (@stmts)
-            {
+            foreach my $stmt (@stmts) {
                 if ( ref $stmt eq 'CODE' ) {
                     $stmt->() if !$DryRun;
                 }

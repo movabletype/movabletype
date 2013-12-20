@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -121,8 +121,8 @@ sub upgrade_functions {
                     if ( $user->type == MT::Author::AUTHOR() ) {
                         return 1
                             if $App
-                                && UNIVERSAL::isa( $App, 'MT::App' )
-                                && ( $user->id == $App->user->id );
+                            && UNIVERSAL::isa( $App, 'MT::App' )
+                            && ( $user->id == $App->user->id );
                     }
                     return 0;
                 },
@@ -716,7 +716,7 @@ sub _v5_generate_websites_place_blogs {
                 my $part = $blogs_dirs[0]->[$i];
                 last
                     unless scalar(@blogs_dirs) == grep { $part eq $_->[$i] }
-                        @blogs_dirs;
+                    @blogs_dirs;
                 push @built_path, $part;
             }
             unless ( grep length($_), @built_path ) {

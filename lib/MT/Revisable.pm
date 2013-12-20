@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -188,8 +188,8 @@ sub gather_changed_cols {
         next if $orig && $obj_col eq $orig_col;
         next
             if $orig
-                && exists $date_cols{$col}
-                && $orig_col eq MT::Object::_db2ts($obj_col);
+            && exists $date_cols{$col}
+            && $orig_col eq MT::Object::_db2ts($obj_col);
 
         push @changed_cols, $col;
     }

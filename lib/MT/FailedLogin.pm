@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -38,7 +38,7 @@ sub cleanup {
 
     return
         if !$app->config->IPLockoutLimit
-            && !$app->config->UserLockoutLimit;
+        && !$app->config->UserLockoutLimit;
 
     my $ip_interval     = $app->config->IPLockoutInterval;
     my $author_interval = $app->config->UserLockoutInterval;

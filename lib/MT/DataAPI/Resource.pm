@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -130,7 +130,7 @@ sub resource {
                         ->registry( 'applications', 'data_api', 'resources',
                         $_->{key}, $k );
                     $reg ? @$reg : ();
-                    } @{ $res->{aliases} }
+                } @{ $res->{aliases} }
             ];
         }
 
@@ -514,7 +514,8 @@ sub to_object {
         else {
             $o->error(
                 MT->translate(
-                    'Cannot parse "[_1]" as an ISO 8601 datetime', $o->$name
+                    'Cannot parse "[_1]" as an ISO 8601 datetime',
+                    $o->$name
                 )
             );
         }

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1284,7 +1284,7 @@ sub _hdlr_entry_nextprev {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $terms = { status => MT::Entry::RELEASE() };
-    $terms->{by_author}   = 1 if $args->{by_author};
+    $terms->{by_author} = 1 if $args->{by_author};
     $terms->{by_category} = 1 if $args->{by_category} || $args->{by_folder};
     my $entry = $e->$meth($terms);
     my $res   = '';

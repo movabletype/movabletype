@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -657,7 +657,7 @@ sub _sync_from_disk {
     my ( $size, $mtime ) = ( stat _ )[ 7, 9 ];
     return
         if $size == $tmpl->linked_file_size
-            && $mtime == $tmpl->linked_file_mtime;
+        && $mtime == $tmpl->linked_file_mtime;
 
 # Use rw handle due to avoid that anyone do open unwritable file.
 # ( -w file test operator can't detect windows ACL condition, so just try to open. )
@@ -715,7 +715,8 @@ sub _sync_to_disk {
         ## Untaint. We assume that the user knows what he/she is doing,
         ## and allow anything.
         ($lfile) = $lfile =~ /(.+)/s;
-        open my $fh, '>', $lfile
+        open my $fh, '>',
+            $lfile
             or return $tmpl->error(
             MT->translate(
                 "Opening linked file '[_1]' failed: [_2]",

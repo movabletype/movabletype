@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -771,7 +771,7 @@ sub set_password {
 
         # Can use SHA512
         $crypt_sha
-            = '$6$' 
+            = '$6$'
             . $salt . '$'
             . Digest::SHA::sha512_base64( $salt . $pass );
     }
@@ -779,7 +779,7 @@ sub set_password {
 
         # Use SHA-1 algorism
         $crypt_sha
-            = '{SHA}' 
+            = '{SHA}'
             . $salt . '$'
             . MT::Util::perl_sha1_digest_hex( $salt . $pass );
     }
@@ -866,8 +866,8 @@ sub commenter_status {
     }
     return APPROVED
         if MT->config->SingleCommunity
-            && ( AUTHOR() == $this->type )
-            && $this->is_active();
+        && ( AUTHOR() == $this->type )
+        && $this->is_active();
     return PENDING;
 }
 
@@ -1483,8 +1483,8 @@ sub userpic_url {
     return if !$asset;
 
     my @info
-        = $asset->thumbnail_url( $author->userpic_thumbnail_options(), %param,
-        );
+        = $asset->thumbnail_url( $author->userpic_thumbnail_options(),
+        %param, );
     if ( ( $info[0] || '' ) !~ m!^https?://! ) {
         my $static_host = MT->instance->static_path;
         if ( $static_host =~ m!^https?://! ) {

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -195,7 +195,7 @@ sub _send_mt_smtp {
     my $pass      = $mgr->SMTPPassword;
     my $localhost = hostname() || 'localhost';
     my $port
-        = $mgr->SMTPPort ? $mgr->SMTPPort
+        = $mgr->SMTPPort          ? $mgr->SMTPPort
         : $mgr->SMTPAuth eq 'ssl' ? 465
         :                           25;
     my ( $auth, $tls, $ssl );

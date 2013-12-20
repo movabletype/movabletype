@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -150,8 +150,7 @@ sub _hdlr_calendar {
     my $days_in_month = days_in( $m, $y );
     my $pad_start = ( wday_from_ts( $y, $m, 1 ) + $start_with_offset ) % 7;
     my $pad_end
-        = 6
-        - (
+        = 6 - (
         ( wday_from_ts( $y, $m, $days_in_month ) + $start_with_offset ) % 7 );
     my $iter = MT::Entry->load_iter(
         {   blog_id     => $blog_id,

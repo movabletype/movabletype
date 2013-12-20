@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -135,7 +135,7 @@ sub can_view {
             require MT::Entry;
             my $entry = MT::Entry->load( $tb->entry_id );
             return (
-                !$entry 
+                !$entry
                     || ( $entry->author_id == $app->user->id
                     && $app->can_do('open_own_entry_trackback_edit_screen') )
                     || $perms->can_do('open_all_trackback_edit_screen')
@@ -202,8 +202,8 @@ sub can_delete {
         # publish_post allows entry author to delete comment.
         return 1
             if $perms->can_do('delete_all_trackbacks')
-                || (   $perms->can_edit_entry( $entry, $author, 1 )
-                    && $perms->can_do('delete_own_entry_trackback') );
+            || ( $perms->can_edit_entry( $entry, $author, 1 )
+            && $perms->can_do('delete_own_entry_trackback') );
         return 0
             if $obj->visible;   # otherwise, visible comment can't be deleted.
         return $perms->can_edit_entry( $entry, $author )
@@ -234,8 +234,8 @@ PERMCHECK: {
             my $entry = MT::Entry->load( $tb->entry_id );
             last PERMCHECK
                 if $entry
-                    && $entry->author_id == $app->user->id
-                    && $app->can_do('handle_junk_for_own_entry_trackback');
+                && $entry->author_id == $app->user->id
+                && $app->can_do('handle_junk_for_own_entry_trackback');
         }
         elsif ( $tb->category_id ) {
             require MT::Category;

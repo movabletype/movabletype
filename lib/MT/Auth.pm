@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -101,7 +101,7 @@ sub task_synchronize {
     # This task method is only invoked if ExternalUserManagement is enabled.
     return
         unless MT->config->ExternalUserManagement
-            || MT->config->ExternalGroupManagement;
+        || MT->config->ExternalGroupManagement;
     return $obj->synchronize(@_);
 }
 

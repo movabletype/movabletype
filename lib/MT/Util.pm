@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -88,7 +88,7 @@ sub iso2ts {
     my ( $blog, $iso ) = @_;
     return undef
         unless $iso
-            =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/;
+        =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/;
     my ( $y, $mo, $d, $h, $m, $s, $offset )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
     if ( $offset && !MT->config->IgnoreISOTimezones ) {
@@ -1435,14 +1435,14 @@ sub discover_tb {
                 my ( $data, $res, $po ) = @_;
                 die
                     unless $c ne ''
-                        or $res->header('Content-Type') =~ m!^text/!;
+                    or $res->header('Content-Type') =~ m!^text/!;
                 $c .= $data;
             },
             16384
         );
         return unless $res->is_success;
     }
-    ( my $url_no_anchor = $url )           =~ s/#.*$//;
+    ( my $url_no_anchor = $url ) =~ s/#.*$//;
     ( my $url_no_host   = $url_no_anchor ) =~ s!^https?://.*/!!i;
     my (@items);
     while ( $c =~ m!(<rdf:RDF.*?</rdf:RDF>)!sg ) {
@@ -1453,13 +1453,13 @@ sub discover_tb {
         $perm_url_no_host =~ s/#.*$//;
         next
             unless $find_all
-                || $perm_url         eq $url
-                || $perm_url         eq $url_no_anchor
-                || $perm_url_no_host eq $url_no_host;
+            || $perm_url eq $url
+            || $perm_url eq $url_no_anchor
+            || $perm_url_no_host eq $url_no_host;
         ( my $inner = $rdf ) =~ s!^.*?<rdf:Description!!s;
         my $item = { permalink => $perm_url };
 
-        while ( $inner =~ /([\w:]+)="([^"]*)"/gs ) {            #"
+        while ( $inner =~ /([\w:]+)="([^"]*)"/gs ) {    #"
             $item->{$1} = $2;
         }
         $item->{ping_url} = $item->{'trackback:ping'};
@@ -2090,9 +2090,8 @@ sub start_background_task {
             my ( $a, $b, $c, $d, $e ) = @A;
             for ( 0 .. 79 ) {
                 $t = M(
-                      ( $F->( int( $_ / 20 ), $a, $b, $c, $d ) ) 
-                    + $e 
-                        + $W[$_]
+                      ( $F->( int( $_ / 20 ), $a, $b, $c, $d ) )
+                    + $e + $W[$_]
                         + $K[ $_ / 20 ]
                         + L $a,
                     5
@@ -2826,8 +2825,7 @@ sub clear_site_stats_widget_cache {
         my $not_fast_cgi = 0;
         $not_fast_cgi ||= exists $ENV{$_}
             for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
-        $is_fast_cgi
-            = defined $param ? $param : ( !$not_fast_cgi );
+        $is_fast_cgi = defined $param ? $param : ( !$not_fast_cgi );
         if ($is_fast_cgi) {
             eval 'require CGI::Fast;';
             $is_fast_cgi = 0 if $@;
