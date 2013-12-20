@@ -352,7 +352,11 @@ sub start_element {
                             next
                                 if ( 'vclob' eq $metacolumns{$metacol} )
                                 || ( 'vblob' eq $metacolumns{$metacol} );
-                            $obj->$metacol( $column_data{$metacol} );
+                            $obj->$metacol(
+                                $metacolumns{$metacol} =~ /^vchar/
+                                ? _decode( $column_data{$metacol} )
+                                : $column_data{$metacol}
+                            );
                         }
 
                         # Restore modulesets
