@@ -77,6 +77,7 @@ sub core_backup_instructions {
         'ts_funcmap'    => { 'skip' => 1 },
         'touch'         => { 'skip' => 1 },
         'failedlogin'   => { 'skip' => 1 },
+        'accesstoken'   => { 'skip' => 1 },
     };
 }
 
