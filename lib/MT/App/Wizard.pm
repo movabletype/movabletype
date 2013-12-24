@@ -993,6 +993,17 @@ sub optional {
     $param{mail_loop}                        = $transfer;
     $param{config}                           = $app->serialize_config(%param);
 
+    # bugid:111277
+    # Performance improvement of sending test mail on Windows environment.
+    if ( $^O eq 'MSWin32' ) {
+        eval {
+            require Net::SSLeay;
+            Net::SSLeay::RAND_poll();
+            no warnings 'redefine';
+            *Net::SSLeay::RAND_poll = sub () {1};
+        };
+    }
+
     require MT::Mail;
     $param{has_net_smtp}      = MT::Mail->can_use_smtp         ? 1 : 0;
     $param{has_net_smtp_auth} = MT::Mail->can_use_smtpauth     ? 1 : 0;
