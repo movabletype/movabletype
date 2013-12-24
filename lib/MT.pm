@@ -1037,8 +1037,8 @@ sub get_timer {
         if ( MT->config('PerformanceLogging') ) {
             my $uri;
             if ( $mt->isa('MT::App') ) {
-                local $mt->{qw(__path __mt_path)};
-                delete $mt->{qw(__path __mt_path)};
+                local @$mt{qw(__path __mt_path)};
+                delete @$mt{qw(__path __mt_path)};
 
                 local $mt->{is_admin}
                     = exists( $mt->{is_admin} )
