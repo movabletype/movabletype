@@ -578,6 +578,17 @@ sub start {
             $key, $pkg->{link}
             ];
     }
+
+# bugid: 111277
+# Performance improvement of 'Requirements Check' screen on Windows environment.
+    if ( $^O eq 'MSWin32' ) {
+        eval {
+            require Net::SSLeay;
+            no warnings;
+            *Net::SSLeay::RAND_poll = sub () {1};
+        };
+    }
+
     my ($needed) = $app->module_check( \@REQ );
     if (@$needed) {
         $param{package_loop} = $needed;

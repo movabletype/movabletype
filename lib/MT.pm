@@ -1242,11 +1242,12 @@ sub init {
     $mt->run_callbacks( 'post_init', $mt, \%param );
 
     if ( $^O eq 'MSWin32' ) {
-        my $is_wizard = UNIVERSAL::isa( $mt, 'MT::App::Wizard' );
 
 # bugid:111222
 # Disable IPv6 in Net::LDAP because LDAP authentication does not work on Windows.
-        if ( $mt->config->AuthenticationModule eq 'LDAP' || $is_wizard ) {
+        if ( $mt->config->AuthenticationModule eq 'LDAP'
+            || UNIVERSAL::isa( $mt, 'MT::App::Wizard' ) )
+        {
             eval <<'__END_OF_EVAL__';
             {
                 package Net::LDAP;
@@ -1257,7 +1258,7 @@ __END_OF_EVAL__
         }
 
         require MT::Util;
-        if ( MT::Util::check_fast_cgi() || $is_wizard ) {
+        if ( MT::Util::check_fast_cgi() ) {
 
             eval {
 
@@ -1287,7 +1288,7 @@ __END_OF_EVAL__
                 );
             };
 
-            if ( $mt->config->SMTPAuth eq 'starttls' || $is_wizard ) {
+            if ( $mt->config->SMTPAuth eq 'starttls' ) {
                 eval { require Net::SMTP::TLS; Net::SMTP::TLS->new };
             }
         }
