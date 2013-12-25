@@ -54,6 +54,7 @@ themes/broken_blog_theme
 #?package=MT ^lib/MT/FileMgr/FTP.pm
 #?package=MT ^lib/MT/FileMgr/FTPS.pm
 #?package=MT ^addons/Sync.pack
+#?package=MT ^mt-static/addons/Sync.pack
 
 #?package=MTOS ^addons
 #?package=MTOS ^mt-cp.cgi
@@ -84,6 +85,7 @@ themes/broken_blog_theme
 #?package=MTOS ^mt-static/plugins/SmartphoneOption
 #?package=MTOS ^mt-sp.cgi
 #?package=MTOS ^addons/Sync.pack
+#?package=MTOS ^mt-static/addons/Sync.pack
 
 #?package=MTCOM ^COPYING
 #?package=MTCOM ^COPYRIGHT
@@ -112,6 +114,7 @@ themes/broken_blog_theme
 #?package=MTCOM ^lib/MT/FileMgr/FTP.pm
 #?package=MTCOM ^lib/MT/FileMgr/FTPS.pm
 #?package=MTCOM ^addons/Sync.pack
+#?package=MTCOM ^mt-static/addons/Sync.pack
 
 #?package=MTA ^COPYING
 #?package=MTA ^COPYRIGHT
