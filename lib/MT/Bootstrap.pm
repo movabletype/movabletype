@@ -188,6 +188,13 @@ sub import {
         };
         if ( my $err = $@ ) {
             if ( !$app && $err =~ m/Missing configuration file/ ) {
+
+                # Preserve before overwriting.
+                my $mt_home = $ENV{MT_HOME};
+
+                # If using FastCGI, populate environment hash.
+                new CGI::Fast if $ENV{FAST_CGI};
+
                 my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
                 $host =~ s/:\d+//;
                 my $port = $ENV{SERVER_PORT};
@@ -196,13 +203,20 @@ sub import {
                     my $script = $1;
                     my $ext    = $2;
 
-                    if (-f File::Spec->catfile(
-                            $ENV{MT_HOME}, "mt-wizard.$ext"
-                        )
-                        )
+                    my $file;
+                    if (-f File::Spec->catfile( $mt_home, "mt-wizard.$ext" ) )
                     {
+                        $file = '/mt-wizard.' . $ext;
+                    }
+                    elsif (
+                        -f File::Spec->catfile( $mt_home, 'mt-wizard.cgi' ) )
+                    {
+                        $file = '/mt-wizard.cgi';    # default file name
+                    }
+
+                    if ($file) {
                         $uri =~ s/\Q$script\E//;
-                        $uri .= '/mt-wizard.' . $ext;
+                        $uri .= $file;
 
                         my $prot = $port == 443 ? 'https' : 'http';
                         my $cgipath = "$prot://$host";
