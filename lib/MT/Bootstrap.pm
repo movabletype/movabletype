@@ -154,9 +154,16 @@ sub import {
                     else {
                         require MT::Touch;
                         require MT::Util;
-                        if ( my $touched
-                            = MT::Touch->latest_touch( 0, 'config' ) )
-                        {
+
+                        # Avoid an error when using SQL Server.
+                        my $latest_touch
+                            = sub { MT::Touch->latest_touch( 0, 'config' ) };
+                        my $touched
+                            = MT->config->ObjectDriver =~ /MSSQLServer/i
+                            ? eval { $latest_touch->() }
+                            : $latest_touch->();
+
+                        if ($touched) {
 
                             # Should get UNIX epoch with no_offset flag,
                             # since MT::Touch uses gmtime always.
