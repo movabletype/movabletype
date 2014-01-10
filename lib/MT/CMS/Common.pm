@@ -16,13 +16,16 @@ sub save {
     my $id              = $q->param('id');
     my @types_for_event = ($type);
 
+    my $class = $app->model($type)
+        or return $app->errtrans( "Invalid type [_1]", $type );
+
+    return $app->errtrans("Invalid request.")
+        unless $type;
+
     if ( $id && $type eq 'website' ) {
         $type = 'blog';
         unshift @types_for_event, $type;
     }
-
-    return $app->errtrans("Invalid request.")
-        unless $type;
 
     # being a general-purpose method, lets look for a mode handler
     # that is specifically for editing this type. if we find it,
@@ -125,8 +128,6 @@ sub save {
         }
     }
 
-    my $class = $app->model($type)
-        or return $app->errtrans( "Invalid type [_1]", $type );
     my ($obj);
     if ($id) {
         $obj = $class->load($id)
@@ -592,13 +593,16 @@ sub edit {
     my $id              = $q->param('id');
     my @types_for_event = ($type);
 
+    return $app->errtrans("Invalid request.")
+        unless $type;
+
+    my $class = $app->model($type)
+        or return $app->errtrans( "Invalid type [_1]", $type );
+
     if ( $id && $type eq 'website' ) {
         $type = 'blog';
         unshift @types_for_event, $type;
     }
-
-    return $app->errtrans("Invalid request.")
-        unless $type;
 
     # being a general-purpose method, lets look for a mode handler
     # that is specifically for editing this type. if we find it,
@@ -616,7 +620,6 @@ sub edit {
 
     my %param = eval { $_[0] ? %{ $_[0] } : (); };
     die Carp::longmess if $@;
-    my $class = $app->model($type) or return;
     my $blog_id = $q->param('blog_id');
 
     if ( defined($blog_id) && $blog_id ) {
