@@ -416,7 +416,7 @@ sub count {
     $count = $class->count( $terms, $args );
     return $app->error( $class->errstr ) unless defined $count;
 
-    # Limit $count by $app->param('limit')
+    # Limit $count by $app->param('count') or $app->param('limit')
     my $limit = $args->{limit} || '';
     if ( $limit =~ /\d+/ && $limit > 0 ) {
         if ( $count > $limit ) {
