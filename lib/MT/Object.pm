@@ -1126,6 +1126,42 @@ sub load_iter {
     return scalar $class->search( $terms, $args );
 }
 
+sub load_arrayref {
+    my $class = shift;
+    my ( $terms, $args ) = @_;
+    my $driver = $class->driver;
+
+    if ($Data::ObjectDriver::RESTRICT_IO) {
+        use Data::Dumper;
+        die "Attempted DBI I/O while in restricted mode: fetch() "
+            . Dumper( $terms, $args );
+    }
+
+    my ( $sql, $bind, $stmt )
+        = $driver->prepare_fetch( $class, $terms, $args );
+
+    my $dbh = $driver->r_handle( $class->properties->{db} );
+    $driver->start_query( $sql, $stmt->{bind} );
+
+    my $sth
+        = $args->{no_cached_prepare}
+        ? $dbh->prepare($sql)
+        : $driver->_prepare_cached( $dbh, $sql );
+    $sth->execute( @{ $stmt->{bind} } );
+
+    my $i      = 0;
+    my $map    = $stmt->select_map;
+    my $values = $sth->fetchall_arrayref;
+    $sth->finish;
+    $driver->end_query($sth);
+
+    if ( !$driver->dbd->offset_implemented && $args->{offset} ) {
+        splice @$values, 0, $args->{offset};
+    }
+
+    wantarray ? @$values : $values->[0];
+}
+
 ## Callbacks
 
 sub _assign_audited_fields {
@@ -2174,6 +2210,8 @@ L</"Note on object locking">.
 
 =item * $obj->load()
 
+=item * $obj->load_arrayref()
+
 =item * $obj->load_iter()
 
 =back
@@ -2185,6 +2223,10 @@ of object, etc.
 
 In addition, you can load objects either into an array (I<load>), or by using
 an iterator to step through the objects (I<load_iter>).
+
+Moreover, you can load objects as references of ARRAY using I<load_arrayref>.
+Since I<load_arrayref> does not pass initialization process of an object, you can load object fastly.
+You can use I<load_arrayref> in the case which acquires only ID.
 
 I<load> has the following general form:
 
@@ -2199,6 +2241,12 @@ I<load_iter> has the following general form:
     my $iter = MT::Foo->load_iter(\%terms, \%arguments);
 
     my $iter = MT::Foo->load_iter(\@terms, \%arguments);
+
+I<load_arrayref> has the following general form:
+
+    my @hashs = MT::Foo->load_arrayref(\%terms, \%arguments);
+
+    my @hashs = MT::Foo->load_arrayref(\@terms, \%arguments);
 
 Both methods share the same parameters; the only difference is the manner in
 which they return the matching objects.
