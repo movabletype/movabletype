@@ -318,6 +318,11 @@ sub load_objects {
         $args->{limit}  = $limit  if $limit;
         $args->{offset} = $offset if $offset;
     }
+    my $load = sub {
+        ( $options{arrayref} && !$has_post_process )
+            ? $class->load_arrayref(@_)
+            : $class->load(@_);
+    };
 
     ## It's time to load now.
     my @objs;
@@ -328,7 +333,7 @@ sub load_objects {
         if ( $sort_result && 'ARRAY' eq ref $sort_result ) {
             return if !scalar @$sort_result;
             if ( !ref $sort_result->[0] ) {
-                @objs = $class->load( { id => $sort_result } )
+                @objs = $load->( { id => $sort_result } )
                     or return $self->error( $class->errstr );
             }
             else {
@@ -336,12 +341,12 @@ sub load_objects {
             }
         }
         else {
-            @objs = $class->load( $terms, $args )
+            @objs = $load->( $terms, $args )
                 or return $self->error( $class->errstr );
         }
     }
     else {
-        @objs = $class->load( $terms, $args )
+        @objs = $load->( $terms, $args )
             or return $self->error( $class->errstr );
     }
 
@@ -369,6 +374,21 @@ sub load_objects {
             ? scalar @objs - 1
             : $limit + $offset - 1;
         @objs = @objs[ $offset .. $max ];
+    }
+
+    if ( $options{arrayref} && $has_post_process ) {
+        my $stmt = $class->driver->prepare_statement( $class, $terms, $args );
+
+        my @cols;
+        my $map = $stmt->select_map;
+        for my $col ( @{ $stmt->select } ) {
+            push @cols, $map->{$col};
+        }
+
+        @objs = map {
+            my $values = $_->column_values;
+            [ map { $values->{$_} } @cols ];
+        } @objs;
     }
 
     return \@objs;
@@ -698,6 +718,12 @@ C<N> objects.
 
 To be used together with I<limit>; rather than returning the first C<N>
 matches (the default), return matches C<M> through C<N + M>.
+
+=item *  arrayref => "0|1"
+
+If C<0> is given, an returned object will be a MT::Object.
+If C<1> is given, an returned object will be a reference of ARRAY.
+The default value is C<0>,
 
 =back
 
