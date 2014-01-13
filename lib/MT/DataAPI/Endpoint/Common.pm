@@ -196,10 +196,6 @@ sub filtered_list {
         = !$blog         ? 'system'
         : $blog->is_blog ? 'blog'
         :                  'website';
-    my $blog_ids
-        = !$blog         ? undef
-        : $blog->is_blog ? [$blog_id]
-        :                  [ $blog->id, map { $_->id } @{ $blog->blogs } ];
     my $resource_data = MT::DataAPI::Resource->resource($ds);
 
     my $setting = MT->registry( listing_screens => $ds ) || {};
@@ -237,22 +233,15 @@ sub filtered_list {
                 if defined $list_permission->{inherit};
             $list_permission = $list_permission->{permit_action};
         }
-        my $allowed  = 0;
-        my @act      = split /\s*,\s*/, $list_permission;
-        my $blog_ids = undef;
-        if ($blog_id) {
-            push @$blog_ids, $blog_id;
-            if ( $scope eq 'website' && $inherit_blogs ) {
-                push @$blog_ids, $_->id foreach @{ $app->blog->blogs() };
-            }
-        }
+        my $allowed = 0;
+        my @act = split /\s*,\s*/, $list_permission;
         foreach my $p (@act) {
             $allowed = 1,
                 last
                 if $app->user->can_do(
                 $p,
                 at_least_one => 1,
-                ( $blog_ids ? ( blog_id => $blog_ids ) : () )
+                ( $blog_id ? ( blog_id => $blog_id ) : () )
                 );
         }
         return $app->permission_denied()
@@ -371,8 +360,7 @@ sub filtered_list {
     my @blog_id_term = (
          !$blog_id              ? ()
         : $scope_mode eq 'none' ? ()
-        : $scope_mode eq 'this' ? ( blog_id => $blog_id )
-        :                         ( blog_id => $blog_ids )
+        :                         ( blog_id => $blog_id )
     );
 
     my %load_options = (
@@ -385,17 +373,15 @@ sub filtered_list {
         scope      => $scope,
         blog       => $blog,
         blog_id    => $blog_id,
-        blog_ids   => $blog_ids,
         %$options,
     );
 
     my %count_options = (
-        terms    => { %$terms, @blog_id_term },
-        args     => {%$args},
-        scope    => $scope,
-        blog     => $blog,
-        blog_id  => $blog_id,
-        blog_ids => $blog_ids,
+        terms   => { %$terms, @blog_id_term },
+        args    => {%$args},
+        scope   => $scope,
+        blog    => $blog,
+        blog_id => $blog_id,
         %$options,
     );
 
