@@ -14,7 +14,8 @@ use MT::DataAPI::Resource;
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    my $user = get_target_user(@_)
+    my $model = 'permission';
+    my $user  = get_target_user(@_)
         or return;
     my $current_user = $app->user;
 
@@ -74,15 +75,16 @@ sub list {
     }
     else {
         $res
-            = filtered_list( $app, $endpoint, 'permission',
+            = filtered_list( $app, $endpoint, $model,
             { permissions => { not => '' } },
             undef, { user => $user } )
             or return;
     }
 
     +{  totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+        items        => MT::DataAPI::Resource::Type::ObjectList->new(
+            $res->{objects}, { model => $model }
+        ),
     };
 }
 

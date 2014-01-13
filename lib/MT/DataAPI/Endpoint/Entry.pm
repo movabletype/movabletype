@@ -115,11 +115,13 @@ sub build_post_save_sub {
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    my $res = filtered_list( $app, $endpoint, 'entry' ) or return;
+    my $model = 'entry';
+    my $res = filtered_list( $app, $endpoint, $model ) or return;
 
     +{  totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+        items        => MT::DataAPI::Resource::Type::ObjectList->new(
+            $res->{objects}, { model => $model }
+        ),
     };
 }
 

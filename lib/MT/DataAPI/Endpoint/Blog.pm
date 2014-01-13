@@ -16,14 +16,16 @@ sub list {
     my $user = get_target_user(@_)
         or return;
 
-    my $res = filtered_list(
-        $app, $endpoint, 'blog', { class => '*' },
+    my $model = 'blog';
+    my $res   = filtered_list(
+        $app, $endpoint, $model, { class => '*' },
         undef, { user => $user }
     ) or return;
 
     +{  totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+        items        => MT::DataAPI::Resource::Type::ObjectList->new(
+            $res->{objects}, { model => $model }
+        ),
     };
 }
 

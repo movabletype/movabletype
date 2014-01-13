@@ -15,11 +15,13 @@ use MT::DataAPI::Resource;
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    my $res = filtered_list( $app, $endpoint, 'ping' ) or return;
+    my $model = 'ping';
+    my $res = filtered_list( $app, $endpoint, $model ) or return;
 
     +{  totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+        items        => MT::DataAPI::Resource::Type::ObjectList->new(
+            $res->{objects}, { model => $model }
+        ),
     };
 }
 
@@ -29,10 +31,11 @@ sub list_for_entry {
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
-    my $res = filtered_list(
+    my $model = 'ping';
+    my $res   = filtered_list(
         $app,
         $endpoint,
-        'ping', undef,
+        $model, undef,
         {   joins => [
                 MT->model('trackback')->join_on(
                     undef,
@@ -45,8 +48,9 @@ sub list_for_entry {
     );
 
     +{  totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+        items        => MT::DataAPI::Resource::Type::ObjectList->new(
+            $res->{objects}, { model => $model }
+        ),
     };
 }
 

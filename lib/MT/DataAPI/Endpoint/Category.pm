@@ -15,11 +15,13 @@ use MT::DataAPI::Resource;
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    my $res = filtered_list( $app, $endpoint, 'category' ) or return;
+    my $model = 'category';
+    my $res = filtered_list( $app, $endpoint, $model ) or return;
 
     +{  totalResults => $res->{count},
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+        items        => MT::DataAPI::Resource::Type::ObjectList->new(
+            $res->{objects}, { model => $model }
+        ),
     };
 }
 

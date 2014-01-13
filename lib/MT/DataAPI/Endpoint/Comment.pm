@@ -16,11 +16,13 @@ use MT::CMS::Comment;
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    my $res = filtered_list( $app, $endpoint, 'comment' ) or return;
+    my $model = 'comment';
+    my $res = filtered_list( $app, $endpoint, $model ) or return;
 
     +{  totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+        items        => MT::DataAPI::Resource::Type::ObjectList->new(
+            $res->{objects}, { model => $model }
+        ),
     };
 }
 
@@ -30,12 +32,15 @@ sub list_for_entry {
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
-    my $res = filtered_list( $app, $endpoint, 'comment',
+    my $model = 'comment';
+    my $res
+        = filtered_list( $app, $endpoint, $model,
         { entry_id => $entry->id } );
 
     +{  totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+        items        => MT::DataAPI::Resource::Type::ObjectList->new(
+            $res->{objects}, { model => $model }
+        ),
     };
 }
 

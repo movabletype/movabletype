@@ -679,7 +679,10 @@ sub resource_object {
 sub use_resource_cache {
     my $app = shift;
     my ($datasource) = @_;
-    if ( UNIVERSAL::can( $datasource, 'datasource' ) ) {
+    if ( UNIVERSAL::can( $datasource, 'model' ) ) {
+        $datasource = $datasource->model;
+    }
+    elsif ( UNIVERSAL::can( $datasource, 'datasource' ) ) {
         $datasource = $datasource->datasource;
     }
 

@@ -338,6 +338,7 @@ sub from_object_with_cache {
     my ( $objs, $fields_specified ) = @_;
     my $app     = MT->instance;
     my $is_list = 1;
+    my $model;
 
     if ( UNIVERSAL::isa( $objs, 'MT::Object' ) ) {
         $is_list = 0;
@@ -346,7 +347,8 @@ sub from_object_with_cache {
     elsif (
         UNIVERSAL::isa( $objs, 'MT::DataAPI::Resource::Type::ObjectList' ) )
     {
-        $objs = $objs->content;
+        $model = $objs->model;
+        $objs  = $objs->content;
     }
     elsif ( UNIVERSAL::isa( $objs, 'MT::DataAPI::Resource::Type::Raw' ) ) {
         return $objs->content;
@@ -354,23 +356,27 @@ sub from_object_with_cache {
 
     return [] unless @$objs;
 
-    my $datasource   = $objs->[0]->datasource;
-    my $latest_touch = $app->model('touch')->load(
+    $model ||= $objs->[0]->datasource;
+    my $latest_touch = $app->model('touch')->load_arrayref(
         { $app->blog ? ( blog_id => [ 0, $app->blog->id ] ) : (), },
-        { sort => 'modified_on', direction => 'descend' }
+        {   fetchonly => ['modified_on'],
+            sort      => 'modified_on',
+            direction => 'descend'
+        }
     );
     my $driver = MT::Cache::Negotiate->new(
         ttl => (
             $latest_touch
             ? time()
-                - MT::Util::ts2epoch( undef, $latest_touch->modified_on, 1 )
+                - MT::Util::ts2epoch( undef,
+                MT::Object::_db2ts( $latest_touch->[0] ), 1 )
             : 0
         ),
         expirable => 1,
     );
     my @load_ids = ();
     my @results  = ();
-    my @keys     = map { $class->cache_key($_) } @$objs;
+    my @keys     = map { $class->cache_key( $model, $_ ) } @$objs;
     my $cached   = $driver->get_multi(@keys);
     my $serializer
         = MT::Serialize->new( MT->config->DataAPIResourceCacheSerializer );
@@ -379,22 +385,42 @@ sub from_object_with_cache {
     $cached = {} if $MT::DebugMode;
 
     for ( my $i = 0; $i < scalar @$objs; $i++ ) {
-        my $r  = $objs->[$i];
-        my $ck = $keys[$i];
+        my $res = $objs->[$i];
+        my $ck  = $keys[$i];
         if ( my $c = $cached->{$ck} ) {
             push @results, ${ $serializer->unserialize($c) };
         }
         else {
-            push @load_ids, [ $i, $ck, $r->id, $r ];
+            my $ref = ref $res;
+            push @load_ids,
+                [
+                $i,
+                $ck,
+                $ref eq 'HASH'    ? $res->{id}
+                : $ref eq 'ARRAY' ? $res->[0]
+                : $res->id,
+                $res
+                ];
         }
     }
 
     if (@load_ids) {
-        my @tmp = $app->model($datasource)
-            ->load( { id => [ map { $_->[2] } @load_ids ] } );
+        my $model = $app->model($model);
+        my %tmp = map { $_->id => $_; }
+            $model->load( { id => [ map { $_->[2] } @load_ids ] } );
         my @load_objs = map {
-            my $id_set = $_;
-            ( grep { $id_set->[2] == $_->id } @tmp )[0] || $id_set->[3];
+            my ( $id, $r ) = @$_[ 2, 3 ];
+            if ( $tmp{$id} ) {
+                $tmp{$id};
+            }
+            elsif ( ref $r eq 'HASH' ) {
+                my $o = $model->new;
+                $o->set_values($r);
+                $o;
+            }
+            else {
+                $r;
+            }
         } @load_ids;
 
         my $converteds
@@ -407,8 +433,7 @@ sub from_object_with_cache {
         }
     }
 
-    my $hashs
-        = $class->filter_cache( \@results, $objs->[0], $fields_specified );
+    my $hashs = $class->filter_cache( \@results, $model, $fields_specified );
 
     $is_list ? $hashs : $hashs->[0];
 }
@@ -450,14 +475,24 @@ sub filter_cache {
 
 sub cache_key {
     my $self = shift;
-    my ( $datasource, $id );
+    my ( $model, $id );
     if ( ref $_[0] ) {
-        ( $datasource, $id ) = ( $_[0]->datasource, $_[0]->id );
+        ( $model, $id ) = ( $_[0]->datasource, $_[0]->id );
     }
     else {
-        ( $datasource, $id ) = @_;
+        ( $model, $id ) = @_;
+        my $id_ref = ref $id;
+        if ( $id_ref eq 'HASH' ) {
+            $id = $id->{id};
+        }
+        elsif ( $id_ref eq 'ARRAY' ) {
+            $id = $id->[0];
+        }
+        elsif ($id_ref) {
+            $id = $id->id;
+        }
     }
-    'data_api_resource_' . $datasource . '_' . $id;
+    'data_api_resource_' . $model . '_' . $id;
 }
 
 sub expire_cache {
@@ -544,13 +579,17 @@ sub to_object {
 package MT::DataAPI::Resource::Type;
 
 sub new {
-    my $self = [ $_[1] ];
-    bless $self, $_[0];
+    my $class = shift;
+    my $self  = {
+        content => $_[0],
+        ( ref $_[1] ? %{ $_[1] } : () )
+    };
+    bless $self, $class;
     $self;
 }
 
 sub content {
-    $_[0]->[0];
+    $_[0]->{content};
 }
 
 package MT::DataAPI::Resource::Type::Raw;
@@ -561,8 +600,11 @@ package MT::DataAPI::Resource::Type::ObjectList;
 
 use base qw(MT::DataAPI::Resource::Type);
 
-sub datasource {
-    my $self    = shift;
+sub model {
+    my $self = shift;
+
+    return $self->{model} if $self->{model};
+
     my $content = $self->content;
     @$content ? $content->[0]->datasource : '';
 }

@@ -410,6 +410,7 @@ sub filtered_list {
         if ( $app->use_resource_cache($ds) ) {
             $load_options{args} ||= {};
             $load_options{args}{fetchonly} ||= ['id'];
+            $load_options{arrayref} = 1;
         }
 
         $objs = $filter->load_objects(%load_options);
