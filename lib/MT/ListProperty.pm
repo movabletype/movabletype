@@ -267,9 +267,13 @@ sub _scope_filter {
     return $hash{$scope};
 }
 
+our %list_properties = ();
 sub list_properties {
     my $pkg = shift;
     my $cls = shift;
+
+    return $list_properties{$cls} if $list_properties{$cls};
+
     my %props;
 
     my $local_props = MT->registry( 'list_properties', $cls );
@@ -293,7 +297,8 @@ sub list_properties {
             $props{$key} = $prop if $prop;
         }
     }
-    return \%props;
+
+    $list_properties{$cls} = \%props;
 }
 
 sub can_display {
