@@ -4784,7 +4784,7 @@ sub setup_filtered_ids {
         :                  [ $blog->id, map { $_->id } @{ $blog->blogs } ];
     my $terms = {};
     $terms->{blog_id} = $blog_ids if $blog;
-    my $args = {};
+    my $args = { fetchonly => ['id'], };
     my $opts = {
         terms    => $terms,
         args     => $args,
@@ -4792,13 +4792,19 @@ sub setup_filtered_ids {
         blog     => $blog,
         blog_id  => $blog_id,
         blog_ids => $blog_ids,
+        arrayref => 1,
     };
 
     MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds,
         $app, $filter, $opts, [] );
-    my $objs = $filter->load_objects(%$opts)
+    my $objs_data = $filter->load_objects(%$opts)
         or die $filter->errstr;
-    my %data = ( objects => [ map( [ $_->id ], @$objs ) ] );
+    my %data = ( objects => [@$objs_data] );
+
+    require MT::Object::Tie::Array::Lazy;
+    my $objs = MT::Object::Tie::Array::Lazy->create( $objs_data,
+        { model => $ds } );
+
     MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%data,
         $objs );
     $app->param( 'id', map( $_->[0], @{ $data{objects} } ) );
