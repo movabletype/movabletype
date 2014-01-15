@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -116,7 +116,7 @@ sub config_template {
         $scope = 'system';
     }
     my $r = $plugin->registry;
-    if ( my $tmpl 
+    if ( my $tmpl
            = $r->{"${scope}_config_template"}
         || $r->{"config_template"}
         || $plugin->{"${scope}_config_template"}

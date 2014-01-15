@@ -177,7 +177,7 @@
 				var n = ed.selection.getStart();
 
 				if (ignore_empty_child_nodes) {
-					while ((n.innerText || n.textContent).replace(/[\s\r\n]+/, '') == '' && n.tagName != 'LI' && n.parentNode) {
+					while ((n.innerText || n.textContent || '').replace(/[\s\r\n]+/, '') == '' && n.tagName != 'LI' && n.parentNode) {
 						n = n.parentNode;
 					}
 				}

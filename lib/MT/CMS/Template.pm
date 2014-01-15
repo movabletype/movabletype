@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1300,7 +1300,7 @@ sub preview {
         # If MT is configured to do 'PreviewInNewWindow', MT will open preview
         # screen on the new window/tab.
         if ( $app->config('PreviewInNewWindow') ) {
-            return $app->redirect( $preview_url );
+            return $app->redirect($preview_url);
         }
     }
     else {
@@ -3120,36 +3120,6 @@ sub delete_widget {
         $app->run_callbacks( 'cms_post_delete.template', $app, $obj );
     }
     $app->call_return;
-}
-
-sub restore_widgetmanagers {
-    my ( $cb, $objects, $deferred, $errors, $callback ) = @_;
-    my @keys = grep { $_ =~ /^MT::Template#/ } keys(%$objects);
-    foreach my $key (@keys) {
-        my $tmpl = $objects->{$key};
-        next unless 'widgetset' eq $tmpl->type;
-        my $modulesets = $tmpl->modulesets;
-        next unless $modulesets;
-        $callback->(
-            MT->translate( 'Restoring widget set [_1]... ', $tmpl->name ) );
-
-        my @tmpl_ids = split ',', $modulesets;
-        my @new_ids;
-        foreach my $id (@tmpl_ids) {
-            my $new_tmpl = $objects->{"MT::Template#$id"};
-            next unless $new_tmpl;
-            push @new_ids, $new_tmpl->id;
-        }
-        if (@new_ids) {
-            $tmpl->modulesets( join( ',', @new_ids ) );
-            $tmpl->save;
-            $callback->( MT->translate("Done.") . "\n" );
-        }
-        else {
-            $callback->( MT->translate("Failed.") . "\n" );
-        }
-    }
-    1;
 }
 
 {

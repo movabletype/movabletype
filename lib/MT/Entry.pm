@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -346,14 +346,15 @@ sub list_props {
                 ) unless $cat_id;
 
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('placement')->join_on(
                     undef,
                     {   category_id => $cat_id,
                         entry_id    => \'= entry_id',
                         blog_id     => $blog_id,
                     },
                     { unique => 1, },
-                );
+                    );
                 return;
             },
             args_via_param => sub {
@@ -514,7 +515,8 @@ sub list_props {
                 elsif ( 'end' eq $option ) {
                     $query = { like => "%$query" };
                 }
-                push @{ $db_args->{joins} }, MT->model('placement')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('placement')->join_on(
                     undef,
                     {   entry_id => \'= entry_id',
                         ( $blog_id ? ( blog_id => $blog_id ) : () ),
@@ -529,7 +531,7 @@ sub list_props {
                             { unique => 1, }
                         ),
                     },
-                );
+                    );
                 return;
             },
         },
@@ -676,8 +678,8 @@ sub list_props {
                 my $from   = $args->{from}   || undef;
                 my $to     = $args->{to}     || undef;
                 my $origin = $args->{origin} || undef;
-                $from   =~ s/\D//g;
-                $to     =~ s/\D//g;
+                $from =~ s/\D//g;
+                $to =~ s/\D//g;
                 $origin =~ s/\D//g;
                 $from .= '000000' if $from;
                 $to   .= '235959' if $to;
@@ -765,17 +767,18 @@ sub list_props {
                         ? MT::Author::ACTIVE()
                         : MT::Author::INACTIVE();
                     $db_args->{joins} ||= [];
-                    push @{ $db_args->{joins} }, MT->model('author')->join_on(
+                    push @{ $db_args->{joins} },
+                        MT->model('author')->join_on(
                         undef,
                         {   id     => \'= entry_author_id',
                             status => $status,
                         },
-                    );
+                        );
                 }
             },
         },
         current_context => { base => '__common.current_context', },
-        content => {
+        content         => {
             base    => '__virtual.content',
             fields  => [qw(title text text_more keywords excerpt basename)],
             display => 'none',
@@ -1510,7 +1513,7 @@ sub save {
         $entry->clear_cache();
 
         my $blog = $entry->blog;
-        my $at 
+        my $at
             = $blog->archive_type_preferred
             || $blog->archive_type
             || 'Individual';

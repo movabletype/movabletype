@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -479,8 +479,8 @@ sub cfg_feedback {
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
-    $q->param( '_type', 'blog' );
-    $q->param( 'id',    scalar $q->param('blog_id') );
+    $q->param( '_type', $app->blog ? $app->blog->class : 'blog' );
+    $q->param( 'id', scalar $q->param('blog_id') );
     $app->forward(
         "view",
         {   output       => 'cfg_feedback.tmpl',
@@ -577,6 +577,8 @@ sub cfg_registration {
     $param{new_roles} = \@roles;
     $param{new_created_user_role} = join( ',', @role_ids );
 
+    $param{is_website} = $blog->class eq 'website';
+
     $app->load_tmpl( 'cfg_registration.tmpl', \%param );
 }
 
@@ -608,8 +610,8 @@ sub cfg_web_services {
             };
     }
 
-    $q->param( '_type', 'blog' );
-    $q->param( 'id',    scalar $q->param('blog_id') );
+    $q->param( '_type', $app->blog ? $app->blog->class : 'blog' );
+    $q->param( 'id', scalar $q->param('blog_id') );
     $app->forward(
         "view",
         {   output           => 'cfg_web_services.tmpl',
@@ -1634,6 +1636,30 @@ sub pre_save {
     else {
 
        #$obj->is_dynamic(0) unless defined $app->{query}->param('is_dynamic');
+    }
+
+    # assumation: if the it is a blog and its site path is relative, then
+    # it is probably writeable.
+    if ( ( !$obj->id or ( $app->param('cfg_screen') || '' ) eq 'cfg_prefs' )
+        and ( $obj->class ne 'blog' or $obj->is_site_path_absolute() ) )
+    {
+        if ( !$obj->id and $obj->class eq 'blog' ) {
+            $obj->parent_id( $app->param('blog_id') );
+        }
+        my $site_path = $obj->site_path;
+        my $fmgr      = $obj->file_mgr;
+        unless ( $fmgr->exists($site_path) ) {
+            my @dirs = File::Spec->splitdir($site_path);
+            pop @dirs;
+            $site_path = File::Spec->catdir(@dirs);
+        }
+        return $app->errtrans(
+            "The '[_1]' provided below is not writable by the web server. Change the directory ownership or permissions and try again.",
+            $obj->class eq 'blog'
+            ? $app->translate('Blog Root')
+            : $app->translate('Website Root')
+            )
+            unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
     }
 
     if ( ( $obj->sanitize_spec || '' ) eq '1' ) {

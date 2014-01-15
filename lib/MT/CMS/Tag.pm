@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -597,8 +597,8 @@ sub build_tag_table {
     while ( my $tag = $iter->() ) {
         my $count = $pkg->tagged_count(
             $tag->id,
-            {   ( $blog_ids ? ( blog_id => $blog_ids ) : () ),
-                ( $pkg =~ m/asset/i ? ( class => '*' ) : () )
+            {   ( $blog_ids         ? ( blog_id => $blog_ids ) : () ),
+                ( $pkg =~ m/asset/i ? ( class   => '*' )       : () )
             }
         );
         $count ||= 0;

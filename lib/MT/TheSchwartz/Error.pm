@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,11 +16,13 @@ __PACKAGE__->install_properties(
             message    => 'string(255) not null',  # varchar(255) not null
             error_time => 'integer not null',      # integer unsigned not null
         },
-        datasource  => 'ts_error',
-        indexes     => {
+        datasource => 'ts_error',
+        indexes    => {
             jobid       => 1,
             error_time  => 1,
             funcid_time => { columns => [ 'funcid', 'error_time' ], },
+            clustered =>
+                { columns => [ 'jobid', 'funcid' ], ms_clustered => 1, },
         },
         defaults  => { funcid => 0, },
         cacheable => 0,

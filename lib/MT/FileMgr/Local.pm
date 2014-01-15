@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -38,7 +38,8 @@ sub get_data {
     my $is_handle = $fmgr->is_handle($from);
     if ( !$is_handle ) {
         $fh = gensym();
-        open $fh, _local($from)
+        open $fh,
+            _local($from)
             or return $fmgr->error(
             MT->translate(
                 "Opening local file '[_1]' failed: [_2]", $from,
@@ -69,7 +70,8 @@ sub put {
     my $rv;
     if ( !$fmgr->is_handle($from) ) {
         my $fh = gensym();
-        open $fh, $from
+        open $fh,
+            $from
             or return $fmgr->error(
             MT->translate(
                 "Opening local file '[_1]' failed: [_2]", $from,
@@ -105,7 +107,8 @@ sub _write_file {
     $to = _local($to);
 
     my $old = umask( oct $umask );
-    sysopen FH, $to, O_RDWR | O_CREAT | O_TRUNC, oct $perms
+    sysopen FH, $to, O_RDWR | O_CREAT | O_TRUNC,
+        oct $perms
         or return $fmgr->error(
         MT->translate(
             "Opening local file '[_1]' failed: [_2]",
@@ -163,7 +166,8 @@ sub rename {
     if ( $fmgr->exists($to) ) {
         $fmgr->delete($to) or return;
     }
-    rename $from, $to
+    rename $from,
+        $to
         or return $fmgr->error(
         MT->translate(
             "Renaming '[_1]' to '[_2]' failed: [_3]", $from,

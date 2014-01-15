@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+ * Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
@@ -214,7 +214,8 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
     },
 
     setFormat: function(format, calledInInit) {
-        var mode = MT.EditorManager.toMode(format);
+        var self = this,
+            mode = MT.EditorManager.toMode(format);
 
         if (calledInInit && mode != 'source') {
             return;
@@ -247,9 +248,11 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                     });
                 }
 
-                this.$editorIframe.hide();
-                this.$editorPathRow.hide();
-                this.$editorTextarea.show();
+                setTimeout(function() {
+                    self.$editorTextarea.show();
+                    self.$editorIframe.hide();
+                    self.$editorPathRow.hide();
+                }, 0);
 
                 this.editor = this.source;
                 this.$editorElement = this.$editorTextarea;
@@ -278,8 +281,11 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
     },
 
     _fullScreenFitToWindow: function() {
-        this.tinymce.execCommand('mtFullScreenUpdateFitToWindow');
-        this.tinymce.execCommand('mtFullScreenFitToWindow');
+        var self = this;
+        setTimeout(function() {
+            self.tinymce.execCommand('mtFullScreenUpdateFitToWindow');
+            self.tinymce.execCommand('mtFullScreenFitToWindow');
+        }, 0);
     },
 
     setContent: function(content) {

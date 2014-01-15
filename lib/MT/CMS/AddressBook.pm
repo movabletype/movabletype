@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -182,7 +182,7 @@ sub export {
         or return $app->error( $app->translate("Please select a blog.") );
     return $app->permission_denied()
         unless $user->is_superuser
-            || ( $perms && $perms->can_do('export_addressbook') );
+        || ( $perms && $perms->can_do('export_addressbook') );
     $app->validate_magic() or return;
 
     local $| = 1;
@@ -196,7 +196,7 @@ sub export {
 
     my $file = '';
     $file = dirify( $blog->name ) . '-' if $blog;
-    $file = "Blog-" . $blog->id . '-' if $file eq '-';
+    $file = "Blog-" . $blog->id . '-'   if $file eq '-';
     $file .= "notifications_list.csv";
     $app->{no_print_body} = 1;
     $app->set_header( "Content-Disposition" => "attachment; filename=$file" );

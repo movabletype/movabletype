@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2005-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2005-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -22,7 +22,7 @@ sub fetch_themes {
     my $path         = $self->url;
     my $static_path  = MT->app->static_file_path;
     my $support_path = MT->app->support_directory_path;
-    $static_path  .= '/' unless $static_path  =~ m!/$!;
+    $static_path  .= '/' unless $static_path =~ m!/$!;
     $support_path .= '/' unless $support_path =~ m!/$!;
     $path =~ s/{{static}}/$static_path/i;
     $path =~ s/{{support}}/$support_path/i;
@@ -32,7 +32,7 @@ sub fetch_themes {
     my $static_webpath = MT->app->static_path;
     my $support_url    = MT->app->support_directory_url;
     $static_webpath .= '/' unless $static_webpath =~ m!/$!;
-    $support_url    .= '/' unless $support_url    =~ m!/$!;
+    $support_url    .= '/' unless $support_url =~ m!/$!;
 
     my $url = $self->url;
     $url =~ s/{{static}}/$static_webpath/i;
@@ -76,11 +76,11 @@ sub fetch_themes {
             foreach (@parsed_link) {
                 my ( $name, $val ) = split /=/, $_, 2;
                 $name =~ s/^ //;
-                $val  =~ s/^['"]|['"]$//g;
+                $val =~ s/^['"]|['"]$//g;
                 next if $name eq '/';
                 $attr{ lc($name) } = $val;
             }
-            next unless lc $attr{rel}  eq 'theme';
+            next unless lc $attr{rel} eq 'theme';
             next unless lc $attr{type} eq 'text/x-theme';
 
             # Fix for relative theme locations

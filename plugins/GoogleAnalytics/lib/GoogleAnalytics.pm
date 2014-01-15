@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -72,7 +72,8 @@ sub _find_current_plugindata {
                             or next;
 
                         my $profile_data = $profile->data;
-                        if ( $data->{client_id} eq $profile_data->{parent_client_id} )
+                        if ( $data->{client_id} eq
+                            $profile_data->{parent_client_id} )
                         {
                             $client = $o;
                             $merged = $profile->clone;

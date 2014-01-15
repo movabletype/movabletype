@@ -39,6 +39,8 @@ $app->user($author);
         [ File::Spec->join( $base, 'plugins' ) ] );
 }
 
+$app->param('maxComments', 9999);
+
 my $disabled_fields = $app->config->DisableResourceField;
 $disabled_fields->{entry} = 'title,excerpt';
 $disabled_fields->{asset} = 'description';

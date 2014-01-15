@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -100,7 +100,7 @@ sub list_props {
                     $desc = $obj->description;
                 }
                 $desc = $desc->() if ref $desc eq 'CODE';
-                $desc = ''        if $msg      eq $desc;
+                $desc = ''        if $msg eq $desc;
                 $desc = MT::Util::encode_html($desc);
                 $msg  = MT::Util::encode_html($msg);
                 return $desc
@@ -147,14 +147,15 @@ sub list_props {
                 my $prop = shift;
                 my ( $terms, $args ) = @_;
                 $args->{joins} ||= [];
-                push @{ $args->{joins} }, MT->model('author')->join_on(
+                push @{ $args->{joins} },
+                    MT->model('author')->join_on(
                     undef, undef,
                     {   sort      => 'nickname',
                         condition => { id => \'= log_author_id', },
                         direction => ( $args->{direction} || 'ascend' ),
                         type      => 'left',
                     },
-                );
+                    );
                 $args->{sort} = [];
                 return;
             },

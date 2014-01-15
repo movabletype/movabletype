@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -2963,6 +2963,22 @@ sub do_reboot {
     if ( $ENV{FAST_CGI} ) {
         require MT::Touch;
         MT::Touch->touch( 0, 'config' );
+
+        if ( my $watchfile = MT->config->IISFastCGIMonitoringFilePath ) {
+            require MT::FileMgr;
+            my $fmgr = MT::FileMgr->new('Local');
+            my $res = $fmgr->put_data( '', $watchfile );
+            if ( !defined($res) ) {
+                $app->log(
+                    $app->translate(
+                        "Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive '[_1]': [_2]",
+                        $watchfile,
+                        $fmgr->errstr,
+                    )
+                );
+                return 1;
+            }
+        }
     }
     if ( my $pidfile = MT->config->PIDFilePath ) {
         require MT::FileMgr;
@@ -3961,7 +3977,12 @@ sub app_path {
     }
     elsif ( $app->{query} ) {
         local $ENV{PATH_INFO} = q()
-            if ( exists( $ENV{PERLXS} ) && $ENV{PERLXS} eq "PerlIS" );
+            if (
+            ( exists( $ENV{PERLXS} ) && $ENV{PERLXS} eq "PerlIS" )
+            || (   defined( $ENV{SERVER_SOFTWARE} )
+                && $ENV{SERVER_SOFTWARE} =~ /IIS/
+                && $ENV{FAST_CGI} )
+            );
         $path = $app->{query}->url;
         $path =~ s!/[^/]*$!!;
 

@@ -2317,6 +2317,7 @@ ul.tabs li a {
     min-height: 100%;
 }
 #content {
+    position: relative;
     height: auto;
     margin: 0;
     padding: 15px 15px 20px;

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -43,12 +43,14 @@ sub edit {
             $param->{entry_title}
                 = substr( $param->{entry_title}, 0, $title_max_len ) . '...'
                 if $param->{entry_title}
-                    && length( $param->{entry_title} ) > $title_max_len;
+                && length( $param->{entry_title} ) > $title_max_len;
             $param->{entry_permalink}
                 = MT::Util::encode_html( $entry->permalink );
             unless ( $param->{has_publish_access} ) {
                 $param->{has_publish_access}
-                    = $app->can_do('edit_comment_status_of_own_entry') ? 1 : 0
+                    = $app->can_do('edit_comment_status_of_own_entry')
+                    ? 1
+                    : 0
                     if $app->user->id == $entry->author_id;
             }
         }
@@ -384,12 +386,12 @@ sub empty_junk {
     if ($blog) {
         push @$blog_ids, $blog->id
             if $user->permissions( $blog->id )
-                ->can_do('delete_junk_comments');
+            ->can_do('delete_junk_comments');
         if ( !$blog->is_blog ) {
             foreach my $b ( @{ $blog->blogs } ) {
                 push @$blog_ids, $b->id
                     if $user->permissions( $b->id )
-                        ->can_do('delete_junk_comments');
+                    ->can_do('delete_junk_comments');
             }
         }
         return $app->permission_denied() unless @$blog_ids;
@@ -614,7 +616,7 @@ sub can_do_reply {
 
         return $app->permission_denied()
             unless $perms->can_edit_entry( $entry, $user, 1 )
-        ;    # check for publish_post
+            ;    # check for publish_post
     }
 
     1;
@@ -680,7 +682,8 @@ sub do_reply {
                 or return $app->publish_error( "Publishing failed. [_1]",
                 $app->errstr );
             $app->_send_comment_notification( $comment, q(), $entry,
-                $app->model('blog')->load( $param->{blog_id} ), $app->user );
+                $app->model('blog')->load( $param->{blog_id} ),
+                $app->user );
         }
     );
     return $app->build_page( 'dialog/comment_reply.tmpl',
@@ -773,7 +776,7 @@ sub dialog_post_comment {
     unless ( $app->can_do('reply_comment_from_cms') ) {
         return $app->permission_denied()
             unless $perms->can_edit_entry( $entry, $user, 1 )
-        ;    # check for publish_post
+            ;    # check for publish_post
     }
 
     my $blog = $parent->blog
@@ -893,10 +896,10 @@ sub can_save {
         return ( $c->entry->author_id == $app->user->id )
             && (
               $obj ? $obj->get_status_text eq $original->get_status_text
-            : $c->is_junk      ? 'junk'     eq $app->param('status')
+            : $c->is_junk      ? 'junk' eq $app->param('status')
             : $c->is_moderated ? 'moderate' eq $app->param('status')
-            : $c->is_published ? 'publish'  eq $app->param('status')
-            : 1
+            : $c->is_published ? 'publish' eq $app->param('status')
+            :                    1
             );
     }
     else {
@@ -1341,7 +1344,7 @@ sub build_comment_table {
         $row->{author_display}
             = substr( $row->{author_display}, 0, $author_max_len ) . '...'
             if $row->{author_display}
-                && length( $row->{author_display} ) > $author_max_len;
+            && length( $row->{author_display} ) > $author_max_len;
         $row->{comment_short}
             = (
             substr( $obj->text(), 0, $trim_length )
@@ -1371,14 +1374,14 @@ sub build_comment_table {
         $row->{entry_title}       = (
               defined( $entry->title ) ? $entry->title
             : defined( $entry->text )  ? $entry->text
-            : ''
+            :                            ''
         );
         $row->{entry_title} = $app->translate('(untitled)')
             if $row->{entry_title} eq '';
         $row->{entry_title}
             = substr( $row->{entry_title}, 0, $title_max_len ) . '...'
             if $row->{entry_title}
-                && length( $row->{entry_title} ) > $title_max_len;
+            && length( $row->{entry_title} ) > $title_max_len;
         $row->{commenter_id} = $obj->commenter_id() if $obj->commenter_id();
         my $cmntr;
 

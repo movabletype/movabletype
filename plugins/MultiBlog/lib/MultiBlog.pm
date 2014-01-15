@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -48,7 +48,7 @@ sub preprocess_native_tags {
     }
 
     # Load multiblog access control list
-    my $incl 
+    my $incl
         = $args->{include_blogs}
         || $args->{include_websites}
         || $args->{blog_id}

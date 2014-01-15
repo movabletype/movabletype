@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -396,8 +396,8 @@ BEGIN {
                         if ( 'range' eq $option ) {
                             $query = [
                                 '-and',
-                                { op => '>', value => $from },
-                                { op => '<', value => $to },
+                                { op => '>=', value => $from },
+                                { op => '<=', value => $to },
                             ];
                         }
                         elsif ( 'days' eq $option ) {
@@ -806,7 +806,7 @@ BEGIN {
                             my @ids = map( $_->object_id,
                                 MT->model('objecttag')
                                     ->load(@objecttag_terms_args) );
-                            { id => { not => \@ids } };
+                            @ids ? { id => { not => \@ids } } : ();
                         }
                         else {
                             $base_args->{joins} ||= [];
@@ -1625,7 +1625,7 @@ BEGIN {
             },
             'entry' => {
                 all_assets => {
-                    type => 'string',
+                    type => 'text',
                     code => '$Core::MT::Summary::Entry::summarize_all_assets',
                     expires => {
                         'MT::ObjectAsset' => {
@@ -1647,24 +1647,27 @@ BEGIN {
                     comments => 'MT::AtomServer::Comments',
                 },
             },
-            'SchemaVersion'          => undef,
-            'MTVersion'              => undef,
-            'MTReleaseNumber'        => undef,
-            'RequiredCompatibility'  => { default => 0 },
-            'EnableSessionKeyCompat' => { default => 0 },
-            'NotifyUpgrade'          => { default => 1 },
-            'Database'               => undef,
-            'DBHost'                 => undef,
-            'DBSocket'               => undef,
-            'DBPort'                 => undef,
-            'DBUser'                 => undef,
-            'DBPassword'             => undef,
-            'PIDFilePath'            => undef,
-            'DefaultLanguage'        => { default => 'en_US', },
-            'LocalPreviews'          => { default => 0 },
-            'EnableAutoRewriteOnIIS' => { default => 1 },
-            'DefaultCommenterAuth'   => { default => 'MovableType' },
-            'TemplatePath'           => {
+            'SchemaVersion'                => undef,
+            'MTVersion'                    => undef,
+            'MTReleaseNumber'              => undef,
+            'RequiredCompatibility'        => { default => 0 },
+            'EnableSessionKeyCompat'       => { default => 0 },
+            'NotifyUpgrade'                => { default => 1 },
+            'Database'                     => undef,
+            'DBHost'                       => undef,
+            'DBSocket'                     => undef,
+            'DBPort'                       => undef,
+            'DBUser'                       => undef,
+            'DBPassword'                   => undef,
+            'DBMaxRetries'                 => { default => 3 },
+            'DBRetryInterval'              => { default => 1 },
+            'PIDFilePath'                  => undef,
+            'DefaultLanguage'              => { default => 'en_US', },
+            'LocalPreviews'                => { default => 0 },
+            'EnableAutoRewriteOnIIS'       => { default => 1 },
+            'IISFastCGIMonitoringFilePath' => undef,
+            'DefaultCommenterAuth'         => { default => 'MovableType' },
+            'TemplatePath'                 => {
                 default => 'tmpl',
                 path    => 1,
             },
@@ -1733,6 +1736,7 @@ BEGIN {
             'SMTPUser'                      => undef,
             'SMTPPassword'                  => undef,
             'SMTPPort'                      => undef,
+            'SMTPTimeout'                   => { default => 10 },
             'DebugEmailAddress'             => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>

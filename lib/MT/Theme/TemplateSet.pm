@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -235,7 +235,7 @@ sub export_template {
         my $type = $tmpl->type;
         return
               $known_section{$type} ? $type
-            : $type eq 'custom' ? 'module'
+            : $type eq 'custom'     ? 'module'
             : $type eq 'individual'
             ? ( $tmpl->identifier eq 'page' ? 'page' : 'individual' )
             : $type eq 'page'     ? 'page'

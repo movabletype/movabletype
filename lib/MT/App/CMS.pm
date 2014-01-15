@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -613,6 +613,13 @@ sub init_request {
     if ( $app->{upgrade_required} ) {
         $app->{requires_login} = 0;
         $app->mode('upgrade');
+    }
+
+    # Check ImageDriver here because GD cannot be loaded
+    # when using IIS and FastCGI.
+    eval { require MT::Image; MT::Image->new or die; };
+    if ($@) {
+        $app->request( 'image_driver_error', 1 );
     }
 }
 
@@ -4850,6 +4857,7 @@ sub setup_editor_param {
                 $tmpls->{config}
                     = { %{ $tmpls->{config} }, %{ $reg->{'config'} } }
                     if $reg->{'config'};
+                delete $tmpls->{config}{plugin};
             }
         }
 
@@ -4937,6 +4945,9 @@ sub pre_run {
     $app->SUPER::pre_run(@_) or return;
     my $user = $app->user;
 
+    # Return if mode was 'upgrade' or 'filtered_list',
+    return if $app->mode eq 'upgrade' or $app->mode eq 'filtered_list';
+
     # Message Center
     my @messages;
 
@@ -4981,8 +4992,7 @@ sub pre_run {
         push @messages, $message;
     }
 
-    eval { require MT::Image; MT::Image->new or die; };
-    if ($@) {
+    if ( $app->request('image_driver_error') ) {
         my $message = {
             level => 'warning',
             text  => $app->translate('ImageDriver is not configured.'),

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -152,7 +152,7 @@ sub config_tmpl {
         'Crypt::SSLeay'
         )
         unless eval { require IO::Socket::SSL }
-            || eval { require Crypt::SSLeay };
+        || eval     { require Crypt::SSLeay };
 
     $plugin->load_tmpl(
         'web_service_config.tmpl',
@@ -199,7 +199,7 @@ sub config_tmpl {
             ),
             (   $blog
                 ? ( scope_label => $blog->class_label, )
-                    : ()
+                : ()
             ),
         }
     )->build;
@@ -262,8 +262,8 @@ sub save_config {
     _clear_session_token_data($app);
 
     # Clear cache for site stats dashnoard widget.
-    if (   $old_client_id ne $config->{client_id}
-        || $old_profile_id ne $config->{profile_id} )
+    if (   $old_client_id ne ( $config->{client_id} || '' )
+        || $old_profile_id ne ( $config->{profile_id} || '' ) )
     {
         my @site_ids = ( $obj ? $obj->id : 0 );
         if ( $obj && !$obj->is_blog ) {
@@ -335,7 +335,7 @@ sub select_profile {
                         link        => $_->{websiteUrl},
                         description => $_->{webPropertyId},
                         }
-                    } @$list
+                } @$list
             ],
             complete_url => $app->uri(
                 mode => 'ga_select_profile_complete',

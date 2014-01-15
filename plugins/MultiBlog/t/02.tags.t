@@ -9,6 +9,12 @@ BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
+BEGIN {
+    use Test::More;
+    eval { require PHP::Serialization }
+        or plan skip_all => 'PHP::Serialization is not installed';
+}
+
 use IPC::Open2;
 
 use Test::Base;
@@ -24,7 +30,7 @@ my $app = MT->instance;
     $tmpl->name('template-module');
     $tmpl->text('template-module:2');
     $tmpl->type('custom');
-    $tmpl->save or die "Couldn't save template record 1: " . $tmpl->errstr;
+    $tmpl->save or die "Couldn't save template record: " . $tmpl->errstr;
 }
 
 my $blog_id = 2;
@@ -55,7 +61,8 @@ run {
 
     SKIP:
     {
-        skip $block->skip, 1 if $block->skip;
+        skip $block->skip, 'skip_static', 1
+            if $block->skip || $block->skip_static;
 
         my $overrides =
           $block->access_overrides
@@ -67,6 +74,47 @@ run {
         $tmpl->text( $block->template );
         my $ctx = $tmpl->context;
 
+        {
+            require MT::Template::Handler;
+            $ctx->{__handlers}{ lc('InvokeEntries') }
+                = MT::Template::Handler->new(
+                sub {
+                    my $ctx = shift;
+                    $ctx->invoke_handler( 'entries', @_ );
+                },
+                1,
+                undef
+                );
+        }
+
+        if ( $block->ctx_stash ) {
+            my $ctx_stash = eval $block->ctx_stash;
+            for my $k (keys %$ctx_stash) {
+                my $v = $ctx_stash->{$k};
+                if ( $k eq 'archive_category' || $k eq 'category' ) {
+                    $v = $app->model('category')->load($v);
+                }
+                elsif ( $k eq 'entries' ) {
+                    my @entries = $app->model('entry')->load( { id => $v } );
+                    $v = [
+                        map {
+                            my $id = $_;
+                            grep { $_->id == $id } @entries;
+                        } ( ref $v ? @$v : $v )
+                    ];
+                }
+                $ctx->stash( $k, $v );
+            }
+        }
+
+        if ( $block->ctx_values ) {
+            my $ctx_values = eval $block->ctx_values;
+            for my $k (keys %$ctx_values) {
+                $ctx->{$k} = $ctx_values->{$k};
+            }
+        }
+
+
         my $blog = MT::Blog->load($blog_id);
         $ctx->stash( 'blog',    $blog );
         $ctx->stash( 'blog_id', $blog->id );
@@ -74,6 +122,8 @@ run {
         $ctx->stash( 'builder', MT::Builder->new );
 
         my $result = $tmpl->build;
+        die $tmpl->errstr unless defined $result;
+
         $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
 
         is( $result, $block->expected, $block->name );
@@ -81,14 +131,20 @@ run {
 };
 
 sub php_test_script {
-    my ($template, $text) = @_;
+    my ($template, $text, $ctx_values, $ctx_stash) = @_;
     $text ||= '';
+
+    $ctx_stash = {
+        %{ eval($ctx_values || '{}') },
+        %{ eval($ctx_stash || '{}') },
+    };
 
     my $test_script = <<PHP;
 <?php
 \$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
 \$MT_CONFIG = '@{[ $app->find_config ]}';
 \$blog_id   = '$blog_id';
+\$ctx_stash = unserialize('@{[ PHP::Serialization::serialize($ctx_stash) ]}');
 \$tmpl = <<<__TMPL__
 $template
 __TMPL__
@@ -112,6 +168,26 @@ $ctx->stash('blog_id', $blog_id);
 $ctx->stash('local_blog_id', $blog_id);
 $blog = $db->fetch_blog($blog_id);
 $ctx->stash('blog', $blog);
+foreach($ctx_stash as $k => $v) {
+    if ($k == 'archive_category' || $k == 'category') {
+        require_once('class.mt_category.php');
+        $cat = new Category;
+        $cat->Load($v);
+        $v = $cat;
+    }
+    if ($k == 'entries') {
+        require_once('class.mt_entry.php');
+        $entries = array();
+        foreach ($v as $id) {
+            $e = new Entry;
+            $e->Load($id);
+            $entries[] = $e;
+        }
+        $v = $entries;
+    }
+    $ctx->stash($k, $v);
+    $ctx->stash('category', $v);
+}
 
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
     $ctx->_eval('?>' . $_var_compiled);
@@ -134,7 +210,9 @@ SKIP:
 
         SKIP:
         {
-            skip $block->skip, 1 if $block->skip;
+            skip $block->skip, 'skip_dynamic', 1
+                if $block->skip || $block->skip_dynamic;
+
             my $overrides =
               $block->access_overrides
               ? eval $block->access_overrides
@@ -143,7 +221,12 @@ SKIP:
                 'system' );
 
             open2( my $php_in, my $php_out, 'php -q' );
-            print $php_out &php_test_script( $block->template, $block->text );
+            print $php_out &php_test_script(
+                $block->template,
+                $block->text       || undef,
+                $block->ctx_values || undef,
+                $block->ctx_stash  || undef
+            );
             close $php_out;
             my $php_result = do { local $/; <$php_in> };
             $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
@@ -411,6 +494,7 @@ Foo
 --- access_overrides
 { 1 => 2 }
 
+
 === mt:MultiBlogLocalBlog mode="loop"
 --- template
 <mt:MultiBlog blog_ids="1,2-3" mode="loop"><mt:BlogName />,</mt:MultiBlog>
@@ -418,3 +502,84 @@ Foo
 none,Test site,
 --- access_overrides
 { 1 => 2, 2 => 2}
+
+
+=== mt:MultiBlog will not be localizeing timestamp context.
+--- template
+<mt:MultiBlog blog_ids="1" mode="loop">
+<mt:Entries limit="2" glue=","><mt:EntryTitle /></mt:Entries>
+</mt:MultiBlog>
+--- expected
+A Rainy Day
+--- ctx_values
+{ current_timestamp => '19780131073500', current_timestamp_end => '19780131074500' }
+--- access_overrides
+{ 1 => 2 }
+
+
+=== mt:MultiBlog will be localizeing timestamp context if ignore_archive_context="1" is given.
+--- template
+<mt:MultiBlog blog_ids="1" mode="loop" ignore_archive_context="1">
+<mt:Entries limit="2" glue=","><mt:EntryTitle /></mt:Entries>
+</mt:MultiBlog>
+--- expected
+A Rainy Day,Verse 5
+--- ctx_values
+{ current_timestamp => '19780131073500', current_timestamp_end => '19780131074500' }
+--- access_overrides
+{ 1 => 2 }
+
+
+=== mt:MultiBlog will not be localizeing category context.
+--- template
+<mt:MultiBlog blog_ids="1" mode="loop">
+<mt:Entries glue=","><mt:EntryTitle /></mt:Entries>
+</mt:MultiBlog>
+--- expected
+Verse 3
+--- ctx_stash
+{ archive_category => 1, category => 1 }
+--- access_overrides
+{ 1 => 2 }
+
+
+=== mt:MultiBlog will be localizeing category context if ignore_archive_context="1" is given.
+--- template
+<mt:MultiBlog blog_ids="1" mode="loop" ignore_archive_context="1">
+<mt:Entries glue=","><mt:EntryTitle /></mt:Entries>
+</mt:MultiBlog>
+--- expected
+A Rainy Day,Verse 5,Verse 4,Verse 3,Verse 2,Verse 1
+--- ctx_stash
+{ archive_category => 1, category => 1 }
+--- access_overrides
+{ 1 => 2 }
+
+
+=== mt:Entries will be ignoreing entries context if $entry->blog_id != $current_blog->id.
+--- template
+<mt:MultiBlog blog_ids="2" mode="loop">
+<mt:Entries limit="1"><mt:EntryTitle /></mt:Entries>
+</mt:MultiBlog>
+--- skip_dynamic
+1
+--- expected
+--- ctx_stash
+{ entries => [1] }
+--- access_overrides
+{ 1 => 2 }
+
+
+=== mt:Entries will not be ignoreing entries context if invoked by other tag.
+--- template
+<mt:MultiBlog blog_ids="2" mode="loop">
+<mt:InvokeEntries limit="1"><mt:EntryTitle /></mt:InvokeEntries>
+</mt:MultiBlog>
+--- skip_dynamic
+1
+--- expected
+A Rainy Day
+--- ctx_stash
+{ entries => [1] }
+--- access_overrides
+{ 1 => 2 }

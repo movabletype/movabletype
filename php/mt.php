@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2004-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2004-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,7 +11,7 @@
 require_once('lib/class.exception.php');
 
 define('VERSION', '6.0');
-define('PRODUCT_VERSION', '6.0.1');
+define('PRODUCT_VERSION', '6.0.2');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -20,7 +20,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 1;
+    $RELEASE_NUMBER = 2;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -217,7 +217,9 @@ class MT {
                 $this->config('Database'),
                 $this->config('DBHost'),
                 $this->config('DBPort'),
-                $this->config('DBSocket'));
+                $this->config('DBSocket'),
+                $this->config('DBMaxRetries'),
+                $this->config('DBRetryInterval'));
         }
         return $this->db;
     }
@@ -434,6 +436,10 @@ class MT {
             $cfg['userpasswordminlength'] = 8;
         isset($cfg['bulkloadmetaobjectslimit']) or
             $cfg['bulkloadmetaobjectslimit'] = 100;
+        isset($cfg['dbmaxretries']) or
+            $cfg['dbmaxretries'] = 3;
+        isset($cfg['dbretryintercal']) or
+            $cfg['dbretryinterval'] = 1;
     }
 
     function configure_paths($blog_site_path) {
@@ -944,9 +950,9 @@ function spam_protect($str) {
 
 function offset_time($ts, $blog = null, $dir = null) {
     if (isset($blog)) {
-        if (!is_array($blog)) {
+        if (!is_object($blog)) {
             global $mt;
-            $blog = $mt->db()->fetch_blog($blog->id);
+            $blog = $mt->db()->fetch_blog($blog);
         }
         $offset = $blog->blog_server_offset;
     } else {

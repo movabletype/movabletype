@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,25 +11,43 @@ function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
         $ctx->localize(array('entry', 'conditional', 'else_content'));
         $entry = $ctx->stash('entry');
         if ($entry) {
-            $entry_id = $entry->entry_id;
-            if (isset($_prev_cache[$entry_id])) {
-                $prev_entry = $_prev_cache[$entry_id];
+            $label = $entry->entry_id;
+            if (isset($args['by_author'])) {
+                $label .= ':author=' . $entry->entry_author_id;
+            }
+            if (isset($args['by_category']) || isset($args['by_folder'])) {
+                $cat = $entry->category();
+                $cat_id = $cat ? $cat->category_id : 0;
+                $label .= ':category=' . $cat_id;
+            }
+
+            if (isset($_prev_cache[$label])) {
+                $prev_entry = $_prev_cache[$label];
             } else {
                 $mt = MT::get_instance();
-                $ts = $mt->db()->db2ts($entry->entry_authored_on);
                 $blog_id = $entry->entry_blog_id;
                 if (isset($args['class'])) {
                     $class = $args['class'];
                 } else {
                     $class = 'entry';
                 }
-                $args = array('not_entry_id' => $entry_id,
+                $ts = $mt->db()->db2ts( ($class == 'entry')
+                    ? $entry->entry_authored_on
+                    : $entry->entry_modified_on
+                );
+                $eargs = array('not_entry_id' => $entry->entry_id,
                               'current_timestamp_end' => $ts,
                               'lastn' => 1,
                               'blog_id' => $blog_id,
                               'class' => $class);
-                list($prev_entry) = $ctx->mt->db()->fetch_entries($args);
-                if ($prev_entry) $_prev_cache[$entry_id] = $prev_entry;
+                if (isset($args['by_author'])) {
+                    $eargs['author_id'] = $entry->entry_author_id;
+                }
+                if (isset($args['by_category']) || isset($args['by_folder'])) {
+                    $eargs['category_id'] = $cat_id;
+                }
+                list($prev_entry) = $ctx->mt->db()->fetch_entries($eargs);
+                if ($prev_entry) $_prev_cache[$label] = $prev_entry;
             }
             $ctx->stash('entry', $prev_entry);
         }

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -98,7 +98,7 @@ sub init_core_callbacks {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 my $terms = $opts->{terms};
                 delete $terms->{blog_id};
-                my $args  = $opts->{args};
+                my $args = $opts->{args};
                 $args->{joins} ||= [];
                 if ( MT->config->SingleCommunity ) {
                     $terms->{type} = 1;
@@ -144,6 +144,7 @@ sub init_core_callbacks {
 
             # website callbacks
             $pkg . 'post_save.website'   => "${pfx}Website::post_save",
+            $pkg . 'pre_save.website'    => "${pfx}Website::pre_save",
             $pkg . 'edit.website'        => "${pfx}Website::edit",
             $pkg . 'post_delete.website' => "${pfx}Website::post_delete",
             $pkg
@@ -303,7 +304,6 @@ sub init_core_callbacks {
             $pkg . 'pre_save.template'    => "${pfx}Template::pre_save",
             $pkg . 'post_save.template'   => "${pfx}Template::post_save",
             $pkg . 'post_delete.template' => "${pfx}Template::post_delete",
-            'restore' => "${pfx}Template::restore_widgetmanagers",
 
             # tags
             $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",

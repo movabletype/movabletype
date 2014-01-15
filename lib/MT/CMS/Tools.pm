@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -66,7 +66,7 @@ sub get_syscheck_content {
         . '&language='
         . MT->current_language;
 
-    my $ua = $app->new_ua( { timeout => 20 } );
+    my $ua = $app->new_ua();
     return unless $ua;
     $ua->max_size(undef) if $ua->can('max_size');
 
@@ -614,8 +614,8 @@ sub save_cfg_system_general {
             $app->param('system_email_address')
         )
         )
-        unless (
-        $app->param('system_email_address') eq $cfg->EmailAddressMain );
+        if ( defined $app->param('system_email_address')
+        && $app->param('system_email_address') ne $cfg->EmailAddressMain );
     push(
         @meta_messages,
         $app->translate(
@@ -831,8 +831,7 @@ sub upgrade {
     if ( $ENV{FAST_CGI} ) {
 
         # don't enter the FCGI loop.
-        require MT::Bootstrap;
-        MT::Bootstrap::fcgi_sig_handler('Upgrade');
+        $app->reboot;
     }
 
     # check for an empty database... no author table would do it...
@@ -1909,7 +1908,8 @@ sub adjust_sitepath {
             File::Path::rmtree($tmp_dir);
         }
         else {
-            opendir my $dh, $tmp_dir
+            opendir my $dh,
+                $tmp_dir
                 or return $app->error(
                 MT->translate(
                     "Cannot open directory '[_1]': [_2]",
@@ -2181,7 +2181,8 @@ sub dialog_restore_upload {
     }
 
     my @files = split( ',', $files );
-    my $file_next = shift @files if scalar(@files);
+    my $file_next;
+    $file_next = shift @files if scalar(@files);
     if ( !defined($file_next) ) {
         if ( scalar(@$assets) ) {
             $asset             = $assets->[0];
@@ -2721,9 +2722,10 @@ sub restore_upload_manifest {
         "Uploaded file was not a valid Movable Type backup manifest file.")
         if !defined($backups);
 
-    my $files     = $backups->{files};
-    my $assets    = $backups->{assets};
-    my $file_next = shift @$files if defined($files) && scalar(@$files);
+    my $files  = $backups->{files};
+    my $assets = $backups->{assets};
+    my $file_next;
+    $file_next = shift @$files if defined($files) && scalar(@$files);
     my $assets_json;
     my $param = {};
 

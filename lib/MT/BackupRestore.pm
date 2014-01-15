@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -77,6 +77,7 @@ sub core_backup_instructions {
         'ts_funcmap'    => { 'skip' => 1 },
         'touch'         => { 'skip' => 1 },
         'failedlogin'   => { 'skip' => 1 },
+        'accesstoken'   => { 'skip' => 1 },
     };
 }
 
@@ -1538,13 +1539,13 @@ sub backup_terms_args {
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
         return {
             terms => { 'blog_id' => $blog_ids },
-            args  => { sort => 'type' },
+            args => { sort => [ { column => 'type' }, { column => 'id' } ] },
         };
     }
     else {
         return {
             terms => undef,
-            args  => { sort => 'type' },
+            args  => { sort => [ { column => 'type' }, { column => 'id' } ] },
         };
     }
 }

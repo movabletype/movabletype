@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -262,7 +262,13 @@ function format_ts($format, $ts, $blog, $lang = null) {
         $format = preg_replace('!%b %e!', '%e %b', $format);
     }
     if (isset($format)) {
-        $format = preg_replace('!%(\w)!e', '\$f[\'\1\']', $format);
+        $keys = array();
+        $values = array();
+        foreach ($f as $k => $v) {
+            $keys[] = '%' . $k;
+            $values[] = $v;
+        }
+        $format = str_replace($keys, $values, $format);
     }
     return $format;
 }
@@ -1647,7 +1653,9 @@ function normalize_language($language, $locale, $ietf) {
         $language = $real_lang[$language];
     }
     if ($locale) {
-        $language = preg_replace('/^([A-Za-z][A-Za-z])([-_]([A-Za-z][A-Za-z]))?$/e', '\'$1\' . "_" . (\'$3\' ? strtoupper(\'$3\') : strtoupper(\'$1\'))', $language);
+        if (preg_match('/^([A-Za-z][A-Za-z])([-_]([A-Za-z][A-Za-z]))?$/', $language, $matches)) {
+            $language = $matches[1] . '_' . strtoupper( $matches[3] ? $matches[3] : $matches[1] );
+        }
     } elseif ($ietf) {
         # http://www.ietf.org/rfc/rfc3066.txt
         $language = preg_replace('/_/', '-', $language);

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -287,7 +287,9 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
 
             // extra newline is eaten by PHP but will cause any actual
             // newline from user to be preserved:
-            $smart_source .= "\n";
+            if ($close_mod_args == '') {
+                $smart_source .= "\n";
+            }
         }
     } else {
         $smart_source = $tpl_source;

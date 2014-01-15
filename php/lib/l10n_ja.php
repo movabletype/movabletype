@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -124,6 +124,7 @@ $Lexicon_ja = array(
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
 
 );
+
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_ja;
     $l10n_str = isset($Lexicon_ja[$str]) ? $Lexicon_ja[$str] : (isset($Lexicon[$str]) ? $Lexicon[$str] : $str);

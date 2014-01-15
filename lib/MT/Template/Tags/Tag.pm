@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -307,6 +307,7 @@ sub _hdlr_tags {
     local $ctx->{__stash}{class_type}    = $type;
     my $vars = $ctx->{__stash}{vars} ||= {};
     my $i = 0;
+
     foreach my $tag (@slice_tags) {
         $i++;
         local $ctx->{__stash}{Tag}     = $tag;
@@ -432,8 +433,8 @@ sub _hdlr_entry_tags {
     my $i       = 1;
     my $vars    = $ctx->{__stash}{vars} ||= {};
     my $tags    = $entry->get_tag_objects;
-    if (!$args->{include_private}) {
-        @$tags = grep { ! $_->is_private } @$tags;
+    if ( !$args->{include_private} ) {
+        @$tags = grep { !$_->is_private } @$tags;
     }
     for my $tag (@$tags) {
         local $vars->{__first__}   = $i == 1;
@@ -588,19 +589,20 @@ sub _hdlr_asset_tags {
     my $res     = '';
     my $i       = 1;
     my $vars    = $ctx->{__stash}{vars} ||= {};
+
     if ( !$args->{include_private} ) {
-        @assets =  grep { ! $_->is_private }  @assets;
+        @assets = grep { !$_->is_private } @assets;
     }
 
-    foreach my $tag ( @assets ) {
+    foreach my $tag (@assets) {
         local $ctx->{__stash}{Tag}             = $tag;
         local $ctx->{__stash}{tag_count}       = undef;
         local $ctx->{__stash}{tag_asset_count} = undef;
-        local $vars->{__first__}   = $i == 1;
-        local $vars->{__last__}    = $i == scalar @assets;
-        local $vars->{__odd__}     = ( $i % 2 ) == 1;
-        local $vars->{__even__}    = ( $i % 2 ) == 0;
-        local $vars->{__counter__} = $i;
+        local $vars->{__first__}               = $i == 1;
+        local $vars->{__last__}                = $i == scalar @assets;
+        local $vars->{__odd__}                 = ( $i % 2 ) == 1;
+        local $vars->{__even__}                = ( $i % 2 ) == 0;
+        local $vars->{__counter__}             = $i;
         $i++;
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );

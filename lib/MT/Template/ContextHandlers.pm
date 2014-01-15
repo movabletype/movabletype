@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1130,7 +1130,7 @@ sub build_date {
             =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
         $mo--;
         my $server_offset = ( $blog && $blog->server_offset )
-            || MT->config->TimeOffset;
+            || MT->current_time_offset;
         if ( ( localtime( timelocal( $s, $m, $h, $d, $mo, $y ) ) )[8] ) {
             $server_offset += 1;
         }
@@ -1150,7 +1150,7 @@ sub build_date {
         my $tz = 'Z';
         unless ( $args->{utc} ) {
             my $so = ( $blog && $blog->server_offset )
-                || MT->config->TimeOffset;
+                || MT->current_time_offset;
             my $partial_hour_offset = 60 * abs( $so - int($so) );
             if ( $format eq 'rfc822' ) {
                 $tz = sprintf( "%s%02d%02d",

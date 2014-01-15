@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -125,7 +125,7 @@ sub list_props {
                 my $edit_str = MT->translate('Edit');
                 my $reply_link;
                 if ( $app->user->permissions( $obj->blog->id )
-                        ->can_do('reply_comment_from_cms')
+                    ->can_do('reply_comment_from_cms')
                     and $obj->is_published )
                 {
                     my $return_arg = $app->uri_params(
@@ -357,25 +357,27 @@ sub list_props {
                 my $prop = shift;
                 my ( $terms, $args ) = @_;
                 $args->{joins} ||= [];
-                push @{ $args->{joins} }, MT->model('entry')->join_on(
+                push @{ $args->{joins} },
+                    MT->model('entry')->join_on(
                     undef,
                     { id => \'= comment_entry_id', },
                     {   sort      => 'title',
                         direction => $args->{direction} || 'ascend',
                     },
-                );
+                    );
                 $args->{sort} = [];
                 return;
             },
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('entry')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('entry')->join_on(
                     undef,
                     {   id =>
                             [ '-and', $args->{value}, \'= comment_entry_id' ],
                     },
-                );
+                    );
                 return;
             },
             bulk_html => sub {
@@ -508,12 +510,13 @@ sub list_props {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $user = MT->app->user;
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('entry')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('entry')->join_on(
                     undef,
                     {   id        => \"= comment_entry_id",
                         author_id => $user->id,
                     },
-                );
+                    );
             },
         },
         email => {
@@ -797,9 +800,9 @@ sub list_props {
             condition => sub {0},
         },
         entry_status => {
-            base      => 'entry.status',
-            col       => 'entry.status',
-            display   => 'none',
+            base    => 'entry.status',
+            col     => 'entry.status',
+            display => 'none',
         },
     };
 }

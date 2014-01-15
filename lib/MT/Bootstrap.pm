@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -70,15 +70,8 @@ sub import {
         # When running under FastCGI, the initial invocation of the
         # script has a bare environment. We can use this to test
         # for FastCGI.
-        my $not_fast_cgi = 0;
-        $not_fast_cgi ||= exists $ENV{$_}
-            for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
-        my $fast_cgi
-            = defined $param{FastCGI} ? $param{FastCGI} : ( !$not_fast_cgi );
-        if ($fast_cgi) {
-            eval 'require CGI::Fast;';
-            $fast_cgi = 0 if $@;
-        }
+        require MT::Util;
+        my $fast_cgi = MT::Util::check_fast_cgi( $param{FastCGI} );
 
         # ready to run now... run inside an eval block so we can gracefully
         # die if something bad happens
@@ -87,8 +80,8 @@ sub import {
 
             # line __LINE__ __FILE__
             require MT;
-            eval "# line " 
-                . __LINE__ . " " 
+            eval "# line "
+                . __LINE__ . " "
                 . __FILE__
                 . "\nrequire $class; 1;"
                 or die $@;
@@ -108,17 +101,17 @@ sub import {
         # exiting.
         # TODO: handle SIGPIPE more gracefully.
                 $SIG{HUP}  = \&fcgi_sig_handler;
-                $SIG{USR1} = \&fcgi_sig_handler;
+                $SIG{USR1} = \&fcgi_sig_handler unless $^O eq 'MSWin32';
                 $SIG{TERM} = \&fcgi_sig_handler;
                 $SIG{PIPE} = 'IGNORE';
+
+                $app = $class->new(%param) or die $class->errstr;
+                delete $app->{init_request};
 
            # we set the "handling request" flag so the signal handler can exit
            # immediately when requests aren't being handled.
                 while ( $fcgi_handling_request = ( my $cgi = new CGI::Fast ) )
                 {
-                    $app = $class->new( %param, CGIObject => $cgi )
-                        or die $class->errstr;
-
                     $ENV{FAST_CGI} = 1;
                     $app->{fcgi_startup_time} ||= time;
                     $app->{fcgi_request_count}
@@ -187,6 +180,7 @@ sub import {
                 $CGI::Fast::Ext_Request->Finish();
             }
             else {
+                $ENV{FAST_CGI} = 0;
                 $app = $class->new(%param) or die $class->errstr;
                 local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
                 $app->run;
@@ -214,7 +208,7 @@ sub import {
                         my $cgipath = "$prot://$host";
                         $cgipath .= ":$port"
                             unless $port == 443
-                                or $port == 80;
+                            or $port == 80;
                         $cgipath .= $uri;
                         print "Status: 302 Moved\n";
                         print "Location: " . $cgipath . "\n\n";

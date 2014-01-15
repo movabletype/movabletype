@@ -129,6 +129,7 @@ body.has-dialog {
     background-color: #fffffc;
     border-radius: 3px;
     box-shadow: 0 3px 12px 0 rgba(0, 0, 0, 0.3);
+    z-index: 1002;
 }
 .mt-dialog {
     display: none;

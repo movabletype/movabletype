@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+ * Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
@@ -983,7 +983,7 @@ $.mtValidator('simple2', {
             );
     },
     showError: function( $target, $error_block ) {
-        var id = $target.parents().find('div.field-content').first().parent().attr('id');
+        var id = $target.parents('div.field-content').first().parent().attr('id');
         var ins = true;
         if ( $('div#'+id+'-msg-block ul').length == 0 ) {
             var $block = $('<div/>')

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2013 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -38,9 +38,20 @@ abstract class MTDatabase {
 
 
     // Construction
-    public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '') {
+    public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
         $this->id = md5(uniqid('MTDatabase',true));
-        $this->connect($user, $password, $dbname, $host, $port, $sock);
+        $retry_cnt = 0;
+        while ( ( empty($this->conn) || ( !empty($this->conn) && !$this->conn->IsConnected() ) ) && $retry_cnt++ < $retry ) {
+            try {
+                $this->connect($user, $password, $dbname, $host, $port, $sock);
+            } catch (Exception $e ) {
+                sleep( $retry_int );
+            }
+        }
+        if ( empty($this->conn) || ( !empty($this->conn) && !$this->conn->IsConnected() ) ) {
+            throw new MTDBException( $this->conn->ErrorMsg() , 0);
+        }
+
         ADOdb_Active_Record::SetDatabaseAdapter($this->conn);
 #        $this->conn->debug = true;
     }
@@ -493,6 +504,9 @@ abstract class MTDatabase {
             require_once('class.mt_fileinfo.php');
             $finfo = new FileInfo;
             $finfos = $finfo->Find($where);
+            if (empty($finfos))
+                return null;
+
             $found = false;
             foreach($finfos as $fi) {
                 $tmap = $fi->TemplateMap();
@@ -919,6 +933,9 @@ abstract class MTDatabase {
                     # this category have no entries (or pages)
                     return null;
                 }
+            } else {
+                # this category have no entries (or pages)
+                return null;
             }
         }
         if ((0 == count($filters)) && (isset($args['show_empty']) && (1 == $args['show_empty']))) {
@@ -939,7 +956,7 @@ abstract class MTDatabase {
                 }
             }
             if (isset($blog_ctx_arg))
-                $tags = $this->fetch_entry_tags(array($blog_ctx_arg, 'tag' => $tag_arg, 'include_private' => $include_private, 'class' => $args['class']));
+                $tags = $this->fetch_entry_tags(array_merge($blog_ctx_arg, array('tag' => $tag_arg, 'include_private' => $include_private, 'class' => $args['class'])));
             else
                 $tags = $this->fetch_entry_tags(array('blog_id' => $blog_id, 'tag' => $tag_arg, 'include_private' => $include_private, 'class' => $args['class']));
             if (!is_array($tags)) $tags = array();
@@ -952,7 +969,7 @@ abstract class MTDatabase {
                     $tag_list[] = $tag->tag_id;
                 }
                 if (isset($blog_ctx_arg))
-                    $ot = $this->fetch_objecttags(array('tag_id' => $tag_list, 'datasource' => 'entry', $blog_ctx_arg));
+                    $ot = $this->fetch_objecttags(array_merge($blog_ctx_arg, array('tag_id' => $tag_list, 'datasource' => 'entry')));
                 else
                     $ot = $this->fetch_objecttags(array('tag_id' => $tag_list, 'datasource' => 'entry', 'blog_id' => $blog_id));
 
@@ -1024,22 +1041,27 @@ abstract class MTDatabase {
             $extras['join']['mt_author'] = array(
                     'condition' => "entry_author_id = author_id"
                     );
+        } elseif (isset($args['author_id']) && preg_match('/^\d+$/', $args['author_id']) && $args['author_id'] > 0) {
+            $author_filter = "and entry_author_id = '" . $args['author_id'] . "'";
         }
 
         $start = isset($args['current_timestamp'])
             ? $args['current_timestamp'] : null;
         $end = isset($args['current_timestamp_end'])
             ? $args['current_timestamp_end'] : null;
+        if ($start || $end) {
+            $timestamp_field = ($args['class'] == 'page') ? 'entry_modified_on' : 'entry_authored_on';
+        }
         if ($start and $end) {
             $start = $this->ts2db($start);
             $end = $this->ts2db($end);
-            $date_filter = "and entry_authored_on between '$start' and '$end'";
+            $date_filter = "and $timestamp_field between '$start' and '$end'";
         } elseif ($start) {
             $start = $this->ts2db($start);
-            $date_filter = "and entry_authored_on >= '$start'";
+            $date_filter = "and $timestamp_field >= '$start'";
         } elseif ($end) {
             $end = $this->ts2db($end);
-            $date_filter = "and entry_authored_on <= '$end'";
+            $date_filter = "and $timestamp_field <= '$end'";
         } else {
             $date_filter = '';
         }
@@ -1169,7 +1191,7 @@ abstract class MTDatabase {
                 if ($args['base_sort_order'] == 'ascend')
                     $base_order = 'asc';
             }
-            $sort_field ='entry_authored_on'; 
+            $sort_field = isset($timestamp_field) ? $timestamp_field : 'entry_authored_on'; 
             $no_resort = 0;
         }
 
