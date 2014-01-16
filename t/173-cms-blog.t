@@ -61,7 +61,6 @@ subtest 'Check callbacks for each config screens' => sub {
             name   => 'Feedback Settings',
         },
         {   __mode => 'cfg_registration',
-            skip   => 1,
             name   => 'Registration Settings',
         },
         {   __mode => 'cfg_web_services',

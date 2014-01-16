@@ -577,9 +577,14 @@ sub cfg_registration {
     $param{new_roles} = \@roles;
     $param{new_created_user_role} = join( ',', @role_ids );
 
-    $param{is_website} = $blog->class eq 'website';
-
-    $app->load_tmpl( 'cfg_registration.tmpl', \%param );
+    $app->param( '_type', $app->blog->class );
+    $app->param( 'id',    $blog->id );
+    $app->forward(
+        "view",
+        {  output => 'cfg_registration.tmpl',
+            %param,
+        }
+    );
 }
 
 sub cfg_web_services {
