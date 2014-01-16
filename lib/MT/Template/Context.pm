@@ -430,7 +430,8 @@ sub set_blog_load_context {
     }
 
     # Filtered by acl;
-    my $allow = delete $attr->{allow_blogs} if $attr->{allow_blogs};
+    my $allow;
+    $allow = delete $attr->{allow_blogs} if $attr->{allow_blogs};
     if ($allow) {
         if ( !$terms->{$col} ) {
             $terms->{$col} = $allow;

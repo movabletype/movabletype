@@ -582,7 +582,8 @@ sub _hdlr_entries {
                     fetchonly   => ['tag_id'],
                     no_triggers => 1
                 };
-                my @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
+                my @ot_ids;
+                @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
                 $map{ $_->tag_id } = 1 for @ot_ids;
                 \%map;
             };
@@ -2183,7 +2184,8 @@ sub _hdlr_entry_author_link {
 
     my $displayname = encode_html( remove_html( $a->nickname || '' ) );
     my $show_email = $args->{show_email} ? 1 : 0;
-    my $show_url = 1 unless exists $args->{show_url} && !$args->{show_url};
+    my $show_url;
+    $show_url = 1 unless exists $args->{show_url} && !$args->{show_url};
 
     # Open the link in a new window if requested (with new_window="1").
     my $target = $args->{new_window} ? ' target="_blank"' : '';

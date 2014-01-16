@@ -29,9 +29,10 @@ sub core_filters {
 }
 
 sub filter {
-    my $pkg       = shift;
-    my ($obj)     = @_;
-    my $blog      = MT::Blog->load( $obj->blog_id ) if $obj->blog_id;
+    my $pkg = shift;
+    my ($obj) = @_;
+    my $blog;
+    $blog = MT::Blog->load( $obj->blog_id ) if $obj->blog_id;
     my $threshold = $blog ? $blog->junk_score_threshold : 0;
 
     # Have the item scored by plugin tests, save any log messages:

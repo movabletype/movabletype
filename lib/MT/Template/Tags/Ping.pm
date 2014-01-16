@@ -322,10 +322,11 @@ Deprecated in favor of L<IfPingsAccepted>.
 
 sub _hdlr_entry_if_allow_pings {
     my ( $ctx, $args, $cond ) = @_;
-    my $entry               = $ctx->stash('entry');
-    my $blog                = $ctx->stash('blog');
-    my $cfg                 = $ctx->{config};
-    my $blog_pings_accepted = 1 if $cfg->AllowPings && $blog->allow_pings;
+    my $entry = $ctx->stash('entry');
+    my $blog  = $ctx->stash('blog');
+    my $cfg   = $ctx->{config};
+    my $blog_pings_accepted;
+    $blog_pings_accepted = 1 if $cfg->AllowPings && $blog->allow_pings;
     if ( $blog_pings_accepted && $entry->allow_pings ) {
         return 1;
     }

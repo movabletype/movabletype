@@ -356,7 +356,8 @@ sub build_ping_table {
     my $title_max_len = const('DISPLAY_LENGTH_EDIT_PING_BREAK_UP');
     while ( my $obj = $iter->() ) {
         my $row = $obj->get_values;
-        my $blog = $blogs{ $obj->blog_id } ||= $obj->blog if $obj->blog_id;
+        my $blog;
+        $blog = $blogs{ $obj->blog_id } ||= $obj->blog if $obj->blog_id;
         $row->{excerpt} = '[' . $app->translate("No Excerpt") . ']'
             unless ( $row->{excerpt} || '' ) ne '';
         if ( ( $row->{title} || '' ) eq ( $row->{source_url} || '' ) ) {

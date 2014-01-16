@@ -2663,7 +2663,8 @@ sub new_ua {
 
     if ( defined $proxy ) {
         $ua->proxy( http => $proxy );
-        my @domains = split( /,\s*/, $no_proxy ) if $no_proxy;
+        my @domains;
+        @domains = split( /,\s*/, $no_proxy ) if $no_proxy;
         $ua->no_proxy(@domains) if @domains;
     }
     if ( defined $sec_proxy ) {
@@ -2766,7 +2767,8 @@ sub init_commenter_authenticators {
     my $auths = $self->registry("commenter_authenticators") || {};
     $Commenter_Auth = {%$auths};
     my $app = $self->app;
-    my $blog = $app->blog if $app->isa('MT::App');
+    my $blog;
+    $blog = $app->blog if $app->isa('MT::App');
     foreach my $auth ( keys %$auths ) {
         if ( my $c = $auths->{$auth}->{condition} ) {
             $c = $self->handler_to_coderef($c);
@@ -2917,7 +2919,8 @@ sub core_commenter_authenticators {
             login_form        => 'comment/auth_typepad.tmpl',
             login_form_params => sub {
                 my ( $key, $blog_id, $entry_id, $static ) = @_;
-                my $entry = MT::Entry->load($entry_id) if $entry_id;
+                my $entry;
+                $entry = MT::Entry->load($entry_id) if $entry_id;
 
                 ## TypeKey URL
                 require MT::Template::Context;

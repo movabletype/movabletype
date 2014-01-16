@@ -2986,7 +2986,8 @@ sub build_blog_selector {
     return if exists $param->{load_selector_data};
 
     my $blog = $app->blog;
-    my $blog_id = $blog->id if $blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
     $param->{dynamic_all} = $blog->custom_dynamic_templates eq 'all' if $blog;
 
     my $blog_class    = $app->model('blog');
@@ -3389,7 +3390,8 @@ sub build_menus {
             }
 
             if ( $menu->{mode} ) {
-                my $sys_only = 1 if $menu->{id} eq 'system';
+                my $sys_only;
+                $sys_only = 1 if $menu->{id} eq 'system';
                 $menu->{link} = $app->uri(
                     mode => $menu->{mode},
                     args => {
@@ -4220,9 +4222,10 @@ sub preview_object_basename {
     my $app = shift;
     my $q   = $app->param;
     my @parts;
-    my $blog    = $app->blog;
-    my $blog_id = $blog->id if $blog;
-    my $id      = $q->param('id');
+    my $blog = $app->blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
+    my $id = $q->param('id');
     push @parts, $app->user->id;
     push @parts, $blog_id || 0;
     push @parts, $id || 0;
@@ -4239,7 +4242,8 @@ sub object_edit_uri {
     die "no such object $type" unless $class;
     my $obj = $class->load($id)
         or die "object_edit_uri could not find $type object $id";
-    my $blog_id = $obj->column('blog_id') if $obj->has_column('blog_id');
+    my $blog_id;
+    $blog_id = $obj->column('blog_id') if $obj->has_column('blog_id');
     return $app->uri(
         'mode' => 'view',
         args   => {
@@ -4379,7 +4383,8 @@ sub rebuild_these {
                     or return $app->publish_error();
             }
             my $blog_id = int( $app->param('blog_id') );
-            my $this_blog = MT::Blog->load($blog_id) if $blog_id;
+            my $this_blog;
+            $this_blog = MT::Blog->load($blog_id) if $blog_id;
             $app->run_callbacks( 'rebuild', $this_blog );
             $app->run_callbacks('post_build');
         }
@@ -4728,9 +4733,10 @@ sub _load_child_blog_ids {
 }
 
 sub view {
-    my $app     = shift;
-    my $blog    = $app->blog;
-    my $blog_id = $blog->id if $blog;
+    my $app  = shift;
+    my $blog = $app->blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
 
     return
           $blog_id

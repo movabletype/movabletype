@@ -251,7 +251,8 @@ sub _hdlr_archives {
             ( $start, $end ) = ( $curr{'start'}, $curr{'end'} );
         }
         else {
-            my $entry = $curr{entries}->[0] if exists( $curr{entries} );
+            my $entry;
+            $entry = $curr{entries}->[0] if exists( $curr{entries} );
             ( $start, $end ) = ( ref $entry ? $entry->authored_on : "" );
         }
         local $ctx->{current_timestamp}      = $start;
@@ -913,9 +914,10 @@ sub _hdlr_archive_count {
         return $ctx->count_format( $count, $args );
     }
 
-    my $e       = $ctx->stash('entries');
-    my @entries = @$e if ref($e) eq 'ARRAY';
-    my $count   = scalar @entries;
+    my $e = $ctx->stash('entries');
+    my @entries;
+    @entries = @$e if ref($e) eq 'ARRAY';
+    my $count = scalar @entries;
     return $ctx->count_format( $count, $args );
 }
 

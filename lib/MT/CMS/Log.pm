@@ -36,7 +36,8 @@ PERMCHECK: {
     my $cfg = $app->config;
 
     # Filtering by blog_id
-    my $blog = $blog_class->load($blog_id) if $blog_id;
+    my $blog;
+    $blog = $blog_class->load($blog_id) if $blog_id;
     if ($blog_id) {
         my $blog_ids = $app->_load_child_blog_ids($blog_id);
         push @$blog_ids, $blog_id;

@@ -70,7 +70,8 @@ sub import_contents {
     my ( %authors, %categories );
 
     my $blog_id = $blog->id;
-    my $author_id = $author->id if $author;
+    my $author_id;
+    $author_id = $author->id if $author;
 
     my $importer        = MT::Import->importer('import_mt');
     my $additional_keys = $importer->{additional_keys};

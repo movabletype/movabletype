@@ -1605,7 +1605,8 @@ sub save {
             my $p_folder = $p->folder;
             my $dup_folder_path
                 = defined $p_folder ? $p_folder->publish_path() : '';
-            my $folder = MT::Folder->load($cat_id) if $cat_id;
+            my $folder;
+            $folder = MT::Folder->load($cat_id) if $cat_id;
             my $folder_path = defined $folder ? $folder->publish_path() : '';
             return $app->error(
                 $app->translate(

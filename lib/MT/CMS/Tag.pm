@@ -12,7 +12,8 @@ sub rename_tag {
     $app->validate_magic or return;
 
     my $perms = $app->permissions;
-    my $blog_id = $app->blog->id if $app->blog;
+    my $blog_id;
+    $blog_id = $app->blog->id if $app->blog;
     $app->can_do('rename_tag')
         or return $app->permission_denied();
     my $id   = $app->param('__id');

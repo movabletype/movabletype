@@ -818,7 +818,8 @@ sub list {
         my ( $obj, $row ) = @_;
         my $template_type;
         my $type = $row->{type} || '';
-        my $tblog = MT::Blog->load( $obj->blog_id ) if $obj->blog_id;
+        my $tblog;
+        $tblog = MT::Blog->load( $obj->blog_id ) if $obj->blog_id;
         if ( $type =~ m/^(individual|page|category|archive)$/ ) {
             $template_type = 'archive';
 

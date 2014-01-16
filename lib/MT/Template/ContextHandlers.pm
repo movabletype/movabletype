@@ -3451,7 +3451,8 @@ sub _hdlr_app_listing {
     my ( $ctx, $args, $cond ) = @_;
 
     my $type = $args->{type} || $ctx->var('object_type');
-    my $class = MT->model($type) if $type;
+    my $class;
+    $class = MT->model($type) if $type;
     my $loop = $args->{loop} || 'object_loop';
     my $loop_obj = $ctx->var($loop);
 

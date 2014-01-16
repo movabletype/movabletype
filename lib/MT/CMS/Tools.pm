@@ -2044,8 +2044,9 @@ sub dialog_restore_upload {
 
     my $objects  = {};
     my $deferred = {};
+    my $objects_json;
     require JSON;
-    my $objects_json = $q->param('objects_json') if $q->param('objects_json');
+    $objects_json = $q->param('objects_json') if $q->param('objects_json');
     $deferred = JSON::from_json( $q->param('deferred_json') )
         if $q->param('deferred_json');
 

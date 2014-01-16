@@ -488,9 +488,9 @@ sub build {
                     ? bless $tokens_else, 'MT::Template::Tokens'
                     : undef;
                 local ( $ctx->{__stash}{uncompiled} ) = $uncompiled;
-                my %args = %{ $t->attributes } if defined $t->attributes;
-                my @args = @{ $t->attribute_list }
-                    if defined $t->attribute_list;
+                my ( %args, @args );
+                %args = %{ $t->attributes }     if defined $t->attributes;
+                @args = @{ $t->attribute_list } if defined $t->attribute_list;
 
                 # process variables
                 foreach my $v ( keys %args ) {

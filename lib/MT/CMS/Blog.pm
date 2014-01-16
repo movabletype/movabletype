@@ -2057,8 +2057,8 @@ sub make_blog_list {
     my ($blogs) = @_;
 
     my $author = $app->user;
-    my $data;
-    my $can_edit_authors = 1 if $app->can_do('edit_authors');
+    my ( $data, $can_edit_authors );
+    $can_edit_authors = 1 if $app->can_do('edit_authors');
     my @blog_ids = map { $_->id } @$blogs;
     my %counts;
     my $e_iter

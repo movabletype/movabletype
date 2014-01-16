@@ -316,10 +316,11 @@ sub needs_upgrade {
     my $c  = shift;
     my $sv = $c->schema_version;
     return 0 unless defined $sv;
-    my $key     = 'PluginSchemaVersion';
-    my $id      = $c->id;
-    my $ver     = MT->config($key);
-    my $cfg_ver = $ver->{$id} if $ver;
+    my $key = 'PluginSchemaVersion';
+    my $id  = $c->id;
+    my $ver = MT->config($key);
+    my $cfg_ver;
+    $cfg_ver = $ver->{$id} if $ver;
     if ( ( !defined $cfg_ver ) || ( $cfg_ver < $sv ) ) {
         return 1;
     }

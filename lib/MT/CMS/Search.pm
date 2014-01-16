@@ -832,7 +832,8 @@ sub do_search_replace {
             {
                 if ($blog_id) {
                     require MT::Blog;
-                    my $blog = MT::Blog->load($blog_id) if $blog_id;
+                    my $blog;
+                    $blog = MT::Blog->load($blog_id) if $blog_id;
                     if (   $blog
                         && !$blog->is_blog
                         && ( $author->permissions($blog_id)
@@ -855,7 +856,8 @@ sub do_search_replace {
         else {
             if ($blog_id) {
                 require MT::Blog;
-                my $blog = MT::Blog->load($blog_id) if $blog_id;
+                my $blog;
+                $blog = MT::Blog->load($blog_id) if $blog_id;
                 if (   $blog
                     && !$blog->is_blog
                     && $author->permissions($blog_id)
