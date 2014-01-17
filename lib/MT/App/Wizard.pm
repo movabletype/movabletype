@@ -333,6 +333,18 @@ sub init_core_registry {
                 link  => 'http://search.cpan.org/dist/XML-Parser',
                 label => 'This module required for action streams.',
             },
+            'XML::SAX::ExpatXS' => {
+                link  => 'http://search.cpan.org/dist/XML-SAX-ExpatXS',
+                label => 'This module required for restoring from backup.',
+            },
+            'XML::SAX::Expat' => {
+                link  => 'http://search.cpan.org/dist/XML-SAX-Expat',
+                label => 'This module required for restoring from backup.',
+            },
+            'XML::LibXML::SAX' => {
+                link  => 'http://search.cpan.org/dist/XML-LibXML-SAX',
+                label => 'This module required for restoring from backup.',
+            },
         },
         required_packages => {
             'Image::Size' => {

@@ -761,6 +761,27 @@ my @CORE_OPT = (
         translate('This module required for action streams.')
     ],
 
+    [   'XML::SAX::ExpatXS', 1.30, 0,
+        translate(
+            '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
+            'XML::SAX::ExpatXS'
+        )
+    ],
+
+    [   'XML::SAX::Expat', 1.30, 0,
+        translate(
+            '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
+            'XML::SAX::Expat'
+        )
+    ],
+
+    [   'XML::LibXML::SAX', 0.37, 0,
+        translate(
+            '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
+            'XML::LibXML::SAX'
+        )
+    ],
+
 );
 
 use Cwd;
