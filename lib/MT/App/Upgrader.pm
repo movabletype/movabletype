@@ -362,6 +362,26 @@ sub init_user {
         }
     }
 
+    {
+        my $eh   = MT::ErrorHandler->new;
+        my $user = MT::Author->new;
+        $user->set_values(
+            {   name        => $initial_user,
+                nickname    => $initial_nickname,
+                email       => $initial_email,
+                lang        => $initial_lang,
+                external_id => $initial_external_id,
+            }
+        );
+        $user->set_password($initial_password);
+        require MT::CMS::User;
+        if (!MT::CMS::User::save_filter( $eh, $app, $user, $user->clone, 1 ) )
+        {
+            $param{error} = $eh->errstr;
+            return $app->build_page( 'install.tmpl', \%param );
+        }
+    }
+
     $initial_use_system = 1
         if $param{use_system_email};
 
