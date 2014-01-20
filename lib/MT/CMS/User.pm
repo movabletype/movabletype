@@ -1505,7 +1505,7 @@ sub can_delete {
 }
 
 sub save_filter {
-    my ( $eh, $app, $obj, $original ) = @_;
+    my ( $eh, $app, $obj, $original, $skip_encode_html ) = @_;
     my $accessor = sub {
         if ($obj) {
             my $k = shift;
@@ -1514,6 +1514,9 @@ sub save_filter {
         else {
             $app->param(@_);
         }
+    };
+    my $encode_html = sub {
+        $skip_encode_html ? $_[0] : encode_html( $_[0] );
     };
 
     my $name = $accessor->('name');
@@ -1556,7 +1559,7 @@ sub save_filter {
                 $app->translate(
                     "[_1] contains an invalid character: [_2]",
                     $app->translate("Username"),
-                    encode_html($1)
+                    $encode_html->($1)
                 )
             );
         }
@@ -1576,7 +1579,7 @@ sub save_filter {
                 $app->translate(
                     "[_1] contains an invalid character: [_2]",
                     $app->translate("Display Name"),
-                    encode_html($1)
+                    $encode_html->($1)
                 )
             );
         }
@@ -1602,7 +1605,11 @@ sub save_filter {
     return 1 if ( $pref ne 'MT' );
     if ( !$accessor->('id') ) {    # it's a new object
         return $eh->error( $app->translate("User requires password") )
-            if ( 0 == length( scalar $app->param('pass') ) );
+            if (
+            0 == length(
+                $obj ? $accessor->('password') : scalar $app->param('pass')
+            )
+            );
     }
     my $email = $accessor->('email');
     return $eh->error(
@@ -1617,7 +1624,7 @@ sub save_filter {
             $app->translate(
                 "[_1] contains an invalid character: [_2]",
                 $app->translate("Email Address"),
-                encode_html($1)
+                $encode_html->($1)
             )
         );
     }
