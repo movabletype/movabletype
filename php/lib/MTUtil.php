@@ -912,6 +912,43 @@ function encode_html($str, $quote_style = ENT_COMPAT) {
     return (strtr($str, $trans_table));
 }
 
+function encode_html_entities($str, $quote_style = ENT_COMPAT) {
+    if (!$str) {
+        return '';
+    }
+
+    static $use_htmlspecialchars;
+    static $encoding;
+    static $is_old_php;
+
+    if (! isset($is_old_php)) {
+        $is_old_php = version_compare(phpversion(), '4.3.0', '<');
+    }
+
+    if ($is_old_php) {
+        return htmlentities($str, $quote_style);
+    }
+
+    if (! isset($use_htmlspecialchars)) {
+        $mt = MT::get_instance();
+        $encoding = strtolower($mt->config('PublishCharset'));
+        $use_htmlspecialchars = !in_array($encoding, array(
+            'iso-8859-1', 'iso8859-1',
+            'iso-8859-5', 'iso8859-5',
+            'iso-8859-15', 'iso8859-15',
+            'utf-8',
+            'cp866', 'ibm866', '866',
+            'cp1251', 'windows-1251', 'win-1251', '1251',
+            'cp1252', 'windows-1252', '1252',
+            'koi8-r', 'koi8-ru', 'koi8r'
+        ), true);
+    }
+
+    return $use_htmlspecialchars ?
+        htmlspecialchars($str, $quote_style, $encoding) :
+        htmlentities($str, $quote_style, $encoding);
+}
+
 function decode_html($str, $quote_style = ENT_COMPAT) {
     if (!isset($str)) return '';
     $trans_table = get_html_translation_table(HTML_SPECIALCHARS, $quote_style);

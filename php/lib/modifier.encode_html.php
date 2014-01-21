@@ -6,12 +6,6 @@
 # $Id$
 
 function smarty_modifier_encode_html($text) {
-    if (version_compare(phpversion(), '4.3.0', '>=')) {
-        $mt = MT::get_instance();
-        $charset = $mt->config('PublishCharset');
-        return htmlentities($text, ENT_COMPAT, $charset);
-    } else {
-        return htmlentities($text, ENT_COMPAT);
-    }
+    return encode_html_entities($text, ENT_COMPAT);
 }
 ?>

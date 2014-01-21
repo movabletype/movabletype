@@ -813,14 +813,8 @@ class MT {
     function error_handler($errno, $errstr, $errfile, $errline) {
         if ($errno & (E_ALL ^ E_NOTICE)) {
             if ( !empty( $this->db ) ) {
-                if (version_compare(phpversion(), '4.3.0', '>=')) {
-                    $charset = $this->config('PublishCharset');
-                    $errstr = htmlentities($errstr, ENT_COMPAT, $charset);
-                    $errfile = htmlentities($errfile, ENT_COMPAT, $charset);
-                } else {
-                    $errstr = htmlentities($errstr, ENT_COMPAT);
-                    $errfile = htmlentities($errfile, ENT_COMPAT);
-                }
+                $errstr = encode_html_entities($errstr, ENT_COMPAT);
+                $errfile = encode_html_entities($errfile, ENT_COMPAT);
                 $mtphpdir = $this->config('PHPDir');
                 $ctx =& $this->context();
                 $ctx->stash('blog_id', $this->blog_id);
