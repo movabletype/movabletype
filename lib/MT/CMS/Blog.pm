@@ -62,6 +62,9 @@ sub edit {
             my %auth = %{ $cmtauth_reg->{$auth} };
             $cmtauth{$auth} = \%auth;
             if ( my $c = $cmtauth_reg->{$auth}->{condition} ) {
+                delete $cmtauth{$auth}, next
+                    if $cmtauth_reg->{$auth}->{disable};
+
                 $c = $app->handler_to_coderef($c);
                 if ($c) {
                     my $reason;
