@@ -336,14 +336,17 @@ sub init_core_registry {
             'XML::SAX::ExpatXS' => {
                 link  => 'http://search.cpan.org/dist/XML-SAX-ExpatXS',
                 label => 'This module required for restoring from backup.',
+                version => 1.30,
             },
             'XML::SAX::Expat' => {
                 link  => 'http://search.cpan.org/dist/XML-SAX-Expat',
                 label => 'This module required for restoring from backup.',
+                version => 0.37,
             },
             'XML::LibXML::SAX' => {
                 link  => 'http://search.cpan.org/dist/XML-LibXML-SAX',
                 label => 'This module required for restoring from backup.',
+                version => 1.70,
             },
         },
         required_packages => {

@@ -768,14 +768,14 @@ my @CORE_OPT = (
         )
     ],
 
-    [   'XML::SAX::Expat', 1.30, 0,
+    [   'XML::SAX::Expat', 0.37, 0,
         translate(
             '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
             'XML::SAX::Expat'
         )
     ],
 
-    [   'XML::LibXML::SAX', 0.37, 0,
+    [   'XML::LibXML::SAX', 1.70, 0,
         translate(
             '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
             'XML::LibXML::SAX'
