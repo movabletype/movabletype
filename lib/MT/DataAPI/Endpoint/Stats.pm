@@ -75,8 +75,17 @@ sub fill_in_archive_info {
     my ( @in_paths, @like_paths );
 
     foreach my $i ( @{ $data->{items} } ) {
+        for my $k (qw(archiveType entry category author startDate)) {
+            $i->{$k} = undef;
+        }
+
         my $path = $i->{path};
-        $items{$path} = $i;
+        if ( $items{$path} ) {
+            push @{ $items{$path} }, $i;
+            next;
+        }
+
+        $items{$path} = [$i];
 
         if ( $path =~ m#/\z# ) {
             $path =~ s{/\z}{/index.%};
@@ -85,10 +94,6 @@ sub fill_in_archive_info {
         }
         else {
             push @in_paths, $path;
-        }
-
-        for my $k (qw(archiveType entry category author)) {
-            $i->{$k} = undef;
         }
     }
 
@@ -105,24 +110,30 @@ sub fill_in_archive_info {
     );
 
     while ( my $fi = $iter->() ) {
-        my $url = $fi->url;
-        my $i   = $items{$url};
-        if ( !$i ) {
+        my $url       = $fi->url;
+        my $item_list = $items{$url};
+        if ( !$item_list ) {
             $url =~ s#\/index\.[^/]+\z#/#g;
-            $i = $items{$url};
+            $item_list = $items{$url};
         }
-        next unless $i;
+        next unless $item_list;
 
-        $i->{archiveType} = $fi->archive_type if defined $fi->archive_type;
+        my $item = shift @$item_list;
+        $item->{archiveType} = $fi->archive_type if defined $fi->archive_type;
         for my $k (qw(entry_id category_id author_id)) {
             if ( defined $fi->$k ) {
                 ( my $hk = $k ) =~ s/_.*//g;
-                $i->{$hk} = { id => $fi->$k, };
+                $item->{$hk} = { id => $fi->$k, };
             }
         }
-        ( $i->{startDate} = $fi->startdate )
+        ( $item->{startDate} = $fi->startdate )
             =~ s/(\d{4})(\d{2})(\d{2}).*/$1-$2-$3/
             if defined $fi->startdate;
+
+        for my $i (@$item_list) {
+            $i->{$_} = $item->{$_}
+                for qw(archiveType entry category author startDate);
+        }
     }
 
     $data;
