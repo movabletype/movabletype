@@ -86,12 +86,17 @@
     get_graph_data('<mt:var name="stat_url">', true);
 
     function get_graph_data(stat_url, retry) {
-      jQuery.getJSON(stat_url+"?callback=?", function(data) {
-      })
-      .error(function(xhr) {
-        if (retry && xhr.status === 404) {
-          jQuery('select#select_blog_id').triggerHandler('change');
-        }
+      jQuery.ajax(stat_url, {
+        dataType: 'jsonp',
+        jsonpCallback: 'widget_site_stats_draw_graph',
+        error: function(xhr) {
+            if (retry && xhr.status === 404) {
+              jQuery('select#select_blog_id').triggerHandler('change');
+            }
+          },
+        success: function(data) {
+            widget_site_stats_draw(data);
+          }
       });
     }
 
@@ -101,9 +106,7 @@
       return num;
     }
 
-  });
-
-  function widget_site_stats_draw_graph(data) {
+  function widget_site_stats_draw(data) {
       jQuery('.site-stats-widget .down-column').css('height', '');
 
       var hover_data = data.hover_data.data;
@@ -147,7 +150,10 @@
         </mt:if>
         jQuery('#statistics_settings_link').show();
       }
-  }
+    }
+
+  });
+
   /* ]]> */
 </script>
 </mt:setvarblock>
