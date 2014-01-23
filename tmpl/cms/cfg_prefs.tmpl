@@ -641,7 +641,7 @@ function setLicense() {
             return ret;
         },
         "#site_url": function($e) {
-            return is_valid_url('<mt:var name="website_url" escape="js">' + $e.val());
+            return is_valid_url('<mt:if name="is_blog"><mt:var name="website_url" escape="js"></mt:If>' + $e.val());
         },
         "#site_path": function($e) {
             return is_valid_path($e.val());
