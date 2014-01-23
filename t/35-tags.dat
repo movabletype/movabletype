@@ -732,5 +732,7 @@
 { "r" : "1", "t" : "<MTPages><MTPagePrevious by_category='1'><MTPageID></MTPagePrevious></MTPages>", "e" : "" }, #716
 { "r" : "1", "t" : "<MTPages><MTPageNext by_folder='1'><MTPageID></MTPageNext></MTPages>", "e" : "" }, #717
 { "r" : "1", "t" : "<MTPages><MTPagePrevious by_folder='1'><MTPageID></MTPagePrevious></MTPages>", "e" : "" }, #718
-{ "r" : "1", "t" : "foo<MTFor decode_html='1'>bar</MTFor>baz", "e" : "foobarbaz" } #719
+{ "r" : "1", "t" : "foo<MTFor decode_html='1'>bar</MTFor>baz", "e" : "foobarbaz" }, #719
+{ "r" : "1", "t" : "<MTSubFolders show_empty=\"1\" top=\"1\"><MTHasParentFolder>Parent of <MTFolderLabel> is <MTParentFolder><MTFolderLabel></MTParentFolder></MTHasParentFolder><MTHasNoParentFolder><MTFolderLabel> has no parent</MTHasNoParentFolder>; <MTSubFolderRecurse></MTSubFolders>", "e" : "download has no parent; Parent of nightly is download; info has no parent; "}, #720
+{ "r" : "1", "t" : "<MTTopLevelFolders show_empty=\"1\"><MTFolderLabel><MTHasSubFolders> (has subcategories)</MTHasSubFolders><MTHasNoSubFolders> (has no subcategories)</MTHasNoSubFolders></MTTopLevelFolders>", "e" : "download (has subcategories)info (has no subcategories)"} #721
 ]

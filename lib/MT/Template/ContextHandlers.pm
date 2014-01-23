@@ -267,8 +267,12 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Folder::_hdlr_folder_prevnext',
             SubFolders =>
                 '$Core::MT::Template::Tags::Folder::_hdlr_sub_folders',
+            'HasNoSubFolders?' =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_has_no_sub_folders',
             ParentFolders =>
                 '$Core::MT::Template::Tags::Folder::_hdlr_parent_folders',
+            'HasNoParentFolder?' =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_has_no_parent_folder',
             ParentFolder =>
                 '$Core::MT::Template::Tags::Folder::_hdlr_parent_folder',
             TopLevelFolders =>
