@@ -4952,7 +4952,12 @@ sub pre_run {
     my $user = $app->user;
 
     # Return if mode was 'upgrade' or 'filtered_list',
-    return if $app->mode eq 'upgrade' or $app->mode eq 'filtered_list';
+    my $method_info = MT->request('method_info') || {};
+    return
+        if ( exists $method_info->{requires_login}
+        && $method_info->{requires_login} == 0 )
+        or $app->param('xhr')
+        or ( $method_info->{app_mode} || '' ) eq 'JSON';
 
     # Message Center
     my @messages;
