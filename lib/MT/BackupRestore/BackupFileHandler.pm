@@ -120,19 +120,26 @@ sub start_element {
                     = map { $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value} }
                     keys(%$attrs);
 
-                # Replace directory separators in $asset->file_path properly.
-                if ( $class =~ /^MT::Asset/ ) {
+                # Replace directory separators properly.
+                if (   $class =~ /^MT::Asset/
+                    || $class eq 'MT::Blog'
+                    || $class eq 'MT::Website' )
+                {
+                    my $key
+                        = $class =~ /^MT::Asset/
+                        ? 'file_path'
+                        : 'upload_path';
                     my ($separator)
-                        = ( $column_data{file_path} =~ m!^%\w(/|\\)! );
+                        = ( $column_data{$key} =~ m!^%\w(/|\\)! );
                     if ( $separator eq '/' && $is_mswin32 ) {
 
                         # *nix => Windows
-                        $column_data{file_path} =~ s!/!\\!g;
+                        $column_data{$key} =~ s!/!\\!g;
                     }
                     elsif ( $separator eq '\\' && !$is_mswin32 ) {
 
                         # Windows => *nix
-                        $column_data{file_path} =~ s!\\!/!g;
+                        $column_data{$key} =~ s!\\!/!g;
                     }
                 }
 
