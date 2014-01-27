@@ -560,6 +560,10 @@ function setLicense() {
         return false;
     });
 
+    function is_valid_subdomain(subdomain) {
+        return subdomain.match(/^[a-z0-9]([a-z0-9-\.]*[a-z0-9])?$/);
+    }
+
     function is_valid_url(url_){
         if (url_.indexOf(' ') != -1) {
             return false;
@@ -608,10 +612,14 @@ function setLicense() {
             var base = '<mt:var name="website_scheme">://<mt:var name="website_domain" encode_html="1">';
             var chk = jQuery($e).parents('.url-field:first').find(':checkbox:checked');
             var subdomain = jQuery($e).parents('.url-field:first').find('.blog-subdomain-text');
+            var ret_subdomain = true;
             if ( chk.length && subdomain.val().length) {
-                base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain" encode_html="1">';
+                ret_subdomain = is_valid_subdomain(subdomain.val());
+                if (ret_subdomain) {
+                    base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain" encode_html="1">';
+                }
             }
-            var ret = is_valid_url(base + $e.val());
+            var ret = ret_subdomain && is_valid_url(base + $e.val());
             if (ret) {
                 subdomain.addClass('valid').removeClass('error');
             }
@@ -628,10 +636,14 @@ function setLicense() {
             var base = '<mt:var name="website_scheme">://<mt:var name="website_domain" encode_html="1">';
             var chk = jQuery($e).parents('.url-field:first').find(':checkbox:checked');
             var subdomain = jQuery($e).parents('.url-field:first').find('.blog-subdomain-text');
+            var ret_subdomain = true;
             if ( chk.length && subdomain.val().length) {
-                base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain" encode_html="1">';
+                ret_subdomain = is_valid_subdomain(subdomain.val());
+                if (ret_subdomain) {
+                    base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain" encode_html="1">';
+                }
             }
-            var ret = is_valid_url(base + $e.val());
+            var ret = ret_subdomain && is_valid_url(base + $e.val());
             if (ret) {
                 subdomain.addClass('valid').removeClass('error');
             }
