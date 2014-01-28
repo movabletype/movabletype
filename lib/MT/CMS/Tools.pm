@@ -1824,6 +1824,101 @@ sub adjust_sitepath {
             or $app->print_encode( $app->translate("failed") . "\n" ), next;
         $app->print_encode( $app->translate("ok") . "\n" );
 
+        ## Change FileInfo
+        my $fileinfo_class = $app->model('fileinfo');
+        my @fileinfo = $fileinfo_class->load( { blog_id => $id } );
+
+        my $delim = $^O eq 'MSWin32' ? '\\' : '/';
+
+        foreach my $fi (@fileinfo) {
+
+            ### Change fileinfo_file_path
+
+            # Use adequate path according to archive type.
+            my ( $old_path, $path );
+            if ( $fi->archive_type eq 'index' || $fi->archive_type eq 'Page' )
+            {
+                $old_path = $old_site_path;
+                $path     = $blog->site_path;
+            }
+            else {
+                $old_path
+                    = $old_archive_path ? $old_archive_path : $old_site_path;
+                $path = $blog->archive_path;
+            }
+
+            my $old_delim        = $fi->file_path =~ m/^\// ? '/' : '\\';
+            my $quoted_old_delim = quotemeta $old_delim;
+            my $quoted_old_path  = quotemeta $old_path;
+
+            # Remove site/archive path part in fileinfo_file_path.
+            my $file_path = $fi->file_path;
+            if ( $blog->is_blog ) {
+                $file_path =~ s/^.*$quoted_old_path(.*)$/$1/;
+                $file_path =~ s/$quoted_old_delim$//;
+            }
+            else {
+                $file_path =~ s/^$quoted_old_path//;
+            }
+
+            # Replace delimiters if needing.
+            $file_path =~ s/^$quoted_old_delim//;
+            if ( $old_delim ne $delim ) {
+                $file_path =~ s/$quoted_old_delim/$delim/g;
+            }
+
+            $fi->file_path( File::Spec->catfile( $path, $file_path ) );
+
+            $app->print_encode(
+                $app->translate(
+                    "Changing File Path for the FileInfo (ID:[_1])...",
+                    $fi->id
+                )
+            );
+
+            ## Change fileinfo_url
+            my ( $old_rel_url, $rel_url );
+            if ( $blog->is_blog ) {
+
+                # Add slash to the head and the end of rel_url if needing.
+                $old_rel_url = $old_site_path;
+                $old_rel_url = '/' . $old_rel_url
+                    unless $old_rel_url =~ m/^\//;
+                $old_rel_url = $old_rel_url . '/'
+                    unless $old_rel_url =~ m/\/$/;
+
+                $rel_url = $site_url_path;
+                $rel_url = '/' . $rel_url unless $rel_url =~ m/^\//;
+                $rel_url = $rel_url . '/' unless $rel_url =~ m/\/$/;
+            }
+            else {
+                # Leave directory only.
+                ($old_rel_url)
+                    = ( $old_site_url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)| );
+                ($rel_url) = ( $site_url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)| );
+            }
+
+            my $url                = $fi->url;
+            my $quoted_old_rel_url = quotemeta $old_rel_url;
+
+            # Replace old rel_url with new one.
+            $url =~ s!$quoted_old_rel_url!$rel_url!;
+
+            $fi->url($url);
+
+            $app->print_encode(
+                "\n"
+                    . $app->translate(
+                    "Changing URL for the FileInfo (ID:[_1])...", $fi->id
+                    )
+            );
+
+            $fi->save
+                or $app->print_encode( $app->translate("failed") . "\n" ),
+                next;
+            $app->print_encode( $app->translate("ok") . "\n" );
+        }
+
         $blogs_meta{$id} = {
             'old_archive_path' => $old_archive_path,
             'old_archive_url'  => $old_archive_url,
