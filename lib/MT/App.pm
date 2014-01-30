@@ -12,7 +12,7 @@ use base qw( MT );
 use File::Spec;
 use MT::Request;
 use MT::Util qw( encode_html offset_time_list decode_html encode_url
-    is_valid_email is_url escape_unicode extract_url_path);
+    is_valid_email is_url escape_unicode extract_url_path merge_hash );
 use MT::I18N qw( wrap_text );
 
 my $COOKIE_NAME = 'mt_user';
@@ -1039,7 +1039,7 @@ sub registry {
     my $gr;
     $gr = $app->SUPER::registry(@_) if @_;
     if ($ar) {
-        MT::__merge_hash( $ar, $gr );
+        merge_hash( $ar, $gr );
         return $ar;
     }
     return $gr;

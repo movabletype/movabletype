@@ -7,7 +7,8 @@ package MT::CMS::Entry;
 
 use strict;
 use MT::Util qw( format_ts relative_date remove_html encode_html encode_js
-    encode_url archive_file_for offset_time_list break_up_text first_n_words );
+    encode_url archive_file_for offset_time_list break_up_text first_n_words
+    merge_hash );
 use MT::I18N qw( const wrap_text );
 
 sub edit {
@@ -3121,7 +3122,7 @@ sub delete {
         $app->run_callbacks( 'cms_post_delete.entry', $app, $obj );
 
         my $child_hash = $rebuild_recipe{ $obj->blog->id } || {};
-        MT::__merge_hash( $child_hash, \%recipe );
+        merge_hash( $child_hash, \%recipe );
         $rebuild_recipe{ $obj->blog->id } = $child_hash;
 
         # Clear cache for site stats dashboard widget.

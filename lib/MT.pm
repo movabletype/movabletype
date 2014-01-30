@@ -11,7 +11,7 @@ use base qw( MT::ErrorHandler );
 use filetest 'access';
 use File::Spec;
 use File::Basename;
-use MT::Util qw( weaken );
+use MT::Util qw( merge_hash weaken );
 use MT::I18N qw( const );
 
 our ( $VERSION, $SCHEMA_VERSION );
@@ -410,37 +410,10 @@ sub registry {
             return $regs unless ref($cr) eq 'HASH';
 
             delete $cr->{plugin} if exists $cr->{plugin};
-            __merge_hash( $r ||= {}, $cr );
+            merge_hash( $r ||= {}, $cr );
         }
     }
     return $r;
-}
-
-# merges contents of two hashes, giving preference to the right side
-# if $replace is true; otherwise it will always append to the left side.
-sub __merge_hash {
-    my ( $h1, $h2, $replace ) = @_;
-    for my $k ( keys(%$h2) ) {
-        if ( exists( $h1->{$k} ) && ( !$replace ) ) {
-            if ( ref $h1->{$k} eq 'HASH' ) {
-                __merge_hash( $h1->{$k}, $h2->{$k}, ( $replace || 0 ) + 1 );
-            }
-            elsif ( ref $h1->{$k} eq 'ARRAY' ) {
-                if ( ref $h2->{$k} eq 'ARRAY' ) {
-                    push @{ $h1->{$k} }, @{ $h2->{$k} };
-                }
-                else {
-                    push @{ $h1->{$k} }, $h2->{$k};
-                }
-            }
-            else {
-                $h1->{$k} = [ $h1->{$k}, $h2->{$k} ];
-            }
-        }
-        else {
-            $h1->{$k} = $h2->{$k};
-        }
-    }
 }
 
 # The above functions can all be used to make MT objects (and subobjects).

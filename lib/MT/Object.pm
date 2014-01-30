@@ -10,7 +10,7 @@ use strict;
 use base qw( Data::ObjectDriver::BaseObject MT::ErrorHandler );
 
 use MT;
-use MT::Util qw(offset_time_list);
+use MT::Util qw( merge_hash offset_time_list );
 
 my ( @PRE_INIT_PROPS, @PRE_INIT_META );
 
@@ -170,7 +170,7 @@ sub install_properties {
         my $cols = {};
         for my $prop (@$more_props) {
             next if ref($prop) ne 'HASH';
-            MT::__merge_hash( $cols, $prop, 1 );
+            merge_hash( $cols, $prop, 1 );
         }
         my @classes = grep { !ref($_) } @$more_props;
         foreach my $isa_class (@classes) {

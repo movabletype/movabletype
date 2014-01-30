@@ -8,7 +8,7 @@ package MT::Component;
 
 use strict;
 use base qw( Class::Accessor::Fast MT::ErrorHandler );
-use MT::Util qw( encode_js weaken );
+use MT::Util qw( encode_js merge_hash weaken );
 
 __PACKAGE__->mk_accessors(qw( id path envelope version schema_version ));
 
@@ -195,7 +195,7 @@ sub callbacks {
         my $r = $c->registry(@path);
         if ($r) {
             my $cb = _getset( $r, 'callbacks' ) || {};
-            MT::__merge_hash( $root_cb, $cb );
+            merge_hash( $root_cb, $cb );
         }
     }
     return $root_cb;
@@ -321,6 +321,7 @@ sub needs_upgrade {
     my $ver = MT->config($key);
     my $cfg_ver;
     $cfg_ver = $ver->{$id} if $ver;
+
     if ( ( !defined $cfg_ver ) || ( $cfg_ver < $sv ) ) {
         return 1;
     }

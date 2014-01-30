@@ -11,6 +11,7 @@ use utf8;
 use base 'Exporter';
 use MT::I18N qw( const );
 use Time::Local qw( timegm );
+use Hash::Merge qw( _merge_hashes );
 
 our @EXPORT_OK
     = qw( start_end_day start_end_week start_end_month start_end_year
@@ -29,7 +30,7 @@ our @EXPORT_OK
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
-    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi );
+    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi merge_hash );
 
 {
     my $Has_Weaken;
@@ -2836,6 +2837,50 @@ sub clear_site_stats_widget_cache {
     }
 }
 
+{
+    my $merge = Hash::Merge->new;
+    $merge->set_clone_behavior(0);
+    $merge->specify_behavior(
+        {   'SCALAR' => {
+                'SCALAR' => sub { [ $_[0], $_[1] ] },
+                'ARRAY'  => sub { [ $_[0], @{ $_[1] } ] },
+                'HASH'   => sub { [ $_[0], $_[1] ] },
+            },
+            'ARRAY' => {
+                'SCALAR' => sub { [ @{ $_[0] }, $_[1] ] },
+                'ARRAY'  => sub { [ @{ $_[0] }, @{ $_[1] } ] },
+                'HASH'   => sub { [ @{ $_[0] }, $_[1] ] },
+            },
+            'HASH' => {
+                'SCALAR' => sub { [ $_[0],              $_[1] ] },
+                'ARRAY'  => sub { [ $_[0],              @{ $_[1] } ] },
+                'HASH'   => sub { _merge_hashes( $_[0], $_[1] ) },
+            },
+        },
+        'MT_REGISTRY',
+    );
+
+    sub merge_hash {
+        my ( $h1, $h2, $replace ) = @_;
+
+        return unless ref($h2) eq 'HASH';
+
+        if ($replace) {
+            $h1->{$_} = $h2->{$_} for keys %$h2;
+            return;
+        }
+
+        for my $k ( keys %$h2 ) {
+            if ( exists $h1->{$k} ) {
+                $h1->{$k} = $merge->merge( $h1->{$k}, $h2->{$k} );
+            }
+            else {
+                $h1->{$k} = $h2->{$k};
+            }
+        }
+    }
+}
+
 package MT::Util::XML::SAX::LexicalHandler;
 
 sub start_dtd {
@@ -3095,6 +3140,13 @@ Clear caches for site stats dashboard widget.
 Check whether MT runs under FastCGI. The result is kept while the process runs. If $ENV{FAST_CGI}
 is defined, the result is determined based on this value. If $param is defined, the result is
 determined by reference to this value.
+
+=head2 merge_hash( $hash1, $hash2 )
+
+Merges contents of two hashes, giving preference to the right side
+if $replace is true; otherwise it will always append to the left side.
+
+Hash and not-hash are not merged. Output hash in this case.
 
 =back
 
