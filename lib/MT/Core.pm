@@ -690,6 +690,11 @@ BEGIN {
                             = $prop->datasource->has_column('author_id')
                             ? 'author_id'
                             : 'created_by';
+
+                      # If there's no value in the column then no voter ID was
+                      # recorded.
+                        return '' if !$obj->$col;
+
                         my $author = MT->model('author')->load( $obj->$col );
                         return $author
                             ? ( $author->nickname || $author->name )
