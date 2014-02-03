@@ -815,7 +815,7 @@ sub init_permissions {
     MT::Permission->init_permissions;
 }
 
-sub init_config {
+sub init_cfg_file {
     my $mt = shift;
     my ($param) = @_;
 
@@ -828,6 +828,15 @@ sub init_config {
         $cfg_file = File::Spec->rel2abs($cfg_file);
         $mt->{cfg_file} = $cfg_file;
     }
+
+    1;
+}
+
+sub init_config {
+    my $mt = shift;
+    my ($param) = @_;
+
+    $mt->init_cfg_file(@_) or return $mt->error( $mt->errstr );
 
     # translate the config file's location to an absolute path, so we
     # can use that directory as a basis for calculating other relative
@@ -1970,6 +1979,10 @@ sub update_ping_list {
         return $LH;
     }
 
+    sub set_language_default {
+        $_[0]->set_language('en_US') unless $LH;
+    }
+
     sub translate {
         my $this = shift;
         my $app = ref($this) ? $this : $this->app;
@@ -1983,6 +1996,7 @@ sub update_ping_list {
         foreach (@args) {
             $_ = $_->() if ref($_) eq 'CODE';
         }
+        $this->set_language_default unless $LH;
         my $text = $LH->maketext( $format, @args );
         return $text;
     }
@@ -2061,8 +2075,15 @@ sub update_ping_list {
         return $text;
     }
 
-    sub current_language { $LH->language_tag }
-    sub language_handle  {$LH}
+    sub current_language {
+        $_[0]->set_language_default unless $LH;
+        $LH->language_tag;
+    }
+
+    sub language_handle {
+        $_[0]->set_language_default unless $LH;
+        $LH;
+    }
 
     sub charset {
         my $mt = shift;
