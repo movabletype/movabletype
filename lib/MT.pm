@@ -12,7 +12,6 @@ use filetest 'access';
 use File::Spec;
 use File::Basename;
 use MT::Util qw( weaken );
-use MT::I18N qw( const );
 
 our ( $VERSION, $SCHEMA_VERSION );
 our (
@@ -98,7 +97,8 @@ sub schema_version  {$SCHEMA_VERSION}
 sub release_number  {$RELEASE_NUMBER}
 
 sub portal_url {
-    if ( my $url = const('PORTAL_URL') ) {
+    require MT::I18N;
+    if ( my $url = MT::I18N::const('PORTAL_URL') ) {
         return $url;
     }
     return $PORTAL_URL;
@@ -1178,6 +1178,8 @@ sub init_core {
 }
 
 sub i18n_default_settings {
+    require MT::I18N;
+
     my %settings = (
         'NewsboxURL'         => 'NEWSBOX_URL',
         'SupportURL'         => 'SUPPORT_URL',
@@ -1193,7 +1195,7 @@ sub i18n_default_settings {
     );
 
     foreach my $key ( keys %settings ) {
-        $settings{$key} = const( $settings{$key} );
+        $settings{$key} = MT::I18N::const( $settings{$key} );
     }
 
     \%settings;
