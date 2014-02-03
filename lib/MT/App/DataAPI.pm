@@ -13,7 +13,7 @@ use base qw( MT::App );
 use MT::DataAPI::Resource;
 use MT::DataAPI::Format;
 use MT::App::CMS::Common;
-use MT::AccessToken;
+use MT::DataAPI::ResponseCache;
 
 our %endpoints = ();
 
@@ -456,6 +456,11 @@ sub init_plugins {
             $pkg
                 . 'list_permission_filter.permission' =>
                 "${pfx}Permission::can_list",
+
+            # ResponseCache
+            $pkg
+                . 'response_cache_filter' =>
+                '$Core::MT::DataAPI::ResponseCache::filter',
         }
     );
 
@@ -739,6 +744,8 @@ sub authenticate {
         unless $data
         && exists $data->{MTAuth}{accessToken};
 
+    require MT::AccessToken;
+
     my $session
         = MT::AccessToken->load_session( $data->{MTAuth}{accessToken} || '' )
         or return undef;
@@ -835,6 +842,7 @@ sub purge_session_records {
     my $class = shift;
 
     require MT::Session;
+    require MT::AccessToken;
 
     # remove expired user sessions
     MT::Core::purge_user_session_records( $class->session_kind,
@@ -1021,6 +1029,16 @@ sub load_default_page_prefs {
 
 sub api {
     my ($app) = @_;
+
+    if ( my $response = MT::DataAPI::ResponseCache->get($app) ) {
+        $app->set_header( $_, $response->{headers}{$_} )
+            for keys %{ $response->{headers} };
+        $app->send_http_header( $response->{mime_type} );
+        $app->{no_print_body} = 1;
+        $app->print_encode( $response->{body} );
+        return undef;
+    }
+
     my ( $version, $path ) = $app->_version_path;
 
     return $app->print_error( 'API Version is required', 400 )
@@ -1101,6 +1119,9 @@ sub api {
 
         $app->{no_print_body} = 1;
         $app->print_encode($data);
+
+        MT::DataAPI::ResponseCache->set( $app, $format->{mime_type}, $data );
+
         undef;
     }
     elsif ( lc($request_method) eq 'options' && !$response ) {

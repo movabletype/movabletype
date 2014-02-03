@@ -347,6 +347,10 @@ sub init_core_callbacks {
             $pkg
                 . 'delete_permission_filter.role' =>
                 "${pfx}User::can_delete_role",
+
+            'MT::Touch::post_save' =>
+                '$Core::MT::DataAPI::ResponseCache::touch_post_save',
+            'take_down' => '$Core::MT::DataAPI::ResponseCache::update_touch',
         }
     );
 }

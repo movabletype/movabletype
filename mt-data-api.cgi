@@ -8,4 +8,18 @@
 
 use strict;
 use lib $ENV{MT_HOME} ? "$ENV{MT_HOME}/lib" : 'lib';
+
+BEGIN {
+    require MT::Util;
+    if ( !MT::Util::check_fast_cgi() ) {
+        require MT::DataAPI::ResponseCache;
+        if ( my $response = MT::DataAPI::ResponseCache->get ) {
+            print $response->{rendered_headers};
+            print $response->{body};
+            exit();
+        }
+        MT::DataAPI::ResponseCache->disable unless $ENV{MOD_PERL};
+    }
+}
+
 use MT::Bootstrap App => 'MT::App::DataAPI';
