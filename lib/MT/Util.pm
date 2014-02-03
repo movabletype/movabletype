@@ -9,8 +9,7 @@ package MT::Util;
 use strict;
 use utf8;
 use base 'Exporter';
-use MT::I18N qw( const );
-use Time::Local qw( timegm );
+use Carp;
 
 our @EXPORT_OK
     = qw( start_end_day start_end_week start_end_month start_end_year
@@ -92,6 +91,7 @@ sub iso2ts {
     my ( $y, $mo, $d, $h, $m, $s, $offset )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
     if ( $offset && !MT->config->IgnoreISOTimezones ) {
+        require Time::Local;
         $mo--;
         my $time = Time::Local::timegm_nocheck( $s, $m, $h, $d, $mo, $y );
         ## If it's not already in UTC, first convert to UTC.
@@ -132,6 +132,7 @@ sub ts2iso {
         );
     }
     else {
+        require Time::Local;
         $ts = Time::Local::timegm_nocheck( $sc, $mn, $hr, $dy, $mo - 1, $yr );
         ( $sc, $mn, $hr, $dy, $mo, $yr )
             = offset_time_list( $ts, $blog, '-' );
@@ -146,6 +147,7 @@ sub ts2epoch {
     my ( $blog, $ts, $no_offset ) = @_;
     return unless $ts;
     my ( $yr, $mo, $dy, $hr, $mn, $sc ) = unpack( 'A4A2A2A2A2A2', $ts );
+    require Time::Local;
     my $epoch
         = Time::Local::timegm_nocheck( $sc, $mn, $hr, $dy, $mo - 1, $yr );
     return unless $epoch;
@@ -1163,6 +1165,8 @@ sub munge_comment {
 # title and, if that already exists, an appended ctr is incremented
 # until we get a non-existent basename
 sub make_unique_basename {
+    require MT::I18N;
+
     my ($entry) = @_;
     my $blog    = MT::Blog->load( $entry->blog_id );
     my $title   = $entry->title;
@@ -1171,7 +1175,7 @@ sub make_unique_basename {
     if ( $title eq '' ) {
         if ( my $text = $entry->text ) {
             $title = first_n_words( $text,
-                const('LENGTH_ENTRY_TITLE_FROM_TEXT') );
+                MT::I18N::const('LENGTH_ENTRY_TITLE_FROM_TEXT') );
         }
         $title = 'Post' if $title eq '';
     }
@@ -1416,6 +1420,9 @@ sub is_url {
 sub discover_tb {
     my ( $url, $find_all, $contents ) = @_;
     my $c = '';
+
+    require MT::I18N;
+
     if ($contents) {
         $c = $$contents;
     }
@@ -1467,7 +1474,8 @@ sub discover_tb {
         $item->{title} = decode_xml( $item->{'dc:title'} );
         if ( !$item->{title} && $rdf =~ m!dc:description="([^"]+)"! ) {    #"
             $item->{title}
-                = first_n_words( $1, const('LENGTH_ENTRY_TITLE_FROM_TEXT') )
+                = first_n_words( $1,
+                MT::I18N::const('LENGTH_ENTRY_TITLE_FROM_TEXT') )
                 . '...';
         }
         push @items, $item;
