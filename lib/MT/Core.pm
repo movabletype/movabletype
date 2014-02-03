@@ -22,6 +22,7 @@ sub name {
 my $core_registry;
 
 BEGIN {
+    require MT::Core::Config;
     $core_registry = {
         version        => MT->VERSION,
         schema_version => MT->schema_version,
@@ -1644,6 +1645,9 @@ BEGIN {
         backup_instructions => \&load_backup_instructions,
         permissions         => \&load_core_permissions,
         config_settings     => {
+            %$MT::Core::Config::common,
+            %$MT::Core::Config::database,
+            %$MT::Core::Config::middleware,
             'AtomApp' => {
                 type    => 'HASH',
                 default => {
@@ -1658,14 +1662,6 @@ BEGIN {
             'RequiredCompatibility'        => { default => 0 },
             'EnableSessionKeyCompat'       => { default => 0 },
             'NotifyUpgrade'                => { default => 1 },
-            'Database'                     => undef,
-            'DBHost'                       => undef,
-            'DBSocket'                     => undef,
-            'DBPort'                       => undef,
-            'DBUser'                       => undef,
-            'DBPassword'                   => undef,
-            'DBMaxRetries'                 => { default => 3 },
-            'DBRetryInterval'              => { default => 1 },
             'PIDFilePath'                  => undef,
             'DefaultLanguage'              => { default => 'en_US', },
             'LocalPreviews'                => { default => 0 },
@@ -1757,7 +1753,6 @@ BEGIN {
             'HTMLPerms'             => { default => '0666', },
             'UploadPerms'           => { default => '0666', },
             'NoTempFiles'           => { default => 0, },
-            'TempDir'               => { default => '/tmp', },
             'RichTextEditor'        => { default => 'archetype', },
             'WYSIWYGEditor'         => undef,
             'SourceEditor'          => undef,
@@ -1952,9 +1947,6 @@ BEGIN {
             'UnpublishPostFrequency' => { default => 1 },
             'AssetCacheDir'          => { default => 'assets_c', },
             'IncludesDir'            => { default => 'includes_c', },
-            'MemcachedServers'       => { type    => 'ARRAY', },
-            'MemcachedNamespace'     => undef,
-            'MemcachedDriver'        => { default => 'Cache::Memcached' },
             'CommenterRegistration'  => {
                 type    => 'HASH',
                 default => {
@@ -2029,17 +2021,7 @@ BEGIN {
             'LockoutNotifyTo'    => undef,
 
             # DataAPI
-            'AccessTokenTTL'          => { default => 60 * 60, },
-            'DataAPICORSAllowOrigin'  => { default => undef },
-            'DataAPICORSAllowMethods' => { default => '*' },
-            'DataAPICORSAllowHeaders' =>
-                { default => 'X-MT-Authorization, X-Requested-With' },
-            'DataAPICORSExposeHeaders' =>
-                { default => 'X-MT-Next-Phase-URL' },
-            'DisableResourceField' => {
-                type    => 'HASH',
-                default => {}
-            },
+            %$MT::Core::Config::data_api,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
