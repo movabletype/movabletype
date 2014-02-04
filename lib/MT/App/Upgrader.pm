@@ -375,7 +375,14 @@ sub init_user {
         );
         $user->set_password($initial_password);
         require MT::CMS::User;
-        if (!MT::CMS::User::save_filter( $eh, $app, $user, $user->clone, 1 ) )
+        if (!MT::CMS::User::save_filter(
+                $eh, $app, $user,
+                $user->clone,
+                {   skip_encode_html          => 1,
+                    skip_validate_unique_name => 1,
+                }
+            )
+            )
         {
             $param{error} = $eh->errstr;
             return $app->build_page( 'install.tmpl', \%param );

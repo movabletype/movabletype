@@ -1506,7 +1506,8 @@ sub can_delete {
 }
 
 sub save_filter {
-    my ( $eh, $app, $obj, $original, $skip_encode_html ) = @_;
+    my ( $eh, $app, $obj, $original, $opts ) = @_;
+    $opts ||= {};
     my $accessor = sub {
         if ($obj) {
             my $k = shift;
@@ -1517,11 +1518,11 @@ sub save_filter {
         }
     };
     my $encode_html = sub {
-        $skip_encode_html ? $_[0] : encode_html( $_[0] );
+        $opts->{skip_encode_html} ? $_[0] : encode_html( $_[0] );
     };
 
     my $name = $accessor->('name');
-    if ($name) {
+    if ( $name && !$opts->{skip_validate_unique_name} ) {
         require MT::Author;
         my $existing = MT::Author->load(
             {   name => $name,
