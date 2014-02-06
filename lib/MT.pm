@@ -1287,10 +1287,6 @@ __END_OF_EVAL__
                     SSL_verify_mode => 0,                 # SSL_VERIFY_NONE
                 );
             };
-
-            if ( $mt->config->SMTPAuth eq 'starttls' ) {
-                eval { require Net::SMTP::TLS; Net::SMTP::TLS->new };
-            }
         }
     }
 

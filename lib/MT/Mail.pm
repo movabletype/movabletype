@@ -15,10 +15,9 @@ use Sys::Hostname;
 our $MAX_LINE_OCTET = 998;
 
 my %SMTPModules = (
-    Core => [ 'Net::SMTP', 'MIME::Base64' ],
-    Auth => ['Authen::SASL'],
-    SSL => [ 'Net::SMTP::SSL', 'IO::Socket::SSL', 'Net::SSLeay' ],
-    TLS => [ 'Net::SMTP::TLS', 'IO::Socket::SSL', 'Net::SSLeay' ],
+    Core     => [ 'Net::SMTPS',      'MIME::Base64' ],
+    Auth     => ['Authen::SASL'],
+    SSLorTLS => [ 'IO::Socket::SSL', 'Net::SSLeay' ],
 );
 
 sub send {
@@ -202,7 +201,8 @@ sub _send_mt_smtp {
     if ( $mgr->SMTPAuth ) {
 
         if ( 'starttls' eq $mgr->SMTPAuth ) {
-            $tls = 1;
+            $tls  = 1;
+            $auth = 1;
         }
         elsif ( 'ssl' eq $mgr->SMTPAuth ) {
             $ssl  = 1;
@@ -218,7 +218,7 @@ sub _send_mt_smtp {
             "Username and password is required for SMTP authentication."
         )
         )
-        if ( $tls or $auth )
+        if $auth
         and ( !$user or !$pass );
 
     # Check required modules;
@@ -226,61 +226,25 @@ sub _send_mt_smtp {
     my @modules = ();
     push @modules, @{ $SMTPModules{Core} };
     push @modules, @{ $SMTPModules{Auth} } if $auth;
-    push @modules, @{ $SMTPModules{SSL} } if $ssl;
-    push @modules, @{ $SMTPModules{TLS} } if $tls;
+    push @modules, @{ $SMTPModules{SSLorTLS} } if $ssl || $tls;
 
     $class->can_use( \@modules ) or return;
 
     # Make a smtp object
-    my $smtp;
-
-    if ($tls) {
-        $smtp = Net::SMTP::TLS->new(
-            $host,
-            Port     => $port,
-            User     => $user,
-            Password => $pass,
-            Timeout  => $mgr->SMTPTimeout,
-            Hello    => $localhost,
-            ( $MT::DebugMode ? ( Debug => 1 ) : () ),
-            )
-            or return $class->error(
-            MT->translate(
-                'Error connecting to SMTP server [_1]:[_2]',
-                $host, $port
-            )
-            );
-    }
-    elsif ($ssl) {
-        $smtp = Net::SMTP::SSL->new(
-            $host,
-            Port    => $port,
-            Timeout => $mgr->SMTPTimeout,
-            Hello   => $localhost,
-            ( $MT::DebugMode ? ( Debug => 1 ) : () ),
-            )
-            or return $class->error(
-            MT->translate(
-                'Error connecting to SMTP server [_1]:[_2]',
-                $host, $port
-            )
-            );
-    }
-    else {
-        $smtp = Net::SMTP->new(
-            $host,
-            Port    => $port,
-            Timeout => $mgr->SMTPTimeout,
-            Hello   => $localhost,
-            ( $MT::DebugMode ? ( Debug => 1 ) : () ),
-            )
-            or return $class->error(
-            MT->translate(
-                'Error connecting to SMTP server [_1]:[_2]',
-                $host, $port
-            )
-            );
-    }
+    my $smtp = Net::SMTPS->new(
+        $host,
+        Port    => $port,
+        Timeout => $mgr->SMTPTimeout,
+        Hello   => $localhost,
+        ( $ssl ? ( doSSL => 'ssl' ) : $tls ? ( doSSL => 'starttls' ) : () ),
+        ( $MT::DebugMode ? ( Debug => 1 ) : () ),
+        )
+        or return $class->error(
+        MT->translate(
+            'Error connecting to SMTP server [_1]:[_2]',
+            $host, $port
+        )
+        );
 
     if ($auth) {
         if ( !$smtp->auth( $user, $pass ) ) {
@@ -421,24 +385,11 @@ sub can_use_smtpauth_ssl {
     return unless $class->can_use_smtpauth;
 
     my @mods;
-    push @mods, @{ $SMTPModules{SSL} };
+    push @mods, @{ $SMTPModules{SSLorTLS} };
     return $class->can_use( \@mods );
 }
 
-sub can_use_smtpauth_tls {
-    my $class = shift;
-
-    # return if we cannot use smtp modules
-    return unless $class->can_use_smtp;
-
-    # return if we cannot use smtpauth modules
-    return unless $class->can_use_smtpauth;
-
-    my @mods;
-    push @mods, @{ $SMTPModules{TLS} };
-
-    return $class->can_use( \@mods );
-}
+*can_use_smtpauth_tls = \&can_use_smtpauth_ssl;
 
 1;
 __END__

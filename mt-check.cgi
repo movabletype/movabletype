@@ -712,20 +712,6 @@ my @CORE_OPT = (
         )
     ],
 
-    [   'Net::SMTP::SSL',
-        0, 0,
-        translate(
-            'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.'
-        )
-    ],
-
-    [   'Net::SMTP::TLS',
-        0, 0,
-        translate(
-            'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.'
-        )
-    ],
-
     [   'IO::Socket::SSL',
         0, 0,
         translate(
@@ -761,21 +747,24 @@ my @CORE_OPT = (
         translate('This module required for action streams.')
     ],
 
-    [   'XML::SAX::ExpatXS', 1.30, 0,
+    [   'XML::SAX::ExpatXS',
+        1.30, 0,
         translate(
             '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
             'XML::SAX::ExpatXS'
         )
     ],
 
-    [   'XML::SAX::Expat', 0.37, 0,
+    [   'XML::SAX::Expat',
+        0.37, 0,
         translate(
             '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
             'XML::SAX::Expat'
         )
     ],
 
-    [   'XML::LibXML::SAX', 1.70, 0,
+    [   'XML::LibXML::SAX',
+        1.70, 0,
         translate(
             '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
             'XML::LibXML::SAX'

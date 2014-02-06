@@ -180,16 +180,6 @@ sub init_core_registry {
                 label =>
                     'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.',
             },
-            'Net::SMTP::SSL' => {
-                link => 'http://search.cpan.org/dist/Net-SMTP-SSL/',
-                label =>
-                    'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.',
-            },
-            'Net::SMTP::TLS' => {
-                link => 'http://search.cpan.org/dist/Net-SMTP-TLS/',
-                label =>
-                    'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.',
-            },
             'IO::Socket::SSL' => {
                 link => 'http://search.cpan.org/dist/IO-Socket-SSL/',
                 label =>
@@ -334,18 +324,18 @@ sub init_core_registry {
                 label => 'This module required for action streams.',
             },
             'XML::SAX::ExpatXS' => {
-                link  => 'http://search.cpan.org/dist/XML-SAX-ExpatXS',
-                label => 'This module required for restoring from backup.',
+                link    => 'http://search.cpan.org/dist/XML-SAX-ExpatXS',
+                label   => 'This module required for restoring from backup.',
                 version => 1.30,
             },
             'XML::SAX::Expat' => {
-                link  => 'http://search.cpan.org/dist/XML-SAX-Expat',
-                label => 'This module required for restoring from backup.',
+                link    => 'http://search.cpan.org/dist/XML-SAX-Expat',
+                label   => 'This module required for restoring from backup.',
                 version => 0.37,
             },
             'XML::LibXML::SAX' => {
-                link  => 'http://search.cpan.org/dist/XML-LibXML-SAX',
-                label => 'This module required for restoring from backup.',
+                link    => 'http://search.cpan.org/dist/XML-LibXML-SAX',
+                label   => 'This module required for restoring from backup.',
                 version => 1.70,
             },
         },
