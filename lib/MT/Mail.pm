@@ -233,6 +233,14 @@ sub _send_mt_smtp {
 
     $class->can_use( \@modules ) or return;
 
+  # bugid: 111227
+  # Do not use IO::Socket::INET6 on Windows environment for avoiding an error.
+    if ( $^O eq 'MSWin32' && $Net::SMTPS::ISA[0] eq 'IO::Socket::INET6' ) {
+        shift @Net::SMTPS::ISA;
+        require IO::Socket::INET;
+        unshift @Net::SMTPS::ISA, 'IO::Socket::INET';
+    }
+
     # Make a smtp object
     my $smtp = Net::SMTPS->new(
         $host,
