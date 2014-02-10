@@ -212,6 +212,9 @@ sub _send_mt_smtp {
             $auth = 1;
         }
     }
+    my $do_ssl = ( $ssl || $tls ) ? $mgr->SMTPAuth : undef;
+    my $ssl_verify_mode
+        = $do_ssl ? ( $mgr->SMTPSSLVerifyNone ? 0 : 1 ) : undef;
 
     return $class->error(
         MT->translate(
@@ -236,7 +239,10 @@ sub _send_mt_smtp {
         Port    => $port,
         Timeout => $mgr->SMTPTimeout,
         Hello   => $localhost,
-        ( $ssl ? ( doSSL => 'ssl' ) : $tls ? ( doSSL => 'starttls' ) : () ),
+        (   $do_ssl
+            ? ( doSSL => $do_ssl, SSL_verify_mode => $ssl_verify_mode )
+            : ()
+        ),
         ( $MT::DebugMode ? ( Debug => 1 ) : () ),
         )
         or return $class->error(
