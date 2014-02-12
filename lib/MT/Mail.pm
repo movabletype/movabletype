@@ -242,7 +242,6 @@ sub _send_mt_smtp {
     }
 
     my %args = (
-        $host,
         Port    => $port,
         Timeout => $mgr->SMTPTimeout,
         Hello   => $localhost,
@@ -259,7 +258,7 @@ sub _send_mt_smtp {
     );
 
     # Make a smtp object
-    my $smtp = Net::SMTPS->new(%args)
+    my $smtp = Net::SMTPS->new( $host, %args )
         or return $class->error(
         MT->translate(
             'Error connecting to SMTP server [_1]:[_2]',
