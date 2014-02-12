@@ -1138,12 +1138,13 @@ sub _hdlr_entries {
                         : sort { $b->$col() cmp $a->$col() } @entries;
                 }
             }
-            if ( $post_sort_limit && ( scalar @entries ) > $post_sort_limit )
-            {
-                @entries
-                    = @entries[ $post_sort_offset .. $post_sort_offset
-                    + $post_sort_limit
-                    - 1 ];
+            if ($post_sort_limit) {
+                @entries = splice @entries, $post_sort_offset,
+                    $post_sort_limit;
+            }
+            elsif ($post_sort_offset) {
+                splice @entries, 0, $post_sort_offset;
+
             }
         }
         else {
