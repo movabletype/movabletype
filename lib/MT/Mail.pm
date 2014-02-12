@@ -241,18 +241,25 @@ sub _send_mt_smtp {
         unshift @Net::SMTPS::ISA, 'IO::Socket::INET';
     }
 
-    # Make a smtp object
-    my $smtp = Net::SMTPS->new(
+    my %args = (
         $host,
         Port    => $port,
         Timeout => $mgr->SMTPTimeout,
         Hello   => $localhost,
         (   $do_ssl
-            ? ( doSSL => $do_ssl, SSL_verify_mode => $ssl_verify_mode )
+            ? ( doSSL           => $do_ssl,
+                SSL_verify_mode => $ssl_verify_mode,
+                $ssl_verify_mode && eval { require Mozilla::CA }
+                ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file() )
+                : (),
+                )
             : ()
         ),
         ( $MT::DebugMode ? ( Debug => 1 ) : () ),
-        )
+    );
+
+    # Make a smtp object
+    my $smtp = Net::SMTPS->new(%args)
         or return $class->error(
         MT->translate(
             'Error connecting to SMTP server [_1]:[_2]',
