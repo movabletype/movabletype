@@ -257,6 +257,13 @@ sub _send_mt_smtp {
         ( $MT::DebugMode ? ( Debug => 1 ) : () ),
     );
 
+    # Can change the arguments of Net::SMTPS here.
+    MT->run_callbacks(
+        'init_smtp',
+        host => $host,
+        args => \%args,
+    );
+
     # Make a smtp object
     my $smtp = Net::SMTPS->new( $host, %args )
         or return $class->error(
