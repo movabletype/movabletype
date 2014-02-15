@@ -1743,6 +1743,7 @@ BEGIN {
             'SMTPPort'                      => undef,
             'SMTPTimeout'                   => { default => 10 },
             'SMTPSSLVerifyNone'             => { default => 0 },
+            'FTPSSSLVerifyNone'             => { default => 0 },
             'DebugEmailAddress'             => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>

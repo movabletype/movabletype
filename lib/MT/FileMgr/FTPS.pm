@@ -16,6 +16,16 @@ sub init {
     my $fmgr    = shift;
     my %options = ();
     $options{Port} = $_[3] if $_[3];
+
+    my $verify = MT->config->FTPSSSLVerifyNone ? 0 : 1;
+    my $mozilla_ca = eval { require Mozilla::CA; 1 };
+    $options{SSL_Client_Certificate} = {
+        SSL_verify_mode => $verify,
+        ( $verify && $mozilla_ca )
+        ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file() )
+        : (),
+    };
+
     my $ftp = $fmgr->{ftp} = Net::FTPSSL->new( $_[0], %options )
         or return $fmgr->error("FTPS connection failed: $@");
     $ftp->login( @_[ 1, 2 ] );
