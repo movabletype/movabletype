@@ -2647,10 +2647,13 @@ sub new_ua {
         );
     }
 
-    my $ua = $lwp_class->new;
-    eval "require Mozilla::CA;";
-    $ua->ssl_opts( verify_hostname => 0 )
-        if $@;   # Should not verify hostname if Mozilla::CA was not installed
+    my $ua         = $lwp_class->new;
+    my $mozilla_ca = eval "require Mozilla::CA; 1";
+    $ua->ssl_opts(
+        verify_hostname => 1,
+        SSL_verify_mode => 1,
+        $mozilla_ca ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file() ) : (),
+    );
     $ua->max_size($max_size) if ( defined $max_size ) && $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
