@@ -348,6 +348,10 @@ sub init_core_registry {
                 label => 'This module required for restoring from backup.',
                 version => 1.70,
             },
+            'Time::HiRes' => {
+                link => 'http://search.cpan.org/dist/Time-HiRes/',
+                label => 'This module is required for executing run-periodic-tasks.',
+            },
         },
         required_packages => {
             'Image::Size' => {
