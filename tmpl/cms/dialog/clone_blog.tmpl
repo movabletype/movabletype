@@ -475,71 +475,32 @@
       return $url.mtValidate('url_path_subdomain') && $simple.mtValidate('simple');
   }
 
-  function is_valid_url_subdomain(subdomain) {
-      return subdomain.match(/^[a-z0-9]([a-z0-9-\.]*[a-z0-9])?$/);
-  }
-
-  function is_valid_url_path(url_){
-      if (url_.indexOf(' ') != -1) {
-          return false;
-      }
-      return url_.match(/^[^\s<>\#%"\,\{\}\\|\\\^\[\]`]*$/);
-  }
-
-  function is_valid_url(url_){
-      if (url_.indexOf(' ') != -1) {
-          return false;
-      }
-      return url_.match(/^https?:\/\/[a-z0-9-\.]+\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/);
-  }
-  function is_valid_path(path_){
-      var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, ""); //"
-      str = encodeURI(str);
-      if (str.indexOf('%') != -1) {
-          return false;
-      }
-      if (str.match(/\.\./)) {
-          return false;
-      }
-      if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-          return false;
-      }
-
-      return true;
-  }
-  function is_valid_absolute_path(path_) {
-      if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-          return true;
-      }
-      return false;
-  }
-
   jQuery.mtValidateAddRules({
       "#site_url_path": function($e) {
-          return is_valid_url_path($e.val());
+          return MT.Validator.urlPath($e.val());
       },
       "#site_url_subdomain": function($e) {
-          return ! $e.is(':visible') || is_valid_url_subdomain($e.val());
+          return ! $e.is(':visible') || MT.Validator.urlSubdomain($e.val());
       },
       "#site_path_absolute": function($e) {
           return is_valid_absolute_path($e.val());
       },
       "#archive_url_path": function($e) {
-          return is_valid_url_path($e.val());
+          return MT.Validator.urlPath($e.val());
       },
       "#archive_url_subdomain": function($e) {
-          return ! $e.is(':visible') || is_valid_url_subdomain($e.val());
+          return ! $e.is(':visible') || MT.Validator.urlSubdomain($e.val());
       },
       "#site_url": function($e) {
-          return is_valid_url('<mt:var name="website_url">' + $e.val());
+          return MT.Validator.url('<mt:var name="website_url">' + $e.val());
       },
       "#site_path": function($e) {
-          return is_valid_path($e.val());
+          return MT.Validator.path($e.val(), 1);
       },
       "#archive_path": function ($e) {
           if ( jQuery('#enable_archive_paths:checked').length && !jQuery('#use_absolute_archive:checked').length ) {
               if ( !$e.val().length ) return false;
-              if ( !is_valid_path($e.val()) ) return false;
+              if ( !MT.Validator.path($e.val(), 1) ) return false;
           }
           return true;
       },

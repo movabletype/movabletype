@@ -301,40 +301,6 @@ function init() {
 
 <script type="text/javascript">
 /* <![CDATA[ */
-    function is_valid_url_subdomain(subdomain) {
-        return subdomain.match(/^[a-z0-9]([a-z0-9-\.]*[a-z0-9])?$/);
-    }
-
-    function is_valid_url_path(url_){
-        if (url_.indexOf(' ') != -1) {
-            return false;
-        }
-        return url_.match(/^[^\s<>\#%"\,\{\}\\|\\\^\[\]`]*$/);
-    }
-
-    function is_valid_url(url_){
-        if (url_.indexOf(' ') != -1) {
-            return false;
-        }
-        return url_.match(/^https?:\/\/[a-z0-9-\.]+\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/);
-    }
-    function is_valid_path(path_){
-        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
-        str = encodeURI(str);
-        if (str.indexOf('%') != -1) {
-            return false;
-        }
-        if (str.match(/\.\./)) {
-            return false;
-        }
-        return true;
-    }
-    function is_valid_absolute_path(path_) {
-        if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-            return true;
-        }
-        return false;
-    }
     <mt:if name="sitepath_limited">
     function is_path_limit_clear( path_ ) {
         re = new RegExp("^<mt:var name="sitepath_limited" escape="js" escape="js">$", "i");
@@ -356,7 +322,7 @@ function init() {
     jQuery.mtValidateAddRules({
         // Website paths
         '.website-url-text': function ($e) {
-            return is_valid_url($e.val());
+            return MT.Validator.url($e.val());
         },
         '.website-path-text': function ($e) {
             var rex = RegExp("site_path_([0-9]+)");
@@ -368,7 +334,7 @@ function init() {
             if (parent_path == '' && $e.val() == '')
                 return false;
             var full_path = parent_path + $e.val();
-            return is_valid_path(full_path);
+            return MT.Validator.path(full_path);
         },
 <mt:if name="sitepath_limited">
        ".limited_path": function( $e ) {
@@ -380,10 +346,10 @@ function init() {
             return !is_valid_absolute_path($e.val());   // IS IT OK?
         },
         '.site-url .blog-url-text': function ($e) {
-            return is_valid_url_path($e.val());
+            return MT.Validator.urlPath($e.val());
         },
         '.site-url .blog-subdomain-text': function ($e) {
-            return ! $e.is(':visible') || is_valid_url_subdomain($e.val());
+            return ! $e.is(':visible') || MT.Validator.urlSubdomain($e.val());
         },
         '.absolute-site_path .blog-path-text': function ($e) {
             var rex = RegExp("site_url_path_([0-9]+)");
@@ -410,10 +376,10 @@ function init() {
         },
     <mt:if name="enabled_archives">
         '.archive-url .archive-url-text': function ($e) {
-            return is_valid_url_path($e.val());
+            return MT.Validator.urlPath($e.val());
         },
         '.archive-url .archive-subdomain-text': function ($e) {
-            return ! $e.is(':visible') || is_valid_url_subdomain($e.val());
+            return ! $e.is(':visible') || MT.Validator.urlSubdomain($e.val());
         },
         '.relative-site_path .archive-path': function ($e) {
             var value = $e.val();
@@ -422,7 +388,7 @@ function init() {
             if ($e.attr('name').match(rex)) {
                 var b_id = RegExp.$1;
                 if ( !jQuery('#use_absolute_archive_'+b_id+':checked').length ) {
-                    return is_valid_path(value)
+                    return MT.Validator.path(value)
                         && !is_valid_absolute_path(value);
                 }
             }
