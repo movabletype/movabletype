@@ -151,23 +151,6 @@ jQuery(function() {
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(function() {
-    function is_valid_url(url_){
-        if (url_.indexOf(' ') != -1) {
-            return false;
-        }
-        return url_.match(/^https?:\/\/[a-z0-9-\.]+\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/);
-    }
-    function is_valid_path(path_){
-        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
-        str = encodeURI(str);
-        if (str.indexOf('%') != -1) {
-            return false;
-        }
-        if (str.match(/\.\./)) {
-            return false;
-        }
-        return true;
-    }
     <mt:if name="sitepath_limited">
     function is_path_limit_clear( path_ ) {
         re = new RegExp("^<mt:var name="sitepath_limited" escape="js" escape="js">$", "i");
@@ -184,10 +167,10 @@ jQuery(function() {
 
     jQuery.mtValidateAddRules({
         '#site_url': function ($e) {
-            return is_valid_url($e.val()) ? true : false;
+            return MT.Validator.url($e.val()) ? true : false;
         },
         '#site_path': function ($e) {
-            return is_valid_path($e.val()) ? true : false;
+            return MT.Validator.path($e.val()) ? true : false;
         },
 <mt:if name="sitepath_limited">
        "#site_path.limited_path": function( $e ) {
