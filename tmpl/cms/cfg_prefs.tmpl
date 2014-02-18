@@ -692,12 +692,11 @@ function setLicense() {
     });
 
     jQuery('#cfg_form').submit( function () {
-        var $url = jQuery(this).find(
-            '#site_url_path, #site_url_subdomain, #archive_url_path, #archive_url_subdomain'
-        );
-        var $simple = jQuery(this).find('input:visible, select:visible').filter(function() {
-            return jQuery.inArray(this, $url) === -1;
-        });
+        var $form = jQuery(this),
+            $url = $form.find('#site_url_path, #site_url_subdomain, #archive_url_path, #archive_url_subdomain'),
+            $simple = $form.find('input:visible, select:visible').filter(function() {
+                return jQuery.inArray(this, $url) === -1;
+            });
 
         return $url.mtValidate('url_path_subdomain') && $simple.mtValidate('simple');
     });

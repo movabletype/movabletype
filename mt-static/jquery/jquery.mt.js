@@ -104,7 +104,7 @@ $.mtUseSubdomain = function(options) {
         }
 
         $subdomain_input = $subdomain.find('input');
-        if ($subdomain_input.data('mtValidator')) {
+        if ($subdomain_input.val() && $subdomain_input.data('mtValidator')) {
             $subdomain_input.mtValid({ focus: false });
         }
     });
@@ -1043,16 +1043,15 @@ jQuery.mtValidator('url_path_subdomain', {
             );
     },
     showError: function ( $target, $error_block ) {
-        var $container = $target.parent().parent();
+        var $container = $target.closest('.content-path');
         if ($container.find('label.msg-error').length) {
             $error_block.hide();
         }
         $container.append($error_block);
     },
     removeError: function( $target, $error_block ) {
-        var $container = $target.parent().parent();
         $error_block.remove();
-        $target.parent().parent()
+        $target.closest('.content-path')
             .find('label.msg-error:hidden:first')
             .closest('div')
             .show();

@@ -170,21 +170,21 @@
      show_hint="1">
   <mt:if name="site_url_subdomain">
     <div class="site-url content-path">
-      <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="blog-subdomain-text text path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path" escape="html">" class="blog-url-text extra-path" /></span>
+      <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" class="blog-subdomain-text text path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path" escape="html">" class="blog-url-text extra-path" /></span>
     </div>
     <div class="use-subdomain option">
       <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
     </div>
   <mt:elseif name="site_url_path">
     <div class="site-url content-path">
-      <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="blog-subdomain-text text path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path" escape="html">" class="blog-url-text text path" /></span>
+      <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" class="blog-subdomain-text text path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path" escape="html">" class="blog-url-text text path" /></span>
     </div>
     <div class="use-subdomain option">
       <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
     </div>
   <mt:else>
     <div class="site-url content-path">
-      <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="blog-subdomain-text extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path" escape="html">" class="blog-url-text extra-path" /></span>
+      <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" class="blog-subdomain-text extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain" escape="html"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path" escape="html">" class="blog-url-text extra-path" /></span>
     </div>
     <div class="use-subdomain option">
       <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
@@ -465,8 +465,25 @@
 
   function _verifyForm(form) {
       var $form = jQuery(form);
-      var res = $form.find('input, select').mtValidate('simple');
-      return res;
+      var $url = $form.find(
+          '#site_url_path, #site_url_subdomain, #archive_url_path, #archive_url_subdomain'
+      );
+      var $simple = $form.find('input, select').filter(function() {
+          return jQuery.inArray(this, $url) === -1;
+      });
+
+      return $url.mtValidate('url_path_subdomain') && $simple.mtValidate('simple');
+  }
+
+  function is_valid_url_subdomain(subdomain) {
+      return subdomain.match(/^[a-z0-9]([a-z0-9-\.]*[a-z0-9])?$/);
+  }
+
+  function is_valid_url_path(url_){
+      if (url_.indexOf(' ') != -1) {
+          return false;
+      }
+      return url_.match(/^[^\s<>\#%"\,\{\}\\|\\\^\[\]`]*$/);
   }
 
   function is_valid_url(url_){
@@ -497,51 +514,21 @@
       return false;
   }
 
-  jQuery('.blog-subdomain-text').bind('keyup focusin focusout', function($e) {
-      var $orig = jQuery(this).parents('.url-field:first').find('.blog-url-text');
-      var ns = jQuery.data( $orig.get(0), 'mtValidator' );
-      if ( ns ) {
-          $orig.mtValid({ focus: false });
-      }
-      $e.stopPropagation();
-      return false;
-  });
-
   jQuery.mtValidateAddRules({
       "#site_url_path": function($e) {
-          var base = '<mt:var name="website_scheme">://<mt:var name="website_domain" escape="html">';
-          var chk = jQuery($e).parents('.url-field:first').find(':checkbox:checked');
-          var subdomain = jQuery($e).parents('.url-field:first').find('.blog-subdomain-text');
-          if ( chk.length && subdomain.val().length) {
-              base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain" escape="html">';
-          }
-          var ret = is_valid_url(base + $e.val());
-          if (ret) {
-              subdomain.addClass('valid').removeClass('error');
-          }
-          else {
-              subdomain.removeClass('valid').addClass('error');
-          }
-          return ret;
+          return is_valid_url_path($e.val());
+      },
+      "#site_url_subdomain": function($e) {
+          return ! $e.is(':visible') || is_valid_url_subdomain($e.val());
       },
       "#site_path_absolute": function($e) {
           return is_valid_absolute_path($e.val());
       },
       "#archive_url_path": function($e) {
-          var base = '<mt:var name="website_scheme">://<mt:var name="website_domain" escape="html">';
-          var chk = jQuery($e).parents('.url-field:first').find(':checkbox:checked');
-          var subdomain = jQuery($e).parents('.url-field:first').find('.blog-subdomain-text');
-          if ( chk.length && subdomain.val().length) {
-              base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain" escape="html">';
-          }
-          var ret = is_valid_url(base + $e.val());
-          if (ret) {
-              subdomain.addClass('valid').removeClass('error');
-          }
-          else {
-              subdomain.removeClass('valid').addClass('error');
-          }
-          return ret;
+          return is_valid_url_path($e.val());
+      },
+      "#archive_url_subdomain": function($e) {
+          return ! $e.is(':visible') || is_valid_url_subdomain($e.val());
       },
       "#site_url": function($e) {
           return is_valid_url('<mt:var name="website_url">' + $e.val());
@@ -569,12 +556,14 @@
       "#server_offset.required": '<__trans phrase="You did not select a time zone." escape="singlequotes">',
       "#site_url": '<__trans phrase="You must set a valid URL." escape="singlequotes">',
       "#site_url_path": '<__trans phrase="You must set a valid URL." escape="singlequotes">',
+      "#site_url_subdomain": '<__trans phrase="You must set a valid URL." escape="singlequotes">',
       "#site_path.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
       "#site_path.path": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
       "#site_path_absolute.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
       "#site_path_absolute": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
       "#archive_url_path.required": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
       "#archive_url_path": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+      "#archive_url_subdomain": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
       "#archive_path.required": '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">',
       "#archive_path": '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
       "#archive_path_absolute.required": '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">',

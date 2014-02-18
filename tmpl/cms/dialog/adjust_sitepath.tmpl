@@ -217,21 +217,21 @@ function init() {
           <input type="hidden" name="old_archive_url_<mt:var name="id" escape="html">" id="old_archive_url_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_url" escape="html">" />
         <mt:if name="old_archive_url_subdomain">
           <div class="archive-url content-path">
-            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="blog-subdomain-text text path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_path_<mt:var name="id" escape="html">" id="archive_url_path_<mt:var name="id" escape="html">" class="blog-url-text archive-url-text text path" value="<mt:var name="old_archive_url_path" escape="html">" /></span>
+            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="archive-subdomain-text text path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_path_<mt:var name="id" escape="html">" id="archive_url_path_<mt:var name="id" escape="html">" class="blog-url-text archive-url-text text path" value="<mt:var name="old_archive_url_path" escape="html">" /></span>
           </div>
           <div class="use-subdomain option">
             <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" checked="checked" class="cb" /> <label for="use_archive_subdomain_<mt:var name="id">"><__trans phrase="Use subdomain"></label>
           </div>
         <mt:elseif name="old_archive_url_path">
           <div class="archive-url content-path">
-            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="blog-subdomain-text text path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="webarchive-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_path_<mt:var name="id" escape="html">" id="archive_url_path_<mt:var name="id" escape="html">" class="blog-url-text archive-url-text text path" value="<mt:var name="old_archive_url_path" escape="html">" /></span>
+            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="archive-subdomain-text text path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="webarchive-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_path_<mt:var name="id" escape="html">" id="archive_url_path_<mt:var name="id" escape="html">" class="blog-url-text archive-url-text text path" value="<mt:var name="old_archive_url_path" escape="html">" /></span>
           </div>
           <div class="use_subdomain option">
             <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" class="cb" /> <label for="use_archive_subdomain_<mt:var name="id">"><__trans phrase="Use subdomain"></label>
           </div>
         <mt:elseif name="old_archive_url">
           <div class="archive-url content-path">
-            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="blog-subdomain-text extra-path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_<mt:var name="id" escape="html">" id="archive_url_<mt:var name="id" escape="html">" class="blog-url-text text path" value="<mt:var name="old_archive_url" escape="html">" /></span>
+            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="archive-subdomain-text extra-path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_<mt:var name="id" escape="html">" id="archive_url_<mt:var name="id" escape="html">" class="blog-url-text text path" value="<mt:var name="old_archive_url" escape="html">" /></span>
           </div>
           <div class="use-subdomain option">
             <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" class="cb" /> <label for="use_archive_subdomain_<mt:var name="id">"><__trans phrase="Use subdomain"></label>
@@ -301,6 +301,17 @@ function init() {
 
 <script type="text/javascript">
 /* <![CDATA[ */
+    function is_valid_url_subdomain(subdomain) {
+        return subdomain.match(/^[a-z0-9]([a-z0-9-\.]*[a-z0-9])?$/);
+    }
+
+    function is_valid_url_path(url_){
+        if (url_.indexOf(' ') != -1) {
+            return false;
+        }
+        return url_.match(/^[^\s<>\#%"\,\{\}\\|\\\^\[\]`]*$/);
+    }
+
     function is_valid_url(url_){
         if (url_.indexOf(' ') != -1) {
             return false;
@@ -342,16 +353,6 @@ function init() {
 <mt:setvarblock name="jq_js_include" append="1">
     init();
 
-    jQuery('.blog-subdomain-text').bind('keyup focusin focusout', function($e) {
-        var $orig = jQuery(this).parents('.url-field:first').find('.blog-url-text');
-        var ns = jQuery.data( $orig.get(0), 'mtValidator' );
-        if ( ns ) {
-            $orig.mtValid({ focus: false });
-        }
-        $e.stopPropagation();
-        return false;
-    });
-
     jQuery.mtValidateAddRules({
         // Website paths
         '.website-url-text': function ($e) {
@@ -379,31 +380,10 @@ function init() {
             return !is_valid_absolute_path($e.val());   // IS IT OK?
         },
         '.site-url .blog-url-text': function ($e) {
-            var value = $e.val();
-            var rex = RegExp("site_url_path_([0-9]+)");
-            var parent_url = '';
-            if (! $e.attr('name').match(rex))
-                return false;
-            var b_id = RegExp.$1;
-            if ( jQuery('#use_subdomain_'+b_id+':checked').length ) {
-                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
-                parent_url += jQuery('input#site_url_subdomain_'+b_id).val();
-                parent_url += '.';
-                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
-            } else {
-                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
-                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
-            }
-            if (parent_url == '' && value == '')
-                return false;
-            var ret = is_valid_url(parent_url + value);
-            if (ret) {
-                jQuery('input#site_url_subdomain_'+b_id).addClass('valid').removeClass('error');
-            }
-            else {
-                jQuery('input#site_url_subdomain_'+b_id).removeClass('valid').addClass('error');
-            }
-            return ret;
+            return is_valid_url_path($e.val());
+        },
+        '.site-url .blog-subdomain-text': function ($e) {
+            return ! $e.is(':visible') || is_valid_url_subdomain($e.val());
         },
         '.absolute-site_path .blog-path-text': function ($e) {
             var rex = RegExp("site_url_path_([0-9]+)");
@@ -429,31 +409,11 @@ function init() {
             return $e.val().length;
         },
     <mt:if name="enabled_archives">
-        '.archive-url-text': function ($e) {
-            var rex = RegExp("archive_url_path_([0-9]+)");
-            var parent_url = '';
-            if (! $e.attr('name').match(rex))
-                return false;
-            var b_id = RegExp.$1;
-            if ( jQuery('#use_archive_subdomain_'+b_id+':checked').length ) {
-                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
-                parent_url += jQuery('input#archive_url_subdomain_'+b_id).val();
-                parent_url += '.';
-                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
-            } else {
-                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
-                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
-            }
-            if (parent_url == '' && $e.val() == '')
-                return false;
-            var ret = is_valid_url(parent_url + $e.val());
-            if (ret) {
-                jQuery('input#archive_url_subdomain_'+b_id).addClass('valid').removeClass('error');
-            }
-            else {
-                jQuery('input#archive_url_subdomain_'+b_id).removeClass('valid').addClass('error');
-            }
-            return ret;
+        '.archive-url .archive-url-text': function ($e) {
+            return is_valid_url_path($e.val());
+        },
+        '.archive-url .archive-subdomain-text': function ($e) {
+            return ! $e.is(':visible') || is_valid_url_subdomain($e.val());
         },
         '.relative-site_path .archive-path': function ($e) {
             var value = $e.val();
@@ -490,8 +450,10 @@ function init() {
         '.website-url-text': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
         '.website-path-text': '<__trans phrase="You must set a valid local site path." escape="singlequotes">',
         '.site-url .blog-url-text': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+        '.site-url .blog-subdomain-text': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
         '.absolute-site_path .blog-path-text': '<__trans phrase="You must set a valid local site path." escape="singlequotes">',
-        '.archive-url-text': '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+        '.archive-url .archive-url-text': '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+        '.archive-url .archive-subdomain-text': '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
         '.relative-site_path .archive-path': '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
         '.absolute-site_path .archive-path': '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
 <mt:if name="sitepath_limited">
@@ -501,7 +463,15 @@ function init() {
     });
 
     jQuery('#adjust_sitepath').submit( function () {
-        if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') ) return false;
+        var $form = jQuery(this),
+            $url = $form.find('.site-url .blog-url-text,.site-url .blog-subdomain-text,.archive-url  .archive-url-text,.archive-url .archive-subdomain-text');
+            $simple = $form.find('input:visible, select:visible').filter(function() {
+                return jQuery.inArray(this, $url) === -1;
+            });
+        if (! ($url.mtValidate('url_path_subdomain') && $simple.mtValidate('simple'))) {
+            return false;
+        }
+
         <mt:if name="request_method" op="eq" value="GET">
         jQuery(this).find('input[name=asset_ids]').val(window.parent.RestoredAssetIds());
         </mt:if>
