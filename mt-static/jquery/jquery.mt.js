@@ -93,10 +93,19 @@ $.mtUseSubdomain = function(options) {
         }
     });
     $checkboxes.click(function() {
+        var $subdomain, $subdomain_input;
+
         if (this.checked) {
-            $(this).prop('checked',true).parents('.field-content').find('.subdomain').show();
+            $subdomain =
+                $(this).prop('checked',true).parents('.field-content').find('.subdomain').show();
         } else {
-            $(this).prop('checked',false).parents('.field-content').find('.subdomain').hide();
+            $subdomain =
+                $(this).prop('checked',false).parents('.field-content').find('.subdomain').hide();
+        }
+
+        $subdomain_input = $subdomain.find('input');
+        if ($subdomain_input.data('mtValidator')) {
+            $subdomain_input.mtValid({ focus: false });
         }
     });
 };
@@ -1022,6 +1031,34 @@ $.mtValidator('simple2', {
             $error_block.find('label').text(msg);
             this.showError( $target, $error_block );
         }
+    }
+});
+jQuery.mtValidator('url_path_subdomain', {
+    wrapError: function ( $target, msg ) {
+        return jQuery('<div />').append(
+            jQuery('<label/>')
+                .attr('for', $target.attr('id') )
+                .addClass('validate-error msg-error')
+                .text(msg)
+            );
+    },
+    showError: function ( $target, $error_block ) {
+        var $container = $target.parent().parent();
+        if ($container.find('label.msg-error').length) {
+            $error_block.hide();
+        }
+        $container.append($error_block);
+    },
+    removeError: function( $target, $error_block ) {
+        var $container = $target.parent().parent();
+        $error_block.remove();
+        $target.parent().parent()
+            .find('label.msg-error:hidden:first')
+            .closest('div')
+            .show();
+    },
+    updateError: function( $target, $error_block, msg ) {
+        $error_block.find('label.msg-error').text(msg);
     }
 });
 $.mtValidator('default', {
