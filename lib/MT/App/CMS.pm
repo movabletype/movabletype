@@ -4952,13 +4952,14 @@ sub pre_run {
     $app->SUPER::pre_run(@_) or return;
     my $user = $app->user;
 
-    # Return if mode was 'upgrade' or 'filtered_list',
+    # Return if setting nortification dashboard is unnecessary.
     my $method_info = MT->request('method_info') || {};
     return
         if ( exists $method_info->{requires_login}
         && $method_info->{requires_login} == 0 )
         or $app->param('xhr')
-        or ( $method_info->{app_mode} || '' ) eq 'JSON';
+        or ( $method_info->{app_mode} || '' ) eq 'JSON'
+        or $app->request('already_set_notification_dashboard');
 
     # Message Center
     my @messages;
@@ -5050,7 +5051,8 @@ sub pre_run {
 
     $app->run_callbacks( 'set_notification_dashboard', \@messages );
 
-    $app->request( 'loop_notification_dashboard', \@messages );
+    $app->request( 'loop_notification_dashboard',        \@messages );
+    $app->request( 'already_set_notification_dashboard', 1 );
 }
 
 sub validate_request_params {
