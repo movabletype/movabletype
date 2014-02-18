@@ -1507,25 +1507,21 @@ sub save {
         }
     }
 
-    if ($is_new) {
+    $entry->clear_cache() if $is_new;
 
-        # Clear some cache
-        $entry->clear_cache();
+    my $blog = $entry->blog;
+    my $at
+        = $blog->archive_type_preferred
+        || $blog->archive_type
+        || 'Individual';
 
-        my $blog = $entry->blog;
-        my $at
-            = $blog->archive_type_preferred
-            || $blog->archive_type
-            || 'Individual';
-
-        my $key;
-        my $publisher  = MT->instance->publisher;
-        my $cache_file = MT::Request->instance->cache('file');
-        $key = $publisher->archive_file_cache_key( $entry, $blog, $at )
-            if $publisher->can('archive_file_cache_key');
-        delete $cache_file->{$key}
-            if $key && $cache_file && exists $cache_file->{$key};
-    }
+    my $key;
+    my $publisher  = MT->instance->publisher;
+    my $cache_file = MT::Request->instance->cache('file');
+    $key = $publisher->archive_file_cache_key( $entry, $blog, $at )
+        if $publisher->can('archive_file_cache_key');
+    delete $cache_file->{$key}
+        if $key && $cache_file && exists $cache_file->{$key};
 
     1;
 }
