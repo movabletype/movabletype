@@ -3029,7 +3029,8 @@ sub build_blog_selector {
 
         # This user can access over 6 blogs.
         if (@fav_blogs) {
-            @blogs = $blog_class->load( { id => \@fav_blogs } );
+            @blogs
+                = $blog_class->load( { class => 'blog', id => \@fav_blogs } );
         }
         else {
             @blogs = ();
