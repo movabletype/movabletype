@@ -130,6 +130,30 @@ my @suite = (
                 1, 'Bumped-up revision number' );
         },
     },
+    {   path   => '/v1/sites/1/entries/1',
+        method => 'PUT',
+        params =>
+            { entry => { tags => [qw(a)] }, },
+        complete => sub {
+            is_deeply([MT->model('entry')->load(1)->tags], [qw(a)], "Entry's tag is updated");
+        },
+    },
+    {   path   => '/v1/sites/1/entries/1',
+        method => 'PUT',
+        params =>
+            { entry => { tags => [qw(a b)] }, },
+        complete => sub {
+            is_deeply([MT->model('entry')->load(1)->tags], [qw(a b)], "Entry's tag is added");
+        },
+    },
+    {   path   => '/v1/sites/1/entries/1',
+        method => 'PUT',
+        params =>
+            { entry => { tags => [] }, },
+        complete => sub {
+            is_deeply([MT->model('entry')->load(1)->tags], [], "Entry's tag is removed");
+        },
+    },
     {   path      => '/v1/sites/1/entries/1',
         method    => 'DELETE',
         callbacks => [
