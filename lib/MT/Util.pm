@@ -777,7 +777,7 @@ sub decode_url {
                 $html =~ s/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w{1,8});)/&amp;/g;
 
             }
-            $html =~ s!"!&quot;!g;    #"
+            $html =~ s!"!&quot;!g;
             $html =~ s!<!&lt;!g;
             $html =~ s!>!&gt;!g;
         }
@@ -797,7 +797,7 @@ sub decode_url {
             $html = HTML::Entities::decode_entities($html);
         }
         else {
-            $html =~ s!&quot;!"!g;    #"
+            $html =~ s!&quot;!"!g;
             $html =~ s!&lt;!<!g;
             $html =~ s!&gt;!>!g;
             $html =~ s!&amp;!&!g;
