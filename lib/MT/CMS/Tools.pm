@@ -70,6 +70,9 @@ sub get_syscheck_content {
     return unless $ua;
     $ua->max_size(undef) if $ua->can('max_size');
 
+    # Do not verify SSL certificate.
+    $ua->ssl_opts( verify_hostname => 0, SSL_verify_mode => 0 );
+
     my $req = new HTTP::Request( GET => $syscheck_url );
     my $resp = $ua->request($req);
     return unless $resp->is_success();
