@@ -1143,7 +1143,7 @@ abstract class MTDatabase {
         if (isset($args['offset']))
             $offset = $args['offset'];
 
-        if (isset($args['limit'])) {
+        if (isset($args['limit']) || isset($args['offset'])) {
             if (isset($args['sort_by'])) {
                 if ($args['sort_by'] == 'title') {
                     $sort_field = 'entry_title';
@@ -1179,20 +1179,21 @@ abstract class MTDatabase {
                 }
             }
             else {
-                $sort_field ='entry_authored_on';
-            }
-            if ($sort_field) {
-                $base_order = ($args['sort_order'] == 'ascend' ? 'asc' : 'desc');
-                $base_order or $base_order = 'desc';
+                $sort_field = isset($timestamp_field) ? $timestamp_field : 'entry_authored_on'; 
             }
         } else {
-            $base_order = 'desc';
-            if (isset($args['base_sort_order'])) {
-                if ($args['base_sort_order'] == 'ascend')
-                    $base_order = 'asc';
-            }
             $sort_field = isset($timestamp_field) ? $timestamp_field : 'entry_authored_on'; 
             $no_resort = 0;
+        }
+
+        if ($sort_field) {
+            $base_order = (
+                isset( $args['sort_order'] )
+                    ? $args['sort_order']
+                    : ( isset( $args['base_sort_order'] )
+                            ? $args['base_sort_order']
+                            : '' )
+            ) === 'ascend' ? 'asc' : 'desc';
         }
 
         if (count($filters) || !is_null($total_count)) {
@@ -1424,12 +1425,24 @@ abstract class MTDatabase {
                 } elseif ($sort_field == 'entry_authored_on') {
                     // already double-sorted by the DB
                 } else {
-                    if (($sort_field == 'entry_status') || ($sort_field == 'entry_author_id') || ($sort_field == 'entry_id')
-                          || ($sort_field == 'entry_comment_count') || ($sort_field == 'entry_ping_count')) {
-                        $sort_fn = "if (\$a->$sort_field == \$b->$sort_field) return 0; return \$a->$sort_field < \$b->$sort_field ? -1 : 1;";
-                    } else {
-                        $sort_fn = "\$f = '" . addslashes($sort_field) . "'; return strcmp(\$a->\$f,\$b->\$f);";
+                    if (preg_match('/^entry_(field\..*)/', $sort_field, $match)) {
+                        if (! $entry_meta_info) {
+                            $entry_meta_info = Entry::get_meta_info('entry');
+                        }
+                        $sort_by_numeric =
+                            preg_match('/integer|float/', $entry_meta_info[$match[1]]);
                     }
+                    else {
+                        $sort_by_numeric =
+                            ($sort_field == 'entry_status') || ($sort_field == 'entry_author_id') || ($sort_field == 'entry_id')
+                            || ($sort_field == 'entry_comment_count') || ($sort_field == 'entry_ping_count');
+                    }
+
+                    $sort_fn = "\$f = '" . addslashes($sort_field) . "'; " .
+                        ($sort_by_numeric
+                            ? 'if ($a->$f == $b->$f) return 0; return $a->$f < $b->$f ? -1 : 1;'
+                            : 'return strcmp($a->$f,$b->$f);');
+
                     $sorter = create_function(
                         $order == 'asc' ? '$a,$b' : '$b,$a',
                         $sort_fn);
