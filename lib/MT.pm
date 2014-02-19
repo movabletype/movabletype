@@ -1807,6 +1807,13 @@ sub ping {
 
         my $ua = MT->new_ua;
 
+        # Get the hostname of MT in HTTPS.
+        my $base;
+        if ( MT->app ) {
+            $base = MT->app->base;
+            $base =~ s/^http:/https:/;
+        }
+
         ## Build query string to be sent on each ping.
         my @qs;
         push @qs, 'title=' . MT::Util::encode_url( $entry->title );
@@ -1825,11 +1832,29 @@ sub ping {
             ($url_domain) = MT::Util::extract_domains($url);
             next if $tb_domains && ( lc($url_domain) !~ $tb_domains );
 
+            # Do not verify SSL certificate
+            # when sending a trackback ping to self.
+            my %ssl_opts;
+            my $changed_ssl_opts;
+            if ( $base && $url =~ m/^$base/ ) {
+                $ssl_opts{$_} = $ua->ssl_opts($_)
+                    for (qw( verify_hostname SSL_verify_mode ));
+                $ua->ssl_opts( verify_hostname => 0, SSL_verify_mode => 0 );
+                $changed_ssl_opts = 1;
+            }
+
             my $req = HTTP::Request->new( POST => $url );
             $req->content_type(
                 "application/x-www-form-urlencoded; charset=$enc");
             $req->content($qs);
             my $res = $ua->request($req);
+
+            # Restore ssl_opts.
+            if ($changed_ssl_opts) {
+                $ua->ssl_opts( $_ => $ssl_opts{$_} )
+                    for (qw( verify_hostname SSL_verify_mode ));
+            }
+
             if ( substr( $res->code, 0, 1 ) eq '2' ) {
                 my $c = $res->content;
                 $c = Encode::decode_utf8($c) if !Encode::is_utf8($c);
