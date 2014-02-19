@@ -1701,11 +1701,14 @@ sub adjust_sitepath {
     my $asset_class = $app->model('asset');
     my %error_assets;
     my %blogs_meta;
-    my $path_limit = $app->config->BaseSitePath;
-    $path_limit = File::Spec->catdir( $path_limit, "PATH" );
-    $path_limit =~ s/PATH$//;
-    my $path_limit_quote = quotemeta($path_limit);
-    my @p                = $q->param;
+    my $path_limit;
+    my $path_limit_quote;
+    if ( $path_limit = $app->config->BaseSitePath ) {
+        $path_limit = File::Spec->catdir( $path_limit, "PATH" );
+        $path_limit =~ s/PATH$//;
+        $path_limit_quote = quotemeta($path_limit);
+    }
+    my @p = $q->param;
     foreach my $p (@p) {
         next unless $p =~ /^site_path_(\d+)/;
         my $id   = $1;
