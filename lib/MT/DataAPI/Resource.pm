@@ -206,6 +206,11 @@ sub resource {
                     $f = { name => $f };
                 }
 
+                if ( $f->{condition} ) {
+                    $f->{condition}
+                        = MT->handler_to_coderef( $f->{condition} );
+                }
+
                 if ( my $hash = $fields{ $f->{name} } ) {
                     for my $k ( keys %$f ) {
                         $hash->{$k} = $f->{$k};

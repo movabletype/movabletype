@@ -19,4 +19,5 @@ applications:
                   return;
               }
         updatable_fields:
-          - junkLog
+          - name: junkLog
+            condition: sub { ! $ENV{HOLD_JUNK_LOG} }
