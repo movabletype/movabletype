@@ -32,6 +32,13 @@
      can_close="0">
     <__trans phrase="A test mail was sent.">
   </mtapp:statusmsg>
+<mt:if name="warning_sitepath_limit">
+  <mtapp:statusmsg
+     id="warning_sitepath_limit"
+     class="warning">
+    <__trans phrase="There are blogs by which 'Base Site Path' does not match 'Blog Root' by 'Use absolute path'.">
+  </mtapp:statusmsg>
+</mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">

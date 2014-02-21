@@ -5049,6 +5049,18 @@ sub pre_run {
         push @messages, $message;
     }
 
+    if ( $app->config->BaseSitePath
+        && count_warning_sitepath_limit( $user->id ) )
+    {
+        my $message = {
+            level => 'warning',
+            text  => $app->translate(
+                "There are blogs by which 'Base Site Path' does not match 'Blog Root' by 'Use absolute path'."
+            ),
+        };
+        push @messages, $message;
+    }
+
     $app->run_callbacks( 'set_notification_dashboard', \@messages );
 
     $app->request( 'loop_notification_dashboard',        \@messages );
@@ -5098,6 +5110,31 @@ sub default_widgets_for_dashboard {
     }
 
     $app->request( $key, %default_widgets ? \%default_widgets : '' );
+}
+
+sub count_warning_sitepath_limit {
+    my $user_id = shift;
+
+    my $count      = 0;
+    my $blog_class = MT->model('blog');
+    my $blog_iter  = $blog_class->load_iter(
+        undef,
+        {   join => MT::Permission->join_on(
+                'blog_id', { author_id => $user_id }
+            )
+        },
+    );
+    while ( my $blog = $blog_iter->() ) {
+        my $blog_path    = $blog->column('site_path');
+        my $website_path = $blog->website->column('site_path');
+        if (   $blog_class->is_site_path_absolute($blog_path)
+            && $blog_path !~ m!^$website_path/.*! )
+        {
+            $count++;
+        }
+    }
+
+    return $count;
 }
 
 1;

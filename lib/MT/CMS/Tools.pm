@@ -532,10 +532,11 @@ sub cfg_system_general {
     $param{system_performance_logging_path} = $cfg->PerformanceLoggingPath;
     $param{system_performance_logging_threshold}
         = $cfg->PerformanceLoggingThreshold;
-    $param{track_revisions} = $cfg->TrackRevisions;
-    $param{saved}           = $app->param('saved');
-    $param{error}           = $app->param('error');
-    $param{screen_class}    = "settings-screen system-general-settings";
+    $param{track_revisions}        = $cfg->TrackRevisions;
+    $param{saved}                  = $app->param('saved');
+    $param{error}                  = $app->param('error');
+    $param{warning_sitepath_limit} = $app->param('warning_sitepath_limit');
+    $param{screen_class} = "settings-screen system-general-settings";
 
     # for feedback settings
     $param{comment_disable}      = $cfg->AllowComments            ? 0 : 1;
@@ -604,6 +605,7 @@ sub save_cfg_system_general {
     my $cfg = $app->config;
     $app->config( 'TrackRevisions', $app->param('track_revisions') ? 1 : 0,
         1 );
+    my $args = {};
 
     # construct the message to the activity log
     my @meta_messages = ();
@@ -682,6 +684,10 @@ sub save_cfg_system_general {
             && -d $app->param('sitepath_limit')
             )
         {
+            my $count = MT::App::CMS::count_warning_sitepath_limit(
+                $app->user->id );
+            $args->{warning_sitepath_limit} = 1 if $count;
+
             $app->config( 'BaseSitePath', $app->param('sitepath_limit'), 1 );
         }
         else {
@@ -802,10 +808,11 @@ sub save_cfg_system_general {
         }
     }
     $cfg->save_config();
+    $args->{saved} = 1;
     $app->redirect(
         $app->uri(
             'mode' => 'cfg_system_general',
-            args   => { saved => 1 }
+            args   => $args,
         ),
         UseMeta => $ENV{FAST_CGI},
     );
