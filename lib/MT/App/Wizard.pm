@@ -1395,9 +1395,21 @@ sub is_valid_static_path {
         $path = $app->cgipath . $static_uri . 'mt.js';
     }
 
+    # If the hostname of $path is same with $app->cgipath,
+    # do not verify SSL certificate.
+    my ($cgihost) = ( $app->cgipath =~ m/^(https?:\/\/[^\/]+)\// );
+    my $ssl_verify_peer = $path !~ m/^$cgihost/ ? 1 : 0;
+    my %ssl_opts = (
+        verify_hostname => $ssl_verify_peer,
+        SSL_verify_mode => $ssl_verify_peer,
+        ( $ssl_verify_peer && eval { require Mozilla::CA; 1 } )
+        ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file() )
+        : (),
+    );
+
     require LWP::UserAgent;
-    my $ua       = LWP::UserAgent->new;
-    my $request  = HTTP::Request->new( GET => $path );
+    my $ua = LWP::UserAgent->new( ssl_opts => \%ssl_opts );
+    my $request = HTTP::Request->new( GET => $path );
     my $response = $ua->request($request);
     $response->is_success
         and ( $response->content_length() != 0 )
