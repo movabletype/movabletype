@@ -1743,7 +1743,9 @@ BEGIN {
             'SMTPPort'                      => undef,
             'SMTPTimeout'                   => { default => 10 },
             'SMTPSSLVerifyNone'             => { default => 0 },
+            'SMTPOptions'                   => { type => 'HASH' },
             'FTPSSSLVerifyNone'             => { default => 0 },
+            'FTPSOptions'                   => { type => 'HASH' },
             'DebugEmailAddress'             => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>

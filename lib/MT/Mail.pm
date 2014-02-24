@@ -257,12 +257,11 @@ sub _send_mt_smtp {
         ( $MT::DebugMode ? ( Debug => 1 ) : () ),
     );
 
-    # Can change the arguments of Net::SMTPS here.
-    MT->run_callbacks(
-        'init_smtp',
-        host => $host,
-        args => \%args,
-    );
+    # Overwrite the arguments of Net::SMTPS.
+    my $smtp_opts = $mgr->SMTPOptions;
+    if ( ref($smtp_opts) eq 'HASH' && %$smtp_opts ) {
+        %args = ( %args, %$smtp_opts );
+    }
 
     # Make a smtp object
     my $smtp = Net::SMTPS->new( $host, %args )

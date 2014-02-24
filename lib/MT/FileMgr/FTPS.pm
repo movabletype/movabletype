@@ -26,12 +26,11 @@ sub init {
         : (),
     };
 
-    # Can change the arguments of Net::FTPSSL here.
-    MT->run_callbacks(
-        'init_ftps',
-        host => $_[0],
-        opts => \%options,
-    );
+    # Overwrite the arguments of Net::FTPSSL.
+    my $ftps_opts = MT->config->FTPSOptions;
+    if ( ref($ftps_opts) eq 'HASH' && %$ftps_opts ) {
+        %options = ( %options, %$ftps_opts );
+    }
 
     my $ftp = $fmgr->{ftp} = Net::FTPSSL->new( $_[0], %options )
         or return $fmgr->error("FTPS connection failed: $@");
