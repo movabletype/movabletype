@@ -1837,9 +1837,8 @@ sub ping {
             my %ssl_opts;
             my $changed_ssl_opts;
             if ( $base && $url =~ m/^$base/ ) {
-                $ssl_opts{$_} = $ua->ssl_opts($_)
-                    for (qw( verify_hostname SSL_verify_mode ));
-                $ua->ssl_opts( verify_hostname => 0, SSL_verify_mode => 0 );
+                $ssl_opts{verify_hostname} = $ua->ssl_opts('verify_hostname');
+                $ua->ssl_opts( verify_hostname => 0 );
                 $changed_ssl_opts = 1;
             }
 
@@ -1851,8 +1850,8 @@ sub ping {
 
             # Restore ssl_opts.
             if ($changed_ssl_opts) {
-                $ua->ssl_opts( $_ => $ssl_opts{$_} )
-                    for (qw( verify_hostname SSL_verify_mode ));
+                $ua->ssl_opts(
+                    'verify_hostname' => $ssl_opts{verify_hostname} );
             }
 
             if ( substr( $res->code, 0, 1 ) eq '2' ) {
@@ -2672,12 +2671,12 @@ sub new_ua {
         );
     }
 
-    my $ua         = $lwp_class->new;
-    my $mozilla_ca = eval "require Mozilla::CA; 1";
+    my $ua = $lwp_class->new;
     $ua->ssl_opts(
         verify_hostname => 1,
-        SSL_verify_mode => 1,
-        $mozilla_ca ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file() ) : (),
+        eval { require Mozilla::CA; 1 }
+        ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file() )
+        : (),
     );
     $ua->max_size($max_size) if ( defined $max_size ) && $ua->can('max_size');
     $ua->agent($agent);

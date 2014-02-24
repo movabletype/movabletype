@@ -32,7 +32,7 @@ sub fetch_themes {
 # If we have a url then we're specifying a specific theme (css) or repo (html)
 # Pick up the file (html with <link>s or a css file with metadata)
     my $user_agent = MT->new_ua;
-    $user_agent->ssl_opts( verify_hostname => 0, SSL_verify_mode => 0 );
+    $user_agent->ssl_opts( verify_hostname => 0 );
     my $request = HTTP::Request->new( GET => $url );
     my $response = $user_agent->request($request);
 
