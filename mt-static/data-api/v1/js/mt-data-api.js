@@ -2398,14 +2398,23 @@ DataAPI.prototype = {
      * @category core
      */
     getTokenData: function() {
-        var token = this.tokenData;
+        var token = this.tokenData,
+            m;
 
         if (! token) {
-            if (window.location && window.location.hash === '#_login') {
-                try {
-                    token = this._updateTokenFromDefaultCookie();
+            if (window.location) {
+                if (window.location.hash === '#_login') {
+                    try {
+                        token = this._updateTokenFromDefaultCookie();
+                    }
+                    catch (e) {
+                    }
                 }
-                catch (e) {
+                else if (m = window.location.hash.match(/^#_ott_(.*)/)) {
+                    token = {
+                        oneTimeToken: m[1]
+                    };
+                    window.location.hash = '#_login';
                 }
             }
 
@@ -2418,7 +2427,10 @@ DataAPI.prototype = {
             }
         }
 
-        if (token && (token.startTime + token.expiresIn < this._getCurrentEpoch())) {
+        if (token &&
+            'startTime' in token &&
+            'expiresIn' in token &&
+            (token.startTime + token.expiresIn < this._getCurrentEpoch())) {
             delete token.accessToken;
             delete token.startTime;
             delete token.expiresIn;
@@ -2992,7 +3004,12 @@ DataAPI.prototype = {
         }
 
         if (endpoint === '/token' || endpoint === '/authentication') {
-            if (tokenData && tokenData.sessionId) {
+            if (tokenData && tokenData.oneTimeToken) {
+                defaultHeaders['X-MT-Authorization'] =
+                    api.getAuthorizationHeader('oneTimeToken');
+                delete tokenData.oneTimeToken;
+            }
+            else if (tokenData && tokenData.sessionId) {
                 defaultHeaders['X-MT-Authorization'] =
                     api.getAuthorizationHeader('sessionId');
             }
