@@ -5047,6 +5047,28 @@ sub pre_run {
         push @messages, $message;
     }
 
+    unless ( $app->config('SSLVerifyNone')
+        || eval { require Mozilla::CA; 1 } )
+    {
+        my $message = {
+            level => 'warning',
+            text  => $app->translate('Cannot verify SSL certificate.'),
+        };
+        if ( $user && $user->is_superuser ) {
+            $message->{detail}
+                = $app->translate(
+                'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this way is not recommended.'
+                );
+        }
+        else {
+            $message->{text}
+                .= ' '
+                . $app->translate(
+                'Please contact your Movable Type system administrator.');
+        }
+        push @messages, $message;
+    }
+
     $app->run_callbacks( 'set_notification_dashboard', \@messages );
 
     $app->request( 'loop_notification_dashboard', \@messages );

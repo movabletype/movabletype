@@ -24,12 +24,10 @@ sub init {
     my $mozilla_ca = eval { require Mozilla::CA; 1 };
     $options{SSL_Client_Certificate} = {
         SSL_verify_mode => $verify,
-        $verify
+        ( $verify && eval { require Mozilla::CA; 1 } )
         ? ( SSL_verifycn_name   => $_[0],
             SSL_verifycn_scheme => 'ftp',
-            eval { require Mozilla::CA; 1 }
-            ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file() )
-            : (),
+            SSL_ca_file         => Mozilla::CA::SSL_ca_file(),
             )
         : (),
     };

@@ -2672,15 +2672,13 @@ sub new_ua {
     }
 
     my $ua = $lwp_class->new;
-    if ( MT->config->SSLVerifyNone ) {
+    if ( MT->config->SSLVerifyNone || !( eval { require Mozilla::CA; 1 } ) ) {
         $ua->ssl_opts( verify_hostname => 0 );
     }
     else {
         $ua->ssl_opts(
             verify_hostname => 1,
-            eval { require Mozilla::CA; 1 }
-            ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file() )
-            : (),
+            SSL_ca_file     => Mozilla::CA::SSL_ca_file(),
         );
     }
     $ua->max_size($max_size) if ( defined $max_size ) && $ua->can('max_size');
