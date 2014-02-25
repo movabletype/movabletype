@@ -1742,10 +1742,11 @@ BEGIN {
             'SMTPPassword'                  => undef,
             'SMTPPort'                      => undef,
             'SMTPTimeout'                   => { default => 10 },
-            'SMTPSSLVerifyNone'             => { default => 0 },
+            'SMTPSSLVerifyNone'             => undef,
             'SMTPOptions'                   => { type => 'HASH' },
-            'FTPSSSLVerifyNone'             => { default => 0 },
+            'FTPSSSLVerifyNone'             => undef,
             'FTPSOptions'                   => { type => 'HASH' },
+            'SSLVerifyNone'                 => undef,
             'DebugEmailAddress'             => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>

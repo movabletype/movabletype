@@ -17,7 +17,10 @@ sub init {
     my %options = ();
     $options{Port} = $_[3] if $_[3];
 
-    my $verify = MT->config->FTPSSSLVerifyNone ? 0 : 1;
+    my $verify
+        = ( MT->config->SSLVerifyNone || MT->config->FTPSSSLVerifyNone )
+        ? 0
+        : 1;
     my $mozilla_ca = eval { require Mozilla::CA; 1 };
     $options{SSL_Client_Certificate} = {
         SSL_verify_mode => $verify,

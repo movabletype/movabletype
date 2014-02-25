@@ -214,7 +214,9 @@ sub _send_mt_smtp {
     }
     my $do_ssl = ( $ssl || $tls ) ? $mgr->SMTPAuth : undef;
     my $ssl_verify_mode
-        = $do_ssl ? ( $mgr->SMTPSSLVerifyNone ? 0 : 1 ) : undef;
+        = $do_ssl
+        ? ( ( $mgr->SSLVerifyNone || $mgr->SMTPSSLVerifyNone ) ? 0 : 1 )
+        : undef;
 
     return $class->error(
         MT->translate(
