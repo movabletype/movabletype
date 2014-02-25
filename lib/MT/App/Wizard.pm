@@ -338,6 +338,11 @@ sub init_core_registry {
                 label   => 'This module required for restoring from backup.',
                 version => 1.70,
             },
+            'Mozilla::CA' => {
+                link => 'http://search.cpan.org/dist/Mozilla-CA/',
+                label =>
+                    'This module is used for verification of SSL certificate.',
+            },
         },
         required_packages => {
             'Image::Size' => {

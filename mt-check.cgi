@@ -771,6 +771,13 @@ my @CORE_OPT = (
         )
     ],
 
+    [   'Mozilla::CA',
+        0, 0,
+        translate(
+            'This module is used for verification of SSL certificate.'
+        )
+    ],
+
 );
 
 use Cwd;
