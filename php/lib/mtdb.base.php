@@ -1427,7 +1427,15 @@ abstract class MTDatabase {
                 } else {
                     if (preg_match('/^entry_(field\..*)/', $sort_field, $match)) {
                         if (! $entry_meta_info) {
-                            $entry_meta_info = Entry::get_meta_info('entry');
+                            if ($class === '*') {
+                                $entry_meta_info = array_merge(
+                                    BaseObject::get_meta_info('entry'),
+                                    BaseObject::get_meta_info('page')
+                                );
+                            }
+                            else {
+                                $entry_meta_info = Entry::get_meta_info($class);
+                            }
                         }
                         $sort_by_numeric =
                             preg_match('/integer|float/', $entry_meta_info[$match[1]]);

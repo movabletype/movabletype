@@ -194,6 +194,15 @@ abstract class BaseObject extends ADOdb_Active_Record
         return $this->_has_meta;
     }
 
+    public function object_type() {
+        if (isset($this->{$this->_prefix . 'class'})) {
+            return $this->{$this->_prefix . 'class'};
+        }
+        else {
+            return trim($this->_prefix, '_');
+        }
+    }
+
     public function has_column($col_name) {
         if ( empty($col_name)) return false;
 
@@ -228,6 +237,8 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (!isset($meta_info) || count($meta_info) === 0)
             return $obj;
 
+        $obj_type = $obj->object_type();
+
         // Parse meta info
         foreach ($meta_info as $meta) {
             $col_name = $obj->_prefix . 'meta_type';
@@ -246,6 +257,11 @@ abstract class BaseObject extends ADOdb_Active_Record
                 }
                 
             }
+
+            if (! self::$_meta_info[$obj_type][$meta_name]) {
+                self::$_meta_info[$obj_type][$meta_name] = $col_name;
+            }
+
             $obj->$meta_name = $value;
             $obj->_original[] = $value;
         }
@@ -310,6 +326,10 @@ abstract class BaseObject extends ADOdb_Active_Record
 
 
         foreach ($objs as &$obj) {
+            if (! $obj_type) {
+                $obj_type = $obj->object_type();
+            }
+
             $meta_info = $obj->$meta_table;
             if (! $meta_info) {
                 continue;
@@ -330,6 +350,11 @@ abstract class BaseObject extends ADOdb_Active_Record
                         $value = $mt->db()->unserialize($value);
                     }
                 }
+
+                if (! self::$_meta_info[$obj_type][$meta_name]) {
+                    self::$_meta_info[$obj_type][$meta_name] = $col_name;
+                }
+
                 $obj->$meta_name = $value;
                 $obj->_original[] = $value;
             }
