@@ -1514,6 +1514,7 @@ sub save {
         = $blog->archive_type_preferred
         || $blog->archive_type
         || 'Individual';
+    $at = 'Page' if $entry->class eq 'page';
 
     my $key;
     my $publisher  = MT->instance->publisher;
