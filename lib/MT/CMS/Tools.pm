@@ -684,8 +684,23 @@ sub save_cfg_system_general {
             && -d $app->param('sitepath_limit')
             )
         {
-            my $count = MT::App::CMS::count_warning_sitepath_limit(
-                $app->user->id );
+            my $count          = 0;
+            my $sitepath_limit = $app->param('sitepath_limit');
+            foreach my $model_name (qw( website blog )) {
+                my $class = MT->model($model_name);
+                my $iter  = $class->load_iter();
+                while ( my $site = $iter->() ) {
+                    my $path = $site->column('site_path');
+                    if ((      $model_name eq 'website'
+                            || $class->is_site_path_absolute($path)
+                        )
+                        && $path !~ m!^$sitepath_limit/.*!
+                        )
+                    {
+                        $count++;
+                    }
+                }
+            }
             $args->{warning_sitepath_limit} = 1 if $count;
 
             $app->config( 'BaseSitePath', $app->param('sitepath_limit'), 1 );

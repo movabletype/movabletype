@@ -2287,7 +2287,14 @@ sub cfg_prefs_save {
             $blog->archive_url("$subdomain/::/$path");
         }
         $blog->site_path( $app->param('site_path_absolute') )
-            if !$app->config->BaseSitePath
+            if (
+            !$app->config->BaseSitePath
+            || ($app->config->BaseSitePath
+                && MT::CMS::Common::is_within_base_sitepath(
+                    $app, $app->param('site_path_absolute')
+                )
+            )
+            )
             && $app->param('use_absolute')
             && $app->param('site_path_absolute');
         $blog->archive_path( $app->param('archive_path_absolute') )

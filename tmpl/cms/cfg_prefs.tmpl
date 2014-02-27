@@ -269,14 +269,14 @@ function setLicense() {
       <div class="relative-site_path content-path">
         <span class="website-path"><mt:if name="is_blog"><mt:var name="website_path" encode_html="1"></mt:if></span><span class="extra-path"><input type="text" name="site_path" id="site_path" value="<mt:if name="is_blog"><mt:unless name="site_path_absolute"><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:unless><mt:else><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:if>" class="<mt:if name="is_blog"> blog-path-text path<mt:else> mt-edit-field website-path-field required<mt:if name="sitepath_limited"> limited_path</mt:if></mt:if> hide-input" /></span>
       </div>
-      <mt:if name="is_blog"><mt:unless name="sitepath_limited">
+      <mt:if name="is_blog"><mt:if name="can_use_absolute">
       <div class="absolute-site_path content-path">
-        <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="text blog-path-text hide-input" />
+        <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="text blog-path-text hide-input<mt:if name="sitepath_limited"> limited_path</mt:if>" />
       </div>
       <div class="use-absolute option">
         <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
       </div>
-      </mt:unless></mt:if>
+      </mt:if></mt:if>
       <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] root requires a complete publish of your [_1]." params="<mt:var name="object_label" capitalize="1">"></p>
 
       <mt:if name="is_blog">
@@ -662,6 +662,9 @@ function setLicense() {
         "#site_path.limited_path": function( $e ) {
             return is_path_limit_clear( $e.val() );
         },
+        "#site_path_absolute.limited_path": function( $e ) {
+            return is_path_limit_clear( $e.val() );
+        },
 </mt:if>
         "#archive_path": function ($e) {
             if ( jQuery('#enable_archive_paths:checked').length && !jQuery('#use_absolute_archive:checked').length ) {
@@ -702,6 +705,7 @@ function setLicense() {
 </mt:if>
         "#site_path_absolute.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
         "#site_path_absolute": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
+        "#site_path_absolute.limited_path": '<__trans phrase="Blog root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
         "#archive_url_path.required": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
         "#archive_url_path": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
         "#archive_path.required": '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">',

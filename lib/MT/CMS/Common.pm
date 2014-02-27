@@ -156,6 +156,18 @@ sub save {
             return $app->errtrans("Invalid request.");
         }
 
+        if (   $app->param('use_absolute')
+            && $app->param('site_path_absolute')
+            && $app->config->BaseSitePath )
+        {
+            my $l_path = $app->config->BaseSitePath;
+            my $s_path = $app->param('site_path_absolute');
+            unless ( is_within_base_sitepath( $app, $s_path ) ) {
+                return $app->errtrans(
+                    "The blog root directory must be within [_1]", $l_path );
+            }
+        }
+
         unless ( $obj->id ) {
             my $subdomain = $q->param('site_url_subdomain');
             $subdomain = '' if !$q->param('use_subdomain');
@@ -210,15 +222,7 @@ sub save {
         if ( $values{site_path} and $app->config->BaseSitePath ) {
             my $l_path = $app->config->BaseSitePath;
             my $s_path = $values{site_path};
-
-            # making sure that we have a '/' in the end of the paths
-            $l_path = File::Spec->catdir( $l_path, "PATH" );
-            $l_path =~ s/PATH$//;
-            $l_path = quotemeta($l_path);
-            $s_path = File::Spec->catdir( $s_path, "PATH" );
-            $s_path =~ s/PATH$//;
-
-            if ( $s_path !~ m/^$l_path/i ) {
+            unless ( is_within_base_sitepath( $app, $s_path ) ) {
                 return $app->errtrans(
                     "The website root directory must be within [_1]",
                     $l_path );
@@ -811,6 +815,8 @@ sub edit {
         $limit =~ s/PATH$//;
         $param{'sitepath_limited_trail'} = $limit;
         $param{'sitepath_limited'}       = $cfg->BaseSitePath;
+        $param{'can_use_absolute'}       = !$cfg->BaseSitePath
+            || ( $blog && $blog->is_site_path_absolute );
     }
 
     my $res = 1;
@@ -2246,6 +2252,20 @@ sub is_disabled_mode {
         }
     }
     return $res;
+}
+
+sub is_within_base_sitepath {
+    my ( $app, $s_path ) = @_;
+    my $l_path = $app->config->BaseSitePath;
+
+    # making sure that we have a '/' in the end of the paths
+    $l_path = File::Spec->catdir( $l_path, "PATH" );
+    $l_path =~ s/PATH$//;
+    $l_path = quotemeta($l_path);
+    $s_path = File::Spec->catdir( $s_path, "PATH" );
+    $s_path =~ s/PATH$//;
+
+    return $s_path =~ m/^$l_path/i;
 }
 
 1;
