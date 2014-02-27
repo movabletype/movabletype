@@ -214,9 +214,23 @@
   </mtapp:settinggroup>
 
 <mt:setvarblock name="jq_js_include" append="1">
-jQuery('#cfg_entry').submit(function(eventObject) {
-    jQuery('input[name="page_custom_prefs"], input[name="entry_custom_prefs"]').removeAttr("disabled");
-});
+    jQuery.mtValidateAddRules({
+        "#basename_limit": function($e) {
+            if ( $e.val() < 15 || $e.val() > 250 ) {
+                return false;
+            }
+            return true;
+        }
+    });
+
+    jQuery.mtValidateAddMessages({
+        "#basename_limit": '<__trans phrase="The range for Basename Length is 15 to 250." escape="singlequotes">',
+    });
+
+    jQuery('#cfg_entry').submit(function(eventObject) {
+        if ( !jQuery("#basename_limit").mtValidate('simple') ) return false;
+        jQuery('input[name="page_custom_prefs"], input[name="entry_custom_prefs"]').removeAttr("disabled");
+    });
 </mt:setvarblock>
 
   <h2><__trans phrase="WYSIWYG Editor Setting"></h2>
