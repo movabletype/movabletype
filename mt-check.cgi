@@ -214,6 +214,7 @@ if ($view) {
     require MT::Session;
     require MT::Serialize;
     my $mt = MT->new;
+    $mt->set_language($lang);
 PERMCHECK: {
         my $sess = MT->model('session')->load( { id => $sess_id } )
             or invalid_request(), last PERMCHECK;
@@ -761,21 +762,24 @@ my @CORE_OPT = (
         translate('This module required for action streams.')
     ],
 
-    [   'XML::SAX::ExpatXS', 1.30, 0,
+    [   'XML::SAX::ExpatXS',
+        1.30, 0,
         translate(
             '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
             'XML::SAX::ExpatXS'
         )
     ],
 
-    [   'XML::SAX::Expat', 0.37, 0,
+    [   'XML::SAX::Expat',
+        0.37, 0,
         translate(
             '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
             'XML::SAX::Expat'
         )
     ],
 
-    [   'XML::LibXML::SAX', 1.70, 0,
+    [   'XML::LibXML::SAX',
+        1.70, 0,
         translate(
             '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
             'XML::LibXML::SAX'
