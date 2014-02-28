@@ -389,6 +389,11 @@ sub asset_userpic {
                     $fmgr->delete($old_file);
                 }
                 $user->userpic_asset_id( $asset->id );
+                return $app->error(
+                    $app->translate(
+                        "Failed to create thumbnail file. This image type is not supported..."
+                    )
+                ) unless ( $fmgr->exists( $user->userpic_file() ) );
                 $user->save;
             }
         }
