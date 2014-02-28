@@ -48,6 +48,7 @@
         <option value="days"<mt:if name="days"> selected="selected"</mt:if>><__trans phrase="Days"></option>
         <option value="posts"<mt:if name="posts"> selected="selected"</mt:if>><__trans phrase="Posts"></option>
       </select>
+      <div id="list_on_index-field-msg-block" style="display: none;"></div>
     </mtapp:setting>
 
     <mtapp:setting
@@ -228,6 +229,8 @@
     });
 
     jQuery('#cfg_entry').submit(function(eventObject) {
+        if ( !jQuery("#list_on_index").mtValidate('simple2') ) return false;
+        if ( !jQuery("#words_in_excerpt").mtValidate('simple') ) return false;
         if ( !jQuery("#basename_limit").mtValidate('simple') ) return false;
         jQuery('input[name="page_custom_prefs"], input[name="entry_custom_prefs"]').removeAttr("disabled");
     });
