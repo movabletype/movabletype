@@ -152,7 +152,7 @@ TC.TagComplete.prototype.keyDown = function( evt )
         this.updateWord( String.fromCharCode(evt.keyCode).toLowerCase() );
     }
     else if ( (evt.keyCode > 47) && (evt.keyCode < 58) ) { // 0-9
-        if (event.shiftKey) return true;
+        if (evt.shiftKey) return true;
         this.updateWord( String.fromCharCode(evt.keyCode) );
     }
     else {
