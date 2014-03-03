@@ -1166,7 +1166,8 @@ sub _hdlr_asset_thumbnail_url {
     $arg{Scale}  = $args->{scale}  if $args->{scale};
     $arg{Square} = $args->{square} if $args->{square};
     foreach my $modifier (qw( Width Height )) {
-        return $ctx->error( MT->translate( "[_1] must be a number.", $modifier ) )
+        return $ctx->error(
+            MT->translate( "[_1] must be a number.", $modifier ) )
             if ( defined $arg{$modifier} && $arg{$modifier} !~ /^\d+$/ );
     }
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
