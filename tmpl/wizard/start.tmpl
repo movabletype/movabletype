@@ -77,7 +77,7 @@ label {
 <mt:include name="include/chromeless_header.tmpl">
 
 <mt:unless name="cfg_exists">
-<form method="post">
+<form method="post" onsubmit="return check_static_uri();">
   <input type="hidden" name="__mode" value="next_step" />
   <input type="hidden" name="step" value="pre_start" />
   <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
@@ -167,12 +167,56 @@ label {
 
 <mt:unless name="uri_invalid">
     <mt:unless name="file_invalid">
-        <mt:setvarblock name="jq_js_include" append="1">
+<mt:setvarblock name="jq_js_include" append="1">
     jQuery(function() {
         jQuery('div.no-static-path, div#static_webpath_config').hide();
     });
-        </mt:setvarblock>
+</mt:setvarblock>
     </mt:unless>
 </mt:unless>
 
+<script type="text/javascript">
+/* <![CDATA[ */
+function check_static_uri() {
+    var input = '<input type="hidden" name="uri_valid" value="1" />';
+
+    function submit_uri_valid() {
+        jQuery('form')
+            .removeAttr('onload')
+            .append(input)
+            .submit();
+    }
+
+    function submit_uri_invalid() {
+        var form = document.forms[0];
+        form.removeAttribute('onload');
+        form.submit();
+    }
+
+    if (window.jQuery) {
+        jQuery('form').append(input);
+        return true;
+    } else {
+        var static_uri = document.getElementById('set_static_uri_to').value + '/jquery/jquery.js';
+        var script     = document.createElement('script');
+
+        script.type = 'text/javascript';
+        script.src  = static_uri;
+
+        // Submit form after checking static web path.
+        script.onerror = submit_uri_invalid;
+        script.onload  = function() {
+            if (window.jQuery) {
+                submit_uri_valid();
+            } else {
+                submit_uri_invalid();
+            }
+        };
+ 
+        document.body.appendChild(script);
+        return false;
+    }
+}
+/* ]]> */
+</script>
 <mt:include name="include/chromeless_footer.tmpl">

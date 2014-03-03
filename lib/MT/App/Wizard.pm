@@ -561,7 +561,7 @@ sub start {
     $static_path =~ s#(^\s+|\s+$)##;
     $static_path .= '/' unless $static_path =~ m!/$!;
 
-    unless ( $app->is_valid_static_path($static_path) ) {
+    unless ( $app->param('uri_valid') || $app->is_valid_static_path($static_path) ) {
         $param{uri_invalid}       = 1;
         $param{set_static_uri_to} = $app->param('set_static_uri_to');
         return $app->build_page( "start.tmpl", \%param );
