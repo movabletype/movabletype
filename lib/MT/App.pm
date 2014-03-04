@@ -1790,6 +1790,7 @@ sub start_session {
         ( $x, $y, $remember )
             = split( /::/, $app->cookie_val( $app->user_cookie ) );
     }
+    $remember ||= '';
     my $session = make_session( $author, $remember );
     my %arg = (
         -name  => $app->user_cookie,
