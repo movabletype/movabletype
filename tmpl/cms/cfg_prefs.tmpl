@@ -585,6 +585,9 @@ function setLicense() {
         "#site_url": function($e) {
             return MT.Validator.url('<mt:if name="is_blog"><mt:var name="website_url" escape="js"></mt:If>' + $e.val());
         },
+        "#archive_url": function($e) {
+            return MT.Validator.url('<mt:if name="is_blog"><mt:var name="website_url" escape="js"></mt:If>' + $e.val());
+        },
         "#site_path": function($e) {
             return MT.Validator.path($e.val(), <mt:if name="is_blog">1<mt:else>0</mt:if>);
         },
@@ -637,6 +640,7 @@ function setLicense() {
         "#site_path_absolute.required": '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
         "#site_path_absolute": '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">',
         "#site_path_absolute.limited_path": '<__trans phrase="Blog root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
+        "#archive_url": '<__trans phrase="You must set a valid URL." escape="singlequotes">',
         "#archive_url_path.required": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
         "#archive_url_path": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
         "#archive_url_subdomain": '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
