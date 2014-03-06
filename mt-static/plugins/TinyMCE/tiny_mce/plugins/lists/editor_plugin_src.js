@@ -173,15 +173,8 @@
 				return ed.selection.isCollapsed() && isEmptyListItem(getLi());
 			}
 
-			function getLi(ignore_empty_child_nodes) {
+			function getLi() {
 				var n = ed.selection.getStart();
-
-				if (ignore_empty_child_nodes) {
-					while ((n.innerText || n.textContent || '').replace(/[\s\r\n]+/, '') == '' && n.tagName != 'LI' && n.parentNode) {
-						n = n.parentNode;
-					}
-				}
-
 				// Get start will return BR if the LI only contains a BR or an empty element as we use these to fix caret position
 				return ((n.tagName == 'BR' || n.tagName == '') && n.parentNode.tagName == 'LI') ? n.parentNode : n;
 			}
@@ -459,13 +452,13 @@
 				}
 
 				if (e.keyCode == tinymce.VK.BACKSPACE) {
-					var li = getLi(true);
+					var li = getLi();
 					if (li) {
 						var list = ed.dom.getParent(li, 'ol,ul'),
 							rng  = ed.selection.getRng();
 						if (list && list.firstChild === li && rng.startOffset == 0) {
 							var elements = listElements(li);
-							elements.unshift(li)
+							elements.unshift(li);
 							ed.execCommand("Outdent", false, elements);
 							ed.undoManager.add();
 							return Event.cancel(e);
@@ -483,7 +476,7 @@
 						ed.dom.remove(li, true);
 						var textNodes = tinymce.grep(prevLi.childNodes, function(n){ return n.nodeType === 3 });
 						if (textNodes.length === 1) {
-							var textNode = textNodes[0]
+							var textNode = textNodes[0];
 							ed.selection.setCursorLocation(textNode, textNode.length);
 						}
 						ed.undoManager.add();
@@ -944,8 +937,7 @@
 		},
 
 		selectedBlocks: function() {
-			var ed = this.ed
-			var selectedBlocks = ed.selection.getSelectedBlocks();
+			var ed = this.ed, selectedBlocks = ed.selection.getSelectedBlocks();
 			return selectedBlocks.length == 0 ? [ ed.dom.getRoot() ] : selectedBlocks;
 		},
 
