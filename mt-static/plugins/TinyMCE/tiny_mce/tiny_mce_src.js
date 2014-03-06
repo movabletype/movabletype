@@ -3233,7 +3233,7 @@ tinymce.html.Styles = function(settings, schema) {
 
 			// Precompile RegExps and map objects
 			tokenRegExp = new RegExp('<(?:' +
-				'(?:!--([\\w\\W]*?)-->)|' + // Comment
+				'(?:!---?>|!--([\\w\\W]*?)-->)|' + // Comment
 				'(?:!\\[CDATA\\[([\\w\\W]*?)\\]\\]>)|' + // CDATA
 				'(?:!DOCTYPE([\\w\\W]*?)>)|' + // DOCTYPE
 				'(?:\\?([^\\s\\/<>]+) ?([\\w\\W]*?)[?/]>)|' + // PI
@@ -4082,6 +4082,17 @@ tinymce.html.Styles = function(settings, schema) {
 				start: function(name, attrs, empty) {
 					var newNode, attrFiltersLen, elementRule, textNode, attrName, text, sibling, parent;
 
+					function addNodeToMatchedAttributes(name, node) {
+						var list = matchedAttributes[name];
+						if (list) {
+							if (list[list.length-1] !== node) {
+								list.push(node);
+							}
+						} else {
+							matchedAttributes[name] = [newNode];
+						}
+					}
+
 					elementRule = validate ? schema.getElementRule(name) : {};
 					if (elementRule) {
 						newNode = createNode(elementRule.outputName || name, 1);
@@ -4100,13 +4111,17 @@ tinymce.html.Styles = function(settings, schema) {
 						while (attrFiltersLen--) {
 							attrName = attributeFilters[attrFiltersLen].name;
 
-							if (attrName in attrs.map) {
-								list = matchedAttributes[attrName];
-
-								if (list)
-									list.push(newNode);
-								else
-									matchedAttributes[attrName] = [newNode];
+							if (attrName instanceof RegExp) {
+								tinymce.each(attrs.map, function(v, k) {
+									if (attrName.test(k)) {
+										addNodeToMatchedAttributes(k, newNode);
+									}
+								});
+							}
+							else {
+								if (attrName in attrs.map) {
+									addNodeToMatchedAttributes(attrName, newNode);
+								}
 							}
 						}
 
@@ -4269,18 +4284,43 @@ tinymce.html.Styles = function(settings, schema) {
 				for (i = 0, l = attributeFilters.length; i < l; i++) {
 					list = attributeFilters[i];
 
-					if (list.name in matchedAttributes) {
-						nodes = matchedAttributes[list.name];
+					if (list.name instanceof RegExp) {
+						tinymce.each(matchedAttributes, function(v, k) {
+							if (! list.name.test(k)) {
+								return;
+							}
 
-						// Remove already removed children
-						fi = nodes.length;
-						while (fi--) {
-							if (!nodes[fi].parent)
-								nodes.splice(fi, 1);
+							var l = tinymce.extend({}, list, {
+								name: k
+							});
+
+							nodes = matchedAttributes[l.name];
+
+							// Remove already removed children
+							fi = nodes.length;
+							while (fi--) {
+								if (!nodes[fi].parent)
+									nodes.splice(fi, 1);
+							}
+
+							for (fi = 0, fl = l.callbacks.length; fi < fl; fi++)
+								l.callbacks[fi](nodes, l.name, args);
+						});
+					}
+					else {
+						if (list.name in matchedAttributes) {
+							nodes = matchedAttributes[list.name];
+
+							// Remove already removed children
+							fi = nodes.length;
+							while (fi--) {
+								if (!nodes[fi].parent)
+									nodes.splice(fi, 1);
+							}
+
+							for (fi = 0, fl = list.callbacks.length; fi < fl; fi++)
+								list.callbacks[fi](nodes, list.name, args);
 						}
-
-						for (fi = 0, fl = list.callbacks.length; fi < fl; fi++)
-							list.callbacks[fi](nodes, list.name, args);
 					}
 				}
 			}
@@ -14074,7 +14114,15 @@ tinymce.create('tinymce.ui.Toolbar:tinymce.ui.Container', {
 
 				// Focus the window iframe
 				if (!contentEditable) {
-					self.getWin().focus();
+					if (!(
+							tinymce.isIE
+						 && doc
+						 && doc.documentMode >= 10
+						 && doc.hasFocus
+						 && doc.hasFocus()
+					)) {
+						self.getWin().focus();
+					}
 				}
 
 				// Focus the body as well since it's contentEditable
@@ -16710,6 +16758,49 @@ tinymce.ForceBlocks = function(editor) {
 					}
 				};
 
+				function isDescendant(container, node) {
+					if (! node || ! node.parentNode) {
+						return false;
+					}
+					node = node.parentNode;
+
+					while (node) {
+						if (container === node) {
+							return true;
+						}
+						node = node.parentNode;
+					}
+
+					return false;
+				}
+
+				function findNonZeroOffsetParent(node) {
+					if (! node || ! node.parentNode) {
+						return {
+							parent: null,
+							offset: null
+						};
+					}
+					var parent = node.parentNode;
+
+					while (parent && parent.childNodes[0] === node) {
+						node = parent;
+						parent = parent.parentNode;
+					}
+
+					var offset = 0;
+					if (parent) {
+						while (parent.childNodes[offset] && parent.childNodes[offset] !== node) {
+							offset++;
+						}
+					}
+
+					return {
+						parent: parent,
+						offset: offset
+					};
+				}
+
 				// Adjust selection so that a end container with a end offset of zero is not included in the selection
 				// as this isn't visible to the user.
 				var rng = ed.selection.getRng();
@@ -16717,10 +16808,19 @@ tinymce.ForceBlocks = function(editor) {
 				var end = rng.endContainer;
 
 				if (start != end && rng.endOffset === 0) {
-					var newEnd = findSelectionEnd(start, end);
-					var endOffset = newEnd.nodeType == 3 ? newEnd.length : newEnd.childNodes.length;
+					if (isDescendant(start, end)) {
+						var data = findNonZeroOffsetParent(end);
+						var newEnd = data.parent;
+						var endOffset = data.offset;
+					}
+					else {
+						var newEnd = findSelectionEnd(start, end);
+						var endOffset = newEnd.nodeType == 3 ? newEnd.length : newEnd.childNodes.length;
+					}
 
-					rng.setEnd(newEnd, endOffset);
+					if (newEnd) {
+						rng.setEnd(newEnd, endOffset);
+					}
 				}
 
 				return rng;
