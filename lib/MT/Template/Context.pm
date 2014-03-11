@@ -728,6 +728,9 @@ sub compile_tag_filter {
 sub compile_role_filter {
     my ( $ctx, $role_expr, $roles ) = @_;
 
+    # Sort in descending order by length
+    @$roles = sort { length( $b->name ) <=> length( $a->name ) } @$roles;
+
     my %roles_used;
     foreach my $role (@$roles) {
         my $name = $role->name;
