@@ -3295,7 +3295,7 @@ abstract class MTDatabase {
             $type_filter = "and asset_class ='" . $args['type'] . "'";
         }
 
-        $where = "1 = 1
+        $where = "asset_parent is NULL
                   $blog_filter
                   $type_filter";
 

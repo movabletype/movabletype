@@ -1309,6 +1309,7 @@ sub _hdlr_asset_count {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
     $terms{blog_id} = $ctx->stash('blog_id') if $ctx->stash('blog_id');
+    $terms{parent} = \'is NULL';
     $terms{class} = $args->{type} || '*';
     my $count = MT::Asset->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );
