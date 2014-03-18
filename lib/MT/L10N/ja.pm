@@ -2737,8 +2737,6 @@ use vars qw( @ISA %Lexicon );
 	'Boilerplate' => '定型文',
 	'Select Boilerplate' => '定型文を選択...',
 
-## mt-static/plugins/Loupe/js/vendor.js
-
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
 	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
 	'Italic (Ctrl+I)' => '斜体 (Ctrl+I)',
@@ -2981,6 +2979,7 @@ use vars qw( @ISA %Lexicon );
 ## themes/pico/templates/about_this_page.mtml
 
 ## themes/pico/templates/archive_index.mtml
+	'Navigation' => 'ナビゲーション',
 	'Related Content' => '関連コンテンツ',
 
 ## themes/pico/templates/archive_widgets_group.mtml
@@ -3019,6 +3018,7 @@ use vars qw( @ISA %Lexicon );
 ## themes/pico/templates/dynamic_error.mtml
 
 ## themes/pico/templates/entry.mtml
+	'Home' => 'ホーム',
 
 ## themes/pico/templates/entry_summary.mtml
 
@@ -3126,6 +3126,7 @@ use vars qw( @ISA %Lexicon );
 	'Upload New Asset' => '新規アイテムのアップロード',
 
 ## tmpl/cms/asset_upload.tmpl
+	'Upload Destination' => 'アップロード先',
 	'Upload Asset' => 'アイテムのアップロード',
 
 ## tmpl/cms/backup.tmpl
@@ -3624,6 +3625,7 @@ use vars qw( @ISA %Lexicon );
 	'Confirm' => '確認',
 
 ## tmpl/cms/dialog/comment_reply.tmpl
+	'Reply to comment' => 'コメント返信',
 	'On [_1], [_2] commented on [_3]' => '[_2]から[_3]へのコメント([_1])',
 	'Your reply:' => '返信',
 	'Submit reply (s)' => '返信を投稿 (s)',
@@ -4247,9 +4249,8 @@ use vars qw( @ISA %Lexicon );
 	'Asset Missing' => 'アイテムなし',
 	'No thumbnail image' => 'サムネイル画像がありません。',
 
-## tmpl/cms/include/asset_upload.tmpl
-	'Upload Destination' => 'アップロード先',
-	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]公開パスの設定[_3]して、[_1]を再構築してください。},
+## tmpl/cms/include/asset_upload.tmplwo	'Upload Destination' => 'アップロード先',
+	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]公開パスの設定[_3]をして、[_1]を再構築してください。},
 	'Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator.' => 'ファイルアップロードができるように、システム、または[_1]管理者が[_1]を再構築する必要があります。システム、または[_1]管理者に連絡してください。',
 	q{Cannot write to '[_1]'. Image upload is possible, but thumbnail is not created.} => q{ファイルのアップロードは可能ですが、'[_1]'への書き込みが行えないため、画像ファイルのサムネイルを作成する事ができません。},
 	q{Asset file('[_1]') has been uploaded.} => q{アイテム('[_1]')がアップロードされました。},
@@ -5386,6 +5387,7 @@ use vars qw( @ISA %Lexicon );
 	'Professional Styles' => 'プロフェッショナルスタイル',
 	'A collection of styles compatible with Professional themes.' => 'プロフェッショナルテーマと互換のあるスタイルです。',
 	'Professional Website' => 'プロフェッショナル ウェブサイト',
+	'Blog Index' => 'ブログ用インデックスページ',
 	'Header' => 'ヘッダー',
 	'Footer' => 'フッター',
 	'Entry Detail' => '記事の詳細',
@@ -5514,6 +5516,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/blog/footer.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/footer_links.mtml
+	'Links' => 'リンク',
 
 ## addons/Commercial.pack/templates/professional/blog/header.mtml
 
@@ -5620,6 +5623,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/website/search.mtml
 
 ## addons/Commercial.pack/templates/professional/website/search_results.mtml
+	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'すべての単語が順序に関係なく検索されます。フレーズで検索したいときは引用符で囲んでください。',
 
 ## addons/Commercial.pack/templates/professional/website/sidebar.mtml
 
@@ -6394,9 +6398,9 @@ use vars qw( @ISA %Lexicon );
 	'Unable to write remote file ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
+	'[Rsync Error] removing temporary directory: [_1]' => 'テンポラリディレクトリ ([_1]) を削除できません。',
 	'Temp Directory [_1] is not writable.' => 'テンポラリディレクトリ ([_1]) に書き込めません。',
 	'Error during rsync: Command (exit code [_1]): [_2]' => 'rsync コマンドでエラーが起きました (終了コード: [_1]): [_2]',
-	'[Rsync Error] removing temporary directory: [_1]' => 'テンポラリディレクトリ ([_1]) を削除できません。',
 	'An error occured while copying the directory.' => 'ファイルのコピー中にエラーが発生しました。',
 
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
@@ -6411,7 +6415,6 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'FTPサーバー \'[_1]\' への接続中にエラーが発生しました: [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'FTPサーバーのカレントディレクトリが取得できませんでした。',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした。',
-	'Check the settings and try again.' => '設定を見直してもう一度お試しください。',
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'サーバー配信設定',
@@ -6916,9 +6919,8 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Moderate' => '公開を保留するキーワード',
 	'Keywords to Junk' => 'スパムにするキーワード',
 
-
 );
 
-## New words: 259
+## New words: 66
 
 1;
