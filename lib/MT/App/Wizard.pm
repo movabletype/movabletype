@@ -193,7 +193,7 @@ sub init_core_registry {
             'IO::Socket::SSL' => {
                 link => 'http://search.cpan.org/dist/IO-Socket-SSL/',
                 label =>
-                    'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.',
+                    'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. This module is required for site statistics of Google Analytics too.',
             },
             'Net::SSLeay' => {
                 link => 'http://search.cpan.org/dist/Net-SSLeay/',
@@ -264,7 +264,7 @@ sub init_core_registry {
             'Crypt::SSLeay' => {
                 link => 'http://search.cpan.org/dist/Crypt-SSLeay',
                 label =>
-                    'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support.',
+                    'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. This module is required for site statistics of Google Analytics too.',
             },
             'Cache::File' => {
                 link => 'http://search.cpan.org/dist/Cache/lib/Cache/File.pm',
@@ -334,23 +334,29 @@ sub init_core_registry {
                 label => 'This module required for action streams.',
             },
             'XML::SAX::ExpatXS' => {
-                link  => 'http://search.cpan.org/dist/XML-SAX-ExpatXS',
-                label => 'This module required for restoring from backup.',
+                link    => 'http://search.cpan.org/dist/XML-SAX-ExpatXS',
+                label   => 'This module required for restoring from backup.',
                 version => 1.30,
             },
             'XML::SAX::Expat' => {
-                link  => 'http://search.cpan.org/dist/XML-SAX-Expat',
-                label => 'This module required for restoring from backup.',
+                link    => 'http://search.cpan.org/dist/XML-SAX-Expat',
+                label   => 'This module required for restoring from backup.',
                 version => 0.37,
             },
             'XML::LibXML::SAX' => {
-                link  => 'http://search.cpan.org/dist/XML-LibXML-SAX',
-                label => 'This module required for restoring from backup.',
+                link    => 'http://search.cpan.org/dist/XML-LibXML-SAX',
+                label   => 'This module required for restoring from backup.',
                 version => 1.70,
             },
             'Time::HiRes' => {
                 link => 'http://search.cpan.org/dist/Time-HiRes/',
-                label => 'This module is required for executing run-periodic-tasks.',
+                label =>
+                    'This module is required for executing run-periodic-tasks.',
+            },
+            'Mozilla::CA' => {
+                link => 'http://search.cpan.org/dist/Mozilla-CA/',
+                label =>
+                    'This module is required for site statistics of Google Analytics.',
             },
         },
         required_packages => {
@@ -561,7 +567,9 @@ sub start {
     $static_path =~ s#(^\s+|\s+$)##;
     $static_path .= '/' unless $static_path =~ m!/$!;
 
-    unless ( $app->param('uri_valid') || $app->is_valid_static_path($static_path) ) {
+    unless ( $app->param('uri_valid')
+        || $app->is_valid_static_path($static_path) )
+    {
         $param{uri_invalid}       = 1;
         $param{set_static_uri_to} = $app->param('set_static_uri_to');
         return $app->build_page( "start.tmpl", \%param );
