@@ -1294,6 +1294,14 @@ __END_OF_EVAL__
         }
     }
 
+    # Force MT to use IPv4 when using SSL and old IO::Socket::INET6 module,
+    # because an error may occur.
+    if ( eval { require IO::Socket::INET6; 1 }
+        && $IO::Socket::INET6::VERSION <= 2.57 )
+    {
+        eval 'use IO::Socket::SSL qw( inet4 )';
+    }
+
     return $mt;
 }
 
