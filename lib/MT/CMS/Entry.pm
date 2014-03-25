@@ -284,6 +284,7 @@ sub edit {
                         $asset_1 = {
                             asset_id   => $asset->id,
                             asset_name => $asset->file_name,
+                            asset_type => $asset->class,
                             asset_thumb =>
                                 $asset->thumbnail_url( Width => 100 )
                         };
@@ -291,7 +292,8 @@ sub edit {
                     else {
                         $asset_1 = {
                             asset_id   => $asset->id,
-                            asset_name => $asset->file_name
+                            asset_name => $asset->file_name,
+                            asset_type => $asset->class,
                         };
                     }
                     push @{$assets}, $asset_1;
