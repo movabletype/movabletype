@@ -259,7 +259,7 @@ sub core_search_apis {
                     $terms->{ $app->param('filter') }
                         = $app->param('filter_val');
                 }
-                $args->{sort}      = 'authored_on';
+                $args->{sort}      = 'modified_on';
                 $args->{direction} = 'descend';
                 }
         },

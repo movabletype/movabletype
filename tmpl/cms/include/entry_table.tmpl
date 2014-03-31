@@ -116,20 +116,38 @@
   </mt:if>
       </td>
       <td class="col datetime">
-  <mt:if name="has_publish_access">
-        <input type="text" name="created_on_<$mt:var name="id"$>" value="<$mt:var name="created_on_time_formatted"$>" />
+  <mt:if name="object_type" eq="page">
+    <mt:if name="has_publish_access">
+          <input type="text" name="modified_on_<$mt:var name="id"$>" value="<$mt:var name="modified_on_time_formatted"$>" />
+    <mt:else>
+          <span title="<$mt:var name="modified_on_time_formatted"$>">
+      <mt:if name="modified_on_relative">
+        <mt:if name="dates_relative">
+          <mt:var name="modified_on_relative">
+        <mt:else>
+          <mt:var name="modified_on_formatted">
+        </mt:if>
+      <mt:else>
+        <mt:var name="modified_on_formatted">
+      </mt:if>
+          </span>
+    </mt:if>
   <mt:else>
-        <span title="<$mt:var name="created_on_time_formatted"$>">
-    <mt:if name="created_on_relative">
-      <mt:if name="dates_relative">
-        <mt:var name="created_on_relative">
+    <mt:if name="has_publish_access">
+          <input type="text" name="created_on_<$mt:var name="id"$>" value="<$mt:var name="created_on_time_formatted"$>" />
+    <mt:else>
+          <span title="<$mt:var name="created_on_time_formatted"$>">
+      <mt:if name="created_on_relative">
+        <mt:if name="dates_relative">
+          <mt:var name="created_on_relative">
+        <mt:else>
+          <mt:var name="created_on_formatted">
+        </mt:if>
       <mt:else>
         <mt:var name="created_on_formatted">
       </mt:if>
-    <mt:else>
-      <mt:var name="created_on_formatted">
+          </span>
     </mt:if>
-        </span>
   </mt:if>
       </td>
       <td class="col view status-view">
