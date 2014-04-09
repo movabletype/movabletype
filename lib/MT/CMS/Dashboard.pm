@@ -719,16 +719,21 @@ sub _build_favorite_websites_data {
         { author_id => $user->id, permissions => { not => "'comment'" } } )
         if !$user->is_superuser && $param->{remove_no_perms};
     my @websites;
-    @websites = $class->load( { id => \@fav_websites }, \%args )
+    @websites
+        = $class->load( { class => 'website', id => \@fav_websites }, \%args )
         if $fav_count;
 
-    @websites = grep sub {
-        my $website = $_;
+    @websites = grep {
+        my $website  = $_;
+        my $has_perm = 0;
         foreach my $id ( $website->id, map { $_->id } @{ $website->blogs } ) {
-            return 1 if $user->has_perm($id);
+            if ( $user->has_perm($id) ) {
+                $has_perm = 1;
+                last;
+            }
         }
-        return 0;
-    }, @websites;
+        $has_perm;
+    } @websites;
     $fav_count = @websites;
 
     # Append accessible websites if user has 4 or more blogs.
@@ -929,7 +934,8 @@ sub _build_favorite_blogs_data {
     my $fav_count = scalar @fav_blogs;
     my @blogs;
     @blogs = $class->load(
-        {   id => \@fav_blogs,
+        {   class => 'blog',
+            id    => \@fav_blogs,
             (   $app->blog && !$app->blog->is_blog
                 ? ( parent_id => $app->blog->id )
                 : ()

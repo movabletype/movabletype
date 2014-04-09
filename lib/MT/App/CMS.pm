@@ -3028,7 +3028,8 @@ sub build_blog_selector {
 
         # This user can access over 6 blogs.
         if (@fav_blogs) {
-            @blogs = $blog_class->load( { id => \@fav_blogs } );
+            @blogs
+                = $blog_class->load( { class => 'blog', id => \@fav_blogs } );
         }
         else {
             @blogs = ();
@@ -4455,10 +4456,17 @@ sub remove_preview_file {
 
     # Clear any preview file that may exist (returning from
     # a preview using the 'reedit', 'cancel' or 'save' buttons)
-    if ( my $preview = $app->param('_preview_file') ) {
+    my $preview_basename = $app->param('_preview_file');
+
+    # Clear any preview file when saving entry,
+    # if PreviewInNewWindow is ON.
+    $preview_basename = $app->preview_object_basename
+        if ( !$preview_basename && $app->config('PreviewInNewWindow') );
+
+    if ($preview_basename) {
         require MT::Session;
         if (my $tf = MT::Session->load(
-                {   id   => $preview,
+                {   id   => $preview_basename,
                     kind => 'TF',
                 }
             )
