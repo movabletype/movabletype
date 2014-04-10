@@ -571,8 +571,9 @@ sub edit {
     ];
 
     $param->{quickpost_js} = MT::CMS::Entry::quickpost_js( $app, $type );
+    $param->{object_label_plural} = $param->{search_label}
+        = $class->class_label_plural;
     if ( 'page' eq $type ) {
-        $param->{search_label} = $app->translate('pages');
         $param->{output}       = 'edit_entry.tmpl';
         $param->{screen_class} = 'edit-page edit-entry';
     }
