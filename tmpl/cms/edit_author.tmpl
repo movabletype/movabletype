@@ -238,7 +238,7 @@ TC.attachLoadEvent(init);
        label="<__trans phrase="Display Name">"
        show_hint="1"
        hint="<__trans phrase="The name displayed when content from this user is published.">">
-      <input type="text" name="nickname" id="nickname" class="text" value="<mt:var name="nickname" escape="html">" <mt:if name="fullname_readonly">disabled="disabled"</mt:if> /><mt:if name="fullname_readonly"><input name="nickname" type="hidden" value="<mt:var name="nickname" escape="html">" /></mt:if>
+      <input type="text" name="nickname" id="nickname" class="text" value="<mt:var name="nickname" escape="html">" <mt:if name="nickname_readonly">disabled="disabled"</mt:if> /><mt:if name="nickname_readonly"><input name="nickname" type="hidden" value="<mt:var name="nickname" escape="html">" /></mt:if>
     </mtapp:setting>
 
     <mtapp:setting
