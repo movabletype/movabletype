@@ -1266,6 +1266,7 @@ sub _upload_file {
             ? File::Spec->catfile( $relative_path, $basename )
             : $basename;
         $asset_file = $q->param('site_path') ? '%r' : '%a';
+        $relative_path =~ s/^[\/\\]//;
         $asset_file = File::Spec->catfile( $asset_file, $relative_path );
         $local_file = File::Spec->catfile( $path,       $basename );
         $base_url
