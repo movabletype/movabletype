@@ -1113,8 +1113,9 @@ sub rebuild_file {
     # is greater than the start_time, then we shouldn't need to build this
     # file again
     my $fmgr = $blog->file_mgr;
-    if ( my $mod_time = $fmgr->file_mod_time($file) ) {
-        return 1 if $mod_time >= $mt->start_time;
+    if ( UNIVERSAL::isa( MT->instance, 'MT::App' ) ) {
+        my $mod_time = $fmgr->file_mod_time($file);
+        return 1 if $mod_time && $mod_time >= $mt->start_time;
     }
 
     if ( $archiver->category_based ) {
@@ -1922,6 +1923,11 @@ sub publish_future_posts {
         }
     );
     foreach my $blog (@blogs) {
+
+        # Clear cache
+        MT->instance->request( '__published:' . $blog->id, undef )
+            if MT->instance->request( '__published:' . $blog->id );
+
         my @ts = MT::Util::offset_time_list( time, $blog );
         my $now = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900,
             $ts[4] + 1,
@@ -2031,6 +2037,11 @@ sub unpublish_past_entries {
     my @blogs         = MT->model('blog')->load();
     push @sites, @blogs;
     foreach my $site (@sites) {
+
+        # Clear cache
+        MT->instance->request( '__published:' . $site->id, undef )
+            if MT->instance->request( '__published:' . $site->id );
+
         my @ts = MT::Util::offset_time_list( time, $site );
         my $now = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900,
             $ts[4] + 1,
