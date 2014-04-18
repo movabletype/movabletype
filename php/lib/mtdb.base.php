@@ -2729,13 +2729,14 @@ abstract class MTDatabase {
 
         $where = "objecttag_tag_id = $tag_id";
 
-        if ($class == 'entry') {
-            $where .= "and entry_status = 2 and entry_class = '$class'";
+        if ($class == 'entry' or $class == 'page') {
+            $where .= " and entry_status = 2 and entry_class = '$class'";
         }
 
+        $ds = $class == 'page' ? 'entry' : $ds;
         $join['mt_objecttag'] = 
             array(
-                "condition" => "${class}_id = objecttag_object_id and objecttag_object_datasource='$class'"
+                "condition" => "${ds}_id = objecttag_object_id and objecttag_object_datasource='$ds'"
                 );
 
         require_once("class.mt_$class.php");
