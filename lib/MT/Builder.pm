@@ -328,8 +328,9 @@ sub _consume_up_to {
     my ( $ctx, $text, $start, $stoptag ) = @_;
     my $whole_tag;
     ( pos $$text ) = $start;
-    while (
-        $$text =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:<[^>]+?>|[^>])*?[\$/]?>)!gi )
+    while ( $$text
+        =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:(?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)*?)[\$/]?>)!gis
+        )
     {
         $whole_tag = $1;
         my ( $prefix, $tag ) = ( $2, lc($3) );

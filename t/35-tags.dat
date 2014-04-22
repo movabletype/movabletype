@@ -735,5 +735,6 @@
 { "r" : "1", "t" : "foo<MTFor decode_html='1'>bar</MTFor>baz", "e" : "foobarbaz" }, #719
 { "r" : "1", "t" : "<MTSubFolders show_empty=\"1\" top=\"1\"><MTHasParentFolder>Parent of <MTFolderLabel> is <MTParentFolder><MTFolderLabel></MTParentFolder></MTHasParentFolder><MTHasNoParentFolder><MTFolderLabel> has no parent</MTHasNoParentFolder>; <MTSubFolderRecurse></MTSubFolders>", "e" : "download has no parent; Parent of nightly is download; info has no parent; "}, #720
 { "r" : "1", "t" : "<MTTopLevelFolders show_empty=\"1\"><MTFolderLabel><MTHasSubFolders> (has subcategories)</MTHasSubFolders><MTHasNoSubFolders> (has no subcategories)</MTHasNoSubFolders></MTTopLevelFolders>", "e" : "download (has subcategories)info (has no subcategories)"}, #721
-{ "r" : "1", "t" : "<MTSetVar name='array'><MTSetVar name='array' function='push' value='foo'><MTUnless name='array'>bar<MTElse>baz</MTUnless>", "e" : "baz" } #723
+{ "r" : "1", "t" : "<MTSetVar name='array'><MTSetVar name='array' function='push' value='foo'><MTUnless name='array'>bar<MTElse>baz</MTUnless>", "e" : "baz" }, #722
+{ "r" : "1", "t" : "<MTLoop name='foo'><MTFor regex_replace='/(?<!\r)\n/',''></MTFor></MTLoop>", "e" : "" } #723
 ]
