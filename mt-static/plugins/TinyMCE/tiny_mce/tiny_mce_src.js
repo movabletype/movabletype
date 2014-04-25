@@ -1111,48 +1111,69 @@ tinymce.util.Quirks = function(editor) {
 
 	function cleanupStylesWhenDeleting() {
 		function removeMergedFormatSpans(isDelete) {
-			var rng, blockElm, node, clonedSpan;
+			var rng, blockElm, wrapperElm, bookmark, container, offset, elm;
+
+			function isAtStartOrEndOfElm() {
+				if (container.nodeType == 3) {
+					if (isDelete && offset == container.length) {
+						return true;
+					}
+
+					if (!isDelete && offset === 0) {
+						return true;
+					}
+				}
+			}
 
 			rng = selection.getRng();
+			var tmpRng = [rng.startContainer, rng.startOffset, rng.endContainer, rng.endOffset];
 
-			// Find root block
-			blockElm = dom.getParent(rng.startContainer, dom.isBlock);
+			if (!rng.collapsed) {
+				isDelete = true;
+			}
 
-			// On delete clone the root span of the next block element
-			if (isDelete)
-				blockElm = dom.getNext(blockElm, dom.isBlock);
+			container = rng[(isDelete ? 'start' : 'end') + 'Container'];
+			offset = rng[(isDelete ? 'start' : 'end') + 'Offset'];
 
-			// Locate root span element and clone it since it would otherwise get merged by the "apple-style-span" on delete/backspace
-			if (blockElm) {
-				node = blockElm.firstChild;
+			if (container.nodeType == 3) {
+				blockElm = dom.getParent(rng.startContainer, dom.isBlock);
 
-				// Ignore empty text nodes
-				while (node && node.nodeType == 3 && node.nodeValue.length === 0)
-					node = node.nextSibling;
+				// On delete clone the root span of the next block element
+				if (isDelete) {
+					blockElm = dom.getNext(blockElm, dom.isBlock);
+				}
 
-				if (node && node.nodeName === 'SPAN') {
-					clonedSpan = node.cloneNode(false);
+				if (blockElm && (isAtStartOrEndOfElm() || !rng.collapsed)) {
+					// Wrap children of block in a EM and let WebKit stick is
+					// runtime styles junk into that EM
+					wrapperElm = dom.create('em', {'id': '__mceDel'});
+
+					tinymce.each(tinymce.grep(blockElm.childNodes), function(node) {
+						wrapperElm.appendChild(node);
+					});
+
+					blockElm.appendChild(wrapperElm);
 				}
 			}
 
 			// Do the backspace/delete action
+			rng = dom.createRng();
+			rng.setStart(tmpRng[0], tmpRng[1]);
+			rng.setEnd(tmpRng[2], tmpRng[3]);
+			selection.setRng(rng);
 			editor.getDoc().execCommand(isDelete ? 'ForwardDelete' : 'Delete', false, null);
 
-			// Find all odd apple-style-spans
-			blockElm = dom.getParent(rng.startContainer, dom.isBlock);
-			tinymce.each(dom.select('span.Apple-style-span,font.Apple-style-span', blockElm), function(span) {
-				var bm = selection.getBookmark();
+			// Remove temp wrapper element
+			if (wrapperElm) {
+				bookmark = selection.getBookmark();
 
-				if (clonedSpan) {
-					dom.replace(clonedSpan.cloneNode(false), span, true);
-				} else {
-					dom.remove(span, true);
+				while (elm = dom.get('__mceDel')) {
+					dom.remove(elm, true);
 				}
 
-				// Restore the selection
-				selection.moveToBookmark(bm);
-			});
-		};
+				selection.moveToBookmark(bookmark);
+			}
+		}
 
 		editor.onKeyDown.add(function(editor, e) {
 			var isDelete;
