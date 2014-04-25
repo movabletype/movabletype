@@ -1012,6 +1012,9 @@ sub init_config {
             elsif ( $ENV{FAST_CGI} ) {
                 print $PERFLOG "# App Mode: FastCGI\n";
             }
+            elsif ( $ENV{'psgi.input'} ) {
+                print $PERFLOG "# App Mode: PSGI\n";
+            }
             else {
                 print $PERFLOG "# App Mode: CGI\n";
             }
