@@ -1706,9 +1706,8 @@ sub _hdlr_entry_excerpt {
         or return $ctx->_no_entry_error();
     if ( my $excerpt = $e->excerpt ) {
         return $excerpt unless $args->{convert_breaks};
-        my $filters = $e->text_filters;
-        push @$filters, '__default__' unless @$filters;
-        return MT->apply_text_filters( $excerpt, $filters, $ctx );
+        my @filters = ('__default__');
+        return MT->apply_text_filters( $excerpt, \@filters, $ctx );
     }
     elsif ( $args->{no_generate} ) {
         return '';
