@@ -615,7 +615,7 @@ sub _fltr_regex_replace {
         if ( defined $re ) {
             $replace =~ s!\\\\(\d+)!\$1!g;  # for php, \\1 is how you write $1
             $replace =~ s!/!\\/!g;
-            eval '$str =~ s/$re/' . $replace . '/' . ( $global ? 'g' : '' );
+            eval '$str =~ ' . "s'$re'$replace'" . ( $global ? 'g' : '' );
             if ($@) {
                 return $ctx->error("Invalid regular expression: $@");
             }
