@@ -384,8 +384,15 @@ sub edit {
                 next unless $name;
                 next if $seen{$name};
                 $seen{$name} = 1;
+                my $set_blog_id
+                    = $set->attributes->{blog_id}
+                    ? $set->attributes->{blog_id}
+                    : $set->attributes->{parent} ? $obj->blog
+                        ? $obj->blog->website->id
+                        : $obj->blog_id
+                    : $obj->blog_id;
                 my $wset = MT::Template->load(
-                    {   blog_id => [ $obj->blog_id, 0 ],
+                    {   blog_id => [ $set_blog_id, 0 ],
                         name    => $name,
                         type    => 'widgetset',
                     },
