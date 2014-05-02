@@ -584,7 +584,7 @@ sub cfg_registration {
     $app->param( 'id',    $blog->id );
     $app->forward(
         "view",
-        {  output => 'cfg_registration.tmpl',
+        {   output => 'cfg_registration.tmpl',
             %param,
         }
     );
@@ -1741,10 +1741,11 @@ sub post_save {
 
         if ( $obj->$blog_field() ne $original->$blog_field() ) {
             my $old
-                = $original->$blog_field()
+                = defined $original->$blog_field()
                 ? $original->$blog_field()
                 : "none";
-            my $new = $obj->$blog_field() ? $obj->$blog_field() : "none";
+            my $new
+                = defined $obj->$blog_field() ? $obj->$blog_field() : "none";
             push(
                 @meta_messages,
                 $app->translate(
