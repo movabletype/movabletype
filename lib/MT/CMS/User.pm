@@ -627,8 +627,6 @@ sub cfg_system_users {
     $tz =~ s!_00$!!;
     $param{ 'server_offset_' . $tz } = 1;
 
-    $param{personal_weblog_readonly}
-        = $app->config->is_readonly('NewUserAutoProvisioning');
     $param{personal_weblog} = $app->config->NewUserAutoProvisioning ? 1 : 0;
     if ( my $id = $param{new_user_theme_id} = $app->config('NewUserBlogTheme')
         || 'rainier' )
@@ -694,12 +692,29 @@ sub cfg_system_users {
         }
     }
 
+    my @readonly_configs
+        = qw( CommenterRegistration DefaultTimeZone DefaultUserLanguage DefaultUserTagDelimiter
+        NewUserAutoProvisioning NewUserBlogTheme NewUserDefaultWebsiteId UserPasswordValidation
+        UserPasswordMinLength );
+
     my @config_warnings;
-    for my $config_directive (
-        qw( UserPasswordValidation UserPasswordMinLength ))
-    {
-        push( @config_warnings, $config_directive )
-            if $app->config->is_readonly($config_directive);
+    for my $config_directive (@readonly_configs) {
+        if ( $app->config->is_readonly($config_directive) ) {
+            push( @config_warnings, $config_directive );
+
+            if ( $config_directive eq 'DefaultUserLanguage' ) {
+                $param{default_language_readonly} = 1;
+            }
+            elsif ( $config_directive eq 'NewUserAutoProvisioning' ) {
+                $param{personal_weblog_readonly} = 1;
+            }
+            else {
+                my $snake_case = $config_directive;
+                $snake_case =~ s/^([A-Z])/\l\1/;
+                $snake_case =~ s/([A-Z])/_\l\1/g;
+                $param{ $snake_case . '_readonly' } = 1;
+            }
+        }
     }
     my $config_warning = join( ", ", @config_warnings ) if (@config_warnings);
 
