@@ -840,18 +840,6 @@ use vars qw( @ISA %Lexicon );
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => 'Sans permission. Veuillez contacter votre administrateur Movable Type pour la mise à jour de Movable Type.',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Type a été mis à jour en version [_1].',
 
-## lib/MT/App/Viewer.pm
-	'Loading blog with ID [_1] failed' => 'Échec lors du chargement du blog ayant pour ID [_1]',
-	'File not found' => 'Fichier introuvable',
-	'Template publishing failed: [_1]' => 'Échec de la publication du gabarit : [_1]',
-	'Unknown archive type: [_1]' => 'Type d\'archive inconnu :[_1]',
-	'Cannot load template [_1]' => 'Impossible de charger le gabarit [_1]',
-	'Archive publishing failed: [_1]' => 'Échec de la publication de l\'archive : [_1]',
-	'Invalid entry ID [_1].' => 'ID de note invalide [_1].',
-	'Entry [_1] was not published.' => 'La note [_1] n\'a pas été publiée.',
-	'Invalid category ID \'[_1]\'' => 'ID de catégorie invalide : \'[_1]\'',
-	'Invalid author ID \'[_1]\'' => 'ID d\'auteur invalide : \'[_1]\'',
-
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => 'Le driver [_1] est obligatoire pour utiliser [_2].',
 	'An error occurred while trying to connect to the database.  Check the settings and try again.' => 'Une erreur est survenue lors de la connexion à la base de données. Vérifiez les paramètres et réessayez.',

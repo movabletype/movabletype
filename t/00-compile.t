@@ -64,9 +64,6 @@ use_ok('MT::App::Search::FreeText');
 use_ok('MT::App::Search::Legacy');
 use_ok('MT::App::Search::TagSearch');
 
-# Publish archive dynamically
-use_ok('MT::App::Viewer');
-
 # Auth framework
 use_ok('MT::Auth');
 use_ok('MT::Auth::MT');

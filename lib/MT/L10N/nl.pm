@@ -839,18 +839,6 @@ use vars qw( @ISA %Lexicon );
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => 'Geen permissies.  Gelieve uw Movable Type administrator te contacteren voor hulp met het upgraden van Movable Type.',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Type is bijgewerkt tot versie [_1]',
 
-## lib/MT/App/Viewer.pm
-	'Loading blog with ID [_1] failed' => 'Laden van blog met ID [_1] mislukt',
-	'File not found' => 'Bestand niet gevonden',
-	'Template publishing failed: [_1]' => 'Publicatie van sjabloon mislukt: [_1]',
-	'Unknown archive type: [_1]' => 'Onbekend archieftype: [_1]',
-	'Cannot load template [_1]' => 'Kan sjabloon [_1] niet laden',
-	'Archive publishing failed: [_1]' => 'Publicatie van archief mislukt: [_1]',
-	'Invalid entry ID [_1].' => 'Ongeldig bericht ID [_1].',
-	'Entry [_1] was not published.' => 'Bericht [_1] werd niet gepubliceerd.',
-	'Invalid category ID \'[_1]\'' => 'Ongeldig categorie-ID \'[_1]\'',
-	'Invalid author ID \'[_1]\'' => 'Ongeldig auteurs ID \'[_1]\'',
-
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => 'De [_1] driver is vereist om [_2] te kunnen gebruiken.',
 	'An error occurred while trying to connect to the database.  Check the settings and try again.' => 'Er deed zich een probleem voor bij het verbinden met de database.  Controleer de instellingen en probeer opnieuw.',

@@ -877,18 +877,6 @@ use vars qw( @ISA %Lexicon );
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => '権限がありません。Movable Typeのアップグレードを管理者に依頼してください。',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Typeをバージョン[_1]にアップグレードしました。',
 
-## lib/MT/App/Viewer.pm
-	'Loading blog with ID [_1] failed' => 'ブログ (ID：[_1]) の読み込みに失敗しました',
-	'File not found' => 'ファイルが見つかりません',
-	'Template publishing failed: [_1]' => 'テンプレートの出力に失敗しました: [_1]',
-	'Unknown archive type: [_1]' => 'アーカイブタイプが不明です: [_1]',
-	'Cannot load template [_1]' => 'テンプレートを読み込めませんでした [_1]',
-	'Archive publishing failed: [_1]' => 'アーカイブの公開に失敗しました: [_1]',
-	'Invalid entry ID [_1].' => 'エントリーIDが不正です: [_1]',
-	'Entry [_1] was not published.' => '記事 [_1] は公開されていません',
-	'Invalid category ID \'[_1]\'' => 'カテゴリのIDが不正です: [_1]',
-	'Invalid author ID \'[_1]\'' => 'ユーザーIDが不正です: [_1]',
-
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => '[_2]を使うには[_1]のドライバが必要です。',
 	'An error occurred while trying to connect to the database.  Check the settings and try again.' => 'データベースに接続できませんでした。設定を見直してもう一度接続してください。',
