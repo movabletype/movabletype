@@ -531,10 +531,6 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> van [_3] op <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Meer lezen</a>',
 
-## default_templates/verify-subscribe.mtml
-	'Thank you for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => 'Bedankt om in te schrijven voor notificaties over updates op [_1].  Gelieve onderstaande link te volgen om uw inschrijving te bevestigen:',
-	'If the link is not clickable, just copy and paste it into your browser.' => 'Indien de link niet klikbaar is, kopiëer en plak hem dan gewoon in uw browser.',
-
 ## lib/MT/AccessToken.pm
 	'AccessToken' => 'AccessToken',
 
@@ -731,16 +727,6 @@ use vars qw( @ISA %Lexicon );
 	'URL is invalid.' => 'URL is ongeldig.',
 	'Commenter profile has successfully been updated.' => 'Reageerdersprofiel is met succes bijgewerkt.',
 	'Commenter profile could not be updated: [_1]' => 'Reageerdersprofiel kon niet worden bijgewerkt: [_1]',
-
-## lib/MT/App/NotifyList.pm
-	'Please enter a valid email address.' => 'Gelieve een geldig e-mail adres op te geven.',
-	'Missing required parameter: blog_id. Please consult the user manual to configure notifications.' => 'Ontbrekende parameter: blog_id. Gelieve de handleiding te raadplegen om waarschuwingen te configureren.',
-	'An invalid redirect parameter was provided. The weblog owner needs to specify a path that matches with the domain of the weblog.' => 'Er werd een ongeldige redirect parameter opgegeven. De eigenaar van de weblog moet een pad opgeven dat overeenkomt met het domein van de weblog.',
-	'The email address \'[_1]\' is already in the notification list for this weblog.' => 'Het e-mail adres \'[_1]\' zit reeds in de notificatielijst voor deze weblog.',
-	'Please verify your email to subscribe' => 'Gelieve uw e-mail adres te verifiëren voor inschrijving',
-	'_NOTIFY_REQUIRE_CONFIRMATION' => 'Er is een e-mail verstuurd naar [_1].  Om uw inschrijving te voltooien, \n    gelieve de link te volgen die in die e-mail staat.  Dit om te bevestigen dat\n    het opgegeven e-mail adres correct is en aan u toebehoort.',
-	'The address [_1] was not subscribed.' => 'Het adres [_1] werd niet ingeschreven.',
-	'The address [_1] has been unsubscribed.' => 'Het adres [_1] werd uitgeschreven.',
 
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => '¨Probleem met dit verzoek: corrupte karakterdata voor karakterset [_1]',
@@ -1593,6 +1579,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'IP address lockout limit' => 'Blokkeringslimiet IP adres',
 	'IP address lockout interval' => 'Blokkeringsinterval IP adres',
 	'Lockout IP address whitelist' => 'Niet blokkkeerbare IP adressen',
+	'Please enter a valid email address.' => 'Gelieve een geldig e-mail adres op te geven.',
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(Categorie zonder label)',
@@ -1862,7 +1849,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'New Comment' => 'Nieuwe reactie',
 	'New Ping' => 'Nieuwe ping',
 	'Entry Notify' => 'Notificatie bericht',
-	'Subscribe Verify' => 'Verificatie inschrijving',
 	'User Lockout' => 'Blokkering gebruiker',
 	'IP Address Lockout' => 'Blokkering IP adres',
 

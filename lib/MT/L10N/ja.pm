@@ -531,10 +531,6 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '[_3] - <a href="[_1]">[_2]</a> (<a href="[_4]">[_5]</a>)',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">続きを読む</a>',
 
-## default_templates/verify-subscribe.mtml
-	'Thank you for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => '[_1]のアップデート通知にご登録いただきありがとうございました。以下のリンクから登録を完了させてください。',
-	'If the link is not clickable, just copy and paste it into your browser.' => 'リンクをクリックできない場合は、お使いのウェブブラウザに貼り付けてください。',
-
 ## lib/MT.pm
 	'Powered by [_1]' => 'Powered by [_1]',
 	'Version [_1]' => 'バージョン [_1]',
@@ -807,16 +803,6 @@ use vars qw( @ISA %Lexicon );
 	'Failed to verify the current password.' => '現在のパスワードを確認できません。',
 	'Commenter profile has successfully been updated.' => 'コメント投稿者のユーザー情報を更新しました。',
 	'Commenter profile could not be updated: [_1]' => 'コメント投稿者のユーザー情報を更新できませんでした: [_1]',
-
-## lib/MT/App/NotifyList.pm
-	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
-	'Missing required parameter: blog_id. Please consult the user manual to configure notifications.' => 'blog_idパラメータを指定してください。詳細はユーザーガイドを参照してください。',
-	'An invalid redirect parameter was provided. The weblog owner needs to specify a path that matches with the domain of the weblog.' => 'redirectパラメータが不正です。ブログのドメインと一致するパスを指定するように管理者に通知してください。',
-	'The email address \'[_1]\' is already in the notification list for this weblog.' => 'メールアドレス([_1])はすでに登録されています。',
-	'Please verify your email to subscribe' => '登録するメールアドレスを確認してください。',
-	'_NOTIFY_REQUIRE_CONFIRMATION' => '[_1]にメールを送信しました。メールアドレスを認証するため、メールの内容に従って登録を完了してください。',
-	'The address [_1] was not subscribed.' => '[_1]は登録されていません。',
-	'The address [_1] has been unsubscribed.' => '[_1]の登録を解除しました。',
 
 ## lib/MT/App/Search.pm
 	'Invalid type: [_1]' => '不正なtypeです: [_1]',
@@ -1620,6 +1606,7 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout limit' => '同一IPアドレスからの試行回数',
 	'IP address lockout interval' => '同一IPアドレスからの試行間隔',
 	'Lockout IP address whitelist' => 'ロックアウトの除外IPアドレス',
+	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(無名カテゴリ)',
@@ -1896,7 +1883,6 @@ use vars qw( @ISA %Lexicon );
 	'New Comment' => '新しいコメント',
 	'New Ping' => '新しいトラックバック',
 	'Entry Notify' => '記事の共有',
-	'Subscribe Verify' => '購読の確認',
 	'User Lockout' => 'ユーザーアカウントのロック通知',
 	'IP Address Lockout' => 'IPアドレスのロック通知',
 

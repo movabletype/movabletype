@@ -532,10 +532,6 @@ el protocolo de comunicación STARTTLS.',
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> desde [_3] en <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Leer más</a>',
 
-## default_templates/verify-subscribe.mtml
-	'Thank you for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => 'Gracias por suscribirse a las notificaciones de novedades de [_1]. Siga el enlace de abajo para confirmar su suscripción:',
-	'If the link is not clickable, just copy and paste it into your browser.' => 'Si no puede hacer clic en el enlace, copie y péguelo en su navegador.',
-
 ## lib/MT/AccessToken.pm
 	'AccessToken' => 'Token de acceso',
 
@@ -731,18 +727,6 @@ el protocolo de comunicación STARTTLS.',
 	'URL is invalid.' => 'La URL no es válida.',
 	'Commenter profile has successfully been updated.' => 'Se actualizó con éxito el perfil del comentarista.',
 	'Commenter profile could not be updated: [_1]' => 'No se pudo actualizar el perfil del comentarista: [_1]',
-
-## lib/MT/App/NotifyList.pm
-	'Please enter a valid email address.' => 'Por favor, teclee una dirección de correo válida.',
-	'Missing required parameter: blog_id. Please consult the user manual to configure notifications.' => 'Falta parámetro obligatorio: blog_id. Por favor, consulte el manual de usuario para configurar las notificaciones.',
-	'An invalid redirect parameter was provided. The weblog owner needs to specify a path that matches with the domain of the weblog.' => 'Parámetro de redirección no válido. El dueño del weblog debe especificar una ruta que coincida con el del dominio del weblog.',
-	'The email address \'[_1]\' is already in the notification list for this weblog.' => 'La dirección de correo-e \'[_1]\' ya está en la lista de notificaciones de este weblog.',
-	'Please verify your email to subscribe' => 'Por favor, verifique su dirección de correo electrónico para la subscripción',
-	'_NOTIFY_REQUIRE_CONFIRMATION' => 'Se envió un correo a [_1]. Para completar su suscripción,
-por favor siga el enlace contenido en este correo. Esto verificará
-que la dirección provista es correcta y le pertenece.',
-	'The address [_1] was not subscribed.' => 'No se suscribió la dirección [_1].',
-	'The address [_1] has been unsubscribed.' => 'Se desuscribió la dirección [_1].',
 
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Problema con esta petición: dato corrupto de carácter para el conjunto de caracteres [_1]',
@@ -1597,6 +1581,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'IP address lockout limit' => 'Límite de bloqueo de direcciones IP',
 	'IP address lockout interval' => 'Intervalo de bloqueo de direcciones IP',
 	'Lockout IP address whitelist' => 'Lista blanca de bloqueo de direcciones IP',
+	'Please enter a valid email address.' => 'Por favor, teclee una dirección de correo válida.',
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(Categoría sin título)',
@@ -1866,7 +1851,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'New Comment' => 'Nuevo comentario',
 	'New Ping' => 'Nuevo ping',
 	'Entry Notify' => 'Notificación de entradas',
-	'Subscribe Verify' => 'Verificación de suscripciones',
 	'User Lockout' => 'Bloqueo de usuarios',
 	'IP Address Lockout' => 'Bloqueo de direcciones IP',
 
