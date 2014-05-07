@@ -53,7 +53,6 @@ use_ok('MT::CMS::Filter');
 # Supporting applications
 use_ok('MT::App::ActivityFeeds');
 use_ok('MT::App::Comments');
-use_ok('MT::App::NotifyList');
 use_ok('MT::App::Trackback');
 use_ok('MT::App::Upgrader');
 use_ok('MT::App::Wizard');
