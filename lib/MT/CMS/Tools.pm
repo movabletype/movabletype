@@ -506,7 +506,9 @@ sub cfg_system_general {
     my @readonly_configs = qw( EmailAddressMain DebugMode PerformanceLogging
         PerformanceLoggingPath PerformanceLoggingThreshold
         UserLockoutLimit UserLockoutInterval IPLockoutLimit
-        IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo );
+        IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo
+        TrackRevisions DisableNotificationPings OutboundTrackbackLimit
+        OutboundTrackbackDomains AllowPings AllowComments );
     push @readonly_configs, 'BaseSitePath' unless $cfg->HideBaseSitePath;
 
     my @config_warnings;

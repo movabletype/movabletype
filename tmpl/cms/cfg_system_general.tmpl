@@ -125,7 +125,7 @@ function validate (f) {
        id="track-revisions"
        label="<__trans phrase="Revision History">"
        hint="<__trans phrase="Enable this setting to have Movable Type track revisions made by users to entries, pages and templates.">">
-      <input type="checkbox" name="track_revisions" id="track-revisions" <mt:if name="track_revisions"> checked="checked"</mt:if> /> <label for="track_revisions"><__trans phrase="Track revision history"></label>
+      <input type="checkbox"<mt:if name="config_warnings_trackrevisions"> disabled="disabled"</mt:if> name="track_revisions" id="track-revisions" <mt:if name="track_revisions"> checked="checked"</mt:if> /> <label for="track_revisions"><__trans phrase="Track revision history"></label>
     </mtapp:setting>
 </mtapp:settinggroup>
 
@@ -149,14 +149,14 @@ function validate (f) {
      id="comment-disable"
      label="<__trans phrase="Prohibit Comments">"
      hint="<__trans phrase="This will override all individual blog settings.">">
-    <input type="checkbox" name="comment_disable" id="comment-disable"<mt:if name="comment_disable"> checked="checked"</mt:if> /> <label for="comment_disable"><__trans phrase="Disable comments for all websites and blogs."></label>
+    <input type="checkbox"<mt:if name="config_warnings_allowcomments"> disabled="disabled"</mt:if> name="comment_disable" id="comment-disable"<mt:if name="comment_disable"> checked="checked"</mt:if> /> <label for="comment_disable"><__trans phrase="Disable comments for all websites and blogs."></label>
   </mtapp:setting>
 
   <mtapp:setting
      id="ping-disable"
      label="<__trans phrase="Prohibit TrackBacks">"
      hint="<__trans phrase="This will override all individual blog settings.">">
-    <input type="checkbox" name="ping_disable" id="ping-disable" <mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <label for="ping_disable"><__trans phrase="Disable receipt of TrackBacks for all websites and blogs."></label>
+    <input type="checkbox"<mt:if name="config_warnings_allowpings"> disabled="disabled"</mt:if> name="ping_disable" id="ping-disable" <mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <label for="ping_disable"><__trans phrase="Disable receipt of TrackBacks for all websites and blogs."></label>
   </mtapp:setting>
 </mtapp:settinggroup>
 
@@ -166,7 +166,7 @@ function validate (f) {
      id="disable-notify-ping"
      label="<__trans phrase="Prohibit Notification Pings">"
      hint="<__trans phrase="Disable sending notification pings when a new entry is created in any blog on the system.">">
-    <input type="checkbox" name="disable_notify_ping" id="disable-notify-ping" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" /> <label for="disable_notify_ping"><__trans phrase="Disable notification pings for all websites and blogs."></label>
+    <input type="checkbox"<mt:if name="config_warnings_disablenotificationpings"> disabled="disabled"</mt:if> name="disable_notify_ping" id="disable-notify-ping" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" /> <label for="disable_notify_ping"><__trans phrase="Disable notification pings for all websites and blogs."></label>
   </mtapp:setting>
 
   <mtapp:setting
@@ -175,11 +175,11 @@ function validate (f) {
      hint="<__trans phrase="Do not send outbound TrackBacks or use TrackBack auto-discovery if your installation is intended to be private.">"
      show_hint="1">
     <ul id="outbound-trackback-setting-list" class="setting-list">
-      <li><input type="radio" name="trackback_send" id="trackback_send_any" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> /> <label for="trackback_send_any"><__trans phrase="Any site"></label></li>
-      <li><input type="radio" name="trackback_send" id="trackback_send_off" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> /> <label for="trackback_send_off"><__trans phrase="Disabled"></label> <span class="hint"><__trans phrase="(No Outbound TrackBacks)"></span></li>
-      <li><input type="radio" name="trackback_send" id="trackback_send_local" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> /> <label for="trackback_send_local"><__trans phrase="Only to blogs within this system"></label></li>
+      <li><input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_any" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> /> <label for="trackback_send_any"><__trans phrase="Any site"></label></li>
+      <li><input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_off" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> /> <label for="trackback_send_off"><__trans phrase="Disabled"></label> <span class="hint"><__trans phrase="(No Outbound TrackBacks)"></span></li>
+      <li><input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_local" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> /> <label for="trackback_send_local"><__trans phrase="Only to blogs within this system"></label></li>
       <li>
-        <input type="radio" name="trackback_send" id="trackback-send-selected" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> /> <label for="trackback_send_selected"><__trans phrase="Only to websites on the following domains:"><br /><textarea name="trackback_send_domains" class="text low"><mt:var name="trackback_send_domains" escape="html"></textarea></label>
+        <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback-send-selected" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> /> <label for="trackback_send_selected"><__trans phrase="Only to websites on the following domains:"><br /><textarea<mt:if name="config_warnings_outboundtrackbackdomains"> disabled="disabled"</mt:if> name="trackback_send_domains" class="text low"><mt:var name="trackback_send_domains" escape="html"></textarea></label>
       </li>
     </ul>
   </mtapp:setting>
