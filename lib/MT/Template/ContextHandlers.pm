@@ -367,7 +367,6 @@ sub core_tags {
             SearchScript => \&MT::Template::Tags::System::_hdlr_search_script,
             XMLRPCScript => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
             AtomScript   => \&MT::Template::Tags::System::_hdlr_atom_script,
-            NotifyScript => \&MT::Template::Tags::System::_hdlr_notify_script,
             CGIHost      => \&MT::Template::Tags::System::_hdlr_cgi_host,
             CGIPath      => \&MT::Template::Tags::System::_hdlr_cgi_path,
             AdminCGIPath =>
@@ -5168,22 +5167,6 @@ default for this setting if unassigned is "mt-atom.cgi".
 sub _hdlr_atom_script {
     my ($ctx) = @_;
     return $ctx->{config}->AtomScript;
-}
-
-###########################################################################
-
-=head2 NotifyScript
-
-Returns the value of the C<NotifyScript> configuration setting. The
-default for this setting if unassigned is "mt-add-notify.cgi".
-
-=for tags configuration
-
-=cut
-
-sub _hdlr_notify_script {
-    my ($ctx) = @_;
-    return $ctx->{config}->NotifyScript;
 }
 
 ###########################################################################

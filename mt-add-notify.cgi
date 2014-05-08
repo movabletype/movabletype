@@ -7,5 +7,8 @@
 # $Id$
 
 use strict;
+use lib $ENV{MT_HOME}
+    ? "$ENV{MT_HOME}/plugins/NotifyList/lib"
+    : 'plugins/NotifyList/lib';
 use lib $ENV{MT_HOME} ? "$ENV{MT_HOME}/lib" : 'lib';
 use MT::Bootstrap App => 'MT::App::NotifyList';

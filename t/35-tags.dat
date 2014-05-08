@@ -508,7 +508,7 @@
 { "r" : "1", "t" : "<MTWebsitePingCount>", "e" : "0"}, #507
 { "r" : "1", "t" : "<MTWebsiteRelativeURL>", "e" : "/"}, #508
 { "r" : "1", "t" : "<MTWebsiteThemeID>", "e" : "classic-website"}, #509
-{ "r" : "1", "t" : "<MTNotifyScript>", "e" : "mt-add-notify.cgi"}, #510
+{ "r" : "0", "t" : "<MTNotifyScript>", "e" : "mt-add-notify.cgi"}, #510
 { "r" : "1", "t" : "<MTPages lastn='1'><MTPageIfTagged tag='page3'><MTPageTitle></MTPageIfTagged></MTPages>", "e" : "Page #3"}, #511
 { "r" : "1", "t" : "<MTPages lastn='1' offset='1'><MTPageNext><MTPageTitle></MTPageNext></MTPages>", "e" : "Page #3"}, #512
 { "r" : "1", "t" : "<MTPages lastn='1'><MTPagePrevious><MTPageTitle></MTPagePrevious></MTPages>", "e" : "Page #2"}, #513

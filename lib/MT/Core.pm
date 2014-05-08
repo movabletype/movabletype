@@ -1790,11 +1790,9 @@ BEGIN {
             'TrackbackScript'       => { default => 'mt-tb.cgi', },
             'SearchScript'          => { default => 'mt-search.cgi', },
             'XMLRPCScript'          => { default => 'mt-xmlrpc.cgi', },
-            'ViewScript'            => { default => 'mt-view.cgi', },
             'AtomScript'            => { default => 'mt-atom.cgi', },
             'UpgradeScript'         => { default => 'mt-upgrade.cgi', },
             'CheckScript'           => { default => 'mt-check.cgi', },
-            'NotifyScript'          => { default => 'mt-add-notify.cgi', },
             'DataAPIScript'         => { default => 'mt-data-api.cgi', },
             'PublishCharset'        => { default => 'utf-8', },
             'SafeMode'              => { default => 1, },
@@ -2056,14 +2054,6 @@ BEGIN {
             'feeds' => {
                 handler => 'MT::App::ActivityFeeds',
                 script  => sub { MT->config->ActivityFeedScript },
-            },
-            'view' => {
-                handler => 'MT::App::Viewer',
-                script  => sub { MT->config->ViewScript },
-            },
-            'notify' => {
-                handler => 'MT::App::NotifyList',
-                script  => sub { MT->config->NotifyScript },
             },
             'tb' => {
                 handler => 'MT::App::Trackback',

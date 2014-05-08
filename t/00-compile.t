@@ -53,7 +53,6 @@ use_ok('MT::CMS::Filter');
 # Supporting applications
 use_ok('MT::App::ActivityFeeds');
 use_ok('MT::App::Comments');
-use_ok('MT::App::NotifyList');
 use_ok('MT::App::Trackback');
 use_ok('MT::App::Upgrader');
 use_ok('MT::App::Wizard');
@@ -63,9 +62,6 @@ use_ok('MT::App::Search');
 use_ok('MT::App::Search::FreeText');
 use_ok('MT::App::Search::Legacy');
 use_ok('MT::App::Search::TagSearch');
-
-# Publish archive dynamically
-use_ok('MT::App::Viewer');
 
 # Auth framework
 use_ok('MT::Auth');

@@ -7,5 +7,8 @@
 # $Id$
 
 use strict;
+use lib $ENV{MT_HOME}
+    ? "$ENV{MT_HOME}/plugins/Viewer/lib"
+    : 'plugins/Viewer/lib';
 use lib $ENV{MT_HOME} ? "$ENV{MT_HOME}/lib" : 'lib';
 use MT::Bootstrap App => 'MT::App::Viewer';

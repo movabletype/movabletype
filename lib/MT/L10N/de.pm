@@ -531,10 +531,6 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> von [_3] zu <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Weiterlesen</a>',
 
-## default_templates/verify-subscribe.mtml
-	'Thank you for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => 'Danke, daß Sie Benachrichtigungen zu [_1] erhalten möchten. Zur Bestätigung klicken Sie bitte auf folgenden Link:',
-	'If the link is not clickable, just copy and paste it into your browser.' => 'Kann der Link nicht angeklickt werden, kopieren Sie ihn und fügen ihn in der Adresszeile Ihres Browers ein.',
-
 ## lib/MT/AccessToken.pm
 	'AccessToken' => 'AccessToken',
 
@@ -731,16 +727,6 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'Das Profil des Kommentarautoren wurde erfolgreich aktualisiert.',
 	'Commenter profile could not be updated: [_1]' => 'Das Profil des Kommentarautoren konnte nicht aktualisiert werden: [_1]',
 
-## lib/MT/App/NotifyList.pm
-	'Please enter a valid email address.' => 'Bitte geben Sie eine gültige E-Mail-Adresse an.',
-	'Missing required parameter: blog_id. Please consult the user manual to configure notifications.' => 'Erforderliches Parameter blog_id fehlt. Bitte konfigurieren Sie die Benachrichtungsfunktion entsprechend.',
-	'An invalid redirect parameter was provided. The weblog owner needs to specify a path that matches with the domain of the weblog.' => 'Ungültiges Redirect-Parameter. Es muss ein Pfad angegeben sein, der zur Domain dieses Weblogs gehört.',
-	'The email address \'[_1]\' is already in the notification list for this weblog.' => 'An die Adresse &#8222;[_1]&#8220; werden bereits Benachrichtigungen über dieses Weblog verschickt.',
-	'Please verify your email to subscribe' => 'Bitte bestätigen Sie Ihre E-Mail-Adresse',
-	'_NOTIFY_REQUIRE_CONFIRMATION' => 'Um den Vorgang abzuschließen, klicken Sie bitte auf den Link in der E-Mail, die an [_1] verschickt wurde. Damit stellen Sie sicher, daß die E-Mail-Adresse Ihnen gehört und korrekt eingegeben wurde.',
-	'The address [_1] was not subscribed.' => 'Die Adresse [_1] war kein Abonnent.',
-	'The address [_1] has been unsubscribed.' => 'Die Adresse [_1] ist kein Abonnent mehr.',
-
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Es ist ein Fehler aufgetreten: ungültige Zeichen für Zeichensatz [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Fehler beim Laden der Website #[_1] zur Bereitstellung an Benutzer. Bitte überprüfen Sie Ihre NewUserDefaultWebsiteId-Einstellugen.',
@@ -837,18 +823,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid session.' => 'Ungültige Session',
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => 'Keine Berechtigung. Bitte wenden Sie sich zur Aktualisierung dieser Movable-Type-Installation an Ihren Administrator.',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Type erfolgreich auf Version [_1] aktualisiert.',
-
-## lib/MT/App/Viewer.pm
-	'Loading blog with ID [_1] failed' => 'Blog mit ID [_1] konte nicht geladen werden',
-	'File not found' => 'Datei nicht gefunden',
-	'Template publishing failed: [_1]' => 'Vorlage konnte nicht veröffentlicht werden: [_1]',
-	'Unknown archive type: [_1]' => 'Archivtyp unbekannt: [_1]',
-	'Cannot load template [_1]' => 'Kann Vorlage [_1] nicht laden',
-	'Archive publishing failed: [_1]' => 'Archiv konnte nicht veröffentlicht werden: [_1]',
-	'Invalid entry ID [_1].' => 'Ungültige Eintrags-ID [_1]',
-	'Entry [_1] was not published.' => 'Eintrag [_1] nicht veröffentlicht.',
-	'Invalid category ID \'[_1]\'' => 'Ungültige Kategorie-ID &#8222;[_1]&#8220;',
-	'Invalid author ID \'[_1]\'' => 'Ungültige Autoren-ID &#8222;[_1]&#8220;',
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => 'Zur Nutzung von [_2] ist ein [_1]-Treiber erforderlich.',
@@ -1603,6 +1577,7 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout limit' => 'Anzahl Versuche bis  IP-Sperrung',
 	'IP address lockout interval' => 'Zeitraum bis IP-Sperrung',
 	'Lockout IP address whitelist' => 'Diese IP-Adresse nie sperren',
+	'Please enter a valid email address.' => 'Bitte geben Sie eine gültige E-Mail-Adresse an.',
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(Namenlose Kategorie)',
@@ -1872,7 +1847,6 @@ use vars qw( @ISA %Lexicon );
 	'New Comment' => 'Neuer Kommentar',
 	'New Ping' => 'Neuer Ping',
 	'Entry Notify' => 'Eintragsbenachrichtigung',
-	'Subscribe Verify' => 'Abonnementbestätigung',
 	'User Lockout' => 'Kontensperre',
 	'IP Address Lockout' => 'IP-Sperre',
 

@@ -531,10 +531,6 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '[_3] - <a href="[_1]">[_2]</a> (<a href="[_4]">[_5]</a>)',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">続きを読む</a>',
 
-## default_templates/verify-subscribe.mtml
-	'Thank you for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => '[_1]のアップデート通知にご登録いただきありがとうございました。以下のリンクから登録を完了させてください。',
-	'If the link is not clickable, just copy and paste it into your browser.' => 'リンクをクリックできない場合は、お使いのウェブブラウザに貼り付けてください。',
-
 ## lib/MT.pm
 	'Powered by [_1]' => 'Powered by [_1]',
 	'Version [_1]' => 'バージョン [_1]',
@@ -808,16 +804,6 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'コメント投稿者のユーザー情報を更新しました。',
 	'Commenter profile could not be updated: [_1]' => 'コメント投稿者のユーザー情報を更新できませんでした: [_1]',
 
-## lib/MT/App/NotifyList.pm
-	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
-	'Missing required parameter: blog_id. Please consult the user manual to configure notifications.' => 'blog_idパラメータを指定してください。詳細はユーザーガイドを参照してください。',
-	'An invalid redirect parameter was provided. The weblog owner needs to specify a path that matches with the domain of the weblog.' => 'redirectパラメータが不正です。ブログのドメインと一致するパスを指定するように管理者に通知してください。',
-	'The email address \'[_1]\' is already in the notification list for this weblog.' => 'メールアドレス([_1])はすでに登録されています。',
-	'Please verify your email to subscribe' => '登録するメールアドレスを確認してください。',
-	'_NOTIFY_REQUIRE_CONFIRMATION' => '[_1]にメールを送信しました。メールアドレスを認証するため、メールの内容に従って登録を完了してください。',
-	'The address [_1] was not subscribed.' => '[_1]は登録されていません。',
-	'The address [_1] has been unsubscribed.' => '[_1]の登録を解除しました。',
-
 ## lib/MT/App/Search.pm
 	'Invalid type: [_1]' => '不正なtypeです: [_1]',
 	'Failed to cache search results.  [_1] is not available: [_2]' => '結果をキャッシュできませんでした。[_1]を利用できません: [_2]',
@@ -876,18 +862,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid session.' => 'セッションが不正です。',
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => '権限がありません。Movable Typeのアップグレードを管理者に依頼してください。',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Typeをバージョン[_1]にアップグレードしました。',
-
-## lib/MT/App/Viewer.pm
-	'Loading blog with ID [_1] failed' => 'ブログ (ID：[_1]) の読み込みに失敗しました',
-	'File not found' => 'ファイルが見つかりません',
-	'Template publishing failed: [_1]' => 'テンプレートの出力に失敗しました: [_1]',
-	'Unknown archive type: [_1]' => 'アーカイブタイプが不明です: [_1]',
-	'Cannot load template [_1]' => 'テンプレートを読み込めませんでした [_1]',
-	'Archive publishing failed: [_1]' => 'アーカイブの公開に失敗しました: [_1]',
-	'Invalid entry ID [_1].' => 'エントリーIDが不正です: [_1]',
-	'Entry [_1] was not published.' => '記事 [_1] は公開されていません',
-	'Invalid category ID \'[_1]\'' => 'カテゴリのIDが不正です: [_1]',
-	'Invalid author ID \'[_1]\'' => 'ユーザーIDが不正です: [_1]',
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => '[_2]を使うには[_1]のドライバが必要です。',
@@ -1632,6 +1606,7 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout limit' => '同一IPアドレスからの試行回数',
 	'IP address lockout interval' => '同一IPアドレスからの試行間隔',
 	'Lockout IP address whitelist' => 'ロックアウトの除外IPアドレス',
+	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(無名カテゴリ)',
@@ -1908,7 +1883,6 @@ use vars qw( @ISA %Lexicon );
 	'New Comment' => '新しいコメント',
 	'New Ping' => '新しいトラックバック',
 	'Entry Notify' => '記事の共有',
-	'Subscribe Verify' => '購読の確認',
 	'User Lockout' => 'ユーザーアカウントのロック通知',
 	'IP Address Lockout' => 'IPアドレスのロック通知',
 
