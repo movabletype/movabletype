@@ -4,6 +4,7 @@ author_link: http://www.sixapart.com/
 author_name: Six Apart, Ltd.
 description: <MT_TRANS phrase='Provide Movable Type email notification support.'>
 version: 1.00
+schema_version: 1.00
 l10n_class: NotifyList::L10N
 
 config_settings:
