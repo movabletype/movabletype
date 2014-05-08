@@ -386,8 +386,6 @@ class MT {
             $cfg['xmlrpcscript'] = 'mt-xmlrpc.cgi';
         isset($cfg['searchscript']) or
             $cfg['searchscript'] = 'mt-search.cgi';
-        isset($cfg['notifyscript']) or
-            $cfg['notifyscript'] = 'mt-add-notify.cgi';
         isset($cfg['defaultlanguage']) or
             $cfg['defaultlanguage'] = 'en_US';
         isset($cfg['globalsanitizespec']) or
