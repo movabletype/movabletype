@@ -1,7 +1,7 @@
 name: Viewer
 key: Viewer
 author_link: http://www.sixapart.com/
-author_nane: Six Apart, Ltd.
+author_name: Six Apart, Ltd.
 description: <MT_TRANS phrase='Publish archive dynamically.'>
 version: 1.00
 l10n_class: Viewer::L10N
