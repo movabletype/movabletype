@@ -737,5 +737,9 @@
 { "r" : "1", "t" : "<MTTopLevelFolders show_empty=\"1\"><MTFolderLabel><MTHasSubFolders> (has subcategories)</MTHasSubFolders><MTHasNoSubFolders> (has no subcategories)</MTHasNoSubFolders></MTTopLevelFolders>", "e" : "download (has subcategories)info (has no subcategories)"}, #721
 { "r" : "1", "t" : "<MTSetVar name='array'><MTSetVar name='array' function='push' value='foo'><MTUnless name='array'>bar<MTElse>baz</MTUnless>", "e" : "baz" }, #722
 { "r" : "1", "t" : "<MTLoop name='foo'><MTFor regex_replace='/</',''></MTFor></MTLoop>", "e" : "" }, #723
-{ "r" : "1", "t" : "<MTSetVarBlock name='foo'>bar</MTSetVarBlock><MTGetVar name='foo' regex_replace='/bar/','bar@baz'>", "e" : "bar@baz" } #724
+{ "r" : "1", "t" : "<MTSetVarBlock name='foo'>bar</MTSetVarBlock><MTGetVar name='foo' regex_replace='/bar/','bar@baz'>", "e" : "bar@baz" }, #724
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='0'></MTEntries>", "e" : "" }, #725
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='foo'></MTEntries>", "e" : "" }, #726
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='10+...'></MTEntries>", "e" : "A Rainy Da..." }, #727
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='11+...'></MTEntries>", "e" : "A Rainy Day" } #728
 ]
