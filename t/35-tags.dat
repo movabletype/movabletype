@@ -741,5 +741,9 @@
 { "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='0'></MTEntries>", "e" : "" }, #725
 { "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='foo'></MTEntries>", "e" : "" }, #726
 { "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='10+...'></MTEntries>", "e" : "A Rainy Da..." }, #727
-{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='11+...'></MTEntries>", "e" : "A Rainy Day" } #728
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='11+...'></MTEntries>", "e" : "A Rainy Day" }, #728
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='-4'></MTEntries>", "e" : "A Rainy" }, #729
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='-4+...'></MTEntries>", "e" : "A Rainy..." }, #730
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='-10+...'></MTEntries>", "e" : "A..." }, #731
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='-11+...'></MTEntries>", "e" : "" } #732
 ]

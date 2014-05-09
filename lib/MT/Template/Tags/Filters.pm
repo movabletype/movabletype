@@ -221,6 +221,7 @@ B<Example:>
 
 sub _fltr_trim_to {
     my ( $str, $val, $ctx ) = @_;
+
     my ( $len, $tail );
     if ( $val =~ /\+/ ) {
         ( $len, $tail ) = split /\+/, $val, 2;
@@ -228,12 +229,28 @@ sub _fltr_trim_to {
     else {
         $len = $val;
     }
-    return '' if $len <= 0;
-    if ( $len < length($str) ) {
-        $str = substr( $str, 0, $len );
-        $str .= $tail if $tail;
+
+    if ( $len =~ m/^\d+$/ && $len > 0 ) {
+
+        # $len is positive number.
+        if ( $len < length($str) ) {
+            $str = substr( $str, 0, $len );
+            $str .= $tail if $tail;
+        }
+        return $str;
     }
-    return $str;
+    elsif ( $len =~ m/^-\d+$/ && $len < 0 ) {
+
+        # $len is negitive number.
+        $str = substr( $str, 0, $len );
+        if ( length($str) && $tail ) {
+            $str .= $tail;
+        }
+        return $str;
+    }
+
+    # $len is zero or is not number.
+    return '';
 }
 
 ###########################################################################
