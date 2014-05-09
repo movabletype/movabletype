@@ -241,7 +241,7 @@ sub _fltr_trim_to {
     }
     elsif ( $len =~ m/^-\d+$/ && $len < 0 ) {
 
-        # $len is negitive number.
+        # $len is negative number.
         $str = substr( $str, 0, $len );
         if ( length($str) && $tail ) {
             $str .= $tail;
