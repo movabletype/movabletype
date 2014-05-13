@@ -421,7 +421,7 @@ sub import_contents {
                                     $handler
                                         = MT->handler_to_coderef($handler);
                                     my $import_key = $add_key->{import_key};
-                                    if ( $piece =~ /^$import_key\w+:/ ) {
+                                    if ( $piece =~ /^$import_key[\w-]+:/ ) {
                                         $handler->( $piece, $entry );
                                     }
                                 }
