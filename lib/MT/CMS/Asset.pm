@@ -393,7 +393,9 @@ sub asset_userpic {
                     $app->translate(
                         "Failed to create thumbnail file. This image type is not supported..."
                     )
-                ) unless ( $fmgr->exists( $user->userpic_file() ) );
+                    )
+                    unless $asset->has_thumbnail
+                    && $asset->can_create_thumbnail;
                 $user->save;
             }
         }
