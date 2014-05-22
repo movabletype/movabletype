@@ -641,7 +641,7 @@ sub cfg_system_users {
             $param{new_user_theme_thumbnail_h} = $t_h;
         }
         else {
-            $app->config( 'NewUserBlogTheme', undef, 1 );
+            $app->config( 'NewUserBlogTheme', '', 1 );
             $cfg->save_config();
             delete $param{new_user_theme_id};
         }
@@ -710,8 +710,8 @@ sub cfg_system_users {
             }
             else {
                 my $snake_case = $config_directive;
-                $snake_case =~ s/^([A-Z])/\l\1/;
-                $snake_case =~ s/([A-Z])/_\l\1/g;
+                $snake_case =~ s/^([A-Z])/\l$1/;
+                $snake_case =~ s/([A-Z])/_\l$1/g;
                 $param{ $snake_case . '_readonly' } = 1;
             }
         }
