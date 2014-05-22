@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -130,12 +130,13 @@ sub list_props {
                         ? MT::Author::ACTIVE()
                         : MT::Author::INACTIVE();
                     $db_args->{joins} ||= [];
-                    push @{ $db_args->{joins} }, MT->model('author')->join_on(
+                    push @{ $db_args->{joins} },
+                        MT->model('author')->join_on(
                         undef,
                         {   id     => \'= filter_author_id',
                             status => $status,
                         },
-                    );
+                        );
                 }
             },
         },
@@ -260,7 +261,11 @@ sub load_objects {
     @items = sort {
         ( $a->{prop}->priority || 5 ) <=> ( $b->{prop}->priority || 5 )
     } @items;
-    my @grep_items = grep { $_->{prop}->has('grep') } @items;
+    my @grep_items = grep {
+              $_->{prop}->has('requires_grep')
+            ? $_->{prop}->requires_grep( $_->{args} )
+            : $_->{prop}->has('grep');
+    } @items;
 
     ## Prepare terms
     my @additional_terms;
@@ -268,9 +273,15 @@ sub load_objects {
         my $prop = $item->{prop};
         $prop->has('terms') or next;
         my $filter_terms
-            = $prop->terms( $item->{args}, $terms, $args, \%options );
-        if ( $filter_terms
-            && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
+            = $prop->terms( $item->{args}, $terms, $args, \%options )
+            or next;
+        if ( ( $item->{args}{option} || q{} ) eq 'not_contains'
+            && $class->has_column( $item->{type} ) )
+        {
+            $filter_terms
+                = [ $filter_terms, '-or', { $item->{type} => \'IS NULL' } ];
+        }
+        if (   ( 'HASH' eq ref $filter_terms && scalar %$filter_terms )
             || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
         {
             push @additional_terms, ( '-and', $filter_terms );
@@ -278,7 +289,7 @@ sub load_objects {
     }
     if ( scalar @additional_terms ) {
         if (   !$terms
-            || ( 'HASH'  eq ref $terms && !scalar %$terms )
+            || ( 'HASH' eq ref $terms  && !scalar %$terms )
             || ( 'ARRAY' eq ref $terms && !scalar @$terms ) )
         {
             shift @additional_terms;
@@ -402,7 +413,11 @@ sub count_objects {
     @items = sort {
         ( $a->{prop}->priority || 5 ) <=> ( $b->{prop}->priority || 5 )
     } @items;
-    my @grep_items = grep { $_->{prop}->has('grep') } @items;
+    my @grep_items = grep {
+              $_->{prop}->has('requires_grep')
+            ? $_->{prop}->requires_grep( $_->{args} )
+            : $_->{prop}->has('grep');
+    } @items;
 
     ## Prepare terms
     my $update_terms = sub {
@@ -414,7 +429,7 @@ sub count_objects {
             my $filter_terms
                 = $prop->terms( $item->{args}, $terms, $args, \%options );
             if ( $filter_terms
-                && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
+                && ( 'HASH' eq ref $filter_terms  && scalar %$filter_terms )
                 || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
             {
                 push @additional_terms, ( '-and', $filter_terms );
@@ -422,7 +437,7 @@ sub count_objects {
         }
         if ( scalar @additional_terms ) {
             if (   !$terms
-                || ( 'HASH'  eq ref $terms && !scalar %$terms )
+                || ( 'HASH' eq ref $terms  && !scalar %$terms )
                 || ( 'ARRAY' eq ref $terms && !scalar @$terms ) )
             {
                 shift @additional_terms;
@@ -453,8 +468,7 @@ sub count_objects {
     }
     my @objs = $class->load( $terms, $args );
 
-    for my $item (@items) {
-        my $coderef = $item->{prop}->has('grep') or next;
+    for my $item (@grep_items) {
         @objs = $item->{prop}->grep( $item->{args}, \@objs, \%options );
     }
 
@@ -498,7 +512,7 @@ sub pack_terms {
             = $prop->terms( $item->{args}, $load_terms, $load_args,
             $options );
         if ( $filter_terms
-            && ( 'HASH'  eq ref $filter_terms && scalar %$filter_terms )
+            && ( 'HASH' eq ref $filter_terms  && scalar %$filter_terms )
             || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) )
         {
             push @terms, $op if scalar @terms > 0;
@@ -536,6 +550,25 @@ sub pack_grep {
         @objs = $prop->grep( $item->{args}, \@objs, $opts );
     }
     return @objs;
+}
+
+sub pack_requires_grep {
+    my $prop   = shift;
+    my ($args) = @_;
+    my $items  = $args->{items};
+    my $ds     = $prop->{class};
+
+    my @items;
+    require MT::ListProperty;
+
+    for my $item (@$items) {
+        my $id = $item->{type};
+        my $list_prop = MT::ListProperty->instance( $ds, $id )
+            or die "Invalid Filter $id";
+        return 1 if $list_prop->has('grep');
+    }
+
+    return 0;
 }
 
 sub _cb_restore_ids {

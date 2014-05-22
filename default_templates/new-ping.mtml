@@ -1,31 +1,23 @@
 <mt:If name="unapproved" trim="1">
-  <mt:IfBlog>
-    <mt:If name="entry_id">
-      <mt:If tag="EntryClass" eq="entry">
-        <__trans phrase="An unapproved TrackBack has been posted on your blog '[_1]', on entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site." params="<$mt:BlogName$>%%<$mt:EntryID$>%%<$mt:EntryTitle$>">
-      <mt:Else>
-        <__trans phrase="An unapproved TrackBack has been posted on your blog '[_1]', on page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site." params="<$mt:BlogName$>%%<$mt:PageID$>%%<$mt:PageTitle$>">
-      </mt:If>
-    <mt:ElseIf name="category_id">
-      <__trans phrase="An unapproved TrackBack has been posted on your blog '[_1]', on category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site." params="<$mt:BlogName$>%%<$mt:CategoryID$>%%<$mt:CategoryLabel$>">
+  <mt:If name="entry_id">
+    <mt:If tag="EntryClass" eq="entry">
+      <__trans phrase="An unapproved TrackBack has been posted on your site '[_1]', on entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site." params="<$mt:BlogName$>%%<$mt:EntryID$>%%<$mt:EntryTitle$>">
+    <mt:Else>
+      <__trans phrase="An unapproved TrackBack has been posted on your site '[_1]', on page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site." params="<$mt:BlogName$>%%<$mt:PageID$>%%<$mt:PageTitle$>">
     </mt:If>
-  <mt:Else>
-    <__trans phrase="An unapproved TrackBack has been posted on your website '[_1]', on page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site." params="<$mt:WebsiteName$>%%<$mt:PageID$>%%<$mt:PageTitle$>">
-  </mt:IfBlog>
+  <mt:ElseIf name="category_id">
+    <__trans phrase="An unapproved TrackBack has been posted on your site '[_1]', on category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site." params="<$mt:BlogName$>%%<$mt:CategoryID$>%%<$mt:CategoryLabel$>">
+  </mt:If>
 <mt:Else>
-  <mt:IfBlog>
-    <mt:If name="entry_id">
-      <mt:If tag="EntryClass" eq="entry">
-        <__trans phrase="A new TrackBack has been posted on your blog '[_1]', on entry #[_2] ([_3])." params="<$mt:BlogName$>%%<$mt:EntryID$>%%<$mt:EntryTitle$>">
-      <mt:Else>
-        <__trans phrase="A new TrackBack has been posted on your blog '[_1]', on page #[_2] ([_3])." params="<$mt:BlogName$>%%<$mt:PageID$>%%<$mt:PageTitle$>">
-      </mt:If>
-    <mt:ElseIf name="category_id">
-      <__trans phrase="A new TrackBack has been posted on your blog '[_1]', on category #[_2] ([_3])." params="<$mt:BlogName$>%%<$mt:CategoryID$>%%<$mt:CategoryLabel$>">
+  <mt:If name="entry_id">
+    <mt:If tag="EntryClass" eq="entry">
+      <__trans phrase="A new TrackBack has been posted on your site '[_1]', on entry #[_2] ([_3])." params="<$mt:BlogName$>%%<$mt:EntryID$>%%<$mt:EntryTitle$>">
+    <mt:Else>
+      <__trans phrase="A new TrackBack has been posted on your site '[_1]', on page #[_2] ([_3])." params="<$mt:BlogName$>%%<$mt:PageID$>%%<$mt:PageTitle$>">
     </mt:If>
-  <mt:Else>
-    <__trans phrase="A new TrackBack has been posted on your website '[_1]', on page #[_2] ([_3])." params="<$mt:WebsiteName$>%%<$mt:PageID$>%%<$mt:PageTitle$>">
-  </mt:IfBlog>
+  <mt:ElseIf name="category_id">
+    <__trans phrase="A new TrackBack has been posted on your site '[_1]', on category #[_2] ([_3])." params="<$mt:BlogName$>%%<$mt:CategoryID$>%%<$mt:CategoryLabel$>">
+  </mt:If>
 </mt:If>
 
 <__trans phrase="Excerpt">: 

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -90,7 +90,7 @@ sub validate_credentials {
             $res );
     }
 
-    $app->run_callbacks( 'post_signin.app', $app, $res );
+    $app->run_callbacks( 'post_signin.app', $app, $res, $ctx );
 
     $res;
 }
@@ -101,7 +101,7 @@ sub task_synchronize {
     # This task method is only invoked if ExternalUserManagement is enabled.
     return
         unless MT->config->ExternalUserManagement
-            || MT->config->ExternalGroupManagement;
+        || MT->config->ExternalGroupManagement;
     return $obj->synchronize(@_);
 }
 

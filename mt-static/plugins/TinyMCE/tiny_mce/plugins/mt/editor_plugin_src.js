@@ -1,12 +1,12 @@
 /*
- * Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
- * This program is distributed under the terms of the
- * GNU General Public License, version 2.
+ * Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+ * This code cannot be redistributed without permission from www.sixapart.com.
+ * For more information, consult your Movable Type license.
  *
  * $Id$
  */
 ;(function($) {
-    $.each(['plugin', 'advanced'], function() {
+    $.each(['plugin', 'advanced', 'core'], function() {
         tinymce
             .ScriptLoader
             .add(tinymce.PluginManager.urls['mt'] + '/langs/' + this + '.js');
@@ -264,6 +264,7 @@
             }
 
             function openDialog(mode, param) {
+                createSessionHistoryFallback(location.href);
                 $.fn.mtDialog.open(
                     ScriptURI + '?' + '__mode=' + mode + '&amp;' + param
                 );
@@ -561,7 +562,7 @@
                     ed.windowManager.open({
                         file : url + '/insert_html.html',
                         width : 430,
-                        height : 335,
+                        height : 345,
                         inline : 1
                     }, {
                         plugin_url : url

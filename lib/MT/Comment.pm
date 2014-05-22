@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -125,7 +125,7 @@ sub list_props {
                 my $edit_str = MT->translate('Edit');
                 my $reply_link;
                 if ( $app->user->permissions( $obj->blog->id )
-                        ->can_do('reply_comment_from_cms')
+                    ->can_do('reply_comment_from_cms')
                     and $obj->is_published )
                 {
                     my $return_arg = $app->uri_params(
@@ -357,25 +357,27 @@ sub list_props {
                 my $prop = shift;
                 my ( $terms, $args ) = @_;
                 $args->{joins} ||= [];
-                push @{ $args->{joins} }, MT->model('entry')->join_on(
+                push @{ $args->{joins} },
+                    MT->model('entry')->join_on(
                     undef,
                     { id => \'= comment_entry_id', },
                     {   sort      => 'title',
                         direction => $args->{direction} || 'ascend',
                     },
-                );
+                    );
                 $args->{sort} = [];
                 return;
             },
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('entry')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('entry')->join_on(
                     undef,
                     {   id =>
                             [ '-and', $args->{value}, \'= comment_entry_id' ],
                     },
-                );
+                    );
                 return;
             },
             bulk_html => sub {
@@ -446,19 +448,27 @@ sub list_props {
             col     => 'visible',
             display => 'none',
             terms   => sub {
-                my ( $prop, $args ) = @_;
-                return $args->{value} eq 'approved'
+                my $prop  = shift;
+                my $value = $prop->normalized_value(@_);
+                return $value eq 'approved'
                     ? { visible => 1, junk_status => NOT_JUNK() }
-                    : $args->{value} eq 'pending'
+                    : $value eq 'pending'
                     ? { visible => 0, junk_status => NOT_JUNK() }
-                    : $args->{value} eq 'junk' ? { junk_status => JUNK() }
-                    :   { junk_status => NOT_JUNK() };
+                    : $value eq 'junk' ? { junk_status => JUNK() }
+                    :                    { junk_status => NOT_JUNK() };
             },
             single_select_options => [
-                { label => MT->translate('Approved'), value => 'approved', },
-                { label => MT->translate('Unapproved'), value => 'pending', },
+                {   label => MT->translate('Approved'),
+                    text  => 'Approved',
+                    value => 'approved',
+                },
+                {   label => MT->translate('Unapproved'),
+                    text  => 'Pending',
+                    value => 'pending',
+                },
                 { label => MT->translate('Not spam'), value => 'not_junk', },
                 {   label => MT->translate('Reported as spam'),
+                    text  => 'Spam',
                     value => 'junk',
                 },
             ],
@@ -500,12 +510,13 @@ sub list_props {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $user = MT->app->user;
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('entry')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('entry')->join_on(
                     undef,
                     {   id        => \"= comment_entry_id",
                         author_id => $user->id,
                     },
-                );
+                    );
             },
         },
         email => {
@@ -533,11 +544,12 @@ sub list_props {
                 my @users = MT->model('author')->load( { email => $query, },
                     { fetchonly => { id => 1 }, } );
                 my @ids = map { $_->id } @users;
-                return [
-                    { commenter_id => \@ids },
-                    '-or',
-                    { 'email' => $query },
-                ];
+                my $terms;
+                if (@ids) {
+                    $terms = [ { commenter_id => \@ids }, '-or', ];
+                }
+                push @$terms, { 'email' => $query };
+                return $terms;
             },
         },
         url => {
@@ -778,11 +790,31 @@ sub list_props {
                 },
             ],
         },
+        id => {
+            base      => '__virtual.id',
+            condition => sub {0},
+        },
+        content => {
+            base      => '__virtual.content',
+            fields    => [qw(url text email ip author)],
+            condition => sub {0},
+        },
+        entry_status => {
+            base    => 'entry.status',
+            col     => 'entry.status',
+            display => 'none',
+        },
     };
 }
 
 sub system_filters {
     return {
+        current_website => {
+            label => 'Comments in This Website',
+            items => [ { type => 'current_context' } ],
+            order => 50,
+            view  => 'website',
+        },
         not_spam => {
             label => 'Non-spam comments',
             items =>
@@ -1003,6 +1035,19 @@ sub all_text {
     $text;
 }
 
+sub permalink {
+    my $self = shift;
+
+    my $id    = $self->id;
+    my $entry = $self->entry;
+    if ( $id && $entry ) {
+        $entry->archive_url . '#comment-' . $id;
+    }
+    else {
+        '#';
+    }
+}
+
 sub is_published {
     return $_[0]->visible && !$_[0]->is_junk;
 }
@@ -1100,6 +1145,27 @@ sub parent {
             }
         }
     );
+}
+
+sub get_status_text {
+    my $self = shift;
+          $self->is_published ? 'Approved'
+        : $self->is_moderated ? 'Pending'
+        :                       'Spam';
+}
+
+sub set_status_by_text {
+    my $self   = shift;
+    my $status = lc $_[0];
+    if ( $status eq 'approved' ) {
+        $self->approve;
+    }
+    elsif ( $status eq 'pending' ) {
+        $self->moderate;
+    }
+    else {
+        $self->junk;
+    }
 }
 
 1;

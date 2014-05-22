@@ -1,0 +1,17 @@
+name: OptionsEndpoint
+version: 1.00
+
+applications:
+  data_api:
+    endpoints:
+      - id: get_options_test
+        verb: OPTIONS
+        version: 1
+        route: /options-test
+        handler: |
+          sub {
+            my $app = shift;
+            $app->set_header( 'X-OPTIONS-TEST' => '1' );
+            undef;
+          }
+        requires_login: 0

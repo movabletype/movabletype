@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -299,12 +299,13 @@ sub list_props {
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $entry_id = $args->{value};
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('trackback')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('trackback')->join_on(
                     undef,
                     {   entry_id => $entry_id,
                         id       => \'= tbping_tb_id',
                     },
-                );
+                    );
             },
             label_via_param => sub {
                 my ( $prop, $app ) = @_;
@@ -325,12 +326,13 @@ sub list_props {
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $cat_id = $args->{value};
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('trackback')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('trackback')->join_on(
                     undef,
                     {   category_id => $cat_id,
                         id          => \'= tbping_tb_id',
                     },
-                );
+                    );
             },
             label_via_param => sub {
                 my ( $prop, $app ) = @_;
@@ -352,7 +354,8 @@ sub list_props {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $user = MT->app->user;
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('trackback')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('trackback')->join_on(
                     undef,
                     {   id       => \"= tbping_tb_id",
                         entry_id => \"= entry_id",
@@ -360,10 +363,18 @@ sub list_props {
                     {   join => MT->model('entry')
                             ->join_on( undef, { author_id => $user->id, } ),
                     },
-                );
+                    );
             },
         },
-
+        id => {
+            base    => '__virtual.id',
+            display => 'none',
+        },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw(title excerpt source_url ip blog_name)],
+            display => 'none',
+        },
     };
 }
 
@@ -560,8 +571,8 @@ sub _nextprev {
             # (greater than for the 'next' object; less than for
             # the 'previous' object).
             push @same, $e
-                if $next && $e->id > $id
-                    or !$next && $e->id < $id;
+                if $next  && $e->id > $id
+                or !$next && $e->id < $id;
         }
         else {
 
@@ -675,6 +686,27 @@ sub visible {
 
     $ping->junk_status(NOT_JUNK) if $is_visible;
     return $ping->SUPER::visible($is_visible);
+}
+
+sub get_status_text {
+    my $self = shift;
+          $self->is_published ? 'Approved'
+        : $self->is_moderated ? 'Pending'
+        :                       'Spam';
+}
+
+sub set_status_by_text {
+    my $self   = shift;
+    my $status = lc $_[0];
+    if ( $status eq 'approved' ) {
+        $self->approve;
+    }
+    elsif ( $status eq 'pending' ) {
+        $self->moderate;
+    }
+    else {
+        $self->junk;
+    }
 }
 
 1;

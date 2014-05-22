@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2006-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2006-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -631,7 +631,7 @@ sub domain_or_ip_in_whitelist {
                 elsif ( $whiteitem =~ m/\w/ ) {
                     next
                         if defined $domain
-                            && ( $domain =~ m/\Q$whiteitem\E$/i );
+                        && ( $domain =~ m/\Q$whiteitem\E$/i );
                     $domains{$domain} = 1;
                 }
             }

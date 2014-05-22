@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -175,8 +175,8 @@ sub install_properties {
         my @classes = grep { !ref($_) } @$more_props;
         foreach my $isa_class (@classes) {
             next if UNIVERSAL::isa( $class, $isa_class );
-            eval "# line " 
-                . __LINE__ . " " 
+            eval "# line "
+                . __LINE__ . " "
                 . __FILE__
                 . "\nno warnings 'all';require $isa_class;"
                 or die;
@@ -343,7 +343,7 @@ sub install_properties {
             for my $col (@$cols) {
                 $is_blob{$col} = 1
                     if $col_defs->{$col}
-                        && $col_defs->{$col}{type} =~ /\bblob\b/;
+                    && $col_defs->{$col}{type} =~ /\bblob\b/;
             }
             foreach ( keys %$data ) {
                 my $v = $data->{$_};
@@ -421,7 +421,11 @@ sub _pre_search_scope_terms_to_class {
     # scope search terms to class
 
     $terms ||= {};
-    return if ( ref $terms eq 'HASH' ) && exists( $terms->{id} );
+    return
+        if ( ref $terms eq 'HASH' )
+        && ( exists( $terms->{id} )
+        && ( ref $terms->{id} ne 'HASH' || !exists( $terms->{id}{not} ) ) )
+        && !exists( $args->{not}{id} );
 
     my $props = $class->properties;
     my $col   = $props->{class_column}
@@ -470,9 +474,9 @@ sub _pre_search_scope_terms_to_class {
                         foreach my $t ( keys %$term ) {
                             push @$array, { $t => $term->{$t} }
                                 if lc $t ne lc $col
-                                    || (   lc $t eq lc $col
-                                        && !$no_class
-                                        && $term->{$t} ne '*' );
+                                || ( lc $t eq lc $col
+                                && !$no_class
+                                && $term->{$t} ne '*' );
                         }
                         push @$new_terms, $array;
                     }
@@ -1128,7 +1132,7 @@ sub _assign_audited_fields {
     my ( $obj, $orig_obj ) = @_;
     if ( $obj->properties->{audit} ) {
         my $blog_id;
-        if ( $obj->has_column('blog_id') ) {
+        if ( $obj->can('blog_id') ) {
             $blog_id = $obj->blog_id;
         }
         my @ts = offset_time_list( time, $blog_id );
@@ -1342,7 +1346,8 @@ sub column_as_datetime {
         if ($blog) {
             $four_digit_offset = sprintf( '%.02d%.02d',
                 int( $blog->server_offset ),
-                60 * abs( $blog->server_offset - int( $blog->server_offset ) )
+                60 *
+                    abs( $blog->server_offset - int( $blog->server_offset ) )
             );
         }
         return new MT::DateTime(
@@ -1756,6 +1761,29 @@ sub inflate {
     }
 
     $obj;
+}
+
+sub assets {
+    my ($self) = @_;
+
+    if ( $self->has_summary('all_assets') ) {
+        my @assets = $self->get_summary_objs( 'all_assets' => 'MT::Asset' );
+        @assets && $assets[0] ? [@assets] : [];
+    }
+    else {
+        [   MT->model('asset')->load(
+                { class => '*' },
+                {   join => MT->model('objectasset')->join_on(
+                        undef,
+                        {   asset_id  => \'= asset_id',
+                            object_ds => $self->datasource,
+                            object_id => $self->id
+                        }
+                    )
+                }
+            )
+        ];
+    }
 }
 
 package MT::Object::Meta;

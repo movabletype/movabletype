@@ -1,0 +1,14 @@
+<mt:if name="loop_notification_dashboard">
+<mtapp:widget
+   class="message-center-widget"
+   label="<__trans phrase="Messages from the system">"
+   can_close="0">
+<mt:setvarblock name="widget_header">
+</mt:setvarblock>
+<ul id="message-center">
+<mt:loop name="loop_notification_dashboard">
+    <li><span class="icon-left icon-<mt:if name="level"><mt:var name="level"><mt:else>warning</mt:if> item<mt:if name="detail"> clickable</mt:if>"><mt:var name="text"></span><mt:if name="detail"><span class="detail"><mt:var name="detail"></span></mt:if></li>
+</mt:loop>
+</ul>
+</mtapp:widget>
+</mt:if>

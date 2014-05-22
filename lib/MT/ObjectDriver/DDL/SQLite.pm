@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -214,7 +214,7 @@ sub unique_constraint_sql {
                 my $idx_info = $indexes->{$name};
                 next
                     unless exists( $idx_info->{unique} )
-                        && $idx_info->{unique};
+                    && $idx_info->{unique};
                 my $column_list = $idx_info->{columns} || [$name];
                 my $columns = '';
                 foreach my $col (@$column_list) {

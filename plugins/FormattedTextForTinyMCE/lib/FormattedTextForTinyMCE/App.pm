@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2006-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2006-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -30,6 +30,7 @@ sub view_text {
     $app->{no_print_body} = 1;
 
     local $| = 1;
+    $app->set_header( 'Cache-Control' => 'no-cache' );
     $app->send_http_header('text/html');
 
     $app->print_encode( $formatted_text->text );

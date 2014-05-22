@@ -1,0 +1,22 @@
+name: DataAPIResource
+version: 1.00
+
+applications:
+  data_api:
+    resources:
+      entry:
+        fields:
+          - name: junkLog
+            from_object: |
+              sub {
+                  "test value";
+              }
+            to_object: |
+              sub {
+                  my ($hash, $obj) = @_;
+                  $obj->junk_log($hash->{junkLog} || '');
+
+                  return;
+              }
+        updatable_fields:
+          - junkLog

@@ -1,0 +1,31 @@
+- 
+  note: Create an user
+  from: 
+    displayName: Test
+    email: test@example.com
+    url: http://test.example.com/
+  to: 
+    nickname: Test
+    url: http://test.example.com/
+- 
+  note: Update an user
+  original: 
+    id: 1
+  from: 
+    displayName: Test
+    email: test@example.com
+    url: http://test.example.com/
+  to: 
+    id: 1
+    nickname: Test
+    url: http://test.example.com/
+-
+  note: Readonly fields
+  original:
+    id: 1
+  from:
+    id: 2
+    language: ja
+  to:
+    id: 1
+    preferred_language: en_US

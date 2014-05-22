@@ -1,18 +1,28 @@
 <mt:unless name="main_index">
 <div class="widget-about-this-page widget">
     <h3 class="widget-header">
+<mt:If name="entry_template">
+        <__trans phrase="About this Entry">
+<mt:Else>
     <mt:If name="archive_template">
         <__trans phrase="About this Archive">
     </mt:If>
+</mt:If>
+<mt:If name="archive_index">
+        <__trans phrase="About Archives">
+</mt:If>
     </h3>
     <div class="widget-content">
+<mt:If name="archive_index">
+        <p><__trans phrase="This page contains links to all of the archived content."></p>
+</mt:If>
 <mt:If name="entry_template">
         <p class="first"><__trans phrase="This page contains a single entry by [_1] published on <em>[_2]</em>." params="<$mt:EntryAuthorLink$>%%<$mt:EntryDate format="%x %X"$>"></p>
     <mt:EntryPrevious>
-        <p><__trans phrase="<a href="[_1]">[_2]</a> was the previous entry in this blog." params="<$mt:EntryPermalink$>%%<$mt:EntryTitle remove_html="1"$>"></p>
+        <p><__trans phrase="<a href="[_1]">[_2]</a> was the previous entry in this website." params="<$mt:EntryPermalink$>%%<$mt:EntryTitle remove_html="1"$>"></p>
     </mt:EntryPrevious>
     <mt:EntryNext>
-        <p><__trans phrase="<a href="[_1]">[_2]</a> is the next entry in this blog." params="<$mt:EntryPermalink$>%%<$mt:EntryTitle remove_html="1"$>"></p>
+        <p><__trans phrase="<a href="[_1]">[_2]</a> is the next entry in this website." params="<$mt:EntryPermalink$>%%<$mt:EntryTitle remove_html="1"$>"></p>
     </mt:EntryNext>
 </mt:If>
 <mt:If name="category_archive">
@@ -56,7 +66,11 @@
         <p><__trans phrase="<a href="[_1]">[_2]</a> is the next archive." params="<$mt:ArchiveLink$>%%<$mt:ArchiveTitle$>"></p>
     </mt:ArchiveNext>
 </mt:If>
+<mt:If name="archive_index">
         <p><__trans phrase="Find recent content on the <a href="[_1]">main index</a>." params="<$mt:BlogURL$>"></p>
+<mt:Else>
+        <p><__trans phrase="Find recent content on the <a href="[_1]">main index</a> or look in the <a href="[_2]">archives</a> to find all content." params="<$mt:BlogURL$>%%<$mt:Link template="archive_index"$>"></p>
+</mt:If>
     </div>
 </div>
 </mt:unless>

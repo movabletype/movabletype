@@ -46,7 +46,7 @@ function init() {
 </script>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl">
+<mt:include name="include/header.tmpl" id="header_include">
 
 <form method="post" id="cfg_form" action="<mt:var name="script_url">">
 <mt:unless name="new_object">
@@ -69,9 +69,7 @@ function init() {
         help_section="blog_theme">
         <select name="blog_theme">
         <mt:loop name="theme_loop">
-        <mt:unless name="errors">
-          <option value="<mt:var name="key" escape="html">"<mt:if name="key" eq='$config.DefaultBlogTheme'> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
-        </mt:unless>
+          <option value="<mt:var name="value" escape="html">"<mt:if name="value" eq='$config.DefaultBlogTheme'> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
         </mt:loop>
         </select>
     </mtapp:setting>

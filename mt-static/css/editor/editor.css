@@ -1,4 +1,8 @@
-/* toolbar */
+/* #Editor.css
+
+
+*/
+
 .editor-toolbar {
     border-top-left-radius: 0;
     -moz-border-radius: 0 5px 0 0;
@@ -10,11 +14,11 @@
     padding: 0;
 }
 
-.editor-mode-textarea iframe, 
-.editor-mode-iframe .text, 
+.editor-mode-textarea iframe,
+.editor-mode-iframe .text,
 .editor-plaintext .editor-toolbar .button.command-toggle-wysiwyg,
 .editor-plaintext .editor-toolbar .button.command-toggle-html,
-.editor-plaintext .editor-toolbar .button.command-outdent, 
+.editor-plaintext .editor-toolbar .button.command-outdent,
 .webkit-detected .editor-toolbar .button.command-insert-link,
 .webkit-detected .editor-toolbar .button.command-indent,
 .webkit-detected .editor-toolbar .button.command-outdent {

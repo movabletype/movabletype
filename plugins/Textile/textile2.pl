@@ -104,7 +104,7 @@ sub textile_2 {
         if ( $entry && $entry->id ) {
             my $link = $entry->permalink;
             $link =~ s/#.+$//;
-            $str  =~ s/(<a .*?(?<=[ ])href=")(#fn(?:\d)+".*?>)/$1$link$2/g;
+            $str =~ s/(<a .*?(?<=[ ])href=")(#fn(?:\d)+".*?>)/$1$link$2/g;
         }
     }
 

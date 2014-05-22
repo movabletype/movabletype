@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -273,9 +273,9 @@ sub ping {
     return $app->_response(
         Error => $app->translate("This TrackBack item is disabled.") )
         if $tb->is_disabled
-            || !$cfg->AllowPings
-            || !$blog
-            || !$blog->allow_pings;
+        || !$cfg->AllowPings
+        || !$blog
+        || !$blog->allow_pings;
 
     if ( $tb->passphrase && ( !$pass || $pass ne $tb->passphrase ) ) {
         return $app->_response(
@@ -530,7 +530,7 @@ sub _send_ping_notification {
                        $author->is_superuser()
                     || $author->permissions( $blog->id )
                     ->can_do('edit_trackback_status_via_notify_mail')
-                ) ? 1 : 0,
+            ) ? 1 : 0,
         );
         $param{entry}    = $entry if $entry;
         $param{category} = $cat   if $cat;

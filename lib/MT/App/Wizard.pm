@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -50,10 +50,10 @@ sub init_request {
 
     my $mode = $app->mode;
     return
-        unless $mode eq 'previous_step'
-            || $mode eq 'next_step'
-            || $mode eq 'retry'
-            || $mode eq 'test';
+           unless $mode eq 'previous_step'
+        || $mode eq 'next_step'
+        || $mode eq 'retry'
+        || $mode eq 'test';
 
     my $step = $app->param('step') || '';
 
@@ -330,7 +330,7 @@ sub init_core_registry {
                     'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.',
             },
             'XML::Parser' => {
-                link  => 'http://search.cpan.org/dist/Text-Balanced',
+                link  => 'http://search.cpan.org/dist/XML-Parser',
                 label => 'This module required for action streams.',
             },
         },
@@ -578,6 +578,17 @@ sub start {
             $key, $pkg->{link}
             ];
     }
+
+# bugid: 111277
+# Performance improvement of 'Requirements Check' screen on Windows environment.
+    if ( $^O eq 'MSWin32' ) {
+        eval {
+            require Net::SSLeay;
+            no warnings;
+            *Net::SSLeay::RAND_poll = sub () {1};
+        };
+    }
+
     my ($needed) = $app->module_check( \@REQ );
     if (@$needed) {
         $param{package_loop} = $needed;
@@ -982,6 +993,17 @@ sub optional {
     $param{mail_loop}                        = $transfer;
     $param{config}                           = $app->serialize_config(%param);
 
+    # bugid:111277
+    # Performance improvement of sending test mail on Windows environment.
+    if ( $^O eq 'MSWin32' ) {
+        eval {
+            require Net::SSLeay;
+            Net::SSLeay::RAND_poll();
+            no warnings 'redefine';
+            *Net::SSLeay::RAND_poll = sub () {1};
+        };
+    }
+
     require MT::Mail;
     $param{has_net_smtp}      = MT::Mail->can_use_smtp         ? 1 : 0;
     $param{has_net_smtp_auth} = MT::Mail->can_use_smtpauth     ? 1 : 0;
@@ -1002,8 +1024,8 @@ sub optional {
                 if $param{mail_transfer};
             $cfg->SendMailPath( $param{sendmail_path} )
                 if $param{mail_transfer}
-                    && ( $param{mail_transfer} eq 'sendmail' )
-                    && $param{sendmail_path};
+                && ( $param{mail_transfer} eq 'sendmail' )
+                && $param{sendmail_path};
             $cfg->EmailAddressMain( $param{email_address_main} )
                 if $param{email_address_main};
 

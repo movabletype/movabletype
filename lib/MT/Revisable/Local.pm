@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -75,6 +75,7 @@ sub init_revisioning {
         return 1;
     }
 
+    my $class_name = ref $class || $class;
     my $base_class = 'MT::Object';
 
     my $subclass_src = "
@@ -82,6 +83,15 @@ sub init_revisioning {
         package $subclass;
         our \$VERSION = 1.0;
         use base qw($base_class);
+
+        sub blog_id {
+            my \$self = shift;
+            return undef unless $class_name->has_column('blog_id');
+            my \$parent = $class_name->load( \$self->${datasource}_id )
+                or return undef;
+
+            return \$parent->blog_id;
+        }
 
         1;
     ";

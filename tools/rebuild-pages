@@ -33,7 +33,7 @@ GetOptions(
     'host=s'     => \$hostname,
     'elapse'     => \$elapse,
     'silent'     => \$silent,
-    'uaage'      => \$usage,
+    'usage'      => \$usage,
 );
 
 if ($usage || !$username || !$password) {
@@ -162,7 +162,7 @@ sub run_rebuild {
                 if ( $res->{status_publishing} ) {
                     ( undef, $url ) =
                       $resp->content() =~ /window.location='(.*)\?(.*)'/;
-                    $url = "http://$hostname/$script_path/" . $mt->AdminScript . "?" . $url;
+                    $url = "http://$hostname$script_path" . $mt->config->AdminScript . "?" . $url;
                 }
                 elsif ( $res->{status_success} ) {
                     logging( "\t" . $at . " built success." . "\n" );

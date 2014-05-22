@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2005-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2005-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -61,11 +61,11 @@ sub fetch_themes {
             foreach (@parsed_link) {
                 my ( $name, $val ) = split /=/, $_, 2;
                 $name =~ s/^ //;
-                $val  =~ s/^['"]|['"]$//g;
+                $val =~ s/^['"]|['"]$//g;
                 next if $name eq '/';
                 $attr{ lc($name) } = $val;
             }
-            next unless lc $attr{rel}  eq 'theme';
+            next unless lc $attr{rel} eq 'theme';
             next unless lc $attr{type} eq 'text/x-theme';
 
             # Fix for relative theme locations

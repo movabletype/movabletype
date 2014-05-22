@@ -27,9 +27,9 @@ use vars qw( %Lexicon );
 	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'アイテム「[_1]」は既にインポートされているのでスキップします。',
 	'Saving asset (\'[_1]\')...' => 'アイテム(\'[_1]\')を保存しています...',
 	' and asset will be tagged (\'[_1]\')...' => 'アイテムにタグ([_1])を付けています...',
-	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'ブログ記事「[_1]」は既にインポートされているのでスキップします。',
+	'Duplicate entry (\'[_1]\') found.  Skipping.' => '記事「[_1]」は既にインポートされているのでスキップします。',
 	'Saving page (\'[_1]\')...' => 'ウェブページ(\'[_1]\')を保存しています...',
-	'Entry has no MT::Trackback object!' => 'ブログ記事にトラックバックの設定がありません',
+	'Entry has no MT::Trackback object!' => '記事にトラックバックの設定がありません',
 	'Assigning permissions for new user...' => '新しいユーザーに権限を追加しています...',
 	'Saving permission failed: [_1]' => '権限の保存中にエラーが発生しました: [_1]',
 

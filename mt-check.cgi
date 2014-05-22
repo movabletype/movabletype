@@ -1,8 +1,8 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -24,6 +24,17 @@ sub BEGIN {
         unshift @INC, File::Spec->catdir( $dir, 'lib' );
         unshift @INC, File::Spec->catdir( $dir, 'extlib' );
     }
+}
+
+# bugid: 111237
+# Net::SSLeay::RAND_poll() takes much time on Windows environment.
+# So, make this subroutine does nothing in mt-check.cgi.
+if ( $^O eq 'MSWin32' ) {
+    eval {
+        require Net::SSLeay;
+        no warnings;
+        *Net::SSLeay::RAND_poll = sub () {1};
+    };
 }
 
 my $cfg_exist;
@@ -99,7 +110,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '5.2.10';
+    $version = '6.0.3';
 }
 
 my ( $mt, $LH );
@@ -150,7 +161,7 @@ sub translate {
     return (
           $mt ? $mt->translate(@_)
         : $LH ? $LH->maketext(@_)
-        : merge_params(@_)
+        :       merge_params(@_)
     );
 }
 

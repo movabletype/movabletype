@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -288,12 +288,13 @@ sub lazy_load_objects {
     my ($col) = @_;
     $proxy->load_objects
         if $proxy->{__pkeys}
-            && (!$proxy->{__objects}
-                || ($col
-                    ? !exists $proxy->{__objects}->{$col}
-                    : !$proxy->{__loaded_all_objects}
-                )
-            );
+        && (
+        !$proxy->{__objects}
+        || ($col
+            ? !exists $proxy->{__objects}->{$col}
+            : !$proxy->{__loaded_all_objects}
+        )
+        );
 }
 
 sub lazier_load_objects {
@@ -469,7 +470,7 @@ sub load_objects {
         $pkeys->{type} = $proxy->{__pkeys}->{type}
             if exists $proxy->{__pkeys}->{type};
         @objs = $meta_pkg->search(
-            { %{ $pkeys }, $col ? ( type => $col ) : () } )
+            { %{$pkeys}, $col ? ( type => $col ) : () } );
     }
 
     if ( !$col ) {

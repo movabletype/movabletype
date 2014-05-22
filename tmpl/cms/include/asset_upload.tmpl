@@ -1,11 +1,25 @@
 <script type="text/javascript">
 /* <![CDATA[ */
+jQuery(document).ready(function() {
+  jQuery('#warning-site-thumb-path').css('display', 'block');
+  jQuery('#warning-archive-thumb-path').css('display', 'none');
+});
+
 function setExtraPath(sel) {
    var opt = sel.options[sel.selectedIndex];
    var path = opt.getAttribute("middle_path");
    if (!path) path = '';
    var middle = sel.form['middle_path'];
    if (middle) middle.value = path;
+   
+   // Switch display of warnings
+   if (opt.value === '1') {
+     jQuery('#warning-site-thumb-path').css('display', 'block');
+     jQuery('#warning-archive-thumb-path').css('display', 'none');
+   } else if (opt.value === '0') {
+     jQuery('#warning-site-thumb-path').css('display', 'none');
+     jQuery('#warning-archive-thumb-path').css('display', 'block');
+   }
 }
 
 function validate(f) {
@@ -62,6 +76,14 @@ function is_valid_path(path_){
   <mt:var name="error">
 </mtapp:statusmsg>
   </mt:if>
+  <mt:loop name="thumb_dir_warnings">
+<mtapp:statusmsg
+   id="warning-<mt:var name="key">-thumb-path"
+   class="warning"
+   can_close="0">
+  <__trans phrase="Cannot write to '[_1]'. Image upload is possible, but thumbnail is not created.", params="<mt:var name="path">" escape="html">
+</mtapp:statusmsg>
+  </mt:loop>
   <mt:if name="uploaded">
 <mtapp:statusmsg
    id="asset-uploaded"
@@ -88,6 +110,8 @@ function is_valid_path(path_){
   <mt:if name="dialog">
   <input type="hidden" name="dialog" value="<mt:var name="dialog">" />
   </mt:if>
+  <input type="hidden" name="auto_rename_if_exists" value="<mt:if name="auto_rename_if_exists">1<mt:Else>0</mt:if>" />
+  <input type="hidden" name="normalize_orientation" value="<mt:if name="normalize_orientation">1<mt:Else>0</mt:if>" />
 
   <mtapp:setting
      id="file"

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -91,11 +91,24 @@ sub can_write {
 }
 
 sub mkpath {
-    my $fmgr = shift;
-    my ($path) = @_;
-    $fmgr->{ftp}->mkdir( $path, 1 )
-        or return $fmgr->error(
-        MT->translate( "Creating path '[_1]' failed: [_2]", $path, $@ ) );
+    my $fmgr        = shift;
+    my ($path)      = @_;
+    my @dirs        = split '/', $path;
+    my $current_dir = $fmgr->{ftp}->pwd();
+    my $fullpath;
+    foreach my $dir (@dirs) {
+        next unless $dir;
+        $fullpath = join '/', $fullpath, $dir;
+        next if $fmgr->{ftp}->cwd($fullpath);
+        $fmgr->{ftp}->mkdir( $fullpath, 1 )
+            or return $fmgr->error(
+            MT->translate(
+                "Creating path '[_1]' failed: [_2]",
+                $fullpath, $@
+            )
+            );
+    }
+    $fmgr->{ftp}->cwd($current_dir);
     1;
 }
 

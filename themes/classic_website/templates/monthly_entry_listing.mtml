@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <title><$mt:BlogName encode_html="1"$>: <__trans phrase="[_1] Archives" params="<$mt:ArchiveTitle$>"></title>
+<mt:Ignore>
+    <!-- Include Next and Previous links if publishing a date-based archive -->
+</mt:Ignore>
+<mt:If name="datebased_archive">
+    <mt:ArchivePrevious><link rel="prev" href="<$mt:ArchiveLink$>" title="<$mt:ArchiveTitle encode_html="1"$>" /></mt:ArchivePrevious>
+    <mt:ArchiveNext><link rel="next" href="<$mt:ArchiveLink$>" title="<$mt:ArchiveTitle encode_html="1"$>" /></mt:ArchiveNext>
+</mt:If>
+</head>
+<body id="<$mt:BlogThemeID$>" class="mt-archive-listing mt-<$mt:Var name="archive_class"$> <$mt:Var name="page_layout"$>">
+    <div id="container">
+        <div id="container-inner">
+
+
+            <$mt:Include module="<__trans phrase="Banner Header">"$>
+
+
+            <div id="content">
+                <div id="content-inner">
+
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+
+
+                            <h1 id="page-title" class="archive-title"><__trans phrase="[_1] Archives" params="<$mt:ArchiveTitle$>"></h1>
+
+
+<mt:Ignore><!-- Limit number of entries to the number set in Blog Entry Settings --></mt:Ignore>
+<mt:Unless name="datebased_archive"><$mt:Var name="limit" value="auto"$></mt:Unless>
+<mt:Entries limit="$limit">
+                            <mt:Ignore><!-- Use the Entry Summary module for each entry published on this page --></mt:Ignore>
+                            <$mt:Include module="<__trans phrase="Entry Summary">"$>
+</mt:Entries>
+
+
+                            <div class="content-nav">
+                                <mt:ArchivePrevious><a href="<$mt:ArchiveLink$>">&laquo; <$mt:ArchiveTitle$></a> |</mt:ArchivePrevious>
+                                <a href="<$mt:Link template="main_index"$>"><__trans phrase="Main Index"></a> |
+                                <a href="<$mt:Link template="archive_index"$>"><__trans phrase="Archives"></a>
+                                <mt:ArchiveNext>| <a href="<$mt:ArchiveLink$>"><$mt:ArchiveTitle$> &raquo;</a></mt:ArchiveNext>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+                    <$mt:Include module="<__trans phrase="Sidebar">"$>
+
+
+                </div>
+            </div>
+
+
+            <$mt:Include module="<__trans phrase="Banner Footer">"$>
+
+
+        </div>
+    </div>
+</body>
+</html>

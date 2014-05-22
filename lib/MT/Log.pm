@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -100,7 +100,7 @@ sub list_props {
                     $desc = $obj->description;
                 }
                 $desc = $desc->() if ref $desc eq 'CODE';
-                $desc = ''        if $msg      eq $desc;
+                $desc = ''        if $msg eq $desc;
                 $desc = MT::Util::encode_html($desc);
                 $msg  = MT::Util::encode_html($msg);
                 return $desc
@@ -147,14 +147,15 @@ sub list_props {
                 my $prop = shift;
                 my ( $terms, $args ) = @_;
                 $args->{joins} ||= [];
-                push @{ $args->{joins} }, MT->model('author')->join_on(
+                push @{ $args->{joins} },
+                    MT->model('author')->join_on(
                     undef, undef,
                     {   sort      => 'nickname',
                         condition => { id => \'= log_author_id', },
                         direction => ( $args->{direction} || 'ascend' ),
                         type      => 'left',
                     },
-                );
+                    );
                 $args->{sort} = [];
                 return;
             },
@@ -580,6 +581,18 @@ from the database).
 
 Returns a localized string identifying the kind of log record the class is
 for.
+
+=head2 MT::Log->class_label_plural
+
+Returns the localized, plural descriptive name for this class.
+
+=head2 MT::Log->list_props
+
+Returns the list_properties registry of this class.
+
+=head2 MT::Log->system_filters
+
+Returns the system_filters registry of this class.
 
 =head2 $log->description
 

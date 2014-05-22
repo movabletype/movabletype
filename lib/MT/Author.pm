@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -733,9 +733,22 @@ sub set_defaults {
 sub remove_sessions {
     my $auth = shift;
     return if ( !$auth or !$auth->id );
+
     require MT::Session;
-    my $sess_iter
-        = MT::Session->remove( { kind => 'US', name => $auth->id } );
+
+    if ( MT->config('EnableSessionKeyCompat') ) {
+        my $sess_iter = MT::Session->load_iter( { kind => 'US' } );
+        my @sess;
+        while ( my $sess = $sess_iter->() ) {
+            my $id = $sess->get('author_id');
+            next unless $id == $auth->id;
+            push @sess, $sess;
+        }
+        $_->remove foreach @sess;
+    }
+
+    MT::Session->remove( { kind => 'US', name => $auth->id } );
+
     return 1;
 }
 
@@ -758,7 +771,7 @@ sub set_password {
 
         # Can use SHA512
         $crypt_sha
-            = '$6$' 
+            = '$6$'
             . $salt . '$'
             . Digest::SHA::sha512_base64( $salt . $pass );
     }
@@ -766,7 +779,7 @@ sub set_password {
 
         # Use SHA-1 algorism
         $crypt_sha
-            = '{SHA}' 
+            = '{SHA}'
             . $salt . '$'
             . MT::Util::perl_sha1_digest_hex( $salt . $pass );
     }
@@ -853,8 +866,8 @@ sub commenter_status {
     }
     return APPROVED
         if MT->config->SingleCommunity
-            && ( AUTHOR() == $this->type )
-            && $this->is_active();
+        && ( AUTHOR() == $this->type )
+        && $this->is_active();
     return PENDING;
 }
 
@@ -1470,8 +1483,8 @@ sub userpic_url {
     return if !$asset;
 
     my @info
-        = $asset->thumbnail_url( $author->userpic_thumbnail_options(), %param,
-        );
+        = $asset->thumbnail_url( $author->userpic_thumbnail_options(),
+        %param, );
     if ( ( $info[0] || '' ) !~ m!^https?://! ) {
         my $static_host = MT->instance->static_path;
         if ( $static_host =~ m!^https?://! ) {
@@ -1523,6 +1536,23 @@ sub locked_out {
     $author->locked_out_time
         && $author->locked_out_time
         >= MT::Lockout::locked_out_user_threshold();
+}
+
+sub anonymous {
+    my $class = shift;
+    my $obj   = $class->new;
+    $obj->set_values(
+        {   id     => 0,
+            type   => AUTHOR,
+            status => ACTIVE,
+        }
+    );
+    $obj;
+}
+
+sub is_anonymous {
+    my $self = shift;
+    $self->id == 0;
 }
 
 1;

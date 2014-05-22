@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -120,7 +120,7 @@ sub upgrade_functions {
                     my ( $path, $url )
                         = ( $values->{file_path}, $values->{url} );
                     $path =~ s{%s(/||\\)support\1}{%s$1};
-                    $url  =~ s{%s/support/}{%s/};
+                    $url =~ s{%s/support/}{%s/};
                     $asset->file_path($path);
                     $asset->url($url);
                     $asset->save;

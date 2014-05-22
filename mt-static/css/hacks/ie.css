@@ -124,6 +124,10 @@
     );
 }
 
+#selector-nav .toggle-button {
+    filter: 0;
+}
+
 .sub-menu {
     position: relative;
 }

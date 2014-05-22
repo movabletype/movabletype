@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -195,7 +195,7 @@ sub _send_mt_smtp {
     my $pass      = $mgr->SMTPPassword;
     my $localhost = hostname() || 'localhost';
     my $port
-        = $mgr->SMTPPort ? $mgr->SMTPPort
+        = $mgr->SMTPPort          ? $mgr->SMTPPort
         : $mgr->SMTPAuth eq 'ssl' ? 465
         :                           25;
     my ( $auth, $tls, $ssl );
@@ -240,7 +240,7 @@ sub _send_mt_smtp {
             Port     => $port,
             User     => $user,
             Password => $pass,
-            Timeout  => 60,
+            Timeout  => $mgr->SMTPTimeout,
             Hello    => $localhost,
             ( $MT::DebugMode ? ( Debug => 1 ) : () ),
             )
@@ -255,7 +255,7 @@ sub _send_mt_smtp {
         $smtp = Net::SMTP::SSL->new(
             $host,
             Port    => $port,
-            Timeout => 60,
+            Timeout => $mgr->SMTPTimeout,
             Hello   => $localhost,
             ( $MT::DebugMode ? ( Debug => 1 ) : () ),
             )
@@ -270,7 +270,7 @@ sub _send_mt_smtp {
         $smtp = Net::SMTP->new(
             $host,
             Port    => $port,
-            Timeout => 60,
+            Timeout => $mgr->SMTPTimeout,
             Hello   => $localhost,
             ( $MT::DebugMode ? ( Debug => 1 ) : () ),
             )

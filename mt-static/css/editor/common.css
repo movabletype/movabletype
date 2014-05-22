@@ -1,4 +1,36 @@
-/* editor-header */
+/*
+# Editor Common
+
+common.css is the common styles for editor block (mostly for editor header block) in edit entry screen.
+
+Some styles for textarea are used in no Rich Text mode (Rich Text mode uses iframe instead textarea).
+
+```
+<div id="editor-header" class="editor-header">
+  <div class="tab selected-tab">
+    <label><a>Body</a>
+    </label>
+  </div>
+  <div class="tab">
+    <label><a>Extended</a>
+    </label>
+  </div>
+  <div id="field-convert_breaks">
+    Format:
+    <select name="convert_breaks" id="convert_breaks">
+      <option value="0">None</option>
+      <option value="__default__">Convert Line Breaks</option>
+      <option value="markdown">Markdown</option>
+      <option value="markdown_with_smartypants">Markdown With SmartyPants</option>
+      <option value="richtext" selected="selected">Rich Text</option>
+      <option value="textile_2">Textile 2</option>
+    </select>
+    <a id="formatting-help-link" class="help-link disabled">?</a>
+  </div>
+</div>
+```
+
+*/
 .editor-header {
     position: relative;
 }
@@ -45,7 +77,6 @@
     vertical-align: baseline;
 }
 
-/* editor-content */
 #editor-content textarea {
     width: 100%;
     height: 550px;

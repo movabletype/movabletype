@@ -1,7 +1,7 @@
 /*
- * Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
- * This program is distributed under the terms of the
- * GNU General Public License, version 2.
+ * Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+ * This code cannot be redistributed without permission from www.sixapart.com.
+ * For more information, consult your Movable Type license.
  *
  * $Id$
  */
@@ -70,6 +70,14 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
                 }
             },
             'template/template.htm': {
+                top: function() {
+                    var height = $(window).height() - 110,
+                        vp     = tinymce.DOM.getViewPort();
+                    return Math.round(Math.max(vp.y, vp.y + (vp.h / 2.0) - ((height+60) / 2.0)));
+                },
+                height: function() {
+                    return $(window).height() - 110;
+                },
                 onload: function(context) {
                     var window = context['iframe'].contentWindow;
                     var dialog = window.TemplateDialog;
@@ -164,10 +172,17 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             resize: 'none'
         });
         if (tinyMCE.isIE8) {
-            adapter.$editorTextarea.css({
-                'min-width': '100%',
-                padding: '0px'
-            });
+            // The workaround for IE8 textarea bug.
+            // The "width" value is overwrote by the "max-width" and the "min-width".
+            // But this workaround requires the "width" value.
+            adapter.$editorTextarea
+                .css({
+                    'width': '100px',
+                    'min-width': '100%',
+                    'max-width': '100%',
+                    padding: '0px'
+                })
+                .attr('cols', '5000');
         }
         adapter.$editorTextareaParent = adapter.$editorTextarea.parent();
         adapter.$editorElement = adapter.$editorTextarea;
@@ -199,7 +214,8 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
     },
 
     setFormat: function(format, calledInInit) {
-        var mode = MT.EditorManager.toMode(format);
+        var self = this,
+            mode = MT.EditorManager.toMode(format);
 
         if (calledInInit && mode != 'source') {
             return;
@@ -232,9 +248,11 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                     });
                 }
 
-                this.$editorIframe.hide();
-                this.$editorPathRow.hide();
-                this.$editorTextarea.show();
+                setTimeout(function() {
+                    self.$editorTextarea.show();
+                    self.$editorIframe.hide();
+                    self.$editorPathRow.hide();
+                }, 0);
 
                 this.editor = this.source;
                 this.$editorElement = this.$editorTextarea;
@@ -263,8 +281,11 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
     },
 
     _fullScreenFitToWindow: function() {
-        this.tinymce.execCommand('mtFullScreenUpdateFitToWindow');
-        this.tinymce.execCommand('mtFullScreenFitToWindow');
+        var self = this;
+        setTimeout(function() {
+            self.tinymce.execCommand('mtFullScreenUpdateFitToWindow');
+            self.tinymce.execCommand('mtFullScreenFitToWindow');
+        }, 0);
     },
 
     setContent: function(content) {
@@ -414,6 +435,10 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                     target: adapter.$editorTextarea.get(0)
                 });
             });
+        });
+
+        ed.onSaveContent.add(function(ed, o) {
+            o.content = o.content.replace(/\u00a0/g, '\u0020');
         });
 
         ed.addCommand('mtSetFormat', function(format) {

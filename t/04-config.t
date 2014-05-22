@@ -12,7 +12,7 @@ use MT::Test;
 use Cwd;
 use File::Spec;
 use File::Temp qw( tempfile );
-use Test::More tests => 32;
+use Test::More tests => 37;
 
 use MT;
 use MT::ConfigMgr;

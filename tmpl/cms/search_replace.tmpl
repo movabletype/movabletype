@@ -97,7 +97,7 @@ function blurDateFields(s) {
 </script>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl">
+<mt:include name="include/header.tmpl" id="header_include">
 
 <div id="search-form">
   <form id="search_form" name="search_form" method="post" action="<mt:var name="script_url">">
@@ -280,9 +280,9 @@ jQuery(function() {
         index = 0;
     }
     jQuery('#search-tabs').tabs({
-        selected: index,
-        select: function(event, ui) {
-            var type = ui.tab.href.replace(/^.*#/, '');
+        active: index,
+        beforeActivate: function(event, ui) {
+            var type = ui.newTab.attr('aria-controls');
             reSearch(type);
             return false;
         }

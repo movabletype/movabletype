@@ -1,11 +1,11 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
 # Original Copyright 2001-2002 Jay Allen.
-# Modifications and integration Copyright 2001-2013 Six Apart.
+# Modifications and integration Copyright 2001-2014 Six Apart.
 
 package MT::App::Search::Legacy;
 
@@ -397,7 +397,8 @@ sub execute {
         }
         return $app->errtrans( "File not found: [_1]", $tmpl_file )
             unless $tmpl;
-        open my $fh, "<", $tmpl
+        open my $fh, "<",
+            $tmpl
             or return $app->error(
             $app->translate(
                 "Opening local file '[_1]' failed: [_2]",

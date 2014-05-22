@@ -131,19 +131,28 @@ use_ok('MT::FileMgr');
 use_ok('MT::FileMgr::Local');
 use_ok('MT::FileMgr::FTP');
 SKIP: {
-    if (eval{ require Net::SFTP }) {
-        use_ok('MT::FileMgr::SFTP');
+
+    if ( eval { require Net::FTPSSL } ) {
+        use_ok('MT::FileMgr::FTPS');
     }
     else {
-        skip('Net::SFTP is not installed', 1);
+        skip( 'Net::FTPSSL is not installed', 1 );
     }
 }
 SKIP: {
-    if (eval{ require HTTP::DAV }) {
+    if ( eval { require Net::SFTP } ) {
+        use_ok('MT::FileMgr::SFTP');
+    }
+    else {
+        skip( 'Net::SFTP is not installed', 1 );
+    }
+}
+SKIP: {
+    if ( eval { require HTTP::DAV } ) {
         use_ok('MT::FileMgr::DAV');
     }
     else {
-        skip('HTTP::DAV is not installed', 1);
+        skip( 'HTTP::DAV is not installed', 1 );
     }
 }
 use_ok('MT::Image');
@@ -169,21 +178,46 @@ use_ok('MT::ListProperty');
 
 use_ok('MT::Util');
 use_ok('MT::Util::Archive');
-use_ok('MT::Util::Archive::Tgz');
 SKIP: {
-    if (eval{ require Archive::Zip }) {
+    if ( eval { require Archive::Tar } ) {
+        use_ok('MT::Util::Archive::Tgz');
+    }
+    else {
+        skip( 'Archive::Tar is not installed', 1 );
+    }
+}
+SKIP: {
+    if ( eval { require Archive::Zip } ) {
         use_ok('MT::Util::Archive::Zip');
     }
     else {
-        skip('Archive::Zip is not installed', 1);
+        skip( 'Archive::Zip is not installed', 1 );
     }
 }
 use_ok('MT::Util::Captcha');
-use_ok('MT::Util::LogProcessor');
+SKIP: {
+    my @modules = qw( Compress::Zlib Path::Class DateTime );
+    my $eval_string = join( ';', map {"require $_"} @modules );
+    if ( eval $eval_string ) {
+        use_ok('MT::Util::LogProcessor');
+    }
+    else {
+        my $last_module = pop @modules;
+        skip( join( ', ', @modules ) . " or $last_module is not installed",
+            1 );
+    }
+}
 use_ok('MT::Util::PerformanceData');
 use_ok('MT::Util::ReqTimer');
 use_ok('MT::Util::YAML');
-use_ok('MT::Util::YAML::Syck');
+SKIP: {
+    if ( eval { require YAML::Syck } ) {
+        use_ok('MT::Util::YAML::Syck');
+    }
+    else {
+        skip( 'YAML::Syck is not installed', 1 );
+    }
+}
 use_ok('MT::Util::YAML::Tiny');
 
 # TheSchwartz support
@@ -319,6 +353,7 @@ use_ok('MT::Upgrade::v2');
 use_ok('MT::Upgrade::v3');
 use_ok('MT::Upgrade::v4');
 use_ok('MT::Upgrade::v5');
+use_ok('MT::Upgrade::v6');
 
 # Revision Management Framework
 use_ok('MT::Revisable');
@@ -343,22 +378,73 @@ use_ok('MT::Theme::TemplateSet');
 # Lockout
 use_ok('MT::FailedLogin');
 use_ok('MT::Lockout');
-use_ok('MT::PSGI');
+
+# DataAPI
+use_ok('MT::App::DataAPI');
+use_ok('MT::App::CMS::Common');
+use_ok('MT::DataAPI::Callback::Comment');
+use_ok('MT::DataAPI::Callback::Entry');
+use_ok('MT::DataAPI::Callback::Permission');
+use_ok('MT::DataAPI::Callback::Trackback');
+use_ok('MT::DataAPI::Callback::User');
+use_ok('MT::DataAPI::Endpoint::Asset');
+use_ok('MT::DataAPI::Endpoint::Auth');
+use_ok('MT::DataAPI::Endpoint::Blog');
+use_ok('MT::DataAPI::Endpoint::Category');
+use_ok('MT::DataAPI::Endpoint::Comment');
+use_ok('MT::DataAPI::Endpoint::Common');
+use_ok('MT::DataAPI::Endpoint::Entry');
+use_ok('MT::DataAPI::Endpoint::Permission');
+use_ok('MT::DataAPI::Endpoint::Publish');
+use_ok('MT::DataAPI::Endpoint::Stats');
+use_ok('MT::DataAPI::Endpoint::Trackback');
+use_ok('MT::DataAPI::Endpoint::User');
+use_ok('MT::DataAPI::Endpoint::Util');
+use_ok('MT::DataAPI::Format');
+use_ok('MT::DataAPI::Format::JSON');
+use_ok('MT::DataAPI::Resource');
+use_ok('MT::DataAPI::Resource::Asset');
+use_ok('MT::DataAPI::Resource::Blog');
+use_ok('MT::DataAPI::Resource::Category');
+use_ok('MT::DataAPI::Resource::Comment');
+use_ok('MT::DataAPI::Resource::Common');
+use_ok('MT::DataAPI::Resource::Entry');
+use_ok('MT::DataAPI::Resource::Permission');
+use_ok('MT::DataAPI::Resource::Trackback');
+use_ok('MT::DataAPI::Resource::User');
+use_ok('MT::DataAPI::Resource::Website');
+use_ok('MT::AccessToken');
+use_ok('MT::Stats');
+use_ok('MT::Stats::Provider');
+
+SKIP: {
+    my @modules
+        = qw( parent Plack CGI::PSGI CGI::Parse::PSGI XMLRPC::Transport::HTTP::Plack );
+    my $eval_string = join( ';', map {"require $_"} @modules );
+    if ( eval $eval_string ) {
+        use_ok('MT::PSGI');
+    }
+    else {
+        my $last_module = pop @modules;
+        skip( join( ', ', @modules ) . " or $last_module is not installed",
+            1 );
+    }
+}
 
 test_all_modules_are_checked();
 
 done_testing();
 
-# compares the list of modules that this test checks with 
+# compares the list of modules that this test checks with
 # the actual modules that are on the file system
 sub test_all_modules_are_checked {
-    my $in_test = _read_compile_test();
-    my $libpath = File::Spec->catfile($FindBin::Bin, "..", 'lib');
+    my $in_test  = _read_compile_test();
+    my $libpath  = File::Spec->catfile( $FindBin::Bin, "..", 'lib' );
     my @in_files = _collect_modules($libpath);
 
     my @not_in_test;
     foreach my $name (@in_files) {
-        if (not exists $in_test->{$name}) {
+        if ( not exists $in_test->{$name} ) {
             push @not_in_test, $name;
             next;
         }
@@ -366,38 +452,41 @@ sub test_all_modules_are_checked {
     }
     my $res = '';
     if (@not_in_test) {
-        $res .= "Modules not tested: " . join(", ", @not_in_test);
+        $res .= "Modules not tested: " . join( ", ", @not_in_test );
     }
-    if (keys %$in_test) {
+    if ( keys %$in_test ) {
         $res .= " " if $res;
-        $res .= "Modules not on HD: " . join(", ", keys %$in_test);
+        $res .= "Modules not on HD: " . join( ", ", keys %$in_test );
     }
     if ($res) {
-        ok( 0, $res); 
-    } 
+        ok( 0, $res );
+    }
     else {
-        ok( 1, "All modules are checked, " . scalar(@in_files) . " modules");
+        ok( 1, "All modules are checked, " . scalar(@in_files) . " modules" );
     }
 }
 
 sub _collect_modules {
     my ($path) = @_;
-    my @files = _internal_collect_modules($path, "");
-    my @files2 = map { s/^:://; s/\.pm$//; $_ } grep { m/\.pm$/ } @files;
+    my @files = _internal_collect_modules( $path, "" );
+    my @files2 = map { s/^:://; s/\.pm$//; $_ } grep {m/\.pm$/} @files;
     return @files2;
 }
 
 sub _internal_collect_modules {
-    my ($path, $prex) = @_;
+    my ( $path, $prex ) = @_;
     my @files;
     opendir my $dh, $path or die "can not open dir $path";
-    while (my $filename = readdir $dh) {
+    while ( my $filename = readdir $dh ) {
         next if $filename =~ /^\./;
-        if (-d File::Spec->catfile($path, $filename)) {
-            push @files, _internal_collect_modules(File::Spec->catfile($path, $filename), $prex . "::"  . $filename);
+        if ( -d File::Spec->catfile( $path, $filename ) ) {
+            push @files,
+                _internal_collect_modules(
+                File::Spec->catfile( $path, $filename ),
+                $prex . "::" . $filename );
             next;
         }
-        push @files, $prex . "::"  . $filename;
+        push @files, $prex . "::" . $filename;
     }
     closedir $dh;
     return @files;
@@ -405,9 +494,9 @@ sub _internal_collect_modules {
 
 sub _read_compile_test {
     my %modules;
-    open my $fh, "<". File::Spec->catfile($FindBin::Bin, "00-compile.t")
+    open my $fh, "<" . File::Spec->catfile( $FindBin::Bin, "00-compile.t" )
         or die "can not open 00-compile.t file";
-    while (my $line = <$fh>) {
+    while ( my $line = <$fh> ) {
         chomp $line;
         next unless $line =~ /use_ok\('([\w:]+)'\)/;
         my $module = $1;

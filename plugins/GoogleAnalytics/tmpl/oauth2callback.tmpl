@@ -1,0 +1,40 @@
+<mt:include name="dialog/header.tmpl">
+
+<mt:If name="error">
+<mtapp:statusmsg
+   id="generic-error"
+   class="error"
+   can_close="0">
+  <mt:var name="error">
+</mtapp:statusmsg>
+</mt:If>
+
+<script type="text/javascript">
+(function() {
+    var code = '<mt:Var name="code" />';
+
+    if (code) {
+        var $ = window.opener.jQuery;
+
+        var clientId     = $('#ga_client_id').val() || $('#ga_parent_client_id').val();
+        var clientSecret = $('#ga_client_secret').val();
+        var dialogUrl    = $('#ga_dialog_url').val();
+        var redirectUri  = encodeURIComponent($('#ga_redirect_uri').val());
+        var magicToken   = $('input[name="magic_token"]').val();
+
+        $.fn.mtDialog.close();
+        $.fn.mtDialog.open(
+            dialogUrl +
+            '&client_id=' + clientId +
+            '&client_secret=' + clientSecret +
+            '&redirect_uri=' + redirectUri +
+            '&code=<mt:Var name="code" />' +
+            '&magic_token=' + magicToken
+        );
+    }
+
+    window.close();
+})();
+</script>
+
+<mt:include name="dialog/footer.tmpl">

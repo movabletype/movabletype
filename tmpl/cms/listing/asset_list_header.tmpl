@@ -15,5 +15,14 @@
             </mtapp:statusmsg>
         </mt:if>
     </mt:if>
+    <mt:if name="thumb_dir_warnings">
+      <mt:setvar name="paths" value="<mt:loop name="thumb_dir_warnings"><mt:var name="path"><mt:unless name='__last__'>, </mt:unless></mt:loop>">
+      <mtapp:statusmsg
+         id="warning-<mt:var name="key">-thumb-path"
+         class="warning"
+         can_close="0">
+        <__trans phrase="Cannot write to '[_1]'. Thumbnail of items may not be displayed.", params="<mt:var name="paths">" escape="html">
+      </mtapp:statusmsg>
+    </mt:if>
 </mt:setvarblock>
 

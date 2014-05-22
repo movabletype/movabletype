@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -472,7 +472,7 @@ sub _migrate_permission_to_role {
         foreach my $key ( keys %MT::Upgrade::LegacyPerms ) {
             next
                 if $MT::Upgrade::LegacyPerms{$key}
-                    =~ m/^not_/;         # skip exclusion permissions
+                =~ m/^not_/;    # skip exclusion permissions
             $full_perm_mask |= $key;
         }
     }

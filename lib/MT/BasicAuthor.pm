@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -54,7 +54,7 @@ sub set_password {
 
         # Can use SHA512
         $crypt_sha
-            = '$6$' 
+            = '$6$'
             . $salt . '$'
             . Digest::SHA::sha512_base64( $salt . $pass );
     }
@@ -62,7 +62,7 @@ sub set_password {
 
         # Use SHA-1 algorism
         $crypt_sha
-            = '{SHA}' 
+            = '{SHA}'
             . $salt . '$'
             . MT::Util::perl_sha1_digest_hex( $salt . $pass );
     }

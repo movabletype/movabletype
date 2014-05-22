@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -29,7 +29,7 @@ our @EXPORT_OK
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
-    realpath canonicalize_path );
+    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi );
 
 {
     my $Has_Weaken;
@@ -88,7 +88,7 @@ sub iso2ts {
     my ( $blog, $iso ) = @_;
     return undef
         unless $iso
-            =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/;
+        =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/;
     my ( $y, $mo, $d, $h, $m, $s, $offset )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
     if ( $offset && !MT->config->IgnoreISOTimezones ) {
@@ -110,13 +110,36 @@ sub iso2ts {
 }
 
 sub ts2iso {
-    my ( $blog, $ts ) = @_;
+    my ( $blog, $ts, $with_timezone ) = @_;
     my ( $yr, $mo, $dy, $hr, $mn, $sc ) = unpack( 'A4A2A2A2A2A2', $ts );
-    $ts = Time::Local::timegm_nocheck( $sc, $mn, $hr, $dy, $mo - 1, $yr );
-    ( $sc, $mn, $hr, $dy, $mo, $yr ) = offset_time_list( $ts, $blog, '-' );
-    $yr += 1900;
-    $mo += 1;
-    sprintf( "%04d-%02d-%02dT%02d:%02d:%02dZ", $yr, $mo, $dy, $hr, $mn, $sc );
+
+    if ($with_timezone) {
+        if ( $blog && !ref($blog) ) {
+            require MT::Blog;
+            $blog = MT::Blog->load($blog);
+        }
+        my $offset
+            = ref $blog
+            ? $blog->server_offset
+            : MT->current_time_offset;
+
+        my ( $off_hour, $off_min ) = split( /\./, $offset );
+        $off_min = int( 6 * ( $off_min || 0 ) );
+        sprintf(
+            '%04d-%02d-%02dT%02d:%02d:%02d%s%02d:%02d',
+            $yr, $mo, $dy, $hr, $mn, $sc, $off_hour >= 0 ? '+' : '-',
+            abs($off_hour), $off_min
+        );
+    }
+    else {
+        $ts = Time::Local::timegm_nocheck( $sc, $mn, $hr, $dy, $mo - 1, $yr );
+        ( $sc, $mn, $hr, $dy, $mo, $yr )
+            = offset_time_list( $ts, $blog, '-' );
+        $yr += 1900;
+        $mo += 1;
+        sprintf( "%04d-%02d-%02dT%02d:%02d:%02dZ",
+            $yr, $mo, $dy, $hr, $mn, $sc );
+    }
 }
 
 sub ts2epoch {
@@ -621,14 +644,9 @@ sub offset_time {
             $offset
                 = $blog && $blog->server_offset ? $blog->server_offset : 0;
         }
-        else {
-            $offset = MT->config->TimeOffset;
-        }
-    }
-    else {
-        $offset = MT->config->TimeOffset;
     }
 
+    $offset = MT->current_time_offset unless defined $offset;
     $offset += 1 if $blog && ( localtime $ts )[8];
     $offset *= -1 if $dir && $dir eq '-';
     $ts += $offset * 3600;
@@ -1486,14 +1504,14 @@ sub discover_tb {
                 my ( $data, $res, $po ) = @_;
                 die
                     unless $c ne ''
-                        or $res->header('Content-Type') =~ m!^text/!;
+                    or $res->header('Content-Type') =~ m!^text/!;
                 $c .= $data;
             },
             16384
         );
         return unless $res->is_success;
     }
-    ( my $url_no_anchor = $url )           =~ s/#.*$//;
+    ( my $url_no_anchor = $url ) =~ s/#.*$//;
     ( my $url_no_host   = $url_no_anchor ) =~ s!^https?://.*/!!i;
     my (@items);
     while ( $c =~ m!(<rdf:RDF.*?</rdf:RDF>)!sg ) {
@@ -1504,13 +1522,13 @@ sub discover_tb {
         $perm_url_no_host =~ s/#.*$//;
         next
             unless $find_all
-                || $perm_url         eq $url
-                || $perm_url         eq $url_no_anchor
-                || $perm_url_no_host eq $url_no_host;
+            || $perm_url eq $url
+            || $perm_url eq $url_no_anchor
+            || $perm_url_no_host eq $url_no_host;
         ( my $inner = $rdf ) =~ s!^.*?<rdf:Description!!s;
         my $item = { permalink => $perm_url };
 
-        while ( $inner =~ /([\w:]+)="([^"]*)"/gs ) {            #"
+        while ( $inner =~ /([\w:]+)="([^"]*)"/gs ) {    #"
             $item->{$1} = $2;
         }
         $item->{ping_url} = $item->{'trackback:ping'};
@@ -2155,9 +2173,8 @@ sub start_background_task {
             my ( $a, $b, $c, $d, $e ) = @A;
             for ( 0 .. 79 ) {
                 $t = M(
-                      ( $F->( int( $_ / 20 ), $a, $b, $c, $d ) ) 
-                    + $e 
-                        + $W[$_]
+                      ( $F->( int( $_ / 20 ), $a, $b, $c, $d ) )
+                    + $e + $W[$_]
                         + $K[ $_ / 20 ]
                         + L $a,
                     5
@@ -2702,6 +2719,12 @@ sub to_json {
     return JSON::to_json( $value, $args );
 }
 
+sub from_json {
+    my ( $value, $args ) = @_;
+    require JSON;
+    return JSON::from_json( $value, $args );
+}
+
 sub break_up_text {
     my ( $text, $length ) = @_;
     return '' unless defined $text;
@@ -2835,6 +2858,64 @@ sub normalize_language {
         $language =~ s/_/-/;
     }
     $language;
+}
+
+sub clear_site_stats_widget_cache {
+    my ($site_id) = @_;
+
+    my $path;
+    if ($site_id) {
+        my @perms = MT::Permission->load( { blog_id => $site_id } );
+        foreach my $perm (@perms) {
+            my $user_id = $perm->author_id;
+            my $low_dir = sprintf( "%03d", $user_id % 1000 );
+            my $sub_dir = sprintf( "%03d", $site_id % 1000 );
+            my $top_dir = $site_id > $sub_dir ? $site_id - $sub_dir : 0;
+            my $support_path
+                = File::Spec->catdir( MT->app->support_directory_path,
+                'dashboard', 'stats', $top_dir, $sub_dir, $low_dir );
+            my $file = "data_" . $site_id . ".json";
+            my $path = File::Spec->catfile( $support_path, $file );
+            require MT::FileMgr;
+            my $fmgr = MT::FileMgr->new('Local');
+
+            if ( $fmgr->exists($path) ) {
+                $fmgr->delete($path) or return 0;
+            }
+        }
+    }
+    else {
+        my $dir = File::Spec->catdir( MT->app->support_directory_path,
+            'dashboard', 'stats' );
+        if ( -d $dir ) {
+            require File::Path;
+            File::Path::rmtree($dir);
+        }
+    }
+
+    return 1;
+}
+
+{
+    my $is_fast_cgi;
+
+    sub check_fast_cgi {
+        my ($param) = shift;
+
+        return $is_fast_cgi if defined $is_fast_cgi;
+        return $is_fast_cgi = $ENV{FAST_CGI} if defined $ENV{FAST_CGI};
+
+        my $not_fast_cgi = 0;
+        $not_fast_cgi ||= exists $ENV{$_}
+            for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
+        $is_fast_cgi = defined $param ? $param : ( !$not_fast_cgi );
+        if ($is_fast_cgi) {
+            eval 'require CGI::Fast;';
+            $is_fast_cgi = 0 if $@;
+        }
+
+        return $is_fast_cgi;
+    }
 }
 
 package MT::Util::XML::SAX::LexicalHandler;
@@ -3049,6 +3130,10 @@ in I<reference> to UTF-8 strings as JSON::to_json requires.
 It then encodes back to the charset specified in PublishCharset
 for MT to render json strings properly.
 
+=head2 from_json($json_text)
+
+Wrapper method to JSON::from_json.
+
 =head2 dir_separator
 
 Returns the character of directory separator.
@@ -3082,6 +3167,16 @@ If true, will format the language in the style "language_LOCALE" (ie: "en_US", "
 
 If true, will change any '_' in the language code to a '-', conforming
 it to the IETF RFC # 3066.
+
+=head2 clear_site_stats_widget_cache($site_id, $user_id)
+
+Clear caches for site stats dashboard widget.
+
+=head2 check_fast_cgi($param)
+
+Check whether MT runs under FastCGI. The result is kept while the process runs. If $ENV{FAST_CGI}
+is defined, the result is determined based on this value. If $param is defined, the result is
+determined by reference to this value.
 
 =back
 

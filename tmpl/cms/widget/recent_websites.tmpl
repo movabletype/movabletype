@@ -25,22 +25,29 @@
     </mt:if>
                     </li>
                     <li>
+    <mt:if name="can_access_to_entry_list">
+                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=<mt:var name="website_id">&amp;filter_key=current_website"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="website_entry_count">"></a>
+    <mt:else>
+                        <__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="website_entry_count">">
+    </mt:if>
+                    </li>
+                    <li>
     <mt:if name="can_access_to_page_list">
-                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=page&amp;blog_id=<mt:var name="website_id">&amp;filter_key=this_website"><__trans phrase="[quant,_1,page,pages]" params="<mt:var name="website_page_count">"></a>
+                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=page&amp;blog_id=<mt:var name="website_id">&amp;filter_key=current_website"><__trans phrase="[quant,_1,page,pages]" params="<mt:var name="website_page_count">"></a>
     <mt:else>
                         <__trans phrase="[quant,_1,page,pages]" params="<mt:var name="website_page_count">">
     </mt:if>
                     </li>
                     <li>
     <mt:if name="can_access_to_comment_list">
-                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="website_id">&amp;filter_key=this_website"><__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="website_comment_count">"></a>
+                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="website_id">&amp;filter_key=current_website"><__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="website_comment_count">"></a>
     <mt:else>
                         <__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="website_comment_count">">
     </mt:if>
                     </li>
     <mt:if name="can_access_to_template_list">
                     <li>
-                        <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="website_id">"><__trans phrase="Template"></a>
+                        <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="website_id">"><__trans phrase="Templates"></a>
                     </li>
     </mt:if>
     <mt:if name="can_access_to_blog_setting_screen">
@@ -53,11 +60,11 @@
                     </li>
                 </ul>
                 <ul id="website-<mt:var name="website_id">-action" class="blog-action">
+    <mt:if name="can_create_new_entry">
+                    <li><a class="button" href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="website_id">"><__trans phrase="New Entry"></a></li>
+    </mt:if>
     <mt:if name="can_create_new_page">
                     <li><a class="button" href="<mt:var name="script_url">?__mode=view&_type=page&amp;blog_id=<mt:var name="website_id">"><__trans phrase="New Page"></a></li>
-    </mt:if>
-    <mt:if name="can_create_blog">
-                    <li><a class="button" href="<mt:var name="script_url">?__mode=view&_type=blog&amp;blog_id=<mt:var name="website_id">"><__trans phrase="New Blog"></a></li>
     </mt:if>
                 </ul>
             </div>

@@ -156,7 +156,7 @@ TC.attachLoadEvent( init );
 </script>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl">
+<mt:include name="include/header.tmpl" id="header_include">
 
 <div id="asset" class="status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
   <form id="edit_asset" method="post" action="<mt:var name="script_url">">
@@ -183,6 +183,13 @@ TC.attachLoadEvent( init );
           <img src="<mt:var name="thumbnail_url" escape="html">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
         </div>
       </div>
+      <mt:elseif name="asset_type" eq="image">
+        <mtapp:statusmsg
+          id="warning-has-no-thumbnail"
+          class="warning"
+          can_close="0">
+          <__trans phrase="Error creating thumbnail file.">
+        </mtapp:statusmsg>
       </mt:if>
     </mt:if>
     <div class="asset-metadata">

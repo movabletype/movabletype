@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Comment;
@@ -43,12 +43,14 @@ sub edit {
             $param->{entry_title}
                 = substr( $param->{entry_title}, 0, $title_max_len ) . '...'
                 if $param->{entry_title}
-                    && length( $param->{entry_title} ) > $title_max_len;
+                && length( $param->{entry_title} ) > $title_max_len;
             $param->{entry_permalink}
                 = MT::Util::encode_html( $entry->permalink );
             unless ( $param->{has_publish_access} ) {
                 $param->{has_publish_access}
-                    = $app->can_do('edit_comment_status_of_own_entry') ? 1 : 0
+                    = $app->can_do('edit_comment_status_of_own_entry')
+                    ? 1
+                    : 0
                     if $app->user->id == $entry->author_id;
             }
         }
@@ -384,12 +386,12 @@ sub empty_junk {
     if ($blog) {
         push @$blog_ids, $blog->id
             if $user->permissions( $blog->id )
-                ->can_do('delete_junk_comments');
+            ->can_do('delete_junk_comments');
         if ( !$blog->is_blog ) {
             foreach my $b ( @{ $blog->blogs } ) {
                 push @$blog_ids, $b->id
                     if $user->permissions( $b->id )
-                        ->can_do('delete_junk_comments');
+                    ->can_do('delete_junk_comments');
             }
         }
         return $app->permission_denied() unless @$blog_ids;
@@ -603,6 +605,23 @@ window.setTimeout("init()", 1500);
 SPINNER
 }
 
+sub can_do_reply {
+    my $app = shift;
+    my ($entry) = @_;
+
+    unless ( $app->can_do('reply_comment_from_cms') ) {
+        my $user  = $app->user;
+        my $perms = $app->{perms};
+        return unless $perms;
+
+        return $app->permission_denied()
+            unless $perms->can_edit_entry( $entry, $user, 1 )
+            ;    # check for publish_post
+    }
+
+    1;
+}
+
 sub do_reply {
     my $app = shift;
 
@@ -630,15 +649,8 @@ sub do_reply {
         $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
         unless $blog;
 
-    unless ( $app->can_do('reply_comment_from_cms') ) {
-        my $user  = $app->user;
-        my $perms = $app->{perms};
-        return unless $perms;
-
-        return $app->permission_denied()
-            unless $perms->can_edit_entry( $entry, $user, 1 )
-        ;    # check for publish_post
-    }
+    can_do_reply( $app, $entry )
+        or return;
 
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec
@@ -670,7 +682,8 @@ sub do_reply {
                 or return $app->publish_error( "Publishing failed. [_1]",
                 $app->errstr );
             $app->_send_comment_notification( $comment, q(), $entry,
-                $app->model('blog')->load( $param->{blog_id} ), $app->user );
+                $app->model('blog')->load( $param->{blog_id} ),
+                $app->user );
         }
     );
     return $app->build_page( 'dialog/comment_reply.tmpl',
@@ -763,7 +776,7 @@ sub dialog_post_comment {
     unless ( $app->can_do('reply_comment_from_cms') ) {
         return $app->permission_denied()
             unless $perms->can_edit_entry( $entry, $user, 1 )
-        ;    # check for publish_post
+            ;    # check for publish_post
     }
 
     my $blog = $parent->blog
@@ -823,9 +836,52 @@ sub can_view {
     }
 }
 
+sub save_filter {
+    my ( $cb, $app, $obj, $original ) = @_;
+
+    # $obj is passed only via MT::App::DataAPI.
+    if ($obj) {
+        if ( !$obj->id ) {
+            return $app->errtrans("Comments are not allowed on this entry.")
+                unless ( $app->config->AllowComments
+                && $obj->entry->allow_comments );
+
+            return $app->errtrans(
+                'You cannot create a comment for an unpublished entry.')
+                if $obj->entry->status != MT::Entry::RELEASE();
+
+            my $parent = $obj->parent;
+            if ( $parent && !$parent->is_published ) {
+                return $app->errtrans(
+                    'You cannot reply to unpublished comment.');
+            }
+        }
+    }
+
+    1;
+}
+
 sub can_save {
-    my ( $eh, $app, $id ) = @_;
-    return 0 unless $id;    # Can't create new comments here
+    my ( $eh, $app, $id, $obj, $original ) = @_;
+    if ( !$id ) {
+        if ( $app->id eq 'data_api' ) {
+            my $cfg          = $app->config;
+            my $registration = $cfg->CommenterRegistration;
+            return
+                   $app->can_do('post_comment')
+                || $app->can_do('manage_feedback')
+                || MT::Permission->can_edit_entry( $obj->entry, $app->user,
+                1 )
+                || (
+                   $registration
+                && $registration->{Allow}
+                && (   $cfg->ExternalUserManagement
+                    || $app->blog->allow_commenter_regist )
+                );
+        }
+
+        return 0;    # Can't create new comments here by default
+    }
     return 1 if $app->user->is_superuser();
 
     return 1
@@ -838,9 +894,12 @@ sub can_save {
     }
     elsif ( $app->can_do('edit_own_entry_comment_without_status') ) {
         return ( $c->entry->author_id == $app->user->id )
-            && ( ( $c->is_junk && ( 'junk' eq $app->param('status') ) )
-            || ( $c->is_moderated && ( 'moderate' eq $app->param('status') ) )
-            || ( $c->is_published && ( 'publish'  eq $app->param('status') ) )
+            && (
+              $obj ? $obj->get_status_text eq $original->get_status_text
+            : $c->is_junk      ? 'junk' eq $app->param('status')
+            : $c->is_moderated ? 'moderate' eq $app->param('status')
+            : $c->is_published ? 'publish' eq $app->param('status')
+            :                    1
             );
     }
     else {
@@ -887,19 +946,25 @@ sub pre_save {
     my $status = $app->param('status');
     if ( $status eq 'publish' ) {
         $obj->approve;
-        if ( $original->junk_status != $obj->junk_status ) {
-            $app->run_callbacks( 'handle_ham', $app, $obj );
-        }
     }
     elsif ( $status eq 'moderate' ) {
         $obj->moderate;
     }
     elsif ( $status eq 'junk' ) {
         $obj->junk;
-        if ( $original->junk_status != $obj->junk_status ) {
-            $app->run_callbacks( 'handle_spam', $app, $obj );
+    }
+
+    if ( $original->junk_status != $obj->junk_status ) {
+        my $current_status_text = $obj->get_status_text;
+        my $callback
+            = $current_status_text eq 'Approved' ? 'handle_ham'
+            : $current_status_text eq 'Spam'     ? 'handle_spam'
+            :                                      '';
+        if ($callback) {
+            $app->run_callbacks( $callback, $app, $obj );
         }
     }
+
     return 1;
 }
 
@@ -1279,7 +1344,7 @@ sub build_comment_table {
         $row->{author_display}
             = substr( $row->{author_display}, 0, $author_max_len ) . '...'
             if $row->{author_display}
-                && length( $row->{author_display} ) > $author_max_len;
+            && length( $row->{author_display} ) > $author_max_len;
         $row->{comment_short}
             = (
             substr( $obj->text(), 0, $trim_length )
@@ -1309,14 +1374,14 @@ sub build_comment_table {
         $row->{entry_title}       = (
               defined( $entry->title ) ? $entry->title
             : defined( $entry->text )  ? $entry->text
-            : ''
+            :                            ''
         );
         $row->{entry_title} = $app->translate('(untitled)')
             if $row->{entry_title} eq '';
         $row->{entry_title}
             = substr( $row->{entry_title}, 0, $title_max_len ) . '...'
             if $row->{entry_title}
-                && length( $row->{entry_title} ) > $title_max_len;
+            && length( $row->{entry_title} ) > $title_max_len;
         $row->{commenter_id} = $obj->commenter_id() if $obj->commenter_id();
         my $cmntr;
 

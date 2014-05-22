@@ -110,7 +110,7 @@ subtest 'Regular JPEG image with wrong extension' => sub {
         'Reported that the extension was changed'
     );
 
-    is( $put_args->[1], 't/site/archives/test.jpg', 'Uploaded file path' );
+    is( $put_args->[1], 't/site/archives/wrong-extension-test.jpg', 'Uploaded file path' );
     my $created_asset
         = MT::Asset->load( { id => { '>' => $newest_asset->id } },
         { sort => [ { column => 'id', desc => 'DESC' } ], } );

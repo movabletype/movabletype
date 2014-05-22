@@ -3,9 +3,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
 <head>
     <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <$mt:Var name="comments_per_page" value="50"$>
     <mt:EntryPrevious><link rel="prev bookmark" href="<$mt:EntryPermalink$>" title="<$mt:EntryTitle encode_html="1"$>" /></mt:EntryPrevious>
     <mt:EntryNext><link rel="next bookmark" href="<$mt:EntryPermalink$>" title="<$mt:EntryTitle encode_html="1"$>" /></mt:EntryNext>
     <$mt:EntryTrackbackData$>
+    <mt:If tag="EntryCommentCount" gt="$comments_per_page">
+    <script type="text/javascript">
+        MT.entryID = <$mt:EntryID$>;
+        MT.commentsPerPage = <$mt:Var name="comments_per_page"$>;
+        MT.entryCommentCount = <$mt:EntryCommentCount$>;
+        MT.commentIds = [<mt:Comments sort_order="ascend" glue=","><mt:CommentID></mt:Comments>];
+    </script>
+    </mt:If>
     <title><$mt:EntryTitle encode_html="1"$> - <$mt:BlogName encode_html="1"$></title>
 </head>
 <body id="<$mt:WebsiteThemeID$>" class="mt-entry-archive <$mt:Var name="page_layout"$>">
@@ -61,7 +70,7 @@
                                     <div class="entry-categories">
                                         <h4><__trans phrase="Categories"><span class="delimiter">:</span></h4>
                                         <ul>
-                                            <li><mt:EntryCategories glue='<span class="delimiter">,</span></li> <li class="entry-category">'><a href="<$mt:CategoryArchiveLink$>" rel="tag"><$mt:CategoryLabel$></a></mt:EntryCategories></li>
+                                            <li class="entry-category"><mt:EntryCategories glue='<span class="delimiter">,</span></li> <li class="entry-category">'><a href="<$mt:CategoryArchiveLink$>" rel="tag"><$mt:CategoryLabel$></a></mt:EntryCategories></li>
                                         </ul>
                                     </div>
     </mt:If>

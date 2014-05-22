@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::CMS::Common;
@@ -10,9 +10,16 @@ use strict;
 use MT::Util qw( format_ts offset_time_list relative_date remove_html);
 
 sub save {
-    my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $app             = shift;
+    my $q               = $app->param;
+    my $type            = $q->param('_type');
+    my $id              = $q->param('id');
+    my @types_for_event = ($type);
+
+    if ( $id && $type eq 'website' ) {
+        $type = 'blog';
+        unshift @types_for_event, $type;
+    }
 
     return $app->errtrans("Invalid request.")
         unless $type;
@@ -26,10 +33,11 @@ sub save {
         return $app->forward($save_mode);
     }
 
-    return $app->errtrans("Invalid request.")
-        if is_disabled_mode( $app, 'save', $type );
+    for my $t (@types_for_event) {
+        return $app->errtrans("Invalid request.")
+            if is_disabled_mode( $app, 'save', $t );
+    }
 
-    my $id = $q->param('id');
     $q->param( 'allow_pings', 0 )
         if ( $type eq 'category' ) && !defined( $q->param('allow_pings') );
 
@@ -46,9 +54,12 @@ sub save {
                 if !$perms && $id;
         }
 
-        $app->run_callbacks( 'cms_save_permission_filter.' . $type,
-            $app, $id )
-            || return $app->permission_denied();
+        for my $t (@types_for_event) {
+            return $app->permission_denied()
+                unless $app->run_callbacks(
+                'cms_save_permission_filter.' . $t,
+                $app, $id );
+        }
     }
 
     my $param = {};
@@ -71,8 +82,11 @@ sub save {
         }
     }
 
-    my $filter_result
-        = $app->run_callbacks( 'cms_save_filter.' . $type, $app );
+    my $filter_result = 1;
+    for my $t (@types_for_event) {
+        $filter_result
+            &&= $app->run_callbacks( 'cms_save_filter.' . $t, $app );
+    }
 
     if ( !$filter_result ) {
         my %param = (%$param);
@@ -151,8 +165,8 @@ sub save {
 
             $values{site_path} = $app->param('site_path_absolute')
                 if !$app->config->BaseSitePath
-                    && $app->param('use_absolute')
-                    && $app->param('site_path_absolute');
+                && $app->param('use_absolute')
+                && $app->param('site_path_absolute');
         }
 
         unless ( $author->is_superuser
@@ -295,6 +309,17 @@ sub save {
             my $url = $values{site_url};
             $values{site_url} = $url;
         }
+
+        my $cfg_screen = $app->param('cfg_screen') || '';
+
+        if ( $cfg_screen eq 'cfg_prefs' ) {
+            $values{publish_empty_archive}
+                = $q->param('publish_empty_archive') ? 1 : 0;
+        }
+
+        if ( $obj && $cfg_screen eq 'cfg_web_services' ) {
+            run_web_services_save_config_callbacks( $app, $obj );
+        }
     }
 
     if ( $type eq 'entry' || $type eq 'page' ) {
@@ -328,10 +353,12 @@ sub save {
         $obj->modified_by( $author->id ) if $obj->id;
     }
 
-    unless (
-        $app->run_callbacks( 'cms_pre_save.' . $type, $app, $obj, $original )
-        )
-    {
+    $filter_result = 1;
+    for my $t (@types_for_event) {
+        $filter_result &&= $app->run_callbacks( 'cms_pre_save.' . $t,
+            $app, $obj, $original );
+    }
+    unless ($filter_result) {
         if ( 'blog' eq $type ) {
             my $meth = $q->param('cfg_screen');
             if ( $meth && $app->handlers_for_mode($meth) ) {
@@ -358,8 +385,11 @@ sub save {
         $app->translate( "Saving object failed: [_1]", $obj->errstr ) );
 
     # Now post-process it.
-    $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $original )
-        or return $app->error( $app->errstr() );
+    for my $t (@types_for_event) {
+        return $app->error( $app->errstr() )
+            unless $app->run_callbacks( 'cms_post_save.' . $t,
+            $app, $obj, $original );
+    }
 
     # Save NWC settings and revision settings
     my $screen = $q->param('cfg_screen') || '';
@@ -538,11 +568,34 @@ sub save {
     $app->call_return;
 }
 
+sub run_web_services_save_config_callbacks {
+    my ($app) = @_;
+
+    my $web_services = $app->registry('web_services');
+    for my $k (%$web_services) {
+        my $callback = $web_services->{$k}{save_config}
+            or next;
+
+        if ( ref $callback eq 'HASH' ) {
+            $callback = MT->handler_to_coderef( $callback->{code} );
+        }
+
+        $callback->( $app, @_ );
+    }
+}
+
 sub edit {
     my $app = shift;
 
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $q               = $app->param;
+    my $type            = $q->param('_type');
+    my $id              = $q->param('id');
+    my @types_for_event = ($type);
+
+    if ( $id && $type eq 'website' ) {
+        $type = 'blog';
+        unshift @types_for_event, $type;
+    }
 
     return $app->errtrans("Invalid request.")
         unless $type;
@@ -556,8 +609,10 @@ sub edit {
         return $app->forward( $edit_mode, @_ );
     }
 
-    return $app->errtrans("Invalid request.")
-        if is_disabled_mode( $app, 'edit', $type );
+    for my $t (@types_for_event) {
+        return $app->errtrans("Invalid request.")
+            if is_disabled_mode( $app, 'edit', $t );
+    }
 
     my %param = eval { $_[0] ? %{ $_[0] } : (); };
     die Carp::longmess if $@;
@@ -598,7 +653,6 @@ sub edit {
 
     $param{autosave_frequency} = $app->config->AutoSaveFrequency;
 
-    my $id     = $q->param('id');
     my $perms  = $app->permissions;
     my $author = $app->user;
     my $cfg    = $app->config;
@@ -630,13 +684,19 @@ sub edit {
         }
     );
 
-    $app->run_callbacks( 'cms_object_scope_filter.' . $type, $app, $id )
-        || return $app->return_to_dashboard( redirect => 1 );
+    for my $t (@types_for_event) {
+        return $app->return_to_dashboard( redirect => 1 )
+            unless $app->run_callbacks( 'cms_object_scope_filter.' . $t,
+            $app, $id );
+    }
 
     if ( !$author->is_superuser ) {
-        $app->run_callbacks( 'cms_view_permission_filter.' . $type,
-            $app, $id, $obj_promise )
-            || return $app->permission_denied();
+        for my $t (@types_for_event) {
+            return $app->permission_denied()
+                unless $app->run_callbacks(
+                'cms_view_permission_filter.' . $t,
+                $app, $id, $obj_promise );
+        }
     }
     my $obj;
     my $blog;
@@ -742,22 +802,7 @@ sub edit {
 
     if ( $type eq 'website' || $type eq 'blog' ) {
         require MT::Theme;
-        my $themes = MT::Theme->load_all_themes;
-        $param{theme_loop} = [
-            map {
-                my ( $errors, $warnings ) = $_->validate_versions;
-                {   key      => $_->{id},
-                    label    => $_->label,
-                    errors   => @$errors ? $errors : undef,
-                    warnings => @$warnings ? $warnings : undef,
-                }
-                }
-                grep {
-                       !defined $_->{class}
-                    || $_->{class} eq 'both'
-                    || $_->{class} eq $type
-                } values %$themes
-        ];
+        $param{theme_loop} = MT::Theme->load_theme_loop($type);
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
         my $limit = File::Spec->catdir( $cfg->BaseSitePath, 'PATH' );
         $limit =~ s/PATH$//;
@@ -765,8 +810,11 @@ sub edit {
         $param{'sitepath_limited'}       = $cfg->BaseSitePath;
     }
 
-    my $res = $app->run_callbacks( 'cms_edit.' . $type, $app, $id, $obj,
-        \%param );
+    my $res = 1;
+    for my $t (@types_for_event) {
+        $res &&= $app->run_callbacks( 'cms_edit.' . $t, $app, $id, $obj,
+            \%param );
+    }
     if ( !$res ) {
         return $app->error( $app->callback_errstr() );
     }
@@ -848,9 +896,8 @@ sub list {
     } MT::Component->select;
 
     my @list_headers;
-    my $core_include
-        = File::Spec->catfile( MT->config->TemplatePath, $app->{template_dir},
-        'listing', $type . '_list_header.tmpl' );
+    my $core_include = File::Spec->catfile( MT->config->TemplatePath,
+        $app->{template_dir}, 'listing', $type . '_list_header.tmpl' );
     push @list_headers,
         {
         filename  => $core_include,
@@ -911,7 +958,8 @@ sub list {
             }
         }
         foreach my $p (@act) {
-            $allowed = 1, last
+            $allowed = 1,
+                last
                 if $app->user->can_do(
                 $p,
                 at_least_one => 1,
@@ -1055,9 +1103,9 @@ sub list {
         my $id = $prop->id;
         my $disp = $prop->display || 'optional';
         my $show
-            = $disp eq 'force' ? 1
-            : $disp eq 'none'  ? 0
-            : scalar %cols ? $cols{$id}
+            = $disp eq 'force'   ? 1
+            : $disp eq 'none'    ? 0
+            : scalar %cols       ? $cols{$id}
             : $disp eq 'default' ? 1
             :                      0;
 
@@ -1071,8 +1119,8 @@ sub list {
                 push @subfields,
                     {
                       display => $sdisp eq 'force' ? 1
-                    : $sdisp eq 'none' ? 0
-                    : scalar %cols ? $cols{ $id . '.' . $sub->{class} }
+                    : $sdisp eq 'none'    ? 0
+                    : scalar %cols        ? $cols{ $id . '.' . $sub->{class} }
                     : $sdisp eq 'default' ? 1
                     : 0,
                     class      => $sub->{class},
@@ -1448,7 +1496,7 @@ sub filtered_list {
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
     my @cols = grep {/^[^\.]+$/} split( ',', $cols );
     my @subcols = grep {/\./} split( ',', $cols );
-    my $class = MT->model( $setting->{object_type}) || MT->model($ds);
+    my $class = MT->model( $setting->{object_type} ) || MT->model($ds);
     if ( $class->has_column('id') ) {
         unshift @cols,    '__id';
         unshift @subcols, '__id';

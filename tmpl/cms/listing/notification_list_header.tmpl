@@ -185,27 +185,26 @@
         setCreateMode();
         return false;
     });
-
-    jQuery('.start-edit').live('click', function () {
+    
+    jQuery('#listing-table')
+      .on('click','.start-edit',function(){
         jQuery(this).attr('href').match(/#(\d+)/);
         var id = RegExp.$1;
         edit_note(id);
         return false;
-    });
-
-    jQuery('.cancel-edit').live('click', function () {
+      })
+      .on('click','.cancel-edit',function(){
         jQuery(this).attr('href').match(/#(\d+)/);
         var id = RegExp.$1;
         cancel_edit(id);
         return false;
-    });
-
-    jQuery('.submit-note').live('click', function () {
+      })
+      .on('click','.submit-note',function(){
         jQuery(this).attr('href').match(/#(\d+)/);
         var id = RegExp.$1;
         submit_edit(id);
         return false;
-    });
+      });
 
 </mt:setvarblock>
 

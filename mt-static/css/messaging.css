@@ -1,4 +1,95 @@
-/* Status Message */
+/* #Message.css
+
+message.css is the set of styles for status message. User can remove messages with close link at the right side of it.
+
+## Message Type
+
+* msg-success
+* msg-alert
+* msg-error
+* msg-info
+* msg-publishing
+
+```
+<div class="msg msg-success">
+  <p class="msg-text">Success: Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
+</div>
+
+<div class="msg msg-alert">
+  <p class="msg-text">Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
+</div>
+
+<div class="msg msg-error">
+  <p class="msg-text">Error: Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
+</div>
+
+<div class="msg msg-info">
+  <p class="msg-text">Info: Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
+</div>
+
+<div class="msg msg-publishing">
+  <p class="msg-text">On Publishing: Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
+</div>
+```
+
+## Close-Set
+msg class defaultly has margin top and bottom. If you want to remove margins, plus .full class
+
+```
+<div class="msg msg-success full">
+  <p class="msg-text">Success: Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
+</div>
+
+<div class="msg msg-alert full">
+  <p class="msg-text">Warning: Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
+</div>
+```
+
+# In-message List
+
+```
+<div class="msg msg-warning">
+  <ul>
+    <li><label>Lorem ipsum dolor sit amet, consectetur adipisicing elit. </label> <button class="button">Save</button></li>
+    <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. </li>
+  </ul>
+  <span class="action-icon icon16 action-icon icon-remove clickable close-link">Close</span>
+</div>
+```
+
+# Validation Error
+
+<h3>Inline Error Message</h3>
+
+validate-error styles strings like the following.
+
+```
+<div class="field-content">
+  <input type="text" class="text med error">
+  <div>
+    <label class="validate-error msg-error">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </label>
+  </div>
+</div>
+```
+
+msg-balloon shows error message like balloon.
+
+```
+<span class="validate-error-wrapper" style="position: relative; white-space: nowrap;">
+  <input type="text" name="category_label" class="text short label error">
+  <label style="position: absolute; left: 171.5px; top: -21px; z-index: 200;" class="msg-error msg-balloon validate-error">Lorem ipsum dolor sit amet</label>
+</span>
+```
+
+*/
+
 .msg {
     position: relative;
     margin: 10px 0;
@@ -10,17 +101,17 @@
     border-radius: 0;
 }
 .msg-success {
-    background-color: #cee4ae;
+    background-color: #d8f8cd;
 }
 .msg-alert,
 .msg-warning {
-    background-color: #fef263;
+    background-color: #f3fcaf;
 }
 .msg-error {
-    background-color: #f6bfbc;
+    background-color: #ffd4d1;
 }
 .msg-info {
-    background-color: #e6eae3;
+    background-color: #cae5f8;
 }
 .msg-publishing {
     margin: 15px 0 0;
@@ -49,17 +140,14 @@
     margin-top: -8px;
 }
 
-/* - for Permission Message */
 .msg .detail {
     margin: 10px 0 0;
 }
 
-/* - for Widget Content */
 p.zero-state {
     margin-bottom: 0;
 }
 
-/* - Generic Website Message */
 #is-generic-website {
     margin: 0;
     padding: 0.75em 0;
@@ -73,13 +161,11 @@ p.zero-state {
     font-size: 95%;
 }
 
-/* - Junk Message */
 #junk-message .junk-score {
     font-weight: bold;
     margin: 0 0 0.5em;
 }
 
-/* - Validation */
 .dialog-msg-error {
     display: block;
 }
@@ -102,13 +188,16 @@ p.zero-state {
     filter: alpha(opacity=80);
 }
 
-/* - Debug Panel Messages */
 .debug-panel {
     position: absolute;
     width: 100%;
     border-top: 1px solid #c8c2be;
     background-color: #f6bfbc;
     text-align: left;
+}
+.debug-panel.dialog-with-actions-bar {
+    position: static;
+    padding-bottom: 45px;
 }
 .debug-panel h3 {
     padding: 5px;
@@ -133,4 +222,29 @@ p.zero-state {
 
 .debug-panel-inner li:hover {
     background-color: #f2a0a1;
+}
+
+#notification_dashboard .widget-content {
+    padding: 10px 0 0 0;
+}
+#notification_dashboard li {
+    display: block;
+    padding: 0 10px;
+}
+#notification_dashboard .item {
+    display: block;
+}
+#notification_dashboard .clickable:hover {
+    cursor: pointer;
+    color: #507ea4;
+}
+#notification_dashboard .detail {
+    display: block;
+    border-bottom: 1px solid #c0c6c9;
+    padding: 0.5em 0.5em 0.5em 14px;
+    color: #7b7c7d;
+}
+
+#notification_dashboard li:last-child .detail {
+    border-bottom: none;
 }

@@ -1,0 +1,30 @@
+/*
+# MT Style Guide
+
+Documentation for style sheet using MT
+
+MT CMS imports the following style sheet from mt-static/styles.css.
+
+* [reset.css](#/style/reset.css)
+* [structure.css](#/style/structure.css)
+* [form.css](#/style/form.css)
+* [listing.css](#/style/listing.css)
+* [sortable.css](#/style/sortable.css)
+* [dialog.css](#/style/dialog.css)
+* [messaging.css](#/style/messaging.css)
+* [utilities.css](#/style/utilities.css)
+* [icons.css](#/style/icons.css)
+
+[chromeless.css](#/style/chromeless.css) is the special style sheet for chromeless screen (e.g. login screen, upgrade screen and install wizard)
+*/
+
+@import url("reset.css");
+@import url("structure.css");
+@import url("form.css");
+@import url("listing.css");
+@import url("sortable.css");
+@import url("dialog.css");
+@import url("messaging.css");
+@import url("utilities.css");
+@import url("icons.css");
+@import url("chromeless.css");

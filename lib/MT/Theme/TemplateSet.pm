@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::Theme::TemplateSet;
@@ -235,7 +235,7 @@ sub export_template {
         my $type = $tmpl->type;
         return
               $known_section{$type} ? $type
-            : $type eq 'custom' ? 'module'
+            : $type eq 'custom'     ? 'module'
             : $type eq 'individual'
             ? ( $tmpl->identifier eq 'page' ? 'page' : 'individual' )
             : $type eq 'page'     ? 'page'

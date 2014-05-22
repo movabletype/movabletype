@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -278,7 +278,7 @@ sub save_config {
             my $h = $settings->{$_};
             foreach my $k ( keys %$h ) {
                 $data
-                    .= $mgr->{__settings}{$_}{key} . ' ' 
+                    .= $mgr->{__settings}{$_}{key} . ' '
                     . $k . '='
                     . $h->{$k} . "\n";
             }

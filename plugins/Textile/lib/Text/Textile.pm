@@ -525,7 +525,7 @@ sub textile {
                 }
                 if ( $params =~ m/{([^}]+)}/ ) {
                     $style = $1;
-                    $style  =~ s/\n/ /g;
+                    $style =~ s/\n/ /g;
                     $params =~ s/{[^}]+}//g;
                 }
                 if (   $params =~ m/\(([A-Za-z0-9_\-\ ]+?)(?:\#(.+?))?\)/
@@ -1014,7 +1014,7 @@ sub format_paragraph {
         $text =~ s!&lt;textile#(\d+)&gt;!<textile#$1>!g;
         $text =~ s!&amp;quot;!&#34;!g;
         $text =~ s!&amp;(([a-z]+|#\d+);)!&$1!g;
-        $text =~ s!&quot;!"!g;                             #"
+        $text =~ s!&quot;!"!g;    #"
 
     # These create markup with entities. Do first and 'save' result for later:
     # "text":url -> hyperlink
@@ -1530,7 +1530,7 @@ sub format_block {
 
     if ($filters) {
         my $filtreg = quotemeta($filters);
-        $str     =~ s/^$filtreg//;
+        $str =~ s/^$filtreg//;
         $filters =~ s/^\|//;
         $filters =~ s/\|$//;
         my @filters = split /\|/, $filters;
@@ -1635,7 +1635,7 @@ sub format_span {
     }
 
     return
-          $pre 
+          $pre
         . $tag . '>'
         . $self->format_paragraph( text => $text )
         . '</span>'

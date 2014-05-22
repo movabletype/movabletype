@@ -34,7 +34,7 @@ GetOptions(
     'user=s'     => \$username,
     'pass=s'     => \$password,
     'silent'     => \$silent,
-    'uaage'      => \$usage,
+    'usage'      => \$usage,
 );
 
 # Construct MT object

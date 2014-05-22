@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -13,6 +13,8 @@ use File::Basename;
 use File::Spec;
 
 @MT::BackupRestore::BackupFileHandler::ISA = qw(XML::SAX::Base);
+
+my $is_mswin32 = $^O eq 'MSWin32' ? 1 : 0;
 
 sub new {
     my $class   = shift;
@@ -46,9 +48,8 @@ sub start_element {
         die MT->translate(
             'The uploaded file was not a valid Movable Type backup manifest file.'
             )
-            if !(      ( 'movabletype' eq $name )
-                    && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns )
-            );
+            if !( ( 'movabletype' eq $name )
+            && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns ) );
 
         $self->{backup_what} = $attrs->{'{}backup_what'}->{Value};
 
@@ -118,6 +119,23 @@ sub start_element {
                 my %column_data
                     = map { $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value} }
                     keys(%$attrs);
+
+                # Replace directory separators in $asset->file_path properly.
+                if ( $class =~ /^MT::Asset/ ) {
+                    my ($separator)
+                        = ( $column_data{file_path} =~ m!^%\w(/|\\)! );
+                    if ( $separator eq '/' && $is_mswin32 ) {
+
+                        # *nix => Windows
+                        $column_data{file_path} =~ s!/!\\!g;
+                    }
+                    elsif ( $separator eq '\\' && !$is_mswin32 ) {
+
+                        # Windows => *nix
+                        $column_data{file_path} =~ s!\\!/!g;
+                    }
+                }
+
                 my $obj;
                 if ( 'author' eq $name ) {
                     $obj = $class->load( { name => $column_data{name} } );
@@ -222,8 +240,8 @@ sub start_element {
                     }
                 }
                 elsif ( 'filter' eq $name ) {
-                    if ($objects->{ "MT::Author#"
-                                . $column_data{author_id} } )
+                    if ( $objects->{ "MT::Author#" . $column_data{author_id} }
+                        )
                     {
                         $obj = $class->load(
                             {   author_id => $column_data{author_id},
@@ -329,12 +347,16 @@ sub start_element {
                         $obj->column( 'external_id',
                             $realcolumn_data{external_id} )
                             if $name eq 'author'
-                                && defined $realcolumn_data{external_id};
+                            && defined $realcolumn_data{external_id};
                         foreach my $metacol ( keys %metacolumns ) {
                             next
                                 if ( 'vclob' eq $metacolumns{$metacol} )
                                 || ( 'vblob' eq $metacolumns{$metacol} );
-                            $obj->$metacol( $column_data{$metacol} );
+                            $obj->$metacol(
+                                $metacolumns{$metacol} =~ /^vchar/
+                                ? _decode( $column_data{$metacol} )
+                                : $column_data{$metacol}
+                            );
                         }
 
                         # Restore modulesets
@@ -437,9 +459,9 @@ sub end_element {
             my $old_id = $obj->id;
             unless (
                 (      ( 'author' eq $name )
-                    || ( 'template'   eq $name )
-                    || ( 'filter'     eq $name )
-                    || ( 'image'      eq $name )
+                    || ( 'template' eq $name )
+                    || ( 'filter' eq $name )
+                    || ( 'image' eq $name )
                     || ( 'plugindata' eq $name )
                 )
                 && ( exists $self->{loaded} )
@@ -463,7 +485,8 @@ sub end_element {
                     $self->{callback}->("\n");
                     $self->{callback}->(
                         MT->translate(
-                            "Tag '[_1]' exists in the system.", $obj->name
+                            "Tag '[_1]' exists in the system.",
+                            $obj->name
                         )
                     );
                 }
@@ -577,9 +600,10 @@ sub end_element {
                 # when it was found in the database.
 
                 if ( $obj->key !~ /^configuration:blog:(\d+)$/i ) {
-                    if ( my $obj
-                        = MT->model('plugindata')
-                        ->load( { key => $obj->key, } ) )
+                    if (my $obj = MT->model('plugindata')->load(
+                            { key => $obj->key, plugin => $obj->plugin }
+                        )
+                        )
                     {
                         $exists = 1;
                         $self->{callback}->("\n");

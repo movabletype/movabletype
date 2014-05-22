@@ -6,10 +6,8 @@
   </mt:if>
   <ul class="multiple-selection">
   <mt:if name="template_type" eq="archive">
-    <mt:if name="is_blog">
     <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry"></a></li>
     <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Entry Listing"></a></li>
-    </mt:if>
     <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Page"></a></li>
   <mt:elseif name="template_type" eq="module">
     <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create template module"></a></li>

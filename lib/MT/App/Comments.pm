@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -282,9 +282,9 @@ sub do_login {
                     ) unless $commenter;
                 }
                 else {
-                    return $app->signup(
-                        error => $app->translate('You need to sign up first.')
-                    ) unless $commenter;
+                    return $app->signup( error =>
+                            $app->translate('You need to sign up first.') )
+                        unless $commenter;
                 }
             }
         }
@@ -469,8 +469,8 @@ sub _send_signup_confirmation {
     my $subject  = $app->translate('Movable Type Account Confirmation');
     my $cgi_path = $app->config('CGIPath');
     $cgi_path .= '/' unless $cgi_path =~ m!/$!;
-    my $url 
-        = $cgi_path 
+    my $url
+        = $cgi_path
         . $cfg->CommentScript
         . $app->uri_params(
         'mode' => 'do_register',
@@ -706,7 +706,7 @@ sub generate_captcha {
     $pi =~ s!^/!!;
     my $cmtscript = $app->config('CommentScript');
     $pi =~ s!.*\Q$cmtscript\E/!!;
-    $pi =~ s,captcha/,,;            #remove prefix..
+    $pi =~ s,captcha/,,;    #remove prefix..
     my ( $blog_id, $token ) = split '/', $pi;
     unless ( $blog_id && $token ) {
         $app->error('Required parameter was missing.');
@@ -1642,7 +1642,7 @@ TRY: {
             my $can_comment = $banned ? 0 : 1;
             $can_comment = 0
                 unless $blog->allow_unreg_comments
-                    || $blog->allow_reg_comments;
+                || $blog->allow_reg_comments;
             $out->{can_comment} = $can_comment;
             $out->{can_post}
                 = ( $blog_perms && $blog_perms->can_create_post ) ? 1 : 0;
@@ -1812,7 +1812,7 @@ sub do_preview {
     $comment->created_on($ts);
     $comment->commenter_id( $commenter->id ) if $commenter;
 
-    $ctx->stash( 'comment', $comment );
+    $ctx->stash( 'comment',           $comment );
     $ctx->stash( 'comment_is_static', $q->param('static') );
     $ctx->stash( 'entry',             $entry );
     $ctx->{current_timestamp} = $ts;
@@ -2065,7 +2065,19 @@ sub save_commenter_profile {
             = $app->translate( 'Commenter profile could not be updated: [_1]',
             $cmntr->errstr );
     }
-    $param{magic_token} = $app->current_magic;
+
+    # Clear and refresh session for this user.
+    my $magic_token = $app->current_magic;
+    if ( $param{password} && 'MT' eq $cmntr->auth_type ) {
+        MT::Auth->invalidate_credentials( { app => $app } );
+        my %cookies = $app->cookies();
+        $app->_invalidate_commenter_session( \%cookies );
+        require MT::Session;
+        MT::Session->remove( { kind => 'SI', name => $cmntr->name } );
+        $magic_token = $app->make_commenter_session($cmntr);
+    }
+
+    $param{magic_token} = $magic_token;
 
     return $app->build_page( 'profile.tmpl', \%param );
 }

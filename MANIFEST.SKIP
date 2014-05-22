@@ -53,6 +53,8 @@ themes/broken_blog_theme
 #?package=MT ^VERSIONS
 #?package=MT ^lib/MT/FileMgr/FTP.pm
 #?package=MT ^lib/MT/FileMgr/FTPS.pm
+#?package=MT ^addons/Sync.pack
+#?package=MT ^mt-static/addons/Sync.pack
 
 #?package=MTOS ^addons
 #?package=MTOS ^mt-cp.cgi
@@ -82,6 +84,8 @@ themes/broken_blog_theme
 #?package=MTOS ^plugins/SmartphoneOption
 #?package=MTOS ^mt-static/plugins/SmartphoneOption
 #?package=MTOS ^mt-sp.cgi
+#?package=MTOS ^addons/Sync.pack
+#?package=MTOS ^mt-static/addons/Sync.pack
 
 #?package=MTCOM ^COPYING
 #?package=MTCOM ^COPYRIGHT
@@ -109,6 +113,8 @@ themes/broken_blog_theme
 #?package=MTCOM ^VERSIONS
 #?package=MTCOM ^lib/MT/FileMgr/FTP.pm
 #?package=MTCOM ^lib/MT/FileMgr/FTPS.pm
+#?package=MTCOM ^addons/Sync.pack
+#?package=MTCOM ^mt-static/addons/Sync.pack
 
 #?package=MTA ^COPYING
 #?package=MTA ^COPYRIGHT
@@ -116,14 +122,14 @@ themes/broken_blog_theme
 #?package=MTA ^mt-static/addons/Cloud.pack
 #?package=MTA ^mt-hb.cgi
 #?package=MTA ^VERSIONS
-#?package=MTA ^lib/MT/FileMgr/FTP.pm
-#?package=MTA ^lib/MT/FileMgr/FTPS.pm
+#?package=MTA ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 
 #?package=MTCLOUD ^COPYING
 #?package=MTCLOUD ^COPYRIGHT
 #?package=MTCLOUD ^addons/Enterprise.pack
 #?package=MTCLOUD ^mt-static/addons/Enterprise.pack
 #?package=MTCLOUD ^tools/migrate-mssql
+#?package=MTCLOUD ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 
 #?language=ja ^plugins/zemanta
 #?language=ru ^plugins/zemanta
@@ -174,6 +180,7 @@ mt-add-notify.cgi
 \.svn\b
 \.git\b
 \.gitignore
+\.gitmodules
 ,v$
 
 # Hidden, temp and backup files.
@@ -228,6 +235,8 @@ lang-it
 #plugins/feeds-app-lite
 plugins/feeds-app-lite/tools/
 plugins/feeds-app-lite/t/
+plugins/MultiBlog/t/
+plugins/FormattedText/t/
 
 # 'Extras'
 ^extras/
@@ -249,6 +258,7 @@ readme\.html\..*
 build-language-stamp
 ^mt-config.cgi$
 ^ru-filter.pl$
+^exports/
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion

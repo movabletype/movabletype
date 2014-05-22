@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -126,9 +126,10 @@ sub ymd2rd {
     # 1, year 1-relative (whew)
 
     $d
-        += ( $m * 367 - 1094 ) / 12 
+        += ( $m * 367 - 1094 ) / 12
         + $y % 100 * 1461 / 4
-        + ( $y / 100 * 36524 + $y / 400 ) - 306;
+        + ( $y / 100 * 36524 + $y / 400 )
+        - 306;
 }
 
 sub tz_offset_as_seconds {

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2013 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -49,9 +49,8 @@ sub start_element {
         die MT->translate(
             "The uploaded file was not a valid Movable Type backup manifest file."
             )
-            if !(      ( 'manifest' eq $name )
-                    && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns )
-            );
+            if !( ( 'manifest' eq $name )
+            && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns ) );
         $self->{start} = 0;
     }
     if ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns ) {
