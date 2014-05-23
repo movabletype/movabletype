@@ -22,13 +22,13 @@ sub list {
 
     if ( !$blog ) {
         ## System wide screen.
-        $param{theme_in_used_loop} = _build_theme_table(
+        $param{theme_in_use_loop} = _build_theme_table(
             classes => { website => 1, blog => 1, both => 1 },
-            in_used => 1,
+            in_use => 1,
         );
         $param{installed_theme_loop} = _build_theme_table(
             classes => { website => 1, blog => 1, both => 1 },
-            in_used => 0,
+            in_use => 0,
         );
     }
     else {
@@ -110,8 +110,8 @@ sub _build_theme_table {
         $theme{blog_count}
             = MT::Blog->count( { class => '*', theme_id => $theme->id } );
 
-        if ( exists $opts{in_used} ) {
-            next if $opts{in_used} xor $theme{blog_count};
+        if ( exists $opts{in_use} ) {
+            next if $opts{in_use} xor $theme{blog_count};
         }
 
         if ( $theme{current} ) {
