@@ -4899,7 +4899,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Current Theme' => 'Tema actual',
 	'Available Themes' => 'Temas disponibles',
 	'Themes in Use' => 'Temas utilizados',
-	'Installed Themes' => 'Temas instalados',
 
 ## tmpl/cms/list_widget.tmpl
 	'Manage [_1] Widgets' => 'Administrar widgets de [_1]',

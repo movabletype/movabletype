@@ -4885,7 +4885,6 @@ use vars qw( @ISA %Lexicon );
 	'Current Theme' => 'Derzeitiges Thema',
 	'Available Themes' => 'Verfügbare Themen',
 	'Themes in Use' => 'Verwendete Themen',
-	'Installed Themes' => 'Installierte Themen',
 
 ## tmpl/cms/list_widget.tmpl
 	'Manage [_1] Widgets' => '[_1]-Widgets verwalten',

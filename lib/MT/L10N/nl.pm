@@ -4900,7 +4900,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Current Theme' => 'Huidig thema',
 	q{Available Themes} => q{Beschikbare thema's},
 	q{Themes in Use} => q{Thema's in gebruik},
-	q{Installed Themes} => q{Geïnstalleerde thema's},
 
 ## tmpl/cms/list_widget.tmpl
 	'Manage [_1] Widgets' => 'Beheer [_1] widgets',

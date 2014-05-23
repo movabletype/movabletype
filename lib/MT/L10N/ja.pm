@@ -4615,7 +4615,6 @@ use vars qw( @ISA %Lexicon );
 	'Current Theme' => '現在のテーマ',
 	'Available Themes' => '利用可能なテーマ',
 	'Themes in Use' => '利用しているテーマ',
-	'Installed Themes' => 'インストールされているテーマ',
 
 ## tmpl/cms/list_widget.tmpl
 	'Manage [_1] Widgets' => '[_1]ウィジェットの管理',

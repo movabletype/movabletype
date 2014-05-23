@@ -4907,7 +4907,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Current Theme' => 'Thème actuel',
 	'Available Themes' => 'Thèmes disponibles',
 	'Themes in Use' => 'Thèmes utilisés',
-	'Installed Themes' => 'Thèmes installés',
 
 ## tmpl/cms/list_widget.tmpl
 	'Manage [_1] Widgets' => 'Gérer les widgets [_1]',
