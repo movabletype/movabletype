@@ -4884,7 +4884,7 @@ use vars qw( @ISA %Lexicon );
 	'No themes are installed.' => 'Keine Themen installiert.',
 	'Current Theme' => 'Derzeitiges Thema',
 	'Available Themes' => 'Verfügbare Themen',
-	'Themes in use' => 'Verwendete Themen',
+	'Themes in Use' => 'Verwendete Themen',
 	'Installed Themes' => 'Installierte Themen',
 
 ## tmpl/cms/list_widget.tmpl

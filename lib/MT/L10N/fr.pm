@@ -4906,7 +4906,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{No themes are installed.} => q{Aucun thème n'est installé.},
 	'Current Theme' => 'Thème actuel',
 	'Available Themes' => 'Thèmes disponibles',
-	'Themes in use' => 'Thèmes utilisés',
+	'Themes in Use' => 'Thèmes utilisés',
 	'Installed Themes' => 'Thèmes installés',
 
 ## tmpl/cms/list_widget.tmpl

@@ -4898,7 +4898,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'No themes are installed.' => 'No hay temas instalados.',
 	'Current Theme' => 'Tema actual',
 	'Available Themes' => 'Temas disponibles',
-	'Themes in use' => 'Temas utilizados',
+	'Themes in Use' => 'Temas utilizados',
 	'Installed Themes' => 'Temas instalados',
 
 ## tmpl/cms/list_widget.tmpl
