@@ -26,7 +26,7 @@ sub list {
             classes => { website => 1, blog => 1, both => 1 },
             in_use => 1,
         );
-        $param{installed_theme_loop} = _build_theme_table(
+        $param{available_theme_loop} = _build_theme_table(
             classes => { website => 1, blog => 1, both => 1 },
             in_use => 0,
         );
