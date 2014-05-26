@@ -2593,7 +2593,7 @@ sub refresh_individual_templates {
             $backup->save;
             push @msg,
                 $app->translate(
-                'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>',
+                'Refreshing template <strong>[_3]</strong> after making <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>.',
                 $blog_id, $backup->id, $tmpl->name );
 
             # we found that the previous template had not been

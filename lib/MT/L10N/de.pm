@@ -1472,7 +1472,7 @@ use vars qw( @ISA %Lexicon );
 	'Error creating new template: ' => 'Fehler beim Anlegen der neuen Vorlage',
 	'Template Referesh' => 'Vorlagen zurücksetzen',
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'Überspringe Vorlage &#8222;[_1]&#8220;, da sie keine Standardvorlage zu sein scheint.',
-	'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>' => 'Setze Vorlage <strong>[_3]</strong>zurück und erstelle dabei eine <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">Sicherung</a>.',
+	'Refreshing template <strong>[_3]</strong> after making <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>.' => 'Setze Vorlage <strong>[_3]</strong>zurück und erstelle dabei eine <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">Sicherung</a>.',
 	'Skipping template \'[_1]\' since it has not been changed.' => 'Überspringe Vorlage &#8222;[_1]&#8220;, da sie unverändert ist.',
 	'Copy of [_1]' => 'Kopie von [_1]',
 	'Cannot publish a global template.' => 'Kann eine globale Vorlage nicht veröffentlichen.',
