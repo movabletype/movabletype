@@ -1508,6 +1508,7 @@ sub _hdlr_if {
     my $var = $args->{name} || $args->{var};
     my $value;
     if ( defined $var ) {
+        $ctx->{__stash}{vars}{__cond_tag__} = undef;
 
         # pick off any {...} or [...] from the name.
         my ( $index, $key );
