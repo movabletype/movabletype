@@ -11,6 +11,8 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
         $name = isset($args['name'])
           ? $args['name'] : $args['var'];
         if (isset($name)) {
+            unset($ctx->__stash['__cond_tag__']);
+
             # pick off any {...} or [...] from the name.
             if (preg_match('/^(.+)([\[\{])(.+)[\]\}]$/', $name, $matches)) {
                 $name = $matches[1];
