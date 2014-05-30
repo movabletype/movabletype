@@ -4903,7 +4903,9 @@ sub setup_editor_param {
 
     if ( !$param->{editors} ) {
         my $rte;
-        if ( $param->{convert_breaks} =~ m/richtext/ ) {
+        if ( defined $param->{convert_breaks}
+            && $param->{convert_breaks} =~ m/richtext/ )
+        {
             ## Rich Text editor
             $rte = lc( $app->config('RichTextEditor') );
         }
