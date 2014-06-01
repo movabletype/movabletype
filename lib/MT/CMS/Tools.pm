@@ -592,7 +592,7 @@ sub cfg_system_general {
         =~ s/,/\n/g;
     $param{sitepath_limit}        = $cfg->BaseSitePath;
     $param{sitepath_limit_hidden} = $cfg->HideBaseSitePath;
-    $param{preflogging_hidden}    = $cfg->HidePaformanceLoggingSettings;
+    $param{preflogging_hidden}    = $cfg->HidePerformanceLoggingSettings;
 
     $param{saved}        = $app->param('saved');
     $param{screen_class} = "settings-screen system-feedback-settings";
@@ -627,7 +627,7 @@ sub save_cfg_system_general {
             $app->param('system_debug_mode')
         )
     ) if ( $app->param('system_debug_mode') =~ /\d+/ );
-    if ( not $cfg->HidePaformanceLoggingSettings ) {
+    if ( not $cfg->HidePerformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             push( @meta_messages,
                 $app->translate('Performance logging is on') );
@@ -659,7 +659,7 @@ sub save_cfg_system_general {
         ( $app->param('system_email_address') || undef ), 1 );
     $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
         if ( $app->param('system_debug_mode') =~ /\d+/ );
-    if ( not $cfg->HidePaformanceLoggingSettings ) {
+    if ( not $cfg->HidePerformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             $app->config( 'PerformanceLogging', 1, 1 );
         }
