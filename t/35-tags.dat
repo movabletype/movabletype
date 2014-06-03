@@ -745,5 +745,7 @@
 { "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='-4'></MTEntries>", "e" : "A Rainy" }, #729
 { "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='-4+...'></MTEntries>", "e" : "A Rainy..." }, #730
 { "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='-10+...'></MTEntries>", "e" : "A..." }, #731
-{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='-11+...'></MTEntries>", "e" : "" } #732
+{ "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryTitle trim_to='-11+...'></MTEntries>", "e" : "" }, #732
+{ "r" : "1", "t" : "<MTIf tag=\"BlogID\"><MTSetVar name=\"hoge\" value=\"ccc\"><MTIf name=\"hoge\" eq=\"aaa\">aaa<MTElseIf eq=\"bbb\">bbb<MTElseIf eq=\"ccc\">ccc<MTElse>not matched.</MTIf></MTIf>", "e" : "ccc" }, #733
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\"><MTBlogID></MTSetVarBlock><MTIf name=\"foo\"><MTSetVar name=\"bar\" value=\"ccc\"><MTIf name=\"bar\" eq=\"aaa\">aaa<MTElseIf eq=\"bbb\">bbb<MTElseIf eq=\"ccc\">ccc<MTElse>not matched.</MTIf></MTIf>", "e" : "ccc" } #734
 ]
