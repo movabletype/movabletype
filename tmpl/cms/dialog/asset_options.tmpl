@@ -159,11 +159,27 @@
      type="submit"
      accesskey="x"
      title="<__trans phrase="Cancel (x)">"
-     class="cancel action button mt-close-dialog">
+     class="action button"
+     onclick="cancel_click(this)">
     <__trans phrase="Cancel"></button>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
 </form>
+
+<script type="text/javascript">
+  /* <![CDATA[ */
+  function cancel_click(btn) {
+      var frm = btn.form;
+      frm.onsubmit = function() {return cancel_upload(frm)};
+      return true;
+  }
+  function cancel_upload(frm) {
+      frm['__mode'].value = 'cancel_upload'
+      parent.jQuery.fn.mtDialog.close();
+      return true;
+  }
+  /* ]]> */
+</script>
 
 <mt:include name="dialog/footer.tmpl">
