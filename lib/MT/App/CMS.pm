@@ -185,6 +185,7 @@ sub core_methods {
         'upload_file'        => "${pkg}Asset::upload_file",
         'upload_userpic'     => "${pkg}User::upload_userpic",
         'complete_insert'    => "${pkg}Asset::complete_insert",
+        'cancel_upload'      => "${pkg}Asset::cancel_upload",
         'complete_upload'    => "${pkg}Asset::complete_upload",
         'start_upload_entry' => "${pkg}Asset::start_upload_entry",
         'logout'             => {
