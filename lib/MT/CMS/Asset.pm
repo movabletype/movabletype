@@ -631,6 +631,30 @@ sub complete_insert {
     }
 }
 
+sub cancel_upload {
+    # Delete uploaded asset after upload if user cancels on asset options page
+    my $app   = shift;
+    my %param = $app->param_hash;
+    my $asset;
+
+    $app->validate_magic() or return;
+
+    require MT::Asset;
+    $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
+      or return $app->errtrans("Invalid request.");
+
+    if (    exists( $param{label} )
+         && exists( $param{description} )
+         && exists( $param{tags} ) )
+    {
+        # Count MT::ObjectAsset records
+        # Do not delete asset if asset has any associations
+        my $oa_class = MT->model('objectasset');
+        my $oa_count = $oa_class->count( { asset_id => $asset->id } );
+        $asset->remove unless $oa_count;
+    }
+}
+
 sub complete_upload {
     my $app   = shift;
     my %param = $app->param_hash;
