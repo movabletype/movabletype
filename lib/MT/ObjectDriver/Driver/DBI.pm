@@ -574,6 +574,34 @@ sub prepare_statement {
             }
         }
 
+        ## Always sort by primary keys.
+        if ( my @pk = @{ $class->primary_key_tuple() } ) {
+            my @column_id
+                = map { $dbd->db_column_name( $tbl, $_, $alias ) } @pk;
+            if ( my $order = $stmt->order() ) {
+                if ( ref($order) eq 'HASH' ) {
+                    $order = [$order];
+                }
+                if ( ref($order) eq 'ARRAY' ) {
+                    my @order_id;
+                    foreach my $column_id (@column_id) {
+                        if (!( grep { $_->{column} eq $column_id } @$order ) )
+                        {
+                            push @order_id,
+                                { column => $column_id, desc => 'ASC' };
+                        }
+                    }
+                    if (@order_id) {
+                        $stmt->order( [ @$order, @order_id ] );
+                    }
+                }
+            }
+            else {
+                $stmt->order(
+                    [ map { +{ column => $_, desc => 'ASC' } } @column_id ] );
+            }
+        }
+
         if ( my $ft_arg = $args->{'freetext'} ) {
             my @columns = map { $dbd->db_column_name( $tbl, $_, $alias ) }
                 @{ $ft_arg->{'columns'} };
