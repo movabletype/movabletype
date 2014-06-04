@@ -398,7 +398,7 @@ Template.Filter = {
     },
 
 
-    rp: function( string, params ) {
+    rp: function( string, context, params ) {
         if ( ( typeof string != "string" ) && string && string.toString )
             string = string.toString();
 
