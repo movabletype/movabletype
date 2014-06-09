@@ -1181,7 +1181,8 @@ sub generate_site_stats_data {
         if ( $fmgr->exists($path) ) {
             my $file = $fmgr->get_data( $path, 'output' );
             $file =~ s/widget_site_stats_draw_graph\((.*)\);/$1/;
-            my $data = MT::Util::from_json($file);
+            my $data;
+            eval { $data = MT::Util::from_json($file) };
             $present_lines = $data->{reg_keys} if $data;
             MT::Request->instance->cache( 'site_stats_lines', $present_lines )
                 if $present_lines;
