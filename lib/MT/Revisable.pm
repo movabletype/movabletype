@@ -469,6 +469,8 @@ C<load_revision> should return an/array of arrayref(s) of:
 
 =item 2. The revision number
 
+=item 3. The revision class object
+
 =back
 
 =head2 $obj->apply_revision(\%terms, \%args)
