@@ -70,6 +70,40 @@ for my $model (@model) {
             my $qr = qr/$order_by/;
             like( $sql, $qr, 'Descending sort.' );
         }
+
+        # Join
+        {
+            my $child_classes = $model->properties->{child_classes};
+            for my $child_class ( keys %$child_classes ) {
+
+                # No sort
+                {
+                    my $args => { join =>
+                            $child_class->join_on( 'id', undef, undef, ), };
+                    my ( $sql, $bind, $stmt )
+                        = $driver->prepare_fetch( $model, undef, $args );
+                    my $order_by
+                        = 'ORDER BY ' . $model->datasource . '_id ASC';
+                    my $qr = qr/$order_by/;
+                    like( $sql, $qr,
+                        'Join ' . $child_class . ' with no sort.' );
+                }
+
+                # With sort
+                {
+                    my $args = {
+                        join => $child_class->join_on(
+                            'id', undef, { direction => 'descend', },
+                        ),
+                    };
+                    my ( $sql, $bind, $stmt )
+                        = $driver->prepare_fetch( $model, undef, $args );
+                    my $col = $model->datasource . '_id';
+                    ok( $sql =~ m/ORDER BY [\w ]+, $col ASC/,
+                        'Join ' . $child_class . ' with descending sort.' );
+                }
+            }
+        }
     };
 }
 
