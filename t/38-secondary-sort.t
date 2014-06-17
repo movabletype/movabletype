@@ -25,9 +25,6 @@ for my $model (@model) {
     next unless $pk && ref($pk) eq 'ARRAY' && @$pk;
 
     subtest $model => sub {
-        my $pk = $model->primary_key_tuple();
-        next unless $pk && ref($pk) eq 'ARRAY' && @$pk;
-
         my @column_name = map { $model->datasource . '_' . $_ } @$pk;
 
         # No arguments
