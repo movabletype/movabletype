@@ -763,7 +763,12 @@ sub prepare_statement {
     }
 
     ## Always sort by primary keys.
-    if ( my @pk = @{ $class->primary_key_tuple() } ) {
+    my @pk                = @{ $class->primary_key_tuple() };
+    my $parent_subroutine = ( caller 1 )[3];
+    if (   @pk
+        && $parent_subroutine !~ m/::prepare_statement$/
+        && !$orig_args->{group} )
+    {
         my @column_id = map { $dbd->db_column_name( $tbl, $_, $alias ) } @pk;
         if ( my $order = $stmt->order() ) {
             if ( ref($order) eq 'HASH' ) {
