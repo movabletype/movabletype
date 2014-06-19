@@ -17,6 +17,7 @@ sub init {
     $fmgr->SUPER::init(@_);
     my %options = ();
     $options{Port} = $_[3] if $_[3];
+    $options{Debug} = 1 if $MT::DebugMode;
     my $ftp = $fmgr->{ftp} = Net::FTP->new( $_[0], %options )
         or return $fmgr->error("FTP connection failed: $@");
     $ftp->login( @_[ 1, 2 ] );
