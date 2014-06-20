@@ -413,7 +413,7 @@ sub _decorate_column_name {
 
 sub prepare_statement {
     my $driver = shift;
-    my ( $class, $terms, $orig_args ) = @_;
+    my ( $class, $terms, $orig_args, $recursive ) = @_;
     my $args = defined $orig_args ? {%$orig_args} : {};
 
     my @joins = (
@@ -612,7 +612,7 @@ sub prepare_statement {
         }
 
         my $join_stmt
-            = $driver->prepare_statement( $j_class, $j_terms, $j_args )
+            = $driver->prepare_statement( $j_class, $j_terms, $j_args, 1 )
             ;    # recursive
 
         $j_args->{unique} = $j_unique if $j_unique;
@@ -763,10 +763,9 @@ sub prepare_statement {
     }
 
     ## Always sort by primary keys.
-    my @pk                = @{ $class->primary_key_tuple() };
-    my $parent_subroutine = ( caller 1 )[3];
+    my @pk = @{ $class->primary_key_tuple() };
     if (   @pk
-        && $parent_subroutine !~ m/::prepare_statement$/
+        && !$recursive
         && !$orig_args->{group} )
     {
         my @column_id = map { $dbd->db_column_name( $tbl, $_, $alias ) } @pk;
