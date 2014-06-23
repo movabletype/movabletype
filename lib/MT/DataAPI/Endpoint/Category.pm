@@ -23,6 +23,42 @@ sub list {
     };
 }
 
+sub create {
+    my ( $app, $endpoint ) = @_;
+
+    my ($blog) = context_objects(@_)
+        or return;
+
+    my $author = $app->user;
+
+    my $orig_category = $app->model('category')->new;
+    $orig_category->set_values(
+        {   blog_id     => $blog->id,
+            author_id   => $author->id,
+            allow_pings => $blog->allow_pings_default,
+        }
+    );
+
+    my $new_category = $app->resource_object( 'category', $orig_category )
+        or return;
+
+    if (   !defined( $new_category->basename )
+        || $new_category->basename eq ''
+        || $app->model('category')->exist(
+            { blog_id => $blog->id, basename => $new_category->basename }
+        )
+        )
+    {
+        $new_category->basename(
+            MT::Util::make_unique_category_basename($new_category) );
+    }
+
+    save_object( $app, 'category', $new_category )
+        or return;
+
+    $new_category;
+}
+
 1;
 
 __END__

@@ -197,6 +197,15 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
+        {   id        => 'create_category',
+            route     => '/sites/:site_id/categories',
+            resources => ['category'],
+            verb      => 'POST',
+            version   => 2,
+            handler   => "${pkg}Category::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create an category.', },
+        },
         {   id             => 'list_comments',
             route          => '/sites/:site_id/comments',
             verb           => 'GET',
@@ -456,6 +465,9 @@ sub init_plugins {
             $pkg
                 . 'list_permission_filter.permission' =>
                 "${pfx}Permission::can_list",
+
+            # category callbacks
+            $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
         }
     );
 

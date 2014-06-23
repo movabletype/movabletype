@@ -214,7 +214,6 @@ sub init_core_callbacks {
                 "${pfx}Category::can_delete",
             $pkg . 'pre_save.category'    => "${pfx}Category::pre_save",
             $pkg . 'post_save.category'   => "${pfx}Category::post_save",
-            $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
             $pkg . 'post_delete.category' => "${pfx}Category::post_delete",
             'list_template_param.category' =>
                 "${pfx}Category::template_param_list",

@@ -74,6 +74,73 @@ my @suite = (
             };
         },
     },
+    {   path   => '/v2/sites/1/categories',
+        method => 'POST',
+        params =>
+            { category => { label => 'test-api-permission-category' }, },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.category',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.category',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.category',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.category',
+                count => 1,
+            },
+        ],
+        result => sub {
+            MT->model('category')
+                ->load( { label => 'test-api-permission-category' } );
+        },
+    },
+    {   path     => '/v2/sites/1/categories',
+        method   => 'POST',
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $error = 'A resource "category" is required.';
+            check_error_message( $body, $error );
+        },
+    },
+    {   path     => '/v2/sites/1/categories',
+        method   => 'POST',
+        params   => { category => {} },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $error = 'A parameter "label" is required.' . "\n";
+            check_error_message( $body, $error );
+        },
+    },
+    {   path   => '/v2/sites/1/categories',
+        method => 'POST',
+        params => { category => { label => ( '1234567890' x 11 ) }, }
+        ,    # exceeding 100 characters
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $error
+                = "The label '" . ( '1234567890' x 11 ) . "' is too long.\n";
+            check_error_message( $body, $error );
+        },
+    },
+    {   path   => '/v2/sites/1/categories',
+        method => 'POST',
+        params => { category => { label => 'test-api-permission-category' } },
+        code   => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $error
+                = 'Save failed: The category name \'test-api-permission-category\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.'
+                . "\n";
+            check_error_message( $body, $error );
+        },
+    },
 );
 
 my %callbacks = ();
@@ -184,3 +251,9 @@ for my $data (@suite) {
 }
 
 done_testing();
+
+sub check_error_message {
+    my ( $body, $error ) = @_;
+    my $result = MT::Util::from_json($body);
+    is( $result->{error}{message}, $error, 'Error message: ' . $error );
+}

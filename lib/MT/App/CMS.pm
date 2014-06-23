@@ -531,6 +531,9 @@ sub init_plugins {
 
             # blog callbacks
             $pkg . 'view_permission_filter.blog' => "${pfx}Blog::can_view",
+
+            # category callbacks
+            $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
         }
     );
 
