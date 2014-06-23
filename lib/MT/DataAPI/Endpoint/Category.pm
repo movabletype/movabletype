@@ -72,6 +72,34 @@ sub get {
     $category;
 }
 
+sub update {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $orig_category ) = context_objects(@_)
+        or return;
+    my $new_category = $app->resource_object( 'category', $orig_category )
+        or return;
+
+    save_object(
+        $app,
+        'category',
+        $new_category,
+        $orig_category,
+        sub {
+
+            # TODO:
+            # I think that modified_by should be updated at common code.
+            # Should not be updated here.
+
+            # $new_category->modified_by( $app->user->id );
+
+            $_[0]->();
+        }
+    ) or return;
+
+    $new_category;
+}
+
 1;
 
 __END__
