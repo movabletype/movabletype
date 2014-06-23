@@ -206,6 +206,16 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to create an category.', },
         },
+        {   id          => 'get_category',
+            route       => '/sites/:site_id/categories/:category_id',
+            version     => 2,
+            handler     => "${pkg}Category::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested category.',
+            },
+            requires_login => 0,
+        },
         {   id             => 'list_comments',
             route          => '/sites/:site_id/comments',
             verb           => 'GET',

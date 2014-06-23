@@ -204,9 +204,6 @@ sub init_core_callbacks {
             # category callbacks
             $pkg . 'edit.category' => "${pfx}Category::edit",
             $pkg
-                . 'view_permission_filter.category' =>
-                "${pfx}Category::can_view",
-            $pkg
                 . 'save_permission_filter.category' =>
                 "${pfx}Category::can_save",
             $pkg

@@ -141,6 +141,24 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
+    {   path      => '/v2/sites/1/categories/1',
+        method    => 'GET',
+        code      => 200,
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.category',
+                count => 1,
+            },
+        ],
+    },
+    {   path   => '/v2/sites/2/categories/1',
+        method => 'GET',
+        code   => 404,
+    },
+    {   path   => '/v2/sites/1/categories/4',
+        method => 'GET',
+        code   => 404,
+    },
 );
 
 my %callbacks = ();
