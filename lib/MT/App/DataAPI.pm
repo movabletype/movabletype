@@ -204,7 +204,7 @@ sub core_endpoints {
             version   => 2,
             handler   => "${pkg}Category::create",
             error_codes =>
-                { 403 => 'Do not have permission to create an category.', },
+                { 403 => 'Do not have permission to create a category.', },
         },
         {   id          => 'get_category',
             route       => '/sites/:site_id/categories/:category_id',
