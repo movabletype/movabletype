@@ -1830,49 +1830,10 @@ sub delete {
             }
         }
         elsif ( $type eq 'category' ) {
-            if ( $app->config('DeleteFilesAtRebuild') ) {
-                require MT::Blog;
-                require MT::Entry;
-                require MT::Placement;
-                my $blog = MT::Blog->load($blog_id)
-                    or return $app->error(
-                    $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
-                my $at = $blog->archive_type;
-                if ( $at && $at ne 'None' ) {
-                    my @at = split /,/, $at;
-                    for my $target (@at) {
-                        my $archiver = $app->publisher->archiver($target);
-                        next unless $archiver;
-                        if ( $archiver->category_based ) {
-                            if ( $archiver->date_based ) {
-                                my @entries = MT::Entry->load(
-                                    { status => MT::Entry::RELEASE() },
-                                    {   join => MT::Placement->join_on(
-                                            'entry_id',
-                                            { category_id => $id },
-                                            { unique      => 1 }
-                                        )
-                                    }
-                                );
-                                for (@entries) {
-                                    $app->publisher
-                                        ->remove_entry_archive_file(
-                                        Category    => $obj,
-                                        ArchiveType => $target,
-                                        Entry       => $_
-                                        );
-                                }
-                            }
-                            else {
-                                $app->publisher->remove_entry_archive_file(
-                                    Category    => $obj,
-                                    ArchiveType => $target
-                                );
-                            }
-                        }
-                    }
-                }
-            }
+            require MT::CMS::Category;
+            MT::CMS::Category::pre_delete( $app, $obj )
+                or return $app->trans_error( 'Cannot load blog #[_1].',
+                $blog_id );
         }
         elsif ( $type eq 'page' ) {
             if ( $app->config('DeleteFilesAtRebuild') ) {
