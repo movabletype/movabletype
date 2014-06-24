@@ -67,7 +67,8 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
             $prefix = $today;
         }
         // gather category name...
-        $cat_name = isset($args['category']) ? $args['category'] : '';
+        if (isset($args['category']))
+            $cat_name = $args['category'];
 
         // caching isn't necessary since we're not building
         // entire site-- just one page
@@ -81,7 +82,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
         $pad_end = 6 - ((wday_from_ts($y, $m, $days_in_month) + $start_with_offset) % 7);
         $this_day = $prefix . sprintf("%02d", $day - $pad_start);
         $args = array('current_timestamp' => $start, 'current_timestamp_end' => $end, 'blog_id' => $blog_id, 'lastn' => -1, 'sort_order' => 'ascend');
-        if ($cat_name)
+        if (isset($cat_name))
             $args['category'] = $cat_name;
         $iter = $ctx->mt->db()->fetch_entries($args);
         $ctx->stash('cal_entries', $iter);
