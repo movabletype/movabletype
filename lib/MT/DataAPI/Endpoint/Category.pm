@@ -100,6 +100,35 @@ sub update {
     $new_category;
 }
 
+sub delete {
+    my ( $app, $endpoint ) = @_;
+    my %recipe = ();
+
+    my ( $blog, $category ) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app, 'data_api_delete_permission_filter',
+        'category', $category )
+        or return;
+
+    require MT::CMS::Category;
+    MT::CMS::Category::pre_delete( $app, $category )
+        or return;
+
+    $category->remove
+        or return $app->error(
+        $app->translate(
+            'Removing [_1] failed: [_2]', $category->class_label,
+            $category->errstr
+        ),
+        500
+        );
+
+    $app->run_callbacks( 'data_api_post_delete.category', $app, $category );
+
+    $category;
+}
+
 1;
 
 __END__

@@ -243,6 +243,30 @@ my @suite = (
         },
         code => 404,
     },
+    {   path   => '/v2/sites/2/categories/2',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {   path      => '/v2/sites/1/categories/1',
+        method    => 'DELETE',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_delete_permission_filter.category',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_delete.category',
+                count => 1,
+            },
+        ],
+        complete => sub {
+            my $deleted = MT->model('category')->load(1);
+            is( $deleted, undef, 'deleted' );
+        },
+    },
+    {   path   => '/v2/sites/1/categories/1',
+        method => 'DELETE',
+        code   => 404,
+    },
 );
 
 my %callbacks = ();

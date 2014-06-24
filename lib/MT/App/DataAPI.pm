@@ -225,6 +225,14 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to update a category.', },
         },
+        {   id      => 'delete_category',
+            route   => '/sites/:site_id/categories/:category_id',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Category::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a category.', },
+        },
         {   id             => 'list_comments',
             route          => '/sites/:site_id/comments',
             verb           => 'GET',
