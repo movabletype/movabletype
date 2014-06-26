@@ -21,6 +21,7 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
+use MT::Util;
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
@@ -33,7 +34,7 @@ my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
 
 my $temp_data = undef;
-my @suite = (
+my @suite     = (
     {   path   => '/v1/sites/1/assets/upload',
         method => 'POST',
         setup  => sub {
@@ -45,8 +46,7 @@ my @suite = (
             File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
         ],
         result => sub {
-            $app->model('asset')
-                ->load( { class => '*' },
+            $app->model('asset')->load( { class => '*' },
                 { sort => [ { column => 'id', desc => 'DESC' }, ] } );
         },
     },
@@ -58,15 +58,15 @@ my @suite = (
             File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
         ],
         complete => sub {
-            my ($data, $body) = @_;
-            my $result = MT::Util::from_json( $body);
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
             $temp_data = $result->{error}{data};
-        }
+            }
     },
     {   path   => '/v1/sites/1/assets/upload',
         method => 'POST',
         params => sub {
-            +{overwrite => 1,
+            +{  overwrite => 1,
                 %$temp_data,
             };
         },
@@ -74,6 +74,85 @@ my @suite = (
             'file',
             File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
         ],
+    },
+    {   path      => '/v2/sites/0/assets',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+            is( $result->{totalResults},
+                4, 'The number of asset (blog_id=0) is 4.' );
+        },
+    },
+    {   path      => '/v2/sites/1/assets',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+            is( $result->{totalResults},
+                3, 'The number of asset (blog_id=1) is 3.' );
+        },
+    },
+    {   path      => '/v2/sites/2/assets',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+            is( $result->{totalResults},
+                3, 'The number of asset (blog_id=2) is 3.' );
+        },
+    },
+    {   path   => '/v2/sites/3/assets',
+        method => 'GET',
+        code   => 404,
+    },
+    {   path      => '/v2/sites/1/assets',
+        method    => 'GET',
+        params    => { search => 'template', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+            is( $result->{totalResults},
+                1,
+                'The number of asset whose label contains "template" is 1.' );
+            like( lc $result->{items}[0]{label},
+                qr/template/, 'The label of asset has "template".' );
+        },
+    },
+    {   path      => '/v2/sites/1/assets',
+        method    => 'GET',
+        params    => { class => 'image', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+            is( $result->{totalResults},
+                2, 'The number of image asset is 2.' );
+        },
     },
 );
 

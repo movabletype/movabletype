@@ -395,6 +395,25 @@ sub core_endpoints {
             },
             error_codes => { 403 => 'Do not have permission to upload.', },
         },
+        {   id             => 'list_assets',
+            route          => '/sites/:site_id/assets',
+            verb           => 'GET',
+            version        => 2,
+            handler        => "${pkg}Asset::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'id',
+                sortOrder    => 'descend',
+                searchFields => 'label',
+                filterKeys   => 'class',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested assets.',
+            },
+            requires_login => 0,
+        },
         {   id             => 'list_permissions_for_user',
             route          => '/users/:user_id/permissions',
             version        => 1,
@@ -495,6 +514,11 @@ sub init_plugins {
 
             # category callbacks
             $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
+
+            # asset callbacks
+            $pkg
+                . 'pre_load_filtered_list.asset' =>
+                "${pfx}Asset::cms_pre_load_filtered_list",
         }
     );
 
