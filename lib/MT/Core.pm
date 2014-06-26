@@ -1306,6 +1306,7 @@ BEGIN {
             asset => {
                 object_label        => 'Asset',
                 primary             => 'label',
+                data_api_scope_mode => 'this',
                 permission          => 'access_to_asset_list',
                 data_api_permission => undef,
                 default_sort_key    => 'created_on',

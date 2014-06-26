@@ -107,14 +107,14 @@ my @suite     = (
         method    => 'GET',
         callbacks => [
             {   name  => 'data_api_pre_load_filtered_list.asset',
-                count => 2,
+                count => 1,
             },
         ],
         complete => sub {
             my ( $data, $body ) = @_;
             my $result = MT::Util::from_json($body);
             is( $result->{totalResults},
-                3, 'The number of asset (blog_id=2) is 3.' );
+                0, 'The number of asset (blog_id=2) is 0.' );
         },
     },
     {   path   => '/v2/sites/3/assets',
