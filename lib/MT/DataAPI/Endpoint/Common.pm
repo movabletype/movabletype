@@ -87,7 +87,7 @@ sub _load_object_by_name {
     if ( $name eq 'site_id' ) {
         return $app->blog if $app->blog;
 
-        # dummy blog
+        # dummy blog to get an object in system scope.
         my $blog = MT->model('blog')->new;
         $blog->id(0);
         return $blog;
