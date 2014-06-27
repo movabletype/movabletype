@@ -416,7 +416,7 @@ sub core_endpoints {
         },
         {   id          => 'get_asset',
             route       => '/sites/:site_id/assets/:asset_id',
-            version     => 1,
+            version     => 2,
             handler     => "${pkg}Asset::get",
             error_codes => {
                 403 =>
