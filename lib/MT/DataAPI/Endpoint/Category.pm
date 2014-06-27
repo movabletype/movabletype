@@ -26,8 +26,8 @@ sub list {
 sub create {
     my ( $app, $endpoint ) = @_;
 
-    my ($blog) = context_objects(@_)
-        or return;
+    my ($blog) = context_objects(@_);
+    return unless $blog && $blog->id;
 
     my $author = $app->user;
 

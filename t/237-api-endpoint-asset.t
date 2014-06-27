@@ -182,6 +182,20 @@ my @suite     = (
         method => 'GET',
         code   => 404,
     },
+    {   path => '/v2/sites/0/assets/3',
+        method => 'GET',
+        result => sub {
+            MT->model('asset')->load(3);
+        },
+    },
+    {   path => '/v2/sites/1/assets/3',
+        method => 'GET',
+        code => 404,
+    },
+    {   path => '/v2/sites/0/assets/1',
+        method => 'GET',
+        code => 404,
+    },
 );
 
 my %callbacks = ();

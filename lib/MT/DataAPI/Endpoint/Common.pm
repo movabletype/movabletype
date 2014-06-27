@@ -84,7 +84,14 @@ sub remove_object {
 sub _load_object_by_name {
     my ( $app, $name, $parent ) = @_;
 
-    return $app->blog if $name eq 'site_id';
+    if ( $name eq 'site_id' ) {
+        return $app->blog if $app->blog;
+
+        # dummy blog
+        my $blog = MT->model('blog')->new;
+        $blog->id(0);
+        return $blog;
+    }
 
     my ($model_name) = ( $name =~ /([\w-]+)_id\z/ ) or return;
     my $model = $app->model($model_name)
