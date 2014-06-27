@@ -414,6 +414,16 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
+        {   id          => 'get_asset',
+            route       => '/sites/:site_id/assets/:asset_id',
+            version     => 1,
+            handler     => "${pkg}Asset::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested asset.',
+            },
+            requires_login => 0,
+        },
         {   id             => 'list_permissions_for_user',
             route          => '/users/:user_id/permissions',
             version        => 1,

@@ -154,6 +154,34 @@ my @suite     = (
                 2, 'The number of image asset is 2.' );
         },
     },
+    {   path      => '/v2/sites/1/assets/1',
+        method    => 'GET',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.asset',
+                count => 1,
+            },
+        ],
+        result => sub {
+            MT->model('asset')->load(1);
+        },
+    },
+    {   path   => '/v2/sites/2/assets/1',
+        method => 'GET',
+        code   => 404,
+    },
+    {   path   => '/v2/sites/1/assets/5',
+        method => 'GET',
+        code   => 404,
+    },
+    {   path   => '/v2/sites/3/assets/1',
+        method => 'GET',
+        code   => 404,
+    },
+    {   path   => '/v2/sites/3/assets/5',
+        method => 'GET',
+        code   => 404,
+    },
 );
 
 my %callbacks = ();

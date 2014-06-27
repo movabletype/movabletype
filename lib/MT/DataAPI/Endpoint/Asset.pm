@@ -66,6 +66,19 @@ sub list {
     };
 }
 
+sub get {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $asset ) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'asset', $asset->id, obj_promise($asset) )
+        or return;
+
+    $asset;
+}
+
 1;
 
 __END__

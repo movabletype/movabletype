@@ -314,8 +314,7 @@ sub init_core_callbacks {
             $pkg . 'not_junk_test' => "${pfx}Common::not_junk_test",
 
             # assets
-            $pkg . 'edit.asset'                   => "${pfx}Asset::edit",
-            $pkg . 'view_permission_filter.asset' => "${pfx}Asset::can_view",
+            $pkg . 'edit.asset' => "${pfx}Asset::edit",
             $pkg
                 . 'delete_permission_filter.asset' =>
                 "${pfx}Asset::can_delete",

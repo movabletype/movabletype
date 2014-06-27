@@ -539,6 +539,7 @@ sub init_plugins {
             $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
 
             # asset callbacks
+            $pkg . 'view_permission_filter.asset' => "${pfx}Asset::can_view",
             $pkg
                 . 'pre_load_filtered_list.asset' =>
                 "${pfx}Asset::cms_pre_load_filtered_list",
