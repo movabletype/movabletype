@@ -369,10 +369,11 @@ sub filtered_list {
     my $scope_mode
         = $setting->{data_api_scope_mode} || $setting->{scope_mode} || 'wide';
     my @blog_id_term = (
-         !$blog_id              ? ()
-        : $scope_mode eq 'none' ? ()
-        : $scope_mode eq 'this' ? ( blog_id => $blog_id )
-        :                         ( blog_id => $blog_ids )
+          $scope_mode eq 'strict' ? ( blog_id => $blog_id )
+        : !$blog_id               ? ()
+        : $scope_mode eq 'none'   ? ()
+        : $scope_mode eq 'this'   ? ( blog_id => $blog_id )
+        :                           ( blog_id => $blog_ids )
     );
 
     my %load_options = (
