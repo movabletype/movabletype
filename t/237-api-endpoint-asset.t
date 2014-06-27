@@ -86,7 +86,7 @@ my @suite     = (
             my ( $data, $body ) = @_;
             my $result = MT::Util::from_json($body);
             is( $result->{totalResults},
-                4, 'The number of asset (blog_id=0) is 4.' );
+                1, 'The number of asset (blog_id=0) is 1.' );
         },
     },
     {   path      => '/v2/sites/1/assets',
