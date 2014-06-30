@@ -540,6 +540,8 @@ sub init_plugins {
 
             # asset callbacks
             $pkg . 'view_permission_filter.asset' => "${pfx}Asset::can_view",
+            $pkg . 'save_filter.asset' => "${pfx}Asset::cms_save_filter",
+            $pkg . 'pre_save.asset'    => "${pfx}Asset::pre_save",
             $pkg
                 . 'pre_load_filtered_list.asset' =>
                 "${pfx}Asset::cms_pre_load_filtered_list",

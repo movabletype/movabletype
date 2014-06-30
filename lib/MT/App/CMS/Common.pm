@@ -319,10 +319,8 @@ sub init_core_callbacks {
                 . 'delete_permission_filter.asset' =>
                 "${pfx}Asset::can_delete",
             $pkg . 'save_permission_filter.asset' => "${pfx}Asset::can_save",
-            $pkg . 'pre_save.asset'               => "${pfx}Asset::pre_save",
             $pkg . 'post_save.asset'              => "${pfx}Asset::post_save",
             $pkg . 'post_delete.asset'  => "${pfx}Asset::post_delete",
-            $pkg . 'save_filter.asset'  => "${pfx}Asset::cms_save_filter",
             'template_param.edit_asset' => "${pfx}Asset::template_param_edit",
             'list_template_param.asset' => "${pfx}Asset::template_param_list",
 

@@ -79,6 +79,19 @@ sub get {
     $asset;
 }
 
+sub update {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $orig_asset ) = context_objects(@_)
+        or return;
+    my $new_asset = $app->resource_object( 'asset', $orig_asset )
+        or return;
+
+    save_object( $app, 'asset', $new_asset, $orig_asset, ) or return;
+
+    $new_asset;
+}
+
 1;
 
 __END__

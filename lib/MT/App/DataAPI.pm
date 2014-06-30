@@ -424,6 +424,15 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
+        {   id        => 'update_asset',
+            route     => '/sites/:site_id/assets/:asset_id',
+            resources => ['asset'],
+            verb      => 'PUT',
+            version   => 2,
+            handler   => "${pkg}Asset::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update an asset.', },
+        },
         {   id             => 'list_permissions_for_user',
             route          => '/users/:user_id/permissions',
             version        => 1,
@@ -529,6 +538,7 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.asset' =>
                 "${pfx}Asset::cms_pre_load_filtered_list",
+            $pkg . 'pre_save.asset' => "${pfx}Asset::pre_save",
         }
     );
 

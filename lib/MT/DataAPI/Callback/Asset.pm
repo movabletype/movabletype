@@ -14,6 +14,34 @@ sub cms_pre_load_filtered_list {
     return 1;
 }
 
+# TODO: Should merge with MT::CMS::Asset::pre_save?
+sub pre_save {
+    my ( $cb, $app, $obj ) = @_;
+
+    # save normalized tags
+    my @tags = $obj->tags;
+    return 1 unless @tags;
+
+    my $blog = $app->blog;
+    my $fields
+        = $blog
+        ? $blog->smart_replace_fields
+        : MT->config->NwcReplaceField;
+    return 1 unless $fields && $fields =~ m/tags/ig;
+
+    require MT::App::CMS;
+    @tags = map { MT::App::CMS::_convert_word_chars( $app, $_ ) } @tags;
+
+    if (@tags) {
+        $obj->set_tags(@tags);
+    }
+    else {
+        $obj->remove_tags();
+    }
+
+    return 1;
+}
+
 1;
 
 __END__

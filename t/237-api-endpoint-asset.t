@@ -182,19 +182,137 @@ my @suite     = (
         method => 'GET',
         code   => 404,
     },
-    {   path => '/v2/sites/0/assets/3',
+    {   path   => '/v2/sites/0/assets/3',
         method => 'GET',
         result => sub {
             MT->model('asset')->load(3);
         },
     },
-    {   path => '/v2/sites/1/assets/3',
+    {   path   => '/v2/sites/1/assets/3',
         method => 'GET',
+        code   => 404,
+    },
+    {   path   => '/v2/sites/0/assets/1',
+        method => 'GET',
+        code   => 404,
+    },
+    {   path     => '/v2/sites/1/assets/1',
+        method   => 'PUT',
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result        = MT::Util::from_json($body);
+            my $error_message = "A resource \"asset\" is required.";
+            is( $result->{error}{message},
+                $error_message, 'Error message: ' . $error_message );
+        },
+    },
+    {   path      => '/v2/sites/1/assets/1',
+        method    => 'PUT',
+        params    => { asset => {} },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.asset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.asset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.asset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.asset',
+                count => 1,
+            },
+        ],
+        result => sub {
+            MT->model('asset')->load(1);
+        },
+    },
+    {   path   => '/v2/sites/2/assets/1',
+        method => 'PUT',
+        params =>
+            { asset => { label => 'update_asset in different scope', }, },
         code => 404,
     },
-    {   path => '/v2/sites/0/assets/1',
-        method => 'GET',
+    {   path   => '/v2/sites/0/assets/1',
+        method => 'PUT',
+        params => {
+            asset => { label => 'update_asset in different scope (system)', },
+        },
         code => 404,
+    },
+    {   path   => '/v2/sites/10/assets/1',
+        method => 'PUT',
+        params =>
+            { asset => { label => 'update_asset in non-existent blog', }, },
+        code => 404,
+    },
+    {   path   => '/v2/sites/1/assets/10',
+        method => 'PUT',
+        params =>
+            { asset => { label => 'update_asset in non-existent asset', }, },
+        code => 404,
+    },
+    {   path   => '/v2/sites/1/assets/1',
+        method => 'PUT',
+        params => {
+            asset => {
+                label       => 'updated label',
+                description => 'updated description',
+                tags        => ['updated tag'],
+
+                filename => 'updated filename',
+                url      => 'updated url',
+                mimeType => 'updated mimeType',
+                id       => '10',
+            },
+        },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.asset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.asset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.asset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.asset',
+                count => 1,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+
+            is( $result->{label},
+                'updated label',
+                'Asset\'s label has been updated.'
+            );
+            is( $result->{description},
+                'updated description',
+                'Asset\'s description has been updated.'
+            );
+            is( scalar @{ $result->{tags} }, 1, 'Asset\'s tag count is 1.' );
+            is( $result->{tags}[0],
+                'updated tag', 'Asset\'s tags has been updated.' );
+
+            isnt(
+                $result->{filename},
+                'updated filename',
+                'Asset\'s filename has not been updated.'
+            );
+            isnt( $result->{url}, 'updated url',
+                'Asset\'s url has not been updated.' );
+            isnt(
+                $result->{mimeType},
+                'updated mimeType',
+                'Asset\'s mimeType has not been updated.'
+            );
+            isnt( $result->{id}, 10, 'Asset\'s id has not been updated.' );
+        },
     },
 );
 
