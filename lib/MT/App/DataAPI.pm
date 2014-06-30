@@ -433,6 +433,14 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to update an asset.', },
         },
+        {   id      => 'delete_asset',
+            route   => '/sites/:site_id/assets/:asset_id',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Asset::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete an asset.', },
+        },
         {   id             => 'list_permissions_for_user',
             route          => '/users/:user_id/permissions',
             version        => 1,

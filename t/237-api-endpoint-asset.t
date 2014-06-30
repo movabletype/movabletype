@@ -32,6 +32,8 @@ my $mock_author = Test::MockModule->new('MT::Author');
 $mock_author->mock( 'is_superuser', sub {0} );
 my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
+my $mock_filemgr_local = Test::MockModule->new('MT::FileMgr::Local');
+$mock_filemgr_local->mock( 'delete', sub {1} );
 
 my $temp_data = undef;
 my @suite     = (
@@ -312,6 +314,62 @@ my @suite     = (
                 'Asset\'s mimeType has not been updated.'
             );
             isnt( $result->{id}, 10, 'Asset\'s id has not been updated.' );
+        },
+    },
+    {   path   => '/v2/sites/2/assets/1',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {   path   => '/v2/sites/0/assets/1',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {   path   => '/v2/sites/10/assets/1',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {   path   => '/v2/sites/10/assets/10',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {   path      => '/v2/sites/1/assets/1',
+        method    => 'DELETE',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_delete_permission_filter.asset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_delete.asset',
+                count => 1,
+            },
+        ],
+        complete => sub {
+            my $deleted = MT->model('asset')->load(1);
+            is( $deleted, undef, 'deleted' );
+        },
+    },
+    {   path   => '/v2/sites/1/assets/3',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {   path   => '/v2/sites/10/assets/3',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {   path      => '/v2/sites/0/assets/3',
+        method    => 'DELETE',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_delete_permission_filter.asset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_delete.asset',
+                count => 1,
+            },
+        ],
+        complete => sub {
+            my $deleted = MT->model('asset')->load(3);
+            is( $deleted, undef, 'deleted' );
         },
     },
 );

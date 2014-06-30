@@ -92,6 +92,30 @@ sub update {
     $new_asset;
 }
 
+sub delete {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $asset ) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app, 'data_api_delete_permission_filter',
+        'asset', $asset )
+        or return;
+
+    $asset->remove
+        or return $app->error(
+        $app->translate(
+            'Removing [_1] failed: [_2]', $asset->class_label,
+            $asset->errstr
+        ),
+        500
+        );
+
+    $app->run_callbacks( 'data_api_post_delete.asset', $app, $asset );
+
+    $asset;
+}
+
 1;
 
 __END__
