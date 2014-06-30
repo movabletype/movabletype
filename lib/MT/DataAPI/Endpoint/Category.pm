@@ -102,7 +102,6 @@ sub update {
 
 sub delete {
     my ( $app, $endpoint ) = @_;
-    my %recipe = ();
 
     my ( $blog, $category ) = context_objects(@_)
         or return;
