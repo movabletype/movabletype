@@ -373,14 +373,21 @@ sub filtered_list {
     my @cols = ( '__id', grep {/^[^\.]+$/} split( ',', $cols ) );
     my @subcols = ( '__id', grep {/\./} split( ',', $cols ) );
 
+    my $endpoint_has_site_id
+        = ( $endpoint->{route} && $endpoint->{route} =~ m!/:site_id/! )
+        ? 1
+        : 0;
     my $scope_mode
         = $setting->{data_api_scope_mode} || $setting->{scope_mode} || 'wide';
     my @blog_id_term = (
-          $scope_mode eq 'strict' ? ( blog_id => $blog_id )
-        : !$blog_id               ? ()
-        : $scope_mode eq 'none'   ? ()
-        : $scope_mode eq 'this'   ? ( blog_id => $blog_id )
-        :                           ( blog_id => $blog_ids )
+          $scope_mode eq 'strict'
+        ? $endpoint_has_site_id
+                ? ( blog_id => $blog_id )
+                : ()
+        : !$blog_id             ? ()
+        : $scope_mode eq 'none' ? ()
+        : $scope_mode eq 'this' ? ( blog_id => $blog_id )
+        :                         ( blog_id => $blog_ids )
     );
 
     my %load_options = (
@@ -391,19 +398,25 @@ sub filtered_list {
         limit      => $limit,
         offset     => $offset,
         scope      => $scope,
-        blog       => $blog,
-        blog_id    => $blog_id,
-        blog_ids   => $blog_ids,
+        ( $scope_mode eq 'strict' && !$endpoint_has_site_id )
+        ? ()
+        : ( blog     => $blog,
+            blog_id  => $blog_id,
+            blog_ids => $blog_ids,
+        ),
         %$options,
     );
 
     my %count_options = (
-        terms    => { %$terms, @blog_id_term },
-        args     => {%$args},
-        scope    => $scope,
-        blog     => $blog,
-        blog_id  => $blog_id,
-        blog_ids => $blog_ids,
+        terms => { %$terms, @blog_id_term },
+        args  => {%$args},
+        scope => $scope,
+        ( $scope_mode eq 'strict' && !$endpoint_has_site_id )
+        ? ()
+        : ( blog     => $blog,
+            blog_id  => $blog_id,
+            blog_ids => $blog_ids,
+        ),
         %$options,
     );
 

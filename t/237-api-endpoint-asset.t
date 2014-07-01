@@ -156,6 +156,20 @@ my @suite     = (
                 2, 'The number of image asset is 2.' );
         },
     },
+    {   path      => '/v2/assets',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+            is( $result->{totalResults},
+                4, 'The number of all image asset is 4.' );
+        },
+    },
     {   path      => '/v2/sites/1/assets/1',
         method    => 'GET',
         callbacks => [
