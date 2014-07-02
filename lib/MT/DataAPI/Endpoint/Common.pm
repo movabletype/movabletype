@@ -379,16 +379,31 @@ sub filtered_list {
         : 0;
     my $scope_mode
         = $setting->{data_api_scope_mode} || $setting->{scope_mode} || 'wide';
-    my @blog_id_term = (
-          $scope_mode eq 'strict'
-        ? $endpoint_has_site_id
-                ? ( blog_id => $blog_id )
-                : ()
-        : !$blog_id             ? ()
-        : $scope_mode eq 'none' ? ()
-        : $scope_mode eq 'this' ? ( blog_id => $blog_id )
-        :                         ( blog_id => $blog_ids )
-    );
+
+    my @blog_id_term;
+    if ( $scope_mode eq 'strict' ) {
+        if ($endpoint_has_site_id) {
+            @blog_id_term = ( blog_id => $blog_id );
+        }
+        else {
+            my @include_site_ids = split ',', $app->param('includeSiteIds');
+            my @exclude_site_ids = split ',', $app->param('excludeSiteIds');
+
+            my %site_id_term;
+            $site_id_term{blog_id} = \@include_site_ids if @include_site_ids;
+            $site_id_term{blog_id}{not} = \@exclude_site_ids
+                if @exclude_site_ids;
+
+            @blog_id_term = %site_id_term;
+        }
+    }
+    else {
+        @blog_id_term
+            = !$blog_id             ? ()
+            : $scope_mode eq 'none' ? ()
+            : $scope_mode eq 'this' ? ( blog_id => $blog_id )
+            :                         ( blog_id => $blog_ids );
+    }
 
     my %load_options = (
         terms => { %$terms, @blog_id_term },

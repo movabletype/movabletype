@@ -170,6 +170,36 @@ my @suite     = (
                 4, 'The number of all image asset is 4.' );
         },
     },
+    {   path      => '/v2/assets',
+        method    => 'GET',
+        params    => { includeSiteIds => '0', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+            is( $result->{totalResults},
+                1, 'The number of image asset (blog_id=0) is 1.' );
+        },
+    },
+    {   path      => '/v2/assets',
+        method    => 'GET',
+        params    => { excludeSiteIds => '0', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+            is( $result->{totalResults},
+                3, 'The number of image asset (exclude blog_id=0) is 3.' );
+        },
+    },
     {   path      => '/v2/sites/1/assets/1',
         method    => 'GET',
         callbacks => [
