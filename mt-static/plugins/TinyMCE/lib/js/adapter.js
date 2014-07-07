@@ -26,7 +26,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
     config: {
         language: language,
 
-        plugins: 'link lists media template textcolor paste',
+        plugins: 'link lists media template textcolor colorpicker paste',
         external_plugins: {
             'mt': staticURI + '/plugins/TinyMCE/lib/plugins/mt/plugin.min.js',
             'mt_fullscreen': staticURI + '/plugins/TinyMCE/lib/plugins/mt_fullscreen/plugin.min.js',
