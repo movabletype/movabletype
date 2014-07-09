@@ -15,49 +15,58 @@ sub core_resources {
     my $pkg = '$Core::MT::DataAPI::Resource::';
     return {
         'entry' => [
-            {   fields           => "${pkg}Entry::fields",
+            {   version          => 1,
+                fields           => "${pkg}Entry::fields",
                 updatable_fields => "${pkg}Entry::updatable_fields",
             }
         ],
         'category' => [
-            {   fields           => "${pkg}Category::fields",
+            {   version          => 1,
+                fields           => "${pkg}Category::fields",
                 updatable_fields => "${pkg}Category::updatable_fields",
             }
         ],
         'comment' => [
-            {   fields           => "${pkg}Comment::fields",
+            {   version          => 1,
+                fields           => "${pkg}Comment::fields",
                 updatable_fields => "${pkg}Comment::updatable_fields",
             }
         ],
         'trackback' => [
-            {   fields           => "${pkg}Trackback::fields",
+            {   version          => 1,
+                fields           => "${pkg}Trackback::fields",
                 updatable_fields => "${pkg}Trackback::updatable_fields",
             }
         ],
         'tbping' => 'trackback',
         'user'   => [
-            {   fields           => "${pkg}User::fields",
+            {   version          => 1,
+                fields           => "${pkg}User::fields",
                 updatable_fields => "${pkg}User::updatable_fields",
             }
         ],
         'author' => 'user',
         'blog'   => [
-            {   fields           => "${pkg}Blog::fields",
+            {   version          => 1,
+                fields           => "${pkg}Blog::fields",
                 updatable_fields => "${pkg}Blog::updatable_fields",
             }
         ],
         'website' => [
-            {   fields           => "${pkg}Website::fields",
+            {   version          => 1,
+                fields           => "${pkg}Website::fields",
                 updatable_fields => "${pkg}Website::updatable_fields",
             }
         ],
         'asset' => [
-            {   fields           => "${pkg}Asset::fields",
+            {   version          => 1,
+                fields           => "${pkg}Asset::fields",
                 updatable_fields => "${pkg}Asset::updatable_fields",
-            }
+            },
         ],
         'permission' => [
-            {   fields           => "${pkg}Permission::fields",
+            {   version          => 1,
+                fields           => "${pkg}Permission::fields",
                 updatable_fields => "${pkg}Permission::updatable_fields",
             }
         ],
@@ -65,11 +74,12 @@ sub core_resources {
 }
 
 sub resource {
-    my $class = shift;
-    my ($key) = @_;
-    my $app   = MT->instance;
+    my $class   = shift;
+    my ($key)   = @_;
+    my $app     = MT->instance;
+    my $api_version = $app->current_api_version;
 
-    if ( !%resources ) {
+    if ( !$resources{$api_version} ) {
         my %aliases = ();
         for my $c ( MT::Component->select ) {
             my $reg = $c->registry( 'applications', 'data_api', 'resources' );
@@ -77,9 +87,9 @@ sub resource {
 
             for my $k ( keys %$reg ) {
                 if ( ref $reg->{$k} ) {
-                    $resources{$k} ||= { aliases => [], };
+                    $resources{$api_version}{$k} ||= { aliases => [], };
 
-                    push @{ $resources{$k}{aliases} },
+                    push @{ $resources{$api_version}{$k}{aliases} },
                         {
                         key    => $k,
                         plugin => $c,
@@ -92,11 +102,11 @@ sub resource {
         }
 
         for my $k ( keys %aliases ) {
-            if ( $resources{$k} ) {
-                push @{ $resources{ $aliases{$k} }{aliases} },
-                    @{ $resources{$k}{aliases} };
+            if ( $resources{$api_version}{$k} ) {
+                push @{ $resources{$api_version}{ $aliases{$k} }{aliases} },
+                    @{ $resources{$api_version}{$k}{aliases} };
             }
-            $resources{$k} = $aliases{$k};
+            $resources{$api_version}{$k} = $aliases{$k};
         }
     }
 
@@ -113,13 +123,13 @@ sub resource {
     {
         next unless $k;
         $resource_key = $k;
-        $res = $resources{$k} and last;
+        $res = $resources{$api_version}{$k} and last;
     }
 
     return unless $res;
 
     if ( !ref $res ) {
-        $resources{$resource_key} = $res = $class->resource($res);
+        $resources{$api_version}{$resource_key} = $res = $class->resource($res);
     }
 
     return unless $res;
@@ -131,30 +141,51 @@ sub resource {
                 @{ $res->{aliases} };
         };
 
+        my @regs;
+        for ( @{ $res->{aliases} } ) {
+            my $p = $_->{plugin};
+            my $reg
+                = $p->registry( 'applications', 'data_api', 'resources',
+                $_->{key} );
+            next unless $reg;
+
+            if ( ref $reg eq 'ARRAY' ) {
+                push @regs, ( map { +{ reg => $_, plugin => $p } } @$reg );
+            }
+            else {
+                push @regs, { reg => $reg, plugin => $p };
+            }
+        }
+
+        # Get the max version number below current api version.
+        my $max_version = do {
+            my @versions = map { $_->{reg}{version} || 1 } @regs;
+            @versions = grep { $_ <= $api_version } @versions;
+            @versions = sort @versions;
+            $versions[-1];
+        };
+
+        # Get the resource registries of the max version.
+        @regs = grep { ( $_->{reg}{version} || 1 ) == $max_version } @regs;
+
         my %tmp_res = ();
-        for my $k (qw(fields updatable_fields)) {
-            for ( @{ $res->{aliases} } ) {
-                my $p = $_->{plugin};
-                my $reg
-                    = $p->registry( 'applications', 'data_api', 'resources',
-                    $_->{key} );
-                next unless $reg;
-                for ( ref $reg eq 'ARRAY' ? @$reg : ($reg) ) {
-                    my $r = $_->{$k};
-                    next unless $r;
-                    unless ( ref $r ) {
-                        my $code = MT->handler_to_coderef($r);
-                        if ( ref $code eq 'CODE' ) {
-                            my $res = $code->($p);
-                            require MT::Component;
-                            MT::Component::__deep_localize_labels( $p, $res )
-                                if $res && ref $res eq 'HASH';
-                            $r = $res;
-                        }
+        for (@regs) {
+            my $p = $_->{plugin};
+            for my $k (qw(fields updatable_fields)) {
+                my $r = $_->{reg}{$k};
+                next unless $r;
+                unless ( ref $r ) {
+                    my $code = MT->handler_to_coderef($r);
+                    if ( ref $code eq 'CODE' ) {
+                        my $res = $code->($p);
+                        require MT::Component;
+                        MT::Component::__deep_localize_labels( $p, $res )
+                            if $res && ref $res eq 'HASH';
+                        $r = $res;
                     }
-                    $tmp_res{$k} ||= [];
-                    push @{ $tmp_res{$k} }, ( $r ? @$r : () );
                 }
+                $tmp_res{$k} ||= [];
+                push @{ $tmp_res{$k} }, ( $r ? @$r : () );
             }
         }
 
