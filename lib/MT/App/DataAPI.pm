@@ -179,6 +179,24 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete an entry.', },
         },
+        {   id             => 'list_categories_for_entry',
+            route          => '/sites/:site_id/entries/:entry_id/categories',
+            verb           => 'GET',
+            version        => 2,
+            handler        => "${pkg}Entry::list_categories",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'label',
+                sortOrder    => 'ascend',
+                searchFields => 'label,basename',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested categories for entry.',
+            },
+            requires_login => 0,
+        },
         {   id             => 'list_categories',
             route          => '/sites/:site_id/categories',
             verb           => 'GET',

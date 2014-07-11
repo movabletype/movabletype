@@ -261,6 +261,26 @@ sub delete {
     $entry;
 }
 
+sub list_categories {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $entry ) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'entry', $entry->id, obj_promise($entry) )
+        or return;
+
+    my $rows = $entry->__load_category_data or return;
+    my %terms = ( id => @$rows ? [ map { $_->[0] } @$rows ] : 0 );
+    my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
+
+    +{  totalResults => $res->{count},
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
 1;
 
 __END__
