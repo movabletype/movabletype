@@ -21,7 +21,7 @@ function smarty_modifier_trim_to($text, $len) {
         # $len is positive number
         if ($len < length_text($text)) {
             $text = substr_text($text, 0, $len);
-            if ( !empty( $tail ) ) {
+            if ( !is_null( $tail ) && $tail !== "" ) {
                 $text .= $tail;
             }
         }
@@ -31,7 +31,8 @@ function smarty_modifier_trim_to($text, $len) {
 
         # $len is negative number.
         $text = substr_text($text, 0, $len);
-        if ( !empty( $text ) && !empty( $tail ) ) {
+        if ( !is_null( $text ) && $text !== ""
+            && !is_null( $tail ) && $tail !== "" ) {
             $text .= $tail;
         }
         return $text;

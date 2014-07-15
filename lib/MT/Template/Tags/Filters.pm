@@ -235,7 +235,7 @@ sub _fltr_trim_to {
         # $len is positive number.
         if ( $len < length($str) ) {
             $str = substr( $str, 0, $len );
-            $str .= $tail if $tail;
+            $str .= $tail if defined $tail;
         }
         return $str;
     }
@@ -243,7 +243,7 @@ sub _fltr_trim_to {
 
         # $len is negative number.
         $str = substr( $str, 0, $len );
-        if ( length($str) && $tail ) {
+        if ( length($str) && defined($tail) ) {
             $str .= $tail;
         }
         return $str;
