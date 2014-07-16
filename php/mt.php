@@ -61,6 +61,9 @@ class MT {
     private  $cache_driver = null;
     private static $_instance = null;
 
+    static public $config_type_array = array('pluginpath', 'alttemplate', 'outboundtrackbackdomains', 'memcachedservers', 'userpasswordvalidation');
+    static public $config_type_hash  = array('pluginswitch', 'pluginschemaversion', 'commenterregistration');
+
     /***
      * Constructor for MT class.
      * Currently, constructor moved to private method because this class implemented Singleton Design Pattern.
@@ -258,8 +261,6 @@ class MT {
         $this->cfg_file = $file;
 
         $cfg = array();
-        $type_array = array('pluginpath', 'alttemplate', 'outboundtrackbackdomains', 'memcachedservers', 'userpasswordvalidation');
-        $type_hash  = array('commenterregistration');
         if ($fp = file($file)) {
             foreach ($fp as $line) {
                 // search through the file
@@ -268,10 +269,10 @@ class MT {
                     if (preg_match('/^\s*(\S+)\s+(.*)$/', $line, $regs)) {
                         $key = strtolower(trim($regs[1]));
                         $value = trim($regs[2]);
-                        if (in_array($key, $type_array)) {
+                        if (in_array($key, self::$config_type_array)) {
                             $cfg[$key][] = $value;
                         }
-                        elseif (in_array($key, $type_hash)) {
+                        elseif (in_array($key, self::$config_type_hash)) {
                             $hash = preg_split('/\=/', $value, 2);
                             $cfg[$key][strtolower(trim($hash[0]))] = trim($hash[1]);
                         } else {
