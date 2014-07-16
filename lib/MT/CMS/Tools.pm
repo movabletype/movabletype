@@ -1666,7 +1666,7 @@ sub restore_premature_cancel {
         $param->{error}
             = $message . '  '
             . $app->translate(
-            "Detailed information is in the <a href='javascript:void(0)' onclick='closeDialog(\"[_1]\")'>activity log</a>.",
+            "Detailed information is in the activity log.",
             $log_url
             );
     }
@@ -2715,7 +2715,7 @@ sub restore_file {
             = $app->uri( mode => 'list', args => { '_type' => 'log' } );
         $$errormsg .= '; ' if $$errormsg;
         $$errormsg .= $app->translate(
-            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.',
+            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.',
             $log_url
         );
         return $blogs;
@@ -2808,7 +2808,7 @@ sub restore_directory {
         my $log_url
             = $app->uri( mode => 'list', args => { '_type' => 'log' } );
         $$error = $app->translate(
-            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.',
+            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.',
             $log_url
         );
         return ( $blogs, $assets );
