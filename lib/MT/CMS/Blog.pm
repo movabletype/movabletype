@@ -1739,7 +1739,9 @@ sub post_save {
 
     for my $blog_field ( keys %blog_fields ) {
 
-        if ( $obj->$blog_field() ne $original->$blog_field() ) {
+        if ( ( $obj->$blog_field() || '' ) ne
+            ( $original->$blog_field() || '' ) )
+        {
             my $old
                 = defined $original->$blog_field()
                 ? $original->$blog_field()
@@ -1963,7 +1965,7 @@ sub post_save {
         # if settings were changed that would affect published pages:
         if (grep { $original->column($_) ne $obj->column($_) }
             qw(allow_unreg_comments allow_reg_comments remote_auth_token
-            allow_pings          allow_comment_html )
+            allow_pings allow_comment_html )
             )
         {
             $app->add_return_arg( need_full_rebuild => 1 );
