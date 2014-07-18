@@ -329,12 +329,15 @@ sub insert {
         if ( $ext_from && $ext_to );
     my $tmpl;
 
+    my $id = $app->param('id') or return $app->errtrans("Invalid request.");
+    my $asset = MT::Asset->load($id);
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
             {   upload_html => $text || '',
                 edit_field => scalar $app->param('edit_field') || '',
                 extension_message => $extension_message,
+                asset_type => $asset->class,
             },
         );
     }
@@ -343,12 +346,11 @@ sub insert {
             'dialog/asset_insert.tmpl',
             {   upload_html => $text || '',
                 edit_field => scalar $app->param('edit_field') || '',
+                asset_type => $asset->class,
             },
         );
     }
     my $ctx = $tmpl->context;
-    my $id = $app->param('id') or return $app->errtrans("Invalid request.");
-    my $asset = MT::Asset->load($id);
     $ctx->stash( 'asset', $asset );
     return $tmpl;
 }
