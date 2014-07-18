@@ -364,12 +364,13 @@ sub core_tags {
                 \&MT::Template::Tags::System::_hdlr_comment_script,
             TrackbackScript =>
                 \&MT::Template::Tags::System::_hdlr_trackback_script,
-            SearchScript => \&MT::Template::Tags::System::_hdlr_search_script,
-            XMLRPCScript => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
-            AtomScript   => \&MT::Template::Tags::System::_hdlr_atom_script,
-            CGIHost      => \&MT::Template::Tags::System::_hdlr_cgi_host,
-            CGIPath      => \&MT::Template::Tags::System::_hdlr_cgi_path,
-            AdminCGIPath =>
+            SearchScript  => \&MT::Template::Tags::System::_hdlr_search_script,
+            XMLRPCScript  => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
+            AtomScript    => \&MT::Template::Tags::System::_hdlr_atom_script,
+            DataAPIScript => \&MT::Template::Tags::System::_hdlr_dataapi_script,
+            CGIHost       => \&MT::Template::Tags::System::_hdlr_cgi_host,
+            CGIPath       => \&MT::Template::Tags::System::_hdlr_cgi_path,
+            AdminCGIPath  =>
                 \&MT::Template::Tags::System::_hdlr_admin_cgi_path,
             CGIRelativeURL =>
                 \&MT::Template::Tags::System::_hdlr_cgi_relative_url,
@@ -5168,6 +5169,24 @@ default for this setting if unassigned is "mt-atom.cgi".
 sub _hdlr_atom_script {
     my ($ctx) = @_;
     return $ctx->{config}->AtomScript;
+}
+
+###########################################################################
+
+###########################################################################
+
+=head2 DataScript
+
+Returns the value of the C<DataAPIScript> configuration setting. The
+default for this setting if unassigned is "mt-data-api.cgi".
+
+=for tags configuration
+
+=cut
+
+sub _hdlr_dataapi_script {
+    my ($ctx) = @_;
+    return $ctx->{config}->DataAPIScript;
 }
 
 ###########################################################################
