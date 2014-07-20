@@ -18,6 +18,7 @@ use MT::AccessToken;
 our %endpoints = ();
 
 sub id {'data_api'}
+sub DEFAULT_VERSION () { 1 }
 
 sub init {
     my $app = shift;
@@ -478,7 +479,7 @@ sub _compile_endpoints {
         foreach my $e (@$endpoints) {
             $e->{component} = $c;
             $e->{id}          ||= $e->{route};
-            $e->{version}     ||= 1;
+            $e->{version}     ||= DEFAULT_VERSION();
             $e->{verb}        ||= 'GET';
             $e->{error_codes} ||= {};
 
@@ -1153,6 +1154,10 @@ A data of a tree structure built with the path of the I<route>
 A list.
 
 =back
+
+=head2 MT::App::DataAPI->default_version
+
+Returns the default version number.
 
 =head2 MT::App::DataAPI->current_endpoint
 
