@@ -32,11 +32,10 @@ class Config extends BaseObject
                             if (preg_match('/^(.+)=(.+)$/', $value, $match))
                                 $this->_data[$key][trim($match[1])] = trim($match[2]);
                         } else {
-                            if (!isset($this->_data[$key]))
-                                if (in_array($key, MT::$config_type_array)) # special case for array
-                                    $this->_data[$key][] = $value;
-                                else
-                                    $this->_data[$key] = $value;
+                            if (in_array($key, MT::$config_type_array)) # special case for array
+                                $this->_data[$key][] = $value;
+                            else
+                                $this->_data[$key] = $value;
                         }
                     }
                 }
