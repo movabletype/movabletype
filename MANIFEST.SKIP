@@ -55,6 +55,21 @@ themes/broken_blog_theme
 #?package=MT ^lib/MT/FileMgr/FTPS.pm
 #?package=MT ^addons/Sync.pack
 #?package=MT ^mt-static/addons/Sync.pack
+#?package=MT ^addons/AWS.pack
+
+#?package=MTAWS ^COPYING
+#?package=MTAWS ^COPYRIGHT
+#?package=MTAWS ^addons/Enterprise.pack
+#?package=MTAWS ^mt-static/addons/Enterprise.pack
+#?package=MTAWS ^tools/migrate-mssql
+#?package=MTAWS ^addons/Cloud.pack
+#?package=MTAWS ^mt-hb.cgi
+#?package=MTAWS ^mt-static/addons/Cloud.pack
+#?package=MTAWS ^VERSIONS
+#?package=MTAWS ^lib/MT/FileMgr/FTP.pm
+#?package=MTAWS ^lib/MT/FileMgr/FTPS.pm
+#?package=MTAWS ^addons/Sync.pack
+#?package=MTAWS ^mt-static/addons/Sync.pack
 
 #?package=MTOS ^addons
 #?package=MTOS ^mt-cp.cgi
@@ -86,6 +101,7 @@ themes/broken_blog_theme
 #?package=MTOS ^mt-sp.cgi
 #?package=MTOS ^addons/Sync.pack
 #?package=MTOS ^mt-static/addons/Sync.pack
+#?package=MTOS ^addons/AWS.pack
 
 #?package=MTCOM ^COPYING
 #?package=MTCOM ^COPYRIGHT
@@ -115,6 +131,7 @@ themes/broken_blog_theme
 #?package=MTCOM ^lib/MT/FileMgr/FTPS.pm
 #?package=MTCOM ^addons/Sync.pack
 #?package=MTCOM ^mt-static/addons/Sync.pack
+#?package=MTCOM ^addons/AWS.pack
 
 #?package=MTA ^COPYING
 #?package=MTA ^COPYRIGHT
@@ -123,6 +140,7 @@ themes/broken_blog_theme
 #?package=MTA ^mt-hb.cgi
 #?package=MTA ^VERSIONS
 #?package=MTA ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
+#?package=MTA ^addons/AWS.pack
 
 #?package=MTCLOUD ^COPYING
 #?package=MTCLOUD ^COPYRIGHT
@@ -130,6 +148,7 @@ themes/broken_blog_theme
 #?package=MTCLOUD ^mt-static/addons/Enterprise.pack
 #?package=MTCLOUD ^tools/migrate-mssql
 #?package=MTCLOUD ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
+#?package=MTCLOUD ^addons/AWS.pack
 
 #?language=ja ^plugins/zemanta
 
