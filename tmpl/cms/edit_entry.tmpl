@@ -1309,7 +1309,7 @@
     jQuery('button.preview').click(function(event) {
         jQuery('form#entry_form input[name=__mode]').val('preview_entry');
   <mt:if name="config.previewinnewwindow">
-        jQuery('form#entry_form').attr('target', '_blank');
+        jQuery('form#entry_form').attr('target', 'mt_preview_entry_<mt:var name="blog_id" escape="js" default="0">_<mt:var name="id" escape="js" default="0">');
   </mt:if>
     });
   <mt:if name="config.previewinnewwindow">

@@ -888,7 +888,7 @@ function saveTemplatePrefs( sync ) {
         syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('preview_template');
   <mt:if name="config.previewinnewwindow">
-        jQuery('form#template-listing-form').attr('target', '_blank');
+        jQuery('form#template-listing-form').attr('target', 'mt_preview_template_<mt:var name="blog_id" escape="js" default="0">_<mt:var name="id" escape="js" default="0">');
   </mt:if>
     });
     jQuery('input#save_revision').click(function() {
