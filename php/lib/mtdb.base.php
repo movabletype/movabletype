@@ -1045,26 +1045,10 @@ abstract class MTDatabase {
             $author_filter = "and entry_author_id = '" . $args['author_id'] . "'";
         }
 
-        $start = isset($args['current_timestamp'])
-            ? $args['current_timestamp'] : null;
-        $end = isset($args['current_timestamp_end'])
-            ? $args['current_timestamp_end'] : null;
-        if ($start || $end) {
+        if (isset($args['current_timestamp']) || isset($args['current_timestamp_end'])) {
             $timestamp_field = ($args['class'] == 'page') ? 'entry_modified_on' : 'entry_authored_on';
         }
-        if ($start and $end) {
-            $start = $this->ts2db($start);
-            $end = $this->ts2db($end);
-            $date_filter = "and $timestamp_field between '$start' and '$end'";
-        } elseif ($start) {
-            $start = $this->ts2db($start);
-            $date_filter = "and $timestamp_field >= '$start'";
-        } elseif ($end) {
-            $end = $this->ts2db($end);
-            $date_filter = "and $timestamp_field <= '$end'";
-        } else {
-            $date_filter = '';
-        }
+        $date_filter = $this->build_date_filter($args, $timestamp_field);
 
         if (isset($args['lastn'])) {
             if (!isset($args['entry_id'])) $limit = $args['lastn'];
@@ -3397,6 +3381,9 @@ abstract class MTDatabase {
             $ext_filter = "and asset_file_ext ='" . $args['file_ext'] . "'";
         }
 
+        $date_filter = $args['ignore_archive_context']
+            ? '' : $this->build_date_filter( $args, 'asset_created_on' );
+
         # Adds a score or rate filter to the filters list.
         if (isset($args['namespace'])) {
             require_once("MTUtil.php");
@@ -3484,6 +3471,7 @@ abstract class MTDatabase {
                 $type_filter
                 $ext_filter
                 $thumb_filter
+                $date_filter
             order by
                 $sort_by $order
         ";
@@ -3819,6 +3807,27 @@ abstract class MTDatabase {
             $tmpl = $tmpls[0];
 
         return $tmpl;
+    }
+
+    private function build_date_filter($args, $field) {
+        $start = isset($args['current_timestamp'])
+            ? $args['current_timestamp'] : null;
+        $end = isset($args['current_timestamp_end'])
+            ? $args['current_timestamp_end'] : null;
+
+        if ($start and $end) {
+            $start = $this->ts2db($start);
+            $end = $this->ts2db($end);
+            return "and $field between '$start' and '$end'";
+        } elseif ($start) {
+            $start = $this->ts2db($start);
+            return "and $field >= '$start'";
+        } elseif ($end) {
+            $end = $this->ts2db($end);
+            return "and $field <= '$end'";
+        } else {
+            return '';
+        }
     }
 }
 ?>
