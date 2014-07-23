@@ -92,6 +92,7 @@ var DataAPI = function(options) {
         timeout: undefined,
         cache: true,
         withoutAuthorization: false,
+        processOneTimeTokenOnInitialize: true,
         loadPluginEndpoints: true,
         suppressResponseCodes: undefined,
         crossOrigin: undefined,
@@ -122,6 +123,10 @@ var DataAPI = function(options) {
         this.loadEndpoints({
             excludeComponents: 'core'
         });
+    }
+
+    if (this.o.processOneTimeTokenOnInitialize) {
+        this._storeOneTimeToken();
     }
 
     this.trigger('initialize');
@@ -2510,6 +2515,31 @@ DataAPI.prototype = {
         return defaultToken;
     },
 
+    _hasOneTimeToken: function() {
+        return window.location && window.location.hash.indexOf('#_ott_') === 0;
+    },
+
+    _storeOneTimeToken: function() {
+        var token, m;
+
+        if (! window.location) {
+            return undefined;
+        }
+
+        m = window.location.hash.match(/^#_ott_(.*)/);
+        if (! m) {
+            return undefined;
+        }
+
+        token = {
+            oneTimeToken: m[1]
+        };
+        window.location.hash = '#_login';
+
+        this.storeTokenData(token);
+        return token;
+    },
+
     /**
      * Get token data via current session store.
      * @method getTokenData
@@ -2520,11 +2550,16 @@ DataAPI.prototype = {
         var token = this.tokenData;
 
         if (! token) {
-            if (window.location && window.location.hash === '#_login') {
-                try {
-                    token = this._updateTokenFromDefaultCookie();
+            if (window.location) {
+                if (window.location.hash === '#_login') {
+                    try {
+                        token = this._updateTokenFromDefaultCookie();
+                    }
+                    catch (e) {
+                    }
                 }
-                catch (e) {
+                else if (this._hasOneTimeToken()) {
+                    this._storeOneTimeToken();
                 }
             }
 
@@ -2537,7 +2572,10 @@ DataAPI.prototype = {
             }
         }
 
-        if (token && (token.startTime + token.expiresIn < this._getCurrentEpoch())) {
+        if (token &&
+            'startTime' in token &&
+            'expiresIn' in token &&
+            (token.startTime + token.expiresIn < this._getCurrentEpoch())) {
             delete token.accessToken;
             delete token.startTime;
             delete token.expiresIn;
@@ -3111,7 +3149,12 @@ DataAPI.prototype = {
         }
 
         if (endpoint === '/token' || endpoint === '/authentication') {
-            if (tokenData && tokenData.sessionId) {
+            if (tokenData && tokenData.oneTimeToken) {
+                defaultHeaders['X-MT-Authorization'] =
+                    api.getAuthorizationHeader('oneTimeToken');
+                delete tokenData.oneTimeToken;
+            }
+            else if (tokenData && tokenData.sessionId) {
                 defaultHeaders['X-MT-Authorization'] =
                     api.getAuthorizationHeader('sessionId');
             }

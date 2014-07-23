@@ -14,6 +14,10 @@ use MT::DataAPI::Endpoint::Common;
 use URI;
 use boolean ();
 use MT::Session;
+use MT::Util;
+
+sub APP_HOST ()  {'app'}
+sub BLOG_HOST () {'blog'}
 
 sub mt_data_api_login_magic_token_cookie_name {
     'mt_data_api_login_magic_token';
@@ -33,10 +37,20 @@ sub make_access_token {
     $token;
 }
 
-sub is_valid_redirect_url {
+sub check_redirect_url {
     my ( $app, $redirect_url ) = @_;
-    eval { URI->new( $app->base )->host eq URI->new($redirect_url)->host; }
-        or undef($@);
+    my $redirect_host = URI->new( $redirect_url, 'http' )->host || '';
+    return APP_HOST
+        if ( URI->new( $app->base, 'http' )->host || '' ) eq $redirect_host;
+
+    my $iter = $app->model('blog')->load_iter( { class => '*' } );
+    while ( my $b = $iter->() ) {
+        return BLOG_HOST
+            if ( URI->new( $b->site_url, 'http' )->host || '' ) eq
+            $redirect_host;
+    }
+
+    return undef;
 }
 
 sub authorization {
@@ -45,7 +59,7 @@ sub authorization {
     my $token = $app->make_magic_token;
 
     my $redirect_url = $app->param('redirectUrl') || '';
-    is_valid_redirect_url( $app, $redirect_url )
+    my $redirect_type = check_redirect_url( $app, $redirect_url )
         or return $app->errtrans('Invalid parameter.');
     my $client_id = $app->current_client_id
         or return $app->errtrans('Invalid parameter.');
@@ -53,11 +67,16 @@ sub authorization {
     my %param = (
         client_id                     => $client_id,
         redirect_url                  => $redirect_url,
+        redirect_type                 => $redirect_type,
         api_version                   => $app->current_api_version,
         mt_data_api_login_magic_token => $token,
     );
 
-    if ( my $session = _current_session($app) ) {
+    if ( $redirect_type eq BLOG_HOST ) {
+
+        # Do nothing
+    }
+    elsif ( my $session = _current_session($app) ) {
         my $access_token = make_access_token( $app, $session );
 
         $param{access_token} = {
@@ -127,7 +146,47 @@ sub authentication {
         delete $response->{sessionId};
     }
 
+    if ( ( $app->param('redirect_type') || '' ) eq BLOG_HOST ) {
+        my $ott = MT->model('session')->new();
+        $ott->kind('OT');    # One time Token
+        $ott->id( $app->make_magic_token() );
+        $ott->start(time);
+        $ott->duration( time + 5 * 60 );
+        $ott->set( response =>
+                MT::Util::to_json( $response, { convert_blessed => 1 } ) );
+        $ott->save
+            or return $app->error(
+            $app->translate(
+                "The login could not be confirmed because of a database error ([_1])",
+                $ott->errstr
+            )
+            );
+        $response = { oneTimeToken => $ott->id, };
+    }
+
     $response;
+}
+
+sub _load_token_by_ott {
+    my ($app) = @_;
+
+    my $data = $app->mt_authorization_data;
+    if ( $data && $data->{MTAuth}{oneTimeToken} ) {
+        if (my $ott = MT::Session::get_unexpired_value(
+                5 * 60, { id => $data->{MTAuth}{oneTimeToken}, kind => 'OT' }
+            )
+            )
+        {
+            my $response = MT::Util::from_json( $ott->get('response') );
+            $ott->remove();
+            return $response;
+        }
+        else {
+            return undef;
+        }
+    }
+
+    return qw();
 }
 
 sub _current_session_from_authorization_data {
@@ -158,6 +217,10 @@ sub _current_session {
 
 sub token {
     my ($app) = @_;
+
+    if ( my ($response) = _load_token_by_ott($app) ) {
+        return $response || $app->error(401);
+    }
 
     my $session = _current_session($app)
         or return $app->error(401);
