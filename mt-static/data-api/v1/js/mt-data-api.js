@@ -2559,7 +2559,7 @@ DataAPI.prototype = {
                     }
                 }
                 else if (this._hasOneTimeToken()) {
-                    this._storeOneTimeToken();
+                    token = this._storeOneTimeToken();
                 }
             }
 
