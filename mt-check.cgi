@@ -628,7 +628,7 @@ my @CORE_OPT = (
     [   'Crypt::SSLeay',
         0, 0,
         translate(
-            'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. This module is required for site statistics of Google Analytics too.'
+            'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for site statistics of Google Analytics.'
         )
     ],
 
@@ -730,7 +730,7 @@ my @CORE_OPT = (
     [   'IO::Socket::SSL',
         0, 0,
         translate(
-            'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. This module is required for site statistics of Google Analytics too.'
+            'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for site statistics of Google Analytics.'
         )
     ],
 

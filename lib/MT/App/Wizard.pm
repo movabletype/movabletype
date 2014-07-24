@@ -193,7 +193,7 @@ sub init_core_registry {
             'IO::Socket::SSL' => {
                 link => 'http://search.cpan.org/dist/IO-Socket-SSL/',
                 label =>
-                    'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. This module is required for site statistics of Google Analytics too.',
+                    'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for site statistics of Google Analytics.',
             },
             'Net::SSLeay' => {
                 link => 'http://search.cpan.org/dist/Net-SSLeay/',
@@ -264,7 +264,7 @@ sub init_core_registry {
             'Crypt::SSLeay' => {
                 link => 'http://search.cpan.org/dist/Crypt-SSLeay',
                 label =>
-                    'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. This module is required for site statistics of Google Analytics too.',
+                    'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also, this module is required for site statistics of Google Analytics.',
             },
             'Cache::File' => {
                 link => 'http://search.cpan.org/dist/Cache/lib/Cache/File.pm',
