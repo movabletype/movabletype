@@ -12,6 +12,7 @@ require_once('lib/class.exception.php');
 
 define('VERSION', '6.0');
 define('PRODUCT_VERSION', '6.0.3');
+define('DATA_API_DEFAULT_VERSION', '1');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -439,6 +440,8 @@ class MT {
             $cfg['dbmaxretries'] = 3;
         isset($cfg['dbretryintercal']) or
             $cfg['dbretryinterval'] = 1;
+        isset($cfg['dataapiscript']) or
+            $cfg['dataapiscript'] = 'mt-data-api.cgi';
     }
 
     function configure_paths($blog_site_path) {
