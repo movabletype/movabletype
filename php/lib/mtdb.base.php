@@ -824,6 +824,9 @@ abstract class MTDatabase {
             $blog_ctx_arg = isset($args['include_blogs']) ?
                 array('include_blogs' => $args['include_blogs']) :
                 array('exclude_blogs' => $args['exclude_blogs']);
+            if (isset($args['include_blogs']) && isset($args['include_with_website'])) {
+                $blog_ctx_arg = array_merge($blog_ctx_arg, array('include_with_website' => $args['include_with_website']));
+            }
         }
 
         # a context hash for filter routines
