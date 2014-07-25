@@ -479,7 +479,7 @@ sub _compile_endpoints {
         foreach my $e (@$endpoints) {
             $e->{component} = $c;
             $e->{id}          ||= $e->{route};
-            $e->{version}     ||= DEFAULT_VERSION();
+            $e->{version}     ||= 1;
             $e->{verb}        ||= 'GET';
             $e->{error_codes} ||= {};
 
@@ -1155,7 +1155,7 @@ A list.
 
 =back
 
-=head2 MT::App::DataAPI->default_version
+=head2 MT::App::DataAPI->DEFAULT_VERSION
 
 Returns the default version number.
 
