@@ -22,7 +22,7 @@ use MT::Comment;
 use MT::TBPing;
 use MT::Util qw( archive_file_for discover_tb start_end_period extract_domain
     extract_domains weaken first_n_words remove_html encode_html trim );
-use MT::I18N qw( const );
+use MT::I18N qw( first_n_text const );
 
 sub CATEGORY_CACHE_TIME () {604800}    ## 7 * 24 * 60 * 60 == 1 week
 
@@ -1275,7 +1275,7 @@ sub get_excerpt {
     my $excerpt
         = MT->apply_text_filters( $entry->text, $entry->text_filters );
     my $blog = $entry->blog() || return;
-    first_n_words( $excerpt,
+    first_n_text( $excerpt,
                $words
             || $blog->words_in_excerpt
             || const('DEFAULT_LENGTH_ENTRY_EXCERPT') )
