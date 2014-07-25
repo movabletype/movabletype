@@ -2087,7 +2087,6 @@ sub unpublish_past_entries {
                     Entry       => $entry,
                     ArchiveType => $archive_type,
                     Category    => $primary_category,
-                    Force       => 0,
                 );
             }
 
