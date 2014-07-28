@@ -7,7 +7,7 @@
 
 function datetime_to_timestamp($dt) {
     $dt = preg_replace('/[^0-9]/', '', $dt);
-    $ts = mktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
+    $ts = gmmktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
     return $ts;
 }
 
