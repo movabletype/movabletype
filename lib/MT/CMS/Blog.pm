@@ -1963,8 +1963,9 @@ sub post_save {
     else {
 
         # if settings were changed that would affect published pages:
-        if (grep { $original->column($_) ne $obj->column($_) }
-            qw(allow_unreg_comments allow_reg_comments remote_auth_token
+        if (grep {
+                ( $original->column($_) || '' ) ne ( $obj->column($_) || '' )
+            } qw(allow_unreg_comments allow_reg_comments remote_auth_token
             allow_pings allow_comment_html )
             )
         {
