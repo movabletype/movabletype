@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.0', '6.0008' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.0', '6.0009' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.0.2',              '__PRODUCT_VERSION_ID__',
+        '6.0.3',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 2;
+        $RELEASE_NUMBER = 3;
     }
 
     $DebugMode = 0;
@@ -1012,6 +1012,9 @@ sub init_config {
             elsif ( $ENV{FAST_CGI} ) {
                 print $PERFLOG "# App Mode: FastCGI\n";
             }
+            elsif ( $ENV{'psgi.input'} ) {
+                print $PERFLOG "# App Mode: PSGI\n";
+            }
             else {
                 print $PERFLOG "# App Mode: CGI\n";
             }
@@ -1292,6 +1295,14 @@ __END_OF_EVAL__
                 eval { require Net::SMTP::TLS; Net::SMTP::TLS->new };
             }
         }
+    }
+
+    # Force MT to use IPv4 when using SSL and old IO::Socket::INET6 module,
+    # because an error may occur.
+    if ( eval { require IO::Socket::INET6; 1 }
+        && $IO::Socket::INET6::VERSION <= 2.57 )
+    {
+        eval 'use IO::Socket::SSL qw( inet4 )';
     }
 
     return $mt;

@@ -59,7 +59,7 @@ if ( defined(MT->config('RPTProcessCap')) && $proc_process_table ) {
     my $rpt_count = 0;
     my $cmndfile  = File::Basename::basename(__FILE__);
     my $cmndline  = ( grep { $_->pid eq $$ } @{ $t->table } )[0]->cmndline;
-    $cmndline =~ s/\Q$cmndfile\E\K.*//;
+    $cmndline =~ s/(?<=\Q$cmndfile\E).*//;
     foreach my $p ( @{ $t->table } ) {
         $rpt_count++ if $p->cmndline =~ m/^\Q$cmndline\E/;
     }

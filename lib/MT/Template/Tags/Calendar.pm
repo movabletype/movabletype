@@ -121,7 +121,8 @@ sub _hdlr_calendar {
         $prefix = $today;
     }
     my ( $cat_name, $cat );
-    if ( $cat_name = $args->{category} ) {
+    if ( defined $args->{category} ) {
+        $cat_name = $args->{category};
         $cat
             = MT::Category->load(
             { label => $cat_name, blog_id => $blog_id } )

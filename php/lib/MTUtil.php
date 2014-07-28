@@ -1056,15 +1056,15 @@ function tag_split($str) {
 
 function catarray_path_length_sort($a, $b) {
 	$al = strlen($a->category_label_path);
-	$bl = strlen($bcategory_label_path);
-	return $al == $bl ? 0 : $al < $bl ? 1 : -1;
+	$bl = strlen($b->category_label_path);
+    return $al === $bl ? 0 : ($al < $bl ? 1 : -1);
 }
 
 # sorts by length of category label, from longest to shortest
 function catarray_length_sort($a, $b) {
 	$al = strlen($a->category_label);
 	$bl = strlen($b->category_label);
-	return $al == $bl ? 0 : $al < $bl ? 1 : -1;
+	return $al === $bl ? 0 : ($al < $bl ? 1 : -1);
 }
 
 function create_expr_exception($m) {
@@ -1474,11 +1474,19 @@ function asset_cleanup_cb($matches) {
     return '<span' . $attr . $inner . '</span>';
 }
 
+# sorts by length of category label, from longest to shortest
+function rolearray_length_sort(&$a, &$b) {
+    $al = strlen($a->name);
+    $bl = strlen($b->name);
+    return $al === $bl ? 0 : ($al < $bl ? 1 : -1);
+}
+
 function create_role_expr_function($expr, &$roles, $datasource = 'author') {
     $roles_used = array();
     $orig_expr = $expr;
 
     $expr = preg_replace('/,/i', ' OR ', $expr);
+    usort($roles, "rolearray_length_sort");
 
     foreach ($roles as $role) {
         $rolen = $role->role_name;

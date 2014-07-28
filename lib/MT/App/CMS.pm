@@ -185,6 +185,7 @@ sub core_methods {
         'upload_file'        => "${pkg}Asset::upload_file",
         'upload_userpic'     => "${pkg}User::upload_userpic",
         'complete_insert'    => "${pkg}Asset::complete_insert",
+        'cancel_upload'      => "${pkg}Asset::cancel_upload",
         'complete_upload'    => "${pkg}Asset::complete_upload",
         'start_upload_entry' => "${pkg}Asset::start_upload_entry",
         'logout'             => {
@@ -4461,10 +4462,17 @@ sub remove_preview_file {
 
     # Clear any preview file that may exist (returning from
     # a preview using the 'reedit', 'cancel' or 'save' buttons)
-    if ( my $preview = $app->param('_preview_file') ) {
+    my $preview_basename = $app->param('_preview_file');
+
+    # Clear any preview file when saving entry,
+    # if PreviewInNewWindow is ON.
+    $preview_basename = $app->preview_object_basename
+        if ( !$preview_basename && $app->config('PreviewInNewWindow') );
+
+    if ($preview_basename) {
         require MT::Session;
         if (my $tf = MT::Session->load(
-                {   id   => $preview,
+                {   id   => $preview_basename,
                     kind => 'TF',
                 }
             )
@@ -4896,7 +4904,9 @@ sub setup_editor_param {
 
     if ( !$param->{editors} ) {
         my $rte;
-        if ( $param->{convert_breaks} =~ m/richtext/ ) {
+        if ( defined $param->{convert_breaks}
+            && $param->{convert_breaks} =~ m/richtext/ )
+        {
             ## Rich Text editor
             $rte = lc( $app->config('RichTextEditor') );
         }

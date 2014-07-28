@@ -531,10 +531,6 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '[_3] - <a href="[_1]">[_2]</a> (<a href="[_4]">[_5]</a>)',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">続きを読む</a>',
 
-## default_templates/verify-subscribe.mtml
-	'Thank you for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => '[_1]のアップデート通知にご登録いただきありがとうございました。以下のリンクから登録を完了させてください。',
-	'If the link is not clickable, just copy and paste it into your browser.' => 'リンクをクリックできない場合は、お使いのウェブブラウザに貼り付けてください。',
-
 ## lib/MT.pm
 	'Powered by [_1]' => 'Powered by [_1]',
 	'Version [_1]' => 'バージョン [_1]',
@@ -808,16 +804,6 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'コメント投稿者のユーザー情報を更新しました。',
 	'Commenter profile could not be updated: [_1]' => 'コメント投稿者のユーザー情報を更新できませんでした: [_1]',
 
-## lib/MT/App/NotifyList.pm
-	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
-	'Missing required parameter: blog_id. Please consult the user manual to configure notifications.' => 'blog_idパラメータを指定してください。詳細はユーザーガイドを参照してください。',
-	'An invalid redirect parameter was provided. The weblog owner needs to specify a path that matches with the domain of the weblog.' => 'redirectパラメータが不正です。ブログのドメインと一致するパスを指定するように管理者に通知してください。',
-	'The email address \'[_1]\' is already in the notification list for this weblog.' => 'メールアドレス([_1])はすでに登録されています。',
-	'Please verify your email to subscribe' => '登録するメールアドレスを確認してください。',
-	'_NOTIFY_REQUIRE_CONFIRMATION' => '[_1]にメールを送信しました。メールアドレスを認証するため、メールの内容に従って登録を完了してください。',
-	'The address [_1] was not subscribed.' => '[_1]は登録されていません。',
-	'The address [_1] has been unsubscribed.' => '[_1]の登録を解除しました。',
-
 ## lib/MT/App/Search.pm
 	'Invalid type: [_1]' => '不正なtypeです: [_1]',
 	'Failed to cache search results.  [_1] is not available: [_2]' => '結果をキャッシュできませんでした。[_1]を利用できません: [_2]',
@@ -876,18 +862,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid session.' => 'セッションが不正です。',
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => '権限がありません。Movable Typeのアップグレードを管理者に依頼してください。',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Typeをバージョン[_1]にアップグレードしました。',
-
-## lib/MT/App/Viewer.pm
-	'Loading blog with ID [_1] failed' => 'ブログ (ID：[_1]) の読み込みに失敗しました',
-	'File not found' => 'ファイルが見つかりません',
-	'Template publishing failed: [_1]' => 'テンプレートの出力に失敗しました: [_1]',
-	'Unknown archive type: [_1]' => 'アーカイブタイプが不明です: [_1]',
-	'Cannot load template [_1]' => 'テンプレートを読み込めませんでした [_1]',
-	'Archive publishing failed: [_1]' => 'アーカイブの公開に失敗しました: [_1]',
-	'Invalid entry ID [_1].' => 'エントリーIDが不正です: [_1]',
-	'Entry [_1] was not published.' => '記事 [_1] は公開されていません',
-	'Invalid category ID \'[_1]\'' => 'カテゴリのIDが不正です: [_1]',
-	'Invalid author ID \'[_1]\'' => 'ユーザーIDが不正です: [_1]',
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => '[_2]を使うには[_1]のドライバが必要です。',
@@ -1527,7 +1501,7 @@ use vars qw( @ISA %Lexicon );
 	'Error creating new template: ' => 'テンプレートの作成エラー:',
 	'Template Referesh' => 'テンプレート初期化',
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'カスタムテンプレートと思われるため、\'[_1]\'をスキップします。',
-	'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>' => '「[_3]」を初期化します(<a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">バックアップ</a>)。',
+	'Refreshing template <strong>[_3]</strong> after making <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>.' => '「[_3]」を初期化します(<a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">バックアップ</a>)。',
 	'Skipping template \'[_1]\' since it has not been changed.' => '[_1]は変更されていないのでスキップします。',
 	'Copy of [_1]' => '[_1]のコピー',
 	'Cannot publish a global template.' => 'グローバルテンプレートの公開ができません。',
@@ -1595,7 +1569,7 @@ use vars qw( @ISA %Lexicon );
 	'Please use xml, tar.gz, zip, or manifest as a file extension.' => '拡張子がxml、tar.gz、zip、manifestのいずれかのファイルをアップロードしてください。',
 	'Unknown file format' => 'ファイル形式が不明です。',
 	'Some objects were not restored because their parent objects were not restored.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。',
-	'Detailed information is in the <a href=\'javascript:void(0)\' onclick=\'closeDialog(\"[_1]\")\'>activity log</a>.' => '詳細は<a href=\'javascript:void(0)\' onclick=\'closeDialog(\"[_1]\")\'>ログ</a>を参照してください。',
+	'Detailed information is in the activity log.' => '詳細はログを参照してください。',
 	'[_1] has canceled the multiple files restore operation prematurely.' => '[_1]が復元を途中で強制終了しました。',
 	'Changing Site Path for the blog \'[_1]\' (ID:[_2])...' => '\'[_1]\'(ID:[_2])のサイトパスを変更しています...',
 	'Removing Site Path for the blog \'[_1]\' (ID:[_2])...' => '\'[_1]\'(ID:[_2])のサイトパスを消去しています...',
@@ -1617,7 +1591,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid attempt to recover password (used hint \'[_1]\')' => 'パスワードの再設定に失敗しました(フレーズ: [_1])。',
 	'User \'[_1]\' (user #[_2]) does not have email address' => 'ユーザー\'[_1]\'(ID:[_2])はメールアドレスがありません',
 	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'パスワード再設定用のリンクがユーザー\'[_1]\'(ID:[_2])のメールアドレス([_3])あてに通知されました。',
-	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。詳細は<a href="javascript:void(0)" onclick="closeDialog(\'[_1]\')">ログ</a>を参照してください。',
+	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。詳細はログを参照してください。',
 	'[_1] is not a directory.' => '[_1]はディレクトリではありません。',
 	'Error occured during restore process.' => '復元中にエラーがありました。',
 	'Some of files could not be restored.' => '復元できなかったファイルがあります。',
@@ -1632,6 +1606,7 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout limit' => '同一IPアドレスからの試行回数',
 	'IP address lockout interval' => '同一IPアドレスからの試行間隔',
 	'Lockout IP address whitelist' => 'ロックアウトの除外IPアドレス',
+	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(無名カテゴリ)',
@@ -1908,7 +1883,6 @@ use vars qw( @ISA %Lexicon );
 	'New Comment' => '新しいコメント',
 	'New Ping' => '新しいトラックバック',
 	'Entry Notify' => '記事の共有',
-	'Subscribe Verify' => '購読の確認',
 	'User Lockout' => 'ユーザーアカウントのロック通知',
 	'IP Address Lockout' => 'IPアドレスのロック通知',
 
@@ -2737,8 +2711,6 @@ use vars qw( @ISA %Lexicon );
 	'Boilerplate' => '定型文',
 	'Select Boilerplate' => '定型文を選択...',
 
-## mt-static/plugins/Loupe/js/vendor.js
-
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
 	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
 	'Italic (Ctrl+I)' => '斜体 (Ctrl+I)',
@@ -2981,6 +2953,7 @@ use vars qw( @ISA %Lexicon );
 ## themes/pico/templates/about_this_page.mtml
 
 ## themes/pico/templates/archive_index.mtml
+	'Navigation' => 'ナビゲーション',
 	'Related Content' => '関連コンテンツ',
 
 ## themes/pico/templates/archive_widgets_group.mtml
@@ -3019,6 +2992,7 @@ use vars qw( @ISA %Lexicon );
 ## themes/pico/templates/dynamic_error.mtml
 
 ## themes/pico/templates/entry.mtml
+	'Home' => 'ホーム',
 
 ## themes/pico/templates/entry_summary.mtml
 
@@ -3126,6 +3100,7 @@ use vars qw( @ISA %Lexicon );
 	'Upload New Asset' => '新規アイテムのアップロード',
 
 ## tmpl/cms/asset_upload.tmpl
+	'Upload Destination' => 'アップロード先',
 	'Upload Asset' => 'アイテムのアップロード',
 
 ## tmpl/cms/backup.tmpl
@@ -3286,7 +3261,7 @@ use vars qw( @ISA %Lexicon );
 	'Disable Plugins' => 'プラグインを利用しない',
 	'Enable plugin functionality' => 'プラグインの機能を有効化する',
 	'Enable Plugins' => 'プラグインを利用する',
-	'_PLUGIN_DIRECTORY_URL' => 'http://communities.movabletype.jp/plugins/',
+	'_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.jp/',
 	'Find Plugins' => 'プラグインを探す',
 	'Your plugin settings have been saved.' => 'プラグインの設定を保存しました。',
 	'Your plugin settings have been reset.' => 'プラグインの設定をリセットしました。',
@@ -3624,6 +3599,7 @@ use vars qw( @ISA %Lexicon );
 	'Confirm' => '確認',
 
 ## tmpl/cms/dialog/comment_reply.tmpl
+	'Reply to comment' => 'コメント返信',
 	'On [_1], [_2] commented on [_3]' => '[_2]から[_3]へのコメント([_1])',
 	'Your reply:' => '返信',
 	'Submit reply (s)' => '返信を投稿 (s)',
@@ -4247,9 +4223,8 @@ use vars qw( @ISA %Lexicon );
 	'Asset Missing' => 'アイテムなし',
 	'No thumbnail image' => 'サムネイル画像がありません。',
 
-## tmpl/cms/include/asset_upload.tmpl
-	'Upload Destination' => 'アップロード先',
-	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]公開パスの設定[_3]して、[_1]を再構築してください。},
+## tmpl/cms/include/asset_upload.tmplwo	'Upload Destination' => 'アップロード先',
+	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]公開パスの設定[_3]をして、[_1]を再構築してください。},
 	'Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator.' => 'ファイルアップロードができるように、システム、または[_1]管理者が[_1]を再構築する必要があります。システム、または[_1]管理者に連絡してください。',
 	q{Cannot write to '[_1]'. Image upload is possible, but thumbnail is not created.} => q{ファイルのアップロードは可能ですが、'[_1]'への書き込みが行えないため、画像ファイルのサムネイルを作成する事ができません。},
 	q{Asset file('[_1]') has been uploaded.} => q{アイテム('[_1]')がアップロードされました。},
@@ -4380,7 +4355,7 @@ use vars qw( @ISA %Lexicon );
 	'This is a beta version of Movable Type and is not recommended for production use.' => 'このMovable Typeはベータ版です。',
 	'http://www.movabletype.org' => 'http://www.movabletype.jp',
 	'MovableType.org' => 'MovableType.jp',
-	'http://plugins.movabletype.org/' => 'http://communities.movabletype.jp/plugins/',
+	'http://plugins.movabletype.org/' => 'http://plugins.movabletype.jp/',
 	'http://wiki.movabletype.org/' => 'http://wiki.movabletype.org/',
 	'Wiki' => 'Wiki(英語)',
 	'Support' => 'サポート',
@@ -4619,7 +4594,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_theme.tmpl
 	'[_1] Themes' => '[_1]テーマの一覧',
 	'All Themes' => 'テーマの一覧',
-	'_THEME_DIRECTORY_URL' => 'http://communities.movabletype.jp/themes/',
+	'_THEME_DIRECTORY_URL' => 'http://plugins.movabletype.jp/',
 	'Find Themes' => 'テーマを探す',
 	'Theme [_1] has been uninstalled.' => 'テーマ "[_1]"をアンインストールしました。',
 	'Theme [_1] has been applied (<a href="[_2]">[quant,_3,warning,warnings]</a>).' => 'テーマ "[_1]"を適用しました(<a href="[_2]">[quant,_3,つの警告,つの警告]</a>)。',
@@ -4639,8 +4614,7 @@ use vars qw( @ISA %Lexicon );
 	'No themes are installed.' => 'テーマがインストールされていません。',
 	'Current Theme' => '現在のテーマ',
 	'Available Themes' => '利用可能なテーマ',
-	'Themes in used' => '利用しているテーマ',
-	'Installed Themes' => 'インストールされているテーマ',
+	'Themes in Use' => '利用しているテーマ',
 
 ## tmpl/cms/list_widget.tmpl
 	'Manage [_1] Widgets' => '[_1]ウィジェットの管理',
@@ -5386,6 +5360,7 @@ use vars qw( @ISA %Lexicon );
 	'Professional Styles' => 'プロフェッショナルスタイル',
 	'A collection of styles compatible with Professional themes.' => 'プロフェッショナルテーマと互換のあるスタイルです。',
 	'Professional Website' => 'プロフェッショナル ウェブサイト',
+	'Blog Index' => 'ブログ用インデックスページ',
 	'Header' => 'ヘッダー',
 	'Footer' => 'フッター',
 	'Entry Detail' => '記事の詳細',
@@ -5514,6 +5489,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/blog/footer.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/footer_links.mtml
+	'Links' => 'リンク',
 
 ## addons/Commercial.pack/templates/professional/blog/header.mtml
 
@@ -5620,6 +5596,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/website/search.mtml
 
 ## addons/Commercial.pack/templates/professional/website/search_results.mtml
+	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'すべての単語が順序に関係なく検索されます。フレーズで検索したいときは引用符で囲んでください。',
 
 ## addons/Commercial.pack/templates/professional/website/sidebar.mtml
 
@@ -6394,9 +6371,9 @@ use vars qw( @ISA %Lexicon );
 	'Unable to write remote file ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
+	'[Rsync Error] removing temporary directory: [_1]' => 'テンポラリディレクトリ ([_1]) を削除できません。',
 	'Temp Directory [_1] is not writable.' => 'テンポラリディレクトリ ([_1]) に書き込めません。',
 	'Error during rsync: Command (exit code [_1]): [_2]' => 'rsync コマンドでエラーが起きました (終了コード: [_1]): [_2]',
-	'[Rsync Error] removing temporary directory: [_1]' => 'テンポラリディレクトリ ([_1]) を削除できません。',
 	'An error occured while copying the directory.' => 'ファイルのコピー中にエラーが発生しました。',
 
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
@@ -6411,7 +6388,6 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'FTPサーバー \'[_1]\' への接続中にエラーが発生しました: [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'FTPサーバーのカレントディレクトリが取得できませんでした。',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした。',
-	'Check the settings and try again.' => '設定を見直してもう一度お試しください。',
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'サーバー配信設定',
@@ -6916,9 +6892,8 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Moderate' => '公開を保留するキーワード',
 	'Keywords to Junk' => 'スパムにするキーワード',
 
-
 );
 
-## New words: 259
+## New words: 66
 
 1;

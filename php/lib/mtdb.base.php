@@ -824,6 +824,9 @@ abstract class MTDatabase {
             $blog_ctx_arg = isset($args['include_blogs']) ?
                 array('include_blogs' => $args['include_blogs']) :
                 array('exclude_blogs' => $args['exclude_blogs']);
+            if (isset($args['include_blogs']) && isset($args['include_with_website'])) {
+                $blog_ctx_arg = array_merge($blog_ctx_arg, array('include_with_website' => $args['include_with_website']));
+            }
         }
 
         # a context hash for filter routines
@@ -1045,26 +1048,10 @@ abstract class MTDatabase {
             $author_filter = "and entry_author_id = '" . $args['author_id'] . "'";
         }
 
-        $start = isset($args['current_timestamp'])
-            ? $args['current_timestamp'] : null;
-        $end = isset($args['current_timestamp_end'])
-            ? $args['current_timestamp_end'] : null;
-        if ($start || $end) {
+        if (isset($args['current_timestamp']) || isset($args['current_timestamp_end'])) {
             $timestamp_field = ($args['class'] == 'page') ? 'entry_modified_on' : 'entry_authored_on';
         }
-        if ($start and $end) {
-            $start = $this->ts2db($start);
-            $end = $this->ts2db($end);
-            $date_filter = "and $timestamp_field between '$start' and '$end'";
-        } elseif ($start) {
-            $start = $this->ts2db($start);
-            $date_filter = "and $timestamp_field >= '$start'";
-        } elseif ($end) {
-            $end = $this->ts2db($end);
-            $date_filter = "and $timestamp_field <= '$end'";
-        } else {
-            $date_filter = '';
-        }
+        $date_filter = $this->build_date_filter($args, $timestamp_field);
 
         if (isset($args['lastn'])) {
             if (!isset($args['entry_id'])) $limit = $args['lastn'];
@@ -2729,13 +2716,14 @@ abstract class MTDatabase {
 
         $where = "objecttag_tag_id = $tag_id";
 
-        if ($class == 'entry') {
-            $where .= "and entry_status = 2 and entry_class = '$class'";
+        if ($class == 'entry' or $class == 'page') {
+            $where .= " and entry_status = 2 and entry_class = '$class'";
         }
 
+        $ds = $class == 'page' ? 'entry' : $ds;
         $join['mt_objecttag'] = 
             array(
-                "condition" => "${class}_id = objecttag_object_id and objecttag_object_datasource='$class'"
+                "condition" => "${ds}_id = objecttag_object_id and objecttag_object_datasource='$ds'"
                 );
 
         require_once("class.mt_$class.php");
@@ -3295,7 +3283,7 @@ abstract class MTDatabase {
             $type_filter = "and asset_class ='" . $args['type'] . "'";
         }
 
-        $where = "1 = 1
+        $where = "asset_parent is NULL
                   $blog_filter
                   $type_filter";
 
@@ -3396,6 +3384,9 @@ abstract class MTDatabase {
             $ext_filter = "and asset_file_ext ='" . $args['file_ext'] . "'";
         }
 
+        $date_filter = $args['ignore_archive_context']
+            ? '' : $this->build_date_filter( $args, 'asset_created_on' );
+
         # Adds a score or rate filter to the filters list.
         if (isset($args['namespace'])) {
             require_once("MTUtil.php");
@@ -3483,6 +3474,7 @@ abstract class MTDatabase {
                 $type_filter
                 $ext_filter
                 $thumb_filter
+                $date_filter
             order by
                 $sort_by $order
         ";
@@ -3818,6 +3810,27 @@ abstract class MTDatabase {
             $tmpl = $tmpls[0];
 
         return $tmpl;
+    }
+
+    private function build_date_filter($args, $field) {
+        $start = isset($args['current_timestamp'])
+            ? $args['current_timestamp'] : null;
+        $end = isset($args['current_timestamp_end'])
+            ? $args['current_timestamp_end'] : null;
+
+        if ($start and $end) {
+            $start = $this->ts2db($start);
+            $end = $this->ts2db($end);
+            return "and $field between '$start' and '$end'";
+        } elseif ($start) {
+            $start = $this->ts2db($start);
+            return "and $field >= '$start'";
+        } elseif ($end) {
+            $end = $this->ts2db($end);
+            return "and $field <= '$end'";
+        } else {
+            return '';
+        }
     }
 }
 ?>

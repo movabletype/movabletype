@@ -236,14 +236,12 @@ TC.attachLoadEvent( init );
         </div>
       </mtapp:setting>
 
-      <mt:unless name="file_is_missing">
-        <mtapp:setting
-           id="asset-url"
-           label_class="top-label"
-           label="<__trans phrase="Embed Asset">">
-          <input type="text" readonly="readonly" name="asset-url" id="asset-url" class="text full readonly" value="<mt:var name="url" escape="html">" />
-        </mtapp:setting>
-      </mt:unless>
+      <mtapp:setting
+         id="asset-url"
+         label_class="top-label"
+         label="<__trans phrase="Embed Asset">">
+        <input type="text" readonly="readonly" name="asset-url" id="asset-url" class="text full readonly" value="<mt:var name="url" escape="html">" />
+      </mtapp:setting>
     </div>
 
     <mt:setvarblock name="action_buttons">

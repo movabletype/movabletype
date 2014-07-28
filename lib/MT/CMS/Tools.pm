@@ -506,7 +506,9 @@ sub cfg_system_general {
     my @readonly_configs = qw( EmailAddressMain DebugMode PerformanceLogging
         PerformanceLoggingPath PerformanceLoggingThreshold
         UserLockoutLimit UserLockoutInterval IPLockoutLimit
-        IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo );
+        IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo
+        TrackRevisions DisableNotificationPings OutboundTrackbackLimit
+        OutboundTrackbackDomains AllowPings AllowComments );
     push @readonly_configs, 'BaseSitePath' unless $cfg->HideBaseSitePath;
 
     my @config_warnings;
@@ -590,7 +592,7 @@ sub cfg_system_general {
         =~ s/,/\n/g;
     $param{sitepath_limit}        = $cfg->BaseSitePath;
     $param{sitepath_limit_hidden} = $cfg->HideBaseSitePath;
-    $param{preflogging_hidden}    = $cfg->HidePaformanceLoggingSettings;
+    $param{preflogging_hidden}    = $cfg->HidePerformanceLoggingSettings;
 
     $param{saved}        = $app->param('saved');
     $param{screen_class} = "settings-screen system-feedback-settings";
@@ -625,7 +627,7 @@ sub save_cfg_system_general {
             $app->param('system_debug_mode')
         )
     ) if ( $app->param('system_debug_mode') =~ /\d+/ );
-    if ( not $cfg->HidePaformanceLoggingSettings ) {
+    if ( not $cfg->HidePerformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             push( @meta_messages,
                 $app->translate('Performance logging is on') );
@@ -657,7 +659,7 @@ sub save_cfg_system_general {
         ( $app->param('system_email_address') || undef ), 1 );
     $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
         if ( $app->param('system_debug_mode') =~ /\d+/ );
-    if ( not $cfg->HidePaformanceLoggingSettings ) {
+    if ( not $cfg->HidePerformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             $app->config( 'PerformanceLogging', 1, 1 );
         }
@@ -1664,7 +1666,7 @@ sub restore_premature_cancel {
         $param->{error}
             = $message . '  '
             . $app->translate(
-            "Detailed information is in the <a href='javascript:void(0)' onclick='closeDialog(\"[_1]\")'>activity log</a>.",
+            "Detailed information is in the activity log.",
             $log_url
             );
     }
@@ -2713,7 +2715,7 @@ sub restore_file {
             = $app->uri( mode => 'list', args => { '_type' => 'log' } );
         $$errormsg .= '; ' if $$errormsg;
         $$errormsg .= $app->translate(
-            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.',
+            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.',
             $log_url
         );
         return $blogs;
@@ -2806,7 +2808,7 @@ sub restore_directory {
         my $log_url
             = $app->uri( mode => 'list', args => { '_type' => 'log' } );
         $$error = $app->translate(
-            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.',
+            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.',
             $log_url
         );
         return ( $blogs, $assets );

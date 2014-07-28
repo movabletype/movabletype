@@ -7,7 +7,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-use Test::More tests => 55;
+use Test::More tests => 57;
 use File::Temp qw( tempfile );
 
 use MT;
@@ -169,6 +169,19 @@ $entry->text(q(This text is **strong**));
 is(build($ctx, '<$MTEntryExcerpt$>'), q(This text is strong...), 'MTEntryExcerpt');
 is(build($ctx, '<$MTEntryExcerpt convert_breaks="1"$>'), q(This text is strong...), 'convert_breaks 1');
 is(build($ctx, '<$MTEntryExcerpt convert_breaks="0"$>'), q(This text is **strong**...), 'convert_breaks 0');
+
+## Test which applies default filter
+## compulsorily with convert_breaks modifier.
+my $excerpt = <<'EXCERPT';
+This
+text
+is
+excerpt
+EXCERPT
+$entry->convert_breaks('markdown');
+$entry->excerpt($excerpt);
+is(build($ctx, '<$MTEntryExcerpt convert_breaks="0"$>'), $excerpt, 'convert_breaks 0');
+is(build($ctx, '<$MTEntryExcerpt convert_breaks="1"$>'), MT->apply_text_filters( $excerpt, [ '__default__' ] ), 'convert_breaks 1');
 
 $entry->convert_breaks('__default__');
 $entry->text('Elvis was a hero to most but he never meant shit to me');

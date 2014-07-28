@@ -329,12 +329,15 @@ sub insert {
         if ( $ext_from && $ext_to );
     my $tmpl;
 
+    my $id = $app->param('id') or return $app->errtrans("Invalid request.");
+    my $asset = MT::Asset->load($id);
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
             {   upload_html => $text || '',
                 edit_field => scalar $app->param('edit_field') || '',
                 extension_message => $extension_message,
+                asset_type => $asset->class,
             },
         );
     }
@@ -343,12 +346,11 @@ sub insert {
             'dialog/asset_insert.tmpl',
             {   upload_html => $text || '',
                 edit_field => scalar $app->param('edit_field') || '',
+                asset_type => $asset->class,
             },
         );
     }
     my $ctx = $tmpl->context;
-    my $id = $app->param('id') or return $app->errtrans("Invalid request.");
-    my $asset = MT::Asset->load($id);
     $ctx->stash( 'asset', $asset );
     return $tmpl;
 }
@@ -393,7 +395,9 @@ sub asset_userpic {
                     $app->translate(
                         "Failed to create thumbnail file. This image type is not supported..."
                     )
-                ) unless ( $fmgr->exists( $user->userpic_file() ) );
+                    )
+                    unless $asset->has_thumbnail
+                    && $asset->can_create_thumbnail;
                 $user->save;
             }
         }
@@ -625,6 +629,41 @@ sub complete_insert {
                     },
                 )
             );
+        }
+    }
+}
+
+sub cancel_upload {
+    # Delete uploaded asset after upload if user cancels on asset options page
+    my $app   = shift;
+    my %param = $app->param_hash;
+
+    $app->validate_magic() or return;
+
+    my $asset;
+    require MT::Asset;
+    $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
+      or return $app->errtrans("Invalid request.");
+
+    # User has permission to delete asset and asset file, or user created asset
+    if ( ( $app->can_do('delete_asset') && $app->can_do('delete_asset_file') )
+         || $asset->created_by == $app->user->id )
+    {
+        # Do not delete asset if asset has been modified since initial upload
+        if ($asset->modified_on == $asset->created_on ) {
+    
+            # Label, description, & tags params exist on asset options
+            #   page if we were editing newly upload asset
+            if (    exists( $param{label} )
+                 && exists( $param{description} )
+                 && exists( $param{tags} ) )
+            {
+                # Count MT::ObjectAsset records for asset
+                # Do not delete asset if asset has any associations
+                my $oa_class = MT->model('objectasset');
+                my $oa_count = $oa_class->count( { asset_id => $asset->id } );
+                $asset->remove unless $oa_count;
+            }
         }
     }
 }
@@ -1266,6 +1305,7 @@ sub _upload_file {
             ? File::Spec->catfile( $relative_path, $basename )
             : $basename;
         $asset_file = $q->param('site_path') ? '%r' : '%a';
+        $relative_path =~ s/^[\/\\]//;
         $asset_file = File::Spec->catfile( $asset_file, $relative_path );
         $local_file = File::Spec->catfile( $path,       $basename );
         $base_url

@@ -12,9 +12,8 @@ function smarty_function_mtentryexcerpt($args, &$ctx) {
         if ((!isset($args['convert_breaks'])) || (!$args['convert_breaks'])) {
             return $excerpt;
         }
-        #$filters = $e['entry_text_filters'];
-        #push @$filters, '__default__' unless @$filters;
-        #return MT->apply_text_filters($excerpt, $filters, $ctx);
+        $cb = 'convert_breaks';
+        return apply_text_filter($ctx, $excerpt, $cb);
     } elseif ($args['no_generate']) {
         return '';
     }

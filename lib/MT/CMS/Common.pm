@@ -310,7 +310,7 @@ sub save {
                 if ( $q->param('file_extension') || '' ) ne '';
         }
 
-        unless ( $values{site_url} =~ m!/$! ) {
+        unless ( ( $values{site_url} || '' ) =~ m!/$! ) {
             my $url = $values{site_url};
             $values{site_url} = $url;
         }

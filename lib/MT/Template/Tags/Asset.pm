@@ -332,11 +332,14 @@ sub _hdlr_assets {
     require MT::Asset;
     my @assets;
     if ( !$assets ) {
-        my ( $start, $end )
-            = ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} );
-        if ( $start && $end ) {
-            $terms{created_on} = [ $start, $end ];
-            $args{range_incl}{created_on} = 1;
+        if ( !$args->{ignore_archive_context} ) {
+            my ( $start, $end )
+                = ( $ctx->{current_timestamp},
+                $ctx->{current_timestamp_end} );
+            if ( $start && $end ) {
+                $terms{created_on} = [ $start, $end ];
+                $args{range_incl}{created_on} = 1;
+            }
         }
         if ( my $days = $args->{days} ) {
             my @ago = offset_time_list( time - 3600 * 24 * $days,
@@ -1309,6 +1312,7 @@ sub _hdlr_asset_count {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
     $terms{blog_id} = $ctx->stash('blog_id') if $ctx->stash('blog_id');
+    $terms{parent} = \'is NULL';
     $terms{class} = $args->{type} || '*';
     my $count = MT::Asset->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );

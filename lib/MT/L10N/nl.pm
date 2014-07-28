@@ -531,10 +531,6 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> van [_3] op <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Meer lezen</a>',
 
-## default_templates/verify-subscribe.mtml
-	'Thank you for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => 'Bedankt om in te schrijven voor notificaties over updates op [_1].  Gelieve onderstaande link te volgen om uw inschrijving te bevestigen:',
-	'If the link is not clickable, just copy and paste it into your browser.' => 'Indien de link niet klikbaar is, kopiëer en plak hem dan gewoon in uw browser.',
-
 ## lib/MT/AccessToken.pm
 	'AccessToken' => 'AccessToken',
 
@@ -732,16 +728,6 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'Reageerdersprofiel is met succes bijgewerkt.',
 	'Commenter profile could not be updated: [_1]' => 'Reageerdersprofiel kon niet worden bijgewerkt: [_1]',
 
-## lib/MT/App/NotifyList.pm
-	'Please enter a valid email address.' => 'Gelieve een geldig e-mail adres op te geven.',
-	'Missing required parameter: blog_id. Please consult the user manual to configure notifications.' => 'Ontbrekende parameter: blog_id. Gelieve de handleiding te raadplegen om waarschuwingen te configureren.',
-	'An invalid redirect parameter was provided. The weblog owner needs to specify a path that matches with the domain of the weblog.' => 'Er werd een ongeldige redirect parameter opgegeven. De eigenaar van de weblog moet een pad opgeven dat overeenkomt met het domein van de weblog.',
-	'The email address \'[_1]\' is already in the notification list for this weblog.' => 'Het e-mail adres \'[_1]\' zit reeds in de notificatielijst voor deze weblog.',
-	'Please verify your email to subscribe' => 'Gelieve uw e-mail adres te verifiëren voor inschrijving',
-	'_NOTIFY_REQUIRE_CONFIRMATION' => 'Er is een e-mail verstuurd naar [_1].  Om uw inschrijving te voltooien, \n    gelieve de link te volgen die in die e-mail staat.  Dit om te bevestigen dat\n    het opgegeven e-mail adres correct is en aan u toebehoort.',
-	'The address [_1] was not subscribed.' => 'Het adres [_1] werd niet ingeschreven.',
-	'The address [_1] has been unsubscribed.' => 'Het adres [_1] werd uitgeschreven.',
-
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => '¨Probleem met dit verzoek: corrupte karakterdata voor karakterset [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Fout bij het laden van website #[_1]',
@@ -838,18 +824,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid session.' => 'Ongeldige sessie.',
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => 'Geen permissies.  Gelieve uw Movable Type administrator te contacteren voor hulp met het upgraden van Movable Type.',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Type is bijgewerkt tot versie [_1]',
-
-## lib/MT/App/Viewer.pm
-	'Loading blog with ID [_1] failed' => 'Laden van blog met ID [_1] mislukt',
-	'File not found' => 'Bestand niet gevonden',
-	'Template publishing failed: [_1]' => 'Publicatie van sjabloon mislukt: [_1]',
-	'Unknown archive type: [_1]' => 'Onbekend archieftype: [_1]',
-	'Cannot load template [_1]' => 'Kan sjabloon [_1] niet laden',
-	'Archive publishing failed: [_1]' => 'Publicatie van archief mislukt: [_1]',
-	'Invalid entry ID [_1].' => 'Ongeldig bericht ID [_1].',
-	'Entry [_1] was not published.' => 'Bericht [_1] werd niet gepubliceerd.',
-	'Invalid category ID \'[_1]\'' => 'Ongeldig categorie-ID \'[_1]\'',
-	'Invalid author ID \'[_1]\'' => 'Ongeldig auteurs ID \'[_1]\'',
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => 'De [_1] driver is vereist om [_2] te kunnen gebruiken.',
@@ -1500,7 +1474,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Error creating new template: ' => 'Fout bij aanmaken nieuw sjabloon: ',
 	'Template Referesh' => 'Sjablonen verversen',
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'Sjabloon \'[_1]\' wordt overgeslagen, omdat het blijkbaar een gepersonaliseerd sjabloon is.',
-	'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>' => 'Bezig sjabloon <strong>[_3]</strong> te verversen met <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>',
+	'Refreshing template <strong>[_3]</strong> after making <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>.' => 'Bezig sjabloon <strong>[_3]</strong> te verversen met <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>',
 	'Skipping template \'[_1]\' since it has not been changed.' => 'Sjabloon \'[_1]\' wordt overgeslagen omdat het niet is veranderd.',
 	'Copy of [_1]' => 'Kopie van [_1]',
 	'Cannot publish a global template.' => 'Kan globaal sjabloon niet publiceren.',
@@ -1568,7 +1542,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Please use xml, tar.gz, zip, or manifest as a file extension.' => 'Gelieve xml, tar.gz, zip, of manifest te gebruiken als bestandsextensies.',
 	'Unknown file format' => 'Onbekend bestandsformaat',
 	'Some objects were not restored because their parent objects were not restored.' => 'Sommige objecten werden niet teruggezet omdat hun ouder-objecten niet werden teruggezet.',
-	'Detailed information is in the <a href=\'javascript:void(0)\' onclick=\'closeDialog(\"[_1]\")\'>activity log</a>.' => 'Gedetailleerde informatie is terug te vinden in het <a href=\'javascript:void(0)\' onclick=\'closeDialog(\"[_1]\")\'>activiteitenlog</a>.',
+	'Detailed information is in the activity log.' => 'Gedetailleerde informatie is terug te vinden in het activiteitenlog.',
 	'[_1] has canceled the multiple files restore operation prematurely.' => '[_1] heeft de terugzet-operatie van meerdere bestanden voortijdig afgebroken.',
 	'Changing Site Path for the blog \'[_1]\' (ID:[_2])...' => 'Sitepad voor blog \'[_1]\' (ID:[_2]) aan het aanpassen...',
 	'Removing Site Path for the blog \'[_1]\' (ID:[_2])...' => 'Sitepad voor blog \'[_1]\' (ID:[_2]) aan het verwijderen...',
@@ -1590,7 +1564,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Invalid attempt to recover password (used hint \'[_1]\')' => 'Ongeldige poging om wachtwoord te recupereren (gebruikte hint \'[_1]\')',
 	'User \'[_1]\' (user #[_2]) does not have email address' => 'Gebruiker \'[_1]\' (gebruiker #[_2]) heeft geen e-mail adres',
 	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'Een verzoek om het wachtwoord re resetten is naar [_3] gestuurd voor gebruiker \'[_1]\' (gebruiker #[_2]).',
-	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.' => 'Sommige objecten werden niet gerecupereerd omdat hun ouder-objecten niet werden teruggezet.  Gedetailleerde informatie is te vinden in het <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activiteitenlog</a>.',
+	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.' => 'Sommige objecten werden niet gerecupereerd omdat hun ouder-objecten niet werden teruggezet.  Gedetailleerde informatie is te vinden in het activiteitenlog.',
 	'[_1] is not a directory.' => '[_1] is geen map.',
 	'Error occured during restore process.' => 'Er deed zich een fout voor tijdens het restore-proces.',
 	'Some of files could not be restored.' => 'Een aantal bestanden konden niet worden teruggezet.',
@@ -1605,6 +1579,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'IP address lockout limit' => 'Blokkeringslimiet IP adres',
 	'IP address lockout interval' => 'Blokkeringsinterval IP adres',
 	'Lockout IP address whitelist' => 'Niet blokkkeerbare IP adressen',
+	'Please enter a valid email address.' => 'Gelieve een geldig e-mail adres op te geven.',
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(Categorie zonder label)',
@@ -1874,7 +1849,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'New Comment' => 'Nieuwe reactie',
 	'New Ping' => 'Nieuwe ping',
 	'Entry Notify' => 'Notificatie bericht',
-	'Subscribe Verify' => 'Verificatie inschrijving',
 	'User Lockout' => 'Blokkering gebruiker',
 	'IP Address Lockout' => 'Blokkering IP adres',
 
@@ -4925,8 +4899,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	q{No themes are installed.} => q{Geen thema's geïnstalleerd},
 	'Current Theme' => 'Huidig thema',
 	q{Available Themes} => q{Beschikbare thema's},
-	q{Themes in used} => q{Thema's in gebruik},
-	q{Installed Themes} => q{Geïnstalleerde thema's},
+	q{Themes in Use} => q{Thema's in gebruik},
 
 ## tmpl/cms/list_widget.tmpl
 	'Manage [_1] Widgets' => 'Beheer [_1] widgets',

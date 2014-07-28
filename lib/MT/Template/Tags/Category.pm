@@ -976,11 +976,11 @@ sub _hdlr_if_category {
     my $e             = $ctx->stash('entry');
     my $tag           = lc $ctx->stash('tag');
     my $entry_context = $tag =~ m/(entry|page)if(category|folder)/;
-    return $ctx->_no_entry_error() if $entry_context && !$e;
-    my $name = $args->{name} || $args->{label};
-    my $primary   = $args->{type} && ( $args->{type} eq 'primary' );
-    my $secondary = $args->{type} && ( $args->{type} eq 'secondary' );
+    my $name          = $args->{name} || $args->{label};
+    my $primary       = $args->{type} && ( $args->{type} eq 'primary' );
+    my $secondary     = $args->{type} && ( $args->{type} eq 'secondary' );
     $entry_context ||= ( $primary || $secondary );
+    return $ctx->_no_entry_error() if $entry_context && !$e;
     my $cat
         = $entry_context
         ? $e->category

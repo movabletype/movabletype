@@ -162,6 +162,9 @@ sub rename {
     my $fmgr = shift;
     my ( $from, $to ) = @_;
 
+    # If same file provided, do nothing
+    return if $from eq $to;
+
     #First, remove existing file
     if ( $fmgr->exists($to) ) {
         $fmgr->delete($to) or return;

@@ -278,6 +278,7 @@ sub add_tags_to_entries {
 
         $entry_count++;
         $entry->add_tags(@tags);
+        $entry->modified_by( $user->id );
         $entry->save
             or return $app->trans_error( "Error saving entry: [_1]",
             $entry->errstr );
@@ -320,6 +321,7 @@ sub remove_tags_from_entries {
         return $app->permission_denied()
             unless $entry && $perms->can_edit_entry( $entry, $user );
         $entry->remove_tags(@tags);
+        $entry->modified_by( $user->id );
         $entry->save
             or return $app->trans_error( "Error saving entry: [_1]",
             $entry->errstr );
@@ -366,6 +368,7 @@ sub add_tags_to_assets {
             next unless $app->user->is_superuser;
         }
         $asset->add_tags(@tags);
+        $asset->modified_by( $app->user->id );
         $asset->save
             or return $app->trans_error( "Error saving file: [_1]",
             $asset->errstr );
@@ -413,6 +416,7 @@ sub remove_tags_from_assets {
             next unless $app->user->is_superuser;
         }
         $asset->remove_tags(@tags);
+        $asset->modified_by( $app->user->id );
         $asset->save
             or return $app->trans_error( "Error saving file: [_1]",
             $asset->errstr );

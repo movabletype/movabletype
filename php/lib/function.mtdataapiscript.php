@@ -5,9 +5,9 @@
 #
 # $Id$
 
-function smarty_function_mtnotifyscript($args, &$ctx) {
+function smarty_function_mtdataapiscript($args, &$ctx) {
     // status: complete
     // parameters: none
-    return $ctx->mt->config('NotifyScript');
+    return $ctx->mt->config('DataAPIScript');
 }
 ?>

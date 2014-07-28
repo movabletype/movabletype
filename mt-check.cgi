@@ -110,7 +110,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '6.0.2';
+    $version = '6.0.3';
 }
 
 my ( $mt, $LH );
@@ -628,7 +628,7 @@ my @CORE_OPT = (
     [   'Crypt::SSLeay',
         0, 0,
         translate(
-            'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support.'
+            'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for site statistics of Google Analytics.'
         )
     ],
 
@@ -730,7 +730,7 @@ my @CORE_OPT = (
     [   'IO::Socket::SSL',
         0, 0,
         translate(
-            'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.'
+            'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for site statistics of Google Analytics.'
         )
     ],
 
@@ -783,6 +783,13 @@ my @CORE_OPT = (
         translate(
             '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
             'XML::LibXML::SAX'
+        )
+    ],
+
+    [   'Mozilla::CA',
+        0, 0,
+        translate(
+            'This module is required for site statistics of Google Analytics.'
         )
     ],
 

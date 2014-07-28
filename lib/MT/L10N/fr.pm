@@ -531,10 +531,6 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> depuis [_3] sur <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Lire la suite</a>',
 
-## default_templates/verify-subscribe.mtml
-	q{Thank you for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:} => q{Merci d'avoir demandé à suivre les mises à jour de [_1]. Suivez le lien ci-dessous pour confirmer votre inscription :},
-	q{If the link is not clickable, just copy and paste it into your browser.} => q{Si le lien n'est pas cliquable, faites simplement un copier-coller dans votre navigateur.},
-
 ## lib/MT/AccessToken.pm
 	'AccessToken' => 'Clé d\'accès',
 
@@ -732,16 +728,6 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'Le profil du commentateur a été modifié avec succès.',
 	'Commenter profile could not be updated: [_1]' => 'Le profil du commentateur n\'a pu être modifié : [_1]',
 
-## lib/MT/App/NotifyList.pm
-	'Please enter a valid email address.' => 'Veuillez entrer une adresse e-mail valide.',
-	'Missing required parameter: blog_id. Please consult the user manual to configure notifications.' => 'Il manque un paramètre requis : blog_id. Veuillez consulter le manuel d\'utilisateur pour configurer les notifications.',
-	'An invalid redirect parameter was provided. The weblog owner needs to specify a path that matches with the domain of the weblog.' => 'Un paramètre de redirection est invalide. Le propriétaire du blog doit spécifier le chemin qui correspond au nom de domaine du blog.',
-	'The email address \'[_1]\' is already in the notification list for this weblog.' => 'L\'adresse e-mail \'[_1]\' fait déjà partie de la liste de notification pour ce blog.',
-	'Please verify your email to subscribe' => 'Merci de vérifier votre e-mail pour souscrire',
-	'_NOTIFY_REQUIRE_CONFIRMATION' => 'Un email a été envoyé à [_1]. Pour valider votre inscription, merci de cliquer sur le lien qui figure dans cet e-mail. Il permettra de vérifier que votre adresse e-mail est valable.',
-	'The address [_1] was not subscribed.' => 'L\'adresse [_1] n\'a pas été abonnée.',
-	'The address [_1] has been unsubscribed.' => 'L\'adresse [_1] a été supprimée.',
-
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Requête erronée : jeu de caractères corrompu [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Erreur lors du chargement du site web #[_1] pour la création de l\'utilisateur. Vérifiez vos paramètres NewUserefaultWebsiteId.',
@@ -839,18 +825,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid session.' => 'Session invalide.',
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => 'Sans permission. Veuillez contacter votre administrateur Movable Type pour la mise à jour de Movable Type.',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Type a été mis à jour en version [_1].',
-
-## lib/MT/App/Viewer.pm
-	'Loading blog with ID [_1] failed' => 'Échec lors du chargement du blog ayant pour ID [_1]',
-	'File not found' => 'Fichier introuvable',
-	'Template publishing failed: [_1]' => 'Échec de la publication du gabarit : [_1]',
-	'Unknown archive type: [_1]' => 'Type d\'archive inconnu :[_1]',
-	'Cannot load template [_1]' => 'Impossible de charger le gabarit [_1]',
-	'Archive publishing failed: [_1]' => 'Échec de la publication de l\'archive : [_1]',
-	'Invalid entry ID [_1].' => 'ID de note invalide [_1].',
-	'Entry [_1] was not published.' => 'La note [_1] n\'a pas été publiée.',
-	'Invalid category ID \'[_1]\'' => 'ID de catégorie invalide : \'[_1]\'',
-	'Invalid author ID \'[_1]\'' => 'ID d\'auteur invalide : \'[_1]\'',
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => 'Le driver [_1] est obligatoire pour utiliser [_2].',
@@ -1503,7 +1477,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Error creating new template: ' => 'Erreur pendant la création du nouveau gabarit : ',
 	'Template Referesh' => 'Réactualisation de gabarit',
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'Saut du gabarit \'[_1]\' car c\'est un gabarit personnalisé.',
-	'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>' => 'Réactualiser les gabarits <strong>[_3]</strong> depuis <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">la sauvegarde</a>',
+	'Refreshing template <strong>[_3]</strong> after making <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>.' => 'Réactualiser les gabarits <strong>[_3]</strong> depuis <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">la sauvegarde</a>',
 	'Skipping template \'[_1]\' since it has not been changed.' => 'Saut du gabarit \'[_1]\' car il n\'a pas été modifié.',
 	'Copy of [_1]' => 'Copie de [_1]',
 	'Cannot publish a global template.' => 'Ne peut pas publier un gabarit global.',
@@ -1571,7 +1545,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Please use xml, tar.gz, zip, or manifest as a file extension.' => 'Merci d\'utiliser xml, tar.gz, zip, ou manifest comme extension de fichier.',
 	'Unknown file format' => 'Format de fichier inconnu',
 	'Some objects were not restored because their parent objects were not restored.' => 'Certains objets n\'ont pas été restaurés car leurs objets parents n\'ont pas été restaurés.',
-	'Detailed information is in the <a href=\'javascript:void(0)\' onclick=\'closeDialog(\"[_1]\")\'>activity log</a>.' => 'Des informations détaillées se trouvent dans le <a href=\'javascript:void(0)\' onclick=\'closeDialog(\"[_1]\")\'>journal d\'activité</a>.',
+	'Detailed information is in the activity log.' => 'Des informations détaillées se trouvent dans le journal d\'activité.',
 	'[_1] has canceled the multiple files restore operation prematurely.' => '[_1] a annulé prématurément l\'opération de restauration de plusieurs fichiers.',
 	'Changing Site Path for the blog \'[_1]\' (ID:[_2])...' => 'Changement du chemin du site pour le blog \'[_1]\' (ID:[_2])...',
 	'Removing Site Path for the blog \'[_1]\' (ID:[_2])...' => 'Suppression du chemin du site pour le blog \'[_1]\' (ID:[_2])...',
@@ -1593,7 +1567,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Invalid attempt to recover password (used hint \'[_1]\')' => 'Tentative invalide de récupération du mot de passe (indice de \'utilisateur \'[_1]\')',
 	'User \'[_1]\' (user #[_2]) does not have email address' => 'L\'utilisateur \'[_1]\' (utilisateur #[_2]) n\'a pas d\'adresse e-mail',
 	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'Un lien de réinitialisation du mot de passe a été envoyé à [_3] concernant l\'utilisateur \'[_1]\' (utilisateur #[_2]).',
-	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.' => 'Certains objets n\'ont pas été restaurés car leurs objets parents n\'ont pas été restaurés. Des informations détaillées se trouvent dans le <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">journal d\'activité</a>.',
+	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.' => 'Certains objets n\'ont pas été restaurés car leurs objets parents n\'ont pas été restaurés. Des informations détaillées se trouvent dans le journal d\'activité.',
 	'[_1] is not a directory.' => '[_1] n\'est pas un répertoire.',
 	'Error occured during restore process.' => 'Une erreur s\'est produite pendant la procédure de restauration.',
 	'Some of files could not be restored.' => 'Certains fichiers n\'ont pu être restaurés.',
@@ -1608,6 +1582,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'IP address lockout limit' => 'Limite de verrouillage pour les adresses IP',
 	'IP address lockout interval' => 'Intervalle de verrouillage pour les adresses IP',
 	'Lockout IP address whitelist' => 'Liste blanche de verrouillage pour les adresses IP',
+	'Please enter a valid email address.' => 'Veuillez entrer une adresse e-mail valide.',
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(Catégorie sans description)',
@@ -1878,7 +1853,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'New Comment' => 'Nouveau commentaire',
 	'New Ping' => 'Nouveau ping',
 	'Entry Notify' => 'Notification de note',
-	'Subscribe Verify' => 'Vérification d\'inscription',
 	'User Lockout' => 'Verrouillage de l\'utilisateur',
 	'IP Address Lockout' => 'Verrouillage de l\'adresse IP',
 
@@ -4932,8 +4906,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{No themes are installed.} => q{Aucun thème n'est installé.},
 	'Current Theme' => 'Thème actuel',
 	'Available Themes' => 'Thèmes disponibles',
-	'Themes in used' => 'Thèmes utilisés',
-	'Installed Themes' => 'Thèmes installés',
+	'Themes in Use' => 'Thèmes utilisés',
 
 ## tmpl/cms/list_widget.tmpl
 	'Manage [_1] Widgets' => 'Gérer les widgets [_1]',
