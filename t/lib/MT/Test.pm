@@ -1303,6 +1303,26 @@ It\'s a hard rain\'s a-gonna fall',
     $page_ping->id(3);
     $page_ping->save or die "Couldn't save TBPing record 1: " . $ping->errstr;
 
+    # About page for website
+    $page = MT::Page->new();
+    $page->set_values(
+        {   blog_id     => 2,
+            title       => 'About',
+            text        => 'About this website.',
+            text_more   => 'This website is wonderful.',
+            keywords    => 'about',
+            excerpt     => 'excerpt',
+            created_on  => '20050131074500',
+            authored_on => '20050131074500',
+            modified_on => '20050131074600',
+            author_id   => $chuckd->id,
+            status      => MT::Entry::RELEASE(),
+        }
+    );
+    $page->id(24);
+    $page->tags('@about');
+    $page->save() or die "Couldn't save page record 24: " . $page->errstr;
+
     MT->instance->rebuild( BlogId => 1, );
 
     ### Make ObjectAsset mappings
