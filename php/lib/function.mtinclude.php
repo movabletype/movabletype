@@ -143,7 +143,7 @@ function smarty_function_mtinclude($args, &$ctx) {
                         $file_stat = stat($include_file);
                         if ($file_stat) {
                             $file_stamp = gmdate("Y-m-d H:i:s", $file_stat[9]);
-                            if (datetime_to_timestamp($latest_touch) > datetime_to_filestamp($file_stamp))
+                            if (datetime_to_timestamp($latest_touch) > datetime_to_timestamp($file_stamp))
                                 $cache_ttl = 1;
                         }
                     } else {
