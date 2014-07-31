@@ -29,7 +29,7 @@ our @EXPORT_OK
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
-    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi );
+    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip );
 
 {
     my $Has_Weaken;
@@ -2836,6 +2836,19 @@ sub clear_site_stats_widget_cache {
     }
 }
 
+sub is_valid_ip {
+    my ($ip) = @_;
+
+    unless ( $ip
+        =~ m/^(([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/((0|1|4|8)|(1|2)[0-9]|3[0-2]))?$/
+        )
+    {
+        return 0;
+    }
+
+    return $ip;
+}
+
 package MT::Util::XML::SAX::LexicalHandler;
 
 sub start_dtd {
@@ -3095,6 +3108,12 @@ Clear caches for site stats dashboard widget.
 Check whether MT runs under FastCGI. The result is kept while the process runs. If $ENV{FAST_CGI}
 is defined, the result is determined based on this value. If $param is defined, the result is
 determined by reference to this value.
+
+=head2 is_valid_ip($ip_address)
+
+Checks the IP address I<$ip_address> for syntax validity; if the
+IP address is valid, I<is_valid_ip> returns the valid
+the IP address. Otherwise, it returns C<0>.
 
 =back
 
