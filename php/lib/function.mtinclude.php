@@ -153,7 +153,7 @@ function smarty_function_mtinclude($args, &$ctx) {
             }
         }
 
-        $elapsed_time = time() - offset_time( datetime_to_timestamp( $tmpl_meta->template_modified_on ), $blog );
+        $elapsed_time = time() - offset_time( datetime_to_timestamp( $tmpl_meta->template_modified_on ), $blog, '-' );
         if ($cache_ttl == 0 || $elapsed_time < $cache_ttl) {
             $cache_ttl = $elapsed_time;
         }
