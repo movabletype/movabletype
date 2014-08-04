@@ -632,7 +632,7 @@ function initMoving() {
         next_level = parseInt(RegExp.$1);
       }
 
-      var left = ui.offset.left - root_pos.left;
+      var left = ui.position.left - root_pos.left;
       var idx = parseInt(Math.abs(left)/indent);
       var d = prev_level < level ? 0 : prev_level - level + 1;
       var pos = 0;
