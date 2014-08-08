@@ -1652,13 +1652,15 @@ sub clear_cache {
     my $obj = shift;
     my $oc = MT->request('object_cache') or return;
 
-    my $pk = $obj->primary_key;
+    my $pk = ref $obj ? $obj->primary_key : shift;
     $pk = join ":", @$pk if ref $pk;
-    my $key = ref($obj) . ':' . $pk;
+    my $key = ( ref($obj) || $obj ) . ':' . $pk;
 
-    if (@_) {
-        $oc = $oc->{$key};
-        delete $oc->{ $_[0] } if $oc;
+    if ( my $p = shift ) {
+        if ( my $c = $oc->{$key} ) {
+            $p = [$p] unless ref $p;
+            delete @$c{@$p};
+        }
     }
     else {
         delete $oc->{$key};
