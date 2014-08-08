@@ -752,5 +752,7 @@
 { "r" : "1", "t" : "<mt:unless trim_to='7+0'>Movable Type</mt:unless>", "e" : "Movable0" }, #736
 { "r" : "1", "t" : "<mt:DataAPIScript>", "e" : "mt-data-api.cgi" }, #737
 { "r" : "1", "t" : "<mt:DataAPIVersion>", "e" : "1" }, #738
-{ "r" : "1", "t" : "<mt:Pages tags=\"@about\" include_blogs=\"siblings\" include_with_website=\"1\"><$mt:PageTitle$></mt:Pages>", "e" : "About" } #739
+{ "r" : "1", "t" : "<mt:Pages tags=\"@about\" include_blogs=\"siblings\" include_with_website=\"1\"><$mt:PageTitle$></mt:Pages>", "e" : "About" }, #739
+{ "r" : "1", "t" : "<MTBlogs><MTBlogThemeID raw='1'></MTBlogs>", "e" : "classic_blog"}, #740
+{ "r" : "1", "t" : "<MTWebsiteThemeID raw='1'>", "e" : "classic_website"} #741
 ]
