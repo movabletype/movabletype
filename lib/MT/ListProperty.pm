@@ -343,7 +343,7 @@ sub make_common_label_html {
             blog_id => $blog_id,
         },
     );
-    if ($label ne '') {
+    if ( defined $label && $label ne '' ) {
         my $can_double_encode = 1;
         $label = MT::Util::encode_html( $label, $can_double_encode );
         return qq{<a href="$edit_link">$label</a>};
