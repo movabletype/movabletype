@@ -1014,6 +1014,7 @@ sub flush_category_cache {
     my ( $copy, $place ) = @_;
     MT::Memcached->instance->delete(
         MT::Entry->cache_key( $place->entry_id, 'categories' ) );
+    MT::Entry->clear_cache($place->entry_id, [qw(category categories)]);
 }
 
 MT::Placement->add_trigger( post_save   => \&flush_category_cache );
