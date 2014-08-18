@@ -106,23 +106,6 @@ __SQL__
             priority      => 3.2,
             code          => \&_v6_remove_indexes,
         },
-        'v6_remove_subscribe_verify_template' => {
-            version_limit => 6.0009,
-            priority => 3.0,   # Should execute before core_upgrade_templates.
-            updater  => {
-                type      => 'template',
-                label     => 'Removing Subscribe Verify template...',
-                terms     => { identifier => 'verify-subscribe' },
-                condition => sub {
-                    $_[0]->remove;
-                    return 0;
-                },
-                sql => <<'__SQL__',
-DELETE FROM mt_template
-WHERE       template_identifier='verify-subscribe';
-__SQL__
-            },
-        },
     };
 }
 
