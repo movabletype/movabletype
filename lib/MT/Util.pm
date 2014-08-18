@@ -11,6 +11,7 @@ use utf8;
 use base 'Exporter';
 use MT::I18N qw( const );
 use Time::Local qw( timegm );
+use List::Util qw( sum );
 
 our @EXPORT_OK
     = qw( start_end_day start_end_week start_end_month start_end_year
@@ -2837,13 +2838,29 @@ sub clear_site_stats_widget_cache {
 }
 
 sub is_valid_ip {
-    my ($ip) = @_;
+    my ($str) = @_;
 
-    unless ( $ip
-        =~ m/^(([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([1-9]?[0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/((1|2|4|8)|(1|2)[0-9]|3[0-2]))?$/
-        )
-    {
-        return 0;
+    my ( $ip, $cidr ) = split /\//, $str;
+    my @ips = split /\./, $ip;
+
+    # xxx.xxx.xxx.xxx
+    if (@ips) {
+        my $num = @ips;
+        return 0 if $num < 4;
+    }
+
+    # 0-255
+    foreach my $num (@ips) {
+        return 0 unless $num =~ /^\d+$/;
+        return 0 if ( $num < 0 || $num > 255 );
+    }
+
+    # 0.0.0.0 255.255.255.255
+    return 0 if ( sum(@ips) == 0 || sum(@ips) == 1020 );
+
+    # CIDR
+    if ($cidr) {
+        return 0 if ( $cidr < 1 || $cidr > 32 );
     }
 
     return $ip;
