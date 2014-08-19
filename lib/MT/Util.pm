@@ -2863,7 +2863,7 @@ sub is_valid_ip {
         return 0 if ( $cidr < 1 || $cidr > 32 );
     }
 
-    return $ip;
+    return $str;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;
