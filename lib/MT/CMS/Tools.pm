@@ -1898,7 +1898,7 @@ sub adjust_sitepath {
 
             $app->print_encode(
                 $app->translate(
-                    "Changing File Path for the FileInfo (ID:[_1])...",
+                    "Changing file path for the FileInfo record (ID:[_1])...",
                     $fi->id
                 )
             );

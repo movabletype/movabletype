@@ -393,7 +393,8 @@ sub asset_userpic {
                 $user->userpic_asset_id( $asset->id );
                 return $app->error(
                     $app->translate(
-                        "Failed to create thumbnail file. This image type is not supported..."
+                        "Failed to create thumbnail file because [_1] could not handle this image type.",
+                        MT->config('ImageDriver')
                     )
                     )
                     unless $asset->has_thumbnail

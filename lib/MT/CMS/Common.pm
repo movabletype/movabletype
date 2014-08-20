@@ -164,7 +164,7 @@ sub save {
             my $s_path = $app->param('site_path_absolute');
             unless ( is_within_base_sitepath( $app, $s_path ) ) {
                 return $app->errtrans(
-                    "The blog root directory must be within [_1]", $l_path );
+                    "The blog root directory must be within [_1].", $l_path );
             }
         }
 
@@ -224,7 +224,7 @@ sub save {
             my $s_path = $values{site_path};
             unless ( is_within_base_sitepath( $app, $s_path ) ) {
                 return $app->errtrans(
-                    "The website root directory must be within [_1]",
+                    "The website root directory must be within [_1].",
                     $l_path );
             }
         }
