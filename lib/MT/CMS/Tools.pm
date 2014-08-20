@@ -717,26 +717,39 @@ sub save_cfg_system_general {
     # construct the message to the activity log
 
     if ( $app->param('comment_disable') ) {
-        push( @meta_messages, 'Allow comments is on' );
+        push( @meta_messages, $app->translate( 'Prohibit comments is on' ) );
     }
     else {
-        push( @meta_messages, 'Allow comments is off' );
+        push( @meta_messages, $app->translate( 'Prohibit commentsis off' ) );
     }
     if ( $app->param('ping_disable') ) {
-        push( @meta_messages, 'Allow trackbacks is on' );
+        push( @meta_messages, $app->translate( 'Prohibit trackbacks is on' ) );
     }
     else {
-        push( @meta_messages, 'Allow trackbacks is off' );
+        push( @meta_messages, $app->translate( 'Prohibit trackbacks is off' ) );
     }
     if ( $app->param('disable_notify_ping') ) {
-        push( @meta_messages, 'Allow outbound trackbacks is on' );
+        push( @meta_messages, $app->translate( 'Prohibit notification pings is on' ) );
     }
     else {
-        push( @meta_messages, 'Allow outbound trackbacks is off' );
+        push( @meta_messages, $app->translate( 'Prohibit notification pings is off' ) );
     }
-    push( @meta_messages,
-        'Outbound trackback limit is ' . $app->param('trackback_send') )
-        if ( $app->param('trackback_send') =~ /\w+/ );
+    if ( $app->param('trackback_send') eq 'any' ) {
+        push( @meta_messages,
+              $app->translate( 'Outbound trackback limit is [_1]', $app->translate('Any site') ) )
+    }
+    elsif ( $app->param('trackback_send') eq 'off' ) {
+        push( @meta_messages,
+              $app->translate( 'Outbound trackback limit is [_1]', $app->translate('Disabled') ) )
+    }
+    elsif ( $app->param('trackback_send') eq 'local' ) {
+        push( @meta_messages,
+              $app->translate( 'Outbound trackback limit is [_1]', $app->translate('Only to blogs within this system') ) )
+    }
+    elsif ( $app->param('trackback_send') eq 'selected' ) {
+        push( @meta_messages,
+              $app->translate( 'Outbound trackback limit is [_1]', $app->translate('Only to websites on the following domains:' . $app->param('config_warnings_outboundtrackbackdomains') ) ) )
+    }
 
     # for lockout settings
     foreach my $hash (

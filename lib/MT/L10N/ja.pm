@@ -1561,6 +1561,13 @@ use vars qw( @ISA %Lexicon );
 	'Performance log path is [_1]' => 'パフォーマンスログのパスは[_1]です',
 	'Performance log threshold is [_1]' => 'パフォーマンスログの閾値は[_1]です',
 	'Invalid SitePath.  The SitePath should be valid and absolute, not relative' => 'サイトパス制限には正しい絶対パスを指定してください。',
+	'Prohibit comments is on' => 'コメントは無効です',
+	'Prohibit comments is off' => 'コメントは有効です',
+	'Prohibit trackbacks is on' => 'トラックバックは無効です',
+	'Prohibit trackbacks is off' => 'トラックバックは有効です',
+	'Prohibitoutbound trackbacks is on' => 'ping通知は無効です',
+	'Prohibit outbound trackbacks is off' => 'ping通知は有効です',
+	'Outbound trackback limit is [_1]' => '外部トラックバック送信は [_1] に制限されます',
 	'[_1] is [_2]' => '[_1]が[_2]',
 	'none' => 'なし',
 	'System Settings Changes Took Place' => 'システム設定が変更されました',
@@ -2068,6 +2075,7 @@ use vars qw( @ISA %Lexicon );
 	'theme' => 'テーマ',
 	'folder' => 'フォルダ',
 	'plugin' => 'プラグイン',
+	'page' => 'ウェブページ',
 	'Message' => 'ログ',
 	'By' => 'ユーザー',
 	'Class' => '分類',
@@ -2523,6 +2531,7 @@ use vars qw( @ISA %Lexicon );
 	'Removing widget from dashboard...' => 'ダッシュボードからウィジェットを削除しています...',
 	'Ordering Categories and Folders of Blogs...' => 'ブログのカテゴリとフォルダの順番を設定しています...',
 	'Ordering Folders of Websites...' => 'ウェブサイトのフォルダの順番を設定しています...',
+	'Setting the \'created by\' ID for any user for whom this field is not defined...' => '作成者の情報をユーザーに付与しています...',
 	'Assigning a language to each blog to help choose appropriate display format for dates...' => 'ブログに日付の言語を設定しています...',
 	'Adding notification dashboard widget...' => '通知ウィジェットをダッシュボードに追加しています...',
 
@@ -5507,6 +5516,7 @@ use vars qw( @ISA %Lexicon );
 	'The template tag \'[_1]\' is already in use in this blog' => '[_1]というタグは既にこのブログに存在します。',
 	'The \'[_1]\' of the template tag \'[_2]\' that is already in use in [_3] is [_4].' => '\'[_2]\'というテンプレートタグが[_3]に既に存在していますが、[_1]が異なるため、重複して作成する事が出来ません。テンプレートタグ名を変えるか、[_1]を同じにする必要があります。([_1]: [_4])',
 	'_CF_BASENAME' => 'ベースネーム',
+	'__CF_REQUIRED_VALUE__' => '値',
 
 ## addons/Commercial.pack/lib/CustomFields/Template/ContextHandlers.pm
 	'Are you sure you have used a \'[_1]\' tag in the correct context? We could not find the [_2]' => '[_2]が見つかりませんでした。[_1]タグを正しいコンテキストで使用しているか確認してください。',
@@ -6987,6 +6997,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 328
+## New words: 288
 
 1;
