@@ -1907,7 +1907,7 @@ sub _hdlr_blog_comment_count {
         {}
     );
     if ($args->{top}) {
-        $terms{parent_id} = \'is not NULL';
+        $terms{parent_id} = \'is NULL';
     }
 
     require MT::Comment;
@@ -1939,7 +1939,7 @@ sub _hdlr_entry_comments {
         or return $ctx->_no_entry_error();
     my $count;
     if ($args->{top}) {
-        $count = MT::Comment->count({ entry_id => $e->id, parent_id => \'is NULL' });
+        $count = MT::Comment->count({ entry_id => $e->id, parent_id => \'is NULL', visible => 1 });
     }
     else {
         $count = $e->comment_count;
@@ -2003,7 +2003,7 @@ sub _hdlr_category_comment_count {
         }
     );
     if ($args->{top}) {
-        $args[0]->{parent_id} = \'is not NULL';
+        $args[0]->{parent_id} = \'is NULL';
     }
     require MT::Comment;
     $count = scalar MT::Comment->count(@args);
