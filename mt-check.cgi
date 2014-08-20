@@ -793,6 +793,13 @@ my @CORE_OPT = (
         )
     ],
 
+    [   'Time::HiRes',
+        0, 0,
+       translate(
+           'This module is required for executing run-periodic-tasks.'
+       )
+    ],
+
 );
 
 use Cwd;

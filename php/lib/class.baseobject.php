@@ -99,11 +99,11 @@ abstract class BaseObject extends ADOdb_Active_Record
     }
 
 
-    public function Load( $where = null, $bindarr = false ) {
+    public function Load( $where = null, $bindarr = false, $lock = false ) {
        if ( is_numeric( $where ) )
             $where = $this->_prefix . "id = " . $where;
 
-        $ret = parent::Load($where, $bindarr);
+        $ret = parent::Load($where, $bindarr, $lock);
         if ($ret && $this->has_meta())
             $this->load_meta($this);
 

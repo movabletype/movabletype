@@ -7,13 +7,15 @@
 
 function smarty_function_mtwebsitethemeid($args, &$ctx) {
     // status: complete
-    // parameters: none
+    // parameters: raw
     $blog = $ctx->stash('blog');
     if (empty($blog)) return '';
     $website = $blog->is_blog() ? $blog->website() : $blog;
     if (empty($website)) return '';
     $id = $website->blog_theme_id;
-    $id = str_replace ('_', '-', $id);
+    $raw = isset($args['raw']) ? $args['raw'] : 0;
+    if (!$raw)
+        $id = str_replace ('_', '-', $id);
     return $id;
 }
 ?>

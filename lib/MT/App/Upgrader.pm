@@ -320,7 +320,7 @@ sub init_user {
             }
             else {
                 $initial_email    = $app->param('email')    || '';
-                $initial_nickname = $app->param('nickname') || '';
+                $initial_nickname = $app->param('nickname');
                 $initial_external_id
                     = MT::Author->unpack_external_id(
                     $app->param('external_id') )
