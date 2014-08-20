@@ -204,6 +204,7 @@ use vars qw( @ISA %Lexicon );
 	'This module required for action streams.' => 'アクションストリームを利用するために必要です。',
 	'[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation' => '[_1]のインストールは必須ではありません。バックアップデータの復元に必要となります。',
 	'This module is required for site statistics of Google Analytics.' => 'このモジュールは、Google Analytics を利用する場合に必要になります。',
+	'This module is required for executing run-periodic-tasks.' => 'このモジュールは、run-periodic-tasks を実行するために必要です。',
 	'The [_1] database driver is required to use [_2].' => '[_2]を使うには[_1]のデータベースドライバが必要です。',
 	'DBI is required to store data in database.' => 'DBIはデータベースにアクセスするために必要です。',
 	'Checking for' => '確認中',
@@ -894,7 +895,6 @@ use vars qw( @ISA %Lexicon );
 	'XML::SAX::ExpatXS is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.' => 'XML::SAX::ExpatXSのインストールは必須ではありません。バックアップデータの復元に必要となります。',
 	'XML::SAX::Expat is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.' => 'XML::SAX::Expatのインストールは必須ではありません。バックアップデータの復元に必要となります。',
 	'XML::LibXML::SAX is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.' => 'XML::LibXML::SAXのインストールは必須ではありません。バックアップデータの復元に必要となります。',
-	'This module is required for executing run-periodic-tasks.' => 'このモジュールは、run-periodic-tasks を実行するために必要です。',
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'ファイルのアップロードを行うために必要です。各種のファイル形式に対応して画像のサイズを取得します。',
 	'This module is required for cookie authentication.' => 'cookie 認証のために必要です。',
 
@@ -5279,7 +5279,7 @@ use vars qw( @ISA %Lexicon );
 	'Password is required.' => 'パスワードは必須です。',
 	'Unable to write temporary file.' => '一時保存ファイルの書き込みが出来ませんでした。',
 	'Cannot delete ip_restriction_[_1] file.' => 'アクセス制限の設定を削除することができませんでした。',
-	'[_1] is not a valid IP address.' => '[_1]は、正しいIPアドレスではありません。',
+	'[_1] is not a valid IP address.' => '[_1] は正しいIPアドレスではありません。',
 	'Unable to write allowed IP addresses file.' => 'アクセス許可リストファイルの書き込みができませんでした。',
 	'HTTP Redirect setting' => 'HTTPリダイレクトの設定',
 	'Unable to update HTTP Redirect settings.' => 'HTTPリダイレクトの設定を保存することが出来ませんでした。',
@@ -5295,13 +5295,22 @@ use vars qw( @ISA %Lexicon );
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
 	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
 	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
+	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを保存できません。',
+	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを作成できません。',
 	'Unable to write AUTOUPDATE file: [_1]' => '自動アップデートの設定を保存することが出来ませんでした。',
 	'IP Restriction settings' => 'アクセス制限の設定',
 	'\'[_1]\' does not exist.' => '\'[_1]\' が見つかりません。',
-	'[_1] is not a valid IP address.' => '[_1] は正しいIPアドレスではありません。',
-	'Unable to write acl file.' => 'アクセス制限リストファイルの書き込みができません。',
+	'Unable to create acl path: [_1]' => '設定ファイルの書き込みディレクトリを作成できません: [_1]',
+	'Cannot write to acl directory: [_1]' => '設定ファイルの書き込みディレクトリに書き込めません: [_1]',
+	'Cannot write to acl file: [_1]' => '設定ファイルを書き込めません: [_1]',
+	'Unable to remove acl file: [_1]' => 'アクセス制限リストファイルの削除ができません: [_1]',
 	'Unable to remove acl file.' => 'アクセス制限リストファイルの削除ができません。',
 	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered  is not a valid.' => 'アクセス制限の設定を、適用することができません。おそらく、入力されたパスまたはIPアドレスが有効ではない可能性があります。',
+
+## addons/Cloud.pack/lib/Cloud/Util.pm
+	'Cannot read resource file.' => 'リソースファイルを読み込めません。',
+	'Cannot get the resource data.' => 'リソース情報を取得できません。',
+	'Unknown plan. Memory: [_1] / Disk: [_2]' => '不明なプランです。メモリ: [_1] / ディスク: [_1]',
 
 ## addons/Cloud.pack/tmpl/cfg_auto_update.tmpl
 	'Auto Update Settings' => '自動アップデートの設定',
@@ -6978,6 +6987,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 244
+## New words: 328
 
 1;
