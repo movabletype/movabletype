@@ -5279,7 +5279,7 @@ use vars qw( @ISA %Lexicon );
 	'Password is required.' => 'パスワードは必須です。',
 	'Unable to write temporary file.' => '一時保存ファイルの書き込みが出来ませんでした。',
 	'Cannot delete ip_restriction_[_1] file.' => 'アクセス制限の設定を削除することができませんでした。',
-	'[_1] is not a valid IP address.' => '[_1] は正しいIPアドレスではありません。',
+	'[_1] is not a valid IP address.' => '[_1]は、正しいIPアドレスではありません。',
 	'Unable to write allowed IP addresses file.' => 'アクセス許可リストファイルの書き込みができませんでした。',
 	'HTTP Redirect setting' => 'HTTPリダイレクトの設定',
 	'Unable to update HTTP Redirect settings.' => 'HTTPリダイレクトの設定を保存することが出来ませんでした。',
@@ -5298,8 +5298,10 @@ use vars qw( @ISA %Lexicon );
 	'Unable to write AUTOUPDATE file: [_1]' => '自動アップデートの設定を保存することが出来ませんでした。',
 	'IP Restriction settings' => 'アクセス制限の設定',
 	'\'[_1]\' does not exist.' => '\'[_1]\' が見つかりません。',
+	'[_1] is not a valid IP address.' => '[_1] は正しいIPアドレスではありません。',
 	'Unable to write acl file.' => 'アクセス制限リストファイルの書き込みができません。',
 	'Unable to remove acl file.' => 'アクセス制限リストファイルの削除ができません。',
+	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered  is not a valid.' => 'アクセス制限の設定を、適用することができません。おそらく、入力されたパスまたはIPアドレスが有効ではない可能性があります。',
 
 ## addons/Cloud.pack/tmpl/cfg_auto_update.tmpl
 	'Auto Update Settings' => '自動アップデートの設定',
@@ -5360,7 +5362,8 @@ use vars qw( @ISA %Lexicon );
 	'HTTP redirect settings' => 'HTTPリダイレクトの設定',
 
 ## addons/Cloud.pack/tmpl/cfg_ip_restriction.tmpl
-	'Administration screen setting have been saved.' => '管理画面の設定を保存しました。',
+	'IP Restriction Settings' => 'アクセス制限の設定',
+	'Administration screen settings have been saved.' => '管理画面の設定を保存しました。',
 	'example.com' => 'example.com',
 	'/path' => '/path',
 	'Domain is required.' => 'ドメイン名は必須です。',
@@ -5369,22 +5372,24 @@ use vars qw( @ISA %Lexicon );
 	'This combination of domain and path already exists.' => '指定されたドメインとパスの組み合わせはすでに設定されています。',
 	'IP is required.' => 'アクセス許可IPアドレスは必須です。',
 	'[_1] is invalid IP Address.' => '[_1] は不正なIPアドレスです。',
+	'IP restriction settings' => 'アクセス制限の設定',
 
 ## addons/Cloud.pack/tmpl/cfg_security.tmpl
+	'Administration screen setting have been saved.' => '管理画面の設定を保存しました。',
 	'Administration screen url have been reset to default.' => '管理画面のURLが既定のURLにリセットされました。',
 	'Admin Screen URL' => '管理画面のURL',
 	'Protect administration screen by Basic Authentication' => '管理画面をBasic認証で保護する',
-	'Restrict Access' => 'アクセス制限',
+	'Access Restriction' => 'アクセス制限',
 	'Restricts IP addresses that can access to administration screen.' => '管理画面にアクセスすることができるIPアドレスを制限する。',
+	'Please add the IP address which allows access to the upper list. You can specify multiple IP addresses separated by commas or line breaks. When the current remote IP address  is not contained, it may become impossible to access an administration screen. For details.' => 'アクセスを許可するIPアドレスをカンマ又は改行区切りで入力してください。現在のアクセス元のIPアドレスが一覧に含まれない場合、設定の保存後に管理画面へアクセスできなくなる場合がありますのでご注意ください。',
 	'Your IP address is [_1].' => '現在のIPアドレスは [_1] です。',
 	'Restricts IP address that can access to public CGI such as Search and Data API.' => '検索やDataAPIなどのCGIへアクセスすることができるIPアドレスを制限する。',
 	'IP address list is required.' => 'IPアドレスは必須です。',
 	'administration screen' => '管理画面',
 	' and ' => 'と',
-	'public access cgi' => '公開されているCGI',
+	'public access CGI' => '公開されているCGI',
 	'The remote IP address is not included in the white list ([_1]). Are you sure you want to restrict the current remote IP address?' => '現在のIPアドレスが[_1]の許可IPアドレスに含まれていません。現在のIPアドレスを制限してもよろしいですか？',
 	'Are you sure you want to save restrict access settings?' => 'アクセス制限の設定を保存します。よろしいですか？',
-	'Please add the IP address which allows access to the upper list. You can specify multiple IP addresses separated by commas or line breaks. When the current remote IP address  is not contained, it may become impossible to access an administration screen. For details.' => 'アクセスを許可するIPアドレスをカンマ又は改行区切りで入力してください。現在のアクセス元のIPアドレスが一覧に含まれない場合、設定の保存後に管理画面へアクセスできなくなる場合がありますのでご注意ください。',
 
 ## addons/Cloud.pack/tmpl/cfg_ssl_certification.tmpl
 	'Install SSL Certification' => 'サーバー証明書の導入',
@@ -6195,7 +6200,7 @@ use vars qw( @ISA %Lexicon );
 	'LDAP users synchronized.' => 'LDAPユーザーが同期されました。',
 	'Synchronization of groups can not be performed without LDAPGroupIdAttribute and/or LDAPGroupNameAttribute being set.' => 'グループを同期するためにはLDAPGroupIdAttributeおよびLDAPGroupNameAttributeの設定が必須です。',
 	'Primary group members cannot be synchronized with Active Directory.' => 'Active Directory からプライマリグループのメンバーを同期できません。',
-	'Cannot synchronize LDAP group members.' => 'LDAP グループのメンバーを同期できません。',
+	'Cannot synchronize LDAP groups members.' => 'LDAPのグループメンバーの同期に失敗しました。',
 	'User filter was not built: [_1]' => 'ユーザーフィルターを構成できません: [_1:',
 	'LDAP groups synchronized with existing groups.' => '既存のグループがLDAPグループと同期されました。',
 	'Information about the following groups was modified:' => '次のグループの情報が更新されました: ',
@@ -6973,6 +6978,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 691
+## New words: 244
 
 1;
