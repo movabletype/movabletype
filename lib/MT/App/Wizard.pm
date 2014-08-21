@@ -264,7 +264,7 @@ sub init_core_registry {
             'Crypt::SSLeay' => {
                 link => 'http://search.cpan.org/dist/Crypt-SSLeay',
                 label =>
-                    'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also, this module is required for site statistics of Google Analytics.',
+                    'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for site statistics of Google Analytics.',
             },
             'Cache::File' => {
                 link => 'http://search.cpan.org/dist/Cache/lib/Cache/File.pm',
@@ -335,17 +335,17 @@ sub init_core_registry {
             },
             'XML::SAX::ExpatXS' => {
                 link    => 'http://search.cpan.org/dist/XML-SAX-ExpatXS',
-                label   => 'This module required for restoring from backup.',
+                label   => 'XML::SAX::ExpatXS is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.',
                 version => 1.30,
             },
             'XML::SAX::Expat' => {
                 link    => 'http://search.cpan.org/dist/XML-SAX-Expat',
-                label   => 'This module required for restoring from backup.',
+                label   => 'XML::SAX::Expat is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.',
                 version => 0.37,
             },
             'XML::LibXML::SAX' => {
                 link    => 'http://search.cpan.org/dist/XML-LibXML-SAX',
-                label   => 'This module required for restoring from backup.',
+                label   => 'XML::LibXML::SAX is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.',
                 version => 1.70,
             },
             'Time::HiRes' => {

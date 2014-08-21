@@ -491,6 +491,7 @@ sub description {
 # trans('theme');
 # trans('folder');
 # trans('plugin');
+# trans('page');
 
 1;
 __END__
