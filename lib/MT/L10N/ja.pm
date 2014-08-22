@@ -5818,7 +5818,7 @@ use vars qw( @ISA %Lexicon );
 	'Thanks for the confirmation.  Please sign in.' => '確認されました。サインインしてください。',
 	'[_1] registered to Movable Type.' => '[_1]はMovable Typeに登録しました。',
 	'Login required' => 'サインインしてください。',
-	'Title or Content is required.' => '本文とタイトルを入力してください。',
+	'Title or Content is required.' => 'タイトルまたは、本文を入力してください。',
 	'Publish failed: [_1]' => '公開できませんでした: [_1]',
 	'System template entry_response not found in blog: [_1]' => '記事の確認テンプレートがありません。',
 	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'ブログ「[_2]」に新しい記事「[_1]」が投稿されました。',
