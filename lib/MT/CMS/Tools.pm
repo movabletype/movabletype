@@ -720,7 +720,7 @@ sub save_cfg_system_general {
         push( @meta_messages, $app->translate( 'Prohibit comments is on' ) );
     }
     else {
-        push( @meta_messages, $app->translate( 'Prohibit commentsis off' ) );
+        push( @meta_messages, $app->translate( 'Prohibit comments is off' ) );
     }
     if ( $app->param('ping_disable') ) {
         push( @meta_messages, $app->translate( 'Prohibit trackbacks is on' ) );

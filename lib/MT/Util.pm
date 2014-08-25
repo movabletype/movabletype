@@ -2859,7 +2859,7 @@ sub is_valid_ip {
     return 0 if ( sum(@ips) == 0 || sum(@ips) == 1020 );
 
     # CIDR
-    if ($cidr) {
+    if ( defined $cidr ) {
         return 0 if ( $cidr < 1 || $cidr > 32 );
     }
 

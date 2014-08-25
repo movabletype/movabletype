@@ -1562,12 +1562,14 @@ use vars qw( @ISA %Lexicon );
 	'Performance log threshold is [_1]' => 'パフォーマンスログの閾値は[_1]です',
 	'Invalid SitePath.  The SitePath should be valid and absolute, not relative' => 'サイトパス制限には正しい絶対パスを指定してください。',
 	'Prohibit comments is on' => 'コメントは無効です',
-	'Prohibit comments is off' => 'コメントは有効です',
+	'Prohibit comments is off' => 'コメントは有効です', 
 	'Prohibit trackbacks is on' => 'トラックバックは無効です',
 	'Prohibit trackbacks is off' => 'トラックバックは有効です',
-	'Prohibitoutbound trackbacks is on' => 'ping通知は無効です',
-	'Prohibit outbound trackbacks is off' => 'ping通知は有効です',
+	'Prohibit notification pings is on' => '更新pingは無効です',
+	'Prohibit notification pings is off' => '更新pingは有効です',
 	'Outbound trackback limit is [_1]' => '外部トラックバック送信は [_1] に制限されます',
+	'Any site' => '任意のサイト',
+	'Only to blogs within this system' => 'ブログのみ',
 	'[_1] is [_2]' => '[_1]が[_2]',
 	'none' => 'なし',
 	'System Settings Changes Took Place' => 'システム設定が変更されました',
@@ -2731,8 +2733,6 @@ use vars qw( @ISA %Lexicon );
 	'Boilerplate' => '定型文',
 	'Select Boilerplate' => '定型文を選択...',
 
-## mt-static/plugins/Loupe/js/vendor.js
-
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
 	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
 	'Italic (Ctrl+I)' => '斜体 (Ctrl+I)',
@@ -3472,9 +3472,7 @@ use vars qw( @ISA %Lexicon );
 	'Disable notification pings for all websites and blogs.' => 'ping通知を無効にする',
 	'Send Outbound TrackBacks to' => '外部トラックバック送信',
 	'Do not send outbound TrackBacks or use TrackBack auto-discovery if your installation is intended to be private.' => 'プライベートに設定する場合は、トラックバックを送信したりトラックバックの自動発見機能は利用しないようにしましょう。',
-	'Any site' => '任意のサイト',
 	'(No Outbound TrackBacks)' => '(すべてのトラックバック送信を無効にする)',
-	'Only to blogs within this system' => 'ブログのみ',
 	'Only to websites on the following domains:' => '次のドメインに属するウェブサイト:',
 	'Lockout Settings' => 'アカウントロックの設定',
 	q{The system administrators whom you wish to notify if a user or an IP address is locked out.  If no administrators are selected, notifications will be sent to the 'System Email' address.} => q{通知メールを受信するシステム管理者を設定できます。受信者の設定がされていない場合は、'システムのメールアドレス'宛に通知されます。},
@@ -5309,6 +5307,7 @@ use vars qw( @ISA %Lexicon );
 	'Unable to write AUTOUPDATE file: [_1]' => '自動アップデートの設定を保存することが出来ませんでした。',
 	'IP Restriction settings' => 'アクセス制限の設定',
 	'\'[_1]\' does not exist.' => '\'[_1]\' が見つかりません。',
+	'\'[_1]\' is invalid path.' => '\'[_1]\' は無効なパスです。',
 	'Unable to create acl path: [_1]' => '設定ファイルの書き込みディレクトリを作成できません: [_1]',
 	'Cannot write to acl directory: [_1]' => '設定ファイルの書き込みディレクトリに書き込めません: [_1]',
 	'Cannot write to acl file: [_1]' => '設定ファイルを書き込めません: [_1]',
@@ -5819,7 +5818,7 @@ use vars qw( @ISA %Lexicon );
 	'Thanks for the confirmation.  Please sign in.' => '確認されました。サインインしてください。',
 	'[_1] registered to Movable Type.' => '[_1]はMovable Typeに登録しました。',
 	'Login required' => 'サインインしてください。',
-	'Title or Content is required.' => '本文とタイトルを入力してください。',
+	'Title or Content is required.' => 'タイトルまたは、本文を入力してください。',
 	'Publish failed: [_1]' => '公開できませんでした: [_1]',
 	'System template entry_response not found in blog: [_1]' => '記事の確認テンプレートがありません。',
 	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'ブログ「[_2]」に新しい記事「[_1]」が投稿されました。',
@@ -6997,6 +6996,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 288
+## New words: 260
 
 1;
