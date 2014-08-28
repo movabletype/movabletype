@@ -784,7 +784,7 @@ sub do_search_replace {
         $search = quotemeta($search) unless $is_regex;
         $search = '(?i)' . $search   unless $case;
     }
-    my ( @to_save, @data );
+    my ( @to_save, @to_save_orig, @data );
     my $api   = $search_api;
     my $class = $app->model( $api->{object_type} || $type );
     my %param = %$list_pref;
@@ -1074,6 +1074,8 @@ sub do_search_replace {
                 unless $author->is_superuser
                 || $app->handler_to_coderef( $api->{perm_check} )->($obj);
             my $match = 0;
+            # For cms_pre_save callback and revisioning
+            my $orig_obj = $obj->clone();
             unless ($show_all) {
                 for my $col (@cols) {
                     next if $do_replace && !$replace_cols{$col};
@@ -1114,6 +1116,19 @@ sub do_search_replace {
     my $replace_count = 0;
     for my $obj (@to_save) {
         $replace_count++;
+
+        # For cms_pre_save callback and revisioning
+        my $orig_obj = shift @to_save_orig;
+
+        $app->run_callbacks( 'cms_pre_save.' . $type,
+            $app, $obj, $orig_obj )
+            || return $app->error(
+            $app->translate(
+                "Saving [_1] failed: [_2]", $obj->class_label,
+                $app->errstr
+            )
+            );
+
         $obj->save
             or return $app->error(
             $app->translate( "Saving object failed: [_1]", $obj->errstr ) );
