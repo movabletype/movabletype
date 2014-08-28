@@ -1129,6 +1129,10 @@ sub do_search_replace {
             )
             );
 
+        # Setting modified_by updates modified_on which we want to do before
+        # a save but after pre_save callbacks fire.
+        $obj->modified_by( $author->id );
+
         $obj->save
             or return $app->error(
             $app->translate( "Saving object failed: [_1]", $obj->errstr ) );
