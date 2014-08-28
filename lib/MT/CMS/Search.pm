@@ -1094,7 +1094,10 @@ sub do_search_replace {
                 }
             }
             if ( $match || $show_all ) {
-                push @to_save, $obj if $do_replace && !$show_all;
+                if ( $do_replace && !$show_all ) {
+                    push @to_save, $obj;
+                    push @to_save_orig, $orig_obj;
+                }
                 push @data, $obj;
             }
             last if ( $limit ne 'all' ) && @data > $limit;
