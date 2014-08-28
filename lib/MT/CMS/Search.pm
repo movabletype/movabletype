@@ -1140,6 +1140,37 @@ sub do_search_replace {
             or return $app->error(
             $app->translate( "Saving object failed: [_1]", $obj->errstr ) );
 
+        # Save revision
+        if ( $obj->isa('MT::Revisable') ) {
+            my $blog = $obj->blog;
+            if ( $blog && $blog->use_revision ) {
+                $obj->gather_changed_cols($orig_obj);
+                if ( exists $obj->{changed_revisioned_cols} ) {
+                    my $col = 'max_revisions_' . $obj->datasource;
+                    my $max = $blog->$col;
+                    $obj->handle_max_revisions($max);
+
+                    my $msg
+                        = $app->translate(
+                        "Searched for: '[_1]' Replaced with: '[_2]'",
+                        $plain_search, $replace );
+
+                    my $revision = $obj->save_revision($msg);
+                    $obj->current_revision($revision);
+
+                    # call update to bypass instance save method
+                    $obj->update or return $obj->error( $obj->errstr );
+                    if ( $obj->has_meta('revision') ) {
+                        $obj->revision($revision);
+
+                        # hack to bypass instance save method
+                        $obj->{__meta}->set_primary_keys($obj);
+                        $obj->{__meta}->save;
+                    }
+                }
+            }
+        }
+
         my $obj_title = '';
         $obj_title = $obj->title if $obj->can('title');  # entries, pages, pings
         $obj_title = $obj->name  if $obj->can('name');   # templates, blogs, websites
