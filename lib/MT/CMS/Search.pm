@@ -6,7 +6,7 @@
 package MT::CMS::Search;
 
 use strict;
-use MT::Util qw( is_valid_date encode_html );
+use MT::Util qw( is_valid_date encode_html first_n_words );
 
 sub core_search_apis {
     my $app     = shift;
@@ -1136,6 +1136,28 @@ sub do_search_replace {
         $obj->save
             or return $app->error(
             $app->translate( "Saving object failed: [_1]", $obj->errstr ) );
+
+        my $obj_title = '';
+        $obj_title = $obj->title if $obj->can('title');  # entries, pages, pings
+        $obj_title = $obj->name  if $obj->can('name');   # templates, blogs, websites
+        $obj_title = first_n_words($obj->text, 10)       # comments
+            if $type eq 'comment';
+
+        my $message
+            = $app->translate(
+            "[_1] '[_2]' (ID:[_3]) updated by user '[_4]' using Search & Replace",
+            $obj->class_label, $obj_title, $obj->id, $author->name );
+
+        $app->log(
+            {   message  => $message,
+                blog_id  => $blog_id,
+                level    => MT::Log::INFO(),
+                class    => $type,
+                category => 'edit',
+                metadata => $obj->id
+            }
+        );
+
     }
     if (@data) {
 
