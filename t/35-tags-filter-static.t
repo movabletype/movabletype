@@ -75,3 +75,16 @@ AbC
 <mt:Unless regex_replace="/a(b)c/","A$C">abc</mt:Unless>
 --- expected
 A$C
+
+===
+--- template
+<mt:Unless regex_replace="/a(b)c/","A\nC">abc</mt:Unless>
+--- expected
+A
+C
+
+===
+--- template
+<mt:Unless regex_replace="/abc/","'$&'">abc</mt:Unless>
+--- expected
+'abc'

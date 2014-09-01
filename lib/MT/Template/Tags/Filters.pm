@@ -631,9 +631,9 @@ sub _fltr_regex_replace {
         my $re = eval {qr/$patt/};
         if ( defined $re ) {
             $replace =~ s!\\\\(\d+)!\$1!g;  # for php, \\1 is how you write $1
-            $replace =~ s{\\(?!\d)}{\\\\}g;
+            $replace =~ s{\\(?![\da-z])}{\\\\}g;
             $replace =~ s!/!\\/!g;
-            $replace =~ s/(@|\$(?!\d))/\\$1/g;
+            $replace =~ s/(@|\$(?![\d\&]))/\\$1/g;
             eval '$str =~ s/$re/' . $replace . '/' . ( $global ? 'g' : '' );
             if ($@) {
                 return $ctx->error("Invalid regular expression: $@");
