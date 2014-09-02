@@ -1817,11 +1817,15 @@ sub attach_categories {
         );
         $place->save or return $place->errstr;
 
-        $has_primary
-            = 1;    # Entry does not have more than one primary category.
+        # Update cache.
+        $obj->cache_property( 'category', undef, $cat )
+            unless $has_primary;
 
-        $obj->cache_property( 'category', undef, $cat );    # Update cache.
-        push @attached_cats, $cat;    # For updating 'categories' cache.
+        # Entry does not have more than one primary category.
+        $has_primary = 1;
+
+        # For updating 'categories' cache.
+        push @attached_cats, $cat;
     }
 
     # Update cache.
