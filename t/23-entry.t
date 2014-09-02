@@ -96,8 +96,8 @@ ok ($entry->comment_count, "Entry comment_count exists");
 my @comments = @{$entry->comments};
 ok (@comments, "Multiple comments exist");
 is ($comments[0]->text, 'Postmodern false consciousness has always been firmly rooted in post-Freudian Lacanian neo-Marxist bojangles. Needless to say, this quickly and asymptotically approches a purpletacular jouissance of etic jumpinmypants.', 'Comment 1');
-is ($comments[1]->text, 'Comment reply for comment 11', 'Comment 2');
-is ($comments[2]->text, 'Comment reply for comment 1', 'Comment 3');
+is ($comments[1]->text, 'Comment reply for comment 1', 'Comment 3');
+is ($comments[2]->text, 'Comment reply for comment 11', 'Comment 2');
 
 ## Test entry auto-generation
 $entry->excerpt('');
