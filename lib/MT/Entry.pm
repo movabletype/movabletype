@@ -1786,6 +1786,7 @@ sub attach_categories {
         my $cat = MT->model('category')->load($cat_id);
         push @cats, $cat if $cat;
     }
+    return [] unless @cats;
 
     # Remove already attached categories.
     my @old_places = MT->model('placement')->load(
