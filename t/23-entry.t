@@ -83,8 +83,8 @@ $entry->clear_cache;
 my $category = $entry->category;
 ok ($category, "Primary category " . $category->label . " exists");
 
-my @categories = $entry->categories;
-ok(@categories, "Multiple cateogires exist ");
+my $categories = $entry->categories;
+ok($categories && scalar @$categories == 2, "Multiple cateogires exist ");
 
 ## Test permalink, archive_url, archive_file
 is ($entry->permalink, 'http://narnia.na/nana/archives/1978/01/a-rainy-day.html', 'Permalink');
