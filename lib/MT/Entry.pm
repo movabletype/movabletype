@@ -1834,6 +1834,83 @@ sub attach_categories {
     return \@attached_cats;
 }
 
+sub update_categories {
+    my $obj     = shift;
+    my @cat_ids = @_;
+
+    # Retrieve categories by category_id.
+    my @cats;
+    for my $cat_id (@cat_ids) {
+        next unless $cat_id && $cat_id =~ m/^\d+$/;
+        my $cat = MT->model('category')->load($cat_id);
+        push @cats, $cat if $cat;
+    }
+
+    # Detach all if no category.
+    unless (@cats) {
+        MT::Placement->remove(
+            {   blog_id  => $obj->blog_id,
+                entry_id => $obj->id,
+            }
+        ) or return MT::Placement->errstr;
+
+        $obj->clear_cache('category');
+        $obj->clear_cache('categories');
+
+        return [];
+    }
+
+    # Detach categories
+    my @remove_cats;
+    for my $old_cat ( @{ $obj->categories } ) {
+        push @remove_cats, $old_cat
+            unless ( grep { $_->id == $old_cat->id } @cats );
+    }
+    if (@remove_cats) {
+        MT::Placement->remove(
+            {   blog_id     => $obj->blog_id,
+                entry_id    => $obj->id,
+                category_id => [ map { $_->id } @remove_cats ],
+            }
+        ) or return MT::Placement->errstr;
+    }
+
+    # Attach/update categories
+    my $is_primary = 1;
+    my @old_place  = MT::Placement->load(
+        {   blog_id  => $obj->blog_id,
+            entry_id => $obj->id,
+        }
+    );
+    for my $cat (@cats) {
+        my $place;
+        if ( ($place) = grep { $_->category_id == $cat->id } @old_place ) {
+            do { $is_primary = 0; next } if $place->is_primary == $is_primary;
+            $place->is_primary($is_primary);
+        }
+        else {
+            $place = MT::Placement->new;
+            $place->set_values(
+                {   blog_id     => $obj->blog_id,
+                    entry_id    => $obj->id,
+                    category_id => $cat->id,
+                    is_primary  => $is_primary,
+                }
+            );
+        }
+        $place->save or return $place->errstr;
+
+        $obj->cache_property( 'category', undef, $cat ) if $is_primary;
+
+        $is_primary = 0;
+    }
+
+    # Update cache
+    $obj->cache_property( 'categories', undef, \@cats );
+
+    return \@cats;
+}
+
 #trans('Draft')
 #trans('Review')
 #trans('Future')
@@ -1974,6 +2051,12 @@ passed directly in as the second argument to I<MT::apply_text_filters>.
 Attaches categories specified by I<@category_ids> to the entry. Invalid ids
 in I<@category_ids> will be ignored. This method returns array reference of
 attached categories.
+
+=head2 $entry->update_categories(@category_ids)
+
+Update categories specified by I<@category_ids> of the entry. Invlaid ids
+in I<@category_ids> will be ignored. If I<@category_ids> is empty, all categories
+will be detached. This method returns array reference of attached categories.
 
 =head1 DATA ACCESS METHODS
 

@@ -339,6 +339,45 @@ sub create_v2 {
     $new_entry;
 }
 
+sub update_v2 {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $orig_entry ) = context_objects(@_)
+        or return;
+    my $new_entry = $app->resource_object( 'entry', $orig_entry )
+        or return;
+
+    my $post_save
+        = build_post_save_sub( $app, $blog, $new_entry, $orig_entry );
+
+    save_object(
+        $app, 'entry',
+        $new_entry,
+        $orig_entry,
+        sub {
+          # Setting modified_by updates modified_on which we want to do before
+          # a save but after pre_save callbacks fire.
+            $new_entry->modified_by( $app->user->id );
+
+            $_[0]->();
+        }
+    ) or return;
+
+    # Update categories
+    my $entry_json = $app->param('entry');
+    my $entry_hash = $app->current_format->{unserialize}->($entry_json);
+    if ( my $category = $entry_hash->{category} ) {
+        $category = [$category] unless ref $category eq 'ARRAY';
+        my @category_id = map { $_->{id} }
+            grep { ref $_ eq 'HASH' && $_->{id} } @$category;
+        $new_entry->update_categories(@category_id);
+    }
+
+    $post_save->();
+
+    $new_entry;
+}
+
 1;
 
 __END__

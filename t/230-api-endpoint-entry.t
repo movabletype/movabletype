@@ -227,6 +227,76 @@ my @suite = (
             is( $categories[0]->id, 1, 'Attached category ID is 1' );
         },
     },
+    {   path   => '/v2/sites/1/entries/2',
+        method => 'PUT',
+        params => {
+            entry => {
+                title    => 'test-api-update-categories',
+                category => [ { id => 20 }, { id => 21 }, { id => 22 } ]
+            },
+        },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                count => 1,
+            },
+        ],
+        result => sub {
+            MT->model('entry')->load(
+                {   id    => 2,
+                    title => 'test-api-update-categories',
+                }
+            );
+        },
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $entry      = MT->model('entry')->load(2);
+            my @categories = @{ $entry->categories };
+            is( scalar @categories, 3, 'Entry has 3 category' );
+        },
+    },
+    {   path   => '/v2/sites/1/entries/2',
+        method => 'PUT',
+        params =>
+            { entry => { category => [ { id => 21 }, { id => 22 } ] }, },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                count => 1,
+            },
+        ],
+        result => sub {
+            MT->model('entry')->load(
+                {   id    => 2,
+                    title => 'test-api-update-categories',
+                }
+            );
+        },
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $entry      = MT->model('entry')->load(2);
+            my @categories = @{ $entry->categories };
+            is( scalar @categories, 2, 'Entry has 2 category' );
+        },
+    },
 );
 
 my %callbacks = ();

@@ -7,7 +7,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-use Test::More tests => 43;
+use Test::More tests => 49;
 
 use MT;
 use MT::Blog;
@@ -87,13 +87,27 @@ my $categories = $entry->categories;
 ok( $categories && scalar @$categories == 2, "Multiple cateogires exist " );
 
 my @entry_category_ids = map { $_->id } @$categories;
-my $attach_category = MT->model('category')->load(
+my $cat3 = MT->model('category')->load(
     { id => { not => \@entry_category_ids } },
     { sort => 'id', direction => 'ascend' },
 );
-my $attached = $entry->attach_categories( $attach_category->id );
+my $attached = $entry->attach_categories( $cat3->id );
 is( scalar @$attached,              1, 'Attached a category' );
 is( scalar @{ $entry->categories }, 3, '3 categories exist' );
+
+my @category_ids = ( $cat->id, $cat2->id );
+my $attached2 = $entry->update_categories(@category_ids);
+is( scalar @$attached2,             2, 'Update categories' );
+is( scalar @{ $entry->categories }, 2, '2 categories exist' );
+
+@category_ids = ( $cat->id );
+my $attached3 = $entry->update_categories(@category_ids);
+is( scalar @$attached3,             1, 'Update categories' );
+is( scalar @{ $entry->categories }, 1, '1 category exist' );
+
+my $attached4 = $entry->update_categories();
+is( scalar @$attached4,             0, 'Update categories' );
+is( scalar @{ $entry->categories }, 0, 'No category exist' );
 
 ## Test permalink, archive_url, archive_file
 is( $entry->permalink,
