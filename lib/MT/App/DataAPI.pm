@@ -175,8 +175,8 @@ sub core_endpoints {
             route     => '/sites/:site_id/entries/:entry_id',
             resources => ['entry'],
             verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}Entry::update_v2",
+            version   => 1,
+            handler   => "${pkg}Entry::update",
             default_params => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to update an entry.', },
@@ -185,8 +185,8 @@ sub core_endpoints {
             route     => '/sites/:site_id/entries/:entry_id',
             resources => ['entry'],
             verb      => 'PUT',
-            version   => 1,
-            handler   => "${pkg}Entry::update",
+            version   => 2,
+            handler   => "${pkg}Entry::update_v2",
             default_params => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to update an entry.', },
