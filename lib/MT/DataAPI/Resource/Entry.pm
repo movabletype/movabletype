@@ -292,6 +292,36 @@ sub fields {
     ];
 }
 
+sub fields_v2 {
+
+    # Overwrite categories field.
+    [   @{ fields() },
+        {   name        => 'categories',
+            from_object => sub {
+                my ($obj) = @_;
+                my $rows = $obj->__load_category_data or return;
+
+                my $primary = do {
+                    my @rows = grep { $_->[1] } @$rows;
+                    @rows ? $rows[0]->[0] : 0;
+                };
+
+                my $cats = MT::Category->lookup_multi(
+                    [ map { $_->[0] } @$rows ] );
+
+                MT::DataAPI::Resource->from_object(
+                    [   sort {
+                                  $a->id == $primary ? -1
+                                : $b->id == $primary ? 1
+                                : $a->label cmp $b->label
+                        } @$cats
+                    ]
+                );
+            },
+        }
+    ];
+}
+
 1;
 
 __END__

@@ -18,7 +18,12 @@ sub core_resources {
             {   version          => 1,
                 fields           => "${pkg}Entry::fields",
                 updatable_fields => "${pkg}Entry::updatable_fields",
-            }
+            },
+            {   version => 2,
+                fields  => "${pkg}Entry::fields_v2",
+                updatable_fields =>
+                    "${pkg}Entry::updatable_fields",    # same as v1
+            },
         ],
         'category' => [
             {   version          => 1,
@@ -74,9 +79,9 @@ sub core_resources {
 }
 
 sub resource {
-    my $class   = shift;
-    my ($key)   = @_;
-    my $app     = MT->instance;
+    my $class       = shift;
+    my ($key)       = @_;
+    my $app         = MT->instance;
     my $api_version = $app->current_api_version;
 
     if ( !$resources{$api_version} ) {
@@ -129,7 +134,8 @@ sub resource {
     return unless $res;
 
     if ( !ref $res ) {
-        $resources{$api_version}{$resource_key} = $res = $class->resource($res);
+        $resources{$api_version}{$resource_key} = $res
+            = $class->resource($res);
     }
 
     return unless $res;

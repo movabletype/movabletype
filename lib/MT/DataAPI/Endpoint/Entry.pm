@@ -281,6 +281,64 @@ sub list_categories {
     };
 }
 
+sub create_v2 {
+    my ( $app, $endpoint ) = @_;
+
+    my ($blog) = context_objects(@_);
+    return unless $blog && $blog->id;
+
+    my $author = $app->user;
+
+    my $orig_entry = $app->model('entry')->new;
+    $orig_entry->set_values(
+        {   blog_id        => $blog->id,
+            author_id      => $author->id,
+            allow_comments => $blog->allow_comments_default,
+            allow_pings    => $blog->allow_pings_default,
+            convert_breaks => $blog->convert_paras,
+            status         => (
+                (          $app->can_do('publish_own_entry')
+                        || $app->can_do('publish_all_entry')
+                )
+                ? MT::Entry::RELEASE()
+                : MT::Entry::HOLD()
+            )
+        }
+    );
+
+    my $new_entry = $app->resource_object( 'entry', $orig_entry )
+        or return;
+
+    if (  !$new_entry->basename
+        || $app->model('entry')
+        ->exist( { blog_id => $blog->id, basename => $new_entry->basename } )
+        )
+    {
+        $new_entry->basename( MT::Util::make_unique_basename($new_entry) );
+    }
+    MT::Util::translate_naughty_words($new_entry);
+
+    my $post_save
+        = build_post_save_sub( $app, $blog, $new_entry, $orig_entry );
+
+    save_object( $app, 'entry', $new_entry )
+        or return;
+
+    # Attach categories
+    my $entry_json = $app->param('entry');
+    my $entry_hash = $app->current_format->{unserialize}->($entry_json);
+    if ( my $category = $entry_hash->{category} ) {
+        $category = [$category] unless ref $category eq 'ARRAY';
+        my @category_id = map { $_->{id} }
+            grep { ref $_ eq 'HASH' && $_->{id} } @$category;
+        $new_entry->attach_categories(@category_id);
+    }
+
+    $post_save->();
+
+    $new_entry;
+}
+
 1;
 
 __END__

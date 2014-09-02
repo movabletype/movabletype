@@ -30,7 +30,8 @@ $mock_author->mock( 'is_superuser', sub {0} );
 my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
 my $version;
-$mock_app_api->mock( 'current_api_version', sub { $version = $_[0] if $_[0] ; $version } );
+$mock_app_api->mock( 'current_api_version',
+    sub { $version = $_[0] if $_[0]; $version } );
 
 my @suite = (
     {   path      => '/v1/sites/1/entries',
@@ -83,9 +84,9 @@ my @suite = (
             is( $entry->revision, 1, 'Has created new revision' );
         },
     },
-    {   path      => '/v1/sites/1/entries/0',
-        method    => 'GET',
-        code      => 404,
+    {   path   => '/v1/sites/1/entries/0',
+        method => 'GET',
+        code   => 404,
     },
     {   path      => '/v1/sites/1/entries/1',
         method    => 'GET',
@@ -132,28 +133,28 @@ my @suite = (
                 1, 'Bumped-up revision number' );
         },
     },
-    {   path   => '/v1/sites/1/entries/1',
-        method => 'PUT',
-        params =>
-            { entry => { tags => [qw(a)] }, },
+    {   path     => '/v1/sites/1/entries/1',
+        method   => 'PUT',
+        params   => { entry => { tags => [qw(a)] }, },
         complete => sub {
-            is_deeply([MT->model('entry')->load(1)->tags], [qw(a)], "Entry's tag is updated");
+            is_deeply( [ MT->model('entry')->load(1)->tags ],
+                [qw(a)], "Entry's tag is updated" );
         },
     },
-    {   path   => '/v1/sites/1/entries/1',
-        method => 'PUT',
-        params =>
-            { entry => { tags => [qw(a b)] }, },
+    {   path     => '/v1/sites/1/entries/1',
+        method   => 'PUT',
+        params   => { entry => { tags => [qw(a b)] }, },
         complete => sub {
-            is_deeply([MT->model('entry')->load(1)->tags], [qw(a b)], "Entry's tag is added");
+            is_deeply( [ MT->model('entry')->load(1)->tags ],
+                [qw(a b)], "Entry's tag is added" );
         },
     },
-    {   path   => '/v1/sites/1/entries/1',
-        method => 'PUT',
-        params =>
-            { entry => { tags => [] }, },
+    {   path     => '/v1/sites/1/entries/1',
+        method   => 'PUT',
+        params   => { entry => { tags => [] }, },
         complete => sub {
-            is_deeply([MT->model('entry')->load(1)->tags], [], "Entry's tag is removed");
+            is_deeply( [ MT->model('entry')->load(1)->tags ],
+                [], "Entry's tag is removed" );
         },
     },
     {   path      => '/v1/sites/1/entries/1',
@@ -179,6 +180,52 @@ my @suite = (
                 count => 1,
             },
         ],
+    },
+    {   path   => '/v2/sites/1/entries',
+        method => 'POST',
+        params => {
+            entry => {
+                title    => 'test-api-attach-categories-to-entry',
+                status   => 'Draft',
+                category => [ { id => 1 } ],
+            },
+        },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                count => 1,
+            },
+        ],
+        result => sub {
+            require MT::Entry;
+            MT->model('entry')->load(
+                {   title  => 'test-api-attach-categories-to-entry',
+                    status => MT::Entry::HOLD(),
+                }
+            );
+        },
+        complete => sub {
+            my ( $data, $body ) = @_;
+            require MT::Entry;
+            my $entry = MT->model('entry')->load(
+                {   title  => 'test-api-attach-categories-to-entry',
+                    status => MT::Entry::HOLD(),
+                }
+            );
+            is( $entry->revision, 1, 'Has created new revision' );
+            my @categories = @{ $entry->categories };
+            is( scalar @categories, 1, 'Attaches a category' );
+            is( $categories[0]->id, 1, 'Attached category ID is 1' );
+        },
     },
 );
 
@@ -220,7 +267,7 @@ for my $data (@suite) {
     note($note);
 
     %callbacks = ();
-    $app = _run_app(
+    _run_app(
         'MT::App::DataAPI',
         {   __path_info      => $path,
             __request_method => $data->{method},

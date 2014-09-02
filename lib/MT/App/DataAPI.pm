@@ -151,6 +151,16 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to create an entry.', },
         },
+        {   id        => 'create_entry',
+            route     => '/sites/:site_id/entries',
+            resources => ['entry'],
+            verb      => 'POST',
+            version   => 2,
+            handler   => "${pkg}Entry::create_v2",
+            default_params => { save_revision => 1, },
+            error_codes =>
+                { 403 => 'Do not have permission to create an entry.', },
+        },
         {   id          => 'get_entry',
             route       => '/sites/:site_id/entries/:entry_id',
             version     => 1,

@@ -1775,6 +1775,65 @@ sub terms_for_tags {
     return { status => MT::Entry::RELEASE() };
 }
 
+sub attach_categories {
+    my $obj = shift;
+    my @cat_ids = @_ or return [];
+
+    # Retrieve categories by category_id.
+    my @cats;
+    for my $cat_id (@cat_ids) {
+        next unless $cat_id && $cat_id =~ m/^\d+$/;
+        my $cat = MT->model('category')->load($cat_id);
+        push @cats, $cat if $cat;
+    }
+
+    # Remove already attached categories.
+    my @old_places = MT->model('placement')->load(
+        {   entry_id    => $obj->id,
+            category_id => [ map { $_->id } @cats ],
+        }
+    );
+    if (@old_places) {
+        my %place_id = map { ( $_->category_id => 1 ) } @old_places;
+        @cats = grep { !$place_id{ $_->id } } @cats;
+    }
+
+    # Attach categories to the entry.
+    my @attached_cats;
+    my $has_primary = MT->model('placement')->count(
+        {   entry_id   => $obj->id,
+            is_primary => 1,
+        }
+    );
+    my $old_cats = $obj->categories;
+    for my $cat (@cats) {
+        my $place = MT->model('placement')->new;
+        $place->set_values(
+            {   blog_id     => $obj->blog->id,
+                entry_id    => $obj->id,
+                category_id => $cat->id,
+                is_primary  => $has_primary ? 0 : 1,
+            }
+        );
+        $place->save or return $place->errstr;
+
+        $has_primary
+            = 1;    # Entry does not have more than one primary category.
+
+        $obj->cache_property( 'category', undef, $cat );    # Update cache.
+        push @attached_cats, $cat;    # For updating 'categories' cache.
+    }
+
+    # Update cache.
+    my @new_cats
+        = ( @attached_cats, $old_cats && @$old_cats ? @$old_cats : () );
+    @new_cats = sort { $a->label cmp $b->label } @new_cats;
+    $obj->cache_property( 'categories', undef, \@new_cats );
+
+    # Return attached categories.
+    return \@attached_cats;
+}
+
 #trans('Draft')
 #trans('Review')
 #trans('Future')
@@ -1909,6 +1968,12 @@ case the two methods give exactly the same results.
 Returns a reference to an array of text filter keynames (the short names
 that are the first argument to I<MT::add_text_filter>. This list can be
 passed directly in as the second argument to I<MT::apply_text_filters>.
+
+=head2 $entry->attach_categories(@category_ids)
+
+Attaches categories specified by I<@category_ids> to the entry. Invalid ids
+in I<@category_ids> will be ignored. This method returns array reference of
+attached categories.
 
 =head1 DATA ACCESS METHODS
 
