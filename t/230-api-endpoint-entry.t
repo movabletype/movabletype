@@ -29,6 +29,8 @@ my $mock_author = Test::MockModule->new('MT::Author');
 $mock_author->mock( 'is_superuser', sub {0} );
 my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
+my $version;
+$mock_app_api->mock( 'current_api_version', sub { $version = $_[0] if $_[0] ; $version } );
 
 my @suite = (
     {   path      => '/v1/sites/1/entries',
@@ -218,7 +220,7 @@ for my $data (@suite) {
     note($note);
 
     %callbacks = ();
-    _run_app(
+    $app = _run_app(
         'MT::App::DataAPI',
         {   __path_info      => $path,
             __request_method => $data->{method},
