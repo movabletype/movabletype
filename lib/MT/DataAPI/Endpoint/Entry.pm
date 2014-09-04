@@ -324,14 +324,22 @@ sub create_v2 {
     save_object( $app, 'entry', $new_entry )
         or return;
 
-    # Attach categories
+    # Attach categories and assets.
     my $entry_json = $app->param('entry');
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
+
     if ( my $category = $entry_hash->{category} ) {
         $category = [$category] unless ref $category eq 'ARRAY';
         my @category_id = map { $_->{id} }
             grep { ref $_ eq 'HASH' && $_->{id} } @$category;
         $new_entry->attach_categories(@category_id);
+    }
+
+    if ( my $assets = $entry_hash->{assets} ) {
+        $assets = [$assets] if ref $assets ne 'ARRAY';
+        my @asset_ids
+            = map { $_->{id} } grep { ref $_ eq 'HASH' && $_->{id} } @$assets;
+        $new_entry->attach_assets(@asset_ids);
     }
 
     $post_save->();

@@ -7,7 +7,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-use Test::More tests => 49;
+use Test::More tests => 51;
 
 use MT;
 use MT::Blog;
@@ -108,6 +108,16 @@ is( scalar @{ $entry->categories }, 1, '1 category exist' );
 my $attached4 = $entry->update_categories();
 is( scalar @$attached4,             0, 'Update categories' );
 is( scalar @{ $entry->categories }, 0, 'No category exist' );
+
+my $asset = MT->model('asset')->load( undef, { sort => 'id', direction => 'ascend', limit => 1 } );
+my $attached_asset_id = $entry->attach_assets( $asset->id );
+is( scalar @$attached_asset_id, 1, 'Attached an asset' );
+my $oa_count = MT->model('objectasset')->count({
+    object_ds => 'entry',
+    object_id => $entry->id,
+    asset_id  => $asset->id,
+});
+is( $oa_count, 1, 'ObjectAsset record exists' );
 
 ## Test permalink, archive_url, archive_file
 is( $entry->permalink,

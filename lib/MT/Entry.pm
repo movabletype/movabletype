@@ -1916,6 +1916,50 @@ sub update_categories {
     return \@cats;
 }
 
+sub attach_assets {
+    my $obj       = shift;
+    my @asset_ids = @_;
+
+    # Remove imvalid IDs.
+    @asset_ids = grep { $_ && $_ =~ m/^\d+$/ } @asset_ids;
+    return [] unless @asset_ids;
+
+    # Remove already attached IDs.
+    my @new_asset_ids;
+    my @current_assets = MT->model('asset')->load(
+        undef,
+        {   join => MT->model('objectasset')->join_on(
+                'asset_id',
+                {   blog_id   => $obj->blog->id,
+                    object_ds => 'entry',
+                    object_id => $obj->id,
+                    asset_id  => \@asset_ids,
+                },
+            ),
+        },
+    );
+    for my $asset_id (@asset_ids) {
+        next if grep { $_->id == $asset_id } @current_assets;
+        push @new_asset_ids, $asset_id;
+    }
+    return [] unless @new_asset_ids;
+
+    # Attach assets.
+    for my $asset_id (@new_asset_ids) {
+        my $objectasset = MT->model('objectasset')->new;
+        $objectasset->set_values(
+            {   blog_id   => $obj->blog->id,
+                object_ds => 'entry',
+                object_id => $obj->id,
+                asset_id  => $asset_id,
+            }
+        );
+        $objectasset->save or return $objectasset->errstr;
+    }
+
+    \@new_asset_ids;
+}
+
 #trans('Draft')
 #trans('Review')
 #trans('Future')
@@ -2062,6 +2106,12 @@ attached categories.
 Update categories specified by I<@category_ids> of the entry. Invlaid ids
 in I<@category_ids> will be ignored. If I<@category_ids> is empty, all categories
 will be detached. This method returns array reference of attached categories.
+
+=head2 $entry->attach_assets(@asset_ids)
+
+Attaches assets specified by I<@asset_ids> to the entry. Invalid IDs
+in I<@asset_ids> will be ignored. This method returns array reference
+of attached asset IDs.
 
 =head1 DATA ACCESS METHODS
 
