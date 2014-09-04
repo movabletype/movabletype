@@ -328,11 +328,11 @@ sub create_v2 {
     my $entry_json = $app->param('entry');
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
 
-    if ( my $category = $entry_hash->{category} ) {
-        $category = [$category] unless ref $category eq 'ARRAY';
-        my @category_id = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$category;
-        $new_entry->attach_categories(@category_id);
+    if ( my $categories = $entry_hash->{categories} ) {
+        $categories = [$categories] if ref $categories ne 'ARRAY';
+        my @category_ids = map { $_->{id} }
+            grep { ref $_ eq 'HASH' && $_->{id} } @$categories;
+        $new_entry->attach_categories(@category_ids);
     }
 
     if ( my $assets = $entry_hash->{assets} ) {
@@ -374,11 +374,11 @@ sub update_v2 {
     # Update categories
     my $entry_json = $app->param('entry');
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
-    if ( my $category = $entry_hash->{category} ) {
-        $category = [$category] unless ref $category eq 'ARRAY';
-        my @category_id = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$category;
-        $new_entry->update_categories(@category_id);
+    if ( my $categories = $entry_hash->{categories} ) {
+        $categories = [$categories] if ref $categories ne 'ARRAY';
+        my @category_ids = map { $_->{id} }
+            grep { ref $_ eq 'HASH' && $_->{id} } @$categories;
+        $new_entry->update_categories(@category_ids);
     }
 
     $post_save->();

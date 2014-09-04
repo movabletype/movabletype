@@ -185,9 +185,9 @@ my @suite = (
         method => 'POST',
         params => {
             entry => {
-                title    => 'test-api-attach-categories-to-entry',
-                status   => 'Draft',
-                category => [ { id => 1 } ],
+                title      => 'test-api-attach-categories-to-entry',
+                status     => 'Draft',
+                categories => [ { id => 1 } ],
             },
         },
         callbacks => [
@@ -231,8 +231,8 @@ my @suite = (
         method => 'PUT',
         params => {
             entry => {
-                title    => 'test-api-update-categories',
-                category => [ { id => 20 }, { id => 21 }, { id => 22 } ]
+                title      => 'test-api-update-categories',
+                categories => [ { id => 20 }, { id => 21 }, { id => 22 } ]
             },
         },
         callbacks => [
@@ -267,7 +267,7 @@ my @suite = (
     {   path   => '/v2/sites/1/entries/2',
         method => 'PUT',
         params =>
-            { entry => { category => [ { id => 21 }, { id => 22 } ] }, },
+            { entry => { categories => [ { id => 21 }, { id => 22 } ] }, },
         callbacks => [
             {   name =>
                     'MT::App::DataAPI::data_api_save_permission_filter.entry',
