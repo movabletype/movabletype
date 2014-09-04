@@ -2097,13 +2097,13 @@ passed directly in as the second argument to I<MT::apply_text_filters>.
 
 =head2 $entry->attach_categories(@category_ids)
 
-Attaches categories specified by I<@category_ids> to the entry. Invalid ids
+Attaches categories specified by I<@category_ids> to the entry. Invalid IDs
 in I<@category_ids> will be ignored. This method returns array reference of
 attached categories.
 
 =head2 $entry->update_categories(@category_ids)
 
-Update categories specified by I<@category_ids> of the entry. Invlaid ids
+Update categories specified by I<@category_ids> of the entry. Invlaid IDs
 in I<@category_ids> will be ignored. If I<@category_ids> is empty, all categories
 will be detached. This method returns array reference of attached categories.
 
