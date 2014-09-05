@@ -86,6 +86,7 @@ ok( $category, "Primary category " . $category->label . " exists" );
 my $categories = $entry->categories;
 ok( $categories && scalar @$categories == 2, "Multiple cateogires exist " );
 
+# Test attach_categories method
 my @entry_category_ids = map { $_->id } @$categories;
 my $cat3 = MT->model('category')->load(
     { id => { not => \@entry_category_ids } },
@@ -95,6 +96,7 @@ my $attached = $entry->attach_categories( $cat3->id );
 is( scalar @$attached,              1, 'Attached a category' );
 is( scalar @{ $entry->categories }, 3, '3 categories exist' );
 
+# Test update_categories method
 my @category_ids = ( $cat->id, $cat2->id );
 my $attached2 = $entry->update_categories(@category_ids);
 is( scalar @$attached2,             2, 'Update categories' );
@@ -109,6 +111,7 @@ my $attached4 = $entry->update_categories();
 is( scalar @$attached4,             0, 'Update categories' );
 is( scalar @{ $entry->categories }, 0, 'No category exist' );
 
+# Test attach_assets method
 my $asset = MT->model('asset')->load( undef, { sort => 'id', direction => 'ascend', limit => 1 } );
 my $attached_asset_id = $entry->attach_assets( $asset->id );
 is( scalar @$attached_asset_id, 1, 'Attached an asset' );
@@ -119,6 +122,7 @@ my $oa_count = MT->model('objectasset')->count({
 });
 is( $oa_count, 1, '1 ObjectAsset record exists' );
 
+# Test update_assets method
 my $attached_asset_id2 = $entry->update_assets();
 is( scalar @$attached_asset_id2, 0, 'Detach an asset' );
 my $oa_count2 = MT->model('objectasset')->count({
