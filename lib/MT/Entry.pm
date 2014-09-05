@@ -1927,7 +1927,7 @@ sub attach_assets {
     # Remove already attached IDs.
     my @new_asset_ids;
     my @current_assets = MT->model('asset')->load(
-        undef,
+        { class => '*' },
         {   join => MT->model('objectasset')->join_on(
                 'asset_id',
                 {   blog_id   => $obj->blog->id,
