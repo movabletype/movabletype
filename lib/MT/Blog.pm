@@ -544,7 +544,9 @@ sub site_url {
     my $blog = shift;
 
     if (@_) {
-        return $blog->SUPER::site_url(@_);
+        my $url = @_[0];
+        $url .= '/' unless $url =~ m{/$};
+        return $blog->SUPER::site_url($url);
     }
     elsif ( $blog->is_dynamic ) {
         my $cfg  = MT->config;
@@ -653,7 +655,9 @@ sub archive_url {
     my $blog = shift;
 
     if (@_) {
-        $blog->SUPER::archive_url(@_) || $blog->site_url;
+        my $url = @_[0];
+        $url .= '/' unless $url =~ m{/$};
+        $blog->SUPER::archive_url($url) || $blog->site_url;
     }
     elsif ( $blog->is_dynamic ) {
         return $blog->site_url;
