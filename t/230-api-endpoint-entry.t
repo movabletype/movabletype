@@ -435,6 +435,40 @@ my @suite = (
             is( scalar @oa, 1, 'Entry has 1 asset' );
         },
     },
+    {   path      => '/v2/sites/1/entries/2/assets',
+        method    => 'GET',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.entry',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+            is( $result->{totalResults}, 1, 'Entry has 1 asset' );
+
+            my $entry  = MT->model('entry')->load(2);
+            my @assets = MT->model('asset')->load(
+                { class => '*' },
+                {   join => MT->model('objectasset')->join_on(
+                        'asset_id',
+                        {   blog_id   => $entry->blog->id,
+                            object_ds => 'entry',
+                            object_id => $entry->id,
+                        },
+                    ),
+                }
+            );
+            my @json_ids
+                = sort { $a <=> $b } map { $_->{id} } @{ $result->{items} };
+            my @asset_ids = sort { $a <=> $b } map { $_->id } @assets;
+            is_deeply( \@json_ids, \@asset_ids, 'Asset IDs are correct' );
+        },
+    },
 );
 
 my %callbacks = ();
