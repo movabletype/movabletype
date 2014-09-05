@@ -371,14 +371,22 @@ sub update_v2 {
         }
     ) or return;
 
-    # Update categories
+    # Update categories and assets.
     my $entry_json = $app->param('entry');
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
+
     if ( my $categories = $entry_hash->{categories} ) {
         $categories = [$categories] if ref $categories ne 'ARRAY';
         my @category_ids = map { $_->{id} }
             grep { ref $_ eq 'HASH' && $_->{id} } @$categories;
         $new_entry->update_categories(@category_ids);
+    }
+
+    if ( my $assets = $entry_hash->{assets} ) {
+        $assets = [$assets] if ref $assets ne 'ARRAY';
+        my @asset_ids
+            = map { $_->{id} } grep { ref $_ eq 'HASH' && $_->{id} } @$assets;
+        $new_entry->update_assets(@asset_ids);
     }
 
     $post_save->();

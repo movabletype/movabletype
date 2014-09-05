@@ -7,7 +7,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-use Test::More tests => 51;
+use Test::More tests => 55;
 
 use MT;
 use MT::Blog;
@@ -117,7 +117,25 @@ my $oa_count = MT->model('objectasset')->count({
     object_id => $entry->id,
     asset_id  => $asset->id,
 });
-is( $oa_count, 1, 'ObjectAsset record exists' );
+is( $oa_count, 1, '1 ObjectAsset record exists' );
+
+my $attached_asset_id2 = $entry->update_assets();
+is( scalar @$attached_asset_id2, 0, 'Detach an asset' );
+my $oa_count2 = MT->model('objectasset')->count({
+    object_ds => 'entry',
+    object_id => $entry->id,
+    asset_id  => $asset->id,
+});
+is( $oa_count2, 0, 'No ObjectAsset record exists' );
+
+my $attached_asset_id3 = $entry->update_assets( $asset->id );
+is( scalar @$attached_asset_id3, 1, 'Attach an asset' );
+my $oa_count3 = MT->model('objectasset')->count({
+    object_ds => 'entry',
+    object_id => $entry->id,
+    asset_id  => $asset->id,
+});
+is( $oa_count3, 1, '1 ObjectAsset record exist' );
 
 ## Test permalink, archive_url, archive_file
 is( $entry->permalink,

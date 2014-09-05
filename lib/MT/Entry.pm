@@ -1960,6 +1960,69 @@ sub attach_assets {
     \@new_asset_ids;
 }
 
+sub update_assets {
+    my $obj       = shift;
+    my @asset_ids = @_;
+
+    # Remove imvalid IDs.
+    @asset_ids = grep { $_ && $_ =~ m/^\d+$/ } @asset_ids;
+    if (@asset_ids) {
+        my @valid_asset_ids;
+        my @assets = @{ MT->model('asset')->lookup_multi( \@asset_ids ) };
+        for my $asset_id (@asset_ids) {
+            next unless ( grep { $_->id == $asset_id } @assets );
+            push @valid_asset_ids, $asset_id;
+        }
+        @asset_ids = @valid_asset_ids;
+    }
+
+    # Detach all if no asset_ids.
+    unless (@asset_ids) {
+        MT->model('objectasset')->remove(
+            {   object_ds => 'entry',
+                object_id => $obj->id,
+            }
+        ) or return MT->model('objectasset')->errstr;
+        return [];
+    }
+
+    # Detach assets.
+    MT->model('objectasset')->remove(
+        {   object_ds => 'entry',
+            object_id => $obj->id,
+            asset_id  => { not => \@asset_ids },
+        }
+    ) or return MT->model('objectasset')->errstr;
+
+    # Remove already attached assets.
+    my @return_ids = @asset_ids;
+    my @current_oa = MT->model('objectasset')->load(
+        {   object_ds => 'entry',
+            object_id => $obj->id,
+            asset_id  => \@asset_ids,
+        }
+    );
+    if (@current_oa) {
+        my %current_oa_id = map { ( $_->asset_id => 1 ) } @current_oa;
+        @asset_ids = grep { !$current_oa_id{$_} } @asset_ids;
+    }
+
+    # Attach assets.
+    for my $asset_id (@asset_ids) {
+        my $oa = MT->model('objectasset')->new;
+        $oa->set_values(
+            {   blog_id   => $obj->blog->id,
+                object_ds => 'entry',
+                object_id => $obj->id,
+                asset_id  => $asset_id,
+            }
+        );
+        $oa->save or return $oa->errstr;
+    }
+
+    return \@return_ids;
+}
+
 #trans('Draft')
 #trans('Review')
 #trans('Future')
@@ -2112,6 +2175,12 @@ will be detached. This method returns array reference of attached categories.
 Attaches assets specified by I<@asset_ids> to the entry. Invalid IDs
 in I<@asset_ids> will be ignored. This method returns array reference
 of attached asset IDs.
+
+=head2 $entry->update_assets(@asset_ids)
+
+Update assets specified by I<@asset_ids> of the entry. Invalid IDs in I<@asset_ids>
+will be ignored. If I<@asset_ids> is empty, all assets will be detached. This method
+returns array reference of attached asset IDs.
 
 =head1 DATA ACCESS METHODS
 
