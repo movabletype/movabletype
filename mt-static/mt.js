@@ -2614,6 +2614,7 @@ MT.App.CategorySelector = new Class( Component, {
             this.list.setOption( "singleSelect", true );
             this.list.setOption( "toggleSelect", false );
         }
+        this.list.setOption( "disableUnSelect", true );
 
         this.parentID = 0;
         var cats = MT.App.categoryList;
