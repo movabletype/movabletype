@@ -1184,7 +1184,7 @@ sub do_search_replace {
 
         $app->log(
             {   message  => $message,
-                blog_id  => $blog_id,
+                blog_id  => ( $obj->can('blog_id') ? $obj->blog_id : 0 ),
                 level    => MT::Log::INFO(),
                 class    => $type,
                 category => 'edit',
