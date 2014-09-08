@@ -249,6 +249,17 @@ my @suite = (
         },
         code => 404,
     },
+    {   path   => '/v2/sites/1/categories/20',
+        method => 'PUT',
+        params =>
+            { category => { label => 'update-test-api-permission-folder' }, },
+        code     => 403,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $error = 'Do not have permission to update a category.';
+            check_error_message( $body, $error );
+        },
+    },
     {   path   => '/v2/sites/2/categories/1',
         method => 'POST',
         params => {
