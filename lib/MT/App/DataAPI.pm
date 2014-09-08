@@ -415,14 +415,14 @@ sub core_endpoints {
             resources => ['category'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}Category::create",
+            handler   => "${pkg}Category::v2::create",
             error_codes =>
                 { 403 => 'Do not have permission to create a category.', },
         },
         {   id          => 'get_category',
             route       => '/sites/:site_id/categories/:category_id',
             version     => 2,
-            handler     => "${pkg}Category::get",
+            handler     => "${pkg}Category::v2::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested category.',
@@ -434,7 +434,7 @@ sub core_endpoints {
             resources => ['category'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}Category::update",
+            handler   => "${pkg}Category::v2::update",
             error_codes =>
                 { 403 => 'Do not have permission to update a category.', },
         },
@@ -442,7 +442,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/categories/:category_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Category::delete",
+            handler => "${pkg}Category::v2::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a category.', },
         },
