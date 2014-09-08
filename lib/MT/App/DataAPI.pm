@@ -516,7 +516,7 @@ sub core_endpoints {
             resources => ['entry'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}Entry::create_v2",
+            handler   => "${pkg}Entry::v2::create",
             default_params => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to create an entry.', },
@@ -526,7 +526,7 @@ sub core_endpoints {
             resources => ['entry'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}Entry::update_v2",
+            handler   => "${pkg}Entry::v2::update",
             default_params => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to update an entry.', },
@@ -535,7 +535,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/entries/:entry_id/categories',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Entry::list_categories",
+            handler        => "${pkg}Entry::v2::list_categories",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -553,7 +553,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/entries/:entry_id/assets',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Entry::list_assets",
+            handler        => "${pkg}Entry::v2::list_assets",
             default_params => {
                 limit        => 10,
                 offset       => 0,
