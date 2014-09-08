@@ -32,7 +32,8 @@ $mock_author->mock( 'is_superuser', sub {0} );
 my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
 my $version;
-$mock_app_api->mock( 'current_api_version', sub { $version = $_[0] if $_[0]; $version } );
+$mock_app_api->mock( 'current_api_version',
+    sub { $version = $_[0] if $_[0]; $version } );
 
 my @suite = (
     {   path      => '/v1/sites/1/categories',
@@ -160,6 +161,16 @@ my @suite = (
     {   path   => '/v2/sites/1/categories/4',
         method => 'GET',
         code   => 404,
+    },
+    {   path     => '/v2/sites/1/categories/20',
+        method   => 'GET',
+        code     => '403',
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $error
+                = 'Do not have permission to retrieve the requested category.';
+            check_error_message( $body, $error );
+        },
     },
     {   path   => '/v2/sites/1/categories/1',
         method => 'PUT',

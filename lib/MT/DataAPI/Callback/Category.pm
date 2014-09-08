@@ -10,6 +10,12 @@ use warnings;
 
 use utf8;
 
+sub can_view {
+    my ( $eh, $app, $id, $objp ) = @_;
+    my $obj = $objp->force();
+    return $obj->is_category;
+}
+
 sub save_filter {
     my ( $eh, $app, $obj, $original ) = @_;
     return $app->error( $app->translate('A parameter "label" is required.') )

@@ -619,6 +619,9 @@ sub init_plugins {
                 "${pfx}Permission::can_list",
 
             # category callbacks
+            $pkg
+                . 'view_permission_filter.category' =>
+                "${pfx}Category::can_view",
             $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
 
             # asset callbacks
