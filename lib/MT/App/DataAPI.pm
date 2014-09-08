@@ -36,6 +36,7 @@ sub core_endpoints {
     my $app = shift;
     my $pkg = '$Core::MT::DataAPI::Endpoint::';
     return [
+        # version 1
         {   id             => 'list_endpoints',
             route          => '/endpoints',
             version        => 1,
@@ -253,42 +254,6 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of categories.',
             },
             requires_login => 0,
-        },
-        {   id        => 'create_category',
-            route     => '/sites/:site_id/categories',
-            resources => ['category'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}Category::create",
-            error_codes =>
-                { 403 => 'Do not have permission to create a category.', },
-        },
-        {   id          => 'get_category',
-            route       => '/sites/:site_id/categories/:category_id',
-            version     => 2,
-            handler     => "${pkg}Category::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested category.',
-            },
-            requires_login => 0,
-        },
-        {   id        => 'update_category',
-            route     => '/sites/:site_id/categories/:category_id',
-            resources => ['category'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}Category::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update a category.', },
-        },
-        {   id      => 'delete_category',
-            route   => '/sites/:site_id/categories/:category_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}Category::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a category.', },
         },
         {   id             => 'list_comments',
             route          => '/sites/:site_id/comments',
@@ -564,6 +529,44 @@ sub core_endpoints {
             route   => '/sites/:site_id/stats/date/visits',
             version => 1,
             handler => "${pkg}Stats::visits_for_date",
+        },
+
+        # version 2
+        {   id        => 'create_category',
+            route     => '/sites/:site_id/categories',
+            resources => ['category'],
+            verb      => 'POST',
+            version   => 2,
+            handler   => "${pkg}Category::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create a category.', },
+        },
+        {   id          => 'get_category',
+            route       => '/sites/:site_id/categories/:category_id',
+            version     => 2,
+            handler     => "${pkg}Category::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested category.',
+            },
+            requires_login => 0,
+        },
+        {   id        => 'update_category',
+            route     => '/sites/:site_id/categories/:category_id',
+            resources => ['category'],
+            verb      => 'PUT',
+            version   => 2,
+            handler   => "${pkg}Category::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a category.', },
+        },
+        {   id      => 'delete_category',
+            route   => '/sites/:site_id/categories/:category_id',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Category::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a category.', },
         },
     ];
 }
