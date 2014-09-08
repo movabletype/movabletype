@@ -386,8 +386,14 @@ sub filtered_list {
             @blog_id_term = ( blog_id => $blog_id );
         }
         else {
-            my @include_site_ids = split ',', $app->param('includeSiteIds') || '';
-            my @exclude_site_ids = split ',', $app->param('excludeSiteIds') || '';
+            my $include_site_ids = $app->param('includeSiteIds');
+            my $exclude_site_ids = $app->param('excludeSiteIds');
+
+            $include_site_ids = '' unless defined $include_site_ids;
+            $exclude_site_ids = '' unless defined $exclude_site_ids;
+
+            my @include_site_ids = split ',', $include_site_ids;
+            my @exclude_site_ids = split ',', $exclude_site_ids;
 
             my %site_id_term;
             $site_id_term{blog_id} = \@include_site_ids if @include_site_ids;
