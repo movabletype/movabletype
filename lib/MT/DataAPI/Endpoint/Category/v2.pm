@@ -75,13 +75,7 @@ sub update {
         $new_category,
         $orig_category,
         sub {
-
-            # TODO:
-            # I think that modified_by should be updated at common code.
-            # Should not be updated here.
-
-            # $new_category->modified_by( $app->user->id );
-
+            $new_category->modified_by( $app->user->id );
             $_[0]->();
         }
     ) or return;
