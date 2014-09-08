@@ -8,14 +8,13 @@ package MT::DataAPI::Resource::Entry::v2;
 use strict;
 use warnings;
 
-use base qw( MT::DataAPI::Resource::Entry );
-
-# updatable_fields is the same as v1.
+use MT::Category;
+use MT::DataAPI::Resource::Entry;
 
 sub fields {
 
     # Overwrite categories field.
-    [   @{ __PACAKGE__->SUPER::fields() },
+    [   @{ MT::DataAPI::Resource::Entry::fields() },
         {   name        => 'categories',
             from_object => sub {
                 my ($obj) = @_;

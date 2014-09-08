@@ -19,9 +19,10 @@ sub core_resources {
                 fields           => "${pkg}Entry::fields",
                 updatable_fields => "${pkg}Entry::updatable_fields",
             },
-            {   version          => 2,
-                fields           => "${pkg}Entry::v2::fields",
-                updatable_fields => "${pkg}Entry::v2::updatable_fields",
+            {   version => 2,
+                fields  => "${pkg}Entry::v2::fields",
+                updatable_fields =>
+                    "${pkg}Entry::updatable_fields",    # same as v1.
             },
         ],
         'category' => [
