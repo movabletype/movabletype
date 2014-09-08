@@ -450,7 +450,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/assets',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Asset::list",
+            handler        => "${pkg}Asset::v2::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -469,7 +469,7 @@ sub core_endpoints {
             route          => '/assets',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Asset::list",
+            handler        => "${pkg}Asset::v2::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -487,7 +487,7 @@ sub core_endpoints {
         {   id          => 'get_asset',
             route       => '/sites/:site_id/assets/:asset_id',
             version     => 2,
-            handler     => "${pkg}Asset::get",
+            handler     => "${pkg}Asset::v2::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested asset.',
@@ -499,7 +499,7 @@ sub core_endpoints {
             resources => ['asset'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}Asset::update",
+            handler   => "${pkg}Asset::v2::update",
             error_codes =>
                 { 403 => 'Do not have permission to update an asset.', },
         },
@@ -507,7 +507,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/assets/:asset_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Asset::delete",
+            handler => "${pkg}Asset::v2::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete an asset.', },
         },
