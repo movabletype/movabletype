@@ -416,6 +416,14 @@ sub count {
     $count = $class->count( $terms, $args );
     return $app->error( $class->errstr ) unless defined $count;
 
+    # Limit $count by $app->param('count') or $app->param('limit')
+    my $limit = $args->{limit} || '';
+    if ( $limit =~ /\d+/ && $limit > 0 ) {
+        if ( $count > $limit ) {
+            $count = $limit;
+        }
+    }
+
     my $cache_driver = $app->{cache_driver};
     $cache_driver->set( $app->{cache_keys}{count},
         $count, $app->config->SearchCacheTTL );

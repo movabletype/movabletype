@@ -157,9 +157,21 @@ function multiblog_function_wrapper($tag, $args, &$ctx) {
 # MultiBlog plugin wrapper for block tags (i.e. container/conditional)
 function multiblog_block_wrapper(&$args, $content, &$ctx, &$repeat) {
     $tag = $ctx->this_tag();
-    $localvars = array('local_blog_id');
+    $localvars = array('entries', 'current_timestamp', 'current_timestamp_end', 'category', 'archive_category', 'local_blog_id');
+
     if (!isset($content)) {
         $ctx->localize($localvars);
+
+        if (
+            ($tag === 'mtblogs' || $tag === 'mtwebsites')
+            && $args['ignore_archive_context']
+        ) {
+            $ctx->stash('entries', null);
+            $ctx->stash('current_timestamp', null);
+            $ctx->stash('current_timestamp_end', null);
+            $ctx->stash('category', null);
+            $ctx->stash('archive_category', null);
+        }
 
         # Set multiblog tag context if applicable
         if ($ctx->stash('multiblog_context')) {

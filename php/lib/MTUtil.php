@@ -7,7 +7,7 @@
 
 function datetime_to_timestamp($dt) {
     $dt = preg_replace('/[^0-9]/', '', $dt);
-    $ts = mktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
+    $ts = gmmktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
     return $ts;
 }
 
@@ -912,6 +912,43 @@ function encode_html($str, $quote_style = ENT_COMPAT) {
     return (strtr($str, $trans_table));
 }
 
+function encode_html_entities($str, $quote_style = ENT_COMPAT) {
+    if (!$str) {
+        return '';
+    }
+
+    static $use_htmlspecialchars;
+    static $encoding;
+    static $is_old_php;
+
+    if (! isset($is_old_php)) {
+        $is_old_php = version_compare(phpversion(), '4.3.0', '<');
+    }
+
+    if ($is_old_php) {
+        return htmlentities($str, $quote_style);
+    }
+
+    if (! isset($use_htmlspecialchars)) {
+        $mt = MT::get_instance();
+        $encoding = strtolower($mt->config('PublishCharset'));
+        $use_htmlspecialchars = !in_array($encoding, array(
+            'iso-8859-1', 'iso8859-1',
+            'iso-8859-5', 'iso8859-5',
+            'iso-8859-15', 'iso8859-15',
+            'utf-8',
+            'cp866', 'ibm866', '866',
+            'cp1251', 'windows-1251', 'win-1251', '1251',
+            'cp1252', 'windows-1252', '1252',
+            'koi8-r', 'koi8-ru', 'koi8r'
+        ), true);
+    }
+
+    return $use_htmlspecialchars ?
+        htmlspecialchars($str, $quote_style, $encoding) :
+        htmlentities($str, $quote_style, $encoding);
+}
+
 function decode_html($str, $quote_style = ENT_COMPAT) {
     if (!isset($str)) return '';
     $trans_table = get_html_translation_table(HTML_SPECIALCHARS, $quote_style);
@@ -1019,15 +1056,15 @@ function tag_split($str) {
 
 function catarray_path_length_sort($a, $b) {
 	$al = strlen($a->category_label_path);
-	$bl = strlen($bcategory_label_path);
-	return $al == $bl ? 0 : $al < $bl ? 1 : -1;
+	$bl = strlen($b->category_label_path);
+    return $al === $bl ? 0 : ($al < $bl ? 1 : -1);
 }
 
 # sorts by length of category label, from longest to shortest
 function catarray_length_sort($a, $b) {
 	$al = strlen($a->category_label);
 	$bl = strlen($b->category_label);
-	return $al == $bl ? 0 : $al < $bl ? 1 : -1;
+	return $al === $bl ? 0 : ($al < $bl ? 1 : -1);
 }
 
 function create_expr_exception($m) {
@@ -1437,11 +1474,19 @@ function asset_cleanup_cb($matches) {
     return '<span' . $attr . $inner . '</span>';
 }
 
+# sorts by length of category label, from longest to shortest
+function rolearray_length_sort(&$a, &$b) {
+    $al = strlen($a->name);
+    $bl = strlen($b->name);
+    return $al === $bl ? 0 : ($al < $bl ? 1 : -1);
+}
+
 function create_role_expr_function($expr, &$roles, $datasource = 'author') {
     $roles_used = array();
     $orig_expr = $expr;
 
     $expr = preg_replace('/,/i', ' OR ', $expr);
+    usort($roles, "rolearray_length_sort");
 
     foreach ($roles as $role) {
         $rolen = $role->role_name;

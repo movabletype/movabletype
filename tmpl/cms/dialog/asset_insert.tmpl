@@ -36,7 +36,7 @@ if (AssetList) {
 
         // create the link to the asset page with asset name as label
         var myAssetLink = window.document.createElement('a');
-        myAssetLink.setAttribute('href', '<mt:CGIPath><mt:AdminScript>?__mode=view&_type=asset&blog_id=<mt:var name="blog_id">&id=<mt:AssetID>');
+        myAssetLink.setAttribute('href', '<mt:var name="script_url">?__mode=view&_type=asset&blog_id=<mt:var name="blog_id">&id=<mt:AssetID>');
         myAssetLink.setAttribute('class', 'asset-title');
         myAssetLink.appendChild(document.createTextNode('<mt:AssetFileName encode_js="1">'));
 
@@ -49,7 +49,7 @@ if (AssetList) {
         var myElement = window.document.createElement('li');
         myElement.setAttribute('id', 'list-asset-<mt:AssetID>');
         myElement.setAttribute('class', 'asset-type-<mt:AssetProperty property="class"$>');
-        <mt:If tag="AssetType" eq="image">
+        <mt:If name="asset_type" eq="image">
             myElement.setAttribute('onmouseover', 'show(\'list-image-<mt:AssetID>\', window.parent.document)');
             myElement.setAttribute('onmouseout','hide(\'list-image-<mt:AssetID>\', window.parent.document)');
         </mt:If>
@@ -67,7 +67,7 @@ if (AssetList) {
         }
 
         // create the image thumbnail if it exists
-        <mt:If tag="AssetType" eq="image">
+        <mt:If name="asset_type" eq="image">
             var myImageElement = window.document.createElement('img');
             myImageElement.setAttribute('id', 'list-image-<mt:AssetID>');
             myImageElement.setAttribute('src', '<mt:AssetThumbnailURL width="100" encode_js="1">');

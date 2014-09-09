@@ -95,7 +95,7 @@ sub mkpath {
     my ($path)      = @_;
     my @dirs        = split '/', $path;
     my $current_dir = $fmgr->{ftp}->pwd();
-    my $fullpath;
+    my $fullpath    = '';
     foreach my $dir (@dirs) {
         next unless $dir;
         $fullpath = join '/', $fullpath, $dir;

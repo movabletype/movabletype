@@ -328,8 +328,9 @@ sub _consume_up_to {
     my ( $ctx, $text, $start, $stoptag ) = @_;
     my $whole_tag;
     ( pos $$text ) = $start;
-    while (
-        $$text =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:<[^>]+?>|[^>])*?[\$/]?>)!gi )
+    while ( $$text
+        =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:(?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)*?)[\$/]?>)!gis
+        )
     {
         $whole_tag = $1;
         my ( $prefix, $tag ) = ( $2, lc($3) );
@@ -488,9 +489,9 @@ sub build {
                     ? bless $tokens_else, 'MT::Template::Tokens'
                     : undef;
                 local ( $ctx->{__stash}{uncompiled} ) = $uncompiled;
-                my %args = %{ $t->attributes } if defined $t->attributes;
-                my @args = @{ $t->attribute_list }
-                    if defined $t->attribute_list;
+                my ( %args, @args );
+                %args = %{ $t->attributes }     if defined $t->attributes;
+                @args = @{ $t->attribute_list } if defined $t->attribute_list;
 
                 # process variables
                 foreach my $v ( keys %args ) {

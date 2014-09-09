@@ -13,9 +13,13 @@ use MT::Request;
 use MT::Promise qw( delay );
 
 sub _tags_for_blog {
-    my ( $ctx, $terms, $args, $type ) = @_;
+    my ( $ctx, $terms, $args, $type, $include_private ) = @_;
     my $r = MT::Request->instance;
-    my $tag_cache = $r->stash( 'blog_tag_cache:' . $type ) || {};
+    my $cache_key
+        = 'blog_tag_cache:'
+        . ( $include_private ? 'include_private:' : '' )
+        . $type;
+    my $tag_cache = $r->stash($cache_key) || {};
     my @tags;
     my $cache_id;
     my $all_count;
@@ -30,10 +34,12 @@ sub _tags_for_blog {
     }
     if ( !$tag_cache->{$cache_id}{tags} ) {
         require MT::Tag;
+        my %temp_terms = %$terms;
+        $temp_terms{is_private} = 0 unless $include_private;
         @tags = MT::Tag->load_by_datasource( $class->datasource,
-            { is_private => 0, %$terms }, {%$args} );
+            {%temp_terms}, {%$args} );
         $tag_cache->{$cache_id} = { tags => \@tags };
-        $r->stash( 'blog_tag_cache:' . $type, $tag_cache );
+        $r->stash( $cache_key, $tag_cache );
     }
     else {
         @tags = @{ $tag_cache->{$cache_id}{tags} };
@@ -245,8 +251,11 @@ sub _hdlr_tags {
         or return $ctx->error( $ctx->errstr );
 
     my @tag_filter;
+    my $include_private = defined $args->{include_private}
+        && $args->{include_private} == 1 ? 1 : 0;
     my ( $tags, $min, $max, $all_count )
-        = _tags_for_blog( $ctx, \%blog_terms, \%blog_args, $type );
+        = _tags_for_blog( $ctx, \%blog_terms, \%blog_args, $type,
+        $include_private );
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
     my $needs_entries

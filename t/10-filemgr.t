@@ -3,7 +3,8 @@
 use strict;
 use warnings;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More tests => 13;
+use Test::More;
+use File::Temp;
 
 use MT;
 use MT::Test;
@@ -31,3 +32,9 @@ is($copy, $String, "$copy is $String");
 ok(-f $File, "$File is a regular file");
 ok($fmgr->delete($File), "delete($File)");
 ok(!-f $File, "$File is gone");
+
+my ($fh, $filename) = File::Temp->tempfile('XXXXXX', UNLINK => 1);
+$fmgr->rename( $filename, $filename );
+ok( -f $filename, '$file should not remove' );
+
+done_testing();

@@ -147,7 +147,7 @@ sub object_from_revision {
 
     my @changed = split ',', $rev->changed;
 
-    return [ $rev_obj, \@changed, $rev->rev_number ];
+    return [ $rev_obj, \@changed, $rev->rev_number, $rev ];
 }
 
 sub load_revision {

@@ -413,7 +413,7 @@ sub _decorate_column_name {
 
 sub prepare_statement {
     my $driver = shift;
-    my ( $class, $terms, $orig_args ) = @_;
+    my ( $class, $terms, $orig_args, $recursive ) = @_;
     my $args = defined $orig_args ? {%$orig_args} : {};
 
     my @joins = (
@@ -612,7 +612,7 @@ sub prepare_statement {
         }
 
         my $join_stmt
-            = $driver->prepare_statement( $j_class, $j_terms, $j_args )
+            = $driver->prepare_statement( $j_class, $j_terms, $j_args, 1 )
             ;    # recursive
 
         $j_args->{unique} = $j_unique if $j_unique;
@@ -760,6 +760,36 @@ sub prepare_statement {
         }
         my $op = $args->{direction} eq 'descend' ? '<' : '>';
         $stmt->add_where( $col, { value => $start_val, op => $op } );
+    }
+
+    ## Always sort by primary keys.
+    my @pk = @{ $class->primary_key_tuple() };
+    if (   @pk
+        && !$recursive
+        && !$orig_args->{group} )
+    {
+        my @column_id = map { $dbd->db_column_name( $tbl, $_, $alias ) } @pk;
+        if ( my $order = $stmt->order() ) {
+            if ( ref($order) eq 'HASH' ) {
+                $order = [$order];
+            }
+            if ( ref($order) eq 'ARRAY' ) {
+                my @order_id;
+                foreach my $column_id (@column_id) {
+                    if ( !( grep { $_->{column} eq $column_id } @$order ) ) {
+                        push @order_id,
+                            { column => $column_id, desc => 'ASC' };
+                    }
+                }
+                if (@order_id) {
+                    $stmt->order( [ @$order, @order_id ] );
+                }
+            }
+        }
+        else {
+            $stmt->order(
+                [ map { +{ column => $_, desc => 'ASC' } } @column_id ] );
+        }
     }
 
     ## Return with this reference, because we might have wrapped $stmt in

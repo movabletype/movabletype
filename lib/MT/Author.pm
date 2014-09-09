@@ -1333,7 +1333,8 @@ sub to_hash {
     my $author = shift;
     my $hash   = $author->SUPER::to_hash(@_);
     my $app    = MT->instance;
-    my $blog   = $app->blog if $app->can('blog');
+    my $blog;
+    $blog = $app->blog if $app->can('blog');
     if ($blog) {
         require MT::Permission;
         if (my $perms = MT::Permission->load(

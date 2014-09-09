@@ -21,7 +21,7 @@ class CacheSession extends BaseCache {
         else {
             $ret = array();
             foreach ($results as $result) {
-                $ret[] = $result->data();
+                $ret[] = $result->session_data;  # retrieve raw data.
             }
             return $ret;
         }

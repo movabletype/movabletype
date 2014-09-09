@@ -172,6 +172,7 @@ sub _fltr_nofollowfy {
             $rel = 'rel="nofollow"';
         }
         @attr = grep { !/^rel\s*=/i } @attr;
+        @attr = map { Encode::decode_utf8($_) } @attr;
         '<a ' . (join ' ', @attr) . ' ' . $rel . '>';
     #xieg;
     $str;
@@ -220,6 +221,7 @@ B<Example:>
 
 sub _fltr_trim_to {
     my ( $str, $val, $ctx ) = @_;
+
     my ( $len, $tail );
     if ( $val =~ /\+/ ) {
         ( $len, $tail ) = split /\+/, $val, 2;
@@ -227,12 +229,28 @@ sub _fltr_trim_to {
     else {
         $len = $val;
     }
-    return '' if $len <= 0;
-    if ( $len < length($str) ) {
-        $str = substr( $str, 0, $len );
-        $str .= $tail if $tail;
+
+    if ( $len =~ m/^\d+$/ && $len > 0 ) {
+
+        # $len is positive number.
+        if ( $len < length($str) ) {
+            $str = substr( $str, 0, $len );
+            $str .= $tail if defined $tail;
+        }
+        return $str;
     }
-    return $str;
+    elsif ( $len =~ m/^-\d+$/ && $len < 0 ) {
+
+        # $len is negative number.
+        $str = substr( $str, 0, $len );
+        if ( length($str) && defined($tail) ) {
+            $str .= $tail;
+        }
+        return $str;
+    }
+
+    # $len is zero or is not number.
+    return '';
 }
 
 ###########################################################################
@@ -613,7 +631,9 @@ sub _fltr_regex_replace {
         my $re = eval {qr/$patt/};
         if ( defined $re ) {
             $replace =~ s!\\\\(\d+)!\$1!g;  # for php, \\1 is how you write $1
+            $replace =~ s{\\(?![\da-z])}{\\\\}g;
             $replace =~ s!/!\\/!g;
+            $replace =~ s/(@|\$(?![\d\&]))/\\$1/g;
             eval '$str =~ s/$re/' . $replace . '/' . ( $global ? 'g' : '' );
             if ($@) {
                 return $ctx->error("Invalid regular expression: $@");

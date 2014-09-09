@@ -27,12 +27,14 @@ class Config extends BaseObject
                     if (preg_match('/^\s*(\S+)\s+(.*)$/', $line, $regs)) {
                         $key = strtolower(trim($regs[1]));
                         $value = trim($regs[2]);
-                        //TODO un-specialize for hash
-                        if (($key === 'pluginswitch') || ($key === 'pluginschemaversion')) { # special case for hash
+                        //TODO un-specialize for hash and array
+                        if (in_array($key, MT::$config_type_hash)) { # special case for hash
                             if (preg_match('/^(.+)=(.+)$/', $value, $match))
                                 $this->_data[$key][trim($match[1])] = trim($match[2]);
                         } else {
-                            if (!isset($this->_data[$key]))
+                            if (in_array($key, MT::$config_type_array)) # special case for array
+                                $this->_data[$key][] = $value;
+                            else
                                 $this->_data[$key] = $value;
                         }
                     }

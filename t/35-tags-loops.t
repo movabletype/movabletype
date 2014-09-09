@@ -114,7 +114,7 @@ $obj->set_values({
     blog_id => $blog_id,
     label => 'asset1',
 });
-$obj->tags(qw(TEST1 TEST2));
+$obj->tags(qw(@PRIVATE TEST1 TEST2));
 $obj->save or die $obj->errstr;
 push @assets, $obj;
 
@@ -123,7 +123,7 @@ $obj->set_values({
     blog_id => $blog_id,
     label => 'asset2',
 });
-$obj->tags(qw(TEST1 TEST2));
+$obj->tags(qw(@PRIVATE TEST1 TEST2));
 $obj->save or die $obj->errstr;
 push @assets, $obj;
 
@@ -133,7 +133,7 @@ $obj->set_values({
     author_id => $author_id,
     status => MT::Entry::RELEASE,
 });
-$obj->tags(qw(TEST1 TEST2));
+$obj->tags(qw(@PRIVATE TEST1 TEST2));
 $obj->save or die $obj->errstr;
 $obj->authored_on($obj->authored_on - 60);
 $obj->save;
@@ -255,7 +255,7 @@ $obj->set_values({
     author_id => $author_id,
     status => MT::Entry::RELEASE,
 });
-$obj->tags(qw(TEST1 TEST2));
+$obj->tags(qw(@PRIVATE TEST1 TEST2));
 $obj->save or die $obj->errstr;
 $obj->authored_on($obj->authored_on - 60);
 $obj->save;
@@ -266,7 +266,7 @@ $obj->set_values({
     author_id => $author_id,
     status => MT::Entry::RELEASE,
 });
-$obj->tags(qw(TEST1 TEST2));
+$obj->tags(qw(@PRIVATE TEST1 TEST2));
 $obj->save or die $obj->errstr;
 
 foreach my $ix (0..1) {
@@ -455,6 +455,12 @@ __END__
 <mt:Tags>____</mt:Tags>
 --- expected
 2
+
+=== mt:Tags with include_private="1"
+--- template
+<mt:Tags include_private="1">____</mt:Tags>
+--- expected
+3
 
 === mt:Pages
 --- template

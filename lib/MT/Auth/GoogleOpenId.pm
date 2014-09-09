@@ -42,8 +42,8 @@ sub set_commenter_properties {
     my ( $commenter, $vident ) = @_;
     my $fields
         = $vident->extension_fields( MT::Auth::OpenID::NS_OPENID_AX() );
-    my $email = $fields->{'value.email'} if exists $fields->{'value.email'};
-    my $nick;
+    my ( $email, $nick );
+    $email = $fields->{'value.email'} if exists $fields->{'value.email'};
     if ( $email =~ /^(.+)\@gmail\.com$/ ) {
         $nick = $1;
     }

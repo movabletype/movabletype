@@ -284,6 +284,7 @@ sub edit {
                         $asset_1 = {
                             asset_id   => $asset->id,
                             asset_name => $asset->file_name,
+                            asset_type => $asset->class,
                             asset_thumb =>
                                 $asset->thumbnail_url( Width => 100 )
                         };
@@ -291,7 +292,8 @@ sub edit {
                     else {
                         $asset_1 = {
                             asset_id   => $asset->id,
-                            asset_name => $asset->file_name
+                            asset_name => $asset->file_name,
+                            asset_type => $asset->class,
                         };
                     }
                     push @{$assets}, $asset_1;
@@ -569,8 +571,9 @@ sub edit {
     ];
 
     $param->{quickpost_js} = MT::CMS::Entry::quickpost_js( $app, $type );
+    $param->{object_label_plural} = $param->{search_label}
+        = $class->class_label_plural;
     if ( 'page' eq $type ) {
-        $param->{search_label} = $app->translate('pages');
         $param->{output}       = 'edit_entry.tmpl';
         $param->{screen_class} = 'edit-page edit-entry';
     }
@@ -1553,7 +1556,7 @@ sub save {
     }
     $values{allow_comments} = 0
         if !defined( $values{allow_comments} )
-        || $app->param('allow_comments') eq '';
+            || $app->param('allow_comments') eq '';
     delete $values{week_number}
         if ( $app->param('week_number') || '' ) eq '';
     delete $values{basename}
@@ -1563,7 +1566,7 @@ sub save {
     $obj->set_values( \%values );
     $obj->allow_pings(0)
         if !defined $app->param('allow_pings')
-        || $app->param('allow_pings') eq '';
+            || $app->param('allow_pings') eq '';
     my $ao_d = $app->param('authored_on_date');
     my $ao_t = $app->param('authored_on_time');
     my $uo_d = $app->param('unpublished_on_date');
@@ -1605,7 +1608,8 @@ sub save {
             my $p_folder = $p->folder;
             my $dup_folder_path
                 = defined $p_folder ? $p_folder->publish_path() : '';
-            my $folder = MT::Folder->load($cat_id) if $cat_id;
+            my $folder;
+            $folder = MT::Folder->load($cat_id) if $cat_id;
             my $folder_path = defined $folder ? $folder->publish_path() : '';
             return $app->error(
                 $app->translate(
@@ -1619,8 +1623,8 @@ sub save {
     if ( $type eq 'entry' ) {
         $obj->status( MT::Entry::HOLD() )
             if !$id
-            && !$perms->can_do('publish_own_entry')
-            && !$perms->can_do('publish_all_entry');
+                && !$perms->can_do('publish_own_entry')
+                && !$perms->can_do('publish_all_entry');
     }
 
     my $filter_result
@@ -1913,26 +1917,25 @@ sub save {
 
     $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $orig_obj );
 
+    # Delete old archive files.
+    if ( $app->config('DeleteFilesAtRebuild') && $id ) {
+        my $file = archive_file_for( $obj, $blog, $archive_type );
+        if ( $file ne $orig_file || $obj->status != MT::Entry::RELEASE() ) {
+            $app->publisher->remove_entry_archive_file(
+                Entry       => $orig_obj,
+                ArchiveType => $archive_type,
+                Category    => $primary_category_old,
+            );
+        }
+    }
+
     ## If the saved status is RELEASE, or if the *previous* status was
     ## RELEASE, then rebuild entry archives, indexes, and send the
     ## XML-RPC ping(s). Otherwise the status was and is HOLD, and we
     ## don't have to do anything.
     if ( ( $obj->status || 0 ) == MT::Entry::RELEASE()
-        || $status_old eq MT::Entry::RELEASE() )
+        || $status_old == MT::Entry::RELEASE() )
     {
-        if ( $app->config('DeleteFilesAtRebuild') && $orig_obj ) {
-            my $file = archive_file_for( $obj, $blog, $archive_type );
-            if ( $file ne $orig_file || $obj->status != MT::Entry::RELEASE() )
-            {
-                $app->publisher->remove_entry_archive_file(
-                    Entry       => $orig_obj,
-                    ArchiveType => $archive_type,
-                    Category    => $primary_category_old,
-                    Force       => 0,
-                );
-            }
-        }
-
         # If there are no static pages, just rebuild indexes.
         if ( $blog->count_static_templates($archive_type) == 0
             || MT::Util->launch_background_tasks() )
@@ -2979,7 +2982,10 @@ sub update_entry_status {
             $app->publisher->remove_entry_archive_file(
                 Entry       => $entry,
                 ArchiveType => $archive_type,
-                Force       => 0,
+                (     ( $new_status != MT::Entry::RELEASE() )
+                    ? ( Force => 1 )
+                    : ( Force => 0 )
+                ),
             );
         }
         my $original   = $entry->clone;

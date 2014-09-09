@@ -1,0 +1,168 @@
+- 
+  note: Individual archive
+  input:
+    items:
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/a-rainy-day.html
+        title: Title
+  output:
+    items:
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/a-rainy-day.html
+        title: Title
+        archiveType: Individual
+        entry:
+          id: 1
+        category: ~
+        author: ~
+        startDate: ~
+- 
+  note: Monthly archive
+  input:
+    items:
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/index.html
+        title: Title
+  output:
+    items:
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/index.html
+        title: Title
+        archiveType: Monthly
+        entry:
+        category: ~
+        author: ~
+        startDate: 1978-01-01
+- 
+  note: Monthly archive (without index.html)
+  input:
+    items:
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/
+        title: Title
+  output:
+    items:
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/
+        title: Title
+        archiveType: Monthly
+        entry: ~
+        category: ~
+        author: ~
+        startDate: 1978-01-01
+- 
+  note: Weekly archive
+  input:
+    items:
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/29-week/index.html
+        title: Title
+  output:
+    items:
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/29-week/index.html
+        title: Title
+        archiveType: Weekly
+        entry: ~
+        category: ~
+        author: ~
+        startDate: 1978-01-29
+- 
+  note: Daily archive
+  input:
+    items:
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/31/index.html
+        title: Title
+  output:
+    items:
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/31/index.html
+        title: Title
+        archiveType: Daily
+        entry: ~
+        category: ~
+        author: ~
+        startDate: 1978-01-31
+- 
+  note: Index
+  input:
+    items:
+      -
+        pageviews: 10
+        path: /nana/index.html
+        title: Title
+  output:
+    items:
+      -
+        pageviews: 10
+        path: /nana/index.html
+        title: Title
+        archiveType: index
+        entry: ~
+        category: ~
+        author: ~
+        startDate: ~
+- 
+  note: The path which is not managed by MT 
+  input:
+    items:
+      -
+        pageviews: 10
+        path: /unknown/path/index.html
+        title: Title
+  output:
+    items:
+      -
+        pageviews: 10
+        path: /unknown/path/index.html
+        title: Title
+        archiveType: ~
+        entry: ~
+        category: ~
+        author: ~
+        startDate: ~
+- 
+  note: Duplicated path
+  input:
+    items:
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/a-rainy-day.html
+        title: Title
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/a-rainy-day.html
+        title: (not set)
+  output:
+    items:
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/a-rainy-day.html
+        title: Title
+        archiveType: Individual
+        entry:
+          id: 1
+        category: ~
+        author: ~
+        startDate: ~
+      -
+        pageviews: 10
+        path: /nana/archives/1978/01/a-rainy-day.html
+        title: (not set)
+        archiveType: Individual
+        entry:
+          id: 1
+        category: ~
+        author: ~
+        startDate: ~

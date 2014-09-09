@@ -97,6 +97,7 @@ sub build_post_save_sub {
             require MT::Entry;
             if ( $entry->status == MT::Entry::RELEASE() && $list ) {
                 MT::CMS::Entry::do_send_pings(
+                    $app,
                     $blog->id,
                     $entry->id,
                     $orig_entry->status,

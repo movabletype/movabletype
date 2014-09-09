@@ -11,6 +11,7 @@ use utf8;
 use base 'Exporter';
 use MT::I18N qw( const );
 use Time::Local qw( timegm );
+use List::Util qw( sum );
 
 our @EXPORT_OK
     = qw( start_end_day start_end_week start_end_month start_end_year
@@ -29,7 +30,7 @@ our @EXPORT_OK
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
-    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi );
+    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip );
 
 {
     my $Has_Weaken;
@@ -777,7 +778,7 @@ sub decode_url {
                 $html =~ s/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w{1,8});)/&amp;/g;
 
             }
-            $html =~ s!"!&quot;!g;    #"
+            $html =~ s!"!&quot;!g;
             $html =~ s!<!&lt;!g;
             $html =~ s!>!&gt;!g;
         }
@@ -797,7 +798,7 @@ sub decode_url {
             $html = HTML::Entities::decode_entities($html);
         }
         else {
-            $html =~ s!&quot;!"!g;    #"
+            $html =~ s!&quot;!"!g;
             $html =~ s!&lt;!<!g;
             $html =~ s!&gt;!>!g;
             $html =~ s!&amp;!&!g;
@@ -2247,7 +2248,8 @@ sub escape_unicode {
                 (?:(?:\xf0[\x90-\xbf])|
                    (?:[\xf1-\xf3][\x80-\xbf])|
                    (?:\xf4[\x80-\x8f])[\x80-\xbf]{2}))/
-                       my $s = Encode::decode_utf8( $1 ) unless Encode::is_utf8( $1 );
+                       my $s;
+                       $s = Encode::decode_utf8( $1 ) unless Encode::is_utf8( $1 );
                 '&#'.hex(unpack("H*", Encode::encode('ucs2', $s))).';'
             /egx;
     $text;
@@ -2835,6 +2837,35 @@ sub clear_site_stats_widget_cache {
     }
 }
 
+sub is_valid_ip {
+    my ($str) = @_;
+
+    my ( $ip, $cidr ) = split /\//, $str;
+    my @ips = split /\./, $ip;
+
+    # xxx.xxx.xxx.xxx
+    if (@ips) {
+        my $num = @ips;
+        return 0 if $num < 4;
+    }
+
+    # 0-255
+    foreach my $num (@ips) {
+        return 0 unless $num =~ /^\d+$/;
+        return 0 if ( $num < 0 || $num > 255 );
+    }
+
+    # 0.0.0.0 255.255.255.255
+    return 0 if ( sum(@ips) == 0 || sum(@ips) == 1020 );
+
+    # CIDR
+    if ( defined $cidr ) {
+        return 0 if ( $cidr < 1 || $cidr > 32 );
+    }
+
+    return $str;
+}
+
 package MT::Util::XML::SAX::LexicalHandler;
 
 sub start_dtd {
@@ -3094,6 +3125,12 @@ Clear caches for site stats dashboard widget.
 Check whether MT runs under FastCGI. The result is kept while the process runs. If $ENV{FAST_CGI}
 is defined, the result is determined based on this value. If $param is defined, the result is
 determined by reference to this value.
+
+=head2 is_valid_ip($ip_address)
+
+Checks the IP address I<$ip_address> for syntax validity; if the
+IP address is valid, I<is_valid_ip> returns the valid
+the IP address. Otherwise, it returns C<0>.
 
 =back
 

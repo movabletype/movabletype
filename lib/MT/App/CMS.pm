@@ -185,6 +185,7 @@ sub core_methods {
         'upload_file'        => "${pkg}Asset::upload_file",
         'upload_userpic'     => "${pkg}User::upload_userpic",
         'complete_insert'    => "${pkg}Asset::complete_insert",
+        'cancel_upload'      => "${pkg}Asset::cancel_upload",
         'complete_upload'    => "${pkg}Asset::complete_upload",
         'start_upload_entry' => "${pkg}Asset::start_upload_entry",
         'logout'             => {
@@ -2986,7 +2987,8 @@ sub build_blog_selector {
     return if exists $param->{load_selector_data};
 
     my $blog = $app->blog;
-    my $blog_id = $blog->id if $blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
     $param->{dynamic_all} = $blog->custom_dynamic_templates eq 'all' if $blog;
 
     my $blog_class    = $app->model('blog');
@@ -3390,7 +3392,8 @@ sub build_menus {
             }
 
             if ( $menu->{mode} ) {
-                my $sys_only = 1 if $menu->{id} eq 'system';
+                my $sys_only;
+                $sys_only = 1 if $menu->{id} eq 'system';
                 $menu->{link} = $app->uri(
                     mode => $menu->{mode},
                     args => {
@@ -4221,9 +4224,10 @@ sub preview_object_basename {
     my $app = shift;
     my $q   = $app->param;
     my @parts;
-    my $blog    = $app->blog;
-    my $blog_id = $blog->id if $blog;
-    my $id      = $q->param('id');
+    my $blog = $app->blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
+    my $id = $q->param('id');
     push @parts, $app->user->id;
     push @parts, $blog_id || 0;
     push @parts, $id || 0;
@@ -4240,7 +4244,8 @@ sub object_edit_uri {
     die "no such object $type" unless $class;
     my $obj = $class->load($id)
         or die "object_edit_uri could not find $type object $id";
-    my $blog_id = $obj->column('blog_id') if $obj->has_column('blog_id');
+    my $blog_id;
+    $blog_id = $obj->column('blog_id') if $obj->has_column('blog_id');
     return $app->uri(
         'mode' => 'view',
         args   => {
@@ -4380,7 +4385,8 @@ sub rebuild_these {
                     or return $app->publish_error();
             }
             my $blog_id = int( $app->param('blog_id') );
-            my $this_blog = MT::Blog->load($blog_id) if $blog_id;
+            my $this_blog;
+            $this_blog = MT::Blog->load($blog_id) if $blog_id;
             $app->run_callbacks( 'rebuild', $this_blog );
             $app->run_callbacks('post_build');
         }
@@ -4736,9 +4742,10 @@ sub _load_child_blog_ids {
 }
 
 sub view {
-    my $app     = shift;
-    my $blog    = $app->blog;
-    my $blog_id = $blog->id if $blog;
+    my $app  = shift;
+    my $blog = $app->blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
 
     return
           $blog_id
@@ -4897,7 +4904,9 @@ sub setup_editor_param {
 
     if ( !$param->{editors} ) {
         my $rte;
-        if ( $param->{convert_breaks} =~ m/richtext/ ) {
+        if ( defined $param->{convert_breaks}
+            && $param->{convert_breaks} =~ m/richtext/ )
+        {
             ## Rich Text editor
             $rte = lc( $app->config('RichTextEditor') );
         }
@@ -4953,8 +4962,14 @@ sub pre_run {
     $app->SUPER::pre_run(@_) or return;
     my $user = $app->user;
 
-    # Return if mode was 'upgrade' or 'filtered_list',
-    return if $app->mode eq 'upgrade' or $app->mode eq 'filtered_list';
+    # Return if setting nortification dashboard is unnecessary.
+    my $method_info = MT->request('method_info') || {};
+    return
+        if ( exists $method_info->{requires_login}
+        && $method_info->{requires_login} == 0 )
+        or $app->param('xhr')
+        or ( $method_info->{app_mode} || '' ) eq 'JSON'
+        or $app->request('already_set_notification_dashboard');
 
     # Message Center
     my @messages;
@@ -5046,7 +5061,8 @@ sub pre_run {
 
     $app->run_callbacks( 'set_notification_dashboard', \@messages );
 
-    $app->request( 'loop_notification_dashboard', \@messages );
+    $app->request( 'loop_notification_dashboard',        \@messages );
+    $app->request( 'already_set_notification_dashboard', 1 );
 }
 
 sub validate_request_params {

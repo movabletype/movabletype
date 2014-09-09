@@ -73,7 +73,8 @@ sub blob {
     my $image = shift;
     my $blob;
     my $imager = $image->{imager};
-    if ( $image->{type} eq 'jpeg'
+    if (   defined $image->{type}
+        && $image->{type} eq 'jpeg'
         && ( $imager->getchannels == 2 || $imager->getchannels == 4 ) )
     {
         $imager = $imager->convert( preset => "noalpha" );

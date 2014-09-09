@@ -675,7 +675,8 @@ sub __load_tags {
 
 sub get_tags {
     my $obj = shift;
-    $obj->__load_tags unless $obj->{__tags} && @{ $obj->{__tags} };
+    $obj->__load_tags
+        unless $obj->{__tags} && @{ $obj->{__tags} } || $obj->{__save_tags};
     return @{ $obj->{__tags} };
 }
 
@@ -686,9 +687,13 @@ sub get_tag_objects {
 }
 
 sub set_tags {
-    my $obj = shift;
-    $obj->{__tags}      = [ sort @_ ];
-    $obj->{__save_tags} = 1;
+    my $obj  = shift;
+    my @tags = @_;
+    my $opt  = ref $tags[-1] ? pop @tags : {};
+
+    $obj->{__tags}            = [ sort @tags ];
+    $obj->{__save_tags}       = 1;
+    $obj->{__force_save_tags} = 1 if $opt->{force};
 }
 
 sub save_tags {
@@ -697,7 +702,7 @@ sub save_tags {
     require MT::ObjectTag;
     my $clear_cache = 0;
     my @tags        = @{ $obj->{__tags} };
-    return 1 unless @tags;
+    return 1 unless delete $obj->{__force_save_tags} || @tags;
 
     my $t = MT->get_timer;
     $t->pause_partial if $t;

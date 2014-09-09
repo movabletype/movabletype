@@ -92,6 +92,7 @@ var DataAPI = function(options) {
         timeout: undefined,
         cache: true,
         withoutAuthorization: false,
+        processOneTimeTokenOnInitialize: true,
         loadPluginEndpoints: true,
         suppressResponseCodes: undefined,
         crossOrigin: undefined,
@@ -122,6 +123,10 @@ var DataAPI = function(options) {
         this.loadEndpoints({
             excludeComponents: 'core'
         });
+    }
+
+    if (this.o.processOneTimeTokenOnInitialize) {
+        this._storeOneTimeToken();
     }
 
     this.trigger('initialize');
@@ -211,21 +216,84 @@ DataAPI.formats = {
  * @type Object
  */
 DataAPI.sessionStores = {};
+;(function() {
+
+function fetchCookieValues(name) {
+    var cookie = Cookie.fetch(name);
+
+    if (! cookie) {
+        return {};
+    }
+
+    try {
+        return JSON.parse(cookie.value);
+    }
+    catch (e) {
+        return {
+            data: cookie.value
+        };
+    }
+}
+
+function fillinDefaultCookieValues(values, o) {
+    var path = values.path,
+        currentPath = extractPath(documentUrl());
+    if (! path || path.length > currentPath.length) {
+        path = currentPath;
+    }
+
+    return {
+        data: values.data,
+        domain: o.sessionDomain || values.domain || undefined,
+        path:  o.sessionPath || path
+    };
+}
+
+function documentUrl() {
+    if (! window.location) {
+        return '';
+    }
+
+    var loc;
+
+    // IE may throw an exception when accessing
+    // a field from window.location if document.domain has been set
+    try {
+        loc = window.location.href;
+    } catch( e ) {
+        // Use the href attribute of an A element
+        // since IE will modify it given document.location
+        loc = window.document.createElement( "a" );
+        loc.href = "";
+        loc = loc.href;
+    }
+
+    return loc;
+}
+
+function extractPath(url) {
+    var urlRegexp = /^[\w.+-]+:(?:\/\/[^\/?#:]*(?::\d+|)|)(.*)\/[^\/]*$/,
+        match     = urlRegexp.exec(url.toLowerCase());
+
+    return match ? match[1] : null;
+}
+
 DataAPI.sessionStores['cookie'] = {
     save: function(name, data, remember) {
-        var o = this.o,
-            expires = remember ? new Date(new Date().getTime() + 315360000000) : undefined; // after 10 years
-        Cookie.bake(name, data, o.sessionDomain, o.sessionPath, expires);
+        var expires = remember ? new Date(new Date().getTime() + 315360000000) : undefined, // after 10 years
+            values  = fillinDefaultCookieValues(fetchCookieValues(name), this.o);
+        Cookie.bake(name, JSON.stringify(values), values.domain, values.path, expires);
     },
     fetch: function(name) {
-        var cookie = Cookie.fetch(name);
-        return cookie ? cookie.value : null;
+        fetchCookieValues(name).data;
     },
     remove: function(name) {
-        var o = this.o;
-        Cookie.bake(name, '', o.sessionDomain, o.sessionPath, new Date(0));
+        var values = fillinDefaultCookieValues(fetchCookieValues(name));
+        Cookie.bake(name, '', values.domain, values.path, new Date(0));
     }
 };
+
+})();
 
 ;(function() {
 
@@ -1939,6 +2007,8 @@ sjcl.misc.cachedPbkdf2 = function (password, obj) {
 
 
 
+var localStorage = window.localStorage;
+
 function cookieName(name) {
     if (! window.location) {
         return name;
@@ -1950,7 +2020,99 @@ function cookieName(name) {
     return name + '_' + port;
 }
 
-var localStorage = window.localStorage;
+function fetchCookieValues(name) {
+    var cookie = Cookie.fetch(cookieName(name));
+
+    if (! cookie) {
+        return {};
+    }
+
+    try {
+        return JSON.parse(cookie.value);
+    }
+    catch (e) {
+        return {
+            encryptKey: cookie.value
+        };
+    }
+}
+
+function fillinDefaultCookieValues(values, o) {
+    function generateKey() {
+        return sjcl.codec.base64.fromBits(sjcl.random.randomWords(8, 0));
+    }
+
+    var path = values.path,
+        currentPath = extractPath(documentUrl());
+    if (! path || path.length > currentPath.length) {
+        path = currentPath;
+    }
+
+    return {
+        encryptKey: values.encryptKey || generateKey(),
+        storageKey: values.storageKey || generateKey(),
+        domain: o.sessionDomain || values.domain || undefined,
+        path: o.sessionPath || path
+    };
+}
+
+function documentUrl() {
+    if (! window.location) {
+        return '';
+    }
+
+    var loc;
+
+    // IE may throw an exception when accessing
+    // a field from window.location if document.domain has been set
+    try {
+        loc = window.location.href;
+    } catch( e ) {
+        // Use the href attribute of an A element
+        // since IE will modify it given document.location
+        loc = window.document.createElement( "a" );
+        loc.href = "";
+        loc = loc.href;
+    }
+
+    return loc;
+}
+
+function extractPath(url) {
+    var urlRegexp = /^[\w.+-]+:(?:\/\/[^\/?#:]*(?::\d+|)|)(.*)\/[^\/]*$/,
+        match     = urlRegexp.exec(url.toLowerCase());
+
+    return match ? match[1] : null;
+}
+
+// DEPRECATED
+// This method will be removed in future version.
+function buildLocalStorageNames(name, path) {
+    function buildName(path) {
+        return name + ':' + path;
+    }
+
+    var names = [];
+
+    if (! path) {
+        return [name];
+    }
+
+    while (true) {
+        names.push(buildName(path));
+        if (path === '/') {
+            break;
+        }
+        path = path.replace(/[^\/]+\/$/, '');
+    }
+    return names;
+}
+
+// DEPRECATED
+// This method will be removed in future version.
+function localStorageNames(name, o) {
+    return buildLocalStorageNames(name, o.sessionPath || extractPath(documentUrl())+"/");
+}
 
 if (! localStorage) {
     DataAPI.sessionStores['cookie-encrypted'] = {
@@ -1962,26 +2124,45 @@ if (! localStorage) {
 else {
     DataAPI.sessionStores['cookie-encrypted'] = {
         save: function(name, data, remember) {
-            var key     = sjcl.codec.base64.fromBits(sjcl.random.randomWords(8, 0)),
-                o       = this.o,
-                expires = remember ? new Date(new Date().getTime() + 315360000000) : undefined; // after 10 years
+            var expires = remember ? new Date(new Date().getTime() + 315360000000) : undefined, // after 10 years
+                values  = fillinDefaultCookieValues(fetchCookieValues(name), this.o);
 
-            Cookie.bake(cookieName(name), key, o.sessionDomain, o.sessionPath, expires);
-            localStorage.setItem(name, sjcl.encrypt(key, data));
+            Cookie.bake(cookieName(name), JSON.stringify(values), values.domain, values.path, expires);
+            localStorage.setItem(values.storageKey, sjcl.encrypt(values.encryptKey, data));
         },
         fetch: function(name) {
+            var values = fetchCookieValues(name),
+                i, names, data;
+
+            // Backward compatibility 
+            if (! values.storageKey) {
+                names = localStorageNames(name, this.o);
+                for (i = 0; i < names.length; i++) {
+                    if (localStorage.getItem(names[i])) {
+                        values.storageKey = names[i];
+                        break;
+                    }
+                }
+            }
+
+            data = localStorage.getItem(values.storageKey);
+
             try {
-                var key = Cookie.fetch(cookieName(name)).value;
-                return sjcl.decrypt(key, localStorage.getItem(name));
+                return sjcl.decrypt(values.encryptKey, data);
             }
             catch (e) {
-                return null;
             }
+
+            return null;
         },
         remove: function(name) {
-            var o = this.o;
-            Cookie.bake(cookieName(name), '', o.sessionDomain, o.sessionPath, new Date(0));
-            localStorage.removeItem(name);
+            var values = fillinDefaultCookieValues(fetchCookieValues(name), this.o);
+
+            Cookie.bake(cookieName(name), '', values.domain, values.path, new Date(0));
+
+            if (values.storageKey) {
+                localStorage.removeItem(values.storageKey);
+            }
         }
     };
 }
@@ -2302,6 +2483,16 @@ DataAPI.prototype = {
         this.tokenData = tokenData;
     },
 
+    /**
+     * Clear token data from object and session store.
+     * @method clearTokenData
+     * @category core
+     */
+    clearTokenData: function() {
+        this.removeSessionData(this.getAppKey());
+        this.tokenData = null;
+    },
+
     _updateTokenFromDefaultCookie: function() {
         var defaultKey    = this.constructor.accessTokenKey,
             defaultCookie = Cookie.fetch(defaultKey),
@@ -2324,6 +2515,31 @@ DataAPI.prototype = {
         return defaultToken;
     },
 
+    _hasOneTimeToken: function() {
+        return window.location && window.location.hash.indexOf('#_ott_') === 0;
+    },
+
+    _storeOneTimeToken: function() {
+        var token, m;
+
+        if (! window.location) {
+            return undefined;
+        }
+
+        m = window.location.hash.match(/^#_ott_(.*)/);
+        if (! m) {
+            return undefined;
+        }
+
+        token = {
+            oneTimeToken: m[1]
+        };
+        window.location.hash = '#_login';
+
+        this.storeTokenData(token);
+        return token;
+    },
+
     /**
      * Get token data via current session store.
      * @method getTokenData
@@ -2334,11 +2550,16 @@ DataAPI.prototype = {
         var token = this.tokenData;
 
         if (! token) {
-            if (window.location && window.location.hash === '#_login') {
-                try {
-                    token = this._updateTokenFromDefaultCookie();
+            if (window.location) {
+                if (window.location.hash === '#_login') {
+                    try {
+                        token = this._updateTokenFromDefaultCookie();
+                    }
+                    catch (e) {
+                    }
                 }
-                catch (e) {
+                else if (this._hasOneTimeToken()) {
+                    token = this._storeOneTimeToken();
                 }
             }
 
@@ -2351,7 +2572,10 @@ DataAPI.prototype = {
             }
         }
 
-        if (token && (token.startTime + token.expiresIn < this._getCurrentEpoch())) {
+        if (token &&
+            'startTime' in token &&
+            'expiresIn' in token &&
+            (token.startTime + token.expiresIn < this._getCurrentEpoch())) {
             delete token.accessToken;
             delete token.startTime;
             delete token.expiresIn;
@@ -2925,7 +3149,12 @@ DataAPI.prototype = {
         }
 
         if (endpoint === '/token' || endpoint === '/authentication') {
-            if (tokenData && tokenData.sessionId) {
+            if (tokenData && tokenData.oneTimeToken) {
+                defaultHeaders['X-MT-Authorization'] =
+                    api.getAuthorizationHeader('oneTimeToken');
+                delete tokenData.oneTimeToken;
+            }
+            else if (tokenData && tokenData.sessionId) {
                 defaultHeaders['X-MT-Authorization'] =
                     api.getAuthorizationHeader('sessionId');
             }
@@ -3017,10 +3246,15 @@ DataAPI.prototype = {
                 return false;
             }
 
-            if (endpoint === '/authentication' &&
-                originalMethod.toLowerCase() === 'delete' &&
-                ! response.error) {
-                api.removeSessionData(api.getAppKey());
+            if ((! response.error &&
+                    endpoint === '/authentication' &&
+                    originalMethod.toLowerCase() === 'delete') ||
+                (response.error && response.error.code === 401 && (
+                    (endpoint === '/authentication' &&
+                     originalMethod.toLowerCase() === 'post') ||
+                    (endpoint === '/token' &&
+                     originalMethod.toLowerCase() === 'post')))) {
+                api.clearTokenData();
             }
             else if (! response.error && (
                 (endpoint === '/authentication' &&
@@ -3391,7 +3625,7 @@ DataAPI.prototype = {
  *   @param {Object} response.data The data exists only if a current error has optional data
  * @example
  *     api.on("error", function(response) {
- *       console.log(response.message);
+ *       console.log(response.error.message);
  *     });
  **/
 

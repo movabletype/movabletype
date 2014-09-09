@@ -247,6 +247,17 @@ __END__
 </mt:Blogs>
 --- expected
 
+=== mt:Blog will be localizeing timestamp context if ignore_archive_context="1" is given.
+--- template
+<mt:Blogs include_blogs="1" ignore_archive_context="1">
+<mt:Entries limit="2" glue=","><mt:EntryTitle /></mt:Entries>
+</mt:Blogs>
+--- expected
+A Rainy Day,Verse 5
+--- ctx_values
+{ current_timestamp => '19780131073500', current_timestamp_end => '19780131074500' }
+--- access_overrides
+{ 1 => 2 }
 
 === mt:Entries
 --- template

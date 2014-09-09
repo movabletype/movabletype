@@ -14,15 +14,21 @@
 /* <![CDATA[ */
 (function() {
 
-function redirect(jsonText) {
+function redirectWithCookie(jsonText) {
     Cookie.bake(MT.DataAPI.accessTokenKey, jsonText, undefined, '/');
     var url = '<mt:var name="redirect_url" encode_js="1" />#_login';
     location.href = url;
 }
 
+function redirectWithOneTimeToken(token) {
+    location.href = '<mt:var name="redirect_url" encode_js="1" />#_ott_' + token;
+}
+
+<mt:Unless name="redirect_type">
 <mt:If name="access_token">
-redirect('<mt:Var name="access_token" to_json="1" encode_js="1" />');
+redirectWithCookie('<mt:Var name="access_token" to_json="1" encode_js="1" />');
 </mt:If>
+</mt:Unless>
 
 
 jQuery(function() {
@@ -54,7 +60,12 @@ jQuery(function($) {
             type: 'POST',
             cache : false
         }).done(function(data) {
-            redirect($.toJSON(data));
+            if (data.oneTimeToken) {
+                redirectWithOneTimeToken(data.oneTimeToken);
+            }
+            else {
+                redirectWithCookie($.toJSON(data));
+            }
         }).fail(function(data) {
             if (data.status === 401) {
                 $('#login-error').removeClass('hidden');
@@ -88,6 +99,7 @@ jQuery(function($) {
 </mt:loop>
   <input type="hidden" name="clientId" id="clientId" value="<mt:var name="client_id" escape="html">" />
   <input type="hidden" name="mtDataApiLoginMagicToken" value="<mt:var name="mt_data_api_login_magic_token" escape="html">" />
+  <input type="hidden" name="redirect_type" value="<mt:var name="redirect_type" escape="html">" />
 
   <div id="msg-block"></div>
 

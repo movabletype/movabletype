@@ -62,6 +62,9 @@ sub edit {
             my %auth = %{ $cmtauth_reg->{$auth} };
             $cmtauth{$auth} = \%auth;
             if ( my $c = $cmtauth_reg->{$auth}->{condition} ) {
+                delete $cmtauth{$auth}, next
+                    if $cmtauth_reg->{$auth}->{disable};
+
                 $c = $app->handler_to_coderef($c);
                 if ($c) {
                     my $reason;
@@ -577,9 +580,14 @@ sub cfg_registration {
     $param{new_roles} = \@roles;
     $param{new_created_user_role} = join( ',', @role_ids );
 
-    $param{is_website} = $blog->class eq 'website';
-
-    $app->load_tmpl( 'cfg_registration.tmpl', \%param );
+    $app->param( '_type', $app->blog->class );
+    $app->param( 'id',    $blog->id );
+    $app->forward(
+        "view",
+        {   output => 'cfg_registration.tmpl',
+            %param,
+        }
+    );
 }
 
 sub cfg_web_services {
@@ -1731,12 +1739,15 @@ sub post_save {
 
     for my $blog_field ( keys %blog_fields ) {
 
-        if ( $obj->$blog_field() ne $original->$blog_field() ) {
+        if ( ( $obj->$blog_field() || '' ) ne
+            ( $original->$blog_field() || '' ) )
+        {
             my $old
-                = $original->$blog_field()
+                = defined $original->$blog_field()
                 ? $original->$blog_field()
                 : "none";
-            my $new = $obj->$blog_field() ? $obj->$blog_field() : "none";
+            my $new
+                = defined $obj->$blog_field() ? $obj->$blog_field() : "none";
             push(
                 @meta_messages,
                 $app->translate(
@@ -1952,9 +1963,10 @@ sub post_save {
     else {
 
         # if settings were changed that would affect published pages:
-        if (grep { $original->column($_) ne $obj->column($_) }
-            qw(allow_unreg_comments allow_reg_comments remote_auth_token
-            allow_pings          allow_comment_html )
+        if (grep {
+                ( $original->column($_) || '' ) ne ( $obj->column($_) || '' )
+            } qw(allow_unreg_comments allow_reg_comments remote_auth_token
+            allow_pings allow_comment_html )
             )
         {
             $app->add_return_arg( need_full_rebuild => 1 );
@@ -2057,8 +2069,8 @@ sub make_blog_list {
     my ($blogs) = @_;
 
     my $author = $app->user;
-    my $data;
-    my $can_edit_authors = 1 if $app->can_do('edit_authors');
+    my ( $data, $can_edit_authors );
+    $can_edit_authors = 1 if $app->can_do('edit_authors');
     my @blog_ids = map { $_->id } @$blogs;
     my %counts;
     my $e_iter
@@ -2279,7 +2291,14 @@ sub cfg_prefs_save {
             $blog->archive_url("$subdomain/::/$path");
         }
         $blog->site_path( $app->param('site_path_absolute') )
-            if !$app->config->BaseSitePath
+            if (
+            !$app->config->BaseSitePath
+            || ($app->config->BaseSitePath
+                && MT::CMS::Common::is_within_base_sitepath(
+                    $app, $app->param('site_path_absolute')
+                )
+            )
+            )
             && $app->param('use_absolute')
             && $app->param('site_path_absolute');
         $blog->archive_path( $app->param('archive_path_absolute') )

@@ -380,59 +380,87 @@ sub edit {
             my @widget_sets;
             my %seen;
             foreach my $set (@sets) {
-                my $name = $set->attributes->{name};
+                my $include = {};
+                my $name    = $set->attributes->{name};
                 next unless $name;
                 next if $seen{$name};
                 $seen{$name} = 1;
-                my $wset = MT::Template->load(
-                    {   blog_id => [ $obj->blog_id, 0 ],
-                        name    => $name,
-                        type    => 'widgetset',
-                    },
-                    {   sort      => 'blog_id',
-                        direction => 'descend',
-                    }
-                );
-                if ($wset) {
-                    my $include = {
-                        include_link => $app->mt_uri(
+                $include->{include_module} = $name;
+                if (   $set->attributes->{blog_id}
+                    && $set->attributes->{blog_id} =~ m/^\$/ )
+                {
+                    $include->{include_from} = 'error';
+                    $include->{include_blog_name}
+                        = $app->translate('Unknown blog');
+                }
+                else {
+                    my $set_blog_id
+                        = $set->attributes->{blog_id}
+                        ? $set->attributes->{blog_id}
+                        : $set->attributes->{parent} ? $obj->blog
+                            ? $obj->blog->website->id
+                            : $obj->blog_id
+                        : $obj->blog_id;
+                    my $wset = MT::Template->load(
+                        {   blog_id => [ $set_blog_id, 0 ],
+                            name    => $name,
+                            type    => 'widgetset',
+                        },
+                        {   sort      => 'blog_id',
+                            direction => 'descend',
+                        }
+                    );
+                    if ($wset) {
+                        $include->{include_link} = $app->mt_uri(
                             mode => 'edit_widget',
                             args => {
                                 blog_id => $wset->blog_id,
                                 id      => $wset->id,
-                            },
-                        ),
-                        include_module => $name,
-                    };
-                    $include->{include_from}
-                        = $wset->blog_id ? 'self'
-                        : $blog_id       ? 'global'
-                        :                  'self';
-
-                    my $inc_blog;
-                    $inc_blog = MT->model('blog')->load( $wset->blog_id )
-                        if $wset->blog_id;
-                    $include->{include_blog_name}
-                        = $inc_blog ? $inc_blog->name
-                        : $blog_id  ? $app->translate('Global')
-                        :             'self';
-                    push @widget_sets, $include;
-                }
-                else {
-                    push @widget_sets,
-                        {
-                        create_link => $app->mt_uri(
+                            }
+                        );
+                        $include->{include_from}
+                            = $wset->blog_id ? 'self'
+                            : $blog_id       ? 'global'
+                            :                  'self';
+                        if ( $wset->blog_id ) {
+                            if ( $wset->blog_id eq $blog_id ) {
+                                $include->{include_from}      = 'self';
+                                $include->{include_blog_name} = 'self';
+                            }
+                            else {
+                                $include->{include_from}
+                                    = $wset->blog->is_blog
+                                    ? 'blog'
+                                    : 'website';
+                                $include->{include_blog_name}
+                                    = $wset->blog->name;
+                            }
+                        }
+                        else {
+                            $include->{include_from}
+                                = $blog_id
+                                ? 'global'
+                                : 'self';
+                            $include->{include_blog_name}
+                                = $blog_id
+                                ? $app->translate('Global')
+                                : 'self';
+                        }
+                    }
+                    else {
+                        $include->{create_link} = $app->mt_uri(
                             mode => 'edit_widget',
                             args => {
                                 blog_id => $blog_id,
                                 name    => $name
-                            },
-                        ),
-                        include_module    => $name,
-                        include_from      => 'self',
-                        include_blog_name => $blog ? $blog->name : '',
-                        };
+                            }
+                        );
+                        $include->{include_from} = 'self';
+                        $include->{include_blog_name}
+                            = $blog ? $blog->name : '';
+                    }
                 }
+                push @widget_sets, $include;
             }
             $param->{widget_set_loop} = \@widget_sets if @widget_sets;
         }
@@ -818,7 +846,8 @@ sub list {
         my ( $obj, $row ) = @_;
         my $template_type;
         my $type = $row->{type} || '';
-        my $tblog = MT::Blog->load( $obj->blog_id ) if $obj->blog_id;
+        my $tblog;
+        $tblog = MT::Blog->load( $obj->blog_id ) if $obj->blog_id;
         if ( $type =~ m/^(individual|page|category|archive)$/ ) {
             $template_type = 'archive';
 
@@ -2564,7 +2593,7 @@ sub refresh_individual_templates {
             $backup->save;
             push @msg,
                 $app->translate(
-                'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>',
+                'Refreshing template <strong>[_3]</strong> after making <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>.',
                 $blog_id, $backup->id, $tmpl->name );
 
             # we found that the previous template had not been

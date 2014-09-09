@@ -91,6 +91,11 @@ sub to_object {
 
     for my $d (@$suite) {
         note( $d->{note} ) if $d->{note};
+        if ($d->{env}) {
+            while (my ($k, $v) = each %{ $d->{env} }) {
+                $ENV{$k} = $v;
+            }
+        }
 
         my ( $original, $expected_values );
         if ( $d->{original} ) {

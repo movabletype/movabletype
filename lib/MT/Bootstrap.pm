@@ -154,9 +154,16 @@ sub import {
                     else {
                         require MT::Touch;
                         require MT::Util;
-                        if ( my $touched
-                            = MT::Touch->latest_touch( 0, 'config' ) )
-                        {
+
+                        # Avoid an error when using SQL Server.
+                        my $latest_touch
+                            = sub { MT::Touch->latest_touch( 0, 'config' ) };
+                        my $touched
+                            = MT->config->ObjectDriver =~ /MSSQLServer/i
+                            ? eval { $latest_touch->() }
+                            : $latest_touch->();
+
+                        if ($touched) {
 
                             # Should get UNIX epoch with no_offset flag,
                             # since MT::Touch uses gmtime always.
@@ -188,6 +195,13 @@ sub import {
         };
         if ( my $err = $@ ) {
             if ( !$app && $err =~ m/Missing configuration file/ ) {
+
+                # Preserve before overwriting.
+                my $mt_home = $ENV{MT_HOME};
+
+                # If using FastCGI, populate environment hash.
+                new CGI::Fast if $ENV{FAST_CGI};
+
                 my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
                 $host =~ s/:\d+//;
                 my $port = $ENV{SERVER_PORT};
@@ -196,13 +210,20 @@ sub import {
                     my $script = $1;
                     my $ext    = $2;
 
-                    if (-f File::Spec->catfile(
-                            $ENV{MT_HOME}, "mt-wizard.$ext"
-                        )
-                        )
+                    my $file;
+                    if (-f File::Spec->catfile( $mt_home, "mt-wizard.$ext" ) )
                     {
+                        $file = '/mt-wizard.' . $ext;
+                    }
+                    elsif (
+                        -f File::Spec->catfile( $mt_home, 'mt-wizard.cgi' ) )
+                    {
+                        $file = '/mt-wizard.cgi';    # default file name
+                    }
+
+                    if ($file) {
                         $uri =~ s/\Q$script\E//;
-                        $uri .= '/mt-wizard.' . $ext;
+                        $uri .= $file;
 
                         my $prot = $port == 443 ? 'https' : 'http';
                         my $cgipath = "$prot://$host";

@@ -26,7 +26,7 @@ our %fields = (
         to_object => sub {
             my ( $hash, $obj ) = @_;
             if ( ref $hash->{tags} eq 'ARRAY' ) {
-                $obj->set_tags( @{ $hash->{tags} } );
+                $obj->set_tags( @{ $hash->{tags} }, { force => 1 } );
             }
             return;
         },

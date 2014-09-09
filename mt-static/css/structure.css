@@ -3532,6 +3532,10 @@ ul.tabs li a {
     right: 10px;
 }
 
+#edit-page #basename-field {
+    word-break: break-all;
+}
+
 #edit-page #basename {
     width: 180px;
 }

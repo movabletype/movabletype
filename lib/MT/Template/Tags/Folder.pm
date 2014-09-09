@@ -96,6 +96,20 @@ sub _hdlr_has_sub_folders {
 
 ###########################################################################
 
+=head2 HasNoSubFolders
+
+Returns true if the current category has no sub-folders.
+
+=for tags folders
+
+=cut
+
+sub _hdlr_has_no_sub_folders {
+    !&_hdlr_has_sub_folders;
+}
+
+###########################################################################
+
 =head2 HasParentFolder
 
 Returns true if the current folder has a parent folder other than the
@@ -122,6 +136,31 @@ sub _check_folder {
         )
         );
     1;
+}
+
+###########################################################################
+
+=head2 HasNoParentFolder
+
+Returns true if the current folder does not have a parent folder
+other than the root.
+
+B<Example:>
+
+    <mt:Folders>
+      <mt:HasNoParentFolder>
+        <mt:FolderLabel> is but an orphan and has no parents.
+      <mt:else>
+        <mt:FolderLabel> has a parent folder!
+      </mt:HasNoParentFolder>
+    </mt:Folders>
+
+=for tags folders
+
+=cut
+
+sub _hdlr_has_no_parent_folder {
+    return !&_hdlr_has_parent_folder;
 }
 
 ###########################################################################
