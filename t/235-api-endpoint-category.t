@@ -291,6 +291,15 @@ my @suite = (
         method => 'DELETE',
         code   => 404,
     },
+    {   path     => '/v2/sites/1/categories/20',
+        method   => 'DELETE',
+        code     => 403,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $error = 'Do not have permission to delete a category.';
+            check_error_message( $body, $error );
+        },
+    },
 );
 
 my %callbacks = ();
