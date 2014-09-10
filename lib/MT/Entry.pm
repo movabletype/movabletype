@@ -1777,46 +1777,47 @@ sub terms_for_tags {
 
 sub attach_categories {
     my $obj = shift;
-    my @cat_ids = @_ or return [];
+    my @cats = @_ or return [];
 
-    # Retrieve categories by category_id.
-    my @cats;
-    for my $cat_id (@cat_ids) {
-        next unless $cat_id && $cat_id =~ m/^\d+$/;
-        my $cat = MT->model('category')->load($cat_id);
-        push @cats, $cat if $cat;
+    # Check whether or not all arguments are MT:Category objects.
+    for my $cat (@cats) {
+        next if eval { $cat->isa('MT::Category') } && $cat->id;
+        return $obj->error(
+            MT->translate(
+                'Invalid arguments. They all need to be saved MT::Category objects.'
+            )
+        );
     }
-    return [] unless @cats;
 
     # Remove already attached categories.
-    my @old_places = MT->model('placement')->load(
+    my @attach_cats;
+    my @current_place = MT->model('placement')->load(
         {   entry_id    => $obj->id,
             category_id => [ map { $_->id } @cats ],
         }
     );
-    if (@old_places) {
-        my %place_id = map { ( $_->category_id => 1 ) } @old_places;
-        @cats = grep { !$place_id{ $_->id } } @cats;
+    for my $cat (@cats) {
+        next if grep { $_->category_id == $cat->id } @current_place;
+        push @attach_cats, $cat;
     }
 
-    # Attach categories to the entry.
-    my @attached_cats;
+    # Attach assets.
     my $has_primary = MT->model('placement')->count(
         {   entry_id   => $obj->id,
             is_primary => 1,
         }
     );
-    my $old_cats = $obj->categories;
-    for my $cat (@cats) {
+    my $current_cats = $obj->categories;
+    for my $cat (@attach_cats) {
         my $place = MT->model('placement')->new;
         $place->set_values(
             {   blog_id     => $obj->blog->id,
                 entry_id    => $obj->id,
                 category_id => $cat->id,
                 is_primary  => $has_primary ? 0 : 1,
-            }
+            },
         );
-        $place->save or return $place->errstr;
+        $place->save or return $obj->error( $place->errstr );
 
         # Update cache.
         $obj->cache_property( 'category', undef, $cat )
@@ -1824,19 +1825,16 @@ sub attach_categories {
 
         # Entry does not have more than one primary category.
         $has_primary = 1;
-
-        # For updating 'categories' cache.
-        push @attached_cats, $cat;
     }
 
     # Update cache.
-    my @new_cats
-        = ( @attached_cats, $old_cats && @$old_cats ? @$old_cats : () );
+    my @new_cats = (
+        @attach_cats, $current_cats && @$current_cats ? @$current_cats : ()
+    );
     @new_cats = sort { $a->label cmp $b->label } @new_cats;
     $obj->cache_property( 'categories', undef, \@new_cats );
 
-    # Return attached categories.
-    return \@attached_cats;
+    return \@attach_cats;
 }
 
 sub update_categories {
@@ -2157,11 +2155,12 @@ Returns a reference to an array of text filter keynames (the short names
 that are the first argument to I<MT::add_text_filter>. This list can be
 passed directly in as the second argument to I<MT::apply_text_filters>.
 
-=head2 $entry->attach_categories(@category_ids)
+=head2 $entry->attach_categories(@categories)
 
-Attaches categories specified by I<@category_ids> to the entry. Invalid IDs
-in I<@category_ids> will be ignored. This method returns array reference of
-attached categories.
+Attaches I<@categories> to the entry. If I<@categories> is empty, this method
+returns array reference of empty array. If I<@categories> contains non MT::Category
+object or unsaved MT::Category object, this method returns undef, This method
+returns array reference of attached categories.
 
 =head2 $entry->update_categories(@category_ids)
 

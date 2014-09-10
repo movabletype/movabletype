@@ -92,7 +92,7 @@ my $cat3 = MT->model('category')->load(
     { id => { not => \@entry_category_ids } },
     { sort => 'id', direction => 'ascend' },
 );
-my $attached = $entry->attach_categories( $cat3->id );
+my $attached = $entry->attach_categories($cat3);
 is( scalar @$attached,              1, 'Attached a category' );
 is( scalar @{ $entry->categories }, 3, '3 categories exist' );
 
