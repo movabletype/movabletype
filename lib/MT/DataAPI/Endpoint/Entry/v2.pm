@@ -64,8 +64,7 @@ sub create {
         my $assets_hash = $entry_hash->{assets};
         $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
 
-        my @asset_ids
-            = map { $_->{id} }
+        my @asset_ids = map { $_->{id} }
             grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
         require MT::App::CMS;
         my @blog_ids = (
@@ -116,6 +115,33 @@ sub update {
         = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $blog,
         $new_entry, $orig_entry );
 
+    # Check whether or not assets can attach/detach.
+    my $entry_json = $app->param('entry');
+    my $entry_hash = $app->current_format->{unserialize}->($entry_json);
+
+    my @update_assets;
+    if ( exists $entry_hash->{assets} ) {
+        my $assets_hash = $entry_hash->{assets};
+        $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
+
+        my @asset_ids = map { $_->{id} }
+            grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
+        require MT::App::CMS;
+        my @blog_ids = (
+            @{ MT::App::CMS::_load_child_blog_ids( $app, $blog->id ) },
+            $blog->id
+        );
+        @update_assets = MT->model('asset')->load(
+            {   id      => \@asset_ids,
+                blog_id => \@blog_ids,
+            }
+        );
+
+        return $app->error( "'assets' parameter is invalid.", 400 )
+            if scalar @$assets_hash == 0
+            || scalar @$assets_hash != scalar @update_assets;
+    }
+
     save_object(
         $app, 'entry',
         $new_entry,
@@ -130,8 +156,6 @@ sub update {
     ) or return;
 
     # Update categories and assets.
-    my $entry_json = $app->param('entry');
-    my $entry_hash = $app->current_format->{unserialize}->($entry_json);
 
     if ( my $categories = $entry_hash->{categories} ) {
         $categories = [$categories] if ref $categories ne 'ARRAY';
@@ -140,11 +164,9 @@ sub update {
         $new_entry->update_categories(@category_ids);
     }
 
-    if ( my $assets = $entry_hash->{assets} ) {
-        $assets = [$assets] if ref $assets ne 'ARRAY';
-        my @asset_ids
-            = map { $_->{id} } grep { ref $_ eq 'HASH' && $_->{id} } @$assets;
-        $new_entry->update_assets(@asset_ids);
+    if (@update_assets) {
+        $new_entry->update_assets(@update_assets)
+            or return $app->error( $new_entry->errstr );
     }
 
     $post_save->();
