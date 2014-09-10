@@ -7,7 +7,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-use Test::More tests => 56;
+use Test::More tests => 57;
 
 use MT;
 use MT::Blog;
@@ -112,36 +112,42 @@ is( scalar @$attached4,             0, 'Update categories' );
 is( scalar @{ $entry->categories }, 0, 'No category exist' );
 
 # Test attach_assets method
-my $asset = MT->model('asset')->load(3);
-my $attached_asset_id = $entry->attach_assets( $asset->id );
-is( scalar @$attached_asset_id, 1, 'Attached an asset' );
-my $oa_count = MT->model('objectasset')->count({
-    object_ds => 'entry',
-    object_id => $entry->id,
-    asset_id  => $asset->id,
-});
+my $asset          = MT->model('asset')->load(3);
+my $attached_asset = $entry->attach_assets($asset);
+is( scalar @$attached_asset, 1, 'Attached an asset' );
+my $oa_count = MT->model('objectasset')->count(
+    {   object_ds => 'entry',
+        object_id => $entry->id,
+        asset_id  => $asset->id,
+    }
+);
 is( $oa_count, 1, '1 ObjectAsset record exists' );
 
-my $attached_asset_id2 = $entry->attach_assets( $asset->id );
-is( scalar @$attached_asset_id2, 0, 'Attached no asset' );
+my $attached_asset_twice = $entry->attach_assets( $asset );
+is( scalar @$attached_asset_twice, 0, 'Attached no asset' );
+
+my $attached_no_asset = $entry->attach_assets();
+is( scalar @$attached_no_asset, 0, 'Attached no asset' );
 
 # Test update_assets method
 my $updated_asset_id = $entry->update_assets();
 is( scalar @$updated_asset_id, 0, 'Detach an asset' );
-my $oa_count_update = MT->model('objectasset')->count({
-    object_ds => 'entry',
-    object_id => $entry->id,
-    asset_id  => $asset->id,
-});
+my $oa_count_update = MT->model('objectasset')->count(
+    {   object_ds => 'entry',
+        object_id => $entry->id,
+        asset_id  => $asset->id,
+    }
+);
 is( $oa_count_update, 0, 'No ObjectAsset record exists' );
 
 my $updated_asset_id2 = $entry->update_assets( $asset->id );
 is( scalar @$updated_asset_id2, 1, 'Attach an asset' );
-my $oa_count_update2 = MT->model('objectasset')->count({
-    object_ds => 'entry',
-    object_id => $entry->id,
-    asset_id  => $asset->id,
-});
+my $oa_count_update2 = MT->model('objectasset')->count(
+    {   object_ds => 'entry',
+        object_id => $entry->id,
+        asset_id  => $asset->id,
+    }
+);
 is( $oa_count_update2, 1, '1 ObjectAsset record exist' );
 
 ## Test permalink, archive_url, archive_file

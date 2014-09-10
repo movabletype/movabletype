@@ -1917,47 +1917,47 @@ sub update_categories {
 }
 
 sub attach_assets {
-    my $obj       = shift;
-    my @asset_ids = @_;
+    my $obj = shift;
+    my @assets = @_ or return [];
 
-    # Remove imvalid IDs.
-    @asset_ids = grep { $_ && $_ =~ m/^\d+$/ } @asset_ids;
-    return [] unless @asset_ids;
+    # Check whether or not all arguments are MT:Asset objects.
+    for my $asset (@assets) {
+        next if eval { $asset->isa('MT::Asset') } && $asset->id;
+        return $obj->error(
+            MT->translate(
+                'Invalid arguments. They all need to be saved MT::Asset objects.'
+            )
+        );
+    }
 
-    # Remove already attached IDs.
-    my @new_asset_ids;
-    my @current_assets = MT->model('asset')->load(
-        { class => '*' },
-        {   join => MT->model('objectasset')->join_on(
-                'asset_id',
-                {   blog_id   => $obj->blog->id,
-                    object_ds => 'entry',
-                    object_id => $obj->id,
-                    asset_id  => \@asset_ids,
-                },
-            ),
+    # Remove already attached assets.
+    my @attach_assets;
+    my @current_oa = MT->model('objectasset')->load(
+        {   blog_id   => $obj->blog->id,
+            object_ds => $obj->class,
+            object_id => $obj->id,
+            asset_id  => [ map { $_->id } @assets ],
         },
     );
-    for my $asset_id (@asset_ids) {
-        next if grep { $_->id == $asset_id } @current_assets;
-        push @new_asset_ids, $asset_id;
+    for my $asset (@assets) {
+        next if grep { $_->asset_id == $asset->id } @current_oa;
+        push @attach_assets, $asset;
     }
-    return [] unless @new_asset_ids;
 
     # Attach assets.
-    for my $asset_id (@new_asset_ids) {
-        my $objectasset = MT->model('objectasset')->new;
-        $objectasset->set_values(
+    for my $asset (@attach_assets) {
+        my $oa = MT->model('objectasset')->new;
+        $oa->set_values(
             {   blog_id   => $obj->blog->id,
-                object_ds => 'entry',
+                object_ds => $obj->class,
                 object_id => $obj->id,
-                asset_id  => $asset_id,
+                asset_id  => $asset->id,
             }
         );
-        $objectasset->save or return $objectasset->errstr;
+        $oa->save or return $oa->errstr;
     }
 
-    \@new_asset_ids;
+    return \@attach_assets;
 }
 
 sub update_assets {
@@ -2170,11 +2170,12 @@ Update categories specified by I<@category_ids> of the entry. Invlaid IDs
 in I<@category_ids> will be ignored. If I<@category_ids> is empty, all categories
 will be detached. This method returns array reference of attached categories.
 
-=head2 $entry->attach_assets(@asset_ids)
+=head2 $entry->attach_assets(@assets)
 
-Attaches assets specified by I<@asset_ids> to the entry. Invalid IDs
-in I<@asset_ids> will be ignored. This method returns array reference
-of attached asset IDs.
+Attaches I<@assets> to the entry. If I<@assets> is empty, this method returns array
+reference of empty array. If I<@assets> contains non MT::Asset object or
+unsavedMT::Asset object, this method returns undef. This method returns
+array reference of attached assets.
 
 =head2 $entry->update_assets(@asset_ids)
 
