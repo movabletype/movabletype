@@ -55,13 +55,38 @@ sub create {
         = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $blog,
         $new_entry, $orig_entry );
 
+    # Check whether or not assets can attach.
+    my $entry_json = $app->param('entry');
+    my $entry_hash = $app->current_format->{unserialize}->($entry_json);
+
+    my @attach_assets;
+    if ( exists $entry_hash->{assets} ) {
+        my $assets_hash = $entry_hash->{assets};
+        $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
+
+        my @asset_ids
+            = map { $_->{id} }
+            grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
+        require MT::App::CMS;
+        my @blog_ids = (
+            @{ MT::App::CMS::_load_child_blog_ids( $app, $blog->id ) },
+            $blog->id
+        );
+        @attach_assets = MT->model('asset')->load(
+            {   id      => \@asset_ids,
+                blog_id => \@blog_ids,
+            }
+        );
+
+        return $app->error( "'assets' parameter is invalid.", 400 )
+            if scalar @$assets_hash == 0
+            || scalar @$assets_hash != scalar @attach_assets;
+    }
+
     save_object( $app, 'entry', $new_entry )
         or return;
 
     # Attach categories and assets.
-    my $entry_json = $app->param('entry');
-    my $entry_hash = $app->current_format->{unserialize}->($entry_json);
-
     if ( my $categories = $entry_hash->{categories} ) {
         $categories = [$categories] if ref $categories ne 'ARRAY';
         my @category_ids = map { $_->{id} }
@@ -69,11 +94,9 @@ sub create {
         $new_entry->attach_categories(@category_ids);
     }
 
-    if ( my $assets = $entry_hash->{assets} ) {
-        $assets = [$assets] if ref $assets ne 'ARRAY';
-        my @asset_ids
-            = map { $_->{id} } grep { ref $_ eq 'HASH' && $_->{id} } @$assets;
-        $new_entry->attach_assets(@asset_ids);
+    if (@attach_assets) {
+        $new_entry->attach_assets(@attach_assets)
+            or return $app->error( $new_entry->errstr );
     }
 
     $post_save->();
