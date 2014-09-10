@@ -66,11 +66,12 @@ sub create {
 
         my @asset_ids = map { $_->{id} }
             grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
-        require MT::App::CMS;
-        my @blog_ids = (
-            @{ MT::App::CMS::_load_child_blog_ids( $app, $blog->id ) },
-            $blog->id
-        );
+        my @blog_ids = ( $blog->id );
+        if ( !$blog->is_blog ) {
+            my @child_blogs = @{ $blog->blogs };
+            my @child_blog_ids = map { $_->id } @child_blogs;
+            push @blog_ids, @child_blog_ids;
+        }
         @attach_assets = MT->model('asset')->load(
             {   id      => \@asset_ids,
                 blog_id => \@blog_ids,
@@ -126,11 +127,12 @@ sub update {
 
         my @asset_ids = map { $_->{id} }
             grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
-        require MT::App::CMS;
-        my @blog_ids = (
-            @{ MT::App::CMS::_load_child_blog_ids( $app, $blog->id ) },
-            $blog->id
-        );
+        my @blog_ids = ( $blog->id );
+        if ( !$blog->is_blog ) {
+            my @child_blogs = @{ $blog->blogs };
+            my @child_blog_ids = map { $_->id } @child_blogs;
+            push @blog_ids, @child_blog_ids;
+        }
         @update_assets = MT->model('asset')->load(
             {   id      => \@asset_ids,
                 blog_id => \@blog_ids,
