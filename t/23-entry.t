@@ -97,13 +97,11 @@ is( scalar @$attached,              1, 'Attached a category' );
 is( scalar @{ $entry->categories }, 3, '3 categories exist' );
 
 # Test update_categories method
-my @category_ids = ( $cat->id, $cat2->id );
-my $attached2 = $entry->update_categories(@category_ids);
+my $attached2 = $entry->update_categories( $cat, $cat2 );
 is( scalar @$attached2,             2, 'Update categories' );
 is( scalar @{ $entry->categories }, 2, '2 categories exist' );
 
-@category_ids = ( $cat->id );
-my $attached3 = $entry->update_categories(@category_ids);
+my $attached3 = $entry->update_categories($cat);
 is( scalar @$attached3,             1, 'Update categories' );
 is( scalar @{ $entry->categories }, 1, '1 category exist' );
 

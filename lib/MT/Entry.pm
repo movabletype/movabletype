@@ -1838,24 +1838,23 @@ sub attach_categories {
 }
 
 sub update_categories {
-    my $obj     = shift;
-    my @cat_ids = @_;
+    my $obj  = shift;
+    my @cats = @_;
 
-    # Retrieve categories by category_id.
-    my @cats;
-    for my $cat_id (@cat_ids) {
-        next unless $cat_id && $cat_id =~ m/^\d+$/;
-        my $cat = MT->model('category')->load($cat_id);
-        push @cats, $cat if $cat;
+    # Check whether or not all arguments are MT:Category objects.
+    for my $cat (@cats) {
+        next if eval { $cat->isa('MT::Category') } && $cat->id;
+        return $obj->error(
+            MT->translate(
+                'Invalid arguments. They all need to be saved MT::Category objects.'
+            )
+        );
     }
 
     # Detach all if no category.
     unless (@cats) {
-        MT::Placement->remove(
-            {   blog_id  => $obj->blog_id,
-                entry_id => $obj->id,
-            }
-        ) or return MT::Placement->errstr;
+        MT::Placement->remove( { entry_id => $obj->id, } )
+            or return $obj->error( MT::Placement->errstr );
 
         $obj->clear_cache('category');
         $obj->clear_cache('categories');
@@ -1864,30 +1863,25 @@ sub update_categories {
     }
 
     # Detach categories
-    my @remove_cats;
-    for my $old_cat ( @{ $obj->categories } ) {
-        push @remove_cats, $old_cat
-            unless ( grep { $_->id == $old_cat->id } @cats );
-    }
-    if (@remove_cats) {
-        MT::Placement->remove(
-            {   blog_id     => $obj->blog_id,
-                entry_id    => $obj->id,
-                category_id => [ map { $_->id } @remove_cats ],
-            }
-        ) or return MT::Placement->errstr;
-    }
+    MT::Placement->remove(
+        {   entry_id    => $obj->id,
+            category_id => { not => [ map { $_->id } @cats ] },
+        }
+    ) or return $obj->error( MT::Placement->errstr );
 
     # Attach/update categories
-    my $is_primary = 1;
-    my @old_place  = MT::Placement->load(
+    my $is_primary    = 1;
+    my @current_place = MT::Placement->load(
         {   blog_id  => $obj->blog_id,
             entry_id => $obj->id,
         }
     );
     for my $cat (@cats) {
-        my $place;
-        if ( ($place) = grep { $_->category_id == $cat->id } @old_place ) {
+        my ($place) = grep { $_->category_id == $cat->id } @current_place;
+        if ($place) {
+
+            # Already attached category.
+            # If is_primary field is changed, save MT::Placement record.
             do { $is_primary = 0; next } if $place->is_primary == $is_primary;
             $place->is_primary($is_primary);
         }
@@ -1901,14 +1895,17 @@ sub update_categories {
                 }
             );
         }
-        $place->save or return $place->errstr;
+        $place->save or return $obj->error( $place->errstr );
 
+        # Update cache.
         $obj->cache_property( 'category', undef, $cat ) if $is_primary;
 
+        # Entry does not have more than one primary category.
         $is_primary = 0;
     }
 
-    # Update cache
+    # Update cache.
+    @cats = sort { $a->label cmp $b->label } @cats;
     $obj->cache_property( 'categories', undef, \@cats );
 
     return \@cats;
@@ -2162,11 +2159,11 @@ returns array reference of empty array. If I<@categories> contains non MT::Categ
 object or unsaved MT::Category object, this method returns undef, This method
 returns array reference of attached categories.
 
-=head2 $entry->update_categories(@category_ids)
+=head2 $entry->update_categories(@categories)
 
-Update categories specified by I<@category_ids> of the entry. Invlaid IDs
-in I<@category_ids> will be ignored. If I<@category_ids> is empty, all categories
-will be detached. This method returns array reference of attached categories.
+Updates attached categories with I<@categories>. If I<@categories> is empty,
+all categories will be detached. This method returns array reference of categories
+attaching entry.
 
 =head2 $entry->attach_assets(@assets)
 
