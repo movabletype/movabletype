@@ -1961,66 +1961,65 @@ sub attach_assets {
 }
 
 sub update_assets {
-    my $obj       = shift;
-    my @asset_ids = @_;
+    my $obj    = shift;
+    my @assets = @_;
 
-    # Remove imvalid IDs.
-    @asset_ids = grep { $_ && $_ =~ m/^\d+$/ } @asset_ids;
-    if (@asset_ids) {
-        my @valid_asset_ids;
-        my @assets = @{ MT->model('asset')->lookup_multi( \@asset_ids ) };
-        for my $asset_id (@asset_ids) {
-            next unless ( grep { $_->id == $asset_id } @assets );
-            push @valid_asset_ids, $asset_id;
-        }
-        @asset_ids = @valid_asset_ids;
+    # Check whether or not all arguments are MT:Asset objects.
+    for my $asset (@assets) {
+        next if eval { $asset->isa('MT::Asset') } && $asset->id;
+        return $obj->error(
+            MT->translate(
+                'Invalid arguments. They all need to be saved MT::Asset objects.'
+            )
+        );
     }
 
-    # Detach all if no asset_ids.
-    unless (@asset_ids) {
+    # Detach all assets if no assets.
+    unless (@assets) {
         MT->model('objectasset')->remove(
-            {   object_ds => 'entry',
+            {   object_ds => $obj->class,
                 object_id => $obj->id,
             }
-        ) or return MT->model('objectasset')->errstr;
+        ) or return $obj->error( MT->model('objectasset')->errstr );
         return [];
     }
 
     # Detach assets.
+    my @asset_ids = map { $_->id } @assets;
     MT->model('objectasset')->remove(
-        {   object_ds => 'entry',
+        {   object_ds => $obj->class,
             object_id => $obj->id,
             asset_id  => { not => \@asset_ids },
         }
-    ) or return MT->model('objectasset')->errstr;
+    ) or return $obj->error( MT->model('objectasset')->errstr );
 
     # Remove already attached assets.
-    my @return_ids = @asset_ids;
-    my @current_oa = MT->model('objectasset')->load(
-        {   object_ds => 'entry',
+    my @attaching_assets = @assets;
+    my @current_oa       = MT->model('objectasset')->load(
+        {   object_ds => $obj->class,
             object_id => $obj->id,
             asset_id  => \@asset_ids,
         }
     );
     if (@current_oa) {
         my %current_oa_id = map { ( $_->asset_id => 1 ) } @current_oa;
-        @asset_ids = grep { !$current_oa_id{$_} } @asset_ids;
+        @assets = grep { !$current_oa_id{ $_->id } } @assets;
     }
 
     # Attach assets.
-    for my $asset_id (@asset_ids) {
+    for my $asset (@assets) {
         my $oa = MT->model('objectasset')->new;
         $oa->set_values(
             {   blog_id   => $obj->blog->id,
-                object_ds => 'entry',
+                object_ds => $obj->class,
                 object_id => $obj->id,
-                asset_id  => $asset_id,
+                asset_id  => $asset->id,
             }
         );
-        $oa->save or return $oa->errstr;
+        $oa->save or return $obj->error( $oa->errstr );
     }
 
-    return \@return_ids;
+    return \@attaching_assets;
 }
 
 #trans('Draft')
@@ -2177,11 +2176,10 @@ reference of empty array. If I<@assets> contains non MT::Asset object or
 unsavedMT::Asset object, this method returns undef. This method returns
 array reference of attached assets.
 
-=head2 $entry->update_assets(@asset_ids)
+=head2 $entry->update_assets(@assets)
 
-Update assets specified by I<@asset_ids> of the entry. Invalid IDs in I<@asset_ids>
-will be ignored. If I<@asset_ids> is empty, all assets will be detached. This method
-returns array reference of attached asset IDs.
+Updates attached assets with I<@assets>. If I<@assets> is empty, all assets will be detached.
+This method returns array reference of assets attaching entry.
 
 =head1 DATA ACCESS METHODS
 
