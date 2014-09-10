@@ -232,7 +232,7 @@ my @suite = (
         params => {
             entry => {
                 title      => 'test-api-update-categories',
-                categories => [ { id => 20 }, { id => 21 }, { id => 22 } ]
+                categories => [ { id => 1 }, { id => 2 }, { id => 3 } ]
             },
         },
         callbacks => [
@@ -267,7 +267,7 @@ my @suite = (
     {   path   => '/v2/sites/1/entries/2',
         method => 'PUT',
         params =>
-            { entry => { categories => [ { id => 21 }, { id => 22 } ] }, },
+            { entry => { categories => [ { id => 2 }, { id => 3 } ] }, },
         callbacks => [
             {   name =>
                     'MT::App::DataAPI::data_api_save_permission_filter.entry',
@@ -296,6 +296,11 @@ my @suite = (
             my @categories = @{ $entry->categories };
             is( scalar @categories, 2, 'Entry has 2 category' );
         },
+    },
+    {   path   => '/v2/sites/1/entries/2',
+        method => 'PUT',
+        params => { entry => { categories => [ id => 20 ] } },
+        code   => 400,
     },
     {   path   => '/v2/sites/1/entries',
         method => 'POST',

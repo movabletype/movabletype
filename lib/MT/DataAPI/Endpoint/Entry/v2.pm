@@ -59,6 +59,25 @@ sub create {
     my $entry_json = $app->param('entry');
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
 
+    my @attach_cats;
+    if ( exists $entry_hash->{categories} ) {
+        my $cats_hash = $entry_hash->{categories};
+        $cats_hash = [$cats_hash] if ref $cats_hash ne 'ARRAY';
+
+        my @cat_ids = map { $_->{id} }
+            grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
+        @attach_cats = MT->model('category')->load(
+            {   id      => \@cat_ids,
+                blog_id => $blog->id,
+                class   => 'category',
+            }
+        );
+
+        return $app->error( "'categories' parameter is invalid.", 400 )
+            if scalar @$cats_hash == 0
+            || scalar @$cats_hash != scalar @attach_cats;
+    }
+
     my @attach_assets;
     if ( exists $entry_hash->{assets} ) {
         my $assets_hash = $entry_hash->{assets};
@@ -87,13 +106,10 @@ sub create {
         or return;
 
     # Attach categories and assets.
-    if ( my $categories = $entry_hash->{categories} ) {
-        $categories = [$categories] if ref $categories ne 'ARRAY';
-        my @category_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$categories;
-        $new_entry->attach_categories(@category_ids);
+    if (@attach_cats) {
+        $new_entry->attach_categories(@attach_cats)
+            or return $app->error( $new_entry->errstr );
     }
-
     if (@attach_assets) {
         $new_entry->attach_assets(@attach_assets)
             or return $app->error( $new_entry->errstr );
@@ -119,6 +135,25 @@ sub update {
     # Check whether or not assets can attach/detach.
     my $entry_json = $app->param('entry');
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
+
+    my @update_cats;
+    if ( exists $entry_hash->{categories} ) {
+        my $cats_hash = $entry_hash->{categories};
+        $cats_hash = [$cats_hash] if ref $cats_hash ne 'ARRAY';
+
+        my @cat_ids = map { $_->{id} }
+            grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
+        @update_cats = MT->model('category')->load(
+            {   id      => \@cat_ids,
+                blog_id => $blog->id,
+                class   => 'category',
+            }
+        );
+
+        return $app->error( "'categories' parameter is invalid.", 400 )
+            if scalar @$cats_hash == 0
+            || scalar @$cats_hash != scalar @update_cats;
+    }
 
     my @update_assets;
     if ( exists $entry_hash->{assets} ) {
@@ -158,14 +193,10 @@ sub update {
     ) or return;
 
     # Update categories and assets.
-
-    if ( my $categories = $entry_hash->{categories} ) {
-        $categories = [$categories] if ref $categories ne 'ARRAY';
-        my @category_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$categories;
-        $new_entry->update_categories(@category_ids);
+    if (@update_cats) {
+        $new_entry->update_categories(@update_cats)
+            or return $app->error( $new_entry->errstr );
     }
-
     if (@update_assets) {
         $new_entry->update_assets(@update_assets)
             or return $app->error( $new_entry->errstr );
