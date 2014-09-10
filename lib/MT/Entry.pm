@@ -2172,7 +2172,7 @@ will be detached. This method returns array reference of attached categories.
 
 Attaches I<@assets> to the entry. If I<@assets> is empty, this method returns array
 reference of empty array. If I<@assets> contains non MT::Asset object or
-unsavedMT::Asset object, this method returns undef. This method returns
+unsaved MT::Asset object, this method returns undef. This method returns
 array reference of attached assets.
 
 =head2 $entry->update_assets(@assets)
