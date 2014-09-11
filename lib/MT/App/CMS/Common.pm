@@ -215,9 +215,6 @@ sub init_core_callbacks {
             'list_template_param.category' =>
                 "${pfx}Category::template_param_list",
             $pkg
-                . 'pre_load_filtered_list.category' =>
-                "${pfx}Category::pre_load_filtered_list",
-            $pkg
                 . 'filtered_list_param.category' =>
                 "${pfx}Category::filtered_list_param",
             'list_template_param.folder' =>
