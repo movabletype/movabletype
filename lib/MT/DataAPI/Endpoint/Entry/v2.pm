@@ -218,6 +218,16 @@ sub list_categories {
         or return;
 
     my $rows = $entry->__load_category_data or return;
+
+    # Filtering by is_primary field.
+    my $type = $app->param('type') || '';
+    if ( $type eq 'primary' ) {
+        @$rows = grep { $_->[1] } @$rows;
+    }
+    elsif ( $type eq 'secondary' ) {
+        @$rows = grep { !$_->[1] } @$rows;
+    }
+
     my %terms = ( id => @$rows ? [ map { $_->[0] } @$rows ] : 0 );
     my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
 
