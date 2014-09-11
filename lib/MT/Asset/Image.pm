@@ -363,11 +363,11 @@ sub as_html {
                 )
                 : MT->translate('View image');
             $text = sprintf(
-                q|<a href="%s" onclick="window.open('%s','popup','width=%d,height=%d,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">%s</a>|,
+                q|<a href="%s" onclick="window.open('%s','popup','width=%d,height=%d,scrollbars=yes,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">%s</a>|,
                 MT::Util::encode_html( $popup->url ),
                 MT::Util::encode_html( $popup->url ),
                 $asset->image_width,
-                $asset->image_height,
+                $asset->image_height + 1,
                 $link,
             );
         }

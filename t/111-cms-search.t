@@ -103,8 +103,41 @@ subtest 'search_replace' => sub {
         };
     }
 
-    subtest 'Column name in website scope' => sub {
+    subtest 'Column name in each scopes' => sub {
+
+        # blog scope
         my $app = _run_app(
+            'MT::App::CMS',
+            {   __test_user      => $admin,
+                __request_method => 'POST',
+                __mode           => 'search_replace',
+                _type            => 'entry',
+                is_limited       => 0,
+                blog_id          => $blog->[0]->id,
+                do_search        => 1,
+                search           => 'A Rainy Day',
+            },
+        );
+        my $out = delete $app->{__test_output};
+        ok( $out, 'Request: search_replace' );
+
+        my $no_results = quotemeta
+            'No entries were found that match the given criteria.';
+        unlike( $out, qr/$no_results/, 'There are some search results.' );
+
+        my $col_blog = quotemeta('<span class="col-label">Blog</span>');
+        $col_blog = qr/$col_blog/;
+        unlike( $out, $col_blog,
+            'Does not have a colomn "Blog" in blog scope' );
+
+        my $col_website_blog
+            = quotemeta('<span class="col-label">Website/Blog</span>');
+        $col_website_blog = qr/$col_website_blog/;
+        unlike( $out, $col_website_blog,
+            'Does not have a column "Website/Blog" in blog scope' );
+
+        # website scope
+        $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,
                 __request_method => 'POST',
@@ -116,20 +149,20 @@ subtest 'search_replace' => sub {
                 search           => 'A Sunny Day',
             },
         );
-        my $out = delete $app->{__test_output};
+        $out = delete $app->{__test_output};
         ok( $out, 'Request: search_replace' );
 
-        my $col_blog = quotemeta('<span class="col-label">Blog</span>');
+        unlike( $out, qr/$no_results/, 'There are some search results.' );
+
         $col_blog = qr/$col_blog/;
         unlike( $out, $col_blog,
             'Does not have a colomn "Blog" in website scope' );
 
-        my $col_website_blog
-            = quotemeta('<span class="col-label">Website/Blog</span>');
         $col_website_blog = qr/$col_website_blog/;
         like( $out, $col_website_blog,
             'Has a column "Website/Blog" in website scope' );
 
+        # system scope
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,
@@ -144,6 +177,8 @@ subtest 'search_replace' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, 'Request: search_replace' );
+
+        unlike( $out, qr/$no_results/, 'There are some search results.' );
 
         unlike( $out, $col_blog,
             'Does not have a colomn "Blog" in system scope' );

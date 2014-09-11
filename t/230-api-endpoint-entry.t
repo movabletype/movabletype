@@ -70,6 +70,16 @@ my @suite = (
                 }
             );
         },
+        complete => sub {
+            my ( $data, $body ) = @_;
+            require MT::Entry;
+            my $entry = MT->model('entry')->load(
+                {   title  => 'test-api-permission-entry',
+                    status => MT::Entry::HOLD(),
+                }
+            );
+            is( $entry->revision, 1, 'Has created new revision' );
+        },
     },
     {   path      => '/v1/sites/1/entries/0',
         method    => 'GET',
@@ -86,6 +96,10 @@ my @suite = (
     },
     {   path   => '/v1/sites/1/entries/1',
         method => 'PUT',
+        setup  => sub {
+            my ($data) = @_;
+            $data->{_revision} = MT->model('entry')->load(1)->revision || 0;
+        },
         params =>
             { entry => { title => 'update-test-api-permission-entry', }, },
         callbacks => [
@@ -109,6 +123,35 @@ my @suite = (
                     title => 'update-test-api-permission-entry',
                 }
             );
+        },
+        complete => sub {
+            my ( $data, $body ) = @_;
+            is( MT->model('entry')->load(1)->revision - $data->{_revision},
+                1, 'Bumped-up revision number' );
+        },
+    },
+    {   path   => '/v1/sites/1/entries/1',
+        method => 'PUT',
+        params =>
+            { entry => { tags => [qw(a)] }, },
+        complete => sub {
+            is_deeply([MT->model('entry')->load(1)->tags], [qw(a)], "Entry's tag is updated");
+        },
+    },
+    {   path   => '/v1/sites/1/entries/1',
+        method => 'PUT',
+        params =>
+            { entry => { tags => [qw(a b)] }, },
+        complete => sub {
+            is_deeply([MT->model('entry')->load(1)->tags], [qw(a b)], "Entry's tag is added");
+        },
+    },
+    {   path   => '/v1/sites/1/entries/1',
+        method => 'PUT',
+        params =>
+            { entry => { tags => [] }, },
+        complete => sub {
+            is_deeply([MT->model('entry')->load(1)->tags], [], "Entry's tag is removed");
         },
     },
     {   path      => '/v1/sites/1/entries/1',

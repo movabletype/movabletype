@@ -241,7 +241,8 @@ sub _hdlr_assets {
                     fetchonly   => ['tag_id'],
                     no_triggers => 1,
                 };
-                my @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
+                my @ot_ids;
+                @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
                 my %map;
                 $map{ $_->tag_id } = 1 for @ot_ids;
                 \%map;
@@ -331,11 +332,14 @@ sub _hdlr_assets {
     require MT::Asset;
     my @assets;
     if ( !$assets ) {
-        my ( $start, $end )
-            = ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} );
-        if ( $start && $end ) {
-            $terms{created_on} = [ $start, $end ];
-            $args{range_incl}{created_on} = 1;
+        if ( !$args->{ignore_archive_context} ) {
+            my ( $start, $end )
+                = ( $ctx->{current_timestamp},
+                $ctx->{current_timestamp_end} );
+            if ( $start && $end ) {
+                $terms{created_on} = [ $start, $end ];
+                $args{range_incl}{created_on} = 1;
+            }
         }
         if ( my $days = $args->{days} ) {
             my @ago = offset_time_list( time - 3600 * 24 * $days,
@@ -1164,6 +1168,11 @@ sub _hdlr_asset_thumbnail_url {
     $arg{Height} = $args->{height} if $args->{height};
     $arg{Scale}  = $args->{scale}  if $args->{scale};
     $arg{Square} = $args->{square} if $args->{square};
+    foreach my $modifier (qw( Width Height )) {
+        return $ctx->error(
+            MT->translate( "[_1] must be a number.", $modifier ) )
+            if ( defined $arg{$modifier} && $arg{$modifier} !~ /^\d+$/ );
+    }
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
     return $url || '';
 }
@@ -1303,6 +1312,7 @@ sub _hdlr_asset_count {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
     $terms{blog_id} = $ctx->stash('blog_id') if $ctx->stash('blog_id');
+    $terms{parent} = \'is NULL';
     $terms{class} = $args->{type} || '*';
     my $count = MT::Asset->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );

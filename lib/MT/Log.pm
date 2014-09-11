@@ -167,7 +167,7 @@ sub list_props {
             base                  => '__virtual.single_select',
             single_select_options => sub {
                 my $prop  = shift;
-                my $app   = shift;
+                my $app   = shift || MT->app;
                 my $terms = {};
                 if ( my $blog_id = $app->param('blog_id') ) {
                     my $blog = MT->model('blog')->load($blog_id);
@@ -491,6 +491,7 @@ sub description {
 # trans('theme');
 # trans('folder');
 # trans('plugin');
+# trans('page');
 
 1;
 __END__

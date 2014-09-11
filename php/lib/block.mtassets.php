@@ -24,6 +24,13 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
         }
         $args['exclude_thumb'] = 1;
 
+        $ts = $ctx->stash('current_timestamp');
+        $tse = $ctx->stash('current_timestamp_end');
+        if ($ts && $tse) {
+            $args['current_timestamp'] = $ts;
+            $args['current_timestamp_end'] = $tse;
+        }
+
         $assets = $ctx->mt->db()->fetch_assets($args);
         $ctx->stash('_assets', $assets);
     } else {

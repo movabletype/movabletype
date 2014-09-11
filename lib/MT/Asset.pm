@@ -840,7 +840,20 @@ sub _make_cache_path {
     if ( !-d $real_cache_path ) {
         require MT::FileMgr;
         my $fmgr = $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
-        $fmgr->mkpath($real_cache_path) or return undef;
+        unless ( $fmgr->mkpath($real_cache_path) ) {
+            my $app = MT->instance;
+            $app->log(
+                {   message => $app->translate(
+                        "Could not create asset cache path: [_1]",
+                        $fmgr->errstr
+                    ),
+                    level    => MT::Log::ERROR(),
+                    class    => 'asset',
+                    category => 'cache',
+                }
+            );
+            return undef;
+        }
     }
 
     my $asset_cache_path

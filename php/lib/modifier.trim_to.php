@@ -5,6 +5,8 @@
 #
 # $Id$
 
+require_once("MTUtil.php");
+
 function smarty_modifier_trim_to($text, $len) {
     $tail = '';
     if ( strstr( $len, '+' ) ) {
@@ -13,15 +15,31 @@ function smarty_modifier_trim_to($text, $len) {
         $tail = $matches[1];
     }
     $len = intval($len);
-    if ( $len <= 0 ) return '';
 
-    require_once("MTUtil.php");
-    if ($len < length_text($text)) {
+    if ( $len > 0 ) {
+
+        # $len is positive number
+        if ($len < length_text($text)) {
+            $text = substr_text($text, 0, $len);
+            if ( !is_null( $tail ) && $tail !== "" ) {
+                $text .= $tail;
+            }
+        }
+        return $text;
+
+    } elseif ( $len < 0 ) {
+
+        # $len is negative number.
         $text = substr_text($text, 0, $len);
-        if ( !empty( $tail ) ) {
+        if ( !is_null( $text ) && $text !== ""
+            && !is_null( $tail ) && $tail !== "" ) {
             $text .= $tail;
         }
+        return $text;
+
     }
-    return $text;
+
+    # $len is zero or is not number.
+    return '';
 }
 ?>

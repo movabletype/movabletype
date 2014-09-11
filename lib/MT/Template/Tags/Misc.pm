@@ -148,10 +148,19 @@ sub _hdlr_widget_manager {
     my $tmpl_name = delete $args->{name}
         or return $ctx->error( MT->translate("name is required.") );
     my $blog_id = $args->{blog_id} || $ctx->{__stash}{blog_id} || 0;
+    if ( exists $args->{parent} && $args->{parent} ) {
+        if ( my $_stash_blog = $ctx->stash('blog') ) {
+            $blog_id = $_stash_blog->website->id;
+        }
+    }
     my $tmpl = MT->model('template')->load(
         {   name    => $tmpl_name,
-            blog_id => $blog_id ? [ 0, $blog_id ] : 0,
-            type    => 'widgetset'
+            blog_id => $blog_id
+            ? ( exists $args->{parent} && $args->{parent} )
+                    ? $blog_id
+                    : [ 0, $blog_id ]
+            : 0,
+            type => 'widgetset'
         },
         {   sort      => 'blog_id',
             direction => 'descend'

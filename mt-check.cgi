@@ -110,7 +110,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '6.0.3';
+    $version = '6.0.4';
 }
 
 my ( $mt, $LH );
@@ -214,6 +214,7 @@ if ($view) {
     require MT::Session;
     require MT::Serialize;
     my $mt = MT->new;
+    $mt->set_language($lang);
 PERMCHECK: {
         my $sess = MT->model('session')->load( { id => $sess_id } )
             or invalid_request(), last PERMCHECK;
@@ -627,7 +628,7 @@ my @CORE_OPT = (
     [   'Crypt::SSLeay',
         0, 0,
         translate(
-            'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support.'
+            'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for site statistics of Google Analytics.'
         )
     ],
 
@@ -729,7 +730,7 @@ my @CORE_OPT = (
     [   'IO::Socket::SSL',
         0, 0,
         translate(
-            'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.'
+            'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for site statistics of Google Analytics.'
         )
     ],
 
@@ -759,6 +760,44 @@ my @CORE_OPT = (
 
     [   'XML::Parser', 0, 0,
         translate('This module required for action streams.')
+    ],
+
+    [   'XML::SAX::ExpatXS',
+        1.30, 0,
+        translate(
+            '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
+            'XML::SAX::ExpatXS'
+        )
+    ],
+
+    [   'XML::SAX::Expat',
+        0.37, 0,
+        translate(
+            '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
+            'XML::SAX::Expat'
+        )
+    ],
+
+    [   'XML::LibXML::SAX',
+        1.70, 0,
+        translate(
+            '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
+            'XML::LibXML::SAX'
+        )
+    ],
+
+    [   'Mozilla::CA',
+        0, 0,
+        translate(
+            'This module is required for site statistics of Google Analytics.'
+        )
+    ],
+
+    [   'Time::HiRes',
+        0, 0,
+       translate(
+           'This module is required for executing run-periodic-tasks.'
+       )
     ],
 
 );

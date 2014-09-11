@@ -11,7 +11,8 @@
 require_once('lib/class.exception.php');
 
 define('VERSION', '6.0');
-define('PRODUCT_VERSION', '6.0.3');
+define('PRODUCT_VERSION', '6.0.4');
+define('DATA_API_DEFAULT_VERSION', '1');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -20,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 3;
+    $RELEASE_NUMBER = 4;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -60,6 +61,9 @@ class MT {
 
     private  $cache_driver = null;
     private static $_instance = null;
+
+    static public $config_type_array = array('pluginpath', 'alttemplate', 'outboundtrackbackdomains', 'memcachedservers', 'userpasswordvalidation');
+    static public $config_type_hash  = array('pluginswitch', 'pluginschemaversion', 'commenterregistration');
 
     /***
      * Constructor for MT class.
@@ -258,8 +262,6 @@ class MT {
         $this->cfg_file = $file;
 
         $cfg = array();
-        $type_array = array('pluginpath', 'alttemplate', 'outboundtrackbackdomains', 'memcachedservers', 'userpasswordvalidation');
-        $type_hash  = array('commenterregistration');
         if ($fp = file($file)) {
             foreach ($fp as $line) {
                 // search through the file
@@ -268,10 +270,10 @@ class MT {
                     if (preg_match('/^\s*(\S+)\s+(.*)$/', $line, $regs)) {
                         $key = strtolower(trim($regs[1]));
                         $value = trim($regs[2]);
-                        if (in_array($key, $type_array)) {
+                        if (in_array($key, self::$config_type_array)) {
                             $cfg[$key][] = $value;
                         }
-                        elseif (in_array($key, $type_hash)) {
+                        elseif (in_array($key, self::$config_type_hash)) {
                             $hash = preg_split('/\=/', $value, 2);
                             $cfg[$key][strtolower(trim($hash[0]))] = trim($hash[1]);
                         } else {
@@ -386,8 +388,6 @@ class MT {
             $cfg['xmlrpcscript'] = 'mt-xmlrpc.cgi';
         isset($cfg['searchscript']) or
             $cfg['searchscript'] = 'mt-search.cgi';
-        isset($cfg['notifyscript']) or
-            $cfg['notifyscript'] = 'mt-add-notify.cgi';
         isset($cfg['defaultlanguage']) or
             $cfg['defaultlanguage'] = 'en_US';
         isset($cfg['globalsanitizespec']) or
@@ -440,6 +440,8 @@ class MT {
             $cfg['dbmaxretries'] = 3;
         isset($cfg['dbretryintercal']) or
             $cfg['dbretryinterval'] = 1;
+        isset($cfg['dataapiscript']) or
+            $cfg['dataapiscript'] = 'mt-data-api.cgi';
     }
 
     function configure_paths($blog_site_path) {
@@ -811,16 +813,10 @@ class MT {
     }
 
     function error_handler($errno, $errstr, $errfile, $errline) {
-        if ($errno & (E_ALL ^ E_NOTICE)) {
+        if ($errno & (E_ALL ^ E_NOTICE ^ E_WARNING)) {
             if ( !empty( $this->db ) ) {
-                if (version_compare(phpversion(), '4.3.0', '>=')) {
-                    $charset = $this->config('PublishCharset');
-                    $errstr = htmlentities($errstr, ENT_COMPAT, $charset);
-                    $errfile = htmlentities($errfile, ENT_COMPAT, $charset);
-                } else {
-                    $errstr = htmlentities($errstr, ENT_COMPAT);
-                    $errfile = htmlentities($errfile, ENT_COMPAT);
-                }
+                $errstr = encode_html_entities($errstr, ENT_COMPAT);
+                $errfile = encode_html_entities($errfile, ENT_COMPAT);
                 $mtphpdir = $this->config('PHPDir');
                 $ctx =& $this->context();
                 $ctx->stash('blog_id', $this->blog_id);

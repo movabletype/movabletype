@@ -3084,3 +3084,53 @@ function backSessionHistoryFallback() {
     });
   }
 }
+
+if (typeof MT.Validator === 'undefined') {
+    MT.Validator = {};
+}
+
+extend(MT.Validator, {
+    urlSubdomain: function(subdomain) {
+        return subdomain.match(/^[a-z0-9]([a-z0-9-\.]*[a-z0-9])?$/);
+    },
+
+    urlPath: function(path) {
+        if (path.indexOf(' ') != -1) {
+            return false;
+        }
+        return path.match(/^[^\s<>\#%"\,\{\}\\|\\\^\[\]`]*$/);
+    },
+
+    url: function(url) {
+        if (url.indexOf(' ') != -1) {
+            return false;
+        }
+        return url.match(/^https?:\/\/[a-z0-9-\.]+\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/);
+    },
+
+    path: function(path, isBlog) {
+        var str = path.replace(/[ "%<>\[\\\]\^`{\|}~]/g, ""); //"
+        str = encodeURI(str);
+        if (str.indexOf('%') != -1) {
+            return false;
+        }
+        if (str.match(/\.\./)) {
+            return false;
+        }
+
+        if (isBlog) {
+            if ( path.match(/^\//) || path.match(/^[a-zA-Z]:\\/)  || path.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
+                return false;
+            }
+        }
+
+        return true;
+    },
+
+    absolutePath: function(path) {
+        if ( path.match(/^\//) || path.match(/^[a-zA-Z]:\\/)  || path.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
+            return true;
+        }
+        return false;
+    }
+});

@@ -135,8 +135,9 @@ sub adjacent_archive_entry {
     my ($param) = @_;
 
     my $order = ( $param->{order} eq 'previous' ) ? 'descend' : 'ascend';
-    my $cat    = $param->{category} if $obj->category_based;
-    my $author = $param->{author}   if $obj->author_based;
+    my ( $cat, $author );
+    $cat    = $param->{category} if $obj->category_based;
+    $author = $param->{author}   if $obj->author_based;
 
     my $ts      = $param->{ts};
     my $blog_id = $param->{blog_id}

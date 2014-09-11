@@ -1114,7 +1114,7 @@ tfoot .col.head{
 
 .list-entry .col.category,
 .list-page .col.category {
-  width: 10%;
+  width: 13%;
 }
 
 .list-entry .col.folder,
@@ -1129,7 +1129,7 @@ tfoot .col.head{
 
 .list-entry .col.comment_count,
 .list-page .col.comment_count {
-  width: 6%;
+  width: 8%;
 }
 
 .list-actions {

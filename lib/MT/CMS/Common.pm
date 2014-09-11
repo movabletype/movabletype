@@ -16,13 +16,16 @@ sub save {
     my $id              = $q->param('id');
     my @types_for_event = ($type);
 
+    my $class = $app->model($type)
+        or return $app->errtrans( "Invalid type [_1]", $type );
+
+    return $app->errtrans("Invalid request.")
+        unless $type;
+
     if ( $id && $type eq 'website' ) {
         $type = 'blog';
         unshift @types_for_event, $type;
     }
-
-    return $app->errtrans("Invalid request.")
-        unless $type;
 
     # being a general-purpose method, lets look for a mode handler
     # that is specifically for editing this type. if we find it,
@@ -125,8 +128,6 @@ sub save {
         }
     }
 
-    my $class = $app->model($type)
-        or return $app->errtrans( "Invalid type [_1]", $type );
     my ($obj);
     if ($id) {
         $obj = $class->load($id)
@@ -153,6 +154,18 @@ sub save {
             =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)! )
         {
             return $app->errtrans("Invalid request.");
+        }
+
+        if (   $app->param('use_absolute')
+            && $app->param('site_path_absolute')
+            && $app->config->BaseSitePath )
+        {
+            my $l_path = $app->config->BaseSitePath;
+            my $s_path = $app->param('site_path_absolute');
+            unless ( is_within_base_sitepath( $app, $s_path ) ) {
+                return $app->errtrans(
+                    "The blog root directory must be within [_1].", $l_path );
+            }
         }
 
         unless ( $obj->id ) {
@@ -209,17 +222,9 @@ sub save {
         if ( $values{site_path} and $app->config->BaseSitePath ) {
             my $l_path = $app->config->BaseSitePath;
             my $s_path = $values{site_path};
-
-            # making sure that we have a '/' in the end of the paths
-            $l_path = File::Spec->catdir( $l_path, "PATH" );
-            $l_path =~ s/PATH$//;
-            $l_path = quotemeta($l_path);
-            $s_path = File::Spec->catdir( $s_path, "PATH" );
-            $s_path =~ s/PATH$//;
-
-            if ( $s_path !~ m/^$l_path/i ) {
+            unless ( is_within_base_sitepath( $app, $s_path ) ) {
                 return $app->errtrans(
-                    "The website root directory must be within [_1]",
+                    "The website root directory must be within [_1].",
                     $l_path );
             }
         }
@@ -305,7 +310,7 @@ sub save {
                 if ( $q->param('file_extension') || '' ) ne '';
         }
 
-        unless ( $values{site_url} =~ m!/$! ) {
+        unless ( ( $values{site_url} || '' ) =~ m!/$! ) {
             my $url = $values{site_url};
             $values{site_url} = $url;
         }
@@ -592,13 +597,16 @@ sub edit {
     my $id              = $q->param('id');
     my @types_for_event = ($type);
 
+    return $app->errtrans("Invalid request.")
+        unless $type;
+
+    my $class = $app->model($type)
+        or return $app->errtrans( "Invalid type [_1]", $type );
+
     if ( $id && $type eq 'website' ) {
         $type = 'blog';
         unshift @types_for_event, $type;
     }
-
-    return $app->errtrans("Invalid request.")
-        unless $type;
 
     # being a general-purpose method, lets look for a mode handler
     # that is specifically for editing this type. if we find it,
@@ -616,7 +624,6 @@ sub edit {
 
     my %param = eval { $_[0] ? %{ $_[0] } : (); };
     die Carp::longmess if $@;
-    my $class = $app->model($type) or return;
     my $blog_id = $q->param('blog_id');
 
     if ( defined($blog_id) && $blog_id ) {
@@ -808,6 +815,8 @@ sub edit {
         $limit =~ s/PATH$//;
         $param{'sitepath_limited_trail'} = $limit;
         $param{'sitepath_limited'}       = $cfg->BaseSitePath;
+        $param{'can_use_absolute'}       = !$cfg->BaseSitePath
+            || ( $blog && $blog->is_site_path_absolute );
     }
 
     my $res = 1;
@@ -2243,6 +2252,20 @@ sub is_disabled_mode {
         }
     }
     return $res;
+}
+
+sub is_within_base_sitepath {
+    my ( $app, $s_path ) = @_;
+    my $l_path = $app->config->BaseSitePath;
+
+    # making sure that we have a '/' in the end of the paths
+    $l_path = File::Spec->catdir( $l_path, "PATH" );
+    $l_path =~ s/PATH$//;
+    $l_path = quotemeta($l_path);
+    $s_path = File::Spec->catdir( $s_path, "PATH" );
+    $s_path =~ s/PATH$//;
+
+    return $s_path =~ m/^$l_path/i;
 }
 
 1;

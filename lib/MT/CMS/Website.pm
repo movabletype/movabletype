@@ -337,6 +337,7 @@ sub edit {
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj ) = @_;
+
     if ( !$obj->id ) {
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
@@ -351,6 +352,11 @@ sub pre_save {
             )
             unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
     }
+
+    # The last slash is added compulsorily.
+    $obj->site_url( $obj->site_url . '/' )
+        unless ( $obj->site_url =~ m/.*\/$/ );
+
     return 1;
 }
 

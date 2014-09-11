@@ -195,10 +195,6 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
 
     '_THROTTLED_COMMENT' =>
         'Too many comments have been submitted from you in a short period of time.  Please try again in a short while.',
-    '_NOTIFY_REQUIRE_CONFIRMATION' =>
-        'An email has been sent to [_1]. To complete your subscription, 
-please follow the link contained in that email. This will verify that
-the address you provided is correct and belongs to you.',
 
     '_INDEX_INTRO' =>
         '<p>If you are installing Movable Type, you may want to review the <a href="http://www.sixapart.com/movabletype/docs/mtinstall.html">installation instructions</a> and view the <a rel="nofollow" href="mt-check.cgi">Movable Type System Check</a> to make sure that your system has what it needs.</p>',

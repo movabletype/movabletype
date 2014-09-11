@@ -267,8 +267,12 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Folder::_hdlr_folder_prevnext',
             SubFolders =>
                 '$Core::MT::Template::Tags::Folder::_hdlr_sub_folders',
+            'HasNoSubFolders?' =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_has_no_sub_folders',
             ParentFolders =>
                 '$Core::MT::Template::Tags::Folder::_hdlr_parent_folders',
+            'HasNoParentFolder?' =>
+                '$Core::MT::Template::Tags::Folder::_hdlr_has_no_parent_folder',
             ParentFolder =>
                 '$Core::MT::Template::Tags::Folder::_hdlr_parent_folder',
             TopLevelFolders =>
@@ -360,13 +364,12 @@ sub core_tags {
                 \&MT::Template::Tags::System::_hdlr_comment_script,
             TrackbackScript =>
                 \&MT::Template::Tags::System::_hdlr_trackback_script,
-            SearchScript => \&MT::Template::Tags::System::_hdlr_search_script,
-            XMLRPCScript => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
-            AtomScript   => \&MT::Template::Tags::System::_hdlr_atom_script,
-            NotifyScript => \&MT::Template::Tags::System::_hdlr_notify_script,
-            CGIHost      => \&MT::Template::Tags::System::_hdlr_cgi_host,
-            CGIPath      => \&MT::Template::Tags::System::_hdlr_cgi_path,
-            AdminCGIPath =>
+            SearchScript  => \&MT::Template::Tags::System::_hdlr_search_script,
+            XMLRPCScript  => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
+            AtomScript    => \&MT::Template::Tags::System::_hdlr_atom_script,
+            CGIHost       => \&MT::Template::Tags::System::_hdlr_cgi_host,
+            CGIPath       => \&MT::Template::Tags::System::_hdlr_cgi_path,
+            AdminCGIPath  =>
                 \&MT::Template::Tags::System::_hdlr_admin_cgi_path,
             CGIRelativeURL =>
                 \&MT::Template::Tags::System::_hdlr_cgi_relative_url,
@@ -925,6 +928,10 @@ sub core_tags {
             SearchIncludeBlogs   => sub {''},
             SearchTemplateID     => sub {0},
             SearchTemplateBlogID => sub {0},
+
+            ## DataAPI
+            DataAPIScript  => \&MT::Template::Tags::System::_hdlr_dataapi_script,
+            DataAPIVersion => \&MT::Template::Tags::System::_hdlr_dataapi_version,
 
             ## Misc
             FeedbackScore =>
@@ -1505,6 +1512,7 @@ sub _hdlr_if {
     my $var = $args->{name} || $args->{var};
     my $value;
     if ( defined $var ) {
+        $ctx->{__stash}{vars}{__cond_tag__} = undef;
 
         # pick off any {...} or [...] from the name.
         my ( $index, $key );
@@ -3451,7 +3459,8 @@ sub _hdlr_app_listing {
     my ( $ctx, $args, $cond ) = @_;
 
     my $type = $args->{type} || $ctx->var('object_type');
-    my $class = MT->model($type) if $type;
+    my $class;
+    $class = MT->model($type) if $type;
     my $loop = $args->{loop} || 'object_loop';
     my $loop_obj = $ctx->var($loop);
 
@@ -5167,22 +5176,6 @@ sub _hdlr_atom_script {
 
 ###########################################################################
 
-=head2 NotifyScript
-
-Returns the value of the C<NotifyScript> configuration setting. The
-default for this setting if unassigned is "mt-add-notify.cgi".
-
-=for tags configuration
-
-=cut
-
-sub _hdlr_notify_script {
-    my ($ctx) = @_;
-    return $ctx->{config}->NotifyScript;
-}
-
-###########################################################################
-
 =head2 CGIHost
 
 Returns the domain host from the configuration directive CGIPath. If CGIPath
@@ -6034,6 +6027,41 @@ sub _hdlr_password_validation_rules {
         if grep { $_ eq 'symbol' } @constrains;
 
     return $msg;
+}
+
+###########################################################################
+
+=head2 DataAPIScript
+
+Returns the value of the C<DataAPIScript> configuration setting. The
+default for this setting if unassigned is "mt-data-api.cgi".
+
+=for tags configuration
+
+=cut
+
+sub _hdlr_dataapi_script {
+    my ($ctx) = @_;
+    return $ctx->{config}->DataAPIScript;
+}
+
+###########################################################################
+
+=head2 DataAPIVersion
+
+Returns the default version number of Data API.
+
+=for tags templating
+
+=for tags dataapi
+
+=cut
+
+sub _hdlr_dataapi_version {
+    my ($ctx) = @_;
+
+    require MT::App::DataAPI;
+    return MT::App::DataAPI::DEFAULT_VERSION();
 }
 
 1;

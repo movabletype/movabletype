@@ -30,7 +30,9 @@
         <img src="<$mt:var name="static_uri"$>images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" />
       </th>
       <th class="col head title primary"><span class="col-label"><__trans phrase="Title"></span></th>
+      <mt:unless name="is_blog">
       <th class="col head blog"><span class="col-label"><__trans phrase="Website/Blog"></span></th>
+      </mt:unless>
       <th class="col head category"><span class="col-label"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></span></th>
       <th class="col head author"><span class="col-label"><__trans phrase="Author"></span></th>
       <th class="col head datetime"><span class="col-label"><mt:if name="object_type" eq="page"><__trans phrase="Last Modified"><mt:else><__trans phrase="Created"></mt:if></span></th>
@@ -116,20 +118,38 @@
   </mt:if>
       </td>
       <td class="col datetime">
-  <mt:if name="has_publish_access">
-        <input type="text" name="created_on_<$mt:var name="id"$>" value="<$mt:var name="created_on_time_formatted"$>" />
+  <mt:if name="object_type" eq="page">
+    <mt:if name="has_publish_access">
+          <input type="text" name="modified_on_<$mt:var name="id"$>" value="<$mt:var name="modified_on_time_formatted"$>" />
+    <mt:else>
+          <span title="<$mt:var name="modified_on_time_formatted"$>">
+      <mt:if name="modified_on_relative">
+        <mt:if name="dates_relative">
+          <mt:var name="modified_on_relative">
+        <mt:else>
+          <mt:var name="modified_on_formatted">
+        </mt:if>
+      <mt:else>
+        <mt:var name="modified_on_formatted">
+      </mt:if>
+          </span>
+    </mt:if>
   <mt:else>
-        <span title="<$mt:var name="created_on_time_formatted"$>">
-    <mt:if name="created_on_relative">
-      <mt:if name="dates_relative">
-        <mt:var name="created_on_relative">
+    <mt:if name="has_publish_access">
+          <input type="text" name="created_on_<$mt:var name="id"$>" value="<$mt:var name="created_on_time_formatted"$>" />
+    <mt:else>
+          <span title="<$mt:var name="created_on_time_formatted"$>">
+      <mt:if name="created_on_relative">
+        <mt:if name="dates_relative">
+          <mt:var name="created_on_relative">
+        <mt:else>
+          <mt:var name="created_on_formatted">
+        </mt:if>
       <mt:else>
         <mt:var name="created_on_formatted">
       </mt:if>
-    <mt:else>
-      <mt:var name="created_on_formatted">
+          </span>
     </mt:if>
-        </span>
   </mt:if>
       </td>
       <td class="col view status-view">

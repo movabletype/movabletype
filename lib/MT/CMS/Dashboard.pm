@@ -334,7 +334,8 @@ sub stats_generation_handler {
 
         require MT::FileMgr;
         my $fmgr = MT::FileMgr->new('Local');
-        my $time = $fmgr->file_mod_time($path) if -f $path;
+        my $time;
+        $time = $fmgr->file_mod_time($path) if -f $path;
 
         if ( lc( MT->config('StatsCachePublishing') ) eq 'onload' ) {
             if ( !$time || ( time - $time > $cache_time ) ) {
@@ -406,9 +407,10 @@ sub create_stats_directory {
 sub mt_blog_stats_widget_entry_tab {
     my ( $app, $tmpl, $param ) = @_;
 
-    my $user    = $app->user;
-    my $blog    = $app->blog;
-    my $blog_id = $blog->id if $blog;
+    my $user = $app->user;
+    my $blog = $app->blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
 
     $param->{editable} = $user->is_superuser;
     if ( $blog && !$param->{editable} ) {
@@ -543,7 +545,8 @@ sub mt_blog_stats_tag_cloud_tab {
     my ( $app, $tmpl, $param ) = @_;
 
     my $blog = $app->blog;
-    my $blog_id = $blog->id if $blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
 
     my $terms = {};
     my $args  = {};
@@ -615,9 +618,10 @@ sub mt_blog_stats_tag_cloud_tab {
 sub mt_blog_stats_widget_comment_tab {
     my ( $app, $tmpl, $param ) = @_;
 
-    my $user    = $app->user;
-    my $blog    = $app->blog;
-    my $blog_id = $blog->id if $blog;
+    my $user = $app->user;
+    my $blog = $app->blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
 
     $param->{editable} = $user->is_superuser;
     if ( $blog && !$param->{editable} ) {
@@ -1155,7 +1159,8 @@ sub generate_site_stats_data {
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
-    my $time = $fmgr->file_mod_time($path) if -f $path;
+    my $time;
+    $time = $fmgr->file_mod_time($path) if -f $path;
 
     # Get readied provider
     require MT::App::DataAPI;
@@ -1176,7 +1181,8 @@ sub generate_site_stats_data {
         if ( $fmgr->exists($path) ) {
             my $file = $fmgr->get_data( $path, 'output' );
             $file =~ s/widget_site_stats_draw_graph\((.*)\);/$1/;
-            my $data = MT::Util::from_json($file);
+            my $data;
+            eval { $data = MT::Util::from_json($file) };
             $present_lines = $data->{reg_keys} if $data;
             MT::Request->instance->cache( 'site_stats_lines', $present_lines )
                 if $present_lines;

@@ -506,7 +506,9 @@ sub cfg_system_general {
     my @readonly_configs = qw( EmailAddressMain DebugMode PerformanceLogging
         PerformanceLoggingPath PerformanceLoggingThreshold
         UserLockoutLimit UserLockoutInterval IPLockoutLimit
-        IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo );
+        IPLockoutInterval LockoutIPWhitelist LockoutNotifyTo
+        TrackRevisions DisableNotificationPings OutboundTrackbackLimit
+        OutboundTrackbackDomains AllowPings AllowComments );
     push @readonly_configs, 'BaseSitePath' unless $cfg->HideBaseSitePath;
 
     my @config_warnings;
@@ -532,10 +534,11 @@ sub cfg_system_general {
     $param{system_performance_logging_path} = $cfg->PerformanceLoggingPath;
     $param{system_performance_logging_threshold}
         = $cfg->PerformanceLoggingThreshold;
-    $param{track_revisions} = $cfg->TrackRevisions;
-    $param{saved}           = $app->param('saved');
-    $param{error}           = $app->param('error');
-    $param{screen_class}    = "settings-screen system-general-settings";
+    $param{track_revisions}        = $cfg->TrackRevisions;
+    $param{saved}                  = $app->param('saved');
+    $param{error}                  = $app->param('error');
+    $param{warning_sitepath_limit} = $app->param('warning_sitepath_limit');
+    $param{screen_class} = "settings-screen system-general-settings";
 
     # for feedback settings
     $param{comment_disable}      = $cfg->AllowComments            ? 0 : 1;
@@ -589,7 +592,7 @@ sub cfg_system_general {
         =~ s/,/\n/g;
     $param{sitepath_limit}        = $cfg->BaseSitePath;
     $param{sitepath_limit_hidden} = $cfg->HideBaseSitePath;
-    $param{preflogging_hidden}    = $cfg->HidePaformanceLoggingSettings;
+    $param{preflogging_hidden}    = $cfg->HidePerformanceLoggingSettings;
 
     $param{saved}        = $app->param('saved');
     $param{screen_class} = "settings-screen system-feedback-settings";
@@ -604,6 +607,7 @@ sub save_cfg_system_general {
     my $cfg = $app->config;
     $app->config( 'TrackRevisions', $app->param('track_revisions') ? 1 : 0,
         1 );
+    my $args = {};
 
     # construct the message to the activity log
     my @meta_messages = ();
@@ -623,7 +627,7 @@ sub save_cfg_system_general {
             $app->param('system_debug_mode')
         )
     ) if ( $app->param('system_debug_mode') =~ /\d+/ );
-    if ( not $cfg->HidePaformanceLoggingSettings ) {
+    if ( not $cfg->HidePerformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             push( @meta_messages,
                 $app->translate('Performance logging is on') );
@@ -655,7 +659,7 @@ sub save_cfg_system_general {
         ( $app->param('system_email_address') || undef ), 1 );
     $app->config( 'DebugMode', $app->param('system_debug_mode'), 1 )
         if ( $app->param('system_debug_mode') =~ /\d+/ );
-    if ( not $cfg->HidePaformanceLoggingSettings ) {
+    if ( not $cfg->HidePerformanceLoggingSettings ) {
         if ( $app->param('system_performance_logging') ) {
             $app->config( 'PerformanceLogging', 1, 1 );
         }
@@ -682,6 +686,25 @@ sub save_cfg_system_general {
             && -d $app->param('sitepath_limit')
             )
         {
+            my $count          = 0;
+            my $sitepath_limit = $app->param('sitepath_limit');
+            foreach my $model_name (qw( website blog )) {
+                my $class = MT->model($model_name);
+                my $iter  = $class->load_iter();
+                while ( my $site = $iter->() ) {
+                    my $path = $site->column('site_path');
+                    if ((      $model_name eq 'website'
+                            || $class->is_site_path_absolute($path)
+                        )
+                        && $path !~ m!^$sitepath_limit/.*!
+                        )
+                    {
+                        $count++;
+                    }
+                }
+            }
+            $args->{warning_sitepath_limit} = 1 if $count;
+
             $app->config( 'BaseSitePath', $app->param('sitepath_limit'), 1 );
         }
         else {
@@ -694,26 +717,39 @@ sub save_cfg_system_general {
     # construct the message to the activity log
 
     if ( $app->param('comment_disable') ) {
-        push( @meta_messages, 'Allow comments is on' );
+        push( @meta_messages, $app->translate( 'Prohibit comments is on' ) );
     }
     else {
-        push( @meta_messages, 'Allow comments is off' );
+        push( @meta_messages, $app->translate( 'Prohibit comments is off' ) );
     }
     if ( $app->param('ping_disable') ) {
-        push( @meta_messages, 'Allow trackbacks is on' );
+        push( @meta_messages, $app->translate( 'Prohibit trackbacks is on' ) );
     }
     else {
-        push( @meta_messages, 'Allow trackbacks is off' );
+        push( @meta_messages, $app->translate( 'Prohibit trackbacks is off' ) );
     }
     if ( $app->param('disable_notify_ping') ) {
-        push( @meta_messages, 'Allow outbound trackbacks is on' );
+        push( @meta_messages, $app->translate( 'Prohibit notification pings is on' ) );
     }
     else {
-        push( @meta_messages, 'Allow outbound trackbacks is off' );
+        push( @meta_messages, $app->translate( 'Prohibit notification pings is off' ) );
     }
-    push( @meta_messages,
-        'Outbound trackback limit is ' . $app->param('trackback_send') )
-        if ( $app->param('trackback_send') =~ /\w+/ );
+    if ( $app->param('trackback_send') eq 'any' ) {
+        push( @meta_messages,
+              $app->translate( 'Outbound trackback limit is [_1]', $app->translate('Any site') ) )
+    }
+    elsif ( $app->param('trackback_send') eq 'off' ) {
+        push( @meta_messages,
+              $app->translate( 'Outbound trackback limit is [_1]', $app->translate('Disabled') ) )
+    }
+    elsif ( $app->param('trackback_send') eq 'local' ) {
+        push( @meta_messages,
+              $app->translate( 'Outbound trackback limit is [_1]', $app->translate('Only to blogs within this system') ) )
+    }
+    elsif ( $app->param('trackback_send') eq 'selected' ) {
+        push( @meta_messages,
+              $app->translate( 'Outbound trackback limit is [_1]', $app->translate('Only to websites on the following domains:' . $app->param('config_warnings_outboundtrackbackdomains') ) ) )
+    }
 
     # for lockout settings
     foreach my $hash (
@@ -802,10 +838,11 @@ sub save_cfg_system_general {
         }
     }
     $cfg->save_config();
+    $args->{saved} = 1;
     $app->redirect(
         $app->uri(
             'mode' => 'cfg_system_general',
-            args   => { saved => 1 }
+            args   => $args,
         ),
         UseMeta => $ENV{FAST_CGI},
     );
@@ -1642,7 +1679,7 @@ sub restore_premature_cancel {
         $param->{error}
             = $message . '  '
             . $app->translate(
-            "Detailed information is in the <a href='javascript:void(0)' onclick='closeDialog(\"[_1]\")'>activity log</a>.",
+            "Detailed information is in the activity log.",
             $log_url
             );
     }
@@ -1701,11 +1738,14 @@ sub adjust_sitepath {
     my $asset_class = $app->model('asset');
     my %error_assets;
     my %blogs_meta;
-    my $path_limit = $app->config->BaseSitePath;
-    $path_limit = File::Spec->catdir( $path_limit, "PATH" );
-    $path_limit =~ s/PATH$//;
-    my $path_limit_quote = quotemeta($path_limit);
-    my @p                = $q->param;
+    my $path_limit;
+    my $path_limit_quote;
+    if ( $path_limit = $app->config->BaseSitePath ) {
+        $path_limit = File::Spec->catdir( $path_limit, "PATH" );
+        $path_limit =~ s/PATH$//;
+        $path_limit_quote = quotemeta($path_limit);
+    }
+    my @p = $q->param;
     foreach my $p (@p) {
         next unless $p =~ /^site_path_(\d+)/;
         my $id   = $1;
@@ -1823,6 +1863,101 @@ sub adjust_sitepath {
         $blog->save
             or $app->print_encode( $app->translate("failed") . "\n" ), next;
         $app->print_encode( $app->translate("ok") . "\n" );
+
+        ## Change FileInfo
+        my $fileinfo_class = $app->model('fileinfo');
+        my @fileinfo = $fileinfo_class->load( { blog_id => $id } );
+
+        my $delim = $^O eq 'MSWin32' ? '\\' : '/';
+
+        foreach my $fi (@fileinfo) {
+
+            ### Change fileinfo_file_path
+
+            # Use adequate path according to archive type.
+            my ( $old_path, $path );
+            if ( $fi->archive_type eq 'index' || $fi->archive_type eq 'Page' )
+            {
+                $old_path = $old_site_path;
+                $path     = $blog->site_path;
+            }
+            else {
+                $old_path
+                    = $old_archive_path ? $old_archive_path : $old_site_path;
+                $path = $blog->archive_path;
+            }
+
+            my $old_delim        = $fi->file_path =~ m/^\// ? '/' : '\\';
+            my $quoted_old_delim = quotemeta $old_delim;
+            my $quoted_old_path  = quotemeta $old_path;
+
+            # Remove site/archive path part in fileinfo_file_path.
+            my $file_path = $fi->file_path;
+            if ( $blog->is_blog ) {
+                $file_path =~ s/^.*$quoted_old_path(.*)$/$1/;
+                $file_path =~ s/$quoted_old_delim$//;
+            }
+            else {
+                $file_path =~ s/^$quoted_old_path//;
+            }
+
+            # Replace delimiters if needing.
+            $file_path =~ s/^$quoted_old_delim//;
+            if ( $old_delim ne $delim ) {
+                $file_path =~ s/$quoted_old_delim/$delim/g;
+            }
+
+            $fi->file_path( File::Spec->catfile( $path, $file_path ) );
+
+            $app->print_encode(
+                $app->translate(
+                    "Changing file path for the FileInfo record (ID:[_1])...",
+                    $fi->id
+                )
+            );
+
+            ## Change fileinfo_url
+            my ( $old_rel_url, $rel_url );
+            if ( $blog->is_blog ) {
+
+                # Add slash to the head and the end of rel_url if needing.
+                $old_rel_url = $old_site_path;
+                $old_rel_url = '/' . $old_rel_url
+                    unless $old_rel_url =~ m/^\//;
+                $old_rel_url = $old_rel_url . '/'
+                    unless $old_rel_url =~ m/\/$/;
+
+                $rel_url = $site_url_path;
+                $rel_url = '/' . $rel_url unless $rel_url =~ m/^\//;
+                $rel_url = $rel_url . '/' unless $rel_url =~ m/\/$/;
+            }
+            else {
+                # Leave directory only.
+                ($old_rel_url)
+                    = ( $old_site_url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)| );
+                ($rel_url) = ( $site_url =~ m|^(?:[^:]*\:\/\/)?[^/]*(.*)| );
+            }
+
+            my $url                = $fi->url;
+            my $quoted_old_rel_url = quotemeta $old_rel_url;
+
+            # Replace old rel_url with new one.
+            $url =~ s!$quoted_old_rel_url!$rel_url!;
+
+            $fi->url($url);
+
+            $app->print_encode(
+                "\n"
+                    . $app->translate(
+                    "Changing URL for the FileInfo (ID:[_1])...", $fi->id
+                    )
+            );
+
+            $fi->save
+                or $app->print_encode( $app->translate("failed") . "\n" ),
+                next;
+            $app->print_encode( $app->translate("ok") . "\n" );
+        }
 
         $blogs_meta{$id} = {
             'old_archive_path' => $old_archive_path,
@@ -2044,8 +2179,9 @@ sub dialog_restore_upload {
 
     my $objects  = {};
     my $deferred = {};
+    my $objects_json;
     require JSON;
-    my $objects_json = $q->param('objects_json') if $q->param('objects_json');
+    $objects_json = $q->param('objects_json') if $q->param('objects_json');
     $deferred = JSON::from_json( $q->param('deferred_json') )
         if $q->param('deferred_json');
 
@@ -2592,7 +2728,7 @@ sub restore_file {
             = $app->uri( mode => 'list', args => { '_type' => 'log' } );
         $$errormsg .= '; ' if $$errormsg;
         $$errormsg .= $app->translate(
-            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.',
+            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.',
             $log_url
         );
         return $blogs;
@@ -2685,7 +2821,7 @@ sub restore_directory {
         my $log_url
             = $app->uri( mode => 'list', args => { '_type' => 'log' } );
         $$error = $app->translate(
-            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.',
+            'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.',
             $log_url
         );
         return ( $blogs, $assets );

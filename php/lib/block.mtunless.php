@@ -19,7 +19,8 @@ function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
             unset($largs['tag']);
             $val = $ctx->tag($tag, $largs);
         }
-        if (preg_match('/^smarty_fun_[a-f0-9]+$/', $val)) {
+        if (!is_array($val)
+          && preg_match('/^smarty_fun_[a-f0-9]+$/', $val)) {
             if (function_exists($val)) {
                 ob_start();
                 $val($ctx, array());

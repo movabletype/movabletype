@@ -16,7 +16,7 @@ sub sanity_check {
     my $q     = $app->param;
     my $id    = $q->param('id');
 
-    if ( $q->param('pass') ne $q->param('pass_verify') ) {
+    if ( ( $q->param('pass') || '' ) ne ( $q->param('pass_verify') || '' ) ) {
         return $app->translate('Passwords do not match.');
     }
     if ( length( scalar $q->param('pass') )

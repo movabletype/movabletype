@@ -302,9 +302,22 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             this.source.insertContent(value);
         }
         else {
+            var selection = this.editor.selection,
+                node, originalIsCollapsed;
+
             this.editor.focus();
             this.editor.execCommand('mtRestoreBookmark');
-            this.editor.execCommand('mceInsertContent', false, value);
+
+            node = selection.getNode();
+            if (node && node.nodeName === 'IMG') {
+                originalIsCollapsed = selection.isCollapsed;
+                selection.isCollapsed = function(){ return true; };
+                this.editor.execCommand('mceInsertContent', false, value);
+                selection.isCollapsed = originalIsCollapsed;
+            }
+            else {
+                this.editor.execCommand('mceInsertContent', false, value);
+            }
         }
     },
 
@@ -319,8 +332,8 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
     getHeight: function() {
         return (this.editor === this.source) ?
-            this.$editorTextarea.outerHeight() :
-            this.$editorIframe.outerHeight();
+            this.$editorTextarea.height() :
+            this.$editorIframe.innerHeight();
     },
 
     setHeight: function(height) {

@@ -181,7 +181,7 @@ use vars qw( @ISA %Lexicon );
 	'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.' => 'IPC::Runのインストールは必須ではありません。MTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
 	'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.' => 'Storableは必須ではありません。外部プラグインの利用の際に必要となる場合があります。',
 	'Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSAのインストールは必須ではありません。インストールされていると、コメント投稿時のサインインが高速になります。',
-	'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support.' => 'Crypt::SSLeayはAOLやYahoo!などのSSLを利用するOpenIDのコメント投稿者を認証するために必要となります。',
+	'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for site statistics of Google Analytics.' => 'Crypt::SSLeayはAOLやYahoo!などのSSLを利用するOpenIDのコメント投稿者を認証する場合、または Google Analytics を利用するために必要となります。',
 	'Cache::File is required if you would like to be able to allow commenters to authenticate via OpenID using Yahoo! Japan.' => 'Cache::Fileのインストールは必須ではありません。Yahoo! Japanによるコメント投稿者のOpenID認証を許可する場合に必要となります。',
 	'MIME::Base64 is required in order to enable comment registration and in order to send mail via an SMTP Server.' => 'MIME::Base64のインストールは必須ではありません。コメントの認証機能を利用する場合やメール送信にSMTPを利用する場合に必要となります。',
 	'XML::Atom is required in order to use the Atom API.' => 'XML::Atomのインストールは必須ではありません。Atom APIを利用する場合に必要となります。',
@@ -196,12 +196,15 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' => 'Authen::SASLとその依存モジュールはCRAM-MD5、DIGEST-MD5又はLOGINをSASLメカニズムとして利用する場合に必要となります。',
 	'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.' => 'Net::SMTP::SSLはSMTP認証にSSLを利用する場合に必要となります。',
 	'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.' => 'Net::SMTP::TLSはSMTP認証にSTARTTLSコマンドを利用する場合に必要となります。',
-	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'IO::Socket::SSLはSMTP認証にSSLまたは、STARTTLSコマンドを利用する場合に必要となります。',
+	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for site statistics of Google Analytics.' => 'IO::Socket::SSLはSMTP認証にSSLまたは、STARTTLSコマンドを利用する場合、または Google Analytics を利用する場合に必要となります。',
 	'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'Net::SSLeayはSMTP認証にSSLまたは、STARTTLSコマンドを利用する場合に必要となります。',
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'MT:Ifタグの機能で使われます。',
 	'This module is used by the Markdown text filter.' => 'Markdown形式を利用するために必要です。',
 	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Perl 5.8以下の環境で、mt-search.cgiを利用するときに必要です。',
 	'This module required for action streams.' => 'アクションストリームを利用するために必要です。',
+	'[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation' => '[_1]のインストールは必須ではありません。バックアップデータの復元に必要となります。',
+	'This module is required for site statistics of Google Analytics.' => 'このモジュールは、Google Analytics を利用する場合に必要になります。',
+	'This module is required for executing run-periodic-tasks.' => 'このモジュールは、run-periodic-tasks を実行するために必要です。',
 	'The [_1] database driver is required to use [_2].' => '[_2]を使うには[_1]のデータベースドライバが必要です。',
 	'DBI is required to store data in database.' => 'DBIはデータベースにアクセスするために必要です。',
 	'Checking for' => '確認中',
@@ -531,10 +534,6 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '[_3] - <a href="[_1]">[_2]</a> (<a href="[_4]">[_5]</a>)',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">続きを読む</a>',
 
-## default_templates/verify-subscribe.mtml
-	'Thank you for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:' => '[_1]のアップデート通知にご登録いただきありがとうございました。以下のリンクから登録を完了させてください。',
-	'If the link is not clickable, just copy and paste it into your browser.' => 'リンクをクリックできない場合は、お使いのウェブブラウザに貼り付けてください。',
-
 ## lib/MT.pm
 	'Powered by [_1]' => 'Powered by [_1]',
 	'Version [_1]' => 'バージョン [_1]',
@@ -808,16 +807,6 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'コメント投稿者のユーザー情報を更新しました。',
 	'Commenter profile could not be updated: [_1]' => 'コメント投稿者のユーザー情報を更新できませんでした: [_1]',
 
-## lib/MT/App/NotifyList.pm
-	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
-	'Missing required parameter: blog_id. Please consult the user manual to configure notifications.' => 'blog_idパラメータを指定してください。詳細はユーザーガイドを参照してください。',
-	'An invalid redirect parameter was provided. The weblog owner needs to specify a path that matches with the domain of the weblog.' => 'redirectパラメータが不正です。ブログのドメインと一致するパスを指定するように管理者に通知してください。',
-	'The email address \'[_1]\' is already in the notification list for this weblog.' => 'メールアドレス([_1])はすでに登録されています。',
-	'Please verify your email to subscribe' => '登録するメールアドレスを確認してください。',
-	'_NOTIFY_REQUIRE_CONFIRMATION' => '[_1]にメールを送信しました。メールアドレスを認証するため、メールの内容に従って登録を完了してください。',
-	'The address [_1] was not subscribed.' => '[_1]は登録されていません。',
-	'The address [_1] has been unsubscribed.' => '[_1]の登録を解除しました。',
-
 ## lib/MT/App/Search.pm
 	'Invalid type: [_1]' => '不正なtypeです: [_1]',
 	'Failed to cache search results.  [_1] is not available: [_2]' => '結果をキャッシュできませんでした。[_1]を利用できません: [_2]',
@@ -877,18 +866,6 @@ use vars qw( @ISA %Lexicon );
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => '権限がありません。Movable Typeのアップグレードを管理者に依頼してください。',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Typeをバージョン[_1]にアップグレードしました。',
 
-## lib/MT/App/Viewer.pm
-	'Loading blog with ID [_1] failed' => 'ブログ (ID：[_1]) の読み込みに失敗しました',
-	'File not found' => 'ファイルが見つかりません',
-	'Template publishing failed: [_1]' => 'テンプレートの出力に失敗しました: [_1]',
-	'Unknown archive type: [_1]' => 'アーカイブタイプが不明です: [_1]',
-	'Cannot load template [_1]' => 'テンプレートを読み込めませんでした [_1]',
-	'Archive publishing failed: [_1]' => 'アーカイブの公開に失敗しました: [_1]',
-	'Invalid entry ID [_1].' => 'エントリーIDが不正です: [_1]',
-	'Entry [_1] was not published.' => '記事 [_1] は公開されていません',
-	'Invalid category ID \'[_1]\'' => 'カテゴリのIDが不正です: [_1]',
-	'Invalid author ID \'[_1]\'' => 'ユーザーIDが不正です: [_1]',
-
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => '[_2]を使うには[_1]のドライバが必要です。',
 	'An error occurred while trying to connect to the database.  Check the settings and try again.' => 'データベースに接続できませんでした。設定を見直してもう一度接続してください。',
@@ -915,6 +892,9 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required in order to restore from a backup.' => '復元の機能を利用する場合に必要となります。',
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'LiveJournal、あるいはOpenIDでコメント投稿者を認証するために必要になります。',
 	'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Perl 5.8以下の環境で、mt-search.cgiを利用するときに必要です。',
+	'XML::SAX::ExpatXS is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.' => 'XML::SAX::ExpatXSのインストールは必須ではありません。バックアップデータの復元に必要となります。',
+	'XML::SAX::Expat is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.' => 'XML::SAX::Expatのインストールは必須ではありません。バックアップデータの復元に必要となります。',
+	'XML::LibXML::SAX is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.' => 'XML::LibXML::SAXのインストールは必須ではありません。バックアップデータの復元に必要となります。',
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'ファイルのアップロードを行うために必要です。各種のファイル形式に対応して画像のサイズを取得します。',
 	'This module is required for cookie authentication.' => 'cookie 認証のために必要です。',
 
@@ -1013,6 +993,7 @@ use vars qw( @ISA %Lexicon );
 	'Could not remove asset file [_1] from the filesystem: [_2]' => 'アイテムのファイル[_1]をファイルシステム上から削除できませんでした: [_2]',
 	'Description' => '説明',
 	'Location' => '場所',
+	'Could not create asset cache path: [_1]' => 'キャッシュ用のディレクトリ \'[_1]\' を作成できませんでした。',
 	'Label' => '名前',
 	'Type' => '種類',
 	'Filename' => 'ファイル名',
@@ -1230,6 +1211,7 @@ use vars qw( @ISA %Lexicon );
 	'(user deleted)' => '(削除されました)',
 	'Files' => 'ファイル',
 	'Extension changed from [_1] to [_2]' => '拡張子が[_1]から[_2]に変更されました',
+	'Failed to create thumbnail file because [_1] could not handle this image type.' => 'サムネイルの作成ができませんでした。[_1]がサポートしていない画像形式です。',
 	'Upload File' => 'ファイルアップロード',
 	'Cannot load file #[_1].' => 'ID:[_1]のファイルをロードできません。',
 	'No permissions' => '権限がありません。',
@@ -1341,10 +1323,11 @@ use vars qw( @ISA %Lexicon );
 	'Orphaned comment' => '記事のないコメント',
 
 ## lib/MT/CMS/Common.pm
-	'The Template Name and Output File fields are required.' => 'テンプレートの名前と出力ファイル名は必須です。',
 	'Invalid type [_1]' => 'type [_1]は不正です。',
+	'The Template Name and Output File fields are required.' => 'テンプレートの名前と出力ファイル名は必須です。',
 	'Invalid ID [_1]' => 'ID [_1]は不正です。',
-	'The website root directory must be within [_1]' => 'ウェブサイトパスは、[_1]以下のディレクトリを指定してください',
+	'The blog root directory must be within [_1].' => 'ブログパスは、[_1]以下のディレクトリを指定してください。',
+	'The website root directory must be within [_1].' => 'ウェブサイトパスは、[_1]以下のディレクトリを指定してください。',
 	'Save failed: [_1]' => '保存できませんでした: [_1]',
 	'Saving object failed: [_1]' => 'オブジェクトを保存できませんでした: [_1]',
 	'\'[_1]\' edited the template \'[_2]\' in the blog \'[_3]\'' => '[_1]がブログ([_3])のテンプレート([_2])を編集しました',
@@ -1375,7 +1358,6 @@ use vars qw( @ISA %Lexicon );
 	'*User deleted*' => '*削除されました*',
 	'New Entry' => '記事を作成',
 	'New Page' => 'ページを作成',
-	'pages' => 'ウェブページ',
 	'Category' => 'カテゴリ',
 	'Tag' => 'タグ',
 	'Entry Status' => '公開状態',
@@ -1527,7 +1509,7 @@ use vars qw( @ISA %Lexicon );
 	'Error creating new template: ' => 'テンプレートの作成エラー:',
 	'Template Referesh' => 'テンプレート初期化',
 	'Skipping template \'[_1]\' since it appears to be a custom template.' => 'カスタムテンプレートと思われるため、\'[_1]\'をスキップします。',
-	'Refreshing template <strong>[_3]</strong> with <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>' => '「[_3]」を初期化します(<a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">バックアップ</a>)。',
+	'Refreshing template <strong>[_3]</strong> after making <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>.' => '「[_3]」を初期化します(<a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">バックアップ</a>)。',
 	'Skipping template \'[_1]\' since it has not been changed.' => '[_1]は変更されていないのでスキップします。',
 	'Copy of [_1]' => '[_1]のコピー',
 	'Cannot publish a global template.' => 'グローバルテンプレートの公開ができません。',
@@ -1565,6 +1547,7 @@ use vars qw( @ISA %Lexicon );
 	'Passwords do not match' => 'パスワードが一致していません。',
 	'That action ([_1]) is apparently not implemented!' => 'アクション([_1])が実装されていません。',
 	'Error occurred while attempting to [_1]: [_2]' => '[_1]の実行中にエラーが発生しました: [_2]',
+	'Please enter a valid email address.' => '正しいメールアドレスを入力してください。',
 	'You do not have a system email address configured.  Please set this first, save it, then try the test email again.' => 'システムメールアドレスの設定がされていません。最初に設定を保存してから、再度テストメール送信を行ってください。',
 	'Test email from Movable Type' => 'Movable Typeからのテストメール',
 	'This is the test email sent by Movable Type.' => 'このメールはMovable Typeから送信されたテストメールです。',
@@ -1578,6 +1561,15 @@ use vars qw( @ISA %Lexicon );
 	'Performance log path is [_1]' => 'パフォーマンスログのパスは[_1]です',
 	'Performance log threshold is [_1]' => 'パフォーマンスログの閾値は[_1]です',
 	'Invalid SitePath.  The SitePath should be valid and absolute, not relative' => 'サイトパス制限には正しい絶対パスを指定してください。',
+	'Prohibit comments is on' => 'コメントは無効です',
+	'Prohibit comments is off' => 'コメントは有効です', 
+	'Prohibit trackbacks is on' => 'トラックバックは無効です',
+	'Prohibit trackbacks is off' => 'トラックバックは有効です',
+	'Prohibit notification pings is on' => '更新pingは無効です',
+	'Prohibit notification pings is off' => '更新pingは有効です',
+	'Outbound trackback limit is [_1]' => '外部トラックバック送信は [_1] に制限されます',
+	'Any site' => '任意のサイト',
+	'Only to blogs within this system' => 'ブログのみ',
 	'[_1] is [_2]' => '[_1]が[_2]',
 	'none' => 'なし',
 	'System Settings Changes Took Place' => 'システム設定が変更されました',
@@ -1595,12 +1587,14 @@ use vars qw( @ISA %Lexicon );
 	'Please use xml, tar.gz, zip, or manifest as a file extension.' => '拡張子がxml、tar.gz、zip、manifestのいずれかのファイルをアップロードしてください。',
 	'Unknown file format' => 'ファイル形式が不明です。',
 	'Some objects were not restored because their parent objects were not restored.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。',
-	'Detailed information is in the <a href=\'javascript:void(0)\' onclick=\'closeDialog(\"[_1]\")\'>activity log</a>.' => '詳細は<a href=\'javascript:void(0)\' onclick=\'closeDialog(\"[_1]\")\'>ログ</a>を参照してください。',
+	'Detailed information is in the activity log.' => '詳細はログを参照してください。',
 	'[_1] has canceled the multiple files restore operation prematurely.' => '[_1]が復元を途中で強制終了しました。',
 	'Changing Site Path for the blog \'[_1]\' (ID:[_2])...' => '\'[_1]\'(ID:[_2])のサイトパスを変更しています...',
 	'Removing Site Path for the blog \'[_1]\' (ID:[_2])...' => '\'[_1]\'(ID:[_2])のサイトパスを消去しています...',
 	'Changing Archive Path for the blog \'[_1]\' (ID:[_2])...' => '\'[_1]\'(ID:[_2])のアーカイブパスを変更しています...',
 	'Removing Archive Path for the blog \'[_1]\' (ID:[_2])...' => '\'[_1]\'(ID:[_2])のアーカイブパスを消去しています...',
+	'Changing file path for the FileInfo record (ID:[_1])...' => 'ファイル情報レコード(ID:[_1])のパスを変更しています...',
+	'Changing URL for the FileInfo (ID:[_1])...' => 'ファイル情報レコード(ID:[_1])のURLを変更しています...',
 	'Changing file path for the asset \'[_1]\' (ID:[_2])...' => 'アイテム\'[_1]\'(ID:[_2])のパスを変更しています...',
 	'Could not remove backup file [_1] from the filesystem: [_2]' => 'バックアップファイル(\'[_1]\')をファイルシステムから削除できませんでした: [_2]',
 	'Some of the backup files could not be removed.' => '削除できなかったバックアップファイルがあります。',
@@ -1617,7 +1611,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid attempt to recover password (used hint \'[_1]\')' => 'パスワードの再設定に失敗しました(フレーズ: [_1])。',
 	'User \'[_1]\' (user #[_2]) does not have email address' => 'ユーザー\'[_1]\'(ID:[_2])はメールアドレスがありません',
 	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'パスワード再設定用のリンクがユーザー\'[_1]\'(ID:[_2])のメールアドレス([_3])あてに通知されました。',
-	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。詳細は<a href="javascript:void(0)" onclick="closeDialog(\'[_1]\')">ログ</a>を参照してください。',
+	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。詳細はログを参照してください。',
 	'[_1] is not a directory.' => '[_1]はディレクトリではありません。',
 	'Error occured during restore process.' => '復元中にエラーがありました。',
 	'Some of files could not be restored.' => '復元できなかったファイルがあります。',
@@ -1908,7 +1902,6 @@ use vars qw( @ISA %Lexicon );
 	'New Comment' => '新しいコメント',
 	'New Ping' => '新しいトラックバック',
 	'Entry Notify' => '記事の共有',
-	'Subscribe Verify' => '購読の確認',
 	'User Lockout' => 'ユーザーアカウントのロック通知',
 	'IP Address Lockout' => 'IPアドレスのロック通知',
 
@@ -2084,6 +2077,7 @@ use vars qw( @ISA %Lexicon );
 	'theme' => 'テーマ',
 	'folder' => 'フォルダ',
 	'plugin' => 'プラグイン',
+	'page' => 'ウェブページ',
 	'Message' => 'ログ',
 	'By' => 'ユーザー',
 	'Class' => '分類',
@@ -2298,6 +2292,7 @@ use vars qw( @ISA %Lexicon );
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score"を指定するときはnamespaceも指定しなければなりません。',
 	'No such user \'[_1]\'' => 'ユーザー([_1])が見つかりません。',
 	'You have an error in your \'[_2]\' attribute: [_1]' => '[_2]属性でエラーがありました: [_1]',
+	'[_1] must be a number.' => '[_1]には数値を指定してください。',
 
 ## lib/MT/Template/Tags/Author.pm
 	'The \'[_2]\' attribute will only accept an integer: [_1]' => '[_2]属性は整数以外は無効です。',
@@ -2538,6 +2533,7 @@ use vars qw( @ISA %Lexicon );
 	'Removing widget from dashboard...' => 'ダッシュボードからウィジェットを削除しています...',
 	'Ordering Categories and Folders of Blogs...' => 'ブログのカテゴリとフォルダの順番を設定しています...',
 	'Ordering Folders of Websites...' => 'ウェブサイトのフォルダの順番を設定しています...',
+	'Setting the \'created by\' ID for any user for whom this field is not defined...' => '作成者の情報をユーザーに付与しています...',
 	'Assigning a language to each blog to help choose appropriate display format for dates...' => 'ブログに日付の言語を設定しています...',
 	'Adding notification dashboard widget...' => '通知ウィジェットをダッシュボードに追加しています...',
 
@@ -2979,7 +2975,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/pico/templates/about_this_page.mtml
 
 ## themes/pico/templates/archive_index.mtml
-	'Navigation' => 'ナビゲーション',
 	'Related Content' => '関連コンテンツ',
 
 ## themes/pico/templates/archive_widgets_group.mtml
@@ -3018,7 +3013,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/pico/templates/dynamic_error.mtml
 
 ## themes/pico/templates/entry.mtml
-	'Home' => 'ホーム',
 
 ## themes/pico/templates/entry_summary.mtml
 
@@ -3126,7 +3120,6 @@ use vars qw( @ISA %Lexicon );
 	'Upload New Asset' => '新規アイテムのアップロード',
 
 ## tmpl/cms/asset_upload.tmpl
-	'Upload Destination' => 'アップロード先',
 	'Upload Asset' => 'アイテムのアップロード',
 
 ## tmpl/cms/backup.tmpl
@@ -3197,6 +3190,7 @@ use vars qw( @ISA %Lexicon );
 	'Entry Fields' => '記事フィールド',
 	'_USAGE_ENTRYPREFS' => '記事の編集画面で表示する項目のセットを選択してください。',
 	'Page Fields' => 'ページフィールド',
+	'The range for Basename Length is 15 to 250.' => 'ファイル名の文字数は、15から250の範囲で設定してください。',
 	'WYSIWYG Editor Setting' => 'WYSIWYGエディタの設定',
 	'Content CSS' => 'コンテンツCSSファイル',
 	'Content CSS will be applied when WYSIWYG editor does support. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'WYSIWYGエディタ内で利用するCSSファイルのURL又は、{{theme_static}}変数を利用したURLを指定する事ができます。WYSIWYGエディタが対応していない場合は適用されません。例: {{theme_static}}path/to/cssfile.css',
@@ -3422,6 +3416,7 @@ use vars qw( @ISA %Lexicon );
 	'You must set your Local file Path.' => 'ファイルパスを指定する必要があります。',
 	'You must set a valid Local file Path.' => '有効なファイルパスを指定してください。',
 	'Website root must be under [_1]' => 'ウェブサイトパスは [_1] 以下を指定してください。',
+	'Blog root must be under [_1]' => 'ブログパスは [_1] 以下を指定してください。',
 	'You must set a valid Archive URL.' => '有効なアーカイブURLを指定してください。',
 	'You must set your Local Archive Path.' => 'アーカイブパスを指定する必要があります。',
 	'You must set a valid Local Archive Path.' => '有効なアーカイブパスを指定してください。',
@@ -3446,6 +3441,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/cfg_system_general.tmpl
 	'Your settings have been saved.' => '設定を保存しました。',
 	'A test mail was sent.' => 'テストメールを送信しました。',
+	'One or more of your websites or blogs are not following the base site path (value of basesitepath) restriction.' => '1つ以上のウェブサイトまたは、ブログがウェブサイトパスの規定値の制限に違反しています。',
 	'(None selected)' => '(選択されていません)',
 	'System Email Address' => 'システムメールアドレス',
 	'Send Test Mail' => 'テストメールの送信',
@@ -3476,9 +3472,7 @@ use vars qw( @ISA %Lexicon );
 	'Disable notification pings for all websites and blogs.' => 'ping通知を無効にする',
 	'Send Outbound TrackBacks to' => '外部トラックバック送信',
 	'Do not send outbound TrackBacks or use TrackBack auto-discovery if your installation is intended to be private.' => 'プライベートに設定する場合は、トラックバックを送信したりトラックバックの自動発見機能は利用しないようにしましょう。',
-	'Any site' => '任意のサイト',
 	'(No Outbound TrackBacks)' => '(すべてのトラックバック送信を無効にする)',
-	'Only to blogs within this system' => 'ブログのみ',
 	'Only to websites on the following domains:' => '次のドメインに属するウェブサイト:',
 	'Lockout Settings' => 'アカウントロックの設定',
 	q{The system administrators whom you wish to notify if a user or an IP address is locked out.  If no administrators are selected, notifications will be sent to the 'System Email' address.} => q{通知メールを受信するシステム管理者を設定できます。受信者の設定がされていない場合は、'システムのメールアドレス'宛に通知されます。},
@@ -3625,7 +3619,6 @@ use vars qw( @ISA %Lexicon );
 	'Confirm' => '確認',
 
 ## tmpl/cms/dialog/comment_reply.tmpl
-	'Reply to comment' => 'コメント返信',
 	'On [_1], [_2] commented on [_3]' => '[_2]から[_3]へのコメント([_1])',
 	'Your reply:' => '返信',
 	'Submit reply (s)' => '返信を投稿 (s)',
@@ -4249,7 +4242,8 @@ use vars qw( @ISA %Lexicon );
 	'Asset Missing' => 'アイテムなし',
 	'No thumbnail image' => 'サムネイル画像がありません。',
 
-## tmpl/cms/include/asset_upload.tmplwo	'Upload Destination' => 'アップロード先',
+## tmpl/cms/include/asset_upload.tmpl
+	'Upload Destination' => 'アップロード先',
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]公開パスの設定[_3]をして、[_1]を再構築してください。},
 	'Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator.' => 'ファイルアップロードができるように、システム、または[_1]管理者が[_1]を再構築する必要があります。システム、または[_1]管理者に連絡してください。',
 	q{Cannot write to '[_1]'. Image upload is possible, but thumbnail is not created.} => q{ファイルのアップロードは可能ですが、'[_1]'への書き込みが行えないため、画像ファイルのサムネイルを作成する事ができません。},
@@ -4639,9 +4633,8 @@ use vars qw( @ISA %Lexicon );
 	'Theme Information' => 'テーマ情報',
 	'No themes are installed.' => 'テーマがインストールされていません。',
 	'Current Theme' => '現在のテーマ',
+	'Themes in Use' => '利用しているテーマ',
 	'Available Themes' => '利用可能なテーマ',
-	'Themes in used' => '利用しているテーマ',
-	'Installed Themes' => 'インストールされているテーマ',
 
 ## tmpl/cms/list_widget.tmpl
 	'Manage [_1] Widgets' => '[_1]ウィジェットの管理',
@@ -4672,7 +4665,7 @@ use vars qw( @ISA %Lexicon );
 	q{You have successfully synchronized users' information with the external directory.} => q{外部のディレクトリとユーザーの情報を同期しました。},
 	'Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory.' => '選択されたユーザーのうち[_1]人は外部ディレクトリ上に存在しないので有効にできませんでした。',
 	q{Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='[_2]'>activity log</a> for more details.} => q{選択されたユーザーのうち[_1]人を有効にできませんでした。エラーの詳細を<a href='[_2]'>ログ</a>で確認してください。},
-	q{An error occured during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information.} => q{同期中にエラーが発生しました。エラーの詳細を<a href='[_1]'>ログ</a>で確認して>ください。},
+	q{An error occurred during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information.} => q{同期中にエラーが発生しました。エラーの詳細を<a href='[_1]'>ログ</a>で確認してください。},
 
 ## tmpl/cms/listing/banlist_list_header.tmpl
 	'You have added [_1] to your list of banned IP addresses.' => '禁止IPリストに[_1]を追加しました。',
@@ -5244,6 +5237,21 @@ use vars qw( @ISA %Lexicon );
 	'A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type.' => '構成ファイル(mt-config.cgi)はすでに存在します。Movable Typeに<a href="[_1]">サインイン</a>してください。',
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 
+## addons/AWS.pack/config.yaml
+	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
+
+## addons/AWS.pack/lib/AWS/App/Upgrade.pm
+	'Invalid instance ID.' => 'インスタンスIDが無効です。',
+
+## addons/AWS.pack/lib/AWS/Util.pm
+	'Cannot verify instance ID.' => 'インスタンスIDの検証ができませんでした。',
+
+## addons/AWS.pack/tmpl/start.tmpl
+	'Welcome to Movable Type for AWS' => 'Movable Type for AWSへようこそ',
+	'Please enter ID of this EC2 instance to begin installation process.' => 'インストールを開始するために、このEC2インスタンスのIDを入力してください。',
+	'Instance ID' => 'インスタンスID',
+	'The instance ID is required.' => 'インスタンスIDは必須です。',
+
 ## addons/Cloud.pack/config.yaml
 	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
 	'Cloud Services' => 'クラウドサービス',
@@ -5252,8 +5260,15 @@ use vars qw( @ISA %Lexicon );
 	'FTPS Password' => 'FTPSパスワードリセット',
 	'Full Restore' => '環境のリストア',
 	'SSL Certifications' => 'サーバー証明書',
+	'IP Restriction' => 'アクセス制限',
 	'Config Directives' => 'MT環境変数',
 	'Disk Usage' => 'ディスクの使用量',
+	'Auto Update' => '自動アップデート',
+
+## addons/Cloud.pack/lib/Cloud/App.pm
+	'Your Movable Type will be automatically updated on [_1].' => 'ご利用中の Movable Type は、[_1] にアップデートが自動的に行われます。',
+	'New version of Movable Type has been released on [_1].' => 'Movable Type の新しいバージョンが [_1] にリリースされています。',
+	'An error occured while reading version information.' => 'バージョン情報の取得に失敗しました。',
 
 ## addons/Cloud.pack/lib/Cloud/App/CMS.pm
 	'Owner' => '管理者',
@@ -5270,6 +5285,9 @@ use vars qw( @ISA %Lexicon );
 	'User ID is required.' => 'ユーザー名は必須です。',
 	'Password is required.' => 'パスワードは必須です。',
 	'Unable to write temporary file.' => '一時保存ファイルの書き込みが出来ませんでした。',
+	'Cannot delete ip_restriction_[_1] file.' => 'アクセス制限の設定を削除することができませんでした。',
+	'[_1] is not a valid IP address.' => '[_1] は正しいIPアドレスではありません。',
+	'Unable to write allowed IP addresses file.' => 'アクセス許可リストファイルの書き込みができませんでした。',
 	'HTTP Redirect setting' => 'HTTPリダイレクトの設定',
 	'Unable to update HTTP Redirect settings.' => 'HTTPリダイレクトの設定を保存することが出来ませんでした。',
 	'Update SSL Certification' => 'サーバー証明書の更新',
@@ -5284,6 +5302,36 @@ use vars qw( @ISA %Lexicon );
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
 	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
 	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
+	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを保存できません。',
+	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを作成できません。',
+	'Unable to write AUTOUPDATE file: [_1]' => '自動アップデートの設定を保存することが出来ませんでした。',
+	'IP Restriction settings' => 'アクセス制限の設定',
+	'\'[_1]\' does not exist.' => '\'[_1]\' が見つかりません。',
+	'\'[_1]\' is invalid path.' => '\'[_1]\' は無効なパスです。',
+	'Unable to create acl path: [_1]' => '設定ファイルの書き込みディレクトリを作成できません: [_1]',
+	'Cannot write to acl directory: [_1]' => '設定ファイルの書き込みディレクトリに書き込めません: [_1]',
+	'Cannot write to acl file: [_1]' => '設定ファイルを書き込めません: [_1]',
+	'Unable to remove acl file: [_1]' => 'アクセス制限リストファイルの削除ができません: [_1]',
+	'Unable to remove acl file.' => 'アクセス制限リストファイルの削除ができません。',
+	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered  is not a valid.' => 'アクセス制限の設定を、適用することができません。おそらく、入力されたパスまたはIPアドレスが有効ではない可能性があります。',
+
+## addons/Cloud.pack/lib/Cloud/Util.pm
+	'Cannot read resource file.' => 'リソースファイルを読み込めません。',
+	'Cannot get the resource data.' => 'リソース情報を取得できません。',
+	'Unknown plan. Memory: [_1] / Disk: [_2]' => '不明なプランです。メモリ: [_1] / ディスク: [_1]',
+
+## addons/Cloud.pack/tmpl/cfg_auto_update.tmpl
+	'Auto Update Settings' => '自動アップデートの設定',
+	'Auto update setting have been saved.' => '自動アップデートの設定を保存しました。',
+	'Current installed version of Movable Type is the latest version.' => 'ご利用中の Movable Type は、最新のバージョンです。',
+	'New version of Movable Type is available.' => 'Movable Type の新しいバージョンがリリースされています。',
+	'Last Update' => '最終更新日',
+	'Movable Type [_1] on [_2]' => 'Movable Type [_1] （[_2] に更新されました）',
+	'Available version' => '最新のバージョン',
+	'Movable Type [_1] (released on [_2])' => 'Movable Type [_1] （[_2] にリリースされています）',
+	'Your Movable Type will be automatically updated on [_1], regardless of your settings.' => '自動アップデートが無効になっている場合でも、ご利用中の Movable Type は、[_1] にアップデートが自動的に行われます。',
+	'Auto update' => '自動アップデート',
+	'Enable	automatic update of Movable Type' => 'Movable Type の自動アップデートを有効にする',
 
 ## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
 	'Manage Basic Authentication' => 'Basic認証の管理',
@@ -5330,11 +5378,35 @@ use vars qw( @ISA %Lexicon );
 	'HTTP redirect setting' => 'HTTPリダイレクトの設定',
 	'HTTP redirect settings' => 'HTTPリダイレクトの設定',
 
+## addons/Cloud.pack/tmpl/cfg_ip_restriction.tmpl
+	'IP Restriction Settings' => 'アクセス制限の設定',
+	'Administration screen settings have been saved.' => '管理画面の設定を保存しました。',
+	'example.com' => 'example.com',
+	'/path' => '/path',
+	'Domain is required.' => 'ドメイン名は必須です。',
+	'"[_1]" does not exist.' => '"[_1]" が見つかりません。',
+	'Invalid Path.' => 'パスが正しくありません。',
+	'This combination of domain and path already exists.' => '指定されたドメインとパスの組み合わせはすでに設定されています。',
+	'IP is required.' => 'アクセス許可IPアドレスは必須です。',
+	'[_1] is invalid IP Address.' => '[_1] は不正なIPアドレスです。',
+	'IP restriction settings' => 'アクセス制限の設定',
+
 ## addons/Cloud.pack/tmpl/cfg_security.tmpl
 	'Administration screen setting have been saved.' => '管理画面の設定を保存しました。',
 	'Administration screen url have been reset to default.' => '管理画面のURLが既定のURLにリセットされました。',
 	'Admin Screen URL' => '管理画面のURL',
 	'Protect administration screen by Basic Authentication' => '管理画面をBasic認証で保護する',
+	'Access Restriction' => 'アクセス制限',
+	'Restricts IP addresses that can access to administration screen.' => '管理画面にアクセスすることができるIPアドレスを制限する。',
+	'Please add the IP address which allows access to the upper list. You can specify multiple IP addresses separated by commas or line breaks. When the current remote IP address  is not contained, it may become impossible to access an administration screen. For details.' => 'アクセスを許可するIPアドレスをカンマ又は改行区切りで入力してください。現在のアクセス元のIPアドレスが一覧に含まれない場合、設定の保存後に管理画面へアクセスできなくなる場合がありますのでご注意ください。',
+	'Your IP address is [_1].' => '現在のIPアドレスは [_1] です。',
+	'Restricts IP address that can access to public CGI such as Search and Data API.' => '検索やDataAPIなどのCGIへアクセスすることができるIPアドレスを制限する。',
+	'IP address list is required.' => 'IPアドレスは必須です。',
+	'administration screen' => '管理画面',
+	' and ' => 'と',
+	'public access CGI' => '公開されているCGI',
+	'The remote IP address is not included in the white list ([_1]). Are you sure you want to restrict the current remote IP address?' => '現在のIPアドレスが[_1]の許可IPアドレスに含まれていません。現在のIPアドレスを制限してもよろしいですか？',
+	'Are you sure you want to save restrict access settings?' => 'アクセス制限の設定を保存します。よろしいですか？',
 
 ## addons/Cloud.pack/tmpl/cfg_ssl_certification.tmpl
 	'Install SSL Certification' => 'サーバー証明書の導入',
@@ -5387,7 +5459,6 @@ use vars qw( @ISA %Lexicon );
 	'Professional Styles' => 'プロフェッショナルスタイル',
 	'A collection of styles compatible with Professional themes.' => 'プロフェッショナルテーマと互換のあるスタイルです。',
 	'Professional Website' => 'プロフェッショナル ウェブサイト',
-	'Blog Index' => 'ブログ用インデックスページ',
 	'Header' => 'ヘッダー',
 	'Footer' => 'フッター',
 	'Entry Detail' => '記事の詳細',
@@ -5444,6 +5515,7 @@ use vars qw( @ISA %Lexicon );
 	'The template tag \'[_1]\' is already in use in this blog' => '[_1]というタグは既にこのブログに存在します。',
 	'The \'[_1]\' of the template tag \'[_2]\' that is already in use in [_3] is [_4].' => '\'[_2]\'というテンプレートタグが[_3]に既に存在していますが、[_1]が異なるため、重複して作成する事が出来ません。テンプレートタグ名を変えるか、[_1]を同じにする必要があります。([_1]: [_4])',
 	'_CF_BASENAME' => 'ベースネーム',
+	'__CF_REQUIRED_VALUE__' => '値',
 
 ## addons/Commercial.pack/lib/CustomFields/Template/ContextHandlers.pm
 	'Are you sure you have used a \'[_1]\' tag in the correct context? We could not find the [_2]' => '[_2]が見つかりませんでした。[_1]タグを正しいコンテキストで使用しているか確認してください。',
@@ -5516,7 +5588,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/blog/footer.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/footer_links.mtml
-	'Links' => 'リンク',
 
 ## addons/Commercial.pack/templates/professional/blog/header.mtml
 
@@ -5623,7 +5694,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/website/search.mtml
 
 ## addons/Commercial.pack/templates/professional/website/search_results.mtml
-	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'すべての単語が順序に関係なく検索されます。フレーズで検索したいときは引用符で囲んでください。',
 
 ## addons/Commercial.pack/templates/professional/website/sidebar.mtml
 
@@ -5748,11 +5818,10 @@ use vars qw( @ISA %Lexicon );
 	'Thanks for the confirmation.  Please sign in.' => '確認されました。サインインしてください。',
 	'[_1] registered to Movable Type.' => '[_1]はMovable Typeに登録しました。',
 	'Login required' => 'サインインしてください。',
-	'Title or Content is required.' => '本文とタイトルを入力してください。',
+	'Title or Content is required.' => 'タイトルまたは、本文を入力してください。',
 	'Publish failed: [_1]' => '公開できませんでした: [_1]',
 	'System template entry_response not found in blog: [_1]' => '記事の確認テンプレートがありません。',
 	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'ブログ「[_2]」に新しい記事「[_1]」が投稿されました。',
-	'Id or Username is required' => 'IDまたはユーザー名が必要です。',
 	'Unknown user' => 'ユーザーが不明です。',
 	'All required fields must have valid values.' => '必須フィールドのすべてに正しい値を設定してください。',
 	'Recent Entries from [_1]' => '[_1]の最近の記事',
@@ -6148,6 +6217,9 @@ use vars qw( @ISA %Lexicon );
 	'The following users were disabled:' => '次のユーザーが無効化されました: ',
 	'LDAP users synchronized.' => 'LDAPユーザーが同期されました。',
 	'Synchronization of groups can not be performed without LDAPGroupIdAttribute and/or LDAPGroupNameAttribute being set.' => 'グループを同期するためにはLDAPGroupIdAttributeおよびLDAPGroupNameAttributeの設定が必須です。',
+	'Primary group members cannot be synchronized with Active Directory.' => 'Active Directory からプライマリグループのメンバーを同期できません。',
+	'Cannot synchronize LDAP groups members.' => 'LDAPのグループメンバーの同期に失敗しました。',
+	'User filter was not built: [_1]' => 'ユーザーフィルターを構成できません: [_1:',
 	'LDAP groups synchronized with existing groups.' => '既存のグループがLDAPグループと同期されました。',
 	'Information about the following groups was modified:' => '次のグループの情報が更新されました: ',
 	'No LDAP group was found using the filter provided.' => '指定されたフィルタではLDAPグループが見つかりませんでした。',
@@ -6156,6 +6228,8 @@ use vars qw( @ISA %Lexicon );
 	'The following groups were deleted:' => '以下のグループが削除されました。',
 	'Failed to create a new group: [_1]' => '新しいグループを作成できませんでした: [_1]',
 	'[_1] directive must be set to synchronize members of LDAP groups to Movable Type Advanced.' => 'Movable Type AdvancedでLDAPグループのメンバーを同期するには、[_1]を設定する必要があります。',
+	'Cannot get group \'[_1]\' (#[_2]) entry and its all member attributes from external directory.' => '外部ディレクトリから、グループ \'[_1]\' (#[_2]) の情報を取得できません。',
+	'Cannot get member entries of group \'[_1]\' (#[_2]) from external directory.' => '外部ディレクトリから、グループ \'[_1]\' (#[_2])のメンバー情報を取得できません。',
 	'Members removed: ' => 'グループから削除されたメンバー: ',
 	'Members added: ' => '追加されたメンバー: ',
 	'Memberships in the group \'[_2]\' (#[_3]) were changed as a result of synchronizing with the external directory.' => '外部ディレクトリとの同期の結果グループ「[_2]」(ID: [_3])を更新しました。',
@@ -6236,8 +6310,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Enterprise.pack/lib/MT/LDAP.pm
 	'Invalid LDAPAuthURL scheme: [_1].' => 'LDAPAuthURLのスキーム「[_1]」が不正です。',
 	'Error connecting to LDAP server [_1]: [_2]' => 'LDAPサーバー [_1] に接続できません: [_2]',
-	'User not found in LDAP: [_1]' => 'LDAPサーバー上にユーザーが見つかりません: [_1]',
+	'Entry not found in LDAP: [_1]' => 'LDAPサーバーにレコードが見つかりません: [_1]',
 	'Binding to LDAP server failed: [_1]' => 'LDAPサーバーに接続できません: [_1]',
+	'User not found in LDAP: [_1]' => 'LDAPサーバー上にユーザーが見つかりません: [_1]',
 	'More than one user with the same name found in LDAP: [_1]' => 'LDAPサーバー上に同一名のユーザーが見つかりました: [_1]',
 
 ## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/MSSQLServer.pm
@@ -6921,6 +6996,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 66
+## New words: 260
 
 1;

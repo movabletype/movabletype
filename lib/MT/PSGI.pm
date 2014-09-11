@@ -240,7 +240,8 @@ sub mount_applications {
     my (@applications) = @_;
     my $urlmap         = Plack::App::URLMap->new;
     for my $app_id (@applications) {
-        my $app = MT->registry( applications => $app_id ) unless ref $app_id;
+        my $app;
+        $app = MT->registry( applications => $app_id ) unless ref $app_id;
         Carp::croak('No application is specified') unless $app;
         my $base = $app->{cgi_path};
         if ($base) {

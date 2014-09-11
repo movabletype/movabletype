@@ -197,26 +197,20 @@
   <mt:setvar name="loop_for" value="current_theme_loop" /><mt:var name="theme_loop_tmpl">
   </div>
 </div>
+<mt:else>
+<div id="theme-in-use-group" class="theme-group">
+  <h2 class="theme-group-name"><__trans phrase="Themes in Use"></h2>
+  <div class="theme-list">
+  <mt:setvar name="loop_for" value="theme_in_use_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
+</div>
+</mt:if>
 <div id="<$mt:var name="scope_type"$>-theme-group" class="theme-group">
   <h2 class="theme-group-name"><__trans phrase="Available Themes"></h2>
   <div class="theme-list">
   <mt:setvar name="loop_for" value="available_theme_loop" /><mt:var name="theme_loop_tmpl">
   </div>
 </div>
-<mt:else>
-<div id="theme-in-used-group" class="theme-group">
-  <h2 class="theme-group-name"><__trans phrase="Themes in used"></h2>
-  <div class="theme-list">
-  <mt:setvar name="loop_for" value="theme_in_used_loop" /><mt:var name="theme_loop_tmpl">
-  </div>
-</div>
-<div id="installed-theme-group" class="theme-group">
-  <h2 class="theme-group-name"><__trans phrase="Installed Themes"></h2>
-  <div class="theme-list">
-  <mt:setvar name="loop_for" value="installed_theme_loop" /><mt:var name="theme_loop_tmpl">
-  </div>
-</div>
-</mt:if>
 
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('a.theme-detail-link').click(function(event) {

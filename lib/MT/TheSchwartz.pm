@@ -45,7 +45,8 @@ sub new {
     my $class = shift;
     $class->mt_schwartz_init();
     my (%param) = @_;
-    my $workers = delete $param{workers} if exists $param{workers};
+    my $workers;
+    $workers        = delete $param{workers}   if exists $param{workers};
     $RANDOMIZE_JOBS = delete $param{randomize} if exists $param{randomize};
 
     # Reports object usage inbetween jobs if Devel::Leak::Object is loaded

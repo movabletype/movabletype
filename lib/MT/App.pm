@@ -389,7 +389,8 @@ sub listing {
     my $iter_method = $opt->{iterator} || $opt->{Iterator} || 'load_iter';
     my $param       = $opt->{params}   || $opt->{Params}   || {};
     $param->{listing_screen} = 1;
-    my $add_pseudo_new_user = delete $param->{pseudo_new_user}
+    my $add_pseudo_new_user;
+    $add_pseudo_new_user = delete $param->{pseudo_new_user}
         if exists $param->{pseudo_new_user};
     my $hasher  = $opt->{code}    || $opt->{Code};
     my $terms   = $opt->{terms}   || $opt->{Terms} || {};
@@ -400,11 +401,13 @@ sub listing {
         = exists( $opt->{no_limit} )
         ? $opt->{no_limit}
         : ( $app->param('search') ? 1 : 0 );
-    my $pre_build = $opt->{pre_build} if ref( $opt->{pre_build} ) eq 'CODE';
+    my $pre_build;
+    $pre_build = $opt->{pre_build} if ref( $opt->{pre_build} ) eq 'CODE';
     $param->{json} = 1 if $json;
 
     my $class = $app->model($type) or return;
-    my $list_pref = $app->list_pref($type) if $app->can('list_pref');
+    my $list_pref;
+    $list_pref = $app->list_pref($type) if $app->can('list_pref');
     $param->{$_} = $list_pref->{$_} for keys %$list_pref;
     my $limit = $args->{limit} || $list_pref->{rows};
     $limit =~ s/\D//g;
@@ -616,7 +619,8 @@ sub listing {
     }
     else {
         $app->load_list_actions( $type, $param );
-        my $count = $pre_build->($param) if $pre_build;
+        my $count;
+        $count = $pre_build->($param) if $pre_build;
         if ($count) {
             my $rows  = scalar @{ $param->{object_loop} };
             my $pager = {
@@ -1031,8 +1035,9 @@ sub init_query {
 
 sub registry {
     my $app = shift;
-    my $ar  = $app->SUPER::registry( "applications", $app->id, @_ );
-    my $gr  = $app->SUPER::registry(@_) if @_;
+    my $ar = $app->SUPER::registry( "applications", $app->id, @_ );
+    my $gr;
+    $gr = $app->SUPER::registry(@_) if @_;
     if ($ar) {
         MT::__merge_hash( $ar, $gr );
         return $ar;
@@ -1482,9 +1487,10 @@ sub get_commenter_session {
     my $cfg = $app->config;
     require MT::Session;
     my $sess_obj = MT::Session->load( { id => $session_key, kind => 'SI' } );
-    my $timeout  = $cfg->CommentSessionTimeout;
-    my $user_id  = $sess_obj->get('author_id') if $sess_obj;
-    my $user     = MT::Author->load($user_id) if $user_id;
+    my $timeout = $cfg->CommentSessionTimeout;
+    my ( $user_id, $user );
+    $user_id = $sess_obj->get('author_id') if $sess_obj;
+    $user    = MT::Author->load($user_id)  if $user_id;
 
     if (   !$sess_obj
         || ( $sess_obj->start() + $timeout < time )
@@ -1784,6 +1790,7 @@ sub start_session {
         ( $x, $y, $remember )
             = split( /::/, $app->cookie_val( $app->user_cookie ) );
     }
+    $remember ||= '';
     my $session = make_session( $author, $remember );
     my %arg = (
         -name  => $app->user_cookie,
@@ -3411,9 +3418,10 @@ sub load_widgets {
     my $app = shift;
     my ( $page, $scope_type, $param ) = @_;
 
-    my $user    = $app->user;
-    my $blog    = $app->blog;
-    my $blog_id = $blog->id if $blog;
+    my $user = $app->user;
+    my $blog = $app->blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
     my $scope
         = $scope_type eq 'blog'
         || $scope_type eq 'website' ? 'blog:' . $blog_id
@@ -3423,7 +3431,8 @@ sub load_widgets {
     my $widget_set     = $page . ':' . $scope;
 
     my $widget_store = $user->widgets;
-    my $widgets = $widget_store->{$widget_set} if $widget_store;
+    my $widgets;
+    $widgets = $widget_store->{$widget_set} if $widget_store;
 
     unless ($widgets) {
         $resave_widgets = 1;
@@ -3507,7 +3516,8 @@ sub build_widgets {
     $passthru_param ||= [qw( html_head js_include )];
 
     my $blog = $app->blog;
-    my $blog_id = $blog->id if $blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
 
     # The list of widgets in a user's record
     # is going to look like this:
@@ -3602,8 +3612,9 @@ sub update_widget_prefs {
     my $user = $app->user;
     $app->validate_magic or return;
 
-    my $blog          = $app->blog;
-    my $blog_id       = $blog->id if $blog;
+    my $blog = $app->blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
     my $widget_id     = $app->param('widget_id');
     my $action        = $app->param('widget_action');
     my $widget_scope  = $app->param('widget_scope');
@@ -3690,9 +3701,10 @@ sub load_widget_list {
     my $app = shift;
     my ( $page, $scope_type, $param ) = @_;
 
-    my $blog    = $app->blog;
-    my $blog_id = $blog->id if $blog;
-    my $user    = $app->user;
+    my $blog = $app->blog;
+    my $blog_id;
+    $blog_id = $blog->id if $blog;
+    my $user = $app->user;
     my $scope
         = $scope_type eq 'blog'
         || $scope_type eq 'website' ? 'blog:' . $blog_id
