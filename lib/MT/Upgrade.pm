@@ -975,9 +975,12 @@ sub core_finish {
         $cfg->MTVersion( $cur_version, 1 );
     }
     my $cur_rel = MT->release_number;
+print STDERR "Current Release Number: $cur_rel\n";
+print STDERR "Config:" . $cfg->MTReleaseNumber . "\n";
     if ( !defined( $cfg->MTReleaseNumber )
         || ( $cur_rel > $cfg->MTReleaseNumber ) )
     {
+print STDERR "Update ReleaseNumber\n";
         $cfg->MTReleaseNumber( $cur_rel, 1 );
     }
     $cfg->save_config unless $DryRun;
