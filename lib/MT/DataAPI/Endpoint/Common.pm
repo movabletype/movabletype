@@ -108,7 +108,7 @@ sub _load_object_by_name {
     # check object class of $obj strictly.
     if (( !$obj && !$app->errstr )
         || ( eval { $obj->isa('MT::Entry') || $obj->isa('MT::Category') }
-            && $obj->class ne $name )
+            && $obj->class ne $model_name )
         )
     {
         return $app->error( ucfirst($model_name) . ' not found', 404 );
