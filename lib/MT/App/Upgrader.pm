@@ -780,6 +780,9 @@ sub main {
     my $schema     = $app->{cfg}->SchemaVersion    || 0;
     my $version    = $app->config->MTVersion       || 0;
     my $rel_number = $app->config->MTReleaseNumber || 0;
+print STDERR "Schema[0]: $schema\n";
+print STDERR "Version[0]: $version\n";
+print STDERR "Release[0]: $rel_number\n";
 
     if ( $schema >= 3.2 ) {
         my $author;
@@ -797,6 +800,10 @@ sub main {
     my $cur_schema  = MT->schema_version;
     my $cur_version = MT->version_number;
     my $cur_rel     = MT->release_number;
+
+print STDERR "Schema[1]: $cur_schema\n";
+print STDERR "Version[1]: $cur_version\n";
+print STDERR "Release[1]: $cur_rel\n";
 
     if ( $cur_schema > $schema ) {
 
@@ -828,6 +835,10 @@ sub main {
         $app->config->MTReleaseNumber( $cur_rel, 1 );
         $app->config->save_config;
     }
+
+print STDERR "Schema[2]: " . $app->config->SchemaVersionn  . "\n";
+print STDERR "Version[2]: " . $app->config->MTVersion  . "\n";
+print STDERR "Release[2]: " . $app->config->MTReleaseNumber  . "\n";
 
     $param->{help_url}    = $app->help_url();
     $param->{to_schema}   = $cur_schema;
