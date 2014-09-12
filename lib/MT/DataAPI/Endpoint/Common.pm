@@ -104,8 +104,14 @@ sub _load_object_by_name {
         }
     ) if $id;
 
-    if ( !$obj && !$app->errstr ) {
-        $app->error( ucfirst($model_name) . ' not found', 404 );
+    # If $obj is mt_entry record or mt_category record,
+    # check object class of $obj strictly.
+    if (( !$obj && !$app->errstr )
+        || ( eval { $obj->isa('MT::Entry') || $obj->isa('MT::Category') }
+            && $obj->class ne $name )
+        )
+    {
+        return $app->error( ucfirst($model_name) . ' not found', 404 );
     }
 
     $obj;
