@@ -831,8 +831,8 @@ print STDERR "Release[1]: $cur_rel\n";
                 category => 'upgrade',
             }
         );
-        $app->config->( 'MTVersion', $cur_version, 1 );
-        $app->config->( 'MTReleaseNumber', $cur_rel, 1 );
+        $app->config( 'MTVersion', $cur_version, 1 );
+        $app->config( 'MTReleaseNumber', $cur_rel, 1 );
         $app->config->save_config;
     }
 
