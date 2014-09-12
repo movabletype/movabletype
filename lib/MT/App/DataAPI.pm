@@ -539,8 +539,6 @@ sub core_endpoints {
             default_params => {
                 limit        => 10,
                 offset       => 0,
-                sortBy       => 'label',
-                sortOrder    => 'ascend',
                 searchFields => 'label,basename',
             },
             error_codes => {

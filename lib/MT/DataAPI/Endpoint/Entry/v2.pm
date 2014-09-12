@@ -219,13 +219,17 @@ sub list_categories {
 
     my $rows = $entry->__load_category_data or return;
 
-    # Filtering by is_primary field.
     my $type = $app->param('type') || '';
     if ( $type eq 'primary' ) {
-        @$rows = grep { $_->[1] } @$rows;
+        @$rows = grep { $_->[1] } @$rows;    # primary only
     }
     elsif ( $type eq 'secondary' ) {
-        @$rows = grep { !$_->[1] } @$rows;
+        @$rows = grep { !$_->[1] } @$rows;    # secondary only
+    }
+    else {
+        # primary and secondary
+        @$rows
+            = ( ( grep { $_->[1] } @$rows ), ( grep { !$_->[1] } @$rows ) );
     }
 
     my %terms = ( id => @$rows ? [ map { $_->[0] } @$rows ] : 0 );
