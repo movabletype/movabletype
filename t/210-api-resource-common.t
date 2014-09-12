@@ -36,6 +36,7 @@ my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'user', $author );
 my $version;
 $mock_app_api->mock( 'current_api_version', sub { $version = $_[1] if $_[1]; $version } );
+MT::App::DataAPI->current_api_version(1);
 
 subtest 'from_object with $fields_specified' => sub {
     my @suite = (
