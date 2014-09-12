@@ -33,7 +33,7 @@ my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
 my $version;
 $mock_app_api->mock( 'current_api_version',
-    sub { $version = $_[0] if $_[0]; $version } );
+    sub { $version = $_[1] if $_[1]; $version } );
 
 my @suite = (
     {   path      => '/v1/sites/1/categories',
