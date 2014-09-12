@@ -582,9 +582,9 @@ sub init_request {
             && ( $mode ne 'upgrade' ) )
         {
 $app->config('DebugMode', 8);
-            my $schema  = $app->config('SchemaVersion');
-            my $version = $app->config('MTVersion');
-            my $rel_num = $app->config('MTReleaseNumber');
+            my $schema     = $app->{cfg}->SchemaVersion    || 0;
+            my $version    = $app->config->MTVersion       || 0;
+            my $rel_num    = $app->config->MTReleaseNumber || 0;
 print STDERR "schema: $schema (" . $app->schema_version . ")\n";
 print STDERR "version: $version (" . $app->version_number . ")\n";
 print STDERR "release: $rel_num (" . $app->release_number . ")\n";
