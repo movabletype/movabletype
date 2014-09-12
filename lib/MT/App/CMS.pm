@@ -581,7 +581,6 @@ sub init_request {
             && ( $mode ne 'recover' )
             && ( $mode ne 'upgrade' ) )
         {
-$app->config('DebugMode', 8);
             my $schema     = $app->{cfg}->SchemaVersion    || 0;
             my $version    = $app->config->MTVersion       || 0;
             my $rel_num    = $app->config->MTReleaseNumber || 0;
