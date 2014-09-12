@@ -581,9 +581,13 @@ sub init_request {
             && ( $mode ne 'recover' )
             && ( $mode ne 'upgrade' ) )
         {
+$app->config('DebugMode' 8);
             my $schema  = $app->config('SchemaVersion');
             my $version = $app->config('MTVersion');
             my $rel_num = $app->config('MTReleaseNumber');
+print STDERR "schema: $schema (" . $app->schema_version . ")\n";
+print STDERR "version: $version (" . $app->version_number . ")\n";
+print STDERR "release: $rel_num\n (" . $app->version_number . ")\n";
             if (   !$schema
                 || ( $schema < $app->schema_version )
                 || ($app->config->NotifyUpgrade
