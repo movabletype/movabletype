@@ -602,11 +602,15 @@ print STDERR "release: $rel_num\n (" . $app->version_number . ")\n";
                 )
                 )
             {
+print STDERR "need upgrade by core\n";
                 $app->{upgrade_required} = 1;
             }
             else {
                 foreach my $plugin (@MT::Components) {
                     if ( $plugin->needs_upgrade ) {
+print STDERR "need upgrade by plugin:";
+use Data::Dumper;
+print STDERR Dumper( $plugin );
                         $app->{upgrade_required} = 1;
                         last;
                     }
