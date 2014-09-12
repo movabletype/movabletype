@@ -178,9 +178,6 @@ sub get {
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
-    # If trying to get MT::Page record, 404 error occurs.
-    return $app->error(404) if !$entry->is_entry;
-
     run_permission_filter( $app, 'data_api_view_permission_filter',
         'entry', $entry->id, obj_promise($entry) )
         or return;

@@ -24,6 +24,7 @@ sub can_list {
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
     my $obj = $objp->force();
+    return 0 unless $obj->is_entry;
     return 1 if $obj->status == MT::Entry::RELEASE();
     if ( !$app->user->permissions( $obj->blog_id )
         ->can_edit_entry( $obj, $app->user ) )
