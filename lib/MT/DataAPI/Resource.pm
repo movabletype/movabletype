@@ -163,16 +163,17 @@ sub resource {
             }
         }
 
-        # Get the max version number below current api version.
-        my $max_version = do {
-            my @versions = map { $_->{reg}{version} || 1 } @regs;
-            @versions = grep { $_ <= $api_version } @versions;
-            @versions = sort @versions;
-            $versions[-1];
+        # Get the resource registries of the version below api version,
+        # and sort these in ascending order of version.
+        @regs = do {
+            my @tmp_regs;
+            for my $ver ( 1 .. $api_version ) {
+                my @ver_regs
+                    = grep { ( $_->{reg}{version} || 1 ) == $ver } @regs;
+                push @tmp_regs, @ver_regs;
+            }
+            @tmp_regs;
         };
-
-        # Get the resource registries of the max version.
-        @regs = grep { ( $_->{reg}{version} || 1 ) == $max_version } @regs;
 
         my %tmp_res = ();
         for (@regs) {
