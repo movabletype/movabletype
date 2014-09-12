@@ -128,6 +128,36 @@ my @suite = (
                 ->load( { label => 'test-api-permission-category' } );
         },
     },
+    {   path   => '/v2/sites/1/categories',
+        method => 'POST',
+        params => {
+            category => {
+                label  => 'test-create-category-with-parent',
+                parent => 1,
+            },
+        },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.category',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.category',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.category',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.category',
+                count => 1,
+            },
+        ],
+        result => sub {
+            MT->model('category')
+                ->load(
+                { label => 'test-create-category-with-parent', parent => 1 }
+                );
+        },
+    },
     {   path     => '/v2/sites/1/categories',
         method   => 'POST',
         code     => 400,
@@ -168,6 +198,36 @@ my @suite = (
             my $error
                 = 'Save failed: The category name \'test-api-permission-category\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.'
                 . "\n";
+            check_error_message( $body, $error );
+        },
+    },
+    {   path   => '/v2/sites/1/categories',
+        method => 'POST',
+        params => {
+            category => {
+                label  => 'test-create-category-with-parent-folder',
+                parent => 20,
+            },
+        },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $error = 'Parent category (ID:20) not found.' . "\n";
+            check_error_message( $body, $error );
+        },
+    },
+    {   path   => '/v2/sites/1/categories',
+        method => 'POST',
+        params => {
+            category => {
+                label  => 'test-create-category-with-invalid-parent',
+                parent => 100,
+            },
+        },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $error = 'Parent category (ID:100) not found.' . "\n";
             check_error_message( $body, $error );
         },
     },
@@ -223,6 +283,28 @@ my @suite = (
                 ->load( { label => 'update-test-api-permission-category' } );
         },
     },
+    {   path      => '/v2/sites/1/categories/1',
+        method    => 'PUT',
+        params    => { category => { parent => 2 } },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.category',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.category',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.category',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.category',
+                count => 1,
+            },
+        ],
+        result => sub {
+            MT->model('category')->load( { id => 1, parent => 2 } );
+        },
+    },
     {   path     => '/v2/sites/1/categories/1',
         method   => 'PUT',
         code     => 400,
@@ -259,6 +341,11 @@ my @suite = (
         params => {
             category => { label => 'update-test-api-permission-category' }
         },
+        setup => sub {
+            my $cat = MT->model('category')->load(1);
+            $cat->parent(0);
+            $cat->save;
+        },
         code     => 409,
         complete => sub {
             my ( $data, $body ) = @_;
@@ -283,6 +370,26 @@ my @suite = (
         complete => sub {
             my ( $data, $body ) = @_;
             my $error = 'Category not found';
+            check_error_message( $body, $error );
+        },
+    },
+    {   path     => '/v2/sites/1/categories/1',
+        method   => 'PUT',
+        params   => { category => { parent => 20 } },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $error = 'Parent category (ID:20) not found.' . "\n";
+            check_error_message( $body, $error );
+        },
+    },
+    {   path     => '/v2/sites/1/categories/1',
+        method   => 'PUT',
+        params   => { category => { parent => 100 } },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $error = 'Parent category (ID:100) not found.' . "\n";
             check_error_message( $body, $error );
         },
     },

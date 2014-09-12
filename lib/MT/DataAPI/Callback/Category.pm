@@ -18,11 +18,29 @@ sub can_view {
 
 sub save_filter {
     my ( $eh, $app, $obj, $original ) = @_;
+
     return $app->error( $app->translate('A parameter "label" is required.') )
         if !defined( $obj->label ) || $obj->label eq '';
+
     return $app->error(
         $app->translate( "The label '[_1]' is too long.", $obj->label ) )
         if length( $obj->label ) > 100;
+
+    if ( $obj->parent ) {
+        my $parent_cat = MT->model('category')->load(
+            {   id      => $obj->parent,
+                blog_id => $obj->blog_id,
+                class   => 'category'
+            }
+        );
+        return $app->error(
+            $app->translate(
+                "Parent category (ID:[_1]) not found.",
+                $obj->parent
+            )
+        ) if !$parent_cat;
+    }
+
     return 1;
 }
 
