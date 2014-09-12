@@ -191,11 +191,10 @@ my @suite = (
     },
     {   path     => '/v2/sites/1/categories/20',
         method   => 'GET',
-        code     => '403',
+        code     => '404',
         complete => sub {
             my ( $data, $body ) = @_;
-            my $error
-                = 'Do not have permission to retrieve the requested category.';
+            my $error = 'Category not found';
             check_error_message( $body, $error );
         },
     },
@@ -280,10 +279,10 @@ my @suite = (
         method => 'PUT',
         params =>
             { category => { label => 'update-test-api-permission-folder' }, },
-        code     => 403,
+        code     => 404,
         complete => sub {
             my ( $data, $body ) = @_;
-            my $error = 'Do not have permission to update a category.';
+            my $error = 'Category not found';
             check_error_message( $body, $error );
         },
     },
@@ -320,10 +319,10 @@ my @suite = (
     },
     {   path     => '/v2/sites/1/categories/20',
         method   => 'DELETE',
-        code     => 403,
+        code     => 404,
         complete => sub {
             my ( $data, $body ) = @_;
-            my $error = 'Do not have permission to delete a category.';
+            my $error = 'Category not found';
             check_error_message( $body, $error );
         },
     },
