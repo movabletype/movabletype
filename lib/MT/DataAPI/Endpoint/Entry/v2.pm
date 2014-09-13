@@ -270,6 +270,30 @@ sub list_assets {
     };
 }
 
+sub list_for_asset {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $asset ) = context_objects(@_)
+        or return;
+
+    my %args = (
+        join => MT->model('objectasset')->join_on(
+            undef,
+            {   blog_id   => $asset->blog_id,
+                object_ds => 'entry',
+                object_id => \'= entry_id',
+                asset_id  => $asset->id,
+            },
+        ),
+    );
+    my $res = filtered_list( $app, $endpoint, 'entry', undef, \%args );
+
+    +{  totalResults => $res->{count} + 0,
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
 1;
 
 __END__
