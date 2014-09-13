@@ -550,7 +550,7 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to update an entry.', },
         },
-        {   id             => 'list_categories_by_entry',
+        {   id             => 'list_categories_for_entry',
             route          => '/sites/:site_id/entries/:entry_id/categories',
             verb           => 'GET',
             version        => 2,
@@ -562,11 +562,11 @@ sub core_endpoints {
             },
             error_codes => {
                 403 =>
-                    'Do not have permission to retrieve the requested categories by entry.',
+                    'Do not have permission to retrieve the requested categories for entry.',
             },
             requires_login => 0,
         },
-        {   id             => 'list_assets_by_entry',
+        {   id             => 'list_assets_for_entry',
             route          => '/sites/:site_id/entries/:entry_id/assets',
             verb           => 'GET',
             version        => 2,
@@ -581,7 +581,7 @@ sub core_endpoints {
             },
             error_codes => {
                 403 =>
-                    'Do not have permission to retrieve the requested assets by entry.',
+                    'Do not have permission to retrieve the requested assets for entry.',
             },
             requires_login => 0,
         },
