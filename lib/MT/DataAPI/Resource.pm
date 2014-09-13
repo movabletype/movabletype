@@ -72,6 +72,11 @@ sub core_resources {
                 fields           => "${pkg}Asset::fields",
                 updatable_fields => "${pkg}Asset::updatable_fields",
             },
+            {   version => 2,
+                fields  => "${pkg}Asset::v2::fields",
+                updatable_fields =>
+                    "${pkg}Asset::updatable_fields",    # same as v1.
+            },
         ],
         'permission' => [
             {   version          => 1,
