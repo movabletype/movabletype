@@ -9,13 +9,10 @@ use strict;
 use warnings;
 
 use MT::Category;
-use MT::DataAPI::Resource::Entry;
+use MT::DataAPI::Resource;
 
 sub fields {
-
-    # Overwrite categories field.
-    [   @{ MT::DataAPI::Resource::Entry::fields() },
-        {   name        => 'categories',
+    [   {   name        => 'categories',
             from_object => sub {
                 my ($obj) = @_;
                 my $rows = $obj->__load_category_data or return;
