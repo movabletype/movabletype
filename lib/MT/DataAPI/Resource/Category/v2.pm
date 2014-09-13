@@ -9,11 +9,8 @@ package MT::DataAPI::Resource::Category::v2;
 use strict;
 use warnings;
 
-use MT::DataAPI::Resource::Category;
-
 sub fields {
-    [   @{ MT::DataAPI::Resource::Category::fields() },
-        {   name             => 'updatable',
+    [   {   name             => 'updatable',
             type             => 'MT::DataAPI::Resource::DataType::Boolean',
             bulk_from_object => sub {
                 my ( $objs, $hashes ) = @_;
@@ -48,7 +45,7 @@ sub fields {
 }
 
 sub updatable_fields {
-    [ @{ MT::DataAPI::Resource::Category::updatable_fields() }, 'parent', ];
+    ['parent'],;
 }
 
 1;
