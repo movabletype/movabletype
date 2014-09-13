@@ -30,8 +30,8 @@ sub core_resources {
                 fields           => "${pkg}Category::fields",
                 updatable_fields => "${pkg}Category::updatable_fields",
             },
-            {   version => 2,
-                fields  => "${pkg}Category::fields",    # same as v1.
+            {   version          => 2,
+                fields           => "${pkg}Category::v2::fields",
                 updatable_fields => "${pkg}Category::v2::updatable_fields",
             },
         ],

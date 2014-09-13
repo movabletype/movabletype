@@ -11,6 +11,42 @@ use warnings;
 
 use MT::DataAPI::Resource::Category;
 
+sub fields {
+    [   @{ MT::DataAPI::Resource::Category::fields() },
+        {   name             => 'updatable',
+            type             => 'MT::DataAPI::Resource::DataType::Boolean',
+            bulk_from_object => sub {
+                my ( $objs, $hashes ) = @_;
+                my $app  = MT->instance;
+                my $user = $app->user;
+
+                if ( $user->is_superuser ) {
+                    $_->{updatable} = 1 for @$hashes;
+                    return;
+                }
+
+                my %blog_perms;
+                for ( my $i = 0; $i < scalar @$objs; $i++ ) {
+                    my $obj = $objs->[$i];
+
+                    next if $obj->class ne 'category';
+
+                    my $cat_blog_id = $obj->blog_id;
+                    if ( !exists $blog_perms{$cat_blog_id} ) {
+                        $blog_perms{$cat_blog_id}
+                            = $user->permissions($cat_blog_id)
+                            ->can_do('save_category');
+                    }
+
+                    if ( $blog_perms{$cat_blog_id} ) {
+                        $hashes->[$i]{updatable} = 1;
+                    }
+                }
+            },
+        },
+    ];
+}
+
 sub updatable_fields {
     [ @{ MT::DataAPI::Resource::Category::updatable_fields() }, 'parent', ];
 }
