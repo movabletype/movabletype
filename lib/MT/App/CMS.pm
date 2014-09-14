@@ -621,7 +621,6 @@ print STDERR Dumper( $plugin );
 print STDERR "Update Requreired? " . $app->{upgrade_required} . "\n";
 
     if ( $app->{upgrade_required} ) {
-        $app->config->clear_dirty;
         $app->{requires_login} = 0;
         $app->mode('upgrade');
     }
