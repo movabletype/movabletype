@@ -207,6 +207,8 @@ sub main {
         exit( $updated ? 0 : 1 );
     }
     else {
+        my $curr = MT->config->DisableObjectCache;
+        MT->config->DisableObjectCache(1);
         my $updated = MT::Upgrade->do_upgrade(
             App       => __PACKAGE__,
             DryRun    => $dryrun,
@@ -214,6 +216,7 @@ sub main {
             SuperUser => $author_id,
             CLI       => 1,
         );
+        MT->config->DisableObjectCache($curr);
 
         print "Upgrade complete!\n" if !$dryrun && $updated && !$quiet;
         print "Your schema is up to date already.\n"
