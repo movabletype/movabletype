@@ -357,14 +357,12 @@ sub read_config_file {
 }
 
 sub read_config_db {
-print STDERR "read_config_db\n";
     my $class     = shift;
     my $mgr       = $class->instance;
     my $cfg_class = MT->model('config') or return;
 
     $mgr->{__dbvar} = {};
 
-local $Data::ObjectDriver::DEBUG = 1;
     my $driver = $MT::Object::DRIVER;
     $driver->clear_cache if $driver && $driver->can('clear_cache');
 
@@ -381,7 +379,6 @@ local $Data::ObjectDriver::DEBUG = 1;
             my ( $var, $val ) = $_ =~ /^\s*(\S+)\s+(.+)$/;
             $val =~ s/\s*$// if defined($val);
             next unless $var && defined($val);
-print STDERR "$var -> $val\n";
             $mgr->set( $var, $val, 1 );
         }
         $mgr->clear_dirty unless $was_dirty;

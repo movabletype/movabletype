@@ -581,12 +581,9 @@ sub init_request {
             && ( $mode ne 'recover' )
             && ( $mode ne 'upgrade' ) )
         {
-            my $schema     = $app->{cfg}->SchemaVersion    || 0;
-            my $version    = $app->config->MTVersion       || 0;
-            my $rel_num    = $app->config->MTReleaseNumber || 0;
-print STDERR "schema: $schema (" . $app->schema_version . ")\n";
-print STDERR "version: $version (" . $app->version_number . ")\n";
-print STDERR "release: $rel_num (" . $app->release_number . ")\n";
+            my $schema  = $app->config('SchemaVersion');
+            my $version = $app->config('MTVersion');
+            my $rel_num = $app->config('MTReleaseNumber');
             if (   !$schema
                 || ( $schema < $app->schema_version )
                 || ($app->config->NotifyUpgrade
@@ -601,15 +598,11 @@ print STDERR "release: $rel_num (" . $app->release_number . ")\n";
                 )
                 )
             {
-print STDERR "need upgrade by core\n";
                 $app->{upgrade_required} = 1;
             }
             else {
-print STDERR "need upgrade by plugin?";
                 foreach my $plugin (@MT::Components) {
                     if ( $plugin->needs_upgrade ) {
-use Data::Dumper;
-print STDERR Dumper( $plugin );
                         $app->{upgrade_required} = 1;
                         last;
                     }
@@ -617,8 +610,6 @@ print STDERR Dumper( $plugin );
             }
         }
     }
-
-print STDERR "Update Requreired? " . $app->{upgrade_required} . "\n";
 
     if ( $app->{upgrade_required} ) {
         $app->{requires_login} = 0;
