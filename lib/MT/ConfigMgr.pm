@@ -364,6 +364,7 @@ print STDERR "read_config_db\n";
 
     $mgr->{__dbvar} = {};
 
+local $Data::ObjectDriver::DEBUG = 1;
     my ($config) = eval { $cfg_class->search };
     if ($config) {
         my $was_dirty = $mgr->is_dirty;
@@ -377,7 +378,7 @@ print STDERR "read_config_db\n";
             my ( $var, $val ) = $_ =~ /^\s*(\S+)\s+(.+)$/;
             $val =~ s/\s*$// if defined($val);
             next unless $var && defined($val);
-print STDERR "$var -> $var\n";
+print STDERR "$var -> $val\n";
             $mgr->set( $var, $val, 1 );
         }
         $mgr->clear_dirty unless $was_dirty;
