@@ -9,6 +9,14 @@ package MT::DataAPI::Resource::Category::v2;
 use strict;
 use warnings;
 
+sub updatable_fields {
+    [   qw(
+            parent
+            allowTrackbacks
+            )
+    ];
+}
+
 sub fields {
     [   {   name             => 'updatable',
             type             => 'MT::DataAPI::Resource::DataType::Boolean',
@@ -41,11 +49,12 @@ sub fields {
                 }
             },
         },
+        {   name                => 'allowTrackbacks',
+            alias               => 'allow_pings',
+            from_object_default => 0,
+            type                => 'MT::DataAPI::Resource::DataType::Boolean',
+        },
     ];
-}
-
-sub updatable_fields {
-    ['parent'],;
 }
 
 1;
