@@ -1562,7 +1562,7 @@ use vars qw( @ISA %Lexicon );
 	'Performance log threshold is [_1]' => 'パフォーマンスログの閾値は[_1]です',
 	'Invalid SitePath.  The SitePath should be valid and absolute, not relative' => 'サイトパス制限には正しい絶対パスを指定してください。',
 	'Prohibit comments is on' => 'コメントは無効です',
-	'Prohibit comments is off' => 'コメントは有効です', 
+	'Prohibit comments is off' => 'コメントは有効です',
 	'Prohibit trackbacks is on' => 'トラックバックは無効です',
 	'Prohibit trackbacks is off' => 'トラックバックは有効です',
 	'Prohibit notification pings is on' => '更新pingは無効です',
@@ -2732,6 +2732,8 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/plugins/FormattedTextForTinyMCE/langs/template.js
 	'Boilerplate' => '定型文',
 	'Select Boilerplate' => '定型文を選択...',
+
+## mt-static/plugins/Loupe/js/vendor.js
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
 	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
@@ -4673,8 +4675,8 @@ use vars qw( @ISA %Lexicon );
 	'Invalid IP address.' => '不正なIPアドレスです。',
 
 ## tmpl/cms/listing/blog_list_header.tmpl
-	'You have successfully deleted the website from the Movable Type system.' => 'システムからウェブサイトの削除が完了しました。',
-	'You have successfully deleted the blog from the website.' => 'ウェブサイトからブログの削除が完了しました。',
+	'You have successfully deleted the website from the Movable Type system. The files still exist in the site path. Please delete files if not needed.' => 'システムからウェブサイトの削除が完了しました。 出漁されたコンテンツは、削除されていませんので、必要に応じて、削除をしてください。',
+	'You have successfully deleted the blog from the website. The files still exist in the site path. Please delete files if not needed.' => 'ウェブサイトからブログの削除が完了しました。 出漁されたコンテンツは、削除されていませんので、必要に応じて、削除をしてください。',
 	'You have successfully moved selected blogs to another website.' => '他のウェブサイトへのブログの移動が完了しました。',
 	'Warning: You need to copy uploaded assets to new locations manually. You should consider maintaining copies of uploaded assets in their original locations to avoid broken links.' => '警告: アップロード済みのファイルは、新しいウェブサイトのパスに手動でコピーする必要があります。また、リンク切れを防止するために、旧パスのファイルも残すことを検討してください。',
 
@@ -5259,7 +5261,7 @@ use vars qw( @ISA %Lexicon );
 	'HTTP Redirect' => 'HTTPリダイレクト',
 	'FTPS Password' => 'FTPSパスワードリセット',
 	'Full Restore' => '環境のリストア',
-	'SSL Certifications' => 'サーバー証明書',
+	'SSL Certificates' => 'サーバー証明書',
 	'IP Restriction' => 'アクセス制限',
 	'Config Directives' => 'MT環境変数',
 	'Disk Usage' => 'ディスクの使用量',
@@ -5295,25 +5297,29 @@ use vars qw( @ISA %Lexicon );
 	'__SSL_CERT_INSTALL' => '導入',
 	'Cannot copy default cert file.' => '既定のサーバー証明書のコピーに失敗しました。',
 	'Cannot copy default secret file.' => '既定のサーバーキーのコピーに失敗しました。',
+	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
 	'Unable to update SSL certification.' => 'サーバー証明書の更新をする事が出来ませんでした。',
 	'Config Directive' => '環境変数',
 	'Restoring Backup Data' => 'バックアップデータの復元',
 	'backup data' => 'バックアップデータ',
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
 	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
-	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
 	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを保存できません。',
 	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを作成できません。',
 	'Unable to write AUTOUPDATE file: [_1]' => '自動アップデートの設定を保存することが出来ませんでした。',
 	'IP Restriction settings' => 'アクセス制限の設定',
+	'Domain, Path and IP addresses are required.' => 'ドメイン名、パス名、IPアドレスは必須です。',
 	'\'[_1]\' does not exist.' => '\'[_1]\' が見つかりません。',
 	'\'[_1]\' is invalid path.' => '\'[_1]\' は無効なパスです。',
 	'Unable to create acl path: [_1]' => '設定ファイルの書き込みディレクトリを作成できません: [_1]',
 	'Cannot write to acl directory: [_1]' => '設定ファイルの書き込みディレクトリに書き込めません: [_1]',
 	'Cannot write to acl file: [_1]' => '設定ファイルを書き込めません: [_1]',
-	'Unable to remove acl file: [_1]' => 'アクセス制限リストファイルの削除ができません: [_1]',
-	'Unable to remove acl file.' => 'アクセス制限リストファイルの削除ができません。',
 	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered  is not a valid.' => 'アクセス制限の設定を、適用することができません。おそらく、入力されたパスまたはIPアドレスが有効ではない可能性があります。',
+	'Unable to remove acl file.' => 'アクセス制限リストファイルの削除ができません。',
+
+## addons/Cloud.pack/lib/Cloud/Template.pm
+	'http://www.movabletype.jp/documentation/cloud/guide/multi_domain.html' => 'http://www.movabletype.jp/documentation/cloud/guide/multi_domain.html',
+	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'ウェブサイトパス\' または \'アーカイブパス\' が変更されています。既存のコンテンツは自身の手で移動してください。',
 
 ## addons/Cloud.pack/lib/Cloud/Util.pm
 	'Cannot read resource file.' => 'リソースファイルを読み込めません。',
@@ -5381,8 +5387,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/tmpl/cfg_ip_restriction.tmpl
 	'IP Restriction Settings' => 'アクセス制限の設定',
 	'Administration screen settings have been saved.' => '管理画面の設定を保存しました。',
-	'example.com' => 'example.com',
-	'/path' => '/path',
+	'Domain name like example.com' => 'ドメイン名 例: example.com',
+	'Path begin with / like /path' => 'パス名 例: /path',
+	'IP addresses that are allowed to access' => 'アクセスを許可するIPアドレス',
 	'Domain is required.' => 'ドメイン名は必須です。',
 	'"[_1]" does not exist.' => '"[_1]" が見つかりません。',
 	'Invalid Path.' => 'パスが正しくありません。',
@@ -6996,6 +7003,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 260
+## New words: 347
 
 1;
