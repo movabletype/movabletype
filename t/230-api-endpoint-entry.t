@@ -474,6 +474,35 @@ my @suite = (
             is_deeply( \@json_ids, \@asset_ids, 'Asset IDs are correct' );
         },
     },
+    {   path     => '/v2/sites/1/categories/1/entries',
+        method   => 'GET',
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+
+            my $cat     = MT->model('category')->load(1);
+            my @entries = MT->model('entry')->load(
+                { class => 'entry' },
+                {   join => MT->model('placement')->join_on(
+                        'entry_id',
+                        {   blog_id     => $cat->blog_id,
+                            category_id => $cat->id,
+                        },
+                    ),
+                }
+            );
+
+            is( $result->{totalResults},
+                scalar @entries,
+                'Category has ' . scalar @entries . 'entries'
+            );
+
+            my @json_ids
+                = sort { $a <=> $b } map { $_->{id} } @{ $result->{items} };
+            my @entry_ids = sort { $a <=> $b } map { $_->id } @entries;
+            is_deeply( \@json_ids, \@entry_ids, 'Entry IDs are correct' );
+            }
+    },
 );
 
 my %callbacks = ();

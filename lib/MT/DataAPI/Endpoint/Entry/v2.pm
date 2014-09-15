@@ -207,6 +207,28 @@ sub update {
     $new_entry;
 }
 
+sub list_for_category {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $cat ) = context_objects(@_)
+        or return;
+
+    my %args = (
+        join => MT->model('placement')->join_on(
+            'entry_id',
+            {   blog_id     => $cat->blog_id,
+                category_id => $cat->id,
+            },
+        ),
+    );
+    my $res = filtered_list( $app, $endpoint, 'entry', undef, \%args );
+
+    +{  totalResults => $res->{count} + 0,
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
 sub list_for_asset {
     my ( $app, $endpoint ) = @_;
 
