@@ -95,6 +95,35 @@ sub fields {
             alias => 'image_height',
             type  => 'MT::DataAPI::Resource::DataType::Integer',
         },
+        {   name             => 'updatable',
+            type             => 'MT::DataAPI::Resource::DataType::Boolean',
+            bulk_from_object => sub {
+                my ( $objs, $hashes ) = @_;
+                my $app  = MT->instance;
+                my $user = $app->user;
+
+                if ( $user->is_superuser ) {
+                    $_->{updatable} = 1 for @$hashes;
+                    return;
+                }
+
+                my %blog_perms;
+                for ( my $i = 0; $i < scalar @$objs; $i++ ) {
+                    my $obj = $objs->[$i];
+
+                    my $cat_blog_id = $obj->blog_id;
+                    if ( !exists $blog_perms{$cat_blog_id} ) {
+                        $blog_perms{$cat_blog_id}
+                            = $user->permissions($cat_blog_id)
+                            ->can_do('save_asset');
+                    }
+
+                    if ( $blog_perms{$cat_blog_id} ) {
+                        $hashes->[$i]{updatable} = 1;
+                    }
+                }
+            },
+        },
     ];
 }
 
