@@ -554,7 +554,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/entries/:entry_id/categories',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Entry::v2::list_categories",
+            handler        => "${pkg}Category::v2::list_for_entry",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -570,7 +570,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/entries/:entry_id/assets',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Entry::v2::list_assets",
+            handler        => "${pkg}Asset::v2::list_for_entry",
             default_params => {
                 limit        => 10,
                 offset       => 0,

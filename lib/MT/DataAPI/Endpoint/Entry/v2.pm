@@ -207,69 +207,6 @@ sub update {
     $new_entry;
 }
 
-sub list_categories {
-    my ( $app, $endpoint ) = @_;
-
-    my ( $blog, $entry ) = context_objects(@_)
-        or return;
-
-    run_permission_filter( $app, 'data_api_view_permission_filter',
-        'entry', $entry->id, obj_promise($entry) )
-        or return;
-
-    my $rows = $entry->__load_category_data or return;
-
-    my $type = $app->param('type') || '';
-    if ( $type eq 'primary' ) {
-        @$rows = grep { $_->[1] } @$rows;    # primary only
-    }
-    elsif ( $type eq 'secondary' ) {
-        @$rows = grep { !$_->[1] } @$rows;    # secondary only
-    }
-    else {
-        # primary and secondary
-        @$rows
-            = ( ( grep { $_->[1] } @$rows ), ( grep { !$_->[1] } @$rows ) );
-    }
-
-    my %terms = ( id => @$rows ? [ map { $_->[0] } @$rows ] : 0 );
-    my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
-
-    +{  totalResults => $res->{count},
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
-    };
-}
-
-sub list_assets {
-    my ( $app, $endpoint ) = @_;
-
-    my ( $blog, $entry ) = context_objects(@_)
-        or return;
-
-    run_permission_filter( $app, 'data_api_view_permission_filter',
-        'entry', $entry->id, obj_promise($entry) )
-        or return;
-
-    my %terms = ( class => '*' );
-    my %args = (
-        join => MT->model('objectasset')->join_on(
-            'asset_id',
-            {   blog_id   => $blog->id,
-                object_ds => 'entry',
-                object_id => $entry->id,
-            },
-        ),
-    );
-    my $res = filtered_list( $app, $endpoint, 'asset', \%terms, \%args )
-        or return;
-
-    +{  totalResults => $res->{count},
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
-    };
-}
-
 sub list_for_asset {
     my ( $app, $endpoint ) = @_;
 

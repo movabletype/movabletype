@@ -73,6 +73,35 @@ sub delete {
     $asset;
 }
 
+sub list_for_entry {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $entry ) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'entry', $entry->id, obj_promise($entry) )
+        or return;
+
+    my %terms = ( class => '*' );
+    my %args = (
+        join => MT->model('objectasset')->join_on(
+            'asset_id',
+            {   blog_id   => $blog->id,
+                object_ds => 'entry',
+                object_id => $entry->id,
+            },
+        ),
+    );
+    my $res = filtered_list( $app, $endpoint, 'asset', \%terms, \%args )
+        or return;
+
+    +{  totalResults => $res->{count},
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
 1;
 
 __END__
