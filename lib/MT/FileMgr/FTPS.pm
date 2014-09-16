@@ -16,7 +16,7 @@ sub init {
     my $fmgr    = shift;
     my %options = ();
     $options{Port} = $_[3] if $_[3];
-    $options{Debug} = 1;
+    $options{Debug} = 1 if $MT::DebugMode;
     my $ftp = $fmgr->{ftp} = Net::FTPSSL->new( $_[0], %options )
         or return $fmgr->error("FTPS connection failed: $@");
     $ftp->login( @_[ 1, 2 ] );
