@@ -754,5 +754,6 @@
 { "r" : "1", "t" : "<mt:DataAPIVersion>", "e" : "1" }, #738
 { "r" : "1", "t" : "<mt:Pages tags=\"@about\" include_blogs=\"siblings\" include_with_website=\"1\"><$mt:PageTitle$></mt:Pages>", "e" : "About" }, #739
 { "r" : "1", "t" : "<mt:Ignore><mt:SetVar name='abc' value='123></mt:Ignore><mt:SetVar name='abc' value='123'>", "e" : "" }, #740
-{ "r" : "1", "t" : "<mt:Ignore><mt:abc</mt:Ignore>", "e" : "" } #741
+{ "r" : "1", "t" : "<mt:Ignore><mt:abc</mt:Ignore>", "e" : "" }, #741
+{ "r" : "1", "t" : "<mt:setvarblock name=\"str\"><&>'\"</mt:setvarblock><$mt:var name=\"str\" encode_html=\"1\"$>", "e" : "&lt;&amp;&gt;&#039;&quot;" } #742
 ]

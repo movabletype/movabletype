@@ -778,6 +778,7 @@ sub decode_url {
 
             }
             $html =~ s!"!&quot;!g;
+            $html =~ s!'!&#039;!g;
             $html =~ s!<!&lt;!g;
             $html =~ s!>!&gt;!g;
         }
