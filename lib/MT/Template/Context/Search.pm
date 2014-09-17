@@ -342,6 +342,10 @@ sub _hdlr_results {
         }
         local $ctx->{current_timestamp} = $ts;
 
+        # param set original blog_id.
+        local $ctx->{__stash}{orig_blog} = $orig_blog;
+        local $ctx->{__stash}{orig_blog_id} = $orig_blog_id;
+
    # TODO: per blog max objects?
    #if ( $count_per_blog >= $max ) {
    #    while (1) {
