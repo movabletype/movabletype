@@ -349,6 +349,7 @@ sub _remove_ignore_blocks {
             # Remove MTIgnore block.
             my $remove_text = substr $$text, $tag_start,
                 ( $tag_end - $tag_start );
+            $remove_text = quotemeta $remove_text;
             $$text =~ s/$remove_text//;
 
             # Set search position.
