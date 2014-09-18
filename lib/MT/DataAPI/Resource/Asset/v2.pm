@@ -124,6 +124,39 @@ sub fields {
                 }
             },
         },
+        {   name  => 'fileExtension',
+            alias => 'file_ext',
+        },
+        {   name             => 'filePath',
+            bulk_from_object => sub {
+                my ( $objs, $hashes ) = @_;
+                my $app = MT->instance;
+                my $user = $app->user or return;
+
+                if ( $user->is_superuser ) {
+                    for ( my $i = 0; $i < scalar(@$objs); $i++ ) {
+                        $hashes->[$i]{filePath} = $objs->[$i]->file_path;
+                    }
+                    return;
+                }
+
+                my %blog_perms;
+                for ( my $i = 0; $i < scalar @$objs; $i++ ) {
+                    my $obj = $objs->[$i];
+
+                    my $asset_blog_id = $obj->blog_id;
+                    if ( !exists $blog_perms{$asset_blog_id} ) {
+                        $blog_perms{$asset_blog_id}
+                            = $user->permissions($asset_blog_id)
+                            ->can_do('open_asset_edit_screen');
+                    }
+
+                    if ( $blog_perms{$asset_blog_id} ) {
+                        $hashes->[$i]{filePath} = $objs->[$i]->file_path;
+                    }
+                }
+            },
+        },
     ];
 }
 
