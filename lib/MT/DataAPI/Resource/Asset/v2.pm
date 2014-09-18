@@ -111,14 +111,14 @@ sub fields {
                 for ( my $i = 0; $i < scalar @$objs; $i++ ) {
                     my $obj = $objs->[$i];
 
-                    my $cat_blog_id = $obj->blog_id;
-                    if ( !exists $blog_perms{$cat_blog_id} ) {
-                        $blog_perms{$cat_blog_id}
-                            = $user->permissions($cat_blog_id)
+                    my $asset_blog_id = $obj->blog_id;
+                    if ( !exists $blog_perms{$asset_blog_id} ) {
+                        $blog_perms{$asset_blog_id}
+                            = $user->permissions($asset_blog_id)
                             ->can_do('save_asset');
                     }
 
-                    if ( $blog_perms{$cat_blog_id} ) {
+                    if ( $blog_perms{$asset_blog_id} ) {
                         $hashes->[$i]{updatable} = 1;
                     }
                 }
