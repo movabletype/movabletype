@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use MT::CMS::Category;
+use MT::Util;
 
 sub updatable_fields {
     [   qw(
@@ -79,6 +80,23 @@ sub fields {
                 }
 
                 return join( "\n", @$ping_urls );
+            },
+        },
+        {   name        => 'archiveLink',
+            from_object => sub {
+                my ($obj) = @_;
+
+                my $blog = MT->model('blog')->load( $obj->blog_id );
+                if ( !$blog ) {
+                    return;
+                }
+
+                my $url = $blog->archive_url;
+                $url .= '/' unless $url =~ m/\/$/;
+                $url .= MT::Util::archive_file_for( undef, $blog, 'Category',
+                    $obj );
+
+                return $url;
             },
         },
     ];
