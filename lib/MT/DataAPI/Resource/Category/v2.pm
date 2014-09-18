@@ -9,10 +9,13 @@ package MT::DataAPI::Resource::Category::v2;
 use strict;
 use warnings;
 
+use MT::CMS::Category;
+
 sub updatable_fields {
     [   qw(
             parent
             allowTrackbacks
+            pingUrls
             )
     ];
 }
@@ -53,6 +56,30 @@ sub fields {
             alias               => 'allow_pings',
             from_object_default => 0,
             type                => 'MT::DataAPI::Resource::DataType::Boolean',
+        },
+        {   name        => 'pingUrls',
+            alias       => 'ping_urls',
+            from_object => sub {
+                my $obj      = shift;
+                my $app      = MT->instance;
+                my $callback = undef;
+
+                if ( !MT::CMS::Category::can_view( $callback, $app, $obj ) ) {
+                    return;
+                }
+
+                return $obj->ping_url_list;
+            },
+            to_object => sub {
+                my $hash = shift;
+
+                my $ping_urls = $hash->{pingUrls};
+                if ( ref($ping_urls) ne 'ARRAY' ) {
+                    $ping_urls = [$ping_urls];
+                }
+
+                return join( "\n", @$ping_urls );
+            },
         },
     ];
 }
