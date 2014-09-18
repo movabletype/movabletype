@@ -41,7 +41,7 @@ sub _int_param {
 
     return undef unless $app->can('param');
 
-    my $value = $app->param('maxComments');
+    my $value = $app->param($key);
     ( defined($value) && $value =~ m/^\d+$/ ) ? int($value) : undef;
 }
 
