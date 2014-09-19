@@ -12,6 +12,22 @@ use MT::Util;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+sub list {
+    my ( $app, $endpoint ) = @_;
+
+    my %terms;
+    if ( $app->param('top') ) {
+        %terms = ( parent => 0 );
+    }
+
+    my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
+
+    +{  totalResults => $res->{count},
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
 sub create {
     my ( $app, $endpoint ) = @_;
 

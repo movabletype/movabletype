@@ -410,6 +410,24 @@ sub core_endpoints {
         },
 
         # version 2
+        {   id             => 'list_categories',
+            route          => '/sites/:site_id/categories',
+            verb           => 'GET',
+            version        => 2,
+            handler        => "${pkg}Category::v2::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'user_custom',
+                sortOrder    => 'ascend',
+                searchFields => 'label,basename',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of categories.',
+            },
+            requires_login => 0,
+        },
         {   id        => 'create_category',
             route     => '/sites/:site_id/categories',
             resources => ['category'],
