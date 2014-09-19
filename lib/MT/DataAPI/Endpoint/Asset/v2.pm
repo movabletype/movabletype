@@ -102,6 +102,25 @@ sub list_for_entry {
     };
 }
 
+sub upload {
+    my ( $app, $endpoint ) = @_;
+
+    my $site_id = $app->param('site_id');
+    if ( !( defined($site_id) && $site_id =~ m/^\d+$/ ) ) {
+        return $app->error(
+            $app->translate('A parameter "site_id" is required.'), 400 );
+    }
+
+    $app->param( 'blog_id', $site_id );
+    $app->delete_param('site_id');
+
+    my $site = MT->model('blog')->load($site_id);
+    $app->blog($site);
+
+    require MT::DataAPI::Endpoint::Asset;
+    MT::DataAPI::Endpoint::Asset::upload( $app, $endpoint );
+}
+
 1;
 
 __END__
