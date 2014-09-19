@@ -342,10 +342,6 @@ sub _hdlr_results {
         }
         local $ctx->{current_timestamp} = $ts;
 
-        # param set original blog_id.
-        local $ctx->{__stash}{orig_blog} = $orig_blog;
-        local $ctx->{__stash}{orig_blog_id} = $orig_blog_id;
-
    # TODO: per blog max objects?
    #if ( $count_per_blog >= $max ) {
    #    while (1) {
@@ -433,7 +429,7 @@ sub context_script {
     if ( my $include_blogs = $ctx->stash('include_blogs') ) {
         $link .= "&IncludeBlogs=" . encode_url($include_blogs);
     }
-    elsif ( my $blog_id = $ctx->stash('blog_id') ) {
+    if ( my $blog_id = $ctx->stash('blog_id') ) {
         $link .= "&blog_id=" . encode_url($blog_id);
     }
 
