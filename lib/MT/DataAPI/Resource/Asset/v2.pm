@@ -160,7 +160,7 @@ sub fields {
         {   name        => 'type',
             from_object => sub {
                 my $obj = shift;
-                MT->translate( $obj->datasource );
+                lc $obj->class_label;
             },
         },
     ];
