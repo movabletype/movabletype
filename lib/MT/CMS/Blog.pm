@@ -1357,11 +1357,8 @@ sub dialog_select_weblog {
     my $auth  = $app->user or return;
 
     if ($favorites) {
-        my @favs = @{ $auth->favorite_blogs || [] };
-        if (@favs) {
-            @favs = @favs[ 0 .. 4 ] if scalar @favs > 5;
-            $terms->{id} = { not => \@favs };
-        }
+        # Do not exclude top 5 favorite blogs from 
+        #   select blog dialog list. bugid:112372
         $confirm_js = 'saveFavorite';
     }
     if (   !$auth->is_superuser
