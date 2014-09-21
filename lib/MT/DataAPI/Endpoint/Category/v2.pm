@@ -28,6 +28,110 @@ sub list {
     };
 }
 
+sub _get_all_parent_categories {
+    my ( $cat, $max_depth, $current_depth ) = @_;
+
+    my $current_depth ||= 1;
+    if ( $max_depth > 0 && $current_depth > $max_depth ) {
+        return;
+    }
+
+    my $parent_cat = $cat->parent_category;
+    if ( !$parent_cat ) {
+        return;
+    }
+
+    return (
+        $parent_cat,
+        _get_all_parent_categories(
+            $parent_cat, $max_depth, $current_depth + 1
+        )
+    );
+}
+
+sub _get_all_child_categories {
+    my ( $cat, $max_depth, $current_depth ) = @_;
+
+    $current_depth ||= 1;
+    if ( $max_depth > 0 && $current_depth > $max_depth ) {
+        return;
+    }
+
+    my @child_cats     = $cat->children_categories;
+    my @all_child_cats = map {
+        (   $_,
+            _get_all_child_categories( $_, $max_depth, $current_depth + 1 )
+            )
+    } @child_cats;
+
+    return @all_child_cats;
+}
+
+sub list_parents {
+    my ( $app, $endpoint ) = @_;
+
+    my $cat = get( $app, $endpoint ) or return;
+
+    my $max_depth = $app->param('maxDepth') || 0;
+    my @parent_cats = _get_all_parent_categories( $cat, $max_depth );
+
+    for my $parent_cat (@parent_cats) {
+        run_permission_filter( $app, 'data_api_view_permission_filter',
+            'category', $parent_cat->id, obj_promise($parent_cat) )
+            or return;
+    }
+
+    if ( $app->param('includeCurrent') ) {
+        unshift @parent_cats, $cat;
+    }
+
+    +{  totalResults => scalar @parent_cats,
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( \@parent_cats ),
+    };
+}
+
+sub list_siblings {
+    my ( $app, $endpoint ) = @_;
+
+    my $cat = get( $app, $endpoint ) or return;
+
+    my %terms = (
+        id      => { not => $cat->id },
+        blog_id => $cat->blog_id,
+        parent  => $cat->parent,
+    );
+    my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
+
+    +{  totalResults => $res->{count},
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub list_children {
+    my ( $app, $endpoint ) = @_;
+
+    my $cat = get( $app, $endpoint ) or return;
+
+    my $max_depth = $app->param('maxDepth') || 0;
+    my @child_cats = _get_all_child_categories( $cat, $max_depth );
+
+    for my $child_cat (@child_cats) {
+        run_permission_filter( $app, 'data_api_view_permission_filter',
+            'category', $child_cat->id, obj_promise($child_cat) )
+            or return;
+    }
+
+    if ( $app->param('includeCurrent') ) {
+        unshift @child_cats, $cat;
+    }
+
+    +{  totalResults => scalar @child_cats,
+        items => MT::DataAPI::Resource::Type::ObjectList->new( \@child_cats ),
+    };
+}
+
 sub create {
     my ( $app, $endpoint ) = @_;
 
