@@ -1239,7 +1239,7 @@ BEGIN {
                     require MT::CMS::Blog;
                     return MT::CMS::Blog::can_view_blog_list( MT->instance );
                 },
-                data_api_condition => undef,
+                data_api_condition => sub {1},
             },
             entry => {
                 object_label        => 'Entry',

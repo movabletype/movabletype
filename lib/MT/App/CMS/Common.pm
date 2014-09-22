@@ -183,9 +183,6 @@ sub init_core_callbacks {
             $pkg . 'post_save.blog'   => "${pfx}Blog::post_save",
             $pkg . 'save_filter.blog' => "${pfx}Blog::save_filter",
             $pkg . 'post_delete.blog' => "${pfx}Blog::post_delete",
-            $pkg
-                . 'pre_load_filtered_list.blog' =>
-                "${pfx}Blog::cms_pre_load_filtered_list",
 
             # folder callbacks
             $pkg . 'edit.folder' => "${pfx}Folder::edit",

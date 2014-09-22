@@ -673,6 +673,41 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
+        {   id             => 'list_sites',
+            route          => '/sites',
+            verb           => 'GET',
+            version        => 2,
+            handler        => "${pkg}Blog::v2::list",
+            default_params => {
+                limit        => 25,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
+                searchFields => 'name',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of blogs.',
+            },
+            requires_login => 0,
+        },
+        {   id             => 'list_sites_by_parent',
+            route          => '/sites/:site_id/children',
+            verb           => 'GET',
+            handler        => "${pkg}Blog::v2::list_by_parent",
+            default_params => {
+                limit        => 25,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
+                searchFields => 'name',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of blogs.',
+            },
+            requires_login => 0,
+        },
     ];
 }
 

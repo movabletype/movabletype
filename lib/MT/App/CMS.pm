@@ -531,6 +531,9 @@ sub init_plugins {
 
             # blog callbacks
             $pkg . 'view_permission_filter.blog' => "${pfx}Blog::can_view",
+            $pkg
+                . 'pre_load_filtered_list.blog' =>
+                "${pfx}Blog::cms_pre_load_filtered_list",
 
             # category callbacks
             $pkg
