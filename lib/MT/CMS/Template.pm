@@ -2970,7 +2970,12 @@ sub edit_widget {
     my %all_widgets;
     while ( my $m = $iter->() ) {
         next unless $m;
-        $all_widgets{ $m->id }{name}    = $m->name;
+        my $widget_name = $m->name;
+        $widget_name = '' if !defined $widget_name;
+        $widget_name =~ s/^\s+|\s+$//g;
+        $widget_name = "(" . $app->translate("No Name") . ")"
+            if $widget_name eq '';
+        $all_widgets{ $m->id }{name}    = $widget_name;
         $all_widgets{ $m->id }{blog_id} = $m->blog_id;
     }
 
