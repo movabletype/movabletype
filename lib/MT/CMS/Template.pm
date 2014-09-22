@@ -3065,9 +3065,14 @@ sub list_widget {
     my @widgetmanagers;
     while ( my $widgetset = $iter->() ) {
         next unless $widgetset;
+        my $ws_name = $widgetset->name;
+        $ws_name = '' if !defined $ws_name;
+        $ws_name =~ s/^\s+|\s+$//g;
+        $ws_name = "(" . $app->translate("No Name") . ")"
+            if $ws_name eq '';
         my $ws = {
             id            => $widgetset->id,
-            widgetmanager => $widgetset->name,
+            widgetmanager => $ws_name,
         };
         if ( my $modulesets = $widgetset->modulesets ) {
             $ws->{widgets} = $modulesets;
