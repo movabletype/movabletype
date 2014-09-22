@@ -13,7 +13,7 @@ use warnings;
 
 use base qw( MT::Plugin );
 
-our $VERSION = '2.41';
+our $VERSION = '2.42';
 my $plugin;
 $plugin = MT::Plugin::MultiBlog->new(
     {   id   => 'multiblog',
@@ -94,7 +94,8 @@ $plugin = MT::Plugin::MultiBlog->new(
             },
             upgrade_functions => {
                 'fix_broken_trigger_cache' => {
-                    updater => {
+                    version_limit => 2.42,
+                    updater       => {
                         type  => 'blog',
                         terms => { class => '*' },
                         label => "Updating the MultiBlog trigger cache...",
