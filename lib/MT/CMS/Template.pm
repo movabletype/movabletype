@@ -887,6 +887,10 @@ sub list {
         $row->{type} = 'entry' if $type eq 'individual';
         my $published_url = $obj->published_url;
         $row->{published_url} = $published_url if $published_url;
+        $row->{name} = '' if !defined $row->{name};
+        $row->{name} =~ s/^\s+|\s+$//g;
+        $row->{name} = "(" . $app->translate("No Name") . ")"
+            if $row->{name} eq '';
     };
 
     my $params        = {};
