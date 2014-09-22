@@ -352,14 +352,7 @@ sub update_trigger_cache {
                     $scope = "system";
                 }
                 elsif ( $id eq '_blogs_in_website' ) {
-                    my $app        = MT::instance;
-                    my $website_id = $app->param('blog_id');
-                    next unless $website_id;
-                    if ( my $website
-                        = $app->model('website')->load($website_id) )
-                    {
-                        $scope = "blog:" . $website->id;
-                    }
+                    $scope = "blog:$blog_id";
                 }
                 else {
                     $scope = "blog:$id";
@@ -381,13 +374,7 @@ sub update_trigger_cache {
                 $scope = "system";
             }
             elsif ( $id eq '_blogs_in_website' ) {
-                my $app        = MT::instance;
-                my $website_id = $app->param('blog_id');
-                next unless $website_id;
-                if ( my $website = $app->model('website')->load($website_id) )
-                {
-                    $scope = "blog:" . $website->id;
-                }
+                $scope = "blog:$blog_id";
             }
             else {
                 $scope = "blog:$id";
