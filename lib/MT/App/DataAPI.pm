@@ -694,6 +694,7 @@ sub core_endpoints {
         {   id             => 'list_sites_by_parent',
             route          => '/sites/:site_id/children',
             verb           => 'GET',
+            version        => 2,
             handler        => "${pkg}Blog::v2::list_by_parent",
             default_params => {
                 limit        => 25,
