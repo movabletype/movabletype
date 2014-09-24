@@ -59,12 +59,20 @@ sub core_resources {
             {   version          => 1,
                 fields           => "${pkg}Blog::fields",
                 updatable_fields => "${pkg}Blog::updatable_fields",
+            },
+            {   version          => 2,
+                fields           => "${pkg}Blog::v2::fields",
+                updatable_fields => "${pkg}Blog::v2::updatable_fields",
             }
         ],
         'website' => [
             {   version          => 1,
                 fields           => "${pkg}Website::fields",
                 updatable_fields => "${pkg}Website::updatable_fields",
+            },
+            {   version          => 2,
+                fields           => "${pkg}Website::v2::fields",
+                updatable_fields => "${pkg}Website::v2::updatable_fields",
             }
         ],
         'asset' => [
