@@ -120,6 +120,7 @@ sub fields {
             from_object => sub {
                 my ($obj) = @_;
                 my $host = $obj->site_url;
+                return '' unless defined $host;
                 if ( $host =~ m!^https?://([^/:]+)(:\d+)?/?! ) {
                     return $1 . ( $2 || '' );
                 }
