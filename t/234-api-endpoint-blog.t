@@ -407,7 +407,24 @@ my @suite = (
     },
 
     # delete_site - normal tests
-
+    {
+        # blog
+        path     => '/v2/sites/1',
+        method   => 'DELETE',
+        complete => sub {
+            my $blog = MT->model('blog')->load(1);
+            is( $blog, undef, 'Blog (ID:1) was deleted.' );
+        },
+    },
+    {
+        # website
+        path     => '/v2/sites/4',
+        method   => 'DELETE',
+        complete => sub {
+            my $website = MT->model('website')->load(4);
+            is( $website, undef, 'Website (ID:4) was deleted.' );
+        },
+    },
 );
 
 my %callbacks = ();
