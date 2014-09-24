@@ -709,6 +709,15 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
+        {   id        => 'insert_new_website',
+            route     => '/sites',
+            resources => ['website'],
+            verb      => 'POST',
+            version   => 2,
+            handler   => "${pkg}Blog::v2::insert_new_website",
+            error_codes =>
+                { 403 => 'Do not have permission to create a website.', },
+        },
     ];
 }
 
@@ -770,6 +779,9 @@ sub init_plugins {
                 . 'pre_load_filtered_list.asset' =>
                 "${pfx}Asset::cms_pre_load_filtered_list",
             $pkg . 'pre_save.asset' => "${pfx}Asset::pre_save",
+
+            # website callbacks
+            $pkg . 'save_filter.website' => "${pfx}Website::save_filter",
         }
     );
 

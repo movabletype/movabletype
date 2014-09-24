@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+use FindBin;
+
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
@@ -32,7 +34,8 @@ $mock_author->mock( 'is_superuser', sub {0} );
 
 my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 my $version;
-$mock_app_api->mock( 'current_api_version', sub { $version = $_[1] if $_[1]; $version } );
+$mock_app_api->mock( 'current_api_version',
+    sub { $version = $_[1] if $_[1]; $version } );
 
 my @suite = (
     {   path      => '/v1/users/me/sites',
@@ -86,6 +89,120 @@ my @suite = (
         ],
         result => sub {
             MT->model('blog')->load(2);
+        },
+    },
+
+    # insert_new_website - irregular tests
+    {   path     => '/v2/sites',
+        method   => 'POST',
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, 'A resource "website" is required.' );
+        },
+    },
+    {   path     => '/v2/sites',
+        method   => 'POST',
+        params   => { website => {}, },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"name\" is required.\n" );
+        },
+    },
+    {   path   => '/v2/sites',
+        method => 'POST',
+        params => { website => { name => 'test-api-permission-website', }, },
+        code   => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"url\" is required.\n" );
+        },
+    },
+    {   path   => '/v2/sites',
+        method => 'POST',
+        params => {
+            website => {
+                name => 'test-api-permission-website',
+                url  => 'http://narnia2.na/',
+            },
+        },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"sitePath\" is required.\n" );
+        },
+    },
+    {   path   => '/v2/sites',
+        method => 'POST',
+        params => {
+            website => {
+                name     => 'test-api-permission-website',
+                url      => 'http://narnia2.na/',
+                sitePath => $FindBin::Bin,
+            },
+        },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"themeId\" is required.\n" );
+        },
+    },
+    {   path   => '/v2/sites',
+        method => 'POST',
+        params => {
+            website => {
+                name     => 'test-api-permission-website',
+                url      => 'http://narnia2.na/',
+                sitePath => $FindBin::Bin,
+                themeId  => 'dummy',
+            },
+        },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, "Invalid theme_id: dummy\n" );
+        },
+    },
+    {   path   => '/v2/sites',
+        method => 'POST',
+        params => {
+            website => {
+                name     => 'test-api-permission-website',
+                url      => 'http://narnia2.na/',
+                sitePath => 'relative/path',
+                themeId  => 'classic_website',
+            },
+        },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "The website root directory must be absolute: relative\/path\n"
+            );
+        },
+    },
+
+    # insert_new_website - normal tests
+    {   path   => '/v2/sites',
+        method => 'POST',
+        params => {
+            website => {
+                themeId      => 'classic_website',
+                name         => 'test-api-permission-website',
+                url          => 'http://narnia2.na/',
+                sitePath     => $FindBin::Bin,
+                serverOffset => '9',
+                language     => 'ja',
+            },
+        },
+        result => sub {
+            MT->model('website')
+                ->load( { name => 'test-api-permission-website' } );
         },
     },
 );
@@ -203,3 +320,9 @@ for my $data (@suite) {
 }
 
 done_testing();
+
+sub check_error_message {
+    my ( $body, $error ) = @_;
+    my $result = MT::Util::from_json($body);
+    is( $result->{error}{message}, $error, 'Error message: ' . $error );
+}
