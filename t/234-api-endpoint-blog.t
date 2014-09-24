@@ -92,6 +92,58 @@ my @suite = (
         },
     },
 
+    # list_sites - normal tests
+    {   path     => '/v2/sites',
+        method   => 'GET',
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $result = MT::Util::from_json($body);
+            my @result_ids = map { $_->{id} } @{ $result->{items} };
+
+            my @sites = MT->model('blog')
+                ->load( { class => '*' }, { sort => 'name' } );
+            my @site_ids = map { $_->id } @sites;
+
+            is_deeply( \@result_ids, \@site_ids );
+        },
+    },
+
+    # list_sites_by_parent - normal tests
+    {   path     => '/v2/sites/2/children',
+        method   => 'GET',
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $result = MT::Util::from_json($body);
+            my @result_ids = map { $_->{id} } @{ $result->{items} };
+
+            my @sites = MT->model('blog')
+                ->load( { parent_id => 2 }, { sort => 'name' } );
+            my @site_ids = map { $_->id } @sites;
+
+            is_deeply( \@result_ids, \@site_ids );
+        },
+    },
+    {
+        # blog
+        path     => '/v2/sites/1/children',
+        method   => 'GET',
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+            is_deeply( $result, { totalResults => 0, items => [] } );
+        },
+    },
+
+    # list_sites_by_parent - irregular tests
+    {
+        # non-existent website
+        path   => '/v2/sites/3/children',
+        method => 'GET',
+        code   => 404,
+    },
+
     # insert_new_website - irregular tests
     {   path     => '/v2/sites',
         method   => 'POST',
