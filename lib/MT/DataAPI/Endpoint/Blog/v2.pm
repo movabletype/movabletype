@@ -146,6 +146,7 @@ sub delete {
 
     my ($site) = context_objects(@_)
         or return;
+    return unless $site && $site->id;
 
     run_permission_filter( $app, 'data_api_delete_permission_filter',
         $site->class, $site )
