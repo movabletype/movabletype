@@ -709,6 +709,15 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
+        {   id        => 'insert_new_blog',
+            route     => '/sites/:site_id',
+            resources => ['blog'],
+            verb      => 'POST',
+            version   => 2,
+            handler   => "${pkg}Blog::v2::insert_new_blog",
+            error_codes =>
+                { 403 => 'Do not have permission to create a blog.', },
+        },
         {   id        => 'insert_new_website',
             route     => '/sites',
             resources => ['website'],
@@ -784,6 +793,7 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.blog' =>
                 "${pfx}Blog::cms_pre_load_filtered_list",
+            $pkg . 'save_filter.blog' => "${pfx}Blog::save_filter",
 
             # website callbacks
             $pkg . 'save_filter.website' => "${pfx}Website::save_filter",

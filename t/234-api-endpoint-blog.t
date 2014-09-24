@@ -261,6 +261,113 @@ my @suite = (
         },
     },
 
+    # insert_new_blog - normal tests
+    {   path   => '/v2/sites/2',
+        method => 'POST',
+        params => {
+            blog => {
+                url      => 'blog',
+                name     => 'blog',
+                sitePath => 'blog',
+                themeId  => 'classic_blog',
+            },
+        },
+        complete => sub {
+            my ( $data, $body ) = @_;
+            my $result = MT::Util::from_json($body);
+            my $blog = MT->model('blog')->load( { name => 'blog' } );
+            is( $result->{id}, $blog->id );
+        },
+    },
+
+    # insert_new_blog - abnormal tests
+    {
+        # website
+        path     => '/v2/sites/1',
+        method   => 'POST',
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "Cannot create a blog under blog (ID:1)." );
+        },
+    },
+    {   path     => '/v2/sites/2',
+        method   => 'POST',
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, "A resource \"blog\" is required." );
+        },
+    },
+    {   path     => '/v2/sites/2',
+        method   => 'POST',
+        params   => { blog => {}, },
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "Either parameter of \"url\" or \"subdomain\" is required." );
+        },
+    },
+    {   path     => '/v2/sites/2',
+        method   => 'POST',
+        params   => { blog => { url => 'blog', }, },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"name\" is required.\n" );
+        },
+    },
+    {   path   => '/v2/sites/2',
+        method => 'POST',
+        params => {
+            blog => {
+                url  => 'blog',
+                name => 'blog',
+            },
+        },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"sitePath\" is required.\n" );
+        },
+    },
+    {   path   => '/v2/sites/2',
+        method => 'POST',
+        params => {
+            blog => {
+                url      => 'blog',
+                name     => 'blog',
+                sitePath => 'blog',
+            },
+        },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"themeId\" is required.\n" );
+        },
+    },
+    {   path   => '/v2/sites/2',
+        method => 'POST',
+        params => {
+            blog => {
+                url      => 'blog',
+                name     => 'blog',
+                sitePath => 'blog',
+                themeId  => 'invalid_theme',
+            },
+        },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, "Invalid theme_id: invalid_theme\n" );
+        },
+    },
+
     # insert_new_website - normal tests
     {   path   => '/v2/sites',
         method => 'POST',

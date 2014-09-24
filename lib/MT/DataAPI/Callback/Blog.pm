@@ -9,6 +9,47 @@ package MT::DataAPI::Callback::Blog;
 use strict;
 use warnings;
 
+sub save_filter {
+    my ( $eh, $app, $obj, $original ) = @_;
+
+    # Check empty fields.
+    my @not_empty_fields = (
+        { field => 'name',      parameter => 'name' },
+        { field => 'site_path', parameter => 'sitePath' },
+        { field => 'theme_id',  parameter => 'themeId' },
+    );
+    for (@not_empty_fields) {
+        my $field = $_->{field};
+        if ( !( defined $obj->column($field) ) || $obj->column($field) eq '' )
+        {
+            return $app->errtrans( 'A parameter "[_1]" is required.',
+                $_->{parameter} );
+        }
+    }
+
+    # Check whether theme_id is valid or not.
+    require MT::Theme;
+    if ( !MT::Theme->load( $obj->theme_id ) ) {
+        return $app->errtrans( 'Invalid theme_id: [_1]', $obj->theme_id );
+    }
+
+# Check whether site_path is within BaseSitePath or not, if site_path is absolute.
+    require File::Spec;
+    my $site_path = $obj->column('site_path');
+    if ( $app->config->BaseSitePath
+        && File::Spec->file_name_is_absolute($site_path) )
+    {
+        my $l_path = $app->config->BaseSitePath;
+        require MT::CMS::Common;
+        if ( !MT::CMS::Common::is_with_base_sitepath( $app, $site_path ) ) {
+            return $app->errtrans(
+                "The blog root directory must be within [_1]", $l_path );
+        }
+    }
+
+    return 1;
+}
+
 sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
 

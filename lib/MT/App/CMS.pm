@@ -531,6 +531,7 @@ sub init_plugins {
 
             # blog callbacks
             $pkg . 'view_permission_filter.blog' => "${pfx}Blog::can_view",
+            $pkg . 'save_filter.blog'            => "${pfx}Blog::save_filter",
             $pkg
                 . 'pre_load_filtered_list.blog' =>
                 "${pfx}Blog::cms_pre_load_filtered_list",

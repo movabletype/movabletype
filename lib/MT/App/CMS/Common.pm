@@ -181,7 +181,6 @@ sub init_core_callbacks {
                 . 'delete_permission_filter.blog' => "${pfx}Blog::can_delete",
             $pkg . 'pre_save.blog'    => "${pfx}Blog::pre_save",
             $pkg . 'post_save.blog'   => "${pfx}Blog::post_save",
-            $pkg . 'save_filter.blog' => "${pfx}Blog::save_filter",
             $pkg . 'post_delete.blog' => "${pfx}Blog::post_delete",
 
             # folder callbacks

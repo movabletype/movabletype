@@ -39,6 +39,66 @@ sub list_by_parent {
 }
 
 # Implemented by reference to MT::CMS::Common::save().
+sub insert_new_blog {
+    my ( $app, $endpoint ) = @_;
+
+    my ($site) = context_objects(@_);
+    return unless $site && $site->id;
+    if ( $site->is_blog ) {
+        return $app->error(
+            $app->translate(
+                'Cannot create a blog under blog (ID:[_1]).',
+                $site->id
+            ),
+            400
+        );
+    }
+
+    my $orig_blog = $app->model('blog')->new;
+    $orig_blog->set_values(
+        {   language      => MT->config->DefaultLanugage || '',
+            date_language => MT->config->DefaultLanguage || '',
+            nofollow_urls => 1,
+            follow_auth_links        => 1,
+            page_layout              => 'layout-wtt',
+            commenter_authenticators => _generate_commenter_authenticators(),
+        }
+    );
+
+    my $new_blog = $app->resource_object( 'blog', $orig_blog ) or return;
+
+    _remove_whitespace_of_name($new_blog);
+    _remove_dot_of_file_extension($new_blog);
+
+    # Generate site_url and set.
+    my $blog_json = $app->param('blog');
+    my $blog_hash = $app->current_format->{unserialize}->($blog_json);
+
+    my $subdomain = $blog_hash->{subdomain};
+    my $path      = $blog_hash->{url};
+
+    if (   !( defined $subdomain && $subdomain ne '' )
+        && !( defined $path && $path ne '' ) )
+    {
+        return $app->error(
+            $app->translate(
+                'Either parameter of "url" or "subdomain" is required.'),
+            400
+        );
+    }
+
+    if ($subdomain) {
+        $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+        $subdomain =~ s/\.{2,}/\./g;
+        $new_blog->site_url("$subdomain/::/$path");
+    }
+
+    save_object( $app, 'blog', $new_blog ) or return;
+
+    $new_blog;
+}
+
+# Implemented by reference to MT::CMS::Common::save().
 sub insert_new_website {
     my ( $app, $endpoint ) = @_;
 
@@ -56,18 +116,8 @@ sub insert_new_website {
     my $new_website = $app->resource_object( 'website', $orig_website )
         or return;
 
-    # Remove whitespace characters of the head and the end.
-    if ( defined $new_website->name ) {
-        my $name = $new_website->name;
-        $name =~ s/(^\s+|\s+$)//g;
-        $new_website->name($name);
-    }
-
-    # Remove the dot of a character string head.
-    if ( my $file_extension = $new_website->file_extension ) {
-        $file_extension =~ s/^\.*// if ( $file_extension || '' ) ne '';
-        $new_website->file_extension($file_extension);
-    }
+    _remove_whitespace_of_name($new_website);
+    _remove_dot_of_file_extension($new_website);
 
     save_object( $app, 'website', $new_website )
         or return;
@@ -88,6 +138,26 @@ sub _generate_commenter_authenticators {
         push @authenticators, $auth;
     }
     return join( ',', @authenticators );
+}
+
+# Remove whitespace characters of the head and the end.
+sub _remove_whitespace_of_name {
+    my ($site) = @_;
+    if ( defined $site->name ) {
+        my $name = $site->name;
+        $name =~ s/(^\s+|\s+$)//g;
+        $site->name($name);
+    }
+
+}
+
+# Remove the dot of a character string head.
+sub _remove_dot_of_file_extension {
+    my ($site) = @_;
+    if ( my $file_extension = $site->file_extension ) {
+        $file_extension =~ s/^\.*// if ( $file_extension || '' ) ne '';
+        $site->file_extension($file_extension);
+    }
 }
 
 1;
