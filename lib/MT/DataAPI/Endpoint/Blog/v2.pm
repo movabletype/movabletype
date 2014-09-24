@@ -93,7 +93,15 @@ sub insert_new_blog {
         $new_blog->site_url("$subdomain/::/$path");
     }
 
-    save_object( $app, 'blog', $new_blog ) or return;
+    save_object(
+        $app, 'blog',
+        $new_blog,
+        $orig_blog,
+        sub {
+            $new_blog->touch;
+            $_[0]->();
+        }
+    ) or return;
 
     $new_blog;
 }
@@ -119,8 +127,16 @@ sub insert_new_website {
     _remove_whitespace_of_name($new_website);
     _remove_dot_of_file_extension($new_website);
 
-    save_object( $app, 'website', $new_website )
-        or return;
+    save_object(
+        $app,
+        'website',
+        $new_website,
+        $orig_website,
+        sub {
+            $new_website->touch;
+            $_[0]->();
+        }
+    ) or return;
 
     $new_website;
 }
