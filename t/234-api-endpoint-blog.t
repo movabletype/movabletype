@@ -108,6 +108,28 @@ my @suite = (
             is_deeply( \@result_ids, \@site_ids );
         },
     },
+    {
+        # not logged in
+        path   => '/v2/sites',
+        method => 'GET',
+        setup  => sub {
+            $mock_app_api->mock( 'user', sub { MT->model('author')->new } );
+        },
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $result = MT::Util::from_json($body);
+            my @result_ids = map { $_->{id} } @{ $result->{items} };
+
+            my @sites = MT->model('blog')
+                ->load( { class => '*' }, { sort => 'name' } );
+            my @site_ids = map { $_->id } @sites;
+
+            is_deeply( \@result_ids, \@site_ids );
+
+            $mock_app_api->unmock('user');
+        },
+    },
 
     # list_sites_by_parent - normal tests
     {   path     => '/v2/sites/2/children',

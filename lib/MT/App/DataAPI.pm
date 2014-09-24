@@ -780,6 +780,11 @@ sub init_plugins {
                 "${pfx}Asset::cms_pre_load_filtered_list",
             $pkg . 'pre_save.asset' => "${pfx}Asset::pre_save",
 
+            # blog callbacks
+            $pkg
+                . 'pre_load_filtered_list.blog' =>
+                "${pfx}Blog::cms_pre_load_filtered_list",
+
             # website callbacks
             $pkg . 'save_filter.website' => "${pfx}Website::save_filter",
         }
