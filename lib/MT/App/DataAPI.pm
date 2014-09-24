@@ -727,6 +727,14 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to create a website.', },
         },
+        {   id      => 'delete_site',
+            route   => '/sites/:site_id',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Blog::v2::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a site.', },
+        },
     ];
 }
 

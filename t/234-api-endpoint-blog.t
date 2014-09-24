@@ -386,6 +386,28 @@ my @suite = (
                 ->load( { name => 'test-api-permission-website' } );
         },
     },
+
+    # delete_site - irregular tests
+    {   path     => '/v2/sites/2',
+        method   => 'DELETE',
+        code     => 403,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                'Website "Test site" (ID:2) were not deleted. You need to delete blogs under the website first.'
+            );
+        },
+    },
+    {   path   => '/v2/sites/10',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {   path   => '/v2/sites/0',
+        method => 'DELETE',
+    },
+
+    # delete_site - normal tests
+
 );
 
 my %callbacks = ();

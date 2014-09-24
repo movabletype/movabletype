@@ -141,6 +141,48 @@ sub insert_new_website {
     $new_website;
 }
 
+sub delete {
+    my ( $app, $endpoint ) = @_;
+
+    my ($site) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app, 'data_api_delete_permission_filter',
+        $site->class, $site )
+        or return;
+
+    if ( !$site->is_blog ) {
+        my $child_blog_count
+            = MT->model('blog')->count( { parent_id => $site->id } );
+        if ($child_blog_count) {
+            return $app->error(
+                $app->translate(
+                    'Website "[_1]" (ID:[_2]) were not deleted. You need to delete blogs under the website first.',
+                    ( defined $site->name ? $site->name : '(no name)' ),
+                    $site->id,
+                ),
+                403,
+            );
+        }
+    }
+
+    $site->remove
+        or return $app->error(
+        $app->translate(
+            'Removing [_1] failed: [_2]', $site->class_label,
+            $site->errstr
+        ),
+        500,
+        );
+
+    $app->run_callbacks( 'data_api_post_delete.' . $site->class, $app,
+        $site );
+
+    $app->run_callbacks( 'rebuild', $site );
+
+    return $site;
+}
+
 sub _generate_commenter_authenticators {
     my @authenticators = qw( MovableType );
     my @default_auth = split /,/, MT->config('DefaultCommenterAuth');
