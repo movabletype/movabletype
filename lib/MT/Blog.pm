@@ -154,6 +154,7 @@ sub list_props {
             order => 100,
         },
         name => {
+            base  => '__virtual.name',
             auto      => 1,
             label     => 'Name',
             order     => 200,
