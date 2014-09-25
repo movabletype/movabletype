@@ -404,6 +404,7 @@ my @suite = (
     },
     {   path   => '/v2/sites/0',
         method => 'DELETE',
+        code   => 404,
     },
 
     # delete_site - normal tests
