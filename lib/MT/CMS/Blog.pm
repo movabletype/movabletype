@@ -14,7 +14,7 @@ sub edit {
 
     my $q       = $app->param;
     my $cfg     = $app->config;
-    my $blog    = $app->blog;
+    my $blog    = $obj || $app->blog;
     my $blog_id = $id;
 
     if ($id) {
