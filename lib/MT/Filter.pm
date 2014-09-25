@@ -85,7 +85,14 @@ sub list_props {
             order   => 200,
             display => 'force',
             raw     => sub {
-                MT::Util::encode_html( $_[1]->label );
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $label = $obj->label;
+                $label = '' if !defined $label;
+                $label =~ s/^\s+|\s+$//g;
+                $label = "(" . $app->translate("No Label") . ")"
+                    if $label eq '';
+                MT::Util::encode_html( $label );
             },
             html_link => sub {
                 my $prop = shift;
