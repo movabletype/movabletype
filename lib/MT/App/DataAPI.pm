@@ -727,6 +727,14 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to create a website.', },
         },
+        {   id      => 'update_site',
+            route   => '/sites/:site_id',
+            verb    => 'PUT',
+            version => 2,
+            handler => "${pkg}Blog::v2::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a site.', },
+        },
         {   id      => 'delete_site',
             route   => '/sites/:site_id',
             verb    => 'DELETE',

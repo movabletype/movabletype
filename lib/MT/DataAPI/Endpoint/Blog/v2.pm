@@ -141,6 +141,32 @@ sub insert_new_website {
     $new_website;
 }
 
+sub update {
+    my ( $app, $endpoint ) = @_;
+
+    my ($site) = context_objects(@_)
+        or return;
+    if ( !$site->id ) {
+        return $app->error( $app->translate('Site not found'), 404 );
+    }
+
+    my $new_site = $app->resource_object( $site->class, $site )
+        or return;
+
+    save_object(
+        $app,
+        $new_site->class,
+        $new_site,
+        $site,
+        sub {
+            $new_site->touch;
+            $_[0]->();
+        }
+    ) or return;
+
+    $new_site;
+}
+
 sub delete {
     my ( $app, $endpoint ) = @_;
 

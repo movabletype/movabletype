@@ -9,6 +9,8 @@ package MT::DataAPI::Resource::Blog::v2;
 use strict;
 use warnings;
 
+use boolean ();
+
 use MT::Entry;
 use MT::DataAPI::Resource;
 
@@ -86,7 +88,7 @@ sub updatable_fields {
             allowCommenterRegist
             newCreatedUserRole
             allowUnregComments
-            requireCommentEmail
+            requireCommentEmails
             commenterAuthenticators
             ),
 
@@ -276,10 +278,19 @@ sub fields {
             condition => \&_can_view_cfg_screens,
         },
         {   name        => 'allowComments',
-            type        => 'MT::DataAPI::Resource::DataType::Boolean',
             from_object => sub {
                 my ($obj) = @_;
-                return $obj->allow_reg_comments || $obj->allow_unreg_comments;
+                if ( $obj->allow_reg_comments || $obj->allow_unreg_comments )
+                {
+                    return boolean::true();
+                }
+                else {
+                    return boolean::false();
+                }
+            },
+            to_object => sub {
+
+                # Do nothing
             },
             type_to_object => sub {
                 my ( $hashes, $objs ) = @_;
@@ -379,12 +390,12 @@ sub fields {
             condition => \&_can_view_cfg_screens,
         },
         {   name      => 'allowUnregComments',
-            alias     => 'allow_ungreg_comments',
+            alias     => 'allow_unreg_comments',
             type      => 'MT::DataAPI::Resource::DataType::Boolean',
             condition => \&_can_view_cfg_screens,
         },
-        {   name      => 'requireCommentEmail',
-            alias     => 'require_comment_email',
+        {   name      => 'requireCommentEmails',
+            alias     => 'require_comment_emails',
             type      => 'MT::DataAPI::Resource::DataType::Boolean',
             condition => \&_can_view_cfg_screens,
         },
