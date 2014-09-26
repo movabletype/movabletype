@@ -1433,7 +1433,8 @@ sub can_save {
 
         my $author = $app->user;
         return $author->permissions( $id->id )->can_do('edit_blog_config')
-            || ( $app->param('cfg_screen')
+            || ( $app->isa('MT::App::CMS')
+            && $app->param('cfg_screen')
             && $app->param('cfg_screen') eq 'cfg_publish_profile' );
     }
     else {
