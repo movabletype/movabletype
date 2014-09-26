@@ -168,7 +168,8 @@ sub list_props {
                     my $cls = MT->model($class);
                     $label
                         = $class
-                        ? ( $cls ? $cls->class_label : 'DELETED' )
+                        ? (
+                        $cls ? $cls->class_label : MT->translate('Deleted') )
                         : $prop->class;
                 }
                 return ref $label ? $label->() : $label;
