@@ -780,7 +780,7 @@ $Languages = array(
 global $_encode_xml_Map;
 $_encode_xml_Map = array('&' => '&amp;', '"' => '&quot;',
                          '<' => '&lt;', '>' => '&gt;',
-                         '\'' => '&apos;');
+                         '\'' => '&#039;');
 
 function __check_xml_char($matches) {
     $val = $matches[2];
@@ -903,7 +903,7 @@ function html_text_transform($str = '') {
     return implode("\n\n", $paras);
 }
 
-function encode_html($str, $quote_style = ENT_COMPAT) {
+function encode_html($str, $quote_style = ENT_QUOTES) {
     if (!isset($str)) return '';
     $trans_table = get_html_translation_table(HTML_SPECIALCHARS, $quote_style);
     if( $trans_table["'"] != '&#039;' ) { # some versions of PHP match single quotes to &#39;
@@ -912,7 +912,7 @@ function encode_html($str, $quote_style = ENT_COMPAT) {
     return (strtr($str, $trans_table));
 }
 
-function encode_html_entities($str, $quote_style = ENT_COMPAT) {
+function encode_html_entities($str, $quote_style = ENT_QUOTES) {
     if (!$str) {
         return '';
     }
@@ -949,7 +949,7 @@ function encode_html_entities($str, $quote_style = ENT_COMPAT) {
         htmlentities($str, $quote_style, $encoding);
 }
 
-function decode_html($str, $quote_style = ENT_COMPAT) {
+function decode_html($str, $quote_style = ENT_QUOTES) {
     if (!isset($str)) return '';
     $trans_table = get_html_translation_table(HTML_SPECIALCHARS, $quote_style);
     if( $trans_table["'"] != '&#039;' ) { # some versions of PHP match single quotes to &#39;

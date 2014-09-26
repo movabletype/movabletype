@@ -178,7 +178,7 @@ function smarty_function_mtvar($args, &$ctx) {
         if ($esc == 'js') {
             $return_val = encode_js($return_val);
         } elseif ($esc == 'html') {
-            $return_val = encode_html_entities($return_val, ENT_COMPAT);
+            $return_val = encode_html_entities($return_val, ENT_QUOTES);
         } elseif ($esc == 'url') {
             $return_val = urlencode($return_val);
             $return_val = preg_replace('/\+/', '%20', $return_val);
