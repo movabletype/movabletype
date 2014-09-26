@@ -92,6 +92,12 @@ sub core_resources {
                 updatable_fields => "${pkg}Permission::updatable_fields",
             }
         ],
+        'role' => [
+            {   version          => 2,
+                fields           => "${pkg}Role::v2::fields",
+                updatable_fields => "${pkg}Role::v2::updatable_fields",
+            },
+        ],
     };
 }
 
