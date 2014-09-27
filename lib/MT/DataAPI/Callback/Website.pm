@@ -31,6 +31,25 @@ sub save_filter {
         }
     }
 
+    # Check positive interger fields.
+    my @positive_inteter_columns
+        = qw( max_revisions_entry max_revisions_template );
+    for my $col (@positive_interger_columns) {
+        if ( !( $obj->$col && $obj->$col =~ m/^\d+$/ ) ) {
+            return $eh->error(
+                $app->translate(
+                    "The number of revisions to store must be a positive integer."
+                )
+            );
+        }
+    }
+
+    # Check whether blog has a preferred archive type or not.
+    if ( _blog_has_archive_type($obj) && !$obj->archive_type_preferred ) {
+        return $eh->error(
+            $app->translate("Please choose a preferred archive type.") );
+    }
+
     # Check whether theme_id is valid or not.
     require MT::Theme;
     if ( !MT::Theme->load( $obj->theme_id ) ) {

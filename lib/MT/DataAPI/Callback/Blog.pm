@@ -27,13 +27,33 @@ sub save_filter {
         }
     }
 
+    # Check positive interger fields.
+    my @positive_inteter_columns
+        = qw( max_revisions_entry max_revisions_template );
+    for my $col (@positive_interger_columns) {
+        if ( !( $obj->$col && $obj->$col =~ m/^\d+$/ ) ) {
+            return $eh->error(
+                $app->translate(
+                    "The number of revisions to store must be a positive integer."
+                )
+            );
+        }
+    }
+
+    # Check whether blog has a preferred archive type or not.
+    if ( _blog_has_archive_type($obj) && !$obj->archive_type_preferred ) {
+        return $eh->error(
+            $app->translate("Please choose a preferred archive type.") );
+    }
+
     # Check whether theme_id is valid or not.
     require MT::Theme;
     if ( !MT::Theme->load( $obj->theme_id ) ) {
         return $app->errtrans( 'Invalid theme_id: [_1]', $obj->theme_id );
     }
 
-# Check whether site_path is within BaseSitePath or not, if site_path is absolute.
+    # Check whether site_path is within BaseSitePath or not,
+    # if site_path is absolute.
     require File::Spec;
     my $site_path = $obj->column('site_path');
     if ( $app->config->BaseSitePath
@@ -48,6 +68,22 @@ sub save_filter {
     }
 
     return 1;
+}
+
+sub _blog_has_archive_type {
+    my ($blog) = @_;
+    my $app = MT->instance;
+
+    my $has_archive_type;
+    for my $at ( split /\s*,\s*/, $blog->archive_type ) {
+        my $archiver = $app->publisher->archiver($at);
+        next unless $archiver;
+        next if 'entry' ne $archiver->entry_class;
+        $has_archive_type = 1;
+        last;
+    }
+
+    return $has_archive_type;
 }
 
 sub cms_pre_load_filtered_list {
