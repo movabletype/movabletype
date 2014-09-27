@@ -90,12 +90,17 @@ sub _load_object_by_name {
     my $model = $app->model($model_name)
         or return;
 
-    my $id  = $app->param($name);
-    my $obj = $model->load(
-        {   id => $id,
-            ( $parent ? ( $parent->datasource . '_id' => $parent->id ) : () ),
-        }
-    ) if $id;
+    my $obj;
+    if ( my $id = $app->param($name) ) {
+        $obj = $model->load(
+            {   id => $id,
+                (   $parent
+                    ? ( $parent->datasource . '_id' => $parent->id )
+                    : ()
+                ),
+            }
+        );
+    }
 
     if ( !$obj && !$app->errstr ) {
         $app->error( ucfirst($model_name) . ' not found', 404 );
