@@ -2038,8 +2038,7 @@ sub save_filter {
             unless 0 < sprintf( '%d', $app->param('max_revisions_template') );
         return $eh->error(
             MT->translate("Please choose a preferred archive type.") )
-            if $app->blog->is_blog
-            && ( !$app->param('no_archives_are_active')
+            if ( !$app->param('no_archives_are_active')
             && !$app->param('preferred_archive_type') );
     }
     return 1;
