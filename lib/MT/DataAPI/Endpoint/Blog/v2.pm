@@ -8,6 +8,9 @@ package MT::DataAPI::Endpoint::Blog::v2;
 use strict;
 use warnings;
 
+use MT::Revisable;
+use MT::CMS::Common;
+use MT::CMS::Blog;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
@@ -38,6 +41,33 @@ sub list_by_parent {
     };
 }
 
+sub _rebuild_pages {
+    my ($site) = @_;
+    my $app = MT->instance;
+
+    my $dcty = $site->custom_dynamic_templates || 'none';
+    if ( ( $dcty eq 'all' ) || ( $dcty eq 'archives' ) ) {
+        my %param = ();
+        MT::CMS::Blog::_create_build_order( $app, $site, \%param );
+        $app->param( 'single_template', 1 );    # to show tmpl full-screen
+        if ( $dcty eq 'all' ) {
+            $app->param( 'type', $param{build_order} );
+        }
+        elsif ( $dcty eq 'archives' ) {
+            my @ats
+                = map { $_->{archive_type} } @{ $param{archive_type_loop} };
+            $app->param( 'type', join( ',', @ats ) );
+        }
+        MT::CMS::Blog::start_rebuild_pages($app);
+    }
+
+    my $site_path = $site->site_path;
+    my $fmgr      = $site->file_mgr;
+    unless ( $fmgr->exists($site_path) ) {
+        $fmgr->mkpath($site_path);
+    }
+}
+
 # Implemented by reference to MT::CMS::Common::save().
 sub insert_new_blog {
     my ( $app, $endpoint ) = @_;
@@ -62,13 +92,15 @@ sub insert_new_blog {
             follow_auth_links        => 1,
             page_layout              => 'layout-wtt',
             commenter_authenticators => _generate_commenter_authenticators(),
+            max_revisions_entry      => $MT::Revisable::MAX_REVISIONS,
+            max_revisions_template   => $MT::Revisable::MAX_REVISIONS,
         }
     );
 
     my $new_blog = $app->resource_object( 'blog', $orig_blog ) or return;
 
-    _remove_whitespace_of_name($new_blog);
-    _remove_dot_of_file_extension($new_blog);
+    MT::CMS::Common::run_web_services_save_config_callbacks( $app,
+        $new_blog );
 
     # Generate site_url and set.
     my $blog_json = $app->param('blog');
@@ -87,11 +119,7 @@ sub insert_new_blog {
         );
     }
 
-    if ($subdomain) {
-        $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
-        $subdomain =~ s/\.{2,}/\./g;
-        $new_blog->site_url("$subdomain/::/$path");
-    }
+    $new_blog->created_by( $app->user->id );
 
     save_object(
         $app, 'blog',
@@ -102,6 +130,10 @@ sub insert_new_blog {
             $_[0]->();
         }
     ) or return;
+
+    if ( $new_blog->is_changed('custom_dynamic_templates') ) {
+        _rebuild_pages($new_blog);
+    }
 
     $new_blog;
 }
@@ -118,14 +150,18 @@ sub insert_new_website {
             follow_auth_links        => 1,
             page_layout              => 'layout-wtt',
             commenter_authenticators => _generate_commenter_authenticators(),
+            max_revisions_entry      => $MT::Revisable::MAX_REVISIONS,
+            max_revisions_template   => $MT::Revisable::MAX_REVISIONS,
         }
     );
 
     my $new_website = $app->resource_object( 'website', $orig_website )
         or return;
 
-    _remove_whitespace_of_name($new_website);
-    _remove_dot_of_file_extension($new_website);
+    MT::CMS::Common::run_web_services_save_config_callbacks( $app,
+        $new_website );
+
+    $new_website->created_by( $app->user->id );
 
     save_object(
         $app,
@@ -137,6 +173,10 @@ sub insert_new_website {
             $_[0]->();
         }
     ) or return;
+
+    if ( $new_website->is_changed('custom_dynamic_templates') ) {
+        _rebuild_pages($new_website);
+    }
 
     $new_website;
 }
@@ -153,6 +193,11 @@ sub update {
     my $new_site = $app->resource_object( $site->class, $site )
         or return;
 
+    MT::CMS::Common::run_web_services_save_config_callbacks( $app,
+        $new_site );
+
+    $new_site->modified_by( $app->user->id );
+
     save_object(
         $app,
         $new_site->class,
@@ -163,6 +208,10 @@ sub update {
             $_[0]->();
         }
     ) or return;
+
+    if ( $new_site->is_changed('custom_dynamic_templates') ) {
+        _rebuild_pages($new_site);
+    }
 
     $new_site;
 }
@@ -225,26 +274,6 @@ sub _generate_commenter_authenticators {
         push @authenticators, $auth;
     }
     return join( ',', @authenticators );
-}
-
-# Remove whitespace characters of the head and the end.
-sub _remove_whitespace_of_name {
-    my ($site) = @_;
-    if ( defined $site->name ) {
-        my $name = $site->name;
-        $name =~ s/(^\s+|\s+$)//g;
-        $site->name($name);
-    }
-
-}
-
-# Remove the dot of a character string head.
-sub _remove_dot_of_file_extension {
-    my ($site) = @_;
-    if ( my $file_extension = $site->file_extension ) {
-        $file_extension =~ s/^\.*// if ( $file_extension || '' ) ne '';
-        $site->file_extension($file_extension);
-    }
 }
 
 1;

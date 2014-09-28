@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use boolean ();
+use File::Spec;
 
 use MT::Entry;
 use MT::DataAPI::Resource;
@@ -20,19 +21,28 @@ sub updatable_fields {
         qw(
             name
             description
-            url
-            archiveUrl
             ),
+        {   name      => 'url',
+            condition => \&_can_save_blog_pathinfo,
+        },
+        {   name      => 'archiveUrl',
+            condition => \&_can_save_blog_pathinfo,
+        },
 
         # v2 fields
 
         # Create Blog screen
         qw(
             themeId
-            sitePath
             serverOffset
             language
             ),
+        {   name      => 'sitePath',
+            condition => \&_can_save_blog_pathinfo,
+        },
+        {   name      => 'archivePath',
+            condition => \&_can_save_blog_pathinfo,
+        },
 
         # General Settings screen
         qw(
@@ -58,7 +68,8 @@ sub updatable_fields {
             allowCommentsDefault
             allowPingsDefault
             contentCss
-            nwcSmartReplace
+            smartReplace
+            smartReplaceFields
             ),
 
         # Feedback Settings screen
@@ -121,6 +132,36 @@ sub fields {
             },
         },
 
+        # v1 fields
+        {   name      => 'name',
+            to_object => sub {
+                my ($hash) = @_;
+                my $name = $hash->{name};
+                $name =~ s/(^\s+|\s+$)//g;
+                return $name;
+            },
+        },
+        {   name      => 'url',
+            alias     => 'site_url',
+            to_object => sub {
+                my ( $hash, $obj ) = @_;
+
+                if ( defined( $hash->{siteSubdomain} )
+                    && $hash->{siteSubdomain} ne '' )
+                {
+                    my $subdomain = $hash->{siteSubdomain};
+                    $subdomain .= '.' if $subdomain !~ /\.$/;
+                    $subdomain =~ s/\.{2,}/\./g;
+
+                    my $path = $hash->{url};
+                    return "$subdomain/::/$path";
+                }
+                else {
+                    return $hash->{url};
+                }
+            },
+        },
+
         # Create Blog screen
         {   name      => 'themeId',
             alias     => 'theme_id',
@@ -142,6 +183,13 @@ sub fields {
         # General Settings screen
         {   name      => 'fileExtension',
             alias     => 'file_extension',
+            to_object => sub {
+                my ($hash) = @_;
+                my $file_extension = $hash->{fileExtension};
+                $file_extension =~ s/^\.*//
+                    if defined($file_extension) && $file_extension ne '';
+                return $file_extension;
+            },
             condition => \&_can_view,
         },
         {   name      => 'archiveTypePreferred',
@@ -241,11 +289,24 @@ sub fields {
             alias     => 'content_css',
             condition => \&_can_view_cfg_screens,
         },
-        {   name        => 'nwcSmartReplace',
-            alias       => 'nwc_smart_replace',
-            from_object => sub {
-                my ($obj) = @_;
-                $obj->nwc_smart_replace;
+        {   name      => 'smartReplace',
+            condition => \&_can_view_cfg_screens,
+        },
+        {   name      => 'smartReplaceFields',
+            to_object => sub {
+                my ($hash) = @_;
+
+                my @new_fields;
+                my @hash_fields = split ',',
+                    ( $hash->{smartReplaceFields} || '' );
+                for my $f (@hash_fields) {
+                    push( @new_fields, $f )
+                        if grep { $f eq $_ }
+                        qw/title text text_more keywords excerpt tags/;
+                }
+
+                my $new_fields = @new_fields ? join( ',', @new_fields ) : 0;
+                return $new_fields;
             },
             condition => \&_can_view_cfg_screens,
         },
@@ -509,6 +570,21 @@ sub _can_view {
 sub _can_view_cfg_screens {
     my $app = MT->instance;
     return $app->can_do('edit_config');
+}
+
+sub _can_save_blog_pathinfo {
+    my $app   = MT->instance;
+    my $perms = $app->permissions;
+    my $user  = $app->user;
+
+    return 1 if $user->is_superuser;
+    if ($perms) {
+        return 1 if $perms->can_do('save_all_settings_for_blog');
+        return 1 if $perms->can_do('save_blog_pathinfo');
+        return 1 if $perms->can_do('save_blog_config');
+    }
+
+    return;
 }
 
 1;

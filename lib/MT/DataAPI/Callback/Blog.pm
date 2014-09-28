@@ -46,7 +46,7 @@ sub save_filter {
     # Check positive interger fields.
     my @positive_integer_columns
         = qw( max_revisions_entry max_revisions_template );
-    for my $col (@positive_interger_columns) {
+    for my $col (@positive_integer_columns) {
         if ( !( $obj->$col && $obj->$col =~ m/^\d+$/ ) ) {
             return $eh->error(
                 $app->translate(
@@ -62,11 +62,6 @@ sub save_filter {
             $app->translate("Please choose a preferred archive type.") );
     }
 
-    # Check whether theme_id is valid or not.
-    if ( !MT::Theme->load( $obj->theme_id ) ) {
-        return $app->errtrans( 'Invalid theme_id: [_1]', $obj->theme_id );
-    }
-
     # Check site_path.
     my $site_path = $obj->column('site_path');
     if ( $obj->class eq 'blog' ) {
@@ -77,7 +72,8 @@ sub save_filter {
             && File::Spec->file_name_is_absolute($site_path) )
         {
             my $l_path = $app->config->BaseSitePath;
-            if ( !MT::CMS::Common::is_with_base_sitepath( $app, $site_path ) )
+            unless (
+                MT::CMS::Common::is_with_base_sitepath( $app, $site_path ) )
             {
                 return $app->errtrans(
                     "The blog root directory must be within [_1]", $l_path );
@@ -108,6 +104,11 @@ sub save_filter {
                 $site_path );
         }
 
+    }
+
+    # Check whether theme_id is valid or not.
+    if ( !MT::Theme->load( $obj->theme_id ) ) {
+        return $app->errtrans( 'Invalid theme_id: [_1]', $obj->theme_id );
     }
 
     return 1;
