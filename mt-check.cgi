@@ -793,6 +793,13 @@ my @CORE_OPT = (
         )
     ],
 
+    [   'YAML::Syck', 0, 0,
+        translate(
+            '[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.',
+            'YAML::Syck'
+        )
+    ],
+
 );
 
 use Cwd;

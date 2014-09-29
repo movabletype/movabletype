@@ -358,6 +358,11 @@ sub init_core_registry {
                 label =>
                     'This module is required for site statistics of Google Analytics.',
             },
+            'YAML::Syck' => {
+                link  => 'http://search.cpan.org/dist/YAML-Syck',
+                label =>
+                    'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.',
+            },
         },
         required_packages => {
             'Image::Size' => {
