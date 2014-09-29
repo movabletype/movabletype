@@ -87,6 +87,30 @@ sub update {
     $new_role;
 }
 
+sub delete {
+    my ( $app, $endpoint ) = @_;
+
+    my ($role) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app, 'data_api_delete_permission_filter',
+        'role', $role )
+        or return;
+
+    $role->remove
+        or return $app->error(
+        $app->translate(
+            'Removing [_1] failed: [_2]', $role->class_label,
+            $role->errstr
+        ),
+        500
+        );
+
+    $app->run_callbacks( 'data_api_post_delete.role', $app, $role );
+
+    $role;
+}
+
 1;
 
 __END__

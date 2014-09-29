@@ -788,6 +788,14 @@ sub core_endpoints {
                     'Do not have permission to retrieve the requested role.',
             },
         },
+        {   id      => 'delete_role',
+            route   => '/roles/:role_id',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Role::v2::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a role.', },
+        },
     ];
 }
 

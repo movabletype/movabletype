@@ -168,7 +168,7 @@ my @suite = (
         },
     },
 
-    # create_role - irregular tests
+    # update_role - irregular tests
     {
         # non-existent role.
         path   => '/v2/roles/20',
@@ -180,6 +180,32 @@ my @suite = (
             }
         },
         code => 404,
+    },
+
+    # delete_role - normal tests
+    {   path      => '/v2/roles/10',
+        method    => 'DELETE',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_delete_permission_filter.role',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_delete.role',
+                count => 1,
+            },
+        ],
+        complete => sub {
+            my $deleted = MT->model('role')->load(10);
+            is( $deleted, undef, 'deleted' );
+        },
+    },
+
+    # delete_role - irregular tests
+    {
+        # non-existent role.
+        path   => '/v2/roles/20',
+        method => 'DELETE',
+        code   => 404,
     },
 );
 
