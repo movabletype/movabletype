@@ -9,6 +9,8 @@ package MT::DataAPI::Resource::Common;
 use strict;
 use warnings;
 
+use MT::DataAPI::Resource;
+
 our %fields = (
     blog => {
         name        => 'blog',
@@ -41,6 +43,62 @@ our %fields = (
             my ( $hash, $obj ) = @_;
             $obj->set_status_by_text( $hash->{status} );
             return;
+        },
+    },
+    createdDate => {
+        name  => 'createdDate',
+        alias => 'created_on',
+        type  => 'MT::DataAPI::Resource::DataType::ISO8601',
+    },
+    modifiedDate => {
+        name  => 'modifiedDate',
+        alias => 'modified_on',
+        type  => 'MT::DataAPI::Resource::DataType::ISO8601',
+    },
+    createdUser => {
+        name             => 'createdUser',
+        bulk_from_object => sub {
+            my ( $objs, $hashes ) = @_;
+
+            my @author_ids = grep {$_} map { $_->created_by } @$objs;
+            my %authors = ();
+            my @authors
+                = @author_ids
+                ? MT->model('author')->load( { id => \@author_ids, } )
+                : ();
+            $authors{ $_->id } = $_ for @authors;
+
+            my $size = scalar(@$objs);
+            for ( my $i = 0; $i < $size; $i++ ) {
+                my $obj = $objs->[$i];
+                my $author = $authors{ $obj->created_by || 0 } or next;
+                $hashes->[$i]{createdUser}
+                    = MT::DataAPI::Resource->from_object( $author,
+                    [qw(id displayName userpicUrl)] );
+            }
+        },
+    },
+    modifiedUser => {
+        name             => 'modifiedUser',
+        bulk_from_object => sub {
+            my ( $objs, $hashes ) = @_;
+
+            my @author_ids = grep {$_} map { $_->modified_by } @$objs;
+            my %authors = ();
+            my @authors
+                = @author_ids
+                ? MT->model('author')->load( { id => \@author_ids, } )
+                : ();
+            $authors{ $_->id } = $_ for @authors;
+
+            my $size = scalar(@$objs);
+            for ( my $i = 0; $i < $size; $i++ ) {
+                my $obj = $objs->[$i];
+                my $author = $authors{ $obj->modified_by || 0 } or next;
+                $hashes->[$i]{modifiedUser}
+                    = MT::DataAPI::Resource->from_object( $author,
+                    [qw(id displayName userpicUrl)] );
+            }
         },
     },
 );
