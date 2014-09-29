@@ -761,6 +761,15 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of roles.',
             },
         },
+        {   id        => 'create_role',
+            route     => '/roles',
+            resources => ['role'],
+            verb      => 'POST',
+            version   => 2,
+            handler   => "${pkg}Role::v2::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create a role.', },
+        },
     ];
 }
 
@@ -831,6 +840,9 @@ sub init_plugins {
 
             # website callbacks
             $pkg . 'save_filter.website' => "${pfx}Website::save_filter",
+
+            # role callbacks
+            $pkg . 'save_filter.role' => "${pfx}Role::save_filter",
         }
     );
 

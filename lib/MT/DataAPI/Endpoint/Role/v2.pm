@@ -22,6 +22,35 @@ sub list {
     };
 }
 
+sub create {
+    my ( $app, $endpoint ) = @_;
+
+    my $orig_role = $app->model('role')->new;
+
+    my $new_role = $app->resource_object( 'role', $orig_role )
+        or return;
+
+    if ( defined $new_role->name ) {
+        my $name = $new_role->name;
+        $name =~ s/(^\s+|\s+$)//g;
+        $new_role->name($name);
+    }
+
+    save_object(
+        $app, 'role',
+        $new_role,
+        $orig_role,
+        sub {
+            if ( my $author = $app->user ) {
+                $new_role->created_by( $author->id );
+            }
+            $_[0]->();
+        }
+    ) or return;
+
+    $new_role;
+}
+
 1;
 
 __END__

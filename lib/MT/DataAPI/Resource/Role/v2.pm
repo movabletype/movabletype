@@ -59,15 +59,16 @@ sub fields {
                 return \@perms;
             },
             to_object => sub {
-                my ($hash) = @_;
+                my ( $hash, $obj ) = @_;
                 return
                     if !( exists $hash->{permissions}
                     && ref( $hash->{permissions} ) eq 'ARRAY' );
 
                 my @perms = @{ $hash->{permissions} };
-                @perms = map {"'$_'"} @perms;
-                my $perms = join ',', @perms;
-                return $perms;
+                $obj->clear_full_permissions;
+                $obj->set_these_permissions(@perms);
+
+                return;
             },
         },
     ];

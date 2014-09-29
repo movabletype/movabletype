@@ -36,6 +36,8 @@ $mock_app_api->mock( 'current_api_version',
     sub { $version = $_[1] if $_[1]; $version } );
 
 my @suite = (
+
+    # list_roles - normal tests
     {   path      => '/v2/roles',
         method    => 'GET',
         setup     => sub { $app->user($author) },
@@ -58,6 +60,72 @@ my @suite = (
             my @expected_ids = map { $_->id } @roles;
             is_deeply( \@result_ids, \@expected_ids,
                 'IDs of items are "' . "@result_ids" . '"' );
+        },
+    },
+
+    # create_role - normal tests
+    {   path   => '/v2/roles',
+        method => 'POST',
+        params => {
+            role => { name => 'create_role', permissions => ['create_post'] }
+        },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.role',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.role',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.role',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.role',
+                count => 1,
+            },
+        ],
+        result => sub {
+            MT->model('role')->load( { name => 'create_role' } );
+        },
+    },
+
+    # create_role - irregular tests
+    {   path     => '/v2/roles',
+        method   => 'POST',
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, 'A resource "role" is required.' );
+        },
+    },
+    {   path     => '/v2/roles',
+        method   => 'POST',
+        params   => { role => {} },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"name\" is required.\n" );
+        },
+    },
+    {   path     => '/v2/roles',
+        method   => 'POST',
+        params   => { role => { name => 'create_role' } },
+        code     => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "Another role already exists by that name.\n" );
+        },
+    },
+    {   path   => '/v2/roles',
+        method => 'POST',
+        params => { role => { name => 'create_role_without_permissions', }, },
+        code   => 409,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "You cannot define a role without permissions.\n" );
         },
     },
 );
@@ -173,6 +241,6 @@ done_testing();
 
 sub check_error_message {
     my ( $body, $error ) = @_;
-    my $result = MT::Util::from_json($body);
+    my $result = $app->current_format->{unserialize}->($body);
     is( $result->{error}{message}, $error, 'Error message: ' . $error );
 }
