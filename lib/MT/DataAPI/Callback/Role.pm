@@ -29,6 +29,11 @@ sub save_filter {
     return 1;
 }
 
+sub can_view {
+    my ( $eh, $app, $id, $objp ) = @_;
+    return $app->can_do('edit_role');
+}
+
 1;
 
 __END__

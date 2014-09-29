@@ -129,6 +129,18 @@ my @suite = (
         },
     },
 
+    # get_role - normal tests
+    {   path   => '/v2/roles/10',
+        method => 'GET',
+        result => sub { MT->model('role')->load(10) },
+    },
+
+    # get_role - irregular tests
+    {   path   => '/v2/roles/20',
+        method => 'GET',
+        code   => 404,
+    },
+
     # update_role - normal tests
     {   path   => '/v2/roles/10',
         method => 'PUT',

@@ -51,6 +51,19 @@ sub create {
     $new_role;
 }
 
+sub get {
+    my ( $app, $endpoint ) = @_;
+
+    my ($role) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'role', $role->id, obj_promise($role) )
+        or return;
+
+    $role;
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 
