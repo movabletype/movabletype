@@ -562,7 +562,7 @@ sub from_object {
         $blogs{ $_->id } = $_ for @$objs;
         @blog_ids = map { $_->id } @$objs;
     }
-    else {
+    elsif ( $objs->[0]->has_column('blog_id') ) {
         @blog_ids = map { $_->blog_id } @$objs;
         my @blogs = MT->model('blog')->load( { id => \@blog_ids, } );
         $blogs{ $_->id } = $_ for @blogs;
@@ -573,7 +573,8 @@ sub from_object {
     for ( my $i = 0; $i < $size; $i++ ) {
         my $h = $hashs->[$i];
         $h->{$name}
-            = MT::Util::ts2iso( $blogs{ $blog_ids[$i] }, $h->{$name}, 1 );
+            = MT::Util::ts2iso( @blog_ids ? $blogs{ $blog_ids[$i] } : undef,
+            $h->{$name}, 1 );
     }
 }
 
