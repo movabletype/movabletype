@@ -114,6 +114,11 @@ sub updatable_fields {
         qw(
             dateLanguage
             ),
+
+        # Others
+        qw(
+            customDynamicTemplates
+            ),
     ];
 }
 
@@ -161,6 +166,26 @@ sub fields {
                 }
             },
         },
+        {   name      => 'archiveUrl',
+            alias     => 'archive_url',
+            to_object => sub {
+                my ( $hash, $obj ) = @_;
+
+                if ( defined( $hash->{archiveSubdomain} )
+                    && $hash->{archiveSubdomain} ne '' )
+                {
+                    my $subdomain = $hash->{archiveSubdomain};
+                    $subdomain .= '.' if $subdomain !~ /\.$/;
+                    $subdomain =~ s/\.{2,}/\./g;
+
+                    my $path = $hash->{archiveurl};
+                    return "$subdomain/::/$path";
+                }
+                else {
+                    return $hash->{archiveUrl};
+                }
+            },
+        },
 
         # Create Blog screen
         {   name      => 'themeId',
@@ -181,6 +206,37 @@ sub fields {
             ),
 
         # General Settings screen
+        {   name        => 'dynamicCache',
+            type        => 'MT::DataAPI::Resource::DataType::Boolean',
+            from_object => sub {
+                my ( $obj, $hash ) = @_;
+
+                my $mtview_path
+                    = File::Spec->catfile( $obj->site_path(), "mtview.php" );
+
+                if ( -f $mtview_path ) {
+                    open my ($fh), $mtview_path;
+                    while ( my $line = <$fh> ) {
+                        $hash->{dynamicCache} = 1
+                            if $line =~ m/^\s*\$mt->caching\(true\);/i;
+                        $hash->{dynamicConditional} = 1
+                            if $line =~ /^\s*\$mt->conditional\(true\);/i;
+                    }
+                    close $fh;
+                }
+
+                return;
+            },
+            condition => \&_can_view,
+        },
+        {   name        => 'dynamicConditional',
+            type        => 'MT::DataAPI::Resource::DataType::Boolean',
+            from_object => sub {
+
+                # Do nothing.
+            },
+            condition => \&_can_view,
+        },
         {   name      => 'fileExtension',
             alias     => 'file_extension',
             to_object => sub {
@@ -283,6 +339,35 @@ sub fields {
         {   name      => 'allowPingsDefault',
             alias     => 'allow_pings_default',
             type      => 'MT::DataAPI::Resource::DataType::Boolean',
+            condition => \&_can_view_cfg_screens,
+        },
+        {   name        => 'entryCustomPrefs',
+            from_object => sub {
+                my $app = MT->instance;
+                my $pref_param
+                    = $app->load_entry_prefs( { type => 'entry' } );
+                my @fields;
+                for my $f ( @{ $pref_param->{disp_prefs_default_fields} } ) {
+                    push @fields, $f->{name}
+                        if $pref_param->{ 'entry_disp_prefs_show_'
+                            . $f->{name} };
+                }
+                return \@fields;
+            },
+            condition => \&_can_view_cfg_screens,
+        },
+        {   name        => 'pageCustomPrefs',
+            from_object => sub {
+                my $app = MT->instance;
+                my $pref_param = $app->load_entry_prefs( { type => 'page' } );
+                my @fields;
+                for my $f ( @{ $pref_param->{disp_prefs_default_fields} } ) {
+                    push @fields, $f->{name}
+                        if $pref_param->{ 'page_disp_prefs_show_'
+                            . $f->{name} };
+                }
+                return \@fields;
+            },
             condition => \&_can_view_cfg_screens,
         },
         {   name      => 'contentCss',
@@ -547,6 +632,9 @@ sub fields {
                     abs($so),, $partial_hour_offset );
             },
         },
+
+        # Others
+        { name => 'customDynamicTemmplates', },
     ];
 }
 
@@ -582,6 +670,7 @@ sub _can_save_blog_pathinfo {
         return 1 if $perms->can_do('save_all_settings_for_blog');
         return 1 if $perms->can_do('save_blog_pathinfo');
         return 1 if $perms->can_do('save_blog_config');
+        return 1 if $perms->can_do('set_publish_paths');
     }
 
     return;

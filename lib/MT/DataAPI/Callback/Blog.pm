@@ -12,7 +12,9 @@ use warnings;
 use File::Spec;
 
 use MT::Theme;
+use MT::PublishOption;
 use MT::CMS::Common;
+use MT::CMS::Blog;
 
 sub save_filter {
     my ( $eh, $app, $obj, $original ) = @_;
@@ -109,6 +111,189 @@ sub save_filter {
     # Check whether theme_id is valid or not.
     if ( !MT::Theme->load( $obj->theme_id ) ) {
         return $app->errtrans( 'Invalid theme_id: [_1]', $obj->theme_id );
+    }
+
+    return 1;
+}
+
+sub _update_dynamicity {
+
+    my $app = shift;
+    my ( $blog, $blog_hash ) = @_;
+
+    my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
+    my $cache       = 0;
+    my $conditional = 0;
+    if ( -f $mtview_path ) {
+        open my ($fh), $mtview_path;
+        while ( my $line = <$fh> ) {
+            $cache = 1
+                if $line =~ m/^\s*\$mt->caching\(true\);/i;
+            $conditional = 1
+                if $line =~ /^\s*\$mt->conditional\(true\);/i;
+        }
+        close $fh;
+    }
+
+    $cache       = 1 if $blog_hash->{dynamicCache};
+    $conditional = 1 if $blog_hash->{dynamicConditional};
+
+    if ($app->model('template')->exist(
+            {   blog_id    => $blog->id,
+                build_type => MT::PublishOption::DYNAMIC()
+            }
+        )
+        || $app->model('templatemap')->exist(
+            {   blog_id    => $blog->id,
+                build_type => MT::PublishOption::DYNAMIC()
+            }
+        )
+        )
+    {
+
+        # dynamic publishing enabled
+        MT::CMS::Blog::prepare_dynamic_publishing( $app, $blog, $cache,
+            $conditional, $blog->site_path, $blog->site_url );
+        if ( $blog->archive_path ) {
+            MT::CMS::Blog::prepare_dynamic_publishing( $app, $blog, $cache,
+                $conditional, $blog->archive_path, $blog->archive_url );
+        }
+    }
+
+}
+
+# This method is not registered to callback.
+# This method is called from MT::CMS::Blog::post_save().
+sub post_save {
+    my $eh = shift;
+    my ( $app, $obj, $original ) = @_;
+
+    my $blog_id = $obj->blog_id;
+
+    # Generate site_url and set.
+    my $site_json = $app->param( $obj->class );
+    my $site_hash = $app->current_format->{unserialize}->($site_json);
+
+    if ( ( $obj->custom_dynamic_templates || '' ) ne
+        ( $original->custom_dynamic_templates || '' ) )
+    {
+
+        my $dcty = $obj->custom_dynamic_templates;
+
+# Apply publishing rules for templates based on
+# publishing method selected:
+#     none (0% publish queue, all static)
+#     async_all (100% publish queue)
+#     async_partial (high-priority templates publish synchronously (main index, preferred indiv. archives, feed templates))
+#     all (100% dynamic)
+#     archives (archives dynamic, static indexes)
+#     custom (custom configuration)
+
+        MT::CMS::Blog::update_publishing_profile( $app, $obj );
+
+        if ( ( $dcty eq 'none' ) || ( $dcty =~ m/^async/ ) ) {
+            MT::CMS::Blog::_update_finfos( $app, 0 );
+        }
+        elsif ( $dcty eq 'all' ) {
+            MT::CMS::Blog::_update_finfos( $app, 1 );
+        }
+        elsif ( $dcty eq 'archives' ) {
+
+            # Only archives have template maps.
+            MT::CMS::Blog::_update_finfos( $app, 1,
+                { templatemap_id => \'is not null' } );
+            MT::CMS::Blog::_update_finfos( $app, 0,
+                { templatemap_id => \'is null' } );
+        }
+    }
+
+    MT::CMS::Blog::cfg_publish_profile_save( $app, $obj ) or return;
+
+    # Update dynamic_cache and dynamic_conditional.
+    if ((   $app->model('template')->exist(
+                {   blog_id    => $blog->id,
+                    build_type => MT::PublishOption::DYNAMIC()
+                }
+            )
+            || $app->model('templatemap')->exist(
+                {   blog_id    => $blog->id,
+                    build_type => MT::PublishOption::DYNAMIC()
+                }
+            )
+        )
+        )
+    {
+
+        # dynamic enabled and caching option may have changed - update mtview
+        my $cache       = $site_hash->{dynamicCache}       ? 1 : 0;
+        my $conditional = $site_hath->{dynamicConditional} ? 1 : 0;
+        MT::CMS::Blog::_create_mtview( $blog, $blog->site_path, $cache,
+            $conditional );
+        MT::CMS::Blog::_create_dynamiccache_dir( $blog, $blog->site_path )
+            if $cache;
+        if ( $blog->archive_path ) {
+            MT::CMS::Blog::_create_mtview( $blog, $blog->archive_path, $cache,
+                $conditional );
+            MT::CMS::Blog::_create_dynamiccache_dir( $blog,
+                $blog->archive_path )
+                if $cache;
+        }
+    }
+
+    # If either of the publishing paths changed, rebuild the fileinfos.
+    my $path_changed = 0;
+    for my $path_field (qw( site_path archive_path site_url archive_url )) {
+        if ( $obj->$path_field() ne $original->$path_field() ) {
+            $path_changed = 1;
+            last;
+        }
+    }
+
+    if ($path_changed) {
+        _update_dynamicity( $app, $obj, $site_hash );
+        $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
+            or $app->publish_error();
+    }
+
+    # Update entry_custom_prefs and page_custom_prefs.
+
+    # FIXME: Needs to exclude MT::Permission records for groups
+    my $perms = $app->model('permission')
+        ->load( { blog_id => $blog_id, author_id => 0 } );
+    if ( !$perms ) {
+        $perms = $app->model('permission')->new;
+        $perms->blog_id($blog_id);
+        $perms->author_id(0);
+    }
+    foreach my $type (qw(entry page)) {
+        my $prefs = $app->_entry_prefs_from_params( $type . '_' );
+        my $prefs = join ',', @{ $site_hash->{entryCustomPrefs} };
+        if ($prefs) {
+            my $prefs_type = $type . '_prefs';
+            $perms->$prefs_type($prefs);
+            $perms->save
+                or return $app->errtrans( "Saving permissions failed: [_1]",
+                $perms->errstr );
+        }
+    }
+
+    # Update DefaultAssignments.
+    my $new_default_roles = $site_hash->{newCreatedUserRole};
+    if ( ref($new_default_roles) eq 'ARRAY' ) {
+        my @hash_role_ids = grep {$_} map { $_->{id} } @$new_default_roles;
+        my @roles = MT->model('role')->load( { id => \@hash_role_ids } );
+        my @role_ids = map { $_->id } @roles;
+
+        my @def = split ',', $app->config('DefaultAssignments');
+        my @defaults;
+        while ( my $r_id = shift @def ) {
+            my $b_id = shift @def;
+            next if $b_id eq $blog_id;
+            push @defaults, join( ',', $r_id, $b_id );
+        }
+        push @defaults, join( ',', $_, $blog_id ) for @role_ids;
+        $app->config( 'DefaultAssignments', join( ',', @defaults ), 1 );
+        $app->config->save_config;
     }
 
     return 1;

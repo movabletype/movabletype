@@ -1713,6 +1713,105 @@ sub _update_finfos {
     1;
 }
 
+sub _post_save_cfg_screens {
+    my ( $app, $obj, $original ) = @_;
+
+    my $screen = $app->param('cfg_screen') || '';
+    if ( $screen eq 'cfg_publish_profile' ) {
+        if ( my $dcty = $app->param('dynamicity') ) {
+
+# Apply publishing rules for templates based on
+# publishing method selected:
+#     none (0% publish queue, all static)
+#     async_all (100% publish queue)
+#     async_partial (high-priority templates publish synchronously (main index, preferred indiv. archives, feed templates))
+#     all (100% dynamic)
+#     archives (archives dynamic, static indexes)
+#     custom (custom configuration)
+
+            update_publishing_profile( $app, $obj );
+
+            if ( ( $dcty eq 'none' ) || ( $dcty =~ m/^async/ ) ) {
+                _update_finfos( $app, 0 );
+            }
+            elsif ( $dcty eq 'all' ) {
+                _update_finfos( $app, 1 );
+            }
+            elsif ( $dcty eq 'archives' ) {
+
+                # Only archives have template maps.
+                _update_finfos( $app, 1,
+                    { templatemap_id => \'is not null' } );
+                _update_finfos( $app, 0, { templatemap_id => \'is null' } );
+            }
+        }
+
+        cfg_publish_profile_save( $app, $obj ) or return;
+    }
+    if ( $screen eq 'cfg_prefs' ) {
+        cfg_prefs_save( $app, $obj ) or return;
+
+        # If either of the publishing paths changed, rebuild the fileinfos.
+        my $path_changed = 0;
+        for my $path_field (qw( site_path archive_path site_url archive_url ))
+        {
+            if ( $obj->$path_field() ne $original->$path_field() ) {
+                $path_changed = 1;
+                last;
+            }
+        }
+
+        if ($path_changed) {
+            update_dynamicity( $app, $obj );
+            $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
+                or $app->publish_error();
+        }
+    }
+    if ( $screen eq 'cfg_entry' ) {
+        my $blog_id = $obj->id;
+
+        # FIXME: Needs to exclude MT::Permission records for groups
+        my $perms = $app->model('permission')
+            ->load( { blog_id => $blog_id, author_id => 0 } );
+        if ( !$perms ) {
+            $perms = $app->model('permission')->new;
+            $perms->blog_id($blog_id);
+            $perms->author_id(0);
+        }
+        foreach my $type (qw(entry page)) {
+            my $prefs = $app->_entry_prefs_from_params( $type . '_' );
+            if ($prefs) {
+                my $prefs_type = $type . '_prefs';
+                $perms->$prefs_type($prefs);
+                $perms->save
+                    or
+                    return $app->errtrans( "Saving permissions failed: [_1]",
+                    $perms->errstr );
+            }
+        }
+    }
+    if ( $screen eq 'cfg_registration' ) {
+        my $new_default_roles = $app->param('new_created_user_role');
+        if ( defined $new_default_roles ) {
+            my $blog_id  = $obj->id;
+            my @role_ids = split ',',
+                ( $app->param('new_created_user_role') || '' );
+            my @def = split ',', $app->config('DefaultAssignments');
+            my @defaults;
+            while ( my $r_id = shift @def ) {
+                my $b_id = shift @def;
+                next if $b_id eq $blog_id;
+                push @defaults, join( ',', $r_id, $b_id );
+            }
+            push @defaults, join( ',', $_, $blog_id ) for @role_ids;
+            $app->config( 'DefaultAssignments', join( ',', @defaults ), 1 );
+            $app->config->save_config;
+        }
+    }
+
+    return 1;
+}
+
 sub post_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
@@ -1774,107 +1873,16 @@ sub post_save {
         );
     }
 
-    my $screen = $app->param('cfg_screen') || '';
-    if ( $screen eq 'cfg_publish_profile' ) {
-        if ( my $dcty = $app->param('dynamicity') ) {
-
-# Apply publishing rules for templates based on
-# publishing method selected:
-#     none (0% publish queue, all static)
-#     async_all (100% publish queue)
-#     async_partial (high-priority templates publish synchronously (main index, preferred indiv. archives, feed templates))
-#     all (100% dynamic)
-#     archives (archives dynamic, static indexes)
-#     custom (custom configuration)
-
-            update_publishing_profile( $app, $obj );
-
-            if ( ( $dcty eq 'none' ) || ( $dcty =~ m/^async/ ) ) {
-                _update_finfos( $app, 0 );
-            }
-            elsif ( $dcty eq 'all' ) {
-                _update_finfos( $app, 1 );
-            }
-            elsif ( $dcty eq 'archives' ) {
-
-                # Only archives have template maps.
-                _update_finfos( $app, 1,
-                    { templatemap_id => \'is not null' } );
-                _update_finfos( $app, 0, { templatemap_id => \'is null' } );
-            }
-        }
-
-        cfg_publish_profile_save( $app, $obj ) or return;
+    if ( $app->isa('MT::App::CMS') ) {
+        _post_save_cfg_screens( $app, $obj, $original ) or return;
     }
-    if ( $screen eq 'cfg_prefs' ) {
-        my $blog_id = $obj->id;
+    elsif ( $app->isa('MT::App::DataAPI') ) {
 
-        # FIXME: Needs to exclude MT::Permission records for groups
-        $app->model('permission')
-            ->load( { blog_id => $blog_id, author_id => 0 } );
-        if ( !$perms ) {
-            $perms = $app->model('permission')->new;
-            $perms->blog_id($blog_id);
-            $perms->author_id(0);
-        }
-
-        cfg_prefs_save( $app, $obj ) or return;
-
-        # If either of the publishing paths changed, rebuild the fileinfos.
-        my $path_changed = 0;
-        for my $path_field (qw( site_path archive_path site_url archive_url ))
-        {
-            if ( $obj->$path_field() ne $original->$path_field() ) {
-                $path_changed = 1;
-                last;
-            }
-        }
-
-        if ($path_changed) {
-            update_dynamicity( $app, $obj );
-            $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
-                or $app->publish_error();
-        }
-    }
-    if ( $screen eq 'cfg_entry' ) {
-        my $blog_id = $obj->id;
-
-        # FIXME: Needs to exclude MT::Permission records for groups
-        my $perms = $app->model('permission')
-            ->load( { blog_id => $blog_id, author_id => 0 } );
-        if ( !$perms ) {
-            $perms = $app->model('permission')->new;
-            $perms->blog_id($blog_id);
-            $perms->author_id(0);
-        }
-        foreach my $type (qw(entry page)) {
-            my $prefs = $app->_entry_prefs_from_params( $type . '_' );
-            if ($prefs) {
-                my $prefs_type = $type . '_prefs';
-                $perms->$prefs_type($prefs);
-                $perms->save
-                    or
-                    return $app->errtrans( "Saving permissions failed: [_1]",
-                    $perms->errstr );
-            }
-        }
-    }
-    if ( $screen eq 'cfg_registration' ) {
-        my $new_default_roles = $app->param('new_created_user_role');
-        if ( defined $new_default_roles ) {
-            my $blog_id  = $obj->id;
-            my @role_ids = split ',',
-                ( $app->param('new_created_user_role') || '' );
-            my @def = split ',', $app->config('DefaultAssignments');
-            my @defaults;
-            while ( my $r_id = shift @def ) {
-                my $b_id = shift @def;
-                next if $b_id eq $blog_id;
-                push @defaults, join( ',', $r_id, $b_id );
-            }
-            push @defaults, join( ',', $_, $blog_id ) for @role_ids;
-            $app->config( 'DefaultAssignments', join( ',', @defaults ), 1 );
-            $app->config->save_config;
+        # Use eval here because decreasing dependency on Data API.
+        if ( eval { require MT::DataAPI::Callback::Blog; 1 } ) {
+            MT::DataAPI::Callback::Blog::post_save( $eh, $app, $obj,
+                $original )
+                or return;
         }
     }
 
@@ -1962,12 +1970,14 @@ sub post_save {
     else {
 
         # if settings were changed that would affect published pages:
-        if (grep { $original->column($_) ne $obj->column($_) }
-            qw(allow_unreg_comments allow_reg_comments remote_auth_token
-            allow_pings          allow_comment_html )
-            )
-        {
-            $app->add_return_arg( need_full_rebuild => 1 );
+        if ( $app->isa('MT::App::CMS') ) {
+            if (grep { $original->column($_) ne $obj->column($_) }
+                qw(allow_unreg_comments allow_reg_comments remote_auth_token
+                allow_pings          allow_comment_html )
+                )
+            {
+                $app->add_return_arg( need_full_rebuild => 1 );
+            }
         }
 
         my $original_set = $original->template_set;
@@ -1977,7 +1987,8 @@ sub post_save {
         if ( ( $original_set || '' ) ne ( $obj_set || '' ) ) {
             $app->run_callbacks( 'blog_template_set_change',
                 { blog => $obj } );
-            $app->add_return_arg( need_full_rebuild => 1 );
+            $app->add_return_arg( need_full_rebuild => 1 )
+                if $app->isa('MT::App::CMS');
         }
 
         ## THINK: should the theme be changed by normal save method?

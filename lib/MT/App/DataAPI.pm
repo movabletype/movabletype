@@ -12,6 +12,7 @@ use base qw( MT::App );
 
 use MT::DataAPI::Resource;
 use MT::DataAPI::Format;
+use MT::App::CMS;
 use MT::App::CMS::Common;
 use MT::AccessToken;
 
@@ -1369,11 +1370,11 @@ sub requires_plain_text_result {
 }
 
 sub load_default_entry_prefs {
-    return q();
+    MT::App::CMS::load_default_entry_prefs(@_);
 }
 
 sub load_default_page_prefs {
-    return q();
+    MT::App::CMS::load_default_page_prefs(@_);
 }
 
 sub api {
@@ -1468,6 +1469,14 @@ sub api {
     else {
         $response;
     }
+}
+
+sub load_entry_prefs {
+    MT::App::CMS::load_entry_prefs(@_);
+}
+
+sub _parse_entry_prefs {
+    MT::App::CMS::_parse_entry_prefs(@_);
 }
 
 1;
