@@ -744,6 +744,23 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete a site.', },
         },
+        {   id             => 'list_roles',
+            route          => '/roles',
+            verb           => 'GET',
+            version        => 2,
+            handler        => "${pkg}Role::v2::list",
+            default_params => {
+                limit        => 25,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
+                searchFields => 'name',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of roles.',
+            },
+        },
     ];
 }
 
