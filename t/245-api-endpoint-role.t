@@ -128,6 +128,47 @@ my @suite = (
                 "You cannot define a role without permissions.\n" );
         },
     },
+
+    # update_role - normal tests
+    {   path   => '/v2/roles/10',
+        method => 'PUT',
+        params => {
+            role =>
+                { name => 'update_role', permissions => ['edit_templates'] }
+        },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.role',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.role',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.role',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.role',
+                count => 1,
+            },
+        ],
+        result => sub {
+            MT->model('role')->load( { id => 10, name => 'update_role' } );
+        },
+    },
+
+    # create_role - irregular tests
+    {
+        # non-existent role.
+        path   => '/v2/roles/20',
+        method => 'PUT',
+        params => {
+            role => {
+                name        => 'update_non_existent_role',
+                permissions => ['edit_templates']
+            }
+        },
+        code => 404,
+    },
 );
 
 my %callbacks = ();

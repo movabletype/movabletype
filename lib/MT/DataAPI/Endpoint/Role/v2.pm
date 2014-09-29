@@ -51,6 +51,29 @@ sub create {
     $new_role;
 }
 
+sub update {
+    my ( $app, $endpoint ) = @_;
+
+    my ($orig_role) = context_objects(@_)
+        or return;
+    my $new_role = $app->resource_object( 'role', $orig_role )
+        or return;
+
+    save_object(
+        $app, 'role',
+        $new_role,
+        $orig_role,
+        sub {
+            if ( my $author = $app->user ) {
+                $new_role->modified_by( $author->id );
+            }
+            $_[0]->();
+        }
+    ) or return;
+
+    $new_role;
+}
+
 1;
 
 __END__

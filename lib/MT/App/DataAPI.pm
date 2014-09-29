@@ -770,6 +770,15 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to create a role.', },
         },
+        {   id        => 'update_role',
+            route     => '/roles/:role_id',
+            resources => ['role'],
+            verb      => 'PUT',
+            version   => 2,
+            handler   => "${pkg}Role::v2::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a role.', },
+        },
     ];
 }
 
