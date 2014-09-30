@@ -1594,8 +1594,9 @@ BEGIN {
                 scope_mode       => 'none',
             },
             permission => {
-                condition          => sub {0},
-                data_api_condition => sub {1},
+                condition           => sub {0},
+                data_api_condition  => sub {1},
+                data_api_scope_mode => 'this',
             },
         },
         summaries => {

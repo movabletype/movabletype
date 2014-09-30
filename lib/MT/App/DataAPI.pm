@@ -744,6 +744,8 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete a site.', },
         },
+
+        # role endpoints
         {   id             => 'list_roles',
             route          => '/roles',
             verb           => 'GET',
@@ -795,6 +797,105 @@ sub core_endpoints {
             handler => "${pkg}Role::v2::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a role.', },
+        },
+
+        # permission endpoints
+        {   id             => 'list_permissions',
+            route          => '/permissions',
+            version        => 2,
+            handler        => "${pkg}Permission::v2::list",
+            default_params => {
+                limit      => 25,
+                offset     => 0,
+                sortBy     => 'blog_id',
+                sortOrder  => 'ascend',
+                filterKeys => 'blogIds',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of permissions.',
+            },
+        },
+        {
+            # update
+            id             => 'list_permissions_for_user',
+            route          => '/users/:user_id/permissions',
+            version        => 2,
+            handler        => "${pkg}Permission::v2::list_for_user",
+            default_params => {
+                limit      => 25,
+                offset     => 0,
+                sortBy     => 'blog_id',
+                sortOrder  => 'ascend',
+                filterKeys => 'blogIds',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested user\'s permissions.',
+            },
+        },
+        {   id             => 'list_permissions_for_site',
+            route          => '/sites/:site_id/permissions',
+            version        => 2,
+            handler        => "${pkg}Permission::v2::list_for_site",
+            default_params => {
+                limit     => 25,
+                offset    => 0,
+                sortBy    => 'blog_id',
+                sortOrder => 'ascend',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of permissions.',
+            },
+        },
+        {   id             => 'list_permissions_for_role',
+            route          => '/roles/:role_id/permissions',
+            version        => 2,
+            handler        => "${pkg}Permission::v2::list_for_role",
+            default_params => {
+                limit      => 25,
+                offset     => 0,
+                sortBy     => 'blog_id',
+                sortOrder  => 'ascend',
+                filterKeys => 'blogIds',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of permissions.',
+            },
+        },
+        {   id      => 'grant_permission_to_site',
+            route   => '/sites/:site_id/permissions/grant',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Permission::v2::grant_to_site",
+            error_codes =>
+                { 403 => 'Do not have permission to grant a permission', },
+        },
+        {   id      => 'grant_permission_to_user',
+            route   => '/users/:user_id/permissions/grant',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Permission::v2::grant_to_user",
+            error_codes =>
+                { 403 => 'Do not have permission to grant a permission', },
+        },
+        {   id      => 'revoke_permission_from_site',
+            route   => '/sites/:site_id/permissions/revoke',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Permission::v2::revoke_from_site",
+            error_codes =>
+                { 403 => 'Do not have permission to revoke a permission', },
+        },
+        {   id      => 'revoke_permission_from_user',
+            route   => '/users/:user_id/permissions/revoke',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Permission::v2::revoke_from_user",
+            error_codes =>
+                { 403 => 'Do not have permission to revoke a permission', },
         },
     ];
 }

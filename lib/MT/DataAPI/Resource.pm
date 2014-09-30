@@ -52,6 +52,10 @@ sub core_resources {
             {   version          => 1,
                 fields           => "${pkg}User::fields",
                 updatable_fields => "${pkg}User::updatable_fields",
+            },
+            {   version          => 2,
+                fields           => "${pkg}User::v2::fields",
+                updatable_fields => "${pkg}User::v2::updatable_fields",
             }
         ],
         'author' => 'user',
@@ -90,7 +94,11 @@ sub core_resources {
             {   version          => 1,
                 fields           => "${pkg}Permission::fields",
                 updatable_fields => "${pkg}Permission::updatable_fields",
-            }
+            },
+            {   version          => 2,
+                fields           => "${pkg}Permission::v2::fields",
+                updatable_fields => "${pkg}Permission::v2::updatable_fields",
+            },
         ],
         'role' => [
             {   version          => 2,

@@ -31,6 +31,9 @@ my $mock_author = Test::MockModule->new('MT::Author');
 $mock_author->mock( 'is_superuser', sub {0} );
 my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
+my $version;
+$mock_app_api->mock( 'current_api_version',
+    sub { $version = $_[1] if $_[1]; $version } );
 
 my $blog = $app->model('blog')->load(1);
 my $start_time
@@ -49,17 +52,17 @@ my @suite = (
             items        => [
                 {   permissions => [
                         qw(administer create_blog create_website edit_templates
-                           manage_plugins view_log)
+                            manage_plugins view_log)
                     ],
                     blog => undef
                 },
                 {   permissions => [
                         qw(administer_blog administer_website comment create_post
-                           edit_all_posts edit_assets edit_categories edit_config
-                           edit_notifications edit_tags edit_templates manage_feedback
-                           manage_member_blogs manage_pages manage_themes manage_users
-                           publish_post rebuild save_image_defaults send_notifications
-                           set_publish_paths upload view_blog_log)
+                            edit_all_posts edit_assets edit_categories edit_config
+                            edit_notifications edit_tags edit_templates manage_feedback
+                            manage_member_blogs manage_pages manage_themes manage_users
+                            publish_post rebuild save_image_defaults send_notifications
+                            set_publish_paths upload view_blog_log)
                     ],
                     blog => { id => 1 },
                 },
@@ -72,6 +75,447 @@ my @suite = (
     {   path   => '/v1/users/2/permissions',
         method => 'GET',
         code   => '403',
+    },
+
+    # version 2
+
+    # list_permissions_for_user - normal tests
+    {   path      => '/v2/users/me/permissions',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.permission',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $result = $app->current_format->{unserialize}->($body);
+            my @perms  = MT->model('permission')->load(
+                {   blog_id     => { not => 0 },
+                    author_id   => $author->id,
+                    permissions => { not => '' },
+                },
+                { sort => 'blog_id' },
+            );
+
+            is( $result->{totalResults},
+                scalar @perms,
+                'totalResults is "' . $result->{totalResults} . '"'
+            );
+
+            my @result_ids   = map { $_->{id} } @{ $result->{items} };
+            my @expected_ids = map { $_->id } @perms;
+            is_deeply( \@result_ids, \@expected_ids,
+                'IDs of items are "' . "@result_ids" . '"' );
+        },
+    },
+    {   path   => '/v2/users/1/permissions',
+        method => 'GET',
+    },
+
+    # list_permissions_for_user - irregular tests
+    {   path   => '/v2/users/2/permissions',
+        method => 'GET',
+        code   => '403',
+    },
+
+    # list_permissions - normal tests
+    {
+        # not superuser
+        path      => '/v2/permissions',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.permission',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $result = $app->current_format->{unserialize}->($body);
+            my @perms  = MT->model('permission')->load(
+                {   blog_id     => { not => 0 },
+                    author_id   => $author->id,
+                    permissions => { not => '' }
+                },
+                { sort => 'blog_id', }
+            );
+
+            is( $result->{totalResults},
+                scalar @perms,
+                'totalResults is "' . $result->{totalResults} . '"'
+            );
+
+            my @result_ids   = map { $_->{id} } @{ $result->{items} };
+            my @expected_ids = map { $_->id } @perms;
+            is_deeply( \@result_ids, \@expected_ids,
+                'IDs of items are "' . "@result_ids" . '"' );
+        },
+    },
+
+    # superuser
+
+    # list_permissions_for_site - normal tests
+    {
+        # not superuser.
+        path      => '/v2/sites/1/permissions',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.permission',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $result = $app->current_format->{unserialize}->($body);
+            my @perms  = MT->model('permission')->load(
+                {   blog_id     => 1,
+                    author_id   => $author->id,
+                    permissions => { not => '' },
+                },
+                { sort => 'blog_id', },
+            );
+
+            is( $result->{totalResults},
+                scalar @perms,
+                'totalResults is "' . $result->{totalResults} . '"'
+            );
+
+            my @result_ids   = map { $_->{id} } @{ $result->{items} };
+            my @expected_ids = map { $_->id } @perms;
+            is_deeply( \@result_ids, \@expected_ids,
+                'IDs of items are "' . "@result_ids" . '"' );
+
+        },
+    },
+
+    # list_permissions_for_site - irregular tests
+
+    # list_permissions_for_role - normal tests
+    {    # not superuser.
+        path      => '/v2/roles/1/permissions',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.permission',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $result = $app->current_format->{unserialize}->($body);
+            my @perms  = MT->model('permission')->load(
+                {   blog_id     => { not => 0 },
+                    author_id   => $author->id,
+                    permissions => { not => '' },
+                },
+                {   sort => 'blog_id',
+                    join => MT->model('association')->join_on(
+                        undef,
+                        {   blog_id   => \'= permission_blog_id',
+                            author_id => \'= permission_author_id',
+                            role_id   => 1,
+                        },
+                    ),
+                },
+            );
+
+            is( $result->{totalResults},
+                scalar @perms,
+                'totalResults is "' . $result->{totalResults} . '"'
+            );
+
+            my @result_ids   = map { $_->{id} } @{ $result->{items} };
+            my @expected_ids = map { $_->id } @perms;
+            is_deeply( \@result_ids, \@expected_ids,
+                'IDs of items are "' . "@result_ids" . '"' );
+
+        },
+    },
+
+    # grant_permission_to_site - irregular tests
+    {   path   => '/v2/sites/10/permissions/grant',
+        method => 'POST',
+        code   => 404,
+    },
+    {   path     => '/v2/sites/1/permissions/grant',
+        method   => 'POST',
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"author_id\" is required." );
+        },
+    },
+    {   path     => '/v2/sites/1/permissions/grant',
+        method   => 'POST',
+        code     => 400,
+        params   => { author_id => 10 },
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, "Author (ID:10) not found." );
+        },
+    },
+    {   path     => '/v2/sites/1/permissions/grant',
+        method   => 'POST',
+        params   => { author_id => $author->id },
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"role_id\" is required." );
+        },
+    },
+    {   path   => '/v2/sites/1/permissions/grant',
+        method => 'POST',
+        params => {
+            author_id => $author->id,
+            role_id   => 20,
+        },
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, "Role (ID:20) not found." );
+        },
+    },
+
+    # grant_permission_to_site - normal tests
+    {   path   => '/v2/sites/1/permissions/grant',
+        method => 'POST',
+        setup  => sub {
+            my $assoc = MT->model('association')->load(
+                {   blog_id   => 1,
+                    author_id => $author->id,
+                    role_id   => 2,
+                }
+            ) and die;
+        },
+        params => {
+            author_id => $author->id,
+            role_id   => 2,
+        },
+        result   => +{ status => 'success', },
+        complete => sub {
+            my $assoc = MT->model('association')->load(
+                {   blog_id   => 1,
+                    author_id => $author->id,
+                    role_id   => 2,
+                }
+            );
+            ok( $assoc, 'Permission has been granted.' );
+        },
+    },
+
+    # grant_permission_to_user - irregular tests
+    {   path   => '/v2/users/10/permissions/grant',
+        method => 'POST',
+        code   => 404,
+    },
+    {   path     => '/v2/users/1/permissions/grant',
+        method   => 'POST',
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"site_id\" is required." );
+        },
+    },
+    {   path     => '/v2/users/1/permissions/grant',
+        method   => 'POST',
+        params   => { site_id => 10, },
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, "Site (ID:10) not found." );
+        },
+    },
+    {   path     => '/v2/users/1/permissions/grant',
+        method   => 'POST',
+        params   => { site_id => 1 },
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"role_id\" is required." );
+        },
+    },
+    {   path     => '/v2/users/1/permissions/grant',
+        method   => 'POST',
+        params   => { site_id => 1, role_id => 20 },
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, "Role (ID:20) not found." );
+        },
+    },
+
+    # grant_permission_to_user - normal tests
+    {   path   => '/v2/users/1/permissions/grant',
+        method => 'POST',
+        setup  => sub {
+            my $assoc = MT->model('association')->load(
+                {   blog_id   => 1,
+                    author_id => $author->id,
+                    role_id   => 3,
+                }
+            ) and die;
+        },
+        params => {
+            site_id => 1,
+            role_id => 3,
+        },
+        result   => +{ status => 'success' },
+        complete => sub {
+            my $assoc = MT->model('association')->load(
+                {   blog_id   => 1,
+                    author_id => $author->id,
+                    role_id   => 3,
+                }
+            );
+            ok( $assoc, 'Permission has been granted.' );
+        },
+    },
+
+    # revoke_permission_from_site - irregular tests
+    {   path   => '/v2/sites/10/permissions/revoke',
+        method => 'POST',
+        code   => 404,
+    },
+    {   path     => '/v2/sites/1/permissions/revoke',
+        method   => 'POST',
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"author_id\" is required." );
+        },
+    },
+    {   path     => '/v2/sites/1/permissions/revoke',
+        method   => 'POST',
+        params   => { author_id => 10, },
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, "Author (ID:10) not found." );
+        },
+    },
+    {   path     => '/v2/sites/1/permissions/revoke',
+        method   => 'POST',
+        params   => { author_id => $author->id },
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"role_id\" is required." );
+        },
+    },
+    {   path     => '/v2/sites/1/permissions/revoke',
+        method   => 'POST',
+        params   => { author_id => $author->id, role_id => 20 },
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, "Role (ID:20) not found." );
+        },
+    },
+
+    # revoke_permission_from_site - normal tests
+    {   path   => '/v2/sites/1/permissions/revoke',
+        method => 'POST',
+        setup  => sub {
+            my $assoc = MT->model('association')->load(
+                {   blog_id   => 1,
+                    author_id => $author->id,
+                    role_id   => 2,
+                }
+            ) or die;
+        },
+        params => {
+            author_id => $author->id,
+            role_id   => 2,
+        },
+        result   => +{ status => 'success' },
+        complete => sub {
+            my $assoc = MT->model('association')->load(
+                {   blog_id   => 1,
+                    author_id => $author->id,
+                    role_id   => 2,
+                }
+            );
+            ok( !$assoc, 'Permission has been revoked.' );
+        },
+    },
+
+    # revoke_permission_from_user - irregular tests
+    {   path   => '/v2/users/10/permissions/revoke',
+        method => 'POST',
+        code   => 404,
+    },
+    {   path     => '/v2/users/1/permissions/revoke',
+        method   => 'POST',
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"site_id\" is required." );
+        },
+    },
+    {   path     => '/v2/users/1/permissions/revoke',
+        method   => 'POST',
+        params   => { site_id => 10, },
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, "Site (ID:10) not found." );
+        },
+    },
+    {   path     => '/v2/users/1/permissions/revoke',
+        method   => 'POST',
+        params   => { site_id => 1 },
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body,
+                "A parameter \"role_id\" is required." );
+        },
+    },
+    {   path     => '/v2/users/1/permissions/revoke',
+        method   => 'POST',
+        params   => { site_id => 1, role_id => 20 },
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, "Role (ID:20) not found." );
+        },
+    },
+
+    # revoke_permission_from_user - normal tests
+    {   path   => '/v2/users/1/permissions/revoke',
+        method => 'POST',
+        setup  => sub {
+            my $assoc = MT->model('association')->load(
+                {   blog_id   => 1,
+                    author_id => $author->id,
+                    role_id   => 3,
+                }
+            ) or die;
+        },
+        params => {
+            site_id => 1,
+            role_id => 3,
+        },
+        result   => +{ status => 'success' },
+        complete => sub {
+            my $assoc = MT->model('association')->load(
+                {   blog_id   => 1,
+                    author_id => $author->id,
+                    role_id   => 3,
+                }
+            );
+            ok( !$assoc, 'Permission has been revoked.' );
+        },
     },
 );
 
@@ -183,3 +627,9 @@ for my $data (@suite) {
 }
 
 done_testing();
+
+sub check_error_message {
+    my ( $body, $error ) = @_;
+    my $result = $app->current_format->{unserialize}->($body);
+    is( $result->{error}{message}, $error, 'Error message: ' . $error );
+}
