@@ -797,7 +797,7 @@ my @CORE_OPT = (
        translate(
            'This module is required for executing run-periodic-tasks.'
        )
-    },
+    ],
     [   'YAML::Syck', 0, 0,
         translate(
             '[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.',
