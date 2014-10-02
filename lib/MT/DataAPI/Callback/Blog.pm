@@ -211,12 +211,12 @@ sub post_save {
 
     # Update dynamic_cache and dynamic_conditional.
     if ((   $app->model('template')->exist(
-                {   blog_id    => $blog->id,
+                {   blog_id    => $obj->id,
                     build_type => MT::PublishOption::DYNAMIC()
                 }
             )
             || $app->model('templatemap')->exist(
-                {   blog_id    => $blog->id,
+                {   blog_id    => $obj->id,
                     build_type => MT::PublishOption::DYNAMIC()
                 }
             )
@@ -226,16 +226,16 @@ sub post_save {
 
         # dynamic enabled and caching option may have changed - update mtview
         my $cache       = $site_hash->{dynamicCache}       ? 1 : 0;
-        my $conditional = $site_hath->{dynamicConditional} ? 1 : 0;
-        MT::CMS::Blog::_create_mtview( $blog, $blog->site_path, $cache,
+        my $conditional = $site_hash->{dynamicConditional} ? 1 : 0;
+        MT::CMS::Blog::_create_mtview( $obj, $obj->site_path, $cache,
             $conditional );
-        MT::CMS::Blog::_create_dynamiccache_dir( $blog, $blog->site_path )
+        MT::CMS::Blog::_create_dynamiccache_dir( $obj, $obj->site_path )
             if $cache;
-        if ( $blog->archive_path ) {
-            MT::CMS::Blog::_create_mtview( $blog, $blog->archive_path, $cache,
+        if ( $obj->archive_path ) {
+            MT::CMS::Blog::_create_mtview( $obj, $obj->archive_path, $cache,
                 $conditional );
-            MT::CMS::Blog::_create_dynamiccache_dir( $blog,
-                $blog->archive_path )
+            MT::CMS::Blog::_create_dynamiccache_dir( $obj,
+                $obj->archive_path )
                 if $cache;
         }
     }
@@ -266,7 +266,6 @@ sub post_save {
         $perms->author_id(0);
     }
     foreach my $type (qw(entry page)) {
-        my $prefs = $app->_entry_prefs_from_params( $type . '_' );
         my $prefs = join ',', @{ $site_hash->{entryCustomPrefs} };
         if ($prefs) {
             my $prefs_type = $type . '_prefs';
