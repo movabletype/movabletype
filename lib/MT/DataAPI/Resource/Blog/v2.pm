@@ -21,13 +21,9 @@ sub updatable_fields {
         qw(
             name
             description
+            url
+            archiveUrl
             ),
-        {   name      => 'url',
-            condition => \&_can_save_blog_pathinfo,
-        },
-        {   name      => 'archiveUrl',
-            condition => \&_can_save_blog_pathinfo,
-        },
 
         # v2 fields
 
@@ -36,13 +32,9 @@ sub updatable_fields {
             themeId
             serverOffset
             language
+            sitePath
+            archivePath
             ),
-        {   name      => 'sitePath',
-            condition => \&_can_save_blog_pathinfo,
-        },
-        {   name      => 'archivePath',
-            condition => \&_can_save_blog_pathinfo,
-        },
 
         # General Settings screen
         qw(
@@ -151,6 +143,8 @@ sub fields {
             to_object => sub {
                 my ( $hash, $obj ) = @_;
 
+                return if !_can_save_blog_pathinfo($obj);
+
                 if ( defined( $hash->{siteSubdomain} )
                     && $hash->{siteSubdomain} ne '' )
                 {
@@ -170,6 +164,8 @@ sub fields {
             alias     => 'archive_url',
             to_object => sub {
                 my ( $hash, $obj ) = @_;
+
+                return if !_can_save_blog_pathinfo($obj);
 
                 if ( defined( $hash->{archiveSubdomain} )
                     && $hash->{archiveSubdomain} ne '' )
@@ -194,10 +190,22 @@ sub fields {
         },
         {   name      => 'sitePath',
             alias     => 'site_path',
+            to_object => sub {
+                my ( $hash, $obj ) = @_;
+                return $hash->{sitePath}
+                    if _can_save_blog_pathinfo($obj);
+                return;
+            },
             condition => \&_can_view,
         },
         {   name      => 'archivePath',
             alias     => 'archive_path',
+            to_object => sub {
+                my ( $hash, $obj ) = @_;
+                return $hash->{archivePath}
+                    if _can_save_blog_pathinfo($obj);
+                return;
+            },
             condition => \&_can_view,
         },
         qw(
@@ -661,16 +669,17 @@ sub _can_view_cfg_screens {
 }
 
 sub _can_save_blog_pathinfo {
-    my $app   = MT->instance;
-    my $perms = $app->permissions;
-    my $user  = $app->user;
+    my ($obj) = @_;
+    my $app  = MT->instance or return;
+    my $user = $app->user   or return;
 
     return 1 if $user->is_superuser;
-    if ($perms) {
-        return 1 if $perms->can_do('save_all_settings_for_blog');
-        return 1 if $perms->can_do('save_blog_pathinfo');
-        return 1 if $perms->can_do('save_blog_config');
-        return 1 if $perms->can_do('set_publish_paths');
+
+    if ( $obj->id ) {
+        my $perms = $app->permissions or return;
+        return 1
+            if $app->can_do('save_all_settings_for_blog')
+            || $perms->can_do('save_blog_pathinfo');
     }
 
     return;

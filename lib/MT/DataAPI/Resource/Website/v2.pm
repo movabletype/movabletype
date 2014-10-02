@@ -12,37 +12,60 @@ use warnings;
 use base qw(MT::DataAPI::Resource::Blog::v2);
 
 sub updatable_fields {
-    [   @{ $_[0]->SUPER::updatable_fields() },
+    $_[0]->SUPER::updatable_fields();
+}
+
+sub fields {
+    [   @{ $_[0]->SUPER::fields() },
 
         {   name      => 'url',
-            condition => \&_can_save_website_pathinfo,
+            alias     => 'site_url',
+            to_object => sub {
+                my ( $hash, $obj ) = @_;
+                return $hash->{url} if _can_save_website_pathinfo($obj);
+                return;
+            },
         },
         {   name      => 'sitePath',
-            condition => \&_can_save_website_pathinfo,
+            to_object => sub {
+                my ( $hash, $obj ) = @_;
+                return $hash->{sitePath} if _can_save_website_pathinfo($obj);
+                return;
+            },
+            condition => sub { __PACKAGE__->SUPER::_can_view() },
         },
         {   name      => 'archiveUrl',
-            condition => \&_can_save_website_pathinfo,
+            to_object => sub {
+                my ( $hash, $obj ) = @_;
+                return $hash->{archiveUrl}
+                    if _can_save_website_pathinfo($obj);
+                return;
+            },
         },
         {   name      => 'archivePath',
-            condition => \&_can_save_website_pathinfo,
+            to_object => sub {
+                my ( $hash, $obj ) = @_;
+                return $hash->{archivePath}
+                    if _can_save_website_pathinfo($obj);
+                return;
+            },
+            condition => sub { __PACKAGE__->SUPER::_can_view() },
         },
     ];
 }
 
-sub fields {
-    $_[0]->SUPER::fields();
-}
-
 sub _can_save_website_pathinfo {
-    my $app   = MT->instance;
-    my $perms = $app->permissions;
-    my $user  = $app->user;
+    my ($obj) = @_;
+    my $app  = MT->instance or return;
+    my $user = $app->user   or return;
 
-    return 1 if $user->is_superuser;
-    if ($perms) {
-        return 1 if $perms->can_do('save_all_settings_for_website');
-        return 1 if $perms->can_do('save_blog_pathinfo');
-        return 1 if $perms->can_do('save_blog_config');
+    return 1 if $user->superuser;
+
+    if ( $obj->id ) {
+        my $perms = $app->permissions or return;
+        return 1
+            if $perms->can_do('save_all_settings_for_website')
+            || $app->can_do('save_blog_pathinfo');
     }
 
     return;
