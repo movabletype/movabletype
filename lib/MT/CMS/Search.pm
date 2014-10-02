@@ -6,7 +6,7 @@
 package MT::CMS::Search;
 
 use strict;
-use MT::Util qw( is_valid_date encode_html );
+use MT::Util qw( is_valid_date encode_html first_n_words );
 
 sub core_search_apis {
     my $app     = shift;
@@ -784,7 +784,7 @@ sub do_search_replace {
         $search = quotemeta($search) unless $is_regex;
         $search = '(?i)' . $search   unless $case;
     }
-    my ( @to_save, @data );
+    my ( @to_save, @to_save_orig, @data );
     my $api   = $search_api;
     my $class = $app->model( $api->{object_type} || $type );
     my %param = %$list_pref;
@@ -1074,6 +1074,8 @@ sub do_search_replace {
                 unless $author->is_superuser
                 || $app->handler_to_coderef( $api->{perm_check} )->($obj);
             my $match = 0;
+            # For cms_pre_save callback and revisioning
+            my $orig_obj = $obj->clone();
             unless ($show_all) {
                 for my $col (@cols) {
                     next if $do_replace && !$replace_cols{$col};
@@ -1092,7 +1094,10 @@ sub do_search_replace {
                 }
             }
             if ( $match || $show_all ) {
-                push @to_save, $obj if $do_replace && !$show_all;
+                if ( $do_replace && !$show_all ) {
+                    push @to_save, $obj;
+                    push @to_save_orig, $orig_obj;
+                }
                 push @data, $obj;
             }
             last if ( $limit ne 'all' ) && @data > $limit;
@@ -1114,9 +1119,79 @@ sub do_search_replace {
     my $replace_count = 0;
     for my $obj (@to_save) {
         $replace_count++;
+
+        # For cms_pre_save callback and revisioning
+        my $orig_obj = shift @to_save_orig;
+
+        $app->run_callbacks( 'cms_pre_save.' . $type,
+            $app, $obj, $orig_obj )
+            || return $app->error(
+            $app->translate(
+                "Saving [_1] failed: [_2]", $obj->class_label,
+                $app->errstr
+            )
+            );
+
+        # Setting modified_by updates modified_on which we want to do before
+        # a save but after pre_save callbacks fire.
+        $obj->modified_by( $author->id );
+
         $obj->save
             or return $app->error(
             $app->translate( "Saving object failed: [_1]", $obj->errstr ) );
+
+        # Save revision
+        if ( $obj->isa('MT::Revisable') ) {
+            my $blog = $obj->blog;
+            if ( $blog && $blog->use_revision ) {
+                $obj->gather_changed_cols($orig_obj);
+                if ( exists $obj->{changed_revisioned_cols} ) {
+                    my $col = 'max_revisions_' . $obj->datasource;
+                    my $max = $blog->$col;
+                    $obj->handle_max_revisions($max);
+
+                    my $msg
+                        = $app->translate(
+                        "Searched for: '[_1]' Replaced with: '[_2]'",
+                        $plain_search, $replace );
+
+                    my $revision = $obj->save_revision($msg);
+                    $obj->current_revision($revision);
+
+                    # call update to bypass instance save method
+                    $obj->update or return $obj->error( $obj->errstr );
+                    if ( $obj->has_meta('revision') ) {
+                        $obj->revision($revision);
+
+                        # hack to bypass instance save method
+                        $obj->{__meta}->set_primary_keys($obj);
+                        $obj->{__meta}->save;
+                    }
+                }
+            }
+        }
+
+        my $obj_title = '';
+        $obj_title = $obj->title if $obj->can('title');  # entries, pages, pings
+        $obj_title = $obj->name  if $obj->can('name');   # templates, blogs, websites
+        $obj_title = first_n_words($obj->text, 10)       # comments
+            if $type eq 'comment';
+
+        my $message
+            = $app->translate(
+            "[_1] '[_2]' (ID:[_3]) updated by user '[_4]' using Search & Replace",
+            $obj->class_label, $obj_title, $obj->id, $author->name );
+
+        $app->log(
+            {   message  => $message,
+                blog_id  => ( $obj->can('blog_id') ? $obj->blog_id : 0 ),
+                level    => MT::Log::INFO(),
+                class    => $type,
+                category => 'edit',
+                metadata => $obj->id
+            }
+        );
+
     }
     if (@data) {
 

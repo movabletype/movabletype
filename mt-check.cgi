@@ -792,12 +792,17 @@ my @CORE_OPT = (
             'This module is required for site statistics of Google Analytics.'
         )
     ],
-
     [   'Time::HiRes',
         0, 0,
        translate(
            'This module is required for executing run-periodic-tasks.'
        )
+    },
+    [   'YAML::Syck', 0, 0,
+        translate(
+            '[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.',
+            'YAML::Syck'
+        )
     ],
 
 );

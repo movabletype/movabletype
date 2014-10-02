@@ -429,7 +429,7 @@ sub context_script {
     if ( my $include_blogs = $ctx->stash('include_blogs') ) {
         $link .= "&IncludeBlogs=" . encode_url($include_blogs);
     }
-    elsif ( my $blog_id = $ctx->stash('blog_id') ) {
+    if ( my $blog_id = $ctx->stash('blog_id') ) {
         $link .= "&blog_id=" . encode_url($blog_id);
     }
 

@@ -14,7 +14,7 @@ sub edit {
 
     my $q       = $app->param;
     my $cfg     = $app->config;
-    my $blog    = $app->blog;
+    my $blog    = $obj || $app->blog;
     my $blog_id = $id;
 
     if ($id) {
@@ -1357,11 +1357,8 @@ sub dialog_select_weblog {
     my $auth  = $app->user or return;
 
     if ($favorites) {
-        my @favs = @{ $auth->favorite_blogs || [] };
-        if (@favs) {
-            @favs = @favs[ 0 .. 4 ] if scalar @favs > 5;
-            $terms->{id} = { not => \@favs };
-        }
+        # Do not exclude top 5 favorite blogs from 
+        #   select blog dialog list. bugid:112372
         $confirm_js = 'saveFavorite';
     }
     if (   !$auth->is_superuser
@@ -2040,8 +2037,7 @@ sub save_filter {
             unless 0 < sprintf( '%d', $app->param('max_revisions_template') );
         return $eh->error(
             MT->translate("Please choose a preferred archive type.") )
-            if $app->blog->is_blog
-            && ( !$app->param('no_archives_are_active')
+            if ( !$app->param('no_archives_are_active')
             && !$app->param('preferred_archive_type') );
     }
     return 1;

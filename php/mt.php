@@ -815,8 +815,8 @@ class MT {
     function error_handler($errno, $errstr, $errfile, $errline) {
         if ($errno & (E_ALL ^ E_NOTICE ^ E_WARNING)) {
             if ( !empty( $this->db ) ) {
-                $errstr = encode_html_entities($errstr, ENT_COMPAT);
-                $errfile = encode_html_entities($errfile, ENT_COMPAT);
+                $errstr = encode_html_entities($errstr, ENT_QUOTES);
+                $errfile = encode_html_entities($errfile, ENT_QUOTES);
                 $mtphpdir = $this->config('PHPDir');
                 $ctx =& $this->context();
                 $ctx->stash('blog_id', $this->blog_id);

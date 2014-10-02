@@ -779,6 +779,7 @@ sub decode_url {
 
             }
             $html =~ s!"!&quot;!g;
+            $html =~ s!'!&#039;!g;
             $html =~ s!<!&lt;!g;
             $html =~ s!>!&gt;!g;
         }
@@ -799,6 +800,7 @@ sub decode_url {
         }
         else {
             $html =~ s!&quot;!"!g;
+            $html =~ s!&#039;!'!g;
             $html =~ s!&lt;!<!g;
             $html =~ s!&gt;!>!g;
             $html =~ s!&amp;!&!g;
@@ -813,7 +815,7 @@ sub decode_url {
         '"'  => '&quot;',
         '<'  => '&lt;',
         '>'  => '&gt;',
-        '\'' => '&apos;'
+        '\'' => '&#039;'
     );
     my %Map_Decode = reverse %Map;
     my $RE         = join '|', keys %Map;

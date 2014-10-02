@@ -887,6 +887,10 @@ sub list {
         $row->{type} = 'entry' if $type eq 'individual';
         my $published_url = $obj->published_url;
         $row->{published_url} = $published_url if $published_url;
+        $row->{name} = '' if !defined $row->{name};
+        $row->{name} =~ s/^\s+|\s+$//g;
+        $row->{name} = "(" . $app->translate("No Name") . ")"
+            if $row->{name} eq '';
     };
 
     my $params        = {};
@@ -2970,7 +2974,12 @@ sub edit_widget {
     my %all_widgets;
     while ( my $m = $iter->() ) {
         next unless $m;
-        $all_widgets{ $m->id }{name}    = $m->name;
+        my $widget_name = $m->name;
+        $widget_name = '' if !defined $widget_name;
+        $widget_name =~ s/^\s+|\s+$//g;
+        $widget_name = "(" . $app->translate("No Name") . ")"
+            if $widget_name eq '';
+        $all_widgets{ $m->id }{name}    = $widget_name;
         $all_widgets{ $m->id }{blog_id} = $m->blog_id;
     }
 
@@ -3065,9 +3074,14 @@ sub list_widget {
     my @widgetmanagers;
     while ( my $widgetset = $iter->() ) {
         next unless $widgetset;
+        my $ws_name = $widgetset->name;
+        $ws_name = '' if !defined $ws_name;
+        $ws_name =~ s/^\s+|\s+$//g;
+        $ws_name = "(" . $app->translate("No Name") . ")"
+            if $ws_name eq '';
         my $ws = {
             id            => $widgetset->id,
-            widgetmanager => $widgetset->name,
+            widgetmanager => $ws_name,
         };
         if ( my $modulesets = $widgetset->modulesets ) {
             $ws->{widgets} = $modulesets;

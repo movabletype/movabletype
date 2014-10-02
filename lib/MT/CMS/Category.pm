@@ -593,6 +593,10 @@ sub pre_save {
             )
         ) if $_->basename eq $obj->basename;
     }
+    return $eh->error(
+        $app->translate( "The name '[_1]' is too long!", $obj->label ) )
+        if ( length( $obj->label ) > 100 );
+
     1;
 }
 

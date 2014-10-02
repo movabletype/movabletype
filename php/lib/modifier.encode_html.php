@@ -6,6 +6,6 @@
 # $Id$
 
 function smarty_modifier_encode_html($text) {
-    return encode_html_entities($text, ENT_COMPAT);
+    return encode_html_entities($text, ENT_QUOTES);
 }
 ?>

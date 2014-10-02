@@ -66,7 +66,8 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
     },
 
     focus: function() {
-        this.textarea.focus();
+        var _this = this;
+        setTimeout(function() {_this.textarea.focus()}, 0);
     },
 
     getHeight: function() {

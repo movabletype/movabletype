@@ -757,5 +757,14 @@
 { "r" : "1", "t" : "<MTWebsiteThemeID raw='1'>", "e" : "classic_website"}, #741
 { "r" : "1", "t" : "<MTSetVarBlock name='foo'>bar</MTSetVarBlock><MTGetVar name='foo' regex_replace='/bar/',\"bar'baz\">", "e" : "bar'baz" }, #742
 { "r" : "1", "t" : "<MTSetVarBlock name='foo'>bar</MTSetVarBlock><MTGetVar name='foo' regex_replace='/bar/','bar@baz/foo@baz'>", "e" : "bar@baz/foo@baz" }, #743
-{ "r" : "1", "t" : "<MTSetVarBlock name='foo'>bar</MTSetVarBlock><MTGetVar name='foo' regex_replace='/bar/','bar@baz\\/'>", "e" : "bar@baz\\/" } #744
+{ "r" : "1", "t" : "<MTSetVarBlock name='foo'>bar</MTSetVarBlock><MTGetVar name='foo' regex_replace='/bar/','bar@baz\\/'>", "e" : "bar@baz\\/" }, #744
+{ "r" : "1", "t" : "<mt:Ignore><mt:SetVar name='abc' value='123></mt:Ignore><mt:SetVar name='abc' value='123'>", "e" : "" }, #745
+{ "r" : "1", "t" : "<mt:Ignore><mt:abc</mt:Ignore>", "e" : "" }, #746
+{ "r" : "1", "t" : "<mt:setvarblock name=\"str\"><&>'\"</mt:setvarblock><$mt:var name=\"str\" encode_html=\"1\"$>", "e" : "&lt;&amp;&gt;&#039;&quot;" }, #747
+{ "r" : "1", "t" : "<mt:setvarblock name=\"str\"><&>'\"</mt:setvarblock><$mt:var name=\"str\" escape=\"html\"$>", "e" : "&lt;&amp;&gt;&#039;&quot;" }, #748
+{ "r" : "1", "t" : "<mt:setvarblock name=\"str\">&lt;&amp;&gt;&#039;&quot;</mt:setvarblock><$mt:var name=\"str\" decode_html=\"1\"$>", "e" : "<&>'\"" }, #749
+{ "r" : "0", "t" : "<mt:setvarblock name=\"str\"><&>'\"</mt:setvarblock><$mt:var name=\"str\" encode_xml=\"1\"$>", "e" : "<![CDATA[<&>'\"]]>" }, #750
+{ "r" : "0", "t" : "<mt:setvarblock name=\"str\"><![CDATA[&lt;&amp;&gt;&#039;&quot;]]></mt:setvarblock><$mt:var name=\"str\" decode_xml=\"1\"$>", "e" : "&lt;&amp;&gt;&#039;&quot;" }, #751
+{ "r" : "1", "t" : "<mt:setvarblock name=\"str\"><&>'\"</mt:setvarblock><$mt:var name=\"str\" encode_xml=\"1\"$>", "e" : "&lt;&amp;&gt;&#039;&quot;" }, #752 TBD NOCDATA 1
+{ "r" : "1", "t" : "<mt:setvarblock name=\"str\">&lt;&amp;&gt;&#039;&quot;</mt:setvarblock><$mt:var name=\"str\" decode_xml=\"1\"$>", "e" : "<&>'\"" } #753 TBD NOCDATA 1
 ]

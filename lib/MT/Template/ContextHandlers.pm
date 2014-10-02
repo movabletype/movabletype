@@ -5844,7 +5844,8 @@ being built.
 
 sub _hdlr_build_template_id {
     my ( $ctx, $args, $cond ) = @_;
-    my $tmpl = $ctx->stash('template');
+    my $tmpl = MT->instance->request('build_template')
+        || $ctx->stash('template');
     if ( $tmpl && $tmpl->id ) {
         return $tmpl->id;
     }
