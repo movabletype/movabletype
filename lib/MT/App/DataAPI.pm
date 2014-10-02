@@ -413,6 +413,7 @@ sub core_endpoints {
         },
 
         # version 2
+        # category endpoints
         {   id             => 'list_categories',
             route          => '/sites/:site_id/categories',
             verb           => 'GET',
@@ -507,6 +508,8 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete a category.', },
         },
+
+        # asset endpoints
         {   id             => 'list_assets',
             route          => '/sites/:site_id/assets',
             verb           => 'GET',
@@ -621,6 +624,8 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete an asset.', },
         },
+
+        # entry endpoints
         {   id        => 'create_entry',
             route     => '/sites/:site_id/entries',
             resources => ['entry'],
@@ -676,6 +681,8 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
+
+        # site endpoints
         {   id             => 'list_sites',
             route          => '/sites',
             verb           => 'GET',
