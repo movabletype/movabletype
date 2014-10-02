@@ -14,6 +14,13 @@ use MT::DataAPI::Endpoint::Common;
 sub search {
     my ( $app, $endpoint ) = @_;
 
+    # Check "search" paramter.
+    my $search = $app->param('search');
+    if ( !( defined $search && $search ne '' ) ) {
+        return $app->error(
+            $app->translate('A parameter "search" is required.'), 400 );
+    }
+
     local $app->{mode} = 'default';
 
     MT::App::Search::init_request($app);
