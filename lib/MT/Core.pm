@@ -2136,6 +2136,10 @@ BEGIN {
                 default_format => 'json',
                 query_builder =>
                     '$Core::MT::DataAPI::Endpoint::Common::query_builder',
+
+                # This is for search endpoint.
+                default =>
+                    sub { MT::App::Search::core_parameters( MT->app ) },
             },
         },
         web_services    => undef,
