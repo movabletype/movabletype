@@ -1686,7 +1686,14 @@ sub search_terms {
 }
 
 sub query_parse {
-    MT::App::Search::query_parse(@_);
+    my ($app) = @_;
+    if ( $app->param('freeText') ) {
+        require MT::App::Search::FreeText;
+        return MT::App::Search::FreeText::query_parse(@_);
+    }
+    else {
+        return MT::App::Search::query_parse(@_);
+    }
 }
 
 sub _query_parse_core {
