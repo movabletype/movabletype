@@ -9,6 +9,7 @@ use strict;
 use warnings;
 
 use MT::Revisable;
+use MT::Theme;
 use MT::CMS::Common;
 use MT::CMS::Blog;
 use MT::DataAPI::Endpoint::Common;
@@ -99,6 +100,11 @@ sub insert_new_blog {
 
     my $new_blog = $app->resource_object( 'blog', $orig_blog ) or return;
 
+    # Set theme if "themeId" parameter not set.
+    if ( !defined( $new_blog->theme_id ) ) {
+        $new_blog->theme_id( _default_theme( $app, 'blog' ) );
+    }
+
     MT::CMS::Common::run_web_services_save_config_callbacks( $app,
         $new_blog );
 
@@ -138,6 +144,30 @@ sub insert_new_blog {
     $new_blog;
 }
 
+sub _default_theme {
+    my ( $app, $type ) = @_ or return;
+
+    my $directive     = 'Default' . ucfirst($type) . 'Theme';
+    my $default_theme = $app->config($directive);
+
+    if ( $default_theme && MT::Theme->load($default_theme) ) {
+
+        # default theme is available.
+        return $default_theme;
+    }
+    else {
+        # If default theme is not available,
+        # select the default theme displayed on Create Website/Blog screen.
+        my $loop = MT::Theme->load_theme_loop($type);
+        if ( ref($loop) eq 'ARRAY' && @$loop ) {
+            return $loop->[0]->{value};
+        }
+        else {
+            return;    # No theme.
+        }
+    }
+}
+
 # Implemented by reference to MT::CMS::Common::save().
 sub insert_new_website {
     my ( $app, $endpoint ) = @_;
@@ -157,6 +187,11 @@ sub insert_new_website {
 
     my $new_website = $app->resource_object( 'website', $orig_website )
         or return;
+
+    # Set theme if "themeId" parameter not set.
+    if ( !defined( $new_website->theme_id ) ) {
+        $new_website->theme_id( _default_theme( $app, 'website' ) );
+    }
 
     MT::CMS::Common::run_web_services_save_config_callbacks( $app,
         $new_website );

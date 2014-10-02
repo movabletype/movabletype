@@ -25,7 +25,6 @@ sub save_filter {
         @not_empty_fields = (
             { field => 'name',      parameter => 'name' },
             { field => 'site_path', parameter => 'sitePath' },
-            { field => 'theme_id',  parameter => 'themeId' },
         );
     }
     else {
@@ -33,7 +32,6 @@ sub save_filter {
             { field => 'name',      parameter => 'name' },
             { field => 'site_url',  parameter => 'url' },
             { field => 'site_path', parameter => 'sitePath' },
-            { field => 'theme_id',  parameter => 'themeId' },
         );
     }
     for (@not_empty_fields) {
