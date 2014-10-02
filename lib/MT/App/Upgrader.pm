@@ -824,8 +824,8 @@ sub main {
                 category => 'upgrade',
             }
         );
-        $app->config->MTVersion( $cur_version, 1 );
-        $app->config->MTReleaseNumber( $cur_rel, 1 );
+        $app->config( 'MTVersion', $cur_version, 1 );
+        $app->config( 'MTReleaseNumber', $cur_rel, 1 );
         $app->config->save_config;
     }
 

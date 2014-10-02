@@ -363,6 +363,9 @@ sub read_config_db {
 
     $mgr->{__dbvar} = {};
 
+    my $driver = $MT::Object::DRIVER;
+    $driver->clear_cache if $driver && $driver->can('clear_cache');
+
     my ($config) = eval { $cfg_class->search };
     if ($config) {
         my $was_dirty = $mgr->is_dirty;
