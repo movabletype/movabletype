@@ -24,8 +24,13 @@ sub search {
 
     MT::App::Search::takedown($app);
 
+    # Output JSON data here.
+    # This makes post_run_data_api.search have no data.
     $app->send_http_header( $app->current_format->{mime_type} );
-    return $result;
+    $app->{no_print_body} = 1;
+    $app->print_encode($result);
+
+    return;
 }
 
 1;
