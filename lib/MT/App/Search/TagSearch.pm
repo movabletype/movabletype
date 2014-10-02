@@ -13,7 +13,7 @@ use HTTP::Date qw( str2time );
 sub process {
     my $app = shift;
     return $app->errtrans('TagSearch works with MT::App::Search.')
-        unless $app->isa('MT::App::Search');
+        unless $app->isa('MT::App::Search') || $app->isa('MT::App::DataAPI');
 
     my ( $count, $out ) = $app->check_cache();
     if ( defined $out ) {

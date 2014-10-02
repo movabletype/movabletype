@@ -21,15 +21,25 @@ sub search {
             $app->translate('A parameter "search" is required.'), 400 );
     }
 
-    local $app->{mode} = 'default';
+    my $tag_search = $app->param('tagSearch') ? 1 : 0;
+
+    local $app->{mode} = $tag_search ? 'tag' : 'default';
 
     MT::App::Search::init_request($app);
     return $app->error( $app->errstr, 400 ) if $app->errstr;
 
-    my $result = MT::App::Search::process($app)
-        or return;
+    my $result;
+    if ($tag_search) {
+        require MT::App::Search::TagSearch;
+        $result = MT::App::Search::TagSearch::process($app);
+    }
+    else {
+        $result = MT::App::Search::process($app);
+    }
 
     MT::App::Search::takedown($app);
+
+    return if !$result;
 
     # Output JSON data here.
     # This makes post_run_data_api.search have no data.

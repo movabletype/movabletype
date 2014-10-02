@@ -1682,7 +1682,14 @@ sub check_cache {
 }
 
 sub search_terms {
-    MT::App::Search::search_terms(@_);
+    my ($app) = @_;
+    if ( $app->param('tagSearch') ) {
+        require MT::App::Search::TagSearch;
+        return MT::App::Search::TagSearch::search_terms(@_);
+    }
+    else {
+        return MT::App::Search::search_terms(@_);
+    }
 }
 
 sub query_parse {
