@@ -150,7 +150,10 @@ sub resource {
     my $resource_key;
     for my $k (
         ref $key
-        ? ( $key->class_type || '',
+        ? ( (   UNIVERSAL::isa( $key, 'MT::Log' )
+                ? ()
+                : ( $key->class_type || '' )
+            ),
             $key->datasource . '.' . ( $key->class_type || '' ),
             $key->datasource
         )
