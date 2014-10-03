@@ -1043,6 +1043,9 @@ sub _upload_to_asset {
     return $app->error( 400, "Invalid or empty filename" )
         if $fname =~ m!/|\.\.|\0|\|!;
 
+    my ( $base, $uploaded_path, $ext )
+        = File::Basename::fileparse( $fname, '\.[^\.]*' );
+
     if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
         my @deny_exts = map {
             if   ( $_ =~ m/^\./ ) {qr/$_/i}
@@ -1052,7 +1055,9 @@ sub _upload_to_asset {
         return $app->error(
             500,
             MT->translate(
-                'The file ([_1]) that you uploaded is not allowed.', $fname
+                '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                $ext,
+                $fname
             )
         ) if $ret[2];
     }
@@ -1066,7 +1071,9 @@ sub _upload_to_asset {
         return $app->error(
             500,
             MT->translate(
-                'The file ([_1]) that you uploaded is not allowed.', $fname
+                '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                $ext,
+                $fname
             )
         ) unless $ret[2];
     }

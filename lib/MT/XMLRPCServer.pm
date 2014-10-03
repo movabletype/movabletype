@@ -1418,6 +1418,8 @@ sub newMediaObject {
         die _fault( MT->translate( "Invalid filename '[_1]'", $fname ) );
     }
 
+    my ( $base, $uploaded_path, $ext )
+        = File::Basename::fileparse( $fname, '\.[^\.]*' );
     if ( my $deny_exts = MT->config->DeniedAssetFileExtensions ) {
         my @deny_exts = map {
             if   ( $_ =~ m/^\./ ) {qr/$_/i}
@@ -1426,7 +1428,8 @@ sub newMediaObject {
         my @ret = File::Basename::fileparse( $fname, @deny_exts );
         die _fault(
             MT->translate(
-                'The file ([_1]) that you uploaded is not allowed.', $fname
+                'The file ([_1]) that you uploaded is not allowed.', $ext,
+                $fname
             )
         ) if $ret[2];
     }
@@ -1439,7 +1442,8 @@ sub newMediaObject {
         my @ret = File::Basename::fileparse( $fname, @allowed );
         die _fault(
             MT->translate(
-                'The file ([_1]) that you uploaded is not allowed.', $fname
+                'The file ([_1]) that you uploaded is not allowed.', $ext,
+                $fname
             )
         ) unless $ret[2];
     }

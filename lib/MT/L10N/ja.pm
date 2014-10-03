@@ -1049,7 +1049,7 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (user #[_2]) added [lc,_4] #[_3]' => '[_1] (ID: [_2])が[_4] (ID: [_3])を追加しました。',
 	'User \'[_1]\' (user #[_2]) edited [lc,_4] #[_3]' => '[_1] (ID: [_2])が[_4] (ID: [_3])を編集しました。',
 	'Entry \'[_1]\' ([lc,_5] #[_2]) deleted by \'[_3]\' (user #[_4]) from atom api' => '[_1]記事([lc,_5]#[_2])は[_3](ID: [_4])によって削除されました。',
-	'The file ([_1]) that you uploaded is not allowed.' => 'ファイル ([_1])のアップロードは許可されていません。',
+	'\'[_1]\' is not allowed to upload by system settings.: [_2]' => '\'[_1]\'のアップロードはシステム設定にて許可されていません。: [_2]',
 	'Invalid image file format.' => '画像ファイルフォーマットが不正です。',
 	'Perl module Image::Size is required to determine the width and height of uploaded images.' => 'Image::Sizeをインストールしないと、画像の幅と高さを検出できません。',
 
