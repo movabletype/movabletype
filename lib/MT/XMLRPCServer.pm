@@ -1428,7 +1428,8 @@ sub newMediaObject {
         my @ret = File::Basename::fileparse( $fname, @deny_exts );
         die _fault(
             MT->translate(
-                'The file ([_1]) that you uploaded is not allowed.', $ext,
+                '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                $ext,
                 $fname
             )
         ) if $ret[2];
@@ -1442,7 +1443,8 @@ sub newMediaObject {
         my @ret = File::Basename::fileparse( $fname, @allowed );
         die _fault(
             MT->translate(
-                'The file ([_1]) that you uploaded is not allowed.', $ext,
+                '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                $ext,
                 $fname
             )
         ) unless $ret[2];
