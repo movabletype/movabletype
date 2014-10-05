@@ -1312,10 +1312,12 @@ BEGIN {
                 default_sort_key    => 'created_on',
             },
             log => {
-                object_label     => 'Log',
-                default_sort_key => 'created_on',
-                primary          => 'message',
-                condition        => sub {
+                object_label        => 'Log',
+                default_sort_key    => 'created_on',
+                primary             => 'message',
+                data_api_condition  => undef,
+                data_api_scope_mode => 'this',
+                condition           => sub {
                     my $app     = MT->instance;
                     my $user    = $app->user;
                     my $blog_id = $app->param('blog_id');

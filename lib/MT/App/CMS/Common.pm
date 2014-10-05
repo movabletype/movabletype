@@ -318,9 +318,6 @@ sub init_core_callbacks {
             'list_template_param.asset' => "${pfx}Asset::template_param_list",
 
             # log
-            $pkg
-                . 'pre_load_filtered_list.log' =>
-                "${pfx}Log::cms_pre_load_filtered_list",
             'list_template_param.log' => "${pfx}Log::template_param_list",
 
             # role

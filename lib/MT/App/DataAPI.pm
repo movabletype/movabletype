@@ -916,6 +916,66 @@ sub core_endpoints {
                 { 403 => 'Do not have permission to search objects', },
             requires_login => 0,
         },
+
+        # log endpoints
+        {   id             => 'list_logs',
+            route          => '/sites/:site_id/logs',
+            version        => 2,
+            handler        => "${pkg}Log::v2::list",
+            default_params => {
+                limit     => 25,
+                offset    => 0,
+                sortBy    => 'created_on',
+                sortOrder => 'descend',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of activity logs.',
+            },
+            requires_login => 0,
+        },
+        {   id          => 'get_log',
+            route       => '/sites/:site_id/logs/:log_id',
+            version     => 2,
+            handler     => "${pkg}Log::v2::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested log.',
+            },
+            requires_login => 0,
+        },
+        {   id      => 'create_log',
+            route   => '/sites/:site_id/logs',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Log::v2::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create a log.', },
+        },
+        {   id      => 'update_log',
+            route   => '/sites/:site_id/logs/:log_id',
+            verb    => 'PUT',
+            version => 2,
+            handler => "${pkg}Log::v2::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a log.', },
+        },
+        {   id      => 'delete_log',
+            route   => '/sites/:site_id/logs/:log_id',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Log::v2::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a log.', },
+        },
+        {   id      => 'reset_logs',
+            route   => '/sites/:site_id/logs',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Log::v2::reset",
+            error_codes =>
+                { 403 => 'Do not have permission to reset logs.', },
+        },
     ];
 }
 
@@ -991,6 +1051,16 @@ sub init_plugins {
             # role callbacks
             $pkg . 'save_filter.role'            => "${pfx}Role::save_filter",
             $pkg . 'view_permission_filter.role' => "${pfx}Role::can_view",
+
+            # log callbacks
+            $pkg
+                . 'pre_load_filtered_list.log' =>
+                "${pfx}Log::cms_pre_load_filtered_list",
+            $pkg . 'view_permission_filter.log'   => "${pfx}Log::can_view",
+            $pkg . 'save_permission_filter.log'   => "${pfx}Log::can_save",
+            $pkg . 'save_filter.log'              => "${pfx}Log::save_filter",
+            $pkg . 'delete_permission_filter.log' => "${pfx}Log::can_delete",
+            $pkg . 'post_delete.log'              => "${pfx}Log::post_delete",
         }
     );
 
