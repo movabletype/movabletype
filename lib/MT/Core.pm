@@ -1533,9 +1533,10 @@ BEGIN {
                     permit_action => 'access_to_tag_list',
                     inherit       => 0,
                 },
-                default_sort_key => 'name',
-                view             => [ 'blog', 'website' ],
-                scope_mode       => 'none',
+                data_api_permission => undef,
+                default_sort_key    => 'name',
+                view                => [ 'blog', 'website' ],
+                scope_mode          => 'none',
             },
             association => {
                 object_label        => 'Permission',

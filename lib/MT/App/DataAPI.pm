@@ -976,6 +976,92 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to reset logs.', },
         },
+
+        # tag endpoints
+        {   id             => 'list_tags',
+            route          => '/tags',
+            version        => 2,
+            default_params => {
+                limit        => 25,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
+                searchFields => 'name',
+            },
+            handler     => "${pkg}Tag::v2::list",
+            error_codes => {
+                403 => 'Do not have permission to retrieve the list of tags.',
+            },
+            requires_login => 0,
+        },
+        {   id             => 'list_tags_for_site',
+            route          => '/sites/:site_id/tags',
+            version        => 2,
+            default_params => {
+                limit        => 25,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
+                searchFields => 'name',
+            },
+            handler     => "${pkg}Tag::v2::list_for_site",
+            error_codes => {
+                403 => 'Do not have permission to retrieve the list of tags.',
+            },
+            requires_login => 0,
+        },
+        {   id          => 'get_tag',
+            route       => '/tags/:tag_name',
+            version     => 2,
+            handler     => "${pkg}Tag::v2::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested tag.',
+            },
+            requires_login => 0,
+        },
+        {   id          => 'get_tag_for_site',
+            route       => '/sites/:site_id/tags/:tag_name',
+            version     => 2,
+            handler     => "${pkg}Tag::v2::get_for_site",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested tag.',
+            },
+            requires_login => 0,
+        },
+        {   id      => 'rename_tag',
+            route   => '/tags/:tag_name',
+            verb    => 'PUT',
+            version => 2,
+            handler => "${pkg}Tag::v2::rename",
+            error_codes =>
+                { 403 => 'Do not have permission to rename a tag.', },
+        },
+        {   id      => 'rename_tag_for_site',
+            route   => '/sites/:site_id/tags/:tag_name',
+            verb    => 'PUT',
+            version => 2,
+            handler => "${pkg}Tag::v2::rename_for_site",
+            error_codes =>
+                { 403 => 'Do not have permission to rename a tag.', },
+        },
+        {   id      => 'delete_tag',
+            route   => '/tags/:tag_name',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Tag::v2::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a tag.', },
+        },
+        {   id      => 'delete_tag_for_site',
+            route   => '/sites/:site_id/tags/:tag_name',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Tag::v2::delete_for_site",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a tag.', },
+        },
     ];
 }
 
@@ -1061,6 +1147,13 @@ sub init_plugins {
             $pkg . 'save_filter.log'              => "${pfx}Log::save_filter",
             $pkg . 'delete_permission_filter.log' => "${pfx}Log::can_delete",
             $pkg . 'post_delete.log'              => "${pfx}Log::post_delete",
+
+            # tag callbacks
+            $pkg
+                . 'pre_load_filtered_list.tag' =>
+                "${pfx}Tag::cms_pre_load_filtered_list",
+            $pkg . 'view_permission_filter.tag'   => "${pfx}Tag::can_view",
+            $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
         }
     );
 

@@ -112,6 +112,12 @@ sub core_resources {
                 updatable_fields => "${pkg}Log::v2::updatable_fields",
             },
         ],
+        'tag' => [
+            {   version          => 2,
+                fields           => "${pkg}Tag::v2::fields",
+                updatable_fields => "${pkg}Tag::v2::updatable_fields",
+            },
+        ],
     };
 }
 

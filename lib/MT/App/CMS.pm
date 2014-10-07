@@ -557,6 +557,12 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.log' =>
                 "${pfx}Log::cms_pre_load_filtered_list",
+
+            # tag callbacks
+            $pkg
+                . 'pre_load_filtered_list.tag' =>
+                "${pfx}Tag::cms_pre_load_filtered_list",
+            $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
         }
     );
 
