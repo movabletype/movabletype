@@ -310,11 +310,6 @@ sub save {
                 if ( $q->param('file_extension') || '' ) ne '';
         }
 
-        unless ( ( $values{site_url} || '' ) =~ m!/$! ) {
-            my $url = $values{site_url};
-            $values{site_url} = $url;
-        }
-
         my $cfg_screen = $app->param('cfg_screen') || '';
 
         if ( $cfg_screen eq 'cfg_prefs' ) {
