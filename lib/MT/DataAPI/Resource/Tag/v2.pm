@@ -84,7 +84,7 @@ sub _object_count {
     if ( defined($blog_id) && $blog_id !~ m/^\d+$/ ) {
         return 0;
     }
-    if ( !MT->model('blog')->load($blog_id) ) {
+    if ( $blog_id && !MT->model('blog')->load($blog_id) ) {
         return 0;
     }
 
