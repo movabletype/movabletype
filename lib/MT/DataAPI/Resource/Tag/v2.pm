@@ -127,7 +127,7 @@ sub _object_count {
 
         $count = MT->model('objecttag')->count(
             {   tag_id            => $obj->id,
-                object_datasource => $class,
+                object_datasource => ( $class eq 'page' ) ? 'entry' : $class,
                 defined($blog_id) ? ( blog_id => $blog_id ) : (),
             },
             { join => MT->model($class)->join_on( undef, $join_terms ) },
@@ -187,7 +187,7 @@ sub _object_count {
 
         $count = MT->model('objecttag')->count(
             {   tag_id            => $obj->id,
-                object_datasource => $class,
+                object_datasource => ( $class eq 'page' ) ? 'entry' : $class,
             },
             { join => MT->model($class)->join_on( undef, $join_terms ) },
         );
