@@ -49,7 +49,26 @@ sub fields {
         {   name        => 'assetCount',
             from_object => sub {
                 my ($obj) = @_;
-                return _object_count( $obj, 'asset' );
+                my $app = MT->instance;
+
+                my $blog_id = $app->param('site_id');
+
+                # Check whether blog_id is valid or not.
+                if ( defined($blog_id) && $blog_id !~ m/^\d+$/ ) {
+                    return 0;
+                }
+                if ( $blog_id && !MT->model('blog')->load($blog_id) ) {
+                    return 0;
+                }
+
+                my $count = MT->model('objecttag')->count(
+                    {   ( defined($blog_id) ? ( blog_id => $blog_id ) : () ),
+                        tag_id            => $obj->id,
+                        object_datasource => 'asset',
+                    },
+                );
+
+                return $count;
             },
         },
         {   name        => 'updatable',
@@ -91,7 +110,7 @@ sub _object_count {
     # Count.
     my $count;
 
-    if ( defined($blog_id) || $class eq 'asset' || $user->is_superuser ) {
+    if ( defined($blog_id) || $user->is_superuser ) {
         my $perms = defined($blog_id) ? $user->permissions($blog_id) : undef;
 
         my $restrict_entries;
@@ -121,13 +140,13 @@ sub _object_count {
         else {
             $join_terms = {
                 id    => \'= objecttag_object_id',
-                class => ( $class eq 'asset' ) ? '*' : $class,
+                class => $class,
             };
         }
 
         $count = MT->model('objecttag')->count(
             {   tag_id            => $obj->id,
-                object_datasource => ( $class eq 'page' ) ? 'entry' : $class,
+                object_datasource => 'entry',
                 defined($blog_id) ? ( blog_id => $blog_id ) : (),
             },
             { join => MT->model($class)->join_on( undef, $join_terms ) },
@@ -187,7 +206,7 @@ sub _object_count {
 
         $count = MT->model('objecttag')->count(
             {   tag_id            => $obj->id,
-                object_datasource => ( $class eq 'page' ) ? 'entry' : $class,
+                object_datasource => 'entry',
             },
             { join => MT->model($class)->join_on( undef, $join_terms ) },
         );
