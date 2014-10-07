@@ -58,6 +58,7 @@ sub fields {
                 my ($obj) = @_;
                 my $app = MT->instance;
                 my $user = $app->user or return;
+                return 1 if $user->is_superuser;
 
                 if ( $app->blog && $app->blog->id ) {
                     my $perms = $user->permissions( $app->blog->id );
@@ -91,15 +92,17 @@ sub _object_count {
     my $count;
 
     if ( defined($blog_id) || $class eq 'asset' || $user->is_superuser ) {
-        my $perms = $user->permissions($blog_id);
+        my $perms = defined($blog_id) ? $user->permissions($blog_id) : undef;
 
         my $restrict_entries;
-        if ( $class eq 'entry' ) {
-            $restrict_entries = ( $perms->can_do('publish_all_entry')
-                    || $perms->can_do('edit_all_entries') ) ? 1 : 0;
-        }
-        elsif ( $class eq 'page' ) {
-            $restrict_entries = $perms->can_do('manage_pages') ? 1 : 0;
+        if ( !$user->is_superuser ) {
+            if ( $class eq 'entry' ) {
+                $restrict_entries = ( $perms->can_do('publish_all_entry')
+                        || $perms->can_do('edit_all_entries') ) ? 1 : 0;
+            }
+            elsif ( $class eq 'page' ) {
+                $restrict_entries = $perms->can_do('manage_pages') ? 1 : 0;
+            }
         }
 
         my $join_terms;
