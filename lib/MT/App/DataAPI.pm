@@ -1062,6 +1062,78 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete a tag.', },
         },
+        {   id             => 'list_entries_for_tag',
+            route          => '/tags/:tag_name/entries',
+            version        => 2,
+            handler        => "${pkg}Entry::v2::list_for_tag",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'authored_on',
+                sortOrder    => 'descend',
+                searchFields => 'title,body,more,keywords,excerpt,basename',
+                filterKeys   => 'status',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested entries for tag.',
+            },
+            requires_login => 0,
+        },
+        {   id             => 'list_entries_for_site_and_tag',
+            route          => '/sites/:site_id/tags/:tag_name/entries',
+            version        => 2,
+            handler        => "${pkg}Entry::v2::list_for_site_and_tag",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'authored_on',
+                sortOrder    => 'descend',
+                searchFields => 'title,body,more,keywords,excerpt,basename',
+                filterKeys   => 'status',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested entries for site and tag.',
+            },
+            requires_login => 0,
+        },
+        {   id             => 'list_assets_for_tag',
+            route          => '/tags/:tag_name/assets',
+            version        => 2,
+            handler        => "${pkg}Asset::v2::list_for_tag",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'id',
+                sortOrder    => 'descend',
+                searchFields => 'label',
+                filterKeys   => 'class',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested assets for tag.',
+            },
+            requires_login => 0,
+        },
+        {   id             => 'list_assets_for_site_and_tag',
+            route          => '/sites/:site_id/tags/:tag_name/assets',
+            version        => 2,
+            handler        => "${pkg}Asset::v2::list_for_site_and_tag",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'id',
+                sortOrder    => 'descend',
+                searchFields => 'label',
+                filterKeys   => 'class',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested assets for site and tag.',
+            },
+            requires_login => 0,
+        },
     ];
 }
 

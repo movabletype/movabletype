@@ -253,6 +253,63 @@ sub list_for_asset {
     };
 }
 
+sub list_for_tag {
+    my ( $app, $endpoint ) = @_;
+
+    require MT::DataAPI::Endpoint::Tag::v2;
+    my $tag = MT::DataAPI::Endpoint::Tag::v2::_retrieve_tag($app) or return;
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'tag', $tag->id, obj_promise($tag) )
+        or return;
+
+    my %args = (
+        join => MT->model('objecttag')->join_on(
+            undef,
+            {   object_datasource => 'entry',
+                object_id         => \'= entry_id',
+                tag_id            => $tag->id,
+            },
+        ),
+    );
+    my $res = filtered_list( $app, $endpoint, 'entry', undef, \%args );
+
+    +{  totalResults => $res->{count} + 0,
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub list_for_site_and_tag {
+    my ( $app, $endpoint ) = @_;
+
+    require MT::DataAPI::Endpoint::Tag::v2;
+    my ( $tag, $site_id )
+        = MT::DataAPI::Endpoint::Tag::v2::_retrieve_tag_related_to_site($app)
+        or return;
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'tag', $tag->id, obj_promise($tag) )
+        or return;
+
+    my %args = (
+        join => MT->model('objecttag')->join_on(
+            undef,
+            {   object_datasource => 'entry',
+                object_id         => \'= entry_id',
+                tag_id            => $tag->id,
+                blog_id           => $site_id,
+            },
+        ),
+    );
+    my $res = filtered_list( $app, $endpoint, 'entry', undef, \%args );
+
+    +{  totalResults => $res->{count} + 0,
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
 1;
 
 __END__
