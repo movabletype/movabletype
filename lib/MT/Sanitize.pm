@@ -163,8 +163,14 @@ sub sanitize {
                         ###    $out .= _expel_up_to(\@open_tags, \%open_tags, $name);
                         ###    $out .= '</' . $name . '>';
                         ###}
-                        push @open_tags, $name;
-                        $open_tags{$name}++;
+
+                        if ( $name
+                            !~ /br|wbr|hr|img|col|base|link|meta|input|keygen|area|param|embed|source|track|command/
+                            )
+                        {
+                            push @open_tags, $name;
+                            $open_tags{$name}++;
+                        }
                     }
                     $out
                         .= '<'

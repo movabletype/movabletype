@@ -77,8 +77,10 @@ function sanitize($s, $arg) {
                     if ($closure == 1) {
                         $result .= sanitize_expel_up_to($open_tag_a, $open_tag_h, $name);
                     } elseif (!$closure) {
-                        $open_tag_a[] = $name;
-                        $open_tag_h[$name]++;
+                        if(!preg_match('/br|wbr|hr|img|col|base|link|meta|input|keygen|area|param|embed|source|track|command/', $name)){
+                            $open_tag_a[] = $name;
+                            $open_tag_h[$name]++;
+                        }
                     }
                 }
                 $result .= '<' .
