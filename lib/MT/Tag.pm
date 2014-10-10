@@ -639,7 +639,6 @@ sub __load_tags {
         $obj->{__tags} = [];
         return $obj->{__tag_objects} = [];
     }
-    return if exists $obj->{__tag_objects};
 
     require MT::Memcached;
     my $cache  = MT::Memcached->instance;
