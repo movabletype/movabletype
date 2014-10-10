@@ -159,6 +159,10 @@ sub import_contents {
         $code = $importer->{code} = MT->handler_to_coderef($code);
     }
     if ($code) {
+        if (not $iter) {
+            $importer->{type}->error( $self->errstr );
+            return;
+        }
         my $result
             = eval { $importer->{code}->( $importer->{type}, %param ); };
         print "Error: $@" if $@;
