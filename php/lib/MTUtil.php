@@ -780,7 +780,7 @@ $Languages = array(
 global $_encode_xml_Map;
 $_encode_xml_Map = array('&' => '&amp;', '"' => '&quot;',
                          '<' => '&lt;', '>' => '&gt;',
-                         '\'' => '&#039;');
+                         '\'' => '&apos;');
 
 function __check_xml_char($matches) {
     $val = $matches[2];

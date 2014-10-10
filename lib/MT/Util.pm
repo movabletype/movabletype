@@ -815,7 +815,7 @@ sub decode_url {
         '"'  => '&quot;',
         '<'  => '&lt;',
         '>'  => '&gt;',
-        '\'' => '&#039;'
+        '\'' => '&apos;'
     );
     my %Map_Decode = reverse %Map;
     my $RE         = join '|', keys %Map;

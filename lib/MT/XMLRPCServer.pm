@@ -342,7 +342,6 @@ sub _new_entry {
         my $enc = $mt->{cfg}->PublishCharset;
         unless ($HAVE_XML_PARSER) {
             $item->{$f} = decode_html( $item->{$f} );
-            $item->{$f} =~ s!&apos;!'!g;         #'
         }
     }
     require MT::Blog;
@@ -532,7 +531,6 @@ sub _edit_entry {
         my $enc = $mt->config('PublishCharset');
         unless ($HAVE_XML_PARSER) {
             $item->{$f} = decode_html( $item->{$f} );
-            $item->{$f} =~ s!&apos;!'!g;         #'
         }
     }
     my $entry = MT->model($obj_type)->load($entry_id)
