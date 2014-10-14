@@ -595,7 +595,7 @@ class MT {
         }
         if ($this->conditional) {
             $last_ts = $blog->blog_children_modified_on;
-            $last_modified = $ctx->_hdlr_date(array('ts' => $last_ts, 'format' => '%a, %d %b %Y %H:%M:%S GMT', 'language' => 'en', 'utc' => 1), $ctx);
+            $last_modified = $ctx->_hdlr_date(array('ts' => $last_ts, 'format' => '%a, %d %b %Y %H:%M:%S GMT', 'language' => 'en'), $ctx);
             $this->doConditionalGet($last_modified);
         }
 
