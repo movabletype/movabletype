@@ -154,7 +154,7 @@ sub list_props {
             order => 100,
         },
         name => {
-            base  => '__virtual.name',
+            base      => '__virtual.name',
             auto      => 1,
             label     => 'Name',
             order     => 200,
@@ -954,7 +954,7 @@ sub count_static_templates {
 sub touch {
     my $blog = shift;
     my (@types) = @_;
-    my ( $s, $m, $h, $d, $mo, $y ) = localtime(time);
+    my ( $s, $m, $h, $d, $mo, $y ) = gmtime(time);
     my $mod_time = sprintf( "%04d%02d%02d%02d%02d%02d",
         1900 + $y, $mo + 1, $d, $h, $m, $s );
     require MT::Touch;
