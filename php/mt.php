@@ -594,8 +594,10 @@ class MT {
             $this->cache_modified_check = true;
         }
         if ($this->conditional) {
-            $last_ts = $blog->blog_children_modified_on;
-            $last_modified = $ctx->_hdlr_date(array('ts' => $last_ts, 'format' => '%a, %d %b %Y %H:%M:%S GMT', 'language' => 'en', 'utc' => 1), $ctx);
+            $local_last_datetime = $blog->blog_children_modified_on;
+            $gmt_last_ts = datetime_to_timestamp($local_last_datetime);
+            $gmt_last_datetime = gmdate('YmdHis', $gmt_last_ts);
+            $last_modified = $ctx->_hdlr_date(array('ts' => $gmt_last_datetime, 'format' => '%a, %d %b %Y %H:%M:%S GMT', 'language' => 'en'), $ctx);
             $this->doConditionalGet($last_modified);
         }
 
