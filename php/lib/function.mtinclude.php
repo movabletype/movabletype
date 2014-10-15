@@ -147,13 +147,13 @@ function smarty_function_mtinclude($args, &$ctx) {
                                 $cache_ttl = 1;
                         }
                     } else {
-                        $cache_ttl = time() - datetime_to_timestamp($latest_touch);
+                        $cache_ttl = time() - datetime_to_timestamp($latest_touch, 'gmt');
                     }
                 }
             }
         }
 
-        $elapsed_time = time() - offset_time( datetime_to_timestamp( $tmpl_meta->template_modified_on ), $blog, '-' );
+        $elapsed_time = time() - offset_time( datetime_to_timestamp( $tmpl_meta->template_modified_on, 'gmt' ), $blog, '-' );
         if ($cache_ttl == 0 || $elapsed_time < $cache_ttl) {
             $cache_ttl = $elapsed_time;
         }

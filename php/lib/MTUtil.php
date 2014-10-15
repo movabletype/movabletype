@@ -5,9 +5,10 @@
 #
 # $Id$
 
-function datetime_to_timestamp($dt) {
+function datetime_to_timestamp($dt, $type) {
+    $mktime = $type == 'gmt' ? 'gmmktime' : 'mktime';
     $dt = preg_replace('/[^0-9]/', '', $dt);
-    $ts = gmmktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
+    $ts = $mktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
     return $ts;
 }
 
