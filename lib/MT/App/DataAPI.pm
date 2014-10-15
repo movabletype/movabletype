@@ -1134,6 +1134,84 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
+
+        # theme endpoints
+        {   id          => 'list_themes',
+            route       => '/themes',
+            version     => 2,
+            handler     => "${pkg}Theme::v2::list",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested themes.',
+            },
+        },
+        {   id          => 'list_themes_for_site',
+            route       => '/sites/:site_id/themes',
+            version     => 2,
+            handler     => "${pkg}Theme::v2::list_for_site",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested site\'s themes.',
+            },
+        },
+        {   id          => 'get_theme',
+            route       => '/themes/:theme_id',
+            version     => 2,
+            handler     => "${pkg}Theme::v2::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested theme.',
+            },
+        },
+        {   id          => 'get_theme_for_site',
+            route       => '/sites/:site_id/themes/:theme_id',
+            version     => 2,
+            handler     => "${pkg}Theme::v2::get_for_site",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested site\'s theme.',
+            },
+        },
+        {   id          => 'apply_theme_to_site',
+            route       => '/sites/:site_id/themes/:theme_id/apply',
+            verb        => 'POST',
+            version     => 2,
+            handler     => "${pkg}Theme::v2::apply",
+            error_codes => {
+                403 =>
+                    'Do not have permission to apply the requested theme to site.',
+            },
+        },
+        {   id          => 'refresh_templates_for_site',
+            route       => '/sites/:site_id/refresh_templates',
+            verb        => 'POST',
+            version     => 2,
+            handler     => "${pkg}Theme::v2::refresh_templates",
+            error_codes => {
+                403 =>
+                    'Do not have permission to refresh templates of the request site.',
+            },
+        },
+        {   id          => 'uninstall_theme',
+            route       => '/themes/:theme_id',
+            verb        => 'DELETE',
+            version     => 2,
+            handler     => "${pkg}Theme::v2::uninstall",
+            error_codes => {
+                403 =>
+                    'Do not have permission to uninstall the requested theme.',
+            },
+        },
+        {   id          => 'export_site_theme',
+            route       => '/sites/:site_id/export_theme',
+            verb        => 'POST',
+            version     => 2,
+            handler     => "${pkg}Theme::v2::export",
+            error_codes => {
+                403 =>
+                    'Do not have permission to export the requested theme.',
+            },
+        },
     ];
 }
 
