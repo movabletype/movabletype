@@ -118,6 +118,18 @@ sub core_resources {
                 updatable_fields => "${pkg}Tag::v2::updatable_fields",
             },
         ],
+        'template' => [
+            {   version          => 2,
+                fields           => "${pkg}Template::v2::fields",
+                updatable_fields => "${pkg}Template::v2::updatable_fields",
+            },
+        ],
+        'templatemap' => [
+            {   version          => 2,
+                fields           => "${pkg}TemplateMap::v2::fields",
+                updatable_fields => "${pkg}TemplateMap::v2::updatable_fields",
+            },
+        ],
     };
 }
 

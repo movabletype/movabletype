@@ -1601,6 +1601,7 @@ BEGIN {
                 data_api_condition  => sub {1},
                 data_api_scope_mode => 'this',
             },
+            template => { data_api_scope_mode => 'strict', },
         },
         summaries => {
             'author' => {

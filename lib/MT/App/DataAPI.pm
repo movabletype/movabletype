@@ -1212,6 +1212,133 @@ sub core_endpoints {
                     'Do not have permission to export the requested theme.',
             },
         },
+
+        # template endpoints
+        {   id             => 'list_templates',
+            route          => '/sites/:site_id/templates',
+            version        => 2,
+            handler        => "${pkg}Template::v2::list",
+            default_params => {
+                limit  => 10,
+                offset => 0,
+
+                #    sortBy       => 'name',
+                #    sortOrder    => 'ascend',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of templates.',
+            },
+        },
+        {   id          => 'get_template',
+            route       => '/sites/:site_id/templates/:template_id',
+            version     => 2,
+            handler     => "${pkg}Template::v2::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested template.',
+            },
+        },
+        {   id      => 'create_template',
+            route   => '/sites/:site_id/templates',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Template::v2::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create a template.', },
+        },
+        {   id      => 'update_template',
+            route   => '/sites/:site_id/templates/:template_id',
+            verb    => 'PUT',
+            version => 2,
+            handler => "${pkg}Template::v2::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a template.', },
+        },
+        {   id      => 'delete_tempalte',
+            route   => '/sites/:site_id/templates/:template_id',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Template::v2::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a template.', },
+        },
+
+        {   id      => 'publish_template',
+            route   => '/sites/:site_id/templates/:template_id/publish',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Template::v2::publish",
+            error_codes =>
+                { 403 => 'Do not have permission to publish a template.', },
+        },
+        {   id      => 'refresh_template',
+            route   => '/sites/:site_id/templates/:template_id/refresh',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Template::v2::refresh",
+            error_codes =>
+                { 403 => 'Do not have permission to refresh a template.', },
+        },
+        {   id      => 'clone_template',
+            route   => '/sites/:site_id/templates/:template_id/clone',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Template::v2::clone",
+            error_codes =>
+                { 403 => 'Do not have permission to clone a template.', },
+        },
+
+        # templatemap endpoints
+        {   id      => 'list_templatemaps',
+            route   => '/sites/:site_id/templates/:template_id/templatemaps',
+            version => 2,
+            handler => "${pkg}TemplateMap::v2::list",
+            default_params => {
+                limit  => 10,
+                offset => 0,
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of templatemaps.',
+            },
+        },
+        {   id => 'get_templatemap',
+            route =>
+                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            version     => 2,
+            handler     => "${pkg}TemplateMap::v2::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested templatemap.',
+            },
+        },
+        {   id      => 'create_templatemap',
+            route   => '/sites/:site_id/templates/:template_id/templatemaps',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}TemplateMap::v2::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create a templatemap.', },
+        },
+        {   id => 'update_templatemap',
+            route =>
+                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            verb    => 'PUT',
+            version => 2,
+            handler => "${pkg}TemplateMap::v2::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a templatemap.', },
+        },
+        {   id => 'delete_templatemap',
+            route =>
+                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}TemplateMap::v2::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a templatemap.', },
+        },
     ];
 }
 
@@ -1304,6 +1431,31 @@ sub init_plugins {
                 "${pfx}Tag::cms_pre_load_filtered_list",
             $pkg . 'view_permission_filter.tag'   => "${pfx}Tag::can_view",
             $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
+
+            # template callbacks
+            $pkg . 'save_filter.template' => "${pfx}Template::save_filter",
+
+            # templatemap callbacks
+            $pkg
+                . 'list_permission_filter.templatemap' =>
+                "${pfx}TemplateMap::can_list",
+            $pkg
+                . 'view_permission_filter.templatemap' =>
+                "${pfx}TemplateMap::can_view",
+            $pkg
+                . 'save_permission_filter.templatemap' =>
+                "${pfx}TemplateMap::can_save",
+            $pkg
+                . 'save_filter.templatemap' =>
+                "${pfx}TemplateMap::save_filter",
+            $pkg . 'pre_save.templatemap'  => "${pfx}TemplateMap::pre_save",
+            $pkg . 'post_save.templatemap' => "${pfx}TemplateMap::post_save",
+            $pkg
+                . 'delete_permission_filter.templatemap' =>
+                "${pfx}TemplateMap::can_delete",
+            $pkg
+                . 'post_delete.templatemap' =>
+                "${pfx}TemplateMap::post_delete",
         }
     );
 
