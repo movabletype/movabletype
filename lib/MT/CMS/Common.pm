@@ -492,6 +492,8 @@ sub save {
                 $q->param( 'type',            'index-' . $obj->id );
                 $q->param( 'tmpl_id',         $obj->id );
                 $q->param( 'single_template', 1 );
+                $app->add_return_arg( 'saved'     => 1 );
+                $app->add_return_arg( 'published' => 1 );
                 return $app->forward('start_rebuild');
             }
             else {

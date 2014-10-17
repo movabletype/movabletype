@@ -138,8 +138,10 @@ sub edit {
         }
         $app->add_breadcrumb( $param->{name} );
         $param->{has_outfile} = $obj->type eq 'index';
-        $param->{has_rebuild} = ( ( $obj->type eq 'index' )
-                && ( ( $blog->custom_dynamic_templates || "" ) ne 'all' ) );
+        $param->{has_rebuild}
+            = (    ( $obj->type eq 'index' )
+                && ( ( $blog->custom_dynamic_templates || "" ) ne 'all' ) )
+            && !$app->param('published');
 
         # FIXME: enumeration of types
         $param->{is_special}
