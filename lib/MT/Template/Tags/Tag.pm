@@ -442,12 +442,13 @@ sub _hdlr_entry_tags {
     my $i       = 1;
     my $vars    = $ctx->{__stash}{vars} ||= {};
     my $tags    = $entry->get_tag_objects;
+    my @tags    = @$tags;
     if ( !$args->{include_private} ) {
-        @$tags = grep { !$_->is_private } @$tags;
+        @tags = grep { !$_->is_private } @tags;
     }
-    for my $tag (@$tags) {
+    for my $tag (@tags) {
         local $vars->{__first__}   = $i == 1;
-        local $vars->{__last__}    = $i == scalar @$tags;
+        local $vars->{__last__}    = $i == scalar @tags;
         local $vars->{__odd__}     = ( $i % 2 ) == 1;
         local $vars->{__even__}    = ( $i % 2 ) == 0;
         local $vars->{__counter__} = $i;
