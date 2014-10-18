@@ -124,6 +124,7 @@ sub core_resources {
                 updatable_fields => "${pkg}Template::v2::updatable_fields",
             },
         ],
+        'widget'      => 'template',
         'templatemap' => [
             {   version          => 2,
                 fields           => "${pkg}TemplateMap::v2::fields",

@@ -1339,6 +1339,142 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete a templatemap.', },
         },
+
+        # widgetset endpoints.
+        {   id             => 'list_widgetsets',
+            route          => '/sites/:site_id/widgetsets',
+            version        => 2,
+            handler        => "${pkg}WidgetSet::v2::list",
+            default_params => {
+                limit  => 25,
+                offset => 0,
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of widgetsets.',
+            },
+        },
+        {   id          => 'get_widgetset',
+            route       => '/sites/:site_id/widgetsets/:widgetset_id',
+            version     => 2,
+            handler     => "${pkg}WidgetSet::v2::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested widgetset.',
+            },
+        },
+        {   id      => 'create_widgetset',
+            route   => '/sites/:site_id/widgetsets',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}WidgetSet::v2::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create a widgetset.', },
+        },
+        {   id      => 'update_widgetset',
+            route   => '/sites/:site_id/widgetsets/:widgetset_id',
+            verb    => 'PUT',
+            version => 2,
+            handler => "${pkg}WidgetSet::v2::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a widgetset.', },
+        },
+        {   id      => 'delete_widgetset',
+            route   => '/sites/:site_id/widgetsets/:widgetset_id',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}WidgetSet::v2::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a widgetset.', },
+        },
+
+        {   id             => 'list_widgets',
+            route          => '/sites/:site_id/widgets',
+            version        => 2,
+            handler        => "${pkg}Widget::v2::list",
+            default_params => {
+                limit  => 25,
+                offset => 0,
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of widgets.',
+            },
+        },
+        {   id          => 'get_widgets',
+            route       => '/sites/:site_id/widgets/:widget_id',
+            version     => 2,
+            handler     => "${pkg}Widget::v2::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested widget.',
+            },
+        },
+        {   id      => 'create_widget',
+            route   => '/sites/:site_id/widgets',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Widget::v2::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create a widget.', },
+        },
+        {   id      => 'update_widget',
+            route   => '/sites/:site_id/widgets/:widget_id',
+            verb    => 'PUT',
+            version => 2,
+            handler => "${pkg}Widget::v2::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a widget.', },
+        },
+        {   id      => 'delete_widget',
+            route   => '/sites/:site_id/widgets/:widget_id',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Widget::v2::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a widget.', },
+        },
+
+        {   id      => 'refresh_widget',
+            route   => '/sites/:site_id/widgets/:widget_id/refresh',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Widget::v2::refresh",
+            error_codes =>
+                { 403 => 'Do not have permission to refresh a widget.', },
+        },
+        {   id      => 'clone_widget',
+            route   => '/sites/:site_id/widgets/:widget_id/clone',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Widget::v2::clone",
+            error_codes =>
+                { 403 => 'Do not have permission to clone a widget.', },
+        },
+
+        {   id      => 'list_widgets_for_widgetset',
+            route   => '/sites/:site_id/widgetsets/:widgetset_id/widgets',
+            version => 2,
+            handler => "${pkg}Widget::v2::list_for_widgetset",
+            default_params => {
+                limit  => 25,
+                offset => 0,
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve widgets of the request widgetset.',
+            },
+        },
+        {   id => 'get_widget_for_widgetset',
+            route =>
+                '/sites/:site_id/widgetsets/:widgetset_id/widgets/:widget_id',
+            version     => 2,
+            handler     => "${pkg}Widget::v2::get_for_widgetset",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve a widget of the request widgetset.',
+            },
+        },
     ];
 }
 
@@ -1434,6 +1570,27 @@ sub init_plugins {
 
             # template callbacks
             $pkg . 'save_filter.template' => "${pfx}Template::save_filter",
+
+            # widget callbacks
+            $pkg
+                . 'save_permission_filter.widget' =>
+                '$Core::MT::CMS::Template::can_save',
+            $pkg . 'save_filter.widget' => "${pfx}Widget::save_filter",
+            $pkg . 'pre_save.widget' => '$Core::MT::CMS::Template::pre_save',
+            $pkg
+                . 'post_save.widget' => '$Core::MT::CMS::Template::post:save',
+
+            # widgetset callbacks
+            $pkg
+                . 'save_permission_filter.widgetset' =>
+                '$Core::MT::CMS::Template::can_save',
+            $pkg . 'save_filter.widgetset' => "${pfx}WidgetSet::save_filter",
+            $pkg
+                . 'pre_save.widgetset' =>
+                '$Core::MT::CMS::Template::pre_save',
+            $pkg
+                . 'post_save.widgetset' =>
+                '$Core::MT::CMS::Template::post:save',
 
             # templatemap callbacks
             $pkg
