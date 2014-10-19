@@ -777,6 +777,25 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
+        {   id             => 'list_trackbacks_for_page',
+            route          => '/sites/:site_id/pages/:page_id/trackbacks',
+            verb           => 'GET',
+            version        => 2,
+            handler        => "${pkg}Trackback::list_for_entry",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'id',
+                sortOrder    => 'descend',
+                searchFields => 'title,excerpt,blogName',
+                filterKeys   => 'status',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of trackbacks.',
+            },
+            requires_login => 0,
+        },
 
         # page endpoints
         {   id             => 'list_pages',
@@ -852,6 +871,25 @@ sub core_endpoints {
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested assets for page.',
+            },
+            requires_login => 0,
+        },
+        {   id             => 'list_comments_for_page',
+            route          => '/sites/:site_id/pages/:page_id/comments',
+            verb           => 'GET',
+            version        => 2,
+            handler        => "${pkg}Comment::list_for_entry",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'id',
+                sortOrder    => 'descend',
+                searchFields => 'body',
+                filterKeys   => 'status',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of comments.',
             },
             requires_login => 0,
         },
