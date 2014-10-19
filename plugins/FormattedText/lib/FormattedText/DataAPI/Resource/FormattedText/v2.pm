@@ -11,6 +11,8 @@ use warnings;
 
 use MT::DataAPI::Resource::Common;
 
+use FormattedText::App;
+
 sub updatable_fields {
     [   qw(
             label
@@ -27,6 +29,33 @@ sub fields {
             text
             description
             ),
+        {   name             => 'updatable',
+            type             => 'MT::DataAPI::Resource::DataType::Boolean',
+            bulk_from_object => sub {
+                my ( $objs, $hashs ) = @_;
+                my $app = MT->instance;
+                my $user = $app->user or return;
+
+                if ( $user->is_superuser ) {
+                    $_->{updatable} = 1 for @$hashs;
+                    return;
+                }
+
+                my %blog_perms;
+
+                for ( my $i = 0; $i < scalar @$objs; $i++ ) {
+                    my $obj = $objs->[$i];
+
+                    my $perms;
+                    $perms = $blog_perms{ $obj->blog_id }
+                        ||= $user->permissions( $obj->blog_id );
+
+                    $hashs->[$i]{updatable}
+                        = FormattedText::App::can_edit_formatted_text( $perms,
+                        $obj, $user );
+                }
+            },
+        },
         $MT::DataAPI::Resource::Common::fields{blog},
         $MT::DataAPI::Resource::Common::fields{createdUser},
         $MT::DataAPI::Resource::Common::fields{modifiedUser},
