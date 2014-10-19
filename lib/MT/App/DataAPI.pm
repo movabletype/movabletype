@@ -509,6 +509,102 @@ sub core_endpoints {
                 { 403 => 'Do not have permission to delete a category.', },
         },
 
+        # folder endpoints
+        {   id             => 'list_folders',
+            route          => '/sites/:site_id/folders',
+            verb           => 'GET',
+            version        => 2,
+            handler        => "${pkg}Folder::v2::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'user_custom',
+                sortOrder    => 'ascend',
+                searchFields => 'label,basename',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of folders.',
+            },
+            requires_login => 0,
+        },
+        {   id          => 'list_parent_folders',
+            route       => '/sites/:site_id/folders/:folder_id/parents',
+            verb        => 'GET',
+            version     => 2,
+            handler     => "${pkg}Folder::v2::list_parents",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of folders.',
+            },
+            requires_login => 0,
+        },
+        {   id             => 'list_sibling_folders',
+            route          => '/sites/:site_id/folders/:folder_id/siblings',
+            verb           => 'GET',
+            version        => 2,
+            handler        => "${pkg}Folder::v2::list_siblings",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'user_custom',
+                sortOrder    => 'ascend',
+                searchFields => 'label,basename',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of folders.',
+            },
+            requires_login => 0,
+        },
+        {   id          => 'list_child_folders',
+            route       => '/sites/:site_id/folders/:folder_id/children',
+            verb        => 'GET',
+            version     => 2,
+            handler     => "${pkg}Folder::v2::list_children",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of folders.',
+            },
+            requires_login => 0,
+        },
+        {   id        => 'create_folder',
+            route     => '/sites/:site_id/folders',
+            resources => ['folder'],
+            verb      => 'POST',
+            version   => 2,
+            handler   => "${pkg}Folder::v2::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create a folder.', },
+        },
+        {   id          => 'get_folder',
+            route       => '/sites/:site_id/folders/:folder_id',
+            version     => 2,
+            handler     => "${pkg}Folder::v2::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested folder.',
+            },
+            requires_login => 0,
+        },
+        {   id        => 'update_folder',
+            route     => '/sites/:site_id/folders/:folder_id',
+            resources => ['folder'],
+            verb      => 'PUT',
+            version   => 2,
+            handler   => "${pkg}Folder::v2::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a folder.', },
+        },
+        {   id      => 'delete_folder',
+            route   => '/sites/:site_id/folders/:folder_id',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Folder::v2::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a folder.', },
+        },
+
         # asset endpoints
         {   id             => 'list_assets',
             route          => '/sites/:site_id/assets',
@@ -1531,6 +1627,11 @@ sub init_plugins {
                 . 'view_permission_filter.category' =>
                 "${pfx}Category::can_view",
             $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
+
+            # folder callbacks
+            $pkg
+                . 'view_permission_filter.folder' => "${pfx}Folder::can_view",
+            $pkg . 'save_filter.folder' => "${pfx}Folder::save_filter",
 
             # asset callbacks
             $pkg

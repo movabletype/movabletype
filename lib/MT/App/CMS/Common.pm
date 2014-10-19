@@ -186,8 +186,6 @@ sub init_core_callbacks {
             # folder callbacks
             $pkg . 'edit.folder' => "${pfx}Folder::edit",
             $pkg
-                . 'view_permission_filter.folder' => "${pfx}Folder::can_view",
-            $pkg
                 . 'save_permission_filter.folder' => "${pfx}Folder::can_save",
             $pkg
                 . 'delete_permission_filter.folder' =>

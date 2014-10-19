@@ -30,13 +30,13 @@ sub save_filter {
         my $parent_cat = MT->model('category')->load(
             {   id      => $obj->parent,
                 blog_id => $obj->blog_id,
-                class   => 'category'
+                class   => $obj->class,
             }
         );
         return $app->error(
             $app->translate(
-                "Parent category (ID:[_1]) not found.",
-                $obj->parent
+                "Parent [_1] (ID:[_2]) not found.", $obj->class,
+                $obj->parent,
             )
         ) if !$parent_cat;
     }
