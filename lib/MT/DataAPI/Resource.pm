@@ -25,6 +25,12 @@ sub core_resources {
                     "${pkg}Entry::updatable_fields",    # same as v1.
             },
         ],
+        'page' => [
+            {   version          => 2,
+                fields           => "${pkg}Page::v2::fields",
+                updatable_fields => "${pkg}Page::v2::updatable_fields",
+            },
+        ],
         'category' => [
             {   version          => 1,
                 fields           => "${pkg}Category::fields",

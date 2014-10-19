@@ -510,6 +510,12 @@ sub init_plugins {
                 "${pfx}Entry::cms_pre_load_filtered_list",
             $pkg . 'view_permission_filter.entry' => "${pfx}Entry::can_view",
 
+            # page callbacks
+            $pkg
+                . 'pre_load_filtered_list.page' =>
+                "${pfx}Page::cms_pre_load_filtered_list",
+            $pkg . 'view_permission_filter.page' => "${pfx}Page::can_view",
+
             # user callbacks
             $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
 

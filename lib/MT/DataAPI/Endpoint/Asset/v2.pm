@@ -75,12 +75,22 @@ sub delete {
 
 sub list_for_entry {
     my ( $app, $endpoint ) = @_;
+    return _list_for_entry( $app, $endpoint, 'entry' );
+}
+
+sub list_for_page {
+    my ( $app, $endpoint ) = @_;
+    return _list_for_entry( $app, $endpoint, 'page' );
+}
+
+sub _list_for_entry {
+    my ( $app, $endpoint, $class ) = @_;
 
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
-        'entry', $entry->id, obj_promise($entry) )
+        $class, $entry->id, obj_promise($entry) )
         or return;
 
     my %terms = ( class => '*' );

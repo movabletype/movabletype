@@ -778,6 +778,84 @@ sub core_endpoints {
             requires_login => 0,
         },
 
+        # page endpoints
+        {   id             => 'list_pages',
+            route          => '/sites/:site_id/pages',
+            verb           => 'GET',
+            version        => 2,
+            handler        => "${pkg}Page::v2::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'authored_on',
+                sortOrder    => 'descend',
+                searchFields => 'title,body,more,keywords,excerpt,basename',
+                filterKeys   => 'status',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested pages.',
+            },
+            requires_login => 0,
+        },
+        {   id        => 'create_page',
+            route     => '/sites/:site_id/pages',
+            resources => ['page'],
+            verb      => 'POST',
+            version   => 2,
+            handler   => "${pkg}Page::v2::create",
+            default_params => { save_revision => 1, },
+            error_codes =>
+                { 403 => 'Do not have permission to create a page.', },
+        },
+        {   id          => 'get_page',
+            route       => '/sites/:site_id/pages/:page_id',
+            version     => 1,
+            handler     => "${pkg}Page::v2::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested page.',
+            },
+            requires_login => 0,
+        },
+        {   id        => 'update_page',
+            route     => '/sites/:site_id/pages/:page_id',
+            resources => ['page'],
+            verb      => 'PUT',
+            version   => 2,
+            handler   => "${pkg}Page::v2::update",
+            default_params => { save_revision => 1, },
+            error_codes =>
+                { 403 => 'Do not have permission to update a page.', },
+        },
+        {   id      => 'delete_page',
+            route   => '/sites/:site_id/pages/:page_id',
+            verb    => 'DELETE',
+            version => 2,
+            handler => "${pkg}Page::v2::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a page.', },
+        },
+        {   id             => 'list_assets_for_page',
+            route          => '/sites/:site_id/pages/:page_id/assets',
+            verb           => 'GET',
+            version        => 2,
+            handler        => "${pkg}Asset::v2::list_for_page",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'id',
+                sortOrder    => 'descend',
+                searchFields => 'label',
+                filterKeys   => 'class',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested assets for page.',
+            },
+            requires_login => 0,
+        },
+
         # site endpoints
         {   id             => 'list_sites',
             route          => '/sites',
@@ -1594,6 +1672,13 @@ sub init_plugins {
                 "${pfx}Entry::cms_pre_load_filtered_list",
             $pkg . 'list_permission_filter.entry' => "${pfx}Entry::can_list",
             $pkg . 'view_permission_filter.entry' => "${pfx}Entry::can_view",
+
+            # page callbacks
+            $pkg
+                . 'pre_load_filtered_list.page' =>
+                "${pfx}Page::cms_pre_load_filtered_list",
+            $pkg . 'list_permission_filter.page' => "${pfx}Page::can_list",
+            $pkg . 'view_permission_filter.page' => "${pfx}Page::can_view",
 
             # user callbacks
             $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",

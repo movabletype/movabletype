@@ -253,17 +253,13 @@ sub init_core_callbacks {
             $pkg . 'post_delete.entry' => "${pfx}Entry::post_delete",
 
             # page callbacks
-            $pkg . 'edit.page'                   => "${pfx}Page::edit",
-            $pkg . 'view_permission_filter.page' => "${pfx}Page::can_view",
+            $pkg . 'edit.page' => "${pfx}Page::edit",
             $pkg
                 . 'delete_permission_filter.page' => "${pfx}Page::can_delete",
             $pkg . 'save_permission_filter.page' => "${pfx}Page::can_save",
             $pkg . 'pre_save.page'               => "${pfx}Page::pre_save",
             $pkg . 'post_save.page'              => "${pfx}Page::post_save",
             $pkg . 'post_delete.page'            => "${pfx}Page::post_delete",
-            $pkg
-                . 'pre_load_filtered_list.page' =>
-                "${pfx}Page::cms_pre_load_filtered_list",
 
             # ping callbacks
             $pkg . 'edit.ping' => "${pfx}TrackBack::edit",
