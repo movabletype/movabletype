@@ -61,6 +61,66 @@ applications:
                     - blog
                 display: 0
 
+    data_api:
+        callbacks:
+            data_api_pre_load_filtered_list.formatted_text: $FormattedText::FormattedText::App::cms_pre_load_filtered_list
+            data_api_view_permission_filter.formatted_text: $FormattedText::FormattedText::App::view_permission_filter
+            data_api_save_permission_filter.formatted_text: $FormattedText::FormattedText::App::save_permission_filter
+            data_api_save_filter.formatted_text: $FormattedText::FormattedText::DataAPI::Callback::FormattedText::save_filter
+            data_api_delete_permission_filter.formatted_text: $FormattedText::FormattedText::App::delete_permission_filter
+
+        resources:
+            formatted_text:
+                - version: 2
+                  fields: $FormattedText::FormattedText::DataAPI::Resource::FormattedText::v2::fields
+                  updatable_fields: $FormattedText::FormattedText::DataAPI::Resource::FormattedText::v2::updatable_fields
+
+        endpoints:
+            - id: list_formatted_texts
+              route: /sites/:site_id/formatted_texts
+              version: 2
+              handler: $FormattedText::FormattedText::DataAPI::Endpoint::FormattedText::v2::list
+              default_params:
+                  limit: 10
+                  offset: 0
+              error_codes:
+                  403: Do not have permission to retrieve the requested formatted texts.
+
+            - id: get_formatted_text
+              route: /sites/:site_id/formatted_texts/:formatted_text_id
+              version: 2
+              handler: $FormattedText::FormattedText::DataAPI::Endpoint::FormattedText::v2::get
+              error_codes:
+                  403: Do not have permission to retrieve the requested formatted text.
+
+            - id: create_formatted_text
+              route: /sites/:site_id/formatted_texts
+              resources:
+                  - formatted_text
+              verb: POST
+              version: 2
+              handler: $FormattedText::FormattedText::DataAPI::Endpoint::FormattedText::v2::create
+              error_codes:
+                  403: Do not have permission to create a formatted text.
+
+            - id: update_formatted_text
+              route: /sites/:site_id/formatted_texts/:formatted_text_id
+              resources:
+                  - formatted_text
+              verb: PUT
+              version: 2
+              handler: $FormattedText::FormattedText::DataAPI::Endpoint::FormattedText::v2::update
+              error_codes:
+                  403: Do not have permission to create a formatted text.
+
+            - id: delete_formatted_text
+              route: /sites/:site_id/formatted_texts/:formatted_text_id
+              verb: DELETE
+              version: 2
+              handler: $FormattedText::FormattedText::DataAPI::Endpoint::FormattedText::v2::delete
+              error_codes:
+                  403: Do not have permission to delete a formatted text.
+
 permissions:
     blog.create_post:
         permitted_action:
