@@ -734,7 +734,8 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id             => 'upload_asset_v2',
+        {    # Different from v1 upload_asset endpoint.
+            id             => 'upload_asset_v2',
             route          => '/assets/upload',
             verb           => 'POST',
             version        => 2,
