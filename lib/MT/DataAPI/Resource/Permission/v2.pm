@@ -19,7 +19,7 @@ sub fields {
             id
             ),
         $MT::DataAPI::Resource::Common::fields{createdDate},
-        $MT::DataAPI::Resource::Common::fields{createdUser},
+        $MT::DataAPI::Resource::Common::fields{createdBy},
         {   name   => 'user',
             fields => [qw(id displayName userpicUrl)],
             type   => 'MT::DataAPI::Resource::DataType::Object',

@@ -13,62 +13,14 @@ use MT::DataAPI::Resource::Common;
 
 sub fields {
     [   $MT::DataAPI::Resource::Common::fields{blog},
+        $MT::DataAPI::Resource::Common::fields{createdBy},
+        $MT::DataAPI::Resource::Common::fields{createdDate},
+        $MT::DataAPI::Resource::Common::fields{modifiedBy},
+        $MT::DataAPI::Resource::Common::fields{modifiedDate},
         qw(
             class
             parent
             ),
-        {   name             => 'createdUser',
-            bulk_from_object => sub {
-                my ( $objs, $hashes ) = @_;
-
-                my @author_ids = grep {$_} map { $_->created_by } @$objs;
-                my %authors = ();
-                my @authors
-                    = @author_ids
-                    ? MT->model('author')->load( { id => \@author_ids, } )
-                    : ();
-                $authors{ $_->id } = $_ for @authors;
-
-                my $size = scalar(@$objs);
-                for ( my $i = 0; $i < $size; $i++ ) {
-                    my $asset = $objs->[$i];
-                    my $a = $authors{ $asset->created_by || 0 } or next;
-                    $hashes->[$i]{createdUser}
-                        = MT::DataAPI::Resource->from_object( $a,
-                        [qw(id displayName userpicUrl)] );
-                }
-            },
-        },
-        {   name             => 'modifiedUser',
-            bulk_from_object => sub {
-                my ( $objs, $hashes ) = @_;
-
-                my @author_ids = grep {$_} map { $_->modified_by } @$objs;
-                my %authors = ();
-                my @authors
-                    = @author_ids
-                    ? MT->model('author')->load( { id => \@author_ids, } )
-                    : ();
-                $authors{ $_->id } = $_ for @authors;
-
-                my $size = scalar(@$objs);
-                for ( my $i = 0; $i < $size; $i++ ) {
-                    my $asset = $objs->[$i];
-                    my $a = $authors{ $asset->modified_by || 0 } or next;
-                    $hashes->[$i]{modifiedUser}
-                        = MT::DataAPI::Resource->from_object( $a,
-                        [qw(id displayName userpicUrl)] );
-                }
-            },
-        },
-        {   name  => 'createdDate',
-            alias => 'created_on',
-            type  => 'MT::DataAPI::Resource::DataType::ISO8601',
-        },
-        {   name  => 'modifiedDate',
-            alias => 'modified_on',
-            type  => 'MT::DataAPI::Resource::DataType::ISO8601',
-        },
         {   name             => 'fileSize',
             bulk_from_object => sub {
                 my ( $objs, $hashes ) = @_;

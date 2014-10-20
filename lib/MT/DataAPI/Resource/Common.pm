@@ -55,8 +55,8 @@ our %fields = (
         alias => 'modified_on',
         type  => 'MT::DataAPI::Resource::DataType::ISO8601',
     },
-    createdUser => {
-        name             => 'createdUser',
+    createdBy => {
+        name             => 'createdBy',
         bulk_from_object => sub {
             my ( $objs, $hashes ) = @_;
 
@@ -72,14 +72,14 @@ our %fields = (
             for ( my $i = 0; $i < $size; $i++ ) {
                 my $obj = $objs->[$i];
                 my $author = $authors{ $obj->created_by || 0 } or next;
-                $hashes->[$i]{createdUser}
+                $hashes->[$i]{createdBy}
                     = MT::DataAPI::Resource->from_object( $author,
                     [qw(id displayName userpicUrl)] );
             }
         },
     },
-    modifiedUser => {
-        name             => 'modifiedUser',
+    modifiedBy => {
+        name             => 'modifiedBy',
         bulk_from_object => sub {
             my ( $objs, $hashes ) = @_;
 
@@ -95,7 +95,7 @@ our %fields = (
             for ( my $i = 0; $i < $size; $i++ ) {
                 my $obj = $objs->[$i];
                 my $author = $authors{ $obj->modified_by || 0 } or next;
-                $hashes->[$i]{modifiedUser}
+                $hashes->[$i]{modifiedBy}
                     = MT::DataAPI::Resource->from_object( $author,
                     [qw(id displayName userpicUrl)] );
             }

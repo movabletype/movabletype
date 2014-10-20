@@ -26,8 +26,8 @@ sub fields {
         },
         $MT::DataAPI::Resource::Common::fields{createdDate},
         $MT::DataAPI::Resource::Common::fields{modifiedDate},
-        $MT::DataAPI::Resource::Common::fields{createdUser},
-        $MT::DataAPI::Resource::Common::fields{modifiedUser},
+        $MT::DataAPI::Resource::Common::fields{createdBy},
+        $MT::DataAPI::Resource::Common::fields{modifiedBy},
         {   name        => 'updatable',
             type        => 'MT::DataAPI::Resource::DataType::Boolean',
             from_object => sub {

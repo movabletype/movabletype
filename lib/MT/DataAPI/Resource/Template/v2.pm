@@ -139,9 +139,9 @@ sub fields {
                 return +{ id => ( $obj->blog_id || 0 ) };
             },
         },
-        $MT::DataAPI::Resource::Common::fields{createdUser},
+        $MT::DataAPI::Resource::Common::fields{createdBy},
         $MT::DataAPI::Resource::Common::fields{createdDate},
-        $MT::DataAPI::Resource::Common::fields{modifiedUser},
+        $MT::DataAPI::Resource::Common::fields{modifiedBy},
         $MT::DataAPI::Resource::Common::fields{modifiedDate},
     ];
 }
