@@ -124,12 +124,7 @@ sub fields {
             alias => 'created_on',
             type  => 'MT::DataAPI::Resource::DataType::ISO8601',
         },
-        {   name        => 'blog',
-            from_object => sub {
-                my ($obj) = @_;
-                return +{ id => ( $obj->blog_id || 0 ) };
-            },
-        },
+        $MT::DataAPI::Resource::Common::fields{blog},
     ];
 }
 

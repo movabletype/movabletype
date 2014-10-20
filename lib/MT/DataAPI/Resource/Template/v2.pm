@@ -133,12 +133,7 @@ sub fields {
                 return MT::DataAPI::Resource->from_object( \@maps );
             },
         },
-        {   name        => 'blog',
-            from_object => sub {
-                my ($obj) = @_;
-                return +{ id => ( $obj->blog_id || 0 ) };
-            },
-        },
+        $MT::DataAPI::Resource::Common::fields{blog},
         $MT::DataAPI::Resource::Common::fields{createdBy},
         $MT::DataAPI::Resource::Common::fields{createdDate},
         $MT::DataAPI::Resource::Common::fields{modifiedBy},
