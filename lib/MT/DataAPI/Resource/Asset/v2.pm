@@ -48,8 +48,12 @@ sub fields {
                     }
 
                     $hash->{meta} = +{
-                        width  => ( $obj->image_width  || undef ),
-                        height => ( $obj->image_height || undef ),
+                        width => $obj->has_meta('image_width')
+                        ? ( $obj->image_width || undef )
+                        : undef,
+                        height => $obj->has_meta('image_height')
+                        ? ( $obj->image_height || undef )
+                        : undef,
                         fileSize => $size,
                     };
                 }
