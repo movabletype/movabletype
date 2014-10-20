@@ -11,6 +11,10 @@ use warnings;
 
 use MT::DataAPI::Resource::Common;
 
+sub updatable_fields {
+    [];    # Nothing. Same as v1.
+}
+
 sub fields {
     [   $MT::DataAPI::Resource::Common::fields{blog},
         $MT::DataAPI::Resource::Common::fields{createdBy},
@@ -21,31 +25,35 @@ sub fields {
             class
             parent
             ),
-        {   name             => 'fileSize',
+        {   name        => 'parent',
+            from_object => sub {
+                my ($obj) = @_;
+                return $obj->parent ? +{ id => $obj->parent } : undef;
+            },
+        },
+        {   name             => 'meta',
             bulk_from_object => sub {
                 my ( $objs, $hashes ) = @_;
 
                 require MT::FileMgr;
                 my $fmgr = MT::FileMgr->new('Local');
 
-                for ( my $i = 0; $i < scalar @$objs; $i++ ) {
-                    my $obj = $objs->[$i];
-                    my $file_path = $obj->file_path or next;
+                for my $i ( 0 .. ( scalar(@$objs) - 1 ) ) {
+                    my $obj  = $objs->[$i];
+                    my $hash = $hashes->[$i];
 
-                    my $size = $fmgr->file_size($file_path);
-                    if ( defined($size) && $size =~ m/^\d+$/ ) {
-                        $hashes->[$i]{fileSize} = $size;
+                    my $size;
+                    if ( my $file_path = $obj->file_path ) {
+                        $size = $fmgr->file_size($file_path);
                     }
+
+                    $hash->{meta} = +{
+                        width  => ( $obj->image_width  || undef ),
+                        height => ( $obj->image_height || undef ),
+                        fileSize => $size,
+                    };
                 }
             },
-        },
-        {   name  => 'imageWidth',
-            alias => 'image_width',
-            type  => 'MT::DataAPI::Resource::DataType::Integer',
-        },
-        {   name  => 'imageHeight',
-            alias => 'image_height',
-            type  => 'MT::DataAPI::Resource::DataType::Integer',
         },
         {   name             => 'updatable',
             type             => 'MT::DataAPI::Resource::DataType::Boolean',
