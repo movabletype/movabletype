@@ -720,6 +720,16 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete an asset.', },
         },
+        {   id          => 'get_thumbnail',
+            route       => '/sites/:site_id/assets/:asset_id/thumbnail',
+            version     => 2,
+            handler     => "${pkg}Asset::v2::get_thumbnail",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested thumbnail.',
+            },
+            requires_login => 0,
+        },
 
         # entry endpoints
         {   id        => 'create_entry',

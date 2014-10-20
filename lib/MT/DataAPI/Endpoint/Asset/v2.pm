@@ -36,6 +36,54 @@ sub get {
     $asset;
 }
 
+sub get_thumbnail {
+    my ( $app, $endpoint ) = @_;
+
+    my $asset = get(@_) or return;
+
+    if ( !$asset->isa('MT::Asset::Image') ) {
+        return $app->error(
+            $app->translate(
+                'An asset does not support to generate thumbnail file.'),
+            400
+        );
+    }
+
+    my $width  = $app->param('width');
+    my $height = $app->param('height');
+    my $scale  = $app->param('scale');
+    my $square = $app->param('square');
+
+    if ( $width && $width !~ m/^\d+$/ ) {
+        return $app->error( $app->translate( 'Invalid width: [_1]', $width ),
+            400 );
+    }
+    if ( $height && $height !~ m/^\d+$/ ) {
+        return $app->error(
+            $app->translate( 'Invalid height: [_1]', $height ), 400 );
+    }
+    if ( $scale && $scale !~ m/^\d+$/ ) {
+        return $app->error( $app->translate( 'Invalid scale: [_1]', $scale ),
+            400 );
+    }
+
+    my %param = (
+        $width  ? ( Width  => $width )  : (),
+        $height ? ( Height => $height ) : (),
+        $scale  ? ( Scale  => $scale )  : (),
+        ( $square && $square eq 'true' ) ? ( Square => 1 ) : (),
+    );
+
+    my ( $thumbnail, $w, $h ) = $asset->thumbnail_url(%param)
+        or return $app->error( $asset->error, 500 );
+
+    return +{
+        url    => $thumbnail,
+        width  => $w,
+        height => $h,
+    };
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 

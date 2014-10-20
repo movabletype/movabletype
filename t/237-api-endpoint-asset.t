@@ -363,6 +363,89 @@ my @suite     = (
             isnt( $result->{id}, 10, 'Asset\'s id has not been updated.' );
         },
     },
+
+    # get_thumbnail - irregular tests
+    {    # Non-existent asset.
+        path   => '/v2/sites/1/assets/400/thumbnail',
+        method => 'GET',
+        code   => 404,
+    },
+    {
+        # Not image.
+        path   => '/v2/sites/1/assets/2/thumbnail',
+        method => 'GET',
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code => 400,
+                    message =>
+                        'An asset does not support to generate thumbnail file.',
+                },
+                },
+                ;
+        },
+    },
+    {
+        # Invalid width.
+        path   => '/v2/sites/1/assets/4/thumbnail',
+        method => 'GET',
+        params => { width => 'width', },
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code    => 400,
+                    message => 'Invalid width: width',
+                },
+                },
+                ;
+        },
+    },
+    {
+        # Invalid height.
+        path   => '/v2/sites/1/assets/4/thumbnail',
+        method => 'GET',
+        params => { height => 'height', },
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code    => 400,
+                    message => 'Invalid height: height',
+                },
+                },
+                ;
+        },
+    },
+    {
+        # Invalid scale.
+        path   => '/v2/sites/1/assets/4/thumbnail',
+        method => 'GET',
+        params => { scale => 'scale', },
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code    => 400,
+                    message => 'Invalid scale: scale',
+                },
+                },
+                ;
+        },
+    },
+
+    # get_thumbnail - normal tests
+    {   path   => '/v2/sites/1/assets/4/thumbnail',
+        method => 'GET',
+        result => sub {
+            my $image = $app->model('asset')->load(4);
+            my ( $thumbnail, $w, $h ) = $image->thumbnail_url;
+            return +{
+                url    => $thumbnail,
+                width  => $w,
+                height => $h,
+            };
+        },
+    },
+
+    # delete_asset
     {   path   => '/v2/sites/2/assets/1',
         method => 'DELETE',
         code   => 404,
