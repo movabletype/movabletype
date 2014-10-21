@@ -31,7 +31,7 @@ sub list {
 sub _get_all_parent_categories {
     my ( $cat, $max_depth, $current_depth ) = @_;
 
-    my $current_depth ||= 1;
+    $current_depth ||= 1;
     if ( $max_depth > 0 && $current_depth > $max_depth ) {
         return;
     }
