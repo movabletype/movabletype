@@ -21,6 +21,8 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
+use boolean;
+
 use MT::Util;
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
@@ -40,6 +42,8 @@ $mock_filemgr_local->mock( 'delete', sub {1} );
 
 my $temp_data = undef;
 my @suite     = (
+
+    # upload_asset - normal tests
     {   path   => '/v1/sites/1/assets/upload',
         method => 'POST',
         setup  => sub {
@@ -55,7 +59,8 @@ my @suite     = (
                 { sort => [ { column => 'id', desc => 'DESC' }, ] } );
         },
     },
-    {   path   => '/v1/sites/1/assets/upload',
+    {    # Upload again. Already exists.
+        path   => '/v1/sites/1/assets/upload',
         method => 'POST',
         code   => '409',
         upload => [
@@ -68,7 +73,8 @@ my @suite     = (
             $temp_data = $result->{error}{data};
             }
     },
-    {   path   => '/v1/sites/1/assets/upload',
+    {    # Overwrite.
+        path   => '/v1/sites/1/assets/upload',
         method => 'POST',
         params => sub {
             +{  overwrite => 1,
@@ -80,6 +86,14 @@ my @suite     = (
             File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
         ],
     },
+
+    # list_assets - irregular tests
+    {   path   => '/v2/sites/3/assets',
+        method => 'GET',
+        code   => 404,
+    },
+
+    # list_assets - normal tests
     {   path      => '/v2/sites/0/assets',
         method    => 'GET',
         callbacks => [
@@ -122,10 +136,6 @@ my @suite     = (
                 0, 'The number of asset (blog_id=2) is 0.' );
         },
     },
-    {   path   => '/v2/sites/3/assets',
-        method => 'GET',
-        code   => 404,
-    },
     {   path      => '/v2/sites/1/assets',
         method    => 'GET',
         params    => { search => 'template', },
@@ -159,6 +169,8 @@ my @suite     = (
                 2, 'The number of image asset is 2.' );
         },
     },
+
+    # list_all_assets - normal tests
     {   path      => '/v2/assets',
         method    => 'GET',
         callbacks => [
@@ -203,18 +215,172 @@ my @suite     = (
                 3, 'The number of image asset (exclude blog_id=0) is 3.' );
         },
     },
-    {   path      => '/v2/sites/1/assets/1',
+
+    # list_assets_for_entry - irregular tests
+    {    # Non-existent entry.
+        path   => '/v2/sites/1/entries/100/assets',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/entries/1/assets',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site.
+        path   => '/v2/sites/2/entries/1/assets',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/entries/1/assets',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Not entry (page).
+        path   => '/v2/sites/1/entries/20/assets',
+        method => 'GET',
+        code   => 404,
+    },
+
+    # list_assets_for_entry - normal tests
+    {   path      => '/v2/sites/1/entries/1/assets',
         method    => 'GET',
+        setup     => sub { $app->user($author) },
         callbacks => [
             {   name =>
-                    'MT::App::DataAPI::data_api_view_permission_filter.asset',
+                    'MT::App::DataAPI::data_api_view_permission_filter.entry',
                 count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
             },
         ],
         result => sub {
-            MT->model('asset')->load(1);
+            $app->user($author);
+            my $asset = $app->model('asset')->load(1);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            my $res = +{
+                totalResults => 1,
+                items => MT::DataAPI::Resource->from_object( [$asset] ),
+            };
         },
     },
+
+    # list_assets_for_page - irregular tests
+    {    # Non-existent page.
+        path   => '/v2/sites/1/pages/100/assets',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/pages/20/assets',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site.
+        path   => '/v2/sites/2/pages/20/assets',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/pages/20/assets',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Not page (entry).
+        path   => '/v2/sites/1/pages/1/assets',
+        method => 'GET',
+        code   => 404,
+    },
+
+    # list_assets_for_page - normal tests
+    {   path      => '/v2/sites/1/pages/20/assets',
+        method    => 'GET',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.page',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+            my $asset = $app->model('asset')->load(2);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            my $res = +{
+                totalResults => 1,
+                items => MT::DataAPI::Resource->from_object( [$asset] ),
+            };
+            return $res;
+        },
+    },
+
+    # list_asset_for_site_and_tag - irregular tests
+    {    # Non-existent tag.
+        path   => '/v2/sites/1/tags/non_existent_tag/assets',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/tags/alpha/assets',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # System.
+        path   => '/v2/sites/0/tags/alpha/assets',
+        method => 'GET',
+        code   => 404,
+    },
+
+    # list_assets_for_site_and_tag - normal tests
+    {   path   => '/v2/sites/1/tags/alpha/assets',
+        method => 'GET',
+        result => sub {
+            $app->user($author);
+            my $asset = $app->model('asset')->load(1);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            my $res = +{
+                totalResults => 1,
+                items => MT::DataAPI::Resource->from_object( [$asset] ),
+            };
+            return $res;
+        },
+    },
+
+    # list_assets_for_tag - irregular tests
+    {    # Non-existent tag.
+        path   => '/v2/tags/non_existent_tag/assets',
+        method => 'GET',
+        code   => 404,
+    },
+
+    # list_assets_for_tag - normal tests
+    {   path   => '/v2/tags/alpha/assets',
+        method => 'GET',
+        result => sub {
+            $app->user($author);
+            my $asset = $app->model('asset')->load(1);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            my $res = +{
+                totalResults => 1,
+                items => MT::DataAPI::Resource->from_object( [$asset] ),
+            };
+            return $res;
+        },
+    },
+
+    # get_asset - irregular tests
     {   path   => '/v2/sites/2/assets/1',
         method => 'GET',
         code   => 404,
@@ -231,12 +397,6 @@ my @suite     = (
         method => 'GET',
         code   => 404,
     },
-    {   path   => '/v2/sites/0/assets/3',
-        method => 'GET',
-        result => sub {
-            MT->model('asset')->load(3);
-        },
-    },
     {   path   => '/v2/sites/1/assets/3',
         method => 'GET',
         code   => 404,
@@ -245,6 +405,28 @@ my @suite     = (
         method => 'GET',
         code   => 404,
     },
+
+    # get_asset - normal tests
+    {   path      => '/v2/sites/1/assets/1',
+        method    => 'GET',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.asset',
+                count => 1,
+            },
+        ],
+        result => sub {
+            MT->model('asset')->load(1);
+        },
+    },
+    {   path   => '/v2/sites/0/assets/3',
+        method => 'GET',
+        result => sub {
+            MT->model('asset')->load(3);
+        },
+    },
+
+    # update_asset - irregular tests
     {   path     => '/v2/sites/1/assets/1',
         method   => 'PUT',
         code     => 400,
@@ -254,28 +436,6 @@ my @suite     = (
             my $error_message = "A resource \"asset\" is required.";
             is( $result->{error}{message},
                 $error_message, 'Error message: ' . $error_message );
-        },
-    },
-    {   path      => '/v2/sites/1/assets/1',
-        method    => 'PUT',
-        params    => { asset => {} },
-        callbacks => [
-            {   name =>
-                    'MT::App::DataAPI::data_api_save_permission_filter.asset',
-                count => 1,
-            },
-            {   name  => 'MT::App::DataAPI::data_api_save_filter.asset',
-                count => 1,
-            },
-            {   name  => 'MT::App::DataAPI::data_api_pre_save.asset',
-                count => 1,
-            },
-            {   name  => 'MT::App::DataAPI::data_api_post_save.asset',
-                count => 1,
-            },
-        ],
-        result => sub {
-            MT->model('asset')->load(1);
         },
     },
     {   path   => '/v2/sites/2/assets/1',
@@ -302,6 +462,30 @@ my @suite     = (
         params =>
             { asset => { label => 'update_asset in non-existent asset', }, },
         code => 404,
+    },
+
+    # update_asset - normal tests
+    {   path      => '/v2/sites/1/assets/1',
+        method    => 'PUT',
+        params    => { asset => {} },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.asset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.asset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.asset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.asset',
+                count => 1,
+            },
+        ],
+        result => sub {
+            MT->model('asset')->load(1);
+        },
     },
     {   path   => '/v2/sites/1/assets/1',
         method => 'PUT',
@@ -445,25 +629,58 @@ my @suite     = (
         },
     },
 
-    # delete_asset
-    {   path   => '/v2/sites/2/assets/1',
+    # delete_asset - irregular tests
+    {    # Other site.
+        path   => '/v2/sites/2/assets/1',
         method => 'DELETE',
         code   => 404,
     },
-    {   path   => '/v2/sites/0/assets/1',
+    {    # Other site (system).
+        path   => '/v2/sites/0/assets/1',
         method => 'DELETE',
         code   => 404,
     },
-    {   path   => '/v2/sites/10/assets/1',
+    {    # Non-exisitent site.
+        path   => '/v2/sites/10/assets/1',
         method => 'DELETE',
         code   => 404,
     },
-    {   path   => '/v2/sites/10/assets/10',
+    {    # Non-existent site and non-existent asset.
+        path   => '/v2/sites/10/assets/10',
         method => 'DELETE',
         code   => 404,
     },
-    {   path      => '/v2/sites/1/assets/1',
+    {    # Other site.
+        path   => '/v2/sites/1/assets/3',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/10/assets/3',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {    # Non-existent asset.
+        path   => '/v2/sites/0/assets/10',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {    # Non-existent asset.
+        path   => '/v2/sites/1/assets/10',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {    # Non-existent asset.
+        path   => '/v2/sites/2/assets/10',
+        method => 'DELETE',
+        code   => 404,
+    },
+
+    # delete_asset - normal tests
+    {    # Blog.
+        path      => '/v2/sites/1/assets/1',
         method    => 'DELETE',
+        setup     => sub { die if !$app->model('asset')->load(1) },
         callbacks => [
             {   name =>
                     'MT::App::DataAPI::data_api_delete_permission_filter.asset',
@@ -478,16 +695,10 @@ my @suite     = (
             is( $deleted, undef, 'deleted' );
         },
     },
-    {   path   => '/v2/sites/1/assets/3',
-        method => 'DELETE',
-        code   => 404,
-    },
-    {   path   => '/v2/sites/10/assets/3',
-        method => 'DELETE',
-        code   => 404,
-    },
-    {   path      => '/v2/sites/0/assets/3',
+    {    # System.
+        path      => '/v2/sites/0/assets/3',
         method    => 'DELETE',
+        setup     => sub { die if !$app->model('asset')->load(3) },
         callbacks => [
             {   name =>
                     'MT::App::DataAPI::data_api_delete_permission_filter.asset',
