@@ -35,7 +35,7 @@ sub fields {
                 for ( my $i = 0; $i < scalar @$objs; $i++ ) {
                     my $obj = $objs->[$i];
 
-                    next if $obj->class ne 'category';
+                    next if !$obj->is_category;
 
                     my $cat_blog_id = $obj->blog_id;
                     if ( !exists $blog_perms{$cat_blog_id} ) {
@@ -53,11 +53,7 @@ sub fields {
         {   name        => 'archiveLink',
             from_object => sub {
                 my ($obj) = @_;
-
-                my $blog = MT->model('blog')->load( $obj->blog_id );
-                if ( !$blog ) {
-                    return;
-                }
+                my $blog = MT->model('blog')->load( $obj->blog_id ) or return;
 
                 my $url = $blog->archive_url;
                 $url .= '/' unless $url =~ m/\/$/;
