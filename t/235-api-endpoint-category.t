@@ -21,6 +21,8 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
+use boolean;
+
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
@@ -36,6 +38,8 @@ $mock_app_api->mock( 'current_api_version',
     sub { $version = $_[1] if $_[1]; $version } );
 
 my @suite = (
+
+    # list_categories - normal tests
     {   path      => '/v1/sites/1/categories',
         method    => 'GET',
         callbacks => [
@@ -104,6 +108,8 @@ my @suite = (
             };
         },
     },
+
+    # create_category - normal tests
     {   path   => '/v2/sites/1/categories',
         method => 'POST',
         params =>
@@ -158,7 +164,10 @@ my @suite = (
                 );
         },
     },
-    {   path     => '/v2/sites/1/categories',
+
+    # create_category - irregular tests
+    {    # No resource.
+        path     => '/v2/sites/1/categories',
         method   => 'POST',
         code     => 400,
         complete => sub {
@@ -167,7 +176,8 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
-    {   path     => '/v2/sites/1/categories',
+    {    # No label.
+        path     => '/v2/sites/1/categories',
         method   => 'POST',
         params   => { category => {} },
         code     => 409,
@@ -177,7 +187,8 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
-    {   path   => '/v2/sites/1/categories',
+    {    # Too long label.
+        path   => '/v2/sites/1/categories',
         method => 'POST',
         params => { category => { label => ( '1234567890' x 11 ) }, }
         ,    # exceeding 100 characters
@@ -189,7 +200,8 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
-    {   path   => '/v2/sites/1/categories',
+    {        # Category having same name exists.
+        path   => '/v2/sites/1/categories',
         method => 'POST',
         params => { category => { label => 'test-api-permission-category' } },
         code   => 409,
@@ -201,7 +213,8 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
-    {   path   => '/v2/sites/1/categories',
+    {    # Invalid parent (folder).
+        path   => '/v2/sites/1/categories',
         method => 'POST',
         params => {
             category => {
@@ -216,7 +229,8 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
-    {   path   => '/v2/sites/1/categories',
+    {    # Invalid parent ( non-existent category ).
+        path   => '/v2/sites/1/categories',
         method => 'POST',
         params => {
             category => {
@@ -231,6 +245,8 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
+
+    # get_category - normal tests
     {   path      => '/v2/sites/1/categories/1',
         method    => 'GET',
         code      => 200,
@@ -240,24 +256,34 @@ my @suite = (
                 count => 1,
             },
         ],
-    },
-    {   path   => '/v2/sites/2/categories/1',
-        method => 'GET',
-        code   => 404,
-    },
-    {   path   => '/v2/sites/1/categories/4',
-        method => 'GET',
-        code   => 404,
-    },
-    {   path     => '/v2/sites/1/categories/20',
-        method   => 'GET',
-        code     => '404',
-        complete => sub {
-            my ( $data, $body ) = @_;
-            my $error = 'Category not found';
-            check_error_message( $body, $error );
+        result => sub {
+            $app->model('category')->load(1);
         },
     },
+
+    # get_category - irregular tests
+    {    # Other site.
+        path   => '/v2/sites/2/categories/1',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/categories/1',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Non-existent category.
+        path   => '/v2/sites/1/categories/4',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/categories/1',
+        method => 'GET',
+        code   => 404,
+    },
+
+    # update_category - normal tests
     {   path   => '/v2/sites/1/categories/1',
         method => 'PUT',
         params => {
@@ -305,7 +331,10 @@ my @suite = (
             MT->model('category')->load( { id => 1, parent => 2 } );
         },
     },
-    {   path     => '/v2/sites/1/categories/1',
+
+    # update_category - irregular tests
+    {    # No resource.
+        path     => '/v2/sites/1/categories/1',
         method   => 'PUT',
         code     => 400,
         complete => sub {
@@ -314,7 +343,8 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
-    {   path     => '/v2/sites/1/categories/1',
+    {    # No label.
+        path     => '/v2/sites/1/categories/1',
         method   => 'PUT',
         params   => { category => { label => '' } },
         code     => 409,
@@ -324,7 +354,8 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
-    {   path   => '/v2/sites/1/categories/1',
+    {    # Too long label.
+        path   => '/v2/sites/1/categories/1',
         method => 'PUT',
         params => { category => { label => ( '1234567890' x 11 ) }, }
         ,    # exceeding 100 characters
@@ -336,7 +367,8 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
-    {   path   => '/v2/sites/1/categories/2',
+    {        # Other site.
+        path   => '/v2/sites/1/categories/2',
         method => 'PUT',
         params => {
             category => { label => 'update-test-api-permission-category' }
@@ -355,14 +387,16 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
-    {   path   => '/v2/sites/1/categories/4',
+    {    # Non-existent site.
+        path   => '/v2/sites/1/categories/4',
         method => 'PUT',
         params => {
             category => { label => 'update-test-api-permission-category-2' }
         },
         code => 404,
     },
-    {   path   => '/v2/sites/1/categories/20',
+    {    # Not category (folder).
+        path   => '/v2/sites/1/categories/20',
         method => 'PUT',
         params =>
             { category => { label => 'update-test-api-permission-folder' }, },
@@ -373,7 +407,8 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
-    {   path     => '/v2/sites/1/categories/1',
+    {    # Invalid parent (folder).
+        path     => '/v2/sites/1/categories/1',
         method   => 'PUT',
         params   => { category => { parent => 20 } },
         code     => 409,
@@ -383,7 +418,8 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
-    {   path     => '/v2/sites/1/categories/1',
+    {    # Invalid parent (non-existent category).
+        path     => '/v2/sites/1/categories/1',
         method   => 'PUT',
         params   => { category => { parent => 100 } },
         code     => 409,
@@ -393,17 +429,176 @@ my @suite = (
             check_error_message( $body, $error );
         },
     },
-    {   path   => '/v2/sites/2/categories/1',
-        method => 'POST',
-        params => {
-            category => { label => 'update-test-api-permission-category-2' }
+
+    # list_categories_for_entry - normal tests
+    {   path      => '/v2/sites/1/entries/6/categories',
+        method    => 'GET',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.entry',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.category',
+                count => 2,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+            my $cat = $app->model('category')->load(1);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                'totalResults' => '1',
+                'items' => mt::DataAPI::Resource->from_object( [$cat] ),
+            };
         },
-        code => 404,
     },
-    {   path   => '/v2/sites/2/categories/2',
-        method => 'DELETE',
+    {   path      => '/v2/sites/1/entries/5/categories',
+        method    => 'GET',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.entry',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.category',
+                count => 1,
+            },
+        ],
+        result => sub {
+            return +{
+                totalResults => 0,
+                items        => [],
+            };
+        },
+    },
+
+    # list_categories_for_entry - irregular tests
+    {    # Non-existent entry.
+        path   => '/v2/sites/1/entries/10/categories',
+        method => 'GET',
         code   => 404,
     },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/entries/6/categories',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site.
+        path   => '/v2/sites/2/entries/6/categories',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/entries/6/categories',
+        method => 'GET',
+        code   => 404,
+    },
+
+    # list_parent_categories - irregular tests
+    {    # Non-existent category.
+        path   => '/v2/sites/1/categories/100/parents',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/categories/3/parents',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site.
+        path   => '/v2/sites/2/categories/3/parents',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/categories/3/parents',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Not category (folder).
+        path   => '/v2/sites/1/categories/22/parents',
+        method => 'GET',
+        code   => 404,
+    },
+
+    # list_parent_categories - normal tests
+    {   path   => '/v2/sites/1/categories/3/parents',
+        method => 'GET',
+        result => sub {
+            $app->user($author);
+            my $cat = $app->model('category')->load(1);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                'totalResults' => '1',
+                'items' => mt::DataAPI::Resource->from_object( [$cat] ),
+            };
+        },
+    },
+
+    # list_sibling_categories - normal tests
+    #    {
+    #        path => '/v2/sites/1/categories/3/siblings',
+    #        method => 'GET',
+    #        result => sub {
+    #            $app->user( $author );
+    #            my $cat = $app->model('category')->load(24);
+    #            no warnings 'redefine';
+    #            local *boolean::true = sub { 'true' };
+    #            local *boolean::false = sub { 'false' };
+    #            return +{
+    #                'totalResults' => '1',
+    #                'items' => mt::DataAPI::Resource->from_object([$cat]),
+    #            };
+    #        },
+    #    },
+
+    # list_child_categories - irregular tests
+    {    # Non-existent category.
+        path   => '/v2/sites/1/categories/100/children',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/categories/1/children',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site.
+        path   => '/v2/sites/2/categories/1/children',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/categories/1/children',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Not category (folder).
+        path   => '/v2/sites/1/categories/22/children',
+        method => 'GET',
+        code   => 404,
+    },
+
+    # list_child_categories - nomal tests
+    {   path   => '/v2/sites/1/categories/1/children',
+        method => 'GET',
+        result => sub {
+            $app->user($author);
+            my @cats = $app->model('category')->load( { id => [ 3, 24 ] } );
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                totalResults => 2,
+                items        => MT::DataAPI::Resource->from_object( \@cats ),
+            };
+        },
+    },
+
+    # delete_category - normal tests
     {   path      => '/v2/sites/1/categories/1',
         method    => 'DELETE',
         callbacks => [
@@ -420,18 +615,32 @@ my @suite = (
             is( $deleted, undef, 'deleted' );
         },
     },
-    {   path   => '/v2/sites/1/categories/1',
+
+    # delete_category - irregular tests
+    {    # Non-existent category.
+        path   => '/v2/sites/1/categories/1',
         method => 'DELETE',
         code   => 404,
     },
-    {   path     => '/v2/sites/1/categories/20',
-        method   => 'DELETE',
-        code     => 404,
-        complete => sub {
-            my ( $data, $body ) = @_;
-            my $error = 'Category not found';
-            check_error_message( $body, $error );
-        },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/categories/2',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {    # Other site.
+        path   => '/v2/sites/2/categories/2',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/categories/2',
+        method => 'DELETE',
+        code   => 404,
+    },
+    {    # Not category (folder).
+        path   => '/v2/sites/1/categories/22',
+        method => 'DELETE',
+        code   => 404,
     },
 );
 
