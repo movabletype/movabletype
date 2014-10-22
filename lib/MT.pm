@@ -893,6 +893,8 @@ sub init_config {
         }
     }
 
+    $mt->set_language( $cfg->DefaultLanguage );
+
     if ( my $local_lib = $cfg->LocalLib ) {
         $local_lib = [$local_lib] if !ref $local_lib;
         eval "use local::lib qw( @{$local_lib} )";
@@ -907,8 +909,6 @@ sub init_config {
     if ( $cfg->PerformanceLogging && $cfg->ProcessMemoryCommand ) {
         $mt->log_times();
     }
-
-    $mt->set_language( $cfg->DefaultLanguage );
 
     my $cgi_path = $cfg->CGIPath;
     if ( !$cgi_path || $cgi_path =~ m!http://www\.example\.com/! ) {
