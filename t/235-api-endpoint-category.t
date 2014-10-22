@@ -606,7 +606,7 @@ my @suite = (
         method => 'GET',
         result => sub {
             $app->user($author);
-            my @cats = map { $app->model('category')->load($_) } qw/ 23 2 /;
+            my @cats = map { $app->model('category')->load($_) } qw/ 2 23 /;
             no warnings 'redefine';
             local *boolean::true  = sub {'true'};
             local *boolean::false = sub {'false'};

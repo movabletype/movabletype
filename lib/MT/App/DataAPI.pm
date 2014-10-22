@@ -423,7 +423,7 @@ sub core_endpoints {
                 limit        => 10,
                 offset       => 0,
                 sortBy       => 'user_custom',
-                sortOrder    => 'ascend',
+                sortOrder    => 'descend',
                 searchFields => 'label,basename',
             },
             error_codes => {
@@ -468,7 +468,7 @@ sub core_endpoints {
                 limit        => 10,
                 offset       => 0,
                 sortBy       => 'user_custom',
-                sortOrder    => 'ascend',
+                sortOrder    => 'descend',
                 searchFields => 'label,basename',
             },
             error_codes => {
