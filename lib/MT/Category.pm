@@ -445,7 +445,7 @@ sub _flattened_category_hierarchy {
         @flat;
     }
     foreach my $cat (@cats) {
-        if ( !$cat->parent || !$children->{ $cat->id } ) {
+        if ( !$cat->parent || !( grep { $cat->parent == $_->id } @cats ) ) {
             push @flattened_cats, $cat;
             push @flattened_cats, __pusher( $children, $cat->id )
                 if $children->{ $cat->id };
