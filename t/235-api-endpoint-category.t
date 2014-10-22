@@ -81,7 +81,8 @@ my @suite = (
             };
         },
     },
-    {   path   => '/v1/sites/1/categories',
+    {    # sortBy label.
+        path   => '/v1/sites/1/categories',
         method => 'GET',
         params => {
             sortBy    => 'label',
@@ -103,6 +104,25 @@ my @suite = (
                                 limit     => 1
                             }
                         )
+                    ]
+                ),
+            };
+        },
+    },
+    {    # sortBy created_by.
+        path      => '/v1/sites/1/categories',
+        method    => 'GET',
+        params    => { sortBy => 'created_by', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.category',
+                count => 2,
+            }
+        ],
+        result => sub {
+            +{  totalResults => 3,
+                items        => MT::DataAPI::Resource->from_object(
+                    [   MT->model('category')
+                            ->load( undef, { sort => 'created_by', } )
                     ]
                 ),
             };
