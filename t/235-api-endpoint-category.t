@@ -538,22 +538,64 @@ my @suite = (
         },
     },
 
+    # list_sibling_categories - irregular tests
+    {    # Non-existent category.
+        path   => '/v2/sites/1/categories/100/siblings',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/categories/3/siblings',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site.
+        path   => '/v2/sites/2/categories/3/siblings',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/categories/3/siblings',
+        method => 'GET',
+        code   => 404,
+    },
+    {    # Not category (folder).
+        path   => '/v2/sites/1/categories/22/siblings',
+        method => 'GET',
+        code   => 404,
+    },
+
     # list_sibling_categories - normal tests
-    #    {
-    #        path => '/v2/sites/1/categories/3/siblings',
-    #        method => 'GET',
-    #        result => sub {
-    #            $app->user( $author );
-    #            my $cat = $app->model('category')->load(24);
-    #            no warnings 'redefine';
-    #            local *boolean::true = sub { 'true' };
-    #            local *boolean::false = sub { 'false' };
-    #            return +{
-    #                'totalResults' => '1',
-    #                'items' => mt::DataAPI::Resource->from_object([$cat]),
-    #            };
-    #        },
-    #    },
+    {    # Non-top.
+        path   => '/v2/sites/1/categories/3/siblings',
+        method => 'GET',
+        result => sub {
+            $app->user($author);
+            my $cat = $app->model('category')->load(24);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                'totalResults' => '1',
+                'items' => mt::DataAPI::Resource->from_object( [$cat] ),
+            };
+        },
+    },
+    {    # Top.
+        path   => '/v2/sites/1/categories/1/siblings',
+        method => 'GET',
+        result => sub {
+            $app->user($author);
+            my @cats = map { $app->model('category')->load($_) } qw/ 23 2 /;
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                'totalResults' => '2',
+                'items' => MT::DataAPI::Resource->from_object( \@cats ),
+            };
+        },
+    },
 
     # list_child_categories - irregular tests
     {    # Non-existent category.
