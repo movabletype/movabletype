@@ -94,7 +94,8 @@ my @suite     = (
     },
 
     # list_assets - normal tests
-    {   path      => '/v2/sites/0/assets',
+    {    # System.
+        path      => '/v2/sites/0/assets',
         method    => 'GET',
         callbacks => [
             {   name  => 'data_api_pre_load_filtered_list.asset',
@@ -108,7 +109,8 @@ my @suite     = (
                 1, 'The number of asset (blog_id=0) is 1.' );
         },
     },
-    {   path      => '/v2/sites/1/assets',
+    {    # Blog.
+        path      => '/v2/sites/1/assets',
         method    => 'GET',
         callbacks => [
             {   name  => 'data_api_pre_load_filtered_list.asset',
@@ -122,7 +124,8 @@ my @suite     = (
                 3, 'The number of asset (blog_id=1) is 3.' );
         },
     },
-    {   path      => '/v2/sites/2/assets',
+    {    # Website.
+        path      => '/v2/sites/2/assets',
         method    => 'GET',
         callbacks => [
             {   name  => 'data_api_pre_load_filtered_list.asset',
@@ -136,7 +139,8 @@ my @suite     = (
                 0, 'The number of asset (blog_id=2) is 0.' );
         },
     },
-    {   path      => '/v2/sites/1/assets',
+    {    # search parameter.
+        path      => '/v2/sites/1/assets',
         method    => 'GET',
         params    => { search => 'template', },
         callbacks => [
@@ -154,7 +158,8 @@ my @suite     = (
                 qr/template/, 'The label of asset has "template".' );
         },
     },
-    {   path      => '/v2/sites/1/assets',
+    {    # class parameter.
+        path      => '/v2/sites/1/assets',
         method    => 'GET',
         params    => { class => 'image', },
         callbacks => [
@@ -167,6 +172,40 @@ my @suite     = (
             my $result = MT::Util::from_json($body);
             is( $result->{totalResults},
                 2, 'The number of image asset is 2.' );
+        },
+    },
+    {    # In order of created_by.
+        path      => '/v2/sites/1/assets',
+        method    => 'GET',
+        params    => { sortBy => 'created_by', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+    },
+    {    # In order of file_name.
+        path      => '/v2/sites/1/assets',
+        method    => 'GET',
+        params    => { sortBy => 'file_name', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+            my @assets = $app->model('asset')->load(
+                { blog_id => 1,           class     => '*' },
+                { sort    => 'file_name', direction => 'descend' },
+            );
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                totalResults => scalar @assets,
+                items => MT::DataAPI::Resource->from_object( \@assets ),
+            };
         },
     },
 
@@ -185,7 +224,8 @@ my @suite     = (
                 4, 'The number of all image asset is 4.' );
         },
     },
-    {   path      => '/v2/assets',
+    {    # includeSiteIds parameter.
+        path      => '/v2/assets',
         method    => 'GET',
         params    => { includeSiteIds => '0', },
         callbacks => [
@@ -200,7 +240,8 @@ my @suite     = (
                 1, 'The number of image asset (blog_id=0) is 1.' );
         },
     },
-    {   path      => '/v2/assets',
+    {    # excludeSiteId parameter.
+        path      => '/v2/assets',
         method    => 'GET',
         params    => { excludeSiteIds => '0', },
         callbacks => [
@@ -214,6 +255,40 @@ my @suite     = (
             is( $result->{totalResults},
                 3, 'The number of image asset (exclude blog_id=0) is 3.' );
         },
+    },
+    {    # In order of file_name.
+        path      => '/v2/assets',
+        method    => 'GET',
+        params    => { sortBy => 'file_name', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+            my @assets = $app->model('asset')->load(
+                { class => '*' },
+                { sort  => 'file_name', direction => 'descend' },
+            );
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                totalResults => scalar @assets,
+                items => MT::DataAPI::Resource->from_object( \@assets ),
+            };
+        },
+    },
+    {    # In order of created_by.
+        path      => '/v2/assets',
+        method    => 'GET',
+        params    => { sortBy => 'created_by', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
     },
 
     # list_assets_for_entry - irregular tests
@@ -268,6 +343,36 @@ my @suite     = (
             };
         },
     },
+    {    # In order of file_name.
+        path      => '/v2/sites/1/entries/1/assets',
+        method    => 'GET',
+        params    => { sortBy => 'file_name', },
+        setup     => sub { $app->user($author) },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.entry',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+    },
+    {    # In order of created_by.
+        path      => '/v2/sites/1/entries/1/assets',
+        method    => 'GET',
+        params    => { sortBy => 'created_by', },
+        setup     => sub { $app->user($author) },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.entry',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+    },
 
     # list_assets_for_page - irregular tests
     {    # Non-existent page.
@@ -321,6 +426,34 @@ my @suite     = (
             return $res;
         },
     },
+    {    # In order of file_name.
+        path      => '/v2/sites/1/pages/20/assets',
+        method    => 'GET',
+        params    => { sortBy => 'file_name', },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.page',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+    },
+    {    # In order of created_by.
+        path      => '/v2/sites/1/pages/20/assets',
+        method    => 'GET',
+        params    => { sortBy => 'created_by', },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.page',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+    },
 
     # list_asset_for_site_and_tag - irregular tests
     {    # Non-existent tag.
@@ -340,8 +473,17 @@ my @suite     = (
     },
 
     # list_assets_for_site_and_tag - normal tests
-    {   path   => '/v2/sites/1/tags/alpha/assets',
-        method => 'GET',
+    {   path      => '/v2/sites/1/tags/alpha/assets',
+        method    => 'GET',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.tag',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
         result => sub {
             $app->user($author);
             my $asset = $app->model('asset')->load(1);
@@ -354,6 +496,34 @@ my @suite     = (
             };
             return $res;
         },
+    },
+    {    # In order of file_name.
+        path      => '/v2/sites/1/tags/alpha/assets',
+        method    => 'GET',
+        params    => { sortBy => 'file_name', },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.tag',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+    },
+    {    # In order of created_by.
+        path      => '/v2/sites/1/tags/alpha/assets',
+        method    => 'GET',
+        params    => { sortBy => 'created_by', },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.tag',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
     },
 
     # list_assets_for_tag - irregular tests
@@ -364,8 +534,17 @@ my @suite     = (
     },
 
     # list_assets_for_tag - normal tests
-    {   path   => '/v2/tags/alpha/assets',
-        method => 'GET',
+    {   path      => '/v2/tags/alpha/assets',
+        method    => 'GET',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.tag',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
         result => sub {
             $app->user($author);
             my $asset = $app->model('asset')->load(1);
@@ -378,6 +557,34 @@ my @suite     = (
             };
             return $res;
         },
+    },
+    {    # In order of file_name.
+        path      => '/v2/tags/alpha/assets',
+        method    => 'GET',
+        params    => { sortBy => 'file_name', },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.tag',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
+    },
+    {    # In order of created_by.
+        path      => '/v2/tags/alpha/assets',
+        method    => 'GET',
+        params    => { sortBy => 'created_by', },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.tag',
+                count => 1,
+            },
+            {   name  => 'data_api_pre_load_filtered_list.asset',
+                count => 2,
+            },
+        ],
     },
 
     # get_asset - irregular tests

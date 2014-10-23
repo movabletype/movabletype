@@ -382,6 +382,7 @@ sub list_props {
             fields  => [qw( label )],
             display => 'none',
         },
+        created_by => { base => '__common.created_by', },
     };
 }
 

@@ -632,7 +632,7 @@ sub core_endpoints {
             default_params => {
                 limit        => 10,
                 offset       => 0,
-                sortBy       => 'id',
+                sortBy       => 'created_on',
                 sortOrder    => 'descend',
                 searchFields => 'label',
                 filterKeys   => 'class',
@@ -651,7 +651,7 @@ sub core_endpoints {
             default_params => {
                 limit        => 10,
                 offset       => 0,
-                sortBy       => 'id',
+                sortBy       => 'created_on',
                 sortOrder    => 'descend',
                 searchFields => 'label',
                 filterKeys   => 'class',
@@ -670,7 +670,7 @@ sub core_endpoints {
             default_params => {
                 limit        => 10,
                 offset       => 0,
-                sortBy       => 'id',
+                sortBy       => 'created_on',
                 sortOrder    => 'descend',
                 searchFields => 'label',
                 filterKeys   => 'class',
@@ -689,7 +689,7 @@ sub core_endpoints {
             default_params => {
                 limit        => 10,
                 offset       => 0,
-                sortBy       => 'id',
+                sortBy       => 'created_on',
                 sortOrder    => 'descend',
                 searchFields => 'label',
                 filterKeys   => 'class',
@@ -707,7 +707,7 @@ sub core_endpoints {
             default_params => {
                 limit        => 10,
                 offset       => 0,
-                sortBy       => 'id',
+                sortBy       => 'created_on',
                 sortOrder    => 'descend',
                 searchFields => 'label',
                 filterKeys   => 'class',
@@ -725,7 +725,7 @@ sub core_endpoints {
             default_params => {
                 limit        => 10,
                 offset       => 0,
-                sortBy       => 'id',
+                sortBy       => 'created_on',
                 sortOrder    => 'descend',
                 searchFields => 'label',
                 filterKeys   => 'class',

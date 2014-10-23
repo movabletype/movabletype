@@ -1182,6 +1182,16 @@ BEGIN {
                         \@terms;
                     },
                 },
+                created_by => {
+                    bulk_sort => sub {
+                        my ( $prop, $objs ) = @_;
+                        return sort {
+                            ( $a->created_by || 0 )
+                                <=> ( $b->created_by || 0 )
+                        } @$objs;
+                    },
+                    display => 'none',
+                },
             },
             website      => '$Core::MT::Website::list_props',
             blog         => '$Core::MT::Blog::list_props',
