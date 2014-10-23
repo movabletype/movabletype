@@ -276,13 +276,27 @@ sub permutate {
         return $app->error(403);
     }
 
-    my $categories_json = $app->param('categories')
+    return permutate_common( $app, $endpoint, $site, 'category' );
+}
+
+sub permutate_common {
+    my ( $app, $endpoint, $site, $class ) = @_;
+
+    my $class_plural = ( $class eq 'category' ) ? 'categories' : 'folders';
+
+    my $categories_json = $app->param($class_plural)
         or return $app->error(
-        $app->translate('A parameter "categories" is required.'), 400 );
+        $app->translate( 'A parameter "' . $class_plural . '" is required.' ),
+        400
+        );
 
     my $invalid_error = sub {
-        $app->error( $app->translate('A parameter "categories" is invalid.'),
-            400 );
+        $app->error(
+            $app->translate(
+                'A parameter "' . $class_plural . '" is invalid.'
+            ),
+            400
+        );
     };
 
     my $categories_array
@@ -297,7 +311,8 @@ sub permutate {
             return $invalid_error->();
         }
 
-        my $cat = $app->model('category')->load( $c->{id} )
+        my $cat
+            = $app->model($class)->load( { id => $c->{id}, class => $class } )
             or return $invalid_error->();
 
         push @categories, $cat;
@@ -308,21 +323,23 @@ sub permutate {
     my $exist_ids = join( ',',
         sort    { $a <=> $b }
             map { $_->id }
-            ( $app->model('category')->load( { blog_id => $site->id } ) ) );
+            ( $app->model($class)->load( { blog_id => $site->id } ) ) );
     if ( ( $parameter_ids || '' ) ne ( $exist_ids || '' ) ) {
         return $invalid_error->();
     }
 
     my $category_order = join( ',', map { $_->id } @categories );
-    $site->category_order($category_order);
+    my $column = $class . '_order';
+    $site->$column($category_order);
     $site->save
         or return $app->error(
         $app->translate( 'Saving object failed: [_1]', $site->errstr ), 500 );
 
-    $app->run_callbacks( 'data_api_post_bulk_save.' . 'category',
+    $app->run_callbacks( 'data_api_post_bulk_save.' . $class,
         $app, \@categories );
 
     return MT::DataAPI::Resource->from_object( \@categories );
+
 }
 
 1;

@@ -197,6 +197,23 @@ sub delete {
     $folder;
 }
 
+sub permutate {
+    my ( $app, $endpoint ) = @_;
+
+    my ($site) = context_objects(@_) or return;
+    if ( !$site->id ) {
+        return $app->error( $app->translate('Site not found'), 404 );
+    }
+
+    if ( !$app->can_do('save_folder') ) {
+        return $app->error(403);
+    }
+
+    return MT::DataAPI::Endpoint::Category::v2::permutate_common( $app,
+        $endpoint, $site, 'folder' );
+
+}
+
 1;
 
 __END__

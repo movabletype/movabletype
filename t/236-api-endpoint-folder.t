@@ -217,6 +217,67 @@ my @suite = (
         },
     },
 
+    # permutate_folders - irregular tests
+    {    # Non-existent site.
+        path   => '/v2/sites/5/folders/permutate',
+        method => 'POST',
+        code   => 404,
+    },
+    {    # System.
+        path   => '/v2/sites/0/folders/permutate',
+        method => 'POST',
+        code   => 404,
+    },
+    {    # No folders parameter.
+        path   => '/v2/sites/1/folders/permutate',
+        method => 'POST',
+        code   => 400,
+        result => sub {
+            return +{
+                error => {
+                    code    => 400,
+                    message => 'A parameter "folders" is required.',
+                },
+            };
+        },
+    },
+    {    # Insufficient folders.
+        path   => '/v2/sites/1/folders/permutate',
+        method => 'POST',
+        params => { folders => [ map { +{ id => $_ } } qw/ 23 22 21 / ], },
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code    => 400,
+                    message => 'A parameter "folders" is invalid.',
+                },
+            };
+        },
+    },
+
+    # permutate_folder - normal tests
+    {   path   => '/v2/sites/1/folders/permutate',
+        method => 'POST',
+        params => { folders => [ map { +{ id => $_ } } qw/ 23 22 21 20 / ], },
+        callbacks => [
+            {   name  => 'MT::App::DataAPI::data_api_post_bulk_save.folder',
+                count => 1,
+            },
+        ],
+        result => sub {
+            my $site = $app->model('blog')->load(1);
+            my @folder_order = split ',', $site->folder_order;
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return MT::DataAPI::Resource->from_object(
+                [ map { $app->model('folder')->load($_) } @folder_order ] );
+        },
+    },
+
     # delete_folder - irregular tests
     {    # Non-existent folder.
         path   => '/v2/sites/1/folders/100',

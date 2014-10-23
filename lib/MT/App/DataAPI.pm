@@ -630,6 +630,14 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete a folder.', },
         },
+        {   id      => 'permutate_folders',
+            route   => '/sites/:site_id/folders/permutate',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Folder::v2::permutate",
+            error_codes =>
+                { 403 => 'Do not have permission to permutate folders.', },
+        },
 
         # asset endpoints
         {   id             => 'list_assets',
