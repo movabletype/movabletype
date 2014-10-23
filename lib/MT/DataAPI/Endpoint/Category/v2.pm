@@ -142,9 +142,8 @@ sub create {
 
     my $orig_category = $app->model('category')->new;
     $orig_category->set_values(
-        {   blog_id     => $blog->id,
-            author_id   => $author->id,
-            allow_pings => $blog->allow_pings_default,
+        {   blog_id   => $blog->id,
+            author_id => $author->id,
         }
     );
 
