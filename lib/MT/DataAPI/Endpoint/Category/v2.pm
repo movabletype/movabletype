@@ -14,13 +14,18 @@ use MT::DataAPI::Resource;
 
 sub list {
     my ( $app, $endpoint ) = @_;
+    return list_common( $app, $endpoint, 'category' );
+}
+
+sub list_common {
+    my ( $app, $endpoint, $class ) = @_;
 
     my %terms;
     if ( $app->param('top') ) {
         %terms = ( parent => 0 );
     }
 
-    my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
+    my $res = filtered_list( $app, $endpoint, $class, \%terms ) or return;
 
     +{  totalResults => $res->{count},
         items =>
@@ -69,15 +74,20 @@ sub _get_all_child_categories {
 
 sub list_parents {
     my ( $app, $endpoint ) = @_;
+    return list_parents_common( $app, $endpoint, 'category' );
+}
 
-    my $cat = get( $app, $endpoint ) or return;
+sub list_parents_common {
+    my ( $app, $endpoint, $class ) = @_;
+
+    my $cat = get_common( $app, $endpoint, $class ) or return;
 
     my $max_depth = $app->param('maxDepth') || 0;
     my @parent_cats = _get_all_parent_categories( $cat, $max_depth );
 
     for my $parent_cat (@parent_cats) {
         run_permission_filter( $app, 'data_api_view_permission_filter',
-            'category', $parent_cat->id, obj_promise($parent_cat) )
+            $class, $parent_cat->id, obj_promise($parent_cat) )
             or return;
     }
 
@@ -93,15 +103,20 @@ sub list_parents {
 
 sub list_siblings {
     my ( $app, $endpoint ) = @_;
+    return list_siblings_common( $app, $endpoint, 'category' );
+}
 
-    my $cat = get( $app, $endpoint ) or return;
+sub list_siblings_common {
+    my ( $app, $endpoint, $class ) = @_;
+
+    my $cat = get_common( $app, $endpoint, $class ) or return;
 
     my %terms = (
         id      => { not => $cat->id },
         blog_id => $cat->blog_id,
         parent  => $cat->parent,
     );
-    my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
+    my $res = filtered_list( $app, $endpoint, $class, \%terms ) or return;
 
     +{  totalResults => $res->{count},
         items =>
@@ -111,15 +126,20 @@ sub list_siblings {
 
 sub list_children {
     my ( $app, $endpoint ) = @_;
+    return list_children_common( $app, $endpoint, 'category' );
+}
 
-    my $cat = get( $app, $endpoint ) or return;
+sub list_children_common {
+    my ( $app, $endpoint, $class ) = @_;
+
+    my $cat = get_common( $app, $endpoint, $class ) or return;
 
     my $max_depth = $app->param('maxDepth') || 0;
     my @child_cats = _get_all_child_categories( $cat, $max_depth );
 
     for my $child_cat (@child_cats) {
         run_permission_filter( $app, 'data_api_view_permission_filter',
-            'category', $child_cat->id, obj_promise($child_cat) )
+            $class, $child_cat->id, obj_promise($child_cat) )
             or return;
     }
 
@@ -134,25 +154,30 @@ sub list_children {
 
 sub create {
     my ( $app, $endpoint ) = @_;
+    return create_common( $app, $endpoint, 'category' );
+}
+
+sub create_common {
+    my ( $app, $endpoint, $class ) = @_;
 
     my ($blog) = context_objects(@_);
     return unless $blog && $blog->id;
 
     my $author = $app->user;
 
-    my $orig_category = $app->model('category')->new;
+    my $orig_category = $app->model($class)->new;
     $orig_category->set_values(
         {   blog_id   => $blog->id,
             author_id => $author->id,
         }
     );
 
-    my $new_category = $app->resource_object( 'category', $orig_category )
+    my $new_category = $app->resource_object( $class, $orig_category )
         or return;
 
     if (   !defined( $new_category->basename )
         || $new_category->basename eq ''
-        || $app->model('category')->exist(
+        || $app->model($class)->exist(
             { blog_id => $blog->id, basename => $new_category->basename }
         )
         )
@@ -161,7 +186,7 @@ sub create {
             MT::Util::make_unique_category_basename($new_category) );
     }
 
-    save_object( $app, 'category', $new_category )
+    save_object( $app, $class, $new_category )
         or return;
 
     $new_category;
@@ -169,12 +194,17 @@ sub create {
 
 sub get {
     my ( $app, $endpoint ) = @_;
+    return get_common( $app, $endpoint, 'category' );
+}
+
+sub get_common {
+    my ( $app, $endpoint, $class ) = @_;
 
     my ( $blog, $category ) = context_objects(@_)
         or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
-        'category', $category->id, obj_promise($category) )
+        $class, $category->id, obj_promise($category) )
         or return;
 
     $category;
@@ -182,15 +212,19 @@ sub get {
 
 sub update {
     my ( $app, $endpoint ) = @_;
+    return update_common( $app, $endpoint, 'category' );
+}
+
+sub update_common {
+    my ( $app, $endpoint, $class ) = @_;
 
     my ( $blog, $orig_category ) = context_objects(@_)
         or return;
-    my $new_category = $app->resource_object( 'category', $orig_category )
+    my $new_category = $app->resource_object( $class, $orig_category )
         or return;
 
     save_object(
-        $app,
-        'category',
+        $app, $class,
         $new_category,
         $orig_category,
         sub {
