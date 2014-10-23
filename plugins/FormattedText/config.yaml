@@ -58,6 +58,7 @@ applications:
                     _type: formatted_text
                 view:
                     - system
+                    - website
                     - blog
                 display: 0
 
