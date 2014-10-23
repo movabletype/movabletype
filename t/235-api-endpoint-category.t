@@ -660,6 +660,70 @@ my @suite = (
         },
     },
 
+    # permutate_categories - irregular tests
+    {    # Non-existent site.
+        path   => '/v2/sites/5/categories/permutate',
+        method => 'POST',
+        code   => 404,
+    },
+    {    # System.
+        path   => '/v2/sites/0/categories/permutate',
+        method => 'POST',
+        code   => 404,
+    },
+    {    # No categories parameter.
+        path   => '/v2/sites/1/categories/permutate',
+        method => 'POST',
+        code   => 400,
+        result => sub {
+            return +{
+                error => {
+                    code    => 400,
+                    message => 'A parameter "categories" is required.',
+                },
+            };
+        },
+    },
+    {    # Insufficient categories.
+        path   => '/v2/sites/1/categories/permutate',
+        method => 'POST',
+        params =>
+            { categories => [ map { +{ id => $_ } } qw/ 24 23 1 2 / ], },
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code    => 400,
+                    message => 'A parameter "categories" is invalid.',
+                },
+            };
+        },
+    },
+
+    # permutate_categories - normal tests
+    {   path   => '/v2/sites/1/categories/permutate',
+        method => 'POST',
+        params =>
+            { categories => [ map { +{ id => $_ } } qw/ 24 23 1 2 3 / ], },
+        callbacks => [
+            {   name  => 'MT::App::DataAPI::data_api_post_bulk_save.category',
+                count => 1,
+            },
+        ],
+        result => sub {
+            my $site = $app->model('blog')->load(1);
+            my @category_order = split ',', $site->category_order;
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return MT::DataAPI::Resource->from_object(
+                [ map { $app->model('category')->load($_) } @category_order ]
+            );
+        },
+    },
+
     # delete_category - normal tests
     {   path      => '/v2/sites/1/categories/1',
         method    => 'DELETE',

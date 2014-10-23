@@ -264,6 +264,67 @@ sub list_for_entry {
     };
 }
 
+sub permutate {
+    my ( $app, $endpoint ) = @_;
+
+    my ($site) = context_objects(@_) or return;
+    if ( !$site->id ) {
+        return $app->error( $app->translate('Site not found'), 404 );
+    }
+
+    if ( !$app->can_do('edit_categories') ) {
+        return $app->error(403);
+    }
+
+    my $categories_json = $app->param('categories')
+        or return $app->error(
+        $app->translate('A parameter "categories" is required.'), 400 );
+
+    my $invalid_error = sub {
+        $app->error( $app->translate('A parameter "categories" is invalid.'),
+            400 );
+    };
+
+    my $categories_array
+        = $app->current_format->{unserialize}->($categories_json);
+    if ( ref $categories_array ne 'ARRAY' ) {
+        return $invalid_error->();
+    }
+
+    my @categories;
+    for my $c (@$categories_array) {
+        if ( ref $c ne 'HASH' || !exists $c->{id} ) {
+            return $invalid_error->();
+        }
+
+        my $cat = $app->model('category')->load( $c->{id} )
+            or return $invalid_error->();
+
+        push @categories, $cat;
+    }
+
+    my $parameter_ids
+        = join( ',', sort { $a <=> $b } map { $_->{id} } @$categories_array );
+    my $exist_ids = join( ',',
+        sort    { $a <=> $b }
+            map { $_->id }
+            ( $app->model('category')->load( { blog_id => $site->id } ) ) );
+    if ( ( $parameter_ids || '' ) ne ( $exist_ids || '' ) ) {
+        return $invalid_error->();
+    }
+
+    my $category_order = join( ',', map { $_->id } @categories );
+    $site->category_order($category_order);
+    $site->save
+        or return $app->error(
+        $app->translate( 'Saving object failed: [_1]', $site->errstr ), 500 );
+
+    $app->run_callbacks( 'data_api_post_bulk_save.' . 'category',
+        $app, \@categories );
+
+    return MT::DataAPI::Resource->from_object( \@categories );
+}
+
 1;
 
 __END__

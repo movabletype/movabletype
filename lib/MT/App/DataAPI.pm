@@ -526,6 +526,14 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete a category.', },
         },
+        {   id      => 'permutate_categories',
+            route   => '/sites/:site_id/categories/permutate',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Category::v2::permutate",
+            error_codes =>
+                { 403 => 'Do not have permission to permutate categories.', },
+        },
 
         # folder endpoints
         {   id             => 'list_folders',
