@@ -142,12 +142,7 @@ sub list_props {
             fields  => [qw(label basename)],
             display => 'none',
         },
-        created_by => {
-            bulk_sort => sub {
-                my ( $prop, $objs ) = @_;
-                return sort { $a->created_by <=> $b->created_by } @$objs;
-            },
-        },
+        created_by => { base => '__common.created_by', },
     };
 }
 
