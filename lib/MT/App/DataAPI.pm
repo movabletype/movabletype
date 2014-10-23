@@ -440,6 +440,8 @@ sub core_endpoints {
             default_params => {
                 limit        => 10,
                 offset       => 0,
+                sortBy       => 'user_custom',
+                sortOrder    => 'descend',
                 searchFields => 'label,basename',
             },
             error_codes => {
