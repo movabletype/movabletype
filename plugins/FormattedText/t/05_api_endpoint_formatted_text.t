@@ -37,16 +37,20 @@ $mock_app_api->mock( 'current_api_version',
 
 my $ft_blog = $app->model('formatted_text')->new;
 $ft_blog->set_values(
-    {   blog_id => 1,
-        label   => 'formatted_text_blog',
+    {   blog_id     => 1,
+        label       => 'formatted_text_blog',
+        text        => 'formatted_text_blog_text',
+        description => 'formatted_text_blog_description',
     }
 );
 $ft_blog->save or die $ft_blog->errstr;
 
 my $ft_website = $app->model('formatted_text')->new;
 $ft_website->set_values(
-    {   blog_id => 2,
-        label   => 'formatted_text_website',
+    {   blog_id     => 2,
+        label       => 'formatted_text_website',
+        text        => 'formatted_text_website_text',
+        description => 'formatted_text_website_description',
     }
 );
 $ft_website->save or die $ft_website->errstr;
@@ -180,6 +184,151 @@ my @suite = (
                 count => 2,
             },
         ],
+    },
+    {    # search label in blog scope.
+        path      => '/v2/sites/1/formatted_texts',
+        method    => 'GET',
+        params    => { search => 'blog', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.formatted_text',
+                count => 2,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+
+            my @fts = $app->model('formatted_text')->load(
+                { blog_id => 1 },
+                { sort    => 'created_on', direction => 'descend' },
+            );
+
+            my @greped_fts;
+            for my $ft (@fts) {
+                if ( grep { $ft->$_() && $ft->$_() =~ m/blog/ }
+                    qw/ label text description / )
+                {
+                    push @greped_fts, $ft;
+                }
+            }
+
+            require boolean;
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                totalResults => scalar @greped_fts,
+                items => MT::DataAPI::Resource->from_object( \@greped_fts ),
+            };
+        },
+    },
+    {    # search label in system scope.
+        path      => '/v2/sites/0/formatted_texts',
+        method    => 'GET',
+        params    => { search => 'blog', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.formatted_text',
+                count => 2,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+
+            my @fts
+                = $app->model('formatted_text')
+                ->load( undef,
+                { sort => 'created_on', direction => 'descend' },
+                );
+
+            my @greped_fts;
+            for my $ft (@fts) {
+                if ( grep { $ft->$_() && $ft->$_() =~ m/blog/ }
+                    qw/ label text description / )
+                {
+                    push @greped_fts, $ft;
+                }
+            }
+
+            require boolean;
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                totalResults => scalar @greped_fts,
+                items => MT::DataAPI::Resource->from_object( \@greped_fts ),
+            };
+        },
+    },
+    {    # search text in blog scope.
+        path      => '/v2/sites/1/formatted_texts',
+        method    => 'GET',
+        params    => { search => 'blog_text', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.formatted_text',
+                count => 2,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+
+            my @fts = $app->model('formatted_text')->load(
+                { blog_id => 1 },
+                { sort    => 'created_on', direction => 'descend' },
+            );
+
+            my @greped_fts;
+            for my $ft (@fts) {
+                if ( grep { $ft->$_() && $ft->$_() =~ m/blog_text/ }
+                    qw/ label text description / )
+                {
+                    push @greped_fts, $ft;
+                }
+            }
+
+            require boolean;
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                totalResults => scalar @greped_fts,
+                items => MT::DataAPI::Resource->from_object( \@greped_fts ),
+            };
+        },
+    },
+    {    # search description in blog scope.
+        path      => '/v2/sites/1/formatted_texts',
+        method    => 'GET',
+        params    => { search => 'blog_description', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.formatted_text',
+                count => 2,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+
+            my @fts = $app->model('formatted_text')->load(
+                { blog_id => 1 },
+                { sort    => 'created_on', direction => 'descend' },
+            );
+
+            my @greped_fts;
+            for my $ft (@fts) {
+                if ( grep { $ft->$_() && $ft->$_() =~ m/blog_description/ }
+                    qw/ label text description / )
+                {
+                    push @greped_fts, $ft;
+                }
+            }
+
+            require boolean;
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                totalResults => scalar @greped_fts,
+                items => MT::DataAPI::Resource->from_object( \@greped_fts ),
+            };
+        },
     },
 
     # update_formatted_text - normal tests

@@ -238,6 +238,11 @@ sub list_props {
             display => 'none',
             label   => 'Description',
         },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( label text description )],
+            display => 'none',
+        },
     };
 }
 

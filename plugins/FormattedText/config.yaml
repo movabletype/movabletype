@@ -83,6 +83,9 @@ applications:
               default_params:
                   limit: 10
                   offset: 0
+                  sortBy: created_on
+                  sortOrder: descend
+                  searchFields: label,text,description
               error_codes:
                   403: Do not have permission to retrieve the requested formatted texts.
 
