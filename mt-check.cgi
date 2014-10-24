@@ -468,6 +468,13 @@ my @CORE_REQ = (
         )
     ],
 
+    [   'Scalar::Util',
+        0, 1,
+        translate(
+            'Scalar::Util is required; It is needed if you want to use the Publish Queue feature.'
+        )
+    ],
+
 );
 
 my @CORE_DATA = (
@@ -565,13 +572,6 @@ my @CORE_OPT = (
         0, 0,
         translate(
             'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.'
-        )
-    ],
-
-    [   'Scalar::Util',
-        0, 1,
-        translate(
-            'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.'
         )
     ],
 

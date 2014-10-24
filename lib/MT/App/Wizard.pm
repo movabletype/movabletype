@@ -226,11 +226,6 @@ sub init_core_registry {
                 label =>
                     'List::Util is optional; It is needed if you want to use the Publish Queue feature.',
             },
-            'Scalar::Util' => {
-                link => 'http://search.cpan.org/dist/Scalar-List-Utils',
-                label =>
-                    'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.',
-            },
             'Image::Magick' => {
                 link => 'http://www.imagemagick.org/script/perl-magick.php',
                 label =>
@@ -334,18 +329,21 @@ sub init_core_registry {
                 label => 'This module required for action streams.',
             },
             'XML::SAX::ExpatXS' => {
-                link    => 'http://search.cpan.org/dist/XML-SAX-ExpatXS',
-                label   => 'XML::SAX::ExpatXS is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.',
+                link => 'http://search.cpan.org/dist/XML-SAX-ExpatXS',
+                label =>
+                    'XML::SAX::ExpatXS is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.',
                 version => 1.30,
             },
             'XML::SAX::Expat' => {
-                link    => 'http://search.cpan.org/dist/XML-SAX-Expat',
-                label   => 'XML::SAX::Expat is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.',
+                link => 'http://search.cpan.org/dist/XML-SAX-Expat',
+                label =>
+                    'XML::SAX::Expat is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.',
                 version => 0.37,
             },
             'XML::LibXML::SAX' => {
-                link    => 'http://search.cpan.org/dist/XML-LibXML-SAX',
-                label   => 'XML::LibXML::SAX is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.',
+                link => 'http://search.cpan.org/dist/XML-LibXML-SAX',
+                label =>
+                    'XML::LibXML::SAX is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.',
                 version => 1.70,
             },
             'Time::HiRes' => {
@@ -359,7 +357,7 @@ sub init_core_registry {
                     'This module is required for site statistics of Google Analytics.',
             },
             'YAML::Syck' => {
-                link  => 'http://search.cpan.org/dist/YAML-Syck',
+                link => 'http://search.cpan.org/dist/YAML-Syck',
                 label =>
                     'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.',
             },
@@ -396,6 +394,11 @@ sub init_core_registry {
                 link => 'http://search.cpan.org/dist/libwww-perl/',
                 label =>
                     'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.',
+            },
+            'Scalar::Util' => {
+                link => 'http://search.cpan.org/dist/Scalar-List-Utils',
+                label =>
+                    'Scalar::Util is required; It is needed if you want to use the Publish Queue feature.',
             },
         },
         database_options => {
