@@ -129,12 +129,36 @@ my @suite = (
             );
         },
     },
+    {    # System.
+        path   => '/v2/sites/0/formatted_texts',
+        method => 'POST',
+        params => {
+            formatted_text => {
+                label       => 'create-formatted-text',
+                text        => 'create-formatted-text-text',
+                description => 'create-formatted-text-description',
+            },
+        },
+        code   => 404,
+        result => sub {
+            {   error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
 
     # create_formatted_text - normal tests
     {   path   => '/v2/sites/1/formatted_texts',
         method => 'POST',
-        params =>
-            { formatted_text => { label => 'create-formatted-text', }, },
+        params => {
+            formatted_text => {
+                label       => 'create-formatted-text',
+                text        => 'create-formatted-text-text',
+                description => 'create-formatted-text-description',
+            },
+        },
         callbacks => [
             {   name =>
                     'MT::App::DataAPI::data_api_save_permission_filter.formatted_text',
@@ -327,6 +351,83 @@ my @suite = (
             return +{
                 totalResults => scalar @greped_fts,
                 items => MT::DataAPI::Resource->from_object( \@greped_fts ),
+            };
+        },
+    },
+
+    # update_formatted_text - irregular tests
+    {    # Non-existent formatted text.
+        path   => '/v2/sites/1/formatted_texts/10',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Formatted_text not found',
+                },
+            };
+        },
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/formatted_texts/' . $ft_blog->id,
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+    {    # Other site.
+        path   => '/v2/sites/1/formatted_texts/' . $ft_website->id,
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Formatted_text not found',
+                },
+            };
+        },
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/formatted_texts/' . $ft_blog->id,
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Formatted_text not found',
+                },
+            };
+        },
+    },
+    {    # No resource.
+        path   => '/v2/sites/1/formatted_texts/' . $ft_blog->id,
+        method => 'PUT',
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code    => 400,
+                    message => 'A resource "formatted_text" is required.',
+                },
+            };
+        },
+    },
+    {    # Duplicated.
+        path   => '/v2/sites/1/formatted_texts/' . $ft_blog->id,
+        method => 'PUT',
+        params =>
+            { formatted_text => { label => 'create-formatted-text', }, },
+        code   => 409,
+        result => sub {
+            +{  error => {
+                    code => 409,
+                    message =>
+                        "The boilerplate 'create-formatted-text' is already in use in this site.\n",
+                },
             };
         },
     },

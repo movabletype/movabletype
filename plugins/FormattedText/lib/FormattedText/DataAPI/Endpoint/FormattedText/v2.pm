@@ -41,6 +41,9 @@ sub create {
 
     my ($site) = context_objects(@_)
         or return;
+    if ( !$site->id ) {
+        return $app->error( $app->translate('Site not found'), 404 );
+    }
 
     my $orig_ft = $app->model('formatted_text')->new;
     $orig_ft->set_values( { blog_id => $site->id, } );
