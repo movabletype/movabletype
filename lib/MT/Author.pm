@@ -263,7 +263,7 @@ sub list_props {
             terms   => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
-                my $val = $args->{value};
+                my $val = $prop->normalized_value(@_);
                 require MT::Lockout;
                 my %statuses = (
                     not_locked_out =>

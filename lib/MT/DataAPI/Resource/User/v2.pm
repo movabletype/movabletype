@@ -95,6 +95,13 @@ sub fields {
                 }
             },
         },
+        {   name        => 'lockedOut',
+            type        => 'MT::DataAPI::Resource::DataType::Boolean',
+            from_object => sub {
+                my ($obj) = @_;
+                return $obj->locked_out;
+            },
+        },
     ];
 }
 

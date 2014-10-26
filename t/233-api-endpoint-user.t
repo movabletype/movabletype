@@ -287,6 +287,60 @@ my @suite = (
             };
         },
     },
+    {    # Lock out.
+        path      => '/v2/users',
+        method    => 'GET',
+        params    => { lockout => 'locked_out' },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.author',
+                count => 1,
+            },
+        ],
+        result => sub {
+            my @users = $app->model('author')->load(
+                { type => MT::Author::AUTHOR() },
+                { sort => 'name', direction => 'ascend' },
+            );
+
+            @users = grep { $_->locked_out } @users;
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                totalResults => 0,
+                items        => [],
+            };
+        },
+    },
+    {    # Not lock out.
+        path      => '/v2/users',
+        method    => 'GET',
+        params    => { lockout => 'not_locked_out' },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.author',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @users = $app->model('author')->load(
+                { type => MT::Author::AUTHOR() },
+                { sort => 'name', direction => 'ascend' },
+            );
+
+            @users = grep { !$_->locked_out } @users;
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                totalResults => 4,
+                items        => MT::DataAPI::Resource->from_object( \@users ),
+            };
+        },
+    },
 
     # create_user - irregular tests
     {    # No resource.

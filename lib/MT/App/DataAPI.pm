@@ -1732,7 +1732,7 @@ sub core_endpoints {
                 sortBy       => 'name',
                 sortOrder    => 'ascend',
                 searchFields => 'name,displayName,email,url',
-                filterKeys   => 'status',
+                filterKeys   => 'status,lockout',
             },
             error_codes => {
                 403 =>
