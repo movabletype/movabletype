@@ -1518,6 +1518,7 @@ sub can_delete {
             )
         );
     }
+    return 1;
 }
 
 sub save_filter {

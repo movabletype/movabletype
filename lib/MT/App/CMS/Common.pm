@@ -61,8 +61,6 @@ sub init_core_callbacks {
             $pkg
                 . 'delete_permission_filter.author' =>
                 "${pfx}User::can_delete",
-            $pkg . 'save_filter.author' => "${pfx}User::save_filter",
-            $pkg . 'pre_save.author'    => "${pfx}User::pre_save",
             $pkg . 'post_save.author'   => "${pfx}User::post_save",
             $pkg . 'post_delete.author' => "${pfx}User::post_delete",
             $pkg . 'pre_load_filtered_list.author' => sub {

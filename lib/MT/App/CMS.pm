@@ -518,6 +518,8 @@ sub init_plugins {
 
             # user callbacks
             $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
+            $pkg . 'save_filter.author' => "${pfx}User::save_filter",
+            $pkg . 'pre_save.author'    => "${pfx}User::pre_save",
 
             # comment callbacks
             $pkg

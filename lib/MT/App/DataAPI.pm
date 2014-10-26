@@ -1720,6 +1720,59 @@ sub core_endpoints {
                     'Do not have permission to retrieve a widget of the request widgetset.',
             },
         },
+
+        # user endpoints
+        {   id             => 'list_users',
+            route          => '/users',
+            version        => 2,
+            handler        => "${pkg}User::v2::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
+                searchFields => 'name,displayName,email,url',
+                filterKeys   => 'status',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested users.',
+            },
+        },
+        {   id        => 'create_user',
+            route     => '/users',
+            version   => 2,
+            verb      => 'POST',
+            resources => ['user'],
+            handler   => "${pkg}User::v2::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create a user.', },
+        },
+        {   id      => 'delete_user',
+            route   => '/users/:user_id',
+            version => 2,
+            verb    => 'DELETE',
+            handler => "${pkg}User::v2::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a user.', },
+        },
+        {   id      => 'unlock_user',
+            route   => '/users/:user_id/unlock',
+            version => 2,
+            verb    => 'POST',
+            handler => "${pkg}User::v2::unlock",
+            error_codes =>
+                { 403 => 'Do not have permission to unlock a user.', },
+        },
+        {   id          => 'recover_password_for_user',
+            route       => '/users/:user_id/recover_password',
+            version     => 2,
+            verb        => 'POST',
+            handler     => "${pkg}User::v2::recover_password",
+            error_codes => {
+                403 => 'Do not have permission to recover password for user.',
+            },
+        },
     ];
 }
 
@@ -1753,6 +1806,7 @@ sub init_plugins {
 
             # user callbacks
             $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
+            $pkg . 'save_filter.author' => "${pfx}User::save_filter",
 
             # comment callbacks
             $pkg
