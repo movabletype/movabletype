@@ -10,6 +10,8 @@ use warnings;
 
 use MT::Log;
 use MT::Permission;
+use MT::App;
+use MT::CMS::Log;
 use MT::DataAPI::Resource;
 use MT::DataAPI::Endpoint::Common;
 
@@ -172,6 +174,15 @@ sub reset {
     }
 
     return +{ status => 'success' };
+}
+
+sub export {
+    my ( $app, $endpoint ) = @_;
+
+    no warnings 'redefine';
+    local *MT::App::validate_magic = sub {1};
+
+    MT::CMS::Log::export($app);
 }
 
 1;

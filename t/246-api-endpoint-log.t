@@ -21,6 +21,8 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
+use boolean ();
+
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
@@ -38,7 +40,8 @@ $mock_app_api->mock( 'current_api_version',
 my @suite = (
 
     # create_log - irregular tests
-    {   path     => '/v2/sites/1/logs',
+    {    # No resource.
+        path     => '/v2/sites/1/logs',
         method   => 'POST',
         code     => 400,
         complete => sub {
@@ -47,7 +50,8 @@ my @suite = (
         },
     },
 
-    {   path     => '/v2/sites/1/logs',
+    {    # No message.
+        path     => '/v2/sites/1/logs',
         method   => 'POST',
         params   => { log => {} },
         code     => 409,
@@ -118,6 +122,20 @@ my @suite = (
         },
     },
 
+    # list_logs - irregular tests
+    {    # Non-existent site.
+        path   => '/v2/sites/5/logs',
+        method => 'GET',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+
     # list_logs - normal tests
     {   path      => '/v2/sites/1/logs',
         method    => 'GET',
@@ -141,22 +159,181 @@ my @suite = (
                 'IDs of items are "' . "@got_log_ids" . '"' );
         },
     },
+    {    # Search message.
+        path      => '/v2/sites/1/logs',
+        method    => 'GET',
+        params    => { search => 'with-param', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.log',
+                count => 2,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+
+            my @logs = $app->model('log')->load(
+                {   blog_id => 1,
+                    message => { like => '%with-param%' },
+                }
+            );
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items        => MT::DataAPI::Resource->from_object( \@logs ),
+            };
+        },
+    },
+    {    # Search ip.
+        path   => '/v2/sites/1/logs',
+        method => 'GET',
+        params => { search => '192.168', },
+        setup  => sub {
+            my $log = $app->model('log')->load( { blog_id => 1 } );
+            $log->ip('192.168.56.1');
+            $log->save or die $log->errstr;
+        },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.log',
+                count => 2,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+
+            my @logs = $app->model('log')->load(
+                {   blog_id => 1,
+                    ip      => { like => '%192.168%' },
+                }
+            );
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items        => MT::DataAPI::Resource->from_object( \@logs ),
+            };
+        },
+    },
+    {    # Filter by level (info).
+        path      => '/v2/sites/1/logs',
+        method    => 'GET',
+        params    => { level => 'info', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.log',
+                count => 2,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+
+            my @logs = $app->model('log')->load(
+                {   blog_id => 1,
+                    level   => MT::Log::INFO(),
+                }
+            );
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items        => MT::DataAPI::Resource->from_object( \@logs ),
+            };
+        },
+    },
+    {    # Filter by level (error).
+        path      => '/v2/sites/1/logs',
+        method    => 'GET',
+        params    => { level => 'error', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.log',
+                count => 1,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+
+            my @logs = $app->model('log')->load(
+                {   blog_id => 1,
+                    level   => MT::Log::ERROR(),
+                }
+            );
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 0,
+                items        => MT::DataAPI::Resource->from_object( \@logs ),
+            };
+        },
+    },
+
+    # export_log - normal tests
+    {   path   => '/v2/sites/1/logs/export',
+        method => 'GET',
+    },
 
     # update_log - irregular tests
-    {   path   => '/v2/sites/10/logs/1',
+    {    # Non-existent site.
+        path   => '/v2/sites/10/logs/1',
         method => 'PUT',
         params => { log => { message => 'update-log-site-1', }, },
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
-    {   path   => '/v2/sites/1/logs/10',
+    {    # Non-existent log.
+        path   => '/v2/sites/1/logs/10',
         method => 'PUT',
         params => { log => { message => 'update-log-site-1', }, },
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Log not found',
+                },
+            };
+        },
     },
-    {   path   => '/v2/sites/2/logs/1',
+    {    # Other site.
+        path   => '/v2/sites/2/logs/1',
         method => 'PUT',
         params => { log => { message => 'update-log-site-1', }, },
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Log not found',
+                },
+            };
+        },
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/logs/1',
+        method => 'PUT',
+        params => { log => { message => 'update-log-site-1', }, },
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Log not found',
+                },
+            };
+        },
     },
 
     # update_log - normal tests
@@ -190,17 +367,53 @@ my @suite = (
     },
 
     # delete_log - irregular tests
-    {   path   => '/v2/sites/10/logs/1',
+    {    # Non-existent site.
+        path   => '/v2/sites/10/logs/1',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
-    {   path   => '/v2/sites/1/logs/10',
+    {    # Non-existent log.
+        path   => '/v2/sites/1/logs/10',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Log not found',
+                },
+            };
+        },
     },
-    {   path   => '/v2/sites/2/logs/1',
+    {    # Other site.
+        path   => '/v2/sites/2/logs/1',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Log not found',
+                },
+            };
+        },
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/logs/1',
+        method => 'DELETE',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Log not found',
+                },
+            };
+        },
     },
 
     # delete_log - normal tests
@@ -223,9 +436,17 @@ my @suite = (
     },
 
     # reset_logs - irregular tests
-    {   path   => '/v2/sites/10/logs',
+    {    # Non-existent site.
+        path   => '/v2/sites/10/logs',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
 
     # reset_logs - normal tests

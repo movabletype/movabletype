@@ -245,29 +245,48 @@ sub list_props {
                 my $prop = shift;
                 my ($args) = @_;
                 my @types;
-                my $val = $args->{value};
+                my $val = $prop->normalized_value(@_);
                 for ( 1, 2, 4, 8, 16 ) {
                     push @types, $_ if $val & $_;
                 }
                 return { level => \@types };
             },
             single_select_options => [
-                { label => MT->translate('Security'), value => SECURITY() },
-                { label => MT->translate('Error'),    value => ERROR() },
-                { label => MT->translate('Warning'),  value => WARNING() },
-                { label => MT->translate('Information'), value => INFO() },
-                { label => MT->translate('Debug'),       value => DEBUG() },
+                {   label => MT->translate('Security'),
+                    value => SECURITY(),
+                    text  => 'security'
+                },
+                {   label => MT->translate('Error'),
+                    value => ERROR(),
+                    text  => 'error'
+                },
+                {   label => MT->translate('Warning'),
+                    value => WARNING(),
+                    text  => 'warning'
+                },
+                {   label => MT->translate('Information'),
+                    value => INFO(),
+                    text  => 'info'
+                },
+                {   label => MT->translate('Debug'),
+                    value => DEBUG(),
+                    text  => 'debug'
+                },
                 {   label => MT->translate('Security or error'),
-                    value => SECURITY() | ERROR()
+                    value => SECURITY() | ERROR(),
+                    text  => 'sercurity_or_error',
                 },
                 {   label => MT->translate('Security/error/warning'),
-                    value => SECURITY() | ERROR() | WARNING()
+                    value => SECURITY() | ERROR() | WARNING(),
+                    text  => 'security_or_error_or_warning',
                 },
                 {   label => MT->translate('Not debug'),
-                    value => SECURITY() | ERROR() | WARNING() | INFO()
+                    value => SECURITY() | ERROR() | WARNING() | INFO(),
+                    text  => 'not_debug',
                 },
                 {   label => MT->translate('Debug/error'),
-                    value => DEBUG() | ERROR()
+                    value => DEBUG() | ERROR(),
+                    text  => 'debug_or_error',
                 },
             ],
         },
@@ -299,6 +318,11 @@ sub list_props {
             },
             display         => 'none',
             filter_editable => 0,
+        },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( message ip )],
+            display => 'none',
         },
     };
 }
