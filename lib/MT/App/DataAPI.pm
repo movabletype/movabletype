@@ -1295,7 +1295,7 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to reset logs.', },
         },
-        {   id      => 'export_log',
+        {   id      => 'export_logs',
             route   => '/sites/:site_id/logs/export',
             verb    => 'GET',
             version => 2,
