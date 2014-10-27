@@ -21,14 +21,17 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
+use boolean ();
+
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
 
-my $mock_author = Test::MockModule->new('MT::Author');
-$mock_author->mock( 'is_superuser', sub {0} );
+my $mock_author  = Test::MockModule->new('MT::Author');
+my $is_superuser = 0;
+$mock_author->mock( 'is_superuser', sub {$is_superuser} );
 my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
 my $version;
@@ -110,14 +113,45 @@ my @suite = (
                 'IDs of items are "' . "@result_ids" . '"' );
         },
     },
-    {   path   => '/v2/users/1/permissions',
-        method => 'GET',
+    {   path      => '/v2/users/1/permissions',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.permission',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @perms = $app->model('permission')->load(
+                {   author_id   => 1,
+                    blog_id     => { not => 0 },
+                    permissions => { not => '' },
+                }
+            );
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => scalar @perms,
+                items        => MT::DataAPI::Resource->from_object( \@perms ),
+            };
+        },
     },
 
     # list_permissions_for_user - irregular tests
     {   path   => '/v2/users/2/permissions',
         method => 'GET',
         code   => '403',
+        result => sub {
+            +{  error => {
+                    code => 403,
+                    message =>
+                        'Do not have permission to retrieve the requested user\'s permissions.',
+                },
+            };
+        },
     },
 
     # list_permissions - normal tests
@@ -154,7 +188,41 @@ my @suite = (
         },
     },
 
-    # superuser
+    {
+        # Superuser.
+        path      => '/v2/permissions',
+        method    => 'GET',
+        setup     => sub { $is_superuser = 1 },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.permission',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $result = $app->current_format->{unserialize}->($body);
+            my @perms  = MT->model('permission')->load(
+                {   blog_id     => { not => 0 },
+                    permissions => { not => '' }
+                },
+                { sort => 'blog_id', }
+            );
+
+            is( $result->{totalResults},
+                scalar @perms,
+                'totalResults is "' . $result->{totalResults} . '"'
+            );
+
+            my @result_ids   = map { $_->{id} } @{ $result->{items} };
+            my @expected_ids = map { $_->id } @perms;
+            is_deeply( \@result_ids, \@expected_ids,
+                'IDs of items are "' . "@result_ids" . '"' );
+
+            $is_superuser = 0;
+
+        },
+    },
 
     # list_permissions_for_site - normal tests
     {
@@ -190,8 +258,66 @@ my @suite = (
 
         },
     },
+    {
+        # superuser.
+        path      => '/v2/sites/1/permissions',
+        method    => 'GET',
+        setup     => sub { $is_superuser = 1 },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.permission',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $result = $app->current_format->{unserialize}->($body);
+            my @perms  = MT->model('permission')->load(
+                {   blog_id     => 1,
+                    permissions => { not => '' },
+                },
+                { sort => 'blog_id', },
+            );
+
+            is( $result->{totalResults},
+                scalar @perms,
+                'totalResults is "' . $result->{totalResults} . '"'
+            );
+
+            my @result_ids   = map { $_->{id} } @{ $result->{items} };
+            my @expected_ids = map { $_->id } @perms;
+            is_deeply( \@result_ids, \@expected_ids,
+                'IDs of items are "' . "@result_ids" . '"' );
+
+            $is_superuser = 0;
+        },
+    },
 
     # list_permissions_for_site - irregular tests
+    {    # Non-existent site.
+        path   => '/v2/sites/5/permissions',
+        method => 'GET',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+    {    # System.
+        path   => '/v2/sites/0/permissions',
+        method => 'GET',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
 
     # list_permissions_for_role - normal tests
     {    # not superuser.
@@ -234,33 +360,99 @@ my @suite = (
 
         },
     },
+    {    # superuser.
+        path      => '/v2/roles/1/permissions',
+        method    => 'GET',
+        setup     => sub { $is_superuser = 1 },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.permission',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $result = $app->current_format->{unserialize}->($body);
+            my @perms  = MT->model('permission')->load(
+                {   blog_id     => { not => 0 },
+                    permissions => { not => '' },
+                },
+                {   sort => 'blog_id',
+                    join => MT->model('association')->join_on(
+                        undef,
+                        {   blog_id   => \'= permission_blog_id',
+                            author_id => \'= permission_author_id',
+                            role_id   => 1,
+                        },
+                    ),
+                },
+            );
+
+            is( $result->{totalResults},
+                scalar @perms,
+                'totalResults is "' . $result->{totalResults} . '"'
+            );
+
+            my @result_ids   = map { $_->{id} } @{ $result->{items} };
+            my @expected_ids = map { $_->id } @perms;
+            is_deeply( \@result_ids, \@expected_ids,
+                'IDs of items are "' . "@result_ids" . '"' );
+
+            $is_superuser = 0;
+        },
+    },
+
+    # list_permissions_for_role - irregular tests
+    {    # Non-existent role.
+        path   => '/v2/roles/100/permissions',
+        method => 'GET',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Role not found',
+                },
+            };
+        },
+    },
 
     # grant_permission_to_site - irregular tests
-    {   path   => '/v2/sites/10/permissions/grant',
+    {    # Non-existent site.
+        path   => '/v2/sites/10/permissions/grant',
         method => 'POST',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
-    {   path     => '/v2/sites/1/permissions/grant',
+    {    # No author_id.
+        path     => '/v2/sites/1/permissions/grant',
         method   => 'POST',
         code     => 400,
         complete => sub {
             my ( $data, $body ) = @_;
             check_error_message( $body,
-                "A parameter \"author_id\" is required." );
+                "A parameter \"user_id\" is required." );
         },
     },
-    {   path     => '/v2/sites/1/permissions/grant',
+    {    # Non-existent author.
+        path     => '/v2/sites/1/permissions/grant',
         method   => 'POST',
-        code     => 400,
-        params   => { author_id => 10 },
+        code     => 404,
+        params   => { user_id => 10 },
         complete => sub {
             my ( $data, $body ) = @_;
-            check_error_message( $body, "Author (ID:10) not found." );
+            check_error_message( $body, "User not found" );
         },
     },
-    {   path     => '/v2/sites/1/permissions/grant',
+    {    # No role_id.
+        path     => '/v2/sites/1/permissions/grant',
         method   => 'POST',
-        params   => { author_id => $author->id },
+        params   => { user_id => $author->id },
         code     => 400,
         complete => sub {
             my ( $data, $body ) = @_;
@@ -268,16 +460,33 @@ my @suite = (
                 "A parameter \"role_id\" is required." );
         },
     },
-    {   path   => '/v2/sites/1/permissions/grant',
+    {    # Non-existent role.
+        path   => '/v2/sites/1/permissions/grant',
         method => 'POST',
         params => {
-            author_id => $author->id,
-            role_id   => 20,
+            user_id => $author->id,
+            role_id => 20,
         },
-        code     => 400,
+        code     => 404,
         complete => sub {
             my ( $data, $body ) = @_;
-            check_error_message( $body, "Role (ID:20) not found." );
+            check_error_message( $body, "Role not found" );
+        },
+    },
+    {    # System.
+        path   => '/v2/sites/0/permissions/grant',
+        method => 'POST',
+        params => {
+            user_id => $author->id,
+            role_id => 2,
+        },
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
         },
     },
 
@@ -293,8 +502,8 @@ my @suite = (
             ) and die;
         },
         params => {
-            author_id => $author->id,
-            role_id   => 2,
+            user_id => $author->id,
+            role_id => 2,
         },
         result   => +{ status => 'success', },
         complete => sub {
@@ -309,11 +518,20 @@ my @suite = (
     },
 
     # grant_permission_to_user - irregular tests
-    {   path   => '/v2/users/10/permissions/grant',
+    {    # Non-existent user.
+        path   => '/v2/users/10/permissions/grant',
         method => 'POST',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'User not found',
+                },
+            };
+        },
     },
-    {   path     => '/v2/users/1/permissions/grant',
+    {    # No site_id.
+        path     => '/v2/users/1/permissions/grant',
         method   => 'POST',
         code     => 400,
         complete => sub {
@@ -322,16 +540,18 @@ my @suite = (
                 "A parameter \"site_id\" is required." );
         },
     },
-    {   path     => '/v2/users/1/permissions/grant',
+    {    # Non-existent site.
+        path     => '/v2/users/1/permissions/grant',
         method   => 'POST',
         params   => { site_id => 10, },
-        code     => 400,
+        code     => 404,
         complete => sub {
             my ( $data, $body ) = @_;
-            check_error_message( $body, "Site (ID:10) not found." );
+            check_error_message( $body, "Site not found" );
         },
     },
-    {   path     => '/v2/users/1/permissions/grant',
+    {    # No role_id.
+        path     => '/v2/users/1/permissions/grant',
         method   => 'POST',
         params   => { site_id => 1 },
         code     => 400,
@@ -341,13 +561,24 @@ my @suite = (
                 "A parameter \"role_id\" is required." );
         },
     },
-    {   path     => '/v2/users/1/permissions/grant',
+    {    # Non-existent role.
+        path     => '/v2/users/1/permissions/grant',
         method   => 'POST',
         params   => { site_id => 1, role_id => 20 },
-        code     => 400,
+        code     => 404,
         complete => sub {
             my ( $data, $body ) = @_;
-            check_error_message( $body, "Role (ID:20) not found." );
+            check_error_message( $body, "Role not found" );
+        },
+    },
+    {    # System.
+        path     => '/v2/users/1/permissions/grant',
+        method   => 'POST',
+        params   => { site_id => 0, role_id => 20 },
+        code     => 404,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, "Site not found" );
         },
     },
 
@@ -379,31 +610,42 @@ my @suite = (
     },
 
     # revoke_permission_from_site - irregular tests
-    {   path   => '/v2/sites/10/permissions/revoke',
+    {    # Non-existent site.
+        path   => '/v2/sites/10/permissions/revoke',
         method => 'POST',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
-    {   path     => '/v2/sites/1/permissions/revoke',
+    {    # No user_id.
+        path     => '/v2/sites/1/permissions/revoke',
         method   => 'POST',
         code     => 400,
         complete => sub {
             my ( $data, $body ) = @_;
             check_error_message( $body,
-                "A parameter \"author_id\" is required." );
+                "A parameter \"user_id\" is required." );
         },
     },
-    {   path     => '/v2/sites/1/permissions/revoke',
+    {    # Non-existent user.
+        path     => '/v2/sites/1/permissions/revoke',
         method   => 'POST',
-        params   => { author_id => 10, },
-        code     => 400,
+        params   => { user_id => 10, },
+        code     => 404,
         complete => sub {
             my ( $data, $body ) = @_;
-            check_error_message( $body, "Author (ID:10) not found." );
+            check_error_message( $body, "User not found" );
         },
     },
-    {   path     => '/v2/sites/1/permissions/revoke',
+    {    # No role_id.
+        path     => '/v2/sites/1/permissions/revoke',
         method   => 'POST',
-        params   => { author_id => $author->id },
+        params   => { user_id => $author->id },
         code     => 400,
         complete => sub {
             my ( $data, $body ) = @_;
@@ -411,13 +653,30 @@ my @suite = (
                 "A parameter \"role_id\" is required." );
         },
     },
-    {   path     => '/v2/sites/1/permissions/revoke',
+    {    # Non-existent role.
+        path     => '/v2/sites/1/permissions/revoke',
         method   => 'POST',
-        params   => { author_id => $author->id, role_id => 20 },
-        code     => 400,
+        params   => { user_id => $author->id, role_id => 20 },
+        code     => 404,
         complete => sub {
             my ( $data, $body ) = @_;
-            check_error_message( $body, "Role (ID:20) not found." );
+            check_error_message( $body, "Role not found" );
+        },
+    },
+    {    # System.
+        path   => '/v2/sites/0/permissions/revoke',
+        method => 'POST',
+        params => {
+            user_id => $author->id,
+            role_id => 2,
+        },
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
         },
     },
 
@@ -433,8 +692,8 @@ my @suite = (
             ) or die;
         },
         params => {
-            author_id => $author->id,
-            role_id   => 2,
+            user_id => $author->id,
+            role_id => 2,
         },
         result   => +{ status => 'success' },
         complete => sub {
@@ -449,11 +708,13 @@ my @suite = (
     },
 
     # revoke_permission_from_user - irregular tests
-    {   path   => '/v2/users/10/permissions/revoke',
+    {    # Non-existent user.
+        path   => '/v2/users/10/permissions/revoke',
         method => 'POST',
         code   => 404,
     },
-    {   path     => '/v2/users/1/permissions/revoke',
+    {    # No site_id.
+        path     => '/v2/users/1/permissions/revoke',
         method   => 'POST',
         code     => 400,
         complete => sub {
@@ -462,16 +723,18 @@ my @suite = (
                 "A parameter \"site_id\" is required." );
         },
     },
-    {   path     => '/v2/users/1/permissions/revoke',
+    {    # Non-existent site.
+        path     => '/v2/users/1/permissions/revoke',
         method   => 'POST',
         params   => { site_id => 10, },
-        code     => 400,
+        code     => 404,
         complete => sub {
             my ( $data, $body ) = @_;
-            check_error_message( $body, "Site (ID:10) not found." );
+            check_error_message( $body, "Site not found" );
         },
     },
-    {   path     => '/v2/users/1/permissions/revoke',
+    {    # No role_id.
+        path     => '/v2/users/1/permissions/revoke',
         method   => 'POST',
         params   => { site_id => 1 },
         code     => 400,
@@ -481,13 +744,30 @@ my @suite = (
                 "A parameter \"role_id\" is required." );
         },
     },
-    {   path     => '/v2/users/1/permissions/revoke',
+    {    # Non-existent role.
+        path     => '/v2/users/1/permissions/revoke',
         method   => 'POST',
         params   => { site_id => 1, role_id => 20 },
-        code     => 400,
+        code     => 404,
         complete => sub {
             my ( $data, $body ) = @_;
-            check_error_message( $body, "Role (ID:20) not found." );
+            check_error_message( $body, "Role not found" );
+        },
+    },
+    {    # System.
+        path   => '/v2/users/1/permissions/revoke',
+        method => 'POST',
+        params => {
+            site_id => 0,
+            role_id => 3,
+        },
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
         },
     },
 

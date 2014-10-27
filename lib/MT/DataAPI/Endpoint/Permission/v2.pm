@@ -69,8 +69,10 @@ sub list_for_site {
     my ( $app, $endpoint ) = @_;
     my $user = $app->user or return;
 
-    my ($site) = context_objects(@_);
-    return if !( $site && $site->id );
+    my ($site) = context_objects(@_) or return;
+    if ( !$site->id ) {
+        return $app->error( $app->translate('Site not found'), 404 );
+    }
 
     my %terms = (
         blog_id     => $site->id,
@@ -185,13 +187,15 @@ sub _grant {
 sub _retrieve_user_from_param {
     my ($app) = @_;
 
-    my $user_id = $app->param('author_id')
-        or return $app->error(
-        $app->translate('A parameter "author_id" is required.'), 400 );
+    my $user_id = $app->param('user_id');
+    if ( !defined $user_id ) {
+        return $app->error(
+            $app->translate('A parameter "user_id" is required.'), 400 );
+    }
 
     my $user = $app->model('author')->load($user_id)
-        or return $app->error(
-        $app->translate( 'Author (ID:[_1]) not found.', $user_id ), 400 );
+        or return $app->error( $app->translate( 'User not found', $user_id ),
+        404 );
 
     return $user;
 }
@@ -199,13 +203,15 @@ sub _retrieve_user_from_param {
 sub _retrieve_role_from_param {
     my ($app) = @_;
 
-    my $role_id = $app->param('role_id')
-        or return $app->error(
-        $app->translate('A parameter "role_id" is required.'), 400 );
+    my $role_id = $app->param('role_id');
+    if ( !defined $role_id ) {
+        return $app->error(
+            $app->translate('A parameter "role_id" is required.'), 400 );
+    }
 
     my $role = $app->model('role')->load($role_id)
-        or return $app->error(
-        $app->translate( 'Role (ID:[_1]) not found.', $role_id ), 400 );
+        or return $app->error( $app->translate( 'Role not found', $role_id ),
+        404 );
 
     return $role;
 }
@@ -213,8 +219,10 @@ sub _retrieve_role_from_param {
 sub grant_to_site {
     my ( $app, $endpoint ) = @_;
 
-    my ($site) = context_objects(@_);
-    return if !( $site && $site->id );
+    my ($site) = context_objects(@_) or return;
+    if ( !$site->id ) {
+        return $app->error( $app->translate('Site not found'), 404 );
+    }
 
     my $param_user = _retrieve_user_from_param($app) or return;
     my $role       = _retrieve_role_from_param($app) or return;
@@ -246,8 +254,10 @@ sub _can_revoke {
 sub revoke_from_site {
     my ( $app, $endpoint ) = @_;
 
-    my ($site) = context_objects(@_);
-    return if !( $site && $site->id );
+    my ($site) = context_objects(@_) or return;
+    if ( !$site->id ) {
+        return $app->error( $app->translate('Site not found'), 404 );
+    }
 
     my $param_user = _retrieve_user_from_param($app) or return;
     my $role       = _retrieve_role_from_param($app) or return;
@@ -271,13 +281,17 @@ sub revoke_from_site {
 sub _retrieve_site_from_param {
     my ($app) = @_;
 
-    my $site_id = $app->param('site_id')
-        or return $app->error(
-        $app->translate('A parameter "site_id" is required.'), 400 );
+    my $site_id = $app->param('site_id');
+    if ( !defined $site_id ) {
+        return $app->error(
+            $app->translate('A parameter "site_id" is required.'), 400 );
+    }
 
-    my $site = $app->model('blog')->load($site_id)
-        or return $app->error(
-        $app->translate( 'Site (ID:[_1]) not found.', $site_id ), 400 );
+    my $site = $app->model('blog')->load($site_id);
+    if ( !( $site && $site->id ) ) {
+        return $app->error( $app->translate( 'Site not found', $site_id ),
+            404 );
+    }
 
     return $site;
 }

@@ -16,7 +16,16 @@ our %fields = (
         name        => 'blog',
         from_object => sub {
             my ($obj) = @_;
-            defined( $obj->blog_id ) ? +{ id => $obj->blog_id, } : undef;
+            my $app = MT->instance;
+            if ( $app->current_api_version ) {
+                return $obj->blog_id ? +{ id => $obj->blog_id, } : undef;
+            }
+            else {
+                return
+                    defined( $obj->blog_id )
+                    ? +{ id => $obj->blog_id, }
+                    : undef;
+            }
         },
     },
     tags => {
