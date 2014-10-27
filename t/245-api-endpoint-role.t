@@ -21,6 +21,8 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
+use boolean ();
+
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
@@ -62,6 +64,57 @@ my @suite = (
                 'IDs of items are "' . "@result_ids" . '"' );
         },
     },
+    {    # Search name.
+        path      => '/v2/roles',
+        method    => 'GET',
+        params    => { search => 'Designer', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.role',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my $role = $app->model('role')->load( { name => 'Designer' } );
+
+            $app->user($author);
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items        => MT::DataAPI::Resource->from_object( [$role] ),
+            };
+        },
+    },
+    {    # Search description.
+        path      => '/v2/roles',
+        method    => 'GET',
+        params    => { search => 'administer', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.role',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @roles = $app->model('role')->load(
+                { description => { like => '%administer%' } },
+                { sort => 'name', direction => 'ascend' },
+            );
+
+            $app->user($author);
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 2,
+                items        => MT::DataAPI::Resource->from_object( \@roles ),
+            };
+        },
+    },
 
     # create_role - normal tests
     {   path   => '/v2/roles',
@@ -90,7 +143,8 @@ my @suite = (
     },
 
     # create_role - irregular tests
-    {   path     => '/v2/roles',
+    {    # No resource.
+        path     => '/v2/roles',
         method   => 'POST',
         code     => 400,
         complete => sub {
@@ -98,7 +152,8 @@ my @suite = (
             check_error_message( $body, 'A resource "role" is required.' );
         },
     },
-    {   path     => '/v2/roles',
+    {    # No name.
+        path     => '/v2/roles',
         method   => 'POST',
         params   => { role => {} },
         code     => 409,
@@ -108,7 +163,8 @@ my @suite = (
                 "A parameter \"name\" is required.\n" );
         },
     },
-    {   path     => '/v2/roles',
+    {    # Same name role exists.
+        path     => '/v2/roles',
         method   => 'POST',
         params   => { role => { name => 'create_role' } },
         code     => 409,
@@ -118,7 +174,8 @@ my @suite = (
                 "Another role already exists by that name.\n" );
         },
     },
-    {   path   => '/v2/roles',
+    {    # No permission.
+        path   => '/v2/roles',
         method => 'POST',
         params => { role => { name => 'create_role_without_permissions', }, },
         code   => 409,
@@ -136,9 +193,17 @@ my @suite = (
     },
 
     # get_role - irregular tests
-    {   path   => '/v2/roles/20',
+    {    # Non-existent role.
+        path   => '/v2/roles/20',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Role not found',
+                },
+            };
+        },
     },
 
     # update_role - normal tests
@@ -179,7 +244,27 @@ my @suite = (
                 permissions => ['edit_templates']
             }
         },
-        code => 404,
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Role not found',
+                },
+            };
+        },
+    },
+    {
+        # No resource.
+        path   => '/v2/roles/10',
+        method => 'PUT',
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code    => 400,
+                    message => 'A resource "role" is required.',
+                },
+            };
+        },
     },
 
     # delete_role - normal tests
@@ -206,6 +291,13 @@ my @suite = (
         path   => '/v2/roles/20',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Role not found',
+                },
+            };
+        },
     },
 );
 

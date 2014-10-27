@@ -1082,7 +1082,7 @@ sub core_endpoints {
                 offset       => 0,
                 sortBy       => 'name',
                 sortOrder    => 'ascend',
-                searchFields => 'name',
+                searchFields => 'name,description',
             },
             error_codes => {
                 403 =>
