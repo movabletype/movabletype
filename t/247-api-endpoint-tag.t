@@ -287,8 +287,6 @@ my @suite = (
             };
         },
     },
-
-    # rename_tag_for_site - irregular tests
     {    # Invalid parameter.
         path   => '/v2/sites/1/tags/rain',
         method => 'PUT',
@@ -298,6 +296,19 @@ my @suite = (
                     code    => 400,
                     message => 'A resource "tag" is required.',
                 }
+            };
+        },
+    },
+    {    # System.
+        path   => '/v2/sites/0/tags/rain',
+        method => 'PUT',
+        params => { tag => { name => 'snow' }, },
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Tag not found',
+                },
             };
         },
     },
@@ -328,12 +339,64 @@ my @suite = (
         },
     },
 
+    # delete_tag - irregular tests
+    {    # Non-existent tag.
+        path   => '/v2/tags/non_exsitent_tag',
+        method => 'DELETE',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Tag not found',
+                },
+            };
+        },
+    },
+
     # delete_tag - normal tests
     {   path     => '/v2/tags/strolling',
         method   => 'DELETE',
         complete => sub {
             my $tag = MT->model('tag')->load( { name => 'strolling' } );
             is( $tag, undef, 'Deleted "strolling" tag.' );
+        },
+    },
+
+    # delete_tag_for_site - irregular tests
+    {    # Non-existent tag.
+        path   => '/v2/sites/1/tags/non_existent_tag',
+        method => 'DELETE',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Tag not found',
+                },
+            };
+        },
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/tags/anemones',
+        method => 'DELETE',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+    {    # System.
+        path   => '/v2/sites/0/tags/anemones',
+        method => 'DELETE',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Tag not found',
+                },
+            };
         },
     },
 
