@@ -2733,8 +2733,6 @@ use vars qw( @ISA %Lexicon );
 	'Boilerplate' => '定型文',
 	'Select Boilerplate' => '定型文を選択...',
 
-## mt-static/plugins/Loupe/js/vendor.js
-
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
 	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
 	'Italic (Ctrl+I)' => '斜体 (Ctrl+I)',
@@ -5318,6 +5316,7 @@ use vars qw( @ISA %Lexicon );
 	'Unable to remove acl file.' => 'アクセス制限リストファイルの削除ができません。',
 
 ## addons/Cloud.pack/lib/Cloud/Template.pm
+	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'www の有無を統一する。 <a href="[_1]">詳細</a>',
 	'http://www.movabletype.jp/documentation/cloud/guide/multi_domain.html' => 'http://www.movabletype.jp/documentation/cloud/guide/multi_domain.html',
 	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'ウェブサイトパス\' または \'アーカイブパス\' が変更されています。既存のコンテンツは自身の手で移動してください。',
 
@@ -6461,23 +6460,35 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/config.yaml
 	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
+	'Migrated sync setting' => '移行されたサーバー配信設定',
 	'Sync' => 'サーバー配信',
+	'Sync Name' => '設定名',
+	'Sync Datetime' => 'サーバー配信日時',
+	'Manage Sync Settings' => 'サーバー配信設定の管理',
+	'Sync Setting' => 'サーバー配信設定',
+	'Sync Settings' => 'サーバー配信設定',
+	'Create new sync setting' => '新しいサーバー配信設定を作成する',
 	'Contents Sync' => 'サーバー配信',
 	'Updating MT::SyncSetting table...' => 'サーバー配信設定テーブルを更新しています...',
 	'Migrating settings of contents sync on website...' => 'ウェブサイトのサーバー配信の設定を移行しています...',
 	'Migrating settings of contents sync on blog...' => 'ブログのサーバー配信の設定を移行しています...',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
+	'Failed to remove sync list. (ID:\'[_1]\')' => '同期リスト (ID:[_1]) の削除に失敗しました。',
+	'Failed to update sync list. (ID:\'[_1]\')' => '同キリスト (ID:[_1]) の更新に失敗しました。',
+	'Failed to create sync list.' => '同期リストの作成に失敗しました。',
+	'Failed to save sync list. (ID:\'[_1]\')' => '同期リストの保存に失敗しました。',
 	'Error switching directory.' => 'ディレクトリの切り替えができません。',
 	'Synchronization with an external server has been successfully finished.' => 'サーバー配信が正常に処理されました',
 	'Failed to sync with an external server.' => 'サーバー配信に失敗しました',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/FTPBase.pm
 	'Cannot access to remote directory \'[_1]\'' => 'リモートディレクトリ\'[_1]\'にアクセスできません。',
-	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
 	'Deleting file \'[_1]\' failed.' => 'ファイル\'[_1]\'を削除できませんでした。',
+	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
 	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
-	'Unable to write remote file ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
+	'Unable to write remote files. Please check activity log for more details.: [_1]' => 'リモートファイルの書き込みに失敗しました。詳細はログを参照してください。: [_1]',
+	'Unable to write remote files ([_1]): [_2]' => 'リモートファイルの書き込みに失敗しました ([_1]): [_2]',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'[Rsync Error] removing temporary directory: [_1]' => 'テンポラリディレクトリ ([_1]) を削除できません。',
@@ -6485,15 +6496,21 @@ use vars qw( @ISA %Lexicon );
 	'Error during rsync: Command (exit code [_1]): [_2]' => 'rsync コマンドでエラーが起きました (終了コード: [_1]): [_2]',
 	'An error occured while copying the directory.' => 'ファイルのコピー中にエラーが発生しました。',
 
+## addons/Sync.pack/lib/MT/SyncFileList.pm
+	'Sync file list' => '同期リスト',
+
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
 	'Sync settings' => 'サーバー配信の設定',
 
 ## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
+	'Sync setting # [_1] not found.' => 'ID:[_1]のサーバー配信設定が見つかりませんでした。',
 	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバー配信の処理に成功したことを通知するメールです。',
+	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
 	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
-	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
+	'Copied [_1]' => 'サーバ配信設定 ([_1]) をコピーしました。',
+	'The sync setting with the same name already exists.' => '同名のサーバー配信設定がすでに存在します。',
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'FTPサーバー \'[_1]\' への接続中にエラーが発生しました: [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'FTPサーバーのカレントディレクトリが取得できませんでした。',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした。',
@@ -6501,10 +6518,10 @@ use vars qw( @ISA %Lexicon );
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'サーバー配信設定',
 	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
+	'The sync settings has been copied but not saved yet.' => 'サーバー配信設定がコピーされましたが、まだ設定は保存されていません。',
 	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
 	'Run synchronization now' => '今すぐ配信する',
-	'Enable contents synchronization' => 'サーバー配信を有効にする',
-	'Sync Settings' => 'サーバー配信の設定',
+	'Copy this sync setting' => 'このサーバー配信設定を複製する',
 	'Sync Date' => 'サーバー配信日時',
 	'Recipient for Notification' => '配信結果の通知先メールアドレス',
 	'Receive only error notification' => '配信に失敗したときだけ受け取る。',
@@ -6522,6 +6539,8 @@ use vars qw( @ISA %Lexicon );
 	'Rsync Destination' => 'rsync 先のディレクトリ',
 	'Sync Type *' => '配信方法 *',
 	'Please select a sync type.' => '配信方法を指定してください。',
+	'Sync name is required.' => '設定名は必須です。',
+	'Sync name should be shorter than [_1] characters.' => '設定名が長すぎます。[_1]文字以内で指定してください。',
 	'The sync date must be in the future.' => 'サーバー配信日時は、未来の日時を指定してください。',
 	'Invalid time.' => '無効な時刻指定です。',
 	'You must make one or more destination settings.' => 'サーバー配信先が設定されていません。',
@@ -6533,6 +6552,7 @@ use vars qw( @ISA %Lexicon );
 	'Preparing...' => 'サーバー配信の準備をしています...',
 	'Synchronizing...' => '配信中です...',
 	'Finish!' => 'ファイルが配信されました!',
+	'Unknown error occurred.' => '不明なエラーです。',
 	'The synchronization was interrupted. Unable to resume.' => 'サーバー配信が中断されました。再開できません。',
 
 ## plugins/FacebookCommenters/config.yaml
@@ -7003,6 +7023,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 347
+## New words: 352
 
 1;
