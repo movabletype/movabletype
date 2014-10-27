@@ -43,58 +43,151 @@ my @suite = (
         method => 'GET',
     },
 
+    # list_themes_for site - irregular tests
+    {    # Non-existent site.
+        path   => '/v2/sites/5/themes',
+        method => 'GET',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+
     # list_themes_for_site - normal tests
-    {   path   => '/v2/sites/2/themes',
+    {    # Website.
+        path   => '/v2/sites/2/themes',
         method => 'GET',
     },
-    {   path   => '/v2/sites/1/themes',
+    {    # Blog.
+        path   => '/v2/sites/1/themes',
         method => 'GET',
     },
-    {   path   => '/v2/sites/0/themes',
+    {    # System. Same as list_themes endpoint.
+        path   => '/v2/sites/0/themes',
         method => 'GET',
     },
 
     # get_theme - irregular tests
-    {   path   => '/v2/themes/non_existent_theme',
+    {    # Non-existent theme.
+        path   => '/v2/themes/non_existent_theme',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Theme not found',
+                },
+            };
+        },
     },
 
     # get_theme - normal tests
     {   path   => '/v2/themes/classic_website',
         method => 'GET',
+        result => sub {
+            require MT::Theme;
+            my $theme = MT::Theme->load('classic_website');
+
+            require boolean;
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return $theme->to_resource();
+        },
     },
 
     # get_theme_for_site - normal tests
-    {   path   => '/v2/sites/2/themes/classic_website',
+    {    # Website.
+        path   => '/v2/sites/2/themes/classic_website',
         method => 'GET',
+        result => sub {
+            require MT::Theme;
+            my $theme = MT::Theme->load('classic_website');
+
+            require boolean;
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return $theme->to_resource();
+        },
     },
-    {   path   => '/v2/sites/1/themes/classic_blog',
+    {    # Blog.
+        path   => '/v2/sites/1/themes/classic_blog',
         method => 'GET',
+        result => sub {
+            require MT::Theme;
+            my $theme = MT::Theme->load('classic_blog');
+
+            require boolean;
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return $theme->to_resource();
+        },
     },
     {   path   => '/v2/sites/0/themes/classic_website',
         method => 'GET',
+        result => sub {
+            require MT::Theme;
+            my $theme = MT::Theme->load('classic_website');
+
+            require boolean;
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return $theme->to_resource();
+        },
     },
 
     # get_theme_for_site - irregular tests
     {    # Non-existent site.
-        path   => '/v2/sites/10/cllassic_blog',
+        path   => '/v2/sites/10/themes/classic_blog',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
     {    # Non-existent theme.
         path   => '/v2/sites/2/themes/non_existent_theme',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Theme not found',
+                },
+            };
+        },
     },
     {    # get website theme via blog.
         path   => '/v2/sites/1/themes/classic_website',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Theme not found',
+                },
+            };
+        },
     },
 
     # apply_theme_to_site - normal tests
-    {   path  => '/v2/sites/2/themes/pico/apply',
+    {    # Website.
+        path  => '/v2/sites/2/themes/pico/apply',
         setup => sub {
             my $site = MT->model('blog')->load(2);
             die if $site->theme_id eq 'pico';
@@ -105,7 +198,8 @@ my @suite = (
             is( $site->theme_id, 'pico', 'Changed into pico.' );
         },
     },
-    {   path  => '/v2/sites/1/themes/pico/apply',
+    {    # Blog.
+        path  => '/v2/sites/1/themes/pico/apply',
         setup => sub {
             my $site = MT->model('blog')->load(1);
             die if $site->theme_id eq 'pico';
@@ -122,50 +216,109 @@ my @suite = (
         path   => '/v2/sites/0/themes/pico/apply',
         method => 'POST',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
     {    # Non-existent site.
         path   => '/v2/sites/10/themes/pico/apply',
         method => 'POST',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
     {    # Non-existent theme.
         path   => '/v2/sites/2/themes/non_existent_theme/apply',
         method => 'POST',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Theme not found',
+                },
+            };
+        },
     },
     {    # Non-existent site and non-existent theme.
         path   => '/v2/sites/5/themes/non_existent_theme/apply',
         method => 'POST',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
     {    # Try to apply website theme to blog.
         path   => '/v2/sites/1/themes/classic_website/apply',
         method => 'POST',
         code   => 400,
+        result => sub {
+            +{  error => {
+                    code    => 400,
+                    message => 'Cannot apply website theme to blog.',
+                },
+            };
+        },
     },
 
     # refresh_templates - normal tests
-    {   path   => '/v2/sites/2/refresh_templates',
+    {    # Website.
+        path   => '/v2/sites/2/refresh_templates',
         method => 'POST',
+        result => sub {
+            +{ status => 'success' };
+        },
     },
-    {   path   => '/v2/sites/1/refresh_templates',
+    {    # Blog.
+        path   => '/v2/sites/1/refresh_templates',
         method => 'POST',
+        result => sub {
+            +{ status => 'success' };
+        },
     },
-    {   path   => '/v2/sites/0/refresh_templates',
+    {    # System.
+        path   => '/v2/sites/0/refresh_templates',
         method => 'POST',
+        result => sub {
+            +{ status => 'success' };
+        },
     },
 
-    {   path   => '/v2/sites/2/refresh_templates',
+    {    # Back up.
+        path   => '/v2/sites/2/refresh_templates',
         method => 'POST',
         params => { backup => 1, },
+        result => sub {
+            +{ status => 'success' };
+        },
     },
-    {   path   => '/v2/sites/2/refresh_templates',
+    {    # Refresh.
+        path   => '/v2/sites/2/refresh_templates',
         method => 'POST',
         params => { refresh_type => 'refresh', },
+        result => sub {
+            +{ status => 'success' };
+        },
     },
-    {   path   => '/v2/sites/2/refresh_templates',
+    {    # Reset.
+        path   => '/v2/sites/2/refresh_templates',
         method => 'POST',
         params => { refresh_type => 'clean', },
+        result => sub {
+            +{ status => 'success' };
+        },
     },
 
     # refresh_templates - irregular tests
@@ -173,12 +326,80 @@ my @suite = (
         path   => '/v2/sites/5/refresh_templates',
         method => 'POST',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
     {    # Invalid parameter.
         path   => '/v2/sites/2/refresh_templates',
         method => 'POST',
         params => { refresh_type => 'dummy', },
         code   => 400,
+        result => sub {
+            +{  error => {
+                    code    => 400,
+                    message => 'A parameter "refresh_type" is invalid: dummy',
+                },
+            };
+        },
+    },
+
+    # uninstall_theme - irregular tests
+    {    # Protected.
+        path   => '/v2/themes/classic_website',
+        method => 'DELETE',
+        code   => 403,
+        result => sub {
+            +{  error => {
+                    code    => 403,
+                    message => 'Cannot uninstall this theme.',
+                },
+            };
+        },
+    },
+
+    # export_site_theme - normal tests
+    {   path   => '/v2/sites/2/export_theme',
+        method => 'POST',
+        params => { overwrite_yes => 1, },
+        result => sub {
+            +{ status => 'success' };
+        },
+    },
+
+    # export_site_theme - irregular tests
+    {    # Non-existent site.
+        path   => '/v2/sites/5/export_theme',
+        method => 'POST',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+    {    # System.
+        path   => '/v2/sites/0/export_theme',
+        method => 'POST',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+    {    # Already exists.
+        path   => '/v2/sites/2/export_theme',
+        method => 'POST',
+        code   => 409,
     },
 );
 

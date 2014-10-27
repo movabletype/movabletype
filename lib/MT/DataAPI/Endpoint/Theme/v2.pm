@@ -399,7 +399,7 @@ sub export {
     my $blog = $app->blog;
 
     if ( !( $blog && $blog->id ) ) {
-        return $app->error( $app->tranlsate('Site not found'), 400 );
+        return $app->error( $app->translate('Site not found'), 404 );
     }
 
     _set_default_params_if_all_params_not_set( $app, $q, $blog );
@@ -464,7 +464,7 @@ sub export {
                         "Export theme folder already exists '[_1]'. You can overwrite a existing theme with 'overwrite_yes=1' parameter, or change the Basename.",
                         $output_path
                     ),
-                    403
+                    409
                 );
             }
         }
