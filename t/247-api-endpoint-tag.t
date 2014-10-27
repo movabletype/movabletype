@@ -21,6 +21,8 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
+use boolean ();
+
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
@@ -56,6 +58,32 @@ my @suite = (
             my @expected_log_names = map { $_->name } @expected_logs;
 
             is_deeply( \@got_log_names, \@expected_log_names );
+        },
+    },
+    {    # Search name.
+        path      => '/v2/tags',
+        method    => 'GET',
+        params    => { search => 'page' },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.tag',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @tags = $app->model('tag')->load(
+                { name => { like => '%page%' } },
+                { sort => 'name', direction => 'ascend' },
+            );
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 3,
+                items        => MT::DataAPI::Resource->from_object( \@tags ),
+            };
         },
     },
 
@@ -112,6 +140,71 @@ my @suite = (
             my @expected_log_names = map { $_->name } @expected_logs;
 
             is_deeply( \@got_log_names, \@expected_log_names );
+        },
+    },
+    {    # System.
+        path      => '/v2/sites/0/tags',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.tag',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @tags = $app->model('tag')->load(
+                undef,
+                {   sort      => 'name',
+                    direction => 'ascend',
+                    join      => MT->model('objecttag')->join_on(
+                        'tag_id',
+                        { blog_id => 0 },
+                        { unique  => 1 },
+                    ),
+                },
+            );
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items        => MT::DataAPI::Resource->from_object( \@tags ),
+            };
+        },
+    },
+    {    # Search name.
+        path      => '/v2/sites/1/tags',
+        method    => 'GET',
+        params    => { search => 'flow' },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.tag',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @tags = $app->model('tag')->load(
+                { name => { like => '%flow%' } },
+                {   sort      => 'name',
+                    direction => 'ascend',
+                    join      => MT->model('objecttag')->join_on(
+                        'tag_id',
+                        { blog_id => 1 },
+                        { unique  => 1 },
+                    ),
+                },
+            );
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items        => MT::DataAPI::Resource->from_object( \@tags ),
+            };
         },
     },
 
@@ -299,19 +392,6 @@ my @suite = (
             };
         },
     },
-    {    # System.
-        path   => '/v2/sites/0/tags/rain',
-        method => 'PUT',
-        params => { tag => { name => 'snow' }, },
-        code   => 404,
-        result => sub {
-            +{  error => {
-                    code    => 404,
-                    message => 'Tag not found',
-                },
-            };
-        },
-    },
 
     # rename_tag_for_site - normal tests
     {   path      => '/v2/sites/1/tags/rain',
@@ -383,18 +463,6 @@ my @suite = (
             +{  error => {
                     code    => 404,
                     message => 'Site not found',
-                },
-            };
-        },
-    },
-    {    # System.
-        path   => '/v2/sites/0/tags/anemones',
-        method => 'DELETE',
-        code   => 404,
-        result => sub {
-            +{  error => {
-                    code    => 404,
-                    message => 'Tag not found',
                 },
             };
         },

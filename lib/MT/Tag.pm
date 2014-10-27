@@ -278,7 +278,11 @@ sub list_props {
                 return;
             },
         },
-
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( name )],
+            display => 'none',
+        },
     };
 }
 
