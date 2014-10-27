@@ -907,7 +907,7 @@ sub core_endpoints {
             default_params => {
                 limit        => 10,
                 offset       => 0,
-                sortBy       => 'authored_on',
+                sortBy       => 'modified_on',
                 sortOrder    => 'descend',
                 searchFields => 'title,body,more,keywords,excerpt,basename',
                 filterKeys   => 'status',

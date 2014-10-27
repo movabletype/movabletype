@@ -1284,11 +1284,13 @@ BEGIN {
                 },
             },
             page => {
-                object_label     => 'Page',
-                primary          => 'title',
-                default_sort_key => 'modified_on',
-                permission       => 'access_to_page_list',
-                feed_link        => sub {
+                object_label        => 'Page',
+                primary             => 'title',
+                default_sort_key    => 'modified_on',
+                data_api_scope_mode => 'this',
+                permission          => 'access_to_page_list',
+                data_api_permission => undef,
+                feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 

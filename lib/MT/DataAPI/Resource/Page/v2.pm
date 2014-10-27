@@ -8,6 +8,7 @@ package MT::DataAPI::Resource::Page::v2;
 use strict;
 use warnings;
 
+use MT::DataAPI::Resource;
 use MT::DataAPI::Resource::Entry;
 use MT::DataAPI::Resource::Entry::v2;
 
@@ -21,9 +22,17 @@ sub fields {
         {   name        => 'categories',
             from_object => sub { },        # Do nothing.
         },
-        qw(
-            folder
-            ),
+        {   name        => 'folder',
+            from_object => sub {
+                my ($obj) = @_;
+                if ( my $folder = $obj->category ) {
+                    return MT::DataAPI::Resource->from_object($folder);
+                }
+                else {
+                    return undef;
+                }
+            },
+        },
     ];
 }
 

@@ -21,6 +21,8 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
+use boolean ();
+
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
@@ -33,23 +35,153 @@ my $version;
 $mock_app_api->mock( 'current_api_version',
     sub { $version = $_[1] if $_[1]; $version } );
 
+my $website_page = $app->model('page')->new;
+$website_page->set_values(
+    {   blog_id   => 2,             # website
+        author_id => $author->id,
+        status    => 2,             # publish
+    }
+);
+$website_page->save or die $website_page->errstr;
+
+my $blog_page = $app->model('page')->load(20);
+$blog_page->status(1);              # draft
+$blog_page->save or die $blog_page->errstr;
+
 my @suite = (
 
     # list_pages - irregualr tests
-    {    # Non-existent site.
+    {                               # Non-existent site.
         path   => '/v2/sites/5/pages',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
 
     # list_pages - normal tests
-    {   path      => '/v2/sites/1/pages',
+    {    # Blog.
+        path      => '/v2/sites/1/pages',
         method    => 'GET',
         callbacks => [
             {   name  => 'data_api_pre_load_filtered_list.page',
                 count => 2,
             },
         ],
+        result => sub {
+            my @pages = $app->model('page')->load( { blog_id => 1 },
+                { sort => 'modified_on', direction => 'descend' } );
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 4,
+                items        => MT::DataAPI::Resource->from_object( \@pages ),
+            };
+        },
+    },
+    {    # Website.
+        path      => '/v2/sites/2/pages',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.page',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @pages = $app->model('page')->load( { blog_id => 2 },
+                { sort => 'modified_on', direction => 'descend' } );
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items        => MT::DataAPI::Resource->from_object( \@pages ),
+            };
+        },
+    },
+    {    # Not logged in.
+        path      => '/v2/sites/0/pages',
+        method    => 'GET',
+        setup     => sub { $mock_app_api->unmock('authenticate') },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.page',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @pages = $app->model('page')->load( { status => 2 },
+                { sort => 'modified_on', direction => 'descend' } );
+
+            $app->user( MT::Author->anonymous );
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 4,
+                items        => MT::DataAPI::Resource->from_object( \@pages ),
+            };
+        },
+        complete => sub { $mock_app_api->mock( 'authenticate', $author ) },
+    },
+    {    # Search.
+        path      => '/v2/sites/1/pages',
+        method    => 'GET',
+        params    => { search => 'watching', },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.page',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my $page = $app->model('page')->load(20);
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items        => MT::DataAPI::Resource->from_object( [$page] ),
+            };
+        },
+    },
+    {    # Filter by status.
+        path      => '/v2/sites/1/pages',
+        method    => 'GET',
+        params    => { status => 'Draft' },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.page',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @pages
+                = $app->model('page')->load( { blog_id => 1, status => 1 } );
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items        => MT::DataAPI::Resource->from_object( \@pages ),
+            };
+        },
     },
 
     # get_page - irregular tests
@@ -77,6 +209,13 @@ my @suite = (
         path   => '/v2/sites/1/pages/2',
         method => 'GET',
         code   => 404,
+    },
+    {    # Not published and not logged in.
+        path     => '/v2/sites/1/pages/20',
+        method   => 'GET',
+        setup    => sub { $mock_app_api->unmock('authenticate') },
+        code     => 403,
+        complete => sub { $mock_app_api->mock( 'authenticate', $author ) },
     },
 
     # get_page - normal tests
@@ -150,6 +289,63 @@ my @suite = (
     },
 
     # update_page - irregular tests
+    {    # Non-existent page.
+        path   => '/v2/sites/1/pages/100',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Page not found',
+                },
+            };
+        },
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/pages/23',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+    {    # Other site.
+        path   => '/v2/sites/2/pages/23',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Page not found',
+                },
+            };
+        },
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/pages/23',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Page not found',
+                },
+            };
+        },
+    },
+    {    # No resource.
+        path     => '/v2/sites/1/pages/23',
+        method   => 'PUT',
+        code     => 400,
+        complete => sub {
+            my ( $data, $body ) = @_;
+            check_error_message( $body, 'A resource "page" is required.' );
+        },
+    },
 
     # update_page - normal tests
     {   path   => '/v2/sites/1/pages/23',
@@ -212,476 +408,6 @@ my @suite = (
             is( $page, undef, 'Deleted page.' );
         },
     },
-
-#    {   path      => '/v1/sites/1/entries',
-#        method    => 'GET',
-#        callbacks => [
-#            {   name  => 'data_api_pre_load_filtered_list.entry',
-#                count => 2,
-#            },
-#        ],
-#    },
-#    {   path   => '/v1/sites/1/entries',
-#        method => 'POST',
-#        params => {
-#            entry => {
-#                title  => 'test-api-permission-entry',
-#                status => 'Draft',
-#            },
-#        },
-#        callbacks => [
-#            {   name =>
-#                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-#                count => 1,
-#            },
-#        ],
-#        result => sub {
-#            require MT::Entry;
-#            MT->model('entry')->load(
-#                {   title  => 'test-api-permission-entry',
-#                    status => MT::Entry::HOLD(),
-#                }
-#            );
-#        },
-#        complete => sub {
-#            my ( $data, $body ) = @_;
-#            require MT::Entry;
-#            my $entry = MT->model('entry')->load(
-#                {   title  => 'test-api-permission-entry',
-#                    status => MT::Entry::HOLD(),
-#                }
-#            );
-#            is( $entry->revision, 1, 'Has created new revision' );
-#        },
-#    },
-#    {   path   => '/v1/sites/1/entries/0',
-#        method => 'GET',
-#        code   => 404,
-#    },
-#    {   path      => '/v1/sites/1/entries/1',
-#        method    => 'GET',
-#        callbacks => [
-#            {   name =>
-#                    'MT::App::DataAPI::data_api_view_permission_filter.entry',
-#                count => 1,
-#            },
-#        ],
-#    },
-#    {   path   => '/v1/sites/1/entries/1',
-#        method => 'PUT',
-#        setup  => sub {
-#            my ($data) = @_;
-#            $data->{_revision} = MT->model('entry')->load(1)->revision || 0;
-#        },
-#        params =>
-#            { entry => { title => 'update-test-api-permission-entry', }, },
-#        callbacks => [
-#            {   name =>
-#                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-#                count => 1,
-#            },
-#        ],
-#        result => sub {
-#            MT->model('entry')->load(
-#                {   id    => 1,
-#                    title => 'update-test-api-permission-entry',
-#                }
-#            );
-#        },
-#        complete => sub {
-#            my ( $data, $body ) = @_;
-#            is( MT->model('entry')->load(1)->revision - $data->{_revision},
-#                1, 'Bumped-up revision number' );
-#        },
-#    },
-#    {   path     => '/v1/sites/1/entries/1',
-#        method   => 'PUT',
-#        params   => { entry => { tags => [qw(a)] }, },
-#        complete => sub {
-#            is_deeply( [ MT->model('entry')->load(1)->tags ],
-#                [qw(a)], "Entry's tag is updated" );
-#        },
-#    },
-#    {   path     => '/v1/sites/1/entries/1',
-#        method   => 'PUT',
-#        params   => { entry => { tags => [qw(a b)] }, },
-#        complete => sub {
-#            is_deeply( [ MT->model('entry')->load(1)->tags ],
-#                [qw(a b)], "Entry's tag is added" );
-#        },
-#    },
-#    {   path     => '/v1/sites/1/entries/1',
-#        method   => 'PUT',
-#        params   => { entry => { tags => [] }, },
-#        complete => sub {
-#            is_deeply( [ MT->model('entry')->load(1)->tags ],
-#                [], "Entry's tag is removed" );
-#        },
-#    },
-#    {   path      => '/v1/sites/1/entries/1',
-#        method    => 'DELETE',
-#        callbacks => [
-#            {   name =>
-#                    'MT::App::DataAPI::data_api_delete_permission_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_post_delete.entry',
-#                count => 1,
-#            },
-#        ],
-#        complete => sub {
-#            my $deleted = MT->model('entry')->load(1);
-#            is( $deleted, undef, 'deleted' );
-#        },
-#    },
-#    {   path      => '/v1/sites/2/entries',
-#        method    => 'GET',
-#        callbacks => [
-#            {   name  => 'data_api_pre_load_filtered_list.entry',
-#                count => 1,
-#            },
-#        ],
-#    },
-#    {   path   => '/v2/sites/1/entries',
-#        method => 'POST',
-#        params => {
-#            entry => {
-#                title      => 'test-api-attach-categories-to-entry',
-#                status     => 'Draft',
-#                categories => [ { id => 1 } ],
-#            },
-#        },
-#        callbacks => [
-#            {   name =>
-#                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-#                count => 1,
-#            },
-#        ],
-#        result => sub {
-#            require MT::Entry;
-#            MT->model('entry')->load(
-#                {   title  => 'test-api-attach-categories-to-entry',
-#                    status => MT::Entry::HOLD(),
-#                }
-#            );
-#        },
-#        complete => sub {
-#            my ( $data, $body ) = @_;
-#            require MT::Entry;
-#            my $entry = MT->model('entry')->load(
-#                {   title  => 'test-api-attach-categories-to-entry',
-#                    status => MT::Entry::HOLD(),
-#                }
-#            );
-#            is( $entry->revision, 1, 'Has created new revision' );
-#            my @categories = @{ $entry->categories };
-#            is( scalar @categories, 1, 'Attaches a category' );
-#            is( $categories[0]->id, 1, 'Attached category ID is 1' );
-#        },
-#    },
-#    {   path   => '/v2/sites/1/entries/2',
-#        method => 'PUT',
-#        params => {
-#            entry => {
-#                title      => 'test-api-update-categories',
-#                categories => [ { id => 1 }, { id => 2 }, { id => 3 } ]
-#            },
-#        },
-#        callbacks => [
-#            {   name =>
-#                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-#                count => 1,
-#            },
-#        ],
-#        result => sub {
-#            MT->model('entry')->load(
-#                {   id    => 2,
-#                    title => 'test-api-update-categories',
-#                }
-#            );
-#        },
-#        complete => sub {
-#            my ( $data, $body ) = @_;
-#            my $entry      = MT->model('entry')->load(2);
-#            my @categories = @{ $entry->categories };
-#            is( scalar @categories, 3, 'Entry has 3 category' );
-#        },
-#    },
-#    {   path   => '/v2/sites/1/entries/2',
-#        method => 'PUT',
-#        params =>
-#            { entry => { categories => [ { id => 2 }, { id => 3 } ] }, },
-#        callbacks => [
-#            {   name =>
-#                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-#                count => 1,
-#            },
-#        ],
-#        result => sub {
-#            MT->model('entry')->load(
-#                {   id    => 2,
-#                    title => 'test-api-update-categories',
-#                }
-#            );
-#        },
-#        complete => sub {
-#            my ( $data, $body ) = @_;
-#            my $entry      = MT->model('entry')->load(2);
-#            my @categories = @{ $entry->categories };
-#            is( scalar @categories, 2, 'Entry has 2 category' );
-#        },
-#    },
-#    {   path   => '/v2/sites/1/entries/2',
-#        method => 'PUT',
-#        params => { entry => { categories => [ id => 20 ] } },
-#        code   => 400,
-#    },
-#    {   path   => '/v2/sites/1/entries',
-#        method => 'POST',
-#        params => {
-#            entry => {
-#                title  => 'test-api-attach-assets-to-entry',
-#                status => 'Draft',
-#                assets => [ { id => 1 } ],
-#            },
-#        },
-#        callbacks => [
-#            {   name =>
-#                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-#                count => 1,
-#            },
-#        ],
-#        result => sub {
-#            require MT::Entry;
-#            MT->model('entry')->load(
-#                {   title  => 'test-api-attach-assets-to-entry',
-#                    status => MT::Entry::HOLD(),
-#                }
-#            );
-#        },
-#        complete => sub {
-#            my ( $data, $body ) = @_;
-#            require MT::Entry;
-#            my $entry = MT->model('entry')->load(
-#                {   title  => 'test-api-attach-assets-to-entry',
-#                    status => MT::Entry::HOLD(),
-#                }
-#            );
-#            is( $entry->revision, 1, 'Has created new revision' );
-#            my @assets = MT->model('asset')->load(
-#                { class => '*' },
-#                {   join => MT->model('objectasset')->join_on(
-#                        'asset_id',
-#                        {   object_ds => 'entry',
-#                            object_id => $entry->id,
-#                            asset_id  => 1,
-#                        },
-#                    ),
-#                }
-#            );
-#            is( scalar @assets, 1, 'Attaches an asset' );
-#            is( $assets[0]->id, 1, 'Attached asset ID is 1' );
-#        },
-#    },
-#    {   path   => '/v2/sites/1/entries/2',
-#        method => 'PUT',
-#        params => {
-#            entry => {
-#                title  => 'test-api-update-assets',
-#                assets => [ { id => 1 }, { id => 2 } ],
-#            },
-#        },
-#        callbacks => [
-#            {   name =>
-#                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-#                count => 1,
-#            },
-#        ],
-#        result => sub {
-#            MT->model('entry')->load(
-#                {   id    => 2,
-#                    title => 'test-api-update-assets',
-#                }
-#            );
-#        },
-#        complete => sub {
-#            my ( $data, $body ) = @_;
-#            my $entry = MT->model('entry')->load(2);
-#            my @oa    = MT->model('objectasset')->load(
-#                {   object_ds => 'entry',
-#                    object_id => $entry->id,
-#                }
-#            );
-#            is( scalar @oa, 2, 'Entry has 2 assets' );
-#        },
-#    },
-#    {   path   => '/v2/sites/1/entries/2',
-#        method => 'PUT',
-#        params => {
-#            entry => {
-#                title  => 'test-api-update-assets',
-#                assets => [ { id => 2 } ],
-#            },
-#        },
-#        callbacks => [
-#            {   name =>
-#                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-#                count => 1,
-#            },
-#            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-#                count => 1,
-#            },
-#        ],
-#        result => sub {
-#            MT->model('entry')->load(
-#                {   id    => 2,
-#                    title => 'test-api-update-assets',
-#                }
-#            );
-#        },
-#        complete => sub {
-#            my ( $data, $body ) = @_;
-#            my $entry = MT->model('entry')->load(2);
-#            my @oa    = MT->model('objectasset')->load(
-#                {   object_ds => 'entry',
-#                    object_id => $entry->id,
-#                }
-#            );
-#            is( scalar @oa, 1, 'Entry has 1 asset' );
-#        },
-#    },
-#    {   path      => '/v2/sites/1/entries/2/assets',
-#        method    => 'GET',
-#        callbacks => [
-#            {   name =>
-#                    'MT::App::DataAPI::data_api_view_permission_filter.entry',
-#                count => 1,
-#            },
-#            {   name  => 'data_api_pre_load_filtered_list.asset',
-#                count => 2,
-#            },
-#        ],
-#        complete => sub {
-#            my ( $data, $body ) = @_;
-#            my $result = MT::Util::from_json($body);
-#            is( $result->{totalResults}, 1, 'Entry has 1 asset' );
-#
-#            my $entry  = MT->model('entry')->load(2);
-#            my @assets = MT->model('asset')->load(
-#                { class => '*' },
-#                {   join => MT->model('objectasset')->join_on(
-#                        'asset_id',
-#                        {   blog_id   => $entry->blog->id,
-#                            object_ds => 'entry',
-#                            object_id => $entry->id,
-#                        },
-#                    ),
-#                }
-#            );
-#            my @json_ids
-#                = sort { $a <=> $b } map { $_->{id} } @{ $result->{items} };
-#            my @asset_ids = sort { $a <=> $b } map { $_->id } @assets;
-#            is_deeply( \@json_ids, \@asset_ids, 'Asset IDs are correct' );
-#        },
-#    },
-#    {   path     => '/v2/sites/1/categories/1/entries',
-#        method   => 'GET',
-#        complete => sub {
-#            my ( $data, $body ) = @_;
-#            my $result = MT::Util::from_json($body);
-#
-#            my $cat     = MT->model('category')->load(1);
-#            my @entries = MT->model('entry')->load(
-#                { class => 'entry' },
-#                {   join => MT->model('placement')->join_on(
-#                        'entry_id',
-#                        {   blog_id     => $cat->blog_id,
-#                            category_id => $cat->id,
-#                        },
-#                    ),
-#                }
-#            );
-#
-#            is( $result->{totalResults},
-#                scalar @entries,
-#                'Category has ' . scalar @entries . 'entries'
-#            );
-#
-#            my @json_ids
-#                = sort { $a <=> $b } map { $_->{id} } @{ $result->{items} };
-#            my @entry_ids = sort { $a <=> $b } map { $_->id } @entries;
-#            is_deeply( \@json_ids, \@entry_ids, 'Entry IDs are correct' );
-#            }
-#    },
 );
 
 my %callbacks = ();
