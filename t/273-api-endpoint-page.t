@@ -268,6 +268,24 @@ my @suite = (
         },
         code => 404,
     },
+    {    # Invalid folder.
+        path   => '/v2/sites/1/pages',
+        method => 'POST',
+        params => {
+            page => {
+                title  => 'create-page-with-folder',
+                text   => 'create page with folder',
+                folder => { id => 100 },
+            },
+        },
+        code   => 400,
+        result => {
+            error => {
+                code    => 400,
+                message => "'folder' parameter is invalid.",
+            },
+        },
+    },
 
     # create_page - normal tests
     {   path   => '/v2/sites/1/pages',
@@ -285,6 +303,35 @@ my @suite = (
                     title   => 'create-page',
                 }
             );
+        },
+    },
+    {    # Attach folder.
+        path   => '/v2/sites/1/pages',
+        method => 'POST',
+        params => {
+            page => {
+                title  => 'create-page-with-folder',
+                text   => 'create page with folder',
+                folder => { id => 22 },
+            },
+        },
+        result => sub {
+            $app->model('page')->load(
+                {   blog_id => 1,
+                    class   => 'page',
+                    title   => 'create-page-with-folder',
+                }
+            );
+        },
+        complete => sub {
+            my $page = $app->model('page')->load(
+                {   blog_id => 1,
+                    class   => 'page',
+                    title   => 'create-page-with-folder',
+                }
+            );
+            my $folder = $page->category;
+            is( $folder->id, 22, 'Attached folder.' );
         },
     },
 
@@ -358,6 +405,33 @@ my @suite = (
         },
         result => sub {
             $app->model('page')->load(23);
+        },
+    },
+    {    # Attach folder.
+        path   => '/v2/sites/1/pages/23',
+        method => 'PUT',
+        params => { page => { folder => { id => 21 }, }, },
+        setup  => sub {
+            die if $app->model('page')->load(23)->category;
+        },
+        result => sub {
+            $app->model('page')->load(23);
+        },
+        complete => sub {
+            my $page = $app->model('page')->load(23);
+            is( $page->category->id, 21, 'Attached folder.' );
+        },
+    },
+    {    # Detach folder.
+        path   => '/v2/sites/1/pages/23',
+        method => 'PUT',
+        params => { page => { folder => {}, }, },
+        result => sub {
+            $app->model('page')->load(23);
+        },
+        complete => sub {
+            my $page = $app->model('page')->load(23);
+            is( $page->category, undef, 'Detached folder.' );
         },
     },
 
