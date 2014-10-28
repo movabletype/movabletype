@@ -111,6 +111,12 @@ sub core_resources {
                 updatable_fields => "${pkg}Permission::v2::updatable_fields",
             },
         ],
+        'association' => [
+            {   version          => 2,
+                fields           => "${pkg}Association::v2::fields",
+                updatable_fields => "${pkg}Association::v2::updatable_fields",
+            },
+        ],
         'role' => [
             {   version          => 2,
                 fields           => "${pkg}Role::v2::fields",

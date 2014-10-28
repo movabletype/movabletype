@@ -303,6 +303,7 @@ sub list_props {
             display => 'none',
             base    => '__virtual.modified_on',
         },
+        blog_id => { base => '__virtual.id', },
     };
 }
 
