@@ -133,6 +133,31 @@ sub fields {
                 return MT::DataAPI::Resource->from_object( \@maps );
             },
         },
+        {   name             => 'updatable',
+            type             => 'MT::DataAPI::Resource::DataType::Boolean',
+            bulk_from_object => sub {
+                my ( $objs, $hashes ) = @_;
+                my $app  = MT->instance or return;
+                my $user = $app->user   or return;
+
+                if ( $user->is_superuser ) {
+                    $_->{updatable} = 1 for @$hashes;
+                    return;
+                }
+
+                my %blog_perms;
+
+                for ( my $i = 0; $i < scalar @$objs; $i++ ) {
+                    my $obj = $objs->[$i];
+
+                    my $perms;
+                    $perms = $blog_perms{ $obj->blog_id }
+                        ||= $user->blog_perm( $obj->blog_id );
+
+                    $hashes->[$i]{updatable} = $perms->can_edit_templates;
+                }
+            },
+        },
         $MT::DataAPI::Resource::Common::fields{blog},
         $MT::DataAPI::Resource::Common::fields{createdBy},
         $MT::DataAPI::Resource::Common::fields{createdDate},

@@ -21,6 +21,8 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
+use boolean ();
+
 use MT::Theme;
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
@@ -157,6 +159,123 @@ my @suite = (
     {   path   => '/v2/sites/2/templates',
         method => 'GET',
     },
+    {    # Search name.
+        path   => '/v2/sites/2/templates',
+        method => 'GET',
+        params => {
+            searchFields => 'name',
+            search       => 'create-template',
+        },
+        result => sub {
+            my @tmpl = $app->model('template')->load(
+                {   blog_id => 2,
+                    name    => { like => '%create-template%' },
+                },
+                {   sort      => 'name',
+                    direction => 'ascend',
+                },
+            );
+
+            $app->user($author);
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items        => MT::DataAPI::Resource->from_object( \@tmpl ),
+            };
+        },
+    },
+    {    # Search identifier.
+        path   => '/v2/sites/2/templates',
+        method => 'GET',
+        params => {
+            searchFields => 'templateType',
+            search       => 'banner_footer',
+        },
+        result => sub {
+            my @tmpl = $app->model('template')->load(
+                {   blog_id    => 2,
+                    identifier => { like => '%banner_footer%' },
+                },
+                {   sort      => 'name',
+                    direction => 'ascend',
+                },
+            );
+
+            $app->user($author);
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items        => MT::DataAPI::Resource->from_object( \@tmpl ),
+            };
+        },
+    },
+    {    # Search text.
+        path   => '/v2/sites/2/templates',
+        method => 'GET',
+        params => {
+            searchFields => 'text',
+            search       => 'DOCTYPE',
+        },
+        result => sub {
+            my @terms_args = (
+                {   blog_id => 2,
+                    text    => { like => '%DOCTYPE%' },
+                },
+                {   sort      => 'name',
+                    direction => 'ascend',
+                    limit     => 10,
+                },
+            );
+
+            my $total_count = $app->model('template')->count(@terms_args);
+            my @tmpl        = $app->model('template')->load(@terms_args);
+
+            $app->user($author);
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => $total_count,
+                items        => MT::DataAPI::Resource->from_object( \@tmpl ),
+            };
+        },
+    },
+    {    # Filter by type.
+        path   => '/v2/sites/2/templates',
+        method => 'GET',
+        params => { type => 'index', },
+        result => sub {
+            my @tmpl = $app->model('template')->load(
+                {   blog_id => 2,
+                    type    => 'index',
+                },
+                {   sort      => 'name',
+                    direction => 'ascend',
+                },
+            );
+
+            $app->user($author);
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => scalar @tmpl,
+                items        => MT::DataAPI::Resource->from_object( \@tmpl ),
+            };
+        },
+    },
 
     # get_template - irregular tests
     {    # Non-existent template.
@@ -269,14 +388,6 @@ my @suite = (
             return +{ status => 'success' };
         },
     },
-
-    #    {   # Archive template.
-    #        path => '/v2/sites/1/templates/96/publish',
-    #        method => 'POST',
-    #        result => sub {
-    #            return +{ status => 'success' };
-    #        },
-    #    },
 
     # refresh_template - irregular tests
     {   path   => '/v2/sites/1/templates/300/refresh',
