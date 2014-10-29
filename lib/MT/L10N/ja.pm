@@ -6509,16 +6509,16 @@ use vars qw( @ISA %Lexicon );
 	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
-	'Copied [_1]' => 'サーバ配信設定 ([_1]) をコピーしました。',
+	'Copied [_1]' => 'サーバ配信設定 ([_1])の複製',
 	'The sync setting with the same name already exists.' => '同名のサーバー配信設定がすでに存在します。',
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'FTPサーバー \'[_1]\' への接続中にエラーが発生しました: [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'FTPサーバーのカレントディレクトリが取得できませんでした。',
-	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした。',
+	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした',
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'サーバー配信設定',
 	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
-	'The sync settings has been copied but not saved yet.' => 'サーバー配信設定がコピーされましたが、まだ設定は保存されていません。',
+	'The sync settings has been copied but not saved yet.' => 'サーバー配信設定が複製されましたが、まだ設定は保存されていません。',
 	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
 	'Run synchronization now' => '今すぐ配信する',
 	'Copy this sync setting' => 'このサーバー配信設定を複製する',
