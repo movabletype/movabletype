@@ -1649,17 +1649,37 @@ sub core_endpoints {
                 { 403 => 'Do not have permission to delete a widgetset.', },
         },
 
+        # widget endpoints.
         {   id             => 'list_widgets',
             route          => '/sites/:site_id/widgets',
             version        => 2,
             handler        => "${pkg}Widget::v2::list",
             default_params => {
-                limit  => 25,
-                offset => 0,
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
+                searchFields => 'name,templateType,text',
             },
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the list of widgets.',
+            },
+        },
+        {   id      => 'list_widgets_for_widgetset',
+            route   => '/sites/:site_id/widgetsets/:widgetset_id/widgets',
+            version => 2,
+            handler => "${pkg}Widget::v2::list_for_widgetset",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
+                searchFields => 'name,templateType,text',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve widgets of the request widgetset.',
             },
         },
         {   id          => 'get_widgets',
@@ -1671,19 +1691,31 @@ sub core_endpoints {
                     'Do not have permission to retrieve the requested widget.',
             },
         },
-        {   id      => 'create_widget',
-            route   => '/sites/:site_id/widgets',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}Widget::v2::create",
+        {   id => 'get_widget_for_widgetset',
+            route =>
+                '/sites/:site_id/widgetsets/:widgetset_id/widgets/:widget_id',
+            version     => 2,
+            handler     => "${pkg}Widget::v2::get_for_widgetset",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve a widget of the request widgetset.',
+            },
+        },
+        {   id        => 'create_widget',
+            route     => '/sites/:site_id/widgets',
+            resources => ['widget'],
+            verb      => 'POST',
+            version   => 2,
+            handler   => "${pkg}Widget::v2::create",
             error_codes =>
                 { 403 => 'Do not have permission to create a widget.', },
         },
-        {   id      => 'update_widget',
-            route   => '/sites/:site_id/widgets/:widget_id',
-            verb    => 'PUT',
-            version => 2,
-            handler => "${pkg}Widget::v2::update",
+        {   id        => 'update_widget',
+            route     => '/sites/:site_id/widgets/:widget_id',
+            resources => ['widget'],
+            verb      => 'PUT',
+            version   => 2,
+            handler   => "${pkg}Widget::v2::update",
             error_codes =>
                 { 403 => 'Do not have permission to update a widget.', },
         },
@@ -1711,30 +1743,6 @@ sub core_endpoints {
             handler => "${pkg}Widget::v2::clone",
             error_codes =>
                 { 403 => 'Do not have permission to clone a widget.', },
-        },
-
-        {   id      => 'list_widgets_for_widgetset',
-            route   => '/sites/:site_id/widgetsets/:widgetset_id/widgets',
-            version => 2,
-            handler => "${pkg}Widget::v2::list_for_widgetset",
-            default_params => {
-                limit  => 25,
-                offset => 0,
-            },
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve widgets of the request widgetset.',
-            },
-        },
-        {   id => 'get_widget_for_widgetset',
-            route =>
-                '/sites/:site_id/widgetsets/:widgetset_id/widgets/:widget_id',
-            version     => 2,
-            handler     => "${pkg}Widget::v2::get_for_widgetset",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve a widget of the request widgetset.',
-            },
         },
 
         # user endpoints

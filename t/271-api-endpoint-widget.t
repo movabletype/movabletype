@@ -21,6 +21,8 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
+use boolean ();
+
 use MT::Theme;
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
@@ -36,17 +38,212 @@ my $version;
 $mock_app_api->mock( 'current_api_version',
     sub { $version = $_[1] if $_[1]; $version } );
 
+my $system_widget = $app->model('template')->new;
+$system_widget->set_values(
+    {   blog_id    => 0,
+        name       => 'System Widget',
+        text       => 'This is a system widget.',
+        identifier => 'system_widget',
+        type       => 'widget',
+    }
+);
+$system_widget->save or die $system_widget->errstr;
+
 my @suite = (
 
     # list_widgets - irregular tests
-    {   path   => '/v2/sites/5/widgets',
+    {    # Non-existent site.
+        path   => '/v2/sites/5/widgets',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
 
     # list_widgets - normal tests
-    {   path   => '/v2/sites/1/widgets',
+    {    # Blog.
+        path      => '/v2/sites/1/widgets',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.template',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @terms_args = (
+                { blog_id => 1,      type      => 'widget' },
+                { sort    => 'name', direction => 'ascend', limit => 10 },
+            );
+            my $total_results = $app->model('template')->count(@terms_args);
+            my @widgets       = $app->model('template')->load(@terms_args);
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => $total_results,
+                items => MT::DataAPI::Resource->from_object( \@widgets ),
+            };
+        },
+    },
+    {    # Website.
+        path      => '/v2/sites/2/widgets',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.template',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @terms_args = (
+                { blog_id => 2,      type      => 'widget' },
+                { sort    => 'name', direction => 'ascend', limit => 10 },
+            );
+            my $total_results = $app->model('template')->count(@terms_args);
+            my @widgets       = $app->model('template')->load(@terms_args);
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => $total_results,
+                items => MT::DataAPI::Resource->from_object( \@widgets ),
+            };
+        },
+    },
+    {    # System.
+        path      => '/v2/sites/0/widgets',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.template',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my $widget = $app->model('template')
+                ->load( { blog_id => 0, type => 'widget' } );
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items => MT::DataAPI::Resource->from_object( [$widget] ),
+            };
+        },
+    },
+    {    # Search name.
+        path   => '/v2/sites/1/widgets',
         method => 'GET',
+        params => {
+            search       => 'Archives',
+            searchFields => 'name',
+        },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.template',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @terms_args = (
+                {   blog_id => 1,
+                    type    => 'widget',
+                    name    => { like => '%Archives%' }
+                },
+                { sort => 'name', direction => 'ascend', limit => 10 },
+            );
+            my $total_results = $app->model('template')->count(@terms_args);
+            my @widgets       = $app->model('template')->load(@terms_args);
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => $total_results,
+                items => MT::DataAPI::Resource->from_object( \@widgets ),
+            };
+        },
+    },
+    {    # Search templateType.
+        path   => '/v2/sites/1/widgets',
+        method => 'GET',
+        params => {
+            search       => 'list',
+            searchFields => 'templateType',
+        },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.template',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @terms_args = (
+                {   blog_id    => 1,
+                    type       => 'widget',
+                    identifier => { like => '%list%' }
+                },
+                { sort => 'name', direction => 'ascend', limit => 10 },
+            );
+            my $total_results = $app->model('template')->count(@terms_args);
+            my @widgets       = $app->model('template')->load(@terms_args);
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => $total_results,
+                items => MT::DataAPI::Resource->from_object( \@widgets ),
+            };
+        },
+    },
+    {    # Search text.
+        path   => '/v2/sites/1/widgets',
+        method => 'GET',
+        params => {
+            search       => 'DOCTYPE',
+            searchFields => 'text',
+        },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.template',
+                count => 1,
+            },
+        ],
+        result => sub {
+            my @terms_args = (
+                {   blog_id => 1,
+                    type    => 'widget',
+                    text    => { like => '%DOCTYPE%' }
+                },
+                { sort => 'name', direction => 'ascend', limit => 10 },
+            );
+            my $total_results = $app->model('template')->count(@terms_args);
+            my @widgets       = $app->model('template')->load(@terms_args);
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => $total_results,
+                items => MT::DataAPI::Resource->from_object( \@widgets ),
+            };
+        },
     },
 
     # get_widget - irregular tests
@@ -54,32 +251,117 @@ my @suite = (
         path   => '/v2/sites/1/widgets/500',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widget not found',
+                },
+            };
+        },
     },
     {    # Non-existent site.
         path   => '/v2/sites/5/widgets/132',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
     {    # Other site.
         path   => '/v2/sites/2/widgets/132',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widget not found',
+                },
+            };
+        },
     },
     {    # Other site (system).
         path   => '/v2/sites/0/widgets/132',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widget not found',
+                },
+            };
+        },
+    },
+    {    # Not widget.
+        path   => '/v2/sites/1/widgets/138',
+        method => 'GET',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widget not found',
+                },
+            };
+        },
     },
 
     # get_widget - normal tests
-    {   path   => '/v2/sites/1/widgets/132',
-        method => 'GET',
+    {    # Blog.
+        path      => '/v2/sites/1/widgets/132',
+        method    => 'GET',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.template',
+                count => 1,
+            },
+        ],
         result => sub {
             $app->model('template')->load(132);
         },
     },
+    {    # Website.
+        path      => '/v2/sites/2/widgets/81',
+        method    => 'GET',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.template',
+                count => 1,
+            },
+        ],
+        result => sub {
+            $app->model('template')->load(81);
+        },
+    },
+    {    # System.
+        path      => '/v2/sites/0/widgets/' . $system_widget->id,
+        method    => 'GET',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.template',
+                count => 1,
+            },
+        ],
+        result => sub {
+            $system_widget;
+        },
+    },
 
-    # creat_widget - irregular tests
+    # create_widget - irregular tests
+    {    # Non-existent site.
+        path   => '/v2/sites/5/widgets',
+        method => 'POST',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
     {    # No resource.
         path     => '/v2/sites/1/widgets',
         method   => 'POST',
@@ -102,9 +384,25 @@ my @suite = (
     },
 
     # create_widget - normal tests
-    {   path   => '/v2/sites/1/widgets',
-        method => 'POST',
-        params => { widget => { name => 'create-widget', }, },
+    {    # Blog.
+        path      => '/v2/sites/1/widgets',
+        method    => 'POST',
+        params    => { widget => { name => 'create-widget', }, },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.widget',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.widget',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.widget',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.widget',
+                count => 1,
+            },
+        ],
         result => sub {
             $app->model('template')->load(
                 {   name    => 'create-widget',
@@ -114,9 +412,53 @@ my @suite = (
             );
         },
     },
-    {   path   => '/v2/sites/0/widgets',
-        method => 'POST',
-        params => { widget => { name => 'create-widget-system', }, },
+    {    # Website.
+        path      => '/v2/sites/2/widgets',
+        method    => 'POST',
+        params    => { widget => { name => 'create-widget-website', }, },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.widget',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.widget',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.widget',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.widget',
+                count => 1,
+            },
+        ],
+        result => sub {
+            $app->model('template')->load(
+                {   name    => 'create-widget-website',
+                    blog_id => 2,
+                    type    => 'widget',
+                }
+            );
+        },
+    },
+    {    # System.
+        path      => '/v2/sites/0/widgets',
+        method    => 'POST',
+        params    => { widget => { name => 'create-widget-system', }, },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.widget',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.widget',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.widget',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.widget',
+                count => 1,
+            },
+        ],
         result => sub {
             $app->model('template')->load(
                 {   name    => 'create-widget-system',
@@ -128,6 +470,66 @@ my @suite = (
     },
 
     # update_widget - irregular tests
+    {    # Non-existent widget.
+        path   => '/v2/sites/1/widgets/500',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widget not found',
+                },
+            };
+        },
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/widgets/132',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+    {    # Other site.
+        path   => '/v2/sites/2/widgets/132',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widget not found',
+                },
+            };
+        },
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/widgets/132',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widget not found',
+                },
+            };
+        },
+    },
+    {    # Not widget.
+        path   => '/v2/sites/1/widgets/138',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widget not found',
+                },
+            };
+        },
+    },
     {    # No resource.
         path     => '/v2/sites/1/widgets/132',
         method   => 'PUT',
@@ -150,7 +552,8 @@ my @suite = (
     },
 
     # update_widget - normal tests
-    {   path   => '/v2/sites/1/widgets/132',
+    {    # Blog.
+        path   => '/v2/sites/1/widgets/132',
         method => 'PUT',
         params => {
             widget => {
@@ -158,6 +561,21 @@ my @suite = (
                 type => 'update-type',
             },
         },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.widget',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.widget',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.widget',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.widget',
+                count => 1,
+            },
+        ],
         result => sub {
             $app->model('template')->load(
                 {   name    => 'update-widget',
@@ -237,29 +655,79 @@ my @suite = (
         path   => '/v2/sites/1/widgets/500',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widget not found',
+                },
+            };
+        },
     },
     {    # Non-existent site.
         path   => '/v2/sites/5/widgets/132',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
     {    # Other site.
         path   => '/v2/sites/2/widgets/132',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widget not found',
+                },
+            };
+        },
     },
     {    # Other site (system).
         path   => '/v2/sites/0/widgets/132',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widget not found',
+                },
+            };
+        },
+    },
+    {    # Not widget.
+        path   => '/v2/sites/1/widgets/138',
+        method => 'DELETE',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widget not found',
+                },
+            };
+        },
     },
 
     # delete_widget - normal tests
-    {   path   => '/v2/sites/1/widgets/132',
+    {    # Blog.
+        path   => '/v2/sites/1/widgets/132',
         method => 'DELETE',
         setup  => sub {
             die if !$app->model('template')->load(132);
         },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_delete_permission_filter.template',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_delete.template',
+                count => 1,
+            },
+        ],
         complete => sub {
             my $widget = $app->model('template')->load(132);
             is( $widget, undef, 'Deleted widget.' );
