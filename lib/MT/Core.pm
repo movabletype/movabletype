@@ -1213,6 +1213,7 @@ BEGIN {
             log          => '$Core::MT::Log::list_props',
             filter       => '$Core::MT::Filter::list_props',
             permission   => '$Core::MT::Permission::list_props',
+            templatemap  => '$Core::MT::TemplateMap::list_props',
 
             # TODO: Move to MT::Template.
             template => {

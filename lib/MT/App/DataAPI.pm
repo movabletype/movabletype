@@ -1553,8 +1553,11 @@ sub core_endpoints {
             version => 2,
             handler => "${pkg}TemplateMap::v2::list",
             default_params => {
-                limit  => 10,
-                offset => 0,
+                limit      => 10,
+                offset     => 0,
+                sortBy     => 'id',
+                sortOrder  => 'ascend',
+                filterKeys => 'archiveType,buildType,isPreferred',
             },
             error_codes => {
                 403 =>

@@ -21,6 +21,8 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
+use boolean ();
+
 use MT::Theme;
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
@@ -39,6 +41,67 @@ $mock_app_api->mock( 'current_api_version',
 my @suite = (
 
     # create_templatemap - irregular tests
+    {    # Non-existent template.
+        path   => '/v2/sites/1/templates/500/templatemaps',
+        method => 'POST',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Template not found',
+                },
+            };
+        },
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/templates/96/templatemaps',
+        method => 'POST',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+    {    # Other site.
+        path   => '/v2/sites/2/templates/96/templatemaps',
+        method => 'POST',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Template not found',
+                },
+            };
+        },
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/templates/96/templatemaps',
+        method => 'POST',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Template not found',
+                },
+            };
+        },
+    },
+    {    # Not archive template.
+        path   => '/v2/sites/1/templates/138/templatemaps',
+        method => 'POST',
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code => 400,
+                    message =>
+                        'Template "header-line" is not archive template.',
+                },
+            };
+        },
+    },
     {    # No resource.
         path     => '/v2/sites/1/templates/96/templatemaps',
         method   => 'POST',
@@ -99,9 +162,144 @@ my @suite = (
         },
     },
 
+    # list_templatemaps - irregular tests
+    {    # Non-existent template.
+        path   => '/v2/sites/1/templates/500/templatemaps',
+        method => 'GET',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Template not found',
+                },
+            };
+        },
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/templates/96/templatemaps',
+        method => 'GET',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+    {    # Other site.
+        path   => '/v2/sites/2/templates/96/templatemaps',
+        method => 'GET',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Template not found',
+                },
+            };
+        },
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/templates/96/templatemaps',
+        method => 'GET',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Template not found',
+                },
+            };
+        },
+    },
+    {    # Not archive template.
+        path   => '/v2/sites/1/templates/138/templatemaps',
+        method => 'GET',
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code => 400,
+                    message =>
+                        'Template "header-line" is not archive template.',
+                },
+            };
+        },
+    },
+
     # list_templatemaps - normal tests
     {   path   => '/v2/sites/1/templates/96/templatemaps',
         method => 'GET',
+        result => sub {
+            my @tm
+                = $app->model('templatemap')->load( { template_id => 96, } );
+
+            $app->user($author);
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 2,
+                items        => MT::DataAPI::Resource->from_object( \@tm ),
+            };
+        },
+    },
+    {    # Filtered by archiveType.
+        path   => '/v2/sites/1/templates/96/templatemaps',
+        method => 'GET',
+        params => { archiveType => 'Category' },
+        result => sub {
+            +{  totalResults => 0,
+                items        => [],
+            };
+        },
+    },
+    {    # Filtered by buildType.
+        path   => '/v2/sites/1/templates/96/templatemaps',
+        method => 'GET',
+        params => { buildType => 'Static' },
+        result => sub {
+            require MT::PublishOption;
+            my @tm = $app->model('templatemap')->load(
+                {   template_id => 96,
+                    build_type  => MT::PublishOption::ONDEMAND(),
+                }
+            );
+
+            $app->user($author);
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 2,
+                items        => MT::DataAPI::Resource->from_object( \@tm ),
+            };
+        },
+    },
+    {    # Filtered by isPreferred.
+        path   => '/v2/sites/1/templates/96/templatemaps',
+        method => 'GET',
+        params => { isPreferred => 'true' },
+        result => sub {
+            my @tm = $app->model('templatemap')->load(
+                {   template_id  => 96,
+                    is_preferred => 1,
+                }
+            );
+
+            $app->user($author);
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 1,
+                items        => MT::DataAPI::Resource->from_object( \@tm ),
+            };
+        },
     },
 
     # get_templatemap - irregular tests

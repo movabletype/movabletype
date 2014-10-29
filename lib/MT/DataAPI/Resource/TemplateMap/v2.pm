@@ -65,6 +65,15 @@ sub fields {
                     $build_type};
             },
         },
+        {   name             => 'updatable',
+            type             => 'MT::DataAPI::Resource::DataType::Boolean',
+            bulk_from_object => sub {
+                my ( $objs, $hashes ) = @_;
+                my $app = MT->instance;
+                return if !$app->can_do('edit_templates');
+                $_->{updatable} = 1 for @$hashes;
+            },
+        },
     ];
 }
 

@@ -23,12 +23,8 @@ sub list {
         blog_id     => $site->id,
         template_id => $tmpl->id,
     );
-    my %args = (
-        sort  => 'id',
-        order => 'ascend',
-    );
 
-    my $res = filtered_list( $app, $endpoint, 'templatemap', \%terms, \%args )
+    my $res = filtered_list( $app, $endpoint, 'templatemap', \%terms )
         or return;
 
     return +{
