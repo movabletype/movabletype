@@ -21,7 +21,7 @@ eval(
     : "use MT::Test qw(:app :db :data);"
 );
 
-use MT::DataAPI::Endpoint::WidgetSet::v2;
+use boolean ();
 
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
@@ -37,6 +37,9 @@ my $version;
 $mock_app_api->mock( 'current_api_version',
     sub { $version = $_[1] if $_[1]; $version } );
 
+my @ws_fields
+    = qw( id name updatable widgets blog createdBy createdDate modifiedBy modifiedDate );
+
 my @suite = (
 
     # list_widgetsets - irregular tests
@@ -44,11 +47,41 @@ my @suite = (
         path   => '/v2/sites/5/widgetsets',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
 
     # list_widgetsets - normal tests
-    {   path   => '/v2/sites/1/widgetsets',
-        method => 'GET',
+    {    # Blog.
+        path      => '/v2/sites/1/widgetsets',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.template',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @ws = $app->model('template')->load(
+                { blog_id => 1,      type      => 'widgetset' },
+                { sort    => 'name', direction => 'ascend' },
+            );
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => scalar @ws,
+                items =>
+                    MT::DataAPI::Resource->from_object( \@ws, \@ws_fields ),
+            };
+        },
     },
 
     # get_widgetset - irregular tests
@@ -56,31 +89,72 @@ my @suite = (
         path   => '/v2/sites/1/widgetsets/500',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widgetset not found',
+                },
+            };
+        },
     },
     {    # Non-existent site.
         path   => '/v2/sites/5/widgetsets/136',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
     {    # Other site.
         path   => '/v2/sites/2/widgetsets/136',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widgetset not found',
+                },
+            };
+        },
     },
     {    # Other site (system).
         path   => '/v2/sites/0/widgetsets/136',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widgetset not found',
+                },
+            };
+        },
     },
     {    # Not widgetset (index template).
         path   => '/v2/sites/2/widgetsets/133',
         method => 'GET',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widgetset not found',
+                },
+            };
+        },
     },
 
     # get_widgetset - normal tests
-    {   path   => '/v2/sites/1/widgetsets/136',
-        method => 'GET',
+    {   path      => '/v2/sites/1/widgetsets/136',
+        method    => 'GET',
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.template',
+                count => 1,
+            },
+        ],
         result => sub {
             my $ws = $app->model('template')->load(
                 {   id      => 136,
@@ -88,11 +162,29 @@ my @suite = (
                     type    => 'widgetset',
                 }
             );
-            return MT::DataAPI::Endpoint::WidgetSet::v2::_from_object($ws);
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return MT::DataAPI::Resource->from_object( $ws, \@ws_fields );
         },
     },
 
     # create_widgetset - irregular tests
+    {    # Non-existent site.
+        path   => '/v2/sites/5/widgetsets',
+        method => 'POST',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
     {    # No resource.
         path     => '/v2/sites/1/widgetsets',
         method   => 'POST',
@@ -124,6 +216,21 @@ my @suite = (
                 widgets => [ { id => 132 }, { id => 131 }, ],
             },
         },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.widgetset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.widgetset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.widgetset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.widgetset',
+                count => 1,
+            },
+        ],
         result => sub {
             my $ws = $app->model('template')->load(
                 {   blog_id => 1,
@@ -131,11 +238,77 @@ my @suite = (
                     type    => 'widgetset',
                 }
             );
-            return MT::DataAPI::Endpoint::WidgetSet::v2::_from_object($ws);
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return MT::DataAPI::Resource->from_object( $ws, \@ws_fields );
         },
     },
 
     # update_widgetset - irregular tests
+    {    # Non-existent widgetset.
+        path   => '/v2/sites/1/widgetsets/500',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widgetset not found',
+                },
+            };
+        },
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/5/widgetsets/136',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+    {    # Other site.
+        path   => '/v2/sites/2/widgetsets/136',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widgetset not found',
+                },
+            };
+        },
+    },
+    {    # Other site (system).
+        path   => '/v2/sites/0/widgetsets/136',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widgetset not found',
+                },
+            };
+        },
+    },
+    {    # Non widgetset.
+        path   => '/v2/sites/1/widgetsets/138',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widgetset not found',
+                },
+            };
+        },
+    },
     {    # No resource.
         path     => '/v2/sites/1/widgetsets/136',
         method   => 'PUT',
@@ -156,6 +329,21 @@ my @suite = (
                 widgets => [ { id => 105 }, { id => 107 }, ],
             },
         },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.widgetset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.widgetset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.widgetset',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.widgetset',
+                count => 1,
+            },
+        ],
         result => sub {
             my $ws = $app->model('template')->load(
                 {   id      => 136,
@@ -164,7 +352,13 @@ my @suite = (
                     type    => 'widgetset',
                 }
             );
-            return MT::DataAPI::Endpoint::WidgetSet::v2::_from_object($ws);
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return MT::DataAPI::Resource->from_object( $ws, \@ws_fields );
         },
     },
 
@@ -173,26 +367,61 @@ my @suite = (
         path   => '/v2/sites/1/widgetsets/500',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widgetset not found',
+                },
+            };
+        },
     },
     {    # Non-existent site.
         path   => '/v2/sites/5/widgetsets/136',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
     {    # Other site.
         path   => '/v2/sites/2/widgetsets/136',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widgetset not found',
+                },
+            };
+        },
     },
     {    # Other site (system).
         path   => '/v2/sites/0/widgetsets/136',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widgetset not found',
+                },
+            };
+        },
     },
     {    # Not widgetset (index template).
         path   => '/v2/sites/2/widgetsets/133',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Widgetset not found',
+                },
+            };
+        },
     },
 
     # delete_widgetset - normal tests
@@ -201,6 +430,15 @@ my @suite = (
         setup  => sub {
             die if !$app->model('template')->load(136);
         },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_delete_permission_filter.template',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_delete.template',
+                count => 1,
+            },
+        ],
         complete => sub {
             my $ws = $app->model('template')->load(
                 {   id      => 136,

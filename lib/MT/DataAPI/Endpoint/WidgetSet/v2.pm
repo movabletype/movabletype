@@ -12,6 +12,9 @@ use warnings;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+my @fields
+    = qw( id name updatable widgets blog createdBy createdDate modifiedBy modifiedDate );
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -26,7 +29,8 @@ sub list {
 
     return +{
         totalResults => ( $res->{count} || 0 ),
-        items => [ map { _from_object($_) } @{ $res->{objects} } ],
+        items =>
+            MT::DataAPI::Resource->from_object( $res->{objects}, \@fields ),
     };
 }
 
@@ -39,7 +43,7 @@ sub get {
         'template', $ws->id, obj_promise($ws) )
         or return;
 
-    return _from_object($ws);
+    return MT::DataAPI::Resource->from_object( $ws, \@fields );
 }
 
 sub create {
@@ -84,7 +88,7 @@ sub create {
 
     save_object( $app, 'widgetset', $new_ws, $orig_ws ) or return;
 
-    return _from_object($new_ws);
+    return MT::DataAPI::Resource->from_object( $new_ws, \@fields );
 }
 
 sub update {
@@ -118,7 +122,7 @@ sub update {
 
     save_object( $app, 'widgetset', $new_ws, $orig_ws ) or return;
 
-    return _from_object($new_ws);
+    return MT::DataAPI::Resource->from_object( $new_ws, \@fields );
 }
 
 sub delete {
@@ -135,25 +139,9 @@ sub delete {
         $app->translate( 'Removing Widgetset failed: [_1]', $ws->errstr ),
         500 );
 
-    return _from_object($ws);
-}
+    $app->run_callbacks( 'data_api_post_delete.template', $app, $ws );
 
-sub _from_object {
-    my ($ws) = @_;
-    return if !$ws;
-
-    my @widgets;
-    if ( my $modulesets = $ws->modulesets ) {
-        my @widget_ids = split ',', $modulesets;
-        @widgets = MT->model('template')->load( { id => \@widget_ids, } );
-    }
-
-    return +{
-        id   => $ws->id,
-        name => $ws->name,
-        widgets =>
-            MT::DataAPI::Resource->from_object( \@widgets, [qw/ id name /] ),
-    };
+    return MT::DataAPI::Resource->from_object( $ws, \@fields );
 }
 
 sub _retrieve_site_and_widgetset {

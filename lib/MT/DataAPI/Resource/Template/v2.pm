@@ -163,6 +163,27 @@ sub fields {
         $MT::DataAPI::Resource::Common::fields{createdDate},
         $MT::DataAPI::Resource::Common::fields{modifiedBy},
         $MT::DataAPI::Resource::Common::fields{modifiedDate},
+
+        # WidgetSet's fields.
+        {   name        => 'widgets',
+            from_object => sub {
+                my ($obj) = @_;
+
+                if ( !$obj->type || $obj->type ne 'widgetset' ) {
+                    return;
+                }
+
+                my @widgets;
+                if ( my $modulesets = $obj->modulesets ) {
+                    my @widget_ids = split ',', $modulesets;
+                    @widgets = MT->model('template')
+                        ->load( { id => \@widget_ids, } );
+                }
+
+                return MT::DataAPI::Resource->from_object( \@widgets,
+                    [qw/ id name /] );
+            },
+        },
     ];
 }
 
