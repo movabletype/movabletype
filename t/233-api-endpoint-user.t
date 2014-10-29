@@ -659,6 +659,70 @@ my @suite = (
         },
         complete => sub { $is_superuser = 0 },
     },
+    {    # Grant system permissions.
+        path   => '/v2/users',
+        method => 'POST',
+        setup  => sub { $is_superuser = 1 },
+        params => {
+            user => {
+                name              => 'create-user-with-permissions',
+                displayName       => 'create user with permissions',
+                password          => 'password',
+                email             => 'chuckd@sixapart.com',
+                systemPermissions => [ qw( create_blog view_log ), ],
+            },
+        },
+        result => sub {
+            $app->user($author);
+            return $app->model('author')
+                ->load( { name => 'create-user-with-permissions' } );
+        },
+        complete => sub { $is_superuser = 0 },
+    },
+    {    # Grant system permissions (superuser).
+        path   => '/v2/users',
+        method => 'POST',
+        setup  => sub { $is_superuser = 1 },
+        params => {
+            user => {
+                name              => 'create-super-user',
+                displayName       => 'create super user',
+                password          => 'password',
+                email             => 'chuckd@sixapart.com',
+                systemPermissions => [ qw( administer ), ],
+            },
+        },
+        result => sub {
+            return $app->model('author')
+                ->load( { name => 'create-super-user' } );
+        },
+        complete => sub { $is_superuser = 0 },
+    },
+
+    # update_user - normal tests
+    {    # Grant permissions.
+        path   => '/v2/users/3',
+        method => 'PUT',
+        setup  => sub { $is_superuser = 1 },
+        params =>
+            { user => { systemPermissions => [qw( create_website )], }, },
+        result => sub {
+            $app->model('author')->load(3);
+        },
+        complete => sub { $is_superuser = 0 },
+    },
+    {    # Update permissions.
+        path   => '/v2/users/3',
+        method => 'PUT',
+        setup  => sub { $is_superuser = 1 },
+        params => {
+            user => { systemPermissions => [qw( view_log manage_plugins )], },
+        },
+        result => sub {
+            $app->model('author')->load(3);
+        },
+        complete => sub { $is_superuser = 0 },
+    },
 
     # unlock_user - irregular tests
     {    # Non-existent user.

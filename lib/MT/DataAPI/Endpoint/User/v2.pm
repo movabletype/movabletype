@@ -9,6 +9,8 @@ package MT::DataAPI::Endpoint::User::v2;
 use strict;
 use warnings;
 
+use MT::Author;
+use MT::Permission;
 use MT::Lockout;
 use MT::CMS::Tools;
 use MT::DataAPI::Endpoint::Common;
@@ -42,7 +44,98 @@ sub create {
 
     save_object( $app, 'author', $new_user, $orig_user ) or return;
 
+    # Grant system permissions.
+    if (   $app->user->is_superuser
+        && $new_user->status == MT::Author::ACTIVE() )
+    {
+
+        my $user_json = $app->param('user');
+        my $user_hash = $app->current_format->{unserialize}->($user_json);
+        if ( exists $user_hash->{systemPermissions} ) {
+            my $perms = $user_hash->{systemPermissions};
+            my @perms = ref($perms) eq 'ARRAY' ? @$perms : ($perms);
+
+            for my $p (@perms) {
+                next if !defined($p);
+
+                if ( $p eq 'administer' ) {
+                    $new_user->is_superuser(1);
+                    last;
+                }
+                else {
+                    my $name = 'can_' . $p;
+                    eval $new_user->$name(1);
+                }
+            }
+
+            $new_user->save
+                or return $app->error(
+                $app->translate(
+                    'Saving [_1] failed: [_2]', $new_user->class_label,
+                    $new_user->errstr
+                ),
+                500
+                );
+        }
+    }
+
     return $new_user;
+}
+
+# Update.
+sub update {
+    my ( $app, $endpoint ) = @_;
+
+    my $user = get_target_user(@_)
+        or return;
+
+    my $new_user = $app->resource_object( 'user', $user )
+        or return;
+
+    save_object( $app, 'author', $new_user, $user )
+        or return;
+
+    # Update system permissions.
+    if (   $app->user->is_superuser
+        && $new_user->status == MT::Author::ACTIVE()
+        && $app->user->id != $new_user->id )
+    {
+
+        my $user_json = $app->param('user');
+        my $user_hash = $app->current_format->{unserialize}->($user_json);
+        if ( exists $user_hash->{systemPermissions} ) {
+            my $perms = $user_hash->{systemPermissions};
+            my @perms = ref($perms) eq 'ARRAY' ? @$perms : ($perms);
+
+            my $sys_perms = MT::Permission->perms('system');
+            my @sys_perms = map { $_->[0] } @$sys_perms;
+
+            for my $p (@sys_perms) {
+                next if !defined($p);
+
+                my $can_do = ( grep { $p eq $_ } @perms ) ? 1 : 0;
+
+                if ( $p eq 'administer' ) {
+                    $new_user->is_superuser($can_do);
+                }
+                else {
+                    my $name = 'can_' . $p;
+                    $new_user->$name($can_do);
+                }
+            }
+
+            $new_user->save
+                or return $app->error(
+                $app->translate(
+                    'Saving [_1] failed: [_2]', $new_user->class_label,
+                    $new_user->errstr
+                ),
+                500
+                );
+        }
+    }
+
+    $new_user;
 }
 
 sub delete {

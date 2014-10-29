@@ -102,6 +102,85 @@ sub fields {
                 return $obj->locked_out;
             },
         },
+        {   name             => 'systemPermissions',
+            bulk_from_object => sub {
+                my ( $objs, $hashes ) = @_;
+                my $app = MT->instance;
+
+                my $perms = $app->model('permission')->perms_from_registry;
+
+                for my $i ( 0 .. ( scalar(@$objs) - 1 ) ) {
+
+                    my $obj  = $objs->[$i];
+                    my $hash = $hashes->[$i];
+
+                    my %user_perms;
+
+                    # General permissions...
+                    my $sys_perms = $obj->permissions(0);
+                    if ( $sys_perms && $sys_perms->permissions ) {
+                        my @sys_perms = split( ',', $sys_perms->permissions );
+                        foreach my $perm (@sys_perms) {
+                            $perm =~ s/'(.+)'/$1/;
+                            $user_perms{ 'system.' . $perm } = 1;
+                        }
+                    }
+
+                    # Make permission list
+                    my @perms;
+                    my @keys = keys %$perms;
+                    foreach my $key (@keys) {
+                        next if $key !~ m/^system./;
+                        my $perm;
+                        ( $perm->{id} = $key ) =~ s/^system\.//;
+
+                        $perm->{order} = $perms->{$key}->{order};
+                        $perm->{can_do}
+                            = $obj->id ? $user_perms{$key} : undef;
+
+                        if ( exists $perms->{$key}->{inherit_from} ) {
+                            my @inherit;
+                            my $inherit_from = $perms->{$key}->{inherit_from};
+                            if ($inherit_from) {
+                                my @child;
+                                foreach (@$inherit_from) {
+                                    my $child = $_;
+                                    $child =~ s/^system\.//;
+                                    push @child, $child;
+                                }
+                                $perm->{children} = \@child;
+                            }
+                        }
+
+                        push @perms, $perm;
+                    }
+
+                    # Process inheritance.
+                    my %all_children;
+                    for my $p (@perms) {
+                        if ( $p->{can_do} ) {
+                            $all_children{$_} = 1 for @{ $p->{children} };
+                        }
+                    }
+
+                    my @can_do = keys %all_children;
+                    for my $p (@perms) {
+                        if ( grep { $p->{id} eq $_ } @can_do ) {
+                            $p->{can_do} = 1;
+                        }
+                    }
+
+                    # Filter and sort.
+                    my @perms_id = map { $_->{id} }
+                        sort { $a->{order} <=> $b->{order} }
+                        grep { $_->{can_do} } @perms;
+
+                    $hash->{systemPermissions} = \@perms_id;
+                }
+
+                return;
+            },
+        },
     ];
 }
 
