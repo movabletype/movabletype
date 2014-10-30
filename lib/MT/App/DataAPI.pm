@@ -1862,6 +1862,14 @@ sub core_endpoints {
                 403 => 'Do not have permission to recover password for user.',
             },
         },
+        {   id             => 'recover_password',
+            route          => '/recover_password',
+            version        => 2,
+            verb           => 'POST',
+            handler        => "${pkg}User::v2::recover",
+            requires_login => 0,
+        },
+
     ];
 }
 

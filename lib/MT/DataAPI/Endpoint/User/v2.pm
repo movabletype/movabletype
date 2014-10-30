@@ -120,6 +120,38 @@ sub recover_password {
     }
 }
 
+sub recover {
+    my ( $app, $endpoint ) = @_;
+
+    my $param;
+
+    no warnings 'once';
+    local *MT::App::DataAPI::start_recover = sub { $param = $_[1] };
+
+    MT::CMS::Tools::recover_password($app);
+
+    return if $app->errstr;
+
+    if ( $param->{error} ) {
+        return $app->error( $param->{error}, 400 );
+    }
+
+    if ( $param->{not_unique_email} ) {
+        return $app->error(
+            $app->translate(
+                'The email address provided is not unique.  Please enter your username.'
+            ),
+            409
+        );
+    }
+
+    my $message = $app->translate(
+        'An email with a link to reset your password has been sent to your email address ([_1]).',
+        $app->param('email')
+    );
+    return +{ status => 'success', message => $message };
+}
+
 1;
 
 __END__
