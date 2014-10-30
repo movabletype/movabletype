@@ -545,7 +545,7 @@ sub site_url {
     my $blog = shift;
 
     if (@_) {
-        my $url = @_[0];
+        my $url = $_[0];
         $url .= '/' unless $url =~ m{/$};
         return $blog->SUPER::site_url($url);
     }
@@ -656,7 +656,7 @@ sub archive_url {
     my $blog = shift;
 
     if (@_) {
-        my $url = @_[0];
+        my $url = $_[0];
         $url .= '/' unless $url =~ m{/$};
         $blog->SUPER::archive_url($url) || $blog->site_url;
     }
