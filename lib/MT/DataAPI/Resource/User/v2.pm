@@ -8,6 +8,8 @@ package MT::DataAPI::Resource::User::v2;
 use strict;
 use warnings;
 
+use MT::Author;
+use MT::Permission;
 use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
@@ -20,6 +22,7 @@ sub updatable_fields {
             dateFormat
             textFormat
             tagDelimiter
+            systemPermissions
             ),
     ];
 }
@@ -103,85 +106,158 @@ sub fields {
             },
         },
         {   name             => 'systemPermissions',
-            bulk_from_object => sub {
-                my ( $objs, $hashes ) = @_;
-                my $app = MT->instance;
-
-                my $perms = $app->model('permission')->perms_from_registry;
-
-                for my $i ( 0 .. ( scalar(@$objs) - 1 ) ) {
-
-                    my $obj  = $objs->[$i];
-                    my $hash = $hashes->[$i];
-
-                    my %user_perms;
-
-                    # General permissions...
-                    my $sys_perms = $obj->permissions(0);
-                    if ( $sys_perms && $sys_perms->permissions ) {
-                        my @sys_perms = split( ',', $sys_perms->permissions );
-                        foreach my $perm (@sys_perms) {
-                            $perm =~ s/'(.+)'/$1/;
-                            $user_perms{ 'system.' . $perm } = 1;
-                        }
-                    }
-
-                    # Make permission list
-                    my @perms;
-                    my @keys = keys %$perms;
-                    foreach my $key (@keys) {
-                        next if $key !~ m/^system./;
-                        my $perm;
-                        ( $perm->{id} = $key ) =~ s/^system\.//;
-
-                        $perm->{order} = $perms->{$key}->{order};
-                        $perm->{can_do}
-                            = $obj->id ? $user_perms{$key} : undef;
-
-                        if ( exists $perms->{$key}->{inherit_from} ) {
-                            my @inherit;
-                            my $inherit_from = $perms->{$key}->{inherit_from};
-                            if ($inherit_from) {
-                                my @child;
-                                foreach (@$inherit_from) {
-                                    my $child = $_;
-                                    $child =~ s/^system\.//;
-                                    push @child, $child;
-                                }
-                                $perm->{children} = \@child;
-                            }
-                        }
-
-                        push @perms, $perm;
-                    }
-
-                    # Process inheritance.
-                    my %all_children;
-                    for my $p (@perms) {
-                        if ( $p->{can_do} ) {
-                            $all_children{$_} = 1 for @{ $p->{children} };
-                        }
-                    }
-
-                    my @can_do = keys %all_children;
-                    for my $p (@perms) {
-                        if ( grep { $p->{id} eq $_ } @can_do ) {
-                            $p->{can_do} = 1;
-                        }
-                    }
-
-                    # Filter and sort.
-                    my @perms_id = map { $_->{id} }
-                        sort { $a->{order} <=> $b->{order} }
-                        grep { $_->{can_do} } @perms;
-
-                    $hash->{systemPermissions} = \@perms_id;
-                }
-
-                return;
-            },
+            bulk_from_object => \&_system_permissions_bulk_from_object,
+            to_object => sub { },    # Do nothing.
+            type_to_object => \&_system_permissions_type_to_object,
         },
     ];
+}
+
+sub _system_permissions_bulk_from_object {
+    my ( $objs, $hashes ) = @_;
+    my $app = MT->instance;
+
+    my $perms = $app->model('permission')->perms_from_registry;
+
+    for my $i ( 0 .. ( scalar(@$objs) - 1 ) ) {
+
+        my $obj  = $objs->[$i];
+        my $hash = $hashes->[$i];
+
+        my %user_perms;
+
+        # General permissions...
+        my $sys_perms = $obj->permissions(0);
+        if ( $sys_perms && $sys_perms->permissions ) {
+            my @sys_perms = split( ',', $sys_perms->permissions );
+            foreach my $perm (@sys_perms) {
+                $perm =~ s/'(.+)'/$1/;
+                $user_perms{ 'system.' . $perm } = 1;
+            }
+        }
+
+        # Make permission list
+        my @perms;
+        my @keys = keys %$perms;
+        foreach my $key (@keys) {
+            next if $key !~ m/^system./;
+            my $perm;
+            ( $perm->{id} = $key ) =~ s/^system\.//;
+
+            $perm->{order} = $perms->{$key}->{order};
+            $perm->{can_do} = $obj->id ? $user_perms{$key} : undef;
+
+            if ( exists $perms->{$key}->{inherit_from} ) {
+                my @inherit;
+                my $inherit_from = $perms->{$key}->{inherit_from};
+                if ($inherit_from) {
+                    my @child;
+                    foreach (@$inherit_from) {
+                        my $child = $_;
+                        $child =~ s/^system\.//;
+                        push @child, $child;
+                    }
+                    $perm->{children} = \@child;
+                }
+            }
+
+            push @perms, $perm;
+        }
+
+        # Process inheritance.
+        my %all_children;
+        for my $p (@perms) {
+            if ( $p->{can_do} ) {
+                $all_children{$_} = 1 for @{ $p->{children} };
+            }
+        }
+
+        my @can_do = keys %all_children;
+        for my $p (@perms) {
+            if ( grep { $p->{id} eq $_ } @can_do ) {
+                $p->{can_do} = 1;
+            }
+        }
+
+        # Filter and sort.
+        my @perms_id = map { $_->{id} }
+            sort { $a->{order} <=> $b->{order} }
+            grep { $_->{can_do} } @perms;
+
+        $hash->{systemPermissions} = \@perms_id;
+    }
+
+    return;
+
+}
+
+sub _system_permissions_type_to_object {
+    my ( $hashes, $objs ) = @_;
+    my $app = MT->instance;
+    my $user = $app->user or return;
+
+    return if !$user->is_superuser;
+
+    for my $i ( 0 .. ( scalar(@$hashes) - 1 ) ) {
+        my $hash = $hashes->[$i];
+        my $obj  = $objs->[$i];
+
+        next if $obj->status != MT::Author::ACTIVE();
+
+        if ( $obj->id ) {
+            next if $user->id == $obj->id;
+            _to_object_when_updating( $hash, $obj );
+        }
+        else {
+            _to_object_when_creating( $hash, $obj );
+        }
+    }
+
+    return;
+}
+
+sub _to_object_when_updating {
+    my ( $hash, $obj ) = @_;
+
+    my $perms = $hash->{systemPermissions};
+    my @perms = ref($perms) eq 'ARRAY' ? @$perms : ($perms);
+
+    my $sys_perms = MT::Permission->perms('system');
+    my @sys_perms = map { $_->[0] } @$sys_perms;
+
+    for my $p (@sys_perms) {
+        next if !defined($p);
+
+        my $can_do = ( grep { $p eq $_ } @perms ) ? 1 : 0;
+
+        if ( $p eq 'administer' ) {
+            $obj->is_superuser($can_do);
+        }
+        else {
+            my $name = 'can_' . $p;
+            $obj->$name($can_do);
+        }
+    }
+}
+
+sub _to_object_when_creating {
+    my ( $hash, $obj ) = @_;
+
+    my $perms = $hash->{systemPermissions};
+    my @perms = ref($perms) eq 'ARRAY' ? @$perms : ($perms);
+
+    for my $p (@perms) {
+        next if !defined($p);
+
+        if ( $p eq 'administer' ) {
+            $obj->is_superuser(1);
+            last;
+        }
+        else {
+            my $name = 'can_' . $p;
+            eval $obj->$name(1);
+        }
+    }
 }
 
 1;
