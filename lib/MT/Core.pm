@@ -1203,29 +1203,8 @@ BEGIN {
             log          => '$Core::MT::Log::list_props',
             filter       => '$Core::MT::Filter::list_props',
             permission   => '$Core::MT::Permission::list_props',
+            template     => '$Core::MT::Template::list_props',
             templatemap  => '$Core::MT::TemplateMap::list_props',
-
-            # TODO: Move to MT::Template.
-            template => {
-                name    => { auto => 1, display => 'none' },
-                blog_id => {
-                    auto    => 1,
-                    display => 'none',
-                },
-                type => {
-                    terms => sub {
-                        my $prop = shift;
-                        my ( $args, $db_terms, $db_args ) = @_;
-                        return +{ type => $args->{value} };
-                    },
-                    display => 'none',
-                },
-                content => {
-                    base    => '__virtual.content',
-                    fields  => [qw( name identifier text )],
-                    display => 'none',
-                },
-            },
         },
         system_filters => {
             entry     => '$Core::MT::Entry::system_filters',
