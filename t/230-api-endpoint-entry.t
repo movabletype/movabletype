@@ -181,6 +181,10 @@ my @suite = (
             },
         ],
     },
+
+    # version 2
+
+    # create_entry
     {   path   => '/v2/sites/1/entries',
         method => 'POST',
         params => {
@@ -227,7 +231,45 @@ my @suite = (
             is( $categories[0]->id, 1, 'Attached category ID is 1' );
         },
     },
-    {   path   => '/v2/sites/1/entries/2',
+    {    # Set format.
+        path   => '/v2/sites/1/entries',
+        method => 'POST',
+        params => {
+            entry => {
+                format => 'markdown',
+                title  => 'create-entry-with-markdown',
+                body   => <<'__BODY__',
+1. foo
+2. bar
+3. baz
+__BODY__
+            },
+        },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                count => 1,
+            },
+        ],
+        result => sub {
+            $app->model('entry')
+                ->load(
+                { blog_id => 1, title => 'create-entry-with-markdown' } );
+        },
+    },
+
+    # update_entry
+    {    # Attach categories.
+        path   => '/v2/sites/1/entries/2',
         method => 'PUT',
         params => {
             entry => {
@@ -264,7 +306,8 @@ my @suite = (
             is( scalar @categories, 3, 'Entry has 3 category' );
         },
     },
-    {   path   => '/v2/sites/1/entries/2',
+    {    # Update categories.
+        path   => '/v2/sites/1/entries/2',
         method => 'PUT',
         params =>
             { entry => { categories => [ { id => 2 }, { id => 3 } ] }, },
@@ -302,7 +345,9 @@ my @suite = (
         params => { entry => { categories => [ id => 20 ] } },
         code   => 400,
     },
-    {   path   => '/v2/sites/1/entries',
+
+    {    # Attach assets.
+        path   => '/v2/sites/1/entries',
         method => 'POST',
         params => {
             entry => {
@@ -440,6 +485,66 @@ my @suite = (
             is( scalar @oa, 1, 'Entry has 1 asset' );
         },
     },
+    {    # Update format.
+        path   => '/v2/sites/1/entries/2',
+        method => 'PUT',
+        params => {
+            entry => {
+                format => 'markdown',
+                body   => <<'__BODY__',
+1. foo
+2. bar
+3. baz
+__BODY__
+            },
+        },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                count => 1,
+            },
+        ],
+        result   => sub { $app->model('entry')->load(2) },
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $got      = $app->current_format->{unserialize}->($body);
+            my $expected = $app->model('entry')->load(2);
+
+            isnt( $got->{body}, $expected->text );
+        },
+    },
+    {    # no_format_filter = 1
+        path      => '/v2/sites/1/entries/2',
+        method    => 'GET',
+        params    => { no_text_filter => 1, },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.entry',
+                count => 1,
+            },
+        ],
+        result   => sub { $app->model('entry')->load(2) },
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $got      = $app->current_format->{unserialize}->($body);
+            my $expected = $app->model('entry')->load(2);
+
+            is( $got->{body}, $expected->text, 'no_text_filter = 1.' );
+        },
+    },
+
+    # list_assets_for_entry
     {   path      => '/v2/sites/1/entries/2/assets',
         method    => 'GET',
         callbacks => [
@@ -474,6 +579,8 @@ my @suite = (
             is_deeply( \@json_ids, \@asset_ids, 'Asset IDs are correct' );
         },
     },
+
+    # list_categories_for_entry
     {   path     => '/v2/sites/1/categories/1/entries',
         method   => 'GET',
         complete => sub {

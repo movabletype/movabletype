@@ -235,6 +235,68 @@ my @suite = (
             );
         },
     },
+    {    # no_text_filter = 0
+        path   => '/v2/sites/1/pages/23',
+        method => 'GET',
+        setup  => sub {
+            my $page = $app->model('page')->load(23);
+            $page->convert_breaks('markdown');
+            my $body = <<'__BODY__';
+1. foo
+2. bar
+3. baz
+__BODY__
+            $page->text($body);
+            $page->save or die $page->errstr;
+        },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.page',
+                count => 1,
+            },
+        ],
+        result => sub {
+            $app->model('page')->load(
+                {   id    => 23,
+                    class => 'page',
+                }
+            );
+        },
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $got      = $app->current_format->{unserialize}->($body);
+            my $expected = $app->model('page')->load(23);
+
+            isnt( $got->{body}, $expected->text );
+        },
+    },
+    {    # no_text_filter = 1
+        path      => '/v2/sites/1/pages/23',
+        method    => 'GET',
+        params    => { no_text_filter => 1 },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_view_permission_filter.page',
+                count => 1,
+            },
+        ],
+        result => sub {
+            $app->model('page')->load(
+                {   id    => 23,
+                    class => 'page',
+                }
+            );
+        },
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $got      = $app->current_format->{unserialize}->($body);
+            my $expected = $app->model('page')->load(23);
+
+            is( $got->{body}, $expected->text );
+        },
+    },
 
     # create_page - irregular tests
     {    # No resource.
@@ -286,6 +348,24 @@ my @suite = (
             },
         },
     },
+    {    # Invalid format.
+        path   => '/v2/sites/1/pages',
+        method => 'POST',
+        params => {
+            page => {
+                title  => 'create-page-with-format',
+                text   => 'create page with format',
+                format => 'invalid',
+            },
+        },
+        code   => 409,
+        result => {
+            error => {
+                code    => 409,
+                message => "Invalid format: invalid\n",
+            },
+        },
+    },
 
     # create_page - normal tests
     {   path   => '/v2/sites/1/pages',
@@ -332,6 +412,25 @@ my @suite = (
             );
             my $folder = $page->category;
             is( $folder->id, 22, 'Attached folder.' );
+        },
+    },
+    {    # Set format.
+        path   => '/v2/sites/1/pages',
+        method => 'POST',
+        params => {
+            page => {
+                title  => 'create-page-with-format',
+                text   => 'create page with format',
+                format => 'markdown',
+            },
+        },
+        result => sub {
+            $app->model('page')->load(
+                {   blog_id => 1,
+                    class   => 'page',
+                    title   => 'create-page-with-format',
+                }
+            );
         },
     },
 
@@ -393,6 +492,18 @@ my @suite = (
             check_error_message( $body, 'A resource "page" is required.' );
         },
     },
+    {    # Invalid format.
+        path   => '/v2/sites/1/pages/23',
+        method => 'PUT',
+        params => { page => { format => 'invalid', }, },
+        code   => 409,
+        result => {
+            error => {
+                code    => 409,
+                message => "Invalid format: invalid\n",
+            },
+        },
+    },
 
     # update_page - normal tests
     {   path   => '/v2/sites/1/pages/23',
@@ -432,6 +543,22 @@ my @suite = (
         complete => sub {
             my $page = $app->model('page')->load(23);
             is( $page->category, undef, 'Detached folder.' );
+        },
+    },
+    {    # Update format.
+        path   => '/v2/sites/1/pages/23',
+        method => 'PUT',
+        params => { page => { format => '__default__' }, },
+        result => sub {
+            $app->model('page')->load(23);
+        },
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $got      = $app->current_format->{unserialize}->($body);
+            my $expected = $app->model('page')->load(23);
+
+            isnt( $got->{body}, $expected->text );
         },
     },
 

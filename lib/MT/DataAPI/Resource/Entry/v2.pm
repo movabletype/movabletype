@@ -11,6 +11,13 @@ use warnings;
 use MT::Category;
 use MT::DataAPI::Resource;
 
+sub updatable_fields {
+    [   qw(
+            format
+            ),
+    ];
+}
+
 sub fields {
     [   {   name        => 'categories',
             from_object => sub {
@@ -34,8 +41,62 @@ sub fields {
                     ]
                 );
             },
-        }
+        },
+        {   name  => 'format',
+            alias => 'convert_breaks',
+        },
+        {    # Update.
+            name                => 'body',
+            alias               => 'text',
+            from_object_default => '',
+            from_object         => sub {
+                my ($obj) = @_;
+                return _from_object_text( $obj, 'text' );
+            },
+        },
+        {    # Update.
+            name                => 'more',
+            alias               => 'text_more',
+            from_object_default => '',
+            from_object         => sub {
+                my ($obj) = @_;
+                return _from_object_text( $obj, 'text_more' );
+            },
+        },
     ];
+}
+
+sub _from_object_text {
+    my ( $obj, $col ) = @_;
+    my $app  = MT->instance;
+    my $user = $app->user;
+
+    if ( $user && $user->id && $app->param('no_text_filter') ) {
+        return $obj->$col;
+    }
+    else {
+        return _apply_text_filters( $app, $obj, $col );
+    }
+}
+
+sub _apply_text_filters {
+    my ( $app, $obj, $col ) = @_;
+
+    my $blog = $obj->blog;
+    my $convert_breaks
+        = defined $obj->convert_breaks
+        ? $obj->convert_breaks
+        : ( $blog ? $blog->convert_paras : '__default__' );
+
+    if ($convert_breaks) {
+        my $filters = $obj->text_filters;
+        push @$filters, '__default__' unless @$filters;
+        my $text = MT->apply_text_filters( $obj->$col, $filters );
+        return $text;
+    }
+    else {
+        return $obj->$col;
+    }
 }
 
 1;

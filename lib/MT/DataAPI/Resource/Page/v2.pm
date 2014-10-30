@@ -13,7 +13,9 @@ use MT::DataAPI::Resource::Entry;
 use MT::DataAPI::Resource::Entry::v2;
 
 sub updatable_fields {
-    [ @{ MT::DataAPI::Resource::Entry::updatable_fields() }, ];
+    [   @{ MT::DataAPI::Resource::Entry::updatable_fields() },
+        @{ MT::DataAPI::Resource::Entry::v2::updatable_fields() },
+    ];
 }
 
 sub fields {

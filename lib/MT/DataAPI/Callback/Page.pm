@@ -93,6 +93,10 @@ sub cms_pre_load_filtered_list {
     1;
 }
 
+sub save_filter {
+    MT::DataAPI::Callback::Entry::save_filter(@_);
+}
+
 1;
 
 __END__

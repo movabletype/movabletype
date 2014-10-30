@@ -1836,6 +1836,7 @@ sub init_plugins {
                 "${pfx}Entry::cms_pre_load_filtered_list",
             $pkg . 'list_permission_filter.entry' => "${pfx}Entry::can_list",
             $pkg . 'view_permission_filter.entry' => "${pfx}Entry::can_view",
+            $pkg . 'save_filter.entry' => "${pfx}Entry::save_filter",
 
             # page callbacks
             $pkg
@@ -1843,6 +1844,7 @@ sub init_plugins {
                 "${pfx}Page::cms_pre_load_filtered_list",
             $pkg . 'list_permission_filter.page' => "${pfx}Page::can_list",
             $pkg . 'view_permission_filter.page' => "${pfx}Page::can_view",
+            $pkg . 'save_filter.page'            => "${pfx}Page::save_filter",
 
             # user callbacks
             $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
