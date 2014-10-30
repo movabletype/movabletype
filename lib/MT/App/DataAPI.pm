@@ -1486,6 +1486,23 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of templates.',
             },
         },
+        {   id             => 'list_all_templates',
+            route          => '/templates',
+            version        => 2,
+            handler        => "${pkg}Template::v2::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'blog_id',
+                sortOrder    => 'ascend',
+                searchFields => 'name,templateType,text',
+                filterKeys   => 'type',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of templates.',
+            },
+        },
         {   id          => 'get_template',
             route       => '/sites/:site_id/templates/:template_id',
             version     => 2,

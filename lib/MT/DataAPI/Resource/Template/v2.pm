@@ -111,9 +111,9 @@ sub fields {
         },
         {   name        => 'archiveTypes',
             from_object => sub {
-                my ($obj)    = @_;
-                my $app      = MT->instance;
-                my $blog     = $app->blog;
+                my ($obj) = @_;
+                my $app = MT->instance;
+                my $blog_id = $obj->blog_id || 0;
                 my $obj_type = $obj->type;
 
                 if (!(  grep { $obj_type eq $_ }
@@ -125,7 +125,7 @@ sub fields {
                 }
 
                 my @maps = $app->model('templatemap')->load(
-                    {   blog_id     => $blog->id,
+                    {   blog_id     => $blog_id,
                         template_id => $obj->id,
                     }
                 );

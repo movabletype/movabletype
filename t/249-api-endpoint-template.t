@@ -277,6 +277,34 @@ my @suite = (
         },
     },
 
+    # list_all_templates - normal tests
+    {   path   => '/v2/templates',
+        method => 'GET',
+        result => sub {
+            my @terms_args = (
+                { type => { not => [qw/ backup /] }, },
+                {   sort      => 'blog_id',
+                    direction => 'ascend',
+                    limit     => 10,
+                },
+            );
+
+            my $total_results = $app->model('template')->count(@terms_args);
+            my @tmpl          = $app->model('template')->load(@terms_args);
+
+            $app->user($author);
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => $total_results,
+                items        => MT::DataAPI::Resource->from_object( \@tmpl ),
+            };
+        },
+    },
+
     # get_template - irregular tests
     {    # Non-existent template.
         path   => '/v2/sites/2/templates/300',
