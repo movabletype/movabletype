@@ -158,6 +158,31 @@ my @suite = (
     # list_templates - normal tests
     {   path   => '/v2/sites/2/templates',
         method => 'GET',
+        result => sub {
+            my @terms_args = (
+                {   blog_id => 2,
+                    type    => { not => [qw( backup widget widgetset )] },
+                },
+                {   sort      => 'name',
+                    direction => 'ascend',
+                    limit     => 10,
+                },
+            );
+
+            my $total_results = $app->model('template')->count(@terms_args);
+            my @tmpl          = $app->model('template')->load(@terms_args);
+
+            $app->user($author);
+
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => $total_results,
+                items        => MT::DataAPI::Resource->from_object( \@tmpl ),
+            };
+        },
     },
     {    # Search name.
         path   => '/v2/sites/2/templates',
@@ -282,7 +307,7 @@ my @suite = (
         method => 'GET',
         result => sub {
             my @terms_args = (
-                { type => { not => [qw/ backup /] }, },
+                { type => { not => [qw/ backup widget widgetset /] }, },
                 {   sort      => 'blog_id',
                     direction => 'ascend',
                     limit     => 10,

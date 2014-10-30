@@ -16,7 +16,7 @@ use MT::DataAPI::Resource;
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    my %terms = ( type => { not => 'backup' }, );
+    my %terms = ( type => { not => [qw/ backup widget widgetset /] }, );
 
     my $res = filtered_list( $app, $endpoint, 'template', \%terms ) or return;
 
@@ -31,6 +31,10 @@ sub get {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $tmpl ) = context_objects(@_) or return;
+
+    if ( grep { $tmpl->type eq $_ } qw/ widget widgetset / ) {
+        return $app->error( $app->translate('Template not found'), 404 );
+    }
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
         'template', $tmpl->id, obj_promise($tmpl) )
@@ -61,6 +65,10 @@ sub update {
 
     my ( $site, $orig_tmpl ) = context_objects(@_) or return;
 
+    if ( grep { $orig_tmpl->type eq $_ } qw/ widget widgetset / ) {
+        return $app->error( $app->translate('Template not found'), 404 );
+    }
+
     my $new_tmpl = $app->resource_object( 'template', $orig_tmpl )
         or return;
 
@@ -74,6 +82,10 @@ sub delete {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $tmpl ) = context_objects(@_) or return;
+
+    if ( grep { $tmpl->type eq $_ } qw/ widget widgetset / ) {
+        return $app->error( $app->translate('Template not found'), 404 );
+    }
 
     run_permission_filter( $app, 'data_api_delete_permission_filter',
         'template', $tmpl )
@@ -141,6 +153,10 @@ sub refresh {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $tmpl ) = context_objects(@_) or return;
+
+    if ( grep { $tmpl->type eq $_ } qw/ backup widget widgetset / ) {
+        return $app->error( $app->translate('Template not found'), 404 );
+    }
 
     my @messages;
     local *MT::App::DataAPI::build_page = sub {
