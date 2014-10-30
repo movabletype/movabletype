@@ -9,6 +9,7 @@ use strict;
 use warnings;
 
 use MT::Category;
+use MT::Template::Context;
 use MT::DataAPI::Resource;
 
 sub updatable_fields {
@@ -89,9 +90,16 @@ sub _apply_text_filters {
         : ( $blog ? $blog->convert_paras : '__default__' );
 
     if ($convert_breaks) {
+        my $ctx = MT::Template::Context->new;
+        $ctx->stash( 'entry', $obj );
+        if ($blog) {
+            $ctx->stash( 'blog_id', $blog->id || 0 );
+            $ctx->stash( 'blog', $blog );
+        }
+
         my $filters = $obj->text_filters;
         push @$filters, '__default__' unless @$filters;
-        my $text = MT->apply_text_filters( $obj->$col, $filters );
+        my $text = MT->apply_text_filters( $obj->$col, $filters, $ctx );
         return $text;
     }
     else {
