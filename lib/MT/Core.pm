@@ -1217,7 +1217,11 @@ BEGIN {
 
             # TODO: Move to MT::Template.
             template => {
-                name => { auto => 1, display => 'none' },
+                name    => { auto => 1, display => 'none' },
+                blog_id => {
+                    auto    => 1,
+                    display => 'none',
+                },
                 type => {
                     terms => sub {
                         my $prop = shift;

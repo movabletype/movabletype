@@ -1618,6 +1618,22 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of widgetsets.',
             },
         },
+        {   id             => 'list_widgetsets',
+            route          => '/widgetsets',
+            version        => 2,
+            handler        => "${pkg}WidgetSet::v2::list_all",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'blog_id',
+                sortOrder    => 'ascend',
+                searchFields => 'name',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of widgetsets.',
+            },
+        },
         {   id          => 'get_widgetset',
             route       => '/sites/:site_id/widgetsets/:widgetset_id',
             version     => 2,
