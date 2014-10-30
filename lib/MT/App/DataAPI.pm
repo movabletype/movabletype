@@ -1687,6 +1687,22 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of widgets.',
             },
         },
+        {   id             => 'list_all_widgets',
+            route          => '/widgets',
+            version        => 2,
+            handler        => "${pkg}Widget::v2::list_all",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'blog_id',
+                sortOrder    => 'ascend',
+                searchFields => 'name,templateType,text',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of widgets.',
+            },
+        },
         {   id      => 'list_widgets_for_widgetset',
             route   => '/sites/:site_id/widgetsets/:widgetset_id/widgets',
             version => 2,
