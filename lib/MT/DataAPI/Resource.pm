@@ -50,7 +50,11 @@ sub core_resources {
             {   version          => 1,
                 fields           => "${pkg}Comment::fields",
                 updatable_fields => "${pkg}Comment::updatable_fields",
-            }
+            },
+            {   version          => 2,
+                fields           => "${pkg}Comment::v2::fields",
+                updatable_fields => "${pkg}Comment::v2::updatable_fields",
+            },
         ],
         'trackback' => [
             {   version          => 1,
