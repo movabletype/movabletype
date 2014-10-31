@@ -946,6 +946,25 @@ sub _allowed_blog_ids_for_backup {
     @blog_ids, $blog_id;
 }
 
+sub _can_write_temp_dir {
+    my ($temp_dir) = @_;
+
+    return 1 unless ( $^O eq 'MSWin32' );
+
+    require File::Temp;
+    my ( $fh, $filepath );
+    eval {
+        ( $fh, $filepath ) = File::Temp::tempfile(
+            '__' . $$ . '.XXXXXXXX',
+            DIR    => $temp_dir,
+            UNLINK => 1
+        );
+    };
+    return 0 if $@;
+
+    return 1;
+}
+
 sub start_backup {
     my $app     = shift;
     my $user    = $app->user;
@@ -978,7 +997,7 @@ sub start_backup {
     $param{over_2048} = 1 if $limit >= 2048 * 1024;
 
     my $tmp = $app->config('TempDir');
-    unless ( ( -d $tmp ) && ( -w $tmp ) ) {
+    unless ( ( -d $tmp ) && ( -w $tmp ) && _can_write_temp_dir($tmp) ) {
         $param{error}
             = $app->translate(
             'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.'
