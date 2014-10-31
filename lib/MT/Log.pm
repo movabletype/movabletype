@@ -161,10 +161,16 @@ sub list_props {
             },
         },
         class => {
-            label                 => 'Class',
-            col                   => 'class',
-            display               => 'none',
-            base                  => '__virtual.single_select',
+            label   => 'Class',
+            col     => 'class',
+            display => 'none',
+            base    => '__virtual.single_select',
+            sort    => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $args->{sort} = $prop->col;
+                return;
+            },
             single_select_options => sub {
                 my $prop  = shift;
                 my $app   = shift || MT->app;
@@ -241,7 +247,13 @@ sub list_props {
             base    => '__virtual.single_select',
             display => 'none',
             col     => 'level',
-            terms   => sub {
+            sort    => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $args->{sort} = $prop->col;
+                return;
+            },
+            terms => sub {
                 my $prop = shift;
                 my ($args) = @_;
                 my @types;
@@ -318,6 +330,16 @@ sub list_props {
             },
             display         => 'none',
             filter_editable => 0,
+        },
+        blog_id => {
+            auto    => 1,
+            col     => 'blog_id',
+            display => 'none',
+        },
+        author_id => {
+            auto    => 1,
+            col     => 'author_id',
+            display => 'none',
         },
         content => {
             base    => '__virtual.content',

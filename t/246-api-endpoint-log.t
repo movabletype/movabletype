@@ -29,8 +29,9 @@ my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
 
-my $mock_author = Test::MockModule->new('MT::Author');
-$mock_author->mock( 'is_superuser', sub {0} );
+my $mock_author  = Test::MockModule->new('MT::Author');
+my $is_superuser = 0;
+$mock_author->mock( 'is_superuser', sub {$is_superuser} );
 my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
 my $version;
@@ -275,6 +276,33 @@ my @suite = (
                 items        => MT::DataAPI::Resource->from_object( \@logs ),
             };
         },
+    },
+    {    # Sort by blog_id.
+        path     => '/v2/sites/0/logs',
+        method   => 'GET',
+        params   => { sortBy => 'blog_id', },
+        setup    => sub { $is_superuser = 1 },
+        complete => sub { $is_superuser = 0 },
+    },
+    {    # Sort by author_id.
+        path   => '/v2/sites/1/logs',
+        method => 'GET',
+        params => { sortBy => 'author_id', },
+    },
+    {    # Sort by level.
+        path   => '/v2/sites/1/logs',
+        method => 'GET',
+        params => { sortBy => 'level', },
+    },
+    {    # Sort by class.
+        path   => '/v2/sites/1/logs',
+        method => 'GET',
+        params => { sortBy => 'class', },
+    },
+    {    # Sort by id.
+        path   => '/v2/sites/1/logs',
+        method => 'GET',
+        params => { sortBy => 'id', },
     },
 
     # export_log - normal tests
