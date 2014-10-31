@@ -44,14 +44,16 @@ sub can_delete {
     my ( $eh, $app, $obj ) = @_;
     my $user = $app->user or return;
 
+    if ( my $sys_perms = $user->permissions(0) ) {
+        return 1 if $sys_perms->can_do('reset_system_log');
+    }
+
     if ( my $site_id = $obj->blog_id ) {
         my $perms = $user->permissions($site_id) or return;
         return $perms->can_do('reset_blog_log');
     }
-    else {
-        my $sys_perms = $user->permissions(0) or return;
-        return $sys_perms->can_do('reset_system_log');
-    }
+
+    return;
 }
 
 sub post_delete {
