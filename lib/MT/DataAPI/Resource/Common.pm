@@ -17,12 +17,12 @@ our %fields = (
         from_object => sub {
             my ($obj) = @_;
             my $app = MT->instance;
-            if ( $app->current_api_version ) {
+            if ( $app->current_api_version == 1 ) {
                 return $obj->blog_id ? +{ id => $obj->blog_id, } : undef;
             }
             else {
-                return
-                    defined( $obj->blog_id )
+                # $app->current_api_version > 1
+                return defined( $obj->blog_id )
                     ? +{ id => $obj->blog_id, }
                     : undef;
             }
