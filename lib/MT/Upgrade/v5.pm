@@ -751,7 +751,7 @@ sub _v5_generate_websites_place_blogs {
             $website->save
                 or return $self->error(
                 $self->translate_escape(
-                    "An error occured during generating a website upon upgrade: [_1]",
+                    "An error occurred during generating a website upon upgrade: [_1]",
                     $website->errstr
                 )
                 );
@@ -794,7 +794,7 @@ sub _v5_generate_websites_place_blogs {
             $blog->save
                 or return $self->error(
                 $self->translate_escape(
-                    "An error occured during migrating a blog's site_url: [_1]",
+                    "An error occurred during migrating a blog's site_url: [_1]",
                     $website->errstr
                 )
                 );

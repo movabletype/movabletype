@@ -2786,7 +2786,7 @@ sub restore_directory {
         sub { _progress( $app, @_ ); } );
 
     if ( scalar @errors ) {
-        $$error = $app->translate('Error occured during restore process.');
+        $$error = $app->translate('Error occurred during restore process.');
         $app->log(
             {   message  => $$error,
                 level    => MT::Log::WARNING(),

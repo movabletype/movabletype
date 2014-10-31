@@ -209,7 +209,7 @@ sub _hdlr_widget_manager {
             my $out = $ctx->invoke_handler( 'include',
                 { %$args, widget => $name, }, $cond, );
 
-            # if error is occured, pass the include's errstr
+            # if error is occurred, pass the include's errstr
             return unless defined $out;
 
             push @res, $out;

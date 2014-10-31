@@ -39,7 +39,7 @@ sub apply {
     if ( !$self->validate_version($importer) ) {
         return $self->error(
             MT->translate(
-                'Compatibility error occured while applying \'[_1]\': [_2].',
+                'Compatibility error occurred while applying \'[_1]\': [_2].',
                 $self->{id},
                 $self->errstr,
             )
@@ -48,7 +48,7 @@ sub apply {
     if ( !$self->validate( $importer, $self->{theme}, $blog ) ) {
         return $self->error(
             MT->translate(
-                'An Error occured while applying \'[_1]\': [_2].',
+                'An Error occurred while applying \'[_1]\': [_2].',
                 $self->{id}, $self->errstr,
             )
         );
@@ -60,7 +60,7 @@ sub apply {
     $handler->( $self, $self->{theme}, $blog, $opts )
         or return $self->error(
         MT->translate(
-            'Fatal error occured while applying \'[_1]\': [_2].',
+            'Fatal error occurred while applying \'[_1]\': [_2].',
             $self->{id}, $self->errstr,
         )
         );

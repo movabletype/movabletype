@@ -2011,7 +2011,7 @@ sub publish_future_posts {
             };
             if ( my $err = $@ ) {
 
-                # a fatal error occured while processing the rebuild
+                # a fatal error occurred while processing the rebuild
                 # step. LOG the error and revert the entry/entries:
                 require MT::Log;
                 $mt->log(
@@ -2133,7 +2133,7 @@ sub unpublish_past_entries {
             };
             if ( my $err = $@ ) {
 
-                # a fatal error occured while processing the rebuild
+                # a fatal error occurred while processing the rebuild
                 # step. LOG the error and revert the entry/entries:
                 require MT::Log;
                 $mt->log(

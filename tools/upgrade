@@ -90,7 +90,7 @@ sub options {
 
 sub _error {
     my $msg = shift;
-    $msg ||= 'An error occured!';
+    $msg ||= 'An error occurred!';
     if ( Encode::is_utf8($msg) ) {
         $msg = Encode::encode_utf8($msg);
     }

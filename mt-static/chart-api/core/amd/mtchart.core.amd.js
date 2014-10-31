@@ -47,7 +47,7 @@ ChartAPI.Data.getData = function (obj, $container, callback, that) {
         '404': 'Data is not found',
         '403': 'Data is forbidden to access'
       };
-      def = 'Some error occured in the data fetching process';
+      def = 'Some error occurred in the data fetching process';
       errorClassName = e.status ? 'error-' + e.status : 'error-unknown';
       if (that) {
         that.$errormsg = jQuery('<div class="error ' + errorClassName + '">' + (status[e.status] || def) + '</div>')
@@ -1588,7 +1588,7 @@ ChartAPI.Graph.morris.Base.prototype.build_ = function (Morris, data, config, ra
     }
   });
 
-  // IE8(VML) occured error setting smooth false
+  // IE8(VML) occurred error setting smooth false
   if (!ChartAPI.Graph.test.svg) {
     graphConfig.smooth = true;
   }

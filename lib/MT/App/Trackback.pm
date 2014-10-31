@@ -336,7 +336,7 @@ sub ping {
     }
 
     $ping->save
-        or return $app->_response( Error => "An internal error occured" );
+        or return $app->_response( Error => "An internal error occurred" );
     if ( $ping->id && !$ping->is_junk ) {
         my $msg = 'New TrackBack received.';
         if ($entry) {

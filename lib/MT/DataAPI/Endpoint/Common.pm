@@ -411,7 +411,7 @@ sub filtered_list {
     if ( !defined $count_result ) {
         return $app->error(
             MT->translate(
-                "An error occured while counting objects: [_1]",
+                "An error occurred while counting objects: [_1]",
                 $filter->errstr
             ),
             500
@@ -430,7 +430,7 @@ sub filtered_list {
         if ( !defined $objs ) {
             return $app->error(
                 MT->translate(
-                    "An error occured while loading objects: [_1]",
+                    "An error occurred while loading objects: [_1]",
                     $filter->errstr
                 ),
                 500
