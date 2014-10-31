@@ -1400,7 +1400,7 @@ sub rebuild_file {
                 (   $category ? MT->translate(
                         "An error occurred publishing [_1] '[_2]': [_3]",
                         lc( $category->class_label ),
-                        $category->id,
+                        $category->label,
                         $tmpl->errstr
                         )
                     : $entry ? MT->translate(
