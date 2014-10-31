@@ -565,11 +565,6 @@ sub init_plugins {
                 . 'pre_load_filtered_list.asset' =>
                 "${pfx}Asset::cms_pre_load_filtered_list",
 
-            # log callbacks
-            $pkg
-                . 'pre_load_filtered_list.log' =>
-                "${pfx}Log::cms_pre_load_filtered_list",
-
             # tag callbacks
             $pkg
                 . 'pre_load_filtered_list.tag' =>

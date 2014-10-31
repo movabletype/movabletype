@@ -1962,9 +1962,6 @@ sub init_plugins {
             $pkg . 'view_permission_filter.role' => "${pfx}Role::can_view",
 
             # log callbacks
-            $pkg
-                . 'pre_load_filtered_list.log' =>
-                "${pfx}Log::cms_pre_load_filtered_list",
             $pkg . 'view_permission_filter.log'   => "${pfx}Log::can_view",
             $pkg . 'save_permission_filter.log'   => "${pfx}Log::can_save",
             $pkg . 'save_filter.log'              => "${pfx}Log::save_filter",

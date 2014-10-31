@@ -307,6 +307,9 @@ sub init_core_callbacks {
 
             # log
             'list_template_param.log' => "${pfx}Log::template_param_list",
+            $pkg
+                . 'pre_load_filtered_list.log' =>
+                "${pfx}Log::cms_pre_load_filtered_list",
 
             # role
             $pkg
