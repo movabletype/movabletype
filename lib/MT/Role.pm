@@ -192,6 +192,10 @@ sub list_props {
             label   => 'Created by',
             display => 'none',
         },
+        modified_by => {
+            auto    => 1,
+            display => 'none',
+        },
         content => {
             base    => '__virtual.content',
             fields  => [qw( name description )],
