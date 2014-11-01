@@ -124,6 +124,22 @@ sub list_props {
             },
             display => 'none',
         },
+        created_on => {
+            base    => '__virtual.created_on',
+            display => 'none',
+        },
+        modified_on => {
+            base    => '__virtual.modified_on',
+            display => 'none',
+        },
+        created_by => {
+            auto    => 1,
+            display => 'none',
+        },
+        modified_by => {
+            auto    => 1,
+            display => 'none',
+        },
         content => {
             base    => '__virtual.content',
             fields  => [qw( name identifier text )],

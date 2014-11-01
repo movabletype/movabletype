@@ -211,6 +211,26 @@ my @suite = (
             };
         },
     },
+    {    # Can sort by modified_on.
+        path   => '/v2/sites/1/widgets',
+        method => 'GET',
+        params => { sortBy => 'modified_on', },
+    },
+    {    # Can sort by created_on.
+        path   => '/v2/sites/1/widgets',
+        method => 'GET',
+        params => { sortBy => 'created_on', },
+    },
+    {    # Can sort by modified_by.
+        path   => '/v2/sites/1/widgets',
+        method => 'GET',
+        params => { sortBy => 'modified_by', },
+    },
+    {    # Can sort by created_by.
+        path   => '/v2/sites/1/widgets',
+        method => 'GET',
+        params => { sortBy => 'created_by', },
+    },
 
     # list_all_widgets - normal tests
     {   path      => '/v2/widgets',
