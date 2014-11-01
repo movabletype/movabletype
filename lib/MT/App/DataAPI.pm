@@ -1635,7 +1635,7 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of widgetsets.',
             },
         },
-        {   id             => 'list_widgetsets',
+        {   id             => 'list_all_widgetsets',
             route          => '/widgetsets',
             version        => 2,
             handler        => "${pkg}WidgetSet::v2::list_all",
