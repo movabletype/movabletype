@@ -83,6 +83,26 @@ my @suite = (
             };
         },
     },
+    {    # Can sort by created_on.
+        path   => '/v2/sites/1/widgetsets',
+        method => 'GET',
+        params => { sortBy => 'created_on' },
+    },
+    {    # Can sort by modified_on.
+        path   => '/v2/sites/1/widgetsets',
+        method => 'GET',
+        params => { sortBy => 'modified_on' },
+    },
+    {    # Can sort by created_by.
+        path   => '/v2/sites/1/widgetsets',
+        method => 'GET',
+        params => { sortBy => 'created_by' },
+    },
+    {    # Can sort by modified_by.
+        path   => '/v2/sites/1/widgetsets',
+        method => 'GET',
+        params => { sortBy => 'modified_by' },
+    },
 
     # list_all_widgetsets - normal tests
     {   path      => '/v2/widgetsets',
