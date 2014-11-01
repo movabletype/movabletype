@@ -177,40 +177,6 @@ my @suite = (
             };
         },
     },
-    {    # Search templateType.
-        path   => '/v2/sites/1/widgets',
-        method => 'GET',
-        params => {
-            search       => 'list',
-            searchFields => 'templateType',
-        },
-        callbacks => [
-            {   name  => 'data_api_pre_load_filtered_list.template',
-                count => 2,
-            },
-        ],
-        result => sub {
-            my @terms_args = (
-                {   blog_id    => 1,
-                    type       => 'widget',
-                    identifier => { like => '%list%' }
-                },
-                { sort => 'name', direction => 'ascend', limit => 10 },
-            );
-            my $total_results = $app->model('template')->count(@terms_args);
-            my @widgets       = $app->model('template')->load(@terms_args);
-
-            $app->user($author);
-            no warnings 'redefine';
-            local *boolean::true  = sub {'true'};
-            local *boolean::false = sub {'false'};
-
-            return +{
-                totalResults => $total_results,
-                items => MT::DataAPI::Resource->from_object( \@widgets ),
-            };
-        },
-    },
     {    # Search text.
         path   => '/v2/sites/1/widgets',
         method => 'GET',

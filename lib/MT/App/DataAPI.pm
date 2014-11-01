@@ -1697,7 +1697,7 @@ sub core_endpoints {
                 offset       => 0,
                 sortBy       => 'name',
                 sortOrder    => 'ascend',
-                searchFields => 'name,templateType,text',
+                searchFields => 'name,text',
             },
             error_codes => {
                 403 =>
@@ -1713,7 +1713,7 @@ sub core_endpoints {
                 offset       => 0,
                 sortBy       => 'blog_id',
                 sortOrder    => 'ascend',
-                searchFields => 'name,templateType,text',
+                searchFields => 'name,text',
             },
             error_codes => {
                 403 =>
@@ -1729,7 +1729,7 @@ sub core_endpoints {
                 offset       => 0,
                 sortBy       => 'name',
                 sortOrder    => 'ascend',
-                searchFields => 'name,templateType,text',
+                searchFields => 'name,text',
             },
             error_codes => {
                 403 =>
