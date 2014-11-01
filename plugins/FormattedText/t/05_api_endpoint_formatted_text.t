@@ -354,6 +354,53 @@ my @suite = (
             };
         },
     },
+    {    # Can sort by id.
+        path      => '/v2/sites/1/formatted_texts',
+        method    => 'GET',
+        params    => { sortBy => 'id', sortOrder => 'ascend' },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.formatted_text',
+                count => 2,
+            },
+        ],
+        result => sub {
+            $app->user($author);
+
+            my @fts = $app->model('formatted_text')->load(
+                { blog_id => 1 },
+                { sort    => 'id', direction => 'ascend' },
+            );
+
+            require boolean;
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                totalResults => scalar @fts,
+                items        => MT::DataAPI::Resource->from_object( \@fts ),
+            };
+        },
+    },
+    {    # Can sort by blog_id.
+        path   => '/v2/sites/1/formatted_texts',
+        method => 'GET',
+        params => { sortBy => 'blog_id' },
+    },
+    {    # Can sort by created_by.
+        path   => '/v2/sites/1/formatted_texts',
+        method => 'GET',
+        params => { sortBy => 'created_by' },
+    },
+    {    # Can sort by label.
+        path   => '/v2/sites/1/formatted_texts',
+        method => 'GET',
+        params => { sortBy => 'label' },
+    },
+    {    # Can sort by modified_on.
+        path   => '/v2/sites/1/formatted_texts',
+        method => 'GET',
+        params => { sortBy => 'modified_on' },
+    },
 
     # update_formatted_text - irregular tests
     {    # Non-existent formatted text.

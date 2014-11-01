@@ -238,6 +238,14 @@ sub list_props {
             display => 'none',
             label   => 'Description',
         },
+        blog_id => {
+            auto    => 1,
+            display => 'none',
+        },
+        created_by => {
+            auto    => 1,
+            display => 'none',
+        },
         content => {
             base    => '__virtual.content',
             fields  => [qw( label text description )],
