@@ -99,6 +99,10 @@ sub list_for_role {
 
     my ($role) = context_objects(@_) or return;
 
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'role', $role->id, obj_promise($role) )
+        or return;
+
     my %terms = (
         blog_id     => { not => 0 },
         author_id   => { not => 0 },
