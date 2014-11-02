@@ -139,6 +139,26 @@ my @suite = (
             };
         },
     },
+    {    # Sort by id.
+        path   => '/v2/users/1/permissions',
+        method => 'GET',
+        params => { sortBy => 'id' },
+    },
+    {    # Sort by created_by.
+        path   => '/v2/users/1/permissions',
+        method => 'GET',
+        params => { sortBy => 'created_by' },
+    },
+    {    # Sort by created_on.
+        path   => '/v2/users/1/permissions',
+        method => 'GET',
+        params => { sortBy => 'created_on' },
+    },
+    {    # Sort by author_name.
+        path   => '/v2/users/1/permissions',
+        method => 'GET',
+        params => { sortBy => 'author_id' },
+    },
 
     # list_permissions_for_user - irregular tests
     {   path   => '/v2/users/2/permissions',
