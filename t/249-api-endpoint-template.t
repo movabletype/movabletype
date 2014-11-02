@@ -301,6 +301,36 @@ my @suite = (
             };
         },
     },
+    {    # Sort by id.
+        path   => '/v2/sites/2/templates',
+        method => 'GET',
+        params => { sortBy => 'id', },
+    },
+    {    # Sort by created_on.
+        path   => '/v2/sites/2/templates',
+        method => 'GET',
+        params => { sortBy => 'created_on', },
+    },
+    {    # Sort by modified_on.
+        path   => '/v2/sites/2/templates',
+        method => 'GET',
+        params => { sortBy => 'modified_on', },
+    },
+    {    # Sort by created_by.
+        path   => '/v2/sites/2/templates',
+        method => 'GET',
+        params => { sortBy => 'created_by', },
+    },
+    {    # Sort by modified_by.
+        path   => '/v2/sites/2/templates',
+        method => 'GET',
+        params => { sortBy => 'modified_by', },
+    },
+    {    # Sort by type.
+        path   => '/v2/sites/2/templates',
+        method => 'GET',
+        params => { sortBy => 'type', },
+    },
 
     # list_all_templates - normal tests
     {   path   => '/v2/templates',

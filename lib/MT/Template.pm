@@ -111,12 +111,14 @@ sub class_label_plural {
 
 sub list_props {
     return +{
-        name    => { auto => 1, display => 'none' },
+        id      => { base => '__virtual.id', display => 'none', },
+        name    => { auto => 1,              display => 'none' },
         blog_id => {
             auto    => 1,
             display => 'none',
         },
         type => {
+            auto  => 1,
             terms => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
