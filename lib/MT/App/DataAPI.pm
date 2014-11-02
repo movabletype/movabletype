@@ -1167,7 +1167,7 @@ sub core_endpoints {
             default_params => {
                 limit     => 25,
                 offset    => 0,
-                sortBy    => 'blog_id',
+                sortBy    => 'id',
                 sortOrder => 'ascend',
             },
             error_codes => {
