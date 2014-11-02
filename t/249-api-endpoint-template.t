@@ -483,6 +483,81 @@ my @suite = (
         method => 'POST',
     },
 
+    # refresh_templates_for_site - irregular tests
+    {    # Non-existent site.
+        path   => '/v2/sites/5/refresh_templates',
+        method => 'POST',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+    {    # Invalid parameter.
+        path   => '/v2/sites/2/refresh_templates',
+        method => 'POST',
+        params => { refresh_type => 'dummy', },
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code    => 400,
+                    message => 'A parameter "refresh_type" is invalid: dummy',
+                },
+            };
+        },
+    },
+
+    # refresh_templates_for_site - normal tests
+    {    # Website.
+        path   => '/v2/sites/2/refresh_templates',
+        method => 'POST',
+        result => sub {
+            +{ status => 'success' };
+        },
+    },
+    {    # Blog.
+        path   => '/v2/sites/1/refresh_templates',
+        method => 'POST',
+        result => sub {
+            +{ status => 'success' };
+        },
+    },
+    {    # System.
+        path   => '/v2/sites/0/refresh_templates',
+        method => 'POST',
+        result => sub {
+            +{ status => 'success' };
+        },
+    },
+
+    {    # Back up.
+        path   => '/v2/sites/2/refresh_templates',
+        method => 'POST',
+        params => { backup => 1, },
+        result => sub {
+            +{ status => 'success' };
+        },
+    },
+    {    # Refresh.
+        path   => '/v2/sites/2/refresh_templates',
+        method => 'POST',
+        params => { refresh_type => 'refresh', },
+        result => sub {
+            +{ status => 'success' };
+        },
+    },
+    {    # Reset.
+        path   => '/v2/sites/2/refresh_templates',
+        method => 'POST',
+        params => { refresh_type => 'clean', },
+        result => sub {
+            +{ status => 'success' };
+        },
+    },
+
     # clone_template - irregular tests
     {    # Email template.
         path   => '/v2/sites/0/templates/33/clone',

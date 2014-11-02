@@ -1437,16 +1437,6 @@ sub core_endpoints {
                     'Do not have permission to apply the requested theme to site.',
             },
         },
-        {   id          => 'refresh_templates_for_site',
-            route       => '/sites/:site_id/refresh_templates',
-            verb        => 'POST',
-            version     => 2,
-            handler     => "${pkg}Theme::v2::refresh_templates",
-            error_codes => {
-                403 =>
-                    'Do not have permission to refresh templates of the request site.',
-            },
-        },
         {   id          => 'uninstall_theme',
             route       => '/themes/:theme_id',
             verb        => 'DELETE',
@@ -1554,6 +1544,16 @@ sub core_endpoints {
             handler => "${pkg}Template::v2::refresh",
             error_codes =>
                 { 403 => 'Do not have permission to refresh a template.', },
+        },
+        {   id          => 'refresh_templates_for_site',
+            route       => '/sites/:site_id/refresh_templates',
+            verb        => 'POST',
+            version     => 2,
+            handler     => "${pkg}Template::v2::refresh_for_site",
+            error_codes => {
+                403 =>
+                    'Do not have permission to refresh templates of the request site.',
+            },
         },
         {   id      => 'clone_template',
             route   => '/sites/:site_id/templates/:template_id/clone',

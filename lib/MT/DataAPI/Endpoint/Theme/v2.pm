@@ -220,46 +220,6 @@ sub apply {
     return +{ status => 'success' };
 }
 
-sub refresh_templates {
-    my ( $app, $endpoint ) = @_;
-
-    my $refresh_type = $app->param('refresh_type');
-    if ( !defined($refresh_type) || $refresh_type eq '' ) {
-        $refresh_type = 'refresh';
-        $app->param( 'refresh_type', $refresh_type );
-    }
-    if ( $refresh_type ne 'refresh' && $refresh_type ne 'clean' ) {
-        return $app->error(
-            $app->translate(
-                'A parameter "refresh_type" is invalid: [_1]',
-                $refresh_type
-            ),
-            400
-        );
-    }
-
-    local $app->{redirect};
-    local $app->{redirect_use_meta};
-    local $app->{return_args};
-
-    no warnings 'redefine';
-    local *MT::App::validate_magic = sub {1};
-
-    require MT::CMS::Template;
-    MT::CMS::Template::refresh_all_templates($app);
-
-    if ( $app->errstr ) {
-        return $app->error( $app->errstr, 500 );
-    }
-
-    if ( $app->{redirect} ) {
-        return +{ status => 'success' };
-    }
-    else {
-        return $app->error(403);
-    }
-}
-
 sub uninstall {
     my ( $app, $endpoint ) = @_;
 
