@@ -209,6 +209,11 @@ sub update {
 
 sub list_for_category {
     my ( $app, $endpoint ) = @_;
+    list_for_category_common( $app, $endpoint, 'entry' );
+}
+
+sub list_for_category_common {
+    my ( $app, $endpoint, $class ) = @_;
 
     my ( $blog, $cat ) = context_objects(@_)
         or return;
@@ -221,7 +226,7 @@ sub list_for_category {
             },
         ),
     );
-    my $res = filtered_list( $app, $endpoint, 'entry', undef, \%args );
+    my $res = filtered_list( $app, $endpoint, $class, undef, \%args );
 
     +{  totalResults => $res->{count} + 0,
         items =>
@@ -231,6 +236,11 @@ sub list_for_category {
 
 sub list_for_asset {
     my ( $app, $endpoint ) = @_;
+    list_for_asset_common( $app, $endpoint, 'entry' );
+}
+
+sub list_for_asset_common {
+    my ( $app, $endpoint, $class ) = @_;
 
     my ( $blog, $asset ) = context_objects(@_)
         or return;
@@ -245,7 +255,7 @@ sub list_for_asset {
             },
         ),
     );
-    my $res = filtered_list( $app, $endpoint, 'entry', undef, \%args );
+    my $res = filtered_list( $app, $endpoint, $class, undef, \%args );
 
     +{  totalResults => $res->{count} + 0,
         items =>
@@ -255,6 +265,11 @@ sub list_for_asset {
 
 sub list_for_tag {
     my ( $app, $endpoint ) = @_;
+    list_for_tag_common( $app, $endpoint, 'entry' );
+}
+
+sub list_for_tag_common {
+    my ( $app, $endpoint, $class ) = @_;
 
     require MT::DataAPI::Endpoint::Tag::v2;
     my $tag = MT::DataAPI::Endpoint::Tag::v2::_retrieve_tag($app) or return;
@@ -272,7 +287,7 @@ sub list_for_tag {
             },
         ),
     );
-    my $res = filtered_list( $app, $endpoint, 'entry', undef, \%args );
+    my $res = filtered_list( $app, $endpoint, $class, undef, \%args );
 
     +{  totalResults => $res->{count} + 0,
         items =>
@@ -282,6 +297,11 @@ sub list_for_tag {
 
 sub list_for_site_and_tag {
     my ( $app, $endpoint ) = @_;
+    list_for_site_and_tag_common( $app, $endpoint, 'entry' );
+}
+
+sub list_for_site_and_tag_common {
+    my ( $app, $endpoint, $class ) = @_;
 
     require MT::DataAPI::Endpoint::Tag::v2;
     my ( $tag, $site_id )
@@ -302,7 +322,7 @@ sub list_for_site_and_tag {
             },
         ),
     );
-    my $res = filtered_list( $app, $endpoint, 'entry', undef, \%args );
+    my $res = filtered_list( $app, $endpoint, $class, undef, \%args );
 
     +{  totalResults => $res->{count} + 0,
         items =>
