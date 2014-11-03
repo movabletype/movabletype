@@ -8,6 +8,8 @@ package MT::DataAPI::Resource::User::v2;
 use strict;
 use warnings;
 
+use boolean ();
+
 use MT::Author;
 use MT::Permission;
 use MT::DataAPI::Resource::Common;
@@ -28,7 +30,22 @@ sub updatable_fields {
 }
 
 sub fields {
-    [   $MT::DataAPI::Resource::Common::fields{status},
+    [   status => {
+            name        => 'status',
+            from_object => sub {
+                my ($obj) = @_;
+                my $app  = MT->instance or return;
+                my $user = $app->user   or return;
+
+                return if !( $user->is_superuser || $user->id == $obj->id );
+                return $obj->get_status_text;
+            },
+            to_object => sub {
+                my ( $hash, $obj ) = @_;
+                $obj->set_status_by_text( $hash->{status} );
+                return;
+            },
+        },
         {   name        => 'password',
             from_object => sub { },      # Display nothing.
             to_object   => sub {
@@ -54,14 +71,37 @@ sub fields {
                 lc $l;
             },
         },
-        qw(
-            dateFormat
-            textFormat
-            ),
+        {   name        => 'dateFormat',
+            alias       => 'date_format',
+            from_object => sub {
+                my ($obj) = @_;
+                my $app  = MT->instance or return;
+                my $user = $app->user   or return;
+
+                return if !( $user->is_superuser || $user->id == $obj->id );
+                return $user->date_format;
+            },
+        },
+        {   name        => 'textFormat',
+            alias       => 'text_format',
+            from_object => sub {
+                my ($obj) = @_;
+                my $app  = MT->instance or return;
+                my $user = $app->user   or return;
+
+                return if !( $user->is_superuser || $user->id == $obj->id );
+                return $user->text_format;
+            },
+        },
         {   name        => 'tagDelimiter',
             alias       => 'entry_prefs',
             from_object => sub {
                 my ($obj) = @_;
+                my $app  = MT->instance or return;
+                my $user = $app->user   or return;
+
+                return if !( $user->is_superuser || $user->id == $obj->id );
+
                 my $entry_prefs = $obj->entry_prefs;
                 if ( defined($entry_prefs) && $entry_prefs eq ' ' ) {
                     return 'space';
@@ -84,25 +124,25 @@ sub fields {
             },
         },
         {   name        => 'isSuperuser',
-            type        => 'MT::DataAPI::Resource::DataType::Boolean',
             from_object => sub {
                 my ($obj) = @_;
                 my $app  = MT->instance or return;
                 my $user = $app->user   or return;
 
-                if ( $user->is_superuser || ( $user->id == $obj->id ) ) {
-                    return $obj->is_superuser;
-                }
-                else {
-                    return;
-                }
+                return if !( $user->is_superuser || $user->id == $obj->id );
+                return $obj->is_superuser
+                    ? boolean::true()
+                    : boolean::false();
             },
         },
         {   name        => 'lockedOut',
-            type        => 'MT::DataAPI::Resource::DataType::Boolean',
             from_object => sub {
                 my ($obj) = @_;
-                return $obj->locked_out;
+                my $app  = MT->instance or return;
+                my $user = $app->user   or return;
+
+                return if !( $user->is_superuser || $user->id == $obj->id );
+                return $obj->locked_out ? boolean::true() : boolean::false();
             },
         },
         {   name             => 'systemPermissions',
@@ -115,7 +155,8 @@ sub fields {
 
 sub _system_permissions_bulk_from_object {
     my ( $objs, $hashes ) = @_;
-    my $app = MT->instance;
+    my $app  = MT->instance or return;
+    my $user = $app->user   or return;
 
     my $perms = $app->model('permission')->perms_from_registry;
 
@@ -123,6 +164,8 @@ sub _system_permissions_bulk_from_object {
 
         my $obj  = $objs->[$i];
         my $hash = $hashes->[$i];
+
+        next if ( !$user->is_superuser || $user->id == $obj->id );
 
         my %user_perms;
 
