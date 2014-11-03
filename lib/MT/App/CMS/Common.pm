@@ -63,11 +63,6 @@ sub init_core_callbacks {
                 "${pfx}User::can_delete",
             $pkg . 'post_save.author'   => "${pfx}User::post_save",
             $pkg . 'post_delete.author' => "${pfx}User::post_delete",
-            $pkg . 'pre_load_filtered_list.author' => sub {
-                my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                my $terms = $opts->{terms};
-                $terms->{type} = MT::Author::AUTHOR();
-            },
             $pkg . 'pre_load_filtered_list.commenter' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 my $terms = $opts->{terms};

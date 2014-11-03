@@ -1818,6 +1818,7 @@ sub core_endpoints {
                 403 =>
                     'Do not have permission to retrieve the requested users.',
             },
+            requires_login => 0,
         },
         {   id        => 'create_user',
             route     => '/users',
@@ -1906,6 +1907,9 @@ sub init_plugins {
             $pkg . 'save_filter.page'            => "${pfx}Page::save_filter",
 
             # user callbacks
+            $pkg
+                . 'pre_load_filtered_list.author' =>
+                "${pfx}User::pre_load_filtered_list",
             $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
             $pkg . 'save_filter.author' => "${pfx}User::save_filter",
 

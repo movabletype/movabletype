@@ -517,6 +517,11 @@ sub init_plugins {
             $pkg . 'view_permission_filter.page' => "${pfx}Page::can_view",
 
             # user callbacks
+            $pkg . 'pre_load_filtered_list.author' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                my $terms = $opts->{terms};
+                $terms->{type} = MT::Author::AUTHOR();
+            },
             $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
             $pkg . 'save_filter.author' => "${pfx}User::save_filter",
             $pkg . 'pre_save.author'    => "${pfx}User::pre_save",

@@ -12,6 +12,18 @@ use MT::I18N;
 use MT::App::CMS;
 use MT::CMS::User;
 
+sub pre_load_filtered_list {
+    my ( $cb, $app, $filter, $opts, $cols ) = @_;
+    my $user = $app->user;
+
+    my $terms = $opts->{terms};
+    $terms->{type} = MT::Author::AUTHOR();
+
+    unless ( $user && $user->is_superuser ) {
+        $terms->{status} = MT::Author::ACTIVE();
+    }
+}
+
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
     my $obj = $objp->force();
