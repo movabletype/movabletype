@@ -44,8 +44,13 @@ sub fields {
                 );
             },
         },
-        {   name  => 'format',
-            alias => 'convert_breaks',
+        {   name      => 'format',
+            alias     => 'convert_breaks',
+            condition => sub {
+                my $app  = MT->instance or return;
+                my $user = $app->user   or return;
+                return $user->id ? 1 : 0;
+            },
         },
         {    # Update.
             name                => 'body',
