@@ -28,7 +28,8 @@ sub fields {
             from_object => sub {
                 my ($obj) = @_;
                 if ( my $folder = $obj->category ) {
-                    return MT::DataAPI::Resource->from_object($folder);
+                    return MT::DataAPI::Resource->from_object( $folder,
+                        [qw( id label parent )] );
                 }
                 else {
                     return undef;

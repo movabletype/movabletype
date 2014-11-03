@@ -39,7 +39,8 @@ sub fields {
                                 : $b->id == $primary ? 1
                                 : $a->label cmp $b->label
                         } @$cats
-                    ]
+                    ],
+                    [qw( id label parent )],
                 );
             },
         },
