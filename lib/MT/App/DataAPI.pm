@@ -1829,17 +1829,6 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to create a user.', },
         },
-        {    # Update.
-            id          => 'update_user',
-            route       => '/users/:user_id',
-            resources   => ['user'],
-            verb        => 'PUT',
-            version     => 2,
-            handler     => "${pkg}User::v2::update",
-            error_codes => {
-                403 => 'Do not have permission to update the requested user.',
-            },
-        },
         {   id      => 'delete_user',
             route   => '/users/:user_id',
             version => 2,

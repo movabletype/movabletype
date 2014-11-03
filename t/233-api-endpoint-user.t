@@ -115,7 +115,9 @@ my @suite = (
         ],
         result => sub {
             my @users = $app->model('author')->load(
-                { type => MT::Author::AUTHOR() },
+                {   type   => MT::Author::AUTHOR(),
+                    status => MT::Author::ACTIVE()
+                },
                 { sort => 'name', direction => 'ascend' },
             );
 
@@ -129,6 +131,32 @@ my @suite = (
             };
         },
     },
+    {    # No parameters (superuser).
+        path      => '/v2/users',
+        method    => 'GET',
+        setup     => sub { $is_superuser = 1 },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.author',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @users = $app->model('author')->load(
+                { type => MT::Author::AUTHOR() },
+                { sort => 'name', direction => 'ascend' },
+            );
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+            return +{
+                totalResults => scalar @users,
+                items        => MT::DataAPI::Resource->from_object( \@users ),
+            };
+        },
+        complete => sub { $is_superuser = 0 },
+    },
     {    # Search name.
         path      => '/v2/users',
         method    => 'GET',
@@ -140,8 +168,11 @@ my @suite = (
         ],
         result => sub {
             my @users = $app->model('author')->load(
-                { name => 'Chuck D', type      => MT::Author::AUTHOR() },
-                { sort => 'name',    direction => 'ascend' },
+                {   name   => 'Chuck D',
+                    type   => MT::Author::AUTHOR(),
+                    status => MT::Author::ACTIVE()
+                },
+                { sort => 'name', direction => 'ascend' },
             );
 
             $app->user($author);
@@ -165,7 +196,10 @@ my @suite = (
         ],
         result => sub {
             my $user = $app->model('author')->load(
-                { nickname => 'Chucky Dee', type => MT::Author::AUTHOR() },
+                {   nickname => 'Chucky Dee',
+                    type     => MT::Author::AUTHOR(),
+                    status   => MT::Author::ACTIVE()
+                },
                 { sort => 'name', direction => 'ascend' },
             );
 
@@ -185,24 +219,13 @@ my @suite = (
         params    => { search => 'heroes.com', },
         callbacks => [
             {   name  => 'data_api_pre_load_filtered_list.author',
-                count => 2,
+                count => 1,
             },
         ],
         result => sub {
-            my $user = $app->model('author')->load(
-                {   email => { like => '%heroes.com%' },
-                    type  => MT::Author::AUTHOR()
-                },
-                { sort => 'name', direction => 'ascend' },
-            );
-
-            $app->user($author);
-            no warnings 'redefine';
-            local *boolean::true  = sub {'true'};
-            local *boolean::false = sub {'false'};
             return +{
-                totalResults => 1,
-                items        => MT::DataAPI::Resource->from_object( [$user] ),
+                totalResults => 0,
+                items        => [],
             };
         },
     },
@@ -217,8 +240,9 @@ my @suite = (
         ],
         result => sub {
             my $user = $app->model('author')->load(
-                {   url  => { like => '%chuckd.com%' },
-                    type => MT::Author::AUTHOR()
+                {   url    => { like => '%chuckd.com%' },
+                    type   => MT::Author::AUTHOR(),
+                    status => MT::Author::ACTIVE()
                 },
                 { sort => 'name', direction => 'ascend' },
             );
@@ -245,7 +269,8 @@ my @suite = (
         result => sub {
             my @users = $app->model('author')->load(
                 {   status => MT::Author::ACTIVE(),
-                    type   => MT::Author::AUTHOR()
+                    type   => MT::Author::AUTHOR(),
+                    status => MT::Author::ACTIVE()
                 },
                 { sort => 'name', direction => 'ascend' },
             );
@@ -266,24 +291,13 @@ my @suite = (
         params    => { status => 'Disabled' },
         callbacks => [
             {   name  => 'data_api_pre_load_filtered_list.author',
-                count => 2,
+                count => 1,
             },
         ],
         result => sub {
-            my @users = $app->model('author')->load(
-                {   status => MT::Author::INACTIVE(),
-                    type   => MT::Author::AUTHOR()
-                },
-                { sort => 'name', direction => 'ascend' },
-            );
-
-            $app->user($author);
-            no warnings 'redefine';
-            local *boolean::true  = sub {'true'};
-            local *boolean::false = sub {'false'};
             return +{
-                totalResults => 1,
-                items        => MT::DataAPI::Resource->from_object( \@users ),
+                totalResults => 0,
+                items        => [],
             };
         },
     },
@@ -298,7 +312,9 @@ my @suite = (
         ],
         result => sub {
             my @users = $app->model('author')->load(
-                { type => MT::Author::AUTHOR() },
+                {   type   => MT::Author::AUTHOR(),
+                    status => MT::Author::ACTIVE()
+                },
                 { sort => 'name', direction => 'ascend' },
             );
 
@@ -325,7 +341,9 @@ my @suite = (
         ],
         result => sub {
             my @users = $app->model('author')->load(
-                { type => MT::Author::AUTHOR() },
+                {   type   => MT::Author::AUTHOR(),
+                    status => MT::Author::ACTIVE()
+                },
                 { sort => 'name', direction => 'ascend' },
             );
 
@@ -335,8 +353,9 @@ my @suite = (
             no warnings 'redefine';
             local *boolean::true  = sub {'true'};
             local *boolean::false = sub {'false'};
+
             return +{
-                totalResults => 4,
+                totalResults => 3,
                 items        => MT::DataAPI::Resource->from_object( \@users ),
             };
         },

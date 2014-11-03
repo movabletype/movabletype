@@ -45,22 +45,6 @@ sub create {
     return $new_user;
 }
 
-# Update.
-sub update {
-    my ( $app, $endpoint ) = @_;
-
-    my $user = get_target_user(@_)
-        or return;
-
-    my $new_user = $app->resource_object( 'user', $user )
-        or return;
-
-    save_object( $app, 'author', $new_user, $user )
-        or return;
-
-    $new_user;
-}
-
 sub delete {
     my ( $app, $endpoint ) = @_;
 
