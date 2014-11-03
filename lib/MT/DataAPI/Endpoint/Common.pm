@@ -155,7 +155,9 @@ sub get_target_user {
     }
     else {
         my ($user) = context_objects(@_);
-        ( $user && $user->status == MT::Author::ACTIVE() ) ? $user : undef;
+        ( $user && $user->status == MT::Author::ACTIVE() )
+            ? $user
+            : $app->error( $app->translate('User not found'), 404 );
     }
 }
 
