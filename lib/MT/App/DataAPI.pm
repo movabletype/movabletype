@@ -2005,26 +2005,26 @@ sub core_endpoints {
                 { 403 => 'Do not have permission to disable all plugins.', },
         },
 
-#        # back up and restore endpoints
-#        {   id => 'backup_site',
-#            route => '/sites/:site_id/backup',
-#            version => 2,
-#            handler => "${pkg}BackupRestore::v2::backup",
-#            error_codes => {
-#                403 =>
-#                    'Do not have permission to back up the requested site.',
-#            },
-#        },
-#        {   id => 'restore_site',
-#            route => '/restore',
-#            verb => 'POST',
-#            version => 2,
-#            handler => "${pkg}BackupRestore::v2::restore",
-#            error_codes => {
-#                403 =>
-#                    'Do not have permission to restore the requested site data.',
-#            },
-#        },
+        # back up and restore endpoints
+        {   id          => 'backup_site',
+            route       => '/sites/:site_id/backup',
+            version     => 2,
+            handler     => "${pkg}BackupRestore::v2::backup",
+            error_codes => {
+                403 =>
+                    'Do not have permission to back up the requested site.',
+            },
+        },
+        {   id          => 'restore_site',
+            route       => '/restore',
+            verb        => 'POST',
+            version     => 2,
+            handler     => "${pkg}BackupRestore::v2::restore",
+            error_codes => {
+                403 =>
+                    'Do not have permission to restore the requested site data.',
+            },
+        },
 
     ];
 }
