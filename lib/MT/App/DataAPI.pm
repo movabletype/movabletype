@@ -898,6 +898,23 @@ sub core_endpoints {
                 { 403 => 'Do not have permission to update an entry.', },
         },
 
+     #        {   id => 'import_entries',
+     #            route => '/sites/:site_id/entries/import',
+     #            verb => 'POST',
+     #            version => 2,
+     #            handler => "${pkg}Entry::v2::import",
+     #            error_codes =>
+     #                { 403 => 'Do not have permission to import entries.', },
+     #        },
+     #        {   id => 'export_entries',
+     #            route => '/sites/:site_id/entries/export',
+     #            verb => 'POST',
+     #            version => 2,
+     #            handler => "${pkg}Entry::v2::export",
+     #            error_codes =>
+     #                { 403 => 'Do not have permission to import entries.', },
+     #        },
+
         # page endpoints
         {   id             => 'list_pages',
             route          => '/sites/:site_id/pages',
@@ -1938,6 +1955,79 @@ sub core_endpoints {
             requires_login => 0,
         },
 
+        # plugin endpoints
+        {   id          => 'list_plugins',
+            route       => '/plugins',
+            version     => 2,
+            handler     => "${pkg}Plugin::v2::list",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of plugins.',
+            },
+        },
+        {   id          => 'get_plugin',
+            route       => '/plugins/:plugin_id',
+            version     => 2,
+            handler     => "${pkg}Plugin::v2::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested plugin.',
+            },
+        },
+        {   id      => 'enable_plugin',
+            route   => '/plugins/:plugin_id/enable',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Plugin::v2::enable",
+            error_codes =>
+                { 403 => 'Do not have permission to enable a plugin.', },
+        },
+        {   id      => 'disable_plugin',
+            route   => '/plugins/:plugin_id/disable',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Plugin::v2::disable",
+            error_codes =>
+                { 403 => 'Do not have permission to disable a plugin.', },
+        },
+        {   id      => 'enable_all_plugins',
+            route   => '/plugins/enable',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Plugin::v2::enable_all",
+            error_codes =>
+                { 403 => 'Do not have permission to enable all plugins.', },
+        },
+        {   id      => 'disable_all_plugins',
+            route   => '/plugins/disable',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Plugin::v2::disable_all",
+            error_codes =>
+                { 403 => 'Do not have permission to disable all plugins.', },
+        },
+
+#        # back up and restore endpoints
+#        {   id => 'backup_site',
+#            route => '/sites/:site_id/backup',
+#            version => 2,
+#            handler => "${pkg}BackupRestore::v2::backup",
+#            error_codes => {
+#                403 =>
+#                    'Do not have permission to back up the requested site.',
+#            },
+#        },
+#        {   id => 'restore_site',
+#            route => '/sites/:site_id/restore',
+#            verb => 'POST',
+#            version => 2,
+#            handler => "${pkg}BackupRestore::v2::restore",
+#            error_codes => {
+#                403 =>
+#                    'Do not have permission to restore the requested site data.',
+#            },
+#        },
+
     ];
 }
 
@@ -2091,6 +2181,12 @@ sub init_plugins {
             $pkg
                 . 'post_delete.templatemap' =>
                 "${pfx}TemplateMap::post_delete",
+
+            # plugin callbacks
+            $pkg
+                . 'list_permission_filter.plugin' => "${pfx}Plugin::can_list",
+            $pkg
+                . 'view_permission_filter.plugin' => "${pfx}Plugin::can_view",
         }
     );
 
