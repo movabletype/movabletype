@@ -2149,6 +2149,10 @@ BEGIN {
                 # This is for search endpoint.
                 default =>
                     sub { MT::App::Search::core_parameters( MT->app ) },
+                import_formats => sub {
+                    require MT::Import;
+                    return MT::Import->core_import_formats();
+                },
             },
         },
         web_services    => undef,

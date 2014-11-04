@@ -30,17 +30,19 @@ sub export {
     my $charset = $app->charset;
     require MT::Blog;
     my $blog_id = $app->param('blog_id')
-        or return $app->error( $app->translate("Please select a blog.") );
+        or
+        return $app->error( $app->translate("Please select a blog."), 400 );
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate(
             "Loading blog '[_1]' failed: [_2]", $blog_id,
             MT::Blog->errstr
-        )
+        ),
+        404
         );
     my $perms = $app->permissions;
-    return $app->error(
-        $app->translate("You do not have export permissions") )
+    return $app->error( $app->translate("You do not have export permissions"),
+        403 )
         unless $perms && $perms->can_do('export_blog');
     $app->validate_magic() or return;
     my $file = dirify( $blog->name ) . ".txt";
@@ -63,7 +65,7 @@ sub export {
     );
     require MT::ImportExport;
     MT::ImportExport->export( $blog, sub { $app->print_encode(@_) } )
-        or return $app->error( MT::ImportExport->errstr );
+        or return $app->error( MT::ImportExport->errstr, 500 );
     1;
 }
 

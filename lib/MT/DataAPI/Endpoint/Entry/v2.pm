@@ -8,8 +8,14 @@ package MT::DataAPI::Endpoint::Entry::v2;
 use strict;
 use warnings;
 
+use MT::I18N qw( const );
+use MT::App;
+use MT::App::CMS;
 use MT::Entry;
+use MT::Import;
 use MT::Util;
+use MT::CMS::Import;
+use MT::CMS::Export;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Endpoint::Entry;
 use MT::DataAPI::Resource;
@@ -328,6 +334,150 @@ sub list_for_site_and_tag_common {
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
+}
+
+sub _check_import_parameters {
+    my ( $app, $endpoint ) = @_;
+
+    # blog_id
+    my ($site) = context_objects(@_) or return;
+    if ( !$site->id ) {
+        return $app->error( $app->translate('Site not found'), 404 );
+    }
+
+    # file
+    if ( !defined $app->param('file') ) {
+        return $app->error(
+            $app->translate('A parameter "file" is required.'), 400 );
+    }
+
+    # import_as_me
+    if ( !defined $app->param('import_as_me') ) {
+        $app->param( 'import_as_me', 1 );
+    }
+
+    # import_type
+    if ( !defined $app->param('import_type') ) {
+        $app->param( 'import_type', 'import_mt' );
+    }
+    else {
+        my $import_type = $app->param('import_type');
+        my $imp         = MT::Import->new;
+        my %keys        = map { $_ => 1 } $imp->importer_keys;
+        if ( !$keys{$import_type} ) {
+            return $app->error(
+                $app->translate(
+                    '"import_type" is invalid: [_1]', $import_type
+                ),
+                400
+            );
+        }
+    }
+
+    # encoding
+    if ( !defined $app->param('encoding') ) {
+        $app->param( 'encoding', 'guess' );
+    }
+    else {
+        my $encoding = $app->param('encoding');
+        my %valid_encodings
+            = map { $_->{name} => 1 } @{ const('ENCODING_NAMES') };
+        if ( !$valid_encodings{$encoding} ) {
+            return $app->error(
+                $app->translate( '"encoding" is invalid: [_1]', $encoding ),
+                400 );
+        }
+    }
+
+    # convert_breaks
+    my $text_filters
+        = MT::App::CMS::load_text_filters( $app, $site->convert_paras,
+        'entry' );
+    if ( !defined $app->param('convert_breaks') ) {
+        my $selected_key
+            = map { $_->{key} } grep { $_->{selected} } @$text_filters;
+        $app->param( 'convert_breaks', $selected_key );
+    }
+    else {
+        my $convert_breaks = $app->param('convert_breaks');
+        my %filter_keys = map { $_->{key} => 1 } @$text_filters;
+        $filter_keys{1} = 1;
+        if ( !$filter_keys{$convert_breaks} ) {
+            return $app->error(
+                $app->translate(
+                    '"convert_breaks" is invalid: [_1]',
+                    $convert_breaks
+                ),
+                400
+            );
+        }
+    }
+
+    # default_cat_id
+    if ( my $default_cat_id = $app->param('default_cat_id') ) {
+        if ( !$app->model('category')
+            ->exist( { id => $default_cat_id, blog_id => $site->id } ) )
+        {
+            return $app->error(
+                $app->translate(
+                    '"default_cat_id" is invalid: [_1]',
+                    $default_cat_id
+                ),
+                400
+            );
+        }
+    }
+
+    return 1;
+}
+
+sub import {
+    my ( $app, $endpoint ) = @_;
+
+    _check_import_parameters(@_) or return;
+
+    local $app->{no_print_body};
+
+    no warnings 'redefine';
+    local *MT::App::validate_magic = sub {1};
+
+    my $param;
+    local *MT::build_page = sub { $param = $_[2] };
+
+    MT::CMS::Import::do_import($app) or return;
+
+    if ( !$param->{import_success} ) {
+        return +{
+            error => {
+                code    => 500,
+                message => $app->translate(
+                    'An error occurred during the import process: [_1]. Please check your import file.',
+                    $param->{error}
+                ),
+            },
+        };
+    }
+
+    return +{
+        status => 'success',
+        !$param->{import_upload}
+        ? ( message => $app->translate(
+                "Make sure that you remove the files that you imported from the 'import' folder, so that if/when you run the import process again, those files will not be re-imported."
+            )
+            )
+        : (),
+    };
+}
+
+sub export {
+    my ( $app, $endpoint ) = @_;
+
+    no warnings 'redefine';
+    local *MT::App::validate_magic = sub {1};
+
+    MT::CMS::Export::export($app);
+
+    return;
 }
 
 1;

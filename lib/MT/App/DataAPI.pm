@@ -897,23 +897,21 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to update an entry.', },
         },
-
-     #        {   id => 'import_entries',
-     #            route => '/sites/:site_id/entries/import',
-     #            verb => 'POST',
-     #            version => 2,
-     #            handler => "${pkg}Entry::v2::import",
-     #            error_codes =>
-     #                { 403 => 'Do not have permission to import entries.', },
-     #        },
-     #        {   id => 'export_entries',
-     #            route => '/sites/:site_id/entries/export',
-     #            verb => 'POST',
-     #            version => 2,
-     #            handler => "${pkg}Entry::v2::export",
-     #            error_codes =>
-     #                { 403 => 'Do not have permission to import entries.', },
-     #        },
+        {   id      => 'import_entries',
+            route   => '/sites/:site_id/entries/import',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}Entry::v2::import",
+            error_codes =>
+                { 403 => 'Do not have permission to import entries.', },
+        },
+        {   id      => 'export_entries',
+            route   => '/sites/:site_id/entries/export',
+            version => 2,
+            handler => "${pkg}Entry::v2::export",
+            error_codes =>
+                { 403 => 'Do not have permission to export entries.', },
+        },
 
         # page endpoints
         {   id             => 'list_pages',
@@ -2018,7 +2016,7 @@ sub core_endpoints {
 #            },
 #        },
 #        {   id => 'restore_site',
-#            route => '/sites/:site_id/restore',
+#            route => '/restore',
 #            verb => 'POST',
 #            version => 2,
 #            handler => "${pkg}BackupRestore::v2::restore",
