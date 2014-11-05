@@ -13,6 +13,7 @@ use boolean ();
 use MT::Author;
 use MT::Permission;
 use MT::DataAPI::Resource::Common;
+use MT::DataAPI::Resource::User;
 
 sub updatable_fields {
     [   qw(
@@ -31,15 +32,11 @@ sub updatable_fields {
 
 sub fields {
     [   status => {
-            name        => 'status',
-            from_object => sub {
-                my ($obj) = @_;
-                my $app  = MT->instance or return;
-                my $user = $app->user   or return;
-
-                return if !( $user->is_superuser || $user->id == $obj->id );
-                return $obj->get_status_text;
-            },
+            name => 'status',
+            bulk_from_object =>
+                MT::DataAPI::Resource::User::_private_bulk_from_object(
+                'status', 'get_status_text'
+                ),
             to_object => sub {
                 my ( $hash, $obj ) = @_;
                 $obj->set_status_by_text( $hash->{status} );
@@ -71,27 +68,19 @@ sub fields {
                 lc $l;
             },
         },
-        {   name        => 'dateFormat',
-            alias       => 'date_format',
-            from_object => sub {
-                my ($obj) = @_;
-                my $app  = MT->instance or return;
-                my $user = $app->user   or return;
-
-                return if !( $user->is_superuser || $user->id == $obj->id );
-                return $user->date_format;
-            },
+        {   name  => 'dateFormat',
+            alias => 'date_format',
+            bulk_from_object =>
+                MT::DataAPI::Resource::User::_private_bulk_from_object(
+                'dateFormat', 'date_format'
+                ),
         },
-        {   name        => 'textFormat',
-            alias       => 'text_format',
-            from_object => sub {
-                my ($obj) = @_;
-                my $app  = MT->instance or return;
-                my $user = $app->user   or return;
-
-                return if !( $user->is_superuser || $user->id == $obj->id );
-                return $user->text_format;
-            },
+        {   name  => 'textFormat',
+            alias => 'text_format',
+            bulk_from_object =>
+                MT::DataAPI::Resource::User::_private_bulk_from_object(
+                'textFormat', 'text_format'
+                ),
         },
         {   name        => 'tagDelimiter',
             alias       => 'entry_prefs',
