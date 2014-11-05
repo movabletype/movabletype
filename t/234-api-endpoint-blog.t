@@ -29,8 +29,9 @@ my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
 
-my $mock_author = Test::MockModule->new('MT::Author');
-$mock_author->mock( 'is_superuser', sub {0} );
+my $is_superuser = 0;
+my $mock_author  = Test::MockModule->new('MT::Author');
+$mock_author->mock( 'is_superuser', sub {$is_superuser} );
 
 my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 my $version;
@@ -203,15 +204,18 @@ my @suite = (
                 url  => 'http://narnia2.na/',
             },
         },
-        code     => 409,
+        setup => sub { $is_superuser = 1 },
+        code => 409,
         complete => sub {
             my ( $data, $body ) = @_;
             check_error_message( $body,
                 "A parameter \"sitePath\" is required.\n" );
+            $is_superuser = 0;
         },
     },
     {   path   => '/v2/sites',
         method => 'POST',
+        setup  => sub { $is_superuser = 1 },
         params => {
             website => {
                 name     => 'test-api-permission-website',
@@ -219,12 +223,7 @@ my @suite = (
                 sitePath => $FindBin::Bin,
             },
         },
-        code     => 409,
-        complete => sub {
-            my ( $data, $body ) = @_;
-            check_error_message( $body,
-                "A parameter \"themeId\" is required.\n" );
-        },
+        complete => sub { $is_superuser = 0 },
     },
     {   path   => '/v2/sites',
         method => 'POST',
@@ -236,10 +235,12 @@ my @suite = (
                 themeId  => 'dummy',
             },
         },
-        code     => 409,
+        setup => sub { $is_superuser = 1 },
+        code => 409,
         complete => sub {
             my ( $data, $body ) = @_;
             check_error_message( $body, "Invalid theme_id: dummy\n" );
+            $is_superuser = 0;
         },
     },
     {   path   => '/v2/sites',
@@ -252,12 +253,14 @@ my @suite = (
                 themeId  => 'classic_website',
             },
         },
-        code     => 409,
+        setup => sub { $is_superuser = 1 },
+        code => 409,
         complete => sub {
             my ( $data, $body ) = @_;
             check_error_message( $body,
                 "The website root directory must be absolute: relative\/path\n"
             );
+            $is_superuser = 0;
         },
     },
 
@@ -272,11 +275,13 @@ my @suite = (
                 themeId  => 'classic_blog',
             },
         },
+        setup => sub { $is_superuser = 1 },
         complete => sub {
             my ( $data, $body ) = @_;
             my $result = MT::Util::from_json($body);
             my $blog = MT->model('blog')->load( { name => 'blog' } );
             is( $result->{id}, $blog->id );
+            $is_superuser = 0;
         },
     },
 
@@ -342,48 +347,15 @@ my @suite = (
                 url      => 'blog',
                 name     => 'blog',
                 sitePath => 'blog',
-            },
-        },
-        code     => 409,
-        complete => sub {
-            my ( $data, $body ) = @_;
-            check_error_message( $body,
-                "A parameter \"themeId\" is required.\n" );
-        },
-    },
-    {   path   => '/v2/sites/2',
-        method => 'POST',
-        params => {
-            blog => {
-                url      => 'blog',
-                name     => 'blog',
-                sitePath => 'blog',
                 themeId  => 'invalid_theme',
             },
         },
-        code     => 409,
+        setup => sub { $is_superuser = 1 },
+        code => 409,
         complete => sub {
             my ( $data, $body ) = @_;
             check_error_message( $body, "Invalid theme_id: invalid_theme\n" );
-        },
-    },
-
-    # insert_new_website - normal tests
-    {   path   => '/v2/sites',
-        method => 'POST',
-        params => {
-            website => {
-                themeId      => 'classic_website',
-                name         => 'test-api-permission-website',
-                url          => 'http://narnia2.na/',
-                sitePath     => $FindBin::Bin,
-                serverOffset => '9',
-                language     => 'ja',
-            },
-        },
-        result => sub {
-            MT->model('website')
-                ->load( { name => 'test-api-permission-website' } );
+            $is_superuser = 0;
         },
     },
 

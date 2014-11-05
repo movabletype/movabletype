@@ -59,7 +59,7 @@ sub _can_save_website_pathinfo {
     my $app  = MT->instance or return;
     my $user = $app->user   or return;
 
-    return 1 if $user->superuser;
+    return 1 if $user->is_superuser;
 
     if ( $obj->id ) {
         my $perms = $app->permissions or return;
