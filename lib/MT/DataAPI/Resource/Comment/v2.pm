@@ -11,6 +11,7 @@ use warnings;
 
 use MT::Template::Context;
 use MT::Util qw( remove_html );
+use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
     [];
@@ -24,6 +25,10 @@ sub fields {
                 return _from_object($obj);
             },
         },
+        $MT::DataAPI::Resource::Common::fields{createdBy},
+        $MT::DataAPI::Resource::Common::fields{modifiedBy},
+        $MT::DataAPI::Resource::Common::fields{createdDate},
+        $MT::DataAPI::Resource::Common::fields{modifiedDate},
     ];
 }
 

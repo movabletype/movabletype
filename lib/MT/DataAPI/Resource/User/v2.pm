@@ -139,6 +139,10 @@ sub fields {
             to_object => sub { },    # Do nothing.
             type_to_object => \&_system_permissions_type_to_object,
         },
+        $MT::DataAPI::Resource::Common::fields{createdBy},
+        $MT::DataAPI::Resource::Common::fields{modifiedBy},
+        $MT::DataAPI::Resource::Common::fields{createdDate},
+        $MT::DataAPI::Resource::Common::fields{modifiedDate},
     ];
 }
 

@@ -14,6 +14,7 @@ use File::Spec;
 
 use MT::Entry;
 use MT::DataAPI::Resource;
+use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
     [
@@ -640,6 +641,11 @@ sub fields {
                     abs($so),, $partial_hour_offset );
             },
         },
+
+        $MT::DataAPI::Resource::Common::fields{createdBy},
+        $MT::DataAPI::Resource::Common::fields{modifiedBy},
+        $MT::DataAPI::Resource::Common::fields{createdDate},
+        $MT::DataAPI::Resource::Common::fields{modifiedDate},
 
         # Others
         { name => 'customDynamicTemmplates', },

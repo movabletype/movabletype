@@ -60,7 +60,11 @@ sub core_resources {
             {   version          => 1,
                 fields           => "${pkg}Trackback::fields",
                 updatable_fields => "${pkg}Trackback::updatable_fields",
-            }
+            },
+            {   version          => 2,
+                fields           => "${pkg}Trackback::v2::fields",
+                updatable_fields => "${pkg}Trackback::v2::updatable_fields",
+            },
         ],
         'tbping' => 'trackback',
         'user'   => [
