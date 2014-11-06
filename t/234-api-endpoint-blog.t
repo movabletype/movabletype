@@ -682,6 +682,7 @@ my @suite = (
                 archiveUrl => 'http://www.sixapart.com/archive',
                 archivePath =>
                     File::Spec->catfile( $FindBin::Bin, 'archive' ),
+
                 fileExtension        => 'pl',
                 archiveTypePreferred => 'Category',
                 publishEmptyArchive  => 1,            # true.
@@ -689,6 +690,17 @@ my @suite = (
                 useRevision          => 0,            # false.
                 maxRevisionsEntry    => 100,
                 maxRevisionsTemplate => 200,
+
+                # Compose Settings screen.
+                listOnIndex          => 10,
+                daysOrPosts          => 'posts',
+                sortOrderPosts       => 'ascend',
+                wordsInExcerpt       => 100,
+                basenameLimit        => 50,
+                statusDefault        => 'Draft',
+                convertParas         => '__default__',
+                allowCommentsDefault => 0,               # false.
+                allowPingsDefault    => 0,               # false.
             },
         },
         setup => sub { $is_superuser = 1 },
@@ -715,19 +727,19 @@ my @suite = (
             my $got = $app->current_format->{unserialize}->($body);
 
             # General Settings scrren.
-            is( $got->{name}, 'update site', 'name' ),
-                is( $got->{description}, 'update description',
-                'description' ),
-                is( $got->{serverOffset}, 3,    'serverOffset' ),
-                is( $got->{language},     'fr', 'language' ),
-                is( $got->{url}, 'http://www.sixapart.com', 'url' ),
-                is( $got->{sitePath},
+            is( $got->{name},         'update site',        'name' );
+            is( $got->{description},  'update description', 'description' );
+            is( $got->{serverOffset}, 3,                    'serverOffset' );
+            is( $got->{language},     'fr',                 'language' );
+            is( $got->{url}, 'http://www.sixapart.com', 'url' );
+            is( $got->{sitePath},
                 File::Spec->catfile( $FindBin::Bin, 'update' ), 'sitePath' );
             is( $got->{archiveUrl}, 'http://www.sixapart.com/archive',
                 'archiveUrl' );
             is( $got->{archivePath},
                 File::Spec->catfile( $FindBin::Bin, 'archive' ),
                 'archivePath' );
+
             is( $got->{fileExtension}, 'pl', 'fileExtension' );
             is( $got->{archiveTypePreferred},
                 'Category', 'archiveTypePreferred' );
@@ -737,7 +749,65 @@ my @suite = (
             is( $got->{maxRevisionsEntry}, 100, 'maxRevisionsEntry' );
             is( $got->{maxRevisionsTemplate}, 200, 'maxRevisionsTemplate' );
 
-            die $body;
+            # Compose Settings screen.
+            is( $got->{listOnIndex},    10,            'listOnIndex' );
+            is( $got->{daysOrPosts},    'posts',       'daysOrPosts' );
+            is( $got->{sortOrderPosts}, 'ascend',      'sortOrderPosts' );
+            is( $got->{wordsInExcerpt}, 100,           'wordsInExcerpt' );
+            is( $got->{basenameLimit},  50,            'basenameLimit' );
+            is( $got->{statusDefault},  'Draft',       'statusDefault' );
+            is( $got->{convertParas},   '__default__', 'convertParas' );
+            is( $got->{allowCommentsDefault}, 0, 'allowCommentsDefault' )
+                ;    # false.
+            is( $got->{allowPingsDefault}, 0, 'allowPingsDefault' );  # false.
+
+            $is_superuser = 0;
+        },
+    },
+    {    # website - set 'days' todaysOrPosts field.
+        path   => '/v2/sites/2',
+        method => 'PUT',
+        params => {
+            website => {
+
+                # Compose Settings screen.
+                listOnIndex          => 20,
+                daysOrPosts          => 'days',
+                convertParas         => 'markdown',
+                allowCommentsDefault => 1,            # true.
+                allowPingsDefault    => 1,            # true.
+            },
+        },
+        setup => sub { $is_superuser = 1 },
+        callbacks => [
+
+            # save_permission_filter callback is not executed,
+            # because superuser accesses.
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.website',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.website',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.website',
+                count => 1,
+            },
+        ],
+        result   => sub { $app->model('website')->load(2) },
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $blog = $app->model('website')->load(2);
+
+            my $got = $app->current_format->{unserialize}->($body);
+
+            # Compose Settings screen.
+            is( $got->{listOnIndex},  20,         'listOnIndex' );
+            is( $got->{daysOrPosts},  'days',     'daysOrPosts' );
+            is( $got->{convertParas}, 'markdown', 'convertParas' );
+            is( $got->{allowCommentsDefault}, 1, 'allowCommentsDefault' )
+                ;    # true.
+            is( $got->{allowPingsDefault}, 1, 'allowPingsDefault' );   # true.
 
             $is_superuser = 0;
         },
@@ -751,7 +821,7 @@ my @suite = (
             +{  error => {
                     code => 403,
                     message =>
-                        'Website "Test site" (ID:2) were not deleted. You need to delete blogs under the website first.',
+                        'Website "update site" (ID:2) were not deleted. You need to delete blogs under the website first.',
                 },
             };
         },

@@ -174,7 +174,7 @@ sub post_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
 
-    my $blog_id = $obj->blog_id;
+    my $blog_id = $obj->id;
 
     # Generate site_url and set.
     my $site_json = $app->param( $obj->class );
@@ -261,26 +261,25 @@ sub post_save {
             or $app->publish_error();
     }
 
-    # Update entry_custom_prefs and page_custom_prefs.
-
-    # FIXME: Needs to exclude MT::Permission records for groups
-    my $perms = $app->model('permission')
-        ->load( { blog_id => $blog_id, author_id => 0 } );
-    if ( !$perms ) {
-        $perms = $app->model('permission')->new;
-        $perms->blog_id($blog_id);
-        $perms->author_id(0);
-    }
-    foreach my $type (qw(entry page)) {
-        my $prefs = join ',', @{ $site_hash->{entryCustomPrefs} };
-        if ($prefs) {
-            my $prefs_type = $type . '_prefs';
-            $perms->$prefs_type($prefs);
-            $perms->save
-                or return $app->errtrans( "Saving permissions failed: [_1]",
-                $perms->errstr );
-        }
-    }
+ #    # Update entry_custom_prefs and page_custom_prefs.
+ #    # FIXME: Needs to exclude MT::Permission records for groups
+ #    my $perms = $app->model('permission')
+ #        ->load( { blog_id => $blog_id, author_id => 0 } );
+ #    if ( !$perms ) {
+ #        $perms = $app->model('permission')->new;
+ #        $perms->blog_id($blog_id);
+ #        $perms->author_id(0);
+ #    }
+ #    foreach my $type (qw(entry page)) {
+ #        my $prefs = join ',', @{ $site_hash->{$type.'CustomPrefs'} };
+ #        if ($prefs) {
+ #            my $prefs_type = $type . '_prefs';
+ #            $perms->$prefs_type($prefs);
+ #            $perms->save
+ #                or return $app->errtrans( "Saving permissions failed: [_1]",
+ #                $perms->errstr );
+ #        }
+ #    }
 
     # Update DefaultAssignments.
     my $new_default_roles = $site_hash->{newCreatedUserRole};

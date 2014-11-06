@@ -302,6 +302,21 @@ sub fields {
                 my ($obj) = @_;
                 return $obj->entries_on_index || $obj->days_on_index || 0;
             },
+            to_object => sub {
+                my ( $hash, $obj ) = @_;
+
+                if ( $hash->{daysOrPosts} && $hash->{daysOrPosts} eq 'posts' )
+                {
+                    $obj->entries_on_index( $hash->{listOnIndex} || 0 );
+                    $obj->days_on_index(0);
+                }
+                else {
+                    $obj->entries_on_index(0);
+                    $obj->days_on_index( $hash->{listOnIndex} || 0 );
+                }
+
+                return;
+            },
             condition => \&_can_view_cfg_screens,
         },
         {   name        => 'daysOrPosts',
@@ -309,6 +324,10 @@ sub fields {
                 my ($obj) = @_;
                 my $type = $obj->entries_on_index ? 'posts' : 'days';
                 return $type;
+            },
+            to_object => sub {
+
+                # Do nothing here. Set when setting listOnIndex field.
             },
             condition => \&_can_view_cfg_screens,
         },
