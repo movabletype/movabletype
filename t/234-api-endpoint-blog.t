@@ -745,6 +745,12 @@ my @suite = (
                 pingGoogle  => 1,                           # true.
                 pingWeblogs => 1,                           # true.
                 pingOthers  => [qw/ dummy_a dummy_b /],
+
+                # Template tags.
+                dateLanguage => 'fr',
+
+                # Publishing Profile screen.
+                customDynamicTemplates => 'all',
             },
         },
         setup => sub { $is_superuser = 1 },
@@ -857,6 +863,13 @@ my @suite = (
             is( $got->{pingWeblogs}, 1, 'pingWeblogs' );               # true.
             is_deeply( $got->{pingOthers}, [qw/ dummy_a dummy_b /],
                 'pingOthers' );
+
+            # Template tags.
+            is( $got->{dateLanguage}, 'fr', 'dateLanguage' );
+
+            # Publishing Profile screen.
+            is( $got->{customDynamicTemplates},
+                'all', 'customDynamicTemplates' );
 
             $is_superuser = 0;
         },

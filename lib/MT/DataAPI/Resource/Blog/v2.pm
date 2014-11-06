@@ -669,13 +669,17 @@ sub fields {
             },
         },
 
+        # Publishing Profile screen.
+        {   name                => 'customDynamicTemplates',
+            alias               => 'custom_dynamic_templates',
+            from_object_default => 'none',
+            condition           => \&_can_view_cfg_screens,
+        },
+
         $MT::DataAPI::Resource::Common::fields{createdBy},
         $MT::DataAPI::Resource::Common::fields{modifiedBy},
         $MT::DataAPI::Resource::Common::fields{createdDate},
         $MT::DataAPI::Resource::Common::fields{modifiedDate},
-
-        # Others
-        { name => 'customDynamicTemmplates', },
     ];
 }
 
