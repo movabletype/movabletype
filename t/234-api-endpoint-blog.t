@@ -15,6 +15,8 @@ BEGIN {
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
+use File::Spec;
+
 use lib qw(lib extlib t/lib);
 
 eval(
@@ -38,7 +40,12 @@ my $version;
 $mock_app_api->mock( 'current_api_version',
     sub { $version = $_[1] if $_[1]; $version } );
 
-# TODO: Fix the error when installing GoogleAnalytics plugin.
+# Oops, sitepath is not absolute.
+my $website = $app->model('website')->load(2);
+$website->site_path($FindBin::Bin);
+$website->save or die $website->errstr;
+
+# TODO: Avoid an error when installing GoogleAnalytics plugin.
 my $mock_cms_common = Test::MockModule->new('MT::CMS::Common');
 $mock_cms_common->mock( 'run_web_services_save_config_callbacks', sub { } );
 
@@ -316,7 +323,8 @@ my @suite = (
         setup     => sub { $is_superuser = 1 },
         callbacks => [
 
-# save_permission_filter callback is not executed, because superuser accesses.
+            # save_permission_filter callback is not executed,
+            # because superuser accesses.
             {   name  => 'MT::App::DataAPI::data_api_save_filter.website',
                 count => 1,
             },
@@ -351,7 +359,8 @@ my @suite = (
         },
         callbacks => [
 
-# save_permission_filter callback is not executed, because superuser accesses.
+            # save_permission_filter callback is not executed,
+            # because superuser accesses.
             {   name  => 'MT::App::DataAPI::data_api_save_filter.website',
                 count => 1,
             },
@@ -497,7 +506,8 @@ my @suite = (
         setup => sub { $is_superuser = 1 },
         callbacks => [
 
-# save_permission_filter callback is not executed, because superuser accesses.
+            # save_permission_filter callback is not executed,
+            # because superuser accesses.
             {   name  => 'MT::App::DataAPI::data_api_save_filter.blog',
                 count => 1,
             },
@@ -526,7 +536,8 @@ my @suite = (
         setup => sub { $is_superuser = 1 },
         callbacks => [
 
-# save_permission_filter callback is not executed, because superuser accesses.
+            # save_permission_filter callback is not executed,
+            # because superuser accesses.
             {   name  => 'MT::App::DataAPI::data_api_save_filter.blog',
                 count => 1,
             },
@@ -571,7 +582,8 @@ my @suite = (
         setup => sub { $is_superuser = 1 },
         callbacks => [
 
-# save_permission_filter callback is not executed, because superuser accesses.
+            # save_permission_filter callback is not executed,
+            # because superuser accesses.
             {   name  => 'MT::App::DataAPI::data_api_save_filter.blog',
                 count => 1,
             },
@@ -654,6 +666,82 @@ my @suite = (
     },
 
     # update_site - normal tests
+    {    # website.
+        path   => '/v2/sites/2',
+        method => 'PUT',
+        params => {
+            website => {
+
+                # General Settings scrren.
+                name         => 'update site',
+                description  => 'update description',
+                serverOffset => 3,
+                language     => 'fr',
+                url          => 'http://www.sixapart.com',
+                sitePath   => File::Spec->catfile( $FindBin::Bin, 'update' ),
+                archiveUrl => 'http://www.sixapart.com/archive',
+                archivePath =>
+                    File::Spec->catfile( $FindBin::Bin, 'archive' ),
+                fileExtension        => 'pl',
+                archiveTypePreferred => 'Category',
+                publishEmptyArchive  => 1,            # true.
+                includeSystem        => 'php',
+                useRevision          => 0,            # false.
+                maxRevisionsEntry    => 100,
+                maxRevisionsTemplate => 200,
+            },
+        },
+        setup => sub { $is_superuser = 1 },
+        callbacks => [
+
+            # save_permission_filter callback is not executed,
+            # because superuser accesses.
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.website',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.website',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.website',
+                count => 1,
+            },
+        ],
+        result   => sub { $app->model('website')->load(2) },
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $blog = $app->model('website')->load(2);
+
+            my $got = $app->current_format->{unserialize}->($body);
+
+            # General Settings scrren.
+            is( $got->{name}, 'update site', 'name' ),
+                is( $got->{description}, 'update description',
+                'description' ),
+                is( $got->{serverOffset}, 3,    'serverOffset' ),
+                is( $got->{language},     'fr', 'language' ),
+                is( $got->{url}, 'http://www.sixapart.com', 'url' ),
+                is( $got->{sitePath},
+                File::Spec->catfile( $FindBin::Bin, 'update' ), 'sitePath' );
+            is( $got->{archiveUrl}, 'http://www.sixapart.com/archive',
+                'archiveUrl' );
+            is( $got->{archivePath},
+                File::Spec->catfile( $FindBin::Bin, 'archive' ),
+                'archivePath' );
+            is( $got->{fileExtension}, 'pl', 'fileExtension' );
+            is( $got->{archiveTypePreferred},
+                'Category', 'archiveTypePreferred' );
+            is( $got->{publishEmptyArchive}, 1, 'publishEmptyArchive' )
+                ;    # true.
+            is( $got->{useRevision},       0,   'useRevision' );      # false.
+            is( $got->{maxRevisionsEntry}, 100, 'maxRevisionsEntry' );
+            is( $got->{maxRevisionsTemplate}, 200, 'maxRevisionsTemplate' );
+
+            die $body;
+
+            $is_superuser = 0;
+        },
+    },
 
     # delete_site - irregular tests
     {   path   => '/v2/sites/2',

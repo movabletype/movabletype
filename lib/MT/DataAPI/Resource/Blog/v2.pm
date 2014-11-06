@@ -242,7 +242,7 @@ sub fields {
             type        => 'MT::DataAPI::Resource::DataType::Boolean',
             from_object => sub {
 
-                # Do nothing.
+                # Do nothing. Set when dynamicCache field is set.
             },
             condition => \&_can_view,
         },

@@ -43,11 +43,11 @@ sub save_filter {
         }
     }
 
-    # Check positive interger fields.
+    # Check positive interger fields when set.
     my @positive_integer_columns
         = qw( max_revisions_entry max_revisions_template );
     for my $col (@positive_integer_columns) {
-        if ( !( $obj->$col && $obj->$col =~ m/^\d+$/ ) ) {
+        if ( defined $obj->$col && $obj->$col !~ m/^\d+$/ ) {
             return $eh->error(
                 $app->translate(
                     "The number of revisions to store must be a positive integer."
