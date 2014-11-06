@@ -264,18 +264,19 @@ sub fields {
         {   name        => 'publishEmptyArchive',
             alias       => 'publish_empty_archive',
             type        => 'MT::DataAPI::Resource::DataType::Boolean',
-            from_object => sub { $_[0]->publish_empty_archive },
-            condition   => \&_can_view,
+            from_object => sub { $_[0]->publish_empty_archive }
+            ,    # meta column.
+            condition => \&_can_view,
         },
         {   name        => 'includeSystem',
             alias       => 'include_system',
-            from_object => sub { $_[0]->include_system },
+            from_object => sub { $_[0]->include_system },    # meta column.
             condition   => \&_can_view,
         },
-        {   name        => 'includeCache',
-            alias       => 'include_cache',
-            type        => 'MT::DataAPI::Resource::DataType::Boolean',
-            from_object => sub { $_[0]->include_cache },
+        {   name  => 'includeCache',
+            alias => 'include_cache',
+            type  => 'MT::DataAPI::Resource::DataType::Boolean',
+            from_object => sub { $_[0]->include_cache },     # meta column.
             condition   => \&_can_view,
         },
         {   name      => 'useRevision',
@@ -285,13 +286,14 @@ sub fields {
         },
         {   name        => 'maxRevisionsEntry',
             alias       => 'max_revisions_entry',
-            from_object => sub { $_[0]->max_revisions_entry },
+            from_object => sub { $_[0]->max_revisions_entry },  # meta column.
             condition   => \&_can_view,
         },
         {   name        => 'maxRevisionsTemplate',
             alias       => 'max_revisions_template',
-            from_object => sub { $_[0]->max_revisions_template },
-            condition   => \&_can_view,
+            from_object => sub { $_[0]->max_revisions_template }
+            ,                                                   # meta column.
+            condition => \&_can_view,
         },
 
         # Compose Settings screen
@@ -384,9 +386,15 @@ sub fields {
             condition => \&_can_view_cfg_screens,
         },
         {   name      => 'smartReplace',
+            alias     => 'smart_replace',
             condition => \&_can_view_cfg_screens,
         },
-        {   name      => 'smartReplaceFields',
+        {   name        => 'smartReplaceFields',
+            alias       => 'smart_replace_fields',
+            from_object => sub {
+                my ($obj) = @_;
+                return [ split ',', $obj->smart_replace_fields ];
+            },
             to_object => sub {
                 my ($hash) = @_;
 
@@ -414,26 +422,22 @@ sub fields {
             alias     => 'junk_score_threshold',
             condition => \&_can_view_cfg_screens,
         },
-        {   name        => 'nofollowUrls',
-            alias       => 'nofollow_urls',
-            type        => 'MT::DataAPI::Resource::DataType::Boolean',
-            from_object => sub {
-                my ($obj) = @_;
-                $obj->nofollow_urls;
-            },
-            condition => \&_can_view_cfg_screens,
+        {   name  => 'nofollowUrls',
+            alias => 'nofollow_urls',
+            type  => 'MT::DataAPI::Resource::DataType::Boolean',
+            from_object => sub { $_[0]->nofollow_urls },    # meta column.
+            condition   => \&_can_view_cfg_screens,
         },
-        {   name        => 'followAuthLinks',
-            alias       => 'follow_auth_links',
-            type        => 'MT::DataAPI::Resource::DataType::Boolean',
-            from_object => sub {
-                my ($obj) = @_;
-                $obj->follow_auth_links;
-            },
-            condition => \&_can_view_cfg_screens,
+        {   name  => 'followAuthLinks',
+            alias => 'follow_auth_links',
+            type  => 'MT::DataAPI::Resource::DataType::Boolean',
+            from_object => sub { $_[0]->follow_auth_links },    # meta column.
+            condition   => \&_can_view_cfg_screens,
         },
-        {   name        => 'allowComments',
-            from_object => sub {
+        {    # Do not use MT::DataAPI::Resource::DataType::Boolean,
+                # because updating 2 columns at once.
+            name        => 'allowComments',
+            urom_object => sub {
                 my ($obj) = @_;
                 if ( $obj->allow_reg_comments || $obj->allow_unreg_comments )
                 {
@@ -444,24 +448,20 @@ sub fields {
                 }
             },
             to_object => sub {
-
-                # Do nothing
-            },
-            type_to_object => sub {
-                my ( $hashes, $objs ) = @_;
-                for ( my $i = 0; $i < scalar @$objs; $i++ ) {
-                    if ( $hashes->[$i]->{allowComments} ) {
-                        $objs->[$i]->allow_reg_comments(1);
-                    }
-                    else {
-                        $objs->[$i]->allow_unreg_comments(0);
-                        $objs->[$i]->allow_reg_comments(0);
-                    }
+                my ( $hash, $obj ) = @_;
+                if ( $hash->{allowComments} ) {
+                    $obj->allow_reg_comments(1);
                 }
+                else {
+                    $obj->allow_unreg_comments(0);
+                    $obj->allow_reg_comments(0);
+                }
+                return;
             },
             condition => \&_can_view_cfg_screens,
         },
-        {   name      => 'moderateComments',
+        {    # Not boolean.
+            name      => 'moderateComments',
             alias     => 'moderate_unreg_comments',
             condition => \&_can_view_cfg_screens,
         },
@@ -474,7 +474,8 @@ sub fields {
             alias     => 'sanitize_spec',
             condition => \&_can_view_cfg_screens,
         },
-        {   name      => 'emailNewComments',
+        {    # Not boolean.
+            name      => 'emailNewComments',
             alias     => 'email_new_comments',
             condition => \&_can_view_cfg_screens,
         },
@@ -488,7 +489,7 @@ sub fields {
             condition => \&_can_view_cfg_screens,
         },
         {   name      => 'convertParasComments',
-            alias     => 'convert_params_comments',
+            alias     => 'convert_paras_comments',
             condition => \&_can_view_cfg_screens,
         },
         {   name      => 'useCommentConfirmation',
@@ -507,7 +508,7 @@ sub fields {
             condition => \&_can_view_cfg_screens,
         },
         {   name      => 'emailNewPings',
-            alias     => 'email_new_pings',
+            alias     => 'email_new_pings',         # Not boolean.
             condition => \&_can_view_cfg_screens,
         },
         {   name      => 'autodiscoverLinks',
@@ -527,7 +528,7 @@ sub fields {
             type      => 'MT::DataAPI::Resource::DataType::Boolean',
             condition => \&_can_view_cfg_screens,
         },
-        {   name        => 'newCreatedUserRole',
+        {   name        => 'newCreatedUserRoles',
             from_object => sub {
                 my ($obj) = @_;
                 my $app = MT->instance;
@@ -540,7 +541,8 @@ sub fields {
                         or next;
                     push @roles, $role;
                 }
-                return MT::DataAPI::Resource->from_object( \@roles );
+                return MT::DataAPI::Resource->from_object( \@roles,
+                    [qw/ id name /] );
             },
             condition => \&_can_view_cfg_screens,
         },

@@ -38,6 +38,10 @@ my $version;
 $mock_app_api->mock( 'current_api_version',
     sub { $version = $_[1] if $_[1]; $version } );
 
+# TODO: Fix the error when installing GoogleAnalytics plugin.
+my $mock_cms_common = Test::MockModule->new('MT::CMS::Common');
+$mock_cms_common->mock( 'run_web_services_save_config_callbacks', sub { } );
+
 my @suite = (
     {   path      => '/v1/users/me/sites',
         method    => 'GET',
