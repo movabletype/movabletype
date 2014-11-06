@@ -1430,7 +1430,8 @@ sub can_save {
 
         my $author = $app->user;
         return $author->permissions( $id->id )->can_do('edit_blog_config')
-            || ( $app->param('cfg_screen')
+            || ( $app->isa('MT::App::CMS')
+            && $app->param('cfg_screen')
             && $app->param('cfg_screen') eq 'cfg_publish_profile' );
     }
     else {
@@ -1709,68 +1710,8 @@ sub _update_finfos {
     1;
 }
 
-sub post_save {
-    my $eh = shift;
+sub _post_save_cfg_screens {
     my ( $app, $obj, $original ) = @_;
-
-    my $perms = $app->permissions;
-    return 1
-        unless $app->user->is_superuser
-        || (
-          $obj->is_blog
-        ? $app->user->can_create_blog
-        : $app->user->can_create_website
-        )
-        || ( $perms && $perms->can_edit_config );
-
-    # check to see what changed and add a flag to meta_messages
-    my @meta_messages = ();
-    my %blog_fields
-        = ( %{ $obj->column_defs }, %{ $obj->properties()->{fields} } );
-    foreach my $key (
-        qw{ created_on created_by modified_on modified_by id class children_modified_on }
-        )
-    {
-        delete $blog_fields{$key};
-    }
-
-    for my $blog_field ( keys %blog_fields ) {
-
-        if ( ( $obj->$blog_field() || '' ) ne
-            ( $original->$blog_field() || '' ) )
-        {
-            my $old
-                = defined $original->$blog_field()
-                ? $original->$blog_field()
-                : "none";
-            my $new
-                = defined $obj->$blog_field() ? $obj->$blog_field() : "none";
-            push(
-                @meta_messages,
-                $app->translate(
-                    "[_1] changed from [_2] to [_3]",
-                    $blog_field, $old, $new
-                )
-            );
-        }
-    }
-
-    # log all of the changes we can possible log
-    my $blog_type = $obj->is_blog ? 'Blog' : 'Website';
-    if ( scalar(@meta_messages) > 0 ) {
-        my $meta_message = join( ", ", @meta_messages );
-        $app->log(
-            {   message => $app->translate(
-                    "Saved [_1] Changes", $obj->class_label
-                ),
-                metadata => $meta_message,
-                level    => MT::Log::INFO(),
-                class    => $obj->class,
-                blog_id  => $obj->id,
-                category => 'edit',
-            }
-        );
-    }
 
     my $screen = $app->param('cfg_screen') || '';
     if ( $screen eq 'cfg_publish_profile' ) {
@@ -1805,17 +1746,6 @@ sub post_save {
         cfg_publish_profile_save( $app, $obj ) or return;
     }
     if ( $screen eq 'cfg_prefs' ) {
-        my $blog_id = $obj->id;
-
-        # FIXME: Needs to exclude MT::Permission records for groups
-        $app->model('permission')
-            ->load( { blog_id => $blog_id, author_id => 0 } );
-        if ( !$perms ) {
-            $perms = $app->model('permission')->new;
-            $perms->blog_id($blog_id);
-            $perms->author_id(0);
-        }
-
         cfg_prefs_save( $app, $obj ) or return;
 
         # If either of the publishing paths changed, rebuild the fileinfos.
@@ -1873,6 +1803,83 @@ sub post_save {
             push @defaults, join( ',', $_, $blog_id ) for @role_ids;
             $app->config( 'DefaultAssignments', join( ',', @defaults ), 1 );
             $app->config->save_config;
+        }
+    }
+
+    return 1;
+}
+
+sub post_save {
+    my $eh = shift;
+    my ( $app, $obj, $original ) = @_;
+
+    my $perms = $app->permissions;
+    return 1
+        unless $app->user->is_superuser
+        || (
+          $obj->is_blog
+        ? $app->user->can_create_blog
+        : $app->user->can_create_website
+        )
+        || ( $perms && $perms->can_edit_config );
+
+    # check to see what changed and add a flag to meta_messages
+    my @meta_messages = ();
+    my %blog_fields
+        = ( %{ $obj->column_defs }, %{ $obj->properties()->{fields} } );
+    foreach my $key (
+        qw{ created_on created_by modified_on modified_by id class children_modified_on }
+        )
+    {
+        delete $blog_fields{$key};
+    }
+
+    for my $blog_field ( keys %blog_fields ) {
+
+        if ( $obj->$blog_field() ne $original->$blog_field() ) {
+            my $old
+                = defined $original->$blog_field()
+                ? $original->$blog_field()
+                : "none";
+            my $new
+                = defined $obj->$blog_field() ? $obj->$blog_field() : "none";
+            push(
+                @meta_messages,
+                $app->translate(
+                    "[_1] changed from [_2] to [_3]",
+                    $blog_field, $old, $new
+                )
+            );
+        }
+    }
+
+    # log all of the changes we can possible log
+    my $blog_type = $obj->is_blog ? 'Blog' : 'Website';
+    if ( scalar(@meta_messages) > 0 ) {
+        my $meta_message = join( ", ", @meta_messages );
+        $app->log(
+            {   message => $app->translate(
+                    "Saved [_1] Changes", $obj->class_label
+                ),
+                metadata => $meta_message,
+                level    => MT::Log::INFO(),
+                class    => $obj->class,
+                blog_id  => $obj->id,
+                category => 'edit',
+            }
+        );
+    }
+
+    if ( $app->isa('MT::App::CMS') ) {
+        _post_save_cfg_screens( $app, $obj, $original ) or return;
+    }
+    elsif ( $app->isa('MT::App::DataAPI') ) {
+
+        # Use eval here because decreasing dependency on Data API.
+        if ( eval { require MT::DataAPI::Callback::Blog; 1 } ) {
+            MT::DataAPI::Callback::Blog::post_save( $eh, $app, $obj,
+                $original )
+                or return;
         }
     }
 
@@ -1960,13 +1967,14 @@ sub post_save {
     else {
 
         # if settings were changed that would affect published pages:
-        if (grep {
-                ( $original->column($_) || '' ) ne ( $obj->column($_) || '' )
-            } qw(allow_unreg_comments allow_reg_comments remote_auth_token
-            allow_pings allow_comment_html )
-            )
-        {
-            $app->add_return_arg( need_full_rebuild => 1 );
+        if ( $app->isa('MT::App::CMS') ) {
+            if (grep { ( $original->column($_) || '' ) ne ( $obj->column($_) || '' ) }
+                qw(allow_unreg_comments allow_reg_comments remote_auth_token
+                allow_pings          allow_comment_html )
+                )
+            {
+                $app->add_return_arg( need_full_rebuild => 1 );
+            }
         }
 
         my $original_set = $original->template_set;
@@ -1976,7 +1984,8 @@ sub post_save {
         if ( ( $original_set || '' ) ne ( $obj_set || '' ) ) {
             $app->run_callbacks( 'blog_template_set_change',
                 { blog => $obj } );
-            $app->add_return_arg( need_full_rebuild => 1 );
+            $app->add_return_arg( need_full_rebuild => 1 )
+                if $app->isa('MT::App::CMS');
         }
 
         ## THINK: should the theme be changed by normal save method?

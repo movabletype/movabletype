@@ -142,6 +142,11 @@ sub list_props {
             fields  => [qw(label basename)],
             display => 'none',
         },
+        created_by => {
+            auto    => 1,
+            col     => 'created_by',
+            display => 'none',
+        },
     };
 }
 
@@ -445,7 +450,7 @@ sub _flattened_category_hierarchy {
         @flat;
     }
     foreach my $cat (@cats) {
-        if ( !$cat->parent ) {
+        if ( !$cat->parent || !( grep { $cat->parent == $_->id } @cats ) ) {
             push @flattened_cats, $cat;
             push @flattened_cats, __pusher( $children, $cat->id )
                 if $children->{ $cat->id };

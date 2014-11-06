@@ -8,7 +8,6 @@ package MT::DataAPI::Endpoint::Category;
 use warnings;
 use strict;
 
-use MT::Util qw(remove_html);
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 

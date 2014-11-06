@@ -40,7 +40,7 @@ sub fields {
         {   name  => 'displayName',
             alias => 'nickname',
         },
-        {   name             => 'name',
+        {   name             => 'email',
             bulk_from_object => _private_bulk_from_object( 'email', 'email' ),
         },
         'url',

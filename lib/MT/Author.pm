@@ -189,7 +189,7 @@ sub list_props {
             terms   => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
-                my $val      = $args->{value};
+                my $val      = $prop->normalized_value(@_);
                 my %statuses = (
                     active   => ACTIVE(),
                     disabled => INACTIVE(),
@@ -199,9 +199,18 @@ sub list_props {
                 return { status => $val };
             },
             single_select_options => [
-                { label => MT->translate('Active'),   value => 'active', },
-                { label => MT->translate('Disabled'), value => 'disabled', },
-                { label => MT->translate('Pending'),  value => 'pending', },
+                {   label => MT->translate('Active'),
+                    value => 'active',
+                    text  => 'Active'
+                },
+                {   label => MT->translate('Disabled'),
+                    value => 'disabled',
+                    text  => 'Disabled'
+                },
+                {   label => MT->translate('Pending'),
+                    value => 'pending',
+                    text  => 'Pending'
+                },
             ],
         },
         url => {
@@ -254,7 +263,7 @@ sub list_props {
             terms   => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
-                my $val = $args->{value};
+                my $val = $prop->normalized_value(@_);
                 require MT::Lockout;
                 my %statuses = (
                     not_locked_out =>
@@ -274,7 +283,12 @@ sub list_props {
                 },
             ],
         },
-        id => { view => [] },
+        id      => { view => [] },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( name nickname email url )],
+            display => 'none',
+        },
     };
 }
 
@@ -1554,6 +1568,29 @@ sub anonymous {
 sub is_anonymous {
     my $self = shift;
     $self->id == 0;
+}
+
+sub get_status_text {
+    my $self = shift;
+    my $text
+        = $self->status == ACTIVE()  ? 'Active'
+        : $self->status == PENDING() ? 'Pending'
+        :                              'Disabled';
+    return $text;
+}
+
+sub set_status_by_text {
+    my $self   = shift;
+    my $status = lc $_[0];
+    if ( $status eq 'active' ) {
+        $self->status( ACTIVE() );
+    }
+    elsif ( $status eq 'pending' ) {
+        $self->status( PENDING() );
+    }
+    else {
+        $self->status( INACTIVE() );
+    }
 }
 
 1;

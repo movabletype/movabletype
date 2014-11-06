@@ -377,6 +377,16 @@ sub list_props {
                 { label => MT->translate('Disabled'), value => 'disabled', },
             ],
         },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( label )],
+            display => 'none',
+        },
+        created_by => {
+            auto    => 1,
+            col     => 'created_by',
+            display => 'none',
+        },
     };
 }
 

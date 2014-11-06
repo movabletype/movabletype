@@ -57,7 +57,13 @@ sub class_label_plural {
 }
 
 sub list_props {
-    return { blog_id => { base => '__virtual.id', }, };
+    return +{
+        id         => { base => '__virtual.id', },
+        blog_id    => { base => '__virtual.id', },
+        created_on => { base => '__virtual.created_on', },
+        created_by => { auto => 1, },
+        author_id  => { base => '__virtual.author_name' },
+    };
 }
 
 sub user {

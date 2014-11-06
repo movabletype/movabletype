@@ -26,7 +26,7 @@ sub get {
 sub update {
     my ( $app, $endpoint ) = @_;
 
-    my $user = get_target_user($app)
+    my $user = get_target_user(@_)
         or return;
 
     my $new_user = $app->resource_object( 'user', $user )

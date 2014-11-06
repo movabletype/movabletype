@@ -109,6 +109,47 @@ sub class_label_plural {
     MT->translate("Templates");
 }
 
+sub list_props {
+    return +{
+        id      => { base => '__virtual.id', display => 'none', },
+        name    => { auto => 1,              display => 'none' },
+        blog_id => {
+            auto    => 1,
+            display => 'none',
+        },
+        type => {
+            auto  => 1,
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                return +{ type => $args->{value} };
+            },
+            display => 'none',
+        },
+        created_on => {
+            base    => '__virtual.created_on',
+            display => 'none',
+        },
+        modified_on => {
+            base    => '__virtual.modified_on',
+            display => 'none',
+        },
+        created_by => {
+            auto    => 1,
+            display => 'none',
+        },
+        modified_by => {
+            auto    => 1,
+            display => 'none',
+        },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( name identifier text )],
+            display => 'none',
+        },
+    };
+}
+
 sub new {
     my $pkg = shift;
     my (%param) = @_;

@@ -14,7 +14,7 @@ sub can_list {
     my $user = $app->user;
     return 1 if $user->is_superuser;
 
-    $user->id == $options->{user}->id;
+    return $user->id == $options->{user}->id;
 }
 
 sub cms_pre_load_filtered_list {

@@ -84,7 +84,14 @@ sub remove_object {
 sub _load_object_by_name {
     my ( $app, $name, $parent ) = @_;
 
-    return $app->blog if $name eq 'site_id';
+    if ( $name eq 'site_id' ) {
+        return $app->blog if $app->blog;
+
+        # dummy blog to get an object in system scope.
+        my $blog = MT->model('blog')->new;
+        $blog->id(0);
+        return $blog;
+    }
 
     my ($model_name) = ( $name =~ /([\w-]+)_id\z/ ) or return;
     my $model = $app->model($model_name)
@@ -102,8 +109,14 @@ sub _load_object_by_name {
         );
     }
 
-    if ( !$obj && !$app->errstr ) {
-        $app->error( ucfirst($model_name) . ' not found', 404 );
+    # If $obj is mt_entry record or mt_category record,
+    # check object class of $obj strictly.
+    if (( !$obj && !$app->errstr )
+        || ( eval { $obj->isa('MT::Entry') || $obj->isa('MT::Category') }
+            && $obj->class ne $model_name )
+        )
+    {
+        return $app->error( ucfirst($model_name) . ' not found', 404 );
     }
 
     $obj;
@@ -142,7 +155,26 @@ sub get_target_user {
     }
     else {
         my ($user) = context_objects(@_);
-        ( $user && $user->status == MT::Author::ACTIVE() ) ? $user : undef;
+
+        my $active_user_or_error = sub {
+            ( $user && $user->status == MT::Author::ACTIVE() )
+                ? $user
+                : $app->error( $app->translate('User not found'), 404 );
+        };
+
+        if ( $app->current_api_version == 1 ) {
+            return $active_user_or_error->();
+        }
+        else {
+            my $login_user = $app->user;
+
+            if ( $login_user->is_superuser || $login_user->id == $user->id ) {
+                return $user;
+            }
+            else {
+                return $active_user_or_error->();
+            }
+        }
     }
 }
 
@@ -371,14 +403,43 @@ sub filtered_list {
     my @cols = ( '__id', grep {/^[^\.]+$/} split( ',', $cols ) );
     my @subcols = ( '__id', grep {/\./} split( ',', $cols ) );
 
+    my $endpoint_has_site_id
+        = ( $endpoint->{route} && $endpoint->{route} =~ m!/:site_id/! )
+        ? 1
+        : 0;
     my $scope_mode
         = $setting->{data_api_scope_mode} || $setting->{scope_mode} || 'wide';
-    my @blog_id_term = (
-         !$blog_id              ? ()
-        : $scope_mode eq 'none' ? ()
-        : $scope_mode eq 'this' ? ( blog_id => $blog_id )
-        :                         ( blog_id => $blog_ids )
-    );
+
+    my @blog_id_term;
+    if ( $scope_mode eq 'strict' ) {
+        if ($endpoint_has_site_id) {
+            @blog_id_term = ( blog_id => $blog_id );
+        }
+        else {
+            my $include_site_ids = $app->param('includeSiteIds');
+            my $exclude_site_ids = $app->param('excludeSiteIds');
+
+            $include_site_ids = '' unless defined $include_site_ids;
+            $exclude_site_ids = '' unless defined $exclude_site_ids;
+
+            my @include_site_ids = split ',', $include_site_ids;
+            my @exclude_site_ids = split ',', $exclude_site_ids;
+
+            my %site_id_term;
+            $site_id_term{blog_id} = \@include_site_ids if @include_site_ids;
+            $site_id_term{blog_id}{not} = \@exclude_site_ids
+                if @exclude_site_ids;
+
+            @blog_id_term = %site_id_term;
+        }
+    }
+    else {
+        @blog_id_term
+            = !$blog_id             ? ()
+            : $scope_mode eq 'none' ? ()
+            : $scope_mode eq 'this' ? ( blog_id => $blog_id )
+            :                         ( blog_id => $blog_ids );
+    }
 
     my %load_options = (
         terms => { %$terms, @blog_id_term },
@@ -388,19 +449,25 @@ sub filtered_list {
         limit      => $limit,
         offset     => $offset,
         scope      => $scope,
-        blog       => $blog,
-        blog_id    => $blog_id,
-        blog_ids   => $blog_ids,
+        ( $scope_mode eq 'strict' && !$endpoint_has_site_id )
+        ? ()
+        : ( blog     => $blog,
+            blog_id  => $blog_id,
+            blog_ids => $blog_ids,
+        ),
         %$options,
     );
 
     my %count_options = (
-        terms    => { %$terms, @blog_id_term },
-        args     => {%$args},
-        scope    => $scope,
-        blog     => $blog,
-        blog_id  => $blog_id,
-        blog_ids => $blog_ids,
+        terms => { %$terms, @blog_id_term },
+        args  => {%$args},
+        scope => $scope,
+        ( $scope_mode eq 'strict' && !$endpoint_has_site_id )
+        ? ()
+        : ( blog     => $blog,
+            blog_id  => $blog_id,
+            blog_ids => $blog_ids,
+        ),
         %$options,
     );
 

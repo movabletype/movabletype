@@ -30,8 +30,8 @@ sub list {
 sub get {
     my ( $app, $endpoint ) = @_;
 
-    my ($blog) = context_objects(@_)
-        or return;
+    my ($blog) = context_objects(@_);
+    return unless $blog && $blog->id;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
         'blog', $blog->id, obj_promise($blog) )

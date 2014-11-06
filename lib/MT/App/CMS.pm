@@ -510,8 +510,21 @@ sub init_plugins {
                 "${pfx}Entry::cms_pre_load_filtered_list",
             $pkg . 'view_permission_filter.entry' => "${pfx}Entry::can_view",
 
+            # page callbacks
+            $pkg
+                . 'pre_load_filtered_list.page' =>
+                "${pfx}Page::cms_pre_load_filtered_list",
+            $pkg . 'view_permission_filter.page' => "${pfx}Page::can_view",
+
             # user callbacks
+            $pkg . 'pre_load_filtered_list.author' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                my $terms = $opts->{terms};
+                $terms->{type} = MT::Author::AUTHOR();
+            },
             $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
+            $pkg . 'save_filter.author' => "${pfx}User::save_filter",
+            $pkg . 'pre_save.author'    => "${pfx}User::pre_save",
 
             # comment callbacks
             $pkg
@@ -531,6 +544,37 @@ sub init_plugins {
 
             # blog callbacks
             $pkg . 'view_permission_filter.blog' => "${pfx}Blog::can_view",
+            $pkg . 'save_filter.blog'            => "${pfx}Blog::save_filter",
+            $pkg
+                . 'pre_load_filtered_list.blog' =>
+                "${pfx}Blog::cms_pre_load_filtered_list",
+
+            # category callbacks
+            $pkg
+                . 'view_permission_filter.category' =>
+                "${pfx}Category::can_view",
+            $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
+            $pkg
+                . 'pre_load_filtered_list.category' =>
+                "${pfx}Category::pre_load_filtered_list",
+
+            # folder callbacks
+            $pkg
+                . 'view_permission_filter.folder' => "${pfx}Folder::can_view",
+
+            # asset callbacks
+            $pkg . 'view_permission_filter.asset' => "${pfx}Asset::can_view",
+            $pkg . 'save_filter.asset' => "${pfx}Asset::cms_save_filter",
+            $pkg . 'pre_save.asset'    => "${pfx}Asset::pre_save",
+            $pkg
+                . 'pre_load_filtered_list.asset' =>
+                "${pfx}Asset::cms_pre_load_filtered_list",
+
+            # tag callbacks
+            $pkg
+                . 'pre_load_filtered_list.tag' =>
+                "${pfx}Tag::cms_pre_load_filtered_list",
+            $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
         }
     );
 

@@ -100,6 +100,30 @@ sub cms_pre_load_filtered_list {
     1;
 }
 
+sub save_filter {
+    my ( $eh, $app, $obj, $orig ) = @_;
+
+    if ( defined $obj->convert_breaks && $obj->convert_breaks ne '' ) {
+        my %valid_filters = ( 1 => 1 );             # __default__
+        my $type          = $obj->class;
+        my $filters       = MT->all_text_filters;
+        for my $filter ( keys %$filters ) {
+            if ( my $cond = $filters->{$filter}{condition} ) {
+                $cond = MT->handler_to_coderef($cond) if !ref($cond);
+                next unless $cond->($type);
+            }
+            $valid_filters{$filter} = 1;
+        }
+
+        if ( !$valid_filters{ $obj->convert_breaks } ) {
+            return $app->errtrans( 'Invalid format: [_1]',
+                $obj->convert_breaks );
+        }
+    }
+
+    return 1;
+}
+
 1;
 
 __END__

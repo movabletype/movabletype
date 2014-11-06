@@ -1203,6 +1203,8 @@ BEGIN {
             log          => '$Core::MT::Log::list_props',
             filter       => '$Core::MT::Filter::list_props',
             permission   => '$Core::MT::Permission::list_props',
+            template     => '$Core::MT::Template::list_props',
+            templatemap  => '$Core::MT::TemplateMap::list_props',
         },
         system_filters => {
             entry     => '$Core::MT::Entry::system_filters',
@@ -1239,7 +1241,7 @@ BEGIN {
                     require MT::CMS::Blog;
                     return MT::CMS::Blog::can_view_blog_list( MT->instance );
                 },
-                data_api_condition => undef,
+                data_api_condition => sub {1},
             },
             entry => {
                 object_label        => 'Entry',
@@ -1274,11 +1276,13 @@ BEGIN {
                 },
             },
             page => {
-                object_label     => 'Page',
-                primary          => 'title',
-                default_sort_key => 'modified_on',
-                permission       => 'access_to_page_list',
-                feed_link        => sub {
+                object_label        => 'Page',
+                primary             => 'title',
+                default_sort_key    => 'modified_on',
+                data_api_scope_mode => 'this',
+                permission          => 'access_to_page_list',
+                data_api_permission => undef,
+                feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 
@@ -1304,16 +1308,19 @@ BEGIN {
                 },
             },
             asset => {
-                object_label     => 'Asset',
-                primary          => 'label',
-                permission       => 'access_to_asset_list',
-                default_sort_key => 'created_on',
+                object_label        => 'Asset',
+                primary             => 'label',
+                data_api_scope_mode => 'strict',
+                permission          => 'access_to_asset_list',
+                data_api_permission => undef,
+                default_sort_key    => 'created_on',
             },
             log => {
-                object_label     => 'Log',
-                default_sort_key => 'created_on',
-                primary          => 'message',
-                condition        => sub {
+                object_label        => 'Log',
+                default_sort_key    => 'created_on',
+                primary             => 'message',
+                data_api_scope_mode => 'this',
+                condition           => sub {
                     my $app     = MT->instance;
                     my $user    = $app->user;
                     my $blog_id = $app->param('blog_id');
@@ -1416,9 +1423,10 @@ BEGIN {
                     permit_action => 'access_to_folder_list',
                     inherit       => 0,
                 },
-                view       => [ 'website', 'blog' ],
-                scope_mode => 'this',
-                condition  => sub {
+                data_api_permission => undef,
+                view                => [ 'website', 'blog' ],
+                scope_mode          => 'this',
+                condition           => sub {
                     my $app = shift;
                     ( $app->param('_type') || '' ) ne 'filter';
                 },
@@ -1488,12 +1496,13 @@ BEGIN {
                 },
             },
             author => {
-                object_label     => 'Author',
-                primary          => 'name',
-                permission       => 'administer',
-                default_sort_key => 'name',
-                view             => 'system',
-                scope_mode       => 'none',
+                object_label        => 'Author',
+                primary             => 'name',
+                permission          => 'administer',
+                data_api_permission => undef,
+                default_sort_key    => 'name',
+                view                => 'system',
+                scope_mode          => 'none',
             },
             commenter => {
                 primary             => 'name',
@@ -1529,9 +1538,10 @@ BEGIN {
                     permit_action => 'access_to_tag_list',
                     inherit       => 0,
                 },
-                default_sort_key => 'name',
-                view             => [ 'blog', 'website' ],
-                scope_mode       => 'none',
+                data_api_permission => undef,
+                default_sort_key    => 'name',
+                view                => [ 'blog', 'website' ],
+                scope_mode          => 'none',
             },
             association => {
                 object_label        => 'Permission',
@@ -1592,9 +1602,11 @@ BEGIN {
                 scope_mode       => 'none',
             },
             permission => {
-                condition          => sub {0},
-                data_api_condition => sub {1},
+                condition           => sub {0},
+                data_api_condition  => sub {1},
+                data_api_scope_mode => 'this',
             },
+            template => { data_api_scope_mode => 'strict', },
         },
         summaries => {
             'author' => {
@@ -1732,18 +1744,19 @@ BEGIN {
             'BaseSitePath'                   => undef,
             'HideBaseSitePath'               => { default => 0, },
             'HidePerformanceLoggingSettings' => { default => 0, },
-            'HidePaformanceLoggingSettings'  => { alias   => 'HidePerformanceLoggingSettings' },
-            'CookieDomain'                   => undef,
-            'CookiePath'                     => undef,
-            'MailEncoding'                   => { default => 'ISO-8859-1', },
-            'MailTransfer'                   => { default => 'sendmail' },
-            'SMTPServer'                     => { default => 'localhost', },
-            'SMTPAuth'                       => { default => 0, },
-            'SMTPUser'                       => undef,
-            'SMTPPassword'                   => undef,
-            'SMTPPort'                       => undef,
-            'SMTPTimeout'                    => { default => 10 },
-            'DebugEmailAddress'              => undef,
+            'HidePaformanceLoggingSettings' =>
+                { alias => 'HidePerformanceLoggingSettings' },
+            'CookieDomain'      => undef,
+            'CookiePath'        => undef,
+            'MailEncoding'      => { default => 'ISO-8859-1', },
+            'MailTransfer'      => { default => 'sendmail' },
+            'SMTPServer'        => { default => 'localhost', },
+            'SMTPAuth'          => { default => 0, },
+            'SMTPUser'          => undef,
+            'SMTPPassword'      => undef,
+            'SMTPPort'          => undef,
+            'SMTPTimeout'       => { default => 10 },
+            'DebugEmailAddress' => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
                 { default => 'http://www.movabletype.org/update/', },
@@ -2132,6 +2145,14 @@ BEGIN {
                 default_format => 'json',
                 query_builder =>
                     '$Core::MT::DataAPI::Endpoint::Common::query_builder',
+
+                # This is for search endpoint.
+                default =>
+                    sub { MT::App::Search::core_parameters( MT->app ) },
+                import_formats => sub {
+                    require MT::Import;
+                    return MT::Import->core_import_formats();
+                },
             },
         },
         web_services    => undef,

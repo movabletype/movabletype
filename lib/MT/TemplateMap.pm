@@ -215,6 +215,41 @@ sub _prefer_next_map {
     return 0;
 }
 
+sub list_props {
+    return +{
+        id           => { base => '__virtual.id' },
+        archive_type => {
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                return +{ archive_type => $args->{value} };
+            },
+            display => 'none',
+        },
+        build_type => {
+            base                  => '__virtual.single_select',
+            display               => 'none',
+            single_select_options => sub {
+                require MT::DataAPI::Resource::Template::v2;
+                my $table
+                    = \%MT::DataAPI::Resource::Template::v2::BUILD_TYPE_TABLE;
+                my @options = map { +{ text => $_, value => $table->{$_} } }
+                    keys %$table;
+                return \@options;
+                }
+                ->(),
+        },
+        is_preferred => {
+            base                  => '__virtual.single_select',
+            display               => 'none',
+            single_select_options => [
+                { value => 0, text => 'False' },
+                { value => 1, text => 'True' },
+            ],
+        },
+    };
+}
+
 1;
 __END__
 

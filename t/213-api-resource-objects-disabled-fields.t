@@ -38,6 +38,7 @@ $app->user($author);
     $app->_init_plugins_core( {}, 1,
         [ File::Spec->join( $base, 'plugins' ) ] );
 }
+$app->current_api_version(1);
 
 $app->param('maxComments', 9999);
 
