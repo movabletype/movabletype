@@ -311,9 +311,22 @@ my @suite = (
 
     #   insert_new_website - normal tests
     {    # Minimal parameters.
-        path   => '/v2/sites',
-        method => 'POST',
-        setup  => sub { $is_superuser = 1 },
+        path      => '/v2/sites',
+        method    => 'POST',
+        setup     => sub { $is_superuser = 1 },
+        callbacks => [
+
+# save_permission_filter callback is not executed, because superuser accesses.
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.website',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.website',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.website',
+                count => 1,
+            },
+        ],
         params => {
             website => {
                 name     => 'test-api-permission-website',
@@ -322,6 +335,51 @@ my @suite = (
             },
         },
         complete => sub { $is_superuser = 0 },
+    },
+    {   path   => '/v2/sites',
+        method => 'POST',
+        setup  => sub { $is_superuser = 1 },
+        params => {
+            website => {
+                name         => 'test-api-permission-website-2',
+                url          => 'http://narnia2.na/',
+                sitePath     => $FindBin::Bin,
+                themeId      => 'classic_website',
+                serverOffset => -5.5,
+                language     => 'de',
+            },
+        },
+        callbacks => [
+
+# save_permission_filter callback is not executed, because superuser accesses.
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.website',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.website',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.website',
+                count => 1,
+            },
+        ],
+        result => sub {
+            $app->model('website')
+                ->load( { name => 'test-api-permission-website-2' } );
+        },
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $got = $app->current_format->{unserialize}->($body);
+
+            is( $got->{name}, 'test-api-permission-website-2', 'name' ),
+                is( $got->{url}, 'http://narnia2.na/', 'url' );
+            is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+            is( $got->{themeId},      'classic_website', 'themeId' );
+            is( $got->{serverOffset}, -5.5,              'serverOffset' );
+            is( $got->{language},     'de',              'language' );
+
+            $is_superuser = 0;
+        },
     },
 
     # insert_new_blog - irregular tests
@@ -401,6 +459,28 @@ my @suite = (
             $is_superuser = 0;
         },
     },
+    {    # Website theme_id.
+        path   => '/v2/sites/2',
+        method => 'POST',
+        params => {
+            blog => {
+                url      => 'blog',
+                name     => 'blog',
+                sitePath => 'blog',
+                themeId  => 'classic_website',
+            },
+        },
+        setup => sub { $is_superuser = 1 },
+        code => 409,
+        result => sub {
+            +{  error => {
+                    code => 409,
+                    message =>
+                        "Cannot apply website theme to blog: classic_website\n",
+                },
+            };
+        },
+    },
 
     # insert_new_blog - normal tests
     {    # Minimal pameters.
@@ -415,8 +495,112 @@ my @suite = (
             },
         },
         setup => sub { $is_superuser = 1 },
+        callbacks => [
+
+# save_permission_filter callback is not executed, because superuser accesses.
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.blog',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.blog',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.blog',
+                count => 1,
+            },
+        ],
         result => sub { $app->model('blog')->load( { name => 'blog' } ) },
         complete => sub { $is_superuser = 0 },
+    },
+    {   path   => '/v2/sites/2',
+        method => 'POST',
+        params => {
+            blog => {
+                themeId      => 'pico',
+                name         => 'blog-2 name',
+                url          => 'blog-2',
+                sitePath     => 'blog-2',
+                serverOffset => +8,
+                language     => 'nl',
+            },
+        },
+        setup => sub { $is_superuser = 1 },
+        callbacks => [
+
+# save_permission_filter callback is not executed, because superuser accesses.
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.blog',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.blog',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.blog',
+                count => 1,
+            },
+        ],
+        result =>
+            sub { $app->model('blog')->load( { name => 'blog-2 name' } ) },
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $got = $app->current_format->{unserialize}->($body);
+
+            is( $got->{themeId}, 'pico',        'themeId' );
+            is( $got->{name},    'blog-2 name', 'name' ),
+                is( $got->{url}, 'blog-2', 'url' );
+            is( $got->{sitePath},     'blog-2', 'sitePath' );
+            is( $got->{serverOffset}, 8,        'serverOffset' );
+            is( $got->{language},     'nl',     'language' );
+
+            $is_superuser = 0;
+        },
+    },
+    {    # Set siteSubDomain, and sitePath is absolute.
+        path   => '/v2/sites/2',
+        method => 'POST',
+        params => {
+            blog => {
+                themeId       => 'classic_blog',
+                name          => 'blog-3 name',
+                url           => 'blog-3',
+                siteSubdomain => 'www',
+                sitePath      => $FindBin::Bin,    # absolute.
+                serverOffset  => +8,
+                language      => 'nl',
+            },
+        },
+        setup => sub { $is_superuser = 1 },
+        callbacks => [
+
+# save_permission_filter callback is not executed, because superuser accesses.
+            {   name  => 'MT::App::DataAPI::data_api_save_filter.blog',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_pre_save.blog',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_save.blog',
+                count => 1,
+            },
+        ],
+        result =>
+            sub { $app->model('blog')->load( { name => 'blog-3 name' } ) },
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $blog = $app->model('blog')->load( { name => 'blog-3 name' } );
+            my $website = $blog->website or die;
+
+            my $got = $app->current_format->{unserialize}->($body);
+
+            is( $got->{themeId}, 'classic_blog', 'themeId' );
+            is( $got->{name},    'blog-3 name',  'name' ),
+                is( $got->{url}, 'http://www.narnia.na/blog-3', 'url' );
+            is( $got->{sitePath},     $FindBin::Bin, 'sitePath' );
+            is( $got->{serverOffset}, 8,             'serverOffset' );
+            is( $got->{language},     'nl',          'language' );
+
+            $is_superuser = 0;
+        },
     },
 
     # update_site - irregular tests
@@ -542,6 +726,9 @@ my @suite = (
         setup  => sub {
             my $website = $app->model('website')->load(2);
             die if !( $website && !$website->is_blog );
+            for my $b ( $app->model('blog')->load( { parent_id => 2 } ) ) {
+                $b->remove or die $b->errstr;
+            }
         },
         callbacks => [
             {   name =>

@@ -106,9 +106,17 @@ sub save_filter {
 
     }
 
+    my $theme = MT::Theme->load( $obj->theme_id );
+
     # Check whether theme_id is valid or not.
-    if ( !MT::Theme->load( $obj->theme_id ) ) {
+    if ( !$theme ) {
         return $app->errtrans( 'Invalid theme_id: [_1]', $obj->theme_id );
+    }
+
+    # Cannot aplly website theme to blog.
+    if ( $obj->is_blog && $theme->{class} eq 'website' ) {
+        return $app->errtrans( 'Cannot apply website theme to blog: [_1]',
+            $obj->theme_id );
     }
 
     return 1;
