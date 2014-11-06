@@ -744,6 +744,7 @@ my @suite = (
                 # Web Services Settings screen.
                 pingGoogle  => 1,                           # true.
                 pingWeblogs => 1,                           # true.
+                pingOthers  => [qw/ dummy_a dummy_b /],
             },
         },
         setup => sub { $is_superuser = 1 },
@@ -854,11 +855,15 @@ my @suite = (
             # Web Services Settings screen.
             is( $got->{pingGoogle},  1, 'pingGoogles' );               # true.
             is( $got->{pingWeblogs}, 1, 'pingWeblogs' );               # true.
+            is_deeply( $got->{pingOthers}, [qw/ dummy_a dummy_b /],
+                'pingOthers' );
 
             $is_superuser = 0;
         },
     },
-    {    # website - set 'days' todaysOrPosts field.
+    {    # website
+            # set 'days' todaysOrPosts field.
+            # check whether boolean fields can have false.
         path   => '/v2/sites/2',
         method => 'PUT',
         params => {

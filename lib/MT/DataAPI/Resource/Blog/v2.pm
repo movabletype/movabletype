@@ -603,8 +603,16 @@ sub fields {
             type      => 'MT::DataAPI::Resource::DataType::Boolean',
             condition => \&_can_view_cfg_screens,
         },
-        {   name     => 'pingOthers',
-            alias    => 'ping_others',
+        {   name        => 'pingOthers',
+            alias       => 'ping_others',
+            from_object => sub {
+                my ($obj) = @_;
+                return [ split /\r?\n/, $obj->ping_others ];
+            },
+            to_object => sub {
+                my ($hash) = @_;
+                return join "\n", @{ $hash->{pingOthers} };
+            },
             codition => \&_can_view_cfg_screens,
         },
 
