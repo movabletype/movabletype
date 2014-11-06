@@ -42,7 +42,11 @@ $mock_app_api->mock( 'current_api_version',
 my $mock_cms_common = Test::MockModule->new('MT::CMS::Common');
 $mock_cms_common->mock( 'run_web_services_save_config_callbacks', sub { } );
 
+my %callbacks = ();
+
 my @suite = (
+
+    # version 1.
     {   path      => '/v1/users/me/sites',
         method    => 'GET',
         callbacks => [
@@ -97,9 +101,16 @@ my @suite = (
         },
     },
 
+    # version 2.
+
     # list_sites - normal tests
-    {   path     => '/v2/sites',
-        method   => 'GET',
+    {   path      => '/v2/sites',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.blog',
+                count => 2,
+            },
+        ],
         complete => sub {
             my ( $data, $body ) = @_;
 
@@ -115,9 +126,14 @@ my @suite = (
     },
     {
         # not logged in
-        path   => '/v2/sites',
-        method => 'GET',
-        setup  => sub {
+        path      => '/v2/sites',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.blog',
+                count => 2,
+            },
+        ],
+        setup => sub {
             $mock_app_api->mock( 'user', sub { MT->model('author')->new } );
         },
         complete => sub {
@@ -136,9 +152,29 @@ my @suite = (
         },
     },
 
+    # list_sites_by_parent - irregular tests
+    {    # Non-existent website.
+        path   => '/v2/sites/3/children',
+        method => 'GET',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+
     # list_sites_by_parent - normal tests
-    {   path     => '/v2/sites/2/children',
-        method   => 'GET',
+    {    # website.
+        path      => '/v2/sites/2/children',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.blog',
+                count => 2,
+            },
+        ],
         complete => sub {
             my ( $data, $body ) = @_;
 
@@ -153,26 +189,38 @@ my @suite = (
         },
     },
     {
-        # blog
-        path     => '/v2/sites/1/children',
-        method   => 'GET',
-        complete => sub {
-            my ( $data, $body ) = @_;
-            my $result = MT::Util::from_json($body);
-            is_deeply( $result, { totalResults => 0, items => [] } );
+        # blog.
+        path      => '/v2/sites/1/children',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.blog',
+                count => 1,
+            },
+        ],
+        result => sub {
+            +{  totalResults => 0,
+                items        => [],
+            };
+        },
+    },
+    {    # System.
+        path      => '/v2/sites/0/children',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.blog',
+                count => 1,
+            },
+        ],
+        result => sub {
+            +{  totalResults => 0,
+                items        => [],
+            };
         },
     },
 
-    # list_sites_by_parent - irregular tests
-    {
-        # non-existent website
-        path   => '/v2/sites/3/children',
-        method => 'GET',
-        code   => 404,
-    },
-
     # insert_new_website - irregular tests
-    {   path     => '/v2/sites',
+    {    # No resource.
+        path     => '/v2/sites',
         method   => 'POST',
         code     => 400,
         complete => sub {
@@ -180,7 +228,8 @@ my @suite = (
             check_error_message( $body, 'A resource "website" is required.' );
         },
     },
-    {   path     => '/v2/sites',
+    {    # No name.
+        path     => '/v2/sites',
         method   => 'POST',
         params   => { website => {}, },
         code     => 409,
@@ -190,7 +239,8 @@ my @suite = (
                 "A parameter \"name\" is required.\n" );
         },
     },
-    {   path   => '/v2/sites',
+    {    # No url.
+        path   => '/v2/sites',
         method => 'POST',
         params => { website => { name => 'test-api-permission-website', }, },
         code   => 409,
@@ -200,7 +250,8 @@ my @suite = (
                 "A parameter \"url\" is required.\n" );
         },
     },
-    {   path   => '/v2/sites',
+    {    # No sitePath.
+        path   => '/v2/sites',
         method => 'POST',
         params => {
             website => {
@@ -217,19 +268,8 @@ my @suite = (
             $is_superuser = 0;
         },
     },
-    {   path   => '/v2/sites',
-        method => 'POST',
-        setup  => sub { $is_superuser = 1 },
-        params => {
-            website => {
-                name     => 'test-api-permission-website',
-                url      => 'http://narnia2.na/',
-                sitePath => $FindBin::Bin,
-            },
-        },
-        complete => sub { $is_superuser = 0 },
-    },
-    {   path   => '/v2/sites',
+    {    # Invalid theme_id.
+        path   => '/v2/sites',
         method => 'POST',
         params => {
             website => {
@@ -247,7 +287,8 @@ my @suite = (
             $is_superuser = 0;
         },
     },
-    {   path   => '/v2/sites',
+    {    # sitePath is not absolute.
+        path   => '/v2/sites',
         method => 'POST',
         params => {
             website => {
@@ -268,30 +309,23 @@ my @suite = (
         },
     },
 
-    # insert_new_blog - normal tests
-    {   path   => '/v2/sites/2',
+    #   insert_new_website - normal tests
+    {    # Minimal parameters.
+        path   => '/v2/sites',
         method => 'POST',
+        setup  => sub { $is_superuser = 1 },
         params => {
-            blog => {
-                url      => 'blog',
-                name     => 'blog',
-                sitePath => 'blog',
-                themeId  => 'classic_blog',
+            website => {
+                name     => 'test-api-permission-website',
+                url      => 'http://narnia2.na/',
+                sitePath => $FindBin::Bin,
             },
         },
-        setup => sub { $is_superuser = 1 },
-        complete => sub {
-            my ( $data, $body ) = @_;
-            my $result = MT::Util::from_json($body);
-            my $blog = MT->model('blog')->load( { name => 'blog' } );
-            is( $result->{id}, $blog->id );
-            $is_superuser = 0;
-        },
+        complete => sub { $is_superuser = 0 },
     },
 
-    # insert_new_blog - abnormal tests
-    {
-        # website
+    # insert_new_blog - irregular tests
+    {    # website
         path     => '/v2/sites/1',
         method   => 'POST',
         code     => 400,
@@ -301,7 +335,8 @@ my @suite = (
                 "Cannot create a blog under blog (ID:1)." );
         },
     },
-    {   path     => '/v2/sites/2',
+    {    # No resource.
+        path     => '/v2/sites/2',
         method   => 'POST',
         code     => 400,
         complete => sub {
@@ -309,7 +344,8 @@ my @suite = (
             check_error_message( $body, "A resource \"blog\" is required." );
         },
     },
-    {   path     => '/v2/sites/2',
+    {    # No url or subdomain.
+        path     => '/v2/sites/2',
         method   => 'POST',
         params   => { blog => {}, },
         code     => 400,
@@ -319,7 +355,8 @@ my @suite = (
                 "Either parameter of \"url\" or \"subdomain\" is required." );
         },
     },
-    {   path     => '/v2/sites/2',
+    {    # No name.
+        path     => '/v2/sites/2',
         method   => 'POST',
         params   => { blog => { url => 'blog', }, },
         code     => 409,
@@ -329,7 +366,8 @@ my @suite = (
                 "A parameter \"name\" is required.\n" );
         },
     },
-    {   path   => '/v2/sites/2',
+    {    # No sitePath.
+        path   => '/v2/sites/2',
         method => 'POST',
         params => {
             blog => {
@@ -344,7 +382,8 @@ my @suite = (
                 "A parameter \"sitePath\" is required.\n" );
         },
     },
-    {   path   => '/v2/sites/2',
+    {    # Invalid theme_id.
+        path   => '/v2/sites/2',
         method => 'POST',
         params => {
             blog => {
@@ -363,31 +402,134 @@ my @suite = (
         },
     },
 
-    # delete_site - irregular tests
-    {   path     => '/v2/sites/2',
-        method   => 'DELETE',
-        code     => 403,
-        complete => sub {
-            my ( $data, $body ) = @_;
-            check_error_message( $body,
-                'Website "Test site" (ID:2) were not deleted. You need to delete blogs under the website first.'
-            );
+    # insert_new_blog - normal tests
+    {    # Minimal pameters.
+        path   => '/v2/sites/2',
+        method => 'POST',
+        params => {
+            blog => {
+                url      => 'blog',
+                name     => 'blog',
+                sitePath => 'blog',
+                themeId  => 'classic_blog',
+            },
+        },
+        setup => sub { $is_superuser = 1 },
+        result => sub { $app->model('blog')->load( { name => 'blog' } ) },
+        complete => sub { $is_superuser = 0 },
+    },
+
+    # update_site - irregular tests
+    {    # Non-existent site.
+        path   => '/v2/sites/10',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
         },
     },
-    {   path   => '/v2/sites/10',
-        method => 'DELETE',
+    {    # System.
+        path   => '/v2/sites/0',
+        method => 'PUT',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
-    {   path   => '/v2/sites/0',
+    {    # No blog resource.
+        path   => '/v2/sites/1',
+        method => 'PUT',
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code    => 400,
+                    message => 'A resource "blog" is required.',
+                },
+            };
+        },
+    },
+    {    # No website resource.
+        path   => '/v2/sites/2',
+        method => 'PUT',
+        code   => 400,
+        result => sub {
+            +{  error => {
+                    code    => 400,
+                    message => 'A resource "website" is required.',
+                },
+            };
+        },
+    },
+
+    # update_site - normal tests
+
+    # delete_site - irregular tests
+    {   path   => '/v2/sites/2',
+        method => 'DELETE',
+        code   => 403,
+        result => sub {
+            +{  error => {
+                    code => 403,
+                    message =>
+                        'Website "Test site" (ID:2) were not deleted. You need to delete blogs under the website first.',
+                },
+            };
+        },
+    },
+    {    # Non-existent site.
+        path   => '/v2/sites/10',
         method => 'DELETE',
         code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+    {    # System.
+        path   => '/v2/sites/0',
+        method => 'DELETE',
+        code   => 404,
+        result => sub {
+            +{  error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
     },
 
     # delete_site - normal tests
     {
         # blog
-        path     => '/v2/sites/1',
-        method   => 'DELETE',
+        path   => '/v2/sites/1',
+        method => 'DELETE',
+        setup  => sub {
+            my $blog = $app->model('blog')->load(1);
+            die if !( $blog && $blog->is_blog );
+        },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_delete_permission_filter.blog',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_delete.blog',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::rebuild',
+                count => 1,
+            },
+        ],
         complete => sub {
             my $blog = MT->model('blog')->load(1);
             is( $blog, undef, 'Blog (ID:1) was deleted.' );
@@ -395,17 +537,32 @@ my @suite = (
     },
     {
         # website
-        path     => '/v2/sites/4',
-        method   => 'DELETE',
+        path   => '/v2/sites/2',
+        method => 'DELETE',
+        setup  => sub {
+            my $website = $app->model('website')->load(2);
+            die if !( $website && !$website->is_blog );
+        },
+        callbacks => [
+            {   name =>
+                    'MT::App::DataAPI::data_api_delete_permission_filter.website',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::data_api_post_delete.website',
+                count => 1,
+            },
+            {   name  => 'MT::App::DataAPI::rebuild',
+                count => 1,
+            },
+        ],
         complete => sub {
-            my $website = MT->model('website')->load(4);
-            is( $website, undef, 'Website (ID:4) was deleted.' );
+            my $website = MT->model('website')->load(2);
+            is( $website, undef, 'Website (ID:2) was deleted.' );
         },
     },
 );
 
-my %callbacks = ();
-my $mock_mt   = Test::MockModule->new('MT');
+my $mock_mt = Test::MockModule->new('MT');
 $mock_mt->mock(
     'run_callbacks',
     sub {

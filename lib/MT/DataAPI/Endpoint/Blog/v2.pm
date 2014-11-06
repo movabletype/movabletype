@@ -30,8 +30,7 @@ sub list {
 sub list_by_parent {
     my ( $app, $endpoint ) = @_;
 
-    my ($blog) = context_objects(@_);
-    return unless $blog && $blog->id;
+    my ($blog) = context_objects(@_) or return;
 
     my %terms = ( class => 'blog', parent_id => $blog->id );
     my $res = filtered_list( $app, $endpoint, 'blog', \%terms ) or return;
@@ -264,6 +263,7 @@ sub delete {
         $site->class, $site )
         or return;
 
+    # If website.
     if ( !$site->is_blog ) {
         my $child_blog_count
             = MT->model('blog')->count( { parent_id => $site->id } );
