@@ -418,9 +418,7 @@ sub fields {
                 my ($hash) = @_;
 
                 my @new_fields;
-                my @hash_fields = split ',',
-                    ( $hash->{smartReplaceFields} || '' );
-                for my $f (@hash_fields) {
+                for my $f ( @{ $hash->{smartReplaceFields} } ) {
                     push( @new_fields, $f )
                         if grep { $f eq $_ }
                         qw/title text text_more keywords excerpt tags/;
@@ -456,7 +454,7 @@ sub fields {
         {    # Do not use MT::DataAPI::Resource::DataType::Boolean,
                 # because updating 2 columns at once.
             name        => 'allowComments',
-            urom_object => sub {
+            from_object => sub {
                 my ($obj) = @_;
                 if ( $obj->allow_reg_comments || $obj->allow_unreg_comments )
                 {

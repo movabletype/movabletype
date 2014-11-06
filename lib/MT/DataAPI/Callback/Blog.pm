@@ -288,7 +288,7 @@ sub post_save {
  #    }
 
     # Update DefaultAssignments.
-    my $new_default_roles = $site_hash->{newCreatedUserRole};
+    my $new_default_roles = $site_hash->{newCreatedUserRoles};
     if ( ref($new_default_roles) eq 'ARRAY' ) {
         my @hash_role_ids = grep {$_} map { $_->{id} } @$new_default_roles;
         my @roles = MT->model('role')->load( { id => \@hash_role_ids } );

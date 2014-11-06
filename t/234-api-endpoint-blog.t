@@ -553,14 +553,23 @@ my @suite = (
         complete => sub {
             my ( $data, $body ) = @_;
 
+            my $website = $app->model('website')->load(2);
+
             my $got = $app->current_format->{unserialize}->($body);
 
             is( $got->{themeId}, 'pico',        'themeId' );
-            is( $got->{name},    'blog-2 name', 'name' ),
-                is( $got->{url}, 'blog-2', 'url' );
-            is( $got->{sitePath},     'blog-2', 'sitePath' );
-            is( $got->{serverOffset}, 8,        'serverOffset' );
-            is( $got->{language},     'nl',     'language' );
+            is( $got->{name},    'blog-2 name', 'name' );
+
+            my $url = $website->site_url;
+            $url .= '/' if $url !~ m/\/$/;
+            $url .= 'blog-2';
+            is( $got->{url}, $url, 'url' );
+
+            is( $got->{sitePath},
+                File::Spec->catfile( $website->site_path, 'blog-2' ),
+                'sitePath' );
+            is( $got->{serverOffset}, 8,    'serverOffset' );
+            is( $got->{language},     'nl', 'language' );
 
             $is_superuser = 0;
         },
@@ -687,7 +696,7 @@ my @suite = (
                 archiveTypePreferred => 'Category',
                 publishEmptyArchive  => 1,            # true.
                 includeSystem        => 'php',
-                useRevision          => 0,            # false.
+                useRevision          => 1,            # true.
                 maxRevisionsEntry    => 100,
                 maxRevisionsTemplate => 200,
 
@@ -699,8 +708,42 @@ my @suite = (
                 basenameLimit        => 50,
                 statusDefault        => 'Draft',
                 convertParas         => '__default__',
-                allowCommentsDefault => 0,               # false.
-                allowPingsDefault    => 0,               # false.
+                allowCommentsDefault => 1,               # true.
+                allowPingsDefault    => 1,               # true.
+                contentCss           => 'css dummy',
+                smartReplace         => 1,
+                smartReplaceFields   => [qw/ text /],
+
+                # Feedback Settings screen.
+                junkFolderExpiry       => 10,
+                junkScoreThreshold     => -5,
+                nofollowUrls           => 1,             # true.
+                followAuthLinks        => 1,             # true.
+                allowComments          => 1,             # true.
+                moderateComments       => 2,
+                allowCommentHtml       => 1,             # true.
+                sanitizeSpec           => 'b,p',
+                emailNewComments       => 2,
+                sortOrderComments      => 'descend',
+                autolinkUrls           => 1,             # true.
+                convertParasComments   => 'markdown',
+                useCommentConfirmation => 1,             # true.
+                allowPings             => 1,             # true.
+                moderatePings          => 1,             # true.
+                emailNewPings          => 2,
+                autodiscoverLinks      => 1,             # true.
+                internalAutodiscovery  => 1,             # true.
+
+                # Registration Settings screen.
+                allowCommenterRegist => 1,                  # true.
+                newCreatedUserRoles  => [ { id => 6 } ],    # Webmaster.
+                allowUnregComments   => 1,                  # true.
+                requireCommentEmails => 1,                  # true.
+                commenterAuthenticators => [qw/ WordPress Hatena /],
+
+                # Web Services Settings screen.
+                pingGoogle  => 1,                           # true.
+                pingWeblogs => 1,                           # true.
             },
         },
         setup => sub { $is_superuser = 1 },
@@ -745,7 +788,7 @@ my @suite = (
                 'Category', 'archiveTypePreferred' );
             is( $got->{publishEmptyArchive}, 1, 'publishEmptyArchive' )
                 ;    # true.
-            is( $got->{useRevision},       0,   'useRevision' );      # false.
+            is( $got->{useRevision},       1,   'useRevision' );       # true.
             is( $got->{maxRevisionsEntry}, 100, 'maxRevisionsEntry' );
             is( $got->{maxRevisionsTemplate}, 200, 'maxRevisionsTemplate' );
 
@@ -757,9 +800,60 @@ my @suite = (
             is( $got->{basenameLimit},  50,            'basenameLimit' );
             is( $got->{statusDefault},  'Draft',       'statusDefault' );
             is( $got->{convertParas},   '__default__', 'convertParas' );
-            is( $got->{allowCommentsDefault}, 0, 'allowCommentsDefault' )
-                ;    # false.
-            is( $got->{allowPingsDefault}, 0, 'allowPingsDefault' );  # false.
+            is( $got->{allowCommentsDefault}, 1, 'allowCommentsDefault' )
+                ;    # true.
+            is( $got->{allowPingsDefault}, 1, 'allowPingsDefault' );   # true.
+            is( $got->{contentCss},   'css dummy', 'contentCss' );
+            is( $got->{smartReplace}, 1,           'smartReplace' );
+            is_deeply( $got->{smartReplaceFields},
+                ['text'], 'smartReplaceFields' );
+
+            # Feedback Settings screen.
+            is( $got->{junkFolderExpiry},   10, 'junkfolderExpiry' );
+            is( $got->{junkScoreThreshold}, -5, 'junkScoreThreshold' );
+            is( $got->{nofollowUrls},       1,  'nofollowUrls' );      # true.
+            is( $got->{followAuthLinks},    1,  'followAuthLinks' );   # true.
+            is( $got->{allowComments},      1,  'allowComments' );     # true.
+            is( $got->{moderateComments},   2,  'moderateComments' );
+            is( $got->{allowCommentHtml},   1,  'allowCommentHtml' );  # true.
+            is( $got->{sanitizeSpec},      'b,p',     'sanitizeSpec' );
+            is( $got->{emailNewComments},  2,         'emailNewComments' );
+            is( $got->{sortOrderComments}, 'descend', 'sortOrderComments' );
+            is( $got->{autolinkUrls}, 1, 'autolinkUrls' );             # true.
+            is( $got->{convertParasComments},
+                'markdown', 'convertParasComments' );
+            is( $got->{useCommentConfirmation}, 1, 'useCommentConfirmation' )
+                ;                                                      # true.
+            is( $got->{allowPings},        1, 'allowPings' );          # true.
+            is( $got->{moderatePings},     1, 'moderatePings' );       # true.
+            is( $got->{emailNewPings},     2, 'emailNewPings' );
+            is( $got->{autodiscoverLinks}, 1, 'autodiscoverLinks' );   # true.
+            is( $got->{internalAutodiscovery}, 1, 'internalAutodiscovery' )
+                ;                                                      # true.
+            is( $got->{allowUnregComments}, 1, 'allowUnregComments' ); # true.
+
+            # Registration Settings screen.
+            is( $got->{allowCommenterRegist}, 1, 'allowCommenterRegist' )
+                ;                                                      # true.
+
+            my $webmaster_role = $app->model('role')->load(6);    # Webmaster.
+            is_deeply(
+                $got->{newCreatedUserRoles},
+                MT::DataAPI::Resource->from_object(
+                    [$webmaster_role], [qw/ id name /]
+                ),
+                'newCreatedUserRoles'
+            );
+
+            is( $got->{allowUnregComments}, 1, 'allowUnregComments' ); # true.
+            is( $got->{requireCommentEmails}, 1, 'requireCommentEmails' )
+                ;                                                      # true.
+            is_deeply( $got->{commenterAuthenticators},
+                [qw/ WordPress Hatena /], 'commenterAuthenticators' );
+
+            # Web Services Settings screen.
+            is( $got->{pingGoogle},  1, 'pingGoogles' );               # true.
+            is( $got->{pingWeblogs}, 1, 'pingWeblogs' );               # true.
 
             $is_superuser = 0;
         },
@@ -770,12 +864,38 @@ my @suite = (
         params => {
             website => {
 
+                # General Settings scrren.
+                publishEmptyArchive => 0,    # false.
+                useRevision         => 0,    # false.
+
                 # Compose Settings screen.
                 listOnIndex          => 20,
                 daysOrPosts          => 'days',
                 convertParas         => 'markdown',
-                allowCommentsDefault => 1,            # true.
-                allowPingsDefault    => 1,            # true.
+                allowCommentsDefault => 0,            # false.
+                allowPingsDefault    => 0,            # false.
+
+                # Feedback Settings screen.
+                nofollowUrls           => 0,          # false.
+                followAuthLinks        => 0,          # false.
+                allowComments          => 0,          # false.
+                allowCommentHtml       => 0,          # false.
+                autolinkUrls           => 0,          # false.
+                useCommentConfirmation => 0,          # false.
+                allowPings             => 0,          # false.
+                moderatePings          => 0,          # false.
+                autodiscoverLinks      => 0,          # false.
+                internalAutodiscovery  => 0,          # false.
+
+                # Registration Settings screen.
+                allowCommenterRegist => 0,            # false.
+                allowUnregComments   => 0,            # false.
+                requireCommentEmails => 0,            # false.
+
+                # Web Services Settings screen.
+                pingGoogle  => 0,                     # false.
+                pingWeblogs => 0,                     # false.
+
             },
         },
         setup => sub { $is_superuser = 1 },
@@ -801,13 +921,44 @@ my @suite = (
 
             my $got = $app->current_format->{unserialize}->($body);
 
+            # General Settings scrren.
+            is( $got->{publishEmptyArchive}, 0, 'publishEmptyArchive' )
+                ;    # false.
+            is( $got->{useRevision}, 0, 'useRevision' );    # false.
+
             # Compose Settings screen.
             is( $got->{listOnIndex},  20,         'listOnIndex' );
             is( $got->{daysOrPosts},  'days',     'daysOrPosts' );
             is( $got->{convertParas}, 'markdown', 'convertParas' );
-            is( $got->{allowCommentsDefault}, 1, 'allowCommentsDefault' )
-                ;    # true.
-            is( $got->{allowPingsDefault}, 1, 'allowPingsDefault' );   # true.
+            is( $got->{allowCommentsDefault}, 0, 'allowCommentsDefault' )
+                ;                                           # false.
+            is( $got->{allowPingsDefault}, 0, 'allowPingsDefault' );  # false.
+
+            # Feedback Settings screen.
+            is( $got->{nofollowUrls},     0, 'nofollowUrls' );        # false.
+            is( $got->{followAuthLinks},  0, 'followAuthLinks' );     # false.
+            is( $got->{allowComments},    0, 'allowComments' );       # false.
+            is( $got->{allowCommentHtml}, 0, 'allowCommentsHtml' );   # false.
+            is( $got->{autolinkUrls},     0, 'autolinkUrls' );        # false.
+            is( $got->{useCommentConfirmation}, 0, 'useCommentConfirmation' )
+                ;                                                     # false.
+            is( $got->{allowPings},        0, 'allowPings' );         # false.
+            is( $got->{moderatePings},     0, 'moderatePings' );      # false.
+            is( $got->{autodiscoverLinks}, 0, 'autodiscoverLinks' );  # false.
+            is( $got->{internalAutodiscovery}, 0, 'internalAutodiscovery' )
+                ;                                                     # false.
+
+            # Registration Settings screen.
+            is( $got->{allowCommenterRegist}, 0, 'allowCommenterRegist' )
+                ;                                                     # false.
+            is( $got->{allowUnregComments}, 0, 'allowUnregComments' )
+                ;                                                     # false.
+            is( $got->{requireCommentEmails}, 0, 'requireCommentEmails' )
+                ;                                                     # false.
+
+            # Web Services Settings screen.
+            is( $got->{pingGoogle},  0, 'pingGoogles' );              # false.
+            is( $got->{pingWeblogs}, 0, 'pingWeblogs' );              # false.
 
             $is_superuser = 0;
         },
