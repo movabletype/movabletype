@@ -1594,19 +1594,6 @@ sub rebuild_indexes {
         }
         next if ( defined $tmpl->build_type && !$tmpl->build_type );
 
-        $tmpl->compile;
-        if ( $tmpl->{errors} && @{ $tmpl->{errors} } ) {
-            my $error;
-            foreach my $err ( @{ $tmpl->{errors} } ) {
-                $error .= $err->{message};
-            }
-            return $mt->error(
-                MT->translate(
-                    "Publish error in template \'[_1]\': [_2]",
-                    $tmpl->name, $error
-            ));
-        }
-
         my $file = $tmpl->outfile;
         $file = '' unless defined $file;
         if ( $tmpl->build_dynamic && ( $file eq '' ) ) {
