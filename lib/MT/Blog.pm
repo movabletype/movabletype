@@ -110,7 +110,7 @@ __PACKAGE__->install_properties(
             'category_order'           => 'text meta',
             'folder_order'             => 'text meta',
             'publish_empty_archive'    => 'boolean meta',
-
+            'disable_data_api' => 'boolean meta',  # Default status is enable.
         },
         meta    => 1,
         audit   => 1,
@@ -154,7 +154,7 @@ sub list_props {
             order => 100,
         },
         name => {
-            base  => '__virtual.name',
+            base      => '__virtual.name',
             auto      => 1,
             label     => 'Name',
             order     => 200,
