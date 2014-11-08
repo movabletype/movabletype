@@ -441,7 +441,9 @@ sub filtered_list {
             :                         ( blog_id => $blog_ids );
     }
 
-    @blog_id_term = _restrict_blog_id( $app, \@blog_id_term );
+    if ( !$app->user->is_superuser ) {
+        @blog_id_term = _restrict_blog_id( $app, \@blog_id_term );
+    }
 
     my %load_options = (
         terms => { %$terms, @blog_id_term },
@@ -523,7 +525,7 @@ sub _restrict_blog_id {
     my @enable_blog_id = keys %enable_blog;
 
     # No blog_id.
-    if (!@$blog_id_term) {
+    if ( !@$blog_id_term ) {
         return ( blog_id => \@enable_blog_id );
     }
 

@@ -2778,7 +2778,9 @@ sub api {
             or return $app->print_error( 'Site not found', 404 );
         $app->param( 'blog_id', $id );
 
-        return $app->print_error(403) if $site->disable_data_api;
+        if ( !$user->is_superuser && $site->disable_data_api ) {
+            return $app->print_error(403);
+        }
 
         $app->permissions( $user->permissions($id) )
             unless $user->is_anonymous;
