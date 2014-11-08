@@ -441,6 +441,8 @@ sub filtered_list {
             :                         ( blog_id => $blog_ids );
     }
 
+    @blog_id_term = _restrict_blog_id( $app, \@blog_id_term );
+
     my %load_options = (
         terms => { %$terms, @blog_id_term },
         args  => {%$args},
@@ -509,6 +511,28 @@ sub filtered_list {
         count => $count,
         editable_count => $editable_count,
     };
+}
+
+sub _restrict_blog_id {
+    my ( $app, $blog_id_term ) = @_;
+
+    my %enable_blog = map { $_->id => 1 }
+        grep { !$_->disable_data_api }
+        ( $app->model('blog')->load( { class => '*' } ) );
+
+    my @enable_blog_id = keys %enable_blog;
+
+    # No blog_id.
+    if (!@$blog_id_term) {
+        return ( blog_id => \@enable_blog_id );
+    }
+
+    # blog_id is scalar or array ref.
+    my $blog_id = $blog_id_term->[1];
+    $blog_id = ref($blog_id) ? $blog_id : [$blog_id];
+
+    $blog_id = [ grep { $enable_blog{$_} } @$blog_id ];
+    return ( blog_id => $blog_id );
 }
 
 1;
