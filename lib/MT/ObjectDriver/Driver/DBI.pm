@@ -763,7 +763,7 @@ sub prepare_statement {
     }
 
     ## Always sort by primary keys.
-    my @pk = @{ $class->primary_key_tuple() };
+    my @pk = @{ $class->primary_key_tuple() || [] };
     if (   @pk
         && !$recursive
         && !$orig_args->{group} )
