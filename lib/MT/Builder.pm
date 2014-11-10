@@ -378,6 +378,10 @@ sub _consume_up_to {
     {
         $whole_tag = $1;
         my ( $prefix, $tag ) = ( $2, lc($3) );
+        next
+            if lc $tag ne lc $stoptag
+            && $stoptag ne 'else'
+            && $stoptag ne 'elseif';
 
         # check only container tag.
         if ( $stoptag ne 'ignore' ) {
