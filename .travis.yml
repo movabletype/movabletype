@@ -13,7 +13,8 @@ before_install:
   # Install Berkeley DB for installing DB_File module.
   # libperl-dev for installing ImageMagick.
   # php5, php5-mysql, php5-gd for tests of dynamic publishing.
-  - sudo apt-get install libdb-dev libgd2-xpm-dev libgmp3-dev libperl-dev php5 php5-mysql php5-gd
+  # libpng12-dev, libgif-dev and libjpeg-dev for Imager.
+  - sudo apt-get install libdb-dev libgd2-xpm-dev libgmp3-dev libperl-dev php5 php5-mysql php5-gd libpng12-dev libgif-dev libjpeg-dev
 
 install:
   # Install ImageMagick for installing Image::Magick.
