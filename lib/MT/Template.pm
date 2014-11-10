@@ -351,6 +351,21 @@ sub build {
     local $ctx->{__stash}{template} = $tmpl;
     my $tokens = $tmpl->tokens
         or return;
+
+    if($tmpl->{errors} && @{ $tmpl->{errors} }){
+        my $error = "";
+        foreach my $err ( @{ $tmpl->{errors} } ) {
+            $error .= $err->{message};
+        }
+        return $tmpl->error(
+            MT->translate(
+                "Publish error in template '[_1]': [_2]",
+                $tmpl->name || $tmpl->{__file},
+                $error
+            )
+        );
+    }
+
     my $build = $ctx->{__stash}{builder} || MT::Builder->new;
     my $page_layout;
     if ( my $blog_id = $tmpl->blog_id ) {
