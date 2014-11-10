@@ -35,7 +35,8 @@ $mock_author->mock( 'is_superuser', sub {0} );
 my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'user', $author );
 my $version;
-$mock_app_api->mock( 'current_api_version', sub { $version = $_[1] if $_[1]; $version } );
+$mock_app_api->mock( 'current_api_version',
+    sub { $version = $_[1] if $_[1]; $version } );
 MT::App::DataAPI->current_api_version(1);
 
 subtest 'from_object with $fields_specified' => sub {
@@ -47,6 +48,7 @@ subtest 'from_object with $fields_specified' => sub {
             },
             to => {
                 id          => 1,
+                name        => undef,
                 displayName => 'Test',
                 userpicUrl =>
                     'http://narnia.na/nana/assets_c/userpics/userpic-1-100x100.png',

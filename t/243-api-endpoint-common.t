@@ -31,29 +31,36 @@ my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
 
 my @suite = (
-    {   path   => '/v1/sites/1/unknown-endpoint',
-        params => { suppressResponseCodes => 1, },
-        method => 'GET',
-        result => +{
-            "error" => { "message" => "Unknown endpoint", "code" => 404 }
-        },
-    },
-    {   path   => '/v1/sites/999999',
-        params => { suppressResponseCodes => 1, },
-        method => 'GET',
-        result =>
-            +{ "error" => { "message" => "Blog not found", "code" => 404 } },
-    },
-    {   path   => '/v1/sites/1/unknown-endpoint',
-        params => {
-            suppressResponseCodes => 1,
-            'X-MT-Requested-Via'  => 'IFRAME',
-        },
-        method => 'POST',
-        result => +{
-            "error" => { "message" => "Unknown endpoint", "code" => 404 }
-        },
-    },
+    map {
+        +(  {   path   => "/v$_/sites/1/unknown-endpoint",
+                params => { suppressResponseCodes => 1, },
+                method => 'GET',
+                result => +{
+                    "error" =>
+                        { "message" => "Unknown endpoint", "code" => 404 }
+                },
+            },
+            {   path   => "/v$_/sites/999999",
+                params => { suppressResponseCodes => 1, },
+                method => 'GET',
+                result => +{
+                    "error" =>
+                        { "message" => "Site not found", "code" => 404 }
+                },
+            },
+            {   path   => "/v$_/sites/1/unknown-endpoint",
+                params => {
+                    suppressResponseCodes => 1,
+                    'X-MT-Requested-Via'  => 'IFRAME',
+                },
+                method => 'POST',
+                result => +{
+                    "error" =>
+                        { "message" => "Unknown endpoint", "code" => 404 }
+                },
+            },
+            )
+    } qw/ 1 2 /,
 );
 
 my %callbacks = ();

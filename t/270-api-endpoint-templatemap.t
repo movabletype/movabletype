@@ -39,9 +39,34 @@ $mock_app_api->mock( 'current_api_version',
     sub { $version = $_[1] if $_[1]; $version } );
 
 my $template_class = $app->model('template');
-my $blog_individual
+
+my $blog_individual_tmpl
     = $template_class->load( { blog_id => 1, type => 'individual' } )
     or die $template_class->errstr;
+my $blog_individual_tmpl_id = $blog_individual_tmpl->id;
+
+my $blog_index_tmpl
+    = $template_class->load( { blog_id => 1, type => 'index' } )
+    or die $template_class->errstr;
+my $blog_index_tmpl_id = $blog_index_tmpl->id;
+
+my $tmplmap_class = $app->model('templatemap');
+
+my $blog_tmplmap
+    = $tmplmap_class->load(
+    { blog_id => 1, template_id => $blog_individual_tmpl_id } )
+    or die $tmplmap_class->errstr;
+my $blog_tmplmap_id = $blog_tmplmap->id;
+
+my $blog_other_tmplmap
+    = $tmplmap_class->load(
+    { blog_id => 1, template_id => { not => $blog_individual_tmpl_id } } )
+    or die $tmplmap_class->errstr;
+my $blog_other_tmplmap_id = $blog_other_tmplmap->id;
+
+my $blog_other_site_tmplmap = $tmplmap_class->load( { blog_id => 2 } )
+    or die $tmplmap_class->errstr;
+my $blog_other_site_tmplmap_id = $blog_other_site_tmplmap->id;
 
 my @suite = (
 
@@ -59,9 +84,7 @@ my @suite = (
         },
     },
     {    # Non-existent site.
-        path => '/v2/sites/5/templates/'
-            . $blog_individual->id
-            . '/templatemaps',
+        path => "/v2/sites/5/templates/$blog_individual_tmpl_id/templatemaps",
         method => 'POST',
         code   => 404,
         result => sub {
@@ -73,9 +96,7 @@ my @suite = (
         },
     },
     {    # Other site.
-        path => '/v2/sites/2/templates/'
-            . $blog_individual->id
-            . '/templatemaps',
+        path => "/v2/sites/2/templates/$blog_individual_tmpl_id/templatemaps",
         method => 'POST',
         code   => 404,
         result => sub {
@@ -87,7 +108,7 @@ my @suite = (
         },
     },
     {    # Other site (system).
-        path   => '/v2/sites/0/templates/96/templatemaps',
+        path => "/v2/sites/0/templates/$blog_individual_tmpl_id/templatemaps",
         method => 'POST',
         code   => 404,
         result => sub {
@@ -99,20 +120,21 @@ my @suite = (
         },
     },
     {    # Not archive template.
-        path   => '/v2/sites/1/templates/138/templatemaps',
+        path   => "/v2/sites/1/templates/$blog_index_tmpl_id/templatemaps",
         method => 'POST',
         code   => 400,
         result => sub {
             +{  error => {
-                    code => 400,
-                    message =>
-                        'Template "header-line" is not archive template.',
+                    code    => 400,
+                    message => 'Template "'
+                        . $blog_index_tmpl->name
+                        . '" is not archive template.',
                 },
             };
         },
     },
     {    # No resource.
-        path     => '/v2/sites/1/templates/96/templatemaps',
+        path => "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
         method   => 'POST',
         code     => 400,
         complete => sub {
@@ -122,7 +144,7 @@ my @suite = (
         },
     },
     {    # No arhichiveType.
-        path     => '/v2/sites/1/templates/96/templatemaps',
+        path => "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
         method   => 'POST',
         params   => { templatemap => {}, },
         code     => 409,
@@ -133,7 +155,7 @@ my @suite = (
         },
     },
     {    # Invalid archiveType.
-        path     => '/v2/sites/1/templates/96/templatemaps',
+        path => "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
         method   => 'POST',
         params   => { templatemap => { archiveType => 'invalid', }, },
         code     => 409,
@@ -144,13 +166,13 @@ my @suite = (
     },
 
     # create_templatemap - normal tests
-    {   path   => '/v2/sites/1/templates/96/templatemaps',
+    {   path => "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
         method => 'POST',
         setup  => sub {
             die
                 if $app->model('templatemap')->exist(
                 {   blog_id      => 1,
-                    template_id  => 96,
+                    template_id  => $blog_individual_tmpl_id,
                     is_preferred => { not => 1 },
                 }
                 );
@@ -164,7 +186,7 @@ my @suite = (
         result => sub {
             $app->model('templatemap')->load(
                 {   blog_id      => 1,
-                    template_id  => 96,
+                    template_id  => $blog_individual_tmpl_id,
                     is_preferred => { not => 1 },
                 }
             );
@@ -185,7 +207,7 @@ my @suite = (
         },
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/templates/96/templatemaps',
+        path => "/v2/sites/5/templates/$blog_individual_tmpl_id/templatemaps",
         method => 'GET',
         code   => 404,
         result => sub {
@@ -197,7 +219,7 @@ my @suite = (
         },
     },
     {    # Other site.
-        path   => '/v2/sites/2/templates/96/templatemaps',
+        path => "/v2/sites/2/templates/$blog_individual_tmpl_id/templatemaps",
         method => 'GET',
         code   => 404,
         result => sub {
@@ -209,7 +231,7 @@ my @suite = (
         },
     },
     {    # Other site (system).
-        path   => '/v2/sites/0/templates/96/templatemaps',
+        path => "/v2/sites/0/templates/$blog_individual_tmpl_id/templatemaps",
         method => 'GET',
         code   => 404,
         result => sub {
@@ -221,25 +243,27 @@ my @suite = (
         },
     },
     {    # Not archive template.
-        path   => '/v2/sites/1/templates/138/templatemaps',
+        path   => "/v2/sites/1/templates/$blog_index_tmpl_id/templatemaps",
         method => 'GET',
         code   => 400,
         result => sub {
             +{  error => {
-                    code => 400,
-                    message =>
-                        'Template "header-line" is not archive template.',
+                    code    => 400,
+                    message => 'Template "'
+                        . $blog_index_tmpl->name
+                        . '" is not archive template.',
                 },
             };
         },
     },
 
     # list_templatemaps - normal tests
-    {   path   => '/v2/sites/1/templates/96/templatemaps',
+    {   path => "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
         method => 'GET',
         result => sub {
             my @tm
-                = $app->model('templatemap')->load( { template_id => 96, } );
+                = $app->model('templatemap')
+                ->load( { template_id => $blog_individual_tmpl_id, } );
 
             $app->user($author);
 
@@ -254,7 +278,7 @@ my @suite = (
         },
     },
     {    # Filtered by archiveType.
-        path   => '/v2/sites/1/templates/96/templatemaps',
+        path => "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
         method => 'GET',
         params => { archiveType => 'Category' },
         result => sub {
@@ -264,13 +288,13 @@ my @suite = (
         },
     },
     {    # Filtered by buildType.
-        path   => '/v2/sites/1/templates/96/templatemaps',
+        path => "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
         method => 'GET',
         params => { buildType => 'Static' },
         result => sub {
             require MT::PublishOption;
             my @tm = $app->model('templatemap')->load(
-                {   template_id => 96,
+                {   template_id => $blog_individual_tmpl_id,
                     build_type  => MT::PublishOption::ONDEMAND(),
                 }
             );
@@ -288,12 +312,12 @@ my @suite = (
         },
     },
     {    # Filtered by isPreferred.
-        path   => '/v2/sites/1/templates/96/templatemaps',
+        path => "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
         method => 'GET',
         params => { isPreferred => 'true' },
         result => sub {
             my @tm = $app->model('templatemap')->load(
-                {   template_id  => 96,
+                {   template_id  => $blog_individual_tmpl_id,
                     is_preferred => 1,
                 }
             );
@@ -313,123 +337,139 @@ my @suite = (
 
     # get_templatemap - irregular tests
     {    # Non-existent templatemap.
-        path   => '/v2/sites/1/templates/96/templatemaps/20',
+        path =>
+            "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/20",
         method => 'GET',
         code   => 404,
     },
     {    # Non-existent template.
-        path   => '/v2/sites/1/templates/300/templatemaps/6',
+        path   => "/v2/sites/1/templates/300/templatemaps/$blog_tmplmap_id",
         method => 'GET',
         code   => 404,
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/templates/96/templatemaps/6',
+        path   => "/v2/sites/5/templates/96/templatemaps/$blog_tmplmap_id",
         method => 'GET',
         code   => 404,
     },
     {    # Other template's templatemap.
-        path   => '/v2/sites/1/templates/96/templatemaps/7',
+        path =>
+            "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_other_tmplmap_id",
         method => 'GET',
         code   => 404,
     },
     {    # Other site's templatemap.
-        path   => '/v2/sites/1/templates/96/templatemaps/1',
+        path =>
+            "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_other_site_tmplmap_id",
         method => 'GET',
         code   => 404,
     },
     {    # Other template.
-        path   => '/v2/sites/1/templates/110/templatemaps/6',
+        path =>
+            "/v2/sites/1/templates/$blog_index_tmpl_id/templatemaps/$blog_tmplmap_id",
         method => 'GET',
         code   => 404,
     },
     {    # Other site.
-        path   => '/v2/sites/2/templates/96/templatemaps/6',
+        path =>
+            "/v2/sites/2/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
         method => 'GET',
         code   => 404,
     },
 
     # get_templatemap - normal tests
-    {   path   => '/v2/sites/1/templates/96/templatemaps/6',
+    {   path =>
+            "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
         method => 'GET',
         result => sub {
-            $app->model('templatemap')->load(6);
+            $blog_tmplmap;
         },
     },
 
     # update_templatemap - normal tests
-    {   path   => '/v2/sites/1/templates/96/templatemaps/6',
+    {   path =>
+            "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
         method => 'PUT',
         params => { templatemap => { fileTemplate => 'foobarbaz', }, },
         result => sub {
-            $app->model('templatemap')->load(6);
+            $app->model('templatemap')->load($blog_tmplmap_id);
         },
     },
 
     # delete_templatemap - irregular tests
     {    # Non-existent templatemap.
-        path   => '/v2/sites/1/templates/96/templatemaps/20',
+        path =>
+            "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/20",
         method => 'DELETE',
         code   => 404,
     },
     {    # Non-existent template.
-        path   => '/v2/sites/1/templates/300/templatemaps/6',
+        path   => "/v2/sites/1/templates/300/templatemaps/$blog_tmplmap_id",
         method => 'DELETE',
         code   => 404,
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/templates/96/templatemaps/6',
+        path =>
+            "/v2/sites/5/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
         method => 'DELETE',
         code   => 404,
     },
     {    # Other template's templatemap.
-        path     => '/v2/sites/1/templates/96/templatemaps/7',
+        path =>
+            "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_other_tmplmap_id",
         method   => 'DELETE',
         code     => 404,
         complete => sub {
-            my $map = $app->model('templatemap')->load(7);
+            my $map
+                = $app->model('templatemap')->load($blog_other_tmplmap_id);
             is( ref $map, 'MT::TemplateMap',
                 'Does not deleted templatemap.' );
         },
     },
     {    # Other site's templatemap.
-        path     => '/v2/sites/1/templates/96/templatemaps/1',
+        path =>
+            "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_other_site_tmplmap_id",
         method   => 'DELETE',
         code     => 404,
         complete => sub {
-            my $map = $app->model('templatemap')->load(1);
+            my $map = $app->model('templatemap')
+                ->load($blog_other_site_tmplmap_id);
             is( ref $map, 'MT::TemplateMap',
                 'Does not deleted templatemap.' );
         },
     },
     {    # Other template.
-        path     => '/v2/sites/1/templates/110/templatemaps/6',
+        path =>
+            "/v2/sites/1/templates/$blog_index_tmpl_id/templatemaps/$blog_tmplmap_id",
         method   => 'DELETE',
         code     => 404,
         complete => sub {
-            my $map = $app->model('templatemap')->load(6);
+            my $map = $app->model('templatemap')->load($blog_tmplmap_id);
             is( ref $map, 'MT::TemplateMap',
                 'Does not deleted templatemap.' );
         },
     },
     {    # Other site.
-        path     => '/v2/sites/2/templates/96/templatemaps/6',
+        path =>
+            "/v2/sites/2/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
         method   => 'DELETE',
         code     => 404,
         complete => sub {
-            my $map = $app->model('templatemap')->load(6);
+            my $map = $app->model('templatemap')->load($blog_tmplmap_id);
             is( ref $map, 'MT::TemplateMap',
                 'Does not deleted templatemap.' );
         },
     },
 
     # delete_templatemap - normal tests
-    {   path   => '/v2/sites/1/templates/96/templatemaps/6',
+    {   path =>
+            "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
         method => 'DELETE',
         setup  => sub {
-            die if !$app->model('templatemap')->load(6);
+            die if !$app->model('templatemap')->load($blog_tmplmap_id);
         },
         complete => sub {
-            my $map = $app->model('templatemap')->load(6);
+            my $map = $app->model('templatemap')->load($blog_tmplmap_id);
             is( $map, undef, 'Deleted templatemap.' );
         },
     },
