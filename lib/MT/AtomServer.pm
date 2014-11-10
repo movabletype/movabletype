@@ -1081,8 +1081,8 @@ sub _upload_to_asset {
     my $local_relative = File::Spec->catfile( '%r',             $fname );
     my $local          = File::Spec->catfile( $blog->site_path, $fname );
     my $fmgr           = $blog->file_mgr;
-    my ( $base, $path, $ext )
-        = File::Basename::fileparse( $local, '\.[^\.]*' );
+    my $path;
+    ( $base, $path, $ext ) = File::Basename::fileparse( $local, '\.[^\.]*' );
     $ext = $MIME2EXT{$type} unless $ext;
 
     require MT::Asset::Image;
