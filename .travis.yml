@@ -1,0 +1,47 @@
+language: perl
+
+perl:
+  - "5.10"
+
+env:
+  matrix:
+    - FILES=t/??-*.t t/[^0-9]*.t plugins/*/t
+    - FILES=t/1??-*.t
+    - FILES=t/2??-*.t
+
+before_install:
+  # Install Berkeley DB for installing DB_File module.
+  # libperl-dev for installing ImageMagick.
+  # php5, php5-mysql, php5-gd for tests of dynamic publishing.
+  - sudo apt-get install libdb-dev libgd2-xpm-dev libgmp3-dev libperl-dev php5 php5-mysql php5-gd
+
+install:
+  # Install ImageMagick for installing Image::Magick.
+  - mkdir local
+  - cd local
+  - wget ftp://ftp.kddlabs.co.jp/graphics/ImageMagick/ImageMagick-6.8.9-10.tar.gz
+  - tar xzvf ImageMagick-6.8.9-10.tar.gz
+  - cd ImageMagick-6.8.9-10
+  - ./configure --prefix=${HOME}/local --with-perl=${HOME}/perl5/perlbrew/perls/5.10/bin/perl
+  - make
+  - sudo make install
+  - cd ../../
+
+  # Instal CPAN modules.
+  - cpanm -n Crypt::CBC
+  - travis_retry cpanm -n --installdeps . --cpanfile ./t/cpanfile
+
+  # Build MT.
+  #- SHELL=/bin/bash make me
+
+before_script:
+  # Create MySQL database for tests.
+  - mysql -e "create database mt_test;"
+  - mysql -uroot -e "grant all privileges on mt_test.* to mt@localhost;"
+
+  # Some tests need mt-config.cgi.
+  - cp ./t/mysql-test.cfg ./mt-config.cgi
+
+script:
+  - prove ${FILES}
+
