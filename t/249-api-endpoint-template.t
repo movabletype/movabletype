@@ -38,6 +38,27 @@ my $version;
 $mock_app_api->mock( 'current_api_version',
     sub { $version = $_[1] if $_[1]; $version } );
 
+my $tmpl_class = $app->model('template');
+
+my $email_tmpl = $tmpl_class->load( { blog_id => 0, type => 'email' } )
+    or die $tmpl_class->errstr;
+my $blog_index_tmpl = $tmpl_class->load( { blog_id => 1, type => 'index' } )
+    or die $tmpl_class->errstr;
+my $blog_tmpl_module = $tmpl_class->load( { blog_id => 1, type => 'custom' } )
+    or die $tmpl_class->errstr;
+my $website_tmpl_module
+    = $tmpl_class->load( { blog_id => 2, type => 'custom' } )
+    or die $tmpl_class->errstr;
+my $system_tmpl = $tmpl_class->new;
+$system_tmpl->set_values(
+    {   blog_id    => 0,
+        name       => 'system template',
+        identifier => 'system_template',
+        type       => 'system_template',
+    }
+);
+$system_tmpl->save or die $system_tmpl->errstr;
+
 my @suite = (
 
     # create_template - irregular tests
@@ -367,26 +388,26 @@ my @suite = (
         code   => 404,
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/templates/34',
+        path   => '/v2/sites/5/templates/' . $website_tmpl_module->id,
         method => 'GET',
         code   => 404,
     },
     {    # Other site.
-        path   => '/v2/sites/1/templates/34',
+        path   => '/v2/sites/1/templates/' . $website_tmpl_module->id,
         method => 'GET',
         code   => 404,
     },
     {    # Other site (system).
-        path   => '/v2/sites/0/templates/34',
+        path   => '/v2/sites/0/templates/' . $website_tmpl_module->id,
         method => 'GET',
         code   => 404,
     },
 
     # get_template - normal tests
-    {   path   => '/v2/sites/2/templates/34',
+    {   path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
         method => 'GET',
         result => sub {
-            $app->model('template')->load(34);
+            $website_tmpl_module;
         },
     },
 
@@ -404,11 +425,11 @@ my @suite = (
     },
 
     # update_template - normal tests
-    {   path   => '/v2/sites/2/templates/34',
+    {   path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
         method => 'PUT',
         params => { template => { name => 'update-template', }, },
         result => sub {
-            $app->model('template')->load(34);
+            $app->model('template')->load( $website_tmpl_module->id );
         },
     },
 
@@ -419,53 +440,54 @@ my @suite = (
         code   => 404,
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/templates/34',
+        path   => '/v2/sites/5/templates/' . $website_tmpl_module->id,
         method => 'DELETE',
         code   => 404,
     },
     {    # Other site.
-        path   => '/v2/sites/1/templates/34',
+        path   => '/v2/sites/1/templates/' . $website_tmpl_module->id,
         method => 'DELETE',
         code   => 404,
     },
     {    # Other site (system).
-        path   => '/v2/sites/0/templates/34',
+        path   => '/v2/sites/0/templates/' . $website_tmpl_module->id,
         method => 'DELETE',
         code   => 404,
     },
     {    # Email template.
-        path   => '/v2/sites/0/templates/33',
+        path   => '/v2/sites/0/templates/' . $email_tmpl->id,
         method => 'DELETE',
         code   => 403,
     },
     {    # System template.
-        path   => '/v2/sites/0/templates/27',
+        path   => '/v2/sites/0/templates/' . $system_tmpl->id,
         method => 'DELETE',
         code   => 403,
     },
 
     # delete_template - normal tests
-    {   path   => '/v2/sites/2/templates/34',
+    {   path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
         method => 'DELETE',
         setup  => sub {
-            die if !$app->model('template')->load(34);
+            die if !$app->model('template')->load( $website_tmpl_module->id );
         },
         complete => sub {
-            my $tmpl = $app->model('template')->load(34);
+            my $tmpl
+                = $app->model('template')->load( $website_tmpl_module->id );
             is( $tmpl, undef, 'Deleted template.' );
         },
     },
 
     # publish_template - irregular tests
     {    # Template module.
-        path   => '/v2/sites/1/templates/138/publish',
+        path => '/v2/sites/1/templates/' . $blog_tmpl_module->id . '/publish',
         method => 'POST',
         code   => 400,
     },
 
     # publish_template - normal tests
     {    # Index template.
-        path   => '/v2/sites/1/templates/133/publish',
+        path => '/v2/sites/1/templates/' . $blog_index_tmpl->id . '/publish',
         method => 'POST',
         result => sub {
             return +{ status => 'success' };
@@ -479,7 +501,7 @@ my @suite = (
     },
 
     # refresh_template - normal tests
-    {   path   => '/v2/sites/1/templates/133/refresh',
+    {   path => '/v2/sites/1/templates/' . $blog_index_tmpl->id . '/refresh',
         method => 'POST',
     },
 
@@ -560,18 +582,18 @@ my @suite = (
 
     # clone_template - irregular tests
     {    # Email template.
-        path   => '/v2/sites/0/templates/33/clone',
+        path   => '/v2/sites/0/templates/' . $email_tmpl->id . '/clone',
         method => 'POST',
         code   => 400,
     },
     {    # System template.
-        path   => '/v2/sites/0/templates/27/clone',
+        path   => '/v2/sites/0/templates/' . $system_tmpl->id . '/clone',
         method => 'POST',
         code   => 400,
     },
 
     # clone_template - normal tests
-    {   path   => '/v2/sites/1/templates/133/clone',
+    {   path   => '/v2/sites/1/templates/' . $blog_index_tmpl->id . '/clone',
         method => 'POST',
         result => sub {
             return +{ status => 'success' };
