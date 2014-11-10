@@ -40,6 +40,21 @@ $mock_app_api->mock( 'current_api_version',
 my @ws_fields
     = qw( id name updatable widgets blog createdBy createdDate modifiedBy modifiedDate );
 
+my $tmpl_class = $app->model('template');
+
+my $blog_ws = $tmpl_class->load( { blog_id => 1, type => 'widgetset' } )
+    or die $tmpl_class->errstr;
+my @blog_widgets
+    = $tmpl_class->load( { blog_id => 1, type => 'widget' }, { limit => 2 } )
+    or die $tmpl_class->errstr;
+my @blog_widgets_update
+    = $tmpl_class->load( { blog_id => 1, type => 'widget' },
+    { limit => 2, offset => 2 } )
+    or die $tmpl_class->errstr;
+
+my $blog_index_tmpl = $tmpl_class->load( { blog_id => 1, type => 'index' } )
+    or die $tmpl_class->errstr;
+
 my @suite = (
 
     # list_widgetsets - irregular tests
@@ -145,7 +160,7 @@ my @suite = (
         },
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/widgetsets/136',
+        path   => '/v2/sites/5/widgetsets/' . $blog_ws->id,
         method => 'GET',
         code   => 404,
         result => sub {
@@ -157,7 +172,7 @@ my @suite = (
         },
     },
     {    # Other site.
-        path   => '/v2/sites/2/widgetsets/136',
+        path   => '/v2/sites/2/widgetsets/' . $blog_ws->id,
         method => 'GET',
         code   => 404,
         result => sub {
@@ -169,7 +184,7 @@ my @suite = (
         },
     },
     {    # Other site (system).
-        path   => '/v2/sites/0/widgetsets/136',
+        path   => '/v2/sites/0/widgetsets/' . $blog_ws->id,
         method => 'GET',
         code   => 404,
         result => sub {
@@ -181,7 +196,7 @@ my @suite = (
         },
     },
     {    # Not widgetset (index template).
-        path   => '/v2/sites/2/widgetsets/133',
+        path   => '/v2/sites/2/widgetsets/' . $blog_index_tmpl->id,
         method => 'GET',
         code   => 404,
         result => sub {
@@ -194,7 +209,7 @@ my @suite = (
     },
 
     # get_widgetset - normal tests
-    {   path      => '/v2/sites/1/widgetsets/136',
+    {   path      => '/v2/sites/1/widgetsets/' . $blog_ws->id,
         method    => 'GET',
         callbacks => [
             {   name =>
@@ -204,7 +219,7 @@ my @suite = (
         ],
         result => sub {
             my $ws = $app->model('template')->load(
-                {   id      => 136,
+                {   id      => $blog_ws->id,
                     blog_id => 1,
                     type    => 'widgetset',
                 }
@@ -260,7 +275,7 @@ my @suite = (
         params => {
             widgetset => {
                 name    => 'create-widgetset',
-                widgets => [ { id => 132 }, { id => 131 }, ],
+                widgets => [ map { +{ id => $_->id } } @blog_widgets ],
             },
         },
         callbacks => [
@@ -309,7 +324,7 @@ my @suite = (
         },
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/widgetsets/136',
+        path   => '/v2/sites/5/widgetsets/' . $blog_ws->id,
         method => 'PUT',
         code   => 404,
         result => sub {
@@ -321,7 +336,7 @@ my @suite = (
         },
     },
     {    # Other site.
-        path   => '/v2/sites/2/widgetsets/136',
+        path   => '/v2/sites/2/widgetsets/' . $blog_ws->id,
         method => 'PUT',
         code   => 404,
         result => sub {
@@ -333,7 +348,7 @@ my @suite = (
         },
     },
     {    # Other site (system).
-        path   => '/v2/sites/0/widgetsets/136',
+        path   => '/v2/sites/0/widgetsets/' . $blog_ws->id,
         method => 'PUT',
         code   => 404,
         result => sub {
@@ -345,7 +360,7 @@ my @suite = (
         },
     },
     {    # Non widgetset.
-        path   => '/v2/sites/1/widgetsets/138',
+        path   => '/v2/sites/1/widgetsets/' . $blog_index_tmpl->id,
         method => 'PUT',
         code   => 404,
         result => sub {
@@ -357,7 +372,7 @@ my @suite = (
         },
     },
     {    # No resource.
-        path     => '/v2/sites/1/widgetsets/136',
+        path     => '/v2/sites/1/widgetsets/' . $blog_ws->id,
         method   => 'PUT',
         code     => 400,
         complete => sub {
@@ -368,12 +383,12 @@ my @suite = (
     },
 
     # update_widgetset - normal tests
-    {   path   => '/v2/sites/1/widgetsets/136',
+    {   path   => '/v2/sites/1/widgetsets/' . $blog_ws->id,
         method => 'PUT',
         params => {
             widgetset => {
                 name    => 'update-widgetset',
-                widgets => [ { id => 105 }, { id => 107 }, ],
+                widgets => [ map { +{ id => $_->id } } @blog_widgets_update ],
             },
         },
         callbacks => [
@@ -393,7 +408,7 @@ my @suite = (
         ],
         result => sub {
             my $ws = $app->model('template')->load(
-                {   id      => 136,
+                {   id      => $blog_ws->id,
                     blog_id => 1,
                     name    => 'update-widgetset',
                     type    => 'widgetset',
@@ -423,7 +438,7 @@ my @suite = (
         },
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/widgetsets/136',
+        path   => '/v2/sites/5/widgetsets/' . $blog_ws->id,
         method => 'DELETE',
         code   => 404,
         result => sub {
@@ -435,7 +450,7 @@ my @suite = (
         },
     },
     {    # Other site.
-        path   => '/v2/sites/2/widgetsets/136',
+        path   => '/v2/sites/2/widgetsets/' . $blog_ws->id,
         method => 'DELETE',
         code   => 404,
         result => sub {
@@ -447,7 +462,7 @@ my @suite = (
         },
     },
     {    # Other site (system).
-        path   => '/v2/sites/0/widgetsets/136',
+        path   => '/v2/sites/0/widgetsets/' . $blog_ws->id,
         method => 'DELETE',
         code   => 404,
         result => sub {
@@ -459,7 +474,7 @@ my @suite = (
         },
     },
     {    # Not widgetset (index template).
-        path   => '/v2/sites/2/widgetsets/133',
+        path   => '/v2/sites/2/widgetsets/' . $blog_index_tmpl->id,
         method => 'DELETE',
         code   => 404,
         result => sub {
@@ -472,10 +487,10 @@ my @suite = (
     },
 
     # delete_widgetset - normal tests
-    {   path   => '/v2/sites/1/widgetsets/136',
+    {   path   => '/v2/sites/1/widgetsets/' . $blog_ws->id,
         method => 'DELETE',
         setup  => sub {
-            die if !$app->model('template')->load(136);
+            die if !$app->model('template')->load( $blog_ws->id );
         },
         callbacks => [
             {   name =>
@@ -488,7 +503,7 @@ my @suite = (
         ],
         complete => sub {
             my $ws = $app->model('template')->load(
-                {   id      => 136,
+                {   id      => $blog_ws->id,
                     blog_id => 1,
                     type    => 'widgetset',
                 }

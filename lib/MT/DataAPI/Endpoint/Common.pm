@@ -441,8 +441,14 @@ sub filtered_list {
             :                         ( blog_id => $blog_ids );
     }
 
-    if ( !$app->user->is_superuser ) {
-        @blog_id_term = _restrict_blog_id( $app, \@blog_id_term );
+    if (  !$app->user->is_superuser
+        && $scope_mode ne 'strict'
+        && (   $class->has_column('blog_id')
+            || $class eq 'MT::Blog'
+            || $class eq 'MT::Website' )
+        )
+    {
+        @blog_id_term = _restrict_blog_id( $app, \@blog_id_term, $class );
     }
 
     my %load_options = (
@@ -516,7 +522,12 @@ sub filtered_list {
 }
 
 sub _restrict_blog_id {
-    my ( $app, $blog_id_term ) = @_;
+    my ( $app, $blog_id_term, $class ) = @_;
+
+    my $column
+        = ( grep { $class eq $_ } qw/ MT::Blog MT::Website / )
+        ? 'id'
+        : 'blog_id';
 
     my %enable_blog = map { $_->id => 1 }
         grep { !$_->disable_data_api }
@@ -526,7 +537,7 @@ sub _restrict_blog_id {
 
     # No blog_id.
     if ( !@$blog_id_term ) {
-        return ( blog_id => \@enable_blog_id );
+        return ( $column => \@enable_blog_id );
     }
 
     # blog_id is scalar or array ref.
@@ -534,7 +545,7 @@ sub _restrict_blog_id {
     $blog_id = ref($blog_id) ? $blog_id : [$blog_id];
 
     $blog_id = [ grep { $enable_blog{$_} } @$blog_id ];
-    return ( blog_id => $blog_id );
+    return ( $column => $blog_id );
 }
 
 1;

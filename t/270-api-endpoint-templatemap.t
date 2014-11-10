@@ -38,6 +38,11 @@ my $version;
 $mock_app_api->mock( 'current_api_version',
     sub { $version = $_[1] if $_[1]; $version } );
 
+my $template_class = $app->model('template');
+my $blog_individual
+    = $template_class->load( { blog_id => 1, type => 'individual' } )
+    or die $template_class->errstr;
+
 my @suite = (
 
     # create_templatemap - irregular tests
@@ -54,7 +59,9 @@ my @suite = (
         },
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/templates/96/templatemaps',
+        path => '/v2/sites/5/templates/'
+            . $blog_individual->id
+            . '/templatemaps',
         method => 'POST',
         code   => 404,
         result => sub {
@@ -66,7 +73,9 @@ my @suite = (
         },
     },
     {    # Other site.
-        path   => '/v2/sites/2/templates/96/templatemaps',
+        path => '/v2/sites/2/templates/'
+            . $blog_individual->id
+            . '/templatemaps',
         method => 'POST',
         code   => 404,
         result => sub {
