@@ -5,9 +5,9 @@ perl:
 
 env:
   matrix:
-    - FILES=t/??-*.t t/[^0-9]*.t plugins/*/t
-    - FILES=t/1??-*.t
-    - FILES=t/2??-*.t
+    - FILES="t/??-*.t t/[^0-9]*.t plugins/*/t"
+    - FILES="t/1??-*.t"
+    - FILES="t/2??-*.t"
 
 before_install:
   # Install Berkeley DB for installing DB_File module.
