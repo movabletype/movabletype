@@ -3,6 +3,9 @@ language: perl
 perl:
   - "5.10"
 
+services:
+  - memcached
+
 env:
   matrix:
     - FILES="t/??-*.t t/[^0-9]*.t plugins/*/t"
