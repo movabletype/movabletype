@@ -227,6 +227,8 @@ sub edit {
                 exists( $selected_pings{$_} ) ? ( selected => 1 ) : (),
                 } foreach keys %$pings;
             $param->{pings_loop} = \@pings;
+
+            $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
         }
         elsif ( $output eq 'cfg_feedback.tmpl' ) {
             $param->{email_new_comments_1}
@@ -311,6 +313,7 @@ sub edit {
     elsif ( $param->{output} && $param->{output} eq 'cfg_web_services.tmpl' )
     {
         # System level web services settings.
+        $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
     }
     else {
         return $app->return_to_dashboard( redirect => 1 )
@@ -1357,7 +1360,8 @@ sub dialog_select_weblog {
     my $auth  = $app->user or return;
 
     if ($favorites) {
-        # Do not exclude top 5 favorite blogs from 
+
+        # Do not exclude top 5 favorite blogs from
         #   select blog dialog list. bugid:112372
         $confirm_js = 'saveFavorite';
     }
@@ -1805,6 +1809,9 @@ sub _post_save_cfg_screens {
             $app->config->save_config;
         }
     }
+    if ( $screen eq 'cfg_web_services' ) {
+        save_data_api_settings($app);
+    }
 
     return 1;
 }
@@ -1968,8 +1975,10 @@ sub post_save {
 
         # if settings were changed that would affect published pages:
         if ( $app->isa('MT::App::CMS') ) {
-            if (grep { ( $original->column($_) || '' ) ne ( $obj->column($_) || '' ) }
-                qw(allow_unreg_comments allow_reg_comments remote_auth_token
+            if (grep {
+                    ( $original->column($_) || '' ) ne
+                        ( $obj->column($_)  || '' )
+                } qw(allow_unreg_comments allow_reg_comments remote_auth_token
                 allow_pings          allow_comment_html )
                 )
             {
@@ -3486,6 +3495,40 @@ sub can_view_blog_list {
             if $p->blog->is_blog;
     }
     return $cond ? 1 : 0;
+}
+
+sub data_api_is_enabled {
+    my ( $app, $blog_id ) = @_;
+    my $cfg = $app->config;
+
+    my @disable_site = split ',',
+        defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
+    return ( grep { $blog_id == $_ } @disable_site ) ? 0 : 1;
+}
+
+sub save_data_api_settings {
+    my ($app) = @_;
+
+    my $blog_id = $app->param('id') || 0;
+    my $cfg = $app->config;
+
+    my $data_api_disable_site
+        = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
+    my %data_api_disable_site
+        = map { $_ => 1 } ( split ',', $data_api_disable_site );
+    if ( $app->param('enable_data_api') ) {
+        delete $data_api_disable_site{$blog_id};
+    }
+    else {
+        $data_api_disable_site{$blog_id} = 1;
+    }
+    my $new_data_api_disable_site = join ',',
+        ( sort { $a <=> $b } keys %data_api_disable_site );
+    $cfg->DataAPIDisableSite($new_data_api_disable_site);
+
+    $cfg->save_config;
+
+    return 1;
 }
 
 1;

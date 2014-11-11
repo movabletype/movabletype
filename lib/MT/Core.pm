@@ -740,7 +740,8 @@ BEGIN {
                             = $prop->datasource->has_column('author_id')
                             ? 'author_id'
                             : 'created_by';
-                        my %author_id = map { $_->$col => 1 if $_->$col } @$objs;
+                        my %author_id
+                            = map { $_->$col => 1 if $_->$col } @$objs;
                         my @authors = MT->model('author')
                             ->load( { id => [ keys %author_id ] } );
                         my %nickname
@@ -2052,6 +2053,7 @@ BEGIN {
                 type    => 'HASH',
                 default => {}
             },
+            'DataAPIDisableSite' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
