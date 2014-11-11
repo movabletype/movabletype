@@ -562,7 +562,7 @@ my @suite = (
 
             my $url = $website->site_url;
             $url .= '/' if $url !~ m/\/$/;
-            $url .= 'blog-2/';
+            $url .= 'blog-2';
             is( $got->{url}, $url, 'url' );
 
             is( $got->{sitePath},
@@ -615,7 +615,7 @@ my @suite = (
 
             is( $got->{themeId}, 'classic_blog', 'themeId' );
             is( $got->{name},    'blog-3 name',  'name' ),
-                is( $got->{url}, 'http://www.narnia.na/blog-3/', 'url' );
+                is( $got->{url}, 'http://www.narnia.na/blog-3', 'url' );
             is( $got->{sitePath},     $FindBin::Bin, 'sitePath' );
             is( $got->{serverOffset}, 8,             'serverOffset' );
             is( $got->{language},     'nl',          'language' );
@@ -688,7 +688,7 @@ my @suite = (
                 language     => 'fr',
                 url          => 'http://www.sixapart.com',
                 sitePath   => File::Spec->catfile( $FindBin::Bin, 'update' ),
-                archiveUrl => 'http://www.sixapart.com/archive/',
+                archiveUrl => 'http://www.sixapart.com/archive',
                 archivePath =>
                     File::Spec->catfile( $FindBin::Bin, 'archive' ),
 
@@ -781,10 +781,10 @@ my @suite = (
             is( $got->{description},  'update description', 'description' );
             is( $got->{serverOffset}, 3,                    'serverOffset' );
             is( $got->{language},     'fr',                 'language' );
-            is( $got->{url}, 'http://www.sixapart.com/', 'url' );
+            is( $got->{url}, 'http://www.sixapart.com', 'url' );
             is( $got->{sitePath},
                 File::Spec->catfile( $FindBin::Bin, 'update' ), 'sitePath' );
-            is( $got->{archiveUrl}, 'http://www.sixapart.com/archive/',
+            is( $got->{archiveUrl}, 'http://www.sixapart.com/archive',
                 'archiveUrl' );
             is( $got->{archivePath},
                 File::Spec->catfile( $FindBin::Bin, 'archive' ),

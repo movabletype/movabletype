@@ -23,7 +23,6 @@ eval(
 
 use boolean ();
 
-use MT::Author;
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
@@ -107,37 +106,36 @@ my @suite = (
             local *boolean::false = sub {'false'};
 
             return +{
-                totalResults => 2,
+                totalResults => 1,
                 items        => MT::DataAPI::Resource->from_object( \@pages ),
             };
         },
     },
+    {    # Not logged in.
+        path      => '/v2/sites/0/pages',
+        method    => 'GET',
+        setup     => sub { $mock_app_api->unmock('authenticate') },
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.page',
+                count => 2,
+            },
+        ],
+        result => sub {
+            my @pages = $app->model('page')->load( { status => 2 },
+                { sort => 'modified_on', direction => 'descend' } );
 
-#    {    # Not logged in.
-#        path      => '/v2/sites/0/pages',
-#        method    => 'GET',
-#        setup     => sub { $mock_app_api->unmock('authenticate') },
-#        callbacks => [
-#            {   name  => 'data_api_pre_load_filtered_list.page',
-#                count => 2,
-#            },
-#        ],
-#        result => sub {
-#            my @pages = $app->model('page')->load( { status => 2 },
-#                { sort => 'modified_on', direction => 'descend' } );
-#
-#            $app->user( MT::Author->anonymous );
-#            no warnings 'redefine';
-#            local *boolean::true  = sub {'true'};
-#            local *boolean::false = sub {'false'};
-#
-#            return +{
-#                totalResults => 4,
-#                items        => MT::DataAPI::Resource->from_object( \@pages ),
-#            };
-#        },
-#        complete => sub { $mock_app_api->mock( 'authenticate', $author ) ; die },
-#    },
+            $app->user( MT::Author->anonymous );
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => 4,
+                items        => MT::DataAPI::Resource->from_object( \@pages ),
+            };
+        },
+        complete => sub { $mock_app_api->mock( 'authenticate', $author ) },
+    },
     {    # Search.
         path      => '/v2/sites/1/pages',
         method    => 'GET',
