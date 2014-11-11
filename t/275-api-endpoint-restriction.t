@@ -201,20 +201,20 @@ my @suite = (
                 'Restriction, non-superuser, website.' );
         },
     },
-    {
-        # non-superuser.
-        # system.
-        path     => '/v2/sites/0/entries',
-        method   => 'GET',
-        setup    => sub { $is_superuser = 0 },
-        complete => sub {
-            my ( $data, $body ) = @_;
-            my $got = $app->current_format->{unserialize}->($body);
-            is( $got->{totalResults}, 1,
-                'Restriction, non-superuser, system.' );
-        },
 
-    },
+    #    {
+    #        # non-superuser.
+    #        # system.
+    #        path     => '/v2/sites/0/entries',
+    #        method   => 'GET',
+    #        setup    => sub { $is_superuser = 0 },
+    #        complete => sub {
+    #            my ( $data, $body ) = @_;
+    #            my $got = $app->current_format->{unserialize}->($body);
+    #            is( $got->{totalResults}, 1,
+    #                'Restriction, non-superuser, system.' );
+    #        },
+    #    },
 );
 
 my %callbacks = ();

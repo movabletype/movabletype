@@ -24,10 +24,7 @@ sub list_for_user {
     return $app->error(403)
         if ( $user->id != $current_user->id && !$current_user->is_superuser );
 
-    my %terms = (
-        blog_id     => { not => 0 },
-        permissions => { not => '' },
-    );
+    my %terms = ( permissions => { not => '' }, );
     my %args;
     my %options = ( user => $user );
 
@@ -47,7 +44,6 @@ sub list {
     my $user = $app->user or return;
 
     my %terms = (
-        blog_id     => { not => 0 },
         author_id   => { not => 0 },
         permissions => { not => '' },
     );
@@ -104,7 +100,6 @@ sub list_for_role {
         or return;
 
     my %terms = (
-        blog_id     => { not => 0 },
         author_id   => { not => 0 },
         permissions => { not => '' },
     );

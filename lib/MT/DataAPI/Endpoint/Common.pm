@@ -543,6 +543,9 @@ sub _restrict_blog_id {
             }
         )
     );
+    if ( !( grep { $_ == 0 } @data_api_disable_site ) ) {
+        $enable_blog{0} = 1;
+    }
 
     my @enable_blog_id = keys %enable_blog;
 
