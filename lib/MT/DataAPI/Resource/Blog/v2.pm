@@ -607,7 +607,10 @@ sub fields {
             alias       => 'ping_others',
             from_object => sub {
                 my ($obj) = @_;
-                return [ split /\r?\n/, $obj->ping_others ];
+                return [
+                    split /\r?\n/,
+                    defined $obj->ping_others ? $obj->ping_others : ''
+                ];
             },
             to_object => sub {
                 my ($hash) = @_;
