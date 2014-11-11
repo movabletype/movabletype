@@ -41,6 +41,7 @@ $app->user($author);
 $app->current_api_version(1);
 
 $app->param('maxComments', 9999);
+$app->param('maxTrackbacks', 9999);
 
 my $disabled_fields = $app->config->DisableResourceField;
 $disabled_fields->{entry} = 'title,excerpt';
