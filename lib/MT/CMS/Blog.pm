@@ -470,7 +470,6 @@ sub cfg_prefs {
     }
     $param{site_path}          = $blog->column('site_path');
     $param{site_path_absolute} = $blog->is_site_path_absolute;
-    $param{enable_data_api}    = !$blog->disable_data_api;
 
     $app->forward( "view", \%param );
 }
@@ -1358,8 +1357,7 @@ sub dialog_select_weblog {
     my $auth  = $app->user or return;
 
     if ($favorites) {
-
-        # Do not exclude top 5 favorite blogs from
+        # Do not exclude top 5 favorite blogs from 
         #   select blog dialog list. bugid:112372
         $confirm_js = 'saveFavorite';
     }
@@ -1634,8 +1632,6 @@ sub pre_save {
                 $obj->archive_url('');
                 $obj->archive_path('');
             }
-            $obj->disable_data_api(
-                $app->param('enable_data_api') ? undef : 1 );
         }
         if ( $screen eq 'cfg_publish_profile' ) {
             if ( my $dcty = $app->param('dynamicity') ) {
@@ -1972,10 +1968,8 @@ sub post_save {
 
         # if settings were changed that would affect published pages:
         if ( $app->isa('MT::App::CMS') ) {
-            if (grep {
-                    ( $original->column($_) || '' ) ne
-                        ( $obj->column($_)  || '' )
-                } qw(allow_unreg_comments allow_reg_comments remote_auth_token
+            if (grep { ( $original->column($_) || '' ) ne ( $obj->column($_) || '' ) }
+                qw(allow_unreg_comments allow_reg_comments remote_auth_token
                 allow_pings          allow_comment_html )
                 )
             {

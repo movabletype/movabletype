@@ -547,20 +547,6 @@ function setLicense() {
     </div>
   </mtapp:settinggroup>
 
-  <mt:if name="blog_id">
-    <mtapp:settinggroup id="data-api-settings">
-    <h2><__trans phrase="Data API Settings"></h2>
-            
-      <mtapp:setting
-         id="enable-data-api"
-         class="has-option"
-         label="<__trans phrase="Data API">">
-      <label for="enable-data-api"><input type="checkbox" value="1" name="enable_data_api" id="enable-data-api"<mt:if name="enable_data_api"> checked="checked"</mt:if> /> <__trans phrase="Enable Data API in this site."></label> 
-      </mtapp:setting>
-    
-    </mtapp:settinggroup>
-  </mt:if>
-
   <mt:setvarblock name="action_buttons">
     <button
        type="submit"

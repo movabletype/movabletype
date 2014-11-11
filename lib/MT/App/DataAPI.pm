@@ -20,8 +20,8 @@ use MT::AccessToken;
 
 our %endpoints = ();
 
-sub id                 {'data_api'}
-sub DEFAULT_VERSION () {1}
+sub id {'data_api'}
+sub DEFAULT_VERSION () { 1 }
 
 sub init {
     my $app = shift;
@@ -118,7 +118,7 @@ sub core_endpoints {
             requires_login => 0,
         },
         {   id          => 'get_blog',
-            route       => '/sites/:site_id',
+            route       => '/sites/:blog_id',
             version     => 1,
             handler     => "${pkg}Blog::get",
             error_codes => {
@@ -2774,11 +2774,9 @@ sub api {
     $app->permissions(undef);
 
     if ( my $id = $params->{site_id} ) {
-        my $site = $app->blog( scalar $app->model('blog')->load($id) )
+        $app->blog( scalar $app->model('blog')->load($id) )
             or return $app->print_error( 'Site not found', 404 );
         $app->param( 'blog_id', $id );
-
-        return $app->print_error(403) if $site->disable_data_api;
 
         $app->permissions( $user->permissions($id) )
             unless $user->is_anonymous;
