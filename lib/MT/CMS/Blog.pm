@@ -229,6 +229,14 @@ sub edit {
             $param->{pings_loop} = \@pings;
 
             $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
+
+            if ( $cfg->is_readonly('DataAPIDisableSite') ) {
+                $param->{'data_api_disable_site_readonly'} = 1;
+                $param->{config_warning} = $app->translate(
+                    "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
+                    'DataAPIDisableSite',
+                );
+            }
         }
         elsif ( $output eq 'cfg_feedback.tmpl' ) {
             $param->{email_new_comments_1}
@@ -314,6 +322,13 @@ sub edit {
     {
         # System level web services settings.
         $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
+        if ( $app->config->is_readonly('DataAPIDisableSite') ) {
+            $param->{'data_api_disable_site_readonly'} = 1;
+            $param->{config_warning} = $app->translate(
+                "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
+                'DataAPIDisableSite',
+            );
+        }
     }
     else {
         return $app->return_to_dashboard( redirect => 1 )
