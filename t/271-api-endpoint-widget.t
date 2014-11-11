@@ -49,6 +49,15 @@ $system_widget->set_values(
 );
 $system_widget->save or die $system_widget->errstr;
 
+my $widget_class = $app->model('template');
+my $blog_widget = $widget_class->load( { blog_id => 1, type => 'widget' } )
+    or die $widget_class->errstr;
+my $website_widget = $widget_class->load( { blog_id => 2, type => 'widget' } )
+    or die $widget_class->errstr;
+
+my $blog_index_tmpl = $widget_class->load( { blog_id => 1, type => 'index' } )
+    or die $widget_class->errstr;
+
 my @suite = (
 
     # list_widgets - irregular tests
@@ -274,7 +283,7 @@ my @suite = (
         },
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/widgets/132',
+        path   => '/v2/sites/5/widgets/' . $blog_widget->id,
         method => 'GET',
         code   => 404,
         result => sub {
@@ -286,7 +295,7 @@ my @suite = (
         },
     },
     {    # Other site.
-        path   => '/v2/sites/2/widgets/132',
+        path   => '/v2/sites/2/widgets/' . $blog_widget->id,
         method => 'GET',
         code   => 404,
         result => sub {
@@ -298,7 +307,7 @@ my @suite = (
         },
     },
     {    # Other site (system).
-        path   => '/v2/sites/0/widgets/132',
+        path   => '/v2/sites/0/widgets/' . $blog_widget->id,
         method => 'GET',
         code   => 404,
         result => sub {
@@ -310,7 +319,7 @@ my @suite = (
         },
     },
     {    # Not widget.
-        path   => '/v2/sites/1/widgets/138',
+        path   => '/v2/sites/1/widgets/' . $blog_index_tmpl->id,
         method => 'GET',
         code   => 404,
         result => sub {
@@ -324,7 +333,7 @@ my @suite = (
 
     # get_widget - normal tests
     {    # Blog.
-        path      => '/v2/sites/1/widgets/132',
+        path      => '/v2/sites/1/widgets/' . $blog_widget->id,
         method    => 'GET',
         callbacks => [
             {   name =>
@@ -333,11 +342,11 @@ my @suite = (
             },
         ],
         result => sub {
-            $app->model('template')->load(132);
+            $blog_widget;
         },
     },
     {    # Website.
-        path      => '/v2/sites/2/widgets/81',
+        path      => '/v2/sites/2/widgets/' . $website_widget->id,
         method    => 'GET',
         callbacks => [
             {   name =>
@@ -346,7 +355,7 @@ my @suite = (
             },
         ],
         result => sub {
-            $app->model('template')->load(81);
+            $website_widget;
         },
     },
     {    # System.
@@ -497,7 +506,7 @@ my @suite = (
         },
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/widgets/132',
+        path   => '/v2/sites/5/widgets/' . $blog_widget->id,
         method => 'PUT',
         code   => 404,
         result => sub {
@@ -509,7 +518,7 @@ my @suite = (
         },
     },
     {    # Other site.
-        path   => '/v2/sites/2/widgets/132',
+        path   => '/v2/sites/2/widgets/' . $blog_widget->id,
         method => 'PUT',
         code   => 404,
         result => sub {
@@ -521,7 +530,7 @@ my @suite = (
         },
     },
     {    # Other site (system).
-        path   => '/v2/sites/0/widgets/132',
+        path   => '/v2/sites/0/widgets/' . $blog_widget->id,
         method => 'PUT',
         code   => 404,
         result => sub {
@@ -533,7 +542,7 @@ my @suite = (
         },
     },
     {    # Not widget.
-        path   => '/v2/sites/1/widgets/138',
+        path   => '/v2/sites/1/widgets/' . $blog_index_tmpl->id,
         method => 'PUT',
         code   => 404,
         result => sub {
@@ -545,7 +554,7 @@ my @suite = (
         },
     },
     {    # No resource.
-        path     => '/v2/sites/1/widgets/132',
+        path     => '/v2/sites/1/widgets/' . $blog_widget->id,
         method   => 'PUT',
         code     => 400,
         complete => sub {
@@ -554,7 +563,7 @@ my @suite = (
         },
     },
     {    # Empty name.
-        path     => '/v2/sites/1/widgets/132',
+        path     => '/v2/sites/1/widgets/' . $blog_widget->id,
         method   => 'PUT',
         params   => { widget => { name => '', }, },
         code     => 409,
@@ -567,7 +576,7 @@ my @suite = (
 
     # update_widget - normal tests
     {    # Blog.
-        path   => '/v2/sites/1/widgets/132',
+        path   => '/v2/sites/1/widgets/' . $blog_widget->id,
         method => 'PUT',
         params => {
             widget => {
@@ -607,28 +616,28 @@ my @suite = (
         code   => 404,
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/widgets/132/refresh',
+        path   => '/v2/sites/5/widgets/' . $blog_widget->id . '/refresh',
         method => 'POST',
         code   => 404,
     },
     {    # Other site.
-        path   => '/v2/sites/2/widgets/132/refresh',
+        path   => '/v2/sites/2/widgets/' . $blog_widget->id . '/refresh',
         method => 'POST',
         code   => 404,
     },
     {    # Other site (system).
-        path   => '/v2/sites/0/widgets/132/refresh',
+        path   => '/v2/sites/0/widgets/' . $blog_widget->id . '/refresh',
         method => 'POST',
         code   => 404,
     },
     {    # Not widget (index template).
-        path   => '/v2/sites/0/widgets/133/refresh',
+        path   => '/v2/sites/0/widgets/' . $blog_index_tmpl->id . '/refresh',
         method => 'POST',
         code   => 404,
     },
 
     # refresh_widget - normal tests
-    {   path   => '/v2/sites/1/widgets/132/refresh',
+    {   path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/refresh',
         method => 'POST',
     },
 
@@ -639,28 +648,28 @@ my @suite = (
         code   => 404,
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/widgets/132/clone',
+        path   => '/v2/sites/5/widgets/' . $blog_widget->id . '/clone',
         method => 'POST',
         code   => 404,
     },
     {    # Other site.
-        path   => '/v2/sites/2/widgets/132/clone',
+        path   => '/v2/sites/2/widgets/' . $blog_widget->id . '/clone',
         method => 'POST',
         code   => 404,
     },
     {    # Other site (system).
-        path   => '/v2/sites/0/widgets/132/clone',
+        path   => '/v2/sites/0/widgets/' . $blog_widget->id . '/clone',
         method => 'POST',
         code   => 404,
     },
     {    # Not widget (index template).
-        path   => '/v2/sites/0/widgets/133/clone',
+        path   => '/v2/sites/0/widgets/' . $blog_index_tmpl->id . '/clone',
         method => 'POST',
         code   => 404,
     },
 
     # clone_widget - normal tests
-    {   path   => '/v2/sites/1/widgets/132/clone',
+    {   path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/clone',
         method => 'POST',
     },
 
@@ -678,7 +687,7 @@ my @suite = (
         },
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/widgets/132',
+        path   => '/v2/sites/5/widgets/' . $blog_widget->id,
         method => 'DELETE',
         code   => 404,
         result => sub {
@@ -690,7 +699,7 @@ my @suite = (
         },
     },
     {    # Other site.
-        path   => '/v2/sites/2/widgets/132',
+        path   => '/v2/sites/2/widgets/' . $blog_widget->id,
         method => 'DELETE',
         code   => 404,
         result => sub {
@@ -702,7 +711,7 @@ my @suite = (
         },
     },
     {    # Other site (system).
-        path   => '/v2/sites/0/widgets/132',
+        path   => '/v2/sites/0/widgets/' . $blog_widget->id,
         method => 'DELETE',
         code   => 404,
         result => sub {
@@ -714,7 +723,7 @@ my @suite = (
         },
     },
     {    # Not widget.
-        path   => '/v2/sites/1/widgets/138',
+        path   => '/v2/sites/1/widgets/' . $blog_index_tmpl->id,
         method => 'DELETE',
         code   => 404,
         result => sub {
@@ -728,10 +737,10 @@ my @suite = (
 
     # delete_widget - normal tests
     {    # Blog.
-        path   => '/v2/sites/1/widgets/132',
+        path   => '/v2/sites/1/widgets/' . $blog_widget->id,
         method => 'DELETE',
         setup  => sub {
-            die if !$app->model('template')->load(132);
+            die if !$app->model('template')->load( $blog_widget->id );
         },
         callbacks => [
             {   name =>
@@ -743,7 +752,7 @@ my @suite = (
             },
         ],
         complete => sub {
-            my $widget = $app->model('template')->load(132);
+            my $widget = $app->model('template')->load( $blog_widget->id );
             is( $widget, undef, 'Deleted widget.' );
         },
     },
