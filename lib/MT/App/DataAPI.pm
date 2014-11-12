@@ -2944,6 +2944,11 @@ sub render {
     return $json;
 }
 
+sub validate_magic {
+    my ($app) = @_;
+    return $app->user && $app->user->id;
+}
+
 1;
 __END__
 

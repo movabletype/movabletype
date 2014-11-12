@@ -88,9 +88,6 @@ sub _switch_plugin_state {
     local $app->{redirect};
     local $app->{redirect_use_meta};
 
-    no warnings 'redefine';
-    local *MT::App::validate_magic = sub {1};
-
     MT::CMS::Plugin::plugin_control($app);
     return if $app->errstr;
 

@@ -440,7 +440,6 @@ sub import {
     local $app->{no_print_body};
 
     no warnings 'redefine';
-    local *MT::App::validate_magic = sub {1};
 
     my $param;
     local *MT::build_page = sub { $param = $_[2] };
@@ -472,9 +471,6 @@ sub import {
 
 sub export {
     my ( $app, $endpoint ) = @_;
-
-    no warnings 'redefine';
-    local *MT::App::validate_magic = sub {1};
 
     MT::CMS::Export::export($app);
 

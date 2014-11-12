@@ -22,7 +22,7 @@ sub backup {
         && _check_limit_size($app);
 
     no warnings 'redefine';
-    local *MT::App::validate_magic = sub {1};
+
     local $app->{is_admin} = 1;
 
     my $param;
@@ -166,7 +166,6 @@ sub restore {
     local $app->{no_print_body};
 
     no warnings 'redefine';
-    local *MT::App::validate_magic = sub {1};
 
     my ( $file, $param );
     my $build_page = \&MT::build_page;

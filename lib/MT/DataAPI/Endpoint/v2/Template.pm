@@ -203,9 +203,6 @@ sub refresh_for_site {
     local $app->{redirect_use_meta};
     local $app->{return_args};
 
-    no warnings 'redefine';
-    local *MT::App::validate_magic = sub {1};
-
     require MT::CMS::Template;
     MT::CMS::Template::refresh_all_templates($app);
 

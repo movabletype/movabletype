@@ -179,10 +179,6 @@ sub reset {
 
 sub export {
     my ( $app, $endpoint ) = @_;
-
-    no warnings 'redefine';
-    local *MT::App::validate_magic = sub {1};
-
     MT::CMS::Log::export($app);
 }
 
