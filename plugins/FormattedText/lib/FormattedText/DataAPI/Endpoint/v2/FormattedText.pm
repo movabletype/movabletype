@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package FormattedText::DataAPI::Endpoint::FormattedText::v2;
+package FormattedText::DataAPI::Endpoint::v2::FormattedText;
 
 use strict;
 use warnings;
@@ -108,7 +108,7 @@ __END__
 
 =head1 NAME
 
-FormattedText::DataAPI::Endpoint::FormattedText::v2 - Movable Type class for endpoint definitions
+FormattedText::DataAPI::Endpoint::v2::FormattedText - Movable Type class for endpoint definitions
 about the FormattedText::FormattedText.
 
 =head1 AUTHOR & COPYRIGHT

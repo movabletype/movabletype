@@ -73,14 +73,14 @@ applications:
         resources:
             formatted_text:
                 - version: 2
-                  fields: $FormattedText::FormattedText::DataAPI::Resource::FormattedText::v2::fields
-                  updatable_fields: $FormattedText::FormattedText::DataAPI::Resource::FormattedText::v2::updatable_fields
+                  fields: $FormattedText::FormattedText::DataAPI::Resource::v2::FormattedText::fields
+                  updatable_fields: $FormattedText::FormattedText::DataAPI::Resource::v2::FormattedText::updatable_fields
 
         endpoints:
             - id: list_formatted_texts
               route: /sites/:site_id/formatted_texts
               version: 2
-              handler: $FormattedText::FormattedText::DataAPI::Endpoint::FormattedText::v2::list
+              handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::list
               default_params:
                   limit: 10
                   offset: 0
@@ -93,7 +93,7 @@ applications:
             - id: get_formatted_text
               route: /sites/:site_id/formatted_texts/:formatted_text_id
               version: 2
-              handler: $FormattedText::FormattedText::DataAPI::Endpoint::FormattedText::v2::get
+              handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::get
               error_codes:
                   403: Do not have permission to retrieve the requested formatted text.
 
@@ -103,7 +103,7 @@ applications:
                   - formatted_text
               verb: POST
               version: 2
-              handler: $FormattedText::FormattedText::DataAPI::Endpoint::FormattedText::v2::create
+              handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::create
               error_codes:
                   403: Do not have permission to create a formatted text.
 
@@ -113,7 +113,7 @@ applications:
                   - formatted_text
               verb: PUT
               version: 2
-              handler: $FormattedText::FormattedText::DataAPI::Endpoint::FormattedText::v2::update
+              handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::update
               error_codes:
                   403: Do not have permission to create a formatted text.
 
@@ -121,7 +121,7 @@ applications:
               route: /sites/:site_id/formatted_texts/:formatted_text_id
               verb: DELETE
               version: 2
-              handler: $FormattedText::FormattedText::DataAPI::Endpoint::FormattedText::v2::delete
+              handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::delete
               error_codes:
                   403: Do not have permission to delete a formatted text.
 

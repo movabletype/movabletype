@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package FormattedText::DataAPI::Resource::FormattedText::v2;
+package FormattedText::DataAPI::Resource::v2::FormattedText;
 
 use strict;
 use warnings;
@@ -70,7 +70,7 @@ __END__
 
 =head1 NAME
 
-FormattedText::DataAPI::Resource::FormattedText::v2 - Movable Type class for resources definitions
+FormattedText::DataAPI::Resource::v2::FormattedText - Movable Type class for resources definitions
 of the FormattedText::FormattedText.
 
 =head1 AUTHOR & COPYRIGHT
