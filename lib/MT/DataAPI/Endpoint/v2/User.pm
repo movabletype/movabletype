@@ -115,15 +115,12 @@ sub recover {
     MT::CMS::Tools::recover_password($app);
 
     return if $app->errstr;
-
-    if ( $param->{error} ) {
-        return $app->error( $param->{error}, 400 );
-    }
+    return $app->error( $param->{error}, 400 ) if $param->{error};
 
     if ( $param->{not_unique_email} ) {
         return $app->error(
             $app->translate(
-                'The email address provided is not unique.  Please enter your username.'
+                'The email address provided is not unique. Please enter your username by "name" parameter.'
             ),
             409
         );

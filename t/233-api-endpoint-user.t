@@ -810,6 +810,66 @@ my @suite = (
         complete => sub { $is_superuser = 0 },
     },
 
+    # recover_password - irregular tests.
+    {    # No email.
+        path   => '/v2/recover_password',
+        method => 'POST',
+        code   => 400,
+        result => sub {
+            return +{
+                error => {
+                    code => 400,
+                    message =>
+                        "Email address is required for password reset.",
+                },
+            };
+        },
+    },
+    {    # Not unique.
+        path   => '/v2/recover_password',
+        method => 'POST',
+        params => { email => 'chuckd@sixapart.com', },
+        code   => 409,
+        result => sub {
+            return +{
+                error => {
+                    code => 409,
+                    message =>
+                        "The email address provided is not unique. Please enter your username by \"name\" parameter.",
+                },
+            };
+        },
+    },
+
+    # recover_password - normal tests.
+    {    # Unique.
+        path   => '/v2/recover_password',
+        method => 'POST',
+        params => { email => 'miuchi@sixapart.com', },
+        result => sub {
+            return +{
+                status => 'success',
+                message =>
+                    'An email with a link to reset your password has been sent to your email address (miuchi@sixapart.com).',
+            };
+        },
+    },
+    {    # Not unique.
+        path   => '/v2/recover_password',
+        method => 'POST',
+        params => {
+            email => 'chuckd@sixapart.com',
+            name  => 'create_user',
+        },
+        result => sub {
+            return +{
+                status => 'success',
+                message =>
+                    'An email with a link to reset your password has been sent to your email address (chuckd@sixapart.com).',
+            };
+        },
+    },
+
     # delete_user - irregular tests
     {    # Non-existent user.
         path   => '/v2/users/100',
