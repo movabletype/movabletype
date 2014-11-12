@@ -718,6 +718,34 @@ my @suite = (
         complete => sub { $is_superuser = 0 },
     },
 
+    # update_user - irregular tests.
+    {    # Non-existent user.
+        path   => '/v2/users/100',
+        method => 'PUT',
+        code   => 404,
+        result => sub {
+            return +{
+                error => {
+                    code    => 404,
+                    message => 'User not found',
+                },
+            };
+        },
+    },
+    {    # No resource.
+        path   => '/v2/users/3',
+        method => 'PUT',
+        code   => 400,
+        result => sub {
+            return +{
+                error => {
+                    code    => 400,
+                    message => 'A resource "user" is required.',
+                },
+            };
+        },
+    },
+
     # update_user - normal tests
     {    # Grant permissions.
         path   => '/v2/users/3',
@@ -761,9 +789,17 @@ my @suite = (
         complete => sub { $is_superuser = 0 },
     },
     {    # No superuser.
-        path     => '/v2/users/3/unlock',
-        method   => 'POST',
-        code     => 403,
+        path   => '/v2/users/3/unlock',
+        method => 'POST',
+        code   => 403,
+        result => sub {
+            return +{
+                error => {
+                    code    => 403,
+                    message => 'Do not have permission to unlock a user.',
+                },
+            };
+        },
         complete => sub { $is_superuser = 0 },
     },
 
@@ -773,12 +809,20 @@ my @suite = (
         setup  => sub {
             $is_superuser = 1;
 
-            my $user = $app->model('user')->load(3);
+            my $user = $app->model('author')->load(3);
             MT::Lockout->lock($user);
             $user->save or die $user->errstr;
             die if !$user->locked_out;
         },
-        complete => sub { $is_superuser = 0 },
+        result => sub {
+            return +{ status => 'success' };
+        },
+        complete => sub {
+            my $user = $app->model('author')->load(3);
+            ok( !$user->locked_out, 'Unlocked user.' );
+
+            $is_superuser = 0;
+        },
     },
 
     # recover_password_for_user - irregular tests
@@ -787,6 +831,15 @@ my @suite = (
         method => 'POST',
         setup  => sub { $is_superuser = 0 },
         code   => 403,
+        result => sub {
+            return +{
+                error => {
+                    code => 403,
+                    message =>
+                        'Do not have permission to recover password for user.',
+                },
+            };
+        },
     },
     {    # Non-existent user.
         path   => '/v2/users/100/recover_password',
@@ -804,10 +857,30 @@ my @suite = (
     },
 
     # recover_password_for_user - normal tests
-    {   path     => '/v2/users/3/recover_password',
-        method   => 'POST',
-        setup    => sub { $is_superuser = 1 },
-        complete => sub { $is_superuser = 0 },
+    {   path   => '/v2/users/3/recover_password',
+        method => 'POST',
+        setup  => sub {
+            my $user = $app->model('author')->load(3);
+            $user->password_reset_expires(0);
+            $user->save or die $user->errstr;
+
+            $is_superuser = 1;
+        },
+        result => sub {
+            return +{
+                status => 'success',
+                message =>
+                    'A password reset link has been sent to bobd@example.com for user  \'Bob D\' (user #3).',
+            };
+        },
+        complete => sub {
+            my $user = $app->model('author')->load(3);
+            ok( $user->password_reset_expires > time,
+                'password_reset_expires is set.'
+            );
+
+            $is_superuser = 0;
+        },
     },
 
     # recover_password - irregular tests.
@@ -843,15 +916,28 @@ my @suite = (
 
     # recover_password - normal tests.
     {    # Unique.
-        path   => '/v2/recover_password',
-        method => 'POST',
-        params => { email => 'miuchi@sixapart.com', },
+        path     => '/v2/recover_password',
+        method   => 'POST',
+        params   => { email => 'chuckd@example.com', },
+        complete => sub {
+            my $user = $app->model('author')
+                ->load( { email => 'chuckd@example.com' } );
+            $user->password_reset_expires(0);
+            $user->save or die $user->errstr;
+        },
         result => sub {
             return +{
                 status => 'success',
                 message =>
-                    'An email with a link to reset your password has been sent to your email address (miuchi@sixapart.com).',
+                    'An email with a link to reset your password has been sent to your email address (chuckd@example.com).',
             };
+        },
+        complete => sub {
+            my $user = $app->model('author')
+                ->load( { email => 'chuckd@example.com' } );
+            ok( $user->password_reset_expires > time,
+                'password_reset_expires is set.'
+            );
         },
     },
     {    # Not unique.
@@ -859,7 +945,15 @@ my @suite = (
         method => 'POST',
         params => {
             email => 'chuckd@sixapart.com',
-            name  => 'create_user',
+            name  => 'create-user',
+        },
+        setup => sub {
+            my $user
+                = $app->model('author')
+                ->load(
+                { email => 'chuckd@sixapart.com', name => 'create-user' } );
+            $user->password_reset_expires(0);
+            $user->save or die $user->errstr;
         },
         result => sub {
             return +{
@@ -867,6 +961,15 @@ my @suite = (
                 message =>
                     'An email with a link to reset your password has been sent to your email address (chuckd@sixapart.com).',
             };
+        },
+        complete => sub {
+            my $user
+                = $app->model('author')
+                ->load(
+                { email => 'chuckd@sixapart.com', name => 'create-user' } );
+            ok( $user->password_reset_expires > time,
+                'password_reset_expires is set.'
+            );
         },
     },
 
