@@ -75,7 +75,7 @@ my @suite = (
 
             return +{
                 totalResults => scalar @$list,
-                items => $list,
+                items        => $list,
             };
         },
     },
@@ -96,7 +96,8 @@ my @suite = (
     },
 
     # get_plugin - normal tests.
-    {   path   => '/v2/plugins/Awesome',
+    {    # By signature.
+        path   => '/v2/plugins/Awesome',
         method => 'GET',
         result => sub {
 
@@ -111,6 +112,32 @@ my @suite = (
 
             my @plugin_loop
                 = grep { $_->{plugin_folder} || $_->{plugin_sig} eq $plugin_id }
+                @{ $param{plugin_loop} };
+
+            my ($plugin) = @{
+                MT::DataAPI::Endpoint::v2::Plugin::_to_object(
+                    \@plugin_loop
+                )
+            };
+            return $plugin;
+        },
+    },
+    {    # By id.
+        path   => '/v2/plugins/64ec5077d1e64b9c18495913e02ba95915a280a4',
+        method => 'GET',
+        result => sub {
+
+            my %param;
+            MT::CMS::Plugin::build_plugin_table(
+                $app,
+                param => \%param,
+                scope => 'system'
+            );
+
+            my $plugin_id = 'MultiBlog/multiblog.pl';
+
+            my @plugin_loop
+                = grep { $_->{plugin_sig} eq $plugin_id }
                 @{ $param{plugin_loop} };
 
             my ($plugin) = @{
@@ -138,7 +165,8 @@ my @suite = (
     },
 
     # enable_plugin - normal tests.
-    {   path   => '/v2/plugins/Awesome/enable',
+    {    # By signature.
+        path   => '/v2/plugins/Awesome/enable',
         method => 'POST',
         result => sub {
             return +{ status => 'success', };
@@ -150,6 +178,21 @@ my @suite = (
             );
             is( $plugin_switch->{Awesome},
                 1, 'PluginSwitch of Awesome is 1.' );
+        },
+    },
+    {    # By id.
+        path => '/v2/plugins/64ec5077d1e64b9c18495913e02ba95915a280a4/enable',
+        method => 'POST',
+        result => sub {
+            return +{ status => 'success', };
+        },
+        complete => sub {
+            my $plugin_switch = $app->config->PluginSwitch;
+            ok( exists $plugin_switch->{'MultiBlog/multiblog.pl'},
+                'MultiBlog/multiblog.pl exists in PluginSwitch.'
+            );
+            is( $plugin_switch->{'MultiBlog/multiblog.pl'},
+                1, 'PluginSwitch of MultiBlog/multiblog.pl is 1.' );
         },
     },
 
@@ -169,7 +212,8 @@ my @suite = (
     },
 
     # disable_plugin - normal tests.
-    {   path   => '/v2/plugins/Awesome/disable',
+    {    # By signature.
+        path   => '/v2/plugins/Awesome/disable',
         method => 'POST',
         result => sub {
             return +{ status => 'success', };
@@ -181,6 +225,22 @@ my @suite = (
             );
             is( $plugin_switch->{Awesome},
                 0, 'PluginSwitch of Awesome is 0.' );
+        },
+    },
+    {    # By id.
+        path =>
+            '/v2/plugins/64ec5077d1e64b9c18495913e02ba95915a280a4/disable',
+        method => 'POST',
+        result => sub {
+            return +{ status => 'success', };
+        },
+        complete => sub {
+            my $plugin_switch = $app->config->PluginSwitch;
+            ok( exists $plugin_switch->{'MultiBlog/multiblog.pl'},
+                'MultiBlog/multiblog.pl exists in PluginSwitch.'
+            );
+            is( $plugin_switch->{'MultiBlog/multiblog.pl'},
+                0, 'PluginSwitch of MultiBlog/multiblog.pl is 0.' );
         },
     },
 

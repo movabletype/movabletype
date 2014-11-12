@@ -42,35 +42,19 @@ sub get {
     run_permission_filter( $app, 'data_api_view_permission_filter', 'plugin' )
         or return;
 
-    my $plugin_id = _retrieve_plugin_id($app) or return;
-
-    my %param;
-    MT::CMS::Plugin::build_plugin_table(
-        $app,
-        param => \%param,
-        scope => 'system'
-    );
-
-    my @plugin_loop
-        = grep { $_->{plugin_folder} || $_->{plugin_sig} eq $plugin_id }
-        @{ $param{plugin_loop} };
-
-    my ($plugin) = @{ _to_object( \@plugin_loop ) }
-        or return $app->error( $app->translate('Plugin not found'), 404 );
-
-    return $plugin;
+    return _retrieve_plugin($app);
 }
 
 sub enable {
     my ( $app, $endpoint ) = @_;
-    my $plugin_id = _retrieve_plugin_id($app) or return;
-    _switch_plugin_state( $app, $plugin_id, 'on' );
+    my $plugin = _retrieve_plugin($app) or return;
+    _switch_plugin_state( $app, $plugin->{signature}, 'on' );
 }
 
 sub disable {
     my ( $app, $endpoint ) = @_;
-    my $plugin_id = _retrieve_plugin_id($app) or return;
-    _switch_plugin_state( $app, $plugin_id, 'off' );
+    my $plugin = _retrieve_plugin($app) or return;
+    _switch_plugin_state( $app, $plugin->{signature}, 'off' );
 }
 
 sub enable_all {
@@ -99,7 +83,7 @@ sub _switch_plugin_state {
     return +{ status => 'success' };
 }
 
-sub _retrieve_plugin_id {
+sub _retrieve_plugin {
     my ($app) = @_;
 
     my $plugin_id = $app->param('plugin_id');
@@ -107,11 +91,24 @@ sub _retrieve_plugin_id {
         return $app->error(
             $app->translate('A parameter "plugin_id" id required.'), 400 );
     }
-    elsif ( !exists $MT::Plugins{$plugin_id} ) {
-        return $app->error( $app->translate('Plugin not found'), 404 );
-    }
 
-    return $plugin_id;
+    my %param;
+    MT::CMS::Plugin::build_plugin_table(
+        $app,
+        param => \%param,
+        scope => 'system'
+    );
+
+    my @plugin_loop = grep {
+        ( defined $_->{plugin_id} ? $_->{plugin_id} : '' ) eq $plugin_id
+            || ( defined $_->{plugin_sig} ? $_->{plugin_sig} : '' ) eq
+            $plugin_id
+    } @{ $param{plugin_loop} };
+
+    my ($plugin) = @{ _to_object( \@plugin_loop ) }
+        or return $app->error( $app->translate('Plugin not found'), 404 );
+
+    return $plugin;
 }
 
 sub _to_object {
@@ -128,7 +125,8 @@ sub _to_object {
         }
 
         my %plugin = (
-            id        => $p->{plugin_sig},
+            id        => $p->{plugin_id},
+            signature => $p->{plugin_sig},
             name      => $p->{plugin_name},
             icon      => $p->{plugin_icon},
             pluginSet => $plugin_set,
