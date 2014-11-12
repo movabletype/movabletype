@@ -120,8 +120,8 @@ sub core_resources {
         ],
         'association' => [
             {   version          => 2,
-                fields           => "${pkg}Association::v2::fields",
-                updatable_fields => "${pkg}Association::v2::updatable_fields",
+                fields           => "${pkg}v2::Association::fields",
+                updatable_fields => "${pkg}v2::Association::updatable_fields",
             },
         ],
         'role' => [
