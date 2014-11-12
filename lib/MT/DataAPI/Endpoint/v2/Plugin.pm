@@ -102,6 +102,9 @@ sub _retrieve_plugin_id {
         return $app->error(
             $app->translate('A parameter "plugin_id" id required.'), 400 );
     }
+    elsif ( !exists $MT::Plugins{$plugin_id} ) {
+        return $app->error( $app->translate('Plugin not found'), 404 );
+    }
 
     return $plugin_id;
 }
