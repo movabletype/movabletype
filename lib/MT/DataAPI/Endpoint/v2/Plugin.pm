@@ -28,7 +28,12 @@ sub list {
         scope => 'system'
     );
 
-    return _to_object( $param{plugin_loop} );
+    my $plugins = _to_object( $param{plugin_loop} );
+
+    return +{
+        totalResults => scalar(@$plugins) || 0,
+        items => $plugins,
+    };
 }
 
 sub get {

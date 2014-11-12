@@ -72,7 +72,11 @@ my @suite = (
             require MT::DataAPI::Endpoint::v2::Plugin;
             my $list = MT::DataAPI::Endpoint::v2::Plugin::_to_object(
                 $param{plugin_loop} );
-            return $list;
+
+            return +{
+                totalResults => scalar @$list,
+                items => $list,
+            };
         },
     },
 
