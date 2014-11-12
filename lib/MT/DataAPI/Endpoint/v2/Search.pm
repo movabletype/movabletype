@@ -3,7 +3,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Search::v2;
+
+package MT::DataAPI::Endpoint::v2::Search;
 
 use strict;
 use warnings;
@@ -56,7 +57,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Search::v2 - Movable Type class for endpoint definitions about the MT::App::Search.
+MT::DataAPI::Endpoint::v2::Search - Movable Type class for endpoint definitions about the MT::App::Search.
 
 =head1 AUTHOR & COPYRIGHT
 

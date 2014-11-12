@@ -3,12 +3,15 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Asset::v2;
+
+package MT::DataAPI::Endpoint::v2::Asset;
 
 use strict;
 use warnings;
 
+use MT::DataAPI::Endpoint::Asset;
 use MT::DataAPI::Endpoint::Common;
+use MT::DataAPI::Endpoint::v2::Tag;
 use MT::DataAPI::Resource;
 
 sub list {
@@ -163,8 +166,7 @@ sub _list_for_entry {
 sub list_for_tag {
     my ( $app, $endpoint ) = @_;
 
-    require MT::DataAPI::Endpoint::Tag::v2;
-    my $tag = MT::DataAPI::Endpoint::Tag::v2::_retrieve_tag($app) or return;
+    my $tag = MT::DataAPI::Endpoint::v2::Tag::_retrieve_tag($app) or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
         'tag', $tag->id, obj_promise($tag) )
@@ -194,9 +196,8 @@ sub list_for_tag {
 sub list_for_site_and_tag {
     my ( $app, $endpoint ) = @_;
 
-    require MT::DataAPI::Endpoint::Tag::v2;
     my ( $tag, $site_id )
-        = MT::DataAPI::Endpoint::Tag::v2::_retrieve_tag_related_to_site($app)
+        = MT::DataAPI::Endpoint::v2::Tag::_retrieve_tag_related_to_site($app)
         or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
@@ -239,7 +240,6 @@ sub upload {
     my $site = MT->model('blog')->load($site_id);
     $app->blog($site);
 
-    require MT::DataAPI::Endpoint::Asset;
     MT::DataAPI::Endpoint::Asset::upload( $app, $endpoint );
 }
 
@@ -249,7 +249,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Asset::v2 - Movable Type class for endpoint definitions about the MT::Asset.
+MT::DataAPI::Endpoint::v2::Asset - Movable Type class for endpoint definitions about the MT::Asset.
 
 =head1 AUTHOR & COPYRIGHT
 

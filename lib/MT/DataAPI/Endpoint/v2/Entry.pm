@@ -3,7 +3,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Entry::v2;
+
+package MT::DataAPI::Endpoint::v2::Entry;
 
 use strict;
 use warnings;
@@ -277,8 +278,8 @@ sub list_for_tag {
 sub list_for_tag_common {
     my ( $app, $endpoint, $class ) = @_;
 
-    require MT::DataAPI::Endpoint::Tag::v2;
-    my $tag = MT::DataAPI::Endpoint::Tag::v2::_retrieve_tag($app) or return;
+    require MT::DataAPI::Endpoint::v2::Tag;
+    my $tag = MT::DataAPI::Endpoint::v2::Tag::_retrieve_tag($app) or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
         'tag', $tag->id, obj_promise($tag) )
@@ -309,9 +310,9 @@ sub list_for_site_and_tag {
 sub list_for_site_and_tag_common {
     my ( $app, $endpoint, $class ) = @_;
 
-    require MT::DataAPI::Endpoint::Tag::v2;
+    require MT::DataAPI::Endpoint::v2::Tag;
     my ( $tag, $site_id )
-        = MT::DataAPI::Endpoint::Tag::v2::_retrieve_tag_related_to_site($app)
+        = MT::DataAPI::Endpoint::v2::Tag::_retrieve_tag_related_to_site($app)
         or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
@@ -486,7 +487,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Entry::v2 - Movable Type class for endpoint definitions about the MT::Entry.
+MT::DataAPI::Endpoint::v2::Entry - Movable Type class for endpoint definitions about the MT::Entry.
 
 =head1 AUTHOR & COPYRIGHT
 

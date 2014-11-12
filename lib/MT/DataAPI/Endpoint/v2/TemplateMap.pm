@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Endpoint::TemplateMap::v2;
+package MT::DataAPI::Endpoint::v2::TemplateMap;
 
 use strict;
 use warnings;
@@ -128,7 +128,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::TemplateMap::v2 - Movable Type class for endpoint definitions about the MT::TemplateMap.
+MT::DataAPI::Endpoint::v2::TemplateMap - Movable Type class for endpoint definitions about the MT::TemplateMap.
 
 =head1 AUTHOR & COPYRIGHT
 

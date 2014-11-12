@@ -4,54 +4,54 @@
 #
 # $Id$
 
-package MT::DataAPI::Endpoint::Folder::v2;
+package MT::DataAPI::Endpoint::v2::Folder;
 
 use strict;
 use warnings;
 
-use MT::DataAPI::Endpoint::Category::v2;
+use MT::DataAPI::Endpoint::v2::Category;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
 sub list {
     my ( $app, $endpoint ) = @_;
-    return MT::DataAPI::Endpoint::Category::v2::list_common( $app, $endpoint,
+    return MT::DataAPI::Endpoint::v2::Category::list_common( $app, $endpoint,
         'folder' );
 }
 
 sub list_parents {
     my ( $app, $endpoint ) = @_;
-    return MT::DataAPI::Endpoint::Category::v2::list_parents_common( $app,
+    return MT::DataAPI::Endpoint::v2::Category::list_parents_common( $app,
         $endpoint, 'folder' );
 }
 
 sub list_siblings {
     my ( $app, $endpoint ) = @_;
-    return MT::DataAPI::Endpoint::Category::v2::list_siblings_common( $app,
+    return MT::DataAPI::Endpoint::v2::Category::list_siblings_common( $app,
         $endpoint, 'folder' );
 }
 
 sub list_children {
     my ( $app, $endpoint ) = @_;
-    return MT::DataAPI::Endpoint::Category::v2::list_children_common( $app,
+    return MT::DataAPI::Endpoint::v2::Category::list_children_common( $app,
         $endpoint, 'folder' );
 }
 
 sub get {
     my ( $app, $endpoint ) = @_;
-    return MT::DataAPI::Endpoint::Category::v2::get_common( $app, $endpoint,
+    return MT::DataAPI::Endpoint::v2::Category::get_common( $app, $endpoint,
         'folder' );
 }
 
 sub create {
     my ( $app, $endpoint ) = @_;
-    return MT::DataAPI::Endpoint::Category::v2::create_common( $app,
+    return MT::DataAPI::Endpoint::v2::Category::create_common( $app,
         $endpoint, 'folder' );
 }
 
 sub update {
     my ( $app, $endpoint ) = @_;
-    return MT::DataAPI::Endpoint::Category::v2::update_common( $app,
+    return MT::DataAPI::Endpoint::v2::Category::update_common( $app,
         $endpoint, 'folder' );
 }
 
@@ -91,7 +91,7 @@ sub permutate {
         return $app->error(403);
     }
 
-    return MT::DataAPI::Endpoint::Category::v2::permutate_common( $app,
+    return MT::DataAPI::Endpoint::v2::Category::permutate_common( $app,
         $endpoint, $site, 'folder' );
 
 }
@@ -102,7 +102,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Folder::v2 - Movable Type class for endpoint definitions about the MT::Folder.
+MT::DataAPI::Endpoint::v2::Folder - Movable Type class for endpoint definitions about the MT::Folder.
 
 =head1 AUTHOR & COPYRIGHT
 

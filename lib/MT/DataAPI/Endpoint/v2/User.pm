@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Endpoint::User::v2;
+package MT::DataAPI::Endpoint::v2::User;
 
 use strict;
 use warnings;
@@ -142,7 +142,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::User::v2 - Movable Type class for endpoint definitions about the MT::Author.
+MT::DataAPI::Endpoint::v2::User - Movable Type class for endpoint definitions about the MT::Author.
 
 =head1 AUTHOR & COPYRIGHT
 

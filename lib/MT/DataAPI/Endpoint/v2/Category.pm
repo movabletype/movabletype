@@ -3,7 +3,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Category::v2;
+
+package MT::DataAPI::Endpoint::v2::Category;
 
 use strict;
 use warnings;
@@ -382,7 +383,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Category::v2 - Movable Type class for endpoint definitions about the MT::Category.
+MT::DataAPI::Endpoint::v2::Category - Movable Type class for endpoint definitions about the MT::Category.
 
 =head1 AUTHOR & COPYRIGHT
 

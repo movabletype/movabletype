@@ -4,14 +4,14 @@
 #
 # $Id$
 
-package MT::DataAPI::Endpoint::Page::v2;
+package MT::DataAPI::Endpoint::v2::Page;
 
 use strict;
 use warnings;
 
 use MT::Util;
 use MT::DataAPI::Endpoint::Entry;
-use MT::DataAPI::Endpoint::Entry::v2;
+use MT::DataAPI::Endpoint::v2::Entry;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
@@ -29,25 +29,25 @@ sub list {
 
 sub list_for_folder {
     my ( $app, $endpoint ) = @_;
-    MT::DataAPI::Endpoint::Entry::v2::list_for_category_common( $app,
+    MT::DataAPI::Endpoint::v2::Entry::list_for_category_common( $app,
         $endpoint, 'page' );
 }
 
 sub list_for_asset {
     my ( $app, $endpoint ) = @_;
-    MT::DataAPI::Endpoint::Entry::v2::list_for_asset_common( $app, $endpoint,
+    MT::DataAPI::Endpoint::v2::Entry::list_for_asset_common( $app, $endpoint,
         'page' );
 }
 
 sub list_for_tag {
     my ( $app, $endpoint ) = @_;
-    MT::DataAPI::Endpoint::Entry::v2::list_for_tag_common( $app, $endpoint,
+    MT::DataAPI::Endpoint::v2::Entry::list_for_tag_common( $app, $endpoint,
         'page' );
 }
 
 sub list_for_site_and_tag {
     my ( $app, $endpoint ) = @_;
-    MT::DataAPI::Endpoint::Entry::v2::list_for_site_and_tag_common( $app,
+    MT::DataAPI::Endpoint::v2::Entry::list_for_site_and_tag_common( $app,
         $endpoint, 'page' );
 }
 
@@ -282,7 +282,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Page::v2 - Movable Type class for endpoint definitions about the MT::Page.
+MT::DataAPI::Endpoint::v2::Page - Movable Type class for endpoint definitions about the MT::Page.
 
 =head1 AUTHOR & COPYRIGHT
 

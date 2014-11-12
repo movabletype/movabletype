@@ -3,7 +3,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Blog::v2;
+
+package MT::DataAPI::Endpoint::v2::Blog;
 
 use strict;
 use warnings;
@@ -317,7 +318,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Blog::v2 - Movable Type class for endpoint definitions about the MT::Blog.
+MT::DataAPI::Endpoint::v2::Blog - Movable Type class for endpoint definitions about the MT::Blog.
 
 =head1 AUTHOR & COPYRIGHT
 

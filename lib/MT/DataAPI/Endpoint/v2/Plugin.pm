@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Endpoint::Plugin::v2;
+package MT::DataAPI::Endpoint::v2::Plugin;
 
 use strict;
 use warnings;
@@ -160,7 +160,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Plugin::v2 - Movable Type class for endpoint definitions about the MT::Plugin.
+MT::DataAPI::Endpoint::v2::Plugin - Movable Type class for endpoint definitions about the MT::Plugin.
 
 =head1 AUTHOR & COPYRIGHT
 

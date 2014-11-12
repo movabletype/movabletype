@@ -419,7 +419,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/categories',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Category::v2::list",
+            handler        => "${pkg}v2::Category::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -437,7 +437,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/entries/:entry_id/categories',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Category::v2::list_for_entry",
+            handler        => "${pkg}v2::Category::list_for_entry",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -455,7 +455,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/categories/:category_id/parents',
             verb        => 'GET',
             version     => 2,
-            handler     => "${pkg}Category::v2::list_parents",
+            handler     => "${pkg}v2::Category::list_parents",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the list of categories.',
@@ -466,7 +466,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/categories/:category_id/siblings',
             verb    => 'GET',
             version => 2,
-            handler => "${pkg}Category::v2::list_siblings",
+            handler => "${pkg}v2::Category::list_siblings",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -484,7 +484,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/categories/:category_id/children',
             verb        => 'GET',
             version     => 2,
-            handler     => "${pkg}Category::v2::list_children",
+            handler     => "${pkg}v2::Category::list_children",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the list of categories.',
@@ -496,14 +496,14 @@ sub core_endpoints {
             resources => ['category'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}Category::v2::create",
+            handler   => "${pkg}v2::Category::create",
             error_codes =>
                 { 403 => 'Do not have permission to create a category.', },
         },
         {   id          => 'get_category',
             route       => '/sites/:site_id/categories/:category_id',
             version     => 2,
-            handler     => "${pkg}Category::v2::get",
+            handler     => "${pkg}v2::Category::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested category.',
@@ -515,7 +515,7 @@ sub core_endpoints {
             resources => ['category'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}Category::v2::update",
+            handler   => "${pkg}v2::Category::update",
             error_codes =>
                 { 403 => 'Do not have permission to update a category.', },
         },
@@ -523,7 +523,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/categories/:category_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Category::v2::delete",
+            handler => "${pkg}v2::Category::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a category.', },
         },
@@ -531,7 +531,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/categories/permutate',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Category::v2::permutate",
+            handler => "${pkg}v2::Category::permutate",
             error_codes =>
                 { 403 => 'Do not have permission to permutate categories.', },
         },
@@ -541,7 +541,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/folders',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Folder::v2::list",
+            handler        => "${pkg}v2::Folder::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -559,7 +559,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/folders/:folder_id/parents',
             verb        => 'GET',
             version     => 2,
-            handler     => "${pkg}Folder::v2::list_parents",
+            handler     => "${pkg}v2::Folder::list_parents",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the list of folders.',
@@ -570,7 +570,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/folders/:folder_id/siblings',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Folder::v2::list_siblings",
+            handler        => "${pkg}v2::Folder::list_siblings",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -588,7 +588,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/folders/:folder_id/children',
             verb        => 'GET',
             version     => 2,
-            handler     => "${pkg}Folder::v2::list_children",
+            handler     => "${pkg}v2::Folder::list_children",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the list of folders.',
@@ -600,14 +600,14 @@ sub core_endpoints {
             resources => ['folder'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}Folder::v2::create",
+            handler   => "${pkg}v2::Folder::create",
             error_codes =>
                 { 403 => 'Do not have permission to create a folder.', },
         },
         {   id          => 'get_folder',
             route       => '/sites/:site_id/folders/:folder_id',
             version     => 2,
-            handler     => "${pkg}Folder::v2::get",
+            handler     => "${pkg}v2::Folder::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested folder.',
@@ -619,7 +619,7 @@ sub core_endpoints {
             resources => ['folder'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}Folder::v2::update",
+            handler   => "${pkg}v2::Folder::update",
             error_codes =>
                 { 403 => 'Do not have permission to update a folder.', },
         },
@@ -627,7 +627,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/folders/:folder_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Folder::v2::delete",
+            handler => "${pkg}v2::Folder::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a folder.', },
         },
@@ -635,7 +635,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/folders/permutate',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Folder::v2::permutate",
+            handler => "${pkg}v2::Folder::permutate",
             error_codes =>
                 { 403 => 'Do not have permission to permutate folders.', },
         },
@@ -645,7 +645,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/assets',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Asset::v2::list",
+            handler        => "${pkg}v2::Asset::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -664,7 +664,7 @@ sub core_endpoints {
             route          => '/assets',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Asset::v2::list",
+            handler        => "${pkg}v2::Asset::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -683,7 +683,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/entries/:entry_id/assets',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Asset::v2::list_for_entry",
+            handler        => "${pkg}v2::Asset::list_for_entry",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -702,7 +702,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/pages/:page_id/assets',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Asset::v2::list_for_page",
+            handler        => "${pkg}v2::Asset::list_for_page",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -720,7 +720,7 @@ sub core_endpoints {
         {   id             => 'list_assets_for_tag',
             route          => '/tags/:tag_name/assets',
             version        => 2,
-            handler        => "${pkg}Asset::v2::list_for_tag",
+            handler        => "${pkg}v2::Asset::list_for_tag",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -738,7 +738,7 @@ sub core_endpoints {
         {   id             => 'list_assets_for_site_and_tag',
             route          => '/sites/:site_id/tags/:tag_name/assets',
             version        => 2,
-            handler        => "${pkg}Asset::v2::list_for_site_and_tag",
+            handler        => "${pkg}v2::Asset::list_for_site_and_tag",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -758,7 +758,7 @@ sub core_endpoints {
             route          => '/assets/upload',
             verb           => 'POST',
             version        => 2,
-            handler        => "${pkg}Asset::v2::upload",
+            handler        => "${pkg}v2::Asset::upload",
             default_params => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
@@ -768,7 +768,7 @@ sub core_endpoints {
         {   id          => 'get_asset',
             route       => '/sites/:site_id/assets/:asset_id',
             version     => 2,
-            handler     => "${pkg}Asset::v2::get",
+            handler     => "${pkg}v2::Asset::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested asset.',
@@ -780,7 +780,7 @@ sub core_endpoints {
             resources => ['asset'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}Asset::v2::update",
+            handler   => "${pkg}v2::Asset::update",
             error_codes =>
                 { 403 => 'Do not have permission to update an asset.', },
         },
@@ -788,14 +788,14 @@ sub core_endpoints {
             route   => '/sites/:site_id/assets/:asset_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Asset::v2::delete",
+            handler => "${pkg}v2::Asset::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete an asset.', },
         },
         {   id          => 'get_thumbnail',
             route       => '/sites/:site_id/assets/:asset_id/thumbnail',
             version     => 2,
-            handler     => "${pkg}Asset::v2::get_thumbnail",
+            handler     => "${pkg}v2::Asset::get_thumbnail",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested thumbnail.',
@@ -808,7 +808,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/categories/:category_id/entries',
             verb    => 'GET',
             version => 2,
-            handler => "${pkg}Entry::v2::list_for_category",
+            handler => "${pkg}v2::Entry::list_for_category",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -827,7 +827,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/assets/:asset_id/entries',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Entry::v2::list_for_asset",
+            handler        => "${pkg}v2::Entry::list_for_asset",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -845,7 +845,7 @@ sub core_endpoints {
         {   id             => 'list_entries_for_tag',
             route          => '/tags/:tag_name/entries',
             version        => 2,
-            handler        => "${pkg}Entry::v2::list_for_tag",
+            handler        => "${pkg}v2::Entry::list_for_tag",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -863,7 +863,7 @@ sub core_endpoints {
         {   id             => 'list_entries_for_site_and_tag',
             route          => '/sites/:site_id/tags/:tag_name/entries',
             version        => 2,
-            handler        => "${pkg}Entry::v2::list_for_site_and_tag",
+            handler        => "${pkg}v2::Entry::list_for_site_and_tag",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -883,7 +883,7 @@ sub core_endpoints {
             resources => ['entry'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}Entry::v2::create",
+            handler   => "${pkg}v2::Entry::create",
             default_params => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to create an entry.', },
@@ -893,7 +893,7 @@ sub core_endpoints {
             resources => ['entry'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}Entry::v2::update",
+            handler   => "${pkg}v2::Entry::update",
             default_params => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to update an entry.', },
@@ -902,14 +902,14 @@ sub core_endpoints {
             route   => '/sites/:site_id/entries/import',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Entry::v2::import",
+            handler => "${pkg}v2::Entry::import",
             error_codes =>
                 { 403 => 'Do not have permission to import entries.', },
         },
         {   id      => 'export_entries',
             route   => '/sites/:site_id/entries/export',
             version => 2,
-            handler => "${pkg}Entry::v2::export",
+            handler => "${pkg}v2::Entry::export",
             error_codes =>
                 { 403 => 'Do not have permission to export entries.', },
         },
@@ -919,7 +919,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/pages',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Page::v2::list",
+            handler        => "${pkg}v2::Page::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -938,7 +938,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/folders/:folder_id/pages',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Page::v2::list_for_folder",
+            handler        => "${pkg}v2::Page::list_for_folder",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -957,7 +957,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/assets/:asset_id/pages',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Page::v2::list_for_asset",
+            handler        => "${pkg}v2::Page::list_for_asset",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -976,7 +976,7 @@ sub core_endpoints {
             route          => '/tags/:tag_name/pages',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Page::v2::list_for_tag",
+            handler        => "${pkg}v2::Page::list_for_tag",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -995,7 +995,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/tags/:tag_name/pages',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Page::v2::list_for_site_and_tag",
+            handler        => "${pkg}v2::Page::list_for_site_and_tag",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1015,7 +1015,7 @@ sub core_endpoints {
             resources => ['page'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}Page::v2::create",
+            handler   => "${pkg}v2::Page::create",
             default_params => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to create a page.', },
@@ -1023,7 +1023,7 @@ sub core_endpoints {
         {   id          => 'get_page',
             route       => '/sites/:site_id/pages/:page_id',
             version     => 1,
-            handler     => "${pkg}Page::v2::get",
+            handler     => "${pkg}v2::Page::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested page.',
@@ -1035,7 +1035,7 @@ sub core_endpoints {
             resources => ['page'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}Page::v2::update",
+            handler   => "${pkg}v2::Page::update",
             default_params => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to update a page.', },
@@ -1044,7 +1044,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/pages/:page_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Page::v2::delete",
+            handler => "${pkg}v2::Page::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a page.', },
         },
@@ -1096,7 +1096,7 @@ sub core_endpoints {
             route          => '/sites',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Blog::v2::list",
+            handler        => "${pkg}v2::Blog::list",
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -1114,7 +1114,7 @@ sub core_endpoints {
             route          => '/sites/:site_id/children',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Blog::v2::list_by_parent",
+            handler        => "${pkg}v2::Blog::list_by_parent",
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -1133,7 +1133,7 @@ sub core_endpoints {
             resources => ['blog'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}Blog::v2::insert_new_blog",
+            handler   => "${pkg}v2::Blog::insert_new_blog",
             error_codes =>
                 { 403 => 'Do not have permission to create a blog.', },
         },
@@ -1142,7 +1142,7 @@ sub core_endpoints {
             resources => ['website'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}Blog::v2::insert_new_website",
+            handler   => "${pkg}v2::Blog::insert_new_website",
             error_codes =>
                 { 403 => 'Do not have permission to create a website.', },
         },
@@ -1150,7 +1150,7 @@ sub core_endpoints {
             route   => '/sites/:site_id',
             verb    => 'PUT',
             version => 2,
-            handler => "${pkg}Blog::v2::update",
+            handler => "${pkg}v2::Blog::update",
             error_codes =>
                 { 403 => 'Do not have permission to update a site.', },
         },
@@ -1158,7 +1158,7 @@ sub core_endpoints {
             route   => '/sites/:site_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Blog::v2::delete",
+            handler => "${pkg}v2::Blog::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a site.', },
         },
@@ -1168,7 +1168,7 @@ sub core_endpoints {
             route          => '/roles',
             verb           => 'GET',
             version        => 2,
-            handler        => "${pkg}Role::v2::list",
+            handler        => "${pkg}v2::Role::list",
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -1186,14 +1186,14 @@ sub core_endpoints {
             resources => ['role'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}Role::v2::create",
+            handler   => "${pkg}v2::Role::create",
             error_codes =>
                 { 403 => 'Do not have permission to create a role.', },
         },
         {   id      => 'get_role',
             route   => '/roles/:role_id',
             version => 2,
-            handler => "${pkg}Role::v2::get",
+            handler => "${pkg}v2::Role::get",
             error_codes =>
                 { 403 => 'Do not have permission to create a role.', },
         },
@@ -1202,7 +1202,7 @@ sub core_endpoints {
             resources   => ['role'],
             verb        => 'PUT',
             version     => 2,
-            handler     => "${pkg}Role::v2::update",
+            handler     => "${pkg}v2::Role::update",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested role.',
@@ -1212,7 +1212,7 @@ sub core_endpoints {
             route   => '/roles/:role_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Role::v2::delete",
+            handler => "${pkg}v2::Role::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a role.', },
         },
@@ -1221,7 +1221,7 @@ sub core_endpoints {
         {   id             => 'list_permissions',
             route          => '/permissions',
             version        => 2,
-            handler        => "${pkg}Permission::v2::list",
+            handler        => "${pkg}v2::Permission::list",
             default_params => {
                 limit      => 25,
                 offset     => 0,
@@ -1239,7 +1239,7 @@ sub core_endpoints {
             id             => 'list_permissions_for_user',
             route          => '/users/:user_id/permissions',
             version        => 2,
-            handler        => "${pkg}Permission::v2::list_for_user",
+            handler        => "${pkg}v2::Permission::list_for_user",
             default_params => {
                 limit      => 25,
                 offset     => 0,
@@ -1255,7 +1255,7 @@ sub core_endpoints {
         {   id             => 'list_permissions_for_site',
             route          => '/sites/:site_id/permissions',
             version        => 2,
-            handler        => "${pkg}Permission::v2::list_for_site",
+            handler        => "${pkg}v2::Permission::list_for_site",
             default_params => {
                 limit     => 25,
                 offset    => 0,
@@ -1270,7 +1270,7 @@ sub core_endpoints {
         {   id             => 'list_permissions_for_role',
             route          => '/roles/:role_id/permissions',
             version        => 2,
-            handler        => "${pkg}Permission::v2::list_for_role",
+            handler        => "${pkg}v2::Permission::list_for_role",
             default_params => {
                 limit      => 25,
                 offset     => 0,
@@ -1287,7 +1287,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/permissions/grant',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Permission::v2::grant_to_site",
+            handler => "${pkg}v2::Permission::grant_to_site",
             error_codes =>
                 { 403 => 'Do not have permission to grant a permission', },
         },
@@ -1295,7 +1295,7 @@ sub core_endpoints {
             route   => '/users/:user_id/permissions/grant',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Permission::v2::grant_to_user",
+            handler => "${pkg}v2::Permission::grant_to_user",
             error_codes =>
                 { 403 => 'Do not have permission to grant a permission', },
         },
@@ -1303,7 +1303,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/permissions/revoke',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Permission::v2::revoke_from_site",
+            handler => "${pkg}v2::Permission::revoke_from_site",
             error_codes =>
                 { 403 => 'Do not have permission to revoke a permission', },
         },
@@ -1311,7 +1311,7 @@ sub core_endpoints {
             route   => '/users/:user_id/permissions/revoke',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Permission::v2::revoke_from_user",
+            handler => "${pkg}v2::Permission::revoke_from_user",
             error_codes =>
                 { 403 => 'Do not have permission to revoke a permission', },
         },
@@ -1320,7 +1320,7 @@ sub core_endpoints {
         {   id      => 'search',
             route   => '/search',
             version => 2,
-            handler => "${pkg}Search::v2::search",
+            handler => "${pkg}v2::Search::search",
             error_codes =>
                 { 403 => 'Do not have permission to search objects', },
             requires_login => 0,
@@ -1330,7 +1330,7 @@ sub core_endpoints {
         {   id             => 'list_logs',
             route          => '/sites/:site_id/logs',
             version        => 2,
-            handler        => "${pkg}Log::v2::list",
+            handler        => "${pkg}v2::Log::list",
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -1347,7 +1347,7 @@ sub core_endpoints {
         {   id          => 'get_log',
             route       => '/sites/:site_id/logs/:log_id',
             version     => 2,
-            handler     => "${pkg}Log::v2::get",
+            handler     => "${pkg}v2::Log::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested log.',
@@ -1358,7 +1358,7 @@ sub core_endpoints {
             resources => ['log'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}Log::v2::create",
+            handler   => "${pkg}v2::Log::create",
             error_codes =>
                 { 403 => 'Do not have permission to create a log.', },
         },
@@ -1367,7 +1367,7 @@ sub core_endpoints {
             resources => ['log'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}Log::v2::update",
+            handler   => "${pkg}v2::Log::update",
             error_codes =>
                 { 403 => 'Do not have permission to update a log.', },
         },
@@ -1375,7 +1375,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/logs/:log_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Log::v2::delete",
+            handler => "${pkg}v2::Log::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a log.', },
         },
@@ -1383,7 +1383,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/logs',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Log::v2::reset",
+            handler => "${pkg}v2::Log::reset",
             error_codes =>
                 { 403 => 'Do not have permission to reset logs.', },
         },
@@ -1391,7 +1391,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/logs/export',
             verb    => 'GET',
             version => 2,
-            handler => "${pkg}Log::v2::export",
+            handler => "${pkg}v2::Log::export",
             error_codes =>
                 { 403 => 'Do not have permission to export logs.', },
         },
@@ -1407,7 +1407,7 @@ sub core_endpoints {
                 sortOrder    => 'ascend',
                 searchFields => 'name',
             },
-            handler     => "${pkg}Tag::v2::list",
+            handler     => "${pkg}v2::Tag::list",
             error_codes => {
                 403 => 'Do not have permission to retrieve the list of tags.',
             },
@@ -1423,7 +1423,7 @@ sub core_endpoints {
                 sortOrder    => 'ascend',
                 searchFields => 'name',
             },
-            handler     => "${pkg}Tag::v2::list_for_site",
+            handler     => "${pkg}v2::Tag::list_for_site",
             error_codes => {
                 403 => 'Do not have permission to retrieve the list of tags.',
             },
@@ -1432,7 +1432,7 @@ sub core_endpoints {
         {   id          => 'get_tag',
             route       => '/tags/:tag_name',
             version     => 2,
-            handler     => "${pkg}Tag::v2::get",
+            handler     => "${pkg}v2::Tag::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested tag.',
@@ -1442,7 +1442,7 @@ sub core_endpoints {
         {   id          => 'get_tag_for_site',
             route       => '/sites/:site_id/tags/:tag_name',
             version     => 2,
-            handler     => "${pkg}Tag::v2::get_for_site",
+            handler     => "${pkg}v2::Tag::get_for_site",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested tag.',
@@ -1453,7 +1453,7 @@ sub core_endpoints {
             route   => '/tags/:tag_name',
             verb    => 'PUT',
             version => 2,
-            handler => "${pkg}Tag::v2::rename",
+            handler => "${pkg}v2::Tag::rename",
             error_codes =>
                 { 403 => 'Do not have permission to rename a tag.', },
         },
@@ -1461,7 +1461,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/tags/:tag_name',
             verb    => 'PUT',
             version => 2,
-            handler => "${pkg}Tag::v2::rename_for_site",
+            handler => "${pkg}v2::Tag::rename_for_site",
             error_codes =>
                 { 403 => 'Do not have permission to rename a tag.', },
         },
@@ -1469,7 +1469,7 @@ sub core_endpoints {
             route   => '/tags/:tag_name',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Tag::v2::delete",
+            handler => "${pkg}v2::Tag::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a tag.', },
         },
@@ -1477,7 +1477,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/tags/:tag_name',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Tag::v2::delete_for_site",
+            handler => "${pkg}v2::Tag::delete_for_site",
             error_codes =>
                 { 403 => 'Do not have permission to delete a tag.', },
         },
@@ -1486,7 +1486,7 @@ sub core_endpoints {
         {   id          => 'list_themes',
             route       => '/themes',
             version     => 2,
-            handler     => "${pkg}Theme::v2::list",
+            handler     => "${pkg}v2::Theme::list",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested themes.',
@@ -1495,7 +1495,7 @@ sub core_endpoints {
         {   id          => 'list_themes_for_site',
             route       => '/sites/:site_id/themes',
             version     => 2,
-            handler     => "${pkg}Theme::v2::list_for_site",
+            handler     => "${pkg}v2::Theme::list_for_site",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested site\'s themes.',
@@ -1504,7 +1504,7 @@ sub core_endpoints {
         {   id          => 'get_theme',
             route       => '/themes/:theme_id',
             version     => 2,
-            handler     => "${pkg}Theme::v2::get",
+            handler     => "${pkg}v2::Theme::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested theme.',
@@ -1513,7 +1513,7 @@ sub core_endpoints {
         {   id          => 'get_theme_for_site',
             route       => '/sites/:site_id/themes/:theme_id',
             version     => 2,
-            handler     => "${pkg}Theme::v2::get_for_site",
+            handler     => "${pkg}v2::Theme::get_for_site",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested site\'s theme.',
@@ -1523,7 +1523,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/themes/:theme_id/apply',
             verb        => 'POST',
             version     => 2,
-            handler     => "${pkg}Theme::v2::apply",
+            handler     => "${pkg}v2::Theme::apply",
             error_codes => {
                 403 =>
                     'Do not have permission to apply the requested theme to site.',
@@ -1533,7 +1533,7 @@ sub core_endpoints {
             route       => '/themes/:theme_id',
             verb        => 'DELETE',
             version     => 2,
-            handler     => "${pkg}Theme::v2::uninstall",
+            handler     => "${pkg}v2::Theme::uninstall",
             error_codes => {
                 403 =>
                     'Do not have permission to uninstall the requested theme.',
@@ -1543,7 +1543,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/export_theme',
             verb        => 'POST',
             version     => 2,
-            handler     => "${pkg}Theme::v2::export",
+            handler     => "${pkg}v2::Theme::export",
             error_codes => {
                 403 =>
                     'Do not have permission to export the requested theme.',
@@ -1554,7 +1554,7 @@ sub core_endpoints {
         {   id             => 'list_templates',
             route          => '/sites/:site_id/templates',
             version        => 2,
-            handler        => "${pkg}Template::v2::list",
+            handler        => "${pkg}v2::Template::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1571,7 +1571,7 @@ sub core_endpoints {
         {   id             => 'list_all_templates',
             route          => '/templates',
             version        => 2,
-            handler        => "${pkg}Template::v2::list",
+            handler        => "${pkg}v2::Template::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1588,7 +1588,7 @@ sub core_endpoints {
         {   id          => 'get_template',
             route       => '/sites/:site_id/templates/:template_id',
             version     => 2,
-            handler     => "${pkg}Template::v2::get",
+            handler     => "${pkg}v2::Template::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested template.',
@@ -1599,7 +1599,7 @@ sub core_endpoints {
             resources => ['template'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}Template::v2::create",
+            handler   => "${pkg}v2::Template::create",
             error_codes =>
                 { 403 => 'Do not have permission to create a template.', },
         },
@@ -1608,7 +1608,7 @@ sub core_endpoints {
             resources => ['template'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}Template::v2::update",
+            handler   => "${pkg}v2::Template::update",
             error_codes =>
                 { 403 => 'Do not have permission to update a template.', },
         },
@@ -1616,7 +1616,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/templates/:template_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Template::v2::delete",
+            handler => "${pkg}v2::Template::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a template.', },
         },
@@ -1625,7 +1625,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/templates/:template_id/publish',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Template::v2::publish",
+            handler => "${pkg}v2::Template::publish",
             error_codes =>
                 { 403 => 'Do not have permission to publish a template.', },
         },
@@ -1633,7 +1633,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/templates/:template_id/refresh',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Template::v2::refresh",
+            handler => "${pkg}v2::Template::refresh",
             error_codes =>
                 { 403 => 'Do not have permission to refresh a template.', },
         },
@@ -1641,7 +1641,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/refresh_templates',
             verb        => 'POST',
             version     => 2,
-            handler     => "${pkg}Template::v2::refresh_for_site",
+            handler     => "${pkg}v2::Template::refresh_for_site",
             error_codes => {
                 403 =>
                     'Do not have permission to refresh templates of the request site.',
@@ -1651,7 +1651,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/templates/:template_id/clone',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Template::v2::clone",
+            handler => "${pkg}v2::Template::clone",
             error_codes =>
                 { 403 => 'Do not have permission to clone a template.', },
         },
@@ -1660,7 +1660,7 @@ sub core_endpoints {
         {   id      => 'list_templatemaps',
             route   => '/sites/:site_id/templates/:template_id/templatemaps',
             version => 2,
-            handler => "${pkg}TemplateMap::v2::list",
+            handler => "${pkg}v2::TemplateMap::list",
             default_params => {
                 limit      => 10,
                 offset     => 0,
@@ -1677,7 +1677,7 @@ sub core_endpoints {
             route =>
                 '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
             version     => 2,
-            handler     => "${pkg}TemplateMap::v2::get",
+            handler     => "${pkg}v2::TemplateMap::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested templatemap.',
@@ -1688,7 +1688,7 @@ sub core_endpoints {
             resources => ['templatemap'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}TemplateMap::v2::create",
+            handler   => "${pkg}v2::TemplateMap::create",
             error_codes =>
                 { 403 => 'Do not have permission to create a templatemap.', },
         },
@@ -1698,7 +1698,7 @@ sub core_endpoints {
             resources => ['templatemap'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}TemplateMap::v2::update",
+            handler   => "${pkg}v2::TemplateMap::update",
             error_codes =>
                 { 403 => 'Do not have permission to update a templatemap.', },
         },
@@ -1707,7 +1707,7 @@ sub core_endpoints {
                 '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}TemplateMap::v2::delete",
+            handler => "${pkg}v2::TemplateMap::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a templatemap.', },
         },
@@ -1716,7 +1716,7 @@ sub core_endpoints {
         {   id             => 'list_widgetsets',
             route          => '/sites/:site_id/widgetsets',
             version        => 2,
-            handler        => "${pkg}WidgetSet::v2::list",
+            handler        => "${pkg}v2::WidgetSet::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1732,7 +1732,7 @@ sub core_endpoints {
         {   id             => 'list_all_widgetsets',
             route          => '/widgetsets',
             version        => 2,
-            handler        => "${pkg}WidgetSet::v2::list_all",
+            handler        => "${pkg}v2::WidgetSet::list_all",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1748,7 +1748,7 @@ sub core_endpoints {
         {   id          => 'get_widgetset',
             route       => '/sites/:site_id/widgetsets/:widgetset_id',
             version     => 2,
-            handler     => "${pkg}WidgetSet::v2::get",
+            handler     => "${pkg}v2::WidgetSet::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested widgetset.',
@@ -1759,7 +1759,7 @@ sub core_endpoints {
             resources => ['widgetset'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}WidgetSet::v2::create",
+            handler   => "${pkg}v2::WidgetSet::create",
             error_codes =>
                 { 403 => 'Do not have permission to create a widgetset.', },
         },
@@ -1768,7 +1768,7 @@ sub core_endpoints {
             resources => ['widgetset'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}WidgetSet::v2::update",
+            handler   => "${pkg}v2::WidgetSet::update",
             error_codes =>
                 { 403 => 'Do not have permission to update a widgetset.', },
         },
@@ -1776,7 +1776,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/widgetsets/:widgetset_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}WidgetSet::v2::delete",
+            handler => "${pkg}v2::WidgetSet::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a widgetset.', },
         },
@@ -1785,7 +1785,7 @@ sub core_endpoints {
         {   id             => 'list_widgets',
             route          => '/sites/:site_id/widgets',
             version        => 2,
-            handler        => "${pkg}Widget::v2::list",
+            handler        => "${pkg}v2::Widget::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1801,7 +1801,7 @@ sub core_endpoints {
         {   id             => 'list_all_widgets',
             route          => '/widgets',
             version        => 2,
-            handler        => "${pkg}Widget::v2::list_all",
+            handler        => "${pkg}v2::Widget::list_all",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1817,7 +1817,7 @@ sub core_endpoints {
         {   id      => 'list_widgets_for_widgetset',
             route   => '/sites/:site_id/widgetsets/:widgetset_id/widgets',
             version => 2,
-            handler => "${pkg}Widget::v2::list_for_widgetset",
+            handler => "${pkg}v2::Widget::list_for_widgetset",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1833,7 +1833,7 @@ sub core_endpoints {
         {   id          => 'get_widgets',
             route       => '/sites/:site_id/widgets/:widget_id',
             version     => 2,
-            handler     => "${pkg}Widget::v2::get",
+            handler     => "${pkg}v2::Widget::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested widget.',
@@ -1843,7 +1843,7 @@ sub core_endpoints {
             route =>
                 '/sites/:site_id/widgetsets/:widgetset_id/widgets/:widget_id',
             version     => 2,
-            handler     => "${pkg}Widget::v2::get_for_widgetset",
+            handler     => "${pkg}v2::Widget::get_for_widgetset",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve a widget of the request widgetset.',
@@ -1854,7 +1854,7 @@ sub core_endpoints {
             resources => ['widget'],
             verb      => 'POST',
             version   => 2,
-            handler   => "${pkg}Widget::v2::create",
+            handler   => "${pkg}v2::Widget::create",
             error_codes =>
                 { 403 => 'Do not have permission to create a widget.', },
         },
@@ -1863,7 +1863,7 @@ sub core_endpoints {
             resources => ['widget'],
             verb      => 'PUT',
             version   => 2,
-            handler   => "${pkg}Widget::v2::update",
+            handler   => "${pkg}v2::Widget::update",
             error_codes =>
                 { 403 => 'Do not have permission to update a widget.', },
         },
@@ -1871,7 +1871,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/widgets/:widget_id',
             verb    => 'DELETE',
             version => 2,
-            handler => "${pkg}Widget::v2::delete",
+            handler => "${pkg}v2::Widget::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a widget.', },
         },
@@ -1880,7 +1880,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/widgets/:widget_id/refresh',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Widget::v2::refresh",
+            handler => "${pkg}v2::Widget::refresh",
             error_codes =>
                 { 403 => 'Do not have permission to refresh a widget.', },
         },
@@ -1888,7 +1888,7 @@ sub core_endpoints {
             route   => '/sites/:site_id/widgets/:widget_id/clone',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Widget::v2::clone",
+            handler => "${pkg}v2::Widget::clone",
             error_codes =>
                 { 403 => 'Do not have permission to clone a widget.', },
         },
@@ -1897,7 +1897,7 @@ sub core_endpoints {
         {   id             => 'list_users',
             route          => '/users',
             version        => 2,
-            handler        => "${pkg}User::v2::list",
+            handler        => "${pkg}v2::User::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1917,7 +1917,7 @@ sub core_endpoints {
             version   => 2,
             verb      => 'POST',
             resources => ['user'],
-            handler   => "${pkg}User::v2::create",
+            handler   => "${pkg}v2::User::create",
             error_codes =>
                 { 403 => 'Do not have permission to create a user.', },
         },
@@ -1925,7 +1925,7 @@ sub core_endpoints {
             route   => '/users/:user_id',
             version => 2,
             verb    => 'DELETE',
-            handler => "${pkg}User::v2::delete",
+            handler => "${pkg}v2::User::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a user.', },
         },
@@ -1933,7 +1933,7 @@ sub core_endpoints {
             route   => '/users/:user_id/unlock',
             version => 2,
             verb    => 'POST',
-            handler => "${pkg}User::v2::unlock",
+            handler => "${pkg}v2::User::unlock",
             error_codes =>
                 { 403 => 'Do not have permission to unlock a user.', },
         },
@@ -1941,7 +1941,7 @@ sub core_endpoints {
             route       => '/users/:user_id/recover_password',
             version     => 2,
             verb        => 'POST',
-            handler     => "${pkg}User::v2::recover_password",
+            handler     => "${pkg}v2::User::recover_password",
             error_codes => {
                 403 => 'Do not have permission to recover password for user.',
             },
@@ -1950,7 +1950,7 @@ sub core_endpoints {
             route          => '/recover_password',
             version        => 2,
             verb           => 'POST',
-            handler        => "${pkg}User::v2::recover",
+            handler        => "${pkg}v2::User::recover",
             requires_login => 0,
         },
 
@@ -1958,7 +1958,7 @@ sub core_endpoints {
         {   id          => 'list_plugins',
             route       => '/plugins',
             version     => 2,
-            handler     => "${pkg}Plugin::v2::list",
+            handler     => "${pkg}v2::Plugin::list",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the list of plugins.',
@@ -1967,7 +1967,7 @@ sub core_endpoints {
         {   id          => 'get_plugin',
             route       => '/plugins/:plugin_id',
             version     => 2,
-            handler     => "${pkg}Plugin::v2::get",
+            handler     => "${pkg}v2::Plugin::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested plugin.',
@@ -1977,7 +1977,7 @@ sub core_endpoints {
             route   => '/plugins/:plugin_id/enable',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Plugin::v2::enable",
+            handler => "${pkg}v2::Plugin::enable",
             error_codes =>
                 { 403 => 'Do not have permission to enable a plugin.', },
         },
@@ -1985,7 +1985,7 @@ sub core_endpoints {
             route   => '/plugins/:plugin_id/disable',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Plugin::v2::disable",
+            handler => "${pkg}v2::Plugin::disable",
             error_codes =>
                 { 403 => 'Do not have permission to disable a plugin.', },
         },
@@ -1993,7 +1993,7 @@ sub core_endpoints {
             route   => '/plugins/enable',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Plugin::v2::enable_all",
+            handler => "${pkg}v2::Plugin::enable_all",
             error_codes =>
                 { 403 => 'Do not have permission to enable all plugins.', },
         },
@@ -2001,7 +2001,7 @@ sub core_endpoints {
             route   => '/plugins/disable',
             verb    => 'POST',
             version => 2,
-            handler => "${pkg}Plugin::v2::disable_all",
+            handler => "${pkg}v2::Plugin::disable_all",
             error_codes =>
                 { 403 => 'Do not have permission to disable all plugins.', },
         },
@@ -2010,7 +2010,7 @@ sub core_endpoints {
         {   id          => 'backup_site',
             route       => '/sites/:site_id/backup',
             version     => 2,
-            handler     => "${pkg}BackupRestore::v2::backup",
+            handler     => "${pkg}v2::BackupRestore::backup",
             error_codes => {
                 403 =>
                     'Do not have permission to back up the requested site.',
@@ -2020,7 +2020,7 @@ sub core_endpoints {
             route       => '/restore',
             verb        => 'POST',
             version     => 2,
-            handler     => "${pkg}BackupRestore::v2::restore",
+            handler     => "${pkg}v2::BackupRestore::restore",
             error_codes => {
                 403 =>
                     'Do not have permission to restore the requested site data.',

@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Endpoint::BackupRestore::v2;
+package MT::DataAPI::Endpoint::v2::BackupRestore;
 
 use strict;
 use warnings;
@@ -206,7 +206,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::BackupRestore::v2 - Movable Type class for endpoint definitions about the MT::BackupRestore.
+MT::DataAPI::Endpoint::v2::BackupRestore - Movable Type class for endpoint definitions about the MT::BackupRestore.
 
 =head1 AUTHOR & COPYRIGHT
 

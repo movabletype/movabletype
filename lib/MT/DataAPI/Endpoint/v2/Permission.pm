@@ -3,7 +3,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Permission::v2;
+
+package MT::DataAPI::Endpoint::v2::Permission;
 
 use strict;
 use warnings;
@@ -344,7 +345,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Permission::v2 - Movable Type class for endpoint definitions about the MT::Permission.
+MT::DataAPI::Endpoint::v2::Permission - Movable Type class for endpoint definitions about the MT::Permission.
 
 =head1 AUTHOR & COPYRIGHT
 

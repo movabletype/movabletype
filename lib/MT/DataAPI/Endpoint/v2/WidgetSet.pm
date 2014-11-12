@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Endpoint::WidgetSet::v2;
+package MT::DataAPI::Endpoint::v2::WidgetSet;
 
 use strict;
 use warnings;
@@ -192,7 +192,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Template::v2 - Movable Type class for endpoint definitions about the WidgetSet (MT::Template).
+MT::DataAPI::Endpoint::v2::WidgetSet - Movable Type class for endpoint definitions about the WidgetSet (MT::Template).
 
 =head1 AUTHOR & COPYRIGHT
 

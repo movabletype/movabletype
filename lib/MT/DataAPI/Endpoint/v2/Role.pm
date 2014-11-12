@@ -3,7 +3,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Role::v2;
+
+package MT::DataAPI::Endpoint::v2::Role;
 
 use strict;
 use warnings;
@@ -117,7 +118,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Role - Movable Type class for endpoint definitions about the MT::Role.
+MT::DataAPI::Endpoint::v2::Role - Movable Type class for endpoint definitions about the MT::Role.
 
 =head1 AUTHOR & COPYRIGHT
 

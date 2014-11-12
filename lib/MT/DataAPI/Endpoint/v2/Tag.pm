@@ -3,7 +3,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Tag::v2;
+
+package MT::DataAPI::Endpoint::v2::Tag;
 
 use strict;
 use warnings;
@@ -278,7 +279,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Tag::v2 - Movable Type class for endpoint definitions about the MT::Tag.
+MT::DataAPI::Endpoint::v2::Tag - Movable Type class for endpoint definitions about the MT::Tag.
 
 =head1 AUTHOR & COPYRIGHT
 
