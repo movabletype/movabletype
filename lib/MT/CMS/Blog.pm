@@ -17,6 +17,20 @@ sub edit {
     my $blog    = $obj || $app->blog;
     my $blog_id = $id;
 
+    # The inflow from management screen of Blogs
+    # on system scope is redirected to Ddashboard.
+    if ( $app->param('blog_id') == 0 && $blog && $blog_id ) {
+        return $app->redirect(
+            $app->uri(
+                mode => 'dashboard',
+                args => {
+                    blog_id  => $blog_id,
+                    redirect => 1
+                },
+            )
+        );
+    }
+
     if ($id) {
         my $output = $param->{output} ||= 'cfg_prefs.tmpl';
         $param->{need_full_rebuild} = 1 if $q->param('need_full_rebuild');

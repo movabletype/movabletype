@@ -159,13 +159,6 @@ sub list_props {
             label     => 'Name',
             order     => 200,
             display   => 'force',
-            html_link => sub {
-                my ( $prop, $obj, $app ) = @_;
-                return $app->uri(
-                    mode => 'dashboard',
-                    args => { blog_id => $obj->id, },
-                );
-            },
         },
         entry_count => {
             label              => 'Entries',

@@ -20,6 +20,20 @@ sub edit {
     return $app->return_to_dashboard( redirect => 1 )
         if $blog && !$id;
 
+    # The inflow from management screen of Websites
+    # on system scope is redirected to Ddashboard.
+    if ( $app->param('blog_id') == 0 && $blog && $blog_id ) {
+        return $app->redirect(
+            $app->uri(
+                mode => 'dashboard',
+                args => {
+                    blog_id  => $blog_id,
+                    redirect => 1
+                },
+            )
+        );
+    }
+
     return $app->permission_denied()
         if !$id && !$app->user->can_create_website();
 
