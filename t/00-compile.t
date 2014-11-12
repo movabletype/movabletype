@@ -423,7 +423,6 @@ use_ok('MT::DataAPI::Callback::Category');
 use_ok('MT::DataAPI::Callback::Folder');
 use_ok('MT::DataAPI::Callback::TemplateMap');
 use_ok('MT::DataAPI::Callback::Role');
-use_ok('MT::DataAPI::Callback::Search');
 use_ok('MT::DataAPI::Callback::WidgetSet');
 use_ok('MT::DataAPI::Callback::Blog');
 use_ok('MT::DataAPI::Callback::Log');
