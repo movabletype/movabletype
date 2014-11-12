@@ -3,7 +3,7 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Resource::Log::v2;
+package MT::DataAPI::Resource::v2::Log;
 
 use strict;
 use warnings;
@@ -134,7 +134,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Log::v2 - Movable Type class for resources definitions of the MT::Log.
+MT::DataAPI::Resource::v2::Log - Movable Type class for resources definitions of the MT::Log.
 
 =head1 AUTHOR & COPYRIGHT
 

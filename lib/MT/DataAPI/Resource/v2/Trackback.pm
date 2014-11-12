@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Trackback::v2;
+package MT::DataAPI::Resource::v2::Trackback;
 
 use strict;
 use warnings;
@@ -29,7 +29,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Trackback::v2 - Movable Type class for resources definitions of the MT::TBPing.
+MT::DataAPI::Resource::v2::Trackback - Movable Type class for resources definitions of the MT::TBPing.
 
 =head1 AUTHOR & COPYRIGHT
 

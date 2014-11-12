@@ -4,12 +4,12 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Website::v2;
+package MT::DataAPI::Resource::v2::Website;
 
 use strict;
 use warnings;
 
-use base qw(MT::DataAPI::Resource::Blog::v2);
+use base qw(MT::DataAPI::Resource::v2::Blog);
 
 sub updatable_fields {
     $_[0]->SUPER::updatable_fields();
@@ -77,7 +77,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Website::v2 - Movable Type class for resources definitions of the MT::Website.
+MT::DataAPI::Resource::v2::Website - Movable Type class for resources definitions of the MT::Website.
 
 =head1 AUTHOR & COPYRIGHT
 

@@ -4,23 +4,23 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Folder::v2;
+package MT::DataAPI::Resource::v2::Folder;
 
 use strict;
 use warnings;
 
 use MT::DataAPI::Resource::Category;
-use MT::DataAPI::Resource::Category::v2;
+use MT::DataAPI::Resource::v2::Category;
 
 sub updatable_fields {
     [   @{ MT::DataAPI::Resource::Category::updatable_fields() },
-        @{ MT::DataAPI::Resource::Category::v2::updatable_fields() },
+        @{ MT::DataAPI::Resource::v2::Category::updatable_fields() },
     ];
 }
 
 sub fields {
     [   @{ MT::DataAPI::Resource::Category::fields() },
-        @{ MT::DataAPI::Resource::Category::v2::fields() },
+        @{ MT::DataAPI::Resource::v2::Category::fields() },
         {   name        => 'archiveLink',
             from_object => sub {return},    # Do nothing.
         },
@@ -82,7 +82,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Folder::v2 - Movable Type class for resources definitions of the MT::Folder.
+MT::DataAPI::Resource::v2::Folder - Movable Type class for resources definitions of the MT::Folder.
 
 =head1 AUTHOR & COPYRIGHT
 

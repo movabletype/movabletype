@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Association::v2;
+package MT::DataAPI::Resource::v2::Association;
 
 use strict;
 use warnings;
@@ -45,7 +45,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Association::v2 - Movable Type class for resources definitions of the MT::Association.
+MT::DataAPI::Resource::v2::Association - Movable Type class for resources definitions of the MT::Association.
 
 =head1 AUTHOR & COPYRIGHT
 

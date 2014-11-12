@@ -4,13 +4,13 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::TemplateMap::v2;
+package MT::DataAPI::Resource::v2::TemplateMap;
 
 use strict;
 use warnings;
 
 use MT::PublishOption;
-use MT::DataAPI::Resource::Template::v2;
+use MT::DataAPI::Resource::v2::Template;
 
 sub updatable_fields {
     [   qw(
@@ -39,13 +39,13 @@ sub fields {
                 my $build_type
                     = (
                     exists
-                        $MT::DataAPI::Resource::Template::v2::REVERSE_BUILD_TYPE_TABLE{
+                        $MT::DataAPI::Resource::v2::Template::REVERSE_BUILD_TYPE_TABLE{
                         $obj->build_type
                         } )
                     ? $obj->build_type
                     : MT::PublishOption::ONDEMAND();
                 return
-                    $MT::DataAPI::Resource::Template::v2::REVERSE_BUILD_TYPE_TABLE{
+                    $MT::DataAPI::Resource::v2::Template::REVERSE_BUILD_TYPE_TABLE{
                     $build_type};
             },
             to_object => sub {
@@ -53,15 +53,15 @@ sub fields {
                 my $build_type
                     = (
                     exists
-                        $MT::DataAPI::Resource::Template::v2::BUILD_TYPE_TABLE{
+                        $MT::DataAPI::Resource::v2::Template::BUILD_TYPE_TABLE{
                         $hash->{buildType}
                         } )
                     ? $hash->{buildType}
-                    : $MT::DataAPI::Resource::Template::v2::REVERSE_BUILD_TYPE_TABLE{
+                    : $MT::DataAPI::Resource::v2::Template::REVERSE_BUILD_TYPE_TABLE{
                     MT::PublishOption::ONDEMAND()
                     };
                 return
-                    $MT::DataAPI::Resource::Template::v2::BUILD_TYPE_TABLE{
+                    $MT::DataAPI::Resource::v2::Template::BUILD_TYPE_TABLE{
                     $build_type};
             },
         },
@@ -83,7 +83,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::TemplateMap::v2 - Movable Type class for resources definitions of the MT::TemplateMap.
+MT::DataAPI::Resource::v2::TemplateMap - Movable Type class for resources definitions of the MT::TemplateMap.
 
 =head1 AUTHOR & COPYRIGHT
 

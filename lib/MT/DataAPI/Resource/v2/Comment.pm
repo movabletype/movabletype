@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Comment::v2;
+package MT::DataAPI::Resource::v2::Comment;
 
 use strict;
 use warnings;
@@ -83,7 +83,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Comment::v2 - Movable Type class for resources definitions of the MT::Comment.
+MT::DataAPI::Resource::v2::Comment - Movable Type class for resources definitions of the MT::Comment.
 
 =head1 AUTHOR & COPYRIGHT
 

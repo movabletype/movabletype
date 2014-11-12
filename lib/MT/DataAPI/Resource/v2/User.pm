@@ -3,7 +3,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Resource::User::v2;
+
+package MT::DataAPI::Resource::v2::User;
 
 use strict;
 use warnings;
@@ -302,7 +303,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::User::v2 - Movable Type class for resources definitions of the MT::Authror.
+MT::DataAPI::Resource::v2::User - Movable Type class for resources definitions of the MT::Authror.
 
 =head1 AUTHOR & COPYRIGHT
 

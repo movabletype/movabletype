@@ -3,7 +3,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Resource::Permission::v2;
+
+package MT::DataAPI::Resource::v2::Permission;
 
 use strict;
 use warnings;
@@ -54,7 +55,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Permission::v2 - Movable Type class for resources definitions of the MT::Permission.
+MT::DataAPI::Resource::v2::Permission - Movable Type class for resources definitions of the MT::Permission.
 
 =head1 AUTHOR & COPYRIGHT
 

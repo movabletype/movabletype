@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Template::v2;
+package MT::DataAPI::Resource::v2::Template;
 
 use strict;
 use warnings;
@@ -193,7 +193,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Template::v2 - Movable Type class for resources definitions of the MT::Template.
+MT::DataAPI::Resource::v2::Template - Movable Type class for resources definitions of the MT::Template.
 
 =head1 AUTHOR & COPYRIGHT
 

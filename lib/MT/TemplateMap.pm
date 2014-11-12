@@ -230,9 +230,9 @@ sub list_props {
             base                  => '__virtual.single_select',
             display               => 'none',
             single_select_options => sub {
-                require MT::DataAPI::Resource::Template::v2;
+                require MT::DataAPI::Resource::v2::Template;
                 my $table
-                    = \%MT::DataAPI::Resource::Template::v2::BUILD_TYPE_TABLE;
+                    = \%MT::DataAPI::Resource::v2::Template::BUILD_TYPE_TABLE;
                 my @options = map { +{ text => $_, value => $table->{$_} } }
                     keys %$table;
                 return \@options;

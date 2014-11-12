@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Role::v2;
+package MT::DataAPI::Resource::v2::Role;
 
 use strict;
 use warnings;
@@ -80,7 +80,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Role - Movable Type class for resources definitions of the MT::Role.
+MT::DataAPI::Resource::v2::Role - Movable Type class for resources definitions of the MT::Role.
 
 =head1 AUTHOR & COPYRIGHT
 

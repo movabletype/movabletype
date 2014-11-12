@@ -3,24 +3,24 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Resource::Page::v2;
+package MT::DataAPI::Resource::v2::Page;
 
 use strict;
 use warnings;
 
 use MT::DataAPI::Resource;
 use MT::DataAPI::Resource::Entry;
-use MT::DataAPI::Resource::Entry::v2;
+use MT::DataAPI::Resource::v2::Entry;
 
 sub updatable_fields {
     [   @{ MT::DataAPI::Resource::Entry::updatable_fields() },
-        @{ MT::DataAPI::Resource::Entry::v2::updatable_fields() },
+        @{ MT::DataAPI::Resource::v2::Entry::updatable_fields() },
     ];
 }
 
 sub fields {
     [   @{ MT::DataAPI::Resource::Entry::fields() },
-        @{ MT::DataAPI::Resource::Entry::v2::fields() },
+        @{ MT::DataAPI::Resource::v2::Entry::fields() },
         {   name        => 'categories',
             from_object => sub { },        # Do nothing.
         },
@@ -45,7 +45,7 @@ __END__
             
 =head1 NAME 
         
-MT::DataAPI::Resource::Page::v2 - Movable Type class for resources definitions of the MT::Page.
+MT::DataAPI::Resource::v2::Page - Movable Type class for resources definitions of the MT::Page.
             
 =head1 AUTHOR & COPYRIGHT
             

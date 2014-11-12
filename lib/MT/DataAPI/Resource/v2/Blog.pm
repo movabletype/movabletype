@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Blog::v2;
+package MT::DataAPI::Resource::v2::Blog;
 
 use strict;
 use warnings;
@@ -731,7 +731,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Blog::v2 - Movable Type class for resources definitions of the MT::Blog.
+MT::DataAPI::Resource::v2::Blog - Movable Type class for resources definitions of the MT::Blog.
 
 =head1 AUTHOR & COPYRIGHT
 

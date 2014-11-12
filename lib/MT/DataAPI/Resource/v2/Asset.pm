@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Asset::v2;
+package MT::DataAPI::Resource::v2::Asset;
 
 use strict;
 use warnings;
@@ -136,7 +136,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Asset::v2 - Movable Type class for resources definitions of the MT::Asset.
+MT::DataAPI::Resource::v2::Asset - Movable Type class for resources definitions of the MT::Asset.
 
 =head1 AUTHOR & COPYRIGHT
 
