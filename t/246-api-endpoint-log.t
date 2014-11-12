@@ -463,6 +463,31 @@ my @suite = (
         },
     },
 
+    # export_logs - irregular tests.
+    {    # Non-existent site.
+        path   => '/v2/sites/100/logs/export',
+        method => 'GET',
+        code   => 404,
+        result => sub {
+            return +{
+                error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+
+    # export_logs - normal tests.
+    {    # Site.
+        path   => '/v2/sites/1/logs/export',
+        method => 'GET',
+    },
+    {    # System.
+        path   => '/v2/sites/0/logs/export',
+        method => 'GET',
+    },
+
     # reset_logs - irregular tests
     {    # Non-existent site.
         path   => '/v2/sites/10/logs',
