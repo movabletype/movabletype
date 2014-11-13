@@ -1,0 +1,291 @@
+AUTHOR: Chuck D
+TITLE: Verse 1
+BASENAME: verse_1
+STATUS: Publish
+ALLOW COMMENTS: 0
+CONVERT BREAKS: 1
+ALLOW PINGS: 0
+DATE: 01/31/1961 07:45:01 AM
+TAGS: rain,verse
+-----
+BODY:
+I saw a newborn baby with wild wolves all around it
+I saw a highway of diamonds with nobody on it
+-----
+EXTENDED BODY:
+
+-----
+EXCERPT:
+
+-----
+KEYWORDS:
+
+-----
+
+
+--------
+AUTHOR: Chuck D
+TITLE: Verse 2
+BASENAME: verse_2
+STATUS: Publish
+ALLOW COMMENTS: 0
+CONVERT BREAKS: 1
+ALLOW PINGS: 0
+DATE: 01/31/1962 07:45:01 AM
+TAGS: anemones,verse
+-----
+BODY:
+Heard one hundred drummers whose hands were a-blazin',
+Heard ten thousand whisperin' and nobody listenin'
+-----
+EXTENDED BODY:
+
+-----
+EXCERPT:
+
+-----
+KEYWORDS:
+
+-----
+
+COMMENT:
+AUTHOR: John Doe
+EMAIL: johnd@doe.com
+IP: 127.0.0.1
+URL: http://john.doe.com/
+DATE: 09/12/2004 06:28:00 PM
+Comment for entry 5, visible
+-----
+
+
+--------
+AUTHOR: Bob D
+TITLE: Verse 3
+BASENAME: verse_3
+STATUS: Publish
+ALLOW COMMENTS: 1
+CONVERT BREAKS: 1
+ALLOW PINGS: 0
+PRIMARY CATEGORY: foo
+CATEGORY: foo
+DATE: 01/31/1963 07:45:01 AM
+TAGS: rain,verse
+-----
+BODY:
+I met one man who was wounded in love,
+I met another man who was wounded with hatred
+-----
+EXTENDED BODY:
+
+-----
+EXCERPT:
+
+-----
+KEYWORDS:
+
+-----
+
+COMMENT:
+AUTHOR: Dylan
+EMAIL: 
+IP: 127.0.0.1
+URL: 
+DATE: 09/10/2004 06:28:00 PM
+All your comments are belonged to us MT Authors.
+-----
+
+COMMENT:
+AUTHOR: Chucky Dee
+EMAIL: 
+IP: 127.0.0.1
+URL: 
+DATE: 09/10/2004 06:30:00 PM
+All your comments are belonged to me.
+-----
+
+COMMENT:
+AUTHOR: Comment 3
+EMAIL: 
+IP: 127.0.0.1
+URL: 
+DATE: 09/11/2004 06:28:00 PM
+Comment for entry 6, visible
+-----
+
+
+--------
+AUTHOR: Chuck D
+TITLE: Verse 4
+BASENAME: verse_4
+STATUS: Publish
+ALLOW COMMENTS: 1
+CONVERT BREAKS: 1
+ALLOW PINGS: 0
+PRIMARY CATEGORY: subfoo
+CATEGORY: subfoo
+DATE: 01/31/1964 07:45:01 AM
+TAGS: anemones,verse
+-----
+BODY:
+Where hunger is ugly, where souls are forgotten,
+Where black is the color, where none is the number,
+And it's a hard, it's a hard, it's a hard, it's a hard,
+It's a hard rain's a-gonna fall
+-----
+EXTENDED BODY:
+
+-----
+EXCERPT:
+
+-----
+KEYWORDS:
+
+-----
+
+
+--------
+AUTHOR: Chuck D
+TITLE: Verse 5
+BASENAME: verse_5
+STATUS: Publish
+ALLOW COMMENTS: 1
+CONVERT BREAKS: 1
+ALLOW PINGS: 0
+DATE: 01/31/1965 07:45:01 AM
+TAGS: rain,verse
+-----
+BODY:
+
+-----
+EXTENDED BODY:
+
+-----
+EXCERPT:
+
+-----
+KEYWORDS:
+
+-----
+
+COMMENT:
+AUTHOR: Comment 8
+EMAIL: 
+IP: 127.0.0.1
+URL: 
+DATE: 06/14/2004 06:28:00 PM
+Comment for entry 8, visible
+-----
+
+
+--------
+AUTHOR: Chuck D
+TITLE: Spurious anemones
+BASENAME: spurious_anemones
+STATUS: Draft
+ALLOW COMMENTS: 1
+CONVERT BREAKS: 1
+ALLOW PINGS: 0
+DATE: 01/31/1978 07:45:00 AM
+TAGS: anemones
+-----
+BODY:
+...are better than the non-spurious
+-----
+EXTENDED BODY:
+variety.
+-----
+EXCERPT:
+
+-----
+KEYWORDS:
+
+-----
+
+
+--------
+AUTHOR: Chuck D
+TITLE: A Rainy Day
+BASENAME: a_rainy_day
+STATUS: Publish
+ALLOW COMMENTS: 1
+CONVERT BREAKS: 1
+ALLOW PINGS: 1
+DATE: 01/31/1978 07:45:00 AM
+TAGS: grandpa,rain,strolling
+-----
+BODY:
+On a drizzly day last weekend,
+-----
+EXTENDED BODY:
+I took my grandpa for a walk.
+-----
+EXCERPT:
+A story of a stroll.
+-----
+KEYWORDS:
+keywords
+-----
+
+COMMENT:
+AUTHOR: v14GrUH 4 cheep
+EMAIL: jake@fatman.com
+IP: 127.0.0.1
+URL: http://fatman.com/
+DATE: 07/14/2004 06:28:00 PM
+Postmodern false consciousness has always been firmly rooted in post-Freudian Lacanian neo-Marxist bojangles. Needless to say, this quickly and asymptotically approches a purpletacular jouissance of etic jumpinmypants.
+-----
+
+COMMENT:
+AUTHOR: Comment 12
+EMAIL: jake@fatman.com
+IP: 127.0.0.1
+URL: http://fatman.com/
+DATE: 08/10/2004 06:30:00 PM
+Comment reply for comment 11
+-----
+
+COMMENT:
+AUTHOR: Comment 11
+EMAIL: jake@fatman.com
+IP: 127.0.0.1
+URL: http://fatman.com/
+DATE: 08/12/2004 06:29:00 PM
+Comment reply for comment 1
+-----
+
+
+PING:
+TITLE: Foo
+URL: http://example.com/
+IP: 127.0.0.1
+BLOG NAME: Example Blog
+DATE: 04/05/2005 12:00:00 AM
+Bar
+-----
+
+--------
+AUTHOR: Bob D
+TITLE: A preponderance of evidence
+BASENAME: a_preponderance_of_evidence
+STATUS: Future
+ALLOW COMMENTS: 1
+CONVERT BREAKS: 1
+ALLOW PINGS: 0
+DATE: 01/31/1978 07:45:00 AM
+-----
+BODY:
+It is sufficient to say...
+-----
+EXTENDED BODY:
+I suck at making up test data.
+-----
+EXCERPT:
+
+-----
+KEYWORDS:
+
+-----
+
+
+--------
+

@@ -346,15 +346,27 @@ sub _check_import_parameters {
         return $app->error( $app->translate('Site not found'), 404 );
     }
 
-    # file
-    if ( !defined $app->param('file') ) {
-        return $app->error(
-            $app->translate('A parameter "file" is required.'), 400 );
-    }
-
     # import_as_me
     if ( !defined $app->param('import_as_me') ) {
         $app->param( 'import_as_me', 1 );
+    }
+
+    # password
+    if ( !$app->param('import_as_me') ) {
+        my $password = $app->param('password');
+        if ( !defined $password || $password eq '' ) {
+            return $app->error(
+                $app->translate(
+                    'You need to provide a parameter "password" if you are going to create new users for each user listed in your blog.'
+                ),
+                400,
+            );
+        }
+        elsif ( my $error
+            = $app->verify_password_strength( undef, $password ) )
+        {
+            return $app->error( $error, 400 );
+        }
     }
 
     # import_type
@@ -367,12 +379,17 @@ sub _check_import_parameters {
         my %keys        = map { $_ => 1 } $imp->importer_keys;
         if ( !$keys{$import_type} ) {
             return $app->error(
-                $app->translate(
-                    '"import_type" is invalid: [_1]', $import_type
-                ),
+                $app->translate( 'Invalid import_type: [_1]', $import_type ),
                 400
             );
         }
+    }
+
+    # default_status (when import_type is "import_mt_format").
+    if ( ( $app->param('import_type') || '' ) eq 'import_mt_format'
+        && !defined $app->param('default_status') )
+    {
+        $app->param( 'default_status', $app->blog->status_default );
     }
 
     # encoding
@@ -385,8 +402,7 @@ sub _check_import_parameters {
             = map { $_->{name} => 1 } @{ const('ENCODING_NAMES') };
         if ( !$valid_encodings{$encoding} ) {
             return $app->error(
-                $app->translate( '"encoding" is invalid: [_1]', $encoding ),
-                400 );
+                $app->translate( 'Invalid encoding: [_1]', $encoding ), 400 );
         }
     }
 
@@ -406,7 +422,7 @@ sub _check_import_parameters {
         if ( !$filter_keys{$convert_breaks} ) {
             return $app->error(
                 $app->translate(
-                    '"convert_breaks" is invalid: [_1]',
+                    'Invalid convert_breaks: [_1]',
                     $convert_breaks
                 ),
                 400
@@ -421,7 +437,7 @@ sub _check_import_parameters {
         {
             return $app->error(
                 $app->translate(
-                    '"default_cat_id" is invalid: [_1]',
+                    'Invalid default_cat_id: [_1]',
                     $default_cat_id
                 ),
                 400
@@ -440,22 +456,20 @@ sub import {
     local $app->{no_print_body};
 
     no warnings 'redefine';
-
     my $param;
     local *MT::build_page = sub { $param = $_[2] };
+    local *MT::App::print = sub { };
 
     MT::CMS::Import::do_import($app) or return;
 
     if ( !$param->{import_success} ) {
-        return +{
-            error => {
-                code    => 500,
-                message => $app->translate(
-                    'An error occurred during the import process: [_1]. Please check your import file.',
-                    $param->{error}
-                ),
-            },
-        };
+        return $app->error(
+            $app->translate(
+                'An error occurred during the import process: [_1]. Please check your import file.',
+                $param->{error}
+            ),
+            500
+        );
     }
 
     return +{
@@ -471,6 +485,10 @@ sub import {
 
 sub export {
     my ( $app, $endpoint ) = @_;
+
+    if ( !$app->param('site_id') ) {
+        return $app->error( $app->translate('Site not found'), 404 );
+    }
 
     MT::CMS::Export::export($app);
 
