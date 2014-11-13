@@ -23,6 +23,7 @@ sub updatable_fields {
 
 sub fields {
     [   qw(
+            id
             name
             ),
         {   name        => 'normalizedName',

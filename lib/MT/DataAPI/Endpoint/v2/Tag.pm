@@ -224,13 +224,11 @@ sub delete_for_site {
 sub _retrieve_tag {
     my ($app) = @_;
 
-    my $tag_name = $app->param('tag_name');
-    if ( !defined($tag_name) || $tag_name eq '' ) {
-        return $app->error(
-            $app->translate('A paramter "tag_name" is required.'), 400 );
-    }
+    my $tag_id = $app->param('tag_id')
+        or return $app->error(
+        $app->translate('A paramter "tag_id" is required.'), 400 );
 
-    my $tag = MT->model('tag')->load( { name => $tag_name } );
+    my $tag = MT->model('tag')->load($tag_id);
     if ( !$tag || MT->model('tag')->load( { n8d_id => $tag->id } ) ) {
         return $app->error( $app->translate('Tag not found'), 404 );
     }
@@ -250,14 +248,12 @@ sub _retrieve_tag_related_to_site {
         return $app->error( $app->translate('Site not found'), 404 );
     }
 
-    my $tag_name = $app->param('tag_name');
-    if ( !defined($tag_name) || $tag_name eq '' ) {
-        return $app->error(
-            $app->translate('A parameter "tag_name" is required.'), 400 );
-    }
+    my $tag_id = $app->param('tag_id')
+        or return $app->error(
+        $app->translate('A parameter "tag_id" is required.'), 400 );
 
     my $tag = MT->model('tag')->load(
-        { name => $tag_name },
+        { id => $tag_id },
         {   join => MT->model('objecttag')->join_on(
                 'tag_id',
                 { blog_id => $site_id },

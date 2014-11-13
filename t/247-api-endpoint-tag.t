@@ -217,7 +217,7 @@ my @suite = (
     },
 
     # get_tag - normal tests
-    {   path      => '/v2/tags/grandpa',
+    {   path      => '/v2/tags/1',
         method    => 'GET',
         callbacks => [
             {   name =>
@@ -226,19 +226,19 @@ my @suite = (
             },
         ],
         result => sub {
-            return MT->model('tag')->load( { name => 'grandpa' } );
+            return MT->model('tag')->load(1);
         },
     },
 
     # get_tag - irregular tests
     {    # Non-existent tag.
-        path   => '/v2/tags/foobarbaz',
+        path   => '/v2/tags/100',
         method => 'GET',
         code   => 404,
     },
 
     # get_tag_for_site - normal tests
-    {   path      => '/v2/sites/1/tags/grandpa',
+    {   path      => '/v2/sites/1/tags/1',
         method    => 'GET',
         callbacks => [
             {   name =>
@@ -247,35 +247,35 @@ my @suite = (
             },
         ],
         result => sub {
-            return MT->model('tag')->load( { name => 'grandpa' } );
+            return MT->model('tag')->load(1);
         },
     },
 
     # get_tag_for_site - irregular tests
     {    # Existent tag via other site.
-        path   => '/v2/sites/2/grandpa',
+        path   => '/v2/sites/2/tags/1',
         method => 'GET',
         code   => 404,
     },
     {    # Existent tag via non-existent site.
-        path   => '/v2/sites/10/grandpa',
+        path   => '/v2/sites/10/tags/1',
         method => 'GET',
         code   => 404,
     },
     {    # Non-existent tag via existent site.
-        path   => '/v2/sites/1/tags/foobarbaz',
+        path   => '/v2/sites/1/tags/100',
         method => 'GET',
         code   => 404,
     },
     {    # Non-existent tag via non-existent site.
-        path   => '/v2/sites/10/tags/foobarbaz',
+        path   => '/v2/sites/10/tags/100',
         method => 'GET',
         code   => 404,
     },
 
     # rename_tag - irregular tests
     {    # Non-existent tag.
-        path   => '/v2/tags/foobarbaz',
+        path   => '/v2/tags/100',
         method => 'PUT',
         code   => 404,
         result => sub {
@@ -288,7 +288,7 @@ my @suite = (
         },
     },
     {    # Invalid parameter.
-        path   => '/v2/tags/grandpa',
+        path   => '/v2/tags/1',
         method => 'PUT',
         code   => 400,
         result => sub {
@@ -302,7 +302,7 @@ my @suite = (
     },
 
     # rename_tag - normal tests
-    {   path      => '/v2/tags/grandpa',
+    {   path      => '/v2/tags/1',
         method    => 'PUT',
         params    => { tag => { name => 'grandma' }, },
         callbacks => [
@@ -320,7 +320,7 @@ my @suite = (
                 count => 1,
             },
         ],
-        result   => sub { MT->model('tag')->load( { name => 'grandma' } ); },
+        result   => sub { MT->model('tag')->load(1); },
         complete => sub {
             my $tag = MT->model('tag')->load( { name => 'grandpa' } );
             is( $tag, undef, 'Renamed "grandpa" tag.' );
@@ -329,7 +329,7 @@ my @suite = (
 
     # rename_tag_for_site - irregular tests
     {    # Non-existent tag.
-        path   => '/v2/sites/1/tags/foobarbaz',
+        path   => '/v2/sites/1/tags/100',
         method => 'PUT',
         code   => 404,
         result => sub {
@@ -342,7 +342,7 @@ my @suite = (
         },
     },
     {    # Non-existent site.
-        path   => '/v2/sites/10/tags/rain',
+        path   => '/v2/sites/10/tags/2',
         method => 'PUT',
         code   => 404,
         result => sub {
@@ -355,7 +355,7 @@ my @suite = (
         },
     },
     {    # Non-existent tag via non-existent site.
-        path   => '/v2/sites/10/tags/foobarbaz',
+        path   => '/v2/sites/10/tags/100',
         method => 'PUT',
         code   => 404,
         result => sub {
@@ -368,7 +368,7 @@ my @suite = (
         },
     },
     {    # Invalid paramter.
-        path   => '/v2/sites/1/tags/rain',
+        path   => '/v2/sites/1/tags/2',
         method => 'PUT',
         code   => 400,
         result => sub {
@@ -381,7 +381,7 @@ my @suite = (
         },
     },
     {    # Invalid parameter.
-        path   => '/v2/sites/1/tags/rain',
+        path   => '/v2/sites/1/tags/2',
         method => 'PUT',
         code   => 400,
         result => sub {
@@ -394,7 +394,7 @@ my @suite = (
     },
 
     # rename_tag_for_site - normal tests
-    {   path      => '/v2/sites/1/tags/rain',
+    {   path      => '/v2/sites/1/tags/2',
         method    => 'PUT',
         params    => { tag => { name => 'snow' }, },
         callbacks => [
@@ -412,7 +412,7 @@ my @suite = (
                 count => 1,
             },
         ],
-        result   => sub { MT->model('tag')->load( { name => 'snow' } ); },
+        result   => sub { MT->model('tag')->load(2); },
         complete => sub {
             my $tag = MT->model('tag')->load( { name => 'rain' } );
             is( $tag, undef, 'Renamed "rain" tag.' );
@@ -421,7 +421,7 @@ my @suite = (
 
     # delete_tag - irregular tests
     {    # Non-existent tag.
-        path   => '/v2/tags/non_exsitent_tag',
+        path   => '/v2/tags/100',
         method => 'DELETE',
         code   => 404,
         result => sub {
@@ -434,17 +434,17 @@ my @suite = (
     },
 
     # delete_tag - normal tests
-    {   path     => '/v2/tags/strolling',
+    {   path     => '/v2/tags/3',
         method   => 'DELETE',
         complete => sub {
-            my $tag = MT->model('tag')->load( { name => 'strolling' } );
+            my $tag = MT->model('tag')->load(3);
             is( $tag, undef, 'Deleted "strolling" tag.' );
         },
     },
 
     # delete_tag_for_site - irregular tests
     {    # Non-existent tag.
-        path   => '/v2/sites/1/tags/non_existent_tag',
+        path   => '/v2/sites/1/tags/100',
         method => 'DELETE',
         code   => 404,
         result => sub {
@@ -456,7 +456,7 @@ my @suite = (
         },
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/tags/anemones',
+        path   => '/v2/sites/5/tags/4',
         method => 'DELETE',
         code   => 404,
         result => sub {
@@ -469,10 +469,10 @@ my @suite = (
     },
 
     # delete_tag_for_site - normal tests
-    {   path     => '/v2/sites/1/tags/anemones',
+    {   path     => '/v2/sites/1/tags/4',
         method   => 'DELETE',
         complete => sub {
-            my $tag = MT->model('tag')->load( { name => 'anemones' } );
+            my $tag = MT->model('tag')->load(4);
             is( $tag, undef, 'Deleted "anemones" tag.' );
         },
     },

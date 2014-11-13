@@ -457,23 +457,23 @@ my @suite     = (
 
     # list_asset_for_site_and_tag - irregular tests
     {    # Non-existent tag.
-        path   => '/v2/sites/1/tags/non_existent_tag/assets',
+        path   => '/v2/sites/1/tags/100/assets',
         method => 'GET',
         code   => 404,
     },
     {    # Non-existent site.
-        path   => '/v2/sites/5/tags/alpha/assets',
+        path   => '/v2/sites/5/tags/6/assets',
         method => 'GET',
         code   => 404,
     },
     {    # System.
-        path   => '/v2/sites/0/tags/alpha/assets',
+        path   => '/v2/sites/0/tags/6/assets',
         method => 'GET',
         code   => 404,
     },
 
     # list_assets_for_site_and_tag - normal tests
-    {   path      => '/v2/sites/1/tags/alpha/assets',
+    {   path      => '/v2/sites/1/tags/6/assets',
         method    => 'GET',
         callbacks => [
             {   name =>
@@ -498,7 +498,7 @@ my @suite     = (
         },
     },
     {    # In order of file_name.
-        path      => '/v2/sites/1/tags/alpha/assets',
+        path      => '/v2/sites/1/tags/6/assets',
         method    => 'GET',
         params    => { sortBy => 'file_name', },
         callbacks => [
@@ -512,7 +512,7 @@ my @suite     = (
         ],
     },
     {    # In order of created_by.
-        path      => '/v2/sites/1/tags/alpha/assets',
+        path      => '/v2/sites/1/tags/6/assets',
         method    => 'GET',
         params    => { sortBy => 'created_by', },
         callbacks => [
@@ -528,13 +528,13 @@ my @suite     = (
 
     # list_assets_for_tag - irregular tests
     {    # Non-existent tag.
-        path   => '/v2/tags/non_existent_tag/assets',
+        path   => '/v2/tags/100/assets',
         method => 'GET',
         code   => 404,
     },
 
     # list_assets_for_tag - normal tests
-    {   path      => '/v2/tags/alpha/assets',
+    {   path      => '/v2/tags/6/assets',
         method    => 'GET',
         callbacks => [
             {   name =>
@@ -559,7 +559,7 @@ my @suite     = (
         },
     },
     {    # In order of file_name.
-        path      => '/v2/tags/alpha/assets',
+        path      => '/v2/tags/6/assets',
         method    => 'GET',
         params    => { sortBy => 'file_name', },
         callbacks => [
@@ -573,7 +573,7 @@ my @suite     = (
         ],
     },
     {    # In order of created_by.
-        path      => '/v2/tags/alpha/assets',
+        path      => '/v2/tags/6/assets',
         method    => 'GET',
         params    => { sortBy => 'created_by', },
         callbacks => [
