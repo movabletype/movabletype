@@ -31,7 +31,8 @@ sub importer {
     my $mt = shift;
     my ($importer) = @_;
     init() unless %Importers;
-    return $Importers{$importer};
+    return $Importers{$importer} if defined $importer && $importer ne '';
+    return;
 }
 
 sub init {
@@ -159,7 +160,7 @@ sub import_contents {
         $code = $importer->{code} = MT->handler_to_coderef($code);
     }
     if ($code) {
-        if (not $iter) {
+        if ( not $iter ) {
             $importer->{type}->error( $self->errstr );
             return;
         }
