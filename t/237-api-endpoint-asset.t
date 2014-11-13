@@ -87,6 +87,71 @@ my @suite     = (
         ],
     },
 
+    # upload_asset_v2 - normal tests.
+    {    # Site.
+        path   => '/v2/assets/upload',
+        method => 'POST',
+        params => { site_id => 1, },
+        setup  => sub {
+            my ($data) = @_;
+            $data->{count} = $app->model('asset')->count;
+        },
+        upload => [
+            'file',
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.png' ),
+        ],
+        result => sub {
+            $app->model('asset')->load( { class => '*' },
+                { sort => [ { column => 'id', desc => 'DESC' }, ] } );
+        },
+    },
+    {    # System.
+        path   => '/v2/assets/upload',
+        method => 'POST',
+        params => { site_id => 0, },
+        setup  => sub {
+            my ($data) = @_;
+            $data->{count} = $app->model('asset')->count;
+        },
+        upload => [
+            'file',
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.gif' ),
+        ],
+        result => sub {
+            $app->model('asset')->load( { class => '*' },
+                { sort => [ { column => 'id', desc => 'DESC' }, ] } );
+        },
+    },
+
+    # upload_asset_v2 - irregular tests.
+    {    # No site_id.
+        path   => '/v2/assets/upload',
+        method => 'POST',
+        code   => 400,
+        result => sub {
+            return +{
+                error => {
+                    code    => 400,
+                    message => 'A parameter "site_id" is required.',
+                },
+            };
+        },
+    },
+    {    # No site_id.
+        path   => '/v2/assets/upload',
+        method => 'POST',
+        params => { site_id => 1, },
+        code   => 500,
+        result => sub {
+            return +{
+                error => {
+                    code    => 500,
+                    message => "Please select a file to upload.\n",
+                },
+            };
+        },
+    },
+
     # list_assets - irregular tests
     {   path   => '/v2/sites/3/assets',
         method => 'GET',
@@ -106,7 +171,7 @@ my @suite     = (
             my ( $data, $body ) = @_;
             my $result = MT::Util::from_json($body);
             is( $result->{totalResults},
-                1, 'The number of asset (blog_id=0) is 1.' );
+                2, 'The number of asset (blog_id=0) is 2.' );
         },
     },
     {    # Blog.
@@ -121,7 +186,7 @@ my @suite     = (
             my ( $data, $body ) = @_;
             my $result = MT::Util::from_json($body);
             is( $result->{totalResults},
-                3, 'The number of asset (blog_id=1) is 3.' );
+                4, 'The number of asset (blog_id=1) is 4.' );
         },
     },
     {    # Website.
@@ -171,7 +236,7 @@ my @suite     = (
             my ( $data, $body ) = @_;
             my $result = MT::Util::from_json($body);
             is( $result->{totalResults},
-                2, 'The number of image asset is 2.' );
+                3, 'The number of image asset is 3.' );
         },
     },
     {    # In order of created_by.
@@ -221,7 +286,7 @@ my @suite     = (
             my ( $data, $body ) = @_;
             my $result = MT::Util::from_json($body);
             is( $result->{totalResults},
-                4, 'The number of all image asset is 4.' );
+                6, 'The number of all image asset is 6.' );
         },
     },
     {    # includeSiteIds parameter.
@@ -237,7 +302,7 @@ my @suite     = (
             my ( $data, $body ) = @_;
             my $result = MT::Util::from_json($body);
             is( $result->{totalResults},
-                1, 'The number of image asset (blog_id=0) is 1.' );
+                2, 'The number of image asset (blog_id=0) is 2.' );
         },
     },
     {    # excludeSiteId parameter.
@@ -253,7 +318,7 @@ my @suite     = (
             my ( $data, $body ) = @_;
             my $result = MT::Util::from_json($body);
             is( $result->{totalResults},
-                3, 'The number of image asset (exclude blog_id=0) is 3.' );
+                4, 'The number of image asset (exclude blog_id=0) is 4.' );
         },
     },
     {    # In order of file_name.
@@ -592,7 +657,7 @@ my @suite     = (
         method => 'GET',
         code   => 404,
     },
-    {   path   => '/v2/sites/1/assets/5',
+    {   path   => '/v2/sites/1/assets/10',
         method => 'GET',
         code   => 404,
     },
@@ -600,7 +665,7 @@ my @suite     = (
         method => 'GET',
         code   => 404,
     },
-    {   path   => '/v2/sites/3/assets/5',
+    {   path   => '/v2/sites/3/assets/10',
         method => 'GET',
         code   => 404,
     },
