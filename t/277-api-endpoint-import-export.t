@@ -118,7 +118,6 @@ my @suite = (
                 },
             };
         },
-        complete => sub { die $_[1] },
     },
     {    # import_as_me=0 and no password.
         path   => '/v2/sites/1/entries/import',
@@ -128,7 +127,7 @@ my @suite = (
             'file',
             File::Spec->catfile(
                 $ENV{MT_HOME},                      "t",
-                '277-api-endpoint-import-export.d', 'blog.txt'
+                '277-api-endpoint-import-export.d', 'first_entry.txt'
             ),
         ],
         code   => 400,
@@ -140,6 +139,11 @@ my @suite = (
                         'You need to provide a parameter "password" if you are going to create new users for each user listed in your blog.',
                 },
             };
+        },
+        complete => sub {
+            my $entry = $app->model('entry')
+                ->load( { blog_id => 1, title => 'First Entry' } );
+            is( $entry, undef, 'An entry has not been imported.' );
         },
     },
     {    # import_as_me=0 and invalid password.
@@ -153,7 +157,7 @@ my @suite = (
             'file',
             File::Spec->catfile(
                 $ENV{MT_HOME},                      "t",
-                '277-api-endpoint-import-export.d', 'blog.txt'
+                '277-api-endpoint-import-export.d', 'first_entry.txt'
             ),
         ],
         code   => 400,
@@ -165,6 +169,11 @@ my @suite = (
                 },
             };
         },
+        complete => sub {
+            my $entry = $app->model('entry')
+                ->load( { blog_id => 1, title => 'First Entry' } );
+            is( $entry, undef, 'An entry has not been imported.' );
+        },
     },
     {    # Invalid import_type.
         path   => '/v2/sites/1/entries/import',
@@ -174,7 +183,7 @@ my @suite = (
             'file',
             File::Spec->catfile(
                 $ENV{MT_HOME},                      "t",
-                '277-api-endpoint-import-export.d', 'blog.txt'
+                '277-api-endpoint-import-export.d', 'first_entry.txt'
             ),
         ],
         code   => 400,
@@ -186,6 +195,11 @@ my @suite = (
                 },
             };
         },
+        complete => sub {
+            my $entry = $app->model('entry')
+                ->load( { blog_id => 1, title => 'First Entry' } );
+            is( $entry, undef, 'An entry has not been imported.' );
+        },
     },
     {    # Invalid endoing.
         path   => '/v2/sites/1/entries/import',
@@ -195,7 +209,7 @@ my @suite = (
             'file',
             File::Spec->catfile(
                 $ENV{MT_HOME},                      "t",
-                '277-api-endpoint-import-export.d', 'blog.txt'
+                '277-api-endpoint-import-export.d', 'first_entry.txt'
             ),
         ],
         code   => 400,
@@ -207,6 +221,11 @@ my @suite = (
                 },
             };
         },
+        complete => sub {
+            my $entry = $app->model('entry')
+                ->load( { blog_id => 1, title => 'First Entry' } );
+            is( $entry, undef, 'An entry has not been imported.' );
+        },
     },
     {    # Invalid convert_breaks.
         path   => '/v2/sites/1/entries/import',
@@ -216,7 +235,7 @@ my @suite = (
             'file',
             File::Spec->catfile(
                 $ENV{MT_HOME},                      "t",
-                '277-api-endpoint-import-export.d', 'blog.txt'
+                '277-api-endpoint-import-export.d', 'first_entry.txt'
             ),
         ],
         code   => 400,
@@ -228,6 +247,11 @@ my @suite = (
                 },
             };
         },
+        complete => sub {
+            my $entry = $app->model('entry')
+                ->load( { blog_id => 1, title => 'First Entry' } );
+            is( $entry, undef, 'An entry has not been imported.' );
+        },
     },
     {    # Invalid default_cat_id.
         path   => '/v2/sites/1/entries/import',
@@ -237,7 +261,7 @@ my @suite = (
             'file',
             File::Spec->catfile(
                 $ENV{MT_HOME},                      "t",
-                '277-api-endpoint-import-export.d', 'blog.txt'
+                '277-api-endpoint-import-export.d', 'first_entry.txt'
             ),
         ],
         code   => 400,
@@ -249,6 +273,11 @@ my @suite = (
                 },
             };
         },
+        complete => sub {
+            my $entry = $app->model('entry')
+                ->load( { blog_id => 1, title => 'First Entry' } );
+            is( $entry, undef, 'An entry has not been imported.' );
+        },
     },
 
     # import_entries - normal tests.
@@ -259,11 +288,16 @@ my @suite = (
             'file',
             File::Spec->catfile(
                 $ENV{MT_HOME},                      "t",
-                '277-api-endpoint-import-export.d', 'blog.txt'
+                '277-api-endpoint-import-export.d', 'first_entry.txt'
             ),
         ],
         result => sub {
             return +{ status => 'success', };
+        },
+        complete => sub {
+            my $entry = $app->model('entry')
+                ->load( { blog_id => 1, title => 'First Entry' } );
+            ok( $entry, 'A entry has been imported.' );
         },
     },
     {    # Website.
@@ -273,11 +307,16 @@ my @suite = (
             'file',
             File::Spec->catfile(
                 $ENV{MT_HOME},                      "t",
-                '277-api-endpoint-import-export.d', 'blog.txt'
+                '277-api-endpoint-import-export.d', 'second_entry.txt'
             ),
         ],
         result => sub {
             return +{ status => 'success', };
+        },
+        complete => sub {
+            my $entry = $app->model('entry')
+                ->load( { blog_id => 2, title => 'Second Entry' } );
+            ok( $entry, 'A entry has been imported.' );
         },
     },
     {    # import_as_me=0.
@@ -291,11 +330,16 @@ my @suite = (
             'file',
             File::Spec->catfile(
                 $ENV{MT_HOME},                      "t",
-                '277-api-endpoint-import-export.d', 'blog.txt'
+                '277-api-endpoint-import-export.d', 'third_entry.txt'
             ),
         ],
         result => sub {
             return +{ status => 'success', };
+        },
+        complete => sub {
+            my $entry = $app->model('entry')
+                ->load( { blog_id => 1, title => 'Third Entry' } );
+            ok( $entry, 'A entry has been imported.' );
         },
     },
     {    # import_type=import_mt_format.
@@ -306,11 +350,16 @@ my @suite = (
             'file',
             File::Spec->catfile(
                 $ENV{MT_HOME},                      "t",
-                '277-api-endpoint-import-export.d', 'blog.txt'
+                '277-api-endpoint-import-export.d', 'fourth_entry.txt'
             ),
         ],
         result => sub {
             return +{ status => 'success', };
+        },
+        complete => sub {
+            my $entry = $app->model('entry')
+                ->load( { blog_id => 1, title => 'Fourth Entry' } );
+            ok( $entry, 'A entry has been imported.' );
         },
     },
 
