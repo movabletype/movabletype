@@ -37,6 +37,13 @@ my $version;
 $mock_app_api->mock( 'current_api_version',
     sub { $version = $_[1] if $_[1]; $version } );
 
+my $blog  = MT->model('blog')->load(1);
+my $entry = MT->model('entry')->load(
+    {   blog_id => $blog->id,
+        status  => MT::Entry::RELEASE(),
+    }
+);
+
 my @suite = (
 
     # search - irregular tests
@@ -53,11 +60,148 @@ my @suite = (
     },
 
     # search - normal tests
-    {   path   => '/v2/search',
+
+    # Tests from 140-app-search.t.
+    {    # Found an entry.
+        path   => '/v2/search',
+        method => 'GET',
+        params => {
+            search       => $entry->title,
+            IncludeBlogs => $blog->id,
+            limit        => 20,
+        },
+        result => sub {
+            my @entries = $app->model('entry')->load(
+                {   blog_id => $blog->id,
+                    status  => MT::Entry::RELEASE(),
+                    class   => '*'
+                },
+                { sort => 'authored_on', direction => 'descend' },
+            );
+
+            my $entry_title = $entry->title;
+            my @greped_entries;
+            for my $e (@entries) {
+                if ( grep { $e->$_ && $e->$_ =~ m/$entry_title/ }
+                    qw/ title text text_more keywords / )
+                {
+                    push @greped_entries, $e;
+                }
+            }
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => scalar @greped_entries,
+                items =>
+                    MT::DataAPI::Resource->from_object( \@greped_entries ),
+            };
+        },
+    },
+    {    # Not found.
+        path   => '/v2/search',
+        method => 'GET',
+        params => {
+            search       => 'Search word for no matching',
+            IncludeBlogs => $blog->id,
+            limit        => 20,
+        },
+        result => sub {
+            return +{
+                totalResults => 0,
+                items        => [],
+            };
+        },
+    },
+    {    # No blog was specified.
+        path   => '/v2/search',
+        method => 'GET',
+        params => {
+            search => $entry->title,
+            limit  => 20,
+        },
+        result => sub {
+            my @entries = $app->model('entry')->load(
+                {   blog_id => $blog->id,
+                    status  => MT::Entry::RELEASE(),
+                    class   => '*'
+                },
+                { sort => 'authored_on', direction => 'descend' },
+            );
+
+            my $entry_title = $entry->title;
+            my @greped_entries;
+            for my $e (@entries) {
+                if ( grep { $e->$_ && $e->$_ =~ m/$entry_title/ }
+                    qw/ title text text_more keywords / )
+                {
+                    push @greped_entries, $e;
+                }
+            }
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => scalar @greped_entries,
+                items =>
+                    MT::DataAPI::Resource->from_object( \@greped_entries ),
+            };
+        },
+    },
+    {    # Only "IncludeBlogs=all" is specified.
+        path   => '/v2/search',
+        method => 'GET',
+        params => {
+            IncludeBlogs => 'all',
+            search       => $entry->title,
+            limit        => 20,
+        },
+        result => sub {
+            my @entries = $app->model('entry')->load(
+                {   blog_id => $blog->id,
+                    status  => MT::Entry::RELEASE(),
+                    class   => '*'
+                },
+                { sort => 'authored_on', direction => 'descend' },
+            );
+
+            my $entry_title = $entry->title;
+            my @greped_entries;
+            for my $e (@entries) {
+                if ( grep { $e->$_ && $e->$_ =~ m/$entry_title/ }
+                    qw/ title text text_more keywords / )
+                {
+                    push @greped_entries, $e;
+                }
+            }
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => scalar @greped_entries,
+                items =>
+                    MT::DataAPI::Resource->from_object( \@greped_entries ),
+            };
+        },
+    },
+
+    # Original tests for search endpoint.
+    {    # limit.
+        path   => '/v2/search',
         method => 'GET',
         params => {
             search       => 'a',
             IncludeBlogs => '1,2',
+            limit        => 5,
         },
         result => sub {
             my @entries = $app->model('entry')->load(
@@ -84,12 +228,52 @@ my @suite = (
 
             return +{
                 totalResults => scalar @greped_entries,
-                items =>
-                    MT::DataAPI::Resource->from_object( \@greped_entries ),
+                items        => MT::DataAPI::Resource->from_object(
+                    [ @greped_entries[ 0 .. 4 ] ]
+                ),
             };
         },
     },
+    {    # offset.
+        path   => '/v2/search',
+        method => 'GET',
+        params => {
+            search       => 'a',
+            IncludeBlogs => '1,2',
+            limit        => 5,
+            offset       => 5,
+        },
+        result => sub {
+            my @entries = $app->model('entry')->load(
+                {   blog_id => [ 1, 2 ],
+                    status  => MT::Entry::RELEASE(),
+                    class   => '*'
+                },
+                { sort => 'authored_on', direction => 'descend' },
+            );
 
+            my @greped_entries;
+            for my $e (@entries) {
+                if ( grep { $e->$_ && $e->$_ =~ m/a/ }
+                    qw/ title text text_more keywords / )
+                {
+                    push @greped_entries, $e;
+                }
+            }
+
+            $app->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
+            return +{
+                totalResults => scalar @greped_entries,
+                items        => MT::DataAPI::Resource->from_object(
+                    [ @greped_entries[ 5 .. 9 ] ]
+                ),
+            };
+        },
+    },
 );
 
 my %callbacks = ();
