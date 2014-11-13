@@ -4590,13 +4590,13 @@ DataAPI.on('initialize', function() {
     {
         "id": "list_assets_for_tag", 
         "resources": null, 
-        "route": "/tags/:tag_name/assets", 
+        "route": "/tags/:tag_id/assets", 
         "verb": "GET"
     }, 
     {
         "id": "list_assets_for_site_and_tag", 
         "resources": null, 
-        "route": "/sites/:site_id/tags/:tag_name/assets", 
+        "route": "/sites/:site_id/tags/:tag_id/assets", 
         "verb": "GET"
     }, 
     {
@@ -4646,7 +4646,7 @@ DataAPI.on('initialize', function() {
     {
         "id": "list_entries_for_tag", 
         "resources": null, 
-        "route": "/tags/:tag_name/entries", 
+        "route": "/tags/:tag_id/entries", 
         "verb": "GET"
     }, 
     {
@@ -4704,7 +4704,7 @@ DataAPI.on('initialize', function() {
     {
         "id": "list_pages_for_tag", 
         "resources": null, 
-        "route": "/tags/:tag_name/pages", 
+        "route": "/tags/:tag_id/pages", 
         "verb": "GET"
     }, 
     {
@@ -4942,37 +4942,37 @@ DataAPI.on('initialize', function() {
     {
         "id": "get_tag", 
         "resources": null, 
-        "route": "/tags/:tag_name", 
+        "route": "/tags/:tag_id", 
         "verb": "GET"
     }, 
     {
         "id": "get_tag_for_site", 
         "resources": null, 
-        "route": "/sites/:site_id/tags/:tag_name", 
+        "route": "/sites/:site_id/tags/:tag_id", 
         "verb": "GET"
     }, 
     {
         "id": "rename_tag", 
         "resources": null, 
-        "route": "/tags/:tag_name", 
+        "route": "/tags/:tag_id", 
         "verb": "PUT"
     }, 
     {
         "id": "rename_tag_for_site", 
         "resources": null, 
-        "route": "/sites/:site_id/tags/:tag_name", 
+        "route": "/sites/:site_id/tags/:tag_id", 
         "verb": "PUT"
     }, 
     {
         "id": "delete_tag", 
         "resources": null, 
-        "route": "/tags/:tag_name", 
+        "route": "/tags/:tag_id", 
         "verb": "DELETE"
     }, 
     {
         "id": "delete_tag_for_site", 
         "resources": null, 
-        "route": "/sites/:site_id/tags/:tag_name", 
+        "route": "/sites/:site_id/tags/:tag_id", 
         "verb": "DELETE"
     }, 
     {
