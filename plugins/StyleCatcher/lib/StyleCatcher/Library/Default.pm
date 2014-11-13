@@ -18,7 +18,7 @@ sub fetch_themes {
 
     my $static_webpath = MT->app->static_path;
     my $support_url    = MT->app->support_directory_url;
-    $url ||= $self->url;
+    $url ||= $self->url || '';
     $url =~ s/{{static}}/$static_webpath/i;
     $url =~ s/{{support}}/$support_url/i;
     $url
