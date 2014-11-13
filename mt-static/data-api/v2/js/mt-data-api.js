@@ -4652,7 +4652,7 @@ DataAPI.on('initialize', function() {
     {
         "id": "list_entries_for_site_and_tag", 
         "resources": null, 
-        "route": "/sites/:site_id/tags/:tag_name/entries", 
+        "route": "/sites/:site_id/tags/:tag_id/entries", 
         "verb": "GET"
     }, 
     {
@@ -4710,7 +4710,7 @@ DataAPI.on('initialize', function() {
     {
         "id": "list_pages_for_site_and_tag", 
         "resources": null, 
-        "route": "/sites/:site_id/tags/:tag_name/pages", 
+        "route": "/sites/:site_id/tags/:tag_id/pages", 
         "verb": "GET"
     }, 
     {
