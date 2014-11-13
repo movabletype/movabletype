@@ -861,7 +861,7 @@ sub core_endpoints {
             requires_login => 0,
         },
         {   id             => 'list_entries_for_site_and_tag',
-            route          => '/sites/:site_id/tags/:tag_name/entries',
+            route          => '/sites/:site_id/tags/:tag_id/entries',
             version        => 2,
             handler        => "${pkg}v2::Entry::list_for_site_and_tag",
             default_params => {
@@ -992,7 +992,7 @@ sub core_endpoints {
             requires_login => 0,
         },
         {   id             => 'list_pages_for_site_and_tag',
-            route          => '/sites/:site_id/tags/:tag_name/pages',
+            route          => '/sites/:site_id/tags/:tag_id/pages',
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Page::list_for_site_and_tag",
