@@ -305,9 +305,55 @@ my @suite = (
         params => { sortBy => 'id', },
     },
 
-    # export_log - normal tests
-    {   path   => '/v2/sites/1/logs/export',
+    # export_log - irregular tests.
+    {    # Non-existent site.
+        path   => '/v2/sites/10/logs/export',
         method => 'GET',
+        code   => 404,
+        result => sub {
+            return +{
+                error => {
+                    code    => 404,
+                    message => 'Site not found',
+                },
+            };
+        },
+    },
+
+    # export_log - normal tests.
+    {    # Blog.
+        path     => '/v2/sites/1/logs/export',
+        method   => 'GET',
+        complete => sub {
+            is( scalar( split /\n/, $_[1] ), 4, '3 lines are output.' );
+            print $_[1];
+        },
+    },
+    {    # Website.
+        path   => '/v2/sites/2/logs/export',
+        method => 'GET',
+        setup  => sub {
+            my $log = $app->model('log')->new;
+            $log->set_values( { blog_id => 2, } );
+            $log->save or die $log->errstr;
+        },
+        complete => sub {
+            is( scalar( split /\n/, $_[1] ), 5, '4 lines are output.' );
+            print $_[1];
+        },
+    },
+    {    # System.
+        path   => '/v2/sites/0/logs/export',
+        method => 'GET',
+        setup  => sub {
+            my $log = $app->model('log')->new;
+            $log->set_values( { blog_id => 0, } );
+            $log->save or die $log->errstr;
+        },
+        complete => sub {
+            is( scalar( split /\n/, $_[1] ), 6, '5 lines are output.' );
+            print $_[1];
+        },
     },
 
     # update_log - irregular tests
