@@ -325,7 +325,8 @@ my @suite = (
         path     => '/v2/sites/1/logs/export',
         method   => 'GET',
         complete => sub {
-            is( scalar( split /\n/, $_[1] ), 4, '3 lines are output.' );
+            my ( $data, $body ) = @_;
+            is( scalar( split /\n/, $body ), 4, '3 lines are output.' );
             print $_[1];
         },
     },
@@ -338,7 +339,8 @@ my @suite = (
             $log->save or die $log->errstr;
         },
         complete => sub {
-            is( scalar( split /\n/, $_[1] ), 5, '4 lines are output.' );
+            my ( $data, $body ) = @_;
+            is( scalar( split /\n/, $body ), 5, '4 lines are output.' );
             print $_[1];
         },
     },
@@ -351,7 +353,8 @@ my @suite = (
             $log->save or die $log->errstr;
         },
         complete => sub {
-            is( scalar( split /\n/, $_[1] ), 6, '5 lines are output.' );
+            my ( $data, $body ) = @_;
+            is( scalar( split /\n/, $body ), 6, '5 lines are output.' );
             print $_[1];
         },
     },
