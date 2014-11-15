@@ -3553,7 +3553,7 @@ sub save_data_api_settings {
     }
     my $new_data_api_disable_site = join ',',
         ( sort { $a <=> $b } keys %data_api_disable_site );
-    $cfg->DataAPIDisableSite($new_data_api_disable_site);
+    $cfg->DataAPIDisableSite( $new_data_api_disable_site, 1 );
 
     $cfg->save_config;
 
