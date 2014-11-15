@@ -93,7 +93,7 @@ sub cms_pre_load_filtered_list {
     my $new_terms;
     push @$new_terms, ($terms)
         if ( keys %$terms );
-    my @filters = map { '-or', $_ } values %filters;
+    my @filters = map { +( '-or', $_ ) } values %filters;
     push @$new_terms, ( '-and', @filters ? \@filters : { blog_id => 0 } );
     $load_options->{terms} = $new_terms;
 
