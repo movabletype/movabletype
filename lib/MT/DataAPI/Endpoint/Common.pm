@@ -529,29 +529,34 @@ sub _restrict_blog_id {
         ? 'id'
         : 'blog_id';
 
+    # Load config settings.
     my $cfg = $app->config;
     my $data_api_disable_site
         = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    my @data_api_disable_site = split ',', $data_api_disable_site;
+    my %data_api_disable_site
+        = map { $_ => 1 } ( split ',', $data_api_disable_site );
 
+    # Retrieve enabled sites.
     my %enable_blog = map { $_->id => 1 } (
         $app->model('blog')->load(
-            {   @data_api_disable_site
-                ? ( id => { not => \@data_api_disable_site } )
+            {   %data_api_disable_site
+                ? ( id => { not => [ keys %data_api_disable_site ] } )
                 : (),
                 class => '*'
             }
         )
     );
-    if ( !( grep { $_ == 0 } @data_api_disable_site ) ) {
+    my %object_can_have_in_system
+        = map { $_ => 1 } qw/ MT::Asset MT::Permmission CustomFields::Field /;
+    if ( $object_can_have_in_system{$class} && !$data_api_disable_site{0} ) {
+
+        # blog_id=0 is OK when some objects.
         $enable_blog{0} = 1;
     }
 
-    my @enable_blog_id = keys %enable_blog;
-
-    # No blog_id.
+    # System scope.
     if ( !@$blog_id_term ) {
-        return ( $column => \@enable_blog_id );
+        return ( $column => [ keys %enable_blog ] );
     }
 
     # blog_id is scalar or array ref.
