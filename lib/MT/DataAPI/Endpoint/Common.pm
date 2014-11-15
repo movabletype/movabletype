@@ -547,7 +547,7 @@ sub _restrict_blog_id {
         )
     );
     my %object_can_have_in_system
-        = map { $_ => 1 } qw/ MT::Asset MT::Permmission CustomFields::Field /;
+        = map { $_ => 1 } qw/ MT::Asset MT::Permission CustomFields::Field /;
     if ( $object_can_have_in_system{$class} && !$data_api_disable_site{0} ) {
 
         # blog_id=0 is OK when some objects.
