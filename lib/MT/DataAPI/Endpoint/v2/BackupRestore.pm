@@ -9,6 +9,8 @@ package MT::DataAPI::Endpoint::v2::BackupRestore;
 use strict;
 use warnings;
 
+use MT::App;
+use MT::App::DataAPI;
 use MT::Util;
 use MT::CMS::Tools;
 
@@ -21,10 +23,11 @@ sub backup {
         && _check_backup_archive_format($app)
         && _check_limit_size($app);
 
-    no warnings 'redefine';
-
     local $app->{is_admin} = 1;
 
+    no warnings 'redefine';
+    local *MT::App::DataAPI::send_http_header = sub { };
+    local *MT::App::print_encode              = sub { };
     my $param;
     my $_backup_finisher = \&MT::CMS::Tools::_backup_finisher;
     local *MT::CMS::Tools::_backup_finisher
@@ -34,15 +37,13 @@ sub backup {
 
     # Error.
     if ( !$param->{backup_success} ) {
-        return +{
-            error => {
-                code    => 500,
-                message => $app->translate(
-                    'An error occurred during the backup process: [_1]',
-                    $param->{error}
-                ),
-            },
-        };
+        return $app->error(
+            $app->translate(
+                'An error occurred during the backup process: [_1]',
+                $param->{error}
+            ),
+            500,
+        );
     }
 
     # Success.
@@ -91,22 +92,17 @@ sub _check_backup_what {
     else {
 
         # Check backup_what.
-        if ( !defined $app->param('backup_what') ) {
-            return $app->error(
-                $app->translate('A parameter "backup_what" is required.'),
-                400 );
-        }
-
-        my $backup_what = $app->param('backup_what');
-        my @blog_ids    = split ',', $backup_what;
-        my @blogs       = $app->model('blog')->load( { id => \@blog_ids } );
-        if ( scalar @blog_ids != scalar @blogs ) {
-            return $app->error(
-                $app->translate(
-                    '"backup_what" is invalid: [_1]', $backup_what
-                ),
-                400
-            );
+        if ( my $backup_what = $app->param('backup_what') ) {
+            my @blog_ids = split ',', $backup_what;
+            my @blogs = $app->model('blog')->load( { id => \@blog_ids } );
+            if ( scalar @blog_ids != scalar @blogs ) {
+                return $app->error(
+                    $app->translate(
+                        'Invalid backup_what: [_1]', $backup_what
+                    ),
+                    400
+                );
+            }
         }
     }
 
@@ -131,7 +127,7 @@ sub _check_backup_archive_format {
         unless ( grep { $backup_archive_format eq $_->{key} } @formats ) {
             return $app->error(
                 $app->translate(
-                    '"backup_archive_format" is invalid: [_1]',
+                    'Invalid backup_archive_format: [_1]',
                     $backup_archive_format
                 ),
                 400
@@ -148,8 +144,7 @@ sub _check_limit_size {
 
     if ( $limit_size && $limit_size !~ m/^\d+$/ ) {
         return $app->error(
-            $app->translate( '"limit_size" is invalid: [_1]', $limit_size ),
-            400 );
+            $app->translate( 'Invalid limit_size: [_1]', $limit_size ), 400 );
     }
 
     return 1;
@@ -166,7 +161,8 @@ sub restore {
     local $app->{no_print_body};
 
     no warnings 'redefine';
-
+    local *MT::App::DataAPI::send_http_header = sub { };
+    local *MT::App::print_encode              = sub { };
     my ( $file, $param );
     my $build_page = \&MT::build_page;
     local *MT::build_page
@@ -174,20 +170,10 @@ sub restore {
 
     MT::CMS::Tools::restore($app);
 
-    # TODO: Implement adjust_sitepath process.
+    # TODO: Implement adjust_sitepath process and upload_asset process..
 
-    if ( $param->{restore_success} ) {
-        return +{
-            status => 'success',
-            !$param->{restore_upload}
-            ? ( message => $app->translate(
-                    "Make sure that you remove the files that you restored from the 'import' folder, so that if/when you run the restore process again, those files will not be re-restored."
-                )
-                )
-            : (),
-        };
-    }
-    else {
+    # Error.
+    if ( !$param->{restore_success} ) {
         return $app->error(
             $app->translate(
                 'An error occurred during the restore process: [_1] Please check activity log for more details.',
@@ -196,6 +182,16 @@ sub restore {
             500
         );
     }
+
+    return +{
+        status => 'success',
+        !$param->{restore_upload}
+        ? ( message => $app->translate(
+                "Make sure that you remove the files that you restored from the 'import' folder, so that if/when you run the restore process again, those files will not be re-restored."
+            )
+            )
+        : (),
+    };
 
 }
 
