@@ -448,7 +448,7 @@ sub filtered_list {
             || $class eq 'MT::Website' )
         )
     {
-        @blog_id_term = _restrict_blog_id( $app, \@blog_id_term, $class );
+        _restrict_site( $app, $class, $filter );
     }
 
     my %load_options = (
@@ -521,8 +521,8 @@ sub filtered_list {
     };
 }
 
-sub _restrict_blog_id {
-    my ( $app, $blog_id_term, $class ) = @_;
+sub _restrict_site {
+    my ( $app, $class, $filter ) = @_;
 
     my $column
         = ( grep { $class eq $_ } qw/ MT::Blog MT::Website / )
@@ -533,38 +533,26 @@ sub _restrict_blog_id {
     my $cfg = $app->config;
     my $data_api_disable_site
         = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    my %data_api_disable_site
-        = map { $_ => 1 } ( split ',', $data_api_disable_site );
+    my @data_api_disable_site = split ',', $data_api_disable_site;
 
-    # Retrieve enabled sites.
-    my %enable_blog = map { $_->id => 1 } (
-        $app->model('blog')->load(
-            {   %data_api_disable_site
-                ? ( id => { not => [ keys %data_api_disable_site ] } )
-                : (),
-                class => '*'
-            }
-        )
+    # Set filters.
+    $filter->append_item(
+        {   type => 'pack',
+            args => {
+                op    => 'and',
+                items => [
+                    map {
+                        +{  type => $column,
+                            args => {
+                                options => 'not_equal',
+                                value   => $_,
+                            },
+                        };
+                    } @data_api_disable_site,
+                ],
+            },
+        },
     );
-    my %object_can_have_in_system
-        = map { $_ => 1 } qw/ MT::Asset MT::Permission CustomFields::Field /;
-    if ( $object_can_have_in_system{$class} && !$data_api_disable_site{0} ) {
-
-        # blog_id=0 is OK when some objects.
-        $enable_blog{0} = 1;
-    }
-
-    # System scope.
-    if ( !@$blog_id_term ) {
-        return ( $column => [ keys %enable_blog ] );
-    }
-
-    # blog_id is scalar or array ref.
-    my $blog_id = $blog_id_term->[1];
-    $blog_id = ref($blog_id) ? $blog_id : [$blog_id];
-
-    $blog_id = [ grep { $enable_blog{$_} } @$blog_id ];
-    return ( $column => $blog_id );
 }
 
 1;

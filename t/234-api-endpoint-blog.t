@@ -54,23 +54,23 @@ my %callbacks = ();
 my @suite = (
 
     # version 1.
-#    {   path      => '/v1/users/me/sites',
-#        method    => 'GET',
-#        callbacks => [
-#            {   name  => 'data_api_pre_load_filtered_list.blog',
-#                count => 2,
-#            },
-#        ],
-#        result => sub {
-#            +{  'totalResults' => '2',
-#                'items'        => MT::DataAPI::Resource->from_object(
-#                    [   MT->model('blog')
-#                            ->load( { class => '*', }, { sort => 'id' } )
-#                    ]
-#                ),
-#            };
-#        },
-#    },
+    {   path      => '/v1/users/me/sites',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.blog',
+                count => 2,
+            },
+        ],
+        result => sub {
+            +{  'totalResults' => '2',
+                'items'        => MT::DataAPI::Resource->from_object(
+                    [   MT->model('blog')
+                            ->load( { class => '*', }, { sort => 'id' } )
+                    ]
+                ),
+            };
+        },
+    },
     {   path   => '/v1/users/4/sites',
         method => 'GET',
         result => sub {
@@ -111,53 +111,53 @@ my @suite = (
     # version 2.
 
     # list_sites - normal tests
-#    {   path      => '/v2/sites',
-#        method    => 'GET',
-#        callbacks => [
-#            {   name  => 'data_api_pre_load_filtered_list.blog',
-#                count => 2,
-#            },
-#        ],
-#        complete => sub {
-#            my ( $data, $body ) = @_;
-#
-#            my $result = MT::Util::from_json($body);
-#            my @result_ids = map { $_->{id} } @{ $result->{items} };
-#
-#            my @sites = MT->model('blog')
-#                ->load( { class => '*' }, { sort => 'name' } );
-#            my @site_ids = map { $_->id } @sites;
-#
-#            is_deeply( \@result_ids, \@site_ids );
-#        },
-#    },
-#    {
-#        # not logged in
-#        path      => '/v2/sites',
-#        method    => 'GET',
-#        callbacks => [
-#            {   name  => 'data_api_pre_load_filtered_list.blog',
-#                count => 2,
-#            },
-#        ],
-#        setup => sub {
-#            $mock_app_api->mock( 'user', sub { MT->model('author')->new } );
-#        },
-#        complete => sub {
-#            my ( $data, $body ) = @_;
-#
-#            my $result = MT::Util::from_json($body);
-#            my @result_ids = map { $_->{id} } @{ $result->{items} };
-#
-#            my @sites = MT->model('blog')
-#                ->load( { class => '*' }, { sort => 'name' } );
-#            my @site_ids = map { $_->id } @sites;
-#
-#            is_deeply( \@result_ids, \@site_ids );
-#
-#            $mock_app_api->unmock('user');
-#        },
-#    },
+    {   path      => '/v2/sites',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.blog',
+                count => 2,
+            },
+        ],
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $result = MT::Util::from_json($body);
+            my @result_ids = map { $_->{id} } @{ $result->{items} };
+
+            my @sites = MT->model('blog')
+                ->load( { class => '*' }, { sort => 'name' } );
+            my @site_ids = map { $_->id } @sites;
+
+            is_deeply( \@result_ids, \@site_ids );
+        },
+    },
+    {
+        # not logged in
+        path      => '/v2/sites',
+        method    => 'GET',
+        callbacks => [
+            {   name  => 'data_api_pre_load_filtered_list.blog',
+                count => 2,
+            },
+        ],
+        setup => sub {
+            $mock_app_api->mock( 'user', sub { MT->model('author')->new } );
+        },
+        complete => sub {
+            my ( $data, $body ) = @_;
+
+            my $result = MT::Util::from_json($body);
+            my @result_ids = map { $_->{id} } @{ $result->{items} };
+
+            my @sites = MT->model('blog')
+                ->load( { class => '*' }, { sort => 'name' } );
+            my @site_ids = map { $_->id } @sites;
+
+            is_deeply( \@result_ids, \@site_ids );
+
+            $mock_app_api->unmock('user');
+        },
+    },
 
     # list_sites_by_parent - irregular tests
     {    # Non-existent website.
