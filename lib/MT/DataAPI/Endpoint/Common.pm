@@ -533,7 +533,8 @@ sub _restrict_site {
     my $cfg = $app->config;
     my $data_api_disable_site
         = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    my @data_api_disable_site = split ',', $data_api_disable_site;
+    my @data_api_disable_site = ( split ',', $data_api_disable_site )
+        or return;
 
     # Set filters.
     $filter->append_item(
@@ -544,8 +545,8 @@ sub _restrict_site {
                     map {
                         +{  type => $column,
                             args => {
-                                options => 'not_equal',
-                                value   => $_,
+                                option => 'not_equal',
+                                value  => $_,
                             },
                         };
                     } @data_api_disable_site,
