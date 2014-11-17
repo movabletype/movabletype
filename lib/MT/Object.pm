@@ -1135,7 +1135,7 @@ sub _assign_audited_fields {
         if ( $obj->isa('MT::Blog') ) {
             $blog = $obj;
         }
-        elsif ( $obj->has_column('blog_id') ) {
+        elsif ( $obj->can('blog_id') ) {
             $blog = $obj->blog_id;
         }
         my @ts = offset_time_list( time, $blog );
