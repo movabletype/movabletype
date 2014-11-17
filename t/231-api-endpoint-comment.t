@@ -30,7 +30,14 @@ $mock_author->mock( 'is_superuser', sub {0} );
 my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
 $mock_app_api->mock( 'authenticate', $author );
 my $version;
-$mock_app_api->mock( 'current_api_version', sub { $version = $_[1] if $_[1]; $version } );
+$mock_app_api->mock( 'current_api_version',
+    sub { $version = $_[1] if $_[1]; $version } );
+
+# TODO: Avoid an error when installing GoogleAnalytics plugin.
+my $mock_cms_common = Test::MockModule->new('MT::CMS::Common');
+$mock_cms_common->mock( 'run_web_services_save_config_callbacks', sub { } );
+
+$app->config->allowComments(1);
 
 my @suite = (
     {   path      => '/v1/sites/1/comments',
@@ -230,22 +237,59 @@ my @suite = (
             is( $deleted, undef, 'deleted' );
         },
     },
-    {
-        path   => '/v1/sites/1/entries/1',
+
+    # Cannot comment to the entry whose allowComments is 0.
+    {   path   => '/v1/sites/1/entries/1',
         method => 'PUT',
         params => { entry => { allowComments => 0 }, },
     },
-    {
-        note => 'post comment to an entry whose allowComments is false',
+    {   note   => 'post comment to an entry whose allowComments is false',
         path   => '/v1/sites/1/entries/1/comments',
         method => 'POST',
         params => { comment => { body => 'test-api-endopoint-comment', }, },
-        code => '409',
+        code   => '409',
     },
-    {
-        path   => '/v1/sites/1/entries/1',
+    {   note   => 'reply comment to an entry whose allowComments is false',
+        path   => '/v1/sites/1/entries/1/comments/1/replies',
+        method => 'POST',
+        params => { comment => { body => 'test-api-endopoint-reply', }, },
+        code   => 409,
+    },
+    {   path   => '/v1/sites/1/entries/1',
         method => 'PUT',
         params => { entry => { allowComments => 1 }, },
+    },
+
+    # Cannot comment when the blog's "allowComments" is false.
+    {   path   => '/v2/sites/1',
+        method => 'PUT',
+        params => { blog => { allowComments => 0, }, },
+    },
+    {   note =>
+            'post comment to an entry whose blog\'s allowComments is false',
+        path   => '/v1/sites/1/entries/1/comments',
+        method => 'POST',
+        params => { comment => { body => 'test-api-endopoint-comment', }, },
+        code   => '409',
+    },
+    {   note   => 'reply comment to an entry whose allowComments is false',
+        path   => '/v1/sites/1/entries/1/comments/1/replies',
+        method => 'POST',
+        params => { comment => { body => 'test-api-endopoint-reply', }, },
+        code   => 409,
+    },
+    {   path   => '/v2/sites/1',
+        method => 'PUT',
+        params => { blog => { allowComments => 1, }, },
+    },
+
+    # Cannot comment when config directive "AllowComments" is false.
+    {   path   => '/v1/sites/1/entries/1/comments',
+        setup  => sub { $app->config->AllowComments(0) },
+        method => 'POST',
+        params => { comment => { body => 'test-api-endopoint-comment', }, },
+        code   => '409',
+        complete => sub { $app->config->AllowComments(1) },
     },
 );
 

@@ -844,6 +844,7 @@ sub save_filter {
         if ( !$obj->id ) {
             return $app->errtrans("Comments are not allowed on this entry.")
                 unless ( $app->config->AllowComments
+                && $obj->entry->blog->accepts_comments
                 && $obj->entry->allow_comments );
 
             return $app->errtrans(
