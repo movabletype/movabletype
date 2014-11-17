@@ -127,7 +127,7 @@ sub _hdlr_has_parent_folder {
 sub _check_folder {
     my ($ctx) = @_;
     my $e     = $ctx->stash('entry');
-    my $cat   = ( $ctx->stash('category') )
+    my $cat   = ( ( $ctx->stash('category') ) || $ctx->stash('archive_category') )
         || ( ( $e = $ctx->stash('entry') ) && $e->category )
         or return $ctx->error(
         MT->translate(
