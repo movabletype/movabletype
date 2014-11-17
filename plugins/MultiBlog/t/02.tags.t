@@ -24,6 +24,9 @@ use MT;
 use MT::Test qw(:db :data);
 my $app = MT->instance;
 
+# Remove objects in website (blog_id = 2).
+$app->model('page')->remove( { id => 24 } );
+
 {
     my $tmpl = $app->model('template')->new;
     $tmpl->blog_id(2);
@@ -39,8 +42,10 @@ my $plugin = $app->component('MultiBlog');
 $plugin->set_config_value( 'default_access_allowed', '0', 'system' );
 
 my $default_access_overrides = {
+
     # not allowed
     1 => 1,
+
     # allowed
     # 1 => 2,
     # inherit
@@ -59,15 +64,15 @@ sub undef_to_empty_string {
 run {
     my $block = shift;
 
-    SKIP:
+SKIP:
     {
         skip $block->skip, 'skip_static', 1
             if $block->skip || $block->skip_static;
 
-        my $overrides =
-          $block->access_overrides
-          ? eval $block->access_overrides
-          : $default_access_overrides;
+        my $overrides
+            = $block->access_overrides
+            ? eval $block->access_overrides
+            : $default_access_overrides;
         $plugin->set_config_value( 'access_overrides', $overrides, 'system' );
 
         my $tmpl = $app->model('template')->new;
@@ -89,7 +94,7 @@ run {
 
         if ( $block->ctx_stash ) {
             my $ctx_stash = eval $block->ctx_stash;
-            for my $k (keys %$ctx_stash) {
+            for my $k ( keys %$ctx_stash ) {
                 my $v = $ctx_stash->{$k};
                 if ( $k eq 'archive_category' || $k eq 'category' ) {
                     $v = $app->model('category')->load($v);
@@ -109,17 +114,16 @@ run {
 
         if ( $block->ctx_values ) {
             my $ctx_values = eval $block->ctx_values;
-            for my $k (keys %$ctx_values) {
+            for my $k ( keys %$ctx_values ) {
                 $ctx->{$k} = $ctx_values->{$k};
             }
         }
 
-
         my $blog = MT::Blog->load($blog_id);
-        $ctx->stash( 'blog',    $blog );
-        $ctx->stash( 'blog_id', $blog->id );
+        $ctx->stash( 'blog',          $blog );
+        $ctx->stash( 'blog_id',       $blog->id );
         $ctx->stash( 'local_blog_id', $blog->id );
-        $ctx->stash( 'builder', MT::Builder->new );
+        $ctx->stash( 'builder',       MT::Builder->new );
 
         my $result = $tmpl->build;
         die $tmpl->errstr unless defined $result;
@@ -131,13 +135,11 @@ run {
 };
 
 sub php_test_script {
-    my ($template, $text, $ctx_values, $ctx_stash) = @_;
+    my ( $template, $text, $ctx_values, $ctx_stash ) = @_;
     $text ||= '';
 
-    $ctx_stash = {
-        %{ eval($ctx_values || '{}') },
-        %{ eval($ctx_stash || '{}') },
-    };
+    $ctx_stash = { %{ eval( $ctx_values || '{}' ) },
+        %{ eval( $ctx_stash || '{}' ) }, };
 
     my $test_script = <<PHP;
 <?php
@@ -202,21 +204,22 @@ PHP
 SKIP:
 {
     unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
-        skip "Can't find executable file: php", 1 * blocks('expected_dynamic');
+        skip "Can't find executable file: php",
+            1 * blocks('expected_dynamic');
     }
 
     run {
         my $block = shift;
 
-        SKIP:
+    SKIP:
         {
             skip $block->skip, 'skip_dynamic', 1
                 if $block->skip || $block->skip_dynamic;
 
-            my $overrides =
-              $block->access_overrides
-              ? eval $block->access_overrides
-              : $default_access_overrides;
+            my $overrides
+                = $block->access_overrides
+                ? eval $block->access_overrides
+                : $default_access_overrides;
             $plugin->set_config_value( 'access_overrides', $overrides,
                 'system' );
 
@@ -236,7 +239,6 @@ SKIP:
         }
     };
 }
-
 
 __END__
 
