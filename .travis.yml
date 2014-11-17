@@ -26,7 +26,7 @@ install:
   - wget http://www.imagemagick.org/download/ImageMagick-6.8.9-10.tar.gz
   - tar xzvf ImageMagick-6.8.9-10.tar.gz
   - cd ImageMagick-6.8.9-10
-  - ./configure --prefix=${HOME}/local --with-perl=${HOME}/perl5/perlbrew/perls/5.10/bin/perl
+  - ./configure --prefix=${HOME}/local --with-perl=${HOME}/perl5/perlbrew/perls/${TRAVIS_PERL_VERSION}/bin/perl
   - make
   - sudo make install
   - cd ../../
