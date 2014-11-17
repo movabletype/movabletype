@@ -11,12 +11,18 @@ use lib qw( t/lib extlib lib ../lib ../extlib );
 use MT::Test qw(:time :db);
 use Test::More;
 use MT::App;
+use MT::Object;
 use MT::Entry;
 
 my $app  = MT::App->new;
 my $blog = MT::Blog->load(1);
 $MT::Test::CORE_TIME = Time::Local::timegm( 0, 0, 12, 19, 11, 2013 );
 my $entry_revision_pkg = MT::Entry->revision_pkg;
+
+# Clear mt_entry_rev table.
+my $driver = MT::Object->driver();
+my $dbh    = $driver->rw_handle;
+$dbh->do("delete from mt_entry_rev");
 
 sub create_entry {
     my $entry = MT::Entry->new;
