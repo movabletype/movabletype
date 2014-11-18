@@ -320,20 +320,13 @@ function validate (f) {
         return false;
     });
 
-    function is_valid_absolute_path(path_) {
-        if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
-            return true;
-        }
-        return false;
-    }
-
     jQuery('input#system_performance_logging').click(function() {
         jQuery('div#system_performance_logging_prefs').toggleClass('hidden');
     });
     jQuery.mtValidateAddRules({
         '.absolute-site_path': function ($e) {
             if ($e.val().length == 0) return 1;
-            return is_valid_absolute_path($e.val());
+            return MT.Validator.absolutePath($e.val());
         }
     });
 
