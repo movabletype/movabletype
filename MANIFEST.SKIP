@@ -262,3 +262,6 @@ build-language-stamp
 
 # Travis
 \.travis.yml
+
+# wercker
+wercker.yml
