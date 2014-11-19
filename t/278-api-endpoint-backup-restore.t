@@ -127,12 +127,11 @@ sub suite {
                 print Dumper($got) . "\n";
             },
         },
-
-        # System.
-        {    # Website.
-            path     => '/v2/sites/0/backup',
-            method   => 'GET',
-            complete => sub {
+        {    # System.
+            path         => '/v2/sites/0/backup',
+            method       => 'GET',
+            is_superuser => 1,
+            complete     => sub {
                 my ( $data, $body ) = @_;
 
                 ($body) = ( $body =~ m/(\{.+\})/ );
