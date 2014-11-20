@@ -63,6 +63,9 @@ sub test_data_api {
     my $format = MT::DataAPI::Format->find_format('json');
 
     for my $data (@$suite) {
+        $mock_app_api->mock( 'authenticate', sub {$author} )
+            if !$mock_app_api->is_mocked('authenticate');
+
         if ( $data->{author_id} ) {
             $author = $app->model('author')->load( $data->{author_id} );
         }
@@ -71,12 +74,17 @@ sub test_data_api {
                 ->load( exists $args->{author_id} ? $args->{author_id} : 1 );
         }
         else {
-            $author = undef;
+            $mock_app_api->unmock('authenticate');
         }
+
         $is_superuser
-            = ( exists $data->{is_superuser} ) ? $data->{is_superuser}
-            : ( exists $args->{is_superuser} ) ? $args->{is_superuser}
-            :                                    0;
+            = $author
+            ? (
+              exists $data->{is_superuser} ? $data->{is_superuser}
+            : exists $args->{is_superuser} ? $args->{is_superuser}
+            : 0
+            )
+            : 0;
 
         $data->{setup}->($data) if $data->{setup};
 
