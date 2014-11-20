@@ -27,7 +27,7 @@ my %full_response_headers = (
 );
 
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 

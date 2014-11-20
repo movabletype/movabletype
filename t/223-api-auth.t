@@ -30,7 +30,7 @@ $mock_app_api->mock( 'base', $app_host );
 my $blog = $app->model('blog')->load(1);
 
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 
