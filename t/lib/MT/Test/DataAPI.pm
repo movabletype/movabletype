@@ -97,6 +97,17 @@ sub test_data_api {
         $note .= ' ' . $data->{note} if $data->{note};
         note($note);
 
+        if ( $data->{config} ) {
+            for my $k ( keys %{ $data->{config} } ) {
+                $app->config->$k( $data->{config}{$k} );
+            }
+        }
+        if ( $data->{request_headers} ) {
+            for my $k ( keys %{ $data->{request_headers} } ) {
+                $ENV{ 'HTTP_' . uc $k } = $data->{request_headers}{$k};
+            }
+        }
+
         %callbacks = ();
         _run_app(
             'MT::App::DataAPI',
