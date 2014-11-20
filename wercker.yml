@@ -38,7 +38,6 @@ build:
          rm t/28-xmlrpc.t
          rm t/90-podcoverage.t
          rm t/171-cms-user.t
-         rm t/234-api-endpoint-blog.t
          rm plugins/MultiBlog/t/03.triggers-blogs_in_website.t
 
     - script:
