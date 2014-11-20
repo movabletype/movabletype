@@ -21,7 +21,7 @@ $mock_filemgr_local->mock( 'delete', sub {1} );
 my $temp_data = undef;
 
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 

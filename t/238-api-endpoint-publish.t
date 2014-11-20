@@ -20,7 +20,7 @@ my $start_time
     = MT::Util::ts2iso( $blog, MT::Util::epoch2ts( $blog, time() ), 1 );
 
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 

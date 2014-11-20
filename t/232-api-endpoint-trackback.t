@@ -14,7 +14,7 @@ my $app = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(2);
 
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 

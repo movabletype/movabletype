@@ -38,7 +38,7 @@ my $blog_index_tmpl = $widget_class->load( { blog_id => 1, type => 'index' } )
 
 # test.
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 

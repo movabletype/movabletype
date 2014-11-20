@@ -22,7 +22,7 @@ my $entry  = $app->model('entry')->load(
 
 # test.
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 # end.
 done_testing;

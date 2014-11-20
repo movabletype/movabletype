@@ -32,7 +32,7 @@ use MT::DataAPI::Resource;
 use MT::DataAPI::Format;
 
 sub test_data_api {
-    my (@suite) = @_;
+    my ( $suite, $args ) = @_;
 
     my $app = MT::App::DataAPI->new;
 
@@ -62,18 +62,21 @@ sub test_data_api {
 
     my $format = MT::DataAPI::Format->find_format('json');
 
-    for my $data (@suite) {
+    for my $data (@$suite) {
         if ( $data->{author_id} ) {
             $author = $app->model('author')->load( $data->{author_id} );
         }
         elsif ( !exists( $data->{author_id} ) ) {
-            $author = $app->model('author')->load(1);
+            $author = $app->model('author')
+                ->load( exists $args->{author_id} ? $args->{author_id} : 1 );
         }
         else {
             $author = undef;
         }
         $is_superuser
-            = ( exists $data->{is_superuser} ) ? $data->{is_superuser} : 0;
+            = ( exists $data->{is_superuser} ) ? $data->{is_superuser}
+            : ( exists $args->{is_superuser} ) ? $args->{is_superuser}
+            :                                    0;
 
         $data->{setup}->($data) if $data->{setup};
 

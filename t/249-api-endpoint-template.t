@@ -47,7 +47,7 @@ $system_tmpl->save or die $system_tmpl->errstr;
 
 # test.
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 

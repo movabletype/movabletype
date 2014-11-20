@@ -18,7 +18,7 @@ $mock_cms_common->mock( 'run_web_services_save_config_callbacks', sub { } );
 $app->config->allowComments(1);
 
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 

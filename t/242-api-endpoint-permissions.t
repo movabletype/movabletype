@@ -22,7 +22,7 @@ my $start_time
 
 # test.
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 

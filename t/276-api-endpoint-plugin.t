@@ -35,7 +35,7 @@ my $app = MT::App::DataAPI->new;
 
 # test.
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 

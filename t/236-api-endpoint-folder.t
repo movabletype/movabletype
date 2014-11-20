@@ -16,7 +16,7 @@ $author->email('melody@example.com');
 $author->save;
 
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 

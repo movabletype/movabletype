@@ -23,7 +23,7 @@ $session_class->remove_all;
 $token_class->remove_all;
 
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 

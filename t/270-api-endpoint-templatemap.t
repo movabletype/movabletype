@@ -48,7 +48,7 @@ my $blog_other_site_tmplmap_id = $blog_other_site_tmplmap->id;
 
 # test.
 my $suite = suite();
-test_data_api(@$suite);
+test_data_api($suite);
 
 done_testing;
 
