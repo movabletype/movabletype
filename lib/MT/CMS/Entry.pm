@@ -1912,6 +1912,7 @@ sub save {
     if ($placements_updated) {
         unshift @add_cat_obj, $obj->cache_property('category')
             if $obj->cache_property('category');
+        @add_cat_obj = sort { $a->label cmp $b->label } @add_cat_obj;
         $obj->cache_property( 'categories', undef, \@add_cat_obj );
     }
 
