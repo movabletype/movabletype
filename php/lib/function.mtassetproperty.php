@@ -22,14 +22,14 @@ function smarty_function_mtassetproperty($args, &$ctx) {
         if ($format == '1') {
             if ($filesize < 1024)
                 $filesize = sprintf("%d Bytes", $filesize);
-            elseif ($filesize < 1048576)
+            elseif ($filesize < 1024000)
                 $filesize = sprintf("%.1f KB", $filesize / 1024);
             else
-                $filesize = sprintf("%.1f MB", $filesize / 1048576);
+                $filesize = sprintf("%.1f MB", $filesize / 1024000);
         } elseif ($format == 'k') {
             $filesize = sprintf("%.1f", $filesize / 1024);
         } elseif ($format == 'm') {
-            $filesize = sprintf("%.1f", $filesize / 1048576);
+            $filesize = sprintf("%.1f", $filesize / 1024000);
         }
         return $filesize;
     } elseif (($args['property'] == 'image_width') || ($args['property'] == 'image_height')) {

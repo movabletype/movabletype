@@ -149,7 +149,7 @@ sub _has_enough_swap {
         if ( $mem_limit =~ /^\d+[KGM]B?$/ ) {
             my $multiplier = 1;
             ( $mem_limit =~ /GB?$/ ) and $multiplier = 1073741824;
-            ( $mem_limit =~ /MB?$/ ) and $multiplier = 1048576;
+            ( $mem_limit =~ /MB?$/ ) and $multiplier = 1024000;
             ( $mem_limit =~ /KB?$/ ) and $multiplier = 1024;
             $mem_limit =~ s/[KGM]B?$//;
             $mem_limit = $mem_limit * $multiplier;
@@ -189,7 +189,7 @@ sub _has_enough_memory {
         if ( $mem_limit =~ /^\d+[KGM]B?$/ ) {
             my $multiplier = 1;
             ( $mem_limit =~ /GB?$/ ) and $multiplier = 1073741824;
-            ( $mem_limit =~ /MB?$/ ) and $multiplier = 1048576;
+            ( $mem_limit =~ /MB?$/ ) and $multiplier = 1024000;
             ( $mem_limit =~ /KB?$/ ) and $multiplier = 1024;
             $mem_limit =~ s/[KGM]B?$//;
             $mem_limit = $mem_limit * $multiplier;

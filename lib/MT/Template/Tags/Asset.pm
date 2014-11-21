@@ -1052,7 +1052,7 @@ sub _hdlr_asset_property {
             $ret = sprintf( "%.1f", $size / 1024 );
         }
         elsif ( $format =~ m/m/i ) {
-            $ret = sprintf( "%.1f", $size / 1048576 );
+            $ret = sprintf( "%.1f", $size / 1024000 );
         }
         else {
             $ret = $size;
