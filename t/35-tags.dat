@@ -767,5 +767,6 @@
 { "r" : "0", "t" : "<mt:setvarblock name=\"str\"><![CDATA[&lt;&amp;&gt;&#039;&quot;]]></mt:setvarblock><$mt:var name=\"str\" decode_xml=\"1\"$>", "e" : "&lt;&amp;&gt;&#039;&quot;" }, #751
 { "r" : "0", "t" : "<mt:setvarblock name=\"str\"><&>'\"</mt:setvarblock><$mt:var name=\"str\" encode_xml=\"1\"$>", "e" : "&lt;&amp;&gt;&#039;&quot;" }, #752 TBD NOCDATA 1
 { "r" : "0", "t" : "<mt:setvarblock name=\"str\">&lt;&amp;&gt;&#039;&quot;</mt:setvarblock><$mt:var name=\"str\" decode_xml=\"1\"$>", "e" : "<&>'\"" }, #753 TBD NOCDATA 1
-{ "r" : "1", "t" : "<mt:setvarblock name=\"str\"><p>abcde<br>abcde<br>abcde<br></p></mt:setvarblock><$mt:var name=\"str\" sanitize=\"br\"$>", "e" : "abcde<br>abcde<br>abcde<br>" } #754
+{ "r" : "1", "t" : "<mt:setvarblock name=\"str\"><p>abcde<br>abcde<br>abcde<br></p></mt:setvarblock><$mt:var name=\"str\" sanitize=\"br\"$>", "e" : "abcde<br>abcde<br>abcde<br>" }, #754
+{ "r" : "1", "t" : "<MTBlogs blog_ids=\"1\"><MTWebsiteHasBlog>true<MTElse>false</MTWebsiteHasBlog></MTBlogs>", "e" : "true" } #755
 ]

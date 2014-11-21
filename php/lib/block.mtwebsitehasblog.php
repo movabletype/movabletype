@@ -11,7 +11,10 @@ function smarty_block_mtwebsitehasblog($args, $content, &$ctx, &$repeat) {
         if (empty($blog)) {
             $ret = false;
         } else if($blog->class == 'blog') {
-            $ret = false;
+            $website = $blog->website();
+            $ret = empty($website)
+                ? false
+                : true;
         } else {
             $blogs = $blog->blogs();
             $ret = empty($blogs)

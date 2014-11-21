@@ -449,7 +449,11 @@ sub _hdlr_website_has_blog {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');
     return 0 unless $blog;
-    return 0 if $blog->class ne 'website';
+
+    if ( $blog->is_blog ) {
+        return 1 if $blog->website;
+        return $ctx->_no_parent_website_error;
+    }
 
     my $blog_class = MT->model('blog');
     my %terms;
