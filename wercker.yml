@@ -61,9 +61,9 @@ build:
          prove t/2[01234]?-*.t
 
     - script:
-       name: test 250-299
+       name: test 250-299, 300-399
        code: |
-         prove t/2[^01234]?-*.t
+         prove t/2[^01234]?-*.t t/3??-*.t
 
     - script:
        name: test others
