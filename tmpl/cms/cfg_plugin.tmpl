@@ -267,7 +267,8 @@ function activatePlugin(flag, plugin_sig) {
         </mt:if>
       </mt:if>
         </ul>
-        
+      
+      <mt:if name="plugin_infos">
       <div id="plugin-<mt:var name="plugin_id">-info">
       <mt:if name="plugin_desc">
         <p><mt:var name="plugin_desc"></p>
@@ -286,6 +287,7 @@ function activatePlugin(flag, plugin_sig) {
           </ul>
         </div>
       <!-- /Plugin Description --></div>
+      </mt:if>
 
       <mt:if name="plugin_resources">
         <div id="plugin-<mt:var name="plugin_id">-resources" class="resources">
