@@ -60,6 +60,8 @@ sub test_data_api {
         }
     );
 
+    my $mock_permission = Test::MockModule->new('MT::Permission');
+
     my $format = MT::DataAPI::Format->find_format('json');
 
     for my $data (@$suite) {
@@ -87,6 +89,27 @@ sub test_data_api {
             : 0;
 
         $data->{setup}->($data) if $data->{setup};
+
+        $mock_permission->unmock('can_do')
+            if $mock_permission->is_mocked('can_do');
+        if ( exists $data->{restrictions} ) {
+            $mock_permission->mock(
+                'can_do',
+                sub {
+                    my ( $perm, $action ) = @_;
+                    my $restrictions
+                        = $data->{restrictions}{ $perm->blog_id };
+                    if ( ref $restrictions eq 'ARRAY'
+                        && ( grep { $_ eq $action } @$restrictions ) )
+                    {
+                        return 0;
+                    }
+                    else {
+                        return $mock_permission->original('can_do')->(@_);
+                    }
+                }
+            );
+        }
 
         my $path = $data->{path};
         $path

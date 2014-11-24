@@ -2773,9 +2773,12 @@ sub api {
     $app->user($user);
     $app->permissions(undef);
 
-    if ( my $id = $params->{site_id} ) {
-        my $site = $app->blog( scalar $app->model('blog')->load($id) )
-            or return $app->print_error( 'Site not found', 404 );
+    if ( defined $params->{site_id} ) {
+        my $id = $params->{site_id};
+        if ($id) {
+            my $site = $app->blog( scalar $app->model('blog')->load($id) )
+                or return $app->print_error( 'Site not found', 404 );
+        }
         $app->param( 'blog_id', $id );
 
         require MT::CMS::Blog;

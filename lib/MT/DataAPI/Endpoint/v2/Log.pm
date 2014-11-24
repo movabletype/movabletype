@@ -156,7 +156,7 @@ sub reset {
                 push @sites, $p->blog if $p->can_do('reset_blog_log');
             }
 
-            return $app->errpr(403) if !@sites;
+            return $app->error(403) if !@sites;
 
             for my $site (@sites) {
                 MT::Log->remove( { blog_id => $site->id, class => '*' } )

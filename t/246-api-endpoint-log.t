@@ -32,13 +32,30 @@ sub suite {
             code   => 400,
             error  => "A resource \"log\" is required.",
         },
-
         {    # No message.
             path   => '/v2/sites/1/logs',
             method => 'POST',
             params => { log => {} },
             code   => 409,
             error  => "A paramter \"message\" is required.\n",
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/logs',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/1/logs',
+            method       => 'POST',
+            params       => { log => { message => 'create-log-site-1', }, },
+            restrictions => {
+                0 => [qw/ view_log /],
+                1 => [qw/ view_blog_log /],
+            },
+            code  => 403,
+            error => 'Do not have permission to create a log.',
         },
 
         # create_log - normal tests
@@ -102,6 +119,55 @@ sub suite {
             },
         },
 
+        # get_log - irregular tests.
+        {    # Non-existent log.
+            path   => '/v2/sites/1/logs/10',
+            method => 'GET',
+            code   => 404,
+            error  => 'Log not found',
+        },
+        {    # Non-existent site.
+            path   => '/v2/sites/10/logs/1',
+            method => 'GET',
+            code   => 404,
+            error  => 'Site not found',
+        },
+        {    # Other site.
+            path   => '/v2/sites/2/logs/1',
+            method => 'GET',
+            code   => 404,
+            error  => 'Log not found',
+        },
+        {    # Other site (system).
+            path   => '/v2/sites/0/logs/1',
+            method => 'GET',
+            code   => 404,
+            error  => 'Log not found',
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/logs/1',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/1/logs/1',
+            method       => 'GET',
+            restrictions => {
+                0 => [qw/ view_log /],
+                1 => [qw/ view_blog_log /],
+            },
+            code  => 403,
+            error => 'Do not have permission to retrieve the requested log.',
+        },
+
+        # get_log - normal tests.
+        {   path   => '/v2/sites/1/logs/1',
+            method => 'GET',
+            result => sub { $app->model('log')->load(1) },
+        },
+
         # list_logs - irregular tests
         {    # Non-existent site.
             path   => '/v2/sites/5/logs',
@@ -114,6 +180,13 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/logs',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
         },
 
         # list_logs - normal tests
@@ -139,6 +212,25 @@ sub suite {
                     'IDs of items are "' . "@got_log_ids" . '"' );
             },
         },
+
+        #        {   # No permissions.
+        #            path => '/v2/sites/0/logs',
+        #            method => 'GET',
+        #            restrctions => {
+        #               0 => [qw/ view_log /],
+        #               1 => [qw/ view_blog_log /],
+        #            },
+        #            callbacks => [
+        #                {   name  => 'data_api_pre_load_filtered_list.log',
+        #                    count => 1,
+        #                },
+        #            ],
+        #            result => sub {
+        #                +{   totalResults => 0,
+        #                     items => [],
+        #                };
+        #            },
+        #        },
         {    # Search message.
             path      => '/v2/sites/1/logs',
             method    => 'GET',
@@ -297,6 +389,15 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/logs/export',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+
+        # No permissions.
 
         # export_log - normal tests.
         {    # Blog.
@@ -390,6 +491,24 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/logs/1',
+            method    => 'PUT',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/1/logs/1',
+            method       => 'PUT',
+            restrictions => {
+                0 => [qw/ view_log /],
+                1 => [qw/ view_blog_log /],
+            },
+            params => { log => { message => 'update-log-site-1', }, },
+            code   => 403,
+            error => 'Do not have permission to update a log.',
+        },
 
         # update_log - normal tests
         {   path   => '/v2/sites/1/logs/1',
@@ -472,6 +591,23 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/logs/1',
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/1/logs/1',
+            method       => 'DELETE',
+            restrictions => {
+                0 => [qw/ reset_system_log /],
+                1 => [qw/ reset_blog_log /],
+            },
+            code  => 403,
+            error => 'Do not have permission to delete a log.',
+        },
 
         # delete_log - normal tests
         {   path      => '/v2/sites/1/logs/1',
@@ -492,31 +628,6 @@ sub suite {
             },
         },
 
-        # export_logs - irregular tests.
-        {    # Non-existent site.
-            path   => '/v2/sites/100/logs/export',
-            method => 'GET',
-            code   => 404,
-            result => sub {
-                return +{
-                    error => {
-                        code    => 404,
-                        message => 'Site not found',
-                    },
-                };
-            },
-        },
-
-        # export_logs - normal tests.
-        {    # Site.
-            path   => '/v2/sites/1/logs/export',
-            method => 'GET',
-        },
-        {    # System.
-            path   => '/v2/sites/0/logs/export',
-            method => 'GET',
-        },
-
         # reset_logs - irregular tests
         {    # Non-existent site.
             path   => '/v2/sites/10/logs',
@@ -530,12 +641,62 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/0/logs',
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (blog).
+            path         => '/v2/sites/1/logs',
+            method       => 'DELETE',
+            restrictions => { 1 => [qw/ reset_blog_log /], },
+            code         => 403,
+            error        => 'Do not have permission to reset logs.',
+        },
+        {    # No permissions (system).
+            path         => '/v2/sites/0/logs',
+            method       => 'DELETE',
+            restrictions => {
+                0 => [qw/ reset_system_log reset_blog_log /],
+                1 => [qw/ reset_blog_log /],
+                2 => [qw/ reset_blog_log /],
+            },
+            code  => 403,
+            error => 'Do not have permission to reset logs.',
+        },
 
         # reset_logs - normal tests
-        {   path   => '/v2/sites/0/logs',
+        {    # Blog.
+            path   => '/v2/sites/1/logs',
             method => 'DELETE',
-            setup =>
-                sub { MT->model('log')->load( { class => '*' } ) or die },
+            setup  => sub {
+                ok( MT->model('log')->exist( { class => '*', blog_id => 1 } ),
+                    'Logs in blog (blog_id=1) exists.'
+                );
+            },
+            result => sub {
+                +{ status => 'success' };
+            },
+            complete => sub {
+                my @logs = MT->model('log')
+                    ->load( { class => '*', blog_id => 1 } );
+                is( scalar @logs, 1, 'There is one log.' );
+                is( $logs[0]->category, 'reset_log',
+                    'All logs except reset_log were deleted.' );
+            },
+        },
+        {    # System.
+            path   => '/v2/sites/0/logs',
+            method => 'DELETE',
+            setup  => sub {
+                ok( MT->model('log')->exist( { class => '*' } ),
+                    'Logs on all sites exists.' );
+            },
+            result => sub {
+                +{ status => 'success' };
+            },
             complete => sub {
                 my @logs = MT->model('log')->load( { class => '*' } );
                 is( scalar @logs, 1, 'There is one log.' );

@@ -8,21 +8,25 @@ package MT::DataAPI::Callback::Log;
 use strict;
 use warnings;
 
-sub can_view {
+sub can_save {
     my ( $eh, $app, $obj ) = @_;
     my $user = $app->user or return;
 
     return 1 if $user->is_superuser;
     return 1 if $user->permissions(0)->can_do('view_log');
+
+    my $blog_id = $obj ? $obj->blog_id : $app->blog->id;
     return 1
-        if $obj->blog_id
-        && $user->permissions( $obj->blog_id )->can_do('view_blog_log');
+        if $blog_id
+        && $user->permissions($blog_id)->can_do('view_blog_log');
 
     return;
 }
 
-sub can_save {
-    can_view(@_);
+sub can_view {
+    my ( $eh, $app, $id, $objp ) = @_;
+    my $obj = $objp->force();
+    can_save( $eh, $app, $obj );
 }
 
 sub save_filter {
