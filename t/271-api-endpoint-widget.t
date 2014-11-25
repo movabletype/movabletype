@@ -6,12 +6,16 @@ use warnings;
 use lib qw(lib extlib t/lib);
 
 use Test::More;
+use Test::MockModule;
 use MT::Test::DataAPI;
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
 # preparation.
+my $mock_perm   = Test::MockModule->new('MT::Permission');
+my $mock_author = Test::MockModule->new('MT::Author');
+
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
@@ -36,6 +40,9 @@ my $website_widget = $widget_class->load( { blog_id => 2, type => 'widget' } )
 my $blog_index_tmpl = $widget_class->load( { blog_id => 1, type => 'index' } )
     or die $widget_class->errstr;
 
+my $blog_ws = $widget_class->load( { blog_id => 1, type => 'widgetset' } )
+    or die $widget_class->errstr;
+
 # test.
 my $suite = suite();
 test_data_api($suite);
@@ -56,6 +63,28 @@ sub suite {
                         message => 'Site not found',
                     },
                 };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/widgets',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/widgets',
+            method => 'GET',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+                $mock_author->mock( 'can_edit_templates', 0 );
+            },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the list of widgets.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
+                $mock_author->unmock('can_edit_templates');
             },
         },
 
@@ -230,6 +259,30 @@ sub suite {
             params => { sortBy => 'created_by', },
         },
 
+        # list_all_widgets - irregular tests.
+        {    # Not logged in.
+            path      => '/v2/widgets',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/widgets',
+            method => 'GET',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+                $mock_author->mock( 'can_edit_templates', 0 );
+            },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the list of widgets.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
+                $mock_author->unmock('can_edit_templates');
+            },
+        },
+
         # list_all_widgets - normal tests
         {   path      => '/v2/widgets',
             method    => 'GET',
@@ -251,10 +304,64 @@ sub suite {
                 no warnings 'redefine';
                 local *boolean::true  = sub {'true'};
                 local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => $total_results,
                     items => MT::DataAPI::Resource->from_object( \@widgets ),
+                };
+            },
+        },
+
+        # list_widgets_for_widgetset - irregular tests.
+        {    # Non-existent site.
+            path   => '/v2/sites/10/widgetsets/' . $blog_ws->id . '/widgets',
+            method => 'GET',
+            code   => 404,
+            error  => 'Site not found',
+        },
+        {    # Other site.
+            path   => '/v2/sites/2/widgetsets/' . $blog_ws->id . '/widgets',
+            method => 'GET',
+            code   => 404,
+            error  => 'Widgetset not found',
+        },
+        {    # Not logged in.
+            path   => '/v2/sites/2/widgetsets/' . $blog_ws->id . '/widgets',
+            method => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/widgetsets/' . $blog_ws->id . '/widgets',
+            method => 'GET',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+                $mock_author->mock( 'can_edit_templates', 0 );
+            },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve widgets of the request widgetset.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
+                $mock_author->unmock('can_edit_templates');
+            },
+        },
+
+        # list_widgets_for_widgetset - normal tests.
+        {   path   => '/v2/sites/1/widgetsets/' . $blog_ws->id . '/widgets',
+            method => 'GET',
+            result => sub {
+                my @widget_id = split ',', $blog_ws->modulesets;
+                my @widget
+                    = $app->model('template')->load( { id => \@widget_id } );
+
+                $app->user($author);
+                no warnings 'redefine';
+                local *boolean::true  = sub {'true'};
+                local *boolean::false = sub {'false'};
+                return +{
+                    totalResults => 3,
+                    items => MT::DataAPI::Resource->from_object( \@widget ),
                 };
             },
         },
@@ -320,6 +427,27 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path   => '/v2/sites/1/widgets/' . $blog_widget->id,
+            method => 'GET',
+            author => 0,
+            code   => 401,
+            error  => 'Unauthorized',
+        },
+
+        # {   # No permissions.
+        #     path      => '/v2/sites/1/widgets/' . $blog_widget->id,
+        #     method    => 'GET',
+        #     setup  => sub {
+        #         $mock_perm->mock( 'can_edit_templates', 0 );
+        #     },
+        #     restrictions => { 1 => [qw/ edit_templates /], },
+        #     code => 403,
+        #     error => 'abc',
+        #     complete => sub {
+        #         $mock_perm->unmock('can_edit_templates');
+        #     },
+        # },
 
         # get_widget - normal tests
         {    # Blog.
@@ -398,6 +526,26 @@ sub suite {
                         message => "A parameter \"name\" is required.\n",
                     },
                 };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/widgets',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/widgets',
+            method => 'POST',
+            params => { widget => { name => 'create-widget', }, },
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            code     => 403,
+            error    => 'Do not have permission to create a widget.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
             },
         },
 
@@ -573,6 +721,31 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/widgets/' . $blog_widget->id,
+            method    => 'PUT',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/widgets/' . $blog_widget->id,
+            method => 'PUT',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            params => {
+                widget => {
+                    name => 'update-widget',
+                    type => 'update-type',
+                },
+            },
+            code     => 403,
+            error    => 'Do not have permission to update a widget.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
+            },
+        },
 
         # update_widget - normal tests
         {    # Blog.
@@ -637,10 +810,43 @@ sub suite {
             method => 'POST',
             code   => 404,
         },
+        {    # Not logged in.
+            path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/refresh',
+            method => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/refresh',
+            method => 'POST',
+            setup  => sub {
+                $mock_author->mock( 'can_edit_templates', 0 );
+                $mock_perm->mock( 'can_edit_templates',  0 );
+                $mock_perm->mock( 'can_administer_blog', 0 );
+            },
+            code     => 403,
+            error    => 'Do not have permission to refresh a widget.',
+            complete => sub {
+                $mock_author->unmock('can_edit_templates');
+                $mock_perm->unmock('can_edit_templates');
+                $mock_perm->unmock('can_administer_blog');
+            },
+        },
 
         # refresh_widget - normal tests
-        {   path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/refresh',
-            method => 'POST',
+        {   path  => '/v2/sites/1/widgets/' . $blog_widget->id . '/refresh',
+            setup => sub {
+                $blog_widget->text('This widget has not been refreshed!');
+                $blog_widget->save or die $blog_widget->errstr;
+            },
+            method   => 'POST',
+            complete => sub {
+                my $refreshed_blog_widget
+                    = $app->model('template')->load( $blog_widget->id );
+                isnt( $refreshed_blog_widget->text,
+                    $blog_widget->text, 'Widget has been refreshed.' );
+            },
         },
 
         # clone_widget - irregular tests
@@ -669,10 +875,47 @@ sub suite {
             method => 'POST',
             code   => 404,
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/widgets/' . $blog_widget->id . '/clone',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/clone',
+            method => 'POST',
+            setup  => sub {
+                $mock_author->mock( 'can_edit_templates', 0 );
+                $mock_perm->mock( 'can_edit_templates',  0 );
+                $mock_perm->mock( 'can_administer_blog', 0 );
+            },
+            code     => 403,
+            error    => 'Do not have permission to clone a widget.',
+            complete => sub {
+                $mock_author->unmock('can_edit_templates');
+                $mock_perm->unmock('can_edit_templates');
+                $mock_perm->unmock('can_administer_blog');
+            },
+        },
 
         # clone_widget - normal tests
-        {   path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/clone',
-            method => 'POST',
+        {   path  => '/v2/sites/1/widgets/' . $blog_widget->id . '/clone',
+            setup => sub {
+                my ($data) = @_;
+                $data->{widget_count} = $app->model('template')
+                    ->count( { blog_id => 1, type => 'widget' } );
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $widget_count = $app->model('template')
+                    ->count( { blog_id => 1, type => 'widget' } );
+                is( $widget_count,
+                    $data->{widget_count} + 1,
+                    'Cloned template.'
+                );
+                }
         },
 
         # delete_widget - irregular tests
@@ -734,6 +977,25 @@ sub suite {
                         message => 'Widget not found',
                     },
                 };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/widgets/' . $blog_index_tmpl->id,
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/widgets/' . $blog_widget->id,
+            method => 'DELETE',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            code     => 403,
+            error    => 'Do not have permission to delete a widget.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
             },
         },
 
