@@ -830,7 +830,7 @@ sub rebuild_pages {
         my $start = time;
         my $count = 0;
         my $cb    = sub {
-            my $result = time - $start > 20 ? 0 : 1;
+            my $result = time - $start > $app->config->RebuildOffsetSeconds ? 0 : 1;
             $count++ if $result;
             return $result;
         };
@@ -901,7 +901,7 @@ sub rebuild_pages {
                 my $start = time;
                 my $count = 0;
                 my $cb    = sub {
-                    my $result = time - $start > 20 ? 0 : 1;
+                    my $result = time - $start > $app->config->RebuildOffsetSeconds ? 0 : 1;
                     $count++ if $result;
                     return $result;
                 };

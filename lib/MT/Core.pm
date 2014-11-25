@@ -2054,6 +2054,7 @@ BEGIN {
                 default => {}
             },
             'DataAPIDisableSite' => undef,
+            'RebuildOffsetSeconds' => { default => 20 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
