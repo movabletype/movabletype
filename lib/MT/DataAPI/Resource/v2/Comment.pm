@@ -38,7 +38,13 @@ sub _from_object {
     my $user  = $app->user;
 
     if ( $user && $user->id && $app->param('no_text_filter') ) {
-        return $obj->text;
+        my $blog = $obj->blog;
+        if ( $blog->allow_comment_html ) {
+            return $obj->text;
+        }
+        else {
+            return remove_html( $obj->text );
+        }
     }
     else {
         return _apply_text_filters( $app, $obj );

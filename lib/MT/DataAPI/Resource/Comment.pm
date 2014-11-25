@@ -70,8 +70,18 @@ sub fields {
             alias => 'created_on',
             type  => 'MT::DataAPI::Resource::DataType::ISO8601',
         },
-        {   name  => 'body',
-            alias => 'text',
+        {   name        => 'body',
+            alias       => 'text',
+            from_object => sub {
+                my ($obj) = @_;
+                if ( $obj->blog->allow_comment_html ) {
+                    return $obj->text;
+                }
+                else {
+                    require MT::Util;
+                    return MT::Util::remove_html( $obj->text );
+                }
+            },
         },
         {   name        => 'link',
             from_object => sub {
@@ -113,7 +123,7 @@ sub fields {
                         ||= $user->blog_perm( $obj->blog_id );
                     $entry = $entries{ $obj->entry_id };
 
-                    $hashs->[$i]{updatable}
+                    $hashs->[$i]{updatable} 
                         = $perms
                         && $entry
                         && (

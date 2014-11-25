@@ -114,6 +114,112 @@ sub suite {
                 MT->model('comment')->load(1);
             },
         },
+        {   note   => 'Sanitize text field (v1)',
+            path   => '/v1/sites/1/comments/1',
+            method => 'GET',
+            setup  => sub {
+                my $comment = $app->model('comment')->load(1);
+                $comment->text('<script>alert(1);</script>');
+                $comment->save or die $comment->errstr;
+
+                my $blog = $comment->blog;
+                $blog->allow_comment_html(0);
+                $blog->save or die $blog->errstr;
+            },
+            result => sub {
+                +{  'link' =>
+                        'http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1',
+                    'parent'    => undef,
+                    'entry'     => { 'id' => '1' },
+                    'status'    => 'Approved',
+                    'date'      => '2004-07-14T18:28:00-03:30',
+                    'updatable' => 'true',
+                    'blog'      => { 'id' => '1' },
+                    'author'    => {
+                        'userpicUrl'  => undef,
+                        'displayName' => 'v14GrUH 4 cheep'
+                    },
+                    'body' => 'alert(1);',
+                    'id'   => 1
+                };
+            },
+        },
+        {   note   => 'Sanitize text field (v2)',
+            path   => '/v2/sites/1/comments/1',
+            method => 'GET',
+            params => { no_text_filter => 1 },
+            result => sub {
+                +{  'link' =>
+                        'http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1',
+                    'parent'       => undef,
+                    'entry'        => { 'id' => '1' },
+                    'status'       => 'Approved',
+                    'date'         => '2004-07-14T18:28:00-03:30',
+                    'createdDate'  => '2004-07-14T18:28:00-03:30',
+                    'modifiedDate' => '0000-00-00T00:00:00-03:30',
+                    'updatable'    => 'true',
+                    'blog'         => { 'id' => '1' },
+                    'author'       => {
+                        'userpicUrl'  => undef,
+                        'displayName' => 'v14GrUH 4 cheep'
+                    },
+                    'body' => 'alert(1);',
+                    'id'   => 1
+                };
+            },
+        },
+        {   note   => 'Not sanitize text field (v1)',
+            path   => '/v1/sites/1/comments/1',
+            method => 'GET',
+            setup  => sub {
+                my $comment = $app->model('comment')->load(1);
+
+                my $blog = $comment->blog;
+                $blog->allow_comment_html(1);
+                $blog->save or die $blog->errstr;
+            },
+            result => sub {
+                +{  'link' =>
+                        'http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1',
+                    'parent'    => undef,
+                    'entry'     => { 'id' => '1' },
+                    'status'    => 'Approved',
+                    'date'      => '2004-07-14T18:28:00-03:30',
+                    'updatable' => 'true',
+                    'blog'      => { 'id' => '1' },
+                    'author'    => {
+                        'userpicUrl'  => undef,
+                        'displayName' => 'v14GrUH 4 cheep'
+                    },
+                    'body' => '<script>alert(1);</script>',
+                    'id'   => 1
+                };
+            },
+        },
+        {   note   => 'Not sanitize text field (v2)',
+            path   => '/v2/sites/1/comments/1',
+            params => { no_text_filter => 1 },
+            method => 'GET',
+            result => sub {
+                +{  'link' =>
+                        'http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1',
+                    'parent'       => undef,
+                    'entry'        => { 'id' => '1' },
+                    'status'       => 'Approved',
+                    'date'         => '2004-07-14T18:28:00-03:30',
+                    'createdDate'  => '2004-07-14T18:28:00-03:30',
+                    'modifiedDate' => '0000-00-00T00:00:00-03:30',
+                    'updatable'    => 'true',
+                    'blog'         => { 'id' => '1' },
+                    'author'       => {
+                        'userpicUrl'  => undef,
+                        'displayName' => 'v14GrUH 4 cheep'
+                    },
+                    'body' => '<script>alert(1);</script>',
+                    'id'   => 1
+                };
+            },
+        },
         {   path   => '/v1/sites/1/comments/1',
             method => 'PUT',
             params => {
