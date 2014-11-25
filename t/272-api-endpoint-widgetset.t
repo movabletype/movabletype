@@ -6,12 +6,16 @@ use warnings;
 use lib qw(lib extlib t/lib);
 
 use Test::More;
+use Test::MockModule;
 use MT::Test::DataAPI;
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
 # preparation.
+my $mock_perm   = Test::MockModule->new('MT::Permission');
+my $mock_author = Test::MockModule->new('MT::Permission');
+
 my $author = $app->model('author')->load(1);
 
 my @ws_fields
@@ -52,6 +56,28 @@ sub suite {
                         message => 'Site not found',
                     },
                 };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/widgetsets',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/widgetsets',
+            method => 'GET',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+                $mock_author->mock( 'can_edit_templates', 0 );
+            },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the list of widgetsets.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
+                $mock_author->unmock('can_edit_templates');
             },
         },
 
@@ -193,6 +219,27 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/widgetsets/' . $blog_ws->id,
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/widgetsets/' . $blog_ws->id,
+            method => 'GET',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            restrictions => { 1 => [qw/ edit_templates /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the requested widgetset.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
+            },
+        },
 
         # get_widgetset - normal tests
         {   path      => '/v2/sites/1/widgetsets/' . $blog_ws->id,
@@ -260,6 +307,31 @@ sub suite {
                     },
                     },
                     ;
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/widgetsets',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/widgetsets',
+            method => 'POST',
+            params => {
+                widgetset => {
+                    name    => 'create-widgetset',
+                    widgets => [ map { +{ id => $_->id } } @blog_widgets ],
+                },
+            },
+            setup => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            code     => 403,
+            error    => 'Do not have permission to create a widgetset.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
             },
         },
 
@@ -378,6 +450,32 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/widgetsets/' . $blog_ws->id,
+            method    => 'PUT',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/widgetsets/' . $blog_ws->id,
+            method => 'PUT',
+            params => {
+                widgetset => {
+                    name => 'update-widgetset',
+                    widgets =>
+                        [ map { +{ id => $_->id } } @blog_widgets_update ],
+                },
+            },
+            setup => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            code     => 403,
+            error    => 'Do not have permission to update a widgetset.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
+            },
+        },
 
         # update_widgetset - normal tests
         {   path   => '/v2/sites/1/widgetsets/' . $blog_ws->id,
@@ -482,6 +580,25 @@ sub suite {
                         message => 'Widgetset not found',
                     },
                 };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/widgetsets/' . $blog_ws->id,
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/widgetsets/' . $blog_ws->id,
+            method => 'DELETE',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            code     => 403,
+            error    => 'Do not have permission to delete a widgetset.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
             },
         },
 

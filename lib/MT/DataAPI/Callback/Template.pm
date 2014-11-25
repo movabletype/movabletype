@@ -9,6 +9,40 @@ package MT::DataAPI::Callback::Template;
 use strict;
 use warnings;
 
+sub can_list {
+    my ( $eh, $app, $terms, $args, $options ) = @_;
+
+    if ( defined $app->param('blog_id') ) {
+
+        # list_templates endpoint.
+        return $app->permissions->can_edit_templates;
+    }
+    else {
+
+        # list_all_templates endpoint.
+
+        # A user having "edit_templates" permission in system scope
+        # can view all templates.
+        return 1 if $app->user->permissions(0)->can_edit_templates;
+
+        my $iter = $app->model('permission')->load_iter(
+            {   author_id => $app->user->id,
+                blog_id   => { not => 0 },
+            }
+        );
+        my @blog_id;
+        while ( my $perm = $iter->() ) {
+            push @blog_id, $perm->blog_id if $perm->can_edit_templates;
+        }
+
+        # No permissions.
+        return unless @blog_id;
+
+        $terms->{blog_id} = \@blog_id;
+        return 1;
+    }
+}
+
 sub save_filter {
     my ( $eh, $app, $obj, $orig ) = @_;
 

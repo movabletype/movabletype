@@ -40,6 +40,7 @@ sub core_endpoints {
     my $app = shift;
     my $pkg = '$Core::MT::DataAPI::Endpoint::';
     return [
+
         # version 1
         {   id             => 'list_endpoints',
             route          => '/endpoints',
@@ -1235,6 +1236,7 @@ sub core_endpoints {
             },
         },
         {
+
             # update
             id             => 'list_permissions_for_user',
             route          => '/users/:user_id/permissions',
@@ -2044,6 +2046,7 @@ sub init_plugins {
     my $pfx = '$Core::MT::DataAPI::Callback::';
     $app->_register_core_callbacks(
         {
+
             # entry callbacks
             $pkg
                 . 'pre_load_filtered_list.entry' =>
@@ -2136,6 +2139,9 @@ sub init_plugins {
             $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
 
             # template callbacks
+            $pkg
+                . 'list_permission_filter.template' =>
+                "${pfx}Template::can_list",
             $pkg . 'save_filter.template' => "${pfx}Template::save_filter",
 
             # widget callbacks
@@ -2439,8 +2445,7 @@ sub object_to_resource {
 sub mt_authorization_data {
     my ($app) = @_;
 
-    my $header
-        = $app->get_header('X-MT-Authorization')
+    my $header = $app->get_header('X-MT-Authorization')
         || ( lc $app->request_method eq 'post'
         && $app->param('X-MT-Authorization') )
         or return undef;
@@ -2467,7 +2472,7 @@ sub authenticate {
     my $data = $app->mt_authorization_data;
     return MT::Author->anonymous
         unless $data
-        && exists $data->{MTAuth}{accessToken};
+            && exists $data->{MTAuth}{accessToken};
 
     my $session
         = MT::AccessToken->load_session( $data->{MTAuth}{accessToken} || '' )
