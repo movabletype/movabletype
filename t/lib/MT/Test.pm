@@ -54,6 +54,7 @@ BEGIN {
         }
     }
     else {
+        require DBD::SQLite;  # Use in sqlite-test.cfg.
         $ENV{MT_CONFIG}
             = File::Spec->catfile( $ENV{MT_HOME}, "t", "sqlite-test.cfg" );
     }
