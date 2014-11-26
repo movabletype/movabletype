@@ -6,12 +6,16 @@ use warnings;
 use lib qw(lib extlib t/lib);
 
 use Test::More;
+use Test::MockModule;
 use MT::Test::DataAPI;
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
 # preparation.
+my $mock_perm   = Test::MockModule->new('MT::Permission');
+my $mock_author = Test::MockModule->new('MT::Author');
+
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
@@ -144,6 +148,31 @@ sub suite {
             code   => 409,
             error  => "Invalid archiveType: invalid\n",
         },
+        {    # Not logged in.
+            path =>
+                "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path =>
+                "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'Individual',
+                    buildType   => 'Static',
+                },
+            },
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                1 => [qw/ edit_templates /],
+            },
+            code  => 403,
+            error => 'Do not have permission to create a templatemap.',
+        },
 
         # create_templatemap - normal tests
         {   path =>
@@ -240,14 +269,36 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path =>
+                "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path =>
+                "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
+            method => 'GET',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            restrictions => { 1 => [qw/ edit_templates /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the list of templatemaps.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
+            },
+        },
 
         # list_templatemaps - normal tests
         {   path =>
                 "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
             method => 'GET',
             result => sub {
-                my @tm
-                    = $app->model('templatemap')
+                my @tm = $app->model('templatemap')
                     ->load( { template_id => $blog_individual_tmpl_id, } );
 
                 $app->user($author);
@@ -364,6 +415,29 @@ sub suite {
             method => 'GET',
             code   => 404,
         },
+        {    # Nog logged in.
+            path =>
+                "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path =>
+                "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
+            method => 'GET',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            restrictions => { 1 => [qw/ edit_templates /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the requested templatemap.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
+            },
+        },
 
         # get_templatemap - normal tests
         {   path =>
@@ -372,6 +446,28 @@ sub suite {
             result => sub {
                 $blog_tmplmap;
             },
+        },
+
+        # update_templatemap - irregular test.
+        {    # Not logged in.
+            path =>
+                "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
+            method    => 'PUT',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path =>
+                "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
+            method => 'PUT',
+            params => { templatemap => { fileTemplate => 'foobarbaz', }, },
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                1 => [qw/ edit_templates /],
+            },
+            code  => 403,
+            error => 'Do not have permission to update a templatemap.',
         },
 
         # update_templatemap - normal tests
@@ -408,8 +504,7 @@ sub suite {
             method   => 'DELETE',
             code     => 404,
             complete => sub {
-                my $map
-                    = $app->model('templatemap')
+                my $map = $app->model('templatemap')
                     ->load($blog_other_tmplmap_id);
                 is( ref $map, 'MT::TemplateMap',
                     'Does not deleted templatemap.' );
@@ -448,6 +543,25 @@ sub suite {
                 is( ref $map, 'MT::TemplateMap',
                     'Does not deleted templatemap.' );
             },
+        },
+        {    # Not logged in.
+            path =>
+                "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path =>
+                "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
+            method       => 'DELETE',
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                1 => [qw/ edit_templates /],
+            },
+            code  => 403,
+            error => 'Do not have permission to delete a templatemap.',
         },
 
         # delete_templatemap - normal tests
