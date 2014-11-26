@@ -428,11 +428,11 @@ sub suite {
             },
         },
         {    # Not logged in.
-            path   => '/v2/sites/1/widgets/' . $blog_widget->id,
-            method => 'GET',
-            author => 0,
-            code   => 401,
-            error  => 'Unauthorized',
+            path      => '/v2/sites/1/widgets/' . $blog_widget->id,
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
         },
 
         # {   # No permissions.
