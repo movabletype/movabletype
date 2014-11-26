@@ -123,7 +123,7 @@ sub fields {
                         ||= $user->blog_perm( $obj->blog_id );
                     $entry = $entries{ $obj->entry_id };
 
-                    $hashs->[$i]{updatable} 
+                    $hashs->[$i]{updatable}
                         = $perms
                         && $entry
                         && (
