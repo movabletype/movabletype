@@ -46,6 +46,20 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/entries/export',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/1/entries/export',
+            method       => 'GET',
+            restrictions => { 1 => [qw/ export_blog /], },
+            code         => 403,
+            error        => 'You do not have export permissions',
+        },
 
         # export_entries - normal tests.
         {    # Blog.
@@ -258,6 +272,20 @@ sub suite {
                     ->load( { blog_id => 1, title => 'First Entry' } );
                 is( $entry, undef, 'An entry has not been imported.' );
             },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/entries/import',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/1/entries/import',
+            method       => 'POST',
+            restrictions => { 1 => [qw/ import_blog /], },
+            code         => 403,
+            error        => 'Do not have permission to import entries.',
         },
 
         # import_entries - normal tests.
