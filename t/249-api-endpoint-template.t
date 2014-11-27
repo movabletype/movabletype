@@ -12,17 +12,12 @@ use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
 # preparation.
+my $mock_perm   = Test::MockModule->new('MT::Permission');
+my $mock_author = Test::MockModule->new('MT::Author');
+
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
-
-my $mock_author = Test::MockModule->new('MT::Author');
-$mock_author->mock( 'is_superuser', sub {0} );
-my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
-$mock_app_api->mock( 'authenticate', $author );
-my $version;
-$mock_app_api->mock( 'current_api_version',
-    sub { $version = $_[1] if $_[1]; $version } );
 
 my $tmpl_class = $app->model('template');
 
@@ -111,6 +106,30 @@ sub suite {
             code  => 409,
             error => "A parameter \"outputFile\" is required.\n",
         },
+        {    # Not logged in.
+            path      => '/v2/sites/2/templates',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/2/templates',
+            method => 'POST',
+            params => {
+                template => {
+                    name       => 'create-template',
+                    type       => 'index',
+                    outputFile => 'create_template.html',
+                },
+            },
+            setup => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            code     => 403,
+            error    => 'Do not have permission to create a template.',
+            complete => sub { $mock_perm->unmock('can_edit_templates') },
+        },
 
         # create_template - normal tests
         {   path   => '/v2/sites/2/templates',
@@ -145,6 +164,24 @@ sub suite {
             path   => '/v2/sites/5/templates',
             method => 'GET',
             code   => 404,
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/2/templates',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/2/templates',
+            method => 'GET',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the list of templates.',
+            complete => sub { $mock_perm->unmock('can_edit_templates') },
         },
 
         # list_templates - normal tests
@@ -325,6 +362,26 @@ sub suite {
             params => { sortBy => 'type', },
         },
 
+        # list_all_templates - irregular tests.
+        {    # Not logged in.
+            path      => '/v2/templates',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/templates',
+            method => 'GET',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the list of templates.',
+            complete => sub { $mock_perm->unmock('can_edit_templates') },
+        },
+
         # list_all_templates - normal tests
         {   path   => '/v2/templates',
             method => 'GET',
@@ -375,6 +432,30 @@ sub suite {
             method => 'GET',
             code   => 404,
         },
+        {    # Not logged in.
+            path      => '/v2/sites/2/templates/' . $website_tmpl_module->id,
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
+            method => 'GET',
+            setup  => sub {
+                $mock_author->mock( 'can_edit_templates', 0 );
+            },
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                2 => [qw/ edit_templates /],
+            },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the requested template.',
+            complete => sub {
+                $mock_author->unmock('can_edit_templates');
+            },
+        },
 
         # get_template - normal tests
         {   path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
@@ -395,6 +476,24 @@ sub suite {
                 },
             },
             code => 404,
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/2/templates/' . $website_tmpl_module->id,
+            method    => 'PUT',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
+            method => 'PUT',
+            params => { template => { name => 'update-template', }, },
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            code     => 403,
+            error    => 'Do not have permission to update a template.',
+            complete => sub { $mock_perm->unmock('can_edit_templates') },
         },
 
         # update_template - normal tests
@@ -437,6 +536,25 @@ sub suite {
             method => 'DELETE',
             code   => 403,
         },
+        {    # Not logged in.
+            path      => '/v2/sites/2/templates/' . $website_tmpl_module->id,
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
+            method => 'DELETE',
+            setup  => sub {
+                $mock_perm->mock( 'can_edit_templates', 0 );
+            },
+            code     => 403,
+            error    => 'Do not have permission to delete a template.',
+            complete => sub {
+                $mock_perm->unmock('can_edit_templates');
+            },
+        },
 
         # delete_template - normal tests
         {   path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
@@ -462,6 +580,32 @@ sub suite {
             method => 'POST',
             code   => 400,
         },
+        {
+            # Not logged in.
+            path => '/v2/sites/1/templates/'
+                . $blog_index_tmpl->id
+                . '/publish',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path => '/v2/sites/1/templates/'
+                . $blog_index_tmpl->id
+                . '/publish',
+            method => 'POST',
+            setup  => sub {
+                $mock_perm->mock( 'can_administer_blog', 0 );
+                $mock_perm->mock( 'can_rebuild',         0 );
+            },
+            code     => 403,
+            error    => 'Do not have permission to publish a template.',
+            complete => sub {
+                $mock_perm->unmock('can_administer_blog');
+                $mock_perm->unmock('can_rebuild');
+            },
+        },
 
         # publish_template - normal tests
         {    # Index template.
@@ -479,12 +623,41 @@ sub suite {
             method => 'POST',
             code   => 404,
         },
+        {    # Not logged in.
+            path => '/v2/sites/1/templates/'
+                . $blog_index_tmpl->id
+                . '/refresh',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path => '/v2/sites/1/templates/'
+                . $blog_index_tmpl->id
+                . '/refresh',
+            method => 'POST',
+        },
 
         # refresh_template - normal tests
         {   path => '/v2/sites/1/templates/'
                 . $blog_index_tmpl->id
                 . '/refresh',
             method => 'POST',
+            setup  => sub {
+                $blog_index_tmpl->text(
+                    'This template has not been refreshed!');
+                $blog_index_tmpl->save or die $blog_index_tmpl->errstr;
+            },
+            complete => sub {
+                my $refreshed_blog_index_tmpl
+                    = $app->model('template')->load( $blog_index_tmpl->id );
+                isnt(
+                    $refreshed_blog_index_tmpl->text,
+                    $blog_index_tmpl->text,
+                    'Template has been refreshed.'
+                );
+            },
         },
 
         # refresh_templates_for_site - irregular tests
@@ -514,6 +687,30 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/2/refresh_templates',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+
+#               {   # No permissions.
+#                   path   => '/v2/sites/2/refresh_templates',
+#                   method => 'POST',
+#                   setup  => sub {
+#                       $mock_author->mock( 'can_edit_templates', 0 );
+#                       $mock_perm->mock( 'can_edit_templates',  0 );
+#                       $mock_perm->mock( 'can_administer_blog', 0 );
+#                   },
+#                   code     => 403,
+#                   error    => 'Do not have permission to refresh a widget.',
+#                   complete => sub {
+#                       $mock_author->unmock('can_edit_templates');
+#                       $mock_perm->unmock('can_edit_templates');
+#                       $mock_perm->unmock('can_administer_blog');
+#                   },
+#               },
 
         # refresh_templates_for_site - normal tests
         {    # Website.
@@ -574,14 +771,59 @@ sub suite {
             method => 'POST',
             code   => 400,
         },
+        {    # Not logged in.
+            path => '/v2/sites/1/templates/'
+                . $blog_index_tmpl->id
+                . '/clone',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path => '/v2/sites/1/templates/'
+                . $blog_index_tmpl->id
+                . '/clone',
+            method => 'POST',
+            setup  => sub {
+                $mock_author->mock( 'can_edit_templates', 0 );
+                $mock_perm->mock( 'can_edit_templates',  0 );
+                $mock_perm->mock( 'can_administer_blog', 0 );
+            },
+            code     => 403,
+            error    => 'Do not have permission to clone a template.',
+            complete => sub {
+                $mock_author->unmock('can_edit_templates');
+                $mock_perm->unmock('can_edit_templates');
+                $mock_perm->unmock('can_administer_blog');
+            },
+        },
 
         # clone_template - normal tests
         {   path => '/v2/sites/1/templates/'
                 . $blog_index_tmpl->id
                 . '/clone',
             method => 'POST',
+            setup  => sub {
+                my ($data) = @_;
+                $data->{tmpl_count} = $app->model('template')->count(
+                    {   blog_id => 1,
+                        type => [qw/ index archive individual page category /]
+                    }
+                );
+            },
             result => sub {
                 return +{ status => 'success' };
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $tmpl_count = $app->model('template')->count(
+                    {   blog_id => 1,
+                        type => [qw/ index archive individual page category /]
+                    }
+                );
+                is( $tmpl_count, $data->{tmpl_count} + 1,
+                    'Cloned template.' );
             },
         },
 

@@ -98,7 +98,7 @@ sub test_data_api {
                 sub {
                     my ( $perm, $action ) = @_;
                     my $restrictions
-                        = $data->{restrictions}{ $perm->blog_id };
+                        = $data->{restrictions}{ $perm->blog_id || 0 };
                     if ( ref $restrictions eq 'ARRAY'
                         && ( grep { $_ eq $action } @$restrictions ) )
                     {

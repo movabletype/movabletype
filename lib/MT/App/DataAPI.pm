@@ -2142,6 +2142,9 @@ sub init_plugins {
             $pkg
                 . 'list_permission_filter.template' =>
                 "${pfx}Template::can_list",
+            $pkg
+                . 'view_permission_filter.template' =>
+                "${pfx}Template::can_view",
             $pkg . 'save_filter.template' => "${pfx}Template::save_filter",
 
             # widget callbacks
@@ -2472,7 +2475,7 @@ sub authenticate {
     my $data = $app->mt_authorization_data;
     return MT::Author->anonymous
         unless $data
-            && exists $data->{MTAuth}{accessToken};
+        && exists $data->{MTAuth}{accessToken};
 
     my $session
         = MT::AccessToken->load_session( $data->{MTAuth}{accessToken} || '' )

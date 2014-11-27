@@ -269,9 +269,6 @@ sub init_core_callbacks {
             # template callbacks
             $pkg . 'edit.template' => "${pfx}Template::edit",
             $pkg
-                . 'view_permission_filter.template' =>
-                "${pfx}Template::can_view",
-            $pkg
                 . 'save_permission_filter.template' =>
                 "${pfx}Template::can_save",
             $pkg

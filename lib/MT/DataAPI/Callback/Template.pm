@@ -43,6 +43,23 @@ sub can_list {
     }
 }
 
+sub can_view {
+    my ( $eh, $app, $id, $objp ) = @_;
+    return 1 if $app->user->can_edit_templates;
+    if ($id) {
+        my $obj = $objp->force();
+        return 0
+            unless $app->user->permissions( $obj->blog_id )
+            ->can_do('edit_templates');
+    }
+    else {
+        my $perms = $app->permissions;
+        return 0
+            unless $perms->can_do('edit_templates');
+    }
+    return 1;
+}
+
 sub save_filter {
     my ( $eh, $app, $obj, $orig ) = @_;
 
