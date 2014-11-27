@@ -25,6 +25,23 @@ done_testing;
 sub suite {
     return +[
 
+        # list_themes - irregular tests.
+        {    # Not logged in.
+            path      => '/v2/themes',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/themes',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ open_theme_listing_screen /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the requested themes.',
+        },
+
         # list_themes - normal tests
         {   path   => '/v2/themes',
             method => 'GET',
@@ -42,6 +59,32 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/2/themes',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (site).
+            path         => '/v2/sites/2/themes',
+            method       => 'GET',
+            restrictions => {
+                0 => [qw/ open_theme_listing_screen /],
+                2 => [qw/ open_theme_listing_screen /],
+            },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the requested site\'s themes.',
+        },
+        {    # No permissions (system).
+            path         => '/v2/sites/0/themes',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ open_theme_listing_screen /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the requested site\'s themes.',
         },
 
         # list_themes_for_site - normal tests
@@ -70,6 +113,21 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # Not logged in.
+            path      => '/v2/themes/classic_website',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/themes/classic_website',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ open_theme_listing_screen /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the requested theme.',
         },
 
         # get_theme - normal tests
@@ -171,6 +229,32 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/0/themes/classic_website',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (site).
+            path         => '/v2/sites/2/themes/classic_website',
+            method       => 'GET',
+            restrictions => {
+                0 => [qw/ open_theme_listing_screen /],
+                2 => [qw/ open_theme_listing_screen /],
+            },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the requested site\'s theme.',
+        },
+        {    # No permissions (system).
+            path         => '/v2/sites/0/themes/classic_website',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ open_theme_listing_screen /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the requested site\'s theme.',
+        },
 
         # apply_theme_to_site - normal tests
         {    # Website.
@@ -259,19 +343,23 @@ sub suite {
                 };
             },
         },
-
-        # uninstall_theme - irregular tests
-        {    # Protected.
-            path   => '/v2/themes/classic_website',
-            method => 'DELETE',
-            code   => 403,
-            result => sub {
-                +{  error => {
-                        code    => 403,
-                        message => 'Cannot uninstall this theme.',
-                    },
-                };
+        {    # Not logged in.
+            path      => '/v2/sites/2/themes/pico/apply',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/2/themes/pico/apply',
+            method       => 'POST',
+            restrictions => {
+                0 => [qw/ apply_theme /],
+                2 => [qw/ apply_theme /],
             },
+            code => 403,
+            error =>
+                'Do not have permission to apply the requested theme to site.',
         },
 
         # export_site_theme - normal tests
@@ -312,6 +400,43 @@ sub suite {
             path   => '/v2/sites/2/export_theme',
             method => 'POST',
             code   => 409,
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/5/export_theme',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/2/export_theme',
+            method       => 'POST',
+            restrictions => {
+                0 => [qw/ do_export_theme /],
+                2 => [qw/ do_export_theme /],
+            },
+            code  => 403,
+            error => 'Do not have permission to export the requested theme.',
+        },
+
+        # uninstall_theme - irregular tests
+        {    # Protected.
+            path   => '/v2/themes/classic_website',
+            method => 'DELETE',
+            code   => 403,
+            result => sub {
+                +{  error => {
+                        code    => 403,
+                        message => 'Cannot uninstall this theme.',
+                    },
+                };
+            },
+        },
+        {    # Non-existent theme.
+            path   => '/v2/themes/non_existent_theme',
+            method => 'DELETE',
+            code   => 404,
+            error  => 'Theme not found',
         },
     ];
 }
