@@ -42,6 +42,23 @@ done_testing;
 sub suite {
     return +[
 
+        # list_plugins - irregular tests.
+        {    # Not logged in.
+            path      => '/v2/plugins',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/plugins',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ manage_plugins /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the list of plugins.',
+        },
+
         # list_plugins - normal tests.
         {   path   => '/v2/plugins',
             method => 'GET',
@@ -80,6 +97,21 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/plugins/Awesome',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/plugins/Awesome',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ manage_plugins /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the requested plugin.',
+        },
 
         # get_plugin - normal tests.
         {    # By signature.
@@ -97,7 +129,8 @@ sub suite {
                 my $plugin_id = 'Awesome';
 
                 my @plugin_loop = grep {
-                    $_->{plugin_folder} || $_->{plugin_sig} eq $plugin_id
+                           $_->{plugin_folder}
+                        || $_->{plugin_sig} eq $plugin_id
                 } @{ $param{plugin_loop} };
 
                 my ($plugin) = @{
@@ -149,6 +182,20 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/plugins/Awesome/enable',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/plugins/Awesome/enable',
+            method       => 'POST',
+            restrictions => { 0 => [qw/ toggle_plugin_switch /], },
+            code         => 403,
+            error        => 'Do not have permission to enable a plugin.',
+        },
 
         # enable_plugin - normal tests.
         {    # By signature.
@@ -197,6 +244,20 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/plugins/Awesome/disable',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/plugins/Awesome/disable',
+            method       => 'POST',
+            restrictions => { 0 => [qw/ toggle_plugin_switch /], },
+            code         => 403,
+            error        => 'Do not have permission to disable a plugin.',
+        },
 
         # disable_plugin - normal tests.
         {    # By signature.
@@ -231,6 +292,22 @@ sub suite {
             },
         },
 
+        # enable_all_plugins - irregular tests.
+        {    # Not logged in.
+            path      => '/v2/plugins/enable',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/plugins/enable',
+            method       => 'POST',
+            restrictions => { 0 => [qw/ toggle_plugin_switch /], },
+            code         => 403,
+            error        => 'Do not have permission to enable all plugins.',
+        },
+
         # enable_all_plugins - normal tests.
         {   path   => '/v2/plugins/enable',
             method => 'POST',
@@ -240,6 +317,22 @@ sub suite {
             complete => sub {
                 is( $app->config->UsePlugins, 1, 'UsePlugins is 1.' );
             },
+        },
+
+        # diable_all_plugins - irregular tests.
+        {    # Not logged in.
+            path      => '/v2/plugins/disable',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/plugins/disable',
+            method       => 'POST',
+            restrictions => { 0 => [qw/ toggle_plugin_switch /], },
+            code         => 403,
+            error        => 'Do not have permission to disable all plugins.',
         },
 
         # disable_all_plugins - normal tests.
