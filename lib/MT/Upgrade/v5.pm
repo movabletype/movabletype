@@ -347,9 +347,13 @@ sub _v5_create_new_role {
     $self->progress(
         $self->translate_escape('Updating existing role name...') );
 
+    my @roles;
     my $iter = $role_class->load_iter(
         { name => MT->translate('_WEBMASTER_MT4'), } );
     while ( my $role = $iter->() ) {
+        push @roles, $role;
+    }
+    for my $role (@roles) {
         next if $role->has('administer_website');
         $role->name( MT->translate('Webmaster (MT4)') );
         $role->save
