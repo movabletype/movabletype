@@ -347,10 +347,10 @@ sub _v5_create_new_role {
     $self->progress(
         $self->translate_escape('Updating existing role name...') );
 
-    my $role
-        = $role_class->load( { name => MT->translate('_WEBMASTER_MT4'), } );
-    if ($role) {
-        return if $role->has('administer_website');
+    my $iter = $role_class->load_iter(
+        { name => MT->translate('_WEBMASTER_MT4'), } );
+    while ( my $role = $iter->() ) {
+        next if $role->has('administer_website');
         $role->name( MT->translate('Webmaster (MT4)') );
         $role->save
             or return $self->error(
@@ -363,7 +363,7 @@ sub _v5_create_new_role {
 
     $self->progress(
         $self->translate_escape('Populating new role for website...') );
-    $role = $role_class->load(
+    my $role = $role_class->load(
         { name => MT->translate('Website Administrator'), } );
     if ( !$role ) {
         $role = $role_class->new();
