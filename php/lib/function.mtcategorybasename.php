@@ -6,7 +6,8 @@
 # $Id$
 
 function smarty_function_mtcategorybasename($args, &$ctx) {
-    $cat = $ctx->stash('category');
+    require_once("MTUtil.php");
+    $cat = get_category_context($ctx);
     if (!$cat) return '';
     $basename = $cat->category_basename;
     if ($sep = $args['separator']) {
