@@ -1063,7 +1063,7 @@ sub _DoStrike {
     # And this style strike also used by Github.
     # https://help.github.com/articles/github-flavored-markdown/#strikethrough
     $text =~ s{ (~~) (?=\S) (.+?) (?<=\S) \1 }
-    {$1<strike>$2</strike>}gsx;
+    {<strike>$2</strike>}gsx;
 
     return $text;
 }
