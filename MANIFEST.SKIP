@@ -265,3 +265,7 @@ build-language-stamp
 
 # wercker
 wercker.yml
+
+# CircleCI
+circle.yml
+Dockerfile
