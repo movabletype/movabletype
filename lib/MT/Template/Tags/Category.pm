@@ -1360,12 +1360,13 @@ B<Example:>
 
 sub _hdlr_category_id {
     my ($ctx) = @_;
-
-    # Get the current category
-    defined( my $cat = _get_category_context($ctx) )
-        or return $ctx->error( $ctx->errstr );
-    return if ( $cat eq '' );
-
+    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
+        or return $ctx->error(
+        MT->translate(
+            "You used an [_1] tag outside of the proper context.",
+            '<$MT' . $ctx->stash('tag') . '$>'
+        )
+        );
     return $cat->id;
 }
 
@@ -1487,12 +1488,13 @@ B<Example:>
 
 sub _hdlr_category_desc {
     my ($ctx) = @_;
-
-    # Get the current category
-    defined( my $cat = _get_category_context($ctx) )
-        or return $ctx->error( $ctx->errstr );
-    return if ( $cat eq '' );
-
+    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
+        or return $ctx->error(
+        MT->translate(
+            "You used an [_1] tag outside of the proper context.",
+            '<$MT' . $ctx->stash('tag') . '$>'
+        )
+        );
     return defined $cat->description ? $cat->description : '';
 }
 
@@ -1510,12 +1512,13 @@ B<Example:>
 
 sub _hdlr_category_archive {
     my ( $ctx, $args ) = @_;
-
-    # Get the current category
-    defined( my $cat = _get_category_context($ctx) )
-        or return $ctx->error( $ctx->errstr );
-    return if ( $cat eq '' );
-
+    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
+        or return $ctx->error(
+        MT->translate(
+            "You used an [_1] tag outside of the proper context.",
+            '<$MTCategoryArchiveLink$>'
+        )
+        );
     my $curr_at
         = $ctx->{current_archive_type}
         || $ctx->{archive_type}
@@ -1566,12 +1569,13 @@ B<Example:>
 
 sub _hdlr_category_count {
     my ( $ctx, $args, $cond ) = @_;
-
-    # Get the current category
-    defined( my $cat = _get_category_context($ctx) )
-        or return $ctx->error( $ctx->errstr );
-    return if ( $cat eq '' );
-
+    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
+        or return $ctx->error(
+        MT->translate(
+            "You used an [_1] tag outside of the proper context.",
+            '<$MT' . $ctx->stash('tag') . '$>'
+        )
+        );
     my $count = $ctx->stash('category_count');
     $count = $cat->entry_count unless defined $count;
     return $ctx->count_format( $count, $args );

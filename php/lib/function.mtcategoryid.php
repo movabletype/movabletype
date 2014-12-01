@@ -6,8 +6,7 @@
 # $Id$
 
 function smarty_function_mtcategoryid($args, &$ctx) {
-    require_once("MTUtil.php");
-    $cat = get_category_context($ctx);
+    $cat = $ctx->stash('category');
     if (!$cat) return '';
     return $cat->category_id;
 }
