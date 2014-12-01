@@ -8,7 +8,7 @@
 function smarty_function_mtcategorycount($args, &$ctx) {
     require_once("MTUtil.php");
     $category = get_category_context($ctx);
-    if (!$cat) return '';
+    if (!$category) return '';
     $count = $category->entry_count();
     return $ctx->count_format($count, $args);
 }
