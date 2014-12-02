@@ -472,7 +472,7 @@ my @CORE_REQ = (
     [   'Scalar::Util',
         0, 1,
         translate(
-            'Scalar::Util is required; It is needed if you want to use the Publish Queue feature.'
+            'Scalar::Util is required for initializing Movable Type application.'
         )
     ],
 

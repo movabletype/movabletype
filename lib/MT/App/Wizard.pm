@@ -398,7 +398,7 @@ sub init_core_registry {
             'Scalar::Util' => {
                 link => 'http://search.cpan.org/dist/Scalar-List-Utils',
                 label =>
-                    'Scalar::Util is required; It is needed if you want to use the Publish Queue feature.',
+                    'Scalar::Util is required for initializing Movable Type application.',
             },
         },
         database_options => {
