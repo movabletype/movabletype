@@ -2119,4 +2119,6 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
         return $args;
     }
 }
+
+# fake for L10N translate("Category")
 ?>
