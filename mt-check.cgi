@@ -292,6 +292,7 @@ if ( !$view ) {
                 margin: 0;
                 text-decoration: none;
                 background: #2b2b2b url($mt_static_path/images/logo/movable-type-brand-logo.png) center 3px no-repeat;
+                background-size: 150px;
                 outline: 0;
             }
 
