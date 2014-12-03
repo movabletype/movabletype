@@ -90,7 +90,31 @@ sub _sort_cats {
         }
 
         # Sort the categories based on sort_method
-        eval("\@\$cats = sort $sort_method \@\$cats");
+        if ( $sort_method =~ /::/ ) {
+            eval("\@\$cats = sort $sort_method \@\$cats");
+        }
+        else {
+            my $safe = eval { require Safe; new Safe; }
+                or return $ctx->error(
+                "Cannot evaluate sort_method [$sort_method]: Perl 'Safe' module is required."
+                );
+            my $vars = $ctx->{__stash}{vars};
+            my $ns   = $safe->root;
+            {
+                no strict 'refs';
+                foreach my $v ( keys %$vars ) {
+                    ${ $ns . '::' . $v } = $vars->{$v};
+                }
+                ${ $ns . '::CATS' } = $cats;
+
+                $safe->permit(qw/ sort /);
+                {
+                    local $SIG{__WARN__} = sub { };
+                    $safe->reval("\@\$CATS = sort $sort_method \@\$CATS");
+                }
+                $cats = ${ $ns . '::CATS' } unless $@;
+            }
+        }
         if ( my $err = $@ ) {
             return $ctx->error(
                 MT->translate(
