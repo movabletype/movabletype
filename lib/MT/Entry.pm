@@ -11,7 +11,7 @@ use strict;
 use MT::Tag;        # Holds MT::Taggable
 use MT::Summary;    # Holds MT::Summarizable
 use base
-  qw( MT::Object MT::Taggable MT::Scorable MT::Summarizable MT::Revisable );
+    qw( MT::Object MT::Taggable MT::Scorable MT::Summarizable MT::Revisable );
 
 use MT::Blog;
 use MT::Author;
@@ -21,14 +21,13 @@ use MT::Placement;
 use MT::Comment;
 use MT::TBPing;
 use MT::Util qw( archive_file_for discover_tb start_end_period extract_domain
-  extract_domains weaken first_n_words remove_html encode_html trim );
+    extract_domains weaken first_n_words remove_html encode_html trim );
 use MT::I18N qw( first_n_text const );
 
-sub CATEGORY_CACHE_TIME () { 604800 }    ## 7 * 24 * 60 * 60 == 1 week
+sub CATEGORY_CACHE_TIME () {604800}    ## 7 * 24 * 60 * 60 == 1 week
 
 __PACKAGE__->install_properties(
-    {
-        column_defs => {
+    {   column_defs => {
             'id'      => 'integer not null auto_increment',
             'blog_id' => 'integer not null',
             'status'  => {
@@ -124,7 +123,7 @@ __PACKAGE__->install_properties(
             comment_count => 1,
 
             auth_stat_class =>
-              { columns => [ 'author_id', 'status', 'class' ], },
+                { columns => [ 'author_id', 'status', 'class' ], },
             blog_basename => { columns => [ 'blog_id', 'basename' ], },
 
             # Page listings are published in order by title
@@ -146,33 +145,37 @@ __PACKAGE__->install_properties(
             # For most blog-level listings, where we list all entries
             # in a blog with a particular class by authored on date.
             blog_authored =>
-              { columns => [ 'blog_id', 'class', 'authored_on' ], },
+                { columns => [ 'blog_id', 'class', 'authored_on' ], },
 
             # For most publishing listings, where we list entries in a blog
             # with a particular class, publish status (2) and authored on date
             blog_stat_date => {
                 columns =>
-                  [ 'blog_id', 'class', 'status', 'authored_on', 'id' ],
+                    [ 'blog_id', 'class', 'status', 'authored_on', 'id' ],
             },
 
             dd_entry_tag_count =>
-              { columns => [ 'blog_id', 'status', 'class', 'id' ], },
+                { columns => [ 'blog_id', 'status', 'class', 'id' ], },
 
             # for tag count
-            tag_count => { columns => [ 'status', 'class', 'blog_id', 'id' ], },
+            tag_count =>
+                { columns => [ 'status', 'class', 'blog_id', 'id' ], },
 
             #for future unpublish
-            class_unpublished => { columns => [ 'class', 'unpublished_on' ], },
+            class_unpublished =>
+                { columns => [ 'class', 'unpublished_on' ], },
             blog_unpublished =>
-              { columns => [ 'blog_id', 'class', 'unpublished_on' ], },
+                { columns => [ 'blog_id', 'class', 'unpublished_on' ], },
         },
         defaults => {
             comment_count => 0,
             ping_count    => 0,
         },
-        child_of => 'MT::Blog',
-        child_classes =>
-          [ 'MT::Comment', 'MT::Placement', 'MT::Trackback', 'MT::FileInfo' ],
+        child_of      => 'MT::Blog',
+        child_classes => [
+            'MT::Comment',   'MT::Placement',
+            'MT::Trackback', 'MT::FileInfo'
+        ],
         audit       => 1,
         meta        => 1,
         summary     => 1,
@@ -182,12 +185,12 @@ __PACKAGE__->install_properties(
     }
 );
 
-sub HOLD ()     { 1 }
-sub RELEASE ()  { 2 }
-sub REVIEW ()   { 3 }
-sub FUTURE ()   { 4 }
-sub JUNK ()     { 5 }
-sub UNPUBLISH() { 6 }
+sub HOLD ()     {1}
+sub RELEASE ()  {2}
+sub REVIEW ()   {3}
+sub FUTURE ()   {4}
+sub JUNK ()     {5}
+sub UNPUBLISH() {6}
 
 use Exporter;
 *import = \&Exporter::import;
@@ -223,18 +226,15 @@ sub list_props {
             display    => 'force',
             order      => 200,
             sub_fields => [
-                {
-                    class   => 'status',
+                {   class   => 'status',
                     label   => 'Status',
                     display => 'default',
                 },
-                {
-                    class   => 'view-link',
+                {   class   => 'view-link',
                     label   => 'Link',
                     display => 'default',
                 },
-                {
-                    class   => 'excerpt',
+                {   class   => 'excerpt',
                     label   => 'Excerpt',
                     display => 'optional',
                 },
@@ -246,7 +246,7 @@ sub list_props {
                 my $class_label = $obj->class_label;
                 my $title       = $prop->super(@_);
                 my $excerpt     = remove_html( $obj->excerpt )
-                  || remove_html( $obj->text );
+                    || remove_html( $obj->text );
                 ## FIXME: Hard coded
                 my $len = 40;
                 if ( length $excerpt > $len ) {
@@ -264,37 +264,39 @@ sub list_props {
                     }
                 );
                 my $status = $obj->status;
-                my $status_class =
-                    $status == MT::Entry::HOLD()      ? 'Draft'
-                  : $status == MT::Entry::RELEASE()   ? 'Published'
-                  : $status == MT::Entry::REVIEW()    ? 'Review'
-                  : $status == MT::Entry::FUTURE()    ? 'Future'
-                  : $status == MT::Entry::JUNK()      ? 'Junk'
-                  : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
-                  :                                     '';
+                my $status_class
+                    = $status == MT::Entry::HOLD()      ? 'Draft'
+                    : $status == MT::Entry::RELEASE()   ? 'Published'
+                    : $status == MT::Entry::REVIEW()    ? 'Review'
+                    : $status == MT::Entry::FUTURE()    ? 'Future'
+                    : $status == MT::Entry::JUNK()      ? 'Junk'
+                    : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
+                    :                                     '';
                 my $lc_status_class = lc $status_class;
                 require MT::Entry;
-                my $status_file =
-                    $status == MT::Entry::HOLD()      ? 'draft.gif'
-                  : $status == MT::Entry::RELEASE()   ? 'success.gif'
-                  : $status == MT::Entry::REVIEW()    ? 'warning.gif'
-                  : $status == MT::Entry::FUTURE()    ? 'future.gif'
-                  : $status == MT::Entry::JUNK()      ? 'warning.gif'
-                  : $status == MT::Entry::UNPUBLISH() ? 'unpublished.gif'
-                  :                                     '';
-                my $status_img =
-                  MT->static_path . 'images/status_icons/' . $status_file;
-                my $view_img = MT->static_path . 'images/status_icons/view.gif';
-                my $view_link_text = MT->translate( 'View [_1]', $class_label );
-                my $view_link      = $obj->status == MT::Entry::RELEASE()
-                  ? qq{
+                my $status_file
+                    = $status == MT::Entry::HOLD()      ? 'draft.gif'
+                    : $status == MT::Entry::RELEASE()   ? 'success.gif'
+                    : $status == MT::Entry::REVIEW()    ? 'warning.gif'
+                    : $status == MT::Entry::FUTURE()    ? 'future.gif'
+                    : $status == MT::Entry::JUNK()      ? 'warning.gif'
+                    : $status == MT::Entry::UNPUBLISH() ? 'unpublished.gif'
+                    :                                     '';
+                my $status_img
+                    = MT->static_path . 'images/status_icons/' . $status_file;
+                my $view_img
+                    = MT->static_path . 'images/status_icons/view.gif';
+                my $view_link_text
+                    = MT->translate( 'View [_1]', $class_label );
+                my $view_link = $obj->status == MT::Entry::RELEASE()
+                    ? qq{
                     <span class="view-link">
                       <a href="$permalink" target="_blank">
                         <img alt="$view_link_text" src="$view_img" />
                       </a>
                     </span>
                 }
-                  : '';
+                    : '';
 
                 my $out = qq{
                     <span class="icon status $lc_status_class">
@@ -306,7 +308,7 @@ sub list_props {
                     $view_link
                 };
                 $out .= qq{<p class="excerpt description">$excerpt</p>}
-                  if trim($excerpt);
+                    if trim($excerpt);
                 return $out;
             },
         },
@@ -345,15 +347,14 @@ sub list_props {
 
                 $db_args->{joins} ||= [];
                 push @{ $db_args->{joins} },
-                  MT->model('placement')->join_on(
+                    MT->model('placement')->join_on(
                     undef,
-                    {
-                        category_id => $cat_id,
+                    {   category_id => $cat_id,
                         entry_id    => \'= entry_id',
                         blog_id     => $blog_id,
                     },
                     { unique => 1, },
-                  );
+                    );
                 return;
             },
             args_via_param => sub {
@@ -361,13 +362,13 @@ sub list_props {
                 my ( $app, $val ) = @_;
                 my $id  = MT->app->param('filter_val');
                 my $cat = MT->model('category')->load($id)
-                  or return $prop->error(
+                    or return $prop->error(
                     MT->translate(
                         '[_1] ( id:[_2] ) does not exists.',
                         $prop->datasource->container_label,
                         $id
                     )
-                  );
+                    );
                 return { option => 'equal', value => $cat->id };
             },
             label_via_param => sub {
@@ -375,13 +376,13 @@ sub list_props {
                 my ($app) = @_;
                 my $id    = $app->param('filter_val');
                 my $cat   = MT->model('category')->load($id)
-                  or return $prop->error(
+                    or return $prop->error(
                     MT->translate(
                         '[_1] ( id:[_2] ) does not exists.',
                         $prop->datasource->container_label,
                         $id
                     )
-                  );
+                    );
                 return if !$app->blog || $app->blog->id != $cat->blog_id;
                 my $label = MT->translate(
                     'Entries from category: [_1]',
@@ -405,15 +406,13 @@ sub list_props {
                 my $prop = shift;
                 my ( $objs, $app, $opts ) = @_;
                 return ( $opts->{bulk_cats}, $opts->{bulk_placements} )
-                  if $opts->{bulk_cats};
+                    if $opts->{bulk_cats};
                 my @entry_ids = map { $_->id } @$objs;
                 my @placements = MT->model('placement')->load(
-                    {
-                        entry_id   => \@entry_ids,
+                    {   entry_id   => \@entry_ids,
                         is_primary => 1,
                     },
-                    {
-                        fetchonly => {
+                    {   fetchonly => {
                             entry_id    => 1,
                             category_id => 1,
                         }
@@ -424,14 +423,13 @@ sub list_props {
                     $opts->{bulk_cats}       = {};
                     return ( {}, {} );
                 }
-                my %placements =
-                  map { $_->entry_id => $_->category_id } @placements;
+                my %placements
+                    = map { $_->entry_id => $_->category_id } @placements;
                 $opts->{bulk_placements} = \%placements;
                 my @cat_ids = map { $_->category_id } @placements;
                 my @categories = MT->model( $prop->category_class )->load(
                     { id => \@cat_ids },
-                    {
-                        fetchonly => {
+                    {   fetchonly => {
                             id    => 1,
                             label => 1,
                         }
@@ -448,7 +446,7 @@ sub list_props {
                 return map {
                     MT::Util::encode_html( $cats->{ $placs->{ $_->id } || 0 },
                         1 )
-                      || $prop->zero_state_label
+                        || $prop->zero_state_label
                 } @$objs;
             },
             bulk_sort => sub {
@@ -456,10 +454,10 @@ sub list_props {
                 my ( $objs, $app, $opts ) = @_;
                 my ( $cats, $placs ) = $prop->bulk_cats(@_);
                 return sort {
-                    (        $cats->{ $placs->{ $a->id } || 0 }
-                          || $prop->zero_state_label )
-                      cmp(   $cats->{ $placs->{ $b->id } || 0 }
-                          || $prop->zero_state_label )
+                    (          $cats->{ $placs->{ $a->id } || 0 }
+                            || $prop->zero_state_label )
+                        cmp(   $cats->{ $placs->{ $b->id } || 0 }
+                            || $prop->zero_state_label )
                 } @$objs;
             },
             raw => sub {
@@ -494,12 +492,14 @@ sub list_props {
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $blog = MT->app->blog;
-                my $blog_id =
-                    $blog
-                  ? $blog->is_blog
-                      ? MT->app->blog->id
-                      : [ MT->app->blog->id, map { $_->id } @{ $blog->blogs } ]
-                  : 0;
+                my $blog_id
+                    = $blog
+                    ? $blog->is_blog
+                        ? MT->app->blog->id
+                        : [ MT->app->blog->id,
+                            map { $_->id } @{ $blog->blogs }
+                        ]
+                    : 0;
                 my $app    = MT->instance;
                 my $option = $args->{option};
                 my $query  = $args->{string};
@@ -516,25 +516,22 @@ sub list_props {
                     $query = { like => "%$query" };
                 }
                 push @{ $db_args->{joins} },
-                  MT->model('placement')->join_on(
+                    MT->model('placement')->join_on(
                     undef,
-                    {
-                        entry_id => \'= entry_id',
+                    {   entry_id => \'= entry_id',
                         ( $blog_id ? ( blog_id => $blog_id ) : () ),
                     },
-                    {
-                        unique => 1,
+                    {   unique => 1,
                         join   => MT->model( $prop->category_class )->join_on(
                             undef,
-                            {
-                                label => $query,
+                            {   label => $query,
                                 id    => \'= placement_category_id',
                                 ( $blog_id ? ( blog_id => $blog_id ) : () ),
                             },
                             { unique => 1, }
                         ),
                     },
-                  );
+                    );
                 return;
             },
         },
@@ -630,33 +627,27 @@ sub list_props {
             col_class             => 'icon',
             base                  => '__virtual.single_select',
             single_select_options => [
-                {
-                    label => MT->translate('Draft'),
+                {   label => MT->translate('Draft'),
                     text  => 'Draft',
                     value => 1,
                 },
-                {
-                    label => MT->translate('Published'),
+                {   label => MT->translate('Published'),
                     text  => 'Publish',
                     value => 2,
                 },
-                {
-                    label => MT->translate('Reviewing'),
+                {   label => MT->translate('Reviewing'),
                     text  => 'Review',
                     value => 3,
                 },
-                {
-                    label => MT->translate('Scheduled'),
+                {   label => MT->translate('Scheduled'),
                     text  => 'Future',
                     value => 4,
                 },
-                {
-                    label => MT->translate('Junk'),
+                {   label => MT->translate('Junk'),
                     text  => 'Spam',
                     value => 5,
                 },
-                {
-                    label => MT->translate('Unpublished (End)'),
+                {   label => MT->translate('Unpublished (End)'),
                     text  => 'Unpublish',
                     value => 6,
                 },
@@ -701,9 +692,9 @@ sub list_props {
                     ];
                 }
                 elsif ( 'days' eq $option ) {
-                    my $days = $args->{days};
-                    my $origin =
-                      MT::Util::epoch2ts( $blog, time - $days * 60 * 60 * 24 );
+                    my $days   = $args->{days};
+                    my $origin = MT::Util::epoch2ts( $blog,
+                        time - $days * 60 * 60 * 24 );
                     $query = [
                         '-and',
                         { op => '>', value => $origin },
@@ -724,11 +715,11 @@ sub list_props {
                 }
                 $db_args->{joins} ||= [];
                 push @{ $db_args->{joins} },
-                  MT->model( $prop->comment_class )->join_on(
+                    MT->model( $prop->comment_class )->join_on(
                     undef,
                     { entry_id => \'= entry_id', created_on => $query },
                     { unique   => 1, },
-                  );
+                    );
                 return;
             },
             sort => 0,
@@ -766,25 +757,24 @@ sub list_props {
                 my $val = $args->{value};
                 if ( $val eq 'deleted' ) {
                     my @all_authors = MT->model('author')
-                      ->load( undef, { fetchonly => { id => 1 }, }, );
-                    return {
-                        author_id => { not => [ map { $_->id } @all_authors ] },
+                        ->load( undef, { fetchonly => { id => 1 }, }, );
+                    return { author_id =>
+                            { not => [ map { $_->id } @all_authors ] },
                     };
                 }
                 else {
-                    my $status =
-                      $val eq 'enabled'
-                      ? MT::Author::ACTIVE()
-                      : MT::Author::INACTIVE();
+                    my $status
+                        = $val eq 'enabled'
+                        ? MT::Author::ACTIVE()
+                        : MT::Author::INACTIVE();
                     $db_args->{joins} ||= [];
                     push @{ $db_args->{joins} },
-                      MT->model('author')->join_on(
+                        MT->model('author')->join_on(
                         undef,
-                        {
-                            id     => \'= entry_author_id',
+                        {   id     => \'= entry_author_id',
                             status => $status,
                         },
-                      );
+                        );
                 }
             },
         },
@@ -833,15 +823,15 @@ sub system_filters {
         my_posts_on_this_context => {
             label => 'My Entries',
             items => sub {
-                [ { type => 'current_user' }, { type => 'current_context' } ],;
+                [ { type => 'current_user' }, { type => 'current_context' } ]
+                ,;
             },
             order => 500,
         },
         commented_in_last_7_days => {
             label => 'Entries with Comments Within the Last 7 Days',
             items => [
-                {
-                    type => 'commented_on',
+                {   type => 'commented_on',
                     args => { option => 'days', days => 7 }
                 }
             ],
@@ -865,7 +855,7 @@ sub author_id {
     my $entry = shift;
     if ( scalar @_ ) {
         $entry->{__orig_value}->{author_id} = $entry->SUPER::author_id
-          unless exists( $entry->{__orig_value}->{author_id} );
+            unless exists( $entry->{__orig_value}->{author_id} );
     }
     return $entry->SUPER::author_id(@_);
 }
@@ -874,32 +864,32 @@ sub status {
     my $entry = shift;
     if ( scalar @_ ) {
         $entry->{__orig_value}->{status} = $entry->SUPER::status
-          unless exists( $entry->{__orig_value}->{status} );
+            unless exists( $entry->{__orig_value}->{status} );
     }
     return $entry->SUPER::status(@_);
 }
 
 sub status_text {
     my $s = $_[0];
-        $s == HOLD      ? "Draft"
-      : $s == RELEASE   ? "Publish"
-      : $s == REVIEW    ? "Review"
-      : $s == FUTURE    ? "Future"
-      : $s == JUNK      ? "Spam"
-      : $s == UNPUBLISH ? "Unpublish"
-      :                   '';
+          $s == HOLD      ? "Draft"
+        : $s == RELEASE   ? "Publish"
+        : $s == REVIEW    ? "Review"
+        : $s == FUTURE    ? "Future"
+        : $s == JUNK      ? "Spam"
+        : $s == UNPUBLISH ? "Unpublish"
+        :                   '';
 }
 
 sub status_int {
     my $s = lc $_[0];    ## Lower-case it so that it's case-insensitive
-        $s eq 'draft'     ? HOLD
-      : $s eq 'publish'   ? RELEASE
-      : $s eq 'review'    ? REVIEW
-      : $s eq 'future'    ? FUTURE
-      : $s eq 'junk'      ? JUNK
-      : $s eq 'spam'      ? JUNK
-      : $s eq 'unpublish' ? UNPUBLISH
-      :                     undef;
+          $s eq 'draft'     ? HOLD
+        : $s eq 'publish'   ? RELEASE
+        : $s eq 'review'    ? REVIEW
+        : $s eq 'future'    ? FUTURE
+        : $s eq 'junk'      ? JUNK
+        : $s eq 'spam'      ? JUNK
+        : $s eq 'unpublish' ? UNPUBLISH
+        :                     undef;
 }
 
 sub authored_on_obj {
@@ -953,13 +943,13 @@ sub _nextprev {
     my $label = '__' . $direction;
     $label .= ':author=' . $terms->{author_id} if exists $terms->{author_id};
     $label .= ':category=' . $terms->{category_id}
-      if exists $terms->{category_id};
+        if exists $terms->{category_id};
     return $obj->{$label} if $obj->{$label};
 
     my $args = {};
     if ( my $cat_id = delete $terms->{category_id} ) {
-        my $join =
-          MT::Placement->join_on( 'entry_id', { category_id => $cat_id } );
+        my $join = MT::Placement->join_on( 'entry_id',
+            { category_id => $cat_id } );
         $args->{join} = $join;
     }
 
@@ -980,7 +970,8 @@ sub trackback {
         sub {
             require MT::Trackback;
             if ( $entry->id ) {
-                return scalar MT::Trackback->load( { entry_id => $entry->id } );
+                return
+                    scalar MT::Trackback->load( { entry_id => $entry->id } );
             }
         },
         @_
@@ -999,7 +990,7 @@ sub author {
             unless ($author) {
                 require MT::Author;
                 $author = MT::Author->load( $entry->author_id )
-                  or return undef;
+                    or return undef;
                 $author_cache->{ $entry->author_id } = $author;
                 $req->stash( 'author_cache', $author_cache );
             }
@@ -1056,8 +1047,8 @@ sub categories {
         'categories',
         sub {
             my $rows = $entry->__load_category_data or return;
-            my $cats =
-              MT::Category->lookup_multi( [ map { $_->[0] } @$rows ] );
+            my $cats
+                = MT::Category->lookup_multi( [ map { $_->[0] } @$rows ] );
             my @cats = sort { $a->label cmp $b->label } @$cats;
             return \@cats;
         }
@@ -1100,12 +1091,10 @@ sub comment_latest {
         sub {
             require MT::Comment;
             MT::Comment->load(
-                {
-                    entry_id => $entry->id,
+                {   entry_id => $entry->id,
                     visible  => 1
                 },
-                {
-                    'sort'    => 'created_on',
+                {   'sort'    => 'created_on',
                     direction => 'descend',
                     limit     => 1,
                 }
@@ -1121,11 +1110,10 @@ MT::Comment->add_callback(
     sub {
         my ( $cb, $comment ) = @_;
         my $entry = MT::Entry->load( $comment->entry_id )
-          or return;
+            or return;
         $entry->clear_cache('comment_latest');
         my $count = MT::Comment->count(
-            {
-                entry_id => $comment->entry_id,
+            {   entry_id => $comment->entry_id,
                 visible  => 1,
             }
         );
@@ -1142,11 +1130,11 @@ MT::Comment->add_callback(
     sub {
         my ( $cb, $comment ) = @_;
         my $entry = MT::Entry->load( $comment->entry_id )
-          or return;
+            or return;
         $entry->clear_cache('comment_latest');
         if ( $comment->visible ) {
-            my $count =
-              $entry->comment_count > 0 ? $entry->comment_count - 1 : 0;
+            my $count
+                = $entry->comment_count > 0 ? $entry->comment_count - 1 : 0;
             $entry->comment_count($count);
             $entry->save;
         }
@@ -1183,10 +1171,9 @@ MT::TBPing->add_callback(
         if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
             if ( $tb->entry_id ) {
                 my $entry = MT::Entry->load( $tb->entry_id )
-                  or return;
+                    or return;
                 my $count = MT::TBPing->count(
-                    {
-                        tb_id   => $tb->id,
+                    {   tb_id   => $tb->id,
                         visible => 1,
                     }
                 );
@@ -1207,8 +1194,9 @@ MT::TBPing->add_callback(
         if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
             if ( $tb->entry_id && $ping->visible ) {
                 my $entry = MT::Entry->load( $tb->entry_id )
-                  or return;
-                my $count = $entry->ping_count > 0 ? $entry->ping_count - 1 : 0;
+                    or return;
+                my $count
+                    = $entry->ping_count > 0 ? $entry->ping_count - 1 : 0;
                 $entry->ping_count($count);
                 $entry->save;
             }
@@ -1229,7 +1217,7 @@ sub archive_file {
         # FIXME: should draw from list of registered archive types
         for my $tat (
             qw( Individual Daily Weekly Author-Monthly Category-Monthly Monthly Category )
-          )
+            )
         {
             $at = $tat if $at{$tat};
             last;
@@ -1250,11 +1238,13 @@ sub permalink {
     my $entry = shift;
     my $blog  = $entry->blog() || return;
     my $url   = $entry->archive_url( $_[0] );
-    my $effective_archive_type =
-      ( $_[0] || $blog->archive_type_preferred || $blog->archive_type );
-    $url .=
-      '#' . ( $_[1]->{valid_html} ? 'a' : '' ) . sprintf( "%06d", $entry->id )
-      unless ( $effective_archive_type eq 'Individual'
+    my $effective_archive_type
+        = ( $_[0] || $blog->archive_type_preferred || $blog->archive_type );
+    $url
+        .= '#'
+        . ( $_[1]->{valid_html} ? 'a' : '' )
+        . sprintf( "%06d", $entry->id )
+        unless ( $effective_archive_type eq 'Individual'
         || $_[1]->{no_anchor} );
     $url;
 }
@@ -1291,13 +1281,14 @@ sub get_excerpt {
     my $entry = shift;
     my ($words) = @_;
     return $entry->excerpt if $entry->excerpt;
-    my $excerpt = MT->apply_text_filters( $entry->text, $entry->text_filters );
+    my $excerpt
+        = MT->apply_text_filters( $entry->text, $entry->text_filters );
     my $blog = $entry->blog() || return;
     first_n_text( $excerpt,
-             $words
-          || $blog->words_in_excerpt
-          || const('DEFAULT_LENGTH_ENTRY_EXCERPT') )
-      . '...';
+               $words
+            || $blog->words_in_excerpt
+            || const('DEFAULT_LENGTH_ENTRY_EXCERPT') )
+        . '...';
 }
 
 sub pinged_url_list {
@@ -1360,12 +1351,11 @@ sub discover_tb_from_entry {
     my $cfg     = MT->config;
     my $blog    = $entry->blog();
     my $send_tb = $cfg->OutboundTrackbackLimit;
-    if (
-           $send_tb ne 'off'
+    if (   $send_tb ne 'off'
         && $blog
         && (   $blog->autodiscover_links
             || $blog->internal_autodiscovery )
-      )
+        )
     {
         my @tb_domains;
         if ( $send_tb eq 'selected' ) {
@@ -1396,8 +1386,8 @@ sub discover_tb_from_entry {
         my $archive_domain;
         ($archive_domain) = extract_domains( $blog->archive_url );
         my %to_ping = map { $_ => 1 } @{ $entry->to_ping_url_list };
-        my %pinged =
-          map { $_ => 1 } @{ $entry->pinged_url_list( IncludeFailures => 1 ) };
+        my %pinged  = map { $_ => 1 }
+            @{ $entry->pinged_url_list( IncludeFailures => 1 ) };
         my $body = $entry->text . ( $entry->text_more || "" );
         $body = MT->apply_text_filters( $body, $entry->text_filters );
         while ( $body =~ m!<a\s.*?\bhref\s*=\s*(["']?)([^'">]+)\1!gsi ) {
@@ -1413,7 +1403,7 @@ sub discover_tb_from_entry {
             next if $tb_domains && lc($url_domain) !~ m/$tb_domains$/;
             if ( my $item = discover_tb($url) ) {
                 $to_ping{ $item->{ping_url} } = 1
-                  unless $pinged{ $item->{ping_url} };
+                    unless $pinged{ $item->{ping_url} };
             }
         }
         $entry->to_ping_urls( join "\n", keys %to_ping );
@@ -1426,16 +1416,15 @@ sub sync_assets {
 
     require MT::ObjectAsset;
     my @assets = MT::ObjectAsset->load(
-        {
-            object_id => $entry->id,
+        {   object_id => $entry->id,
             blog_id   => $entry->blog_id,
             object_ds => $entry->datasource,
             embedded  => 1,
         }
     );
     my %assets = map { $_->asset_id => $_->id } @assets;
-    while ( $text =~
-        m!<form[^>]*?\smt:asset-id=["'](\d+)["'][^>]*?>(.+?)</form>!gis )
+    while ( $text
+        =~ m!<form[^>]*?\smt:asset-id=["'](\d+)["'][^>]*?>(.+?)</form>!gis )
     {
         my $id      = $1;
         my $innards = $2;
@@ -1462,7 +1451,7 @@ sub sync_assets {
     if ( my @old_maps = grep { $assets{ $_->asset_id } } @assets ) {
         my @old_ids = map { $_->id } grep { $_->embedded } @old_maps;
         MT::ObjectAsset->remove( { id => \@old_ids } )
-          if @old_ids;
+            if @old_ids;
     }
     return 1;
 }
@@ -1479,13 +1468,13 @@ sub save {
     if ( !$entry->id && !$entry->authored_on ) {
         my @ts = MT::Util::offset_time_list( time, $entry->blog_id );
         my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
-          $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
         $entry->authored_on($ts);
     }
     if ( my $dt = $entry->authored_on_obj ) {
         my ( $yr, $w ) = $dt->week;
         $entry->week_number( $yr * 100 + $w )
-          if $yr * 100 + $w != ( $entry->week_number || 0 );
+            if $yr * 100 + $w != ( $entry->week_number || 0 );
     }
     unless ( $entry->SUPER::save(@_) ) {
         print STDERR "error during save: " . $entry->errstr . "\n";
@@ -1512,7 +1501,7 @@ sub save {
         $tb->url( $entry->permalink );
         $tb->is_disabled(0);
         $tb->save
-          or return $entry->error( $tb->errstr );
+            or return $entry->error( $tb->errstr );
         $entry->trackback($tb);
     }
     else {
@@ -1523,26 +1512,26 @@ sub save {
         if ( $tb && !$tb->is_disabled ) {
             $tb->is_disabled(1);
             $tb->save
-              or return $entry->error( $tb->errstr );
+                or return $entry->error( $tb->errstr );
         }
     }
 
     $entry->clear_cache() if $is_new;
 
     my $blog = $entry->blog;
-    my $at =
-         $blog->archive_type_preferred
-      || $blog->archive_type
-      || 'Individual';
+    my $at
+        = $blog->archive_type_preferred
+        || $blog->archive_type
+        || 'Individual';
     $at = 'Page' if $entry->class eq 'page';
 
     my $key;
     my $publisher  = MT->instance->publisher;
     my $cache_file = MT::Request->instance->cache('file');
     $key = $publisher->archive_file_cache_key( $entry, $blog, $at )
-      if $publisher->can('archive_file_cache_key');
+        if $publisher->can('archive_file_cache_key');
     delete $cache_file->{$key}
-      if $key && $cache_file && exists $cache_file->{$key};
+        if $key && $cache_file && exists $cache_file->{$key};
 
     1;
 }
@@ -1569,13 +1558,14 @@ sub blog {
             my $blog_id = $entry->blog_id;
             require MT::Blog;
             MT::Blog->load($blog_id)
-              or $entry->error(
+                or $entry->error(
                 MT->translate(
                     "Loading blog '[_1]' failed: [_2]",
                     $blog_id,
-                    MT::Blog->errstr || MT->translate("record does not exist.")
+                    MT::Blog->errstr
+                        || MT->translate("record does not exist.")
                 )
-              );
+                );
         }
     );
 }
@@ -1584,20 +1574,20 @@ sub to_hash {
     my $entry = shift;
     my $hash  = $entry->SUPER::to_hash(@_);
 
-    $hash->{'entry.text_html'} =
-      sub { MT->apply_text_filters( $entry->text, $entry->text_filters ) };
+    $hash->{'entry.text_html'}
+        = sub { MT->apply_text_filters( $entry->text, $entry->text_filters ) };
     $hash->{'entry.text_more_html'} = sub {
         MT->apply_text_filters( $entry->text_more, $entry->text_filters );
     };
     $hash->{'entry.permalink'}                     = $entry->permalink;
     $hash->{'entry.status_text'}                   = $entry->status_text;
     $hash->{ 'entry.status_is_' . $entry->status } = 1;
-    $hash->{'entry.created_on_iso'} =
-      sub { MT::Util::ts2iso( $entry->blog_id, $entry->created_on ) };
-    $hash->{'entry.modified_on_iso'} =
-      sub { MT::Util::ts2iso( $entry->blog_id, $entry->modified_on ) };
-    $hash->{'entry.authored_on_iso'} =
-      sub { MT::Util::ts2iso( $entry->blog_id, $entry->authored_on ) };
+    $hash->{'entry.created_on_iso'}
+        = sub { MT::Util::ts2iso( $entry->blog_id, $entry->created_on ) };
+    $hash->{'entry.modified_on_iso'}
+        = sub { MT::Util::ts2iso( $entry->blog_id, $entry->modified_on ) };
+    $hash->{'entry.authored_on_iso'}
+        = sub { MT::Util::ts2iso( $entry->blog_id, $entry->authored_on ) };
 
     # Populate author info
     my $auth = $entry->author or return $hash;
@@ -1623,8 +1613,7 @@ sub gather_changed_cols {
     # check if tag was changed
     my $tag_changed = 0;
     my @objecttags  = MT->model('objecttag')->load(
-        {
-            object_id         => $obj->id,
+        {   object_id         => $obj->id,
             object_datasource => $obj->datasource,
             blog_id           => $obj->blog_id
         }
@@ -1661,14 +1650,15 @@ sub gather_changed_cols {
     my $cat_changed = 0;
     my @category_ids;
     eval {
-        @category_ids = split /\s*,\s*/, ( $app->param('category_ids') || '' );
+        @category_ids = split /\s*,\s*/,
+            ( $app->param('category_ids') || '' );
 
-       # page has root folder (id:-1) for default and should be removed from ids
+     # page has root folder (id:-1) for default and should be removed from ids
         @category_ids = grep { $_ != -1 } @category_ids;
     };
     unless ($@) {
-        my @placements =
-          MT->model('placement')->load( { entry_id => $obj->id } );
+        my @placements
+            = MT->model('placement')->load( { entry_id => $obj->id } );
 
         # the number of categories have changed
         $cat_changed = 1 if scalar(@category_ids) != scalar(@placements);
@@ -1678,7 +1668,7 @@ sub gather_changed_cols {
             my %categories = map { $_ => 1 } @category_ids;
             foreach my $placement (@placements) {
                 $primary_cat_id = $placement->category_id
-                  if $placement->is_primary;
+                    if $placement->is_primary;
                 delete $categories{ $placement->category_id };
             }
 
@@ -1687,15 +1677,13 @@ sub gather_changed_cols {
         }
 
         unless ($cat_changed) {
-            if (
-                (
-                       @category_ids
+            if ((      @category_ids
                     && $primary_cat_id
                     && ( $category_ids[0] != $primary_cat_id )
                 )
                 || ( !$primary_cat_id && @category_ids )
                 || ( $primary_cat_id  && !@category_ids )
-              )
+                )
             {
 
                 # primary category was changed
@@ -1707,7 +1695,7 @@ sub gather_changed_cols {
     }
 
     $obj->{changed_revisioned_cols} = $changed_cols
-      if $cat_changed || $tag_changed;
+        if $cat_changed || $tag_changed;
     1;
 }
 
@@ -1719,7 +1707,7 @@ sub pack_revision {
     my ( @tags, @cats );
     if ( my $tags = $obj->get_tag_objects ) {
         @tags = map { $_->id } @$tags
-          if @$tags;
+            if @$tags;
     }
 
     # a revision may remove all the tags
@@ -1728,7 +1716,7 @@ sub pack_revision {
     my $primary = $obj->category;
     if ( my $cats = $obj->categories ) {
         @cats = map { [ $_->id, $_->id == $primary->id ? 1 : 0 ] } @$cats
-          if @$cats;
+            if @$cats;
     }
 
     # a revision may remove all the categories
@@ -1756,11 +1744,11 @@ sub unpack_revision {
 
         if (@$rev_tags) {
             my $lookups = MT::Tag->lookup_multi($rev_tags);
-            my @tags = grep { defined } @$lookups;
+            my @tags = grep {defined} @$lookups;
             $obj->{__tags}             = [ map { $_->name } @tags ];
             $obj->{__tag_objects}      = \@tags;
             $obj->{__missing_tags_rev} = 1
-              if scalar(@tags) != scalar(@$lookups);
+                if scalar(@tags) != scalar(@$lookups);
         }
         else {
             $obj->{__tags}        = [];
@@ -1776,11 +1764,11 @@ sub unpack_revision {
         if (@$rev_cats) {
             my ($primary) = grep { $_->[1] } @$rev_cats;
             $cat = MT::Category->lookup( $primary->[0] );
-            my $cats =
-              MT::Category->lookup_multi( [ map { $_->[0] } @$rev_cats ] );
-            @cats = sort { $a->label cmp $b->label } grep { defined } @$cats;
+            my $cats = MT::Category->lookup_multi(
+                [ map { $_->[0] } @$rev_cats ] );
+            @cats = sort { $a->label cmp $b->label } grep {defined} @$cats;
             $obj->{__missing_cats_rev} = 1
-              if scalar(@cats) != scalar(@$cats);
+                if scalar(@cats) != scalar(@$cats);
         }
         $obj->cache_property( 'category',   undef, $cat );
         $obj->cache_property( 'categories', undef, \@cats );
@@ -1805,7 +1793,7 @@ sub attach_categories {
         next if eval { $cat->isa('MT::Category') } && $cat->id;
         return $obj->error(
             MT->translate(
-'Invalid arguments. They all need to be saved MT::Category objects.'
+                'Invalid arguments. They all need to be saved MT::Category objects.'
             )
         );
     }
@@ -1813,8 +1801,7 @@ sub attach_categories {
     # Remove already attached categories.
     my @attach_cats;
     my @current_place = MT->model('placement')->load(
-        {
-            entry_id    => $obj->id,
+        {   entry_id    => $obj->id,
             category_id => [ map { $_->id } @cats ],
         }
     );
@@ -1825,8 +1812,7 @@ sub attach_categories {
 
     # Attach assets.
     my $has_primary = MT->model('placement')->count(
-        {
-            entry_id   => $obj->id,
+        {   entry_id   => $obj->id,
             is_primary => 1,
         }
     );
@@ -1834,8 +1820,7 @@ sub attach_categories {
     for my $cat (@attach_cats) {
         my $place = MT->model('placement')->new;
         $place->set_values(
-            {
-                blog_id     => $obj->blog->id,
+            {   blog_id     => $obj->blog->id,
                 entry_id    => $obj->id,
                 category_id => $cat->id,
                 is_primary  => $has_primary ? 0 : 1,
@@ -1845,15 +1830,16 @@ sub attach_categories {
 
         # Update cache.
         $obj->cache_property( 'category', undef, $cat )
-          unless $has_primary;
+            unless $has_primary;
 
         # Entry does not have more than one primary category.
         $has_primary = 1;
     }
 
     # Update cache.
-    my @new_cats =
-      ( @attach_cats, $current_cats && @$current_cats ? @$current_cats : () );
+    my @new_cats = (
+        @attach_cats, $current_cats && @$current_cats ? @$current_cats : ()
+    );
     @new_cats = sort { $a->label cmp $b->label } @new_cats;
     $obj->cache_property( 'categories', undef, \@new_cats );
 
@@ -1869,7 +1855,7 @@ sub update_categories {
         next if eval { $cat->isa('MT::Category') } && $cat->id;
         return $obj->error(
             MT->translate(
-'Invalid arguments. They all need to be saved MT::Category objects.'
+                'Invalid arguments. They all need to be saved MT::Category objects.'
             )
         );
     }
@@ -1877,7 +1863,7 @@ sub update_categories {
     # Detach all if no category.
     unless (@cats) {
         MT::Placement->remove( { entry_id => $obj->id, } )
-          or return $obj->error( MT::Placement->errstr );
+            or return $obj->error( MT::Placement->errstr );
 
         $obj->clear_cache('category');
         $obj->clear_cache('categories');
@@ -1887,8 +1873,7 @@ sub update_categories {
 
     # Detach categories
     MT::Placement->remove(
-        {
-            entry_id    => $obj->id,
+        {   entry_id    => $obj->id,
             category_id => { not => [ map { $_->id } @cats ] },
         }
     ) or return $obj->error( MT::Placement->errstr );
@@ -1896,8 +1881,7 @@ sub update_categories {
     # Attach/update categories
     my $is_primary    = 1;
     my @current_place = MT::Placement->load(
-        {
-            blog_id  => $obj->blog_id,
+        {   blog_id  => $obj->blog_id,
             entry_id => $obj->id,
         }
     );
@@ -1913,8 +1897,7 @@ sub update_categories {
         else {
             $place = MT::Placement->new;
             $place->set_values(
-                {
-                    blog_id     => $obj->blog_id,
+                {   blog_id     => $obj->blog_id,
                     entry_id    => $obj->id,
                     category_id => $cat->id,
                     is_primary  => $is_primary,
@@ -1946,7 +1929,7 @@ sub attach_assets {
         next if eval { $asset->isa('MT::Asset') } && $asset->id;
         return $obj->error(
             MT->translate(
-'Invalid arguments. They all need to be saved MT::Asset objects.'
+                'Invalid arguments. They all need to be saved MT::Asset objects.'
             )
         );
     }
@@ -1954,8 +1937,7 @@ sub attach_assets {
     # Remove already attached assets.
     my @attach_assets;
     my @current_oa = MT->model('objectasset')->load(
-        {
-            blog_id   => $obj->blog->id,
+        {   blog_id   => $obj->blog->id,
             object_ds => $obj->class,
             object_id => $obj->id,
             asset_id  => [ map { $_->id } @assets ],
@@ -1970,8 +1952,7 @@ sub attach_assets {
     for my $asset (@attach_assets) {
         my $oa = MT->model('objectasset')->new;
         $oa->set_values(
-            {
-                blog_id   => $obj->blog->id,
+            {   blog_id   => $obj->blog->id,
                 object_ds => $obj->class,
                 object_id => $obj->id,
                 asset_id  => $asset->id,
@@ -1992,7 +1973,7 @@ sub update_assets {
         next if eval { $asset->isa('MT::Asset') } && $asset->id;
         return $obj->error(
             MT->translate(
-'Invalid arguments. They all need to be saved MT::Asset objects.'
+                'Invalid arguments. They all need to be saved MT::Asset objects.'
             )
         );
     }
@@ -2000,8 +1981,7 @@ sub update_assets {
     # Detach all assets if no assets.
     unless (@assets) {
         MT->model('objectasset')->remove(
-            {
-                object_ds => $obj->class,
+            {   object_ds => $obj->class,
                 object_id => $obj->id,
             }
         ) or return $obj->error( MT->model('objectasset')->errstr );
@@ -2011,8 +1991,7 @@ sub update_assets {
     # Detach assets.
     my @asset_ids = map { $_->id } @assets;
     MT->model('objectasset')->remove(
-        {
-            object_ds => $obj->class,
+        {   object_ds => $obj->class,
             object_id => $obj->id,
             asset_id  => { not => \@asset_ids },
         }
@@ -2021,8 +2000,7 @@ sub update_assets {
     # Remove already attached assets.
     my @attaching_assets = @assets;
     my @current_oa       = MT->model('objectasset')->load(
-        {
-            object_ds => $obj->class,
+        {   object_ds => $obj->class,
             object_id => $obj->id,
             asset_id  => \@asset_ids,
         }
@@ -2036,8 +2014,7 @@ sub update_assets {
     for my $asset (@assets) {
         my $oa = MT->model('objectasset')->new;
         $oa->set_values(
-            {
-                blog_id   => $obj->blog->id,
+            {   blog_id   => $obj->blog->id,
                 object_ds => $obj->class,
                 object_id => $obj->id,
                 asset_id  => $asset->id,
