@@ -68,6 +68,28 @@ sub suite {
 
         # version 2
 
+        # list_permissions_for_user - irregular tests
+        {    # The other user.
+            path   => '/v2/users/2/permissions',
+            method => 'GET',
+            code   => '403',
+            result => sub {
+                +{  error => {
+                        code => 403,
+                        message =>
+                            'Do not have permission to retrieve the requested user\'s permissions.',
+                    },
+                };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/users/2/permissions',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+
         # list_permissions_for_user - normal tests
         {   path      => '/v2/users/me/permissions',
             method    => 'GET',
@@ -146,18 +168,13 @@ sub suite {
             params => { sortBy => 'author_id' },
         },
 
-        # list_permissions_for_user - irregular tests
-        {   path   => '/v2/users/2/permissions',
-            method => 'GET',
-            code   => '403',
-            result => sub {
-                +{  error => {
-                        code => 403,
-                        message =>
-                            'Do not have permission to retrieve the requested user\'s permissions.',
-                    },
-                };
-            },
+        # list_permissions - irregular tests.
+        {    # Not logged in.
+            path      => '/v2/permissions',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
         },
 
         # list_permissions - normal tests
@@ -193,7 +210,6 @@ sub suite {
                     'IDs of items are "' . "@result_ids" . '"' );
             },
         },
-
         {
             # Superuser.
             path         => '/v2/permissions',
@@ -225,6 +241,39 @@ sub suite {
                 is_deeply( \@result_ids, \@expected_ids,
                     'IDs of items are "' . "@result_ids" . '"' );
             },
+        },
+
+        # list_permissions_for_site - irregular tests
+        {    # Non-existent site.
+            path   => '/v2/sites/5/permissions',
+            method => 'GET',
+            code   => 404,
+            result => sub {
+                +{  error => {
+                        code    => 404,
+                        message => 'Site not found',
+                    },
+                };
+            },
+        },
+        {    # System.
+            path   => '/v2/sites/0/permissions',
+            method => 'GET',
+            code   => 404,
+            result => sub {
+                +{  error => {
+                        code    => 404,
+                        message => 'Site not found',
+                    },
+                };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/permissions',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
         },
 
         # list_permissions_for_site - normal tests
@@ -294,30 +343,33 @@ sub suite {
             },
         },
 
-        # list_permissions_for_site - irregular tests
-        {    # Non-existent site.
-            path   => '/v2/sites/5/permissions',
+        # list_permissions_for_role - irregular tests
+        {    # Non-existent role.
+            path   => '/v2/roles/100/permissions',
             method => 'GET',
             code   => 404,
             result => sub {
                 +{  error => {
                         code    => 404,
-                        message => 'Site not found',
+                        message => 'Role not found',
                     },
                 };
             },
         },
-        {    # System.
-            path   => '/v2/sites/0/permissions',
-            method => 'GET',
-            code   => 404,
-            result => sub {
-                +{  error => {
-                        code    => 404,
-                        message => 'Site not found',
-                    },
-                };
-            },
+        {    # Not logged in.
+            path      => '/v2/roles/1/permissions',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/roles/1/permissions',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ edit_role /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the list of permissions.',
         },
 
         # list_permissions_for_role - normal tests
@@ -401,20 +453,6 @@ sub suite {
             },
         },
 
-        # list_permissions_for_role - irregular tests
-        {    # Non-existent role.
-            path   => '/v2/roles/100/permissions',
-            method => 'GET',
-            code   => 404,
-            result => sub {
-                +{  error => {
-                        code    => 404,
-                        message => 'Role not found',
-                    },
-                };
-            },
-        },
-
         # grant_permission_to_site - irregular tests
         {    # Non-existent site.
             path   => '/v2/sites/10/permissions/grant',
@@ -473,6 +511,40 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # Not logged in.
+            path   => '/v2/sites/1/permissions/grant',
+            method => 'POST',
+            params => {
+                user_id => $author->id,
+                role_id => 2,
+            },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (not administer role).
+            path   => '/v2/sites/1/permissions/grant',
+            method => 'POST',
+            params => {
+                user_id => $author->id,
+                role_id => 3,
+            },
+            restrictions =>
+                { 1 => [qw/ grant_administer_role grant_role_for_blog /], },
+            code  => 403,
+            error => 'Do not have permission to grant a permission.',
+        },
+        {    # No permissions (administer role).
+            path   => '/v2/sites/1/permissions/grant',
+            method => 'POST',
+            params => {
+                user_id => $author->id,
+                role_id => 2,
+            },
+            restrictions => { 1 => [qw/ grant_administer_role /], },
+            code         => 403,
+            error => 'Do not have permission to grant a permission.',
         },
 
         # grant_permission_to_site - normal tests
@@ -548,6 +620,40 @@ sub suite {
             params => { site_id => 0, role_id => 20 },
             code   => 404,
             error  => "Site not found",
+        },
+        {    # Not logged in.
+            path   => '/v2/users/1/permissions/grant',
+            method => 'POST',
+            params => {
+                site_id => 1,
+                role_id => 3,
+            },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (not administer role).
+            path   => '/v2/users/1/permissions/grant',
+            method => 'POST',
+            params => {
+                site_id => 1,
+                role_id => 3,
+            },
+            restrictions =>
+                { 1 => [qw/ grant_administer_role grant_role_for_blog /], },
+            code  => 403,
+            error => 'Do not have permission to grant a permission.',
+        },
+        {    # No permissions (administer role).
+            path   => '/v2/users/1/permissions/grant',
+            method => 'POST',
+            params => {
+                site_id => 1,
+                role_id => 2,
+            },
+            restrictions => { 1 => [qw/ grant_administer_role /], },
+            code         => 403,
+            error => 'Do not have permission to grant a permission.',
         },
 
         # grant_permission_to_user - normal tests
@@ -633,6 +739,39 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path   => '/v2/sites/1/permissions/revoke',
+            method => 'POST',
+            params => {
+                user_id => $author->id,
+                role_id => 2,
+            },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (not administer role).
+            path   => '/v2/sites/1/permissions/revoke',
+            method => 'POST',
+            params => {
+                user_id => $author->id,
+                role_id => 3,
+            },
+            restrictions => { 1 => [qw/ revoke_role /], },
+            code         => 403,
+            error => 'Do not have permission to revoke a permission.',
+        },
+        {    # No permissions (administer role).
+            path   => '/v2/sites/1/permissions/revoke',
+            method => 'POST',
+            params => {
+                user_id => $author->id,
+                role_id => 2,
+            },
+            restrictions => { 1 => [qw/ revoke_administer_role /], },
+            code         => 403,
+            error => 'Do not have permission to revoke a permission.',
+        },
 
         # revoke_permission_from_site - normal tests
         {   path   => '/v2/sites/1/permissions/revoke',
@@ -709,6 +848,39 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # Not logged in.
+            path   => '/v2/users/1/permissions/revoke',
+            method => 'POST',
+            params => {
+                site_id => 1,
+                role_id => 3,
+            },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (not administer role).
+            path   => '/v2/users/1/permissions/revoke',
+            method => 'POST',
+            params => {
+                site_id => 1,
+                role_id => 3,
+            },
+            restrictions => { 1 => [qw/ revoke_role /], },
+            code         => 403,
+            error => 'Do not have permission to revoke a permission.',
+        },
+        {    # No permissions (administer role).
+            path   => '/v2/users/1/permissions/revoke',
+            method => 'POST',
+            params => {
+                site_id => 1,
+                role_id => 2,
+            },
+            restrictions => { 1 => [qw/ revoke_administer_role /], },
+            code         => 403,
+            error => 'Do not have permission to revoke a permission.',
         },
 
         # revoke_permission_from_user - normal tests

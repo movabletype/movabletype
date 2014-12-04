@@ -7,6 +7,7 @@ use lib qw(lib extlib t/lib);
 
 use Test::More;
 use MT::Test::DataAPI;
+use MT::Test::Permission;
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -20,6 +21,11 @@ $mock_filemgr_local->mock( 'delete', sub {1} );
 
 my $temp_data = undef;
 
+my $unpublished_page = MT::Test::Permission->make_page(
+    blog_id => 1,
+    status  => 1,    # unpublished
+);
+
 my $suite = suite();
 test_data_api($suite);
 
@@ -27,6 +33,34 @@ done_testing;
 
 sub suite {
     return +[
+
+        # upload_asset - irregular tests.
+        {    # Not logged in.
+            path   => '/v1/sites/1/assets/upload',
+            method => 'POST',
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+                ),
+            ],
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v1/sites/1/assets/upload',
+            method => 'POST',
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+                ),
+            ],
+            restrictions => { 1 => [qw/ upload /], },
+            code         => 403,
+            error => 'Do not have permission to upload.',
+        },
 
         # upload_asset - normal tests
         {   path   => '/v1/sites/1/assets/upload',
@@ -60,7 +94,7 @@ sub suite {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
                 $temp_data = $result->{error}{data};
-                }
+            }
         },
         {    # Overwrite.
             path   => '/v1/sites/1/assets/upload',
@@ -76,6 +110,39 @@ sub suite {
                     $ENV{MT_HOME}, "t", 'images', 'test.jpg'
                 ),
             ],
+        },
+
+        # upload_asset_v2 - irregular tests.
+        {    # Not logged in.
+            path   => '/v2/assets/upload',
+            method => 'POST',
+            params => { site_id => 1, },
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.png'
+                ),
+            ],
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/assets/upload',
+            method => 'POST',
+            params => { site_id => 1, },
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.png'
+                ),
+            ],
+            restrictions => {
+                1 => [qw/ upload /],
+                0 => [qw/ upload /],
+            },
+            code  => 403,
+            error => 'Do not have permission to upload.',
         },
 
         # upload_asset_v2 - normal tests.
@@ -378,6 +445,16 @@ sub suite {
             method => 'GET',
             code   => 404,
         },
+        {    # Unpublished entry and not logged in.
+            path      => '/v2/sites/1/entries/3/assets',
+            method    => 'GET',
+            author_id => 0,
+            code      => 403,
+            error =>
+                'Do not have permission to retrieve the requested assets for entry.',
+        },
+
+        # TODO: Unpublished entry and no permissions.
 
         # list_assets_for_entry - normal tests
         {   path      => '/v2/sites/1/entries/1/assets',
@@ -461,6 +538,22 @@ sub suite {
             method => 'GET',
             code   => 404,
         },
+        {    # Unpublished page and not logged in.
+            path => '/v2/sites/1/pages/' . $unpublished_page->id . '/assets',
+            method    => 'GET',
+            author_id => 0,
+            code      => 403,
+            error =>
+                'Do not have permission to retrieve the requested assets for page.',
+        },
+        {    # Unpublished page and no permissions.
+            path => '/v2/sites/1/pages/' . $unpublished_page->id . '/assets',
+            method       => 'GET',
+            restrictions => { 1 => [qw/ open_page_edit_screen /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the requested assets for page.',
+        },
 
         # list_assets_for_page - normal tests
         {   path      => '/v2/sites/1/pages/20/assets',
@@ -532,6 +625,36 @@ sub suite {
             method => 'GET',
             code   => 404,
         },
+        {    # Private tag and not logged in.
+            path      => '/v2/sites/2/tags/16/assets',
+            method    => 'GET',
+            author_id => 0,
+            code      => 403,
+            error =>
+                'Do not have permission to retrieve the requested assets for site and tag.',
+        },
+
+        # Private tag and no permissions.
+        {   path         => '/v2/sites/2/tags/16/assets',
+            method       => 'GET',
+            restrictions => {
+                2 => [qw/ edit_tags /],
+                0 => [qw/ edit_tags /],
+            },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the requested assets for site and tag.',
+        },
+        {   path         => '/v2/sites/2/tags/16/assets',
+            method       => 'GET',
+            restrictions => {
+                2 => [qw/ access_to_tag_list /],
+                0 => [qw/ access_to_tag_list /],
+            },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the requested assets for site and tag.',
+        },
 
         # list_assets_for_site_and_tag - normal tests
         {   path      => '/v2/sites/1/tags/6/assets',
@@ -592,6 +715,22 @@ sub suite {
             path   => '/v2/tags/100/assets',
             method => 'GET',
             code   => 404,
+        },
+        {    # Private tag and not logged in.
+            path      => '/v2/tags/16/assets',
+            method    => 'GET',
+            author_id => 0,
+            code      => 403,
+            error =>
+                'Do not have permission to retrieve the requested assets for tag.',
+        },
+        {    # Private tag and no permissions.
+            path         => '/v2/tags/16/assets',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ administer /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the requested assets for tag.',
         },
 
         # list_assets_for_tag - normal tests
@@ -733,6 +872,22 @@ sub suite {
                 asset => { label => 'update_asset in non-existent asset', },
             },
             code => 404,
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/assets/1',
+            method    => 'PUT',
+            params    => { asset => {} },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/1/assets/1',
+            method       => 'PUT',
+            params       => { asset => {} },
+            restrictions => { 1 => [qw/ save_asset /], },
+            code         => 403,
+            error        => 'Do not have permission to update an asset.',
         },
 
         # update_asset - normal tests
@@ -889,9 +1044,10 @@ sub suite {
         },
 
         # get_thumbnail - normal tests
-        {   path   => '/v2/sites/1/assets/4/thumbnail',
-            method => 'GET',
-            result => sub {
+        {   path      => '/v2/sites/1/assets/4/thumbnail',
+            method    => 'GET',
+            author_id => 0,
+            result    => sub {
                 my $image = $app->model('asset')->load(4);
                 my ( $thumbnail, $w, $h ) = $image->thumbnail_url;
                 return +{
@@ -947,6 +1103,20 @@ sub suite {
             path   => '/v2/sites/2/assets/10',
             method => 'DELETE',
             code   => 404,
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/assets/1',
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/1/assets/1',
+            method       => 'DELETE',
+            restrictions => { 1 => [qw/ delete_asset /], },
+            code         => 403,
+            error        => 'Do not have permission to delete an asset.',
         },
 
         # delete_asset - normal tests
