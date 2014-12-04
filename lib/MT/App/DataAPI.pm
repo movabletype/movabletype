@@ -1191,23 +1191,23 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to create a role.', },
         },
-        {   id      => 'get_role',
-            route   => '/roles/:role_id',
-            version => 2,
-            handler => "${pkg}v2::Role::get",
-            error_codes =>
-                { 403 => 'Do not have permission to create a role.', },
-        },
-        {   id          => 'update_role',
+        {   id          => 'get_role',
             route       => '/roles/:role_id',
-            resources   => ['role'],
-            verb        => 'PUT',
             version     => 2,
-            handler     => "${pkg}v2::Role::update",
+            handler     => "${pkg}v2::Role::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested role.',
             },
+        },
+        {   id        => 'update_role',
+            route     => '/roles/:role_id',
+            resources => ['role'],
+            verb      => 'PUT',
+            version   => 2,
+            handler   => "${pkg}v2::Role::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a role.', },
         },
         {   id      => 'delete_role',
             route   => '/roles/:role_id',
@@ -2135,7 +2135,9 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.tag' =>
                 "${pfx}Tag::cms_pre_load_filtered_list",
-            $pkg . 'view_permission_filter.tag'   => "${pfx}Tag::can_view",
+            $pkg . 'view_permission_filter.tag' => "${pfx}Tag::can_view",
+
+    #            $pkg . 'save_permission_filter.tag' => "${pfx}Tag::can_save",
             $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
 
             # template callbacks

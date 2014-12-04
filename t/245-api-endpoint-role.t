@@ -25,6 +25,22 @@ done_testing;
 sub suite {
     return +[
 
+        # list_roles - invalid tests.
+        {    # Not logged in.
+            path      => '/v2/roles',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/roles',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ access_to_role_list /], },
+            code         => 403,
+            error => 'Do not have permission to retrieve the list of roles.',
+        },
+
         # list_roles - normal tests
         {   path      => '/v2/roles',
             method    => 'GET',
@@ -124,6 +140,58 @@ sub suite {
             params => { sortBy => 'modified_on' },
         },
 
+        # create_role - irregular tests
+        {    # No resource.
+            path   => '/v2/roles',
+            method => 'POST',
+            code   => 400,
+            error  => 'A resource "role" is required.',
+        },
+        {    # No name.
+            path   => '/v2/roles',
+            method => 'POST',
+            params => { role => {} },
+            code   => 409,
+            error  => "A parameter \"name\" is required.\n",
+        },
+        {    # Same name role exists.
+            path   => '/v2/roles',
+            method => 'POST',
+            params => { role => { name => 'Moderator' } },
+            code   => 409,
+            error  => "Another role already exists by that name.\n",
+        },
+        {    # No permission in the request parameters.
+            path   => '/v2/roles',
+            method => 'POST',
+            params =>
+                { role => { name => 'create_role_without_permissions', }, },
+            code  => 409,
+            error => "You cannot define a role without permissions.\n",
+        },
+        {    # Not logged in.
+            path   => '/v2/roles',
+            method => 'POST',
+            params => {
+                role =>
+                    { name => 'create_role', permissions => ['create_post'] }
+            },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions to do this method.
+            path   => '/v2/roles',
+            method => 'POST',
+            params => {
+                role =>
+                    { name => 'create_role', permissions => ['create_post'] }
+            },
+            restrictions => { 0 => [qw/ save_role /], },
+            code         => 403,
+            error => 'Do not have permission to create a role.',
+        },
+
         # create_role - normal tests
         {   path   => '/v2/roles',
             method => 'POST',
@@ -151,42 +219,6 @@ sub suite {
             },
         },
 
-        # create_role - irregular tests
-        {    # No resource.
-            path   => '/v2/roles',
-            method => 'POST',
-            code   => 400,
-            error  => 'A resource "role" is required.',
-        },
-        {    # No name.
-            path   => '/v2/roles',
-            method => 'POST',
-            params => { role => {} },
-            code   => 409,
-            error  => "A parameter \"name\" is required.\n",
-        },
-        {    # Same name role exists.
-            path   => '/v2/roles',
-            method => 'POST',
-            params => { role => { name => 'create_role' } },
-            code   => 409,
-            error  => "Another role already exists by that name.\n",
-        },
-        {    # No permission.
-            path   => '/v2/roles',
-            method => 'POST',
-            params =>
-                { role => { name => 'create_role_without_permissions', }, },
-            code  => 409,
-            error => "You cannot define a role without permissions.\n",
-        },
-
-        # get_role - normal tests
-        {   path   => '/v2/roles/10',
-            method => 'GET',
-            result => sub { MT->model('role')->load(10) },
-        },
-
         # get_role - irregular tests
         {    # Non-existent role.
             path   => '/v2/roles/20',
@@ -200,35 +232,25 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/roles/10',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/roles/10',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ edit_role /], },
+            code         => 403,
+            error => 'Do not have permission to retrieve the requested role.',
+        },
 
-        # update_role - normal tests
+        # get_role - normal tests
         {   path   => '/v2/roles/10',
-            method => 'PUT',
-            params => {
-                role => {
-                    name        => 'update_role',
-                    permissions => ['edit_templates']
-                }
-            },
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_save_permission_filter.role',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_save_filter.role',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_pre_save.role',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_post_save.role',
-                    count => 1,
-                },
-            ],
-            result => sub {
-                MT->model('role')
-                    ->load( { id => 10, name => 'update_role' } );
-            },
+            method => 'GET',
+            result => sub { MT->model('role')->load(10) },
         },
 
         # update_role - irregular tests
@@ -264,6 +286,91 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path   => '/v2/roles/10',
+            method => 'PUT',
+            params => {
+                role => {
+                    name        => 'update_role',
+                    permissions => ['edit_templates']
+                }
+            },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/roles/10',
+            method => 'PUT',
+            params => {
+                role => {
+                    name        => 'update_role',
+                    permissions => ['edit_templates']
+                }
+            },
+            restrictions => { 0 => [qw/ save_role /], },
+            code         => 403,
+            error => 'Do not have permission to update a role.',
+        },
+
+        # update_role - normal tests
+        {   path   => '/v2/roles/10',
+            method => 'PUT',
+            params => {
+                role => {
+                    name        => 'update_role',
+                    permissions => ['edit_templates']
+                }
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.role',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.role',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.role',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.role',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('role')
+                    ->load( { id => 10, name => 'update_role' } );
+            },
+        },
+
+        # delete_role - irregular tests
+        {
+            # non-existent role.
+            path   => '/v2/roles/20',
+            method => 'DELETE',
+            code   => 404,
+            result => sub {
+                +{  error => {
+                        code    => 404,
+                        message => 'Role not found',
+                    },
+                };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/roles/10',
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/roles/10',
+            method       => 'DELETE',
+            restrictions => { 0 => [qw/ delete_role /], },
+            code         => 403,
+            error        => 'Do not have permission to delete a role.',
+        },
 
         # delete_role - normal tests
         {   path      => '/v2/roles/10',
@@ -280,21 +387,6 @@ sub suite {
             complete => sub {
                 my $deleted = MT->model('role')->load(10);
                 is( $deleted, undef, 'deleted' );
-            },
-        },
-
-        # delete_role - irregular tests
-        {
-            # non-existent role.
-            path   => '/v2/roles/20',
-            method => 'DELETE',
-            code   => 404,
-            result => sub {
-                +{  error => {
-                        code    => 404,
-                        message => 'Role not found',
-                    },
-                };
             },
         },
     ];
