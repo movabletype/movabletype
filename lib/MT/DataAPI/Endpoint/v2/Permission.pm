@@ -135,7 +135,7 @@ sub _can_grant {
 
     if ( !$perms->can_do('grant_administer_role') ) {
         return if !$perms->can_do('grant_role_for_blog');
-        return if !$role->has('administer_blog');
+        return if $role->has('administer_blog');
     }
 
     return 1;

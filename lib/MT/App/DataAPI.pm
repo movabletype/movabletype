@@ -1291,7 +1291,7 @@ sub core_endpoints {
             version => 2,
             handler => "${pkg}v2::Permission::grant_to_site",
             error_codes =>
-                { 403 => 'Do not have permission to grant a permission', },
+                { 403 => 'Do not have permission to grant a permission.', },
         },
         {   id      => 'grant_permission_to_user',
             route   => '/users/:user_id/permissions/grant',
@@ -1299,7 +1299,7 @@ sub core_endpoints {
             version => 2,
             handler => "${pkg}v2::Permission::grant_to_user",
             error_codes =>
-                { 403 => 'Do not have permission to grant a permission', },
+                { 403 => 'Do not have permission to grant a permission.', },
         },
         {   id      => 'revoke_permission_from_site',
             route   => '/sites/:site_id/permissions/revoke',
@@ -1307,7 +1307,7 @@ sub core_endpoints {
             version => 2,
             handler => "${pkg}v2::Permission::revoke_from_site",
             error_codes =>
-                { 403 => 'Do not have permission to revoke a permission', },
+                { 403 => 'Do not have permission to revoke a permission.', },
         },
         {   id      => 'revoke_permission_from_user',
             route   => '/users/:user_id/permissions/revoke',
@@ -1315,7 +1315,7 @@ sub core_endpoints {
             version => 2,
             handler => "${pkg}v2::Permission::revoke_from_user",
             error_codes =>
-                { 403 => 'Do not have permission to revoke a permission', },
+                { 403 => 'Do not have permission to revoke a permission.', },
         },
 
         # search endpoints
@@ -1324,7 +1324,7 @@ sub core_endpoints {
             version => 2,
             handler => "${pkg}v2::Search::search",
             error_codes =>
-                { 403 => 'Do not have permission to search objects', },
+                { 403 => 'Do not have permission to search objects.', },
             requires_login => 0,
         },
 
