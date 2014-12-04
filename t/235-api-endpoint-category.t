@@ -113,6 +113,82 @@ sub suite {
             },
         },
 
+        # create_category - irregular tests
+        {    # No resource.
+            path   => '/v2/sites/1/categories',
+            method => 'POST',
+            code   => 400,
+            error  => 'A resource "category" is required.',
+        },
+        {    # No label.
+            path   => '/v2/sites/1/categories',
+            method => 'POST',
+            params => { category => {} },
+            code   => 409,
+            error  => 'A parameter "label" is required.' . "\n",
+        },
+        {    # Too long label.
+            path   => '/v2/sites/1/categories',
+            method => 'POST',
+            params => { category => { label => ( '1234567890' x 11 ) }, }
+            ,    # exceeding 100 characters
+            code        => 409,
+                  error => "The label '"
+                . ( '1234567890' x 11 )
+                . "' is too long.\n",
+        },
+        {        # Category having same name exists.
+            path   => '/v2/sites/1/categories',
+            method => 'POST',
+            params => { category => { label => 'foo' } },
+            code   => 409,
+            error =>
+                'Save failed: The category name \'foo\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.'
+                . "\n",
+        },
+        {        # Invalid parent (folder).
+            path   => '/v2/sites/1/categories',
+            method => 'POST',
+            params => {
+                category => {
+                    label  => 'test-create-category-with-parent-folder',
+                    parent => 20,
+                },
+            },
+            code  => 409,
+            error => 'Parent category (ID:20) not found.' . "\n",
+        },
+        {        # Invalid parent ( non-existent category ).
+            path   => '/v2/sites/1/categories',
+            method => 'POST',
+            params => {
+                category => {
+                    label  => 'test-create-category-with-invalid-parent',
+                    parent => 100,
+                },
+            },
+            code  => 409,
+            error => 'Parent category (ID:100) not found.' . "\n",
+        },
+        {        # Not logged in.
+            path   => '/v2/sites/1/categories',
+            method => 'POST',
+            params =>
+                { category => { label => 'test-api-permission-category' }, },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {        # No permissions.
+            path   => '/v2/sites/1/categories',
+            method => 'POST',
+            params =>
+                { category => { label => 'test-api-permission-category' }, },
+            restrictions => { 1 => [qw/ save_category /], },
+            code         => 403,
+            error => 'Do not have permission to create a category.',
+        },
+
         # create_category - normal tests
         {   path   => '/v2/sites/1/categories',
             method => 'POST',
@@ -170,65 +246,6 @@ sub suite {
             },
         },
 
-        # create_category - irregular tests
-        {    # No resource.
-            path   => '/v2/sites/1/categories',
-            method => 'POST',
-            code   => 400,
-            error  => 'A resource "category" is required.',
-        },
-        {    # No label.
-            path   => '/v2/sites/1/categories',
-            method => 'POST',
-            params => { category => {} },
-            code   => 409,
-            error  => 'A parameter "label" is required.' . "\n",
-        },
-        {    # Too long label.
-            path   => '/v2/sites/1/categories',
-            method => 'POST',
-            params => { category => { label => ( '1234567890' x 11 ) }, }
-            ,    # exceeding 100 characters
-            code        => 409,
-                  error => "The label '"
-                . ( '1234567890' x 11 )
-                . "' is too long.\n",
-        },
-        {        # Category having same name exists.
-            path   => '/v2/sites/1/categories',
-            method => 'POST',
-            params =>
-                { category => { label => 'test-api-permission-category' } },
-            code => 409,
-            error =>
-                'Save failed: The category name \'test-api-permission-category\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.'
-                . "\n",
-        },
-        {        # Invalid parent (folder).
-            path   => '/v2/sites/1/categories',
-            method => 'POST',
-            params => {
-                category => {
-                    label  => 'test-create-category-with-parent-folder',
-                    parent => 20,
-                },
-            },
-            code  => 409,
-            error => 'Parent category (ID:20) not found.' . "\n",
-        },
-        {        # Invalid parent ( non-existent category ).
-            path   => '/v2/sites/1/categories',
-            method => 'POST',
-            params => {
-                category => {
-                    label  => 'test-create-category-with-invalid-parent',
-                    parent => 100,
-                },
-            },
-            code  => 409,
-            error => 'Parent category (ID:100) not found.' . "\n",
-        },
-
         # get_category - normal tests
         {   path      => '/v2/sites/1/categories/1',
             method    => 'GET',
@@ -264,6 +281,97 @@ sub suite {
             path   => '/v2/sites/5/categories/1',
             method => 'GET',
             code   => 404,
+        },
+
+        # update_category - irregular tests
+        {    # No resource.
+            path   => '/v2/sites/1/categories/1',
+            method => 'PUT',
+            code   => 400,
+            error  => 'A resource "category" is required.',
+        },
+        {    # No label.
+            path   => '/v2/sites/1/categories/1',
+            method => 'PUT',
+            params => { category => { label => '' } },
+            code   => 409,
+            error  => 'A parameter "label" is required.' . "\n",
+        },
+        {    # Too long label.
+            path   => '/v2/sites/1/categories/1',
+            method => 'PUT',
+            params => { category => { label => ( '1234567890' x 11 ) }, }
+            ,    # exceeding 100 characters
+            code        => 409,
+                  error => "The label '"
+                . ( '1234567890' x 11 )
+                . "' is too long.\n",
+        },
+        {        # Other site.
+            path   => '/v2/sites/1/categories/2',
+            method => 'PUT',
+            params => { category => { label => 'foo' } },
+            setup  => sub {
+                my $cat = MT->model('category')->load(1);
+                $cat->parent(0);
+                $cat->save;
+            },
+            code => 409,
+            error =>
+                'Save failed: The category name \'foo\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.'
+                . "\n",
+        },
+        {    # Non-existent site.
+            path   => '/v2/sites/1/categories/4',
+            method => 'PUT',
+            params => {
+                category =>
+                    { label => 'update-test-api-permission-category-2' }
+            },
+            code => 404,
+        },
+        {    # Not category (folder).
+            path   => '/v2/sites/1/categories/20',
+            method => 'PUT',
+            params => {
+                category => { label => 'update-test-api-permission-folder' },
+            },
+            code  => 404,
+            error => 'Category not found',
+        },
+        {    # Invalid parent (folder).
+            path   => '/v2/sites/1/categories/1',
+            method => 'PUT',
+            params => { category => { parent => 20 } },
+            code   => 409,
+            error  => 'Parent category (ID:20) not found.' . "\n",
+        },
+        {    # Invalid parent (non-existent category).
+            path   => '/v2/sites/1/categories/1',
+            method => 'PUT',
+            params => { category => { parent => 100 } },
+            code   => 409,
+            error  => 'Parent category (ID:100) not found.' . "\n",
+        },
+        {    # Not logged in.
+            path   => '/v2/sites/1/categories/1',
+            method => 'PUT',
+            params => {
+                category => { label => 'update-test-api-permission-category' }
+            },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/categories/1',
+            method => 'PUT',
+            params => {
+                category => { label => 'update-test-api-permission-category' }
+            },
+            restrictions => { 1 => [qw/ save_category /], },
+            code         => 403,
+            error => 'Do not have permission to update a category.',
         },
 
         # update_category - normal tests
@@ -316,78 +424,37 @@ sub suite {
             },
         },
 
-        # update_category - irregular tests
-        {    # No resource.
-            path   => '/v2/sites/1/categories/1',
-            method => 'PUT',
-            code   => 400,
-            error  => 'A resource "category" is required.',
-        },
-        {    # No label.
-            path   => '/v2/sites/1/categories/1',
-            method => 'PUT',
-            params => { category => { label => '' } },
-            code   => 409,
-            error  => 'A parameter "label" is required.' . "\n",
-        },
-        {    # Too long label.
-            path   => '/v2/sites/1/categories/1',
-            method => 'PUT',
-            params => { category => { label => ( '1234567890' x 11 ) }, }
-            ,    # exceeding 100 characters
-            code        => 409,
-                  error => "The label '"
-                . ( '1234567890' x 11 )
-                . "' is too long.\n",
-        },
-        {        # Other site.
-            path   => '/v2/sites/1/categories/2',
-            method => 'PUT',
-            params => {
-                category => { label => 'update-test-api-permission-category' }
-            },
-            setup => sub {
-                my $cat = MT->model('category')->load(1);
-                $cat->parent(0);
-                $cat->save;
-            },
-            code => 409,
-            error =>
-                'Save failed: The category name \'update-test-api-permission-category\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.'
-                . "\n",
+        # list_categories_for_entry - irregular tests
+        {    # Non-existent entry.
+            path   => '/v2/sites/1/entries/10/categories',
+            method => 'GET',
+            code   => 404,
         },
         {    # Non-existent site.
-            path   => '/v2/sites/1/categories/4',
-            method => 'PUT',
-            params => {
-                category =>
-                    { label => 'update-test-api-permission-category-2' }
-            },
-            code => 404,
+            path   => '/v2/sites/5/entries/6/categories',
+            method => 'GET',
+            code   => 404,
         },
-        {    # Not category (folder).
-            path   => '/v2/sites/1/categories/20',
-            method => 'PUT',
-            params => {
-                category => { label => 'update-test-api-permission-folder' },
-            },
-            code  => 404,
-            error => 'Category not found',
+        {    # Other site.
+            path   => '/v2/sites/2/entries/6/categories',
+            method => 'GET',
+            code   => 404,
         },
-        {    # Invalid parent (folder).
-            path   => '/v2/sites/1/categories/1',
-            method => 'PUT',
-            params => { category => { parent => 20 } },
-            code   => 409,
-            error  => 'Parent category (ID:20) not found.' . "\n",
+        {    # Other site (system).
+            path   => '/v2/sites/0/entries/6/categories',
+            method => 'GET',
+            code   => 404,
         },
-        {    # Invalid parent (non-existent category).
-            path   => '/v2/sites/1/categories/1',
-            method => 'PUT',
-            params => { category => { parent => 100 } },
-            code   => 409,
-            error  => 'Parent category (ID:100) not found.' . "\n",
+        {    # Unpublished entry and not logged in.
+            path      => '/v2/sites/1/entries/3/categories',
+            method    => 'GET',
+            author_id => 0,
+            code      => 403,
+            error =>
+                'Do not have permission to retrieve the requested categories for entry.',
         },
+
+        # TODO: Unpublished entry and no permissions.
 
         # list_categories_for_entry - normal tests
         {   path      => '/v2/sites/1/entries/6/categories',
@@ -432,28 +499,6 @@ sub suite {
             },
         },
 
-        # list_categories_for_entry - irregular tests
-        {    # Non-existent entry.
-            path   => '/v2/sites/1/entries/10/categories',
-            method => 'GET',
-            code   => 404,
-        },
-        {    # Non-existent site.
-            path   => '/v2/sites/5/entries/6/categories',
-            method => 'GET',
-            code   => 404,
-        },
-        {    # Other site.
-            path   => '/v2/sites/2/entries/6/categories',
-            method => 'GET',
-            code   => 404,
-        },
-        {    # Other site (system).
-            path   => '/v2/sites/0/entries/6/categories',
-            method => 'GET',
-            code   => 404,
-        },
-
         # list_parent_categories - irregular tests
         {    # Non-existent category.
             path   => '/v2/sites/1/categories/100/parents',
@@ -486,13 +531,24 @@ sub suite {
             method => 'GET',
             result => sub {
                 $app->user($author);
-                my $cat = $app->model('category')->load(1);
+
+                my @cat;
+                my $parent     = $app->model('category')->load(3)->parent;
+                my $parent_cat = $app->model('category')->load($parent);
+                while ($parent_cat) {
+                    push @cat, $parent_cat;
+                    $parent_cat
+                        = $parent_cat->parent
+                        ? $app->model('category')->load( $parent_cat->parent )
+                        : undef;
+                }
+
                 no warnings 'redefine';
                 local *boolean::true  = sub {'true'};
                 local *boolean::false = sub {'false'};
                 return +{
-                    'totalResults' => '1',
-                    'items' => mt::DataAPI::Resource->from_object( [$cat] ),
+                    'totalResults' => scalar @cat,
+                    'items' => mt::DataAPI::Resource->from_object( \@cat ),
                 };
             },
         },
@@ -541,17 +597,20 @@ sub suite {
             },
         },
         {    # Top.
-            path   => '/v2/sites/1/categories/1/siblings',
+            path   => '/v2/sites/1/categories/2/siblings',
             method => 'GET',
             result => sub {
                 $app->user($author);
+                my $cat = $app->model('category')->load(2);
                 my @cats
-                    = map { $app->model('category')->load($_) } qw/ 2 23 /;
+                    = $app->model('category')
+                    ->load(
+                    { id => { not => $cat->id }, parent => $cat->parent } );
                 no warnings 'redefine';
                 local *boolean::true  = sub {'true'};
                 local *boolean::false = sub {'false'};
                 return +{
-                    'totalResults' => '2',
+                    'totalResults' => scalar @cats,
                     'items' => MT::DataAPI::Resource->from_object( \@cats ),
                 };
             },
@@ -639,6 +698,26 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path   => '/v2/sites/1/categories/permutate',
+            method => 'POST',
+            params => {
+                categories => [ map { +{ id => $_ } } qw/ 24 23 1 2 3 / ],
+            },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/categories/permutate',
+            method => 'POST',
+            params => {
+                categories => [ map { +{ id => $_ } } qw/ 24 23 1 2 3 / ],
+            },
+            restrictions => { 1 => [qw/ edit_categories /], },
+            code         => 403,
+            error => 'Do not have permission to permutate categories.',
+        },
 
         # permutate_categories - normal tests
         {   path   => '/v2/sites/1/categories/permutate',
@@ -669,30 +748,7 @@ sub suite {
             },
         },
 
-        # delete_category - normal tests
-        {   path      => '/v2/sites/1/categories/1',
-            method    => 'DELETE',
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_delete_permission_filter.category',
-                    count => 1,
-                },
-                {   name => 'MT::App::DataAPI::data_api_post_delete.category',
-                    count => 1,
-                },
-            ],
-            complete => sub {
-                my $deleted = MT->model('category')->load(1);
-                is( $deleted, undef, 'deleted' );
-            },
-        },
-
         # delete_category - irregular tests
-        {    # Non-existent category.
-            path   => '/v2/sites/1/categories/1',
-            method => 'DELETE',
-            code   => 404,
-        },
         {    # Non-existent site.
             path   => '/v2/sites/5/categories/2',
             method => 'DELETE',
@@ -712,6 +768,38 @@ sub suite {
             path   => '/v2/sites/1/categories/22',
             method => 'DELETE',
             code   => 404,
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/categories/1',
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/1/categories/1',
+            method       => 'DELETE',
+            restrictions => { 1 => [qw/ delete_category /], },
+            code         => 403,
+            error        => 'Do not have permission to delete a category.',
+        },
+
+        # delete_category - normal tests
+        {   path      => '/v2/sites/1/categories/1',
+            method    => 'DELETE',
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_delete_permission_filter.category',
+                    count => 1,
+                },
+                {   name => 'MT::App::DataAPI::data_api_post_delete.category',
+                    count => 1,
+                },
+            ],
+            complete => sub {
+                my $deleted = MT->model('category')->load(1);
+                is( $deleted, undef, 'deleted' );
+            },
         },
     ];
 }

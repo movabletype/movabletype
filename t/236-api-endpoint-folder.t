@@ -114,6 +114,22 @@ sub suite {
                 . ( '1234567890' x 11 )
                 . "' is too long.\n",
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/folders',
+            method    => 'POST',
+            params    => { folder => { label => 'create-folder', }, },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permisions.
+            path   => '/v2/sites/1/folders',
+            method => 'POST',
+            params => { folder => { label => 'create-folder', }, },
+            restrictions => { 1 => [qw/ save_folder /], },
+            code         => 403,
+            error => 'Do not have permission to create a folder.',
+        },
 
         # create_folder - normal tests
         {   path      => '/v2/sites/1/folders',
@@ -175,6 +191,22 @@ sub suite {
             code   => 400,
             return => 'A resource "folder" is required.',
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/folders/22',
+            method    => 'PUT',
+            params    => { folder => { label => 'update-folder', }, },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/folders/22',
+            method => 'PUT',
+            params => { folder => { label => 'update-folder', }, },
+            restrictions => { 1 => [qw/ save_folder /], },
+            code         => 403,
+            error => 'Do not have permission to update a folder.',
+        },
 
         # update_folder - normal tests
         {   path   => '/v2/sites/1/folders/22',
@@ -229,6 +261,24 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path   => '/v2/sites/1/folders/permutate',
+            method => 'POST',
+            params =>
+                { folders => [ map { +{ id => $_ } } qw/ 23 22 21 20 / ], },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/folders/permutate',
+            method => 'POST',
+            params =>
+                { folders => [ map { +{ id => $_ } } qw/ 23 22 21 20 / ], },
+            restrictions => { 1 => [qw/ save_folder /], },
+            code         => 403,
+            error => 'Do not have permission to permutate folders.',
+        },
 
         # permutate_folder - normal tests
         {   path   => '/v2/sites/1/folders/permutate',
@@ -281,6 +331,20 @@ sub suite {
             path   => '/v2/sites/1/folders/3',
             method => 'DELETE',
             code   => 404,
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/folders/22',
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/1/folders/22',
+            method       => 'DELETE',
+            restrictions => { 1 => [qw/ delete_folder /], },
+            code         => 403,
+            error        => 'Do not have permission to delete a folder.',
         },
 
         # delete_folder - normal tests
