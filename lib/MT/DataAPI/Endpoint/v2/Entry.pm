@@ -225,6 +225,10 @@ sub list_for_category_common {
     my ( $blog, $cat ) = context_objects(@_)
         or return;
 
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        $cat->class, $cat->id, obj_promise($cat) )
+        or return;
+
     my %args = (
         join => MT->model('placement')->join_on(
             'entry_id',
@@ -250,6 +254,10 @@ sub list_for_asset_common {
     my ( $app, $endpoint, $class ) = @_;
 
     my ( $blog, $asset ) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'asset', $asset->id, obj_promise($asset) )
         or return;
 
     my %args = (

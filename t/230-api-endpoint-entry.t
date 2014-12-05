@@ -7,9 +7,20 @@ use lib qw(lib extlib t/lib);
 
 use Test::More;
 use MT::Test::DataAPI;
+use MT::Test::Permission;
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
+
+my $blog    = $app->model('blog')->load;
+my $website = $app->model('website')->load;
+
+my $website_category
+    = MT::Test::Permission->make_category( blog_id => $website->id, );
+my $blog_folder = $app->model('folder')->load( { blog_id => $blog->id, } );
+
+my $website_asset
+    = MT::Test::Permission->make_asset( blog_id => $website->id, );
 
 my $suite = suite();
 test_data_api($suite);
@@ -173,8 +184,93 @@ sub suite {
 
         # version 2
 
-        # create_entry
-        {   path   => '/v2/sites/1/entries',
+        # create_entry - irregular tests.
+        {    # Attach non-existent category.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title      => 'test-api-attach-categories-to-entry',
+                    status     => 'Draft',
+                    categories => [ { id => 100 } ],
+                },
+            },
+            code  => 400,
+            error => "'categories' parameter is invalid.",
+        },
+        {    # Attach category of other site.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title      => 'test-api-attach-categories-to-entry',
+                    status     => 'Draft',
+                    categories => [ { id => $website_category->id } ],
+                },
+            },
+            code  => 400,
+            error => "'categories' parameter is invalid.",
+        },
+        {    # Attach folder.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title      => 'test-api-attach-categories-to-entry',
+                    status     => 'Draft',
+                    categories => [ { id => $blog_folder->id } ],
+                },
+            },
+            code  => 400,
+            error => "'categories' parameter is invalid.",
+        },
+        {    # Attach non-existent asset.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title  => 'test-api-attach-assets-to-entry',
+                    status => 'Draft',
+                    assets => [ { id => 100 } ],
+                },
+            },
+            code  => 400,
+            error => "'assets' parameter is invalid.",
+        },
+        {    # Attach asset in other site.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title  => 'test-api-attach-assets-to-entry',
+                    status => 'Draft',
+                    assets => [ { id => $website_asset->id } ],
+                },
+            },
+            code  => 400,
+            error => "'assets' parameter is invalid.",
+        },
+        {    # Invalid format.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    format => 'invalid',
+                    title  => 'create-entry-with-invalid-format',
+                    body   => <<'__BODY__',
+1. foo
+2. bar
+3. baz
+__BODY__
+                },
+            },
+            code  => 409,
+            error => "Invalid format: invalid\n",
+        },
+
+        # create_entry - normal tests.
+        {    # Attach category.
+            path   => '/v2/sites/1/entries',
             method => 'POST',
             params => {
                 entry => {
@@ -220,121 +316,6 @@ sub suite {
                 is( $categories[0]->id, 1, 'Attached category ID is 1' );
             },
         },
-        {    # Set format.
-            path   => '/v2/sites/1/entries',
-            method => 'POST',
-            params => {
-                entry => {
-                    format => 'markdown',
-                    title  => 'create-entry-with-markdown',
-                    body   => <<'__BODY__',
-1. foo
-2. bar
-3. baz
-__BODY__
-                },
-            },
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-                    count => 1,
-                },
-            ],
-            result => sub {
-                $app->model('entry')
-                    ->load(
-                    { blog_id => 1, title => 'create-entry-with-markdown' } );
-            },
-        },
-
-        # update_entry
-        {    # Attach categories.
-            path   => '/v2/sites/1/entries/2',
-            method => 'PUT',
-            params => {
-                entry => {
-                    title      => 'test-api-update-categories',
-                    categories => [ { id => 1 }, { id => 2 }, { id => 3 } ]
-                },
-            },
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-                    count => 1,
-                },
-            ],
-            result => sub {
-                MT->model('entry')->load(
-                    {   id    => 2,
-                        title => 'test-api-update-categories',
-                    }
-                );
-            },
-            complete => sub {
-                my ( $data, $body ) = @_;
-                my $entry      = MT->model('entry')->load(2);
-                my @categories = @{ $entry->categories };
-                is( scalar @categories, 3, 'Entry has 3 category' );
-            },
-        },
-        {    # Update categories.
-            path   => '/v2/sites/1/entries/2',
-            method => 'PUT',
-            params =>
-                { entry => { categories => [ { id => 2 }, { id => 3 } ] }, },
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-                    count => 1,
-                },
-            ],
-            result => sub {
-                MT->model('entry')->load(
-                    {   id    => 2,
-                        title => 'test-api-update-categories',
-                    }
-                );
-            },
-            complete => sub {
-                my ( $data, $body ) = @_;
-                my $entry      = MT->model('entry')->load(2);
-                my @categories = @{ $entry->categories };
-                is( scalar @categories, 2, 'Entry has 2 category' );
-            },
-        },
-        {   path   => '/v2/sites/1/entries/2',
-            method => 'PUT',
-            params => { entry => { categories => [ id => 20 ] } },
-            code   => 400,
-        },
-
         {    # Attach assets.
             path   => '/v2/sites/1/entries',
             method => 'POST',
@@ -392,7 +373,142 @@ __BODY__
                 is( $assets[0]->id, 1, 'Attached asset ID is 1' );
             },
         },
-        {   path   => '/v2/sites/1/entries/2',
+        {    # Set format.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    format => 'markdown',
+                    title  => 'create-entry-with-markdown',
+                    body   => <<'__BODY__',
+1. foo
+2. bar
+3. baz
+__BODY__
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                $app->model('entry')
+                    ->load(
+                    { blog_id => 1, title => 'create-entry-with-markdown' } );
+            },
+        },
+
+        # update_entry - irregular tests.
+        {    # Attach non-existent category
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => { entry => { categories => [ id => 200 ] } },
+            code   => 400,
+            error  => "'categories' parameter is invalid.",
+        },
+        {    # Attach category in other site.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => {
+                entry => { categories => [ id => $website_category->id ] }
+            },
+            code  => 400,
+            error => "'categories' parameter is invalid.",
+        },
+        {    # Attach folder.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => { entry => { categories => [ id => 20 ] } },
+            code   => 400,
+            error  => "'categories' parameter is invalid.",
+        },
+
+        # update_entry - normal tests.
+        {    # Attach categories.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => {
+                entry => {
+                    title      => 'test-api-update-categories',
+                    categories => [ { id => 1 }, { id => 2 }, { id => 3 } ]
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('entry')->load(
+                    {   id    => 2,
+                        title => 'test-api-update-categories',
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $entry      = MT->model('entry')->load(2);
+                my @categories = @{ $entry->categories };
+                is( scalar @categories, 3, 'Entry has 3 category' );
+            },
+        },
+        {    # Update attached categories.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params =>
+                { entry => { categories => [ { id => 2 }, { id => 3 } ] }, },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('entry')->load(
+                    {   id    => 2,
+                        title => 'test-api-update-categories',
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $entry      = MT->model('entry')->load(2);
+                my @categories = @{ $entry->categories };
+                is( scalar @categories, 2, 'Entry has 2 category' );
+            },
+        },
+        {    # Attach assets.
+            path   => '/v2/sites/1/entries/2',
             method => 'PUT',
             params => {
                 entry => {
@@ -433,7 +549,8 @@ __BODY__
                 is( scalar @oa, 2, 'Entry has 2 assets' );
             },
         },
-        {   path   => '/v2/sites/1/entries/2',
+        {    # Update attached assets.
+            path   => '/v2/sites/1/entries/2',
             method => 'PUT',
             params => {
                 entry => {
@@ -512,6 +629,8 @@ __BODY__
                 isnt( $got->{body}, $expected->text );
             },
         },
+
+        # get_entry - normal tests.
         {    # no_format_filter = 1
             path      => '/v2/sites/1/entries/2',
             method    => 'GET',
@@ -533,44 +652,28 @@ __BODY__
             },
         },
 
-        # list_assets_for_entry
-        {   path      => '/v2/sites/1/entries/2/assets',
+        # list_entries_for_asset
+        {   path      => '/v2/sites/1/assets/2/entries',
             method    => 'GET',
             callbacks => [
                 {   name =>
-                        'MT::App::DataAPI::data_api_view_permission_filter.entry',
+                        'MT::App::DataAPI::data_api_view_permission_filter.asset',
                     count => 1,
                 },
-                {   name  => 'data_api_pre_load_filtered_list.asset',
+                {   name  => 'data_api_pre_load_filtered_list.entry',
                     count => 2,
                 },
             ],
             complete => sub {
                 my ( $data, $body ) = @_;
-                my $result = MT::Util::from_json($body);
-                is( $result->{totalResults}, 1, 'Entry has 1 asset' );
+                my $got = $app->current_format->{unserialize}->($body);
 
-                my $entry  = MT->model('entry')->load(2);
-                my @assets = MT->model('asset')->load(
-                    { class => '*' },
-                    {   join => MT->model('objectasset')->join_on(
-                            'asset_id',
-                            {   blog_id   => $entry->blog->id,
-                                object_ds => 'entry',
-                                object_id => $entry->id,
-                            },
-                        ),
-                    }
-                );
-                my @json_ids
-                    = sort { $a <=> $b }
-                    map    { $_->{id} } @{ $result->{items} };
-                my @asset_ids = sort { $a <=> $b } map { $_->id } @assets;
-                is_deeply( \@json_ids, \@asset_ids, 'Asset IDs are correct' );
+                is( $got->{totalResults},     1 );
+                is( $got->{items}->[0]->{id}, 2 );
             },
         },
 
-        # list_categories_for_entry
+        # list_entries_for_category
         {   path     => '/v2/sites/1/categories/1/entries',
             method   => 'GET',
             complete => sub {
@@ -594,12 +697,11 @@ __BODY__
                     'Category has ' . scalar @entries . 'entries'
                 );
 
-                my @json_ids
-                    = sort { $a <=> $b }
-                    map    { $_->{id} } @{ $result->{items} };
+                my @json_ids = sort { $a <=> $b }
+                    map { $_->{id} } @{ $result->{items} };
                 my @entry_ids = sort { $a <=> $b } map { $_->id } @entries;
                 is_deeply( \@json_ids, \@entry_ids, 'Entry IDs are correct' );
-                }
+            }
         },
     ];
 }
