@@ -2511,8 +2511,8 @@ sub refresh_individual_templates {
             my @elements = $theme->elements;
             my ($set) = grep { $_->{importer} eq 'template_set' } @elements;
             $set = $set->{data};
-            $set->{envelope} = $theme->path;
-            $theme->__deep_localize_labels($set);
+            $set->{envelope} = $theme->path if ref $set;
+            $theme->__deep_localize_labels($set) if ref $set;
             $tmpl_list = MT::DefaultTemplates->templates($set);
         }
         else {
