@@ -197,6 +197,7 @@ sub takedown {
     my $app = shift;
     delete $app->{searchparam};
     delete $app->{search_string};
+    delete $app->{cache_keys};
     $app->SUPER::takedown(@_) if $app->isa('MT::App::Search');
 }
 
