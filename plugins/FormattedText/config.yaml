@@ -88,7 +88,7 @@ applications:
                   sortOrder: descend
                   searchFields: label,text,description
               error_codes:
-                  403: Do not have permission to retrieve the requested formatted texts.
+                  403: Do not have permission to retrieve the list of formatted texts.
 
             - id: get_formatted_text
               route: /sites/:site_id/formatted_texts/:formatted_text_id
@@ -115,7 +115,7 @@ applications:
               version: 2
               handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::update
               error_codes:
-                  403: Do not have permission to create a formatted text.
+                  403: Do not have permission to update a formatted text.
 
             - id: delete_formatted_text
               route: /sites/:site_id/formatted_texts/:formatted_text_id
