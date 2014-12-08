@@ -85,11 +85,6 @@ sub upgrade_functions {
             priority      => 3.0,
             code          => \&_v5_remove_technorati,
         },
-        'v5_remove_news_widget_cache' => {
-            version_limit => 5.0,
-            priority      => 3.0,
-            code          => \&_v5_remove_news_widget_cache,
-        },
         'v5_assign_entry_ceated_by' => {
             version_limit => 5.0019,
             priority      => 3.1,
@@ -842,16 +837,6 @@ sub _v5_remove_technorati {
             )
         );
     }
-}
-
-sub _v5_remove_news_widget_cache {
-    my $self = shift;
-    $self->progress(
-        $self->translate_escape( 'Expiring cached MT News widget...', ) );
-    my $class = MT->model('session')
-        or return $self->error(
-        $self->translate_escape( "Error loading class: [_1].", 'session' ) );
-    $class->remove( { kind => [qw( NW LW )] } );
 }
 
 sub _v5_recover_auth_type {

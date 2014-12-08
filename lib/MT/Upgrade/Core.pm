@@ -11,6 +11,8 @@ use strict;
 MT->add_callback( 'MT::Upgrade::seed_database', 5, undef, \&seed_database );
 MT->add_callback( 'MT::Upgrade::upgrade_end', 5, undef,
     sub { $_[1]->add_step('core_upgrade_templates') } );
+MT->add_callback( 'MT::Upgrade::upgrade_end', 6, undef,
+    sub { $_[1]->add_step('core_remove_news_widget_cache') } );
 
 sub upgrade_functions {
     my $self = shift;
@@ -127,6 +129,10 @@ sub upgrade_functions {
                 }
                 0;
             },
+        },
+        'core_remove_news_widget_cache' => {
+            priority => 6,
+            code     => \&_remove_news_widget_cache,
         },
     };
 }
@@ -395,6 +401,16 @@ sub upgrade_templates {
     }
 
     $updated;
+}
+
+sub _remove_news_widget_cache {
+    my $self = shift;
+    $self->progress(
+        $self->translate_escape( 'Expiring cached MT News widget...', ) );
+    my $class = MT->model('session')
+        or return $self->error(
+        $self->translate_escape( "Error loading class: [_1].", 'session' ) );
+    $class->remove( { kind => [qw( NW LW )] } );
 }
 
 sub _uri_unescape_utf8 {

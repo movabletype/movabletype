@@ -575,10 +575,6 @@ sub finish {
         $inst->flush_all;
     }
 
-    # clear newsbox cache
-    my $class = MT->model('session');
-    $class->remove( { kind => [qw( NW LW )] } );
-
     $app->reboot();
 
     if ( $app->{author} ) {
