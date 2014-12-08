@@ -87,23 +87,6 @@ sub suite {
 
         # version 2
 
-        # list_users - irregular tests.
-        {    # Not logged in.
-            path      => '/v2/users',
-            method    => 'GET',
-            author_id => 0,
-            code      => 401,
-            error     => 'Unauthorized',
-        },
-        {    # No permissions.
-            path         => '/v2/users',
-            method       => 'GET',
-            restrictions => { 0 => [qw/ administer /], },
-            code         => 403,
-            error =>
-                'Do not have permission to retrieve the requested users.',
-        },
-
         # list_users - normal tests
         {    # No parameters.
             path      => '/v2/users',
