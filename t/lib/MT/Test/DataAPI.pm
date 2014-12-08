@@ -198,10 +198,14 @@ sub test_data_api {
 
         my $result;
         if ( my $expected_result = $data->{result} ) {
+            MT->instance->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
             $expected_result = $expected_result->( $data, $body )
                 if ref $expected_result eq 'CODE';
             if ( UNIVERSAL::isa( $expected_result, 'MT::Object' ) ) {
-                MT->instance->user($author);
                 $expected_result = $format->{unserialize}->(
                     $format->{serialize}->(
                         MT::DataAPI::Resource->from_object($expected_result)

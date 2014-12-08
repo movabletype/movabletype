@@ -7,6 +7,7 @@ use lib qw(lib extlib t/lib);
 
 use Test::More;
 use MT::Test::DataAPI;
+use MT::Test::Permission;
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -14,6 +15,11 @@ my $app = MT::App::DataAPI->new;
 # TODO: Avoid an error when installing GoogleAnalytics plugin.
 my $mock_cms_common = Test::MockModule->new('MT::CMS::Common');
 $mock_cms_common->mock( 'run_web_services_save_config_callbacks', sub { } );
+
+my $unpublished_page = MT::Test::Permission->make_page(
+    blog_id => 1,
+    status  => 1,
+);
 
 $app->config->allowComments(1);
 
@@ -328,6 +334,75 @@ sub suite {
                 my $deleted
                     = MT->model('comment')->load( $data->{comment}->id );
                 is( $deleted, undef, 'deleted' );
+            },
+        },
+
+        # version 2.
+
+        # list_comments_for_page - irregular tests.
+        {    # Non-existent page.
+            path   => '/v2/sites/1/pages/200/comments',
+            method => 'GET',
+            code   => 404,
+            error  => 'Page not found',
+        },
+        {    # Entry.
+            path   => '/v2/sites/1/pages/1/comments',
+            method => 'GET',
+            code   => 404,
+            error  => 'Page not found',
+        },
+        {    # Non-existent site.
+            path   => '/v2/sites/5/pages/20/comments',
+            method => 'GET',
+            code   => 404,
+            error  => 'Site not found',
+        },
+        {    # System.
+            path   => '/v2/sites/0/pages/20/comments',
+            method => 'GET',
+            code   => 404,
+            error  => 'Page not found',
+        },
+        {    # Unpubished page and not logged in.
+            path => '/v2/sites/1/pages/'
+                . $unpublished_page->id
+                . '/comments',
+            method    => 'GET',
+            author_id => 0,
+            code      => 403,
+            error =>
+                'Do not have permission to retrieve the list of comments.',
+        },
+        {    # Unpublished page and no permissions.
+            path => '/v2/sites/1/pages/'
+                . $unpublished_page->id
+                . '/comments',
+            method       => 'GET',
+            restrictions => { 1 => [qw/ open_page_edit_screen /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the list of comments.',
+        },
+
+        # list_comments_for_page - normal tests.
+        {   path   => '/v2/sites/1/pages/20/comments',
+            method => 'GET',
+            setup  => sub {
+                my ($data) = @_;
+                $data->{comment} = MT::Test::Permission->make_comment(
+                    blog_id  => 1,
+                    entry_id => 20,
+                );
+            },
+            result => sub {
+                my ( $data, $body ) = @_;
+                return +{
+                    totalResults => 1,
+                    items        => MT::DataAPI::Resource->from_object(
+                        [ $data->{comment} ]
+                    ),
+                };
             },
         },
 
