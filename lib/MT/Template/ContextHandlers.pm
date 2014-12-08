@@ -4804,6 +4804,12 @@ sub _hdlr_link {
             MT->translate( "Cannot find template '[_1]'", $tmpl_name ) );
         my $site_url = $blog->site_url;
         $site_url .= '/' unless $site_url =~ m!/$!;
+
+        # add support for relative URLS
+        if ( $arg->{relative} ) {
+            $site_url =~ s/^https?://;
+        }
+
         my $link = $site_url . $tmpl->outfile;
         $link = MT::Util::strip_index( $link, $curr_blog )
             unless $arg->{with_index};
