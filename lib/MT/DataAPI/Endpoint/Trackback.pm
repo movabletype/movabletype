@@ -29,6 +29,10 @@ sub list_for_entry {
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        $entry->class, $entry->id, obj_promise($entry) )
+        or return;
+
     my $res = filtered_list(
         $app,
         $endpoint,
