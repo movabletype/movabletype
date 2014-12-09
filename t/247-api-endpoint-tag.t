@@ -15,6 +15,22 @@ my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
 
+my $blog_entry = $app->model('entry')->load( { blog_id => 1 } );
+$blog_entry->add_tags('@private');
+$blog_entry->save or die $blog_entry->errstr;
+
+my $blog_private_tag = $app->model('tag')->load(
+    { is_private => 1 },
+    {   join => $app->model('objecttag')->join_on(
+            'tag_id',
+            {   blog_id           => 1,
+                object_datasource => 'entry',
+                object_id         => $blog_entry->id
+            },
+        )
+    },
+);
+
 my $suite = suite();
 test_data_api($suite);
 
@@ -71,7 +87,6 @@ sub suite {
                 };
             },
         },
-
         {
             # Not logged in.
             path      => '/v2/tags',
@@ -96,6 +111,14 @@ sub suite {
 
                 is_deeply( \@got_log_names, \@expected_log_names );
             },
+        },
+
+        # list_tags_for_site - irregular tests
+        {
+            # Non-existent site.
+            path   => '/v2/sites/10/tags',
+            method => 'GET',
+            code   => 404,
         },
 
         # list_tags_for_site - normal tests
@@ -194,37 +217,29 @@ sub suite {
             },
         },
 
-        # list_tags_for_site - irregular tests
-        {
-            # Non-existent site.
-            path   => '/v2/sites/10/tags',
-            method => 'GET',
-            code   => 404,
-        },
-
-        # get_tag - normal tests
-        {   path      => '/v2/tags/1',
-            method    => 'GET',
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
-                    count => 1,
-                },
-            ],
-            result => sub {
-                return MT->model('tag')->load(1);
-            },
-        },
-
         # get_tag - irregular tests
         {    # Non-existent tag.
             path   => '/v2/tags/100',
             method => 'GET',
             code   => 404,
         },
+        {    # Private tag and not logged in.
+            path      => '/v2/tags/9',
+            method    => 'GET',
+            author_id => 0,
+            code      => 403,
+            error => 'Do not have permission to retrieve the requested tag.',
+        },
+        {    # Private tag and no permissions.
+            path         => '/v2/tags/9',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ administer /], },
+            code         => 403,
+            error => 'Do not have permission to retrieve the requested tag.',
+        },
 
-        # get_tag_for_site - normal tests
-        {   path      => '/v2/sites/1/tags/1',
+        # get_tag - normal tests
+        {   path      => '/v2/tags/1',
             method    => 'GET',
             callbacks => [
                 {   name =>
@@ -258,6 +273,41 @@ sub suite {
             method => 'GET',
             code   => 404,
         },
+        {    # Private tag and not logged in.
+            path      => '/v2/sites/0/tags/9',
+            method    => 'GET',
+            author_id => 0,
+            code      => 403,
+            error => 'Do not have permission to retrieve the requested tag.',
+        },
+        {    # Private tag and no permissions (site).
+            path         => '/v2/sites/1/tags/' . $blog_private_tag->id,
+            method       => 'GET',
+            restrictions => { 1 => [qw/ access_to_tag_list edit_tags /], },
+            code         => 403,
+            error => 'Do not have permission to retrieve the requested tag.',
+        },
+        {    # Private tag and no permissions (system).
+            path         => '/v2/sites/0/tags/9',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ administer /], },
+            code         => 403,
+            error => 'Do not have permission to retrieve the requested tag.',
+        },
+
+        # get_tag_for_site - normal tests
+        {   path      => '/v2/sites/1/tags/1',
+            method    => 'GET',
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                return MT->model('tag')->load(1);
+            },
+        },
 
         # rename_tag - irregular tests
         {    # Non-existent tag.
@@ -285,6 +335,22 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # Not logged in.
+            path      => '/v2/tags/1',
+            method    => 'PUT',
+            params    => { tag => { name => 'grandma' }, },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/tags/1',
+            method => 'PUT',
+            params => { tag => { name => 'grandma' }, },
+            restrictions => { 0 => [qw/ administer /], },
+            code         => 403,
+            error => 'Do not have permission to rename a tag.',
         },
 
         # rename_tag - normal tests
@@ -378,6 +444,22 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/tags/2',
+            method    => 'PUT',
+            params    => { tag => { name => 'snow' }, },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/tags/2',
+            method => 'PUT',
+            params => { tag => { name => 'snow' }, },
+            restrictions => { 1 => [qw/ edit_tags rename_tag /], },
+            code         => 403,
+            error => 'Do not have permission to rename a tag.',
+        },
 
         # rename_tag_for_site - normal tests
         {   path      => '/v2/sites/1/tags/2',
@@ -418,6 +500,20 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/tags/3',
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissons.
+            path         => '/v2/tags/3',
+            method       => 'DELETE',
+            restrictions => { 0 => [qw/ administer /], },
+            code         => 403,
+            error        => 'Do not have permission to delete a tag.',
+        },
 
         # delete_tag - normal tests
         {   path     => '/v2/tags/3',
@@ -452,6 +548,27 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/tags/4',
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (site).
+            path         => '/v2/sites/1/tags/4',
+            method       => 'DELETE',
+            restrictions => { 1 => [qw/ remove_tag /], },
+            code         => 403,
+            error        => 'Do not have permission to delete a tag.',
+        },
+        {    # No permissions (system).
+            path         => '/v2/sites/0/tags/9',
+            method       => 'DELETE',
+            restrictions => { 0 => [qw/ administer /], },
+            code         => 403,
+            error        => 'Do not have permission to delete a tag.',
         },
 
         # delete_tag_for_site - normal tests

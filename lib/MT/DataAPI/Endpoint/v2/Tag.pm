@@ -78,6 +78,10 @@ sub rename {
         ->load( { name => $new_tag->name }, { binary => { name => 1 } } );
 
     if ($same_name_tag) {
+        run_permission_filter( $app, 'data_api_save_permission_filter',
+            'tag' )
+            or return;
+
         return $app->error(304) if $same_name_tag->id == $new_tag->id;
 
         my @ots = MT->model('objecttag')->load( { tag_id => $new_tag->id } );
@@ -95,7 +99,7 @@ sub rename {
     else {
 
         # Do not change IDs.
-        save_object( $app, 'tag', $new_tag, $orig_tag, );
+        save_object( $app, 'tag', $new_tag, $orig_tag, ) or return;
         return $new_tag;
     }
 }
@@ -111,6 +115,10 @@ sub rename_for_site {
     my $same_name_tag = MT::Tag->load( { name => $new_tag->name },
         { binary => { name => 1 } } );
     if ($same_name_tag) {
+        run_permission_filter( $app, 'data_api_save_permission_filter',
+            'tag' )
+            or return;
+
         return $app->error(304) if $same_name_tag->id == $new_tag->id;
 
         my @ots = MT::ObjectTag->load(
@@ -132,7 +140,7 @@ sub rename_for_site {
     else {
 
         # Do not change IDs.
-        save_object( $app, 'tag', $new_tag, $orig_tag, );
+        save_object( $app, 'tag', $new_tag, $orig_tag, ) or return;
         return $new_tag;
     }
 }

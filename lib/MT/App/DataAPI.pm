@@ -2135,9 +2135,8 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.tag' =>
                 "${pfx}Tag::cms_pre_load_filtered_list",
-            $pkg . 'view_permission_filter.tag' => "${pfx}Tag::can_view",
-
-    #            $pkg . 'save_permission_filter.tag' => "${pfx}Tag::can_save",
+            $pkg . 'view_permission_filter.tag'   => "${pfx}Tag::can_view",
+            $pkg . 'save_permission_filter.tag'   => "${pfx}Tag::can_save",
             $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
 
             # template callbacks
