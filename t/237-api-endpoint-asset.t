@@ -453,8 +453,15 @@ sub suite {
             error =>
                 'Do not have permission to retrieve the requested assets for entry.',
         },
-
-        # TODO: Unpublished entry and no permissions.
+        {    #  Unpublished entry and no permissions.
+            path   => '/v2/sites/1/entries/3/assets',
+            method => 'GET',
+            restrictions =>
+                { 1 => [qw/ edit_all_entries edit_all_unpublished_entry /], },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the requested assets for entry.',
+        },
 
         # list_assets_for_entry - normal tests
         {   path      => '/v2/sites/1/entries/1/assets',

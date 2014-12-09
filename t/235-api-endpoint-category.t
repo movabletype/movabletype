@@ -453,8 +453,15 @@ sub suite {
             error =>
                 'Do not have permission to retrieve the requested categories for entry.',
         },
-
-        # TODO: Unpublished entry and no permissions.
+        {    # Unpublished entry and no permissions.
+            path   => '/v2/sites/1/entries/3/categories',
+            method => 'GET',
+            restrictions =>
+                { 1 => [qw/ edit_all_entries edit_all_unpublished_entry /], },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the requested categories for entry.',
+        },
 
         # list_categories_for_entry - normal tests
         {   path      => '/v2/sites/1/entries/6/categories',
