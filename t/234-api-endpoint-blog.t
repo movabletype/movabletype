@@ -270,6 +270,34 @@ sub suite {
             error =>
                 "The website root directory must be absolute: relative\/path\n",
         },
+        {    # Not logged in.
+            path   => '/v2/sites',
+            method => 'POST',
+            params => {
+                website => {
+                    name     => 'test-api-permission-website',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $FindBin::Bin,
+                },
+            },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites',
+            method => 'POST',
+            params => {
+                website => {
+                    name     => 'test-api-permission-website',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $FindBin::Bin,
+                },
+            },
+            restrictions => { 0 => [qw/ create_new_website /], },
+            code         => 403,
+            error => 'Do not have permission to create a website.',
+        },
 
         #   insert_new_website - normal tests
         {    # Minimal parameters.
@@ -419,6 +447,36 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # Not logged in.
+            path   => '/v2/sites/2',
+            method => 'POST',
+            params => {
+                blog => {
+                    url      => 'blog',
+                    name     => 'blog',
+                    sitePath => 'blog',
+                    themeId  => 'classic_blog',
+                },
+            },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permisionss.
+            path   => '/v2/sites/2',
+            method => 'POST',
+            params => {
+                blog => {
+                    url      => 'blog',
+                    name     => 'blog',
+                    sitePath => 'blog',
+                    themeId  => 'classic_blog',
+                },
+            },
+            restrictions => { 0 => [qw/ create_blog /], },
+            code         => 403,
+            error => 'Do not have permission to create a blog.',
         },
 
         # insert_new_blog - normal tests
@@ -600,6 +658,33 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/2',
+            method    => 'PUT',
+            params    => { website => {} },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (blog).
+            path         => '/v2/sites/1',
+            method       => 'PUT',
+            params       => { blog => {} },
+            restrictions => { 1 => [qw/ edit_blog_config /], },
+            code         => 403,
+            error        => 'Do not have permission to update a site.',
+        },
+        {    # No permissions (website).
+            path         => '/v2/sites/2',
+            method       => 'PUT',
+            params       => { website => {} },
+            restrictions => {
+                0 => [qw/ edit_blog_config /],
+                2 => [qw/ edit_blog_config /],
+            },
+            code  => 403,
+            error => 'Do not have permission to update a site.',
         },
 
         # update_site - normal tests
@@ -959,6 +1044,20 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1',
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (blog).
+            path         => '/v2/sites/1',
+            method       => 'DELETE',
+            restrictions => { 1 => [qw/ delete_blog /], },
+            code         => 403,
+            error        => 'Do not have permission to delete a site.',
+        },
 
         # delete_site - normal tests
         {
@@ -986,11 +1085,16 @@ sub suite {
                 is( $blog, undef, 'Blog (ID:1) was deleted.' );
             },
         },
-        {
-            # website
-            path   => '/v2/sites/2',
-            method => 'DELETE',
-            setup  => sub {
+
+        # delete_site - irregular tests
+        {    # No permissions (website).
+            path         => '/v2/sites/2',
+            method       => 'DELETE',
+            restrictions => {
+                2 => [qw/ delete_website /],
+                0 => [qw/ delete_website /],
+            },
+            setup => sub {
                 my $website = $app->model('website')->load(2);
                 die if !( $website && !$website->is_blog );
                 for my $b ( $app->model('blog')->load( { parent_id => 2 } ) )
@@ -998,6 +1102,15 @@ sub suite {
                     $b->remove or die $b->errstr;
                 }
             },
+            code  => 403,
+            error => 'Do not have permission to delete a site.',
+        },
+
+        # delete_site - normal tests
+        {
+            # website
+            path      => '/v2/sites/2',
+            method    => 'DELETE',
             callbacks => [
                 {   name =>
                         'MT::App::DataAPI::data_api_delete_permission_filter.website',
