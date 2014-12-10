@@ -12,6 +12,8 @@ use MT::Test::DataAPI;
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
+$MT::DebugMode = 1;
+
 my $suite = suite();
 test_data_api( $suite, { author_id => 1, is_superuser => 1 } );
 
@@ -94,6 +96,29 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/backup',
+            method    => 'GET',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (site).
+            path         => '/v2/sites/1/backup',
+            method       => 'GET',
+            is_superuser => 0,
+            restrictions => { 1 => [qw/ backup_blog /], },
+            code         => 403,
+            error => 'Do not have permission to back up the requested site.',
+        },
+        {    # No permissions (system).
+            path         => '/v2/sites/0/backup',
+            method       => 'GET',
+            is_superuser => 0,
+            restrictions => { 0 => [qw/ backup_blog /], },
+            code         => 403,
+            error => 'Do not have permission to back up the requested site.',
+        },
 
         # backup_site - normal tests.
         {    # Blog.
@@ -128,9 +153,7 @@ sub suite {
                 print Dumper($got) . "\n";
             },
         },
-
-        # System.
-        {    # Website.
+        {    # System.
             path     => '/v2/sites/0/backup',
             method   => 'GET',
             complete => sub {
@@ -182,11 +205,18 @@ sub suite {
                     = qr/An error occurred during the restore process: The uploaded backup manifest file was created with Movable Type, but the schema version/;
                 like( $got->{error}{message},
                     $error_message, 'Error message is OK.' );
+
             },
         },
-
-        # restore_site - normal tests.
-        {   path   => '/v2/restore',
+        {    # Not logged in.
+            path      => '/v2/restore',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/restore',
             method => 'POST',
             upload => [
                 'file',
@@ -201,6 +231,23 @@ sub suite {
                 my $schema_version = $MT::SCHEMA_VERSION;
                 system "perl -i -pe \"s{6\\.0008}{$schema_version}g\" $file";
             },
+            is_superuser => 0,
+            restrictions => { 0 => [qw/ restore_blog /], },
+            code         => 403,
+            error =>
+                'Do not have permission to restore the requested site data.',
+        },
+
+        # restore_site - normal tests.
+        {   path   => '/v2/restore',
+            method => 'POST',
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME},                       "t",
+                    '278-api-endpoint-backup-restore.d', 'backup.xml'
+                ),
+            ],
             complete => sub {
                 my ( $data, $body ) = @_;
 

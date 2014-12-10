@@ -23,19 +23,25 @@ sub backup {
         && _check_backup_archive_format($app)
         && _check_limit_size($app);
 
-    local $app->{is_admin} = 1;
-
-    no warnings 'redefine';
-    local *MT::App::DataAPI::send_http_header = sub { };
-    local *MT::App::print_encode              = sub { };
     my $param;
-    my $_backup_finisher = \&MT::CMS::Tools::_backup_finisher;
-    local *MT::CMS::Tools::_backup_finisher
-        = sub { $param = $_[2]; $_backup_finisher->(@_) };
+    {
+        local $app->{is_admin} = 1;
+        local $app->{no_print_body};
 
-    MT::CMS::Tools::backup($app);
+        no warnings 'redefine';
+        local *MT::App::DataAPI::send_http_header = sub { };
+        local *MT::App::print_encode              = sub { };
+        local *MT::build_page                     = sub { };
+
+        my $_backup_finisher = \&MT::CMS::Tools::_backup_finisher;
+        local *MT::CMS::Tools::_backup_finisher
+            = sub { $param = $_[2]; $_backup_finisher->(@_) };
+
+        MT::CMS::Tools::backup($app);
+    }
 
     # Error.
+    return if $app->errstr;
     if ( !$param->{backup_success} ) {
         return $app->error(
             $app->translate(
@@ -158,21 +164,22 @@ sub restore {
             $app->translate('A parameter "file" is required.'), 400 );
     }
 
-    local $app->{no_print_body};
+    my $param;
+    {
+        local $app->{no_print_body};
 
-    no warnings 'redefine';
-    local *MT::App::DataAPI::send_http_header = sub { };
-    local *MT::App::print_encode              = sub { };
-    my ( $file, $param );
-    my $build_page = \&MT::build_page;
-    local *MT::build_page
-        = sub { $file = $_[1]; $param = $_[2]; $build_page->(@_) };
+        no warnings 'redefine';
+        local *MT::App::DataAPI::send_http_header = sub { };
+        local *MT::App::print_encode              = sub { };
+        local *MT::build_page                     = sub { $param = $_[2] };
 
-    MT::CMS::Tools::restore($app);
+        MT::CMS::Tools::restore($app);
+    }
 
     # TODO: Implement adjust_sitepath process and upload_asset process..
 
     # Error.
+    return if $app->errstr;
     if ( !$param->{restore_success} ) {
         return $app->error(
             $app->translate(
