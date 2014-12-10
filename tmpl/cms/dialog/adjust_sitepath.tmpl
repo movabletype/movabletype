@@ -343,7 +343,7 @@ function init() {
 </mt:if>
         // Blog paths
         '.relative-site_path .blog-path-text': function ($e) {
-            return !is_valid_absolute_path($e.val());   // IS IT OK?
+            return !MT.Validator.absolutePath($e.val());   // IS IT OK?
         },
         '.site-url .blog-url-text': function ($e) {
             return MT.Validator.urlPath($e.val());
@@ -369,7 +369,7 @@ function init() {
                             }
                     }
                     </mt:if>
-                    return is_valid_absolute_path($e.val());
+                    return MT.Validator.absolutePath($e.val());
                 }
             }
             return $e.val().length;
@@ -389,7 +389,7 @@ function init() {
                 var b_id = RegExp.$1;
                 if ( !jQuery('#use_absolute_archive_'+b_id+':checked').length ) {
                     return MT.Validator.path(value)
-                        && !is_valid_absolute_path(value);
+                        && !MT.Validator.absolutePath(value);
                 }
             }
             return true;
@@ -401,7 +401,7 @@ function init() {
             if ($e.attr('name').match(rex)) {
                 var b_id = RegExp.$1;
                 if ( jQuery('#use_absolute_archive_'+b_id+':checked').length ) {
-                    return is_valid_absolute_path(value);
+                    return MT.Validator.absolutePath(value);
                 }
             }
             return $e.val().length;

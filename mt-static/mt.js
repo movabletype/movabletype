@@ -1596,7 +1596,8 @@ MT.App = new Class( App, {
         if ( this.cpeList )
             this.cpeList.forEach( function( cpe ) { cpe.onSubmit() } );
 
-        form.submitted = true;
+        if ( form.getAttribute( "mt:once" ) )
+            form.submitted = true;
         this.stopAutoSave();
     },
 
