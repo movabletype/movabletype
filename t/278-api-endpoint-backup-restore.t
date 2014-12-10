@@ -12,8 +12,6 @@ use MT::Test::DataAPI;
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
-$MT::DebugMode = 1;
-
 my $suite = suite();
 test_data_api( $suite, { author_id => 1, is_superuser => 1 } );
 
