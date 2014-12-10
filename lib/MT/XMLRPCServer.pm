@@ -78,6 +78,18 @@ BEGIN {
     $HAVE_XML_PARSER = $@ ? 0 : 1;
 }
 
+sub _validate_params {
+    my ($params) = @_;
+
+    foreach my $p (@$params) {
+        die _fault( MT->translate("Invalid parameter") )
+            if ( 'ARRAY' eq ref $p )
+            or ( 'HASH' eq ref $p );
+    }
+
+    return 1;
+}
+
 sub _fault {
     my $mt  = MT::XMLRPCServer::Util::mt_new();
     my $enc = $mt->config('PublishCharset');
@@ -126,6 +138,7 @@ sub _make_token {
 sub _login {
     my $class = shift;
     my ( $user, $pass, $blog_id ) = @_;
+
     my $mt  = MT::XMLRPCServer::Util::mt_new();
     my $enc = $mt->config('PublishCharset');
     require MT::Author;
@@ -274,11 +287,10 @@ sub _save_placements {
             my $cat_class = MT->model('category');
 
             # The spec says to ignore invalid category names.
-            @categories = grep {defined} $cat_class->search(
-                {   blog_id => $entry->blog_id,
-                    label   => $cats,
-                }
-            );
+            @categories
+                = grep {defined}
+                $cat_class->search(
+                { blog_id => $entry->blog_id, label => $cats, } );
         }
     }
 
@@ -288,10 +300,7 @@ CATEGORY: for my $category (@categories) {
         my $place;
         if ($is_primary_placement) {
             $place = MT::Placement->load(
-                {   entry_id   => $entry->id,
-                    is_primary => 1,
-                }
-            );
+                { entry_id => $entry->id, is_primary => 1, } );
         }
         if ( !$place ) {
             $place = MT::Placement->new;
@@ -310,10 +319,7 @@ CATEGORY: for my $category (@categories) {
             # Delete all the secondary placements, so each of the remaining
             # iterations of the loop make a brand new placement.
             my @old_places = MT::Placement->load(
-                {   entry_id   => $entry->id,
-                    is_primary => 0,
-                }
-            );
+                { entry_id => $entry->id, is_primary => 0, } );
             for my $place (@old_places) {
                 $place->remove;
             }
@@ -388,8 +394,7 @@ sub _new_entry {
     );
     $entry->allow_comments( $item->{mt_allow_comments} )
         if exists $item->{mt_allow_comments};
-    $entry->title( $item->{title} )
-        if exists $item->{title};
+    $entry->title( $item->{title} ) if exists $item->{title};
 
     $class->_apply_basename( $entry, $item, \%param );
 
@@ -492,6 +497,10 @@ sub newPost {
     else {
         ( $blog_id, $user, $pass, $item, $publish ) = @_;
     }
+
+    _validate_params( [ $blog_id, $user, $pass, $publish ] ) or return;
+    _validate_params( [ values %$item ] ) or return;
+
     $class->_new_entry(
         blog_id => $blog_id,
         user    => $user,
@@ -504,6 +513,10 @@ sub newPost {
 sub newPage {
     my $class = shift;
     my ( $blog_id, $user, $pass, $item, $publish ) = @_;
+
+    _validate_params( [ $blog_id, $user, $pass, $publish ] ) or return;
+    _validate_params( [ values %$item ] ) or return;
+
     $class->_new_entry(
         blog_id => $blog_id,
         user    => $user,
@@ -667,6 +680,10 @@ sub editPost {
     else {
         ( $entry_id, $user, $pass, $item, $publish ) = @_;
     }
+
+    _validate_params( [ $entry_id, $user, $pass, $publish ] ) or return;
+    _validate_params( [ values %$item ] ) or return;
+
     $class->_edit_entry(
         entry_id => $entry_id,
         user     => $user,
@@ -679,6 +696,11 @@ sub editPost {
 sub editPage {
     my $class = shift;
     my ( $blog_id, $entry_id, $user, $pass, $item, $publish ) = @_;
+
+    _validate_params( [ $blog_id, $entry_id, $user, $pass, $publish ] )
+        or return;
+    _validate_params( [ values %$item ] ) or return;
+
     $class->_edit_entry(
         blog_id  => $blog_id,
         entry_id => $entry_id,
@@ -699,6 +721,9 @@ sub getUsersBlogs {
         $class = __PACKAGE__;
     }
     my ( $appkey, $user, $pass ) = @_;
+
+    _validate_params( [ $user, $pass ] ) or return;
+
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my ($author) = $class->_login( $user, $pass );
     die _fault( MT->translate("Invalid login") ) unless $author;
@@ -747,6 +772,9 @@ sub getUserInfo {
         $class = __PACKAGE__;
     }
     my ( $appkey, $user, $pass ) = @_;
+
+    _validate_params( [ $user, $pass ] ) or return;
+
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my ($author) = $class->_login( $user, $pass );
     die _fault( MT->translate("Invalid login") ) unless $author;
@@ -839,6 +867,9 @@ sub getRecentPosts {
     else {
         ( $blog_id, $user, $pass, $num ) = @_;
     }
+
+    _validate_params( [ $blog_id, $user, $pass, $num ] ) or return;
+
     $class->_get_entries(
         blog_id => $blog_id,
         user    => $user,
@@ -850,6 +881,9 @@ sub getRecentPosts {
 sub getRecentPostTitles {
     my $class = shift;
     my ( $blog_id, $user, $pass, $num ) = @_;
+
+    _validate_params( [ $blog_id, $user, $pass, $num ] ) or return;
+
     $class->_get_entries(
         blog_id     => $blog_id,
         user        => $user,
@@ -862,6 +896,9 @@ sub getRecentPostTitles {
 sub getPages {
     my $class = shift;
     my ( $blog_id, $user, $pass ) = @_;
+
+    _validate_params( [ $blog_id, $user, $pass ] ) or return;
+
     $class->_get_entries(
         blog_id => $blog_id,
         user    => $user,
@@ -904,16 +941,13 @@ sub _delete_entry {
 
     # Rebuild archives
     if (%recipe) {
-        $mt->rebuild_archives(
-            Blog   => $blog,
-            Recipe => \%recipe,
-        ) or die _fault( $class->errstr );
+        $mt->rebuild_archives( Blog => $blog, Recipe => \%recipe, )
+            or die _fault( $class->errstr );
     }
 
     # Rebuild index files
     if ( $mt->config('RebuildAtDelete') ) {
-        $mt->rebuild_indexes( Blog => $blog )
-            or die _fault( $class->errstr );
+        $mt->rebuild_indexes( Blog => $blog ) or die _fault( $class->errstr );
     }
 
     $mt->log(
@@ -940,6 +974,9 @@ sub deletePost {
         $class = __PACKAGE__;
     }
     my ( $appkey, $entry_id, $user, $pass, $publish ) = @_;
+
+    _validate_params( [ $entry_id, $user, $pass, $publish ] ) or return;
+
     $class->_delete_entry(
         entry_id => $entry_id,
         user     => $user,
@@ -951,6 +988,9 @@ sub deletePost {
 sub deletePage {
     my $class = shift;
     my ( $blog_id, $user, $pass, $entry_id ) = @_;
+
+    _validate_params( [ $blog_id, $user, $pass, $entry_id ] ) or return;
+
     $class->_delete_entry(
         blog_id  => $blog_id,
         entry_id => $entry_id,
@@ -1024,12 +1064,18 @@ sub _get_entry {
 sub getPost {
     my $class = shift;
     my ( $entry_id, $user, $pass ) = @_;
+
+    _validate_params( [ $entry_id, $user, $pass ] ) or return;
+
     $class->_get_entry( entry_id => $entry_id, user => $user, pass => $pass );
 }
 
 sub getPage {
     my $class = shift;
     my ( $blog_id, $entry_id, $user, $pass ) = @_;
+
+    _validate_params( [ $blog_id, $entry_id, $user, $pass ] ) or return;
+
     $class->_get_entry(
         blog_id  => $blog_id,
         entry_id => $entry_id,
@@ -1045,9 +1091,8 @@ sub supportedMethods {
         'metaWeblog.getPost',    'metaWeblog.newPost',  'metaWeblog.editPost',
         'metaWeblog.getRecentPosts', 'metaWeblog.newMediaObject',
         'metaWeblog.getCategories',  'metaWeblog.deletePost',
-        'metaWeblog.getUsersBlogs',
-        'wp.newPage', 'wp.getPages', 'wp.getPage', 'wp.editPage',
-        'wp.deletePage',
+        'metaWeblog.getUsersBlogs', 'wp.newPage', 'wp.getPages', 'wp.getPage',
+        'wp.editPage', 'wp.deletePage',
 
         # not yet supported: metaWeblog.getTemplate, metaWeblog.setTemplate
         'mt.getCategoryList', 'mt.setPostCategories', 'mt.getPostCategories',
@@ -1081,6 +1126,9 @@ sub supportedTextFilters {
 sub getCategoryList {
     my $class = shift;
     my ( $blog_id, $user, $pass ) = @_;
+
+    _validate_params( [ $blog_id, $user, $pass ] ) or return;
+
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my ( $author, $perms ) = $class->_login( $user, $pass, $blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
@@ -1105,6 +1153,9 @@ sub getCategoryList {
 sub getCategories {
     my $class = shift;
     my ( $blog_id, $user, $pass ) = @_;
+
+    _validate_params( [ $blog_id, $user, $pass ] ) or return;
+
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my ( $author, $perms ) = $class->_login( $user, $pass, $blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
@@ -1142,6 +1193,9 @@ sub getCategories {
 sub getTagList {
     my $class = shift;
     my ( $blog_id, $user, $pass ) = @_;
+
+    _validate_params( [ $blog_id, $user, $pass ] ) or return;
+
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my ( $author, $perms ) = $class->_login( $user, $pass, $blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
@@ -1174,6 +1228,9 @@ sub getTagList {
 sub getPostCategories {
     my $class = shift;
     my ( $entry_id, $user, $pass ) = @_;
+
+    _validate_params( [ $entry_id, $user, $pass ] ) or return;
+
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     require MT::Entry;
     my $entry = MT::Entry->load($entry_id)
@@ -1204,6 +1261,12 @@ sub getPostCategories {
 sub setPostCategories {
     my $class = shift;
     my ( $entry_id, $user, $pass, $cats ) = @_;
+
+    _validate_params( [ $entry_id, $user, $pass ] ) or return;
+    foreach my $c (@$cats) {
+        _validate_params( [ values %$c ] ) or return;
+    }
+
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     require MT::Entry;
     require MT::Placement;
@@ -1252,11 +1315,13 @@ sub setPostCategories {
 sub getTrackbackPings {
     my $class = shift;
     my ($entry_id) = @_;
+
+    _validate_params( [$entry_id] ) or return;
+
     require MT::Trackback;
     require MT::TBPing;
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
-    my $tb = MT::Trackback->load( { entry_id => $entry_id } )
-        or return [];
+    my $tb = MT::Trackback->load( { entry_id => $entry_id } ) or return [];
     my $iter = MT::TBPing->load_iter( { tb_id => $tb->id } );
     my @data;
 
@@ -1274,6 +1339,9 @@ sub getTrackbackPings {
 sub publishPost {
     my $class = shift;
     my ( $entry_id, $user, $pass ) = @_;
+
+    _validate_params( [ $entry_id, $user, $pass ] ) or return;
+
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     require MT::Entry;
     my $entry = MT::Entry->load($entry_id)
@@ -1294,6 +1362,8 @@ sub runPeriodicTasks {
     my $class = shift;
     my ( $user, $pass ) = @_;
 
+    _validate_params( [ $user, $pass ] ) or return;
+
     my $mt = MT::XMLRPCServer::Util::mt_new();
     my $author = $class->_login( $user, $pass );
     die _fault( MT->translate("Invalid login") ) unless $author;
@@ -1306,6 +1376,8 @@ sub runPeriodicTasks {
 sub publishScheduledFuturePosts {
     my $class = shift;
     my ( $blog_id, $user, $pass ) = @_;
+
+    _validate_params( [ $blog_id, $user, $pass ] ) or return;
 
     my $mt = MT::XMLRPCServer::Util::mt_new();
     my $author = $class->_login( $user, $pass );
@@ -1343,8 +1415,7 @@ sub publishScheduledFuturePosts {
         if ( $entry && $entry->authored_on <= $now ) {
             $entry->status( MT::Entry::RELEASE() );
             $entry->discover_tb_from_entry();
-            $entry->save
-                or die $entry->errstr;
+            $entry->save or die $entry->errstr;
 
             $types{ $entry->class } = 1;
             start_background_task(
@@ -1361,17 +1432,16 @@ sub publishScheduledFuturePosts {
     $blog->save if $changed && ( keys %types );
 
     if ($changed) {
-        $mt->rebuild_indexes( Blog => $blog )
-            or die $mt->errstr;
+        $mt->rebuild_indexes( Blog => $blog ) or die $mt->errstr;
     }
-    {   responseCode   => 'success',
-        publishedCount => $total_changed,
-    };
+    { responseCode => 'success', publishedCount => $total_changed, };
 }
 
 sub getNextScheduled {
     my $class = shift;
     my ( $user, $pass ) = @_;
+
+    _validate_params( [ $user, $pass ] ) or return;
 
     my $mt = MT::XMLRPCServer::Util::mt_new();
     my $author = $class->_login( $user, $pass );
@@ -1385,6 +1455,11 @@ sub getNextScheduled {
 sub setRemoteAuthToken {
     my $class = shift;
     my ( $user, $pass, $remote_auth_username, $remote_auth_token ) = @_;
+
+    _validate_params(
+        [ $user, $pass, $remote_auth_username, $remote_auth_token ] )
+        or return;
+
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my ($author) = $class->_login( $user, $pass );
     die _fault( MT->translate("Invalid login") ) unless $author;
@@ -1397,6 +1472,10 @@ sub setRemoteAuthToken {
 sub newMediaObject {
     my $class = shift;
     my ( $blog_id, $user, $pass, $file ) = @_;
+
+    _validate_params( [ $blog_id, $user, $pass ] ) or return;
+    _validate_params( [ values %$file ] ) or return;
+
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my ( $author, $perms ) = $class->_login( $user, $pass, $blog_id );
     die _fault( MT->translate("Invalid login") ) unless $author;
@@ -1503,8 +1582,7 @@ sub newMediaObject {
     my $asset_pkg = MT::Asset->handler_for_file($local_basename);
     my $is_image  = 0;
     if ( defined($w) && defined($h) ) {
-        $is_image = 1
-            if $asset_pkg->isa('MT::Asset::Image');
+        $is_image = 1 if $asset_pkg->isa('MT::Asset::Image');
     }
     else {
 
