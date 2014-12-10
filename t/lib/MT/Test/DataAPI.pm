@@ -92,6 +92,10 @@ sub test_data_api {
 
         $mock_permission->unmock('can_do')
             if $mock_permission->is_mocked('can_do');
+        $mock_permission->unmock('can_edit_templates')
+            if $mock_permission->is_mocked('can_edit_templates');
+        $mock_permission->unmock('can_administer_blog')
+            if $mock_permission->is_mocked('can_administer_blog');
         if ( exists $data->{restrictions} ) {
             $mock_permission->mock(
                 'can_do',
@@ -108,6 +112,38 @@ sub test_data_api {
                         return $mock_permission->original('can_do')->(@_);
                     }
                 }
+            );
+
+            $mock_permission->mock(
+                'can_edit_templates',
+                sub {
+                    my ($perm) = @_;
+                    if ( grep { $_ eq 'edit_templates' }
+                        @{ $data->{restrictions}{ $perm->blog_id || 0 } } )
+                    {
+                        return;
+                    }
+                    else {
+                        return $mock_permission->original(
+                            'can_edit_templates')->(@_);
+                    }
+                },
+            );
+
+            $mock_permission->mock(
+                'can_administer_blog',
+                sub {
+                    my ($perm) = @_;
+                    if ( grep { $_ eq 'administer_blog' }
+                        @{ $data->{restrictions}{ $perm->blog_id || 0 } } )
+                    {
+                        return;
+                    }
+                    else {
+                        return $mock_permission->original('administer_blog')
+                            ->(@_);
+                    }
+                },
             );
         }
 

@@ -695,22 +695,7 @@ sub suite {
             error     => 'Unauthorized',
         },
 
-#               {   # No permissions.
-#                   path   => '/v2/sites/2/refresh_templates',
-#                   method => 'POST',
-#                   setup  => sub {
-#                       $mock_author->mock( 'can_edit_templates', 0 );
-#                       $mock_perm->mock( 'can_edit_templates',  0 );
-#                       $mock_perm->mock( 'can_administer_blog', 0 );
-#                   },
-#                   code     => 403,
-#                   error    => 'Do not have permission to refresh a widget.',
-#                   complete => sub {
-#                       $mock_author->unmock('can_edit_templates');
-#                       $mock_perm->unmock('can_edit_templates');
-#                       $mock_perm->unmock('can_administer_blog');
-#                   },
-#               },
+        # No error occurs with no permissions in this endpoint.
 
         # refresh_templates_for_site - normal tests
         {    # Website.

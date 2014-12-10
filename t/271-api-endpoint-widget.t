@@ -73,19 +73,12 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/1/widgets',
-            method => 'GET',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-                $mock_author->mock( 'can_edit_templates', 0 );
-            },
-            code => 403,
+            path         => '/v2/sites/1/widgets',
+            method       => 'GET',
+            restrictions => { 1 => [qw/ edit_templates /], },
+            code         => 403,
             error =>
                 'Do not have permission to retrieve the list of widgets.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-                $mock_author->unmock('can_edit_templates');
-            },
         },
 
         # list_widgets - normal tests
@@ -268,19 +261,16 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/widgets',
-            method => 'GET',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-                $mock_author->mock( 'can_edit_templates', 0 );
+            path         => '/v2/widgets',
+            method       => 'GET',
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                1 => [qw/ edit_templates /],
+                2 => [qw/ edit_templates /],
             },
             code => 403,
             error =>
                 'Do not have permission to retrieve the list of widgets.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-                $mock_author->unmock('can_edit_templates');
-            },
         },
 
         # list_all_widgets - normal tests
@@ -435,19 +425,17 @@ sub suite {
             error     => 'Unauthorized',
         },
 
-        # {   # No permissions.
-        #     path      => '/v2/sites/1/widgets/' . $blog_widget->id,
-        #     method    => 'GET',
-        #     setup  => sub {
-        #         $mock_perm->mock( 'can_edit_templates', 0 );
-        #     },
-        #     restrictions => { 1 => [qw/ edit_templates /], },
-        #     code => 403,
-        #     error => 'abc',
-        #     complete => sub {
-        #         $mock_perm->unmock('can_edit_templates');
-        #     },
-        # },
+        {    # No permissions.
+            path         => '/v2/sites/1/widgets/' . $blog_widget->id,
+            method       => 'GET',
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                1 => [qw/ edit_templates /],
+            },
+            code => 403,
+            error =>
+                'Do not have permission to retrieve the requested widget.',
+        },
 
         # get_widget - normal tests
         {    # Blog.
@@ -539,14 +527,9 @@ sub suite {
             path   => '/v2/sites/1/widgets',
             method => 'POST',
             params => { widget => { name => 'create-widget', }, },
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-            },
-            code     => 403,
-            error    => 'Do not have permission to create a widget.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-            },
+            restrictions => { 1 => [qw/ edit_templates /], },
+            code         => 403,
+            error => 'Do not have permission to create a widget.',
         },
 
         # create_widget - normal tests
@@ -729,22 +712,17 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/1/widgets/' . $blog_widget->id,
-            method => 'PUT',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-            },
-            params => {
+            path         => '/v2/sites/1/widgets/' . $blog_widget->id,
+            method       => 'PUT',
+            restrictions => { 1 => [qw/ edit_templates /], },
+            params       => {
                 widget => {
                     name => 'update-widget',
                     type => 'update-type',
                 },
             },
-            code     => 403,
-            error    => 'Do not have permission to update a widget.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-            },
+            code  => 403,
+            error => 'Do not have permission to update a widget.',
         },
 
         # update_widget - normal tests
@@ -820,18 +798,12 @@ sub suite {
         {    # No permissions.
             path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/refresh',
             method => 'POST',
-            setup  => sub {
-                $mock_author->mock( 'can_edit_templates', 0 );
-                $mock_perm->mock( 'can_edit_templates',  0 );
-                $mock_perm->mock( 'can_administer_blog', 0 );
+            restrictions => {
+                1 => [qw/ edit_templates administer_blog /],
+                0 => [qw/ edit_templates administer_blog /],
             },
-            code     => 403,
-            error    => 'Do not have permission to refresh a widget.',
-            complete => sub {
-                $mock_author->unmock('can_edit_templates');
-                $mock_perm->unmock('can_edit_templates');
-                $mock_perm->unmock('can_administer_blog');
-            },
+            code  => 403,
+            error => 'Do not have permission to refresh a widget.',
         },
 
         # refresh_widget - normal tests
@@ -885,18 +857,12 @@ sub suite {
         {    # No permissions.
             path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/clone',
             method => 'POST',
-            setup  => sub {
-                $mock_author->mock( 'can_edit_templates', 0 );
-                $mock_perm->mock( 'can_edit_templates',  0 );
-                $mock_perm->mock( 'can_administer_blog', 0 );
+            restrictions => {
+                0 => [qw/ edit_templates administer_blog /],
+                1 => [qw/ edit_templates administer_blog /],
             },
-            code     => 403,
-            error    => 'Do not have permission to clone a widget.',
-            complete => sub {
-                $mock_author->unmock('can_edit_templates');
-                $mock_perm->unmock('can_edit_templates');
-                $mock_perm->unmock('can_administer_blog');
-            },
+            code  => 403,
+            error => 'Do not have permission to clone a widget.',
         },
 
         # clone_widget - normal tests
@@ -915,7 +881,7 @@ sub suite {
                     $data->{widget_count} + 1,
                     'Cloned template.'
                 );
-                }
+            }
         },
 
         # delete_widget - irregular tests
@@ -987,16 +953,11 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/1/widgets/' . $blog_widget->id,
-            method => 'DELETE',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-            },
-            code     => 403,
-            error    => 'Do not have permission to delete a widget.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-            },
+            path         => '/v2/sites/1/widgets/' . $blog_widget->id,
+            method       => 'DELETE',
+            restrictions => { 1 => [qw/ edit_templates /], },
+            code         => 403,
+            error        => 'Do not have permission to delete a widget.',
         },
 
         # delete_widget - normal tests
