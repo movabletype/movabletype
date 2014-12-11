@@ -491,12 +491,19 @@
                     });
 
                     ed.parser.addAttributeFilter('style', function(nodes, name) {
-                        var i, node,
+                            var i, node, savedValue, attrValue,
                             internalName = attrPrefix + name;
 
                         for (i = 0; i < nodes.length; i++) {
-                            node = nodes[i];
-                            node.attr(internalName, node.attr(name));
+                            node       = nodes[i];
+                            attrValue  = node.attr(name);
+                            savedValue = node.attr(internalName);
+
+                            if (attrValue === placeholder && savedValue) {
+                                continue;
+                            }
+
+                            node.attr(internalName, attrValue);
                             node.attr(name, placeholder);
                         }
                     });
