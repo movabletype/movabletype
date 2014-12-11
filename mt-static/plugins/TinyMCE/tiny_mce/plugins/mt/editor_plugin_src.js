@@ -472,9 +472,12 @@
                             node = nodes[i];
                             $.each(['type', 'rel'], function(i, k) {
                                 var value = node.attr(k);
-                                if (value) {
-                                    node.attr(k, valuePrefix + value);
+
+                                if (!value || value.match(valueRegExp)) {
+                                    return;
                                 }
+
+                                node.attr(k, valuePrefix + value);
                             });
                         }
                     });
@@ -484,6 +487,11 @@
 
                         for (i = 0; i < nodes.length; i++) {
                             node = nodes[i];
+
+                            if (value && value.match(valueRegExp)) {
+                                continue;
+                            }
+
                             node.attr('type', valuePrefix + (node.attr('type') || 'text/css'));
                         }
                     });
