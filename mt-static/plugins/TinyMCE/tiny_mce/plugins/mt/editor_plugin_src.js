@@ -378,6 +378,8 @@
             ed.onPreInit.add(function() {
                 var attrPrefix  = 'data-mce-mt-',
                     attrRegExp  = new RegExp('^' + attrPrefix),
+                    dataPrefix  = 'mce-mt-escaped-data:',
+                    dataRegExp  = new RegExp('^' + dataPrefix),
                     placeholder = 'javascript:void("mce-mt-event-placeholder");return false';
 
                 // Save/Restore event handler of the node.
@@ -426,7 +428,12 @@
 
                     for (i = 0; i < nodes.length; i++) {
                         node = nodes[i];
-                        node.value = escape(node.value);
+
+                        if (!node.value || node.value.match(dataRegExp)) {
+                            continue;
+                        }
+
+                        node.value = dataPrefix + escape(node.value);
                     }
                 });
 
@@ -435,7 +442,12 @@
 
                     for (i = 0; i < nodes.length; i++) {
                         node = nodes[i];
-                        node.value = unescape(node.value);
+
+                        if (!node.value || !node.value.match(dataRegExp)) {
+                            continue;
+                        }
+
+                        node.value = unescape(node.value.replace(dataRegExp, ''));
                         if (node.value.indexOf('[CDATA[') === 0) {
                             node.name = '#cdata';
                             node.type = 4;
