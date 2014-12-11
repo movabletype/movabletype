@@ -378,7 +378,7 @@
             ed.onPreInit.add(function() {
                 var attrPrefix  = 'data-mce-mt-',
                     attrRegExp  = new RegExp('^' + attrPrefix),
-                    placeholder = 'javascript:void("mce-mt-event-placeholer");return false';
+                    placeholder = 'javascript:void("mce-mt-event-placeholder");return false';
 
                 // Save/Restore event handler of the node.
                 ed.parser.addAttributeFilter([/^on|action/], function(nodes, name) {
