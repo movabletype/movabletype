@@ -123,12 +123,12 @@ sub suite {
                     outputFile => 'create_template.html',
                 },
             },
-            setup => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                2 => [qw/ edit_templates /],
             },
-            code     => 403,
-            error    => 'Do not have permission to create a template.',
-            complete => sub { $mock_perm->unmock('can_edit_templates') },
+            code  => 403,
+            error => 'Do not have permission to create a template.',
         },
 
         # create_template - normal tests
@@ -173,15 +173,12 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/2/templates',
-            method => 'GET',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-            },
-            code => 403,
+            path         => '/v2/sites/2/templates',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ edit_templates /], },
+            code         => 403,
             error =>
                 'Do not have permission to retrieve the list of templates.',
-            complete => sub { $mock_perm->unmock('can_edit_templates') },
         },
 
         # list_templates - normal tests
@@ -371,15 +368,16 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/templates',
-            method => 'GET',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
+            path         => '/v2/templates',
+            method       => 'GET',
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                1 => [qw/ edit_templates /],
+                2 => [qw/ edit_templates /],
             },
             code => 403,
             error =>
                 'Do not have permission to retrieve the list of templates.',
-            complete => sub { $mock_perm->unmock('can_edit_templates') },
         },
 
         # list_all_templates - normal tests
@@ -442,9 +440,6 @@ sub suite {
         {    # No permissions.
             path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
             method => 'GET',
-            setup  => sub {
-                $mock_author->mock( 'can_edit_templates', 0 );
-            },
             restrictions => {
                 0 => [qw/ edit_templates /],
                 2 => [qw/ edit_templates /],
@@ -452,9 +447,6 @@ sub suite {
             code => 403,
             error =>
                 'Do not have permission to retrieve the requested template.',
-            complete => sub {
-                $mock_author->unmock('can_edit_templates');
-            },
         },
 
         # get_template - normal tests
@@ -488,12 +480,12 @@ sub suite {
             path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
             method => 'PUT',
             params => { template => { name => 'update-template', }, },
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                2 => [qw/ edit_templates /],
             },
-            code     => 403,
-            error    => 'Do not have permission to update a template.',
-            complete => sub { $mock_perm->unmock('can_edit_templates') },
+            code  => 403,
+            error => 'Do not have permission to update a template.',
         },
 
         # update_template - normal tests
@@ -546,14 +538,12 @@ sub suite {
         {    # No permissions.
             path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
             method => 'DELETE',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                2 => [qw/ edit_templates /],
             },
-            code     => 403,
-            error    => 'Do not have permission to delete a template.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-            },
+            code  => 403,
+            error => 'Do not have permission to delete a template.',
         },
 
         # delete_template - normal tests
@@ -594,17 +584,10 @@ sub suite {
             path => '/v2/sites/1/templates/'
                 . $blog_index_tmpl->id
                 . '/publish',
-            method => 'POST',
-            setup  => sub {
-                $mock_perm->mock( 'can_administer_blog', 0 );
-                $mock_perm->mock( 'can_rebuild',         0 );
-            },
-            code     => 403,
-            error    => 'Do not have permission to publish a template.',
-            complete => sub {
-                $mock_perm->unmock('can_administer_blog');
-                $mock_perm->unmock('can_rebuild');
-            },
+            method       => 'POST',
+            restrictions => { 1 => [qw/ administer_blog rebuild /], },
+            code         => 403,
+            error        => 'Do not have permission to publish a template.',
         },
 
         # publish_template - normal tests
@@ -769,19 +752,13 @@ sub suite {
             path => '/v2/sites/1/templates/'
                 . $blog_index_tmpl->id
                 . '/clone',
-            method => 'POST',
-            setup  => sub {
-                $mock_author->mock( 'can_edit_templates', 0 );
-                $mock_perm->mock( 'can_edit_templates',  0 );
-                $mock_perm->mock( 'can_administer_blog', 0 );
+            method       => 'POST',
+            restrictions => {
+                0 => [qw/ edit_templates administer_blog /],
+                1 => [qw/ edit_templates administer_blog /],
             },
-            code     => 403,
-            error    => 'Do not have permission to clone a template.',
-            complete => sub {
-                $mock_author->unmock('can_edit_templates');
-                $mock_perm->unmock('can_edit_templates');
-                $mock_perm->unmock('can_administer_blog');
-            },
+            code  => 403,
+            error => 'Do not have permission to clone a template.',
         },
 
         # clone_template - normal tests

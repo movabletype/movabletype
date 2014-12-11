@@ -280,17 +280,14 @@ sub suite {
         {    # No permissions.
             path =>
                 "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
-            method => 'GET',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
+            method       => 'GET',
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                1 => [qw/ edit_templates /],
             },
-            restrictions => { 1 => [qw/ edit_templates /], },
-            code         => 403,
+            code => 403,
             error =>
                 'Do not have permission to retrieve the list of templatemaps.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-            },
         },
 
         # list_templatemaps - normal tests
@@ -426,17 +423,14 @@ sub suite {
         {    # No permissions.
             path =>
                 "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps/$blog_tmplmap_id",
-            method => 'GET',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
+            method       => 'GET',
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                1 => [qw/ edit_templates /],
             },
-            restrictions => { 1 => [qw/ edit_templates /], },
-            code         => 403,
+            code => 403,
             error =>
                 'Do not have permission to retrieve the requested templatemap.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-            },
         },
 
         # get_templatemap - normal tests
