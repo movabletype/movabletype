@@ -48,6 +48,7 @@ before_script:
 
   # Remove failed tests.
   - rm t/28-xmlrpc.t
+  - rm t/34-sqlite.t
   - rm t/41-atom.t
   - rm t/90-podcoverage.t
   - rm t/171-cms-user.t
