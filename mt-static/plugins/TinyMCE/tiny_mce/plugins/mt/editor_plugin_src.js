@@ -382,13 +382,21 @@
 
                 // Save/Restore event handler of the node.
                 ed.parser.addAttributeFilter([/^on|action/], function(nodes, name) {
-                    var i, node,
+                    var i, node, savedValue, attrValue,
                         internalName = attrPrefix + name;
 
                     for (i = 0; i < nodes.length; i++) {
-                        node = nodes[i];
+                        node       = nodes[i];
+                        attrValue  = node.attr(name);
+                        savedValue = node.attr(internalName);
 
-                        node.attr(internalName, node.attr(name));
+                        // Already saved.
+                        // Perhaps returned by the back button of the  web browser.
+                        if (attrValue === placeholder && savedValue) {
+                            continue;
+                        }
+
+                        node.attr(internalName, attrValue);
                         node.attr(name, placeholder);
                     }
                 });
