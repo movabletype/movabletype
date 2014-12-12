@@ -2610,12 +2610,12 @@ MT.App.CategorySelector = new Class( Component, {
             this.type = "category";
             this.list.setOption( "singleSelect", false );
             this.list.setOption( "toggleSelect", true );
+            this.list.setOption( "disableUnSelect", true );
         } else {
             this.type = "folder";
             this.list.setOption( "singleSelect", true );
             this.list.setOption( "toggleSelect", false );
         }
-        this.list.setOption( "disableUnSelect", true );
 
         this.parentID = 0;
         var cats = MT.App.categoryList;
