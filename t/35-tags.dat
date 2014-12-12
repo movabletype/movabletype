@@ -770,5 +770,9 @@
 { "r" : "1", "t" : "<mt:setvarblock name=\"str\"><p>abcde<br>abcde<br>abcde<br></p></mt:setvarblock><$mt:var name=\"str\" sanitize=\"br\"$>", "e" : "abcde<br>abcde<br>abcde<br>" }, #754
 { "r" : "1", "t" : "<MTBlogs blog_ids=\"1\"><MTWebsiteHasBlog>true<MTElse>false</MTWebsiteHasBlog></MTBlogs>", "e" : "true" }, #755
 { "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\" sort_method=\"{ $a->label cmp $b->label }\"><MTCategoryLabel></MTSubCategories>", "e" : "barfoo"}, #756
-{ "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\" sort_method=\"SortMethod::sort\"><MTCategoryLabel></MTSubCategories>", "e" : "barfoo"} #757
+{ "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\" sort_method=\"SortMethod::sort\"><MTCategoryLabel></MTSubCategories>", "e" : "barfoo"}, #757
+{ "r" : "1", "t" : "<MTEntries><mt:EntryID>:<$mt:CategoryID$>;</MTEntries>", "e" : "1:;8:;7:3;6:1;5:;4:;"}, #758
+{ "r" : "1", "t" : "<MTEntries><mt:EntryID>:<$mt:CategoryDescription$>;</MTEntries>", "e" : "1:;8:;7:subcat;6:bar;5:;4:;"}, #759
+{ "r" : "1", "t" : "<MTEntries><mt:EntryID>:<$mt:CategoryArchiveLink$>;</MTEntries>", "e" : "1:;8:;7:http://narnia.na/nana/archives/foo/subfoo/;6:http://narnia.na/nana/archives/foo/;5:;4:;"}, #760
+{ "r" : "1", "t" : "<MTEntries><mt:EntryID>:<$mt:CategoryCount$>;</MTEntries>", "e" : "1:;8:;7:1;6:1;5:;4:;"} #761
 ]
