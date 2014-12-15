@@ -359,55 +359,55 @@ sub suite {
             params => { sortBy => 'type', },
         },
 
-        # list_all_templates - irregular tests.
-        {    # Not logged in.
-            path      => '/v2/templates',
-            method    => 'GET',
-            author_id => 0,
-            code      => 401,
-            error     => 'Unauthorized',
-        },
-        {    # No permissions.
-            path         => '/v2/templates',
-            method       => 'GET',
-            restrictions => {
-                0 => [qw/ edit_templates /],
-                1 => [qw/ edit_templates /],
-                2 => [qw/ edit_templates /],
-            },
-            code => 403,
-            error =>
-                'Do not have permission to retrieve the list of templates.',
-        },
-
-        # list_all_templates - normal tests
-        {   path   => '/v2/templates',
-            method => 'GET',
-            result => sub {
-                my @terms_args = (
-                    { type => { not => [qw/ backup widget widgetset /] }, },
-                    {   sort      => 'blog_id',
-                        direction => 'ascend',
-                        limit     => 10,
-                    },
-                );
-
-                my $total_results
-                    = $app->model('template')->count(@terms_args);
-                my @tmpl = $app->model('template')->load(@terms_args);
-
-                $app->user($author);
-
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
-                return +{
-                    totalResults => $total_results,
-                    items => MT::DataAPI::Resource->from_object( \@tmpl ),
-                };
-            },
-        },
+#        # list_all_templates - irregular tests.
+#        {    # Not logged in.
+#            path      => '/v2/templates',
+#            method    => 'GET',
+#            author_id => 0,
+#            code      => 401,
+#            error     => 'Unauthorized',
+#        },
+#        {    # No permissions.
+#            path         => '/v2/templates',
+#            method       => 'GET',
+#            restrictions => {
+#                0 => [qw/ edit_templates /],
+#                1 => [qw/ edit_templates /],
+#                2 => [qw/ edit_templates /],
+#            },
+#            code => 403,
+#            error =>
+#                'Do not have permission to retrieve the list of templates.',
+#        },
+#
+#        # list_all_templates - normal tests
+#        {   path   => '/v2/templates',
+#            method => 'GET',
+#            result => sub {
+#                my @terms_args = (
+#                    { type => { not => [qw/ backup widget widgetset /] }, },
+#                    {   sort      => 'blog_id',
+#                        direction => 'ascend',
+#                        limit     => 10,
+#                    },
+#                );
+#
+#                my $total_results
+#                    = $app->model('template')->count(@terms_args);
+#                my @tmpl = $app->model('template')->load(@terms_args);
+#
+#                $app->user($author);
+#
+#                no warnings 'redefine';
+#                local *boolean::true  = sub {'true'};
+#                local *boolean::false = sub {'false'};
+#
+#                return +{
+#                    totalResults => $total_results,
+#                    items => MT::DataAPI::Resource->from_object( \@tmpl ),
+#                };
+#            },
+#        },
 
         # get_template - irregular tests
         {    # Non-existent template.

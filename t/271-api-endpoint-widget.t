@@ -252,54 +252,54 @@ sub suite {
             params => { sortBy => 'created_by', },
         },
 
-        # list_all_widgets - irregular tests.
-        {    # Not logged in.
-            path      => '/v2/widgets',
-            method    => 'GET',
-            author_id => 0,
-            code      => 401,
-            error     => 'Unauthorized',
-        },
-        {    # No permissions.
-            path         => '/v2/widgets',
-            method       => 'GET',
-            restrictions => {
-                0 => [qw/ edit_templates /],
-                1 => [qw/ edit_templates /],
-                2 => [qw/ edit_templates /],
-            },
-            code => 403,
-            error =>
-                'Do not have permission to retrieve the list of widgets.',
-        },
-
-        # list_all_widgets - normal tests
-        {   path      => '/v2/widgets',
-            method    => 'GET',
-            callbacks => [
-                {   name  => 'data_api_pre_load_filtered_list.template',
-                    count => 2,
-                },
-            ],
-            result => sub {
-                my @terms_args = (
-                    { type => 'widget' },
-                    { sort => 'blog_id', direction => 'ascend', limit => 10 },
-                );
-                my $total_results
-                    = $app->model('template')->count(@terms_args);
-                my @widgets = $app->model('template')->load(@terms_args);
-
-                $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-                return +{
-                    totalResults => $total_results,
-                    items => MT::DataAPI::Resource->from_object( \@widgets ),
-                };
-            },
-        },
+#        # list_all_widgets - irregular tests.
+#        {    # Not logged in.
+#            path      => '/v2/widgets',
+#            method    => 'GET',
+#            author_id => 0,
+#            code      => 401,
+#            error     => 'Unauthorized',
+#        },
+#        {    # No permissions.
+#            path         => '/v2/widgets',
+#            method       => 'GET',
+#            restrictions => {
+#                0 => [qw/ edit_templates /],
+#                1 => [qw/ edit_templates /],
+#                2 => [qw/ edit_templates /],
+#            },
+#            code => 403,
+#            error =>
+#                'Do not have permission to retrieve the list of widgets.',
+#        },
+#
+#        # list_all_widgets - normal tests
+#        {   path      => '/v2/widgets',
+#            method    => 'GET',
+#            callbacks => [
+#                {   name  => 'data_api_pre_load_filtered_list.template',
+#                    count => 2,
+#                },
+#            ],
+#            result => sub {
+#                my @terms_args = (
+#                    { type => 'widget' },
+#                    { sort => 'blog_id', direction => 'ascend', limit => 10 },
+#                );
+#                my $total_results
+#                    = $app->model('template')->count(@terms_args);
+#                my @widgets = $app->model('template')->load(@terms_args);
+#
+#                $app->user($author);
+#                no warnings 'redefine';
+#                local *boolean::true  = sub {'true'};
+#                local *boolean::false = sub {'false'};
+#                return +{
+#                    totalResults => $total_results,
+#                    items => MT::DataAPI::Resource->from_object( \@widgets ),
+#                };
+#            },
+#        },
 
         # list_widgets_for_widgetset - irregular tests.
         {    # Non-existent site.

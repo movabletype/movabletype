@@ -223,40 +223,40 @@ sub suite {
             },
         },
 
-        # list_pages_for_tag - normal tests.
-        {   path      => '/v2/tags/15/pages',
-            method    => 'GET',
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
-                    count => 1,
-                },
-                {   name  => 'data_api_pre_load_filtered_list.page',
-                    count => 2,
-                },
-            ],
-            result => sub {
-                my @page = $app->model('page')->load(
-                    undef,
-                    {   join => $app->model('objecttag')->join_on(
-                            undef,
-                            {   blog_id           => \'= entry_blog_id',
-                                object_id         => \'= entry_id',
-                                object_datasource => 'entry',
-                                tag_id            => 15,
-                            },
-                        ),
-                        sort      => 'modified_on',
-                        direction => 'descend',
-                    },
-                );
-
-                return +{
-                    totalResults => scalar @page,
-                    items => MT::DataAPI::Resource->from_object( \@page ),
-                };
-            },
-        },
+#        # list_pages_for_tag - normal tests.
+#        {   path      => '/v2/tags/15/pages',
+#            method    => 'GET',
+#            callbacks => [
+#                {   name =>
+#                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
+#                    count => 1,
+#                },
+#                {   name  => 'data_api_pre_load_filtered_list.page',
+#                    count => 2,
+#                },
+#            ],
+#            result => sub {
+#                my @page = $app->model('page')->load(
+#                    undef,
+#                    {   join => $app->model('objecttag')->join_on(
+#                            undef,
+#                            {   blog_id           => \'= entry_blog_id',
+#                                object_id         => \'= entry_id',
+#                                object_datasource => 'entry',
+#                                tag_id            => 15,
+#                            },
+#                        ),
+#                        sort      => 'modified_on',
+#                        direction => 'descend',
+#                    },
+#                );
+#
+#                return +{
+#                    totalResults => scalar @page,
+#                    items => MT::DataAPI::Resource->from_object( \@page ),
+#                };
+#            },
+#        },
 
         # list_pagss_for_site_and_tag - normal tests.
         {   path      => '/v2/sites/1/tags/15/pages',

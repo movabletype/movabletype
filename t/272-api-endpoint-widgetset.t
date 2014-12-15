@@ -123,33 +123,33 @@ sub suite {
             params => { sortBy => 'modified_by' },
         },
 
-        # list_all_widgetsets - normal tests
-        {   path      => '/v2/widgetsets',
-            method    => 'GET',
-            callbacks => [
-                {   name  => 'data_api_pre_load_filtered_list.template',
-                    count => 2,
-                },
-            ],
-            result => sub {
-                my @ws = $app->model('template')->load(
-                    { type => 'widgetset' },
-                    { sort => 'blog_id', direction => 'ascend' },
-                );
-
-                $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
-                return +{
-                    totalResults => scalar @ws,
-                    items        => MT::DataAPI::Resource->from_object(
-                        \@ws, \@ws_fields
-                    ),
-                };
-            },
-        },
+#        # list_all_widgetsets - normal tests
+#        {   path      => '/v2/widgetsets',
+#            method    => 'GET',
+#            callbacks => [
+#                {   name  => 'data_api_pre_load_filtered_list.template',
+#                    count => 2,
+#                },
+#            ],
+#            result => sub {
+#                my @ws = $app->model('template')->load(
+#                    { type => 'widgetset' },
+#                    { sort => 'blog_id', direction => 'ascend' },
+#                );
+#
+#                $app->user($author);
+#                no warnings 'redefine';
+#                local *boolean::true  = sub {'true'};
+#                local *boolean::false = sub {'false'};
+#
+#                return +{
+#                    totalResults => scalar @ws,
+#                    items        => MT::DataAPI::Resource->from_object(
+#                        \@ws, \@ws_fields
+#                    ),
+#                };
+#            },
+#        },
 
         # get_widgetset - irregular tests
         {    # Non-existent widgetset.

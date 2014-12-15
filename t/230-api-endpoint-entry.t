@@ -704,40 +704,40 @@ __BODY__
             }
         },
 
-        # list_entries_for_tag
-        {   path      => '/v2/tags/2/entries',
-            method    => 'GET',
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
-                    count => 1,
-                },
-                {   name  => 'data_api_pre_load_filtered_list.entry',
-                    count => 2,
-                },
-            ],
-            result => sub {
-                my @entry = $app->model('entry')->load(
-                    undef,
-                    {   join => $app->model('objecttag')->join_on(
-                            undef,
-                            {   blog_id           => \'= entry_blog_id',
-                                object_id         => \'= entry_id',
-                                object_datasource => 'entry',
-                                tag_id            => 2,
-                            },
-                        ),
-                        sort      => 'authored_on',
-                        direction => 'descend',
-                    },
-                );
-
-                return +{
-                    totalResults => scalar @entry,
-                    items => MT::DataAPI::Resource->from_object( \@entry ),
-                };
-            },
-        },
+#        # list_entries_for_tag
+#        {   path      => '/v2/tags/2/entries',
+#            method    => 'GET',
+#            callbacks => [
+#                {   name =>
+#                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
+#                    count => 1,
+#                },
+#                {   name  => 'data_api_pre_load_filtered_list.entry',
+#                    count => 2,
+#                },
+#            ],
+#            result => sub {
+#                my @entry = $app->model('entry')->load(
+#                    undef,
+#                    {   join => $app->model('objecttag')->join_on(
+#                            undef,
+#                            {   blog_id           => \'= entry_blog_id',
+#                                object_id         => \'= entry_id',
+#                                object_datasource => 'entry',
+#                                tag_id            => 2,
+#                            },
+#                        ),
+#                        sort      => 'authored_on',
+#                        direction => 'descend',
+#                    },
+#                );
+#
+#                return +{
+#                    totalResults => scalar @entry,
+#                    items => MT::DataAPI::Resource->from_object( \@entry ),
+#                };
+#            },
+#        },
 
         # list_entries_for_site_and_tag
         {   path      => '/v2/sites/1/tags/2/entries',
