@@ -3274,9 +3274,15 @@ sub CGIMaxUpload {
     my $val = $mgr->get_internal('CGIMaxUpload');
     return $mgr->default('CGIMaxUpload') unless $val;
 
-    require Scalar::Util;
-    return $mgr->default('CGIMaxUpload')
-        unless Scalar::Util::looks_like_number($val);
+    eval "require Scalar::Util";
+    if ( !$@ ) {
+        return $mgr->default('CGIMaxUpload')
+            unless Scalar::Util::looks_like_number($val);
+    }
+    else {
+        return $mgr->default('CGIMaxUpload')
+            unless ( $val =~ /^[+-]?[0-9]+$/ );
+    }
     return $val;
 }
 
