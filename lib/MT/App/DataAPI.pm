@@ -813,11 +813,23 @@ sub core_endpoints {
             requires_login => 0,
         },
         {    # Different from v1 upload_asset endpoint.
-            id             => 'upload_asset_v2',
+            id             => 'upload_asset',
             route          => '/assets/upload',
             verb           => 'POST',
             version        => 2,
             handler        => "${pkg}v2::Asset::upload",
+            default_params => {
+                autoRenameIfExists   => 0,
+                normalizeOrientation => 1,
+            },
+            error_codes => { 403 => 'Do not have permission to upload.', },
+        },
+        {   # Same as v2 upload_asset.
+            id             => 'upload_asset_for_site',
+            route          => '/sites/:site_id/assets/upload',
+            verb           => 'POST',
+            version        => 2,
+            handler        => "${pkg}Asset::upload",
             default_params => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
