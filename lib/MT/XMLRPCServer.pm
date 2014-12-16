@@ -495,7 +495,17 @@ sub newPost {
     }
 
     _validate_params( [ $blog_id, $user, $pass, $publish ] ) or return;
-    _validate_params( [ values %$item ] ) or return;
+    my $values;
+    foreach my $k ( keys %$item ) {
+        if ( 'categories' eq $k ) {
+            # XMLRPC supports categories array
+            _validate_params( \@{$item->{$k}} ) or return;
+        }
+        else {
+            push @$values, $item->{$k};
+        }
+    }
+    _validate_params( \@$values ) or return;
 
     $class->_new_entry(
         blog_id => $blog_id,
@@ -663,7 +673,17 @@ sub editPost {
     }
 
     _validate_params( [ $entry_id, $user, $pass, $publish ] ) or return;
-    _validate_params( [ values %$item ] ) or return;
+    my $values;
+    foreach my $k ( keys %$item ) {
+        if ( 'categories' eq $k ) {
+            # XMLRPC supports categories array
+            _validate_params( \@{$item->{$k}} ) or return;
+        }
+        else {
+            push @$values, $item->{$k};
+        }
+    }
+    _validate_params( \@$values ) or return;
 
     $class->_edit_entry(
         entry_id => $entry_id,
