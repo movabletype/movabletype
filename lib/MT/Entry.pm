@@ -759,8 +759,7 @@ sub list_props {
                     my @all_authors = MT->model('author')
                         ->load( undef, { fetchonly => { id => 1 }, }, );
                     return { author_id =>
-                            { not => [ map { $_->id } @all_authors ] },
-                    };
+                            { not => [ map { $_->id } @all_authors ] }, };
                 }
                 else {
                     my $status
@@ -1410,6 +1409,7 @@ sub discover_tb_from_entry {
     }
 }
 
+# Deprecated (case #112321).
 sub sync_assets {
     my $entry = shift;
     my $text = ( $entry->text || '' ) . "\n" . ( $entry->text_more || '' );
