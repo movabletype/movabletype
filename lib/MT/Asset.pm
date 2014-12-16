@@ -387,6 +387,60 @@ sub list_props {
             col     => 'created_by',
             display => 'none',
         },
+        missing_file => {
+            base        => '__virtual.single_select',
+            label       => 'Missing File',
+            singleton   => 1,
+            filter_tmpl => sub {
+                my $file = MT->translate('File');
+                return <<"__FILTER_TMPL__";
+<mt:setvar name="label" value="$file">
+<mt:var name="filter_form_single_select">
+__FILTER_TMPL__
+            },
+            single_select_options => [
+                { label => MT->translate('missing'), value => 1, },
+                { label => MT->translate('extant'),  value => 0, },
+            ],
+            label_via_param => sub {
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                if ($val) {
+                    return MT->translate('Assets with Missing File');
+                }
+                else {
+                    return MT->translate('Assets with Extant File');
+                }
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+
+                my $filter;
+
+                require MT::FileMgr;
+                my $fmgr = MT::FileMgr->new('Local');
+                if ( $args->{value} ) {
+                    $filter = sub { !$fmgr->exists( $_[0] ) };
+                }
+                else {
+                    $filter = sub { $fmgr->exists( $_[0] ) };
+                }
+
+                my @id;
+
+                require MT::Asset;
+                my $iter = MT::Asset->load_iter( $db_terms, $db_args );
+                while ( my $asset = $iter->() ) {
+                    push @id, $asset->id
+                        if defined $asset->file_path
+                        && $asset->file_path ne ''
+                        && $filter->( $asset->file_path );
+                }
+
+                return +{ id => @id ? \@id : 0 };
+            },
+        },
     };
 }
 
@@ -440,6 +494,18 @@ sub system_filters {
         items => [ { type => 'current_context' } ],
         view  => 'website',
         order => 10000,
+    };
+
+    $filters{missing_file} = {
+        label => 'Assets with Missing File',
+        items => [ { type => 'missing_file', args => { value => 1 }, } ],
+        order => 10100,
+    };
+
+    $filters{extant_file} = {
+        label => 'Assets with Extant File',
+        items => [ { type => 'missing_file', args => { value => 0 }, } ],
+        order => 10200,
     };
 
     return \%filters;
