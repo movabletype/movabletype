@@ -650,7 +650,7 @@ sub archive_url {
 
     if (@_) {
         my $url = $_[0];
-        $url .= '/' unless $url =~ m{/$};
+        $url .= '/' if $url ne "" && $url !~ m{/$};
         $blog->SUPER::archive_url($url) || $blog->site_url;
     }
     elsif ( $blog->is_dynamic ) {
