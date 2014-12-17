@@ -4730,6 +4730,22 @@ DataAPI.on('initialize', function() {
         "verb": "GET"
     }, 
     {
+        "id": "create_comment_for_page", 
+        "resources": [
+            "comment"
+        ], 
+        "route": "/sites/:site_id/pages/:page_id/comments", 
+        "verb": "POST"
+    }, 
+    {
+        "id": "create_reply_comment_for_page", 
+        "resources": [
+            "comment"
+        ], 
+        "route": "/sites/:site_id/pages/:page_id/comments/:comment_id/replies", 
+        "verb": "POST"
+    }, 
+    {
         "id": "list_trackbacks_for_page", 
         "resources": null, 
         "route": "/sites/:site_id/pages/:page_id/trackbacks", 
