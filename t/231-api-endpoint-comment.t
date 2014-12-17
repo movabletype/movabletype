@@ -16,6 +16,15 @@ my $app = MT::App::DataAPI->new;
 my $mock_cms_common = Test::MockModule->new('MT::CMS::Common');
 $mock_cms_common->mock( 'run_web_services_save_config_callbacks', sub { } );
 
+my $page_comment = $app->model('comment')->new;
+$page_comment->set_values(
+    {   blog_id  => 1,
+        entry_id => 20,    # page
+    }
+);
+$page_comment->approve;
+$page_comment->save or die $page_comment->errstr;
+
 my $unpublished_page = MT::Test::Permission->make_page(
     blog_id => 1,
     status  => 1,
@@ -388,21 +397,90 @@ sub suite {
         # list_comments_for_page - normal tests.
         {   path   => '/v2/sites/1/pages/20/comments',
             method => 'GET',
-            setup  => sub {
-                my ($data) = @_;
-                $data->{comment} = MT::Test::Permission->make_comment(
-                    blog_id  => 1,
-                    entry_id => 20,
-                );
-            },
             result => sub {
                 my ( $data, $body ) = @_;
+                my $comment = $app->model('comment')
+                    ->load( { blog_id => 1, entry_id => 20 } );
                 return +{
                     totalResults => 1,
-                    items        => MT::DataAPI::Resource->from_object(
-                        [ $data->{comment} ]
-                    ),
+                    items => MT::DataAPI::Resource->from_object( [$comment] ),
                 };
+            },
+        },
+
+        # create_comment_for_page - normal tests.
+        {   path   => '/v2/sites/1/pages/20/comments',
+            method => 'POST',
+            params => {
+                comment => { body => 'test-api-endopoint-comment-for-page', },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.comment',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.comment',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.comment',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.comment',
+                    count => 1,
+                },
+            ],
+            setup => sub {
+                my $page = $app->model('page')->load(20);
+                $page->allow_comments(1);
+                $page->save or die $page->errstr;
+            },
+            result => sub {
+                my $c = MT->model('comment')->load(
+                    {   text        => 'test-api-endopoint-comment-for-page',
+                        visible     => 1,
+                        junk_status => MT::Comment::NOT_JUNK(),
+                    },
+                    {   sort      => 'id',
+                        direction => 'descend',
+                    },
+                );
+            },
+        },
+
+        # create_reply_comment_for_page - normal tests.
+        {   path => '/v2/sites/1/pages/20/comments/'
+                . $page_comment->id
+                . '/replies',
+            method => 'POST',
+            params => {
+                comment => { body => 'test-api-endopoint-reply-for-page', },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.comment',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.comment',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.comment',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.comment',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('comment')->load(
+                    {   text        => 'test-api-endopoint-reply-for-page',
+                        visible     => 1,
+                        junk_status => MT::Comment::NOT_JUNK(),
+                        parent_id   => $page_comment->id,
+                    },
+                    {   sort      => 'id',
+                        direction => 'descend',
+                    },
+                );
             },
         },
 

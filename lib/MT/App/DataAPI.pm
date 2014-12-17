@@ -1161,6 +1161,29 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
+        {
+            id        => 'create_comment_for_page',
+            route     => '/sites/:site_id/pages/:page_id/comments',
+            resources => ['comment'],
+            verb      => 'POST',
+            version   => 2,
+            handler   => "${pkg}Comment::create",
+            error_codes =>
+              { 403 => 'Do not have permission to create a comment.', },
+        },
+        {
+            id => 'create_reply_comment_for_page',
+            route =>
+              '/sites/:site_id/pages/:page_id/comments/:comment_id/replies',
+            resources   => ['comment'],
+            verb        => 'POST',
+            version     => 2,
+            handler     => "${pkg}Comment::create_reply",
+            error_codes => {
+                403 =>
+'Do not have permission to create a reply to the requested comment.',
+            },
+        },
 
         # trackback endpoints
         {
