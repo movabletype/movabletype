@@ -248,7 +248,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
             if ( ok( $resp->is_success ) ) {
 
                 my $parser = MT::Util::libxml_parser();
-                my $doc    = $parser->parse_string( \$resp->content );
+                my $doc    = $parser->parse_string( $resp->content );
 
                 my $cats = $doc->getElementsByTagName('categories');
                 ok( $cats && @$cats );
