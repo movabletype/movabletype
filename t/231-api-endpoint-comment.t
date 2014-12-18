@@ -129,12 +129,12 @@ sub suite {
                 MT->model('comment')->load(1);
             },
         },
-        {   note   => 'Sanitize text field (v1)',
+        {   note   => 'Sanitize text field (v1) - No HTML',
             path   => '/v1/sites/1/comments/1',
             method => 'GET',
             setup  => sub {
                 my $comment = $app->model('comment')->load(1);
-                $comment->text('<script>alert(1);</script>');
+                $comment->text('<p><script>alert(1);</script></p>');
                 $comment->save or die $comment->errstr;
 
                 my $blog = $comment->blog;
@@ -159,10 +159,65 @@ sub suite {
                 };
             },
         },
-        {   note   => 'Sanitize text field (v2)',
-            path   => '/v2/sites/1/comments/1',
+        {   note   => 'Sanitize text field (v1) - default setting',
+            path   => '/v1/sites/1/comments/1',
             method => 'GET',
+            setup  => sub {
+                my $comment = $app->model('comment')->load(1);
+                my $blog    = $comment->blog;
+                $blog->allow_comment_html(1);
+                $blog->save or die $blog->errstr;
+            },
+            result => sub {
+                +{  'link' =>
+                        'http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1',
+                    'parent'    => undef,
+                    'entry'     => { 'id' => '1' },
+                    'status'    => 'Approved',
+                    'date'      => '2004-07-14T18:28:00-03:30',
+                    'updatable' => 'true',
+                    'blog'      => { 'id' => '1' },
+                    'author'    => {
+                        'userpicUrl'  => undef,
+                        'displayName' => 'v14GrUH 4 cheep'
+                    },
+                    'body' => '<p>alert(1);</p>',
+                    'id'   => 1
+                };
+            },
+        },
+        {   note   => 'Not sanitize text field (v1)',
+            path   => '/v1/sites/1/comments/1',
+            params => { sanitize => 0 },
+            method => 'GET',
+            result => sub {
+                +{  'link' =>
+                        'http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1',
+                    'parent'    => undef,
+                    'entry'     => { 'id' => '1' },
+                    'status'    => 'Approved',
+                    'date'      => '2004-07-14T18:28:00-03:30',
+                    'updatable' => 'true',
+                    'blog'      => { 'id' => '1' },
+                    'author'    => {
+                        'userpicUrl'  => undef,
+                        'displayName' => 'v14GrUH 4 cheep'
+                    },
+                    'body' => '<p><script>alert(1);</script></p>',
+                    'id'   => 1
+                };
+            },
+        },
+        {   note   => 'Sanitize text field (v2) - No HTML',
+            path   => '/v2/sites/1/comments/1',
             params => { no_text_filter => 1 },
+            method => 'GET',
+            setup  => sub {
+                my $comment = $app->model('comment')->load(1);
+                my $blog    = $comment->blog;
+                $blog->allow_comment_html(0);
+                $blog->save or die $blog->errstr;
+            },
             result => sub {
                 +{  'link' =>
                         'http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1',
@@ -183,37 +238,39 @@ sub suite {
                 };
             },
         },
-        {   note   => 'Not sanitize text field (v1)',
-            path   => '/v1/sites/1/comments/1',
+        {   note   => 'Sanitize text field (v2) - default setting',
+            path   => '/v2/sites/1/comments/1',
+            params => { no_text_filter => 1 },
             method => 'GET',
             setup  => sub {
                 my $comment = $app->model('comment')->load(1);
-
-                my $blog = $comment->blog;
+                my $blog    = $comment->blog;
                 $blog->allow_comment_html(1);
                 $blog->save or die $blog->errstr;
             },
             result => sub {
                 +{  'link' =>
                         'http://narnia.na/nana/archives/1978/01/a-rainy-day.html#comment-1',
-                    'parent'    => undef,
-                    'entry'     => { 'id' => '1' },
-                    'status'    => 'Approved',
-                    'date'      => '2004-07-14T18:28:00-03:30',
-                    'updatable' => 'true',
-                    'blog'      => { 'id' => '1' },
-                    'author'    => {
+                    'parent'       => undef,
+                    'entry'        => { 'id' => '1' },
+                    'status'       => 'Approved',
+                    'date'         => '2004-07-14T18:28:00-03:30',
+                    'createdDate'  => '2004-07-14T18:28:00-03:30',
+                    'modifiedDate' => '0000-00-00T00:00:00-03:30',
+                    'updatable'    => 'true',
+                    'blog'         => { 'id' => '1' },
+                    'author'       => {
                         'userpicUrl'  => undef,
                         'displayName' => 'v14GrUH 4 cheep'
                     },
-                    'body' => '<script>alert(1);</script>',
+                    'body' => '<p>alert(1);</p>',
                     'id'   => 1
                 };
             },
         },
         {   note   => 'Not sanitize text field (v2)',
             path   => '/v2/sites/1/comments/1',
-            params => { no_text_filter => 1 },
+            params => { sanitize => 0, no_text_filter => 1 },
             method => 'GET',
             result => sub {
                 +{  'link' =>
@@ -230,7 +287,7 @@ sub suite {
                         'userpicUrl'  => undef,
                         'displayName' => 'v14GrUH 4 cheep'
                     },
-                    'body' => '<script>alert(1);</script>',
+                    'body' => '<p><script>alert(1);</script></p>',
                     'id'   => 1
                 };
             },

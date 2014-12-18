@@ -11,6 +11,7 @@ use warnings;
 
 use MT::Template::Context;
 use MT::Util qw( remove_html );
+use MT::DataAPI::Resource::Comment;
 use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
@@ -36,19 +37,23 @@ sub _from_object {
     my ($obj) = @_;
     my $app   = MT->instance;
     my $user  = $app->user;
+    my $blog  = $obj->blog;
+
+    my $text;
 
     if ( $user && $user->id && $app->param('no_text_filter') ) {
-        my $blog = $obj->blog;
         if ( $blog->allow_comment_html ) {
-            return $obj->text;
+            $text = $obj->text;
         }
         else {
-            return remove_html( $obj->text );
+            $text = remove_html( $obj->text );
         }
     }
     else {
-        return _apply_text_filters( $app, $obj );
+        $text = _apply_text_filters( $app, $obj );
     }
+
+    MT::DataAPI::Resource::Comment::sanitize_text( $obj, $text );
 }
 
 sub _apply_text_filters {
