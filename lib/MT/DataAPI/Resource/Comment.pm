@@ -154,7 +154,7 @@ sub sanitize_text {
 
     my $val = 1;    # default value
 
-    # User 'sanitize' parameter when logging in.
+    # User can change 'sanitize' parameter when logging in.
     if ( $user && $user->id ) {
         $val = $app->param('sanitize');
         $val = 1 if !defined($val) || $val eq '';
