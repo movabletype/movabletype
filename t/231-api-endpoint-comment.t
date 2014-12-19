@@ -86,6 +86,89 @@ sub suite {
                 );
             },
         },
+        {   note =>
+                'Unpublished comment is created when "Comment Policy" setting is "No one".',
+            setup => sub {
+                my $blog = $app->model('blog')->load(1);
+                $blog->moderate_unreg_comments(1);
+                $blog->save or die $blog->errstr;
+            },
+            path   => '/v1/sites/1/entries/1/comments',
+            method => 'POST',
+            params => {
+                comment =>
+                    { body => 'test-api-endopoint-comment-policy-no-one', },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.comment',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.comment',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.comment',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.comment',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('comment')->load(
+                    {   text    => 'test-api-endopoint-comment-policy-no-one',
+                        visible => 0,
+                        junk_status => MT::Comment::NOT_JUNK(),
+                    },
+                    {   sort      => 'id',
+                        direction => 'descend',
+                    },
+                );
+            },
+        },
+        {   note =>
+                'Unpublished comment is replied when "Comment Policy" setting is "No one".',
+            path   => '/v1/sites/1/entries/1/comments/1/replies',
+            method => 'POST',
+            params => {
+                comment => {
+                    body => 'test-api-endopoint-reply-comment-policy-no-one',
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.comment',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.comment',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.comment',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.comment',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('comment')->load(
+                    {   text =>
+                            'test-api-endopoint-reply-comment-policy-no-one',
+                        visible     => 0,
+                        junk_status => MT::Comment::NOT_JUNK(),
+                        parent_id   => 1,
+                    },
+                    {   sort      => 'id',
+                        direction => 'descend',
+                    },
+                );
+            },
+            complete => sub {
+                my ($blog) = $app->model('blog')->load(1);
+                $blog->moderate_unreg_comments(2);
+                $blog->save or die $blog->errstr;
+            },
+        },
         {   path   => '/v1/sites/1/entries/1/comments/1/replies',
             method => 'POST',
             params => { comment => { body => 'test-api-endopoint-reply', }, },

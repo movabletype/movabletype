@@ -58,10 +58,7 @@ sub _build_default_comment {
         }
     );
 
-    if (   $app->can_do('manage_feedback')
-        || MT::Permission->can_edit_entry( $entry, $app->user, 1 )
-        || $blog->publish_trusted_commenters )
-    {
+    if ( $blog->publish_trusted_commenters ) {
         $orig_comment->approve;
     }
     else {
@@ -119,7 +116,6 @@ sub create_reply {
     my $orig_comment
         = _build_default_comment( $app, $endpoint, $blog, $entry );
     $orig_comment->set_values( { parent_id => $parent->id, } );
-    $orig_comment->approve;
 
     my $new_comment = $app->resource_object( 'comment', $orig_comment )
         or return;
