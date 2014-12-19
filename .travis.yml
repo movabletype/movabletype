@@ -15,6 +15,7 @@ before_install:
   - PATH=${PATH#/home/travis/perl5/perlbrew/bin:}
   - perl -v
   - echo $PATH
+  - curl -L https://cpanmin.us | perl - --sudo App::cpanminus
 
   # Install Berkeley DB for installing DB_File module.
   # libperl-dev for installing ImageMagick.
