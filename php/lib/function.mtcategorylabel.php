@@ -6,12 +6,8 @@
 # $Id$
 
 function smarty_function_mtcategorylabel($args, &$ctx) {
-    $cat = $ctx->stash('category');
-    if (!$cat) {
-        if ($e = $ctx->stash('entry')) {
-            $cat = $e->category();
-        }
-    }
+    require_once("MTUtil.php");
+    $cat = get_category_context($ctx);
     if (!$cat) return '';
     return $cat->category_label;
 }

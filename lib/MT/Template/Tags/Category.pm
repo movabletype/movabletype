@@ -414,17 +414,10 @@ sub _hdlr_category_prevnext {
     my $e          = $ctx->stash('entry');
     my $tag        = $ctx->stash('tag');
     my $step       = $tag =~ m/Next/i ? 1 : -1;
-    my $cat
-        = $e
-        ? $e->category
-            ? $e->category
-            : ( $ctx->stash('category') || $ctx->stash('archive_category') )
-        : ( $ctx->stash('category') || $ctx->stash('archive_category') );
-    return $ctx->error(
-        MT->translate(
-            "You used an [_1] tag outside of the proper context.", "<MT$tag>"
-        )
-    ) if !defined $cat;
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return '' if ( $cat eq '' );
+
     require MT::Placement;
     my $needs_entries;
     my $uncompiled = $ctx->stash('uncompiled') || '';
@@ -1420,21 +1413,12 @@ B<Example:>
 
 sub _hdlr_category_label {
     my ( $ctx, $args, $cond ) = @_;
-    my $class_type = $args->{class_type} || 'category';
-    my $e = $ctx->stash('entry');
-    my $cat
-        = ( $ctx->stash('category') || $ctx->stash('archive_category') )
-        || ( ( $e = $ctx->stash('entry') ) && $e->category )
-        or return (
-        defined( $args->{default} )
-        ? $args->{default}
-        : $ctx->error(
-            MT->translate(
-                "You used an [_1] tag outside of the proper context.",
-                '<$MT' . $ctx->stash('tag') . '$>'
-            )
-        )
-        );
+
+    # Get the current category
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return if ( $cat eq '' );
+
     my $label = $cat->label;
     $label = '' unless defined $label;
     return $label;
@@ -1470,21 +1454,12 @@ B<Example:>
 
 sub _hdlr_category_basename {
     my ( $ctx, $args, $cond ) = @_;
-    my $class_type = $args->{class_type} || 'category';
-    my $e = $ctx->stash('entry');
-    my $cat
-        = ( $ctx->stash('category') || $ctx->stash('archive_category') )
-        || ( ( $e = $ctx->stash('entry') ) && $e->category )
-        or return (
-        defined( $args->{default} )
-        ? $args->{default}
-        : $ctx->error(
-            MT->translate(
-                "You used an [_1] tag outside of the proper context.",
-                '<$MT' . $ctx->stash('tag') . '$>'
-            )
-        )
-        );
+
+    # Get the current category
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return if ( $cat eq '' );
+
     my $basename = $cat->basename || '';
     if ( my $sep = $args->{separator} ) {
         if ( $sep eq '-' ) {
