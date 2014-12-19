@@ -82,11 +82,14 @@ sub suite {
                             mt_keywords       => 'Keywords',
                             mt_tb_ping_urls   => ['http://127.0.0.1/'],
                             dateCreated       => '19770922T15:30:00',
-                            categories        => [
-                                map {
-                                    $mt->model('category')->load($_)->label
-                                } qw(1 2)
-                            ],
+                            ( $_ eq 'wp.newPage' ) ? () : (
+                                categories => [
+                                    map {
+                                        $mt->model('category')->load($_)
+                                            ->label
+                                    } qw(1 2)
+                                ]
+                            ),
                         },
                         0,
                     ],
@@ -109,10 +112,6 @@ sub suite {
                     mt_keywords       => 'Keywords',
                     mt_tb_ping_urls   => ['http://127.0.0.1/'],
                     dateCreated       => '19770922T15:30:00',
-                    categories        => [
-                        map { $mt->model('category')->load($_)->label }
-                            qw(1 2)
-                    ],
                 },
                 0,
             ],
