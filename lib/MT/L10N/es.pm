@@ -287,7 +287,7 @@ el protocolo de comunicación STARTTLS.',
 	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1] respondió al <a href="[_2]">comentario de [_3]</a>',
 
 ## default_templates/commenter_confirm.mtml
-	'Thank you registering for an account to comment on [_1].' => 'Gracias por registrar una cuenta para comentar en [_1].',
+	'Thank you for registering an account to comment on [_1].' => 'Gracias por registrar una cuenta para comentar en [_1].',
 	'For your security and to prevent fraud, we ask you to confirm your account and email address before continuing. Once your account is confirmed, you will immediately be allowed to comment on [_1].' => 'Por su seguridad, y para prevenir fraudes, solicitamos que confirme su cuenta y dirección de correo antes de continuar. Tras confirmar su cuenta, podrá comentar de inmediato en [_1].',
 	'To confirm your account, please click on the following URL, or cut and paste this URL into a web browser:' => 'Para confirmar su cuenta, por favor, haga clic en la siguiente URL, o copie y pegue la URL en un navegador:',
 	q{If you did not make this request, or you don't want to register for an account to comment on [_1], then no further action is required.} => q{Si no realizó esta petición, o no quiere registrar una cuenta para comentar en [_1], no se necesitan más acciones.},
@@ -6068,7 +6068,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'[_1] Forum' => 'Foro [_1]',
 
 ## addons/Community.pack/templates/global/email_verification_email.mtml
-	'Thank you registering for an account to [_1].' => 'Gracias por registrar una cuenta en [_1].',
+	'Thank you for registering an account to [_1].' => 'Gracias por registrar una cuenta en [_1].',
 	'For your own security and to prevent fraud, we ask that you please confirm your account and email address before continuing. Once confirmed you will immediately be allowed to sign in to [_1].' => 'Por su propia seguridad y para prevenir fraudes, le solicitamos que confirme su cuenta y dirección de correo antes de continuar. Una vez confirmados, ya podrá iniciar una sesión en [_1].',
 	'To confirm your account, please click on or cut and paste the following URL into a web browser:' => 'Para confirmar su cuenta, haga clic en (o copie y pegue) la URL en un navegador web:',
 	q{If you did not make this request, or you don't want to register for an account to [_1], then no further action is required.} => q{Si no realizó esta petición, o no quiere registrar una cuenta en [_1], no se requiere ninguna otra acción.},
