@@ -13,6 +13,11 @@ env:
     - FILES="t/2??-*.t t/3??-*.t"
 
 before_install:
+  # Use system Perl.
+  - perlbrew switch-off
+  - PATH=${PATH#/home/travis/perl5/perlbrew/bin:}
+  - perl -v
+
   # Install Berkeley DB for installing DB_File module.
   # libperl-dev for installing ImageMagick.
   # php5, php5-mysql, php5-gd for tests of dynamic publishing.
@@ -20,19 +25,11 @@ before_install:
   - sudo apt-get install libdb-dev libgd2-xpm-dev libgmp3-dev libperl-dev php5 php5-mysql php5-gd libpng12-dev libgif-dev libjpeg-dev
 
 install:
-  # Install ImageMagick for installing Image::Magick.
-  - mkdir local
-  - cd local
-  - wget http://www.imagemagick.org/download/ImageMagick.tar.gz
-  - tar xzvf ImageMagick.tar.gz
-  - cd ImageMagick-*
-  - ./configure --prefix=${HOME}/local --with-perl=${HOME}/perl5/perlbrew/perls/${TRAVIS_PERL_VERSION}/bin/perl
-  - make
-  - sudo make install
-  - cd ../../
+  # Install Image::Magick.
+  - sudo apt-get -y install perlmagick
 
   # Instal CPAN modules.
-  - cpanm -n Crypt::CBC
+  - cpanm -n Crypt::CBC Test::Deep DateTime DateTime::TimeZone
   - travis_retry cpanm -n --installdeps . --cpanfile ./t/cpanfile
 
   # Build MT.
