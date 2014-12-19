@@ -14,6 +14,7 @@ before_install:
   - perlbrew switch-off
   - PATH=${PATH#/home/travis/perl5/perlbrew/bin:}
   - perl -v
+  - echo $PATH
 
   # Install Berkeley DB for installing DB_File module.
   # libperl-dev for installing ImageMagick.
@@ -26,8 +27,8 @@ install:
   - sudo apt-get -y install perlmagick
 
   # Instal CPAN modules.
-  - cpanm -n Crypt::CBC Test::Deep DateTime DateTime::TimeZone
-  - travis_retry cpanm -n --installdeps . --cpanfile ./t/cpanfile
+  - sudo cpanm -n Crypt::CBC Test::Deep DateTime DateTime::TimeZone
+  - travis_retry sudo cpanm -n --installdeps . --cpanfile ./t/cpanfile
 
   # Build MT.
   #- SHELL=/bin/bash make me
