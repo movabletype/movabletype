@@ -515,9 +515,9 @@ sub newPage {
     _validate_params( [ $blog_id, $user, $pass, $publish ] ) or return;
     my $values;
     foreach my $k ( keys %$item ) {
-        if ( 'categories' eq $k || 'mt_tb_ping_urls' eq $k ) {
+        if ( 'mt_tb_ping_urls' eq $k ) {
 
-            # XMLRPC supports categories array and mt_tb_ping_urls array
+            # XMLRPC supports mt_tb_ping_urls array
             _validate_params( \@{ $item->{$k} } ) or return;
         }
         else {
@@ -703,9 +703,9 @@ sub editPage {
         or return;
     my $values;
     foreach my $k ( keys %$item ) {
-        if ( 'categories' eq $k || 'mt_tb_ping_urls' eq $k ) {
+        if ( 'mt_tb_ping_urls' eq $k ) {
 
-            # XMLRPC supports categories array and mt_tb_ping_urls array
+            # XMLRPC supports mt_tb_ping_urls array
             _validate_params( \@{ $item->{$k} } ) or return;
         }
         else {
