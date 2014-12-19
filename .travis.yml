@@ -28,7 +28,7 @@ install:
   - sudo apt-get -y install perlmagick
 
   # Instal CPAN modules.
-  - sudo cpanm -n Crypt::CBC Test::Deep DateTime DateTime::TimeZone
+  - sudo cpanm -n Crypt::CBC Test::Deep DateTime DateTime::TimeZone Clone
   - travis_retry sudo cpanm -n --installdeps . --cpanfile ./t/cpanfile
 
   # Build MT.
