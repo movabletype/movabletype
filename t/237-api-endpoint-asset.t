@@ -335,7 +335,7 @@ sub suite {
                 };
             },
         },
-        {    # relatedAsset is false.
+        {    # relatedAssets is false.
             path   => '/v2/sites/1/assets',
             method => 'GET',
             setup  => sub {
@@ -366,7 +366,7 @@ sub suite {
                 };
             },
         },
-        {    # relatedAsset is true.
+        {    # relatedAssets is true.
             path      => '/v2/sites/1/assets',
             method    => 'GET',
             params    => { relatedAssets => 1, },
