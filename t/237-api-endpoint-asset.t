@@ -341,7 +341,7 @@ sub suite {
             setup  => sub {
                 my $asset = $app->model('asset')->load(1);
                 $asset->set_values(
-                    {   id     => 10,
+                    {   id     => 100,
                         parent => 1,
                     }
                 );
@@ -385,7 +385,6 @@ sub suite {
                     items => MT::DataAPI::Resource->from_object( \@assets ),
                 };
             },
-            complete => sub {die},
         },
 
  #        # list_all_assets - normal tests
