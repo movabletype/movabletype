@@ -335,89 +335,141 @@ sub suite {
                 };
             },
         },
+        {    # relatedAsset is false.
+            path   => '/v2/sites/1/assets',
+            method => 'GET',
+            setup  => sub {
+                my $asset = $app->model('asset')->load(1);
+                $asset->set_values(
+                    {   id     => 10,
+                        parent => 1,
+                    }
+                );
+                $asset->save or die $asset->errstr;
+            },
+            callbacks => [
+                {   name  => 'data_api_pre_load_filtered_list.asset',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                my @assets = $app->model('asset')->load(
+                    {   class   => '*',
+                        blog_id => 1,
+                        parent  => [ \'IS NULL', 0, '' ],
+                    },
+                    { sort => 'created_on', direction => 'descend', },
+                );
+                return +{
+                    totalResults => scalar @assets,
+                    items => MT::DataAPI::Resource->from_object( \@assets ),
+                };
+            },
+        },
+        {    # relatedAsset is true.
+            path      => '/v2/sites/1/assets',
+            method    => 'GET',
+            params    => { relatedAssets => 1, },
+            callbacks => [
+                {   name  => 'data_api_pre_load_filtered_list.asset',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                my @assets = $app->model('asset')->load(
+                    { class => '*',          blog_id   => 1, },
+                    { sort  => 'created_on', direction => 'descend', },
+                );
+                return +{
+                    totalResults => scalar @assets,
+                    items => MT::DataAPI::Resource->from_object( \@assets ),
+                };
+            },
+            complete => sub {die},
+        },
 
-#        # list_all_assets - normal tests
-#        {   path      => '/v2/assets',
-#            method    => 'GET',
-#            callbacks => [
-#                {   name  => 'data_api_pre_load_filtered_list.asset',
-#                    count => 2,
-#                },
-#            ],
-#            complete => sub {
-#                my ( $data, $body ) = @_;
-#                my $result = MT::Util::from_json($body);
-#                is( $result->{totalResults},
-#                    6, 'The number of all image asset is 6.' );
-#            },
-#        },
-#        {    # includeSiteIds parameter.
-#            path      => '/v2/assets',
-#            method    => 'GET',
-#            params    => { includeSiteIds => '0', },
-#            callbacks => [
-#                {   name  => 'data_api_pre_load_filtered_list.asset',
-#                    count => 2,
-#                },
-#            ],
-#            complete => sub {
-#                my ( $data, $body ) = @_;
-#                my $result = MT::Util::from_json($body);
-#                is( $result->{totalResults},
-#                    2, 'The number of image asset (blog_id=0) is 2.' );
-#            },
-#        },
-#        {    # excludeSiteId parameter.
-#            path      => '/v2/assets',
-#            method    => 'GET',
-#            params    => { excludeSiteIds => '0', },
-#            callbacks => [
-#                {   name  => 'data_api_pre_load_filtered_list.asset',
-#                    count => 2,
-#                },
-#            ],
-#            complete => sub {
-#                my ( $data, $body ) = @_;
-#                my $result = MT::Util::from_json($body);
-#                is( $result->{totalResults},
-#                    4,
-#                    'The number of image asset (exclude blog_id=0) is 4.' );
-#            },
-#        },
-#        {    # In order of file_name.
-#            path      => '/v2/assets',
-#            method    => 'GET',
-#            params    => { sortBy => 'file_name', },
-#            callbacks => [
-#                {   name  => 'data_api_pre_load_filtered_list.asset',
-#                    count => 2,
-#                },
-#            ],
-#            result => sub {
-#                $app->user($author);
-#                my @assets = $app->model('asset')->load(
-#                    { class => '*' },
-#                    { sort  => 'file_name', direction => 'descend' },
-#                );
-#                no warnings 'redefine';
-#                local *boolean::true  = sub {'true'};
-#                local *boolean::false = sub {'false'};
-#                return +{
-#                    totalResults => scalar @assets,
-#                    items => MT::DataAPI::Resource->from_object( \@assets ),
-#                };
-#            },
-#        },
-#        {    # In order of created_by.
-#            path      => '/v2/assets',
-#            method    => 'GET',
-#            params    => { sortBy => 'created_by', },
-#            callbacks => [
-#                {   name  => 'data_api_pre_load_filtered_list.asset',
-#                    count => 2,
-#                },
-#            ],
-#        },
+ #        # list_all_assets - normal tests
+ #        {   path      => '/v2/assets',
+ #            method    => 'GET',
+ #            callbacks => [
+ #                {   name  => 'data_api_pre_load_filtered_list.asset',
+ #                    count => 2,
+ #                },
+ #            ],
+ #            complete => sub {
+ #                my ( $data, $body ) = @_;
+ #                my $result = MT::Util::from_json($body);
+ #                is( $result->{totalResults},
+ #                    6, 'The number of all image asset is 6.' );
+ #            },
+ #        },
+ #        {    # includeSiteIds parameter.
+ #            path      => '/v2/assets',
+ #            method    => 'GET',
+ #            params    => { includeSiteIds => '0', },
+ #            callbacks => [
+ #                {   name  => 'data_api_pre_load_filtered_list.asset',
+ #                    count => 2,
+ #                },
+ #            ],
+ #            complete => sub {
+ #                my ( $data, $body ) = @_;
+ #                my $result = MT::Util::from_json($body);
+ #                is( $result->{totalResults},
+ #                    2, 'The number of image asset (blog_id=0) is 2.' );
+ #            },
+ #        },
+ #        {    # excludeSiteId parameter.
+ #            path      => '/v2/assets',
+ #            method    => 'GET',
+ #            params    => { excludeSiteIds => '0', },
+ #            callbacks => [
+ #                {   name  => 'data_api_pre_load_filtered_list.asset',
+ #                    count => 2,
+ #                },
+ #            ],
+ #            complete => sub {
+ #                my ( $data, $body ) = @_;
+ #                my $result = MT::Util::from_json($body);
+ #                is( $result->{totalResults},
+ #                    4,
+ #                    'The number of image asset (exclude blog_id=0) is 4.' );
+ #            },
+ #        },
+ #        {    # In order of file_name.
+ #            path      => '/v2/assets',
+ #            method    => 'GET',
+ #            params    => { sortBy => 'file_name', },
+ #            callbacks => [
+ #                {   name  => 'data_api_pre_load_filtered_list.asset',
+ #                    count => 2,
+ #                },
+ #            ],
+ #            result => sub {
+ #                $app->user($author);
+ #                my @assets = $app->model('asset')->load(
+ #                    { class => '*' },
+ #                    { sort  => 'file_name', direction => 'descend' },
+ #                );
+ #                no warnings 'redefine';
+ #                local *boolean::true  = sub {'true'};
+ #                local *boolean::false = sub {'false'};
+ #                return +{
+ #                    totalResults => scalar @assets,
+ #                    items => MT::DataAPI::Resource->from_object( \@assets ),
+ #                };
+ #            },
+ #        },
+ #        {    # In order of created_by.
+ #            path      => '/v2/assets',
+ #            method    => 'GET',
+ #            params    => { sortBy => 'created_by', },
+ #            callbacks => [
+ #                {   name  => 'data_api_pre_load_filtered_list.asset',
+ #                    count => 2,
+ #                },
+ #            ],
+ #        },
 
         # list_assets_for_entry - irregular tests
         {    # Non-existent entry.
