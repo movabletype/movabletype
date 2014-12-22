@@ -45,7 +45,6 @@ before_script:
   # Remove failed tests.
   - rm t/34-sqlite.t
   - rm t/90-podcoverage.t
-  - rm plugins/MultiBlog/t/03.triggers-blogs_in_website.t
 
 script:
   - prove ${FILES}

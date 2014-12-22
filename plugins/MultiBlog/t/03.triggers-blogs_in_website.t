@@ -30,7 +30,7 @@ $plugin->save_config(
         blog_content_accessible => 1,
         old_rebuild_triggers    => '',
         rebuild_triggers =>
-          'ri:2:_blogs_in_website',
+          'ri:_blogs_in_website:entry_pub',
     },
     'blog:2'
 );
