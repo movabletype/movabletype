@@ -83,6 +83,10 @@ sub create {
         return $app->error( "'categories' parameter is invalid.", 400 )
             if scalar @$cats_hash == 0
             || scalar @$cats_hash != scalar @attach_cats;
+
+        # Restore order.
+        my %attach_cats_hash = map { +( $_->id => $_ ) } @attach_cats;
+        @attach_cats = map { $attach_cats_hash{$_} } @cat_ids;
     }
 
     my @attach_assets;
@@ -160,6 +164,10 @@ sub update {
         return $app->error( "'categories' parameter is invalid.", 400 )
             if scalar @$cats_hash == 0
             || scalar @$cats_hash != scalar @update_cats;
+
+        # Restore order.
+        my %update_cats_hash = map { +( $_->id => $_ ) } @update_cats;
+        @update_cats = map { $update_cats_hash{$_} } @cat_ids;
     }
 
     my @update_assets;

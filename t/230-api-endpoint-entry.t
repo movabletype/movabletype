@@ -276,7 +276,7 @@ __BODY__
                 entry => {
                     title      => 'test-api-attach-categories-to-entry',
                     status     => 'Draft',
-                    categories => [ { id => 1 } ],
+                    categories => [ { id => 2 }, { id => 1 }, { id => 3 } ],
                 },
             },
             callbacks => [
@@ -304,6 +304,7 @@ __BODY__
             },
             complete => sub {
                 my ( $data, $body ) = @_;
+
                 require MT::Entry;
                 my $entry = MT->model('entry')->load(
                     {   title  => 'test-api-attach-categories-to-entry',
@@ -311,9 +312,14 @@ __BODY__
                     }
                 );
                 is( $entry->revision, 1, 'Has created new revision' );
-                my @categories = @{ $entry->categories };
-                is( scalar @categories, 1, 'Attaches a category' );
-                is( $categories[0]->id, 1, 'Attached category ID is 1' );
+
+                my $got = $app->current_format->{unserialize}->($body);
+                is( scalar @{ $got->{categories} }, 3,
+                    'Attaches 3 category' );
+                is( $got->{categories}->[0]->{id},
+                    2, 'Primary category ID is 2' );
+                is_deeply( [ map { $_->{id} } @{ $got->{categories} } ],
+                    [qw/ 2 1 3 /], 'Attached category IDs are "2 1 3"' );
             },
         },
         {    # Attach assets.
@@ -441,7 +447,7 @@ __BODY__
             params => {
                 entry => {
                     title      => 'test-api-update-categories',
-                    categories => [ { id => 1 }, { id => 2 }, { id => 3 } ]
+                    categories => [ { id => 3 }, { id => 2 }, { id => 1 } ]
                 },
             },
             callbacks => [
@@ -468,9 +474,13 @@ __BODY__
             },
             complete => sub {
                 my ( $data, $body ) = @_;
-                my $entry      = MT->model('entry')->load(2);
-                my @categories = @{ $entry->categories };
-                is( scalar @categories, 3, 'Entry has 3 category' );
+                my $got = $app->current_format->{unserialize}->($body);
+                is( scalar @{ $got->{categories} },
+                    3, 'Entry has 3 category' );
+                is( $got->{categories}->[0]->{id},
+                    3, 'Primary category ID is 3' );
+                is_deeply( [ map { $_->{id} } @{ $got->{categories} } ],
+                    [qw/ 3 2 1 /], "Entry's categoy Ids are \"3 2 1\"" );
             },
         },
         {    # Update attached categories.
@@ -502,9 +512,13 @@ __BODY__
             },
             complete => sub {
                 my ( $data, $body ) = @_;
-                my $entry      = MT->model('entry')->load(2);
-                my @categories = @{ $entry->categories };
-                is( scalar @categories, 2, 'Entry has 2 category' );
+                my $got = $app->current_format->{unserialize}->($body);
+                is( scalar @{ $got->{categories} },
+                    2, 'Entry has 2 category' );
+                is( $got->{categories}->[0]->{id},
+                    2, 'Primary category ID is 2' );
+                is_deeply( [ map { $_->{id} } @{ $got->{categories} } ],
+                    [qw/ 2 3 /], "Entry's categoy Ids are \"2 3\"" );
             },
         },
         {    # Attach assets.
