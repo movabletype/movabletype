@@ -1568,7 +1568,7 @@ sub newMediaObject {
     }
 
     my $local_file = File::Spec->catfile( $blog->site_path, $file->{name} );
-    $ext = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+    my $ext = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
     require MT::Asset::Image;
     if ( MT::Asset::Image->can_handle($ext) ) {
         require MT::Image;
