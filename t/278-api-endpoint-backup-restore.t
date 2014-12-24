@@ -37,7 +37,7 @@ sub suite {
         {    # Invalid TmpDir.
             path   => '/v2/sites/1/backup',
             method => 'GET',
-            setup  => sub { $app->config->TempDir('/') },
+            setup  => sub { $app->config->TempDir('NON_EXISTENT_DIR') },
             code   => 409,
             result => sub {
                 return +{

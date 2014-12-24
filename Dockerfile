@@ -29,7 +29,7 @@ RUN yum -y install ImageMagick-perl
 RUN yum -y install gmp-devel
 
 # For installing XML::Parser.
-RUN yum -y install expat-devel
+RUN yum -y install expat-devel perl-XML-Parser
 
 # For installing XML::LibXML.
 RUN yum -y install libxml2-devel
@@ -38,7 +38,7 @@ RUN yum -y install wget
 RUN wget -O - https://cpanmin.us | perl - App::cpanminus
 RUN wget https://raw.githubusercontent.com/movabletype/movabletype/develop/t/cpanfile
 RUN cpanm --installdeps .
-RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage
+RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage Clone
 
 # PHP
 RUN yum -y install php php-mysql php-gd
