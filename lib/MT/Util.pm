@@ -30,7 +30,8 @@ our @EXPORT_OK
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
-    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip );
+    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
+    encode_json );
 
 {
     my $Has_Weaken;
@@ -709,30 +710,37 @@ sub decode_js {
     return $str;
 }
 
+sub encode_json {
+    my ($str) = @_;
+    return '' unless defined $str && !ref($str);
+    my $json = to_json( [$str] );
+    return ( $json =~ m/^\["(.+)"\]$/ )[0];    # ["foo"] => for
+}
+
 sub encode_php {
     my ( $str, $meth ) = @_;
     return '' unless defined $str;
     if ( $meth eq 'qq' ) {
         $str = encode_phphere($str);
-        $str =~ s!"!\\"!g;    ## Replace " with \"
+        $str =~ s!"!\\"!g;                     ## Replace " with \"
     }
     elsif ( substr( $meth, 0, 4 ) eq 'here' ) {
         $str = encode_phphere($str);
     }
     else {
-        $str =~ s!\\!\\\\!g;    ## Replace \ with \\
-        $str =~ s!'!\\'!g;      ## Replace ' with \'
+        $str =~ s!\\!\\\\!g;                   ## Replace \ with \\
+        $str =~ s!'!\\'!g;                     ## Replace ' with \'
     }
     $str;
 }
 
 sub encode_phphere {
     my ($str) = @_;
-    $str =~ s!\\!\\\\!g;        ## Replace \ with \\
-    $str =~ s!\$!\\\$!g;        ## Replace $ with \$
-    $str =~ s!\n!\\n!g;         ## Replace character \n with string \n
-    $str =~ s!\r!\\r!g;         ## Replace character \r with string \r
-    $str =~ s!\t!\\t!g;         ## Replace character \t with string \t
+    $str =~ s!\\!\\\\!g;    ## Replace \ with \\
+    $str =~ s!\$!\\\$!g;    ## Replace $ with \$
+    $str =~ s!\n!\\n!g;     ## Replace character \n with string \n
+    $str =~ s!\r!\\r!g;     ## Replace character \r with string \r
+    $str =~ s!\t!\\t!g;     ## Replace character \t with string \t
     $str;
 }
 

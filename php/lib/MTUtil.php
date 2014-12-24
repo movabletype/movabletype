@@ -852,6 +852,25 @@ function encode_js($str) {
     return $str;
 }
 
+function encode_json($str) {
+    if (!isset($str)) return '';
+    // Do not use JSON_UNESCAPED_UNICODE with json_encode for supporting PHP 5.3.x and before.
+    // Do not use closure for supporting PHP 5.2.x and before.
+    $callback = create_function(
+        '$matches',
+        'return mb_convert_encoding(pack("H*", str_replace("\\\\u", "", $matches[0])), "UTF-8", "UTF-16");'
+    );
+    // Do not escape slashes for compatible with Perl,
+    // and JSON spec says that it is OK whether slashes are escaped or not.
+    $encoded_str = preg_replace_callback(
+        '/(?:\\\\u[0-9a-zA-Z]{4})++/',
+        $callback,
+        str_replace('\/', '/', json_encode($str))
+    );
+    // "foo" => foo
+    return preg_replace('/^"(.+)"$/', '$1', $encoded_str);
+}
+
 function gmtime($ts = null) {
     if (!isset($ts)) {
         $ts = time();

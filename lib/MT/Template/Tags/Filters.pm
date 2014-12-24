@@ -448,6 +448,20 @@ sub _fltr_encode_js {
 
 ###########################################################################
 
+=head2 encode_json
+
+Encodes any special characters so that the string can be used safely as
+the value in JSON.
+
+=cut
+
+sub _fltr_encode_json {
+    my ( $str, $val, $ctx ) = @_;
+    MT::Util::encode_json($str);
+}
+
+###########################################################################
+
 =head2 encode_php
 
 Encodes any special characters so that the string can be used safely as
