@@ -7,6 +7,8 @@ BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
+use Test::MockModule;
+
 use lib 't/lib', 'lib', 'extlib', '../lib', '../extlib';
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
@@ -109,6 +111,12 @@ MT::Association->link( $egawa,    $create_post, $second_blog );
 my $website_cat = MT::Test::Permission->make_category(
     blog_id   => $website->id,
     author_id => $admin->id,
+    label     => 'Foo',
+);
+my $website_cat2 = MT::Test::Permission->make_category(
+    blog_id   => $website->id,
+    author_id => $admin->id,
+    label     => 'Bar',
 );
 
 # Entry
@@ -781,6 +789,38 @@ subtest 'Test in website scope' => sub {
     };
 
     done_testing();
+};
+
+diag 'The cache of new entry check';
+subtest 'The cache of new entry check' => sub {
+    my $categories;
+
+    my $mock_entry = Test::MockModule->new('MT::Entry');
+    $mock_entry->mock(
+        'categories',
+        sub {
+            $categories = $mock_entry->original('categories')->(@_);
+        }
+    );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'entry',
+            blog_id          => $website->id,
+            author_id        => $admin->id,
+            status           => 2,
+            category_ids     => $website_cat->id . ',' . $website_cat2->id,
+        },
+    );
+
+    is_deeply(
+        [ map { $_->id } @$categories ],
+        [ $website_cat2->id, $website_cat->id ],
+        'A new entry has category "Bar" and category "Foo" in cache.'
+    );
 };
 
 done_testing();
