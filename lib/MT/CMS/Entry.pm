@@ -1556,7 +1556,7 @@ sub save {
     }
     $values{allow_comments} = 0
         if !defined( $values{allow_comments} )
-            || $app->param('allow_comments') eq '';
+        || $app->param('allow_comments') eq '';
     delete $values{week_number}
         if ( $app->param('week_number') || '' ) eq '';
     delete $values{basename}
@@ -1566,7 +1566,7 @@ sub save {
     $obj->set_values( \%values );
     $obj->allow_pings(0)
         if !defined $app->param('allow_pings')
-            || $app->param('allow_pings') eq '';
+        || $app->param('allow_pings') eq '';
     my $ao_d = $app->param('authored_on_date');
     my $ao_t = $app->param('authored_on_time');
     my $uo_d = $app->param('unpublished_on_date');
@@ -1623,8 +1623,8 @@ sub save {
     if ( $type eq 'entry' ) {
         $obj->status( MT::Entry::HOLD() )
             if !$id
-                && !$perms->can_do('publish_own_entry')
-                && !$perms->can_do('publish_all_entry');
+            && !$perms->can_do('publish_own_entry')
+            && !$perms->can_do('publish_all_entry');
     }
 
     my $filter_result
@@ -1851,6 +1851,7 @@ sub save {
     my $error_string = MT::callback_errstr();
 
     my $placements_updated;
+    my $primary_category;
 
     ## Now that the object is saved, we can be certain that it has an
     ## ID. So we can now add/update/remove the primary placement.
@@ -1866,8 +1867,7 @@ sub save {
         }
         $place->category_id($cat_id);
         $place->save;
-        my $cat = $cat_class->load($cat_id);
-        $obj->cache_property( 'category', undef, $cat );
+        $primary_category   = $cat_class->load($cat_id);
         $placements_updated = 1;
     }
     else {
@@ -1910,8 +1910,7 @@ sub save {
         push @add_cat_obj, $cat;
     }
     if ($placements_updated) {
-        unshift @add_cat_obj, $obj->cache_property('category')
-            if $obj->cache_property('category');
+        unshift @add_cat_obj, $primary_category if $primary_category;
         @add_cat_obj = sort { $a->label cmp $b->label } @add_cat_obj;
         $obj->cache_property( 'categories', undef, \@add_cat_obj );
     }
