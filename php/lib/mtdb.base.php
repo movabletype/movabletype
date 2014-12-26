@@ -1053,10 +1053,10 @@ abstract class MTDatabase {
         }
         $date_filter = $this->build_date_filter($args, $timestamp_field);
 
-        if (isset($args['lastn'])) {
-            if (!isset($args['entry_id'])) $limit = $args['lastn'];
-        } elseif (isset($args['days']) && !$date_filter) {
+        if (isset($args['days']) && !$date_filter) {
             $day_filter = 'and ' . $this->limit_by_day_sql('entry_authored_on', intval($args['days']));
+        } elseif (isset($args['lastn'])) {
+            if (!isset($args['entry_id'])) $limit = $args['lastn'];
         } else {
             $found_valid_args = 0;
             foreach ( array(
