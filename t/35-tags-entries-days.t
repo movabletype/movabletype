@@ -38,7 +38,7 @@ my $entry_today = MT::Test::Permission->make_entry(
 my $entry_yesterday = MT::Test::Permission->make_entry(
     blog_id     => $blog_id,
     title       => "yesterday's entry",
-    authored_on => $now - 1000000,        # yesterday.
+    authored_on => $now - 1010000,        # 25 hours age.
 );
 
 run {
