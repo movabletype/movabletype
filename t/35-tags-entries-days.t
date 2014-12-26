@@ -27,18 +27,21 @@ filters {
     expected => [qw( chomp )],
 };
 
-my $now = epoch2ts( MT->model('blog')->load($blog_id), time );
+my $now = time;
+my $today = epoch2ts( MT->model('blog')->load($blog_id), $now );
+my $yesterday
+    = epoch2ts( MT->model('blog')->load($blog_id), $now - 60 * 60 * 25 );
 
 # Make test data
 my $entry_today = MT::Test::Permission->make_entry(
     blog_id     => $blog_id,
     title       => "today's entry",
-    authored_on => $now,
+    authored_on => $today,
 );
 my $entry_yesterday = MT::Test::Permission->make_entry(
     blog_id     => $blog_id,
     title       => "yesterday's entry",
-    authored_on => $now - 1010000,        # 25 hours age.
+    authored_on => $yesterday,
 );
 
 run {
