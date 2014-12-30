@@ -134,7 +134,7 @@ B<Attributes:>
 A text string that is used to join each of the items together. For example
 
     <mt:Tags glue=", "><$mt:TagName$></mt:Tags>
-    
+
 would print out each tag name separated by a comma and a space.
 
 =item * type
@@ -366,7 +366,7 @@ would print out each tag name separated by a comma and a space.
 
 A boolean value which controls whether private tags (i.e. tags which start
 with @) should be output by the block.  The default is 0 which suppresses
-the output of private tags.  If set to 1, the tags will be displayed.  
+the output of private tags.  If set to 1, the tags will be displayed.
 
 One example of its use is in publishing a list of related entries to the
 current entry.
@@ -878,7 +878,7 @@ sub _hdlr_tag_search_link {
     $param .= '&amp;limit=' . $ctx->{config}->MaxResults;
     $param .= '&amp;blog_id=' . $template_blog_id if $template_blog_id;
     my $path = $ctx->cgi_path;
-    $path . $ctx->{config}->SearchScript . '?' . $param;
+    MT::Util::strip_protocol($path . $ctx->{config}->SearchScript . '?' . $param, $args);
 }
 
 ###########################################################################

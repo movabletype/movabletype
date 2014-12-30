@@ -1822,7 +1822,9 @@ sub _hdlr_entry_link {
     my $blog = $ctx->stash('blog');
     my $arch = $blog->archive_url || '';
     $arch = $blog->site_url if $e->class eq 'page';
+    $arch = MT::Util::strip_protocol($arch, $args);
     $arch .= '/' unless $arch =~ m!/$!;
+
 
     my $at = $args->{type} || $args->{archive_type};
     if ($at) {
@@ -1839,8 +1841,6 @@ sub _hdlr_entry_link {
         my $link = $arch . $archive_filename;
         $link = MT::Util::strip_index( $link, $blog )
             unless $args->{with_index};
-            $link = MT::Util::strip_protocol($link, $args);
-
         $link;
     }
     else { return "" }
@@ -1958,6 +1958,7 @@ sub _hdlr_entry_permalink {
         { valid_html => $args->{valid_html} } )
         or return $ctx->error( $e->errstr );
     $link = MT::Util::strip_index( $link, $blog ) unless $args->{with_index};
+    $link = MT::Util::strip_protocol($link, $args);
     $link;
 }
 
