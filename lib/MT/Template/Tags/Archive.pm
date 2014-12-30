@@ -697,6 +697,7 @@ sub _hdlr_archive_link {
     $arch .= archive_file_for( $entry, $blog, $at, $cat, undef,
         $ctx->{current_timestamp}, $author );
     $arch = MT::Util::strip_index( $arch, $blog ) unless $args->{with_index};
+    $arch = MT::Util::strip_protocol($arch, $args);
     return $arch;
 }
 
@@ -1085,6 +1086,8 @@ sub _hdlr_index_link {
     $path .= '/' unless $path =~ m!/$!;
     $path .= $idx->outfile;
     $path = MT::Util::strip_index( $path, $blog ) unless $args->{with_index};
+    $path = MT::Util::strip_protocol($path, $args);
+
     $path;
 }
 

@@ -1324,6 +1324,14 @@ sub strip_index {
     $link;
 }
 
+sub strip_protocol {
+    my ( $link, $args ) = @_;
+    if ($args->{relative} eq 'protocol') {
+        $link =~ s/https?://;
+    }
+    return $link;
+}
+
 sub get_entry {
     my ( $ts, $blog_id, $at, $order ) = @_;
     my $archiver = MT->instance->publisher->archiver($at)

@@ -636,7 +636,7 @@ sub _hdlr_comment_parent {
 
 =head2 CommentReplies
 
-A block tag which iterates over a list of reply comments to the 
+A block tag which iterates over a list of reply comments to the
 in context.
 
 B<Example:>
@@ -1288,10 +1288,13 @@ sub _hdlr_comment_author_link {
         $name = encode_html( remove_html( $cmntr->nickname ) )
             if $cmntr->nickname;
         if ( $cmntr->url ) {
+            my $url = $cmntr->url;
+            $url = MT::Util::strip_protocol($url, $args);
+
             return sprintf(
                 qq(<a title="%s" href="%s"%s>%s</a>),
                 encode_html( $cmntr->url ),
-                encode_html( $cmntr->url ),
+                encode_html( $url ),
                 $target, $name
             );
         }
@@ -1303,6 +1306,8 @@ sub _hdlr_comment_author_link {
         my $comment_script = $cfg->CommentScript;
         $name = remove_html($name);
         my $url = remove_html( $c->url );
+        $url = MT::Util::strip_protocol($url, $args);
+
         if ( $c->id && !$args->{no_redirect} && !$args->{nofollowfy} ) {
             return
                 sprintf(
@@ -1452,7 +1457,10 @@ sub _hdlr_comment_url {
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
     my $url = defined $c->url ? $c->url : '';
-    return remove_html($url);
+    $url = remove_html($url);
+    $url =  MT::Util::strip_protocol($url, $args);
+    return $url
+
 }
 
 ###########################################################################

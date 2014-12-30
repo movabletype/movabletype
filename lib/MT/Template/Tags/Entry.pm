@@ -260,7 +260,7 @@ of entries that follow, you can do this:
     <mt:Entries tag="@featured" lastn="3">
         ...
     </mt:Entries>
-    
+
     <mt:Entries lastn="7" unique="1">
         ...
     </mt:Entries>
@@ -1839,6 +1839,8 @@ sub _hdlr_entry_link {
         my $link = $arch . $archive_filename;
         $link = MT::Util::strip_index( $link, $blog )
             unless $args->{with_index};
+            $link = MT::Util::strip_protocol($link, $args);
+
         $link;
     }
     else { return "" }
@@ -2202,8 +2204,10 @@ sub _hdlr_entry_author_link {
 
             # Add vcard properties to link if requested (with hcard="1")
             my $hcard = $args->{show_hcard} ? ' class="fn url"' : '';
+            my $link = MT::Util::strip_protocol($a->url, $args);
+
             return sprintf qq(<a%s href="%s"%s>%s</a>), $hcard,
-                encode_html( $a->url ), $target, $displayname;
+                encode_html( $link ), $target, $displayname;
         }
     }
     elsif ( $type eq 'email' ) {
@@ -2227,6 +2231,7 @@ sub _hdlr_entry_author_link {
                 )
                 )
             {
+                $link = MT::Util::strip_protocol($a->url, $args);
                 return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
                     $displayname;
             }
@@ -2433,7 +2438,7 @@ sub _hdlr_entry_blog_url {
     my $b = MT::Blog->load( $e->blog_id )
         or return $ctx->error(
         MT->translate( 'Cannot load blog #[_1].', $e->blog_id ) );
-    return $b->site_url;
+    return MT::Util::strip_protocol($b->site_url, $args);
 }
 
 ###########################################################################

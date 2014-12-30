@@ -4806,9 +4806,7 @@ sub _hdlr_link {
         $site_url .= '/' unless $site_url =~ m!/$!;
 
         # add support for relative URLS
-        if ( $arg->{relative} ) {
-            $site_url =~ s/^https?://;
-        }
+        $site_url = MT::Util::strip_protocol($site_url, $arg);
 
         my $link = $site_url . $tmpl->outfile;
         $link = MT::Util::strip_index( $link, $curr_blog )
