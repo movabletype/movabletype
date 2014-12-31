@@ -5225,7 +5225,7 @@ name is unnecessary):
 
 =cut
 
-sub _hdlr_cgi_path { shift->cgi_path }
+sub _hdlr_cgi_path { MT::Util::strip_protocol(shift->cgi_path, shift) }
 
 ###########################################################################
 
@@ -5343,7 +5343,7 @@ B<Example:>
 =cut
 
 sub _hdlr_static_path {
-    my ($ctx) = @_;
+    my ($ctx, $args) = @_;
     my $cfg   = $ctx->{config};
     my $path  = $cfg->StaticWebPath;
     if ( !$path ) {
@@ -5361,7 +5361,7 @@ sub _hdlr_static_path {
         }
     }
     $path .= '/' unless $path =~ m!/$!;
-    return $path;
+    return MT::Util::strip_protocol($path, $args);
 }
 
 ###########################################################################
