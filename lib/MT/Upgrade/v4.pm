@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -494,7 +494,7 @@ sub upgrade_functions {
                 my $cfg = MT->config;
                 $cfg->PluginSwitch( "Cloner/cloner.pl=0", 1 );
                 $cfg->save_config;
-                }
+            }
         },
     };
 }

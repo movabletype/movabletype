@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -889,7 +889,7 @@ sub list {
         $row->{type} = 'entry' if $type eq 'individual';
         my $published_url = $obj->published_url;
         $row->{published_url} = $published_url if $published_url;
-        $row->{name} = '' if !defined $row->{name};
+        $row->{name}          = ''             if !defined $row->{name};
         $row->{name} =~ s/^\s+|\s+$//g;
         $row->{name} = "(" . $app->translate("No Name") . ")"
             if $row->{name} eq '';

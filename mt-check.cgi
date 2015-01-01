@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -795,11 +795,12 @@ my @CORE_OPT = (
     ],
     [   'Time::HiRes',
         0, 0,
-       translate(
-           'This module is required for executing run-periodic-tasks.'
-       )
+        translate(
+            'This module is required for executing run-periodic-tasks.'
+        )
     ],
-    [   'YAML::Syck', 0, 0,
+    [   'YAML::Syck',
+        0, 0,
         translate(
             '[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.',
             'YAML::Syck'

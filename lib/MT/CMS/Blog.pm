@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -830,7 +830,8 @@ sub rebuild_pages {
         my $start = time;
         my $count = 0;
         my $cb    = sub {
-            my $result = time - $start > $app->config->RebuildOffsetSeconds ? 0 : 1;
+            my $result
+                = time - $start > $app->config->RebuildOffsetSeconds ? 0 : 1;
             $count++ if $result;
             return $result;
         };
@@ -901,7 +902,10 @@ sub rebuild_pages {
                 my $start = time;
                 my $count = 0;
                 my $cb    = sub {
-                    my $result = time - $start > $app->config->RebuildOffsetSeconds ? 0 : 1;
+                    my $result
+                        = time - $start > $app->config->RebuildOffsetSeconds
+                        ? 0
+                        : 1;
                     $count++ if $result;
                     return $result;
                 };

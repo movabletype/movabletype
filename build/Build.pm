@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -109,7 +109,7 @@ sub get_options {
         'symlink!'   => 1, # Make build symlinks when staging.
         'verbose!'   => 1, # Express (the default) or suppress run output.
         'workspace!' => 1, # To export or not to export. That is the question.
-        'workspace-dir=s' => '',    # Constructed at run-time.
+        'workspace-dir=s'    => '',    # Constructed at run-time.
         'versions-trailer=s' => '',
         @_,
     );
@@ -120,7 +120,7 @@ sub get_options {
         $o{$key} = \$val unless ref $val;
     }
 
-    GetOptions(%o);                 # Get the command-line options.
+    GetOptions(%o);    # Get the command-line options.
 
     # "Un-map" the references so we don't have to say, ${$self->{'foo'}}.
     while ( my ( $key, $val ) = each %o ) {
@@ -210,14 +210,16 @@ sub setup {
             my $v = $config->{PRODUCT_VERSION};
             if ( exists $self->{'rel_num=s'} ) {
                 $v .= ".$self->{'rel_num=s'}"
-                    if $self->{'rel_num=s'} || ( $self->{'export!'} && $self->{'export-dir=s'} );
+                    if $self->{'rel_num=s'}
+                    || ( $self->{'export!'} && $self->{'export-dir=s'} );
             }
-            if ( $self->{'alpha=s'} || $self->{'beta=s'} || $self->{'rc=s'} ) {
+            if ( $self->{'alpha=s'} || $self->{'beta=s'} || $self->{'rc=s'} )
+            {
                 $v .= (
-                    $self->{'alpha=s'} ? "a$self->{'alpha=s'}"
+                      $self->{'alpha=s'} ? "a$self->{'alpha=s'}"
                     : $self->{'beta=s'}  ? "b$self->{'beta=s'}"
                     : $self->{'rc=s'}    ? "rc$self->{'rc=s'}"
-                    : ''
+                    :                      ''
                 );
             }
             push @stamp, $v;
@@ -284,9 +286,12 @@ sub make {
                 $self->{'lang=s'},
                 $self->{'workspace-dir=s'},
                 ( $self->{'verbose!'} ? '' : '--silent' ),
-                ( $self->{'rpm!'}     ? ''    : '--rpm' ),
+                ( $self->{'rpm!'}     ? '' : '--rpm' ),
                 (   $self->{'export!'} && $self->{'export-dir=s'}
-                    ? '--export-dir=' . $self->{'export-dir=s'} . ' --export-prefix=' . $self->{'versions-trailer=s'}
+                    ? '--export-dir='
+                        . $self->{'export-dir=s'}
+                        . ' --export-prefix='
+                        . $self->{'versions-trailer=s'}
                     : ''
                 ),
                 $self->{'license=s'} || '',
@@ -499,7 +504,7 @@ sub stage_distro {
             unlink("$current$arch")
                 or warn("WARNING: Can't unlink '$current$arch': $!\n")
                 unless $self->{'debug'}
-                    or ( "$current$arch" eq $dest );
+                or ( "$current$arch" eq $dest );
         }
     }
 
@@ -542,7 +547,7 @@ sub stage_distro {
         (
           $prod ? File::Spec->catdir( $self->{'prod-dir=s'}, $stage_dir )
         : $self->{'symlink!'} ? $link
-        : $stage_dir
+        :                       $stage_dir
         );
 
     # Give unto us a shiny, new config file.
@@ -754,7 +759,7 @@ sub remove_copy {
 }
 
 sub repo_rev {
-    my ( $prefix ) = @_;
+    my ($prefix) = @_;
     $prefix ||= '';
     my $revision = qx{ git log --pretty=format:'' | wc -l };
     chomp $revision;
@@ -909,7 +914,7 @@ sub notify {
     $self->{'email-body=s'} .= sprintf "Build file(s) located on %s\n%s",
         hostname(), join( "\n", @{ $distros->{path} } )
         if $self->{'qa'}
-            or !$self->{'cleanup!'};
+        or !$self->{'cleanup!'};
 
     require Net::SMTP;
     my $smtp
@@ -971,13 +976,10 @@ sub inject_footer {
     # debug mode, doing a (local) make or are building an alpha/beta
     # version.
     return
-        if $self->{'debug'}
-            || $self->{'make'}
-            || ($self->{'prod'}
-                && !(
-                    $self->{'beta=s'} || $self->{'alpha=s'} || $self->{'rc=s'}
-                )
-            );
+           if $self->{'debug'}
+        || $self->{'make'}
+        || ( $self->{'prod'}
+        && !( $self->{'beta=s'} || $self->{'alpha=s'} || $self->{'rc=s'} ) );
     $self->verbose('Entered inject_footer()');
     return if $self->{'prod'} || $self->{'debug'} || $self->{'make'};
 

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -33,15 +33,18 @@ sub cms_pre_load_filtered_list {
         my $blog_id = $terms->{blog_id};
         if ( ref $blog_id eq 'ARRAY' ) {
             @$blog_id = grep { $_ != 0 } @$blog_id;
-        } elsif ( ref $blog_id eq 'HASH' && exists $blog_id->{not} ) {
+        }
+        elsif ( ref $blog_id eq 'HASH' && exists $blog_id->{not} ) {
             my $not = $blog_id->{not};
-            $not = [ $not ] unless ref $not;
-            push @$not, 0 if (!(grep { $_ == 0 } @$not ) );
+            $not = [$not] unless ref $not;
+            push @$not, 0 if ( !( grep { $_ == 0 } @$not ) );
             $blog_id->{not} = $not;
-        } elsif ( !$blog_id ) {
+        }
+        elsif ( !$blog_id ) {
             $terms->{blog_id} = { not => 0 };
         }
-    } else {
+    }
+    else {
         $terms->{blog_id} = { not => 0 };
     }
 

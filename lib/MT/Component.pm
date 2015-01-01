@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -321,6 +321,7 @@ sub needs_upgrade {
     my $ver = MT->config($key);
     my $cfg_ver;
     $cfg_ver = $ver->{$id} if $ver;
+
     if ( ( !defined $cfg_ver ) || ( $cfg_ver < $sv ) ) {
         return 1;
     }

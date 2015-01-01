@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -73,7 +73,7 @@ sub core_search_apis {
                 }
                 $args->{sort}      = 'authored_on';
                 $args->{direction} = 'descend';
-                }
+            }
         },
         'comment' => {
             'order'     => 200,
@@ -138,7 +138,7 @@ sub core_search_apis {
                 my ( $terms, $args, $blog_id ) = @_;
                 $args->{sort}      = 'created_on';
                 $args->{direction} = 'descend';
-                }
+            }
         },
         'ping' => {
             'order'     => 300,
@@ -211,7 +211,7 @@ sub core_search_apis {
                 my ( $terms, $args, $blog_id ) = @_;
                 $args->{sort}      = 'created_on';
                 $args->{direction} = 'descend';
-                }
+            }
         },
         'page' => {
             'order'     => 400,
@@ -261,7 +261,7 @@ sub core_search_apis {
                 }
                 $args->{sort}      = 'modified_on';
                 $args->{direction} = 'descend';
-                }
+            }
         },
         'template' => {
             'order'     => 500,
@@ -318,7 +318,7 @@ sub core_search_apis {
                 my ( $terms, $args, $blog_id ) = @_;
                 $args->{sort}      = 'created_on';
                 $args->{direction} = 'ascend';
-                }
+            }
         },
         'asset' => {
             'order'     => 600,
@@ -377,7 +377,7 @@ sub core_search_apis {
                 }
                 $args->{sort}      = 'created_on';
                 $args->{direction} = 'descend';
-                }
+            }
         },
         'log' => {
             'order'     => 700,
@@ -435,7 +435,7 @@ sub core_search_apis {
                 $terms->{class}    = '*';
                 $args->{sort}      = 'created_on';
                 $args->{direction} = 'descend';
-                }
+            }
         },
         'author' => {
             'order'     => 800,
@@ -527,7 +527,7 @@ sub core_search_apis {
                 $terms->{parent_id} = $blog_id if $blog_id;
                 $args->{sort}       = 'name';
                 $args->{direction}  = 'ascend';
-                }
+            }
         },
         'website' => {
             'order'     => 1000,
@@ -563,7 +563,7 @@ sub core_search_apis {
                 my ( $terms, $args, $blog_id ) = @_;
                 $args->{sort}      = 'name';
                 $args->{direction} = 'ascend';
-                }
+            }
         }
     };
     return $types;
@@ -1074,6 +1074,7 @@ sub do_search_replace {
                 unless $author->is_superuser
                 || $app->handler_to_coderef( $api->{perm_check} )->($obj);
             my $match = 0;
+
             # For cms_pre_save callback and revisioning
             my $orig_obj = $obj->clone();
             unless ($show_all) {
@@ -1095,7 +1096,7 @@ sub do_search_replace {
             }
             if ( $match || $show_all ) {
                 if ( $do_replace && !$show_all ) {
-                    push @to_save, $obj;
+                    push @to_save,      $obj;
                     push @to_save_orig, $orig_obj;
                 }
                 push @data, $obj;
@@ -1123,8 +1124,7 @@ sub do_search_replace {
         # For cms_pre_save callback and revisioning
         my $orig_obj = shift @to_save_orig;
 
-        $app->run_callbacks( 'cms_pre_save.' . $type,
-            $app, $obj, $orig_obj )
+        $app->run_callbacks( 'cms_pre_save.' . $type, $app, $obj, $orig_obj )
             || return $app->error(
             $app->translate(
                 "Saving [_1] failed: [_2]", $obj->class_label,
@@ -1172,9 +1172,11 @@ sub do_search_replace {
         }
 
         my $obj_title = '';
-        $obj_title = $obj->title if $obj->can('title');  # entries, pages, pings
-        $obj_title = $obj->name  if $obj->can('name');   # templates, blogs, websites
-        $obj_title = first_n_words($obj->text, 10)       # comments
+        $obj_title = $obj->title
+            if $obj->can('title');    # entries, pages, pings
+        $obj_title = $obj->name
+            if $obj->can('name');     # templates, blogs, websites
+        $obj_title = first_n_words( $obj->text, 10 )    # comments
             if $type eq 'comment';
 
         my $message

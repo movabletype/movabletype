@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -319,7 +319,7 @@ sub init_user {
                 return $app->build_page( 'install.tmpl', \%param );
             }
             else {
-                $initial_email    = $app->param('email')    || '';
+                $initial_email = $app->param('email') || '';
                 $initial_nickname = $app->param('nickname');
                 $initial_external_id
                     = MT::Author->unpack_external_id(
@@ -824,8 +824,8 @@ sub main {
                 category => 'upgrade',
             }
         );
-        $app->config( 'MTVersion', $cur_version, 1 );
-        $app->config( 'MTReleaseNumber', $cur_rel, 1 );
+        $app->config( 'MTVersion',       $cur_version, 1 );
+        $app->config( 'MTReleaseNumber', $cur_rel,     1 );
         $app->config->save_config;
     }
 

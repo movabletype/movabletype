@@ -33,7 +33,7 @@ $indent = qr/^(?:\t+|\s{4,})/;
             my $level = length $_[2];
             return "<h$level>", format_line( $_[3], @_[ -2, -1 ] ),
                 "</h$level>\n";
-            }
+        }
     ],
 
     blocks => {
@@ -117,7 +117,7 @@ sub format {
         if defined $newtags and UNIVERSAL::isa( $newtags, 'HASH' );
     check_blocks( \%tags )
         if exists $newtags->{blockorder}
-            or exists $newtags->{blocks};
+        or exists $newtags->{blocks};
 
     my @blocks = find_blocks( $text, \%tags, $opts );
     @blocks = merge_blocks( \@blocks, \%tags, $opts );
