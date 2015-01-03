@@ -252,7 +252,7 @@ sub ldapadd {
 sub ldapmodrdn {
     my (%opt) = @_;
     my $auth = MT::LDAP->new;
-    my $ldap = $auth->{ldap};
+    my $ldap = $auth->ldap;
     _ldapbind($auth, $ldap);
     my $base = $auth->{base};
     my $dn = "cn=$opt{name},$base";
@@ -274,7 +274,7 @@ sub ldapmodrdn {
 sub ldapmodify {
     my (%opt) = @_;
     my $auth = MT::LDAP->new;
-    my $ldap = $auth->{ldap};
+    my $ldap = $auth->ldap;
     _ldapbind($auth, $ldap);
     my $base = $auth->{base};
     my $dn = "cn=$opt{name},$base";
@@ -297,7 +297,7 @@ sub ldapmodify {
 sub ldapdelete {
     my (%opt) = @_;
     my $auth = MT::LDAP->new;
-    my $ldap = $auth->{ldap};
+    my $ldap = $auth->ldap;
     _ldapbind($auth, $ldap);
     my $base = $auth->{base};
     my $dn = "cn=$opt{name},$base";
@@ -310,7 +310,7 @@ sub ldapdelete {
 sub ldapsearch {
     my (%opt) = @_;
     my $auth = MT::LDAP->new;
-    my $ldap = $auth->{ldap};
+    my $ldap = $auth->ldap;
     _ldapbind($auth, $ldap);
     my $base = $auth->{base};
     my $res = $ldap->search( 

@@ -150,7 +150,7 @@ sub _ldapbind {
 sub ldapadd {
     my (%opt) = @_;
     my $auth = MT::LDAP->new;
-    my $ldap = $auth->{ldap};
+    my $ldap = $auth->ldap;
     _ldapbind($auth, $ldap);
     my $base = $auth->{base};
     my $dn = "cn=$opt{name},$base";
@@ -177,7 +177,7 @@ sub ldapadd {
 sub ldapdelete {
     my (%opt) = @_;
     my $auth = MT::LDAP->new;
-    my $ldap = $auth->{ldap};
+    my $ldap = $auth->ldap;
     _ldapbind($auth, $ldap);
     my $base = $auth->{base};
     my $dn = "cn=$opt{name},$base";
