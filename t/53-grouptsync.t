@@ -42,6 +42,8 @@ require MT::Auth::LDAP;
 &ldapdelete( name => 'Chuck D' );
 &ldapdelete( name => 'Melody' );
 
+&ldapdelete( name => 'Group 1', base => MT->config->LDAPGroupSearchBase );
+
 if (!MT::ConfigMgr->instance->LDAPUserIdAttribute) {
     print "Set LDAPUserIdAttribute directive or this test will fail.\n";
 }
