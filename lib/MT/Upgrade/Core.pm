@@ -419,7 +419,8 @@ sub _uri_unescape_utf8 {
         use URI::Escape;
         $text = uri_unescape($text);
     }
-    return Encode::decode_utf8($text);
+    return Encode::decode_utf8($text)
+        unless Encode::is_utf8($text);
 }
 
 1;

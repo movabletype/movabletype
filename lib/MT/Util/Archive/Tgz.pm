@@ -118,7 +118,8 @@ sub extract {
 
     $path ||= MT->config->TempDir;
     for my $file ( $obj->files ) {
-        my $file_enc = Encode::decode_utf8($file);
+        my $file_enc = Encode::decode_utf8($file)
+            unless Encode::is_utf8($file);
         my $f = File::Spec->catfile( $path, $file_enc );
         $obj->{_arc}->extract_file( $file, MT::FileMgr::Local::_local($f) );
     }

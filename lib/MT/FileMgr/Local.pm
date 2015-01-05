@@ -58,7 +58,8 @@ sub get_data {
     close $fh if !$is_handle;
     if ( !$type || $type ne 'upload' ) {
         require Encode;
-        $data = Encode::decode_utf8($data);
+        $data = Encode::decode_utf8($data)
+            unless Encode::is_utf8($data);
     }
     $data;
 }

@@ -172,10 +172,11 @@ sub _fltr_nofollowfy {
             $rel = 'rel="nofollow"';
         }
         @attr = grep { !/^rel\s*=/i } @attr;
-        @attr = map { Encode::decode_utf8($_) } @attr;
+        @attr = map { Encode::is_utf8( $_ ) ? $_ : Encode::decode_utf8($_) } @attr;
         '<a ' . (join ' ', @attr) . ' ' . $rel . '>';
     #xieg;
     $str;
+
 }
 
 ###########################################################################
