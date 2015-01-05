@@ -44,6 +44,20 @@ my $entry_yesterday = MT::Test::Permission->make_entry(
     authored_on => $yesterday,
 );
 
+my $entry_today_comment = MT::Test::Permission->make_comment(
+    blog_id    => $blog_id,
+    entry_id   => $entry_today->id,
+    text       => "today comment",
+    created_on => $today,
+);
+
+my $entry_yesterday_comment = MT::Test::Permission->make_comment(
+    blog_id    => $blog_id,
+    entry_id   => $entry_yesterday->id,
+    text       => "yesterday comment",
+    created_on => $yesterday,
+);
+
 run {
     my $block = shift;
 
@@ -142,6 +156,12 @@ __END__
 === lastn
 --- template
 <mt:Entries days="1" lastn="0"><mt:EntryTitle>
+</mt:Entries>
+--- expected
+today's entry
+=== recently_commented_on
+--- template
+<mt:Entries recently_commented_on="1" lastn="0"><mt:EntryTitle>
 </mt:Entries>
 --- expected
 today's entry
