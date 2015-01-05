@@ -21,8 +21,8 @@ sub edit {
         if $blog && !$id;
 
     # The inflow from management screen of Websites
-    # on system scope is redirected to Ddashboard.
-    if ( $app->param('blog_id') == 0 && $blog && $blog_id ) {
+    # on system scope is redirected to dashboard.
+    if ( $app->mode eq 'view' ) {
         return $app->redirect(
             $app->uri(
                 mode => 'dashboard',
