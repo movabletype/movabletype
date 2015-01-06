@@ -21,7 +21,7 @@ use MT::AccessToken;
 our %endpoints = ();
 
 sub id                 {'data_api'}
-sub DEFAULT_VERSION () {1}
+sub DEFAULT_VERSION () {2}
 
 sub init {
     my $app = shift;
