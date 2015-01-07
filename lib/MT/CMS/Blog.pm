@@ -18,8 +18,8 @@ sub edit {
     my $blog_id = $id;
 
     # The inflow from management screen of Blogs
-    # on system scope is redirected to dashboard.
-    if ( $app->mode eq 'view' ) {
+    # is redirected to dashboard.
+    if ( $app->mode eq 'view' && $blog && $blog_id ) {
         return $app->redirect(
             $app->uri(
                 mode => 'dashboard',
