@@ -26,10 +26,7 @@ sub edit {
         return $app->redirect(
             $app->uri(
                 mode => 'dashboard',
-                args => {
-                    blog_id  => $blog_id,
-                    redirect => 1
-                },
+                args => { blog_id => $blog_id },
             )
         );
     }
