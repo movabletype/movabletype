@@ -892,7 +892,7 @@ sub remove_html {
         /geisx;
     $text =~ s/<(?!\!\[CDATA\[)/&lt;/gis;
     $text = Encode::decode_utf8($text)
-        unless Encode::is_utf8($text);;
+        unless Encode::is_utf8($text);
     return $text;
 }
 

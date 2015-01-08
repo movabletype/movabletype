@@ -48,6 +48,7 @@ RETRY_CONN:
         require MT::I18N;
         my $from = MT::I18N::guess_encoding($err) || 'utf-8';
         my $to   = $cfg->PublishCharset           || 'utf-8';
+        $err = Encode::encode_utf8($err) if Encode::is_utf8($err);
         Encode::from_to( $err, $from, $to );
 
         if ( $retry++ < $retry_max ) {
