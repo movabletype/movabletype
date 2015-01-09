@@ -97,6 +97,9 @@ abstract class BaseObject extends ADOdb_Active_Record
 
         parent::__set($name, $value);
     }
+    public function __isset($name){
+        return isset($this->$name);
+    }
 
 
     public function Load( $where = null, $bindarr = false, $lock = false ) {
