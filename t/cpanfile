@@ -16,7 +16,7 @@ requires 'Cache::File';
 requires 'Archive::Tar';
 requires 'IO::Compress::Gzip';
 requires 'IO::Uncompress::Gunzip';
-requires 'Archive::Zip', '<= 1.39';  # Cannot install Archive::Zip@1.40 to CentOS6.
+requires 'Archive::Zip';
 requires 'Digest::SHA1';
 requires 'Net::SMTP';
 requires 'Authen::SASL';
