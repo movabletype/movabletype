@@ -1,7 +1,5 @@
 FROM centos:centos6
 
-MAINTAINER Masahiro Iuchi
-
 RUN yum clean all
 RUN yum -y update
 
