@@ -32,11 +32,15 @@ RUN yum -y install expat-devel perl-XML-Parser
 # For installing XML::LibXML.
 RUN yum -y install libxml2-devel
 
-# For install Archive::Zip.
+# For installing Archive::Zip.
 RUN yum -y install zip unzip
 
 RUN yum -y install wget
 RUN wget -O - https://cpanmin.us | perl - App::cpanminus
+
+# Update for installing SOAP::Lite. Cannot install by cpanm and old Archive::Tar.
+RUN cpanm Archive::Tar
+
 RUN wget https://raw.githubusercontent.com/movabletype/movabletype/develop/t/cpanfile
 RUN cpanm --installdeps .
 RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage Clone
