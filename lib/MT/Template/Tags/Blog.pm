@@ -280,7 +280,7 @@ sub _hdlr_blog_url {
     my $url = $blog->site_url;
     return '' unless defined $url;
     $url .= '/' unless $url =~ m!/$!;
-    $url;
+    return MT::Util::strip_protocol($url, $args);
 }
 
 ###########################################################################
@@ -620,7 +620,7 @@ sub _hdlr_blog_template_set_id {
 
 =head2 BlogThemeID
 
-Outputs applied theme's ID for the blog currently in context.  The 
+Outputs applied theme's ID for the blog currently in context.  The
 identifier is modified such that underscores are changed to dashes.
 
 B<Attributes:>

@@ -815,7 +815,7 @@ sub _hdlr_asset_url {
     my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')
         or return $ctx->_no_asset_error();
-    return $a->url;
+    return MT::Util::strip_protocol($a->url, $args);
 }
 
 ###########################################################################
