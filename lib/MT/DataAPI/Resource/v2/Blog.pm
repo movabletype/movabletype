@@ -679,6 +679,18 @@ sub fields {
             condition           => \&_can_view_cfg_screens,
         },
 
+        {   name        => 'parent',
+            from_object => sub {
+                my ($obj)  = @_;
+                my $app    = MT->instance;
+                my $parent = $app->model('blog')->load( $obj->parent_id );
+                return $parent
+                    ? MT::DataAPI::Resource->from_object( $parent,
+                    [qw( id name )] )
+                    : undef;
+            },
+        },
+
         $MT::DataAPI::Resource::Common::fields{createdBy},
         $MT::DataAPI::Resource::Common::fields{modifiedBy},
         $MT::DataAPI::Resource::Common::fields{createdDate},
