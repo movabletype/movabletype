@@ -50,6 +50,7 @@ RUN yum -y install php php-mysql php-gd
 RUN sed 's/^;date\.timezone =/date\.timezone = "Asia\/Tokyo"/' -i /etc/php.ini
 
 # PHPUnit
+RUN yum -y install php-xml
 RUN wget https://phar.phpunit.de/phpunit.phar
 RUN chmod +x phpunit.phar
 RUN mv phpunit.phar /usr/local/bin/phpunit
