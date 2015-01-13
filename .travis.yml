@@ -5,9 +5,9 @@ services:
 
 env:
   matrix:
-    - FILES="t/??-*.t t/[^0-9]*.t plugins/*/t"
-    - FILES="t/1??-*.t"
-    - FILES="t/2??-*.t t/3??-*.t"
+    - TESTS="prove t/??-*.t t/[^0-9]*.t plugins/*/t"
+    - TESTS="prove t/1??-*.t"
+    - TESTS="prove t/2??-*.t t/3??-*.t; phpunit"
 
 before_install:
   # Use system Perl.
@@ -47,5 +47,5 @@ before_script:
   - rm t/90-podcoverage.t
 
 script:
-  - prove ${FILES}
+  - ${TESTS}
 
