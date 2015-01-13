@@ -21,7 +21,7 @@ class BaseObjectTest extends PHPUnit_Framework_TestCase {
     require_once( "php/lib/class.mt_author.php" );
     $author = new Author;
     $author->Load();
-    $this->assertTrue( isset( $config->id ) );
+    $this->assertTrue( isset( $author->id ) );
 
   }
 
