@@ -52,5 +52,5 @@ before_script:
   - rm t/90-podcoverage.t
 
 script:
-  - ${TESTS}
+  - bash -c "${TESTS}"
 
