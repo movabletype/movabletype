@@ -52,7 +52,7 @@ RUN sed 's/^;date\.timezone =/date\.timezone = "Asia\/Tokyo"/' -i /etc/php.ini
 # PHPUnit
 RUN wget https://phar.phpunit.de/phpunit.phar
 RUN chmod +x phpunit.phar
-RUN phpunit.phar /usr/local/bin/phpunit
+RUN mv phpunit.phar /usr/local/bin/phpunit
 
 RUN service mysqld start & sleep 10 && \
     mysql -e "create database mt_test default character set utf8;" && \
