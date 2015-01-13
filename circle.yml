@@ -18,4 +18,4 @@ test:
 
     - cp ./t/mysql-test.cfg ./mt-config.cgi
 
-    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove ./t ./plugins/*/t"
+    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove ./t ./plugins/*/t; phpunit"
