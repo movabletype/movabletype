@@ -681,8 +681,9 @@ sub fields {
 
         {   name        => 'parent',
             from_object => sub {
-                my ($obj)  = @_;
-                my $app    = MT->instance;
+                my ($obj) = @_;
+                my $app = MT->instance;
+                return undef unless $obj->parent_id;
                 my $parent = $app->model('blog')->load( $obj->parent_id );
                 return $parent
                     ? MT::DataAPI::Resource->from_object( $parent,
