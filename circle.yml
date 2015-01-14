@@ -12,10 +12,11 @@ dependencies:
     - mkdir -p ~/docker; docker save mt > ~/docker/image.tar
 
 test:
-  override:
+  pre:
+    - cp ./t/mysql-test.cfg ./mt-config.cgi
+
     - rm t/34-sqlite.t
     - rm t/90-podcoverage.t
 
-    - cp ./t/mysql-test.cfg ./mt-config.cgi
-
+  override:
     - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove ./t ./plugins/*/t; phpunit"
