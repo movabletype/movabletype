@@ -670,7 +670,11 @@ sub unserialize_config {
     if ($data) {
         $data = pack 'H*', $data;
         require MT::Serialize;
-        my $ser    = MT::Serialize->new('MT');
+        my $ser     = MT::Serialize->new('MT');
+        my $ser_ver = $ser->serializer_version($data);
+        if ( !$ser_ver || $ser_ver != $MT::Serialize::SERIALIZER_VERSION ) {
+            die $app->translate('Invalid parameter.');
+        }
         my $thawed = $ser->unserialize($data);
         if ($thawed) {
             my $saved_cfg = $$thawed;
