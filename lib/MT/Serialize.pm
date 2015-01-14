@@ -7,7 +7,8 @@
 package MT::Serialize;
 
 use strict;
-our $VERSION = 5;
+our $VERSION            = '5';
+our $SERIALIZER_VERSION = '2';
 
 {
     my %Types = (
@@ -43,6 +44,24 @@ sub unserialize {
     my $ser = shift;
     $ser = _default_serializer unless ref $ser;
     $ser->{thaw}->(@_);
+}
+
+sub serializer_version {
+    my ( $ser, $frozen ) = @_;
+    return undef unless $frozen && substr( $frozen, 0, 4 ) eq 'SERG';
+    my $n = unpack 'N', substr( $frozen, 4, 4 );
+    if ( $n == 0 ) {
+        my $v = unpack 'N', substr( $frozen, 8, 4 );
+        if ( ( $v > 0 ) && ( $v <= $VERSION ) ) {
+            return $v;
+        }
+        else {
+            return undef;
+        }
+    }
+    else {
+        return 1;
+    }
 }
 
 sub _freeze_storable { require Storable; Storable::freeze(@_) }
