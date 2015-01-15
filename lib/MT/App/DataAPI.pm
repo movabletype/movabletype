@@ -2061,16 +2061,17 @@ sub core_endpoints {
                     'Do not have permission to back up the requested site.',
             },
         },
-        {   id          => 'restore_site',
-            route       => '/restore',
-            verb        => 'POST',
-            version     => 2,
-            handler     => "${pkg}v2::BackupRestore::restore",
-            error_codes => {
-                403 =>
-                    'Do not have permission to restore the requested site data.',
-            },
-        },
+
+#        {   id          => 'restore_site',
+#            route       => '/restore',
+#            verb        => 'POST',
+#            version     => 2,
+#            handler     => "${pkg}v2::BackupRestore::restore",
+#            error_codes => {
+#                403 =>
+#                    'Do not have permission to restore the requested site data.',
+#            },
+#        },
 
     ];
 }

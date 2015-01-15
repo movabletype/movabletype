@@ -168,95 +168,95 @@ sub suite {
             },
         },
 
-        # restore_site - irregular tests.
-        {    # No file.
-            path   => '/v2/restore',
-            method => 'POST',
-            code   => 400,
-            result => sub {
-                return +{
-                    error => {
-                        code    => 400,
-                        message => 'A parameter "file" is required.',
-                    },
-                };
-            },
-        },
-        {    # Old schema version.
-            path   => '/v2/restore',
-            method => 'POST',
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME},                       "t",
-                    '278-api-endpoint-backup-restore.d', 'backup.xml'
-                ),
-            ],
-            code     => 500,
-            complete => sub {
-                my ( $data, $body ) = @_;
-
-                ($body) = ( $body =~ m/(\{.+\})/ );
-                my $got = $app->current_format->{unserialize}->($body);
-
-                my $error_message
-                    = qr/An error occurred during the restore process: The uploaded backup manifest file was created with Movable Type, but the schema version/;
-                like( $got->{error}{message},
-                    $error_message, 'Error message is OK.' );
-
-            },
-        },
-        {    # Not logged in.
-            path      => '/v2/restore',
-            method    => 'POST',
-            author_id => 0,
-            code      => 401,
-            error     => 'Unauthorized',
-        },
-        {    # No permissions.
-            path   => '/v2/restore',
-            method => 'POST',
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME},                       "t",
-                    '278-api-endpoint-backup-restore.d', 'backup.xml'
-                ),
-            ],
-            setup => sub {
-                my $file = File::Spec->catfile( $ENV{MT_HOME}, "t",
-                    '278-api-endpoint-backup-restore.d', 'backup.xml' );
-                my $schema_version = $MT::SCHEMA_VERSION;
-                system "perl -i -pe \"s{6\\.0008}{$schema_version}g\" $file";
-            },
-            is_superuser => 0,
-            restrictions => { 0 => [qw/ restore_blog /], },
-            code         => 403,
-            error =>
-                'Do not have permission to restore the requested site data.',
-        },
-
-        # restore_site - normal tests.
-        {   path   => '/v2/restore',
-            method => 'POST',
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME},                       "t",
-                    '278-api-endpoint-backup-restore.d', 'backup.xml'
-                ),
-            ],
-            complete => sub {
-                my ( $data, $body ) = @_;
-
-                ($body) = ( $body =~ m/(\{.+\})/ );
-                my $got = $app->current_format->{unserialize}->($body);
-
-                my $expected = +{ status => 'success', };
-
-                is_deeply( $got, $expected );
-            },
-        },
+#        # restore_site - irregular tests.
+#        {    # No file.
+#            path   => '/v2/restore',
+#            method => 'POST',
+#            code   => 400,
+#            result => sub {
+#                return +{
+#                    error => {
+#                        code    => 400,
+#                        message => 'A parameter "file" is required.',
+#                    },
+#                };
+#            },
+#        },
+#        {    # Old schema version.
+#            path   => '/v2/restore',
+#            method => 'POST',
+#            upload => [
+#                'file',
+#                File::Spec->catfile(
+#                    $ENV{MT_HOME},                       "t",
+#                    '278-api-endpoint-backup-restore.d', 'backup.xml'
+#                ),
+#            ],
+#            code     => 500,
+#            complete => sub {
+#                my ( $data, $body ) = @_;
+#
+#                ($body) = ( $body =~ m/(\{.+\})/ );
+#                my $got = $app->current_format->{unserialize}->($body);
+#
+#                my $error_message
+#                    = qr/An error occurred during the restore process: The uploaded backup manifest file was created with Movable Type, but the schema version/;
+#                like( $got->{error}{message},
+#                    $error_message, 'Error message is OK.' );
+#
+#            },
+#        },
+#        {    # Not logged in.
+#            path      => '/v2/restore',
+#            method    => 'POST',
+#            author_id => 0,
+#            code      => 401,
+#            error     => 'Unauthorized',
+#        },
+#        {    # No permissions.
+#            path   => '/v2/restore',
+#            method => 'POST',
+#            upload => [
+#                'file',
+#                File::Spec->catfile(
+#                    $ENV{MT_HOME},                       "t",
+#                    '278-api-endpoint-backup-restore.d', 'backup.xml'
+#                ),
+#            ],
+#            setup => sub {
+#                my $file = File::Spec->catfile( $ENV{MT_HOME}, "t",
+#                    '278-api-endpoint-backup-restore.d', 'backup.xml' );
+#                my $schema_version = $MT::SCHEMA_VERSION;
+#                system "perl -i -pe \"s{6\\.0008}{$schema_version}g\" $file";
+#            },
+#            is_superuser => 0,
+#            restrictions => { 0 => [qw/ restore_blog /], },
+#            code         => 403,
+#            error =>
+#                'Do not have permission to restore the requested site data.',
+#        },
+#
+#        # restore_site - normal tests.
+#        {   path   => '/v2/restore',
+#            method => 'POST',
+#            upload => [
+#                'file',
+#                File::Spec->catfile(
+#                    $ENV{MT_HOME},                       "t",
+#                    '278-api-endpoint-backup-restore.d', 'backup.xml'
+#                ),
+#            ],
+#            complete => sub {
+#                my ( $data, $body ) = @_;
+#
+#                ($body) = ( $body =~ m/(\{.+\})/ );
+#                my $got = $app->current_format->{unserialize}->($body);
+#
+#                my $expected = +{ status => 'success', };
+#
+#                is_deeply( $got, $expected );
+#            },
+#        },
 
     ];
 }
