@@ -23,9 +23,10 @@ sub backup {
         && _check_backup_archive_format($app)
         && _check_limit_size($app);
 
+    local $app->{is_admin} = 1;
+
     my $param;
     {
-        local $app->{is_admin} = 1;
         local $app->{no_print_body};
 
         no warnings 'redefine';
