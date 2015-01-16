@@ -495,7 +495,18 @@ sub newPost {
     }
 
     _validate_params( [ $blog_id, $user, $pass, $publish ] ) or return;
-    _validate_params( [ values %$item ] ) or return;
+    my $values;
+    foreach my $k ( keys %$item ) {
+        if ( 'categories' eq $k || 'mt_tb_ping_urls' eq $k ) {
+
+            # XMLRPC supports categories array and mt_tb_ping_urls array
+            _validate_params( \@{ $item->{$k} } ) or return;
+        }
+        else {
+            push @$values, $item->{$k};
+        }
+    }
+    _validate_params( \@$values ) or return;
 
     $class->_new_entry(
         blog_id => $blog_id,
@@ -511,7 +522,18 @@ sub newPage {
     my ( $blog_id, $user, $pass, $item, $publish ) = @_;
 
     _validate_params( [ $blog_id, $user, $pass, $publish ] ) or return;
-    _validate_params( [ values %$item ] ) or return;
+    my $values;
+    foreach my $k ( keys %$item ) {
+        if ( 'mt_tb_ping_urls' eq $k ) {
+
+            # XMLRPC supports mt_tb_ping_urls array
+            _validate_params( \@{ $item->{$k} } ) or return;
+        }
+        else {
+            push @$values, $item->{$k};
+        }
+    }
+    _validate_params( \@$values ) or return;
 
     $class->_new_entry(
         blog_id => $blog_id,
@@ -663,7 +685,18 @@ sub editPost {
     }
 
     _validate_params( [ $entry_id, $user, $pass, $publish ] ) or return;
-    _validate_params( [ values %$item ] ) or return;
+    my $values;
+    foreach my $k ( keys %$item ) {
+        if ( 'categories' eq $k || 'mt_tb_ping_urls' eq $k ) {
+
+            # XMLRPC supports categories array and mt_tb_ping_urls array
+            _validate_params( \@{ $item->{$k} } ) or return;
+        }
+        else {
+            push @$values, $item->{$k};
+        }
+    }
+    _validate_params( \@$values ) or return;
 
     $class->_edit_entry(
         entry_id => $entry_id,
@@ -680,7 +713,18 @@ sub editPage {
 
     _validate_params( [ $blog_id, $entry_id, $user, $pass, $publish ] )
         or return;
-    _validate_params( [ values %$item ] ) or return;
+    my $values;
+    foreach my $k ( keys %$item ) {
+        if ( 'mt_tb_ping_urls' eq $k ) {
+
+            # XMLRPC supports mt_tb_ping_urls array
+            _validate_params( \@{ $item->{$k} } ) or return;
+        }
+        else {
+            push @$values, $item->{$k};
+        }
+    }
+    _validate_params( \@$values ) or return;
 
     $class->_edit_entry(
         blog_id  => $blog_id,
@@ -1493,8 +1537,7 @@ sub newMediaObject {
     }
 
     my $local_file = File::Spec->catfile( $blog->site_path, $file->{name} );
-    my $ext
-        = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+    my $ext = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
     require MT::Asset::Image;
     if ( MT::Asset::Image->can_handle($ext) ) {
         require MT::Image;
