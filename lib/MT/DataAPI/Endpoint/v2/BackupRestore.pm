@@ -54,20 +54,30 @@ sub backup {
     }
 
     # Success.
-    return +{
-        status      => 'success',
-        backupFiles => ( $param->{files_loop} )
-        ? [ map { $_->{url} } @{ $param->{files_loop} } ]
-        : [ $app->uri(
-                mode => 'backup_download',
-                args => {
-                    magic_token => $param->{magic_token},
-                    filename => MT::Util::encode_html( $param->{filename} ),
-                    $param->{blog_id} ? ( blog_id => $param->{blog_id} ) : (),
-                },
-            )
-        ],
-    };
+    if (  !$param->{files_loop}
+        && $app->permissions->can_do('backup_download') )
+    {
+        $app->param( 'filename', $param->{filename} );
+        return MT::CMS::Tools::backup_download($app);
+    }
+    else {
+        return +{
+            status      => 'success',
+            backupFiles => ( $param->{files_loop} )
+            ? [ map { $_->{url} } @{ $param->{files_loop} } ]
+            : [ $app->uri(
+                    mode => 'backup_download',
+                    args => {
+                        magic_token => $param->{magic_token},
+                        filename =>
+                            MT::Util::encode_html( $param->{filename} ),
+                        $param->{blog_id} ? ( blog_id => $param->{blog_id} )
+                        : (),
+                    },
+                )
+            ],
+        };
+    }
 }
 
 sub _check_tmp_dir {
