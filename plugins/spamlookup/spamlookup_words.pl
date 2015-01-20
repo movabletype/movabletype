@@ -16,7 +16,7 @@ use vars qw($VERSION);
 
 sub BEGIN {
     @MT::Plugin::SpamLookup::KeywordFilter::ISA = ('MT::Plugin');
-    $VERSION                                    = '2.2';
+    $VERSION                                    = '2.3';
     my $plugin;
     $plugin = new MT::Plugin::SpamLookup::KeywordFilter(
         {   name    => 'SpamLookup - Keyword Filter',
