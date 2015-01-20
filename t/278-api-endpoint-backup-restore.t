@@ -167,6 +167,50 @@ sub suite {
                 print Dumper($got) . "\n";
             },
         },
+        {    # zip.
+            path     => '/v2/sites/1/backup',
+            method   => 'GET',
+            params   => { backup_archive_format => 'zip', },
+            complete => sub {
+                my ( $data, $out, $headers ) = @_;
+                like( $headers->{'content-type'},
+                    qr/^application\/zip;/,
+                    'content-type field has "application/zip;"' );
+                like(
+                    $headers->{'content-disposition'},
+                    qr/^attachment; filename="/,
+                    'content-disposition field has "attachment; filename="'
+                );
+            },
+        },
+        {    # tar.gz.
+            path     => '/v2/sites/2/backup',
+            method   => 'GET',
+            params   => { backup_archive_format => 'tgz', },
+            complete => sub {
+                my ( $data, $out, $headers ) = @_;
+                like( $headers->{'content-type'},
+                    qr/^application\/x\-tar\-gz;/,
+                    'content-type field has "application/x-tar-gz;"' );
+                like(
+                    $headers->{'content-disposition'},
+                    qr/^attachment; filename="/,
+                    'content-disposition field has "attachment; filename="'
+                );
+            },
+        },
+        {    # Do not have backup_download permission.
+            path         => '/v2/sites/0/backup',
+            restrictions => { 0 => [qw/ backup_download /], },
+            params       => { backup_archive_format => 'zip' },
+            method       => 'GET',
+            complete     => sub {
+                my ( $data, $out, $headers ) = @_;
+                ok( !exists $headers->{'content-disposition'},
+                    'There is not content-disposition'
+                );
+            },
+        },
 
 #        # restore_site - irregular tests.
 #        {    # No file.

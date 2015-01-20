@@ -249,7 +249,7 @@ sub test_data_api {
         }
 
         if ( my $complete = $data->{complete} ) {
-            $complete->( $data, $body );
+            $complete->( $data, $body, \%headers );
         }
 
     }
