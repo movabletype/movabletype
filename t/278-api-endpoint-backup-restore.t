@@ -6,6 +6,8 @@ use warnings;
 use lib qw(lib extlib t/lib);
 
 use Data::Dumper;
+use File::Spec;
+use File::Temp qw( tempdir );
 use Test::More;
 use MT::Test::DataAPI;
 
@@ -120,8 +122,11 @@ sub suite {
 
         # backup_site - normal tests.
         {    # Blog.
-            path     => '/v2/sites/1/backup',
-            method   => 'GET',
+            path   => '/v2/sites/1/backup',
+            method => 'GET',
+            setup  => sub {
+                MT->config->TempDir( tempdir( CLEANUP => 1 ) );
+            },
             complete => sub {
                 my ( $data, $body ) = @_;
 
@@ -133,11 +138,21 @@ sub suite {
                     3, 'Returned 3 backup files.' );
 
                 print Dumper($got) . "\n";
+
+                for my $url ( @{ $got->{backupFiles} } ) {
+                    my ($filename) = $url =~ m/name=([^&]+)/;
+                    my $filepath = File::Spec->catfile( MT->config->TempDir,
+                        $filename );
+                    ok( -e $filepath, "$filepath exists" );
+                }
             },
         },
         {    # Website.
-            path     => '/v2/sites/2/backup',
-            method   => 'GET',
+            path   => '/v2/sites/2/backup',
+            method => 'GET',
+            setup  => sub {
+                MT->config->TempDir( tempdir( CLEANUP => 1 ) );
+            },
             complete => sub {
                 my ( $data, $body ) = @_;
 
@@ -149,11 +164,21 @@ sub suite {
                     3, 'Returned 3 backup files.' );
 
                 print Dumper($got) . "\n";
+
+                for my $url ( @{ $got->{backupFiles} } ) {
+                    my ($filename) = $url =~ m/name=([^&]+)/;
+                    my $filepath = File::Spec->catfile( MT->config->TempDir,
+                        $filename );
+                    ok( -e $filepath, "$filepath exists" );
+                }
             },
         },
         {    # System.
-            path     => '/v2/sites/0/backup',
-            method   => 'GET',
+            path   => '/v2/sites/0/backup',
+            method => 'GET',
+            setup  => sub {
+                MT->config->TempDir( tempdir( CLEANUP => 1 ) );
+            },
             complete => sub {
                 my ( $data, $body ) = @_;
 
@@ -165,12 +190,22 @@ sub suite {
                     4, 'Returned 4 backup files.' );
 
                 print Dumper($got) . "\n";
+
+                for my $url ( @{ $got->{backupFiles} } ) {
+                    my ($filename) = $url =~ m/name=([^&]+)/;
+                    my $filepath = File::Spec->catfile( MT->config->TempDir,
+                        $filename );
+                    ok( -e $filepath, "$filepath exists" );
+                }
             },
         },
         {    # zip.
-            path     => '/v2/sites/1/backup',
-            method   => 'GET',
-            params   => { backup_archive_format => 'zip', },
+            path   => '/v2/sites/1/backup',
+            method => 'GET',
+            params => { backup_archive_format => 'zip', },
+            setup  => sub {
+                MT->config->TempDir( tempdir( CLEANUP => 1 ) );
+            },
             complete => sub {
                 my ( $data, $out, $headers ) = @_;
                 like( $headers->{'content-type'},
@@ -184,9 +219,12 @@ sub suite {
             },
         },
         {    # tar.gz.
-            path     => '/v2/sites/2/backup',
-            method   => 'GET',
-            params   => { backup_archive_format => 'tgz', },
+            path   => '/v2/sites/2/backup',
+            method => 'GET',
+            params => { backup_archive_format => 'tgz', },
+            setup  => sub {
+                MT->config->TempDir( tempdir( CLEANUP => 1 ) );
+            },
             complete => sub {
                 my ( $data, $out, $headers ) = @_;
                 like( $headers->{'content-type'},
@@ -201,10 +239,13 @@ sub suite {
         },
         {    # Do not have backup_download permission.
             path         => '/v2/sites/0/backup',
-            restrictions => { 0 => [qw/ backup_download /], },
-            params       => { backup_archive_format => 'zip' },
             method       => 'GET',
-            complete     => sub {
+            params       => { backup_archive_format => 'zip' },
+            restrictions => { 0 => [qw/ backup_download /], },
+            setup        => sub {
+                MT->config->TempDir( tempdir( CLEANUP => 1 ) );
+            },
+            complete => sub {
                 my ( $data, $out, $headers ) = @_;
                 ok( !exists $headers->{'content-disposition'},
                     'There is not content-disposition'
