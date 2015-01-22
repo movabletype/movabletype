@@ -4676,6 +4676,7 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to remove [_1] [_2]?' => '[_1]\'[_2]\'を削除してよろしいですか?',
 	'Are you sure you want to remove [_1] [_2] with [_3] sub [_4]?' => '[_3]個のサブ[_4]を含む[_1]\'[_2]\'を削除してよろしいですか?',
 	'Alert' => '警告',
+	'Label is too long.' => '名前が長すぎます。',
 
 ## tmpl/cms/list_common.tmpl
 	'25 rows' => '25件',
