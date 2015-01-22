@@ -302,15 +302,15 @@ sub _check_params {
 
     if ( !defined($theme_id) || $theme_id eq '' ) {
         return $app->error(
-            $app->translate('A parameter "theme_id" is required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.', 'theme_id'), 400 );
     }
     if ( !defined($theme_name) || $theme_name eq '' ) {
         return $app->error(
-            $app->translate('A parameter "theme_name" is required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.', 'theme_name'), 400 );
     }
     if ( !defined($theme_version) || $theme_version eq '' ) {
         return $app->error(
-            $app->translate('A parameter "theme_version" is required.'),
+            $app->translate('A parameter "[_1]" is required.', 'theme_version'),
             400 );
     }
 

@@ -172,7 +172,7 @@ sub restore {
 
     if ( !defined $app->param('file') ) {
         return $app->error(
-            $app->translate('A parameter "file" is required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.', 'file'), 400 );
     }
 
     my $param;

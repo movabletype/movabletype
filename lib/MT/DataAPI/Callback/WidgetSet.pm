@@ -13,7 +13,7 @@ sub save_filter {
     my ( $eh, $app, $obj, $orig ) = @_;
 
     if ( !defined( $obj->name ) || $obj->name eq '' ) {
-        return $app->errtrans('A parameter "name" is required.');
+        return $app->errtrans('A parameter "[_1]" is required.', 'name');
     }
 
     if ( ( $obj->type || '' ) ne 'widgetset' ) {

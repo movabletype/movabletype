@@ -142,9 +142,7 @@ sub do_import {
         $pass = $q->param('password')
             or return $app->error(
             $app->translate(
-                      "You need to provide a password if you are going to "
-                    . "create new users for each user listed in your blog."
-            )
+                      'You need to provide a password if you are going to create new users for each user listed in your blog.')
             ) if ( MT::Auth->password_exists );
     }
 

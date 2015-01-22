@@ -76,7 +76,7 @@ sub save_filter {
                 MT::CMS::Common::is_with_base_sitepath( $app, $site_path ) )
             {
                 return $app->errtrans(
-                    "The blog root directory must be within [_1]", $l_path );
+                    "The blog root directory must be within [_1].", $l_path );
             }
         }
 
@@ -90,7 +90,7 @@ sub save_filter {
                 MT::CMS::Common::is_within_base_sitepath( $app, $site_path ) )
             {
                 return $app->errtrans(
-                    "The website root directory must be within [_1]",
+                    "The website root directory must be within [_1].",
                     $l_path );
             }
         }
@@ -100,7 +100,7 @@ sub save_filter {
             and not File::Spec->file_name_is_absolute($site_path) )
         {
             return $app->errtrans(
-                "The website root directory must be absolute: [_1]",
+                "The website root directory must be an absolute: [_1]",
                 $site_path );
         }
 

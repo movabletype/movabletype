@@ -91,7 +91,7 @@ sub save_filter {
     if ( $obj->type eq 'index'
         && ( !defined( $obj->outfile ) || $obj->outfile eq '' ) )
     {
-        return $app->errtrans('A parameter "outputFile" is required.');
+        return $app->errtrans('A parameter "[_1]" is required.', 'outputFile');
     }
 
     return 1;

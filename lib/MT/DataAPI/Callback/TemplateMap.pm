@@ -38,12 +38,12 @@ sub save_filter {
     my ( $eh, $app, $obj, $orig ) = @_;
 
     if ( !defined( $obj->archive_type ) || $obj->archive_type eq '' ) {
-        return $app->errtrans('A parameter "archiveType" is required.');
+        return $app->errtrans('A parameter "[_1]" is required.', 'archiveType');
     }
 
     my $archive_types = _retrieve_archive_types( $app, $obj );
     if ( !( grep { $obj->archive_type eq $_ } @$archive_types ) ) {
-        return $app->errtrans( 'Invalid archiveType: [_1]',
+        return $app->errtrans( 'Invalid archive type: [_1]',
             $obj->archive_type );
     }
 

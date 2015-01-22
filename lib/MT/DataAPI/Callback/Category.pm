@@ -19,7 +19,7 @@ sub can_view {
 sub save_filter {
     my ( $eh, $app, $obj, $original ) = @_;
 
-    return $app->error( $app->translate('A parameter "label" is required.') )
+    return $app->error( $app->translate('A parameter "[_1]" is required.', 'label') )
         if !defined( $obj->label ) || $obj->label eq '';
 
     return $app->error(

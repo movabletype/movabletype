@@ -1181,7 +1181,7 @@ sub do_search_replace {
 
         my $message
             = $app->translate(
-            "[_1] '[_2]' (ID:[_3]) updated by user '[_4]' using Search & Replace",
+            "[_1] '[_2]' (ID:[_3]) updated by user '[_4]' using Search & Replace.",
             $obj->class_label, $obj_title, $obj->id, $author->name );
 
         $app->log(

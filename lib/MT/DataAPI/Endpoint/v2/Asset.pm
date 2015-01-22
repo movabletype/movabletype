@@ -231,7 +231,7 @@ sub upload {
     my $site_id = $app->param('site_id');
     if ( !( defined($site_id) && $site_id =~ m/^\d+$/ ) ) {
         return $app->error(
-            $app->translate('A parameter "site_id" is required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.', 'site_id'), 400 );
     }
 
     $app->param( 'blog_id', $site_id );

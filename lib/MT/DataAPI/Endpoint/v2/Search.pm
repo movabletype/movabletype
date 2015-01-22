@@ -19,7 +19,7 @@ sub search {
     my $search = $app->param('search');
     if ( !( defined $search && $search ne '' ) ) {
         return $app->error(
-            $app->translate('A parameter "search" is required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.', 'search'), 400 );
     }
 
     my $tag_search = $app->param('tagSearch') ? 1 : 0;

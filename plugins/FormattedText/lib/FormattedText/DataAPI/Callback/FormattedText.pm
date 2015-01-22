@@ -13,7 +13,7 @@ sub save_filter {
     my ( $eh, $app, $obj, $orig ) = @_;
 
     if ( !defined( $obj->label ) || $obj->label eq '' ) {
-        return $app->errtrans('A parameter "label" is required.');
+        return $app->errtrans('A parameter "[_1]" is required.', 'label');
     }
 
     if ($app->model('formatted_text')->exist(

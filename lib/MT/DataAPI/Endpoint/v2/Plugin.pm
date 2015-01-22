@@ -89,7 +89,7 @@ sub _retrieve_plugin {
     my $plugin_id = $app->param('plugin_id');
     if ( !defined $plugin_id || $plugin_id eq '' ) {
         return $app->error(
-            $app->translate('A parameter "plugin_id" id required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.', 'plugin_id'), 400 );
     }
 
     my %param;
