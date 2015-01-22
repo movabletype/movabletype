@@ -3389,7 +3389,7 @@ use vars qw( @ISA %Lexicon );
 	q{No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed and if the CaptchaSourceImageBase configuration directive points to a valid captcha-source directory within the 'mt-static/images' directory.} => q{CAPTCHAプロバイダがありません。Image:：Magickがインストールされているか、またCaptchaSourceImageBaseが正しく設定されていてmt-static/images/captcha-sourceにアクセスできるか確認してください。},
 	'Use Comment Confirmation Page' => 'コメントの確認ページ',
 	'Use comment confirmation page' => 'コメントの確認ページを有効にする',
-	q{Each commenter's browser will be redirected to a comment confirmation page after their comment is accepted.} => q{コメント投稿後に、コメント完了ページを表示する},
+	q{Each commenter's browser will be redirected to a comment confirmation page after their comment is accepted.} => q{コメント投稿後に、コメントの確認ページを表示する},
 	'Trackback Settings' => 'トラックバック設定',
 	'Note: TrackBacks are currently disabled at the system level.' => '注: トラックバックは現在システムレベルで無効になっています。',
 	'Accept TrackBacks from any source.' => '全てのトラックバックを許可する',
