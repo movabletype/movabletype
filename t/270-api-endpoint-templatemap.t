@@ -146,7 +146,7 @@ sub suite {
             method => 'POST',
             params => { templatemap => { archiveType => 'invalid', }, },
             code   => 409,
-            error  => "Invalid archiveType: invalid\n",
+            error  => "Invalid archive type: invalid\n",
         },
         {    # Not logged in.
             path =>
