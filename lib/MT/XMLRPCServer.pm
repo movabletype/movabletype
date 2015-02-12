@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -348,7 +348,6 @@ sub _new_entry {
         my $enc = $mt->{cfg}->PublishCharset;
         unless ($HAVE_XML_PARSER) {
             $item->{$f} = decode_html( $item->{$f} );
-            $item->{$f} =~ s!&apos;!'!g;         #'
         }
     }
     require MT::Blog;
@@ -500,7 +499,18 @@ sub newPost {
     }
 
     _validate_params( [ $blog_id, $user, $pass, $publish ] ) or return;
-    _validate_params( [ values %$item ] ) or return;
+    my $values;
+    foreach my $k ( keys %$item ) {
+        if ( 'categories' eq $k || 'mt_tb_ping_urls' eq $k ) {
+
+            # XMLRPC supports categories array and mt_tb_ping_urls array
+            _validate_params( \@{ $item->{$k} } ) or return;
+        }
+        else {
+            push @$values, $item->{$k};
+        }
+    }
+    _validate_params( \@$values ) or return;
 
     $class->_new_entry(
         blog_id => $blog_id,
@@ -516,7 +526,18 @@ sub newPage {
     my ( $blog_id, $user, $pass, $item, $publish ) = @_;
 
     _validate_params( [ $blog_id, $user, $pass, $publish ] ) or return;
-    _validate_params( [ values %$item ] ) or return;
+    my $values;
+    foreach my $k ( keys %$item ) {
+        if ( 'mt_tb_ping_urls' eq $k ) {
+
+            # XMLRPC supports mt_tb_ping_urls array
+            _validate_params( \@{ $item->{$k} } ) or return;
+        }
+        else {
+            push @$values, $item->{$k};
+        }
+    }
+    _validate_params( \@$values ) or return;
 
     $class->_new_entry(
         blog_id => $blog_id,
@@ -545,7 +566,6 @@ sub _edit_entry {
         my $enc = $mt->config('PublishCharset');
         unless ($HAVE_XML_PARSER) {
             $item->{$f} = decode_html( $item->{$f} );
-            $item->{$f} =~ s!&apos;!'!g;         #'
         }
     }
     my $entry = MT->model($obj_type)->load($entry_id)
@@ -684,7 +704,18 @@ sub editPost {
     }
 
     _validate_params( [ $entry_id, $user, $pass, $publish ] ) or return;
-    _validate_params( [ values %$item ] ) or return;
+    my $values;
+    foreach my $k ( keys %$item ) {
+        if ( 'categories' eq $k || 'mt_tb_ping_urls' eq $k ) {
+
+            # XMLRPC supports categories array and mt_tb_ping_urls array
+            _validate_params( \@{ $item->{$k} } ) or return;
+        }
+        else {
+            push @$values, $item->{$k};
+        }
+    }
+    _validate_params( \@$values ) or return;
 
     $class->_edit_entry(
         entry_id => $entry_id,
@@ -701,7 +732,18 @@ sub editPage {
 
     _validate_params( [ $blog_id, $entry_id, $user, $pass, $publish ] )
         or return;
-    _validate_params( [ values %$item ] ) or return;
+    my $values;
+    foreach my $k ( keys %$item ) {
+        if ( 'mt_tb_ping_urls' eq $k ) {
+
+            # XMLRPC supports mt_tb_ping_urls array
+            _validate_params( \@{ $item->{$k} } ) or return;
+        }
+        else {
+            push @$values, $item->{$k};
+        }
+    }
+    _validate_params( \@$values ) or return;
 
     $class->_edit_entry(
         blog_id  => $blog_id,
@@ -1497,6 +1539,8 @@ sub newMediaObject {
         die _fault( MT->translate( "Invalid filename '[_1]'", $fname ) );
     }
 
+    my ( $base, $uploaded_path, $ext )
+        = File::Basename::fileparse( $fname, '\.[^\.]*' );
     if ( my $deny_exts = MT->config->DeniedAssetFileExtensions ) {
         my @deny_exts = map {
             if   ( $_ =~ m/^\./ ) {qr/$_/i}
@@ -1505,7 +1549,9 @@ sub newMediaObject {
         my @ret = File::Basename::fileparse( $fname, @deny_exts );
         die _fault(
             MT->translate(
-                'The file ([_1]) that you uploaded is not allowed.', $fname
+                '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                $ext,
+                $fname
             )
         ) if $ret[2];
     }
@@ -1518,14 +1564,15 @@ sub newMediaObject {
         my @ret = File::Basename::fileparse( $fname, @allowed );
         die _fault(
             MT->translate(
-                'The file ([_1]) that you uploaded is not allowed.', $fname
+                '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                $ext,
+                $fname
             )
         ) unless $ret[2];
     }
 
     my $local_file = File::Spec->catfile( $blog->site_path, $file->{name} );
-    my $ext
-        = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+    $ext = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
     require MT::Asset::Image;
     if ( MT::Asset::Image->can_handle($ext) ) {
         require MT::Image;

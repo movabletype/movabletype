@@ -839,9 +839,9 @@ var editor_params = {
     mode: "text/html"
 };
 if (options.match('lang:css')) {
-    editor_params['mode'] = 'text/javascript';
-} else if (options.match('lang:javascript')) {
     editor_params['mode'] = 'text/css';
+} else if (options.match('lang:javascript')) {
+    editor_params['mode'] = 'text/javascript';
 }
 
 var editor = CodeMirror.fromTextArea(jQuery('#text').get(0), editor_params);

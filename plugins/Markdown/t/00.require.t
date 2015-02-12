@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use lib qw(lib plugins/Markdown);
+use lib qw(lib extlib plugins/Markdown);
 
 use Test::More;
 

@@ -483,7 +483,7 @@
           return ! $e.is(':visible') || MT.Validator.urlSubdomain($e.val());
       },
       "#site_path_absolute": function($e) {
-          return is_valid_absolute_path($e.val());
+          return MT.Validator.absolutePath($e.val());
       },
       "#archive_url_path": function($e) {
           return MT.Validator.urlPath($e.val());
@@ -506,7 +506,7 @@
       },
       "#archive_path_absolute": function ($e) {
           if ( jQuery('#enable_archive_paths:checked').length && jQuery('#use_absolute_archive:checked').length ) {
-              if ( !is_valid_absolute_path($e.val()) ) return false;
+              if ( !MT.Validator.absolutePath($e.val()) ) return false;
           }
           return true;
       }

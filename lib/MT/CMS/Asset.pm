@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -337,16 +337,16 @@ sub insert {
             {   upload_html => $text || '',
                 edit_field => scalar $app->param('edit_field') || '',
                 extension_message => $extension_message,
-                asset_type => $asset->class,
+                asset_type        => $asset->class,
             },
         );
     }
     else {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
-            {   upload_html => $text || '',
-                edit_field => scalar $app->param('edit_field') || '',
-                asset_type => $asset->class,
+            {   upload_html => $text                            || '',
+                edit_field  => scalar $app->param('edit_field') || '',
+                asset_type  => $asset->class,
             },
         );
     }
@@ -635,6 +635,7 @@ sub complete_insert {
 }
 
 sub cancel_upload {
+
     # Delete uploaded asset after upload if user cancels on asset options page
     my $app   = shift;
     my %param = $app->param_hash;
@@ -644,20 +645,20 @@ sub cancel_upload {
     my $asset;
     require MT::Asset;
     $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
-      or return $app->errtrans("Invalid request.");
+        or return $app->errtrans("Invalid request.");
 
-    # User has permission to delete asset and asset file, or user created asset
+   # User has permission to delete asset and asset file, or user created asset
     if ( ( $app->can_do('delete_asset') && $app->can_do('delete_asset_file') )
-         || $asset->created_by == $app->user->id )
+        || $asset->created_by == $app->user->id )
     {
         # Do not delete asset if asset has been modified since initial upload
-        if ($asset->modified_on == $asset->created_on ) {
-    
+        if ( $asset->modified_on == $asset->created_on ) {
+
             # Label, description, & tags params exist on asset options
             #   page if we were editing newly upload asset
-            if (    exists( $param{label} )
-                 && exists( $param{description} )
-                 && exists( $param{tags} ) )
+            if (   exists( $param{label} )
+                && exists( $param{description} )
+                && exists( $param{tags} ) )
             {
                 # Count MT::ObjectAsset records for asset
                 # Do not delete asset if asset has any associations
@@ -1460,6 +1461,9 @@ sub _upload_file {
             = File::Spec->catfile( '%s', 'uploads', $unique_basename );
     }
 
+    my ( $base, $uploaded_path, $ext )
+        = File::Basename::fileparse( $basename, '\.[^\.]*' );
+
     if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
         my @deny_exts = map {
             if   ( $_ =~ m/^\./ ) {qr/$_/i}
@@ -1469,7 +1473,8 @@ sub _upload_file {
         if ( $ret[2] ) {
             return $app->error(
                 $app->translate(
-                    'The file ([_1]) that you uploaded is not allowed.',
+                    '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                    $ext,
                     $basename
                 )
             );
@@ -1486,7 +1491,8 @@ sub _upload_file {
         unless ( $ret[2] ) {
             return $app->error(
                 $app->translate(
-                    'The file ([_1]) that you uploaded is not allowed.',
+                    '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                    $ext,
                     $basename
                 )
             );

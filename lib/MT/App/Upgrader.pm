@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -319,7 +319,7 @@ sub init_user {
                 return $app->build_page( 'install.tmpl', \%param );
             }
             else {
-                $initial_email    = $app->param('email')    || '';
+                $initial_email = $app->param('email') || '';
                 $initial_nickname = $app->param('nickname');
                 $initial_external_id
                     = MT::Author->unpack_external_id(
@@ -736,7 +736,11 @@ sub unserialize_config {
     if ($data) {
         $data = pack 'H*', $data;
         require MT::Serialize;
-        my $ser    = MT::Serialize->new('MT');
+        my $ser     = MT::Serialize->new('MT');
+        my $ser_ver = $ser->serializer_version($data);
+        if ( !$ser_ver || $ser_ver != $MT::Serialize::SERIALIZER_VERSION ) {
+            die $app->translate('Invalid parameter.');
+        }
         my $thawed = $ser->unserialize($data);
         if ($thawed) {
             my $saved_cfg = $$thawed;
@@ -824,8 +828,8 @@ sub main {
                 category => 'upgrade',
             }
         );
-        $app->config( 'MTVersion', $cur_version, 1 );
-        $app->config( 'MTReleaseNumber', $cur_rel, 1 );
+        $app->config( 'MTVersion',       $cur_version, 1 );
+        $app->config( 'MTReleaseNumber', $cur_rel,     1 );
         $app->config->save_config;
     }
 

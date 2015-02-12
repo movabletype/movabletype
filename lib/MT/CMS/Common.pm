@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -310,11 +310,6 @@ sub save {
                 if ( $q->param('file_extension') || '' ) ne '';
         }
 
-        unless ( ( $values{site_url} || '' ) =~ m!/$! ) {
-            my $url = $values{site_url};
-            $values{site_url} = $url;
-        }
-
         my $cfg_screen = $app->param('cfg_screen') || '';
 
         if ( $cfg_screen eq 'cfg_prefs' ) {
@@ -497,6 +492,8 @@ sub save {
                 $q->param( 'type',            'index-' . $obj->id );
                 $q->param( 'tmpl_id',         $obj->id );
                 $q->param( 'single_template', 1 );
+                $app->add_return_arg( 'saved'     => 1 );
+                $app->add_return_arg( 'published' => 1 );
                 return $app->forward('start_rebuild');
             }
             else {
@@ -1554,7 +1551,7 @@ sub filtered_list {
     if ( !defined $count_result ) {
         return $app->error(
             MT->translate(
-                "An error occured while counting objects: [_1]",
+                "An error occurred while counting objects: [_1]",
                 $filter->errstr
             )
         );
@@ -1573,7 +1570,7 @@ sub filtered_list {
         if ( !defined $objs ) {
             return $app->error(
                 MT->translate(
-                    "An error occured while loading objects: [_1]",
+                    "An error occurred while loading objects: [_1]",
                     $filter->errstr
                 )
             );
@@ -1830,49 +1827,10 @@ sub delete {
             }
         }
         elsif ( $type eq 'category' ) {
-            if ( $app->config('DeleteFilesAtRebuild') ) {
-                require MT::Blog;
-                require MT::Entry;
-                require MT::Placement;
-                my $blog = MT::Blog->load($blog_id)
-                    or return $app->error(
-                    $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
-                my $at = $blog->archive_type;
-                if ( $at && $at ne 'None' ) {
-                    my @at = split /,/, $at;
-                    for my $target (@at) {
-                        my $archiver = $app->publisher->archiver($target);
-                        next unless $archiver;
-                        if ( $archiver->category_based ) {
-                            if ( $archiver->date_based ) {
-                                my @entries = MT::Entry->load(
-                                    { status => MT::Entry::RELEASE() },
-                                    {   join => MT::Placement->join_on(
-                                            'entry_id',
-                                            { category_id => $id },
-                                            { unique      => 1 }
-                                        )
-                                    }
-                                );
-                                for (@entries) {
-                                    $app->publisher
-                                        ->remove_entry_archive_file(
-                                        Category    => $obj,
-                                        ArchiveType => $target,
-                                        Entry       => $_
-                                        );
-                                }
-                            }
-                            else {
-                                $app->publisher->remove_entry_archive_file(
-                                    Category    => $obj,
-                                    ArchiveType => $target
-                                );
-                            }
-                        }
-                    }
-                }
-            }
+            require MT::CMS::Category;
+            MT::CMS::Category::pre_delete( $app, $obj )
+                or return $app->trans_error( 'Cannot load blog #[_1].',
+                $blog_id );
         }
         elsif ( $type eq 'page' ) {
             if ( $app->config('DeleteFilesAtRebuild') ) {

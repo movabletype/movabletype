@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -290,52 +290,17 @@ sub bulk_update {
             or return $app->json_error( $app->errstr() );
         $updates++;
     }
-    for my $obj ( values %old_objects ) {
 
-        # Remove published archive files.
-        if ( 'category' eq $model and $app->config('DeleteFilesAtRebuild') ) {
-            require MT::Blog;
-            require MT::Entry;
-            require MT::Placement;
-            my $at = $blog->archive_type;
-            if ( $at && $at ne 'None' ) {
-                my @at = split /,/, $at;
-                for my $target (@at) {
-                    my $archiver = $app->publisher->archiver($target);
-                    next unless $archiver;
-                    if ( $archiver->category_based ) {
-                        if ( $archiver->date_based ) {
-                            my @entries = MT::Entry->load(
-                                { status => MT::Entry::RELEASE() },
-                                {   join => MT::Placement->join_on(
-                                        'entry_id',
-                                        { category_id => $obj->id },
-                                        { unique      => 1 }
-                                    )
-                                }
-                            );
-                            for (@entries) {
-                                $app->publisher->remove_entry_archive_file(
-                                    Category    => $obj,
-                                    ArchiveType => $target,
-                                    Entry       => $_
-                                );
-                            }
-                        }
-                        else {
-                            $app->publisher->remove_entry_archive_file(
-                                Category    => $obj,
-                                ArchiveType => $target
-                            );
-                        }
-                    }
-                }
-            }
+    if ( 'category' eq $model ) {
+        for my $obj ( values %old_objects ) {
+
+            # Remove published archive files.
+            pre_delete( $app, $obj );
+
+            $obj->remove;
+            $app->run_callbacks( 'cms_post_delete.' . $model, $app, $obj );
+            $deletes++;
         }
-
-        $obj->remove;
-        $app->run_callbacks( 'cms_post_delete.' . $model, $app, $obj );
-        $deletes++;
     }
 
     $app->touch_blogs;
@@ -593,6 +558,10 @@ sub pre_save {
             )
         ) if $_->basename eq $obj->basename;
     }
+    return $eh->error(
+        $app->translate( "The name '[_1]' is too long!", $obj->label ) )
+        if ( length( $obj->label ) > 100 );
+
     1;
 }
 
@@ -621,6 +590,55 @@ sub save_filter {
     return $app->errtrans( "The name '[_1]' is too long!",
         $app->param('label') )
         if ( length( $app->param('label') ) > 100 );
+    return 1;
+}
+
+sub pre_delete {
+    my ( $app, $obj ) = @_;
+
+    return 1 unless $app->config('DeleteFilesAtRebuild');
+
+    my $blog = $app->blog or return;
+    my $at = $blog->archive_type;
+
+    return 1 unless $at && $at ne 'None';
+
+    require MT::Blog;
+    require MT::Entry;
+    require MT::Placement;
+
+    # Remove published archive files.
+
+    my @at = split /,/, $at;
+    for my $target (@at) {
+        my $archiver = $app->publisher->archiver($target);
+        next unless $archiver && $archiver->category_based;
+        if ( $archiver->date_based ) {
+            my @entries = MT::Entry->load(
+                { status => MT::Entry::RELEASE() },
+                {   join => MT::Placement->join_on(
+                        'entry_id',
+                        { category_id => $obj->id },
+                        { unique      => 1 }
+                    )
+                }
+            );
+            for (@entries) {
+                $app->publisher->remove_entry_archive_file(
+                    Category    => $obj,
+                    ArchiveType => $target,
+                    Entry       => $_
+                );
+            }
+        }
+        else {
+            $app->publisher->remove_entry_archive_file(
+                Category    => $obj,
+                ArchiveType => $target
+            );
+        }
+    }
+
     return 1;
 }
 

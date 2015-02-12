@@ -28,6 +28,7 @@ my($copy) = $String = "bj淡rn";
 ok($fmgr->put_data($String, $File), "put_data($String, $File)");
 ok(!$fmgr->content_is_updated($File, \$String), "content_is_updated($File,$String)");
 is($copy, $String, "$copy is $String");
+is($copy, Encode::encode_utf8($fmgr->get_data($File)), "get_data($File)");
 
 ok(-f $File, "$File is a regular file");
 ok($fmgr->delete($File), "delete($File)");

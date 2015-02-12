@@ -1,0 +1,26 @@
+AUTHOR: admin
+TITLE: Third Entry
+BASENAME: third_entry
+STATUS: Publish
+ALLOW COMMENTS: 1
+CONVERT BREAKS: richtext
+ALLOW PINGS: 1
+DATE: 11/13/2014 10:10:52 PM
+-----
+BODY:
+<p>This is a third entry.</p>
+-----
+EXTENDED BODY:
+
+-----
+EXCERPT:
+
+-----
+KEYWORDS:
+
+-----
+
+
+-----
+--------
+

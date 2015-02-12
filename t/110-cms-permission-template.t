@@ -1255,6 +1255,7 @@ subtest 'blog scope' => sub {
             "save_widget by other permission" );
 
         done_testing();
+
     };
 
     subtest 'mode = save' => sub {
@@ -1629,159 +1630,175 @@ subtest 'blog scope' => sub {
         done_testing();
     };
 
-    subtest 'mode = save (widget)' => sub {
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $admin,
-                __request_method => 'POST',
-                __mode           => 'save',
-                _type            => 'widget',
-                blog_id          => $blog->id,
-                id               => $widget->id,
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out,                          "Request: save" );
-        ok( $out !~ m!permission denied!i, "save by admin" );
+SKIP: {
+        skip
+            'mode = save (widget) may be deprecated.',
+            1;
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $aikawa,
-                __request_method => 'POST',
-                __mode           => 'save',
-                _type            => 'widget',
-                blog_id          => $blog->id,
-                id               => $widget->id,
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out,                          "Request: save" );
-        ok( $out !~ m!permission denied!i, "save by permitted user" );
+        subtest 'mode = save (widget)' => sub {
+            $app = _run_app(
+                'MT::App::CMS',
+                {   __test_user      => $admin,
+                    __request_method => 'POST',
+                    __mode           => 'save',
+                    _type            => 'widget',
+                    blog_id          => $blog->id,
+                    id               => $widget->id,
+                }
+            );
+            $out = delete $app->{__test_output};
+            ok( $out,                          "Request: save" );
+            ok( $out !~ m!permission denied!i, "save by admin" );
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $kagawa,
-                __request_method => 'POST',
-                __mode           => 'save',
-                _type            => 'widget',
-                blog_id          => $blog->id,
-                id               => $widget->id,
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out,                          "Request: save" );
-        ok( $out !~ m!permission denied!i, "save by permitted user (sys)" );
+            $app = _run_app(
+                'MT::App::CMS',
+                {   __test_user      => $aikawa,
+                    __request_method => 'POST',
+                    __mode           => 'save',
+                    _type            => 'widget',
+                    blog_id          => $blog->id,
+                    id               => $widget->id,
+                }
+            );
+            $out = delete $app->{__test_output};
+            ok( $out,                          "Request: save" );
+            ok( $out !~ m!permission denied!i, "save by permitted user" );
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $ukawa,
-                __request_method => 'POST',
-                __mode           => 'save',
-                _type            => 'widget',
-                blog_id          => $blog->id,
-                id               => $widget->id,
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out,                          "Request: save" );
-        ok( $out =~ m!permission denied!i, "save by other blog" );
+            $app = _run_app(
+                'MT::App::CMS',
+                {   __test_user      => $kagawa,
+                    __request_method => 'POST',
+                    __mode           => 'save',
+                    _type            => 'widget',
+                    blog_id          => $blog->id,
+                    id               => $widget->id,
+                }
+            );
+            $out = delete $app->{__test_output};
+            ok( $out, "Request: save" );
+            ok( $out !~ m!permission denied!i,
+                "save by permitted user (sys)"
+            );
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $ogawa,
-                __request_method => 'POST',
-                __mode           => 'save',
-                _type            => 'widget',
-                blog_id          => $blog->id,
-                id               => $widget->id,
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out,                          "Request: save" );
-        ok( $out =~ m!permission denied!i, "save by other permission" );
+            $app = _run_app(
+                'MT::App::CMS',
+                {   __test_user      => $ukawa,
+                    __request_method => 'POST',
+                    __mode           => 'save',
+                    _type            => 'widget',
+                    blog_id          => $blog->id,
+                    id               => $widget->id,
+                }
+            );
+            $out = delete $app->{__test_output};
+            ok( $out,                          "Request: save" );
+            ok( $out =~ m!permission denied!i, "save by other blog" );
 
-        done_testing();
-    };
+            $app = _run_app(
+                'MT::App::CMS',
+                {   __test_user      => $ogawa,
+                    __request_method => 'POST',
+                    __mode           => 'save',
+                    _type            => 'widget',
+                    blog_id          => $blog->id,
+                    id               => $widget->id,
+                }
+            );
+            $out = delete $app->{__test_output};
+            ok( $out,                          "Request: save" );
+            ok( $out =~ m!permission denied!i, "save by other permission" );
 
-    subtest 'mode = edit (widget)' => sub {
-        my $widget2 = MT::Test::Permission->make_template(
-            blog_id => $blog->id,
-            type    => 'widget',
-            name    => 'New Widget',
-        );
+            done_testing();
+        };
+    }
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $admin,
-                __request_method => 'POST',
-                __mode           => 'edit',
-                _type            => 'widget',
-                blog_id          => $blog->id,
-                id               => $widget2->id,
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out,                          "Request: edit" );
-        ok( $out !~ m!permission denied!i, "edit by admin" );
+SKIP: {
+        skip
+            'mode = edit (widget) may be deprecated.',
+            1;
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $aikawa,
-                __request_method => 'POST',
-                __mode           => 'edit',
-                _type            => 'widget',
-                blog_id          => $blog->id,
-                id               => $widget2->id,
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out,                          "Request: edit" );
-        ok( $out !~ m!permission denied!i, "edit by permitted user" );
+        subtest 'mode = edit (widget)' => sub {
+            my $widget2 = MT::Test::Permission->make_template(
+                blog_id => $blog->id,
+                type    => 'widget',
+                name    => 'New Widget',
+            );
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $kagawa,
-                __request_method => 'POST',
-                __mode           => 'edit',
-                _type            => 'widget',
-                blog_id          => $blog->id,
-                id               => $widget2->id,
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out,                          "Request: edit" );
-        ok( $out !~ m!permission denied!i, "edit by permitted user (sys)" );
+            $app = _run_app(
+                'MT::App::CMS',
+                {   __test_user      => $admin,
+                    __request_method => 'POST',
+                    __mode           => 'edit',
+                    _type            => 'widget',
+                    blog_id          => $blog->id,
+                    id               => $widget2->id,
+                }
+            );
+            $out = delete $app->{__test_output};
+            ok( $out,                          "Request: edit" );
+            ok( $out !~ m!permission denied!i, "edit by admin" );
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $ukawa,
-                __request_method => 'POST',
-                __mode           => 'edit',
-                _type            => 'widget',
-                blog_id          => $blog->id,
-                id               => $widget2->id,
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out,                          "Request: edit" );
-        ok( $out =~ m!permission denied!i, "edit by other blog" );
+            $app = _run_app(
+                'MT::App::CMS',
+                {   __test_user      => $aikawa,
+                    __request_method => 'POST',
+                    __mode           => 'edit',
+                    _type            => 'widget',
+                    blog_id          => $blog->id,
+                    id               => $widget2->id,
+                }
+            );
+            $out = delete $app->{__test_output};
+            ok( $out,                          "Request: edit" );
+            ok( $out !~ m!permission denied!i, "edit by permitted user" );
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $ogawa,
-                __request_method => 'POST',
-                __mode           => 'edit',
-                _type            => 'widget',
-                blog_id          => $blog->id,
-                id               => $widget2->id,
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out,                          "Request: edit" );
-        ok( $out =~ m!permission denied!i, "edit by other permission" );
+            $app = _run_app(
+                'MT::App::CMS',
+                {   __test_user      => $kagawa,
+                    __request_method => 'POST',
+                    __mode           => 'edit',
+                    _type            => 'widget',
+                    blog_id          => $blog->id,
+                    id               => $widget2->id,
+                }
+            );
+            $out = delete $app->{__test_output};
+            ok( $out, "Request: edit" );
+            ok( $out !~ m!permission denied!i,
+                "edit by permitted user (sys)"
+            );
 
-        done_testing();
-    };
+            $app = _run_app(
+                'MT::App::CMS',
+                {   __test_user      => $ukawa,
+                    __request_method => 'POST',
+                    __mode           => 'edit',
+                    _type            => 'widget',
+                    blog_id          => $blog->id,
+                    id               => $widget2->id,
+                }
+            );
+            $out = delete $app->{__test_output};
+            ok( $out,                          "Request: edit" );
+            ok( $out =~ m!permission denied!i, "edit by other blog" );
+
+            $app = _run_app(
+                'MT::App::CMS',
+                {   __test_user      => $ogawa,
+                    __request_method => 'POST',
+                    __mode           => 'edit',
+                    _type            => 'widget',
+                    blog_id          => $blog->id,
+                    id               => $widget2->id,
+                }
+            );
+            $out = delete $app->{__test_output};
+            ok( $out,                          "Request: edit" );
+            ok( $out =~ m!permission denied!i, "edit by other permission" );
+
+            done_testing();
+        };
+    }
 
     subtest 'mode = delete (widget)' => sub {
         $widget = MT::Test::Permission->make_template(

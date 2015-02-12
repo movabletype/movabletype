@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -90,7 +90,31 @@ sub _sort_cats {
         }
 
         # Sort the categories based on sort_method
-        eval("\@\$cats = sort $sort_method \@\$cats");
+        if ( $sort_method =~ /::/ ) {
+            eval("\@\$cats = sort $sort_method \@\$cats");
+        }
+        else {
+            my $safe = eval { require Safe; new Safe; }
+                or return $ctx->error(
+                "Cannot evaluate sort_method [$sort_method]: Perl 'Safe' module is required."
+                );
+            my $vars = $ctx->{__stash}{vars};
+            my $ns   = $safe->root;
+            {
+                no strict 'refs';
+                foreach my $v ( keys %$vars ) {
+                    ${ $ns . '::' . $v } = $vars->{$v};
+                }
+                ${ $ns . '::CATS' } = $cats;
+
+                $safe->permit(qw/ sort /);
+                {
+                    local $SIG{__WARN__} = sub { };
+                    $safe->reval("\@\$CATS = sort $sort_method \@\$CATS");
+                }
+                $cats = ${ $ns . '::CATS' } unless $@;
+            }
+        }
         if ( my $err = $@ ) {
             return $ctx->error(
                 MT->translate(

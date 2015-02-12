@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2004-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2004-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -10,9 +10,9 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '6.0');
-define('PRODUCT_VERSION', '6.0.6');
-define('DATA_API_DEFAULT_VERSION', '1');
+define('VERSION', '6.1');
+define('PRODUCT_VERSION', '6.1');
+define('DATA_API_DEFAULT_VERSION', '2');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 6;
+    $RELEASE_NUMBER = 0;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -594,8 +594,10 @@ class MT {
             $this->cache_modified_check = true;
         }
         if ($this->conditional) {
-            $last_ts = $blog->blog_children_modified_on;
-            $last_modified = $ctx->_hdlr_date(array('ts' => $last_ts, 'format' => '%a, %d %b %Y %H:%M:%S GMT', 'language' => 'en', 'utc' => 1), $ctx);
+            $local_last_datetime = $blog->blog_children_modified_on;
+            $gmt_last_ts = datetime_to_timestamp($local_last_datetime);
+            $gmt_last_datetime = gmdate('YmdHis', $gmt_last_ts);
+            $last_modified = $ctx->_hdlr_date(array('ts' => $gmt_last_datetime, 'format' => '%a, %d %b %Y %H:%M:%S GMT', 'language' => 'en'), $ctx);
             $this->doConditionalGet($last_modified);
         }
 
@@ -815,8 +817,8 @@ class MT {
     function error_handler($errno, $errstr, $errfile, $errline) {
         if ($errno & (E_ALL ^ E_NOTICE ^ E_WARNING)) {
             if ( !empty( $this->db ) ) {
-                $errstr = encode_html_entities($errstr, ENT_COMPAT);
-                $errfile = encode_html_entities($errfile, ENT_COMPAT);
+                $errstr = encode_html_entities($errstr, ENT_QUOTES);
+                $errfile = encode_html_entities($errfile, ENT_QUOTES);
                 $mtphpdir = $this->config('PHPDir');
                 $ctx =& $this->context();
                 $ctx->stash('blog_id', $this->blog_id);

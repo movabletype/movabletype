@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -740,6 +740,43 @@ sub core_theme_element_handlers {
                 info   => '$Core::MT::Theme::Entry::info_pages',
             },
         },
+    };
+}
+
+sub to_resource {
+    my ($self) = @_;
+    my $app    = MT->instance;
+    my $user   = $app->user;
+
+    require boolean;
+
+    return +{
+        id    => $self->id,
+        label => do {
+            my $label = $self->{registry}{label};
+            ref $label ? $label->() : $label;
+        },
+        version       => $self->{version},
+        description   => $self->description,
+        authorName    => $self->{author_name},
+        authorLink    => $self->{author_link},
+        uninstallable => (
+            (          ( $user && $user->is_superuser )
+                    && ( defined $self->{type} && $self->{type} eq 'package' )
+                    && !$self->{protected}
+            )
+            ? boolean::true()
+            : boolean::false()
+        ),
+        $app->blog
+        ? ( current => ( $app->blog->theme_id eq $self->{id} )
+            ? boolean::true()
+            : boolean::false()
+            )
+        : ( inUse => ( $self->{blog_count} )
+            ? boolean::true()
+            : boolean::false()
+        ),
     };
 }
 

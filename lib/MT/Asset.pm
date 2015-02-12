@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -376,6 +376,16 @@ sub list_props {
                 { label => MT->translate('Enabled'),  value => 'active', },
                 { label => MT->translate('Disabled'), value => 'disabled', },
             ],
+        },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( label )],
+            display => 'none',
+        },
+        created_by => {
+            auto    => 1,
+            col     => 'created_by',
+            display => 'none',
         },
     };
 }

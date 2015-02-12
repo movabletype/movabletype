@@ -17,7 +17,7 @@ MT->instance();
 my $driver = MT::Object->driver();
 
 my $object_types = MT->registry('object_types');
-my @model        = values %$object_types;
+my @model = grep { !ref $_ } values %$object_types;
 
 for my $model (@model) {
 
@@ -75,8 +75,10 @@ for my $model (@model) {
 
                 # No sort
                 {
-                    my $args => { join =>
-                            $child_class->join_on( 'id', undef, undef, ), };
+                    my $args
+                        = {
+                        join => $child_class->join_on( 'id', undef, undef, ),
+                        };
                     my ( $sql, $bind, $stmt )
                         = $driver->prepare_fetch( $model, undef, $args );
                     my $order_by

@@ -92,9 +92,9 @@
                             <div id="search-results">
                                 <span id="current-page" class="hidden"><$mt:CurrentPage$></span>
                                 <h1 id="page-title" class="search-results-header">
-        <mt:IfStraightSearch>
+        <MTIfStatic><mt:IfStraightSearch>
                                     <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
-        </mt:IfStraightSearch>
+        </mt:IfStraightSearch></MTIfStatic>
         <mt:IfTagSearch>
                                     <__trans phrase="Results tagged &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
         </mt:IfTagSearch>
@@ -120,9 +120,9 @@
 <mt:Ignore><!-- Display no results message --></mt:Ignore>
 <mt:NoSearchResults>
                             <h1 id="page-title" class="search-results-header">
-    <mt:IfStraightSearch>
+    <MTIfStatic><mt:IfStraightSearch>
                                 <__trans phrase="Results matching &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
-    </mt:IfStraightSearch>
+    </mt:IfStraightSearch></MTIfStatic>
     <mt:IfTagSearch>
                                 <__trans phrase="Results tagged &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
     </mt:IfTagSearch>

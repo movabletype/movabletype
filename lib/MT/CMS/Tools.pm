@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -717,38 +717,64 @@ sub save_cfg_system_general {
     # construct the message to the activity log
 
     if ( $app->param('comment_disable') ) {
-        push( @meta_messages, $app->translate( 'Prohibit comments is on' ) );
+        push( @meta_messages, $app->translate('Prohibit comments is on') );
     }
     else {
-        push( @meta_messages, $app->translate( 'Prohibit comments is off' ) );
+        push( @meta_messages, $app->translate('Prohibit comments is off') );
     }
     if ( $app->param('ping_disable') ) {
-        push( @meta_messages, $app->translate( 'Prohibit trackbacks is on' ) );
+        push( @meta_messages, $app->translate('Prohibit trackbacks is on') );
     }
     else {
-        push( @meta_messages, $app->translate( 'Prohibit trackbacks is off' ) );
+        push( @meta_messages, $app->translate('Prohibit trackbacks is off') );
     }
     if ( $app->param('disable_notify_ping') ) {
-        push( @meta_messages, $app->translate( 'Prohibit notification pings is on' ) );
+        push( @meta_messages,
+            $app->translate('Prohibit notification pings is on') );
     }
     else {
-        push( @meta_messages, $app->translate( 'Prohibit notification pings is off' ) );
+        push( @meta_messages,
+            $app->translate('Prohibit notification pings is off') );
     }
     if ( $app->param('trackback_send') eq 'any' ) {
-        push( @meta_messages,
-              $app->translate( 'Outbound trackback limit is [_1]', $app->translate('Any site') ) )
+        push(
+            @meta_messages,
+            $app->translate(
+                'Outbound trackback limit is [_1]',
+                $app->translate('Any site')
+            )
+        );
     }
     elsif ( $app->param('trackback_send') eq 'off' ) {
-        push( @meta_messages,
-              $app->translate( 'Outbound trackback limit is [_1]', $app->translate('Disabled') ) )
+        push(
+            @meta_messages,
+            $app->translate(
+                'Outbound trackback limit is [_1]',
+                $app->translate('Disabled')
+            )
+        );
     }
     elsif ( $app->param('trackback_send') eq 'local' ) {
-        push( @meta_messages,
-              $app->translate( 'Outbound trackback limit is [_1]', $app->translate('Only to blogs within this system') ) )
+        push(
+            @meta_messages,
+            $app->translate(
+                'Outbound trackback limit is [_1]',
+                $app->translate('Only to blogs within this system')
+            )
+        );
     }
     elsif ( $app->param('trackback_send') eq 'selected' ) {
-        push( @meta_messages,
-              $app->translate( 'Outbound trackback limit is [_1]', $app->translate('Only to websites on the following domains:' . $app->param('config_warnings_outboundtrackbackdomains') ) ) )
+        push(
+            @meta_messages,
+            $app->translate(
+                'Outbound trackback limit is [_1]',
+                $app->translate(
+                    'Only to websites on the following domains:'
+                        . $app->param(
+                        'config_warnings_outboundtrackbackdomains')
+                )
+            )
+        );
     }
 
     # for lockout settings
@@ -857,6 +883,9 @@ sub save_cfg_system_web_services {
     require MT::CMS::Common;
     MT::CMS::Common::run_web_services_save_config_callbacks($app);
 
+    require MT::CMS::Blog;
+    MT::CMS::Blog::save_data_api_settings($app);
+
     $app->add_return_arg( 'saved'         => 1 );
     $app->add_return_arg( 'saved_changes' => 1 );
     return $app->call_return;
@@ -946,6 +975,25 @@ sub _allowed_blog_ids_for_backup {
     @blog_ids, $blog_id;
 }
 
+sub _can_write_temp_dir {
+    my ($temp_dir) = @_;
+
+    return 1 unless ( $^O eq 'MSWin32' );
+
+    require File::Temp;
+    my ( $fh, $filepath );
+    eval {
+        ( $fh, $filepath ) = File::Temp::tempfile(
+            '__' . $$ . '.XXXXXXXX',
+            DIR    => $temp_dir,
+            UNLINK => 1
+        );
+    };
+    return 0 if $@;
+
+    return 1;
+}
+
 sub start_backup {
     my $app     = shift;
     my $user    = $app->user;
@@ -978,7 +1026,7 @@ sub start_backup {
     $param{over_2048} = 1 if $limit >= 2048 * 1024;
 
     my $tmp = $app->config('TempDir');
-    unless ( ( -d $tmp ) && ( -w $tmp ) ) {
+    unless ( ( -d $tmp ) && ( -w $tmp ) && _can_write_temp_dir($tmp) ) {
         $param{error}
             = $app->translate(
             'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.'
@@ -1678,10 +1726,8 @@ sub restore_premature_cancel {
             );
         $param->{error}
             = $message . '  '
-            . $app->translate(
-            "Detailed information is in the activity log.",
-            $log_url
-            );
+            . $app->translate( "Detailed information is in the activity log.",
+            $log_url );
     }
     else {
         $app->log(
@@ -2786,7 +2832,7 @@ sub restore_directory {
         sub { _progress( $app, @_ ); } );
 
     if ( scalar @errors ) {
-        $$error = $app->translate('Error occured during restore process.');
+        $$error = $app->translate('Error occurred during restore process.');
         $app->log(
             {   message  => $$error,
                 level    => MT::Log::WARNING(),

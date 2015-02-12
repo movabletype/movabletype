@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -190,6 +190,15 @@ sub list_props {
         created_by => {
             base    => '__virtual.author_name',
             label   => 'Created by',
+            display => 'none',
+        },
+        modified_by => {
+            auto    => 1,
+            display => 'none',
+        },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( name description )],
             display => 'none',
         },
     };

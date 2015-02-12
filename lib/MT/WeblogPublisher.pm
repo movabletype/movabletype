@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1400,7 +1400,7 @@ sub rebuild_file {
                 (   $category ? MT->translate(
                         "An error occurred publishing [_1] '[_2]': [_3]",
                         lc( $category->class_label ),
-                        $category->id,
+                        $category->label,
                         $tmpl->errstr
                         )
                     : $entry ? MT->translate(
@@ -1998,7 +1998,7 @@ sub publish_future_posts {
             };
             if ( my $err = $@ ) {
 
-                # a fatal error occured while processing the rebuild
+                # a fatal error occurred while processing the rebuild
                 # step. LOG the error and revert the entry/entries:
                 require MT::Log;
                 $mt->log(
@@ -2120,7 +2120,7 @@ sub unpublish_past_entries {
             };
             if ( my $err = $@ ) {
 
-                # a fatal error occured while processing the rebuild
+                # a fatal error occurred while processing the rebuild
                 # step. LOG the error and revert the entry/entries:
                 require MT::Log;
                 $mt->log(

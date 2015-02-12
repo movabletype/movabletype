@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2004-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2004-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,7 +16,7 @@ use vars qw($VERSION);
 
 sub BEGIN {
     @MT::Plugin::SpamLookup::KeywordFilter::ISA = ('MT::Plugin');
-    $VERSION                                    = '2.2';
+    $VERSION                                    = '2.3';
     my $plugin;
     $plugin = new MT::Plugin::SpamLookup::KeywordFilter(
         {   name    => 'SpamLookup - Keyword Filter',

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,7 +11,10 @@ function smarty_block_mtwebsitehasblog($args, $content, &$ctx, &$repeat) {
         if (empty($blog)) {
             $ret = false;
         } else if($blog->class == 'blog') {
-            $ret = false;
+            $website = $blog->website();
+            $ret = empty($website)
+                ? false
+                : true;
         } else {
             $blogs = $blog->blogs();
             $ret = empty($blogs)

@@ -18,7 +18,7 @@
  ##########  <MT_TRANS phrase="SEARCH FEED AUTODISCOVERY LINK IS PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED">
 </MTIgnore>
 <MTNoSearch><MTElse>
-    <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Blog Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
+    <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Blog Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStatic><MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch></MTIfStatic>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
 </MTElse></MTNoSearch>      
     <title><MT_TRANS phrase="Search Results"></title>
 </head>
@@ -40,14 +40,14 @@
 <MTIgnore>
   ##########  <MT_TRANS phrase="STRAIGHT SEARCHES GET THE SEARCH QUERY FORM">
 </MTIgnore>
-                      <MTIfStraightSearch>
+                      <MTIfStatic><MTIfStraightSearch>
                       <h2 class="search-results-header"><MT_TRANS phrase="Search this site"></h2>
                       <form method="post" action="<$MTCGIPath$><$MTSearchScript$>" id="search-form">
                          <input type="hidden" name="IncludeBlogs" value="<$MTSearchIncludeBlogs$>" />
                          <p><input type="text" size="30" name="search" id="search" value="<$MTSearchString$>" /> <input type="submit" value="<MT_TRANS phrase="Search">" /></p>
                          <p id="search-options"><input type="checkbox" name="CaseSearch" /> <MT_TRANS phrase="Match case"> <input type="checkbox" name="RegexSearch" /> <MT_TRANS phrase="Regex search"></p>
                       </form>
-                      </MTIfStraightSearch>
+                      </MTIfStraightSearch></MTIfStatic>
                      
 <MTIgnore>
     ##########  <MT_TRANS phrase="SEARCH RESULTS DISPLAY">
@@ -55,9 +55,9 @@
                       <MTSearchResults>
                           <MTBlogResultHeader>
                               <h3 class="search-results-header">
-                              <MTIfStraightSearch>
+                              <MTIfStatic><MTIfStraightSearch>
                                   <MT_TRANS phrase="Matching entries from [_1]" params="<$MTBlogName encode_html="1" encode_html="1"$>">
-                              </MTIfStraightSearch>
+                              </MTIfStraightSearch></MTIfStatic>
                               <MTIfTagSearch>
                                   <MT_TRANS phrase="Entries from [_1] tagged with '[_2]'" params="<$MTBlogName encode_html="1" encode_html="1"$>%%<$MTSearchString encode_html="1"$>">
                                   </MTIfTagSearch>
@@ -95,9 +95,9 @@
 </MTIgnore>
                       <MTNoSearchResults>
                           <h3 class="search-results-header">
-                              <MTIfStraightSearch>
+                              <MTIfStatic><MTIfStraightSearch>
                                   <MT_TRANS phrase="Entries matching '[_1]'" params="<$MTSearchString encode_html="1"$>">
-                              </MTIfStraightSearch>
+                              </MTIfStraightSearch></MTIfStatic>
                               <MTIfTagSearch>
                                   <MT_TRANS phrase="Entries tagged with '[_1]'" params="<$MTSearchString encode_html="1"$>">
                               </MTIfTagSearch>

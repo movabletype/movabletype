@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2002-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2002-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -163,8 +163,14 @@ sub sanitize {
                         ###    $out .= _expel_up_to(\@open_tags, \%open_tags, $name);
                         ###    $out .= '</' . $name . '>';
                         ###}
-                        push @open_tags, $name;
-                        $open_tags{$name}++;
+
+                        if ( $name
+                            !~ /br|wbr|hr|img|col|base|link|meta|input|keygen|area|param|embed|source|track|command/
+                            )
+                        {
+                            push @open_tags, $name;
+                            $open_tags{$name}++;
+                        }
                     }
                     $out
                         .= '<'
