@@ -409,6 +409,15 @@ sub end_element {
                 if ( 'blob' eq $defs->{$column_name}->{type} ) {
                     $text = MIME::Base64::decode_base64($text);
                     if ( substr( $text, 0, 4 ) eq 'SERG' ) {
+                        my $ser_ver
+                            = MT::Serialize->serializer_version($text);
+                        if ( $ser_ver == 3 ) {
+                            my $conf_ver = lc MT->config->Serializer;
+                            if ( ( $conf_ver ne 'storable' ) && ( $conf_ver ne 'mts' ) ) {
+                                $self->{critical} = 1;
+                                die MT->translate('Invalid serializer version was specified.');
+                            }
+                        }
                         $text = MT::Serialize->unserialize($text);
                         $obj->$column_name($$text);
                     }
@@ -424,6 +433,15 @@ sub end_element {
                 if ( my $type = $metacolumns->{$column_name} ) {
                     if ( 'vblob' eq $type ) {
                         $text = MIME::Base64::decode_base64($text);
+                        my $ser_ver
+                            = MT::Serialize->serializer_version($text);
+                        if ( $ser_ver == 3 ) {
+                            my $conf_ver = lc MT->config->Serializer;
+                            if ( ( $conf_ver ne 'storable' ) && ( $conf_ver ne 'mts' ) ) {
+                                $self->{critical} = 1;
+                                die MT->translate('Invalid serializer version was specified.');
+                            }
+                        }
                         $text = MT::Serialize->unserialize($text);
                         $obj->$column_name($$text);
                     }
