@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -87,7 +87,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         return $this->$name;
     }
 
-	public function __set($name, $value) {
+    public function __set($name, $value) {
         if (is_null($this->_prefix))
             return;
 
@@ -98,6 +98,10 @@ abstract class BaseObject extends ADOdb_Active_Record
         parent::__set($name, $value);
     }
 
+    public function __isset( $name ){
+        $value = $this->$name;
+        return isset( $value );
+    }
 
     public function Load( $where = null, $bindarr = false, $lock = false ) {
        if ( is_numeric( $where ) )

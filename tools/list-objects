@@ -17,7 +17,7 @@ use MT;
 my $mt = MT->new(defined $cfg ? (Config => $cfg) : ()) or die MT->errstr;
 my $class = MT->model($type);
 
-die "Error loading '$type': $@" if $@;
+die "Error loading '$type'" unless $class;
 
 my $iter = $class->load_iter($id ? { id => $id } : ()) or
     die "Load failed: " . $class->errstr;

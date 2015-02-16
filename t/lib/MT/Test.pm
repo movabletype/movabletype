@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -54,6 +54,7 @@ BEGIN {
         }
     }
     else {
+        require DBD::SQLite;    # Use in sqlite-test.cfg.
         $ENV{MT_CONFIG}
             = File::Spec->catfile( $ENV{MT_HOME}, "t", "sqlite-test.cfg" );
     }
@@ -1460,10 +1461,11 @@ sub _run_app {
     my $cgi              = CGI->new;
     my $follow_redirects = 0;
     my $max_redirects    = 10;
-    my %app_hash_values = qw(
+    my %app_hash_values  = qw(
         __request_method request_method
         __path_info __path_info
     );
+
     while ( my ( $k, $v ) = each(%$params) ) {
         next if grep { $_ eq $k } keys %app_hash_values;
         if ( ref($v) eq 'ARRAY' && $k ne '__test_upload' ) {

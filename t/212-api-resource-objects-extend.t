@@ -35,6 +35,7 @@ $app->user($app->model('author')->load(1));
     $app->_init_plugins_core( {}, 1,
         [ File::Spec->join( $base, 'plugins' ) ] );
 }
+$app->current_api_version(1);
 
 MT::DataAPI::Resource->resource('asset');
 MT::DataAPI::Format::find_format;

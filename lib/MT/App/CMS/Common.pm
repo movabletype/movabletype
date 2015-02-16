@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -61,15 +61,8 @@ sub init_core_callbacks {
             $pkg
                 . 'delete_permission_filter.author' =>
                 "${pfx}User::can_delete",
-            $pkg . 'save_filter.author' => "${pfx}User::save_filter",
-            $pkg . 'pre_save.author'    => "${pfx}User::pre_save",
             $pkg . 'post_save.author'   => "${pfx}User::post_save",
             $pkg . 'post_delete.author' => "${pfx}User::post_delete",
-            $pkg . 'pre_load_filtered_list.author' => sub {
-                my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                my $terms = $opts->{terms};
-                $terms->{type} = MT::Author::AUTHOR();
-            },
             $pkg . 'pre_load_filtered_list.commenter' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 my $terms = $opts->{terms};
@@ -181,16 +174,10 @@ sub init_core_callbacks {
                 . 'delete_permission_filter.blog' => "${pfx}Blog::can_delete",
             $pkg . 'pre_save.blog'    => "${pfx}Blog::pre_save",
             $pkg . 'post_save.blog'   => "${pfx}Blog::post_save",
-            $pkg . 'save_filter.blog' => "${pfx}Blog::save_filter",
             $pkg . 'post_delete.blog' => "${pfx}Blog::post_delete",
-            $pkg
-                . 'pre_load_filtered_list.blog' =>
-                "${pfx}Blog::cms_pre_load_filtered_list",
 
             # folder callbacks
             $pkg . 'edit.folder' => "${pfx}Folder::edit",
-            $pkg
-                . 'view_permission_filter.folder' => "${pfx}Folder::can_view",
             $pkg
                 . 'save_permission_filter.folder' => "${pfx}Folder::can_save",
             $pkg
@@ -204,9 +191,6 @@ sub init_core_callbacks {
             # category callbacks
             $pkg . 'edit.category' => "${pfx}Category::edit",
             $pkg
-                . 'view_permission_filter.category' =>
-                "${pfx}Category::can_view",
-            $pkg
                 . 'save_permission_filter.category' =>
                 "${pfx}Category::can_save",
             $pkg
@@ -214,13 +198,9 @@ sub init_core_callbacks {
                 "${pfx}Category::can_delete",
             $pkg . 'pre_save.category'    => "${pfx}Category::pre_save",
             $pkg . 'post_save.category'   => "${pfx}Category::post_save",
-            $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
             $pkg . 'post_delete.category' => "${pfx}Category::post_delete",
             'list_template_param.category' =>
                 "${pfx}Category::template_param_list",
-            $pkg
-                . 'pre_load_filtered_list.category' =>
-                "${pfx}Category::pre_load_filtered_list",
             $pkg
                 . 'filtered_list_param.category' =>
                 "${pfx}Category::filtered_list_param",
@@ -266,17 +246,13 @@ sub init_core_callbacks {
             $pkg . 'post_delete.entry' => "${pfx}Entry::post_delete",
 
             # page callbacks
-            $pkg . 'edit.page'                   => "${pfx}Page::edit",
-            $pkg . 'view_permission_filter.page' => "${pfx}Page::can_view",
+            $pkg . 'edit.page' => "${pfx}Page::edit",
             $pkg
                 . 'delete_permission_filter.page' => "${pfx}Page::can_delete",
             $pkg . 'save_permission_filter.page' => "${pfx}Page::can_save",
             $pkg . 'pre_save.page'               => "${pfx}Page::pre_save",
             $pkg . 'post_save.page'              => "${pfx}Page::post_save",
             $pkg . 'post_delete.page'            => "${pfx}Page::post_delete",
-            $pkg
-                . 'pre_load_filtered_list.page' =>
-                "${pfx}Page::cms_pre_load_filtered_list",
 
             # ping callbacks
             $pkg . 'edit.ping' => "${pfx}TrackBack::edit",
@@ -293,9 +269,6 @@ sub init_core_callbacks {
             # template callbacks
             $pkg . 'edit.template' => "${pfx}Template::edit",
             $pkg
-                . 'view_permission_filter.template' =>
-                "${pfx}Template::can_view",
-            $pkg
                 . 'save_permission_filter.template' =>
                 "${pfx}Template::can_save",
             $pkg
@@ -306,11 +279,7 @@ sub init_core_callbacks {
             $pkg . 'post_delete.template' => "${pfx}Template::post_delete",
 
             # tags
-            $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
-            $pkg . 'post_delete.tag'              => "${pfx}Tag::post_delete",
-            $pkg
-                . 'pre_load_filtered_list.tag' =>
-                "${pfx}Tag::cms_pre_load_filtered_list",
+            $pkg . 'post_delete.tag' => "${pfx}Tag::post_delete",
 
             # junk-related callbacks
             #'HandleJunk' => \&_builtin_spam_handler,
@@ -318,27 +287,21 @@ sub init_core_callbacks {
             $pkg . 'not_junk_test' => "${pfx}Common::not_junk_test",
 
             # assets
-            $pkg . 'edit.asset'                   => "${pfx}Asset::edit",
-            $pkg . 'view_permission_filter.asset' => "${pfx}Asset::can_view",
+            $pkg . 'edit.asset' => "${pfx}Asset::edit",
             $pkg
                 . 'delete_permission_filter.asset' =>
                 "${pfx}Asset::can_delete",
             $pkg . 'save_permission_filter.asset' => "${pfx}Asset::can_save",
-            $pkg . 'pre_save.asset'               => "${pfx}Asset::pre_save",
             $pkg . 'post_save.asset'              => "${pfx}Asset::post_save",
             $pkg . 'post_delete.asset'  => "${pfx}Asset::post_delete",
-            $pkg . 'save_filter.asset'  => "${pfx}Asset::cms_save_filter",
             'template_param.edit_asset' => "${pfx}Asset::template_param_edit",
-            $pkg
-                . 'pre_load_filtered_list.asset' =>
-                "${pfx}Asset::cms_pre_load_filtered_list",
             'list_template_param.asset' => "${pfx}Asset::template_param_list",
 
             # log
+            'list_template_param.log' => "${pfx}Log::template_param_list",
             $pkg
                 . 'pre_load_filtered_list.log' =>
                 "${pfx}Log::cms_pre_load_filtered_list",
-            'list_template_param.log' => "${pfx}Log::template_param_list",
 
             # role
             $pkg

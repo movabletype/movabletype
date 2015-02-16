@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -10,6 +10,7 @@ use strict;
 use base qw( MT::App );
 
 use MT::Util qw( encode_html encode_url perl_sha1_digest_hex );
+use MT::App::Search::Common;
 
 sub id {'new_search'}
 
@@ -30,14 +31,9 @@ sub init {
     #        $app->param($k, $v);
     #    }
     #}
-    my $pkg = ref($app);
-    $app->_register_core_callbacks(
-        {   "${pkg}::search_post_execute" => \&_log_search,
-            "${pkg}::search_post_render"  => \&_cache_out,
-            "${pkg}::prepare_throttle"    => \&_default_throttle,
-            "${pkg}::take_down"           => \&_default_takedown,
-        }
-    );
+
+    MT::App::Search::Common::init_core_callbacks($app);
+
     $app;
 }
 
@@ -89,9 +85,11 @@ sub core_parameters {
 
 sub init_request {
     my $app = shift;
-    $app->SUPER::init_request(@_);
 
-    $app->mode('tag') if $app->param('tag');
+    if ( $app->isa('MT::App::Search') ) {
+        $app->SUPER::init_request(@_);
+        $app->mode('tag') if $app->param('tag');
+    }
 
     my $q = $app->param;
 
@@ -199,7 +197,8 @@ sub takedown {
     my $app = shift;
     delete $app->{searchparam};
     delete $app->{search_string};
-    $app->SUPER::takedown(@_);
+    delete $app->{cache_keys};
+    $app->SUPER::takedown(@_) if $app->isa('MT::App::Search');
 }
 
 sub generate_cache_keys {
@@ -214,6 +213,13 @@ sub generate_cache_keys {
             $count_key .= lc($p) . encode_url($pp)
                 if ( 'limit' ne lc($p) ) && ( 'offset' ne lc($p) );
         }
+    }
+
+    # Cache key is different for each applications.
+    if ( !$app->isa('MT::App::Search') ) {
+        my $app_key_param = 'app_id' . encode_url( $app->id );
+        $key       .= $app_key_param;
+        $count_key .= $app_key_param;
     }
 
     $key       = perl_sha1_digest_hex($key);
@@ -395,7 +401,7 @@ sub process {
     return $app->error( $app->errstr ) unless defined $out;
 
     my $result;
-    if ( ref($out) && ( $out->isa('MT::Template') ) ) {
+    if ( ref($out) && eval { $out->isa('MT::Template') } ) {
         defined( $result = $out->build() )
             or return $app->error( $out->errstr );
     }
@@ -594,7 +600,7 @@ sub _cache_out {
     my ( $cb, $app, $count, $out ) = @_;
 
     my $result;
-    if ( ref($out) && ( $out->isa('MT::Template') ) ) {
+    if ( ref($out) && eval { $out->isa('MT::Template') } ) {
         defined( $result = $out->build() )
             or die $out->errstr;
     }

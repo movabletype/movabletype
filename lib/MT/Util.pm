@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -782,6 +782,7 @@ sub decode_url {
 
             }
             $html =~ s!"!&quot;!g;
+            $html =~ s!'!&#039;!g;
             $html =~ s!<!&lt;!g;
             $html =~ s!>!&gt;!g;
         }
@@ -802,6 +803,7 @@ sub decode_url {
         }
         else {
             $html =~ s!&quot;!"!g;
+            $html =~ s!&#039;!'!g;
             $html =~ s!&lt;!<!g;
             $html =~ s!&gt;!>!g;
             $html =~ s!&amp;!&!g;
@@ -892,7 +894,8 @@ sub remove_html {
         defined $1 ? $1 : ''
         /geisx;
     $text =~ s/<(?!\!\[CDATA\[)/&lt;/gis;
-    $text = Encode::decode_utf8($text);
+    $text = Encode::decode_utf8($text)
+        unless Encode::is_utf8($text);
     return $text;
 }
 
@@ -1206,7 +1209,8 @@ sub xliterate_utf8 {
     );
 
     $str =~ s/([\200-\377]{2})/$utf8_table{$1}||''/ge;
-    $str = Encode::decode_utf8($str);
+    $str = Encode::decode_utf8($str)
+        unless Encode::is_utf8($str);
     $str;
 }
 

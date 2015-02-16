@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -166,8 +166,7 @@ sub startup : Test(startup) {
 
     # The table may exist from a previous test, so delete it if it does.
     eval {
-        if ( $driver->table_exists('Ddltest') )
-        {
+        if ( $driver->table_exists('Ddltest') ) {
             my $sql = $driver->dbd->ddl_class->drop_table_sql('Ddltest');
             $driver->rw_handle->do($sql);
         }

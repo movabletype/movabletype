@@ -39,7 +39,7 @@ function adjustWidthHeight (f, width) {
     var e = width ? h : w;
     var s = width ? ht : wt;
     var full = width ? hf : wf;
-    e.value = Math.floor(pct * full);
+    e.value = Math.round(pct * full);
     return true;
 }
 

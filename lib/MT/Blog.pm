@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -154,17 +154,11 @@ sub list_props {
             order => 100,
         },
         name => {
-            auto      => 1,
-            label     => 'Name',
-            order     => 200,
-            display   => 'force',
-            html_link => sub {
-                my ( $prop, $obj, $app ) = @_;
-                return $app->uri(
-                    mode => 'dashboard',
-                    args => { blog_id => $obj->id, },
-                );
-            },
+            base    => '__virtual.name',
+            auto    => 1,
+            label   => 'Name',
+            order   => 200,
+            display => 'force',
         },
         entry_count => {
             label              => 'Entries',
@@ -544,7 +538,9 @@ sub site_url {
     my $blog = shift;
 
     if (@_) {
-        return $blog->SUPER::site_url(@_);
+        my $url = $_[0];
+        $url .= '/' unless $url =~ m{/$};
+        return $blog->SUPER::site_url($url);
     }
     elsif ( $blog->is_dynamic ) {
         my $cfg  = MT->config;
@@ -653,7 +649,9 @@ sub archive_url {
     my $blog = shift;
 
     if (@_) {
-        $blog->SUPER::archive_url(@_) || $blog->site_url;
+        my $url = $_[0];
+        $url .= '/' if $url ne "" && $url !~ m{/$};
+        $blog->SUPER::archive_url($url) || $blog->site_url;
     }
     elsif ( $blog->is_dynamic ) {
         return $blog->site_url;

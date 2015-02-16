@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1131,11 +1131,14 @@ sub load_iter {
 sub _assign_audited_fields {
     my ( $obj, $orig_obj ) = @_;
     if ( $obj->properties->{audit} ) {
-        my $blog_id;
-        if ( $obj->can('blog_id') ) {
-            $blog_id = $obj->blog_id;
+        my $blog;
+        if ( $obj->isa('MT::Blog') ) {
+            $blog = $obj;
         }
-        my @ts = offset_time_list( time, $blog_id );
+        elsif ( $obj->can('blog_id') ) {
+            $blog = $obj->blog_id;
+        }
+        my @ts = offset_time_list( time, $blog );
         my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
             $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
 
@@ -1166,11 +1169,14 @@ sub modified_by {
         if ( $obj->properties->{audit} ) {
             my $res = $obj->SUPER::modified_by($user_id);
 
-            my $blog_id;
-            if ( $obj->has_column('blog_id') ) {
-                $blog_id = $obj->blog_id;
+            my $blog;
+            if ( $obj->isa('MT::Blog') ) {
+                $blog = $obj;
             }
-            my @ts = offset_time_list( time, $blog_id );
+            elsif ( $obj->can('blog_id') ) {
+                $blog = $obj->blog_id;
+            }
+            my @ts = offset_time_list( time, $blog );
             my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
                 $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
             $obj->modified_on($ts);

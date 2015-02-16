@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -46,7 +46,6 @@ use vars qw( %Lexicon );
 	'When' => ' ',
 	'Trigger' => 'トリガー',
 	'Action' => 'アクション',
-	'Weblog' => 'ブログ',
 	'Content Privacy' => 'コンテンツのセキュリティ',
 	'Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.' => '同じMovable Type内の他のブログがこのブログのコンテンツを公開できるかどうかを指定します。この設定はシステムレベルのMultiBlogの構成で指定された既定のアグリゲーションポリシーよりも優先されます。',
 	'Use system default' => 'システムの既定値を使用',

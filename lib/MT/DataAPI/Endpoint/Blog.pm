@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -30,8 +30,8 @@ sub list {
 sub get {
     my ( $app, $endpoint ) = @_;
 
-    my ($blog) = context_objects(@_)
-        or return;
+    my ($blog) = context_objects(@_);
+    return unless $blog && $blog->id;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
         'blog', $blog->id, obj_promise($blog) )

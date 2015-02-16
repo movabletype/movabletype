@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1053,10 +1053,10 @@ abstract class MTDatabase {
         }
         $date_filter = $this->build_date_filter($args, $timestamp_field);
 
-        if (isset($args['lastn'])) {
-            if (!isset($args['entry_id'])) $limit = $args['lastn'];
-        } elseif (isset($args['days']) && !$date_filter) {
+        if (isset($args['days']) && !$date_filter) {
             $day_filter = 'and ' . $this->limit_by_day_sql('entry_authored_on', intval($args['days']));
+        } elseif (isset($args['lastn'])) {
+            if (!isset($args['entry_id'])) $limit = $args['lastn'];
         } else {
             $found_valid_args = 0;
             foreach ( array(

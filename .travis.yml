@@ -1,0 +1,56 @@
+language: perl
+
+services:
+  - memcached
+
+env:
+  matrix:
+    - TESTS="prove t/??-*.t t/[^0-9]*.t plugins/*/t"
+    - TESTS="prove t/1??-*.t"
+    - TESTS="prove t/2??-*.t t/3??-*.t && phpunit"
+
+before_install:
+  # Use system Perl.
+  - perlbrew switch-off
+  - PATH=${PATH#/home/travis/perl5/perlbrew/bin:}
+  - perl -v
+  - echo $PATH
+  - curl -L https://cpanmin.us | perl - --sudo App::cpanminus
+
+  # Install Berkeley DB for installing DB_File module.
+  # libperl-dev for installing ImageMagick.
+  # php5, php5-mysql, php5-gd for tests of dynamic publishing.
+  # libpng12-dev, libgif-dev and libjpeg-dev for Imager.
+  - sudo apt-get install libdb-dev libgd2-xpm-dev libgmp3-dev libperl-dev php5 php5-mysql php5-gd libpng12-dev libgif-dev libjpeg-dev
+
+  # PHPUnit
+  - wget https://phar.phpunit.de/phpunit.phar
+  - chmod +x phpunit.phar
+  - sudo mv phpunit.phar /usr/local/bin/phpunit
+
+install:
+  # Install Image::Magick.
+  - sudo apt-get -y install perlmagick
+
+  # Instal CPAN modules.
+  - sudo cpanm -n Crypt::CBC Test::Deep DateTime DateTime::TimeZone Clone
+  - travis_retry sudo cpanm -n --installdeps . --cpanfile ./t/cpanfile
+
+  # Build MT.
+  #- SHELL=/bin/bash make me
+
+before_script:
+  # Create MySQL database for tests.
+  - mysql -e "create database mt_test;"
+  - mysql -uroot -e "grant all privileges on mt_test.* to mt@localhost;"
+
+  # Some tests need mt-config.cgi.
+  - cp ./t/mysql-test.cfg ./mt-config.cgi
+
+  # Remove failed tests.
+  - rm t/34-sqlite.t
+  - rm t/90-podcoverage.t
+
+script:
+  - bash -c "${TESTS}"
+

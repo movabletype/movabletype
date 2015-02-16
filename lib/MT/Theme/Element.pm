@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -39,7 +39,7 @@ sub apply {
     if ( !$self->validate_version($importer) ) {
         return $self->error(
             MT->translate(
-                'Compatibility error occured while applying \'[_1]\': [_2].',
+                'Compatibility error occurred while applying \'[_1]\': [_2].',
                 $self->{id},
                 $self->errstr,
             )
@@ -48,7 +48,7 @@ sub apply {
     if ( !$self->validate( $importer, $self->{theme}, $blog ) ) {
         return $self->error(
             MT->translate(
-                'An Error occured while applying \'[_1]\': [_2].',
+                'An Error occurred while applying \'[_1]\': [_2].',
                 $self->{id}, $self->errstr,
             )
         );
@@ -60,7 +60,7 @@ sub apply {
     $handler->( $self, $self->{theme}, $blog, $opts )
         or return $self->error(
         MT->translate(
-            'Fatal error occured while applying \'[_1]\': [_2].',
+            'Fatal error occurred while applying \'[_1]\': [_2].',
             $self->{id}, $self->errstr,
         )
         );

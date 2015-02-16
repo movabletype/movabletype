@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -114,10 +114,22 @@ sub list_props {
         status => {
             base                  => 'entry.status',
             single_select_options => [
-                { label => MT->translate('Draft'),             value => 1, },
-                { label => MT->translate('Published'),         value => 2, },
-                { label => MT->translate('Scheduled'),         value => 4, },
-                { label => MT->translate('Unpublished (End)'), value => 6, },
+                {   label => MT->translate('Draft'),
+                    value => 1,
+                    text  => 'Draft',
+                },
+                {   label => MT->translate('Published'),
+                    value => 2,
+                    text  => 'Publish',
+                },
+                {   label => MT->translate('Scheduled'),
+                    value => 4,
+                    text  => 'Future',
+                },
+                {   label => MT->translate('Unpublished (End)'),
+                    value => 6,
+                    text  => 'Unpublish',
+                },
             ],
         },
         basename     => { base => 'entry.basename' },
@@ -130,6 +142,11 @@ sub list_props {
             { base => 'entry.current_user', label => 'My Pages', },
         author_status   => { base => 'entry.author_status' },
         current_context => { base => '__common.current_context' },
+        content         => {
+            base    => '__virtual.content',
+            fields  => [qw(title text text_more keywords excerpt basename)],
+            display => 'none',
+        },
     };
 }
 
@@ -227,6 +244,16 @@ sub permalink {
 sub all_permalinks {
     my $page = shift;
     return ( $page->permalink(@_) );
+}
+
+sub status_text {
+    my $page = shift;
+    $page->SUPER::status_text(@_);
+}
+
+sub status_int {
+    my $page = shift;
+    $page->SUPER::status_int(@_);
 }
 
 1;

@@ -1,13 +1,14 @@
 <?php
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
 # $Id$
 
-function datetime_to_timestamp($dt) {
+function datetime_to_timestamp($dt, $type = 'local') {
+    $mktime = (isset($type) && $type == 'gmt') ? 'gmmktime' : 'mktime';
     $dt = preg_replace('/[^0-9]/', '', $dt);
-    $ts = gmmktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
+    $ts = $mktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
     return $ts;
 }
 
@@ -979,7 +980,7 @@ function html_text_transform($str = '') {
     return implode("\n\n", $paras);
 }
 
-function encode_html($str, $quote_style = ENT_COMPAT) {
+function encode_html($str, $quote_style = ENT_QUOTES) {
     if (!isset($str)) return '';
     $trans_table = get_html_translation_table(HTML_SPECIALCHARS, $quote_style);
     if( $trans_table["'"] != '&#039;' ) { # some versions of PHP match single quotes to &#39;
@@ -988,7 +989,7 @@ function encode_html($str, $quote_style = ENT_COMPAT) {
     return (strtr($str, $trans_table));
 }
 
-function encode_html_entities($str, $quote_style = ENT_COMPAT) {
+function encode_html_entities($str, $quote_style = ENT_QUOTES) {
     if (!$str) {
         return '';
     }
@@ -1025,7 +1026,7 @@ function encode_html_entities($str, $quote_style = ENT_COMPAT) {
         htmlentities($str, $quote_style, $encoding);
 }
 
-function decode_html($str, $quote_style = ENT_COMPAT) {
+function decode_html($str, $quote_style = ENT_QUOTES) {
     if (!isset($str)) return '';
     $trans_table = get_html_translation_table(HTML_SPECIALCHARS, $quote_style);
     if( $trans_table["'"] != '&#039;' ) { # some versions of PHP match single quotes to &#39;

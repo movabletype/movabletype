@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -48,6 +48,7 @@ RETRY_CONN:
         require MT::I18N;
         my $from = MT::I18N::guess_encoding($err) || 'utf-8';
         my $to   = $cfg->PublishCharset           || 'utf-8';
+        $err = Encode::encode_utf8($err) if Encode::is_utf8($err);
         Encode::from_to( $err, $from, $to );
 
         if ( $retry++ < $retry_max ) {
@@ -763,7 +764,7 @@ sub prepare_statement {
     }
 
     ## Always sort by primary keys.
-    my @pk = @{ $class->primary_key_tuple() };
+    my @pk = @{ $class->primary_key_tuple() || [] };
     if (   @pk
         && !$recursive
         && !$orig_args->{group} )
