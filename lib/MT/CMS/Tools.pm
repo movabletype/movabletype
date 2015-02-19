@@ -1957,7 +1957,7 @@ sub adjust_sitepath {
 
             $app->print_encode(
                 $app->translate(
-                    "Changing file path for the FileInfo record (ID:[_1])...",
+                    "Changing file path for FileInfo record (ID:[_1])...",
                     $fi->id
                 )
             );
@@ -1995,7 +1995,7 @@ sub adjust_sitepath {
             $app->print_encode(
                 "\n"
                     . $app->translate(
-                    "Changing URL for the FileInfo (ID:[_1])...", $fi->id
+                    "Changing URL for FileInfo record (ID:[_1])...", $fi->id
                     )
             );
 

@@ -160,7 +160,7 @@ sub delete {
         if ($exist) {
             return $app->error(
                 $app->translate(
-                    'Can not delete private tag associated with objects in system scope.'
+                    'Cannot delete private tag associated with objects in system scope.'
                 ),
                 403
             );
@@ -193,7 +193,7 @@ sub delete_for_site {
 
     if ( !$site_id && $tag->is_private ) {
         return $app->error(
-            $app->translate('Can not delete private tag in system scope.'),
+            $app->translate('Cannot delete private tag in system scope.'),
             403 );
     }
 

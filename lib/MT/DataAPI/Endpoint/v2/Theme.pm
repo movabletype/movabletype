@@ -421,7 +421,7 @@ sub export {
             else {
                 return $app->error(
                     $app->translate(
-                        "Export theme folder already exists '[_1]'. You can overwrite a existing theme with 'overwrite_yes=1' parameter, or change the Basename.",
+                        "Export theme folder already exists '[_1]'. You can overwrite an existing theme with 'overwrite_yes=1' parameter, or change the Basename.",
                         $output_path
                     ),
                     409
