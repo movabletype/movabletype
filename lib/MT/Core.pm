@@ -2053,8 +2053,22 @@ BEGIN {
                 type    => 'HASH',
                 default => {}
             },
-            'DataAPIDisableSite' => undef,
+            'DataAPIDisableSite'   => undef,
             'RebuildOffsetSeconds' => { default => 20 },
+
+            # Enterprise.pack
+            'LDAPAuthURL'           => { type => 'ARRAY' },
+            'LDAPAuthBindDN'        => { type => 'ARRAY' },
+            'LDAPAuthPassword'      => { type => 'ARRAY' },
+            'LDAPAuthSASLMechanism' => {
+                default => 'PLAIN',
+                type    => 'ARRAY',
+            },
+            'LDAPGroupSearchBase'   => { type  => 'ARRAY' },
+            'AuthLDAPURL'           => { alias => 'LDAPAuthURL' },
+            'AuthLDAPBindDN'        => { alias => 'LDAPAuthBindDN' },
+            'AuthLDAPPassword'      => { alias => 'LDAPAuthPassword' },
+            'AuthLDAPSASLMechanism' => { alias => 'LDAPAuthSASLMechanism' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2352,14 +2366,14 @@ sub load_core_tasks {
             frequency => $cfg->FuturePostFrequency * 60,    # once per minute
             code      => sub {
                 MT->instance->publisher->publish_future_posts;
-                }
+            }
         },
         'UnpublishingPost' => {
             label     => 'Unpublish Past Entries',
             frequency => $cfg->UnpublishPostFrequency * 60,  # once per minute
             code      => sub {
                 MT->instance->publisher->unpublish_past_entries;
-                }
+            }
         },
         'AddSummaryWatcher' => {
             label     => 'Add Summary Watcher to queue',
@@ -2394,7 +2408,7 @@ sub load_core_tasks {
             frequency => 60,     # * 60 * 24,   # once a day
             code      => sub {
                 MT::Core->purge_session_records;
-                }
+            }
         },
         'PurgeExpiredDataAPISessionRecords' => {
             label => 'Purge Stale DataAPI Session Records',
@@ -2402,7 +2416,7 @@ sub load_core_tasks {
             code      => sub {
                 require MT::App::DataAPI;
                 MT::App::DataAPI->purge_session_records;
-                }
+            }
         },
         'CleanExpiredFailedLogin' => {
             label     => 'Remove expired lockout data',
@@ -2410,7 +2424,7 @@ sub load_core_tasks {
             code      => sub {
                 my $app = MT->instance;
                 $app->model('failedlogin')->cleanup($app);
-                }
+            }
         },
         'CleanFileInfoRecords' => {
             label     => 'Purge Unused FileInfo Records',
@@ -2418,7 +2432,7 @@ sub load_core_tasks {
             code      => sub {
                 my $app = MT->instance;
                 $app->model('fileinfo')->cleanup;
-                }
+            }
         },
     };
 }
