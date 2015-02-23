@@ -2064,6 +2064,7 @@ BEGIN {
                 default => 'PLAIN',
                 type    => 'ARRAY',
             },
+            'LDAPUserSearchBase'    => { type  => 'ARRAY' },
             'LDAPGroupSearchBase'   => { type  => 'ARRAY' },
             'AuthLDAPURL'           => { alias => 'LDAPAuthURL' },
             'AuthLDAPBindDN'        => { alias => 'LDAPAuthBindDN' },
