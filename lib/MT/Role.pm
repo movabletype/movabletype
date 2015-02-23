@@ -193,8 +193,9 @@ sub list_props {
             display => 'none',
         },
         modified_by => {
-            auto    => 1,
-            display => 'none',
+            auto            => 1,
+            display         => 'none',
+            filter_editable => 0,
         },
         content => {
             base    => '__virtual.content',

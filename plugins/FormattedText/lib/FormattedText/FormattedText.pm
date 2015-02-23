@@ -239,12 +239,14 @@ sub list_props {
             label   => 'Description',
         },
         blog_id => {
-            auto    => 1,
-            display => 'none',
+            auto            => 1,
+            display         => 'none',
+            filter_editable => 0,
         },
         created_by => {
-            auto    => 1,
-            display => 'none',
+            auto            => 1,
+            display         => 'none',
+            filter_editable => 0,
         },
         content => {
             base    => '__virtual.content',

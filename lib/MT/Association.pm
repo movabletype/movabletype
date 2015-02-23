@@ -297,13 +297,13 @@ sub list_props {
             terms => sub {
                 my $types = MT->component('Enterprise') ? [ 1, 2 ] : 1;
                 return { type => $types };
-                }
+            }
         },
         modified_on => {
             display => 'none',
             base    => '__virtual.modified_on',
         },
-        blog_id => { auto => 1, display => 'none' },
+        blog_id => { auto => 1, display => 'none', filter_editable => 0, },
     };
 }
 

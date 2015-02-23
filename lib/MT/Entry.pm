@@ -779,9 +779,10 @@ sub list_props {
         },
         current_context => { base => '__common.current_context', },
         blog_id         => {
-            auto    => 1,
-            col     => 'blog_id',
-            display => 'none',
+            auto            => 1,
+            col             => 'blog_id',
+            display         => 'none',
+            filter_editable => 0,
         },
         content => {
             base    => '__virtual.content',

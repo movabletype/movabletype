@@ -383,9 +383,10 @@ sub list_props {
             display => 'none',
         },
         created_by => {
-            auto    => 1,
-            col     => 'created_by',
-            display => 'none',
+            auto            => 1,
+            col             => 'created_by',
+            display         => 'none',
+            filter_editable => 0,
         },
         missing_file => {
             base        => '__virtual.single_select',
