@@ -332,14 +332,16 @@ sub list_props {
             filter_editable => 0,
         },
         blog_id => {
-            auto    => 1,
-            col     => 'blog_id',
-            display => 'none',
+            auto            => 1,
+            col             => 'blog_id',
+            display         => 'none',
+            filter_editable => 0,
         },
         author_id => {
-            auto    => 1,
-            col     => 'author_id',
-            display => 'none',
+            auto            => 1,
+            col             => 'author_id',
+            display         => 'none',
+            filter_editable => 0,
         },
         content => {
             base    => '__virtual.content',
