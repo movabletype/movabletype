@@ -268,7 +268,7 @@ sub suite {
             is_superuser => 1,
             code         => 409,
             error =>
-                "The website root directory must be an absolute: relative\/path\n",
+                "The website root directory must be an absolute path: relative\/path\n",
         },
         {    # Not logged in.
             path   => '/v2/sites',
@@ -1015,7 +1015,7 @@ sub suite {
                 +{  error => {
                         code => 403,
                         message =>
-                            'Website "update site" (ID:2) were not deleted. You need to delete blogs under the website first.',
+                            'Website "update site" (ID:2) was not deleted. You need to delete the blogs under the website first.',
                     },
                 };
             },

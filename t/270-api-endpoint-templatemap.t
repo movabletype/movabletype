@@ -120,7 +120,7 @@ sub suite {
                         code    => 400,
                         message => 'Template "'
                             . $blog_index_tmpl->name
-                            . '" is not archive template.',
+                            . '" is not an archive template.',
                     },
                 };
             },
@@ -264,7 +264,7 @@ sub suite {
                         code    => 400,
                         message => 'Template "'
                             . $blog_index_tmpl->name
-                            . '" is not archive template.',
+                            . '" is not an archive template.',
                     },
                 };
             },
