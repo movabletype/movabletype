@@ -105,6 +105,7 @@ sub save_filter {
 
     if ( defined $obj->convert_breaks && $obj->convert_breaks ne '' ) {
         my %valid_filters = ( 1 => 1 );             # __default__
+        $valid_filters{0} = 1;
         my $type          = $obj->class;
         my $filters       = MT->all_text_filters;
         for my $filter ( keys %$filters ) {
