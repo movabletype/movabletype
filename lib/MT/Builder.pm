@@ -229,9 +229,9 @@ sub compile {
                             my @m         = $pre_error =~ m/\r?\n/g;
                             my $line      = scalar @m;
                             foreach (@$errors) {
-                                $line += $_->{line};
-                                $_->{line} = $line;
-                                $_->{message} =~ s/#/$line/ unless $depth;
+                                $_->{line} += $line;
+                                $_->{message} =~ s/#/$_->{line}/
+                                    unless $depth;
                             }
                         }
 
