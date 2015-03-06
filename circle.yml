@@ -12,13 +12,11 @@ dependencies:
     - mkdir -p ~/docker; docker save mt > ~/docker/image.tar
 
 test:
-  override:
-    - rm t/28-xmlrpc.t
-    - rm t/41-atom.t
-    - rm t/90-podcoverage.t
-    - rm t/171-cms-user.t
-    - rm plugins/MultiBlog/t/03.triggers-blogs_in_website.t
-
+  pre:
     - cp ./t/mysql-test.cfg ./mt-config.cgi
 
-    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove ./t ./plugins/*/t"
+    - rm t/34-sqlite.t
+    - rm t/90-podcoverage.t
+
+  override:
+    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove ./t ./plugins/*/t && phpunit"

@@ -7,11 +7,17 @@ use lib qw(lib extlib t/lib);
 
 use Test::More;
 use MT::Test::DataAPI;
+use MT::Test::Permission;
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
 my $author = MT->model('author')->load(2);
+
+my $unpublished_page = MT::Test::Permission->make_page(
+    blog_id => 1,
+    status  => 1,
+);
 
 my $suite = suite();
 test_data_api($suite);
@@ -93,6 +99,66 @@ sub suite {
             complete => sub {
                 my $deleted = MT->model('ping')->load(1);
                 is( $deleted, undef, 'deleted' );
+            },
+        },
+
+        # version 2
+
+        # list_trackbacks_for_page - irregular tests.
+        {    # Non-existent page.
+            path   => '/v2/sites/1/pages/230/trackbacks',
+            method => 'GET',
+            code   => 404,
+            error  => 'Page not found',
+        },
+        {    # Entry.
+            path   => '/v2/sites/1/pages/1/trackbacks',
+            method => 'GET',
+            code   => 404,
+            error  => 'Page not found',
+        },
+        {    # Non-existent site.
+            path   => '/v2/sites/5/pages/23/trackbacks',
+            method => 'GET',
+            code   => 404,
+            error  => 'Site not found',
+        },
+        {    # System.
+            path   => '/v2/sites/0/pages/23/trackbacks',
+            method => 'GET',
+            code   => 404,
+            error  => 'Page not found',
+        },
+        {    # Unpublished page and not logged in.
+            path => '/v2/sites/1/pages/'
+                . $unpublished_page->id
+                . '/trackbacks',
+            method    => 'GET',
+            author_id => 0,
+            code      => 403,
+            error =>
+                'Do not have permission to retrieve the list of trackbacks.',
+        },
+        {    # Unpublished page and no permissions.
+            path => '/v2/sites/1/pages/'
+                . $unpublished_page->id
+                . '/trackbacks',
+            method       => 'GET',
+            restrictions => { 1 => [qw/ open_page_edit_screen /], },
+            code         => 403,
+            error =>
+                'Do not have permission to retrieve the list of trackbacks.',
+        },
+
+        # list_trackbacks_for_page - normal tests.
+        {   path   => '/v2/sites/1/pages/23/trackbacks',
+            method => 'GET',
+            result => sub {
+                my $tbping = $app->model('tbping')->load(3);
+                return +{
+                    totalResults => 1,
+                    items => MT::DataAPI::Resource->from_object( [$tbping] ),
+                };
             },
         },
     ];

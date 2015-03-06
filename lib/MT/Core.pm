@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -3289,9 +3289,15 @@ sub CGIMaxUpload {
     my $val = $mgr->get_internal('CGIMaxUpload');
     return $mgr->default('CGIMaxUpload') unless $val;
 
-    require Scalar::Util;
-    return $mgr->default('CGIMaxUpload')
-        unless Scalar::Util::looks_like_number($val);
+    eval "require Scalar::Util";
+    if ( !$@ ) {
+        return $mgr->default('CGIMaxUpload')
+            unless Scalar::Util::looks_like_number($val);
+    }
+    else {
+        return $mgr->default('CGIMaxUpload')
+            unless ( $val =~ /^[+-]?[0-9]+$/ );
+    }
     return $val;
 }
 

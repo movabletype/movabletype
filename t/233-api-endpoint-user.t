@@ -605,6 +605,45 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/users',
+            method    => 'POST',
+            author_id => 0,
+            params    => {
+                user => {
+                    name         => 'create-user',
+                    displayName  => 'create user',
+                    password     => 'password',
+                    email        => 'chuckd@sixapart.com',
+                    url          => 'http://www.sixapart.com/',
+                    dateFormat   => 'full',
+                    textFormat   => 'richtext',
+                    tagDelimiter => 'space',
+                    language     => 'ja',
+                },
+            },
+            code  => '401',
+            error => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/users',
+            method => 'POST',
+            params => {
+                user => {
+                    name         => 'create-user',
+                    displayName  => 'create user',
+                    password     => 'password',
+                    email        => 'chuckd@sixapart.com',
+                    url          => 'http://www.sixapart.com/',
+                    dateFormat   => 'full',
+                    textFormat   => 'richtext',
+                    tagDelimiter => 'space',
+                    language     => 'ja',
+                },
+            },
+            code  => '403',
+            error => 'Do not have permission to create a user.',
+        },
 
         # create_user - normal tests
         {   path         => '/v2/users',
@@ -712,6 +751,23 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path   => '/v2/users/3',
+            method => 'PUT',
+            params =>
+                { user => { systemPermissions => [qw( create_website )], }, },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/users/3',
+            method => 'PUT',
+            params =>
+                { user => { systemPermissions => [qw( create_website )], }, },
+            code  => 403,
+            error => 'Do not have permission to update the requested user.',
+        },
 
         # update_user - normal tests
         {    # Grant permissions.
@@ -751,7 +807,14 @@ sub suite {
                 };
             },
         },
-        {    # No superuser.
+        {    # Not logged in.
+            path      => '/v2/users/3/unlock',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (no superuser).
             path   => '/v2/users/3/unlock',
             method => 'POST',
             code   => 403,
@@ -812,6 +875,19 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/users/3/recover_password',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (no superuser).
+            path   => '/v2/users/3/recover_password',
+            method => 'POST',
+            code   => 403,
+            error  => 'Do not have permission to recover password for user.',
+        },
 
         # recover_password_for_user - normal tests
         {   path         => '/v2/users/3/recover_password',
@@ -839,10 +915,11 @@ sub suite {
 
         # recover_password - irregular tests.
         {    # No email.
-            path   => '/v2/recover_password',
-            method => 'POST',
-            code   => 400,
-            result => sub {
+            path      => '/v2/recover_password',
+            method    => 'POST',
+            author_id => 0,
+            code      => 400,
+            result    => sub {
                 return +{
                     error => {
                         code => 400,
@@ -853,11 +930,12 @@ sub suite {
             },
         },
         {    # Not unique.
-            path   => '/v2/recover_password',
-            method => 'POST',
-            params => { email => 'chuckd@sixapart.com', },
-            code   => 409,
-            result => sub {
+            path      => '/v2/recover_password',
+            method    => 'POST',
+            author_id => 0,
+            params    => { email => 'chuckd@sixapart.com', },
+            code      => 409,
+            result    => sub {
                 return +{
                     error => {
                         code => 409,
@@ -870,10 +948,11 @@ sub suite {
 
         # recover_password - normal tests.
         {    # Unique.
-            path     => '/v2/recover_password',
-            method   => 'POST',
-            params   => { email => 'chuckd@example.com', },
-            complete => sub {
+            path      => '/v2/recover_password',
+            method    => 'POST',
+            params    => { email => 'chuckd@example.com', },
+            author_id => 0,
+            complete  => sub {
                 my $user = $app->model('author')
                     ->load( { email => 'chuckd@example.com' } );
                 $user->password_reset_expires(0);
@@ -901,7 +980,8 @@ sub suite {
                 email => 'chuckd@sixapart.com',
                 name  => 'create-user',
             },
-            setup => sub {
+            author_id => 0,
+            setup     => sub {
                 my $user
                     = $app->model('author')
                     ->load(
@@ -941,6 +1021,20 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # Not logged in.
+            path      => '/v2/users/3',
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/users/3',
+            method       => 'DELETE',
+            is_superuser => 0,
+            code         => 403,
+            error        => 'Do not have permission to delete a user.',
         },
 
         # delete_user - normal tests

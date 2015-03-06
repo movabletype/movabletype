@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -21,15 +21,12 @@ sub edit {
         if $blog && !$id;
 
     # The inflow from management screen of Websites
-    # on system scope is redirected to Ddashboard.
-    if ( $app->param('blog_id') == 0 && $blog && $blog_id ) {
+    # is redirected to dashboard.
+    if ( $app->mode eq 'view' && $blog && $blog_id ) {
         return $app->redirect(
             $app->uri(
                 mode => 'dashboard',
-                args => {
-                    blog_id  => $blog_id,
-                    redirect => 1
-                },
+                args => { blog_id => $blog_id },
             )
         );
     }
@@ -472,6 +469,7 @@ sub dialog_select_website {
     my $terms = {};
     my $args  = {};
     if ($favorites) {
+
         # Do not exclude top 5 favorite websites from
         #   select website dialog list. bugid:112372
         $confirm_js = 'saveFavorite';

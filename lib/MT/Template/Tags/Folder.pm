@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -126,8 +126,9 @@ sub _hdlr_has_parent_folder {
 
 sub _check_folder {
     my ($ctx) = @_;
-    my $e     = $ctx->stash('entry');
-    my $cat   = ( ( $ctx->stash('category') ) || $ctx->stash('archive_category') )
+    my $e = $ctx->stash('entry');
+    my $cat
+        = ( ( $ctx->stash('category') ) || $ctx->stash('archive_category') )
         || ( ( $e = $ctx->stash('entry') ) && $e->category )
         or return $ctx->error(
         MT->translate(

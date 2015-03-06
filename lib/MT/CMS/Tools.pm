@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1957,7 +1957,7 @@ sub adjust_sitepath {
 
             $app->print_encode(
                 $app->translate(
-                    "Changing file path for the FileInfo record (ID:[_1])...",
+                    "Changing file path for FileInfo record (ID:[_1])...",
                     $fi->id
                 )
             );
@@ -1995,7 +1995,7 @@ sub adjust_sitepath {
             $app->print_encode(
                 "\n"
                     . $app->translate(
-                    "Changing URL for the FileInfo (ID:[_1])...", $fi->id
+                    "Changing URL for FileInfo record (ID:[_1])...", $fi->id
                     )
             );
 

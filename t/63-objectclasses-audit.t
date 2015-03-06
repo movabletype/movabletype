@@ -57,24 +57,102 @@ my @suite = (
         timestamp     => 20131219210000,
     },
 );
+
 subtest 'audit columns' => sub {
-    for my $d (@suite) {
-        subtest 'server_offset:' . $d->{server_offset} => sub {
-            $blog->server_offset( $d->{server_offset} );
-            $blog->save;
-            my ( $e, $rev ) = create_entry();
-            is( $e->created_on, $d->{timestamp},
-                'An entry\'s created_on has been assigned correctly' );
-            is( $e->modified_on, $d->{timestamp},
-                'An entry\'s modified_on has been assigned correctly' );
-            is( $rev->created_on, $d->{timestamp},
-                'An revision object\'s created_on has been assigned correctly'
+    subtest 'entry' => sub {
+        for my $d (@suite) {
+            subtest 'server_offset:' . $d->{server_offset} => sub {
+                $blog->server_offset( $d->{server_offset} );
+                $blog->save;
+                my ( $e, $rev ) = create_entry();
+                is( $e->created_on, $d->{timestamp},
+                    'An entry\'s created_on has been assigned correctly' );
+                is( $e->modified_on, $d->{timestamp},
+                    'An entry\'s modified_on has been assigned correctly' );
+                is( $rev->created_on, $d->{timestamp},
+                    'An revision object\'s created_on has been assigned correctly'
+                );
+                is( $rev->modified_on, $d->{timestamp},
+                    'An revision object\'s modified_on has been assigned correctly'
+                );
+            };
+        }
+    };
+
+    my $w;
+    subtest 'website' => sub {
+        subtest 'create' => sub {
+            $w = MT->model('website')->new;
+            $w->set_values(
+                {   name          => 'test website',
+                    server_offset => $suite[0]->{server_offset},
+                }
             );
-            is( $rev->modified_on, $d->{timestamp},
-                'An revision object\'s modified_on has been assigned correctly'
+            $w->save or die $w->errstr;
+
+            is( $w->created_on,
+                $suite[0]->{timestamp},
+                'A website\'s created_on has been assigned correctly'
+            );
+            is( $w->modified_on,
+                $suite[0]->{timestamp},
+                'A website\'s modified_on has been assigned correctly'
             );
         };
-    }
+
+        subtest 'update' => sub {
+            $w->server_offset( $suite[1]->{server_offset} );
+            $w->modified_by(1);
+            $w->save or die $w->errstr;
+
+            is( $w->created_on,
+                $suite[0]->{timestamp},
+                'A website\'s created_on has been assigned correctly'
+            );
+            is( $w->modified_on,
+                $suite[1]->{timestamp},
+                'A website\'s modified_on has been assigned correctly'
+            );
+        };
+    };
+
+    subtest 'blog' => sub {
+        my $b;
+        subtest 'create' => sub {
+            $b = MT->model('blog')->new;
+            $b->set_values(
+                {   name          => 'test blog',
+                    parent_id     => $w->id,
+                    server_offset => $suite[1]->{server_offset},
+                }
+            );
+            $b->save or die $b->errstr;
+
+            is( $b->created_on,
+                $suite[1]->{timestamp},
+                'A blog\'s created_on has been assigned correctly'
+            );
+            is( $b->modified_on,
+                $suite[1]->{timestamp},
+                'A blog\'s modified_on has been assigned correctly'
+            );
+        };
+
+        subtest 'update' => sub {
+            $b->server_offset( $suite[2]->{server_offset} );
+            $b->modified_by(1);
+            $b->save or die $b->errstr;
+
+            is( $b->created_on,
+                $suite[1]->{timestamp},
+                'A blog\'s created_on has been assigned correctly'
+            );
+            is( $b->modified_on,
+                $suite[2]->{timestamp},
+                'A blog\'s modified_on has been assigned correctly'
+            );
+        };
+    };
 };
 
 done_testing();

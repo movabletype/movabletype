@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -83,6 +83,10 @@ sub create {
         return $app->error( "'categories' parameter is invalid.", 400 )
             if scalar @$cats_hash == 0
             || scalar @$cats_hash != scalar @attach_cats;
+
+        # Restore order.
+        my %attach_cats_hash = map { +( $_->id => $_ ) } @attach_cats;
+        @attach_cats = map { $attach_cats_hash{$_} } @cat_ids;
     }
 
     my @attach_assets;
@@ -160,6 +164,10 @@ sub update {
         return $app->error( "'categories' parameter is invalid.", 400 )
             if scalar @$cats_hash == 0
             || scalar @$cats_hash != scalar @update_cats;
+
+        # Restore order.
+        my %update_cats_hash = map { +( $_->id => $_ ) } @update_cats;
+        @update_cats = map { $update_cats_hash{$_} } @cat_ids;
     }
 
     my @update_assets;
@@ -225,6 +233,10 @@ sub list_for_category_common {
     my ( $blog, $cat ) = context_objects(@_)
         or return;
 
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        $cat->class, $cat->id, obj_promise($cat) )
+        or return;
+
     my %args = (
         join => MT->model('placement')->join_on(
             'entry_id',
@@ -250,6 +262,10 @@ sub list_for_asset_common {
     my ( $app, $endpoint, $class ) = @_;
 
     my ( $blog, $asset ) = context_objects(@_)
+        or return;
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'asset', $asset->id, obj_promise($asset) )
         or return;
 
     my %args = (

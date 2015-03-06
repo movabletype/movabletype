@@ -1,7 +1,5 @@
 FROM centos:centos6
 
-MAINTAINER Masahiro Iuchi
-
 RUN yum clean all
 RUN yum -y update
 
@@ -29,20 +27,33 @@ RUN yum -y install ImageMagick-perl
 RUN yum -y install gmp-devel
 
 # For installing XML::Parser.
-RUN yum -y install expat-devel
+RUN yum -y install expat-devel perl-XML-Parser
 
 # For installing XML::LibXML.
 RUN yum -y install libxml2-devel
 
+# For installing Archive::Zip.
+RUN yum -y install zip unzip
+
 RUN yum -y install wget
 RUN wget -O - https://cpanmin.us | perl - App::cpanminus
+
+# Update for installing SOAP::Lite. Cannot install by cpanm and old Archive::Tar.
+RUN cpanm Archive::Tar
+
 RUN wget https://raw.githubusercontent.com/movabletype/movabletype/develop/t/cpanfile
 RUN cpanm --installdeps .
-RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage
+RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage Clone
 
 # PHP
 RUN yum -y install php php-mysql php-gd
 RUN sed 's/^;date\.timezone =/date\.timezone = "Asia\/Tokyo"/' -i /etc/php.ini
+
+# PHPUnit
+RUN yum -y install php-xml
+RUN wget https://phar.phpunit.de/phpunit.phar
+RUN chmod +x phpunit.phar
+RUN mv phpunit.phar /usr/local/bin/phpunit
 
 RUN service mysqld start & sleep 10 && \
     mysql -e "create database mt_test default character set utf8;" && \

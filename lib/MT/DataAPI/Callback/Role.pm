@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -12,7 +12,7 @@ sub save_filter {
     my ( $eh, $app, $obj, $original ) = @_;
 
     if ( !( defined $obj->name && $obj->name ne '' ) ) {
-        return $app->errtrans('A parameter "name" is required.');
+        return $app->errtrans('A parameter "[_1]" is required.', 'name');
     }
 
     my $role_by_name = MT->model('role')->load( { name => $obj->name } );

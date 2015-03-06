@@ -787,7 +787,7 @@ List = new Class( Component, {
                     this.unsetSelection( [ item_id ] );
                 return;
             } else {
-                if ( !this.toggleSelect && !this.disableUnSelect )
+                if ( !this.toggleSelect )
                     this.resetSelection();
             }
         }

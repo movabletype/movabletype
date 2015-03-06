@@ -25,6 +25,11 @@ my $blog_page = $app->model('page')->load(20);
 $blog_page->status(1);              # draft
 $blog_page->save or die $blog_page->errstr;
 
+my $blog_folder = $app->model('folder')->load( { blog_id => 1 } ) or die;
+my $blog_page_2 = $app->model('page')->load(21) or die;
+$blog_page_2->category_id( $blog_folder->id );
+$blog_page_2->save or die $blog_page_2->errstr;
+
 my $suite = suite();
 test_data_api($suite);
 
@@ -34,7 +39,7 @@ sub suite {
     return +[
 
         # list_pages - irregualr tests
-        {                           # Non-existent site.
+        {    # Non-existent site.
             path   => '/v2/sites/5/pages',
             method => 'GET',
             code   => 404,
@@ -45,10 +50,18 @@ sub suite {
                     },
                 };
             },
+        },    # status is draft and not logged in.
+        {   path      => '/v2/sites/1/pages',
+            method    => 'GET',
+            params    => { status => 'draft' },
+            author_id => 0,
+            code      => 403,
+            error =>
+                'Do not have permission to retrieve the requested pages.',
         },
 
         # list_pages - normal tests
-        {    # Blog.
+        {     # Blog.
             path      => '/v2/sites/1/pages',
             method    => 'GET',
             callbacks => [
@@ -168,6 +181,118 @@ sub suite {
             },
         },
 
+        # list_pages_for_folder - normal tests
+        {   path      => '/v2/sites/1/folders/' . $blog_folder->id . '/pages',
+            method    => 'GET',
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_view_permission_filter.folder',
+                    count => 1,
+                },
+                {   name  => 'data_api_pre_load_filtered_list.page',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                return +{
+                    totalResults => 1,
+                    items =>
+                        MT::DataAPI::Resource->from_object( [$blog_page_2] ),
+                };
+            },
+        },
+
+        # list_pages_for_asset - normal tests.
+        {   path      => '/v2/sites/1/assets/2/pages',
+            method    => 'GET',
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_view_permission_filter.asset',
+                    count => 1,
+                },
+                {   name  => 'data_api_pre_load_filtered_list.page',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                return +{
+                    totalResults => 1,
+                    items =>
+                        MT::DataAPI::Resource->from_object( [$blog_page] ),
+                };
+            },
+        },
+
+#        # list_pages_for_tag - normal tests.
+#        {   path      => '/v2/tags/15/pages',
+#            method    => 'GET',
+#            callbacks => [
+#                {   name =>
+#                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
+#                    count => 1,
+#                },
+#                {   name  => 'data_api_pre_load_filtered_list.page',
+#                    count => 2,
+#                },
+#            ],
+#            result => sub {
+#                my @page = $app->model('page')->load(
+#                    undef,
+#                    {   join => $app->model('objecttag')->join_on(
+#                            undef,
+#                            {   blog_id           => \'= entry_blog_id',
+#                                object_id         => \'= entry_id',
+#                                object_datasource => 'entry',
+#                                tag_id            => 15,
+#                            },
+#                        ),
+#                        sort      => 'modified_on',
+#                        direction => 'descend',
+#                    },
+#                );
+#
+#                return +{
+#                    totalResults => scalar @page,
+#                    items => MT::DataAPI::Resource->from_object( \@page ),
+#                };
+#            },
+#        },
+
+        # list_pagss_for_site_and_tag - normal tests.
+        {   path      => '/v2/sites/1/tags/15/pages',
+            method    => 'GET',
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
+                    count => 1,
+                },
+                {   name  => 'data_api_pre_load_filtered_list.page',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                my @page = $app->model('page')->load(
+                    { blog_id => 1 },
+                    {   join => $app->model('objecttag')->join_on(
+                            undef,
+                            {   blog_id           => \'= entry_blog_id',
+                                object_id         => \'= entry_id',
+                                object_datasource => 'entry',
+                                tag_id            => 15,
+                            },
+                        ),
+                        sort      => 'modified_on',
+                        direction => 'descend',
+                    },
+                );
+
+                return +{
+                    totalResults => scalar @page,
+                    items => MT::DataAPI::Resource->from_object( \@page ),
+                };
+            },
+        },
+
         # get_page - irregular tests
         {    # Non-existent page.
             path   => '/v2/sites/1/pages/500',
@@ -199,6 +324,13 @@ sub suite {
             method    => 'GET',
             author_id => 0,
             code      => 403,
+        },
+        {    # Unpublished page and no permissions.
+            path         => '/v2/sites/1/pages/20',
+            method       => 'GET',
+            restrictions => { 1 => [qw/ open_page_edit_screen /], },
+            code         => 403,
+            error => 'Do not have permission to retrieve the requested page.',
         },
 
         # get_page - normal tests
@@ -346,6 +478,32 @@ __BODY__
                 },
             },
         },
+        {    # Not logged in.
+            path   => '/v2/sites/1/pages',
+            method => 'POST',
+            params => {
+                page => {
+                    title => 'create-page',
+                    text  => 'create page',
+                },
+            },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/pages',
+            method => 'POST',
+            params => {
+                page => {
+                    title => 'create-page',
+                    text  => 'create page',
+                },
+            },
+            restrictions => { 1 => [qw/ save_page /], },
+            code         => 403,
+            error => 'Do not have permission to create a page.',
+        },
 
         # create_page - normal tests
         {   path   => '/v2/sites/1/pages',
@@ -411,6 +569,41 @@ __BODY__
                         title   => 'create-page-with-format',
                     }
                 );
+            },
+        },
+        {    # Set format 0.
+            path   => '/v2/sites/1/pages',
+            method => 'POST',
+            params => {
+                page => {
+                    format => '0',
+                    title  => 'create-page-with-none',
+                    body   => <<'__BODY__',
+1. foo
+2. bar
+3. baz
+__BODY__
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.page',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                $app->model('page')
+                    ->load(
+                    { blog_id => 1, title => 'create-page-with-none' } );
             },
         },
 
@@ -480,6 +673,32 @@ __BODY__
                     message => "Invalid format: invalid\n",
                 },
             },
+        },
+        {    # Not logged in.
+            path   => '/v2/sites/1/pages/23',
+            method => 'PUT',
+            params => {
+                page => {
+                    title => 'update-page',
+                    body  => 'update page',
+                },
+            },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/pages/23',
+            method => 'PUT',
+            params => {
+                page => {
+                    title => 'update-page',
+                    body  => 'update page',
+                },
+            },
+            restrictions => { 1 => [qw/ save_page /], },
+            code         => 403,
+            error => 'Do not have permission to update a page.',
         },
 
         # update_page - normal tests
@@ -564,6 +783,20 @@ __BODY__
             path   => '/v2/sites/1/pages/2',
             method => 'DELETE',
             code   => 404,
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/pages/23',
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path         => '/v2/sites/1/pages/23',
+            method       => 'DELETE',
+            restrictions => { 1 => [qw/ delete_page /], },
+            code         => 403,
+            error        => 'Do not have permission to delete a page.',
         },
 
         # delete_page - normal tests

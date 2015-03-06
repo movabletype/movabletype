@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -190,7 +190,7 @@ sub _retrieve_user_from_param {
     my $user_id = $app->param('user_id');
     if ( !defined $user_id ) {
         return $app->error(
-            $app->translate('A parameter "user_id" is required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.', 'user_id'), 400 );
     }
 
     my $user = $app->model('author')->load($user_id)
@@ -206,7 +206,7 @@ sub _retrieve_role_from_param {
     my $role_id = $app->param('role_id');
     if ( !defined $role_id ) {
         return $app->error(
-            $app->translate('A parameter "role_id" is required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.','role_id'), 400 );
     }
 
     my $role = $app->model('role')->load($role_id)
@@ -284,7 +284,7 @@ sub _retrieve_site_from_param {
     my $site_id = $app->param('site_id');
     if ( !defined $site_id ) {
         return $app->error(
-            $app->translate('A parameter "site_id" is required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.', 'site_id'), 400 );
     }
 
     my $site = $app->model('blog')->load($site_id);

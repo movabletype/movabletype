@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -18,18 +18,19 @@ sub tborigin {
     # only filter TrackBack pings...
     return (ABSTAIN) unless UNIVERSAL::isa( $obj, 'MT::TBPing' );
 
-    my $domain = extract_domains( $obj->source_url, 1 );
+    my @domain = extract_domains( $obj->source_url, 1 );
 
     my $config = $plugin->get_config_hash( 'blog:' . $obj->blog_id )
         ;    # config($plugin);
     my $pingip = $obj->ip;
 
-    if ( domain_or_ip_in_whitelist( $domain, $pingip, $config->{whitelist} ) )
+    if (domain_or_ip_in_whitelist( \@domain, $pingip, $config->{whitelist} ) )
     {
         return (ABSTAIN);
     }
 
-    my $score = int( $config->{tborigin_weight} ) || 1;
+    my $domain   = $domain[0];
+    my $score    = int( $config->{tborigin_weight} ) || 1;
     my $domainip = checkdns($domain);
     if ( !$domainip ) {
         return (

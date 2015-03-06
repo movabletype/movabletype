@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -297,13 +297,13 @@ sub list_props {
             terms => sub {
                 my $types = MT->component('Enterprise') ? [ 1, 2 ] : 1;
                 return { type => $types };
-                }
+            }
         },
         modified_on => {
             display => 'none',
             base    => '__virtual.modified_on',
         },
-        blog_id => { auto => 1, display => 'none' },
+        blog_id => { auto => 1, display => 'none', filter_editable => 0, },
     };
 }
 

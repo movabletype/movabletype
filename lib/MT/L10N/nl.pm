@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -286,7 +286,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1] reageerde op <a href="[_2]">reactie van [_3]</a>',
 
 ## default_templates/commenter_confirm.mtml
-	'Thank you registering for an account to comment on [_1].' => 'Bedankt om een account aan te maken om te kunnen reageren op [_1].',
+	'Thank you for registering an account to comment on [_1].' => 'Bedankt om een account aan te maken om te kunnen reageren op [_1].',
 	'For your security and to prevent fraud, we ask you to confirm your account and email address before continuing. Once your account is confirmed, you will immediately be allowed to comment on [_1].' => 'Voor uw eigen veiligheid en om fraude tegen te gaan, vragen we u om uw account en email adres te bevestigen vooraleer verder te gaan.  Zodra uw account bevestigd is, kunt u meteen reageren op [_1].',
 	'To confirm your account, please click on the following URL, or cut and paste this URL into a web browser:' => 'Om uw account te bevestigen moet u op volgende URL klikken of hem in uw webbrowser knippen en plakken.',
 	q{If you did not make this request, or you don't want to register for an account to comment on [_1], then no further action is required.} => q{Als u deze account niet heeft aangevraagd, of als u niet de bedoeling had te registreren om te kunnen reageren op [_1] dan hoeft u verder niets te doen.},
@@ -6056,7 +6056,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'[_1] Forum' => 'Forum [_1]',
 
 ## addons/Community.pack/templates/global/email_verification_email.mtml
-	'Thank you registering for an account to [_1].' => 'Bedankt om een account te registreren op [_1]',
+	'Thank you for registering an account to [_1].' => 'Bedankt om een account te registreren op [_1]',
 	'For your own security and to prevent fraud, we ask that you please confirm your account and email address before continuing. Once confirmed you will immediately be allowed to sign in to [_1].' => 'Voor uw eigen veiligheid en om fraude te voorkomen, vragen we om uw account en e-mail adres te bevestigen vooraleer verder te gaan.  Zodra u bevestigd heeft, kunt u onmiddellijk aanmelden bij [_1].',
 	'To confirm your account, please click on or cut and paste the following URL into a web browser:' => 'Om uw account te bevestigen moet u op deze link klikken of de URL in uw webbrowser plakken:',
 	q{If you did not make this request, or you don't want to register for an account to [_1], then no further action is required.} => q{Als u hier niet zelf om gevraagd heeft, of u wenst geen account te registreren op [_1], dan is er niets dat u verder hoeft te doen.},

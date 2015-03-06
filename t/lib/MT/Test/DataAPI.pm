@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -90,8 +90,14 @@ sub test_data_api {
 
         $data->{setup}->($data) if $data->{setup};
 
+        my @special_perms = qw/ edit_templates administer_blog rebuild /;
+
         $mock_permission->unmock('can_do')
             if $mock_permission->is_mocked('can_do');
+        for (@special_perms) {
+            $mock_permission->unmock("can_$_")
+                if $mock_permission->is_mocked("can_$_");
+        }
         if ( exists $data->{restrictions} ) {
             $mock_permission->mock(
                 'can_do',
@@ -109,6 +115,25 @@ sub test_data_api {
                     }
                 }
             );
+
+            for my $sp_perm (@special_perms) {
+                $mock_permission->mock(
+                    "can_$sp_perm",
+                    sub {
+                        my ($perm) = @_;
+                        if ( grep { $_ eq $sp_perm }
+                            @{ $data->{restrictions}{ $perm->blog_id || 0 } }
+                            )
+                        {
+                            return;
+                        }
+                        else {
+                            return $mock_permission->original("can_$sp_perm")
+                                ->(@_);
+                        }
+                    },
+                );
+            }
         }
 
         my $path = $data->{path};
@@ -198,10 +223,14 @@ sub test_data_api {
 
         my $result;
         if ( my $expected_result = $data->{result} ) {
+            MT->instance->user($author);
+            no warnings 'redefine';
+            local *boolean::true  = sub {'true'};
+            local *boolean::false = sub {'false'};
+
             $expected_result = $expected_result->( $data, $body )
                 if ref $expected_result eq 'CODE';
             if ( UNIVERSAL::isa( $expected_result, 'MT::Object' ) ) {
-                MT->instance->user($author);
                 $expected_result = $format->{unserialize}->(
                     $format->{serialize}->(
                         MT::DataAPI::Resource->from_object($expected_result)
@@ -220,7 +249,7 @@ sub test_data_api {
         }
 
         if ( my $complete = $data->{complete} ) {
-            $complete->( $data, $body );
+            $complete->( $data, $body, \%headers );
         }
 
     }

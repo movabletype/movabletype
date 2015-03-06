@@ -15,6 +15,22 @@ my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
 
+my $blog_entry = $app->model('entry')->load( { blog_id => 1 } );
+$blog_entry->add_tags('@private');
+$blog_entry->save or die $blog_entry->errstr;
+
+my $blog_private_tag = $app->model('tag')->load(
+    { is_private => 1 },
+    {   join => $app->model('objecttag')->join_on(
+            'tag_id',
+            {   blog_id           => 1,
+                object_datasource => 'entry',
+                object_id         => $blog_entry->id
+            },
+        )
+    },
+);
+
 my $suite = suite();
 test_data_api($suite);
 
@@ -23,79 +39,86 @@ done_testing;
 sub suite {
     return +[
 
-        # list_tags - normal tests
-        {   path      => '/v2/tags',
-            method    => 'GET',
-            callbacks => [
-                {   name  => 'data_api_pre_load_filtered_list.tag',
-                    count => 2,
-                },
-            ],
-            complete => sub {
-                my ( $data, $body ) = @_;
+#        # list_tags - normal tests
+#        {   path      => '/v2/tags',
+#            method    => 'GET',
+#            callbacks => [
+#                {   name  => 'data_api_pre_load_filtered_list.tag',
+#                    count => 2,
+#                },
+#            ],
+#            complete => sub {
+#                my ( $data, $body ) = @_;
+#
+#                my $got_logs = $app->current_format->{unserialize}->($body);
+#                my @expected_logs
+#                    = MT->model('tag')->load( undef, { sort => 'name' } );
+#
+#                my @got_log_names
+#                    = map { $_->{name} } @{ $got_logs->{items} };
+#                my @expected_log_names = map { $_->name } @expected_logs;
+#
+#                is_deeply( \@got_log_names, \@expected_log_names );
+#            },
+#        },
+#        {    # Search name.
+#            path      => '/v2/tags',
+#            method    => 'GET',
+#            params    => { search => 'page' },
+#            callbacks => [
+#                {   name  => 'data_api_pre_load_filtered_list.tag',
+#                    count => 2,
+#                },
+#            ],
+#            result => sub {
+#                my @tags = $app->model('tag')->load(
+#                    { name => { like => '%page%' } },
+#                    { sort => 'name', direction => 'ascend' },
+#                );
+#
+#                $app->user($author);
+#                no warnings 'redefine';
+#                local *boolean::true  = sub {'true'};
+#                local *boolean::false = sub {'false'};
+#
+#                return +{
+#                    totalResults => 3,
+#                    items => MT::DataAPI::Resource->from_object( \@tags ),
+#                };
+#            },
+#        },
+#        {
+#            # Not logged in.
+#            path      => '/v2/tags',
+#            method    => 'GET',
+#            author_id => 0,
+#            callbacks => [
+#                {   name  => 'data_api_pre_load_filtered_list.tag',
+#                    count => 2,
+#                },
+#            ],
+#            complete => sub {
+#                my ( $data, $body ) = @_;
+#
+#                my $got_logs = $app->current_format->{unserialize}->($body);
+#                my @expected_logs
+#                    = MT->model('tag')->load( { is_private => { not => 1 } },
+#                    { sort => 'name' } );
+#
+#                my @got_log_names
+#                    = map { $_->{name} } @{ $got_logs->{items} };
+#                my @expected_log_names = map { $_->name } @expected_logs;
+#
+#                is_deeply( \@got_log_names, \@expected_log_names );
+#            },
+#        },
 
-                my $got_logs = $app->current_format->{unserialize}->($body);
-                my @expected_logs
-                    = MT->model('tag')->load( undef, { sort => 'name' } );
-
-                my @got_log_names
-                    = map { $_->{name} } @{ $got_logs->{items} };
-                my @expected_log_names = map { $_->name } @expected_logs;
-
-                is_deeply( \@got_log_names, \@expected_log_names );
-            },
-        },
-        {    # Search name.
-            path      => '/v2/tags',
-            method    => 'GET',
-            params    => { search => 'page' },
-            callbacks => [
-                {   name  => 'data_api_pre_load_filtered_list.tag',
-                    count => 2,
-                },
-            ],
-            result => sub {
-                my @tags = $app->model('tag')->load(
-                    { name => { like => '%page%' } },
-                    { sort => 'name', direction => 'ascend' },
-                );
-
-                $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
-                return +{
-                    totalResults => 3,
-                    items => MT::DataAPI::Resource->from_object( \@tags ),
-                };
-            },
-        },
-
+        # list_tags_for_site - irregular tests
         {
-            # Not logged in.
-            path      => '/v2/tags',
-            method    => 'GET',
-            author_id => 0,
-            callbacks => [
-                {   name  => 'data_api_pre_load_filtered_list.tag',
-                    count => 2,
-                },
-            ],
-            complete => sub {
-                my ( $data, $body ) = @_;
-
-                my $got_logs = $app->current_format->{unserialize}->($body);
-                my @expected_logs
-                    = MT->model('tag')->load( { is_private => { not => 1 } },
-                    { sort => 'name' } );
-
-                my @got_log_names
-                    = map { $_->{name} } @{ $got_logs->{items} };
-                my @expected_log_names = map { $_->name } @expected_logs;
-
-                is_deeply( \@got_log_names, \@expected_log_names );
-            },
+            # Non-existent site.
+            path   => '/v2/sites/10/tags',
+            method => 'GET',
+            code   => 404,
         },
 
         # list_tags_for_site - normal tests
@@ -194,48 +217,40 @@ sub suite {
             },
         },
 
-        # list_tags_for_site - irregular tests
-        {
-            # Non-existent site.
-            path   => '/v2/sites/10/tags',
-            method => 'GET',
-            code   => 404,
-        },
-
-        # get_tag - normal tests
-        {   path      => '/v2/tags/1',
-            method    => 'GET',
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
-                    count => 1,
-                },
-            ],
-            result => sub {
-                return MT->model('tag')->load(1);
-            },
-        },
-
-        # get_tag - irregular tests
-        {    # Non-existent tag.
-            path   => '/v2/tags/100',
-            method => 'GET',
-            code   => 404,
-        },
-
-        # get_tag_for_site - normal tests
-        {   path      => '/v2/sites/1/tags/1',
-            method    => 'GET',
-            callbacks => [
-                {   name =>
-                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
-                    count => 1,
-                },
-            ],
-            result => sub {
-                return MT->model('tag')->load(1);
-            },
-        },
+#        # get_tag - irregular tests
+#        {    # Non-existent tag.
+#            path   => '/v2/tags/100',
+#            method => 'GET',
+#            code   => 404,
+#        },
+#        {    # Private tag and not logged in.
+#            path      => '/v2/tags/9',
+#            method    => 'GET',
+#            author_id => 0,
+#            code      => 403,
+#            error => 'Do not have permission to retrieve the requested tag.',
+#        },
+#        {    # Private tag and no permissions.
+#            path         => '/v2/tags/9',
+#            method       => 'GET',
+#            restrictions => { 0 => [qw/ administer /], },
+#            code         => 403,
+#            error => 'Do not have permission to retrieve the requested tag.',
+#        },
+#
+#        # get_tag - normal tests
+#        {   path      => '/v2/tags/1',
+#            method    => 'GET',
+#            callbacks => [
+#                {   name =>
+#                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
+#                    count => 1,
+#                },
+#            ],
+#            result => sub {
+#                return MT->model('tag')->load(1);
+#            },
+#        },
 
         # get_tag_for_site - irregular tests
         {    # Existent tag via other site.
@@ -258,60 +273,111 @@ sub suite {
             method => 'GET',
             code   => 404,
         },
-
-        # rename_tag - irregular tests
-        {    # Non-existent tag.
-            path   => '/v2/tags/100',
-            method => 'PUT',
-            code   => 404,
-            result => sub {
-                return +{
-                    error => {
-                        code    => 404,
-                        message => 'Tag not found',
-                    },
-                };
-            },
+        {    # Private tag and not logged in.
+            path      => '/v2/sites/0/tags/9',
+            method    => 'GET',
+            author_id => 0,
+            code      => 403,
+            error => 'Do not have permission to retrieve the requested tag.',
         },
-        {    # Invalid parameter.
-            path   => '/v2/tags/1',
-            method => 'PUT',
-            code   => 400,
-            result => sub {
-                return +{
-                    error => {
-                        code    => 400,
-                        message => 'A resource "tag" is required.',
-                    },
-                };
-            },
+        {    # Private tag and no permissions (site).
+            path         => '/v2/sites/1/tags/' . $blog_private_tag->id,
+            method       => 'GET',
+            restrictions => { 1 => [qw/ access_to_tag_list edit_tags /], },
+            code         => 403,
+            error => 'Do not have permission to retrieve the requested tag.',
+        },
+        {    # Private tag and no permissions (system).
+            path         => '/v2/sites/0/tags/9',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ administer /], },
+            code         => 403,
+            error => 'Do not have permission to retrieve the requested tag.',
         },
 
-        # rename_tag - normal tests
-        {   path      => '/v2/tags/1',
-            method    => 'PUT',
-            params    => { tag => { name => 'grandma' }, },
+        # get_tag_for_site - normal tests
+        {   path      => '/v2/sites/1/tags/1',
+            method    => 'GET',
             callbacks => [
                 {   name =>
-                        'MT::App::DataAPI::data_api_save_permission_filter.tag',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_save_filter.tag',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_pre_save.tag',
-                    count => 1,
-                },
-                {   name  => 'MT::App::DataAPI::data_api_post_save.tag',
+                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
                     count => 1,
                 },
             ],
-            result   => sub { MT->model('tag')->load(1); },
-            complete => sub {
-                my $tag = MT->model('tag')->load( { name => 'grandpa' } );
-                is( $tag, undef, 'Renamed "grandpa" tag.' );
+            result => sub {
+                return MT->model('tag')->load(1);
             },
         },
+
+#        # rename_tag - irregular tests
+#        {    # Non-existent tag.
+#            path   => '/v2/tags/100',
+#            method => 'PUT',
+#            code   => 404,
+#            result => sub {
+#                return +{
+#                    error => {
+#                        code    => 404,
+#                        message => 'Tag not found',
+#                    },
+#                };
+#            },
+#        },
+#        {    # Invalid parameter.
+#            path   => '/v2/tags/1',
+#            method => 'PUT',
+#            code   => 400,
+#            result => sub {
+#                return +{
+#                    error => {
+#                        code    => 400,
+#                        message => 'A resource "tag" is required.',
+#                    },
+#                };
+#            },
+#        },
+#        {    # Not logged in.
+#            path      => '/v2/tags/1',
+#            method    => 'PUT',
+#            params    => { tag => { name => 'grandma' }, },
+#            author_id => 0,
+#            code      => 401,
+#            error     => 'Unauthorized',
+#        },
+#        {    # No permissions.
+#            path   => '/v2/tags/1',
+#            method => 'PUT',
+#            params => { tag => { name => 'grandma' }, },
+#            restrictions => { 0 => [qw/ administer /], },
+#            code         => 403,
+#            error => 'Do not have permission to rename a tag.',
+#        },
+#
+#        # rename_tag - normal tests
+#        {   path      => '/v2/tags/1',
+#            method    => 'PUT',
+#            params    => { tag => { name => 'grandma' }, },
+#            callbacks => [
+#                {   name =>
+#                        'MT::App::DataAPI::data_api_save_permission_filter.tag',
+#                    count => 1,
+#                },
+#                {   name  => 'MT::App::DataAPI::data_api_save_filter.tag',
+#                    count => 1,
+#                },
+#                {   name  => 'MT::App::DataAPI::data_api_pre_save.tag',
+#                    count => 1,
+#                },
+#                {   name  => 'MT::App::DataAPI::data_api_post_save.tag',
+#                    count => 1,
+#                },
+#            ],
+#            result   => sub { MT->model('tag')->load(1); },
+#            complete => sub {
+#                my $tag = MT->model('tag')->load( { name => 'grandpa' } );
+#                is( $tag, undef, 'Renamed "grandpa" tag.' );
+#            },
+#        },
 
         # rename_tag_for_site - irregular tests
         {    # Non-existent tag.
@@ -378,6 +444,22 @@ sub suite {
                 };
             },
         },
+        {    # Not logged in.
+            path      => '/v2/sites/1/tags/2',
+            method    => 'PUT',
+            params    => { tag => { name => 'snow' }, },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/tags/2',
+            method => 'PUT',
+            params => { tag => { name => 'snow' }, },
+            restrictions => { 1 => [qw/ edit_tags rename_tag /], },
+            code         => 403,
+            error => 'Do not have permission to rename a tag.',
+        },
 
         # rename_tag_for_site - normal tests
         {   path      => '/v2/sites/1/tags/2',
@@ -405,28 +487,42 @@ sub suite {
             },
         },
 
-        # delete_tag - irregular tests
-        {    # Non-existent tag.
-            path   => '/v2/tags/100',
-            method => 'DELETE',
-            code   => 404,
-            result => sub {
-                +{  error => {
-                        code    => 404,
-                        message => 'Tag not found',
-                    },
-                };
-            },
-        },
-
-        # delete_tag - normal tests
-        {   path     => '/v2/tags/3',
-            method   => 'DELETE',
-            complete => sub {
-                my $tag = MT->model('tag')->load(3);
-                is( $tag, undef, 'Deleted "strolling" tag.' );
-            },
-        },
+#        # delete_tag - irregular tests
+#        {    # Non-existent tag.
+#            path   => '/v2/tags/100',
+#            method => 'DELETE',
+#            code   => 404,
+#            result => sub {
+#                +{  error => {
+#                        code    => 404,
+#                        message => 'Tag not found',
+#                    },
+#                };
+#            },
+#        },
+#        {    # Not logged in.
+#            path      => '/v2/tags/3',
+#            method    => 'DELETE',
+#            author_id => 0,
+#            code      => 401,
+#            error     => 'Unauthorized',
+#        },
+#        {    # No permissons.
+#            path         => '/v2/tags/3',
+#            method       => 'DELETE',
+#            restrictions => { 0 => [qw/ administer /], },
+#            code         => 403,
+#            error        => 'Do not have permission to delete a tag.',
+#        },
+#
+#        # delete_tag - normal tests
+#        {   path     => '/v2/tags/3',
+#            method   => 'DELETE',
+#            complete => sub {
+#                my $tag = MT->model('tag')->load(3);
+#                is( $tag, undef, 'Deleted "strolling" tag.' );
+#            },
+#        },
 
         # delete_tag_for_site - irregular tests
         {    # Non-existent tag.
@@ -452,6 +548,27 @@ sub suite {
                     },
                 };
             },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/tags/4',
+            method    => 'DELETE',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions (site).
+            path         => '/v2/sites/1/tags/4',
+            method       => 'DELETE',
+            restrictions => { 1 => [qw/ remove_tag /], },
+            code         => 403,
+            error        => 'Do not have permission to delete a tag.',
+        },
+        {    # No permissions (system).
+            path         => '/v2/sites/0/tags/9',
+            method       => 'DELETE',
+            restrictions => { 0 => [qw/ administer /], },
+            code         => 403,
+            error        => 'Do not have permission to delete a tag.',
         },
 
         # delete_tag_for_site - normal tests

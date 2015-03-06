@@ -66,19 +66,12 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/1/widgetsets',
-            method => 'GET',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-                $mock_author->mock( 'can_edit_templates', 0 );
-            },
-            code => 403,
+            path         => '/v2/sites/1/widgetsets',
+            method       => 'GET',
+            restrictions => { 1 => [qw/ edit_templates /], },
+            code         => 403,
             error =>
                 'Do not have permission to retrieve the list of widgetsets.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-                $mock_author->unmock('can_edit_templates');
-            },
         },
 
         # list_widgetsets - normal tests
@@ -130,33 +123,33 @@ sub suite {
             params => { sortBy => 'modified_by' },
         },
 
-        # list_all_widgetsets - normal tests
-        {   path      => '/v2/widgetsets',
-            method    => 'GET',
-            callbacks => [
-                {   name  => 'data_api_pre_load_filtered_list.template',
-                    count => 2,
-                },
-            ],
-            result => sub {
-                my @ws = $app->model('template')->load(
-                    { type => 'widgetset' },
-                    { sort => 'blog_id', direction => 'ascend' },
-                );
-
-                $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
-                return +{
-                    totalResults => scalar @ws,
-                    items        => MT::DataAPI::Resource->from_object(
-                        \@ws, \@ws_fields
-                    ),
-                };
-            },
-        },
+#        # list_all_widgetsets - normal tests
+#        {   path      => '/v2/widgetsets',
+#            method    => 'GET',
+#            callbacks => [
+#                {   name  => 'data_api_pre_load_filtered_list.template',
+#                    count => 2,
+#                },
+#            ],
+#            result => sub {
+#                my @ws = $app->model('template')->load(
+#                    { type => 'widgetset' },
+#                    { sort => 'blog_id', direction => 'ascend' },
+#                );
+#
+#                $app->user($author);
+#                no warnings 'redefine';
+#                local *boolean::true  = sub {'true'};
+#                local *boolean::false = sub {'false'};
+#
+#                return +{
+#                    totalResults => scalar @ws,
+#                    items        => MT::DataAPI::Resource->from_object(
+#                        \@ws, \@ws_fields
+#                    ),
+#                };
+#            },
+#        },
 
         # get_widgetset - irregular tests
         {    # Non-existent widgetset.
@@ -227,18 +220,15 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/1/widgetsets/' . $blog_ws->id,
-            method => 'GET',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
+            path         => '/v2/sites/1/widgetsets/' . $blog_ws->id,
+            method       => 'GET',
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                1 => [qw/ edit_templates /],
             },
-            restrictions => { 1 => [qw/ edit_templates /], },
-            code         => 403,
+            code => 403,
             error =>
                 'Do not have permission to retrieve the requested widgetset.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-            },
         },
 
         # get_widgetset - normal tests
@@ -325,14 +315,9 @@ sub suite {
                     widgets => [ map { +{ id => $_->id } } @blog_widgets ],
                 },
             },
-            setup => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-            },
-            code     => 403,
-            error    => 'Do not have permission to create a widgetset.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-            },
+            restrictions => { 1 => [qw/ edit_templates /], },
+            code         => 403,
+            error => 'Do not have permission to create a widgetset.',
         },
 
         # create_widgetset - normal tests
@@ -467,14 +452,9 @@ sub suite {
                         [ map { +{ id => $_->id } } @blog_widgets_update ],
                 },
             },
-            setup => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-            },
-            code     => 403,
-            error    => 'Do not have permission to update a widgetset.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-            },
+            restrictions => { 1 => [qw/ edit_templates /], },
+            code         => 403,
+            error => 'Do not have permission to update a widgetset.',
         },
 
         # update_widgetset - normal tests
@@ -590,16 +570,11 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/1/widgetsets/' . $blog_ws->id,
-            method => 'DELETE',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-            },
-            code     => 403,
-            error    => 'Do not have permission to delete a widgetset.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-            },
+            path         => '/v2/sites/1/widgetsets/' . $blog_ws->id,
+            method       => 'DELETE',
+            restrictions => { 1 => [qw/ edit_templates /], },
+            code         => 403,
+            error        => 'Do not have permission to delete a widgetset.',
         },
 
         # delete_widgetset - normal tests
