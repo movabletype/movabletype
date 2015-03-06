@@ -60,5 +60,15 @@ RUN service mysqld start & sleep 10 && \
     mysql -e "grant all privileges on mt_test.* to mt@localhost;" && \
     service mysqld stop
 
+# OpenLDAP
+RUN cpanm Net::LDAP
+RUN yum -y install openldap-clients openldap-servers
+COPY t/ldif/modify_domain.ldif .
+COPY t/ldif/add_entries.ldif .
+RUN service slapd start & sleep 10 && \
+    ldapmodify -Y EXTERNAL -H ldapi:// -f modify_domain.ldif && \
+    ldapadd -f add_entries.ldif -x -D "cn=admin,dc=example,dc=com" -w secret && \
+    service slapd stop
+
 RUN yum clean all
 RUN rm ./cpanfile

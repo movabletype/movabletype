@@ -1,0 +1,19 @@
+dn: dc=example,dc=com
+objectClass: dcObject
+objectClass: organization
+dc: example
+o: Example Corporation
+description: The Example Corporation
+
+dn: cn=admin,dc=example,dc=com
+objectClass: organizationalRole
+cn: admin
+description: Directory Manager
+
+dn: ou=users,dc=example,dc=com
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=example,dc=com
+objectClass: organizationalUnit
+ou: groups
