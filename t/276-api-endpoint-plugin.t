@@ -273,6 +273,10 @@ sub suite {
                 );
                 is( $plugin_switch->{Awesome},
                     0, 'PluginSwitch of Awesome is 0.' );
+
+                $plugin_switch->{Awesome} = 1;
+                $app->config->PluginSwitch( $plugin_switch, 1 );
+                $app->config->save_config;
             },
         },
         {    # By id.
@@ -289,6 +293,10 @@ sub suite {
                 );
                 is( $plugin_switch->{'MultiBlog/multiblog.pl'},
                     0, 'PluginSwitch of MultiBlog/multiblog.pl is 0.' );
+
+                $plugin_switch->{'MultiBlog/multiblog.pl'} = 1;
+                $app->config->PluginSwitch( $plugin_switch, 1 );
+                $app->config->save_config;
             },
         },
 
@@ -343,6 +351,9 @@ sub suite {
             },
             complete => sub {
                 is( $app->config->UsePlugins, 0, 'UsePlugins is 0.' );
+
+                $app->config->UsePlugins( 1, 1 );
+                $app->config->save_config;
             },
         },
     ];

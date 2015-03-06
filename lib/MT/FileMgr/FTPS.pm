@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -15,8 +15,8 @@ use Net::FTPSSL;
 sub init {
     my $fmgr    = shift;
     my %options = ();
-    $options{Port} = $_[3] if $_[3];
-    $options{Debug} = 1 if $MT::DebugMode;
+    $options{Port}  = $_[3] if $_[3];
+    $options{Debug} = 1     if $MT::DebugMode;
     my $ftp = $fmgr->{ftp} = Net::FTPSSL->new( $_[0], %options )
         or return $fmgr->error("FTPS connection failed: $@");
     $ftp->login( @_[ 1, 2 ] );

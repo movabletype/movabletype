@@ -249,11 +249,16 @@ subtest 'Manage Users screen' => sub {
             },
         );
         my $out = delete $app->{__test_output};
-        ok( $out =~ m/Status: 302 Found/
-                && $out =~ m/saved_status=enabled/
-                && $out !~ m/not_enabled=/,
-            '1 user having name has been enabled.'
-        );
+
+        #        ok( $out =~ m/Status: 302 Found/
+        #                && $out =~ m/saved_status=enabled/
+        #                && $out !~ m/not_enabled=/,
+        #            '1 user having name has been enabled.'
+        #        );
+        ok( $out =~ m/Status: 302 Found/,    'No error occurred.' );
+        ok( $out =~ m/saved_status=enabled/, 'Users have been enabled.' );
+        ok( $out !~ m/not_enabled=/,
+            'There is no user who has not been enabled.' );
     };
 };
 

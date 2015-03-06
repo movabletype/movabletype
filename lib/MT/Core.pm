@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -2053,7 +2053,7 @@ BEGIN {
                 type    => 'HASH',
                 default => {}
             },
-            'DataAPIDisableSite' => undef,
+            'DataAPIDisableSite'   => undef,
             'RebuildOffsetSeconds' => { default => 20 },
         },
         upgrade_functions => \&load_upgrade_fns,
@@ -2352,14 +2352,14 @@ sub load_core_tasks {
             frequency => $cfg->FuturePostFrequency * 60,    # once per minute
             code      => sub {
                 MT->instance->publisher->publish_future_posts;
-                }
+            }
         },
         'UnpublishingPost' => {
             label     => 'Unpublish Past Entries',
             frequency => $cfg->UnpublishPostFrequency * 60,  # once per minute
             code      => sub {
                 MT->instance->publisher->unpublish_past_entries;
-                }
+            }
         },
         'AddSummaryWatcher' => {
             label     => 'Add Summary Watcher to queue',
@@ -2394,7 +2394,7 @@ sub load_core_tasks {
             frequency => 60,     # * 60 * 24,   # once a day
             code      => sub {
                 MT::Core->purge_session_records;
-                }
+            }
         },
         'PurgeExpiredDataAPISessionRecords' => {
             label => 'Purge Stale DataAPI Session Records',
@@ -2402,7 +2402,7 @@ sub load_core_tasks {
             code      => sub {
                 require MT::App::DataAPI;
                 MT::App::DataAPI->purge_session_records;
-                }
+            }
         },
         'CleanExpiredFailedLogin' => {
             label     => 'Remove expired lockout data',
@@ -2410,7 +2410,7 @@ sub load_core_tasks {
             code      => sub {
                 my $app = MT->instance;
                 $app->model('failedlogin')->cleanup($app);
-                }
+            }
         },
         'CleanFileInfoRecords' => {
             label     => 'Purge Unused FileInfo Records',
@@ -2418,7 +2418,7 @@ sub load_core_tasks {
             code      => sub {
                 my $app = MT->instance;
                 $app->model('fileinfo')->cleanup;
-                }
+            }
         },
     };
 }
@@ -3274,9 +3274,15 @@ sub CGIMaxUpload {
     my $val = $mgr->get_internal('CGIMaxUpload');
     return $mgr->default('CGIMaxUpload') unless $val;
 
-    require Scalar::Util;
-    return $mgr->default('CGIMaxUpload')
-        unless Scalar::Util::looks_like_number($val);
+    eval "require Scalar::Util";
+    if ( !$@ ) {
+        return $mgr->default('CGIMaxUpload')
+            unless Scalar::Util::looks_like_number($val);
+    }
+    else {
+        return $mgr->default('CGIMaxUpload')
+            unless ( $val =~ /^[+-]?[0-9]+$/ );
+    }
     return $val;
 }
 

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.0', '6.0009' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.1', '6.0009' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.0.5',              '__PRODUCT_VERSION_ID__',
+        '6.1',                '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 5;
+        $RELEASE_NUMBER = 0;
     }
 
     $DebugMode = 0;
@@ -4328,7 +4328,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2014 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2015 Six Apart.
 All rights reserved.
 
 =cut

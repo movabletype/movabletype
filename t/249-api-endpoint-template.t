@@ -11,6 +11,9 @@ use MT::Test::DataAPI;
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
+use MT::FileMgr;
+my $fmgr = MT::FileMgr->new('Local');
+
 # preparation.
 my $mock_perm   = Test::MockModule->new('MT::Permission');
 my $mock_author = Test::MockModule->new('MT::Author');
@@ -123,12 +126,12 @@ sub suite {
                     outputFile => 'create_template.html',
                 },
             },
-            setup => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                2 => [qw/ edit_templates /],
             },
-            code     => 403,
-            error    => 'Do not have permission to create a template.',
-            complete => sub { $mock_perm->unmock('can_edit_templates') },
+            code  => 403,
+            error => 'Do not have permission to create a template.',
         },
 
         # create_template - normal tests
@@ -173,15 +176,12 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/2/templates',
-            method => 'GET',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-            },
-            code => 403,
+            path         => '/v2/sites/2/templates',
+            method       => 'GET',
+            restrictions => { 0 => [qw/ edit_templates /], },
+            code         => 403,
             error =>
                 'Do not have permission to retrieve the list of templates.',
-            complete => sub { $mock_perm->unmock('can_edit_templates') },
         },
 
         # list_templates - normal tests
@@ -362,54 +362,55 @@ sub suite {
             params => { sortBy => 'type', },
         },
 
-        # list_all_templates - irregular tests.
-        {    # Not logged in.
-            path      => '/v2/templates',
-            method    => 'GET',
-            author_id => 0,
-            code      => 401,
-            error     => 'Unauthorized',
-        },
-        {    # No permissions.
-            path   => '/v2/templates',
-            method => 'GET',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-            },
-            code => 403,
-            error =>
-                'Do not have permission to retrieve the list of templates.',
-            complete => sub { $mock_perm->unmock('can_edit_templates') },
-        },
-
-        # list_all_templates - normal tests
-        {   path   => '/v2/templates',
-            method => 'GET',
-            result => sub {
-                my @terms_args = (
-                    { type => { not => [qw/ backup widget widgetset /] }, },
-                    {   sort      => 'blog_id',
-                        direction => 'ascend',
-                        limit     => 10,
-                    },
-                );
-
-                my $total_results
-                    = $app->model('template')->count(@terms_args);
-                my @tmpl = $app->model('template')->load(@terms_args);
-
-                $app->user($author);
-
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
-                return +{
-                    totalResults => $total_results,
-                    items => MT::DataAPI::Resource->from_object( \@tmpl ),
-                };
-            },
-        },
+ #        # list_all_templates - irregular tests.
+ #        {    # Not logged in.
+ #            path      => '/v2/templates',
+ #            method    => 'GET',
+ #            author_id => 0,
+ #            code      => 401,
+ #            error     => 'Unauthorized',
+ #        },
+ #        {    # No permissions.
+ #            path         => '/v2/templates',
+ #            method       => 'GET',
+ #            restrictions => {
+ #                0 => [qw/ edit_templates /],
+ #                1 => [qw/ edit_templates /],
+ #                2 => [qw/ edit_templates /],
+ #            },
+ #            code => 403,
+ #            error =>
+ #                'Do not have permission to retrieve the list of templates.',
+ #        },
+ #
+ #        # list_all_templates - normal tests
+ #        {   path   => '/v2/templates',
+ #            method => 'GET',
+ #            result => sub {
+ #                my @terms_args = (
+ #                    { type => { not => [qw/ backup widget widgetset /] }, },
+ #                    {   sort      => 'blog_id',
+ #                        direction => 'ascend',
+ #                        limit     => 10,
+ #                    },
+ #                );
+ #
+ #                my $total_results
+ #                    = $app->model('template')->count(@terms_args);
+ #                my @tmpl = $app->model('template')->load(@terms_args);
+ #
+ #                $app->user($author);
+ #
+ #                no warnings 'redefine';
+ #                local *boolean::true  = sub {'true'};
+ #                local *boolean::false = sub {'false'};
+ #
+ #                return +{
+ #                    totalResults => $total_results,
+ #                    items => MT::DataAPI::Resource->from_object( \@tmpl ),
+ #                };
+ #            },
+ #        },
 
         # get_template - irregular tests
         {    # Non-existent template.
@@ -442,9 +443,6 @@ sub suite {
         {    # No permissions.
             path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
             method => 'GET',
-            setup  => sub {
-                $mock_author->mock( 'can_edit_templates', 0 );
-            },
             restrictions => {
                 0 => [qw/ edit_templates /],
                 2 => [qw/ edit_templates /],
@@ -452,9 +450,6 @@ sub suite {
             code => 403,
             error =>
                 'Do not have permission to retrieve the requested template.',
-            complete => sub {
-                $mock_author->unmock('can_edit_templates');
-            },
         },
 
         # get_template - normal tests
@@ -488,12 +483,12 @@ sub suite {
             path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
             method => 'PUT',
             params => { template => { name => 'update-template', }, },
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                2 => [qw/ edit_templates /],
             },
-            code     => 403,
-            error    => 'Do not have permission to update a template.',
-            complete => sub { $mock_perm->unmock('can_edit_templates') },
+            code  => 403,
+            error => 'Do not have permission to update a template.',
         },
 
         # update_template - normal tests
@@ -546,14 +541,12 @@ sub suite {
         {    # No permissions.
             path   => '/v2/sites/2/templates/' . $website_tmpl_module->id,
             method => 'DELETE',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                2 => [qw/ edit_templates /],
             },
-            code     => 403,
-            error    => 'Do not have permission to delete a template.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-            },
+            code  => 403,
+            error => 'Do not have permission to delete a template.',
         },
 
         # delete_template - normal tests
@@ -594,17 +587,10 @@ sub suite {
             path => '/v2/sites/1/templates/'
                 . $blog_index_tmpl->id
                 . '/publish',
-            method => 'POST',
-            setup  => sub {
-                $mock_perm->mock( 'can_administer_blog', 0 );
-                $mock_perm->mock( 'can_rebuild',         0 );
-            },
-            code     => 403,
-            error    => 'Do not have permission to publish a template.',
-            complete => sub {
-                $mock_perm->unmock('can_administer_blog');
-                $mock_perm->unmock('can_rebuild');
-            },
+            method       => 'POST',
+            restrictions => { 1 => [qw/ administer_blog rebuild /], },
+            code         => 403,
+            error        => 'Do not have permission to publish a template.',
         },
 
         # publish_template - normal tests
@@ -613,8 +599,23 @@ sub suite {
                 . $blog_index_tmpl->id
                 . '/publish',
             method => 'POST',
+            setup  => sub {
+                my ($data) = @_;
+
+                my $fi = $app->model('fileinfo')
+                    ->load( { template_id => $blog_index_tmpl->id } );
+                $fmgr->delete( $fi->file_path );
+
+                $data->{template_file_path} = $fi->file_path;
+            },
             result => sub {
                 return +{ status => 'success' };
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $file_path = $data->{template_file_path};
+                ok( $fmgr->exists($file_path), "'$file_path' exists." );
             },
         },
 
@@ -695,22 +696,7 @@ sub suite {
             error     => 'Unauthorized',
         },
 
-#               {   # No permissions.
-#                   path   => '/v2/sites/2/refresh_templates',
-#                   method => 'POST',
-#                   setup  => sub {
-#                       $mock_author->mock( 'can_edit_templates', 0 );
-#                       $mock_perm->mock( 'can_edit_templates',  0 );
-#                       $mock_perm->mock( 'can_administer_blog', 0 );
-#                   },
-#                   code     => 403,
-#                   error    => 'Do not have permission to refresh a widget.',
-#                   complete => sub {
-#                       $mock_author->unmock('can_edit_templates');
-#                       $mock_perm->unmock('can_edit_templates');
-#                       $mock_perm->unmock('can_administer_blog');
-#                   },
-#               },
+        # No error occurs with no permissions in this endpoint.
 
         # refresh_templates_for_site - normal tests
         {    # Website.
@@ -784,19 +770,13 @@ sub suite {
             path => '/v2/sites/1/templates/'
                 . $blog_index_tmpl->id
                 . '/clone',
-            method => 'POST',
-            setup  => sub {
-                $mock_author->mock( 'can_edit_templates', 0 );
-                $mock_perm->mock( 'can_edit_templates',  0 );
-                $mock_perm->mock( 'can_administer_blog', 0 );
+            method       => 'POST',
+            restrictions => {
+                0 => [qw/ edit_templates administer_blog /],
+                1 => [qw/ edit_templates administer_blog /],
             },
-            code     => 403,
-            error    => 'Do not have permission to clone a template.',
-            complete => sub {
-                $mock_author->unmock('can_edit_templates');
-                $mock_perm->unmock('can_edit_templates');
-                $mock_perm->unmock('can_administer_blog');
-            },
+            code  => 403,
+            error => 'Do not have permission to clone a template.',
         },
 
         # clone_template - normal tests

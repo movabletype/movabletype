@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -21,7 +21,7 @@ use MT::AccessToken;
 our %endpoints = ();
 
 sub id                 {'data_api'}
-sub DEFAULT_VERSION () {1}
+sub DEFAULT_VERSION () {2}
 
 sub init {
     my $app = shift;
@@ -661,25 +661,26 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id             => 'list_all_assets',
-            route          => '/assets',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Asset::list",
-            default_params => {
-                limit        => 10,
-                offset       => 0,
-                sortBy       => 'created_on',
-                sortOrder    => 'descend',
-                searchFields => 'label',
-                filterKeys   => 'class',
-            },
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested assets.',
-            },
-            requires_login => 0,
-        },
+
+#        {   id             => 'list_all_assets',
+#            route          => '/assets',
+#            verb           => 'GET',
+#            version        => 2,
+#            handler        => "${pkg}v2::Asset::list",
+#            default_params => {
+#                limit        => 10,
+#                offset       => 0,
+#                sortBy       => 'created_on',
+#                sortOrder    => 'descend',
+#                searchFields => 'label',
+#                filterKeys   => 'class',
+#            },
+#            error_codes => {
+#                403 =>
+#                    'Do not have permission to retrieve the requested assets.',
+#            },
+#            requires_login => 0,
+#        },
         {   id             => 'list_assets_for_entry',
             route          => '/sites/:site_id/entries/:entry_id/assets',
             verb           => 'GET',
@@ -718,24 +719,25 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id             => 'list_assets_for_tag',
-            route          => '/tags/:tag_id/assets',
-            version        => 2,
-            handler        => "${pkg}v2::Asset::list_for_tag",
-            default_params => {
-                limit        => 10,
-                offset       => 0,
-                sortBy       => 'created_on',
-                sortOrder    => 'descend',
-                searchFields => 'label',
-                filterKeys   => 'class',
-            },
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested assets for tag.',
-            },
-            requires_login => 0,
-        },
+
+#        {   id             => 'list_assets_for_tag',
+#            route          => '/tags/:tag_id/assets',
+#            version        => 2,
+#            handler        => "${pkg}v2::Asset::list_for_tag",
+#            default_params => {
+#                limit        => 10,
+#                offset       => 0,
+#                sortBy       => 'created_on',
+#                sortOrder    => 'descend',
+#                searchFields => 'label',
+#                filterKeys   => 'class',
+#            },
+#            error_codes => {
+#                403 =>
+#                    'Do not have permission to retrieve the requested assets for tag.',
+#            },
+#            requires_login => 0,
+#        },
         {   id             => 'list_assets_for_site_and_tag',
             route          => '/sites/:site_id/tags/:tag_id/assets',
             version        => 2,
@@ -755,11 +757,23 @@ sub core_endpoints {
             requires_login => 0,
         },
         {    # Different from v1 upload_asset endpoint.
-            id             => 'upload_asset_v2',
+            id             => 'upload_asset',
             route          => '/assets/upload',
             verb           => 'POST',
             version        => 2,
             handler        => "${pkg}v2::Asset::upload",
+            default_params => {
+                autoRenameIfExists   => 0,
+                normalizeOrientation => 1,
+            },
+            error_codes => { 403 => 'Do not have permission to upload.', },
+        },
+        {    # Same as v2 upload_asset.
+            id             => 'upload_asset_for_site',
+            route          => '/sites/:site_id/assets/upload',
+            verb           => 'POST',
+            version        => 2,
+            handler        => "${pkg}Asset::upload",
             default_params => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
@@ -843,24 +857,25 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id             => 'list_entries_for_tag',
-            route          => '/tags/:tag_id/entries',
-            version        => 2,
-            handler        => "${pkg}v2::Entry::list_for_tag",
-            default_params => {
-                limit        => 10,
-                offset       => 0,
-                sortBy       => 'authored_on',
-                sortOrder    => 'descend',
-                searchFields => 'title,body,more,keywords,excerpt,basename',
-                filterKeys   => 'status',
-            },
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested entries for tag.',
-            },
-            requires_login => 0,
-        },
+
+#        {   id             => 'list_entries_for_tag',
+#            route          => '/tags/:tag_id/entries',
+#            version        => 2,
+#            handler        => "${pkg}v2::Entry::list_for_tag",
+#            default_params => {
+#                limit        => 10,
+#                offset       => 0,
+#                sortBy       => 'authored_on',
+#                sortOrder    => 'descend',
+#                searchFields => 'title,body,more,keywords,excerpt,basename',
+#                filterKeys   => 'status',
+#            },
+#            error_codes => {
+#                403 =>
+#                    'Do not have permission to retrieve the requested entries for tag.',
+#            },
+#            requires_login => 0,
+#        },
         {   id             => 'list_entries_for_site_and_tag',
             route          => '/sites/:site_id/tags/:tag_id/entries',
             version        => 2,
@@ -973,25 +988,26 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id             => 'list_pages_for_tag',
-            route          => '/tags/:tag_id/pages',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Page::list_for_tag",
-            default_params => {
-                limit        => 10,
-                offset       => 0,
-                sortBy       => 'modified_on',
-                sortOrder    => 'descend',
-                searchFields => 'title,body,more,keywords,excerpt,basename',
-                filterKeys   => 'status',
-            },
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested pages.',
-            },
-            requires_login => 0,
-        },
+
+#        {   id             => 'list_pages_for_tag',
+#            route          => '/tags/:tag_id/pages',
+#            verb           => 'GET',
+#            version        => 2,
+#            handler        => "${pkg}v2::Page::list_for_tag",
+#            default_params => {
+#                limit        => 10,
+#                offset       => 0,
+#                sortBy       => 'modified_on',
+#                sortOrder    => 'descend',
+#                searchFields => 'title,body,more,keywords,excerpt,basename',
+#                filterKeys   => 'status',
+#            },
+#            error_codes => {
+#                403 =>
+#                    'Do not have permission to retrieve the requested pages.',
+#            },
+#            requires_login => 0,
+#        },
         {   id             => 'list_pages_for_site_and_tag',
             route          => '/sites/:site_id/tags/:tag_id/pages',
             verb           => 'GET',
@@ -1069,6 +1085,27 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of comments.',
             },
             requires_login => 0,
+        },
+        {   id        => 'create_comment_for_page',
+            route     => '/sites/:site_id/pages/:page_id/comments',
+            resources => ['comment'],
+            verb      => 'POST',
+            version   => 2,
+            handler   => "${pkg}Comment::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create a comment.', },
+        },
+        {   id => 'create_reply_comment_for_page',
+            route =>
+                '/sites/:site_id/pages/:page_id/comments/:comment_id/replies',
+            resources   => ['comment'],
+            verb        => 'POST',
+            version     => 2,
+            handler     => "${pkg}Comment::create_reply",
+            error_codes => {
+                403 =>
+                    'Do not have permission to create a reply to the requested comment.',
+            },
         },
 
         # trackback endpoints
@@ -1398,23 +1435,23 @@ sub core_endpoints {
                 { 403 => 'Do not have permission to export logs.', },
         },
 
-        # tag endpoints
-        {   id             => 'list_tags',
-            route          => '/tags',
-            version        => 2,
-            default_params => {
-                limit        => 25,
-                offset       => 0,
-                sortBy       => 'name',
-                sortOrder    => 'ascend',
-                searchFields => 'name',
-            },
-            handler     => "${pkg}v2::Tag::list",
-            error_codes => {
-                403 => 'Do not have permission to retrieve the list of tags.',
-            },
-            requires_login => 0,
-        },
+# tag endpoints
+#        {   id             => 'list_tags',
+#            route          => '/tags',
+#            version        => 2,
+#            default_params => {
+#                limit        => 25,
+#                offset       => 0,
+#                sortBy       => 'name',
+#                sortOrder    => 'ascend',
+#                searchFields => 'name',
+#            },
+#            handler     => "${pkg}v2::Tag::list",
+#            error_codes => {
+#                403 => 'Do not have permission to retrieve the list of tags.',
+#            },
+#            requires_login => 0,
+#        },
         {   id             => 'list_tags_for_site',
             route          => '/sites/:site_id/tags',
             version        => 2,
@@ -1431,16 +1468,17 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id          => 'get_tag',
-            route       => '/tags/:tag_id',
-            version     => 2,
-            handler     => "${pkg}v2::Tag::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested tag.',
-            },
-            requires_login => 0,
-        },
+
+ #        {   id          => 'get_tag',
+ #            route       => '/tags/:tag_id',
+ #            version     => 2,
+ #            handler     => "${pkg}v2::Tag::get",
+ #            error_codes => {
+ #                403 =>
+ #                    'Do not have permission to retrieve the requested tag.',
+ #            },
+ #            requires_login => 0,
+ #        },
         {   id          => 'get_tag_for_site',
             route       => '/sites/:site_id/tags/:tag_id',
             version     => 2,
@@ -1451,14 +1489,15 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id      => 'rename_tag',
-            route   => '/tags/:tag_id',
-            verb    => 'PUT',
-            version => 2,
-            handler => "${pkg}v2::Tag::rename",
-            error_codes =>
-                { 403 => 'Do not have permission to rename a tag.', },
-        },
+
+       #        {   id      => 'rename_tag',
+       #            route   => '/tags/:tag_id',
+       #            verb    => 'PUT',
+       #            version => 2,
+       #            handler => "${pkg}v2::Tag::rename",
+       #            error_codes =>
+       #                { 403 => 'Do not have permission to rename a tag.', },
+       #        },
         {   id      => 'rename_tag_for_site',
             route   => '/sites/:site_id/tags/:tag_id',
             verb    => 'PUT',
@@ -1467,14 +1506,15 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to rename a tag.', },
         },
-        {   id      => 'delete_tag',
-            route   => '/tags/:tag_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Tag::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a tag.', },
-        },
+
+       #        {   id      => 'delete_tag',
+       #            route   => '/tags/:tag_id',
+       #            verb    => 'DELETE',
+       #            version => 2,
+       #            handler => "${pkg}v2::Tag::delete",
+       #            error_codes =>
+       #                { 403 => 'Do not have permission to delete a tag.', },
+       #        },
         {   id      => 'delete_tag_for_site',
             route   => '/sites/:site_id/tags/:tag_id',
             verb    => 'DELETE',
@@ -1570,23 +1610,24 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of templates.',
             },
         },
-        {   id             => 'list_all_templates',
-            route          => '/templates',
-            version        => 2,
-            handler        => "${pkg}v2::Template::list",
-            default_params => {
-                limit        => 10,
-                offset       => 0,
-                sortBy       => 'blog_id',
-                sortOrder    => 'ascend',
-                searchFields => 'name,templateType,text',
-                filterKeys   => 'type',
-            },
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of templates.',
-            },
-        },
+
+#        {   id             => 'list_all_templates',
+#            route          => '/templates',
+#            version        => 2,
+#            handler        => "${pkg}v2::Template::list",
+#            default_params => {
+#                limit        => 10,
+#                offset       => 0,
+#                sortBy       => 'blog_id',
+#                sortOrder    => 'ascend',
+#                searchFields => 'name,templateType,text',
+#                filterKeys   => 'type',
+#            },
+#            error_codes => {
+#                403 =>
+#                    'Do not have permission to retrieve the list of templates.',
+#            },
+#        },
         {   id          => 'get_template',
             route       => '/sites/:site_id/templates/:template_id',
             version     => 2,
@@ -1731,22 +1772,23 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of widgetsets.',
             },
         },
-        {   id             => 'list_all_widgetsets',
-            route          => '/widgetsets',
-            version        => 2,
-            handler        => "${pkg}v2::WidgetSet::list_all",
-            default_params => {
-                limit        => 10,
-                offset       => 0,
-                sortBy       => 'blog_id',
-                sortOrder    => 'ascend',
-                searchFields => 'name',
-            },
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of widgetsets.',
-            },
-        },
+
+#        {   id             => 'list_all_widgetsets',
+#            route          => '/widgetsets',
+#            version        => 2,
+#            handler        => "${pkg}v2::WidgetSet::list_all",
+#            default_params => {
+#                limit        => 10,
+#                offset       => 0,
+#                sortBy       => 'blog_id',
+#                sortOrder    => 'ascend',
+#                searchFields => 'name',
+#            },
+#            error_codes => {
+#                403 =>
+#                    'Do not have permission to retrieve the list of widgetsets.',
+#            },
+#        },
         {   id          => 'get_widgetset',
             route       => '/sites/:site_id/widgetsets/:widgetset_id',
             version     => 2,
@@ -1800,22 +1842,23 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of widgets.',
             },
         },
-        {   id             => 'list_all_widgets',
-            route          => '/widgets',
-            version        => 2,
-            handler        => "${pkg}v2::Widget::list_all",
-            default_params => {
-                limit        => 10,
-                offset       => 0,
-                sortBy       => 'blog_id',
-                sortOrder    => 'ascend',
-                searchFields => 'name,text',
-            },
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of widgets.',
-            },
-        },
+
+#        {   id             => 'list_all_widgets',
+#            route          => '/widgets',
+#            version        => 2,
+#            handler        => "${pkg}v2::Widget::list_all",
+#            default_params => {
+#                limit        => 10,
+#                offset       => 0,
+#                sortBy       => 'blog_id',
+#                sortOrder    => 'ascend',
+#                searchFields => 'name,text',
+#            },
+#            error_codes => {
+#                403 =>
+#                    'Do not have permission to retrieve the list of widgets.',
+#            },
+#        },
         {   id      => 'list_widgets_for_widgetset',
             route   => '/sites/:site_id/widgetsets/:widgetset_id/widgets',
             version => 2,
@@ -2018,16 +2061,17 @@ sub core_endpoints {
                     'Do not have permission to back up the requested site.',
             },
         },
-        {   id          => 'restore_site',
-            route       => '/restore',
-            verb        => 'POST',
-            version     => 2,
-            handler     => "${pkg}v2::BackupRestore::restore",
-            error_codes => {
-                403 =>
-                    'Do not have permission to restore the requested site data.',
-            },
-        },
+
+#        {   id          => 'restore_site',
+#            route       => '/restore',
+#            verb        => 'POST',
+#            version     => 2,
+#            handler     => "${pkg}v2::BackupRestore::restore",
+#            error_codes => {
+#                403 =>
+#                    'Do not have permission to restore the requested site data.',
+#            },
+#        },
 
     ];
 }
@@ -2135,9 +2179,8 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.tag' =>
                 "${pfx}Tag::cms_pre_load_filtered_list",
-            $pkg . 'view_permission_filter.tag' => "${pfx}Tag::can_view",
-
-    #            $pkg . 'save_permission_filter.tag' => "${pfx}Tag::can_save",
+            $pkg . 'view_permission_filter.tag'   => "${pfx}Tag::can_view",
+            $pkg . 'save_permission_filter.tag'   => "${pfx}Tag::can_save",
             $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
 
             # template callbacks

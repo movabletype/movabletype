@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -47,7 +47,7 @@ sub get_thumbnail {
     if ( !$asset->isa('MT::Asset::Image') ) {
         return $app->error(
             $app->translate(
-                'An asset does not support to generate thumbnail file.'),
+                'The asset does not support generating a thumbnail file.'),
             400
         );
     }
@@ -231,7 +231,7 @@ sub upload {
     my $site_id = $app->param('site_id');
     if ( !( defined($site_id) && $site_id =~ m/^\d+$/ ) ) {
         return $app->error(
-            $app->translate('A parameter "site_id" is required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.', 'site_id'), 400 );
     }
 
     $app->param( 'blog_id', $site_id );

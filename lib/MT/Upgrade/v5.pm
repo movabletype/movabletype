@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -84,11 +84,6 @@ sub upgrade_functions {
             version_limit => 5.0017,
             priority      => 3.0,
             code          => \&_v5_remove_technorati,
-        },
-        'v5_remove_news_widget_cache' => {
-            version_limit => 5.0,
-            priority      => 3.0,
-            code          => \&_v5_remove_news_widget_cache,
         },
         'v5_assign_entry_ceated_by' => {
             version_limit => 5.0019,
@@ -842,16 +837,6 @@ sub _v5_remove_technorati {
             )
         );
     }
-}
-
-sub _v5_remove_news_widget_cache {
-    my $self = shift;
-    $self->progress(
-        $self->translate_escape( 'Expiring cached MT News widget...', ) );
-    my $class = MT->model('session')
-        or return $self->error(
-        $self->translate_escape( "Error loading class: [_1].", 'session' ) );
-    $class->remove( { kind => [qw( NW LW )] } );
 }
 
 sub _v5_recover_auth_type {

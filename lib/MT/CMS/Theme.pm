@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -24,11 +24,11 @@ sub list {
         ## System wide screen.
         $param{theme_in_use_loop} = _build_theme_table(
             classes => { website => 1, blog => 1, both => 1 },
-            in_use => 1,
+            in_use  => 1,
         );
         $param{available_theme_loop} = _build_theme_table(
             classes => { website => 1, blog => 1, both => 1 },
-            in_use => 0,
+            in_use  => 0,
         );
     }
     else {

@@ -250,7 +250,7 @@ function initItem($item) {
 <mt:if name="object_type" eq="category">
       jQuery.mtValidateRules['.label'] = function ($e) {
         if ( !$e.val().length ) return this.raise('<__trans phrase="Label is required." escape="js">');
-        if ( $e.val().length > 100 ) return this.raise('<__trans phrase="The name '[_1]' is too long!" params="<mt:var name="object_label">" escape="js">');
+        if ( $e.val().length > 100 ) return this.raise('<__trans phrase="Label is too long." escape="js">');
         return hasDupe(parent, catid, $e.val()) ? this.raise('<__trans phrase="Duplicated label on this level." escape="js">') : true;
       };
 <mt:else>
@@ -397,7 +397,7 @@ function addItem(parent, label) {
     return false;
   }
   if ( label.length > 100 ){
-    jQuery('#msg-block').append("<div class='msg msg-error additem-error'><__trans phrase="The name '[_1]' is too long!" params="<mt:var name='object_label'>" escapse="js"></div>");
+    jQuery('#msg-block').append("<div class='msg msg-error additem-error'><__trans phrase="Label is too long." escapse="js"></div>");
     return false;
   }
   var id = 'x'+dummy;

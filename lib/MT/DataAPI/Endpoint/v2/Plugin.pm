@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -89,7 +89,7 @@ sub _retrieve_plugin {
     my $plugin_id = $app->param('plugin_id');
     if ( !defined $plugin_id || $plugin_id eq '' ) {
         return $app->error(
-            $app->translate('A parameter "plugin_id" id required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.', 'plugin_id'), 400 );
     }
 
     my %param;

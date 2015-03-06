@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -677,6 +677,19 @@ sub fields {
             alias               => 'custom_dynamic_templates',
             from_object_default => 'none',
             condition           => \&_can_view_cfg_screens,
+        },
+
+        {   name        => 'parent',
+            from_object => sub {
+                my ($obj) = @_;
+                my $app = MT->instance;
+                return undef unless $obj->parent_id;
+                my $parent = $app->model('blog')->load( $obj->parent_id );
+                return $parent
+                    ? MT::DataAPI::Resource->from_object( $parent,
+                    [qw( id name )] )
+                    : undef;
+            },
         },
 
         $MT::DataAPI::Resource::Common::fields{createdBy},

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -76,7 +76,7 @@ sub save_filter {
                 MT::CMS::Common::is_with_base_sitepath( $app, $site_path ) )
             {
                 return $app->errtrans(
-                    "The blog root directory must be within [_1]", $l_path );
+                    "The blog root directory must be within [_1].", $l_path );
             }
         }
 
@@ -90,7 +90,7 @@ sub save_filter {
                 MT::CMS::Common::is_within_base_sitepath( $app, $site_path ) )
             {
                 return $app->errtrans(
-                    "The website root directory must be within [_1]",
+                    "The website root directory must be within [_1].",
                     $l_path );
             }
         }
@@ -100,7 +100,7 @@ sub save_filter {
             and not File::Spec->file_name_is_absolute($site_path) )
         {
             return $app->errtrans(
-                "The website root directory must be absolute: [_1]",
+                "The website root directory must be an absolute path: [_1]",
                 $site_path );
         }
 

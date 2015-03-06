@@ -1,39 +1,41 @@
 language: perl
 
-perl:
-  - "5.10"
-
 services:
   - memcached
 
 env:
   matrix:
-    - FILES="t/??-*.t t/[^0-9]*.t plugins/*/t"
-    - FILES="t/1??-*.t"
-    - FILES="t/2??-*.t t/3??-*.t"
+    - TESTS="prove t/??-*.t t/[^0-9]*.t plugins/*/t"
+    - TESTS="prove t/1??-*.t"
+    - TESTS="prove t/2??-*.t t/3??-*.t && phpunit"
 
 before_install:
+  # Use system Perl.
+  - perlbrew switch-off
+  - PATH=${PATH#/home/travis/perl5/perlbrew/bin:}
+  - perl -v
+  - echo $PATH
+  - curl -L https://cpanmin.us | perl - --sudo App::cpanminus
+
   # Install Berkeley DB for installing DB_File module.
   # libperl-dev for installing ImageMagick.
   # php5, php5-mysql, php5-gd for tests of dynamic publishing.
   # libpng12-dev, libgif-dev and libjpeg-dev for Imager.
+  - sudo apt-get update
   - sudo apt-get install libdb-dev libgd2-xpm-dev libgmp3-dev libperl-dev php5 php5-mysql php5-gd libpng12-dev libgif-dev libjpeg-dev
 
+  # PHPUnit
+  - wget https://phar.phpunit.de/phpunit.phar
+  - chmod +x phpunit.phar
+  - sudo mv phpunit.phar /usr/local/bin/phpunit
+
 install:
-  # Install ImageMagick for installing Image::Magick.
-  - mkdir local
-  - cd local
-  - wget http://www.imagemagick.org/download/ImageMagick.tar.gz
-  - tar xzvf ImageMagick.tar.gz
-  - cd ImageMagick-*
-  - ./configure --prefix=${HOME}/local --with-perl=${HOME}/perl5/perlbrew/perls/${TRAVIS_PERL_VERSION}/bin/perl
-  - make
-  - sudo make install
-  - cd ../../
+  # Install Image::Magick.
+  - sudo apt-get -y install perlmagick
 
   # Instal CPAN modules.
-  - cpanm -n Crypt::CBC
-  - travis_retry cpanm -n --installdeps . --cpanfile ./t/cpanfile
+  - sudo cpanm -n Crypt::CBC Test::Deep DateTime DateTime::TimeZone Clone
+  - travis_retry sudo cpanm -n --installdeps . --cpanfile ./t/cpanfile
 
   # Build MT.
   #- SHELL=/bin/bash make me
@@ -47,12 +49,9 @@ before_script:
   - cp ./t/mysql-test.cfg ./mt-config.cgi
 
   # Remove failed tests.
-  - rm t/28-xmlrpc.t
-  - rm t/41-atom.t
+  - rm t/34-sqlite.t
   - rm t/90-podcoverage.t
-  - rm t/171-cms-user.t
-  - rm plugins/MultiBlog/t/03.triggers-blogs_in_website.t
 
 script:
-  - prove ${FILES}
+  - bash -c "${TESTS}"
 

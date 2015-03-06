@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -271,7 +271,7 @@ sub delete {
         if ($child_blog_count) {
             return $app->error(
                 $app->translate(
-                    'Website "[_1]" (ID:[_2]) were not deleted. You need to delete blogs under the website first.',
+                    'Website "[_1]" (ID:[_2]) was not deleted. You need to delete the blogs under the website first.',
                     ( defined $site->name ? $site->name : '(no name)' ),
                     $site->id,
                 ),

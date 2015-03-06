@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -302,15 +302,15 @@ sub _check_params {
 
     if ( !defined($theme_id) || $theme_id eq '' ) {
         return $app->error(
-            $app->translate('A parameter "theme_id" is required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.', 'theme_id'), 400 );
     }
     if ( !defined($theme_name) || $theme_name eq '' ) {
         return $app->error(
-            $app->translate('A parameter "theme_name" is required.'), 400 );
+            $app->translate('A parameter "[_1]" is required.', 'theme_name'), 400 );
     }
     if ( !defined($theme_version) || $theme_version eq '' ) {
         return $app->error(
-            $app->translate('A parameter "theme_version" is required.'),
+            $app->translate('A parameter "[_1]" is required.', 'theme_version'),
             400 );
     }
 
@@ -421,7 +421,7 @@ sub export {
             else {
                 return $app->error(
                     $app->translate(
-                        "Export theme folder already exists '[_1]'. You can overwrite a existing theme with 'overwrite_yes=1' parameter, or change the Basename.",
+                        "Export theme folder already exists '[_1]'. You can overwrite an existing theme with 'overwrite_yes=1' parameter, or change the Basename.",
                         $output_path
                     ),
                     409

@@ -1,7 +1,7 @@
 /*
  * Movable Type DataAPI SDK for JavaScript v2
  * https://github.com/movabletype/mt-data-api-sdk-js
- * Copyright (c) 2013-2014 Six Apart, Ltd.
+ * Copyright (c) 2013-2015 Six Apart, Ltd.
  * This program is distributed under the terms of the MIT license.
  *
  * Includes jQuery JavaScript Library in some parts.
@@ -4570,12 +4570,6 @@ DataAPI.on('initialize', function() {
         "verb": "GET"
     }, 
     {
-        "id": "list_all_assets", 
-        "resources": null, 
-        "route": "/assets", 
-        "verb": "GET"
-    }, 
-    {
         "id": "list_assets_for_entry", 
         "resources": null, 
         "route": "/sites/:site_id/entries/:entry_id/assets", 
@@ -4588,21 +4582,21 @@ DataAPI.on('initialize', function() {
         "verb": "GET"
     }, 
     {
-        "id": "list_assets_for_tag", 
-        "resources": null, 
-        "route": "/tags/:tag_id/assets", 
-        "verb": "GET"
-    }, 
-    {
         "id": "list_assets_for_site_and_tag", 
         "resources": null, 
         "route": "/sites/:site_id/tags/:tag_id/assets", 
         "verb": "GET"
     }, 
     {
-        "id": "upload_asset_v2", 
+        "id": "upload_asset", 
         "resources": null, 
         "route": "/assets/upload", 
+        "verb": "POST"
+    }, 
+    {
+        "id": "upload_asset_for_site", 
+        "resources": null, 
+        "route": "/sites/:site_id/assets/upload", 
         "verb": "POST"
     }, 
     {
@@ -4641,12 +4635,6 @@ DataAPI.on('initialize', function() {
         "id": "list_entries_for_asset", 
         "resources": null, 
         "route": "/sites/:site_id/assets/:asset_id/entries", 
-        "verb": "GET"
-    }, 
-    {
-        "id": "list_entries_for_tag", 
-        "resources": null, 
-        "route": "/tags/:tag_id/entries", 
         "verb": "GET"
     }, 
     {
@@ -4702,12 +4690,6 @@ DataAPI.on('initialize', function() {
         "verb": "GET"
     }, 
     {
-        "id": "list_pages_for_tag", 
-        "resources": null, 
-        "route": "/tags/:tag_id/pages", 
-        "verb": "GET"
-    }, 
-    {
         "id": "list_pages_for_site_and_tag", 
         "resources": null, 
         "route": "/sites/:site_id/tags/:tag_id/pages", 
@@ -4746,6 +4728,22 @@ DataAPI.on('initialize', function() {
         "resources": null, 
         "route": "/sites/:site_id/pages/:page_id/comments", 
         "verb": "GET"
+    }, 
+    {
+        "id": "create_comment_for_page", 
+        "resources": [
+            "comment"
+        ], 
+        "route": "/sites/:site_id/pages/:page_id/comments", 
+        "verb": "POST"
+    }, 
+    {
+        "id": "create_reply_comment_for_page", 
+        "resources": [
+            "comment"
+        ], 
+        "route": "/sites/:site_id/pages/:page_id/comments/:comment_id/replies", 
+        "verb": "POST"
     }, 
     {
         "id": "list_trackbacks_for_page", 
@@ -4928,21 +4926,9 @@ DataAPI.on('initialize', function() {
         "verb": "GET"
     }, 
     {
-        "id": "list_tags", 
-        "resources": null, 
-        "route": "/tags", 
-        "verb": "GET"
-    }, 
-    {
         "id": "list_tags_for_site", 
         "resources": null, 
         "route": "/sites/:site_id/tags", 
-        "verb": "GET"
-    }, 
-    {
-        "id": "get_tag", 
-        "resources": null, 
-        "route": "/tags/:tag_id", 
         "verb": "GET"
     }, 
     {
@@ -4952,22 +4938,10 @@ DataAPI.on('initialize', function() {
         "verb": "GET"
     }, 
     {
-        "id": "rename_tag", 
-        "resources": null, 
-        "route": "/tags/:tag_id", 
-        "verb": "PUT"
-    }, 
-    {
         "id": "rename_tag_for_site", 
         "resources": null, 
         "route": "/sites/:site_id/tags/:tag_id", 
         "verb": "PUT"
-    }, 
-    {
-        "id": "delete_tag", 
-        "resources": null, 
-        "route": "/tags/:tag_id", 
-        "verb": "DELETE"
     }, 
     {
         "id": "delete_tag_for_site", 
@@ -5021,12 +4995,6 @@ DataAPI.on('initialize', function() {
         "id": "list_templates", 
         "resources": null, 
         "route": "/sites/:site_id/templates", 
-        "verb": "GET"
-    }, 
-    {
-        "id": "list_all_templates", 
-        "resources": null, 
-        "route": "/templates", 
         "verb": "GET"
     }, 
     {
@@ -5122,12 +5090,6 @@ DataAPI.on('initialize', function() {
         "verb": "GET"
     }, 
     {
-        "id": "list_all_widgetsets", 
-        "resources": null, 
-        "route": "/widgetsets", 
-        "verb": "GET"
-    }, 
-    {
         "id": "get_widgetset", 
         "resources": null, 
         "route": "/sites/:site_id/widgetsets/:widgetset_id", 
@@ -5159,12 +5121,6 @@ DataAPI.on('initialize', function() {
         "id": "list_widgets", 
         "resources": null, 
         "route": "/sites/:site_id/widgets", 
-        "verb": "GET"
-    }, 
-    {
-        "id": "list_all_widgets", 
-        "resources": null, 
-        "route": "/widgets", 
         "verb": "GET"
     }, 
     {
@@ -5309,12 +5265,6 @@ DataAPI.on('initialize', function() {
         "id": "list_fields", 
         "resources": null, 
         "route": "/sites/:site_id/fields", 
-        "verb": "GET"
-    }, 
-    {
-        "id": "list_all_fields", 
-        "resources": null, 
-        "route": "/fields", 
         "verb": "GET"
     }, 
     {

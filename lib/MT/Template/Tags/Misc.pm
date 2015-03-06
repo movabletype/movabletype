@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -162,9 +162,10 @@ sub _hdlr_widget_manager {
             : 0,
             type => 'widgetset'
         },
-        {   sort      => 'blog_id',
+            {
+            sort      => 'blog_id',
             direction => 'descend'
-        }
+            }
         )
         or return $ctx->error(
         MT->translate( "Specified WidgetSet '[_1]' not found.", $tmpl_name )

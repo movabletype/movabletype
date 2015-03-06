@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -652,7 +652,7 @@ sub archive_url {
 
     if (@_) {
         my $url = $_[0];
-        $url .= '/' unless $url =~ m{/$};
+        $url .= '/' if $url ne "" && $url !~ m{/$};
         $blog->SUPER::archive_url($url) || $blog->site_url;
     }
     elsif ( $blog->is_dynamic ) {

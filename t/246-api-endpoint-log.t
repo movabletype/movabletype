@@ -213,24 +213,23 @@ sub suite {
             },
         },
 
-        #        {   # No permissions.
-        #            path => '/v2/sites/0/logs',
-        #            method => 'GET',
-        #            restrctions => {
-        #               0 => [qw/ view_log /],
-        #               1 => [qw/ view_blog_log /],
-        #            },
-        #            callbacks => [
-        #                {   name  => 'data_api_pre_load_filtered_list.log',
-        #                    count => 1,
-        #                },
-        #            ],
-        #            result => sub {
-        #                +{   totalResults => 0,
-        #                     items => [],
-        #                };
-        #            },
-        #        },
+        {    # System.
+            path      => '/v2/sites/0/logs',
+            method    => 'GET',
+            callbacks => [
+                {   name  => 'data_api_pre_load_filtered_list.log',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                my @logs = $app->model('log')->load( { class => '*' },
+                    { sort => 'created_on', direction => 'descend' } );
+                return +{
+                    totalResults => scalar @logs,
+                    items => MT::DataAPI::Resource->from_object( \@logs ),
+                };
+            },
+        },
         {    # Search message.
             path      => '/v2/sites/1/logs',
             method    => 'GET',
@@ -405,7 +404,8 @@ sub suite {
             method   => 'GET',
             complete => sub {
                 my ( $data, $body ) = @_;
-                is( scalar( split /\n/, $body ), 4, '3 lines are output.' );
+                my @line = split /\n/, $body;
+                is( scalar @line, 4, '3 lines are output.' );
                 print $_[1];
             },
         },
@@ -419,7 +419,8 @@ sub suite {
             },
             complete => sub {
                 my ( $data, $body ) = @_;
-                is( scalar( split /\n/, $body ), 5, '4 lines are output.' );
+                my @line = split /\n/, $body;
+                is( scalar @line, 5, '4 lines are output.' );
                 print $_[1];
             },
         },
@@ -433,7 +434,8 @@ sub suite {
             },
             complete => sub {
                 my ( $data, $body ) = @_;
-                is( scalar( split /\n/, $body ), 6, '5 lines are output.' );
+                my @line = split /\n/, $body;
+                is( scalar @line, 6, '5 lines are output.' );
                 print $_[1];
             },
         },

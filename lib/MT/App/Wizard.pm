@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -193,7 +193,7 @@ sub init_core_registry {
             'IO::Socket::SSL' => {
                 link => 'http://search.cpan.org/dist/IO-Socket-SSL/',
                 label =>
-                    'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for site statistics of Google Analytics.',
+                    'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for Google Analytics site statistics.',
             },
             'Net::SSLeay' => {
                 link => 'http://search.cpan.org/dist/Net-SSLeay/',
@@ -247,7 +247,8 @@ sub init_core_registry {
                     'This module is needed if you would like to be able to use NetPBM as the image driver for MT.',
             },
             'Storable' => {
-                link => 'http://search.cpan.org/dist/Storable',
+                
+link => 'http://search.cpan.org/dist/Storable',
                 label =>
                     'This module is required by certain MT plugins available from third parties.',
             },
@@ -259,7 +260,7 @@ sub init_core_registry {
             'Crypt::SSLeay' => {
                 link => 'http://search.cpan.org/dist/Crypt-SSLeay',
                 label =>
-                    'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for site statistics of Google Analytics.',
+                    'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for Google Analytics site statistics.',
             },
             'Cache::File' => {
                 link => 'http://search.cpan.org/dist/Cache/lib/Cache/File.pm',
@@ -331,19 +332,19 @@ sub init_core_registry {
             'XML::SAX::ExpatXS' => {
                 link => 'http://search.cpan.org/dist/XML-SAX-ExpatXS',
                 label =>
-                    'XML::SAX::ExpatXS is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.',
+                    'XML::SAX::ExpatXS is optional; It is one of the modules required to restore a backup created in a backup/restore operation.',
                 version => 1.30,
             },
             'XML::SAX::Expat' => {
                 link => 'http://search.cpan.org/dist/XML-SAX-Expat',
                 label =>
-                    'XML::SAX::Expat is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.',
+                    'XML::SAX::Expat is optional; It is one of the modules required to restore a backup created in a backup/restore operation.',
                 version => 0.37,
             },
             'XML::LibXML::SAX' => {
                 link => 'http://search.cpan.org/dist/XML-LibXML-SAX',
                 label =>
-                    'XML::LibXML::SAX is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.',
+                    'XML::LibXML::SAX is optional; It is one of the modules required to restore a backup created in a backup/restore operation.',
                 version => 1.70,
             },
             'Time::HiRes' => {
@@ -354,7 +355,7 @@ sub init_core_registry {
             'Mozilla::CA' => {
                 link => 'http://search.cpan.org/dist/Mozilla-CA/',
                 label =>
-                    'This module is required for site statistics of Google Analytics.',
+                    'This module is required for Google Analytics site statistics.',
             },
             'YAML::Syck' => {
                 link => 'http://search.cpan.org/dist/YAML-Syck',
@@ -1308,7 +1309,11 @@ sub unserialize_config {
     if ($data) {
         $data = pack 'H*', $data;
         require MT::Serialize;
-        my $ser    = MT::Serialize->new('MT');
+        my $ser     = MT::Serialize->new('MT');
+        my $ser_ver = $ser->serializer_version($data);
+        if ( !$ser_ver || $ser_ver != $MT::Serialize::SERIALIZER_VERSION ) {
+            die $app->translate('Invalid parameter.');
+        }
         my $thawed = $ser->unserialize($data);
         if ($thawed) {
             my $saved_cfg = $$thawed;
