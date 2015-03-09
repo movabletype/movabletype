@@ -33,6 +33,7 @@ use vars qw( @ISA %Lexicon );
 	'Category Monthly' => 'per categorie per maand',
 	'Category Daily' => 'per categorie per dag',
 	'Category Weekly' => 'per categorie per week',
+	'Category' => 'Categorie',
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace',
@@ -163,6 +164,7 @@ use vars qw( @ISA %Lexicon );
 	'File::Spec is required to work with file system path information on all supported operating systems.' => 'File::Spec is vereist om te kunnen werken met padinformatie in bestandssystemen op alle ondersteunde operating systemen.',
 	'CGI::Cookie is required for cookie authentication.' => 'CGI::Cookie is vereist om authenticatie via cookies te kunnen gebruiken.',
 	'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.' => 'LWP::UserAgent is vereist om Movable Type configuratiebestanden te kunnen maken tijdens het gebruik van de installatiewizard.',
+	'Scalar::Util is required for initializing Movable Type application.' => 'Scalar::Util is vereist om de Movable Type applicatie te kunnen initialiseren.', # Translate - New
 	'DBI is required to work with most supported databases.' => 'DBI is vereist om te kunnen werken met de meeste ondersteunde databases.',
 	'DBI and DBD::mysql are required if you want to use the MySQL database backend.' => 'DBI en DBD::mysql zijn vereist om gebruikt te kunnen maken van een MySQL database backend.',
 	'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.' => 'DBI en DBD::Pg zijn vereist om gebruikt te kunnen maken van een PostgreSQL database backend.',
@@ -175,13 +177,12 @@ use vars qw( @ISA %Lexicon );
 	'HTML::Parser is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'HTML::Parser is optioneel: Het is nodig als u het TrackBack systeem wenst te gebruiken of pings wenst te sturen naar weblogs.com of MT recent bijgewerkte sites.',
 	'SOAP::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.' => 'SOAP::Lite is optioneel; Het is vereist als u de MT XML-RPC server implementatie wenst te gebruiken.',
 	'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.' => 'File::Temp is optioneel; Het is vereist als u bestaande bestanden wenst te kunnen overschrijven bij uploads.',
-	'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'Scalar::Util is optioneel; Het is vereist als u de publicatiewachtrij-functie wenst te gebruiken.',
 	'List::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'List::Util is optioneel; Het is vereist als u de publicatiewachtrij-functie wenst te gebruiken.',
 	'[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.' => '[_1] is optioneel; Het is één van de modules voor afbeeldingsbewerking die u kunt gebruiken om thumbnails te maken van geuploade afbeeldingen.',
 	'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.' => 'IPC::Run is optioneel; Het is veriest als u NetPBM wenst te gebruiken als de afbeeldingsbewerker voor Movable Type',
 	'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.' => 'Storable is optioneel; Het is vereist door bepaalde Movable Type plugins ontwikkeld door derden.',
 	'Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSA is optioneel; Als het is geïnstalleerd dan verloopt registratie van reageerders iets sneller.',
-	'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support.' => 'Deze module en de modules waarvan ze afhangt zijn nodig om reageerders te kunnen authenticeren via OpenID providers zoals AOL en Yahoo! die SSL ondersteuning vereisen.',
+	'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for Google Analytics site statistics.' => 'Deze module en de vereisten ervan zijn vereist om het mogelijk te maken dat reageerdeers zich kunnen aanmelden via OpenID providers zoals AOL en Yahoo! die ondersteuning voor SSL vereisen.  Deze module is ook vereist om sitestatistieken te genereren via Google Analytics.', # Translate - New
 	'Cache::File is required if you would like to be able to allow commenters to authenticate via OpenID using Yahoo! Japan.' => 'Cache::File is vereist als u wenst dat reageerders zich kunnen aanmelden met OpenID via Yahoo! Japan.',
 	'MIME::Base64 is required in order to enable comment registration and in order to send mail via an SMTP Server.' => 'MIME::Base64 is vereist om het registreren van reageerders in te schakelen en om mail te kunnen versturen via een SMTP server.',
 	'XML::Atom is required in order to use the Atom API.' => 'XML::Atom is vereist om de Atom API te kunnen gebruiken.',
@@ -196,12 +197,16 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' => 'Deze modules en de modules waar deze van afhangt zijn vereist om CRM-MD5, DIGEST-MD5 of LOGIN SASL te ondersteunen.',
 	'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.' => 'Net::SMTP::SSL is vereist om SMTP Auth te kunnen gebruiken over een SSL verbinding.',
 	'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.' => 'Net::SMTP::TLS is vereist om SMTP Auth te kunnen gebruiken met het STARTTLS commando.',
-	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'IO::Socket::SSL is vereist om SMTP Auth te kunnen gebruiken over een SSL verbinding of om het te kunnen gebruiken met een STARTTLS commando.',
+	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for Google Analytics site statistics.' => 'I0::Socket::SSL is vereist om SMTP authentication over een SSL verbinding te kunnen gebruiken of met een STARTTLS commando.  Deze module is ook vereist voor sitestatistieken met Google Analytics.', # Translate - New
 	'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'Net::SSLeay is vereist om SMTP Auth te kunnen gebruiken over een SSL verbinding of om het te kunnen gebruiken met een STARTTLS commando.',
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'Deze module wordt gebruikt in een testattribuut voor de MTIf conditionele tag.',
 	'This module is used by the Markdown text filter.' => 'Deze module is vereist voor de Markdown tekstfilter.',
 	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Deze module is vereist door mt-search.cgi als u Movable Type draait op een versie van Perl ouder dan 5.8.',
 	'This module required for action streams.' => 'Deze module is vereist voor action streams.',
+	'[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation' => '[_1] is optioneel; Het is één van de modules die nodig zijn om een backup terug te zetten tijdens een backup/restore operatie', # Translate - New
+	'This module is required for Google Analytics site statistics.' => 'Deze module is vereist voor sitestatistieken via Google Analytics', # Translate - New
+	'This module is required for executing run-periodic-tasks.' => 'Deze module is vereist om run-periodic-tasks te kunnen uitvoeren.', # Translate - New
+	'[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => '[_1] is optioneel; Het is een beter, sneller en lichter alternatief voor YAML::Tiny bij het behandelen van YAML bestanden.', # Translate - New
 	'The [_1] database driver is required to use [_2].' => 'De [_1] databasedriver is vereist om [_2] te kunnen gebruiken.',
 	'DBI is required to store data in database.' => 'DBI is vereist om gegevens te kunnen opslaan in een database',
 	'Checking for' => 'Controleren op',
@@ -757,7 +762,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while trying to process signup: [_1]' => 'Er deed zich een fout voor bij het verwerken van de registratie: [_1]',
 	'New Comment Added to \'[_1]\'' => 'Nieuwe reactie achtergelaten op \'[_1]\'',
 	'Close' => 'Sluiten',
-	'Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive \'[_1]\': [_2]' => 'Openen monitoringbestand aangegeven via de IISFastCGIMonitoringFilePath directief mislukt \'[_1]\': [_2]', # Translate - New
+	'Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive \'[_1]\': [_2]' => 'Openen monitoringbestand aangegeven via de IISFastCGIMonitoringFilePath directief mislukt \'[_1]\': [_2]',
 	'Failed to open pid file [_1]: [_2]' => 'Openen pid bestand mislukt [_1]: [_2]',
 	'Failed to send reboot signal: [_1]' => 'Sturen van reboot signaal mislukt: [_1]',
 	'The file you uploaded is too large.' => 'Het bestand dat u heeft geupload is te groot.',
@@ -822,6 +827,7 @@ use vars qw( @ISA %Lexicon );
 	'The \'Website Root\' provided below is not allowed' => 'De \'Website Root\' die werd opgegeven hieronder is niet toegestaan',
 	'The \'Website Root\' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click \'Finish Install\' again.' => 'De \'Website Root\' die werd opgegeven hieronder is niet beschrijfbaar door de webserver.  Verander de eigenaar of de permissies op deze map en klik dan opnieuw op de knop om de installatie af te werken.',
 	'Invalid session.' => 'Ongeldige sessie.',
+	'Invalid parameter.' => 'Ongeldige parameters',
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => 'Geen permissies.  Gelieve uw Movable Type administrator te contacteren voor hulp met het upgraden van Movable Type.',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Type is bijgewerkt tot versie [_1]',
 
@@ -851,6 +857,10 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required in order to restore from a backup.' => 'Deze module en de modules waar ze van afhangt zijn vereisten om te kunen restoren uit een backup.',
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'Deze module en de modules waar ze van afhangt zijn nodig om reageerders zichzelf te laten authenticeren via OpenID providers waaronder LiveJournal.',
 	'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Deze module wordt vereist door mt-search.cgi als u Movable Type draait op een Perl versie ouder dan 5.8',
+	'XML::SAX::ExpatXS is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::SAX::ExpatXS is optioneel; Het is één van de vereiste modules om een backup terug te zetten die aangemaakt werd bij een backup/restore operatie.', # Translate - New
+	'XML::SAX::Expat is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::SAX::Expat is optioneel; Het is één van de vereiste modules om een backup terug te zetten die aangemaakt werd bij een backup/restore operatie.', # Translate - New
+	'XML::LibXML::SAX is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::LibXML::SAX is optioneel; Het is één van de vereiste modules om een backup terug te zetten die aangemaakt werd bij een backup/restore operatie.', # Translate - New
+	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::Syck is optioneel; Het is een beter, sneller en lichter alternatief voor YAML::Tiny bij het behandelen van YAML bestanden.', # Translate - New
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Deze module is vereist om bestande te kunnen opladen (om het formaat van afbeeldingen in vele verschillende formaten te kunnen bepalen).',
 	'This module is required for cookie authentication.' => 'Deze module is vereist voor cookie-authenticatie.',
 
@@ -969,6 +979,7 @@ use vars qw( @ISA %Lexicon );
 	'Could not remove asset file [_1] from the filesystem: [_2]' => 'Kon mediabestand [_1] niet verwijderen uit het bestandssysteem: [_2]',
 	'Description' => 'Beschrijving',
 	'Location' => 'Locatie',
+	'Could not create asset cache path: [_1]' => 'Kon cachepad voor mediabestand niet aanmaken [_1]', # Translate - New
 	'string(255)' => 'string(255)',
 	'Label' => 'Naam',
 	'Type' => 'Type',
@@ -1005,7 +1016,7 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (user #[_2]) added [lc,_4] #[_3]' => 'Gebruiker \'[_1]\' (gebruiker #[_2]) voegde [lc,_4] #[_3] toe',
 	'User \'[_1]\' (user #[_2]) edited [lc,_4] #[_3]' => 'Gebruiker \'[_1]\' (gebruiker #[_2]) bewerkte [lc,_4] #[_3]',
 	'Entry \'[_1]\' ([lc,_5] #[_2]) deleted by \'[_3]\' (user #[_4]) from atom api' => 'Bericht \'[_1]\' ([lc,_5] #[_2]) verwijderd door \'[_3]\' (gebruiker #[_4]) via de ATOM API',
-	'The file ([_1]) that you uploaded is not allowed.' => 'Het bestand ([_1]) dat u uploade is niet toegestaan.',
+	'\'[_1]\' is not allowed to upload by system settings.: [_2]' => '\'[_1]\' heeft volgens systeeminstellingen geen toelating om te uploaden.: [_2]', # Translate - New
 	'Invalid image file format.' => 'Ongeldig afbeeldingsbestandsformaat',
 	'Perl module Image::Size is required to determine the width and height of uploaded images.' => 'Perl module Image::Size is vereist om de hoogte en breedte te kunnen bepalen van geuploade bestanden.',
 
@@ -1072,6 +1083,7 @@ use vars qw( @ISA %Lexicon );
 	'Restoring [_1] records:' => '[_1] records aan het terugzetten:',
 	'A user with the same name as the current user ([_1]) was found in the backup.  Skipping this user record.' => 'Een gebruiker met dezelfde naam als de huidige gebruiker ([_1]) werd gevonden in de backup.  Dit record wordt overgeslagen.',
 	'A user with the same name \'[_1]\' was found in the backup (ID:[_2]).  Restore replaced this user with the data from the backup.' => 'Een gebruiker met dezelfde naam \'[_1]\' werd gevonden in de backup (ID:[_2]).  Restore verving de gegevens van deze gebruiker met die uit de backup.',
+	'Invalid serializer version was specified.' => 'Ongeldige serialisatieverie opgegeven.', # Translate - New
 	'Tag \'[_1]\' exists in the system.' => 'Tag \'[_1]\' bestaat in het systeem.',
 	'[_1] records restored...' => '[_1] records teruggezet...',
 	'The role \'[_1]\' has been renamed to \'[_2]\' because a role with the same name already exists.' => 'De rol \'[_1]\' werd hernoemd naar \'[_2]\' omdat een rol met die naam al bestond.',
@@ -1156,7 +1168,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## lib/MT/Category.pm
 	'[quant,_1,entry,entries,No entries]' => '[quant,_1,bericht,berichten,Geen berichten]',
 	'[quant,_1,page,pages,No pages]' => '[quant,_1,pagina,pagina\'s,geen pagina\'s]',
-	'Category' => 'Categorie',
 	'Categories must exist within the same blog' => 'Categorieën moeten bestaan binnen dezelfde blog',
 	'Category loop detected' => 'Categorielus gedetecteerd',
 	'string(100) not null' => 'string(100) not null',
@@ -1179,6 +1190,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'(user deleted)' => '(gebruiker verwijderd)',
 	'Files' => 'Bestanden',
 	'Extension changed from [_1] to [_2]' => 'Extensie veranderd van [_1] in [_2]',
+	'Failed to create thumbnail file because [_1] could not handle this image type.' => 'Aanmaken thumbnailbestand mislukt omdat [_1] dit afbeeldingstype niet aankan.', # Translate - New
 	'Upload File' => 'Opladen',
 	'Cannot load file #[_1].' => 'Kan bestand niet laden #[_1].',
 	'No permissions' => 'Geen permissies',
@@ -1218,6 +1230,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Error' => 'Fout',
 	'Finished!' => 'Klaar!',
 	'General Settings' => 'Algemene instellingen',
+	'These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'Deze instellingen worden overroepen door een instelling het het MT configuratiebestand: [_1].  Verwijder de waarde uit het configuratiebestand om deze hier te kunnen beheren.',
 	'Plugin Settings' => 'Instellingen plugins',
 	'New Blog' => 'Nieuwe blog',
 	'Cannot load template #[_1].' => 'Kan sjabloon #[_1] niet laden.',
@@ -1229,12 +1242,12 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Selected Blog' => 'Geselecteerde blog',
 	'Type a blog name to filter the choices below.' => 'Typ de naam van een weblog in om de onderstaande keuzes te filteren.',
 	'Blog Name' => 'Blognaam',
-	'The \'[_1]\' provided below is not writable by the web server. Change the directory ownership or permissions and try again.' => 'De \'[_1]\' die hieronder is opgegeven is niet beschrijfbaar door de webserver.  Wijzig de eigenaar van de map of de permissies en probeer opnieuw.', # Translate - New
+	'The \'[_1]\' provided below is not writable by the web server. Change the directory ownership or permissions and try again.' => 'De \'[_1]\' die hieronder is opgegeven is niet beschrijfbaar door de webserver.  Wijzig de eigenaar van de map of de permissies en probeer opnieuw.',
 	'Blog Root' => 'Blogroot',
 	'Website Root' => 'Website root',
+	'Saving permissions failed: [_1]' => 'Permissies opslaan mislukt: [_1]',
 	'[_1] changed from [_2] to [_3]' => '[_1] veranderd van [_2] naar [_3]',
 	'Saved [_1] Changes' => '[_1] wijzigingen opgeslagen',
-	'Saving permissions failed: [_1]' => 'Permissies opslaan mislukt: [_1]',
 	'[_1] \'[_2]\' (ID:[_3]) created by \'[_4]\'' => '[_1] \'[_2]\' (ID:[_3]) aangemaakt door \'[_4]\'',
 	'You did not specify a blog name.' => 'U gaf geen weblognaam op.',
 	'Site URL must be an absolute URL.' => 'Site URL moet eenn absolute URL zijn.',
@@ -1265,8 +1278,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Permission denied: [_1]' => 'Toestemming geweigerd: [_1]',
 	'The category name \'[_1]\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Categorienaam \'[_1]\' conflicteert met de naam van een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke naam hebben.',
 	'The category basename \'[_1]\' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.' => 'Categoriebasisnaam \'[_1]\' conflicteert met de basisnaam van een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke basisnaam hebben.',
-	'Category \'[_1]\' created by \'[_2]\'' => 'Categorie \'[_1]\' aangemaakt door \'[_2]\'',
 	'The name \'[_1]\' is too long!' => 'De naam \'[_1]\' is te lang!',
+	'Category \'[_1]\' created by \'[_2]\'' => 'Categorie \'[_1]\' aangemaakt door \'[_2]\'',
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Categorie \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Categorienaam \'[_1]\' conflicteert met een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke naam hebben.',
 
@@ -1290,10 +1303,11 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Orphaned comment' => 'Verweesde reactie',
 
 ## lib/MT/CMS/Common.pm
-	'The Template Name and Output File fields are required.' => 'De velden sjabloonnaam en uitvoerbestand zijn verplicht.',
 	'Invalid type [_1]' => 'Ongeldig type [_1]',
+	'The Template Name and Output File fields are required.' => 'De velden sjabloonnaam en uitvoerbestand zijn verplicht.',
 	'Invalid ID [_1]' => 'Ongeldig ID [_1]',
-	'The website root directory must be within [_1]' => 'De websiteroot-map moet vallen onder [_1]',
+	'The blog root directory must be within [_1].' => 'De hoofdmap van de blog moet onder [_1] zitten.', # Translate - New
+	'The website root directory must be within [_1].' => 'De hoofdmap van de website moet onder [_1] zitten.', # Translate - New
 	'Save failed: [_1]' => 'Opslaan mislukt: [_1]',
 	'Saving object failed: [_1]' => 'Object opslaan mislukt: [_1]',
 	'\'[_1]\' edited the template \'[_2]\' in the blog \'[_3]\'' => '\'[_1]\' bewerkte het sjabloon \'[_2]\' op blog \'[_3]\'',
@@ -1307,8 +1321,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'[_1] Feed' => '[_1] Feed',
 	'Unknown list type' => 'Onbekend type lijst',
 	'Invalid filter terms: [_1]' => 'Ongeldige filtertermen: [_1]',
-	'An error occured while counting objects: [_1]' => 'Er deed zich een fout voor bij het tellen van objecten: [_1]',
-	'An error occured while loading objects: [_1]' => 'Er deed zich een fout voor bij het laden van objecten: [_1]',
+	'An error occurred while counting objects: [_1]' => 'Er deed zich een fout voor bij het tellen van de objecten: [_1]', # Translate - New
+	'An error occurred while loading objects: [_1]' => 'Er deed zich een fout voor bij het laden van de objecten: [_1]', # Translate - New
 	'Removing tag failed: [_1]' => 'Tag verwijderen mislukt: [_1]',
 	'Removing [_1] failed: [_2]' => 'Verwijderen van [_1] mislukt: [_2]',
 	'System templates cannot be deleted.' => 'Systeemsjablonen kunnen niet worden verwijderd.',
@@ -1324,7 +1338,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'*User deleted*' => '*Gebruiker verwijderd*',
 	'New Entry' => 'Nieuw bericht',
 	'New Page' => 'Nieuwe pagina',
-	'pages' => 'pagina\'s',
 	'Tag' => 'Tag',
 	'Entry Status' => 'Status bericht',
 	'Cannot load template.' => 'Kan sjabloon niet laden.',
@@ -1418,6 +1431,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Search & Replace' => 'Zoeken & vervangen',
 	'Invalid date(s) specified for date range.' => 'Ongeldige datum(s) opgegeven in datumbereik.',
 	'Error in search expression: [_1]' => 'Fout in zoekexpressie: [_1]',
+	'Searched for: \'[_1]\' Replaced with: \'[_2]\'' => 'Gezocht naar: \'[_1]\' Vervangen door: \'[_2]\'', # Translate - New
+	'[_1] \'[_2]\' (ID:[_3]) updated by user \'[_4]\' using Search & Replace.' => '[_1] \'[_2]\' (ID:[_3]) bijgewerkt door gebruiker \'[_4]\' via zoeken & vervangen.', # Translate - New
 
 ## lib/MT/CMS/Tag.pm
 	'A new name for the tag must be specified.' => 'Een nieuwe naam voor de tag moet worden opgegeven.',
@@ -1446,6 +1461,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Archive' => 'Archief',
 	'Entry or Page' => 'Bericht of pagina',
 	'New Template' => 'Nieuwe sjabloon',
+	'No Name' => 'Geen naam',
 	'Index Templates' => 'Indexsjablonen',
 	'Archive Templates' => 'Archiefsjablonen',
 	'Template Modules' => 'Sjabloonmodules',
@@ -1467,7 +1483,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'You must select at least one event checkbox.' => 'U moet minstens één gebeurtenis-vakje aankruisen.',
 	'Template \'[_1]\' (ID:[_2]) created by \'[_3]\'' => 'Sjabloon \'[_1]\' (ID:[_2]) aangemaakt door \'[_3]\'',
 	'Template \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Sjabloon \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
-	'No Name' => 'Geen naam',
 	'Orphaned' => 'Verweesd',
 	'Global Templates' => 'Globale sjablonen',
 	' (Backup from [_1])' => ' (Backup van [_1])',
@@ -1512,12 +1527,12 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Passwords do not match' => 'Wachtwoorden komen niet overeen',
 	'That action ([_1]) is apparently not implemented!' => 'Die handeling ([_1]) is blijkbaar niet geïmplementeerd!',
 	'Error occurred while attempting to [_1]: [_2]' => 'Er deed zich een fout voor bij het [_1]: [_2]',
+	'Please enter a valid email address.' => 'Gelieve een geldig e-mail adres op te geven.',
 	'You do not have a system email address configured.  Please set this first, save it, then try the test email again.' => 'Er is geen systeem e-mailadres ingesteld.  Stel dit eerst in, sla het op en probeer dan de test e-mail opnieuw.',
 	'Test email from Movable Type' => 'Test e-mail van Movable Type',
 	'This is the test email sent by Movable Type.' => 'Dit is de test e-mail verstuurd door Movable Type.',
 	'Test e-mail was successfully sent to [_1]' => 'De test e-mail werd met succes verzonden naar [_1]',
 	'E-mail was not properly sent. [_1]' => 'E-mail werd niet goed verzonden. [_1]',
-	'These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'Deze instellingen worden overroepen door een instelling het het MT configuratiebestand: [_1].  Verwijder de waarde uit het configuratiebestand om deze hier te kunnen beheren.',
 	'Email address is [_1]' => 'E-mail adres is [_1]',
 	'Debug mode is [_1]' => 'Debug modus is [_1]',
 	'Performance logging is on' => 'Performantielogging staat aan',
@@ -1525,6 +1540,15 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Performance log path is [_1]' => 'Performantielogpad is [_1]',
 	'Performance log threshold is [_1]' => 'Performantielogdrempel is [_1]',
 	'Invalid SitePath.  The SitePath should be valid and absolute, not relative' => 'Ongeldig sitepad.  Het sitepad moet geldig en absoluut zijn, niet relatief',
+	'Prohibit comments is on' => 'Reacties verbieden staat aan', # Translate - New
+	'Prohibit comments is off' => 'Reacties verbieden staat uit', # Translate - New
+	'Prohibit trackbacks is on' => 'Trackbacks verbieden staat aan', # Translate - New
+	'Prohibit trackbacks is off' => 'Trackbacks verbieden staat uit', # Translate - New
+	'Prohibit notification pings is on' => 'Notificaties verbieden staat aan', # Translate - New
+	'Prohibit notification pings is off' => 'Notificaties verbieden staat uit', # Translate - New
+	'Outbound trackback limit is [_1]' => 'Limiet voor uitgaande trackbacks is [_1]', # Translate - New
+	'Any site' => 'Eender welke site',
+	'Only to blogs within this system' => 'Enkel naar blogs binnen dit systeem',
 	'[_1] is [_2]' => '[_1] is [_2]',
 	'none' => 'geen',
 	'System Settings Changes Took Place' => 'Wijzigingen werden aangebracht aan de systeeminstellingen',
@@ -1548,6 +1572,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Removing Site Path for the blog \'[_1]\' (ID:[_2])...' => 'Sitepad voor blog \'[_1]\' (ID:[_2]) aan het verwijderen...',
 	'Changing Archive Path for the blog \'[_1]\' (ID:[_2])...' => 'Archiefpad aan het aanpassen voor blog \'[_1]\' (ID:[_2])...',
 	'Removing Archive Path for the blog \'[_1]\' (ID:[_2])...' => 'Archiefpad aan het verwijderen voor blog \'[_1]\' (ID:[_2])...',
+	'Changing file path for FileInfo record (ID:[_1])...' => 'Bestandspad aan het aanpassen voor FileInfo record (ID:[_1])...', # Translate - New
+	'Changing URL for FileInfo record (ID:[_1])...' => 'URL aan het aanpassen voor FileInfo record (ID:[_1])...', # Translate - New
 	'Changing file path for the asset \'[_1]\' (ID:[_2])...' => 'Bestandslocatie voor mediabestand \'[_1]\' (ID:[_2]) wordt aangepast...',
 	'Could not remove backup file [_1] from the filesystem: [_2]' => 'Kon backup bestand [_1] niet verwijderen uit het bestandssysteem: [_2]',
 	'Some of the backup files could not be removed.' => 'Enkele backup bestanden konden niet worden verwijderd.',
@@ -1566,7 +1592,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'Een verzoek om het wachtwoord re resetten is naar [_3] gestuurd voor gebruiker \'[_1]\' (gebruiker #[_2]).',
 	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the activity log.' => 'Sommige objecten werden niet gerecupereerd omdat hun ouder-objecten niet werden teruggezet.  Gedetailleerde informatie is te vinden in het activiteitenlog.',
 	'[_1] is not a directory.' => '[_1] is geen map.',
-	'Error occured during restore process.' => 'Er deed zich een fout voor tijdens het restore-proces.',
+	'Error occurred during restore process.' => 'Er deed zich een fout voor bij het terugzetten.', # Translate - New
 	'Some of files could not be restored.' => 'Een aantal bestanden konden niet worden teruggezet.',
 	'Uploaded file was not a valid Movable Type backup manifest file.' => 'Het opgeladen bestand was geen geldig Movable Type backup manifest bestand.',
 	'Manifest file \'[_1]\' is too large. Please use import direcotry for restore.' => 'Manifestbestand \'[_1]\' is te groot.  Gelieve de map \'import\' te gebruiken om de gegevens terug te zetten.',
@@ -1579,7 +1605,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'IP address lockout limit' => 'Blokkeringslimiet IP adres',
 	'IP address lockout interval' => 'Blokkeringsinterval IP adres',
 	'Lockout IP address whitelist' => 'Niet blokkkeerbare IP adressen',
-	'Please enter a valid email address.' => 'Gelieve een geldig e-mail adres op te geven.',
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(Categorie zonder label)',
@@ -1699,7 +1724,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'[_1] [_2] future' => '[_1] [_2] toekomst',
 	'[_1] [_2] past' => '[_1] [_2] verleden',
 	'<mt:var name="[_1]"> [_2] [_3] [_4]' => '<mt:var name="[_1]"> [_2] [_3] [_4]',
-	'Invalid parameter.' => 'Ongeldige parameters',
 	'[_1] [_3] [_2]' => '[_1] [_3] [_2]',
 	'No Label' => 'Geen label',
 	'(system)' => '(systeem)',
@@ -1799,6 +1823,42 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Manage Plugins' => 'Plugins beheren',
 	'View System Activity Log' => 'Systeemactiviteitlog bekijken',
 
+## lib/MT/DataAPI/Callback/Blog.pm
+	'A parameter "[_1]" is required.' => 'Eeen "[_1]" parameter is vereist', # Translate - New
+	'The website root directory must be an absolute path: [_1]' => 'De hoofdmap van de website moet een absoluut pad zijn: [_1]', # Translate - New
+	'Invalid theme_id: [_1]' => 'Ongeldig theme_id: [_1]', # Translate - New
+	'Cannot apply website theme to blog: [_1]' => 'Kan website-thema niet op blog toepassen: [_1]', # Translate - New
+
+## lib/MT/DataAPI/Callback/Category.pm
+	'The label \'[_1]\' is too long.' => 'Het label \'[_1]\' is te lang.', # Translate - New
+	'Parent [_1] (ID:[_2]) not found.' => 'Moeder [_1] (ID:[_2]) niet gevonden.', # Translate - New
+
+## lib/MT/DataAPI/Callback/Entry.pm
+
+## lib/MT/DataAPI/Callback/Log.pm
+	'A paramter "[_1]" is required.' => 'Een "[_1]" parameter is vereist.', # Translate - New
+	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1]) is ongeldig.', # Translate - New
+	'Log (ID:[_1]) deleted by \'[_2]\'' => 'Log (ID:[_1]) verwijderd door \'[_2]\'', # Translate - New
+
+## lib/MT/DataAPI/Callback/Role.pm
+
+## lib/MT/DataAPI/Callback/Tag.pm
+	'Invalid tag name: [_1]' => 'Ongeldige tagnaam: [_1]', # Translate - New
+
+## lib/MT/DataAPI/Callback/TemplateMap.pm
+	'Invalid archive type: [_1]' => 'Ongeldig archieftype: [_1]', # Translate - New
+
+## lib/MT/DataAPI/Callback/Template.pm
+
+## lib/MT/DataAPI/Callback/User.pm
+	'Invalid language: [_1]' => 'Ongeldige taal: [_1]',
+	'Invalid dateFormat: [_1]' => 'Ongeldig dateFormat: [_1]', # Translate - New
+	'Invalid textFormat: [_1]' => 'Ongeldig textFormat: [_1]', # Translate - New
+
+## lib/MT/DataAPI/Callback/Widget.pm
+
+## lib/MT/DataAPI/Callback/WidgetSet.pm
+
 ## lib/MT/DataAPI/Endpoint/Auth.pm
 
 ## lib/MT/DataAPI/Endpoint/Comment.pm
@@ -1806,6 +1866,97 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## lib/MT/DataAPI/Endpoint/Common.pm
 
 ## lib/MT/DataAPI/Endpoint/Entry.pm
+
+## lib/MT/DataAPI/Endpoint/v2/Asset.pm
+	'The asset does not support generating a thumbnail file.' => 'Dit mediabestand ondersteunt het aanmaken van een thumbnailbestand niet.', # Translate - New
+	'Invalid width: [_1]' => 'Ongeldige breedte: [_1]', # Translate - New
+	'Invalid height: [_1]' => 'Ongeldige hoogte: [_1]', # Translate - New
+	'Invalid scale: [_1]' => 'Ongeldige schaal: [_1]', # Translate - New
+
+## lib/MT/DataAPI/Endpoint/v2/BackupRestore.pm
+	'An error occurred during the backup process: [_1]' => 'Er deed zich een fout voor tijdens het backup-proces: [_1]',
+	'Invalid backup_what: [_1]' => 'Ongeldige backup_what: [_1]', # Translate - New
+	'Invalid backup_archive_format: [_1]' => 'Ongeldige backup_archive_format: [_1]', # Translate - New
+	'Invalid limit_size: [_1]' => 'Ongeldige limit_size: [_1]', # Translate - New
+	'An error occurred during the restore process: [_1] Please check activity log for more details.' => 'Er deed zich een fout voor tijdens het restore-proces: [_1].  Kijk het activiteitenlog na voor meer details.',
+	'Make sure that you remove the files that you restored from the \'import\' folder, so that if/when you run the restore process again, those files will not be re-restored.' => 'Verwijder de bestanden die u heeft teruggezet uit de map \'import\', om te vermijden dat ze opnieuw worden teruggezet wanneer u ooit het restore-proces opnieuw uitvoert.',
+
+## lib/MT/DataAPI/Endpoint/v2/Blog.pm
+	'Cannot create a blog under blog (ID:[_1]).' => 'Kan geen blog aanmaken onder blog (ID: [_1])', # Translate - New
+	'Either parameter of "url" or "subdomain" is required.' => 'Of "url" of "subdomein" parameter vereist.', # Translate - New
+	'Site not found' => 'Site niet gevonden', # Translate - New
+	'Website "[_1]" (ID:[_2]) was not deleted. You need to delete the blogs under the website first.' => 'Website "[_1]" (ID: [_2]) niet verwijderd.  U moet eerst de blogs onder de website verwijderen.', # Translate - New
+
+## lib/MT/DataAPI/Endpoint/v2/Category.pm
+
+## lib/MT/DataAPI/Endpoint/v2/Entry.pm
+	'You need to provide a parameter "password" if you are going to create new users for each user listed in your blog.' => 'U moet de "password" parameter opgeven als u nieuwe gebruikers wenst aan te maken voor elke gebruiker die aan uw blog vastzit.', # Translate - New
+	'Invalid import_type: [_1]' => 'Ongeldig import_type: [_1]', # Translate - New
+	'Invalid encoding: [_1]' => 'Ongeldige encodering: [_1]', # Translate - New
+	'Invalid convert_breaks: [_1]' => 'Ongeldige convert_breaks: [_1]', # Translate - New
+	'Invalid default_cat_id: [_1]' => 'Ongeldige default_cat_id: [_1]', # Translate - New
+	'An error occurred during the import process: [_1]. Please check your import file.' => 'Er deed zich een fout voor tijdens het importproces: [_1]. Gelieve uw importbestand na te kijken.',
+	'Make sure that you remove the files that you imported from the \'import\' folder, so that if/when you run the import process again, those files will not be re-imported.' => 'Verwijder zeker de bestanden waaruit u gegevens importeerde uit de \'import\' folder, zodat wanneer u het import proces ooit opnieuw draait deze bestanden niet nog eens worden geïmporteerd.',
+
+## lib/MT/DataAPI/Endpoint/v2/Folder.pm
+
+## lib/MT/DataAPI/Endpoint/v2/Log.pm
+	'Log message' => 'Logbericht',
+
+## lib/MT/DataAPI/Endpoint/v2/Page.pm
+	'\'folder\' parameter is invalid.' => '\'folder\' parameter is ongeldig.', # Translate - New
+
+## lib/MT/DataAPI/Endpoint/v2/Permission.pm
+	'Granting permission failed: [_1]' => 'Permissie verlenen mislukt: [_1]', # Translate - New
+	'Role not found' => 'Rol niet gevonden', # Translate - New
+	'Revoking permission failed: [_1]' => 'Permissie afnemen mislukt: [_1]', # Translate - New
+
+## lib/MT/DataAPI/Endpoint/v2/Plugin.pm
+	'Plugin not found' => 'Plugin niet gevonden', # Translate - New
+
+## lib/MT/DataAPI/Endpoint/v2/Role.pm
+
+## lib/MT/DataAPI/Endpoint/v2/Search.pm
+
+## lib/MT/DataAPI/Endpoint/v2/Tag.pm
+	'Cannot delete private tag associated with objects in system scope.' => 'Kan privé-tag verbonden met objecten op systeemniveau niet verwijderen.', # Translate - New
+	'Cannot delete private tag in system scope.' => 'Kan privé-tag op systeemniveau niet verwijderen.', # Translate - New
+	'Tag not found' => 'Tag niet gevonden', # Translate - New
+
+## lib/MT/DataAPI/Endpoint/v2/TemplateMap.pm
+	'Template "[_1]" is not an archive template.' => 'Sjabloon "[_1]" is geen archiefsjabloon.', # Translate - New
+
+## lib/MT/DataAPI/Endpoint/v2/Template.pm
+	'Template not found' => 'Sjabloon niet gevonden', # Translate - New
+	'Cannot delete [_1] template.' => 'Kan [_1] sjabloon niet verwijderen.', # Translate - New
+	'Cannot publish [_1] template.' => 'Kan [_1] sjabloon niet publiceren.', # Translate - New
+	'A parameter "refresh_type" is invalid: [_1]' => 'De parameter "refresh_type" is ongeldig: [_1]', # Translate - New
+	'Cannot clone [_1] template.' => 'Kan sjabloon [_1] niet klonen.', # Translate - New
+
+## lib/MT/DataAPI/Endpoint/v2/Theme.pm
+	'Cannot apply website theme to blog.' => 'Kan website-thema niet toepassen op blog.', # Translate - New
+	'Changing site theme failed: [_1]' => 'Aanpassen site-thema mislukt: [_1]', # Translate - New
+	'Applying theme failed: [_1]' => 'Toepassen van thema mislukt: [_1]', # Translate - New
+	'Cannot uninstall this theme.' => 'Dit thema kan niet gedeïnstalleerd worden.', # Translate - New
+	'Cannot uninstall theme because the theme is in use.' => 'Kan thema niet deïnstalleren omdat het nog gebruikt wordt.', # Translate - New
+	'theme_id may only contain letters, numbers, and the dash or underscore character. The theme_id must begin with a letter.' => 'theme_id kan enkel letters, cijfers en het minteken of liggend streepje bevatten.  Het theme_id moet beginnen met een letter.', # Translate - New
+	'theme_version may only contain letters, numbers, and the dash or underscore character.' => 'theme_version kan enkel letters, cijfers en het minteken of liggend streepje bevatten.', # Translate - New
+	'Cannot install new theme with existing (and protected) theme\'s basename: [_1]' => 'Kan geen nieuw theme installeren met dezelfde basisnaam als een bestaand (en beschermd) thema: [_1]', # Translate - New
+	'Export theme folder already exists \'[_1]\'. You can overwrite an existing theme with \'overwrite_yes=1\' parameter, or change the Basename.' => 'Map voor exporteren thema bestaat al \'[_1]\'.  U kunt een bestaand thema overschrijven met de \'overwrite_yes=1\' parameter of u kunt de basisnaam aanpassen.', # Translate - New
+	'Unknown archiver type : $arctype' => 'Onbekend archiveringstype : $arctype', # Translate - New
+
+## lib/MT/DataAPI/Endpoint/v2/User.pm
+	'The email address provided is not unique. Please enter your username by "name" parameter.' => 'Het opgegeven email adres is niet uniek.  Gelieve uw gebruikersnaam in te vullen bij de "name" parameter.', # Translate - New
+	'An email with a link to reset your password has been sent to your email address ([_1]).' => 'Er is een e-mail met een link om uw wachtwoord aan te passen doorgestuurd naar uw e-mail adres ([_1]).',
+
+## lib/MT/DataAPI/Endpoint/v2/Widget.pm
+	'Widget not found' => 'Widget niet gevonden', # Translate - New
+	'Removing Widget failed: [_1]' => 'Widget verwijderen mislukt: [_1]', # Translate - New
+	'Widgetset not found' => 'Widgetset niet gevonden', # Translate - New
+
+## lib/MT/DataAPI/Endpoint/v2/WidgetSet.pm
+	'A resource "widgetset" is required.' => 'Een bron "widgetset" is vereist.', # Translate - New
+	'Removing Widgetset failed: [_1]' => 'Widget set verwijderen mislukt: [_1]', # Translate - New
 
 ## lib/MT/DataAPI/Resource.pm
 	'Cannot parse "[_1]" as an ISO 8601 datetime' => 'Kan "[_1]" niet parsen als een IS0 8601 datetime',
@@ -1865,6 +2016,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Unpublished (End)' => 'Publicatie ongedaan gemaakt (einde)',
 	'Entries by [_1]' => 'Berichten door [_1]',
 	'record does not exist.' => 'record bestaat niet.',
+	'Invalid arguments. They all need to be saved MT::Category objects.' => 'Ongeldige argumenten. Ze moeten allemaal als MT::Category objecten opgeslagen zijn.', # Translate - New
+	'Invalid arguments. They all need to be saved MT::Asset objects.' => 'Ongeldige argumenten. Ze moeten allemaal als MT::Asset objecten opgeslagen zijn.', # Translate - New
 	'Review' => 'Na te kijken',
 	'Future' => 'Toekomstig',
 	'Spam' => 'Spam',
@@ -2001,7 +2154,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'User has been unlocked. Username: [_1]' => 'Gebruiker werd gedeblokkeerd.  Gebruikersnaam: [_1]',
 
 ## lib/MT/Log.pm
-	'Log message' => 'Logbericht',
 	'Log messages' => 'Logberichten',
 	'Security' => 'Beveiliging',
 	'Warning' => 'Waarschuwing',
@@ -2024,6 +2176,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'theme' => 'thema',
 	'folder' => 'map',
 	'plugin' => 'plugin',
+	'page' => 'pagina', # Translate - Case
 	'Message' => 'Boodschap',
 	'By' => 'Door',
 	'Class' => 'Klasse',
@@ -2093,7 +2246,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'http://www.movabletype.com/' => 'http://www.movabletype.com',
 	'Hello, world' => 'Hello, world',
 	'Hello, [_1]' => 'Hallo, [_1]',
-	'Should not call MT::registry() without argument.' => 'MT::registry() niet aanroepen zonder argument.', # Translate - New
 	'Message: [_1]' => 'Bericht: [_1]',
 	'If it is present, the third argument to add_callback must be an object of type MT::Component or MT::Plugin' => 'Als het aanwezig is, dan moet het derde argument bij add_callback een object van het type MT::Component of MT::Plugin zijn',
 	'Fourth argument to add_callback must be a CODE reference.' => 'Vierde argument van add_callback moet een CODE referentie zijn.',
@@ -2102,7 +2254,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Internal callback' => 'Interne callback',
 	'Unnamed plugin' => 'Naamloze plugin',
 	'[_1] died with: [_2]' => '[_1] faalde met volgende boorschap: [_2]',
-	'Bad LocalLib config ([_1]): ' => 'Foute LocalLib configuratie ([_1]): ',
+	'Bad LocalLib config ([_1]): [_2]' => 'Fout in LocalLib configuratie ([_1]): [_2]', # Translate - New
 	'Bad ObjectDriver config' => 'Fout in ObjectDriver configuratie',
 	'Bad CGIPath config' => 'Fout in CGIPath configuratie',
 	'Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?' => 'Ontbrekend configuratiebestand.  Misschien vergat u mt-config.cgi-original te hernoemen naar mt-config.cgi?',
@@ -2250,8 +2402,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Template load error: [_1]' => 'Fout bij laden sjabloon: [_1]',
 	'Tried to load the template file from outside of the include path \'[_1]\'' => 'Poging het sjabloonbestand te laden van buiten het include pad  \'[_1]\'',
 	'Error reading file \'[_1]\': [_2]' => 'Fout bij het lezen van bestand \'[_1]\': [_2]',
-	'Load of blog \'[_1]\' failed: [_2]' => 'Laden van blog \'[_1]\' mislukt: [_2]',
 	'Publish error in template \'[_1]\': [_2]' => 'Publicatiefout in sjabloon \'[_1]\': [_2]',
+	'Load of blog \'[_1]\' failed: [_2]' => 'Laden van blog \'[_1]\' mislukt: [_2]',
 	'Template name must be unique within this [_1].' => 'Sjabloonnaam moet uniek zijn binnen deze [_1].',
 	'You cannot use a [_1] extension for a linked file.' => 'U kunt geen [_1] extensie gebruiken voor een gelinkt bestand.',
 	'Opening linked file \'[_1]\' failed: [_2]' => 'Gelinkt bestand \'[_1]\' openen mislukt: [_2]',
@@ -2281,6 +2433,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace.',
 	'No such user \'[_1]\'' => 'Geen gebruiker \'[_1]\'',
 	'You have an error in your \'[_2]\' attribute: [_1]' => 'Er staat een fout in uw \'[_2]\' attribuut: [_1]',
+	'[_1] must be a number.' => '[_1] moet een getal zijn.', # Translate - New
 
 ## lib/MT/Template/Tags/Author.pm
 	'The \'[_2]\' attribute will only accept an integer: [_1]' => 'Het \'[_2]\' attribuut accepteert alleen een geheel getal: [_1]',
@@ -2330,9 +2483,9 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## lib/MT/Theme/Element.pm
 	'Component \'[_1]\' is not found.' => 'Component \'[_1]\' niet gevonden.',
 	'Internal error: the importer is not found.' => 'Interne fout: de importer werd niet gevonden.',
-	'Compatibility error occured while applying \'[_1]\': [_2].' => 'Compatibiliteitsfout bij het toepassen van \'[_1]\': [_2].',
-	'An Error occured while applying \'[_1]\': [_2].' => 'Er deed zich een fout voor bij het toepassen van \'[_1]\': [_2].',
-	'Fatal error occured while applying \'[_1]\': [_2].' => 'Fatale fout bij het toepassen van \'[_1]\': [_2].',
+	'Compatibility error occurred while applying \'[_1]\': [_2].' => 'Er deed zich een compatibiliteitsprobleem voor bij het toepassen van \'[_1]\': [_2].', # Translate - New
+	'An Error occurred while applying \'[_1]\': [_2].' => 'Er deed zich een fout voor bij het toepassen van \'[_1]\': [_2].', # Translate - New
+	'Fatal error occurred while applying \'[_1]\': [_2].' => 'Er deed zich een fatale fout voor bij het toepassen van \'[_1]\': [_2].', # Translate - New
 	'Importer for \'[_1]\' is too old.' => 'Importeerder voor \'[_1]\' is te oud.',
 	'Theme element \'[_1]\' is too old for this environment.' => 'Thema element \'[_1]\' is te oud voor deze omgeving.',
 
@@ -2390,6 +2543,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'First Website' => 'Eerste website',
 	'Creating new template: \'[_1]\'.' => 'Nieuw sjabloon wordt aangemaakt: \'[_1]\'.',
 	'Mapping templates to blog archive types...' => 'Bezig met sjablonen aan archieftypes toe te wijzen...',
+	'Expiring cached MT News widget...' => 'Gecached MT Nieuws Widget aan het verversen...',
+	'Error loading class: [_1].' => 'Fout bij het laden van klasse: [_1].',
 	'Assigning custom dynamic template settings...' => 'Aangepaste instellingen voor dynamische sjablonen worden toegewezen...',
 	'Assigning user types...' => 'Gebruikertypes worden toegewezen...',
 	'Assigning category parent fields...' => 'Velden van hoofdcategorieën worden toegewezen...',
@@ -2408,7 +2563,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'User \'[_1]\' upgraded plugin \'[_2]\' to version [_3] (schema version [_4]).' => 'Gebruiker \'[_1]\' deed een upgrade van plugin \'[_2]\' naar versie [_3] (schema versie [_4]).',
 	'Plugin \'[_1]\' installed successfully.' => 'Plugin \'[_1]\' met succes geïnstalleerd.',
 	'User \'[_1]\' installed plugin \'[_2]\', version [_3] (schema version [_4]).' => 'Gebruiker \'[_1]\' installeerde plugin \'[_2]\', versie [_3] (schema versie [_4]).',
-	'Error loading class: [_1].' => 'Fout bij het laden van klasse: [_1].',
 	'Assigning entry comment and TrackBack counts...' => 'Tellingen aantal reacties en TrackBacks bericht aan het toekennen...',
 	'Error saving [_1] record # [_3]: [_2]...' => 'Fout bij opslaan [_1] record # [_3]: [_2]...',
 
@@ -2503,12 +2657,11 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Migrating existing [quant,_1,blog,blogs] into websites and their children...' => 'Bezig bestaande [quant,_1,blog,blogs] te migreren naar websites (met kinderen)...',
 	'Error loading role: [_1].' => 'Fout bij laden rollen: [_1].',
 	'New WebSite [_1]' => 'Nieuwe website [_1]',
-	'An error occured during generating a website upon upgrade: [_1]' => 'Er deed zich een fout bij tijdens het aanmaken van een website bij de upgrade: [_1]',
+	'An error occurred during generating a website upon upgrade: [_1]' => 'Er deed zich een fout voor bij het aanmaken van een website tijdens de upgrade: [_1]', # Translate - New
 	'Generated a website [_1]' => 'Website [_1] aangemaakt',
-	'An error occured during migrating a blog\'s site_url: [_1]' => 'Er deed zich een fout bij tijdens het migreren van de site_url van een blog: [_1]',
+	'An error occurred during migrating a blog\'s site_url: [_1]' => 'Er deed zich een fout voor bij het migreren van de site_url van een blog: [_1]', # Translate - New
 	'Moved blog [_1] ([_2]) under website [_3]' => 'Blog [_1] ([_2]) werd verplaatst tot onder website [_3]',
 	'Removing technorati update-ping service from [_1] (ID:[_2]).' => 'Technorati update-ping service aan het verwijderen van [_1] (ID:[_2]).',
-	'Expiring cached MT News widget...' => 'Gecached MT Nieuws Widget aan het verversen...',
 	'Recovering type of author...' => 'Type auteur wordt opgehaald...',
 	'Merging dashboard settings...' => 'Bezig dashboard-instellingen samen te voegen...',
 	'Classifying blogs...' => 'Blogs aan het classificeren...',
@@ -2517,6 +2670,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Removing widget from dashboard...' => 'Widget wordt verwijderd van dashboard...',
 	'Ordering Categories and Folders of Blogs...' => 'Bezig categorieën en mappen van blogs te sorteren...',
 	'Ordering Folders of Websites...' => 'Bezig mappen van websites te sorteren...',
+	'Setting the \'created by\' ID for any user for whom this field is not defined...' => 'Bezig het \'created by\' ID in te stellen voor elke gebruiker waarvoor dit veld niet gedefiniëerd is...', # Translate - New
 	'Assigning a language to each blog to help choose appropriate display format for dates...' => 'Bezig een taal in te stellen voor elke blog om het juiste weergaveformaat voor datums te helpen kiezen...',
 	'Adding notification dashboard widget...' => 'Bezig notificatiedashboardwidget toe te voegen',
 
@@ -2631,23 +2785,9 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Perl module Image::Size is nodig om de breedte en hoogte van opgeladen afbeeldingen te bepalen.',
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Sjabloonmethodes zijn niet geïmplementeerd wegens het verschil tussen de Blogger API en de Movable Type API.',
 
-## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
-	'A configuration directive is required.' => 'Een configuratiedirectief is vereist.',
-	'[_1] cannot be updated.' => '[_1] kan niet worden bijgewerkt.',
-	'Although [_1] can be updated by Movable Type, it cannot be updated on this screen.' => 'Hoewel [_1] kan bijgewerkt worden door ',
-	'[_1] already exists.' => '[_1] bestaat al.',
-	'A configuration value is required.' => 'Een configuratiewaarde is vereist.',
-	'The HASH type configuration directive should be in the format of "key=value"' => 'Configuratiewaarden van type HASH moeten in volgend formaat staan: "key=value"',
-	'[_1] for [_2] already exists.' => '[_1] voor [_2] bestaat al.',
-	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
-	'Are you sure you want to remove [_1]?' => 'Bent u zeker dat u [_1] wenst te verwijderen?',
-	'configuration directive' => 'configuratiedirectief',
-
-## mt-static/addons/Cloud.pack/js/cms.js
+## mt-static/addons/Sync.pack/js/cms.js
 	'Continue' => 'Doorgaan',
 	'You have unsaved changes to this page that will be lost.' => 'U heeft niet opgeslagen veranderingen op deze pagina die verloren zullen geen.',
-
-## mt-static/addons/Sync.pack/js/cms.js
 
 ## mt-static/chart-api/deps/raphael-min.js
 	'+e.x+' => '+e.x+',
@@ -2717,6 +2857,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## mt-static/plugins/FormattedTextForTinyMCE/langs/template.js
 	'Boilerplate' => 'Standaardtekst',
 	'Select Boilerplate' => 'Standaardtekst selecteren',
+
+## mt-static/plugins/Loupe/js/vendor.js
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
 	'Fullscreen' => 'Volledig scherm',
@@ -3373,14 +3515,15 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Specifies the default Accept Comments setting when creating a new entry.' => 'Bepaalt de standaardinstelling voor het aanvaarden van nieuwe reacties bij nieuwe berichten.',
 	'Setting Ignored' => 'Instelling genegeerd',
 	'Note: This option is currently ignored since comments are disabled either blog or system-wide.' => 'Opmerking: deze optie wordt momenteel genegeerd omdat reacties zijn uitgeschakeld op blog- of systeemniveau.',
-	'Note: This option is currently ignored since comments are disabled either website or system-wide.' => 'Opmerking: deze optie wordt momenteel genegeerd omdat reacties zijn uitgeschakeld op website- of systeemniveau', # Translate - New
+	'Note: This option is currently ignored since comments are disabled either website or system-wide.' => 'Opmerking: deze optie wordt momenteel genegeerd omdat reacties zijn uitgeschakeld op website- of systeemniveau',
 	'Specifies the default Accept TrackBacks setting when creating a new entry.' => 'Bepaalt de standaardinstelling voor het aanvaarden van nieuwe TrackBacks bij nieuwe berichten.',
 	'Accept TrackBacks' => 'TrackBacks aanvaarden',
 	'Note: This option is currently ignored since TrackBacks are disabled either blog or system-wide.' => 'Opmerking: deze optie wordt momenteel genegeerd omdat TrackBacks zijn uitgeschakeld op blog- of systeemniveau.',
-	'Note: This option is currently ignored since TrackBacks are disabled either website or system-wide.' => 'Opmerking: deze optie wordt momenteel genegeerd omdat TrackBacks zijn uitgeschakeld op website- of systeemniveau.', # Translate - New
+	'Note: This option is currently ignored since TrackBacks are disabled either website or system-wide.' => 'Opmerking: deze optie wordt momenteel genegeerd omdat TrackBacks zijn uitgeschakeld op website- of systeemniveau.',
 	'Entry Fields' => 'Berichtvelden',
 	'_USAGE_ENTRYPREFS' => 'Selecteer de velden die getoond moeten worden in het scherm om berichten te bewerken.',
 	'Page Fields' => 'Paginavelden',
+	'The range for Basename Length is 15 to 250.' => 'Basisnamen kunnen van 15 tot 250 karakters lang zijn.', # Translate - New
 	'WYSIWYG Editor Setting' => 'Instellingen WYSIWYG Editor',
 	'Content CSS' => 'Inhoud CSS',
 	'Content CSS will be applied when WYSIWYG editor does support. You can specify CSS file by URL or {{theme_static}} placeholder. Example: {{theme_static}}path/to/cssfile.css' => 'Inhoud CSS zal toegepast worden als de editor het ondersteunt.  U kunt een CSS bestand opgeven via de URL of met de {{theme_static}} plaatsvervanger. Voorbeeld: {{theme_static}}path/to/cssfile.css',
@@ -3504,8 +3647,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## tmpl/cms/cfg_prefs.tmpl
 	'Error: Movable Type was not able to create a directory for publishing your [_1]. If you create this directory yourself, grant write permission to the web server.' => 'Fout: Movable Type kon geen map aanmaken om uw [_1] in te publiceren.  Als u deze map zelf aanmaakt, zorg er dan voor dat de webserver er schrijfpermissies op heeft.',
-	'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your site directory.' => 'Fout: Movable Type kon geen map aanmaken om uw dynamische sjablonen in te cachen.  U moet een map aanmaken met de naam <code>[_1]</code> in de map van uw site.', # Translate - New
-	'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your site directory.' => 'Fout: Movable Type kon niet schrijven in de map om dynamische sjablonen in te cachen.  Controleer de schrijfpermissies van de map met de naam <code>[_1]</code> in de map van uw site.', # Translate - New
+	'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your site directory.' => 'Fout: Movable Type kon geen map aanmaken om uw dynamische sjablonen in te cachen.  U moet een map aanmaken met de naam <code>[_1]</code> in de map van uw site.',
+	'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your site directory.' => 'Fout: Movable Type kon niet schrijven in de map om dynamische sjablonen in te cachen.  Controleer de schrijfpermissies van de map met de naam <code>[_1]</code> in de map van uw site.',
 	'[_1] Settings' => 'Instellingen [_1]',
 	'Name your blog. The name can be changed at any time.' => 'Geef uw blog een naam.  De naam kan op elk moment worden gewijzigd.',
 	'Enter a description for your blog.' => 'Geef een beschrijving op voor uw weblog.',
@@ -3546,11 +3689,11 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.' => 'Als u een andere taal kiest dan de standaard taal die op systeemniveau staat ingesteld, dan moet u mogelijk de namen van bepaalde modules aanpassen in bepaalde sjablonen om andere globale modules te kunnen includeren.',
 	'License' => 'Licentie',
 	'Your blog is currently licensed under:' => 'Uw weblog valt momenteel onder deze licentie:',
-	'Your website is currently licensed under:' => 'Uw website valt momenteel onder deze licentie:', # Translate - New
+	'Your website is currently licensed under:' => 'Uw website valt momenteel onder deze licentie:',
 	'Change license' => 'Licentie aanpassen',
 	'Remove license' => 'Licentie verwijderen',
 	'Your blog does not have an explicit Creative Commons license.' => 'Uw weblog heeft geen expliciete Creative Commons licentie',
-	'Your website does not have an explicit Creative Commons license.' => 'Uw website heeft geen expliciete Creative Commons licentie', # Translate - New
+	'Your website does not have an explicit Creative Commons license.' => 'Uw website heeft geen expliciete Creative Commons licentie',
 	'Select a license' => 'Selecteer een licentie',
 	'Publishing Paths' => 'Publicatiepaden',
 	'[_1] URL' => '[_1] URL',
@@ -3606,6 +3749,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'You must set your Local file Path.' => 'U moet uw lokaal bestandspad instellen.',
 	'You must set a valid Local file Path.' => 'U moet een geldig lokaal bestandspad instellen.',
 	'Website root must be under [_1]' => 'Websiteroot moet vallen onder [_1]',
+	'Blog root must be under [_1]' => 'Hoofdmap van de blog moet vallen onder [_1]', # Translate - New
 	'You must set a valid Archive URL.' => 'U moet een geldige archief URL instellen.',
 	'You must set your Local Archive Path.' => 'U moet uw lokaal archiefpad instellen.',
 	'You must set a valid Local Archive Path.' => 'U moet een geldig lokaal archiefpad instellen.',
@@ -3613,7 +3757,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## tmpl/cms/cfg_registration.tmpl
 	'Registration Settings' => 'Registratie-instellingen',
 	'Your blog preferences have been saved.' => 'Uw blogvoorkeuren zijn opgeslagen.',
-	'Your website preferences have been saved.' => 'Uw websitevoorkeuren zijn opgeslagen.', # Translate - New
+	'Your website preferences have been saved.' => 'Uw websitevoorkeuren zijn opgeslagen.',
 	'User Registration' => 'Gebruikersregistratie',
 	'Allow registration for this website.' => 'Registratie toestaan op deze website',
 	'Registration Not Enabled' => 'Registratie niet ingeschakeld',
@@ -3630,6 +3774,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## tmpl/cms/cfg_system_general.tmpl
 	'Your settings have been saved.' => 'Uw instellingen zijn opgeslagen.',
 	'A test mail was sent.' => 'Een testmail werd verstuurd',
+	'One or more of your websites or blogs are not following the base site path (value of BaseSitePath) restriction.' => 'Eén of meer van uw websites of blogs volgen de site basispad restrictie niet (waarde van BaseSitePath).', # Translate - New
 	'(None selected)' => '(Geen geselecteerd)',
 	'System Email Address' => 'Systeememailadres',
 	'Send Test Mail' => 'Testmail versturen',
@@ -3651,18 +3796,16 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'System-wide Feedback Controls' => 'Systeeminstellingen voor feedback',
 	'Prohibit Comments' => 'Reacties verbieden',
 	'This will override all individual blog settings.' => 'Deze instelling zal van toepassing zijn over alle instellingen op individuele blogs heen.',
-	'Disable comments for all websites and blogs.' => 'Reacties uitschakelen voor alle websites en blogs.', # Translate - New
+	'Disable comments for all websites and blogs.' => 'Reacties uitschakelen voor alle websites en blogs.',
 	'Prohibit TrackBacks' => 'Trackbacks verbieden',
-	'Disable receipt of TrackBacks for all websites and blogs.' => 'Ontvangen van TrackBacks uitschakelen voor alle websites en blogs.', # Translate - New
+	'Disable receipt of TrackBacks for all websites and blogs.' => 'Ontvangen van TrackBacks uitschakelen voor alle websites en blogs.',
 	'Outbound Notifications' => 'Uitgaande notificaties',
 	'Prohibit Notification Pings' => 'Notificatiepings verbieden',
 	'Disable sending notification pings when a new entry is created in any blog on the system.' => 'Schakel het sturen van automatische notificatiepings uit bij het aanmaken van een bericht op eender welke blog in het systeem.',
-	'Disable notification pings for all websites and blogs.' => 'Notificaties uitschakelen voor alle websites en blogs.', # Translate - New
+	'Disable notification pings for all websites and blogs.' => 'Notificaties uitschakelen voor alle websites en blogs.',
 	'Send Outbound TrackBacks to' => 'Uitgaande TrackBacks sturen naar',
 	'Do not send outbound TrackBacks or use TrackBack auto-discovery if your installation is intended to be private.' => 'Verstuur geen uitgaande TrackBacks en maak geen gebruik van TrackBack auto-discovery als het de bedoeling is uw installatie privé te houden.',
-	'Any site' => 'Eender welke site',
 	'(No Outbound TrackBacks)' => '(Geen uitgaande TrackBacks)',
-	'Only to blogs within this system' => 'Enkel naar blogs binnen dit systeem',
 	'Only to websites on the following domains:' => 'Enkel naar websites onder volgende domeinen:',
 	'Lockout Settings' => 'Instellingen blokkering',
 	q{The system administrators whom you wish to notify if a user or an IP address is locked out.  If no administrators are selected, notifications will be sent to the 'System Email' address.} => q{De systeembeheerders die op de hoogte gebracht moeten worden als een gebruiker of IP adres geblokkeerd wordt.  Indien geen administrators geselecteerd zijn, worden de berichten naar eht 'Systeem e-mail adres' gestuurd.},
@@ -3685,7 +3828,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Select website' => 'Selecteer website',
 	'Allow Registration' => 'Registratie toestaan',
 	'Select a system administrator you wish to notify when commenters successfully registered themselves.' => 'Selecteer een systeembeheerder die op de hoogte gebracht moet worden wanneer nieuwe reageerders zich met succes registreren.',
-	'Allow commenters to register on this system.' => 'Toestaan dat reageerders zich registreren op dit systeem.', # Translate - New
+	'Allow commenters to register on this system.' => 'Toestaan dat reageerders zich registreren op dit systeem.',
 	'Notify the following system administrators when a commenter registers:' => 'De systeembeheerder op de hoogte brengen wanneer een reageerder zich registreert:',
 	'Select system administrators' => 'Systeembeheerder kiezen',
 	'Note: System Email Address is not set in System > General Settings. Emails will not be sent.' => 'Opmerking: systeem e-mail adres is niet ingesteld onder Systeem > Algemene Instellingen.  E-mails zullen niet worden verstuurd.',
@@ -3718,6 +3861,10 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## tmpl/cms/cfg_web_services.tmpl
 	'Web Services Settings' => 'Instellingen webservices',
+	'Data API Settings' => 'Data API instellingen', # Translate - New
+	'Data API' => 'Data API', # Translate - New
+	'Enable Data API in this site.' => 'Data API inschakelen voor deze site.', # Translate - New
+	'Enable Data API in system scope.' => 'Data API inschakelen op systeemniveau.', # Translate - New
 	'External Notifications' => 'Externe notificaties',
 	'Notify ping services of website updates' => 'Ping services op de hoogte brengen van updates aan uw website',
 	'When this website is updated, Movable Type will automatically notify the selected sites.' => 'Wanneer deze website wordt bijgewerkt zal Movable Type automatisch de geselecteerde sites op de hoogte brengen.',
@@ -3865,7 +4012,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## tmpl/cms/dialog/recover.tmpl
 	'Reset Password' => 'Wachtwoord opnieuw instellen',
 	'The email address provided is not unique.  Please enter your username.' => 'Het opgegeven e-mail adres is niet uniek.  Gelieve uw gebruikersnaam op te geven.',
-	'An email with a link to reset your password has been sent to your email address ([_1]).' => 'Er is een e-mail met een link om uw wachtwoord aan te passen doorgestuurd naar uw e-mail adres ([_1]).',
 	'Back (x)' => 'Terug (x)',
 	'Sign in to Movable Type (s)' => 'Aanmelden op Movable Tpe (s)',
 	'Sign in to Movable Type' => 'Aanmelden op Movable Type',
@@ -4464,7 +4610,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Download This File' => 'Dit bestand downloaden',
 	'Download: [_1]' => 'Download: [_1]',
 	q{_BACKUP_DOWNLOAD_MESSAGE} => q{Het downloaden van het backup-bestand zal over een paar seconden automatisch beginnen.  Als dit niet het geval is om wat voor reden dan ook, klik dan <a href='#' onclick='submit_form()'>hier</a> om de download met de hand in gang te zetten.  Merk op dat u het backupbestand slechts één keer kunt downloaden gedurende een sessie.},
-	'An error occurred during the backup process: [_1]' => 'Er deed zich een fout voor tijdens het backup-proces: [_1]',
 
 ## tmpl/cms/include/backup_start.tmpl
 	'Backing up Movable Type' => 'Backup maken van Movable Type',
@@ -4594,7 +4739,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## tmpl/cms/include/import_end.tmpl
 	'All data imported successfully!' => 'Alle gegevens werden met succes geïmporteerd!',
 	q{Make sure that you remove the files that you imported from the 'import' folder, so that if/when you run the import process again, those files will not be re-imported.} => q{Verwijder zeker de bestanden waaruit u gegevens importeerde uit de 'import' folder, zodat wanneer u het import proces ooit opnieuw draait deze bestanden niet nog eens worden geïmporteerd.},
-	'An error occurred during the import process: [_1]. Please check your import file.' => 'Er deed zich een fout voor tijdens het importproces: [_1]. Gelieve uw importbestand na te kijken.',
 
 ## tmpl/cms/include/import_start.tmpl
 	'Importing...' => 'Importeren...',
@@ -4724,6 +4868,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Change and move' => 'Wijzig en verplaats',
 	'Rename' => 'Naam wijzigen',
 	'Label is required.' => 'Label is verplicht',
+	'Label is too long.' => 'Label is te lang', # Translate - New
 	'Duplicated label on this level.' => 'Dubbel gebruik van een label op dit niveau.',
 	'Basename is required.' => 'Basisnaam is verplicht.',
 	'Invalid Basename.' => 'Ongeldige basisnaam.',
@@ -4819,8 +4964,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Invalid IP address.' => 'Ongeldig IP adres',
 
 ## tmpl/cms/listing/blog_list_header.tmpl
-	'You have successfully deleted the website from the Movable Type system.' => 'U heeft de website met succes verwijderd uit het Movable Type systeem.',
-	'You have successfully deleted the blog from the website.' => 'U heeft de blog met succes verwijderd uit deze website.',
+	'You have successfully deleted the website from the Movable Type system. The files still exist in the site path. Please delete files if not needed.' => 'U heeft met succes de website verwijderd uit het Movable Type systeem.  De bestanden ervan bestaan nog in het sitepad.  Gelieve de bestanden te verwijderen als u ze niet meer nodig heeft.', # Translate - New
+	'You have successfully deleted the blog from the website. The files still exist in the site path. Please delete files if not needed.' => 'U heeft met succes de blog verwijderd uit de website. De bestanden ervan bestaan nog in het sitepad.  Gelieve de bestanden te verwijderen als u ze niet meer nodig heeft.', # Translate - New
 	'You have successfully refreshed your templates.' => 'U heeft met succes uw sjablonen ververst.',
 	'You have successfully moved selected blogs to another website.' => 'U heeft de geselecteerde blogs met succes verplaatst naar een andere website.',
 	'Warning: You need to copy uploaded assets to new locations manually. You should consider maintaining copies of uploaded assets in their original locations to avoid broken links.' => 'Waarschuwing: u moet mediabestanden die werden geupload met de hand naar de nieuwe locatie verhuizen.  Overweeg ook om op de oorspronkelijke locatie kopieën te bewaren om zo gebroken links te vermijden.',
@@ -4898,8 +5043,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Theme Information' => 'Thema informatie',
 	q{No themes are installed.} => q{Geen thema's geïnstalleerd},
 	'Current Theme' => 'Huidig thema',
-	q{Available Themes} => q{Beschikbare thema's},
 	q{Themes in Use} => q{Thema's in gebruik},
+	q{Available Themes} => q{Beschikbare thema's},
 
 ## tmpl/cms/list_widget.tmpl
 	'Manage [_1] Widgets' => 'Beheer [_1] widgets',
@@ -5006,7 +5151,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## tmpl/cms/restore_end.tmpl
 	q{Make sure that you remove the files that you restored from the 'import' folder, so that if/when you run the restore process again, those files will not be re-restored.} => q{Verwijder de bestanden die u heeft teruggezet uit de map 'import', om te vermijden dat ze opnieuw worden teruggezet wanneer u ooit het restore-proces opnieuw uitvoert.},
-	'An error occurred during the restore process: [_1] Please check activity log for more details.' => 'Er deed zich een fout voor tijdens het restore-proces: [_1].  Kijk het activiteitenlog na voor meer details.',
 
 ## tmpl/cms/restore_start.tmpl
 	'Restoring Movable Type' => 'Movable Type terugzetten',
@@ -5044,7 +5188,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## tmpl/cms/setup_initial_website.tmpl
 	'Create Your First Website' => 'Eerste website aanmaken',
 	q{In order to properly publish your website, you must provide Movable Type with your website's URL and the filesystem path where its files should be published.} => q{Om uw website te kunnen publiceren, moet u Movable Type voorzien van de URL van uw website en het pad waar de bestanden ervan moeten worden gepubliceerd.},
-	'Support directory does not exists or not writable by the web server. Change the ownership or permissions on this directory' => 'Support map bestaat niet of is niet beschrijfbaar door de webserver.  Wijzig de eigenaar of permissies van deze map.', # Translate - New
+	'Support directory does not exists or not writable by the web server. Change the ownership or permissions on this directory' => 'Support map bestaat niet of is niet beschrijfbaar door de webserver.  Wijzig de eigenaar of permissies van deze map.',
 	'My First Website' => 'Mijn eerste website',
 	q{The 'Website Root' is the directory in your web server's filesystem where Movable Type will publish the files for your website. The web server must have write access to this directory.} => q{De 'Website Root' is de map in het bestandssysteem van uw webserver waar Movable Type de bestanden zal publiceren voor uw website.  De webserver moet schrijftoegang hebben tot deze map.},
 	'Select the theme you wish to use for this new website.' => 'Selecteer het thema dat u wenst te gebruiken op deze nieuwe website.',
@@ -5350,6 +5494,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Please enter the parameters necessary for connecting to your database.' => 'Gelieve de parameters in te vullen die nodig zijn om met uw database te verbinden.',
 	'Database Type' => 'Databasetype',
 	'Select One...' => 'Selecteer er één...',
+	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
 	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => 'Staat uw gewenste database er niet bij?  Kijk bij de <a href="[_1]" target="_blank">Movable Type systeemcontrole</a> of er bijkomende modules nodig zijn.',
 	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => '<a href="javascript:void(0)" onclick="[_1]">Klik hier om dit scherm te vernieuwen</a> zodra de installatie voltooid is.',
 	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => 'Meer weten over: <a href="[_1]" target="_blank">Database instellen</a>',
@@ -5519,12 +5664,19 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Restoring asset associations found in custom fields ( [_1] ) ...' => 'Mediabestand-associaties aan het terugzetten die werden gevonden in gepersonaliseerde velden ( [_1] ) ...',
 	'Restoring url of the assets associated in custom fields ( [_1] )...' => 'URL van de mediabestand aan het terugzetten geassocieerd via gepersonaliseerde velden ( [_1] )',
 
+## addons/Commercial.pack/lib/CustomFields/DataAPI/Callback/Field.pm
+	'The type "[_1]" is invalid.' => 'Het type "]_1]" is ongeldig.', # Translate - New
+	'The systemObject "[_1]" is invalid.' => 'Het systemObject "[_1]" is ongeldig.', # Translate - New
+
+## addons/Commercial.pack/lib/CustomFields/DataAPI/Endpoint/v2/Field.pm
+
 ## addons/Commercial.pack/lib/CustomFields/Field.pm
 	'The template tag \'[_1]\' is already in use in the system level' => 'De sjabloontag \'[_1]\' is al in gebruik op systeemniveau',
 	'The template tag \'[_1]\' is already in use in [_2]' => 'De sjabloontag \'[_1]\' wordt al gebruikt in [_2]',
 	'The template tag \'[_1]\' is already in use in this blog' => 'De sjabloontag \'[_1]\' wordt al gebruikt op deze blog',
 	'The \'[_1]\' of the template tag \'[_2]\' that is already in use in [_3] is [_4].' => 'De \'[_1]\' van de sjabloontag \'[_2]\' die al gebruikt wordt in [_3] is [_4].',
 	'_CF_BASENAME' => 'Basename',
+	'__CF_REQUIRED_VALUE__' => 'Waarde', # Translate - New
 
 ## addons/Commercial.pack/lib/CustomFields/Template/ContextHandlers.pm
 	'Are you sure you have used a \'[_1]\' tag in the correct context? We could not find the [_2]' => 'Bent u zeker dat u een \'[_1]\' tag gebruikte in de juiste context?  We vonden geen [_2]',
@@ -5779,7 +5931,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Login Form' => 'Aanmeldformulier',
 	'Registration Form' => 'Registratieformulier',
 	'Registration Confirmation' => 'Registratiebevestiging',
-	'Profile Error' => 'Profielfout',
 	'Profile View' => 'Profiel bekijken',
 	'Profile Edit Form' => 'Bewerkingsformulier profiel',
 	'Profile Feed' => 'Profielfeed',
@@ -5831,7 +5982,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Publish failed: [_1]' => 'Publicatie mislukt: [_1]',
 	'System template entry_response not found in blog: [_1]' => 'Systeemsjabloon entry_response niet gevonden voor blog: [_1]',
 	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'Nieuw bericht \'[_1]\' toegevoegd aan de blog \'[_2]\'',
-	'Id or Username is required' => 'ID of gebruikersnaam is verplicht',
 	'Unknown user' => 'Onbekende gebruiker',
 	'All required fields must have valid values.' => 'Alle vereiste velden moeten geldige waarden bevatten.',
 	'Recent Entries from [_1]' => 'Recente berichten van [_1]',
@@ -5846,6 +5996,9 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Click here to recommend' => 'Klik hier om aan te raden',
 	'Click here to follow' => 'Hier klikken om te volgen',
 	'Click here to leave' => 'Hier klikken om niet meer te volgen',
+
+## addons/Community.pack/lib/MT/Community/Upgrade.pm
+	'Removing Profile Error global system template...' => 'Bezig globaal systeemsjabloon "Profielfout" te verwijderen...', # Translate - New
 
 ## addons/Community.pack/php/function.mtentryrecommendvotelink.php
 
@@ -6096,10 +6249,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## addons/Community.pack/templates/global/profile_edit_form.mtml
 	'Go <a href="[_1]">back to the previous page</a> or <a href="[_2]">view your profile</a>.' => 'Ga <a href="[_1]">terug naar de vorige pagina</a> of <a href="[_2]">bekijk uw profiel</a>.',
 
-## addons/Community.pack/templates/global/profile_error.mtml
-	'ERROR MSG HERE' => 'FOUTBOODSCHAP HIER',
-	'Go Back' => 'Ga terug',
-
 ## addons/Community.pack/templates/global/profile_feed.mtml
 	'Posted [_1] to [_2]' => 'Publiceerde [_1] op [_2]',
 	'Commented on [_1] in [_2]' => 'Reageerde op [_1] op [_2]',
@@ -6227,6 +6376,9 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'The following users were disabled:' => 'Deze gebruikers werden gedesactiveerd:',
 	'LDAP users synchronized.' => 'LDAP gebruikers gesynchroniseerd',
 	'Synchronization of groups can not be performed without LDAPGroupIdAttribute and/or LDAPGroupNameAttribute being set.' => 'Synchronisatie van groepen kan niet worden uitgevoerd zonder dat LDAPGroupIdAttribute en/of LDAPGroupNameAttribute ingesteld zijn.',
+	'Primary group members cannot be synchronized with Active Directory.' => 'Primaire groepsleden kunen niet gesynchroniseerd worden met Active Directory.', # Translate - New
+	'Cannot synchronize LDAP groups members.' => 'Kan LDAP groepsleden niet synchroniseren.', # Translate - New
+	'User filter was not built: [_1]' => 'Gebruikersfilter werd niet opgebouwd: [_1]', # Translate - New
 	'LDAP groups synchronized with existing groups.' => 'LDAP groepen zijn gesynchroniseerd met bestaande groepen.',
 	'Information about the following groups was modified:' => 'Informatie over volgend groepen werd bijgewerkt:',
 	'No LDAP group was found using the filter provided.' => 'Geen LDAP groep gevonden met de opgegeven filter.',
@@ -6235,6 +6387,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'The following groups were deleted:' => 'Volgende groepen werden verwijderd:',
 	'Failed to create a new group: [_1]' => 'Nieuwe groep aanmaken mislukt: [_1]',
 	'[_1] directive must be set to synchronize members of LDAP groups to Movable Type Advanced.' => '´[_1] directief moet ingesteld zijn om leden van een LDAP groep te synchroniseren naar Movable Type Advanced',
+	'Cannot get group \'[_1]\' (#[_2]) entry and its all member attributes from external directory.' => 'Kan geen informatie over groep \'[_1]\' (#[_2]) en bijhorende attributen ophalen uit externe directory.', # Translate - New
+	'Cannot get member entries of group \'[_1]\' (#[_2]) from external directory.' => 'Kan geen informatie over leden van greop \'[_1]\' (#[_2]) ophalen uit externe directory.', # Translate - New
 	'Members removed: ' => 'Leden verwijderd:',
 	'Members added: ' => 'Leden toegevoegd:',
 	'Memberships in the group \'[_2]\' (#[_3]) were changed as a result of synchronizing with the external directory.' => 'Lidmaatschappen in de groep \'[_2]\' (#[_3]) werden aangepast als resultaat van de synchronisatie met de externe directory',
@@ -6250,7 +6404,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Invalid user name: [_1]' => 'Ongeldige gebruikersnaam: [_1]',
 	'Invalid display name: [_1]' => 'Ongeldige getoonde naam: [_1]',
 	'Invalid email address: [_1]' => 'Ongeldig e-mail adres: [_1]',
-	'Invalid language: [_1]' => 'Ongeldige taal: [_1]',
 	'Invalid password: [_1]' => 'Ongeldig wachtwoord: [_1]',
 	'\'Personal Blog Location\' setting is required to create new user blogs.' => '\'Locatie persoonlijke blog\' instelling is vereist om nieuwe gebruikersblogs aan te maken.',
 	'Invalid weblog name: [_1]' => 'Ongeldige weblognaam: [_1]',
@@ -6299,6 +6452,23 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'A user cannot change his/her own username in this environment.' => 'Een gebruiker kan zijn/haar gebruikersnaam niet aanpassen in deze omgeving',
 	'An error occurred when enabling this user.' => 'Er deed zich een fout voor bij het activeren van deze gebruiker.',
 
+## addons/Enterprise.pack/lib/MT/Enterprise/DataAPI/Callback/Group.pm
+	'A parameter "[_1]" is invalid.' => 'Een parameter "[_1]" is ongeldig.', # Translate - New
+
+## addons/Enterprise.pack/lib/MT/Enterprise/DataAPI/Endpoint/v2/Group.pm
+	'Creating group failed: ExternalGroupManagement is enabled.' => 'Groep aanmaken mislukt: ExternalGroupManagement is ingeschakeld.', # Translate - New
+	'Cannot add member to inactive group.' => 'Kan geen lid toevoegen aan inactieve groep.', # Translate - New
+	'Adding member to group failed: [_1]' => 'Lid toevoegen aan groep mislukt: [_1]', # Translate - New
+	'Removing member from group failed: [_1]' => 'Lid verwijderen uit groep mislukt: [_1]', # Translate - New
+	'Group not found' => 'Groep niet gevonden', # Translate - New
+	'Member not found' => 'Lid niet gevonden', # Translate - New
+	'A resource "member" is required.' => 'Een bron ("member") is vereist.', # Translate - New
+
+## addons/Enterprise.pack/lib/MT/Enterprise/DataAPI/Endpoint/v2/Permission.pm
+	'Association not found' => 'Associatie niet gevonden', # Translate - New
+
+## addons/Enterprise.pack/lib/MT/Enterprise/DataAPI/Endpoint/v2/User.pm
+
 ## addons/Enterprise.pack/lib/MT/Enterprise/Upgrade.pm
 	'Fixing binary data for Microsoft SQL Server storage...' => 'Binaire data aan het fixen voor opslag in Microsoft SQL Server...',
 
@@ -6315,8 +6485,9 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## addons/Enterprise.pack/lib/MT/LDAP.pm
 	'Invalid LDAPAuthURL scheme: [_1].' => 'Ongeldig LDAPAuthURL schema: [_1].',
 	'Error connecting to LDAP server [_1]: [_2]' => 'Probleem bij connecteren naar LDAP server [_1]: [_2]',
-	'User not found in LDAP: [_1]' => 'Gebruiker niet gevonden in LDAP: [_1]',
+	'Entry not found in LDAP: [_1]' => 'Item niet gevonden in LDAP: [_1]', # Translate - New
 	'Binding to LDAP server failed: [_1]' => 'Binden aan LDAP server mislukt: [_1]',
+	'User not found in LDAP: [_1]' => 'Gebruiker niet gevonden in LDAP: [_1]',
 	'More than one user with the same name found in LDAP: [_1]' => 'Meer dan één gebruiker met dezelfde naam gevonden in LDAP: [_1]',
 
 ## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/MSSQLServer.pm
@@ -6458,80 +6629,100 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## addons/Sync.pack/config.yaml
 	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype',
-	'Sync' => 'Synchronisatie', # Translate - New
-	'Contents Sync' => 'Synchronisatie inhoud', # Translate - New
-	'Updating MT::SyncSetting table...' => 'Bezig MT::SyncSetting tabel bij te werken...', # Translate - New
-	'Migrating settings of contents sync on website...' => 'Bezig instellingen van inhoudssynchronisatie op website te migreren...', # Translate - New
-	'Migrating settings of contents sync on blog...' => 'Bezig instellingen van inhoudssynchronisatie op blog te migreren..', # Translate - New
+	'Migrated sync setting' => 'Synchronisatie-instellingen gemigreerd', # Translate - New
+	'Sync' => 'Synchronisatie',
+	'Sync Name' => 'Synchronisatie naam', # Translate - New
+	'Sync Datetime' => 'Synchronisatie datum en tijd', # Translate - New
+	'Manage Sync Settings' => 'Synchronisatie instellingen beheren', # Translate - New
+	'Sync Setting' => 'Synchronsatie instelling', # Translate - New
+	'Sync Settings' => 'Synchronisatie instellingen',
+	'Create new sync setting' => 'Nieuwe synchronisatie instelling aanmaken', # Translate - New
+	'Contents Sync' => 'Synchronisatie inhoud',
+	'Updating MT::SyncSetting table...' => 'Bezig MT::SyncSetting tabel bij te werken...',
+	'Migrating settings of contents sync on website...' => 'Bezig instellingen van inhoudssynchronisatie op website te migreren...',
+	'Migrating settings of contents sync on blog...' => 'Bezig instellingen van inhoudssynchronisatie op blog te migreren..',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/FTPBase.pm
-	'Cannot access to remote directory \'[_1]\'' => 'Geen toegang tot externe map \'[_1]\'', # Translate - New
-	'Deleting path \'[_1]\' failed.' => 'Verwijderen pad \'[_1]\' mislukt.', # Translate - New
-	'Deleting file \'[_1]\' failed.' => 'Verwijderen bestand \'[_1]\' mislukt.', # Translate - New
-	'Unable to write temporary file ([_1]): [_2]' => 'Schrijven naar tijdelijk bestand mislukt ([_1]): [_2]', # Translate - New
-	'Unable to write remote file ([_1]): [_2]' => 'Schrijven naar extern bestand mislukt ([_1]): [_2]', # Translate - New
+	'Cannot access to remote directory \'[_1]\'' => 'Geen toegang tot externe map \'[_1]\'',
+	'Deleting file \'[_1]\' failed.' => 'Verwijderen bestand \'[_1]\' mislukt.',
+	'Deleting path \'[_1]\' failed.' => 'Verwijderen pad \'[_1]\' mislukt.',
+	'Unable to write temporary file ([_1]): [_2]' => 'Schrijven naar tijdelijk bestand mislukt ([_1]): [_2]',
+	'Unable to write remote files. Please check activity log for more details.: [_1]' => 'Schrijven van externe bestanden mislukt.  Kijk het activiteitenlog na voor meer details: [_1]', # Translate - New
+	'Unable to write remote files ([_1]): [_2]' => 'Kon geen externe bestanden schrijven ([_1]): [_2]', # Translate - New
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
-	'Error switching directory.' => 'Fout bij wisselen van map.', # Translate - New
-	'Synchronization with an external server has been successfully finished.' => 'Synchronisatie naar externe server met succes afgerond.', # Translate - New
-	'Failed to sync with an external server.' => 'Synchronisatie naar externe server mislukt.', # Translate - New
+	'Failed to remove sync list. (ID:\'[_1]\')' => 'Verwijderen sychronisatielijst mislukt. (ID:\'[_1]\')', # Translate - New
+	'Failed to update sync list. (ID:\'[_1]\')' => 'Bijwerken synchronisatielijst mislukt. (ID:\'[_1]\')', # Translate - New
+	'Failed to create sync list.' => 'Aanmaken synchronisatielijst mislukt.', # Translate - New
+	'Failed to save sync list. (ID:\'[_1]\')' => 'Opslaan synchronisatielijst mislukt. (ID:\'[_1]\')', # Translate - New
+	'Error switching directory.' => 'Fout bij wisselen van map.',
+	'Synchronization with an external server has been successfully finished.' => 'Synchronisatie naar externe server met succes afgerond.',
+	'Failed to sync with an external server.' => 'Synchronisatie naar externe server mislukt.',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
-	'Temp Directory [_1] is not writable.' => 'Tijdelijke map [_1] niet beschrijfbaar.', # Translate - New
-	'Error during rsync: Command (exit code [_1]): [_2]' => 'Fout tijdens rsync: commando (exitcode [_1]): [_2]', # Translate - New
-	'[Rsync Error] removing temporary directory: [_1]' => '[Rsync Error] verwijderen tijdelijke map: [_1]', # Translate - New
-	'An error occured while copying the directory.' => 'Er deed zich een fout voor bij het kopiëren van de map.', # Translate - New
+	'[Rsync Error] removing temporary directory: [_1]' => '[Rsync Error] verwijderen tijdelijke map: [_1]',
+	'Temp Directory [_1] is not writable.' => 'Tijdelijke map [_1] niet beschrijfbaar.',
+	'Error during rsync: Command (exit code [_1]): [_2]' => 'Fout tijdens rsync: commando (exitcode [_1]): [_2]',
+	'An error occurred while copying the directory.' => 'Er deed zich een fout voor ibj het kopiëren van de map.', # Translate - New
+
+## addons/Sync.pack/lib/MT/SyncFileList.pm
+	'Sync file list' => 'Bestandslijst synchronisatie', # Translate - New
 
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
-	'Sync settings' => 'Instellingen ', # Translate - New
+	'Sync settings' => 'Instellingen synchronisatie',
 
 ## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
-	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'Deze mail is om u te melden dat synchronisatie met een externe server met succes werd afgerond.', # Translate - New
-	'This email is to notify you that failed to sync with an external server.' => 'Deze mail is om u te melden dat synchronisatie met een externe server mislukt is.', # Translate - New
+	'Sync setting # [_1] not found.' => 'Synchronisatie instelling # [_1] niet gevonden.', # Translate - New
+	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'Deze mail is om u te melden dat synchronisatie met een externe server met succes werd afgerond.',
+	'Saving sync settings failed: [_1]' => 'Opslaan instelling voor synchronisatie mislukt: [_1]',
+	'This email is to notify you that failed to sync with an external server.' => 'Deze mail is om u te melden dat synchronisatie met een externe server mislukt is.',
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
-	'Saving sync settings failed: [_1]' => 'Opslaan instelling voor synchronisatie mislukt: [_1]', # Translate - New
-	'An error occured while trying to connect to the FTP server. Check the settings and try again.' => 'Er deed zich een fout voor tijdens het verbinden met de FTP server.  Controleer de instellingen en probeer opnieuw.', # Translate - New
-	'Cannot connect to the FTP server.' => 'Kan niet verbinden met de FTP server.', # Translate - New
-	'Cannot retrieve current directory.' => 'Kan huidige map niet binnenhalen.', # Translate - New
-	'Cannot retrieve directory list.' => 'Kan lijst met mappen niet binnenhalen.', # Translate - New
+	'Copied [_1]' => '[_1] gekopiëerd', # Translate - New
+	'The sync setting with the same name already exists.' => 'Een synchronisatie instelling met dezelfde naam bestaat al.', # Translate - New
+	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Er deed zich een fout voor bij het verbinden met de FTP server \'[_1]\': [_2]', # Translate - New
+	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Er deed zich een fout voor bij het ophalen van de huidige map van \'[_1]\'', # Translate - New
+	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Er deed zich een fout voor bij het ophalen van de lijst van mappen van \'[_1]\'', # Translate - New
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
-	'Contents Sync Settings' => 'Instellingen synchronisatie inhoud', # Translate - New
-	'Contents sync settings has been saved.' => 'De instellingen voor synchronisatie van inhoud zijn opgeslagen.', # Translate - New
-	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => 'Eén of meer sjablonen staan ingesteld om dynamisch gepubliceerd te worden. Dynamisch publiceren werkt mogelijk niet op de bestemmings-server.', # Translate - New
-	'Run synchronization now' => 'Nu synchroniseren', # Translate - New
-	'Enable contents synchronization' => 'Synchronisatie voor inhoud inschakelen', # Translate - New
-	'Sync Settings' => 'Synchronisatie instellingen', # Translate - New
-	'Sync Date' => 'Synchronisatiedatum', # Translate - New
-	'Recipient for Notification' => 'Ontvanger van berichten', # Translate - New
-	'Receive only error notification' => 'Enkel foutmeldingen ontvangen', # Translate - New
-	'Destinations' => 'Bestemmingen', # Translate - New
-	'Add destination' => 'Bestemming toevoegen', # Translate - New
-	'Sync Type' => 'Synchronisatietype', # Translate - New
-	'Sync type not selected' => 'Synchronisatietype niet geselecteerd', # Translate - New
-	'FTP' => 'FTP', # Translate - New
-	'Rsync' => 'Rsync', # Translate - New
-	'FTP Server' => 'FTP Server', # Translate - New
-	'Port' => 'Poort', # Translate - New
-	'SSL' => 'SSL', # Translate - New
-	'Enable SSL' => 'SSL inschakelen', # Translate - New
-	'Start Directory' => 'Beginmap', # Translate - New
-	'Rsync Destination' => 'Rsync bestemming', # Translate - New
-	'Sync Type *' => 'Synchronisatietype *', # Translate - New
-	'Please select a sync type.' => 'Gelieve een synchronisatietype in te stellen.', # Translate - New
-	'The sync date must be in the future.' => 'De synchronisatiedatum moet in de toekomst liggen.', # Translate - New
-	'Invalid time.' => 'Ongeldig tijdstip;', # Translate - New
-	'You must make one or more destination settings.' => 'U moet één of meer bestemmingen instellen.', # Translate - New
-	'Are you sure you want to run synchronization?' => 'Bent u zeker dat u synchronisatie wenst uit te voeren?', # Translate - New
-	'Are you sure you want to remove this settings?' => 'Bent u zeker dat u deze instellingen wil verwijderen?', # Translate - New
+	'Contents Sync Settings' => 'Instellingen synchronisatie inhoud',
+	'Contents sync settings has been saved.' => 'De instellingen voor synchronisatie van inhoud zijn opgeslagen.',
+	'The sync settings has been copied but not saved yet.' => 'De synchronisatie instellingen zijn gekopiëerd maar nog niet opgeslagen.', # Translate - New
+	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => 'Eén of meer sjablonen staan ingesteld om dynamisch gepubliceerd te worden. Dynamisch publiceren werkt mogelijk niet op de bestemmings-server.',
+	'Run synchronization now' => 'Nu synchroniseren',
+	'Copy this sync setting' => 'Deze synchronisatie instelling kopiëren', # Translate - New
+	'Sync Date' => 'Synchronisatiedatum',
+	'Recipient for Notification' => 'Ontvanger van berichten',
+	'Receive only error notification' => 'Enkel foutmeldingen ontvangen',
+	'Destinations' => 'Bestemmingen',
+	'Add destination' => 'Bestemming toevoegen',
+	'Sync Type' => 'Synchronisatietype',
+	'Sync type not selected' => 'Synchronisatietype niet geselecteerd',
+	'FTP' => 'FTP',
+	'Rsync' => 'Rsync',
+	'FTP Server' => 'FTP Server',
+	'Port' => 'Poort',
+	'SSL' => 'SSL',
+	'Enable SSL' => 'SSL inschakelen',
+	'Start Directory' => 'Beginmap',
+	'Rsync Destination' => 'Rsync bestemming',
+	'Sync Type *' => 'Synchronisatietype *',
+	'Please select a sync type.' => 'Gelieve een synchronisatietype in te stellen.',
+	'Sync name is required.' => 'Synchroniatienaam is vereist.', # Translate - New
+	'Sync name should be shorter than [_1] characters.' => 'Synchronisatienaam moet korter dan [_1] karakters zijn.', # Translate - New
+	'The sync date must be in the future.' => 'De synchronisatiedatum moet in de toekomst liggen.',
+	'Invalid time.' => 'Ongeldig tijdstip;',
+	'You must make one or more destination settings.' => 'U moet één of meer bestemmingen instellen.',
+	'Are you sure you want to run synchronization?' => 'Bent u zeker dat u synchronisatie wenst uit te voeren?',
+	'Are you sure you want to remove this settings?' => 'Bent u zeker dat u deze instellingen wil verwijderen?',
 
 ## addons/Sync.pack/tmpl/dialog/contents_sync_now.tmpl
-	'Sync Now!' => 'Nu synchroniseren!', # Translate - New
-	'Preparing...' => 'Voorbereiding...', # Translate - New
-	'Synchronizing...' => 'Synchroniseren...', # Translate - New
-	'Finish!' => 'Klaar!', # Translate - New
-	'The synchronization was interrupted. Unable to resume.' => 'De synchronisatie werd onderbroken.  Hervatten niet mogelijk.', # Translate - New
+	'Sync Now!' => 'Nu synchroniseren!',
+	'Preparing...' => 'Voorbereiding...',
+	'Synchronizing...' => 'Synchroniseren...',
+	'Finish!' => 'Klaar!',
+	'Unknown error occurred.' => 'Er deed zich een onbekende fout voor.', # Translate - New
+	'The synchronization was interrupted. Unable to resume.' => 'De synchronisatie werd onderbroken.  Hervatten niet mogelijk.',
 
 ## plugins/FacebookCommenters/config.yaml
 	'Provides commenter registration through Facebook Connect.' => 'Voegt registratie van reageerders toe via Facebook Connect.',
@@ -6612,6 +6803,11 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Are you sure you want to delete the selected boilerplates?' => 'Bent u zeker dat u de geselecteerde standaardtekst wenst te verwijderen?',
 	'My Boilerplate' => 'Mijn standaardteksten',
 
+## plugins/FormattedText/lib/FormattedText/DataAPI/Callback/FormattedText.pm
+	'The boilerplate \'[_1]\' is already in use in this site.' => 'De standaardtekst \'[_1]\' wordt al gebruikt op deze site.', # Translate - New
+
+## plugins/FormattedText/lib/FormattedText/DataAPI/Endpoint/v2/FormattedText.pm
+
 ## plugins/FormattedText/lib/FormattedText/FormattedText.pm
 	'Boilerplates' => 'Standaardteksten',
 	'The boilerplate \'[_1]\' is already in use in this blog.' => 'Standaardtekst \'[_1]\' wordt al gebruikt op deze blog.',
@@ -6665,6 +6861,64 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'(No profile selected)' => '(geen profiel geselecteerd)',
 	'Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?' => 'Client ID of client secret voor Google Analytics werd aangepast, maar profiel werd niet bijgewerkt.  Bent u zeker dat u deze instellingen wenst op te slaan?',
 
+## plugins/Loupe/lib/Loupe/App.pm
+	'Loupe settings has been successfully. You can send invitation email to users via <a href="[_1]">Loupe Plugin Settings</a>.' => 'Instellen van Loupe voltooid.  U kunt uitnodigingsmails sturen naar gebruikers via de <a href="[_1]">Loupe Plugin instellingen</a>.',
+	'Error saving Loupe settings: [_1]' => 'Fout bij opslaan Loupe instellingen:',
+	'Send invitation email' => 'Uitnodigingsmail sturen',
+	'Could not send a invitation mail because Loupe is not enabled.' => 'Kon geen uitnodiging mailen omdat Loupe niet is ingeschakeld.',
+	'Welcome to Loupe' => 'Welkom bij Loupe',
+
+## plugins/Loupe/lib/Loupe/Mail.pm
+	'Loupe invitation mail has been sent to [_3] for user \'[_1]\' (user #[_2]).' => 'Loupe uitnodiging werd gemaild naar [_3] voor gebruiker \'[_1]\' (gebruiker #[_2]).',
+
+## plugins/Loupe/lib/Loupe.pm
+	'Loupe\'s HTML file name must not be blank.' => 'Naam HTML bestand voor Loupe mag niet leeg zijn.',
+	'The URL should not include any directory name: [_1]' => 'De URL mag geen mapnaam bevatten: [_1]',
+	'Could not create Loupe directory: [_1]' => 'Kon Loupe map niet aanmaken: [_1]',
+	'Loupe HTML file has been created: [_1]' => 'Loupe HTML bestand werd aangemaakt: [_1]',
+	'Could not create Loupe HTML file: [_1]' => 'Kon Loupe HTML bestand niet aanmaken: [_1]',
+	'Loupe HTML file has been deleted: [_1]' => 'Loupe HTML bestand werd verwijderd: [_1]',
+	'Could not delete Loupe HTML file: [_1]' => 'Kon Loupe HTML bestand niet verwijderen: [_1]',
+
+## plugins/Loupe/lib/Loupe/Upgrade.pm
+	'Adding Loupe dashboard widget...' => 'Bezig dashboardwidget voor Loupe toe te voegen...',
+
+## plugins/Loupe/Loupe.pl
+	q{Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics.} => q{Loupe is een mobiel-vriendelijke, alternatieve console voor Movable Type waarmee gebruikers berichten en reacties kunnen modereren, foto's kunnen uploaden en website en blogstatistieken kunnen bekijken.},
+
+## plugins/Loupe/tmpl/dialog/welcome_mail_result.tmpl
+	'Send Loupe welcome email' => 'Loupe welkomstmail versturen',
+
+## plugins/Loupe/tmpl/system_config.tmpl
+	'Enable Loupe' => 'Loupe inschakelen',
+	q{The URL of Loupe's HTML file.} => q{De URL van het HTML bestand van Loupe.},
+
+## plugins/Loupe/tmpl/welcome_mail_html.tmpl
+	'Your MT blog status at a glance' => 'De status van uw MT blog in een oogopslag',
+	'Dear [_1], ' => 'Beste [_1]',
+	'With Loupe, you can check the status of your blog without having to sign in to your Movable Type account.' => 'Met Loupe kunt u de staus van uw blog zien zonder u te moeten aanmelden met uw Movable Type account.',
+	'View Access Analysis' => 'Toegangsanalyse bekijken',
+	'Approve Entries' => 'Berichten goedkeuren',
+	'Reply to Comments' => 'Antwoorden op reacties',
+	'Loupe is best used with a smartphone (iPhone or Android 4.0 or higher)' => 'Loupe werkt best op een smartphone (iPhone of Android 4.0 of hoger)',
+	'Try Loupe' => 'Probeer Loupe',
+	'Perfect for Mini-tasking' => 'Perfect voor Mini-tasking',
+	'_LOUPE_BRIEF' => '"Welke berichten van mij zijn het populairste op dit moment?" "Moet ik nog berichten of reacties goedkeuren?" "Ik moet dringend antwoorden op deze reactie..." Al dit soort mini-takkjes kunnen nu rechtstreeks op de smartphone gedaan worden. Loupe werd speciaal ontworpen om snel en makkelijk je blog te kunnen checken.',
+	'Use Loupe to help manage your Movable Type blogs no matter where you are!' => 'Gebruik Loupe om u te helpen uw Movable Type blogs te beheren waar u ook bent',
+	'Social Media' => 'Sociale Media',
+	'https://twitter.com/movabletype' => 'https://twitter.com/movabletype',
+	'Contact Us' => 'Contacteer ons',
+	'http://www.movabletype.org/' => 'http://www.movabletype.org/',
+	'http://plugins.movabletype.org' => 'http://plugins.movabletype.org',
+
+## plugins/Loupe/tmpl/welcome_mail_plain.tmpl
+	'Loupe is ready for use!' => 'Loupe is klaar voor gebruik!',
+
+## plugins/Loupe/tmpl/widget/welcome_to_loupe.tmpl
+	q{Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">See more details.</a>} => q{Loupe is een mobiel-vriendelijke alternatieve console voor Movable Type waarmee gebruikers berichten en reacties kunnen goedkeuren, foto's kunnen uploaden en website- en blogstatistieken mee kunnen bekijken. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">Meer details lezen.</a>},
+	'Loupe can be used without complex configuration, you can get started immediately.' => 'Loupe kan gebruikt worden zonder complexe instellingen, u kunt onmiddelijk beginnen.',
+	'Configure Loupe' => 'Loupe configureren',
+
 ## plugins/Markdown/Markdown.pl
 	'A plain-text-to-HTML formatting plugin.' => 'Een plugin om gewone tekst naar HTML te formatteren',
 	'Markdown' => 'Markdown',
@@ -6683,270 +6937,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## plugins/mixiComment/tmpl/config.tmpl
 	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'Er werd reeds een mixi ID geregistreerd voor deze blog.  Als u de mixi ID voor de blog wenst aan te passen, <a href="[_1]">klik dan hier</a> om u aan te melden met uw mixi account.  Als u alle mixi gebruikers toestemming wenst te geven op uw blog te reageren (en niet enkel uw eigen mixi gebruikers), klik dan op de resetknop om deze instelling te verwijderen.',
 	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'Als u reacties wenst te beperken tot uw eigen mixi gebruikers, <a href="[_1]">klik dan hier</a> om u aan te melden met uw mixi account.',
-
-## plugins/Motion/config.yaml
-	'A Movable Type theme with structured entries and action streams.' => 'Een Movable Type thema met gestructureerde berichten en action streams.',
-	'Adjusting field types for embed custom fields...' => 'Veldtypes aan het aanpassen voor gepersonaliseerde velden van type embed...',
-	'Updating favoriting namespace for Motion...' => 'Favoriting namespace aan het bijwerken voor Motion...',
-	'Motion Themes' => 'Motion sjablonen',
-	'Themes for Motion template set' => 'Thema\'s voor de Motion sjabloonset',
-	'Motion' => 'Motion',
-	'Post Type' => 'Type bericht',
-	'Photo' => 'Foto',
-	'Embed Object' => 'Embedded object',
-	'MT JavaScript' => 'MT javascript',
-	'Motion MT JavaScript' => 'Motion MT JavaScript',
-	'Motion JavaScript' => 'Motion Javascript',
-	'Entry Listing: Monthly' => 'Overzicht berichten: per maand',
-	'Entry Listing: Category' => 'Overzicht berichten: per categorie',
-	'|' => '|',
-	'Entry Response' => 'Antwoord op bericht',
-	'Profile View' => 'Profiel bekijken',
-	'Profile Edit Form' => 'Bewerkingsformulier profiel',
-	'Profile Error' => 'Profielfout',
-	'Profile Feed' => 'Profielfeed',
-	'Login Form' => 'Aanmeldformulier',
-	'Register Confirmation' => 'Bevestiging registratie',
-	'New Password Reset Form' => 'Formulier nieuw wachtwoord resetten',
-	'New Password Form' => 'Formulier nieuw wachtwoord',
-	'User Profile' => 'Gebruikersprofiel',
-	'Actions (Local)' => 'Acties (lokaal)',
-	'Single Entry' => 'Enkel bericht',
-	'Messaging' => 'Boodschappen',
-	'Form Field' => 'Veld in formulier',
-	'About Pages' => '\'Over\' pagina\'s',
-	'About Site' => 'Over deze site',
-	'Gallery' => 'Galerij',
-	'Main Column Actions' => 'Hoofdkolom-acties',
-	'Main Column Posting Form (All Media)' => 'Hoofdkolom publicatieformulier (alle media)',
-	'Main Column Posting Form (Text Only, Like Twitter)' => 'Hoofdkolom publicatieformulier (enkel tekst, zoals Twitter)',
-	'Main Column Registration' => 'Hoofdkolom registratie',
-	'Fans' => 'Fans',
-	'Popular Entries' => 'Populaire berichten',
-	'Elsewhere' => 'Elders',
-	'Following' => 'Volgt',
-	'Followers' => 'Volgers',
-	'User Archives' => 'Gebruikersarchieven',
-	'Blogroll' => 'Blogroll',
-	'Feeds' => 'Feeds',
-	'Main Column Content' => 'Hoofdkolom inhoud',
-	'Main Index Widgets' => 'Hoofdindexwidgets',
-	'Archive Widgets' => 'Archiefwidgets',
-	'Entry Widgets' => 'Berichtwidgets',
-	'Footer Widgets' => 'Voettekstwidgets',
-	'Default Widgets' => 'Standaardwidgets',
-	'Profile Widgets' => 'Profielwidgets',
-
-## plugins/Motion/lib/Motion/Search.pm
-	'This module works with MT::App::Search.' => 'Deze module werkt met MT::App::Search.',
-	'Specify the blog_id of a blog that has Motion template set.' => 'Geef het blog_id op van een blog die de Motion sjabloonset gebruikt.',
-	'Error loading template: [_1]' => 'Fout bij laden sjabloon: [_1]',
-
-## plugins/Motion/templates/Motion/actions_local.mtml
-	'[_1] commented on [_2]' => '[_1] reageerde op [_2]',
-	'[_1] favorited [_2]' => '[_1] markeerde [_2] als favoriet',
-	'No recent actions.' => 'Geen recente acties.',
-
-## plugins/Motion/templates/Motion/actions.mtml
-	'[_1] is now following [_2]' => '[_1] volgt nu [_2]',
-	'[_1] favorited [_2] on [_3]' => '[_1] markeerde [_2] als favoriet op [_3]',
-
-## plugins/Motion/templates/Motion/archive_index.mtml
-
-## plugins/Motion/templates/Motion/banner_footer.mtml
-
-## plugins/Motion/templates/Motion/banner_header.mtml
-
-## plugins/Motion/templates/Motion/comment_detail.mtml
-
-## plugins/Motion/templates/Motion/comment_listing.mtml
-
-## plugins/Motion/templates/Motion/comment_preview.mtml
-
-## plugins/Motion/templates/Motion/comment_response.mtml
-	'<strong>Bummer....</strong> [_1]' => '<strong>Jammer...</strong> [_1]',
-
-## plugins/Motion/templates/Motion/comments.mtml
-	'what will you say?' => 'wat zegt u?',
-	'[_1] [_2]in reply to comment from [_3][_4]' => '[_1] [_2]als antwoord op reactie van [_3][_4]',
-	'Write a comment...' => 'Laat een reactie achter...',
-
-## plugins/Motion/templates/Motion/dynamic_error.mtml
-
-## plugins/Motion/templates/Motion/entry_listing_author.mtml
-	'Archived Entries from [_1]' => 'Gearchiveerde berichten van [_1]',
-	'Recent Entries from [_1]' => 'Recente berichten van [_1]',
-
-## plugins/Motion/templates/Motion/entry_listing_category.mtml
-
-## plugins/Motion/templates/Motion/entry_listing_monthly.mtml
-
-## plugins/Motion/templates/Motion/entry.mtml
-
-## plugins/Motion/templates/Motion/entry_response.mtml
-
-## plugins/Motion/templates/Motion/entry_summary.mtml
-	'By [_1] <span class="date">on [_2]</span>' => 'Door [_1] <span class="date">op [_2]</span>',
-	'Unpublish this post' => 'Publicatie van dit bericht ongedaan maken',
-	'1 <span>Comment</span>' => '1 <span>reactie</span>',
-	'# <span>Comments</span>' => '# <span>reacties</span>',
-	'0 <span>Comments</span>' => '0 <span>reacties</span>',
-	'1 <span>TrackBack</span>' => '1 <span>TrackBack</span>',
-	'# <span>TrackBacks</span>' => '# <span>TrackBacks</span>',
-	'0 <span>TrackBacks</span>' => '0 <span>TrackBacks</span>',
-	'Posted to [_1]' => 'Gepubliceerd op [_1]',
-
-## plugins/Motion/templates/Motion/form_field.mtml
-	'(Optional)' => '(optioneel)',
-
-## plugins/Motion/templates/Motion/javascript.mtml
-	'Please select a file to post.' => 'Gelieve een bestand te kiezen om te publiceren.',
-	'You selected an unsupported file type.' => 'U selecteerde een type bestand dat niet wordt ondersteund.',
-
-## plugins/Motion/templates/Motion/login_form.mtml
-	'Not a member?&nbsp;&nbsp;<a href="[_1]">Sign Up</a>!' => 'Nog geen lid?&nbsp;&nbsp;<a href="[_1]">Registreer</a>!',
-	'Forgot?' => 'Vergeten?',
-
-## plugins/Motion/templates/Motion/main_index.mtml
-
-## plugins/Motion/templates/Motion/member_index.mtml
-
-## plugins/Motion/templates/Motion/motion_js.mtml
-	'Add userpic' => 'Voeg gebruikersafbeelding toe',
-
-## plugins/Motion/templates/Motion/new_password.mtml
-	'Choose New Password' => 'Nieuw wachtwoord kiezen',
-
-## plugins/Motion/templates/Motion/page.mtml
-
-## plugins/Motion/templates/Motion/password_reset.mtml
-	'Recover (s)' => 'Terughalen (s)',
-
-## plugins/Motion/templates/Motion/profile_feed.mtml
-	'Posted [_1] to [_2]' => 'Publiceerde [_1] op [_2]',
-	'Commented on [_1] in [_2]' => 'Reageerde op [_1] op [_2]',
-	'followed [_1]' => 'volgde [_1]',
-
-## plugins/Motion/templates/Motion/register_confirmation.mtml
-	'Authentication Email Sent' => 'Authenticatiemail verzonden',
-	'Profile Created' => 'Profiel aangemaakt',
-
-## plugins/Motion/templates/Motion/register.mtml
-	'Enter a password for yourself.' => 'Kies een wachtwoord voor uzelf.',
-	'The URL of your website.' => 'De URL van uw website.',
-
-## plugins/Motion/templates/Motion/search_results.mtml
-
-## plugins/Motion/templates/Motion/sidebar.mtml
-
-## plugins/Motion/templates/Motion/single_entry.mtml
-	'Note: This post is being held for approval by the site owner.' => 'Opmerking: dit bericht wordt tegengehouden tot de eigenaar van de site het goedkeurt.',
-	'<a href="[_1]">Most recent comment by <strong>[_2]</strong> on [_3]</a>' => '<a href="[_1]">Recentste reactie van <strong>[_2]</strong> op [_3]</a>',
-	'[_1] posted [_2] on [_3]' => '[_1] publiceerde [_2] op [_3]',
-
-## plugins/Motion/templates/Motion/trackbacks.mtml
-
-## plugins/Motion/templates/Motion/user_profile_edit.mtml
-	'Go <a href="[_1]">back to the previous page</a> or <a href="[_2]">view your profile</a>.' => 'Ga <a href="[_1]">terug naar de vorige pagina</a> of <a href="[_2]">bekijk uw profiel</a>.',
-
-## plugins/Motion/templates/Motion/user_profile.mtml
-	'Recent Actions from [_1]' => 'Recente acties van [_1]',
-	'Responses to Comments from [_1]' => 'Antwoorden op reacties van [_1]',
-	'You are following [_1].' => 'U volgt [_1].',
-	'Unfollow' => 'Niet langer volgen',
-	'Follow' => 'Volgen',
-	'Profile Data' => 'Profielgegevens',
-	'More Entries by [_1]' => 'Meer berichten van [_1]',
-	'Recent Actions' => 'Recente acties',
-	'_PROFILE_COMMENT_LENGTH' => '10',
-	'Comment Threads' => 'Reactie threads',
-	'[_1] commented on ' => '[_1] reageerde op ',
-	'No responses to comments.' => 'Geen antwoorden op reacties.',
-
-## plugins/Motion/templates/Motion/widget_about_ssite.mtml
-	'The Motion Template Set is a great example of the type of site you can build with Movable Type.' => 'De Motion sjabloonset is een goed voorbeeld van het soort site dat met Movable Type gebouwd kan worden.',
-
-## plugins/Motion/templates/Motion/widget_categories.mtml
-
-## plugins/Motion/templates/Motion/widget_elsewhere.mtml
-	'Are you sure you want to remove the [_1] from your profile?' => 'Zeker om [_1] van uw profiel verwijderen?',
-	'Your user name or ID is required.' => 'Uw gebruikersnaam of ID is vereist.',
-	'Add a Service' => 'Service toevoegen',
-	'Service' => 'Service',
-	'Select a service...' => 'Selecteer een service...',
-	'Your Other Profiles' => 'Uw andere profielen',
-	'Find [_1] Elsewhere' => 'Elders [_1] vinden',
-	'Remove service' => 'Service verwijderen',
-
-## plugins/Motion/templates/Motion/widget_fans.mtml
-
-## plugins/Motion/templates/Motion/widget_followers.mtml
-	'Not being followed' => 'Wordt niet gevolgd',
-
-## plugins/Motion/templates/Motion/widget_following.mtml
-	'Not following anyone' => 'Volgt niemand',
-
-## plugins/Motion/templates/Motion/widget_gallery.mtml
-	'Recent Photos' => 'Recente afbeeldingen',
-
-## plugins/Motion/templates/Motion/widget_main_column_actions.mtml
-
-## plugins/Motion/templates/Motion/widget_main_column_posting_form.mtml
-	'QuickPost' => 'SnelBericht',
-	'Text post' => 'TekstBericht',
-	'Photo post' => 'FotoBericht',
-	'Link post' => 'LinkBericht',
-	'Embed post' => 'EmbedBericht',
-	'Audio post' => 'AudioBericht',
-	'URL of web page' => 'URL van webpagina',
-	'Select photo file' => 'Selecteer fotobestand',
-	'Only GIF, JPEG and PNG image files are supported.' => 'Enkel GIF, JPEG en PNG afbeeldingsbestanden worden ondersteund.',
-	'Select audio file' => 'Selecteer audiobestand',
-	'Only MP3 audio files are supported.' => 'Alleen MP3 audiobestanden worden ondersteund.',
-	'Paste embed code' => 'Plak embed code hier',
-	'Content' => 'Inhoud',
-	'more options' => 'meer opties',
-	'Post' => 'Publiceren',
-
-## plugins/Motion/templates/Motion/widget_main_column_posting_form_text.mtml
-
-## plugins/Motion/templates/Motion/widget_main_column_registration.mtml
-	'<a href="javascript:void(0)" onclick="[_1]">Sign In</a>' => '<a href="javascript:void(0)" onclick="[_1]">Aanmelden</a>',
-	'Not a member? <a href="[_1]">Register</a>' => 'Nog geen lid? <a href="[_1]">Registreer nu</a>',
-	'(or <a href="javascript:void(0)" onclick="[_1]">Sign In</a>)' => '(of <a href="javascript:void(0)" onclick="[_1]">meld u aan</a>)',
-	'No posting privileges.' => 'Geen rechten om berichten te publiceren',
-
-## plugins/Motion/templates/Motion/widget_members.mtml
-
-## plugins/Motion/templates/Motion/widget_monthly_archives.mtml
-
-## plugins/Motion/templates/Motion/widget_popular_entries.mtml
-	'posted by <a href="[_1]">[_2]</a> on [_3]' => 'gepubliceerd door <a href="[_1]">[_2]</a> op [_3]',
-
-## plugins/Motion/templates/Motion/widget_powered_by.mtml
-
-## plugins/Motion/templates/Motion/widget_recent_comments.mtml
-	'<p>[_3]...</p><div class="comment-attribution">[_4]<br /><a href="[_1]">[_2]</a></div>' => '<p>[_3]...</p><div class="comment-attribution">[_4]<br /><a href="[_1]">[_2]</a></div>',
-
-## plugins/Motion/templates/Motion/widget_recent_entries.mtml
-	'posted by [_1] on [_2]' => 'gepubliceerd door [_1] op [_2]',
-
-## plugins/Motion/templates/Motion/widget_search.mtml
-
-## plugins/Motion/templates/Motion/widget_signin.mtml
-	'You are signed in as <a href="[_1]">[_2]</a>' => 'U bent aangemeld als <a href="[_1]">[_2]</a>',
-	'You are signed in as [_1]' => 'U bent aangemeld als [_1]',
-	'Edit profile' => 'Profiel bewerken',
-
-## plugins/Motion/templates/Motion/widget_tag_cloud.mtml
-
-## plugins/Motion/templates/Motion/widget_user_archives.mtml
-	'Recenty entries from [_1]' => 'Recente berichten van [_]',
-
-## plugins/Motion/tmpl/edit_linkpost.tmpl
-
-## plugins/Motion/tmpl/edit_videopost.tmpl
-	'Embed code' => 'Embed-code',
 
 ## plugins/MultiBlog/lib/MultiBlog.pm
 	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'MultiBlog trigger voor blog #[_1] aan het terugzetten...',
@@ -6977,7 +6967,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'When' => 'Wanneer',
 	'Trigger' => 'Trigger',
 	'Action' => 'Actie',
-	'Weblog' => 'Weblog',
 	'Content Privacy' => 'Privacy inhoud',
 	'Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.' => 'Geef aan of andere blogs op deze installatie inhoud van deze blog mogen publiceren.  Deze instelling krijgt voorrang op het standaard aggregatiebeleid op systeemniveau wat u kunt terugvinden in het configuratiescherm voor MultiBlog op systeemniveau.',
 	'Use system default' => 'Standaard systeeminstelling gebruiken',
@@ -7175,7 +7164,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## plugins/WidgetManager/WidgetManager.pl
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager versie 1.1: Deze versie van de plugin dient om data van de oudere versie van Widget Manager die met Movable Type werd meegeleverd over te zetten naar de kern van Movable Type.  Er zitten geen andere opties in.  Deze plugin kan zonder problemen verwijderd worden na de installatie/upgrade van Movable Type.',
 	'Moving storage of Widget Manager [_2]...' => 'Opslag voor widget manager [_2] aan het verhuizen...',
-	'Failed.' => 'Mislukt.', # Translate - New
+	'Failed.' => 'Mislukt.',
 
 ## plugins/WXRImporter/config.yaml
 	'Import WordPress exported RSS into MT.' => 'Importeer RSS geëxporteerd uit WordPress in MT.',
@@ -7207,6 +7196,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 );
 
-## New words: 479
+## New words: 1196
 
 1;
