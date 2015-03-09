@@ -1,0 +1,36 @@
+dn: dc=example,dc=jp
+objectClass: dcObject
+objectClass: organization
+dc: example
+o: Example Corporation
+description: The Example Corporation
+
+dn: cn=admin,dc=example,dc=jp
+objectClass: organizationalRole
+cn: admin
+description: Directory Manager
+
+dn: ou=users,dc=example,dc=jp
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=example,dc=jp
+objectClass: organizationalUnit
+ou: groups
+
+dn: cn=user2,ou=users,dc=example,dc=jp
+uid: user2
+cn: user2
+sn: user2
+mail: user2@example.jp
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+
+dn: cn=group2,ou=groups,dc=example,dc=jp
+cn: group2
+objectClass: top
+objectClass: posixGroup
+memberUid: user2
+gidNumber: 1001

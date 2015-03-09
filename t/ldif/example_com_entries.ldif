@@ -17,3 +17,20 @@ ou: users
 dn: ou=groups,dc=example,dc=com
 objectClass: organizationalUnit
 ou: groups
+
+dn: cn=user1,ou=users,dc=example,dc=com
+uid: user1
+cn: user1
+sn: user1
+mail: user1@example.com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+
+dn: cn=group1,ou=groups,dc=example,dc=com
+cn: group1
+objectClass: top
+objectClass: posixGroup
+memberUid: user1
+gidNumber: 1000
