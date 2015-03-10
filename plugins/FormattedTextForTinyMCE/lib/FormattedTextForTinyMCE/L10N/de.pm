@@ -15,20 +15,20 @@ use vars qw( %Lexicon );
 %Lexicon = (
 
 ## mt-static/plugins/FormattedTextForTinyMCE/extension.js
-	'Insert Boilerplate' => 'Formatierten Text einfügen', # Translate - New # OK
+	'Insert Boilerplate' => 'Textbaustein einfügen', # Translate - Improved
 
 ## mt-static/plugins/FormattedTextForTinyMCE/langs/template.js
-	'Boilerplate' => 'Formatierter Text', # Translate - New # OK
-	'Select Boilerplate' => 'Formatierten Text auswählen', # Translate - New # OK	
+	'Boilerplate' => 'Textbaustein', # Translate - Improved
+	'Select Boilerplate' => 'Textbausteine wählen', # Translate - Improved
 	
 ## plugins/FormattedTextForTinyMCE/config.yaml
-	'Add the "Insert Boilerplate" button to the TinyMCE.' => '&#8222;Formatierten Text einfügen&#8220;-Symbol in der TinyMCE-Symbolleiste anzeigen', # Translate - New # OK
+	'Add the "Insert Boilerplate" button to the TinyMCE.' => '&#8222;Textbaustein einfügen&#8220;-Symbol in der TinyMCE-Symbolleiste anzeigen', # Translate - Improved
 
 ## plugins/FormattedTextForTinyMCE/lib/FormattedTextForTinyMCE/App.pm
-	'Cannot load boilerplate.' => 'Konnte formatierten Text nicht laden', # Translate - New # OK
+	'Cannot load boilerplate.' => 'Konnte Textbaustein nicht laden', # Translate - Improved
 
 ## plugins/FormattedTextForTinyMCE/tmpl/extension.tmpl
-	'Select a Boilerplate' => 'Formatierten Text wählen', # Translate - New # OK
+	'Select a Boilerplate' => 'Textbaustein wählen', # Translate - Improved
 
 );
 
