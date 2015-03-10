@@ -41,9 +41,6 @@ RUN wget -O - https://cpanmin.us | perl - App::cpanminus
 # Update for installing SOAP::Lite. Cannot install by cpanm and old Archive::Tar.
 RUN cpanm Archive::Tar
 
-# Cannot install parent@0.229 with system Perl of CentOS6.
-RUN cpanm parent@0.228
-
 RUN wget https://raw.githubusercontent.com/movabletype/movabletype/develop/t/cpanfile
 RUN cpanm --installdeps .
 RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage Clone
