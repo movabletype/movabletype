@@ -182,7 +182,7 @@ use vars qw( @ISA %Lexicon );
 	'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.' => 'IPC::Runのインストールは必須ではありません。MTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
 	'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.' => 'Storableは必須ではありません。外部プラグインの利用の際に必要となる場合があります。',
 	'Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSAのインストールは必須ではありません。インストールされていると、コメント投稿時のサインインが高速になります。',
-	'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for site statistics of Google Analytics.' => 'Crypt::SSLeayはAOLやYahoo!などのSSLを利用するOpenIDのコメント投稿者を認証する場合、または Google Analytics を利用するために必要となります。',
+	'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for Google Analytics site statistics.' => 'Crypt::SSLeayはAOLやYahoo!などのSSLを利用するOpenIDのコメント投稿者を認証する場合、または Google Analytics を利用するために必要となります。',
 	'Cache::File is required if you would like to be able to allow commenters to authenticate via OpenID using Yahoo! Japan.' => 'Cache::Fileのインストールは必須ではありません。Yahoo! Japanによるコメント投稿者のOpenID認証を許可する場合に必要となります。',
 	'MIME::Base64 is required in order to enable comment registration and in order to send mail via an SMTP Server.' => 'MIME::Base64のインストールは必須ではありません。コメントの認証機能を利用する場合やメール送信にSMTPを利用する場合に必要となります。',
 	'XML::Atom is required in order to use the Atom API.' => 'XML::Atomのインストールは必須ではありません。Atom APIを利用する場合に必要となります。',
@@ -197,14 +197,14 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' => 'Authen::SASLとその依存モジュールはCRAM-MD5、DIGEST-MD5又はLOGINをSASLメカニズムとして利用する場合に必要となります。',
 	'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.' => 'Net::SMTP::SSLはSMTP認証にSSLを利用する場合に必要となります。',
 	'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.' => 'Net::SMTP::TLSはSMTP認証にSTARTTLSコマンドを利用する場合に必要となります。',
-	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for site statistics of Google Analytics.' => 'IO::Socket::SSLはSMTP認証にSSLまたは、STARTTLSコマンドを利用する場合、または Google Analytics を利用する場合に必要となります。',
+	'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for Google Analytics site statistics.' => 'IO::Socket::SSLはSMTP認証にSSLまたは、STARTTLSコマンドを利用する場合、または Google Analytics を利用する場合に必要となります。',
 	'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'Net::SSLeayはSMTP認証にSSLまたは、STARTTLSコマンドを利用する場合に必要となります。',
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'MT:Ifタグの機能で使われます。',
 	'This module is used by the Markdown text filter.' => 'Markdown形式を利用するために必要です。',
 	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Perl 5.8以下の環境で、mt-search.cgiを利用するときに必要です。',
 	'This module required for action streams.' => 'アクションストリームを利用するために必要です。',
-	'[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation' => '[_1]のインストールは必須ではありません。バックアップデータの復元に必要となります。',
-	'This module is required for site statistics of Google Analytics.' => 'このモジュールは、Google Analytics を利用する場合に必要になります。',
+	'[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation' => '[_1]のインストールは必須ではありません。バックアップデータの復元に必要となります。',
+	'This module is required for Google Analytics site statistics.' => 'このモジュールは、Google Analytics を利用する場合に必要になります。',
 	'This module is required for executing run-periodic-tasks.' => 'このモジュールは、run-periodic-tasks を実行するために必要です。',
 	'[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => '[_1]のインストールは必須ではありません。YAML::Tinyよりも、軽量で高速に動作します。',
 	'The [_1] database driver is required to use [_2].' => '[_2]を使うには[_1]のデータベースドライバが必要です。',
@@ -895,9 +895,9 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required in order to restore from a backup.' => '復元の機能を利用する場合に必要となります。',
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'LiveJournal、あるいはOpenIDでコメント投稿者を認証するために必要になります。',
 	'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Perl 5.8以下の環境で、mt-search.cgiを利用するときに必要です。',
-	'XML::SAX::ExpatXS is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.' => 'XML::SAX::ExpatXSのインストールは必須ではありません。バックアップデータの復元に必要となります。',
-	'XML::SAX::Expat is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.' => 'XML::SAX::Expatのインストールは必須ではありません。バックアップデータの復元に必要となります。',
-	'XML::LibXML::SAX is optional; It is one of the modules is required to restore a backup created in a backup/restore operation.' => 'XML::LibXML::SAXのインストールは必須ではありません。バックアップデータの復元に必要となります。',
+	'XML::SAX::ExpatXS is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::SAX::ExpatXSのインストールは必須ではありません。バックアップデータの復元に必要となります。',
+	'XML::SAX::Expat is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::SAX::Expatのインストールは必須ではありません。バックアップデータの復元に必要となります。',
+	'XML::LibXML::SAX is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::LibXML::SAXのインストールは必須ではありません。バックアップデータの復元に必要となります。',
 	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => '[_1]のインストールは必須ではありません。YAML::Tinyよりも、軽量で高速に動作します。',
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'ファイルのアップロードを行うために必要です。各種のファイル形式に対応して画像のサイズを取得します。',
 	'This module is required for cookie authentication.' => 'cookie 認証のために必要です。',
@@ -1599,8 +1599,8 @@ use vars qw( @ISA %Lexicon );
 	'Removing Site Path for the blog \'[_1]\' (ID:[_2])...' => '\'[_1]\'(ID:[_2])のサイトパスを消去しています...',
 	'Changing Archive Path for the blog \'[_1]\' (ID:[_2])...' => '\'[_1]\'(ID:[_2])のアーカイブパスを変更しています...',
 	'Removing Archive Path for the blog \'[_1]\' (ID:[_2])...' => '\'[_1]\'(ID:[_2])のアーカイブパスを消去しています...',
-	'Changing file path for the FileInfo record (ID:[_1])...' => 'ファイル情報レコード(ID:[_1])のパスを変更しています...',
-	'Changing URL for the FileInfo (ID:[_1])...' => 'ファイル情報レコード(ID:[_1])のURLを変更しています...',
+	'Changing file path for FileInfo record (ID:[_1])...' => 'ファイル情報レコード(ID:[_1])のパスを変更しています...',
+	'Changing URL for FileInfo record (ID:[_1])...' => 'ファイル情報レコード(ID:[_1])のURLを変更しています...',
 	'Changing file path for the asset \'[_1]\' (ID:[_2])...' => 'アイテム\'[_1]\'(ID:[_2])のパスを変更しています...',
 	'Could not remove backup file [_1] from the filesystem: [_2]' => 'バックアップファイル(\'[_1]\')をファイルシステムから削除できませんでした: [_2]',
 	'Some of the backup files could not be removed.' => '削除できなかったバックアップファイルがあります。',
@@ -1859,7 +1859,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Callback/Blog.pm
 	'A parameter "[_1]" is required.' => '"[_1]" パラメータは必須です。',
-	'The website root directory must be an absolute: [_1]' => 'ウェブサイトパスは、絶対パスでなければなりません: [_1]',
+	'The website root directory must be an absolute path: [_1]' => 'ウェブサイトパスは、絶対パスでなければなりません: [_1]',
 	'Invalid theme_id: [_1]' => '不正なtheme_idです: [_1]',
 	'Cannot apply website theme to blog: [_1]' => 'ウェブサイトテーマをブログに適用する事はできません: [_1]',
 
@@ -1871,7 +1871,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Callback/Log.pm
 	'A paramter "[_1]" is required.' => 'パラメータ "[_1]"は必須です。',
-	'author_id (ID:[_1] is invalid.' => 'author_id (ID:[_1])は不正です。',
+	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1])は不正です。',
 	'Log (ID:[_1]) deleted by \'[_2]\'' => '\'[_2]\'がログ (ID:[_1])を削除しました。',
 
 ## lib/MT/DataAPI/Callback/Role.pm
@@ -1902,7 +1902,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Endpoint/Entry.pm
 
 ## lib/MT/DataAPI/Endpoint/v2/Asset.pm
-	'An asset does not support to generate thumbnail file.' => 'このアイテムはサムネイルを作成できません。',
+	'The asset does not support generating a thumbnail file.' => 'このアイテムはサムネイルを作成できません。',
 	'Invalid width: [_1]' => '不正な幅が指定されました: [_1]',
 	'Invalid height: [_1]' => '不正な高さが指定されました: [_1]',
 	'Invalid scale: [_1]' => '不正なスケールが指定されました: [_1]',
@@ -1919,7 +1919,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot create a blog under blog (ID:[_1]).' => 'ブログ(ID:[_1])の下にブログを作成する事はできません。',
 	'Either parameter of "url" or "subdomain" is required.' => '"url"または"subdomain"パラメータのいずれかを指定する必要があります。',
 	'Site not found' => 'ウェブサイトが見つかりません',
-	'Website "[_1]" (ID:[_2]) were not deleted. You need to delete blogs under the website first.' => 'ウェブサイト "[_1]" (ID:[_2]) を削除できません。ウェブサイト内のブログを先に削除する必要があります。',
+	'Website "[_1]" (ID:[_2]) was not deleted. You need to delete the blogs under the website first.' => 'ウェブサイト "[_1]" (ID:[_2]) を削除できません。ウェブサイト内のブログを先に削除する必要があります。',
 
 ## lib/MT/DataAPI/Endpoint/v2/Category.pm
 
@@ -1953,8 +1953,8 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Endpoint/v2/Search.pm
 
 ## lib/MT/DataAPI/Endpoint/v2/Tag.pm
-	'Can not delete private tag associated with objects in system scope.' => 'システムで利用されているプライベートタグは削除できません。',
-	'Can not delete private tag in system scope.' => 'システムで利用されているプライベートタグは削除できません。',
+	'Cannot delete private tag associated with objects in system scope.' => 'システムで利用されているプライベートタグは削除できません。',
+	'Cannot delete private tag in system scope.' => 'システムで利用されているプライベートタグは削除できません。',
 	'Tag not found' => '指定されたタグが見つかりません',
 
 ## lib/MT/DataAPI/Endpoint/v2/Template.pm
@@ -1965,7 +1965,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot clone [_1] template.' => '指定されたテンプレートは複製できません: [_1]',
 
 ## lib/MT/DataAPI/Endpoint/v2/TemplateMap.pm
-	'Template "[_1]" is not archive template.' => 'テンプレート "[_1]" はアーカイブテンプレートではありません。',
+	'Template "[_1]" is not an archive template.' => 'テンプレート "[_1]" はアーカイブテンプレートではありません。',
 
 ## lib/MT/DataAPI/Endpoint/v2/Theme.pm
 	'Cannot apply website theme to blog.' => 'ウェブサイトテーマをブログに適用出来ません。',
@@ -1976,7 +1976,7 @@ use vars qw( @ISA %Lexicon );
 	'theme_id may only contain letters, numbers, and the dash or underscore character. The theme_id must begin with a letter.' => 'テーマIDには、アルファベット、数字、ダッシュ(-)、アンダースコア(_)のみ利用可能です。また、かならずアルファベットで始めてください。',
 	'theme_version may only contain letters, numbers, and the dash or underscore character.' => 'バージョンにはアルファベット、数字、ダッシュ(-)、アンダースコア(_)が利用できます。',
 	'Cannot install new theme with existing (and protected) theme\'s basename: [_1]' => '保護されたテーマがすでに存在するため、新しいテーマをインストールできません: [_1]',
-	'Export theme folder already exists \'[_1]\'. You can overwrite a existing theme with \'overwrite_yes=1\' parameter, or change the Basename.' => 'エクスポート先のフォルダがすでに存在します。既存のフォルダを上書きする場合は、\'overwrite_yes\'パラメータに1を指定するか、ベースネームを変えてください。',
+	'Export theme folder already exists \'[_1]\'. You can overwrite an existing theme with \'overwrite_yes=1\' parameter, or change the Basename.' => 'エクスポート先のフォルダがすでに存在します。既存のフォルダを上書きする場合は、\'overwrite_yes\'パラメータに1を指定するか、ベースネームを変えてください。',
 	'Unknown archiver type : $arctype' => '無効なアーカイブ形式が指定されました: [_1]',
 
 ## lib/MT/DataAPI/Endpoint/v2/User.pm
@@ -2866,6 +2866,8 @@ use vars qw( @ISA %Lexicon );
 	'Boilerplate' => '定型文',
 	'Select Boilerplate' => '定型文を選択...',
 
+## mt-static/plugins/Loupe/js/vendor.js
+
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
 	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
 	'Italic (Ctrl+I)' => '斜体 (Ctrl+I)',
@@ -3574,7 +3576,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/cfg_system_general.tmpl
 	'Your settings have been saved.' => '設定を保存しました。',
 	'A test mail was sent.' => 'テストメールを送信しました。',
-	'One or more of your websites or blogs are not following the base site path (value of basesitepath) restriction.' => '1つ以上のウェブサイトまたは、ブログがウェブサイトパスの規定値の制限に違反しています。',
+	'One or more of your websites or blogs are not following the base site path (value of BaseSitePath) restriction.' => '1つ以上のウェブサイトまたは、ブログがウェブサイトパスの規定値の制限に違反しています。',
 	'(None selected)' => '(選択されていません)',
 	'System Email Address' => 'システムメールアドレス',
 	'Send Test Mail' => 'テストメールの送信',
@@ -4665,7 +4667,7 @@ use vars qw( @ISA %Lexicon );
 	'Change and move' => '変更して移動',
 	'Rename' => '名前を変更',
 	'Label is required.' => '名前は必須です。',
-	q{The name '[_1]' is too long!} => q{'[_1]'は長すぎます。},
+	'Label is too long.' => '名前が長すぎます。',
 	'Duplicated label on this level.' => '名前が同一階層内で重複しています。',
 	'Basename is required.' => '出力ファイル名/フォルダ名は必須です。',
 	'Invalid Basename.' => '不正な出力ファイル名/フォルダ名です。',
@@ -4676,7 +4678,6 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to remove [_1] [_2]?' => '[_1]\'[_2]\'を削除してよろしいですか?',
 	'Are you sure you want to remove [_1] [_2] with [_3] sub [_4]?' => '[_3]個のサブ[_4]を含む[_1]\'[_2]\'を削除してよろしいですか?',
 	'Alert' => '警告',
-	'Label is too long.' => '名前が長すぎます。',
 
 ## tmpl/cms/list_common.tmpl
 	'25 rows' => '25件',
@@ -6600,21 +6601,32 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/config.yaml
 	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
+	'Migrated sync setting' => '移行されたサーバー配信設定',
 	'Sync' => 'サーバー配信',
+	'Sync Name' => '設定名',
+	'Sync Datetime' => 'サーバー配信日時',
+	'Manage Sync Settings' => 'サーバー配信設定の管理',
+	'Sync Setting' => 'サーバー配信設定',
+	'Sync Settings' => 'サーバー配信設定',
+	'Create new sync setting' => '新しいサーバー配信設定を作成する',
 	'Contents Sync' => 'サーバー配信',
 	'Updating MT::SyncSetting table...' => 'サーバー配信設定テーブルを更新しています...',
 	'Migrating settings of contents sync on website...' => 'ウェブサイトのサーバー配信の設定を移行しています...',
 	'Migrating settings of contents sync on blog...' => 'ブログのサーバー配信の設定を移行しています...',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
+	'Failed to remove sync list. (ID:\'[_1]\')' => '同期リスト (ID:[_1]) の削除に失敗しました。',
+	'Failed to update sync list. (ID:\'[_1]\')' => '同キリスト (ID:[_1]) の更新に失敗しました。',
+	'Failed to create sync list.' => '同期リストの作成に失敗しました。',
+	'Failed to save sync list. (ID:\'[_1]\')' => '同期リストの保存に失敗しました。',
 	'Error switching directory.' => 'ディレクトリの切り替えができません。',
 	'Synchronization with an external server has been successfully finished.' => 'サーバー配信が正常に処理されました',
 	'Failed to sync with an external server.' => 'サーバー配信に失敗しました',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/FTPBase.pm
 	'Cannot access to remote directory \'[_1]\'' => 'リモートディレクトリ\'[_1]\'にアクセスできません。',
-	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
 	'Deleting file \'[_1]\' failed.' => 'ファイル\'[_1]\'を削除できませんでした。',
+	'Deleting path \'[_1]\' failed.' => 'ディレクトリ\'[_1]\'を削除できませんでした。',
 	'Unable to write temporary file ([_1]): [_2]' => '一時ファイル([_1])の書き込みができませんでした: [_2]',
 	'Unable to write remote files. Please check activity log for more details.: [_1]' => '配信先にファイルを書き込めません。詳細についてはログを確認してください。: [_1]',
 	'Unable to write remote files ([_1]): [_2]' => 'アップロード先にファイル([_1])を書き込めませんでした:[_2]',
@@ -6625,26 +6637,32 @@ use vars qw( @ISA %Lexicon );
 	'Error during rsync: Command (exit code [_1]): [_2]' => 'rsync コマンドでエラーが起きました (終了コード: [_1]): [_2]',
 	'An error occurred while copying the directory.' => 'ファイルのコピー中にエラーが発生しました。',
 
+## addons/Sync.pack/lib/MT/SyncFileList.pm
+	'Sync file list' => '同期リスト',
+
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
 	'Sync settings' => 'サーバー配信の設定',
 
 ## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
+	'Sync setting # [_1] not found.' => 'ID:[_1]のサーバー配信設定が見つかりませんでした。',
 	'This email is to notify you that synchronization with an external server has been successfully finished.' => 'これはサーバー配信の処理に成功したことを通知するメールです。',
+	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
 	'This email is to notify you that failed to sync with an external server.' => 'これはサーバー配信の処理に失敗したことを通知するメールです。',
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
-	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
+	'Copied [_1]' => 'サーバ配信設定 ([_1])の複製',
+	'The sync setting with the same name already exists.' => '同名のサーバー配信設定がすでに存在します。',
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'FTPサーバー \'[_1]\' への接続中にエラーが発生しました: [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'FTPサーバーのカレントディレクトリが取得できませんでした。',
-	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした。',
+	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした',
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'サーバー配信設定',
 	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
+	'The sync settings has been copied but not saved yet.' => 'サーバー配信設定が複製されましたが、まだ設定は保存されていません。',
 	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
 	'Run synchronization now' => '今すぐ配信する',
-	'Enable contents synchronization' => 'サーバー配信を有効にする',
-	'Sync Settings' => 'サーバー配信の設定',
+	'Copy this sync setting' => 'このサーバー配信設定を複製する',
 	'Sync Date' => 'サーバー配信日時',
 	'Recipient for Notification' => '配信結果の通知先メールアドレス',
 	'Receive only error notification' => '配信に失敗したときだけ受け取る。',
@@ -6662,6 +6680,8 @@ use vars qw( @ISA %Lexicon );
 	'Rsync Destination' => 'rsync 先のディレクトリ',
 	'Sync Type *' => '配信方法 *',
 	'Please select a sync type.' => '配信方法を指定してください。',
+	'Sync name is required.' => '設定名は必須です。',
+	'Sync name should be shorter than [_1] characters.' => '設定名が長すぎます。[_1]文字以内で指定してください。',
 	'The sync date must be in the future.' => 'サーバー配信日時は、未来の日時を指定してください。',
 	'Invalid time.' => '無効な時刻指定です。',
 	'You must make one or more destination settings.' => 'サーバー配信先が設定されていません。',
@@ -7018,6 +7038,7 @@ use vars qw( @ISA %Lexicon );
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
 	'Failed.' => '失敗',
 
+
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードが使用されます。[_2]のHTTPステータスが返されました。',
 	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードはありません。[_2]のHTTPステータスが返されました。',
@@ -7147,7 +7168,5 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
-
-## New words: 241
 
 1;
