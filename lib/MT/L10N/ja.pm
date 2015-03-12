@@ -6789,7 +6789,7 @@ use vars qw( @ISA %Lexicon );
 	'Google Analytics profile' => '使用するGoogle Analyticsのプロファイル',
 	'Select Google Analytics profile' => 'Google Analyticsのプロファイルを選択する',
 	'(No profile selected)' => '（プロファイルが選択されていません）',
-	'Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?' => 'Client IDあるいはClient secretが更新されていますが、プロファイルを選択し直していませんが。設定を保存してもよろしいですか？',
+	'Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?' => 'Client IDあるいはClient secretが更新されていますが、プロファイルを選択し直していません。設定を保存してもよろしいですか？',
 
 ## plugins/Loupe/Loupe.pl
 	'Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics.' => 'Loupe は、スマートフォンに最適化された、まったく新しい Movable Type への入り口です。Loupe を使えば、Movable Type へログインをすることなく、承認待ちの記事やコメントを承認したり、画像のアップロードを行ったり、あなたのサイトの状態を即座に確認することが出来ます。',
