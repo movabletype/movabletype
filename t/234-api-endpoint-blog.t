@@ -137,6 +137,40 @@ sub suite {
                 is_deeply( \@result_ids, \@site_ids );
             },
         },
+        {    # search
+            path      => '/v2/sites',
+            method    => 'GET',
+            params    => { search => 'Test' },
+            callbacks => [
+                {   name  => 'data_api_pre_load_filtered_list.blog',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                my @sites = $app->model('blog')
+                    ->load( { class => '*', name => { like => '%Test%' }, } );
+                return +{
+                    totalResults => scalar(@sites),
+                    items => MT::DataAPI::Resource->from_object( \@sites ),
+                };
+            },
+        },
+        {    # search (no hits)
+            path      => '/v2/sites',
+            method    => 'GET',
+            params    => { search => 'No hits' },
+            callbacks => [
+                {   name  => 'data_api_pre_load_filtered_list.blog',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                return +{
+                    totalResults => 0,
+                    items        => [],
+                };
+            },
+        },
 
         # list_sites_by_parent - irregular tests
         {    # Non-existent website.
