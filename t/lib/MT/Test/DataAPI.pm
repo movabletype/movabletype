@@ -13,7 +13,7 @@ use base qw( Exporter );
 BEGIN {
     use Test::More;
     eval { require Test::MockModule }
-        or plan skip_all => 'Test::MockModule is not installed';
+      or plan skip_all => 'Test::MockModule is not installed';
 
     $ENV{MT_CONFIG} ||= 'mysql-test.cfg';
 }
@@ -23,6 +23,7 @@ eval(
     ? "use MT::Test qw(:app);"
     : "use MT::Test qw(:app :db :data);"
 );
+die $@ if $@;  # Display the cause of error.
 
 our @EXPORT = qw/ test_data_api /;
 
@@ -38,11 +39,11 @@ sub test_data_api {
 
     my $is_superuser;
     my $mock_author = Test::MockModule->new('MT::Author');
-    $mock_author->mock( 'is_superuser', sub {$is_superuser} );
+    $mock_author->mock( 'is_superuser', sub { $is_superuser } );
 
     my $author;
     my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
-    $mock_app_api->mock( 'authenticate', sub {$author} );
+    $mock_app_api->mock( 'authenticate', sub { $author } );
 
     my $version;
     $mock_app_api->mock( 'current_api_version',
@@ -65,46 +66,46 @@ sub test_data_api {
     my $format = MT::DataAPI::Format->find_format('json');
 
     for my $data (@$suite) {
-        $mock_app_api->mock( 'authenticate', sub {$author} )
-            if !$mock_app_api->is_mocked('authenticate');
+        $mock_app_api->mock( 'authenticate', sub { $author } )
+          if !$mock_app_api->is_mocked('authenticate');
 
         if ( $data->{author_id} ) {
             $author = $app->model('author')->load( $data->{author_id} );
         }
         elsif ( !exists( $data->{author_id} ) ) {
             $author = $app->model('author')
-                ->load( exists $args->{author_id} ? $args->{author_id} : 1 );
+              ->load( exists $args->{author_id} ? $args->{author_id} : 1 );
         }
         else {
             $mock_app_api->unmock('authenticate');
         }
 
-        $is_superuser
-            = $author
-            ? (
+        $is_superuser =
+          $author
+          ? (
               exists $data->{is_superuser} ? $data->{is_superuser}
             : exists $args->{is_superuser} ? $args->{is_superuser}
             : 0
-            )
-            : 0;
+          )
+          : 0;
 
         $data->{setup}->($data) if $data->{setup};
 
         my @special_perms = qw/ edit_templates administer_blog rebuild /;
 
         $mock_permission->unmock('can_do')
-            if $mock_permission->is_mocked('can_do');
+          if $mock_permission->is_mocked('can_do');
         for (@special_perms) {
             $mock_permission->unmock("can_$_")
-                if $mock_permission->is_mocked("can_$_");
+              if $mock_permission->is_mocked("can_$_");
         }
         if ( exists $data->{restrictions} ) {
             $mock_permission->mock(
                 'can_do',
                 sub {
                     my ( $perm, $action ) = @_;
-                    my $restrictions
-                        = $data->{restrictions}{ $perm->blog_id || 0 };
+                    my $restrictions =
+                      $data->{restrictions}{ $perm->blog_id || 0 };
                     if ( ref $restrictions eq 'ARRAY'
                         && ( grep { $_ eq $action } @$restrictions ) )
                     {
@@ -122,14 +123,13 @@ sub test_data_api {
                     sub {
                         my ($perm) = @_;
                         if ( grep { $_ eq $sp_perm }
-                            @{ $data->{restrictions}{ $perm->blog_id || 0 } }
-                            )
+                            @{ $data->{restrictions}{ $perm->blog_id || 0 } } )
                         {
                             return;
                         }
                         else {
                             return $mock_permission->original("can_$sp_perm")
-                                ->(@_);
+                              ->(@_);
                         }
                     },
                 );
@@ -137,20 +137,20 @@ sub test_data_api {
         }
 
         my $path = $data->{path};
-        $path
-            =~ s/:(?:(\w+)_id)|:(\w+)/ref $data->{$1} ? $data->{$1}->id : $data->{$2}/ge;
+        $path =~
+s/:(?:(\w+)_id)|:(\w+)/ref $data->{$1} ? $data->{$1}->id : $data->{$2}/ge;
 
-        my $params
-            = ref $data->{params} eq 'CODE'
-            ? $data->{params}->($data)
-            : $data->{params};
+        my $params =
+          ref $data->{params} eq 'CODE'
+          ? $data->{params}->($data)
+          : $data->{params};
 
         my $note = $path;
         if ( lc $data->{method} eq 'get' && $data->{params} ) {
             $note .= '?'
-                . join( '&',
+              . join( '&',
                 map { $_ . '=' . $data->{params}{$_} }
-                    keys %{ $data->{params} } );
+                  keys %{ $data->{params} } );
         }
         $note .= ' ' . $data->{method};
         $note .= ' ' . $data->{note} if $data->{note};
@@ -170,19 +170,22 @@ sub test_data_api {
         %callbacks = ();
         _run_app(
             'MT::App::DataAPI',
-            {   __path_info      => $path,
+            {
+                __path_info      => $path,
                 __request_method => $data->{method},
-                (   $data->{upload}
+                (
+                    $data->{upload}
                     ? ( __test_upload => $data->{upload} )
                     : ()
                 ),
-                (   $params
+                (
+                    $params
                     ? map {
                         $_ => ref $params->{$_}
-                            ? MT::Util::to_json( $params->{$_} )
-                            : $params->{$_};
-                        }
-                        keys %{$params}
+                          ? MT::Util::to_json( $params->{$_} )
+                          : $params->{$_};
+                      }
+                      keys %{$params}
                     : ()
                 ),
             }
@@ -193,12 +196,11 @@ sub test_data_api {
             my ( $k, $v ) = split /\s*:\s*/, $_, 2;
             $v =~ s/(\r\n|\r|\n)\z//;
             lc $k => $v
-            }
-            split /\n/, $headers;
+          }
+          split /\n/, $headers;
 
         my $expected_status = $data->{code} || 200;
-        is( $headers{status}, $expected_status,
-            'Status ' . $expected_status );
+        is( $headers{status}, $expected_status, 'Status ' . $expected_status );
         if ( $data->{next_phase_url} ) {
             like(
                 $headers{'x-mt-next-phase-url'},
@@ -210,7 +212,7 @@ sub test_data_api {
         foreach my $cb ( @{ $data->{callbacks} } ) {
             my $params_list = $callbacks{ $cb->{name} } || [];
             if ( my $params = $cb->{params} ) {
-                for ( my $i = 0; $i < scalar(@$params); $i++ ) {
+                for ( my $i = 0 ; $i < scalar(@$params) ; $i++ ) {
                     is_deeply( $params_list->[$i], $cb->{params}[$i] );
                 }
             }
@@ -225,11 +227,11 @@ sub test_data_api {
         if ( my $expected_result = $data->{result} ) {
             MT->instance->user($author);
             no warnings 'redefine';
-            local *boolean::true  = sub {'true'};
-            local *boolean::false = sub {'false'};
+            local *boolean::true  = sub { 'true' };
+            local *boolean::false = sub { 'false' };
 
             $expected_result = $expected_result->( $data, $body )
-                if ref $expected_result eq 'CODE';
+              if ref $expected_result eq 'CODE';
             if ( UNIVERSAL::isa( $expected_result, 'MT::Object' ) ) {
                 $expected_result = $format->{unserialize}->(
                     $format->{serialize}->(
