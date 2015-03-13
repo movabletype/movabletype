@@ -51,7 +51,7 @@ use vars qw( %Lexicon );
 	'Google Analytics profile' => '使用するGoogle Analyticsのプロファイル',
 	'Select Google Analytics profile' => 'Google Analyticsのプロファイルを選択する',
 	'(No profile selected)' => '（プロファイルが選択されていません）',
-	'Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?' => 'Client IDあるいはClient secretが更新されていますが、プロファイルを選択し直していませんが。設定を保存してもよろしいですか？',
+	'Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?' => 'Client IDあるいはClient secretが更新されていますが、プロファイルを選択し直していません。設定を保存してもよろしいですか？',
 
 );
 
