@@ -5020,7 +5020,7 @@ DataAPI.on('initialize', function() {
         "verb": "PUT"
     }, 
     {
-        "id": "delete_tempalte", 
+        "id": "delete_template", 
         "resources": null, 
         "route": "/sites/:site_id/templates/:template_id", 
         "verb": "DELETE"
