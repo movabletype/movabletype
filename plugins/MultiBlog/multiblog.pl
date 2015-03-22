@@ -200,6 +200,17 @@ sub add_trigger {
                                 ),
                                 };
                         }
+                        if ( $app->blog && $app->blog->is_blog ) {
+                            my $website = $app->blog->website;
+                            $count++;
+                            unshift @$loop,
+                                {
+                                id    => $website->id,
+                                label => $website->name,
+                                description => $website->description,
+                                link => $website->site_url,
+                                };
+                        }
                         $count++;
                         unshift @$loop,
                             {
