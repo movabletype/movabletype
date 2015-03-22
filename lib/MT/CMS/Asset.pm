@@ -1556,7 +1556,7 @@ sub _upload_file {
 
     require File::Basename;
     my $local_basename = File::Basename::basename($local_file);
-    my $ext
+    my $local_ext
         = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
 
     require MT::Asset;
@@ -1591,7 +1591,7 @@ sub _upload_file {
         $original = $asset->clone;
         $asset->file_path($asset_file);
         $asset->file_name($local_basename);
-        $asset->file_ext($ext);
+        $asset->file_ext($local_ext);
         $asset->blog_id($blog_id);
         $asset->label($local_basename);
         $asset->created_by( $app->user->id );
