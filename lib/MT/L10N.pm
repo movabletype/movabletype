@@ -11,6 +11,8 @@ use Locale::Maketext;
 @MT::L10N::ISA = qw( Locale::Maketext );
 @MT::L10N::Lexicon = ( _AUTO => 1, );
 
+our $ENABLED_METHODS_REGEX = qr/^lc|uc|quant|numerate|numf|sprintf$/;
+
 sub language_name {
     my $tag = $_[0]->language_tag;
     require I18N::LangTags::List;
@@ -28,6 +30,19 @@ sub lc {
 sub uc {
     my $lh = shift;
     uc( $_[0] );
+}
+
+# Restrict enabled methods in bracket.
+sub _compile {
+    my ( $lh, $string ) = @_;
+
+    if ( $string && grep { $_ !~ m/$ENABLED_METHODS_REGEX/ }
+        ( $string =~ m/(?:^|[^~])\[(\w+),/gs ) )
+    {
+        die 'Invalid method in translating phrase: "' . $string . '"';
+    }
+
+    return $lh->SUPER::_compile($string);
 }
 
 1;
