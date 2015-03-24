@@ -14,6 +14,7 @@ use strict;
 
 # Handle cwd = MT_DIR, MT_DIR/t
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use File::Path qw( rmtree );
 use File::Spec;
 use File::Temp qw( tempfile );
 use File::Basename;
@@ -65,7 +66,7 @@ BEGIN {
     }
     elsif ( -f $ds_dir . '/mt.db' ) {
         my $file = $ds_dir . '/mt.db';
-        `rm $file`;
+        unlink $file;
     }
 }
 
@@ -415,7 +416,7 @@ sub init_data {
     my $pkg = shift;
 
     # nix the old site just in case
-    `rm -fR t/site` if ( -d 't/site' );
+    rmtree('t/site') if ( -d 't/site' );
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
     MT->config->ThemesDirectory($themedir);
