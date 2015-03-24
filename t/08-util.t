@@ -28,6 +28,10 @@ use strict;
 my $mt = MT->new;
 $mt->config('NoHTMLEntities', 1);
 
+if ( $^O eq 'MSWin32' ) {
+    $mt->config( 'TempDir', 'C:\Windows\Temp' );
+}
+
 ## Use done_testing()
 ## BEGIN { plan tests => 221 };
 
