@@ -89,7 +89,7 @@ is($mt->{cfg}->Database, $db_dir . '/mt.db', "DataSource=$db_dir");
 foreach my $key (qw{ UserSessionCookiePath UserSessionCookieName ProcessMemoryCommand SecretToken }) {
 	my $value = $cfg->get($key);
 	ok(length($value), "Config $key is not empty");
-	is($cfg->get($key), $value, "Config $key returns the same value twice");
+	is_deeply($cfg->get($key), $value, "Config $key returns the same value twice");
 	if ($key eq 'SecretToken') {
 		like($value, qr/^[a-zA-Z0-9]{40}$/, 'Secret Token Generated');
 	}
