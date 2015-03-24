@@ -11,7 +11,7 @@ use Locale::Maketext;
 @MT::L10N::ISA = qw( Locale::Maketext );
 @MT::L10N::Lexicon = ( _AUTO => 1, );
 
-our $ENABLED_METHODS_REGEX = qr/^lc|uc|quant|numerate|numf|sprintf$/;
+our $ENABLED_METHODS_REGEX = qr/^(?:lc|uc|quant|numerate|numf|sprintf)$/;
 
 sub language_name {
     my $tag = $_[0]->language_tag;

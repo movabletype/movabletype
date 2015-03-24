@@ -5,7 +5,29 @@ use Test::More;
 
 use lib qw( lib extlib t/lib );
 use MT;
+use MT::L10N;
+
 MT->instance;
+
+subtest 'default $MT::L10N::ENABLED_METHODS_REGEX' => sub {
+    my $regex = $MT::L10N::ENABLED_METHODS_REGEX;
+
+    like( 'lc',       $regex, 'lc' );
+    like( 'uc',       $regex, 'uc' );
+    like( 'quant',    $regex, 'quant' );
+    like( 'numerate', $regex, 'numerate' );
+    like( 'numf',     $regex, 'numf' );
+    like( 'sprintf',  $regex, 'sprintf' );
+
+    unlike( 'fail_with', $regex, 'fail_with' );
+
+    unlike( 'lcc',        $regex, 'lcc' );
+    unlike( 'uucc',       $regex, 'uucc' );
+    unlike( 'qquantt',    $regex, 'qquantt' );
+    unlike( 'nnumeratee', $regex, 'nnumeratee' );
+    unlike( 'nnumff',     $regex, 'nnumff' );
+    unlike( 'ssprintff',  $regex, 'ssprintff' );
+};
 
 subtest 'Enabled methods of Locale::Maketext in bracket' => sub {
     my $quant = MT->translate('[quant,1,file]');
