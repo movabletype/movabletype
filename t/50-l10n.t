@@ -62,7 +62,7 @@ subtest 'Disabled methods' => sub {
     ok( $@, 'non_existent_method' );
 };
 
-subtest 'Escaped by tilda' => sub {
+subtest 'Escaped by tilde' => sub {
     my $quant = MT->translate('~[quant,1,file~]');
     is( $quant, '[quant,1,file]', 'quant' );
 
