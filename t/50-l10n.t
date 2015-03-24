@@ -69,6 +69,22 @@ subtest 'Escaped by tilde' => sub {
     my $non_existent_method = MT->translate('~[non_existent_method,100~]');
     is( $non_existent_method, '[non_existent_method,100]',
         'non_existent_method' );
+
+    my $fail_with = MT->translate('~[fail_with,failure_handler_auto~]');
+    is( $fail_with, '[fail_with,failure_handler_auto]', 'fail_with' );
+
+    eval { MT->translate('~~[fail_with,failure_handler_auto]') };
+    ok( $@, 'fail_with with 2 tildes' );
+
+    my $fail_with_3_tildes
+        = MT->translate('~~~[fail_with,failure_handler_auto~]');
+    is( $fail_with_3_tildes,
+        '~[fail_with,failure_handler_auto]',
+        'fail_with with 3 tildes'
+    );
+
+    eval { MT->translate('~~~~[fail_with,failure_handler_auto]') };
+    ok( $@, 'fail_with with 4 tildes' );
 };
 
 done_testing;

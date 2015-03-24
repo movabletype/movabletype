@@ -37,7 +37,7 @@ sub _compile {
     my ( $lh, $string ) = @_;
 
     if ( $string && grep { $_ !~ m/$ENABLED_METHODS_REGEX/ }
-        ( $string =~ m/(?:^|[^~])\[(\w+),/gs ) )
+        ( $string =~ m/(?:^|[^~])(?:~~)*\[(\w+),/gs ) )
     {
         die 'Invalid method in translating phrase: "' . $string . '"';
     }
