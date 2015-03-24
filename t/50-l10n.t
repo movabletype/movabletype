@@ -54,8 +54,6 @@ subtest 'Enabled methods of MT::L10N in bracket' => sub {
 subtest 'Disabled methods' => sub {
     eval { MT->translate('[fail_with,failure_handler_auto]') };
     ok( $@, 'fail_with' );
-
-    require MT::L10N;
     ok( MT::L10N->can('fail_with'), 'fail_with method exists' );
 
     eval { MT->translate('[non_existent_method,100]'); };
