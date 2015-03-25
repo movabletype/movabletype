@@ -9,6 +9,10 @@ dn: ou=users,dc=example,dc=com
 objectClass: organizationalUnit
 ou: users
 
+dn: ou=MT,ou=users,dc=example,dc=com
+objectClass: organizationalUnit
+ou: MT
+
 dn: ou=groups,dc=example,dc=com
 objectClass: organizationalUnit
 ou: groups
