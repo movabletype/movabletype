@@ -50,7 +50,7 @@ __END__
 
 =head1 NAME
 
-MT::L10N
+MT::L10N - Localization support for MT
 
 =head1 METHODS
 
@@ -73,6 +73,10 @@ Returns a lowercased version of $str.
 =head2 uc($str)
 
 Returns a uppercased version of $str.
+
+=head2 $obj->_compile($str)
+
+Override Locale::Maketext::_compile. Non-permitted methods in bracket notation are forbidden here. Permitted methods are defined by $ENABLED_METHODS_REGEX.
 
 =head1 AUTHOR & COPYRIGHT
 
