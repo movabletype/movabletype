@@ -9,8 +9,8 @@ use MT::L10N;
 
 MT->instance;
 
-subtest 'default $MT::L10N::ENABLED_METHODS_REGEX' => sub {
-    my $regex = $MT::L10N::ENABLED_METHODS_REGEX;
+subtest 'default $MT::L10N::PERMITTED_METHODS_REGEX' => sub {
+    my $regex = $MT::L10N::PERMITTED_METHODS_REGEX;
 
     like( 'lc',       $regex, 'lc' );
     like( 'uc',       $regex, 'uc' );
