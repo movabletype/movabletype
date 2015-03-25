@@ -12,7 +12,7 @@ use Test::More;
 plan tests => 25;
 
 {
-    diag('test MT::CMS::Blog::_update_finfos');
+    note('test MT::CMS::Blog::_update_finfos');
 
     ok(MT->model('blog')->load(1), 'have a blog #1');
     # This test blog has:
@@ -54,7 +54,7 @@ plan tests => 25;
     my $ret = MT::CMS::Blog::_update_finfos(MT->instance, 1);
 
     ok($ret, 'set all finfos virtual');
-    diag(MT->instance->errstr) if !$ret;
+    note(MT->instance->errstr) if !$ret;
     is(MT->model('fileinfo')->count({
         blog_id => 1,
         virtual => [ \"= 0", \"is null" ],
@@ -81,7 +81,7 @@ plan tests => 25;
         id      => 1,
     }), 1, 'blog #1 has fileinfo #1');
 
-    diag('test basic condition (not used by app)');
+    note('test basic condition (not used by app)');
     $ret = MT::CMS::Blog::_update_finfos(MT->instance, 1, { id => 1 });
 
     ok($ret, 'set fileinfo #1 virtual');
@@ -98,7 +98,7 @@ plan tests => 25;
     MT::CMS::Blog::_update_finfos(MT->instance, 0)
         or BAIL_OUT('could not reset fileinfos after basic condition test');
 
-    diag('test template map presence as used in app');
+    note('test template map presence as used in app');
     $ret = MT::CMS::Blog::_update_finfos(MT->instance, 1, { templatemap_id => \"is not null" });
 
     ok($ret, 'set fileinfos with templatemaps virtual');

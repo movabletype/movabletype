@@ -77,7 +77,7 @@ plan tests => $tag_count;
 
 foreach my $c (keys %$components) {
     next unless $mt->component($c);
-    diag("Checking for tag documentation for component $c");
+    note("Checking for tag documentation for component $c");
     my $all_docs = '';
     my $tags = $mt->component($c)->registry('tags');
     my $core_tags = $mt->component('core')->registry('tags')
@@ -92,7 +92,7 @@ foreach my $c (keys %$components) {
                 my $file_path = File::Spec->catfile($inc, $file);
                 next unless -e $file_path;
 
-                diag("Reading module $file_path");
+                note("Reading module $file_path");
                 open DOC, "< $file_path"
                     or die "Can't read file $file_path: " . $!;
                 $all_docs .= <DOC>;
