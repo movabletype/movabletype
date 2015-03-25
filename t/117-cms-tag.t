@@ -57,10 +57,10 @@ $website_asset->save;
 # Run tests
 my ( $app, $out );
 
-diag 'Test in website scope';
+note 'Test in website scope';
 subtest 'Test in website scope' => sub {
 
-    diag 'Build in filter check';
+    note 'Build in filter check';
     subtest 'Built in filter check' => sub {
         $app = _run_app(
             'MT::App::CMS',
@@ -122,7 +122,7 @@ subtest 'Test in website scope' => sub {
         done_testing();
     };
 
-    diag 'Display options check';
+    note 'Display options check';
     subtest 'Display options check' => sub {
         $app = _run_app(
             'MT::App::CMS',

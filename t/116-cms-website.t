@@ -25,13 +25,13 @@ my $admin = MT->model('author')->load(1);
 # Run tests
 my ( $app, $out );
 
-diag 'Test cfg_prefs mode';
+note 'Test cfg_prefs mode';
 subtest 'Test cfg_prefs mode' => sub {
     foreach my $type ( 'website', 'blog' ) {
         my $type_ucfirst = ucfirst $type;
         my $test_blog = $type eq 'website' ? $website : $blog;
 
-        diag "$type_ucfirst scope";
+        note "$type_ucfirst scope";
         subtest "$type_ucfirst scope" => sub {
             $app = _run_app(
                 'MT::App::CMS',
@@ -186,7 +186,7 @@ subtest 'Test cfg_prefs mode' => sub {
     }
 };
 
-diag 'Test cfg_entry mode';
+note 'Test cfg_entry mode';
 subtest 'Test cfg_entry mode' => sub {
     $app = _run_app(
         'MT::App::CMS',
@@ -323,7 +323,7 @@ subtest 'Test cfg_entry mode' => sub {
     done_testing();
 };
 
-diag 'Website listing screen';
+note 'Website listing screen';
 subtest 'Website listing screen' => sub {
     $app = _run_app(
         'MT::App::CMS',
