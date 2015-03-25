@@ -937,7 +937,6 @@ subtest 'mode = revoke_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-diag($out);
     ok( $out, "Request: revoke_role" );
     ok( $out =~ m!permission=1!i, "revoke_role by non permitted user parent website" );
 
