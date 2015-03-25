@@ -9,6 +9,26 @@ use MT::L10N;
 
 MT->instance;
 
+# Check whether or not new method is added to MT::L10N roughly.
+subtest 'MT::L10N methods' => sub {
+    my @keys = sort keys(%MT::L10N::);
+
+    my @expected_keys = (
+        'BEGIN',              'ISA',
+        'Lexicon',            'PERMITTED_METHODS_REGEX',
+        'SUPER::',            '_add_supers',
+        '_compile',           '_langtag_munging',
+        'ascii_only',         'en_us::',
+        'encoding',           'fallback_language_classes',
+        'fallback_languages', 'get_handle',
+        'import',             'ja::',
+        'language_name',      'lc',
+        'uc'
+    );
+
+    is_deeply( \@keys, \@expected_keys, 'No new method is added' );
+};
+
 subtest 'default $MT::L10N::PERMITTED_METHODS_REGEX' => sub {
     my $regex = $MT::L10N::PERMITTED_METHODS_REGEX;
 
