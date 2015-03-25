@@ -43,7 +43,7 @@ sub _run_app_with_upload_file {
         }
     );
 
-    my $app = _run_app( $class, $params );
+    $app = _run_app( $class, $params );
 
     $app, $put_args;
 }
