@@ -136,7 +136,7 @@ subtest 'Test in website scope' => sub {
         ok( $out, "Request: list" );
 
         my $checkbox = quotemeta(
-            '<label for="custom-prefs-entry_count">Entries</label>' );
+            '<label for="custom-prefs-entry_count">Entries</label>');
         $checkbox = qr/$checkbox/;
         like( $out, $checkbox, 'Has "Entries" setting in Display Options' );
 
