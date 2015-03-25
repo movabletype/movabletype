@@ -57,7 +57,7 @@ isa_ok( $mt, 'MT' );
 }
 
 {
-    diag('meta field tests');
+    note('meta field tests');
 
     my $author = MT::Author->load( { name => 'Chuck D' } );
     ok( eval { $author->widgets(); 1 }, 'Author obj has widgets accessor' );
