@@ -51,6 +51,17 @@ subtest 'Enabled methods of MT::L10N in bracket' => sub {
     is( $uc, 'DEF', 'uc' );
 };
 
+subtest 'number in bracket' => sub {
+    my $positive = MT->translate( '[_1]', 'positive' );
+    is( $positive, 'positive', '[_1]' );
+
+    my $negative = MT->translate( '[_-1]', 'negative', 'integer' );
+    is( $negative, 'integer', '[_-1]' );
+
+    my $zero = MT->translate( '[_0]', 'zero' );
+    ok( eval { $zero->isa('MT::L10N') }, '[_0]' );
+};
+
 subtest 'Disabled methods' => sub {
     ok( MT::L10N->can('fail_with'), 'fail_with method exists' );
 

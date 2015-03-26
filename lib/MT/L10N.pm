@@ -36,7 +36,8 @@ sub uc {
 sub _compile {
     my ( $lh, $string ) = @_;
 
-    if ( $string && grep { $_ !~ m/$PERMITTED_METHODS_REGEX/ }
+    if ( $string
+        && grep { $_ !~ m/$PERMITTED_METHODS_REGEX/ && $_ !~ m/^_-?\d+$/ }
         ( $string =~ m/(?:^|[^~])(?:~~)*\[(\w+)(?:,|\])/gs ) )
     {
         die 'Invalid method in translating phrase: "' . $string . '"';
@@ -76,7 +77,7 @@ Returns a uppercased version of $str.
 
 =head2 $obj->_compile($str)
 
-Override Locale::Maketext::_compile. Non-permitted methods in bracket notation are forbidden here. Permitted methods are defined by $PERMITTED_METHODS_REGEX.
+Override Locale::Maketext::_compile. Non-permitted methods but underscore and numbers like "_1" in bracket notation are forbidden here. Permitted methods are defined by $PERMITTED_METHODS_REGEX.
 
 =head1 AUTHOR & COPYRIGHT
 
