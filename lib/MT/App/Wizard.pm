@@ -247,8 +247,8 @@ sub init_core_registry {
                     'This module is needed if you would like to be able to use NetPBM as the image driver for MT.',
             },
             'Storable' => {
-                
-link => 'http://search.cpan.org/dist/Storable',
+
+                link => 'http://search.cpan.org/dist/Storable',
                 label =>
                     'This module is required by certain MT plugins available from third parties.',
             },
