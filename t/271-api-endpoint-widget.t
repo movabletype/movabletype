@@ -332,7 +332,9 @@ sub suite {
             error =>
                 'Do not have permission to retrieve widgets of the request widgetset.',
             complete => sub {
-                $mock_perm->unmock('can_edit_templates');
+
+                # unmock in MT::Test::DataAPI.
+                # $mock_perm->unmock('can_edit_templates');
                 $mock_author->unmock('can_edit_templates');
             },
         },
