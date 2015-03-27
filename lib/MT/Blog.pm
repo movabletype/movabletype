@@ -161,6 +161,28 @@ sub list_props {
             label   => 'Name',
             order   => 200,
             display => 'force',
+            html    => sub {
+                my $prop = shift;
+                my ( $obj, $app, $opts ) = @_;
+                my $name = $obj->name;
+                $name = '' if !defined $name;
+                $name =~ s/^\s+|\s+$//g;
+                my $dashboard_link = $app->uri(
+                    mode => 'dashboard',
+                    args => { blog_id => $obj->id, },
+                );
+                if ( defined $name && $name ne '' ) {
+                    my $can_double_encode = 1;
+                    $name
+                        = MT::Util::encode_html( $name, $can_double_encode );
+                    return qq{<a href="$dashboard_link">$name</a>};
+                }
+                else {
+                    return MT->translate(
+                        qq{[_1] (<a href="[_2]">id:[_3]</a>)},
+                        'No Name', $dashboard_link, $obj->id, );
+                }
+            }
         },
         entry_count => {
             label              => 'Entries',
