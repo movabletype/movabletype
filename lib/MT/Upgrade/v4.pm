@@ -924,7 +924,7 @@ sub remove_indexes {
                 'drop index mt_asset_file_path on mt_asset',
                 'drop index mt_blocklist_name on mt_blocklist',
                 'drop index mt_entry_blog_id on mt_entry',
-                'drop index mt_template_build_dynamic on mt_tempalte'
+                'drop index mt_template_build_dynamic on mt_template'
             ]
         );
     }
@@ -934,7 +934,7 @@ sub remove_indexes {
                 'drop index mt_asset.mt_asset_file_path',
                 'drop index mt_blocklist.mt_blocklist_name',
                 'drop index mt_entry.mt_entry_blog_id',
-                'drop index mt_tempalte.mt_template_build_dynamic'
+                'drop index mt_template.mt_template_build_dynamic'
             ]
         );
     }

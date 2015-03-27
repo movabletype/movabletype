@@ -23,6 +23,7 @@ eval(
     ? "use MT::Test qw(:app);"
     : "use MT::Test qw(:app :db :data);"
 );
+die $@ if $@;    # Display the cause of error.
 
 our @EXPORT = qw/ test_data_api /;
 

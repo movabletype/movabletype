@@ -1655,7 +1655,7 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to update a template.', },
         },
-        {   id      => 'delete_tempalte',
+        {   id      => 'delete_template',
             route   => '/sites/:site_id/templates/:template_id',
             verb    => 'DELETE',
             version => 2,
