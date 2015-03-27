@@ -78,7 +78,7 @@ my @count_specs = (
 
 $Data::ObjectDriver::PROFILE = 1;
 for my $spec (@count_specs) {
-    diag( $spec->{name} );
+    note( $spec->{name} );
 
     my $filter = MT::Filter->new;
     $filter->object_ds( $spec->{datasource} || 'entry' );
