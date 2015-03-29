@@ -166,11 +166,17 @@ sub _grant {
         );
 
     if (  !$site->is_blog
+        && $site->has_blog
         && $role->has('manage_member_blogs')
-        && _exists_administer_blog_role() )
+        && _exists_administer_blog_role())
     {
-        for my $blog ( $site->blogs ) {
-            MT::Association->link( $param_user, $role, $blog )
+        # Load Blog Administrator role. If no roles found, should be return successfully.
+        my @admin_roles = MT::Role->load_by_permission("administer_blog");
+        return 1 unless @admin_roles;
+        my $admin_role = $admin_roles[0];
+
+        for my $blog ( @{$site->blogs} ) {
+            MT::Association->link( $param_user, $admin_role, $blog )
                 or return $app->error(
                 $app->translate(
                     'Granting permission failed: [_1]',
