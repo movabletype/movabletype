@@ -16,6 +16,7 @@ eval(
 );
 
 use Test::More;
+use File::Basename;
 use MT::WeblogPublisher;
 
 my $mt        = MT->instance;
@@ -95,6 +96,13 @@ for my $at (
             $d->{published}, 'Rebuild: When a target file does not exists' );
 
         {
+            my $dirname = dirname($file);
+            if ( !-d $dirname ) {
+                require MT::FileMgr;
+                my $fmgr = MT::FileMgr->new('Local');
+                $fmgr->mkpath($dirname);
+            }
+
             open my $fh, '>', $file;
             print {$fh} "test";
             close $fh;
