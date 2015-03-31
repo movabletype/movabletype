@@ -2055,6 +2055,21 @@ BEGIN {
             },
             'DataAPIDisableSite'   => undef,
             'RebuildOffsetSeconds' => { default => 20 },
+
+            # Enterprise.pack
+            'LDAPAuthURL'           => { type => 'ARRAY' },
+            'LDAPAuthBindDN'        => { type => 'ARRAY' },
+            'LDAPAuthPassword'      => { type => 'ARRAY' },
+            'LDAPAuthSASLMechanism' => {
+                default => 'PLAIN',
+                type    => 'ARRAY',
+            },
+            'LDAPUserSearchBase'    => { type  => 'ARRAY' },
+            'LDAPGroupSearchBase'   => { type  => 'ARRAY' },
+            'AuthLDAPURL'           => { alias => 'LDAPAuthURL' },
+            'AuthLDAPBindDN'        => { alias => 'LDAPAuthBindDN' },
+            'AuthLDAPPassword'      => { alias => 'LDAPAuthPassword' },
+            'AuthLDAPSASLMechanism' => { alias => 'LDAPAuthSASLMechanism' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
