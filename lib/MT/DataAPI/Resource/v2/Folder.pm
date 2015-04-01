@@ -74,7 +74,6 @@ sub fields {
                 my $basename = $obj->basename || '';
                 $basename =~ s/_/-/g;
                 $path .= $basename;
-                $path .= '/' unless $path =~ m/\/$/;
                 return $path;
             },
         },
