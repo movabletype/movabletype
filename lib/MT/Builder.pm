@@ -52,11 +52,6 @@ sub compile {
 
     my $mods;
 
-    # At first, remove MTIgnore blocks.
-    if ( $depth <= 0 && $text =~ m/^<\$?MT:?Ignore/i ) {
-        _remove_ignore_blocks( \$text );
-    }
-
     # Translate any HTML::Template markup into native MT syntax.
     if (   $depth <= 0
         && $text
@@ -321,41 +316,6 @@ sub compile {
             if !Encode::is_utf8($text);
     }
     return $state->{tokens};
-}
-
-sub _remove_ignore_blocks {
-    my $text = shift;
-
-    # Search MTIgnore start tag.
-    while ( $$text
-        =~ m!(<\$?(MT:?)(Ignore(?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)*?)[\$/]?>)!gis
-        )
-    {
-        my ( $whole_tag, $prefix, $tag ) = ( $1, $2, $3 );
-        ( $tag, my ($args) ) = split /\s+/, $tag, 2;
-
-        next if lc($tag) ne 'ignore';
-
-        my $sec_start = pos $$text;
-        my $tag_start = $sec_start - length $whole_tag;
-
-        if ( $whole_tag !~ m|/>$| ) {
-
-            # Search MTIgnore end tag.
-            my ( $sec_end, $tag_end )
-                = _consume_up_to( undef, $text, $sec_start, 'ignore' );
-            last unless $sec_end;
-
-            # Remove MTIgnore block.
-            my $remove_text = substr $$text, $tag_start,
-                ( $tag_end - $tag_start );
-            $remove_text = quotemeta $remove_text;
-            $$text =~ s/$remove_text//;
-
-            # Set search position.
-            ( pos $$text ) = $tag_start;
-        }
-    }
 }
 
 sub translate_html_tmpl {
