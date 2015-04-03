@@ -700,7 +700,11 @@ ok( dir_separator(), 'dir_separator()' );
     ok( $data->[0] = $copied->[0], 'not deep copied' );
 }
 
-{
+SKIP: {
+    if ( $^O eq 'MSWin32' ) {
+        skip 'This test is not for Windows', 6;
+    }
+
     my $path;
     $path = '/foo/bar/baz';
     is( canonicalize_path($path),
@@ -719,6 +723,32 @@ ok( dir_separator(), 'dir_separator()' );
     is( canonicalize_path($path), 'baz', 'only filename supplied' );
     $path = '../../baz';
     is( canonicalize_path($path), '../../baz', 'relative parent path' );
+}
+
+SKIP: {
+    if ( $^O ne 'MSWin32' ) {
+        skip 'This test is for Windows', 6;
+    }
+
+    my $path;
+    $path = 'C:\foo\bar\baz';
+    is( canonicalize_path($path),
+        'C:\foo\bar\baz', 'Already canonicalized(abs)' );
+    $path = 'D:\foo\bar\0\baz';
+    is( canonicalize_path($path),
+        'D:\foo\bar\0\baz', 'Contains a path named "0"' );
+    $path = 't\..\t\08-util.t';
+    is( canonicalize_path($path),
+        File::Spec->catdir( 't', '08-util.t' ),
+        'canonicalize relative path'
+    );
+    $path = 'A:\foo\..\bar\baz';
+    is( canonicalize_path($path), 'A:\bar\baz',
+        'canonicalize absolute path' );
+    $path = 'baz';
+    is( canonicalize_path($path), 'baz', 'only filename supplied' );
+    $path = '..\..\baz';
+    is( canonicalize_path($path), '..\..\baz', 'relative parent path' );
 }
 
 done_testing();
