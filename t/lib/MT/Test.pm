@@ -116,7 +116,7 @@ sub init_app {
     $app->instance( $cfg ? ( Config => $cfg ) : () );
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        abs_path( $app->config->SearchTemplatePath ) );
+        File::Spec->rel2abs( $app->config->SearchTemplatePath ) );
 
     # kill __test_output for a new request
     require MT;
