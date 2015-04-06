@@ -176,6 +176,10 @@ If 'namespace' is also specified, filters the comments based on
 the count within that namespace. This specifies the maximum count
 to consider the comment for inclusion.
 
+=item * top
+
+If true, will count only top-level comments
+
 =back
 
 =for tags multiblog, comments, loop, scoring
@@ -319,6 +323,10 @@ sub _hdlr_comments {
         $terms{visible} = 1;
         $ctx->set_blog_load_context( $args, \%terms, \%args )
             or return $ctx->error( $ctx->errstr );
+
+        if ( $args->{top} ) {
+            $terms{parent_id} = [ \'is NULL', 0 ];
+        }
 
         ## If there is a "lastn" arg, then we need to check if there is an entry
         ## in context. If so, grab the N most recent comments for that entry;
@@ -1849,6 +1857,16 @@ sub _hdlr_comment_replies_recurse {
 Returns the number of published comments associated with the website
 currently in context.
 
+B<Attributes:>
+
+=over 4
+
+=item * top
+
+If true, will count only top-level comments
+
+=back
+
 =for tags multiblog, count, websites, comments
 
 =cut
@@ -1859,6 +1877,16 @@ currently in context.
 
 Returns the number of published comments associated with the blog
 currently in context.
+
+B<Attributes:>
+
+=over 4
+
+=item * top
+
+If true, will count only top-level comments
+
+=back
 
 =for tags multiblog, count, blogs, comments
 
@@ -1878,6 +1906,9 @@ sub _hdlr_blog_comment_count {
         },
         {}
     );
+    if ( $args->{top} ) {
+        $terms{parent_id} = [ \'is NULL', 0 ];
+    }
 
     require MT::Comment;
     my $count = MT::Comment->count( \%terms, \%args );
@@ -1890,13 +1921,34 @@ sub _hdlr_blog_comment_count {
 
 Outputs the number of published comments for the current entry in context.
 
+B<Attributes:>
+
+=over 4
+
+=item * top
+
+If true, will count only top-level comments
+
+=back
+
 =cut
 
 sub _hdlr_entry_comments {
     my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $count = $e->comment_count;
+    my $count;
+    if ( $args->{top} ) {
+        $count = MT::Comment->count(
+            {   entry_id  => $e->id,
+                parent_id => [ \'is NULL', 0 ],
+                visible   => 1
+            }
+        );
+    }
+    else {
+        $count = $e->comment_count;
+    }
     return $ctx->count_format( $count, $args );
 }
 
@@ -1911,6 +1963,16 @@ B<Example:>
     <ul><mt:Categories>
         <li><$mt:CategoryLabel$> (<$mt:CategoryCommentCount$>)</li>
     </mt:Categories></ul>
+
+B<Attributes:>
+
+=over 4
+
+=item * top
+
+If true, will count only top-level comments
+
+=back
 
 =for tags categories, comments
 
@@ -1945,6 +2007,9 @@ sub _hdlr_category_comment_count {
             )
         }
     );
+    if ( $args->{top} ) {
+        $args[0]->{parent_id} = [ \'is NULL', 0 ];
+    }
     require MT::Comment;
     $count = scalar MT::Comment->count(@args);
     return $ctx->count_format( $count, $args );

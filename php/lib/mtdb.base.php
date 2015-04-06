@@ -2634,6 +2634,9 @@ abstract class MTDatabase {
         $where = "entry_status = 2
                   and comment_visible = 1
                   $blog_filter";
+        if (isset($args['top']) and $args['top'] == 1) {
+            $where .= " and (comment_parent_id is NULL or comment_parent_id = 0)";
+        }
         $join = array();
         $join['mt_entry'] =
             array(
@@ -2651,6 +2654,9 @@ abstract class MTDatabase {
         $where = "placement_category_id = $cat_id
               and entry_status=2
               and comment_visible=1";
+        if (isset($args['top']) and $args['top'] == 1) {
+            $where .= " and (comment_parent_id is NULL or comment_parent_id = 0)";
+        }
         $join['mt_entry'] =
              array(
                 'condition' => 'comment_entry_id = entry_id'
@@ -2926,12 +2932,15 @@ abstract class MTDatabase {
             $post_select_offset = $offset;
             $limit = 0; $offset = 0;
         }
+        if (isset($args['top']) and $args['top'] == 1)
+            $top_only = " and (comment_parent_id is NULL or comment_parent_id = 0)";
 
         if ($limit) $extras['limit'] = $limit;
         if ($offset) $extras['offset'] = $offset;
 
         $where = "
              comment_visible = 1
+             $top_only
              $entry_filter
              $blog_filter
              order by comment_created_on $query_order";

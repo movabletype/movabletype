@@ -1168,6 +1168,18 @@ sub set_status_by_text {
     }
 }
 
+# Reset parent_id of child comments after removing parent comment.
+__PACKAGE__->add_trigger( 'post_remove', \&_update_parent_id );
+
+sub _update_parent_id {
+    my $comment = shift;
+    my @children = MT::Comment->load( { parent_id => $comment->id } );
+    for my $c (@children) {
+        $c->parent_id(undef);
+        $c->save;
+    }
+}
+
 1;
 __END__
 
