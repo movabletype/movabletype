@@ -1032,15 +1032,16 @@ It\'s a hard rain\'s a-gonna fall',
             }
         );
         $cmt->id(16);
-        $cmt->save() or die "Couldn't save comment record 16: " . $cmt->errstr;
+        $cmt->save()
+            or die "Couldn't save comment record 16: " . $cmt->errstr;
 
         $cmt->id(17);
         $cmt->visible(0);
         $cmt->text('Comment for entry 24, moderated');
         $cmt->author('JD17');
         $cmt->created_on('20040812182800');
-        $cmt->save() or die "Couldn't save comment record 17: " . $cmt->errstr;
-
+        $cmt->save()
+            or die "Couldn't save comment record 17: " . $cmt->errstr;
     }
 
     require MT::Template;
@@ -1350,6 +1351,8 @@ It\'s a hard rain\'s a-gonna fall',
     );
     $page->id(24);
     $page->tags('@about');
+    $page->comment_count(
+        MT::Comment->count( { entry_id => 24, visible => 1 } ) || 0 );
     $page->save() or die "Couldn't save page record 24: " . $page->errstr;
 
     MT->instance->rebuild( BlogId => 1, );
