@@ -1,4 +1,4 @@
-box: masiuchi/wercker-box-mt@0.0.4
+box: masiuchi/wercker-box-mt@0.0.8
 
 services:
   - wercker/mysql
