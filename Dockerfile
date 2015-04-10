@@ -43,7 +43,7 @@ RUN cpanm Archive::Tar
 
 RUN wget https://raw.githubusercontent.com/movabletype/movabletype/develop/t/cpanfile
 RUN cpanm --installdeps .
-RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage Clone
+RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage Clone Test::File
 
 # PHP
 RUN yum -y install php php-mysql php-gd
