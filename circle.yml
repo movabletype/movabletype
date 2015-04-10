@@ -17,6 +17,7 @@ test:
 
     - rm t/34-sqlite.t
     - rm t/90-podcoverage.t
+    - rm t/120-object-leak.t
 
   override:
     - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && export PERL5OPT=\"-MDevel::Cover=+ignore,^(/|t/|extlib/)\" && prove ./t ./plugins/*/t"
