@@ -41,10 +41,13 @@ RUN wget -O - https://cpanmin.us | perl - App::cpanminus
 # Update for installing SOAP::Lite. Cannot install by cpanm and old Archive::Tar.
 RUN cpanm Archive::Tar
 
+# Coveralls
+RUN cpanm Devel::Cover::Report::Coveralls
+RUN yum -y install git
+
 RUN wget https://raw.githubusercontent.com/movabletype/movabletype/develop/t/cpanfile
 RUN cpanm --installdeps .
 RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage Clone Test::File
-RUN cpanm Devel::Cover::Report::Coveralls
 
 # PHP
 RUN yum -y install php php-mysql php-gd

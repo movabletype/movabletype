@@ -19,4 +19,7 @@ test:
     - rm t/90-podcoverage.t
 
   override:
-    - docker run -v $PWD:/var/www/mt -w /var/www/mt -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && PERL5OPT=-MDevel::Cover prove ./t/00-compile.t && cover -report coveralls"
+    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && PERL5OPT=-MDevel::Cover prove ./t/00-compile.t"
+
+  post:
+    - docker run -v $PWD:/var/www/mt -w /var/www/mt -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN mt bash -c "cover -report coveralls"
