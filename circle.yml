@@ -1,6 +1,8 @@
 machine:
   services:
     - docker
+  environment:
+    PERL5OPT: -MDevel::Cover
 
 dependencies:
   cache_directories:
@@ -19,4 +21,7 @@ test:
     - rm t/90-podcoverage.t
 
   override:
-    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove ./t ./plugins/*/t && phpunit"
+    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove ./t/00-compile.t"
+
+  post:
+    - cover -report coveralls
