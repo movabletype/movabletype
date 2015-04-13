@@ -317,12 +317,31 @@ sub _send_mt_smtp {
         }
     }
 
-    $smtp->data();
-    $smtp->datasend($hdr);
-    $smtp->datasend("\n");
-    $smtp->datasend($body);
-    $smtp->dataend();
-    $smtp->quit;
+    my $_check_smtp_err;
+    {
+        $_check_smtp_err = sub {
+
+     # Net::SMTP::TLS is does'nt work "$smtp->status()" and "$smtp->message()"
+            return unless $smtp->can('status');
+
+            # status 4xx or 5xx is not send message.
+            die $smtp->message() if $smtp->status() =~ /^[45]$/;
+        };
+    }
+
+    eval {
+        $smtp->data();
+        $smtp->datasend($hdr);
+        $_check_smtp_err->();
+        $smtp->datasend("\n");
+        $smtp->datasend($body);
+        $_check_smtp_err->();
+        $smtp->dataend();
+        $smtp->quit;
+    };
+    if ($@) {
+        return $class->error($@);
+    }
     1;
 }
 
