@@ -8,7 +8,7 @@ package Net::SMTPS;
 
 use vars qw ( $VERSION @ISA );
 
-$VERSION = "0.03";
+$VERSION = "0.04";
 
 use base qw ( Net::SMTP );
 use Net::Cmd;  # import CMD_OK, CMD_MORE, ...
@@ -45,17 +45,24 @@ sub new {
   # eliminate IO::Socket::SSL from @ISA for multiple call of new.
   @ISA = grep { !/IO::Socket::SSL/ } @ISA;
 
+  my %_args = map { +"$_" => $arg{$_} } grep {! /^SSL/} keys %arg;
+
   my $h;
+  $_args{PeerPort} = $_args{Port} || 'smtp(25)';
+  $_args{Proto} = 'tcp';
+  $_args{Timeout} = defined $_args{Timeout} ? $_args{Timeout} : 120;
+
   foreach $h (@{ref($hosts) ? $hosts : [$hosts]}) {
-    $obj = $type->SUPER::new(
-      PeerAddr => ($host = $h),
-      PeerPort => $arg{Port} || 'smtp(25)',
-      LocalAddr => $arg{LocalAddr},
-      LocalPort => $arg{LocalPort},
-      Proto     => 'tcp',
-      Timeout   => defined $arg{Timeout}
-      ? $arg{Timeout}
-      : 120
+      $_args{PeerAddr} = ($host = $h);
+
+      #if ($_args{Debug}) {
+	#  foreach my $i (keys %_args) {
+	#     print STDERR "$type>>> arg $i: $_args{$i}\n";
+	#  }
+      #}
+
+      $obj = $type->SUPER::new(
+	  %_args
       )
       and last;
   }
