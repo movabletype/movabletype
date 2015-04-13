@@ -21,6 +21,7 @@ test:
     # These tests fails with Devel::Cover.
     - rm t/120-object-leak.t
     - rm t/28-xmlrpc-invalid-request.t
+    - rm t/28-xmlrpc.t
 
   override:
     - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && export PERL5OPT=\"-MDevel::Cover=+ignore,^(/|t/|extlib/)\" && prove ./t ./plugins/*/t"
