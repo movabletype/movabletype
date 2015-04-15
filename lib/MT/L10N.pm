@@ -11,6 +11,8 @@ use Locale::Maketext;
 @MT::L10N::ISA = qw( Locale::Maketext );
 @MT::L10N::Lexicon = ( _AUTO => 1, );
 
+our $PERMITTED_METHODS_REGEX = qr/^(?:lc|uc|quant|numerate|numf|sprintf)$/;
+
 sub language_name {
     my $tag = $_[0]->language_tag;
     require I18N::LangTags::List;
@@ -30,12 +32,26 @@ sub uc {
     uc( $_[0] );
 }
 
+# Restrict enabled methods in bracket.
+sub _compile {
+    my ( $lh, $string ) = @_;
+
+    if ( $string
+        && grep { $_ !~ m/$PERMITTED_METHODS_REGEX/ && $_ !~ m/^_-?\d+$/ }
+        ( $string =~ m/(?:^|[^~])(?:~~)*\[(\w+)(?:,|\])/gs ) )
+    {
+        die 'Invalid method in translating phrase: "' . $string . '"';
+    }
+
+    return $lh->SUPER::_compile($string);
+}
+
 1;
 __END__
 
 =head1 NAME
 
-MT::L10N
+MT::L10N - Localization support for MT
 
 =head1 METHODS
 
@@ -58,6 +74,10 @@ Returns a lowercased version of $str.
 =head2 uc($str)
 
 Returns a uppercased version of $str.
+
+=head2 $obj->_compile($str)
+
+Override Locale::Maketext::_compile. Non-permitted methods but underscore and numbers like "_1" in bracket notation are forbidden here. Permitted methods are defined by $PERMITTED_METHODS_REGEX.
 
 =head1 AUTHOR & COPYRIGHT
 
