@@ -70,6 +70,10 @@ sub fields {
                     = $site_url . ( $parent ? $parent->publish_path : '' );
                 $path .= '/' unless $path =~ m/\/$/;
 
+                # This path
+                my $basename = $obj->basename || '';
+                $basename =~ s/_/-/g;
+                $path .= $basename;
                 return $path;
             },
         },

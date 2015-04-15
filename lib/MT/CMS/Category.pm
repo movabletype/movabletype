@@ -291,16 +291,15 @@ sub bulk_update {
         $updates++;
     }
 
-    if ( 'category' eq $model ) {
-        for my $obj ( values %old_objects ) {
+    for my $obj ( values %old_objects ) {
+        if ( 'category' eq $model ) {
 
             # Remove published archive files.
             pre_delete( $app, $obj );
-
-            $obj->remove;
-            $app->run_callbacks( 'cms_post_delete.' . $model, $app, $obj );
-            $deletes++;
         }
+        $obj->remove;
+        $app->run_callbacks( 'cms_post_delete.' . $model, $app, $obj );
+        $deletes++;
     }
 
     $app->touch_blogs;
