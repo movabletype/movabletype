@@ -89,6 +89,14 @@ sub suite {
             result => sub {
                 $app->model('folder')->load(22);
             },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( $got->{path},
+                    'http://narnia.na/nana/download/nightly',
+                    'path is "http://narnia.na/nana/download/nightly"'
+                );
+            },
         },
 
         # create_folder - irregular tests

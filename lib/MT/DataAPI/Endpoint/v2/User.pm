@@ -93,8 +93,10 @@ sub recover_password {
 
     my ($user) = context_objects(@_) or return;
 
+    require MT::App::CMS;
+    my $cms = MT::App::CMS->new;
     my ( $rc, $res )
-        = MT::CMS::Tools::reset_password( $app, $user, $user->hint );
+        = MT::CMS::Tools::reset_password( $cms, $user, $user->hint );
 
     if ($rc) {
         return +{ status => 'success', message => $res };

@@ -159,7 +159,7 @@ sub _system_permissions_bulk_from_object {
         my $obj  = $objs->[$i];
         my $hash = $hashes->[$i];
 
-        next if ( !$user->is_superuser || $user->id == $obj->id );
+        next unless $user->is_superuser;
 
         my %user_perms;
 

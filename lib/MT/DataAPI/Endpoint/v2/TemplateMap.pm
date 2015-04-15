@@ -112,7 +112,7 @@ sub _is_archive_template {
     {
         return $app->error(
             $app->translate(
-                'Template "[_1]" is not archive template.',
+                'Template "[_1]" is not an archive template.',
                 $tmpl->name
             ),
             400

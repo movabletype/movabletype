@@ -100,7 +100,7 @@ sub save_filter {
             and not File::Spec->file_name_is_absolute($site_path) )
         {
             return $app->errtrans(
-                "The website root directory must be an absolute: [_1]",
+                "The website root directory must be an absolute path: [_1]",
                 $site_path );
         }
 

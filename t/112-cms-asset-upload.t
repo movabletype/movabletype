@@ -1,6 +1,9 @@
 #!/usr/bin/perl
+use strict;
+use warnings;
 
-#use strict;
+use File::Spec;
+
 use lib qw( t/lib extlib lib ../lib ../extlib );
 
 BEGIN {
@@ -40,7 +43,7 @@ sub _run_app_with_upload_file {
         }
     );
 
-    my $app = _run_app( $class, $params );
+    $app = _run_app( $class, $params );
 
     $app, $put_args;
 }
@@ -62,14 +65,17 @@ subtest 'Regular JPEG image' => sub {
     );
     my $out = delete $app->{__test_output};
 
-    is( $put_args->[1], 't/site/archives/test.jpg', 'Uploaded file path' );
+    is( $put_args->[1],
+        File::Spec->catfile(qw/ t site archives test.jpg /),
+        'Uploaded file path'
+    );
     my $created_asset
         = MT::Asset->load( { id => { '>' => $newest_asset->id } },
         { sort => [ { column => 'id', desc => 'DESC' } ], } );
     ok( $created_asset, 'An asset is created' );
     my $expected_values = {
         'file_ext'   => 'jpg',
-        'file_path'  => '%a/test.jpg',
+        'file_path'  => File::Spec->catfile(qw/ %a test.jpg /),
         'file_name'  => 'test.jpg',
         'url'        => '%a/test.jpg',
         'class'      => 'image',
@@ -110,18 +116,21 @@ subtest 'Regular JPEG image with wrong extension' => sub {
         'Reported that the extension was changed'
     );
 
-    is( $put_args->[1], 't/site/archives/wrong-extension-test.jpg', 'Uploaded file path' );
+    is( $put_args->[1],
+        File::Spec->catfile(qw/ t site archives wrong-extension-test.jpg /),
+        'Uploaded file path'
+    );
     my $created_asset
         = MT::Asset->load( { id => { '>' => $newest_asset->id } },
         { sort => [ { column => 'id', desc => 'DESC' } ], } );
     ok( $created_asset, 'An asset is created' );
     my $expected_values = {
-        'file_ext'   => 'jpg',
-        'file_path'  => '%a/wrong-extension-test.jpg',
-        'file_name'  => 'wrong-extension-test.jpg',
-        'url'        => '%a/wrong-extension-test.jpg',
-        'class'      => 'image',
-        'blog_id'    => '1',
+        'file_ext'  => 'jpg',
+        'file_path' => File::Spec->catfile(qw/ %a wrong-extension-test.jpg /),
+        'file_name' => 'wrong-extension-test.jpg',
+        'url'       => '%a/wrong-extension-test.jpg',
+        'class'     => 'image',
+        'blog_id'   => '1',
         'created_by' => '1'
     };
     my $result_values = do {
@@ -152,10 +161,13 @@ subtest 'Regular PDF file' => sub {
     );
     my $out = delete $app->{__test_output};
 
-    is( $put_args->[1], 't/site/archives/test.pdf', 'Uploaded file path' );
+    is( $put_args->[1],
+        File::Spec->catfile(qw/ t site archives test.pdf /),
+        'Uploaded file path'
+    );
     my $expected_values = {
         'file_ext'   => 'pdf',
-        'file_path'  => '%a/test.pdf',
+        'file_path'  => File::Spec->catfile(qw/ %a test.pdf /),
         'file_name'  => 'test.pdf',
         'url'        => '%a/test.pdf',
         'class'      => 'file',
