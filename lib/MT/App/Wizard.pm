@@ -89,9 +89,9 @@ sub init_request {
         $app->delete_param('test') if $app->param('test');
     }
 
-    # If mt-check.cgi exists, redirect to errro screen
+    # If mt-config.cgi exists, redirect to error screen
     my $cfg_exists = $app->is_config_exists();
-    if ( $cfg_exists && lc $step ne 'seed' && lc $mode ne 'retry' ) {
+    if ( $cfg_exists && lc $step ne 'seed' ) {
         my %param;
         $param{cfg_exists} = 1;
         $app->mode('pre_start');
@@ -247,8 +247,8 @@ sub init_core_registry {
                     'This module is needed if you would like to be able to use NetPBM as the image driver for MT.',
             },
             'Storable' => {
-                
-link => 'http://search.cpan.org/dist/Storable',
+
+                link => 'http://search.cpan.org/dist/Storable',
                 label =>
                     'This module is required by certain MT plugins available from third parties.',
             },
