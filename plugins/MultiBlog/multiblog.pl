@@ -163,8 +163,11 @@ sub add_trigger {
                     $row->{link}  = $obj->site_url;
                 }
             },
-            terms => { id  => [$blog_id], },
-            args  => { not => { id => 1 }, },
+            terms => {
+                id => { not => [$blog_id] },
+                class => [ 'website', 'blog' ]
+            },
+            args   => { not => { id => 1 }, },
             params => {
                 panel_type    => 'blog',
                 dialog_title  => $plugin->translate('MultiBlog'),
@@ -198,17 +201,6 @@ sub add_trigger {
                                 description => $plugin->translate(
                                     'Select to apply this trigger to all blogs in this website.'
                                 ),
-                                };
-                        }
-                        if ( $app->blog && $app->blog->is_blog ) {
-                            my $website = $app->blog->website;
-                            $count++;
-                            unshift @$loop,
-                                {
-                                id    => $website->id,
-                                label => $website->name,
-                                description => $website->description,
-                                link => $website->site_url,
                                 };
                         }
                         $count++;
