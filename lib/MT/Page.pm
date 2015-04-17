@@ -23,9 +23,9 @@ __PACKAGE__->install_properties(
 # Callbacks: clean list of changed columns to only
 # include versioned columns
 MT->add_callback( 'data_api_pre_save.' . 'page',
-    1, undef, \&MT::Revisable::mt_presave_obj );
+    9, undef, \&MT::Revisable::mt_presave_obj );
 MT->add_callback( 'api_pre_save.' . 'page',
-    1, undef, \&MT::Revisable::mt_presave_obj );
+    9, undef, \&MT::Revisable::mt_presave_obj );
 MT->add_callback( 'cms_pre_save.' . 'page',
     9, undef, \&MT::Revisable::mt_presave_obj );
 
