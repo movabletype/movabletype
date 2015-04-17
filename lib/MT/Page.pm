@@ -27,7 +27,7 @@ MT->add_callback( 'data_api_pre_save.' . 'page',
 MT->add_callback( 'api_pre_save.' . 'page',
     1, undef, \&MT::Revisable::mt_presave_obj );
 MT->add_callback( 'cms_pre_save.' . 'page',
-    1, undef, \&MT::Revisable::mt_presave_obj );
+    9, undef, \&MT::Revisable::mt_presave_obj );
 
 # Callbacks: object-level callbacks could not be
 # prioritized and thus caused problems with plugins
