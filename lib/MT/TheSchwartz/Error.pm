@@ -13,7 +13,7 @@ __PACKAGE__->install_properties(
     {   column_defs => {
             jobid  => 'integer not null',    # bigint unsigned not null
             funcid => 'integer not null',    # int unsigned not null default 0
-            message    => 'string(255) not null',  # varchar(255) not null
+            message    => 'text not null',  # text not null
             error_time => 'integer not null',      # integer unsigned not null
         },
         datasource => 'ts_error',
