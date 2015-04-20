@@ -167,7 +167,6 @@ sub add_trigger {
                 id => { not => [$blog_id] },
                 class => [ 'website', 'blog' ]
             },
-            args   => { not => { id => 1 }, },
             params => {
                 panel_type    => 'blog',
                 dialog_title  => $plugin->translate('MultiBlog'),
