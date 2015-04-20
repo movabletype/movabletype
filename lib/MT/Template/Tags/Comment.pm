@@ -13,6 +13,16 @@ use MT::Util qw( encode_html encode_js remove_html spam_protect encode_url );
 use MT::Promise qw( delay );
 use MT::I18N qw( first_n_text );
 
+=head1 NAME
+
+MT::Template::Tags::Comment - MT tags related with comment
+
+=head1 TAGS
+
+=cut
+
+###########################################################################
+
 sub _comment_follow {
     my ( $ctx, $arg ) = @_;
     my $c = $ctx->stash('comment');
