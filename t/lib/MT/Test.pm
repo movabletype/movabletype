@@ -193,9 +193,10 @@ sub init_testdb {
 
     #MT::Upgrade->register_class(['Foo', 'Bar']);
     MT->instance;
-    MT->registry->{object_types}->{foo} = 'Foo';
-    MT->registry->{object_types}->{bar} = 'Bar';
-    MT->registry->{object_types}->{baz} = 'Baz';
+    my $registry = MT->component('core')->registry;
+    $registry->{object_types}->{foo} = 'Foo';
+    $registry->{object_types}->{bar} = 'Bar';
+    $registry->{object_types}->{baz} = 'Baz';
 
     # Replace the standard seed_database/install_template functions
     # with stubs since we're not creating a full schema.
