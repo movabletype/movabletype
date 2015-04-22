@@ -1848,8 +1848,10 @@ sub post_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
 
-    my $sess_obj = $app->autosave_session_obj;
-    $sess_obj->remove if $sess_obj;
+    if ( $app->can('autosave_session_obj') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        $sess_obj->remove if $sess_obj;
+    }
 
     my $dynamic = 0;
     my $q       = $app->param;
