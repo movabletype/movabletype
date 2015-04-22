@@ -171,6 +171,10 @@ sub suite {
             complete => sub {
                 my $deleted = MT->model('entry')->load(1);
                 is( $deleted, undef, 'deleted' );
+
+                my $count = MT->model('log')->count( { level => 4 } ); # ERROR
+                is( $count, 0, 'No error occurs.' );
+                MT->model('log')->remove( { level => 4 } );
             },
         },
         {   path      => '/v1/sites/2/entries',
