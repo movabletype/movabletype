@@ -9,7 +9,7 @@ package MT::PSGI;
 use strict;
 use warnings;
 use parent qw(Plack::Component);
-use Plack::Util::Accessor qw(script application url _app);
+use Plack::Util::Accessor qw(script application _app);
 use MT;
 use MT::Component;
 use Carp;
