@@ -571,6 +571,8 @@ MT::Revisable::Local driver which saves versions within the Movable Type databas
 To change this, you would first need to create a driver that implements the
 following methods:
 
+=over
+
 =item * revision_pkg
 
 =item * revision_props
@@ -580,5 +582,7 @@ following methods:
 =item * save_revision
 
 =item * load_revision
+
+=back
 
 If some of the above methods are not applicable to your driver, simply return undef.
