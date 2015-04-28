@@ -1007,11 +1007,11 @@ use vars qw( @ISA %Lexicon );
 	'Except Userpic' => 'プロフィール画像を除外する',
 	'Author Status' => 'ユーザーの状態',
 	'Assets of this website' => 'ウェブサイトのアイテム',
-        'Missing File' => 'ファイルの存在有無',
-        'missing' => '存在しない',
-        'extant' => '存在する',
-        'Assets with Missing File' => 'ファイルが存在しないアイテム',
-        'Assets with Extant File' => 'ファイルが存在するアイテム',
+	'Missing File' => 'ファイルの存在有無',
+	'missing' => '存在しない',
+	'extant' => '存在する',
+	'Assets with Missing File' => 'ファイルが存在しないアイテム',
+	'Assets with Extant File' => 'ファイルが存在するアイテム',
 
 ## lib/MT/Asset/Audio.pm
 
