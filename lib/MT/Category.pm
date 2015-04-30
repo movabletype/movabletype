@@ -147,6 +147,12 @@ sub list_props {
             col     => 'created_by',
             display => 'none',
         },
+        blog_id => {
+            auto            => 1,
+            col             => 'blog_id',
+            display         => 'none',
+            filter_editable => 0,
+        },
     };
 }
 
