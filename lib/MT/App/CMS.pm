@@ -84,7 +84,7 @@ sub core_methods {
                 my $app = shift;
                 return 0 unless $app->param('dialog_view');
                 return 1;
-                }
+            }
         },
         'list_theme' => "${pkg}Theme::list",
 
@@ -770,7 +770,7 @@ sub core_content_actions {
                 permission  => 'export_addressbook',
                 condition   => sub {
                     MT->app && MT->app->param('blog_id');
-                    }
+                }
             },
         },
     };
@@ -824,7 +824,7 @@ sub core_list_actions {
                 condition => sub {
                     return 0 if $app->mode eq 'view';
                     return 1;
-                    }
+                }
             },
             'open_batch_editor' => {
                 label         => "Batch Edit Entries",
@@ -1163,7 +1163,7 @@ sub core_list_actions {
                             : 1
                         : $app->blog ? 1
                         :              0;
-                    }
+                }
             },
             'untrust_commenter' => {
                 label => "Untrust Commenter(s)",
@@ -1183,7 +1183,7 @@ sub core_list_actions {
                             : 1
                         : $app->blog ? 1
                         :              0;
-                    }
+                }
             },
             'ban_commenter' => {
                 label         => "Ban Commenter(s)",
@@ -1203,7 +1203,7 @@ sub core_list_actions {
                             : 1
                         : $app->blog ? 1
                         :              0;
-                    }
+                }
             },
             'unban_commenter' => {
                 label         => "Unban Commenter(s)",
@@ -1223,7 +1223,7 @@ sub core_list_actions {
                             : 1
                         : $app->blog ? 1
                         :              0;
-                    }
+                }
             },
             'publish' => {
                 label         => 'Publish',
@@ -1239,7 +1239,7 @@ sub core_list_actions {
                 condition => sub {
                     return 0 if $app->mode eq 'view';
                     return 1;
-                    }
+                }
             },
             'delete' => {
                 label      => 'Delete',
@@ -1469,7 +1469,7 @@ sub core_list_actions {
 
                     my $count = MT->model('website')->count();
                     $count > 1 ? 1 : 0;
-                    }
+                }
             },
             clone_blog => {
                 label         => "Clone Blog",
@@ -2324,7 +2324,7 @@ sub core_menus {
             condition => sub {
                 require MT::CMS::Search;
                 return MT::CMS::Search::can_search_replace($app);
-                }
+            }
         },
         'tools:plugins' => {
             label             => "Plugins",
@@ -5076,7 +5076,7 @@ sub pre_run {
         if ( $user && $user->is_superuser ) {
             $message->{detail}
                 = $app->translate(
-                'You should remove "SSLVerifyMode 1" in mt-config.cgi.' );
+                'You should remove "SSLVerifyNone 1" in mt-config.cgi.');
         }
         else {
             $message->{text}
