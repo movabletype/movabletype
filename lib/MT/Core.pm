@@ -1743,10 +1743,13 @@ BEGIN {
             'SMTPPort'                      => undef,
             'SMTPTimeout'                   => { default => 10 },
             'SMTPSSLVerifyNone'             => undef,
+            'SMTPSSLVersion'                => undef,
             'SMTPOptions'                   => { type => 'HASH' },
             'FTPSSSLVerifyNone'             => undef,
+            'FTPSSLVersion'                 => undef,
             'FTPSOptions'                   => { type => 'HASH' },
             'SSLVerifyNone'                 => undef,
+            'SSLVersion'                    => undef,
             'DebugEmailAddress'             => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>

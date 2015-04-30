@@ -1407,6 +1407,9 @@ sub is_valid_static_path {
     my $ssl_verify_peer = $path !~ m/^$cgihost/ ? 1 : 0;
     my %ssl_opts = (
         verify_hostname => $ssl_verify_peer,
+        $ssl_verify_peer
+        ? ( SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2' )
+        : (),
         ( $ssl_verify_peer && eval { require Mozilla::CA; 1 } )
         ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file() )
         : (),

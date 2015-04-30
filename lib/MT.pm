@@ -2678,7 +2678,8 @@ sub new_ua {
     else {
         $ua->ssl_opts(
             verify_hostname => 1,
-            SSL_ca_file     => Mozilla::CA::SSL_ca_file(),
+            SSL_vesion  => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
+            SSL_ca_file => Mozilla::CA::SSL_ca_file(),
         );
     }
     $ua->max_size($max_size) if ( defined $max_size ) && $ua->can('max_size');
