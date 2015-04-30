@@ -22,6 +22,7 @@ sub compile {
 
     $opt ||= { uncompiled => 1 };
     my $depth = $opt->{depth} ||= 0;
+    $opt->{old_depth} ||= 0;
 
     my $ids;
     my $classes;
@@ -165,34 +166,36 @@ sub compile {
         if ($hdlr) {
             ( $h, $is_container ) = $hdlr->values;
         }
-        if ( !$h ) {
 
-            # determine line #
-            my $pre_error = substr( $text, 0, $tag_start );
-            my @m         = $pre_error =~ m/\r?\n/g;
-            my $line      = scalar @m;
-            if ($depth) {
-                $opt->{error_line} = $line;
-                push @$errors,
-                    {
-                    message => MT->translate(
-                        "<[_1]> at line [_2] is unrecognized.",
-                        $prefix . $tag, "#"
-                    ),
-                    line => $line + 1
-                    };
-            }
-            else {
-                push @$errors,
-                    {
-                    message => MT->translate(
-                        "<[_1]> at line [_2] is unrecognized.",
-                        $prefix . $tag,
-                        $line + 1
-                    ),
-                    line => $line
-                    };
-            }
+        # determine line #
+        my $pre_line = substr( $text, 0, $tag_start );
+        my @m        = $pre_line =~ m/\r?\n/g;
+        my $line     = scalar @m;
+        $opt->{depth_line} ||= 0;
+        if($depth == 0){
+            $opt->{line} = $line+1;
+            $opt->{depth_line} = 0;
+        }elsif ( $depth > $opt->{old_depth} ) {
+            $opt->{line} += $line;
+            $opt->{depth_line} = ($opt->{line}-1);
+        }elsif($depth == $opt->{old_depth}){
+            $opt->{line} = $opt->{depth_line} + $line;
+        }else{
+            $opt->{line} = $line + 1;
+            $opt->{depth_line} = $line;
+        }
+        $opt->{old_depth} = $depth;
+
+        if ( !$h ) {
+            push @$errors,
+                {
+                message => MT->translate(
+                    "<[_1]> at line [_2] is unrecognized.",
+                    $prefix . $tag,
+                    $opt->{line}
+                ),
+                line => $opt->{line}
+                };
         }
         if ($is_container) {
             if ( $whole_tag !~ m|/>$| ) {
@@ -219,16 +222,6 @@ sub compile {
                         local $opt->{parent} = $rec;
                         $rec->childNodes(
                             $build->compile( $ctx, $sec, $opt ) );
-                        if (@$errors) {
-                            my $pre_error = substr( $text, 0, $sec_start );
-                            my @m         = $pre_error =~ m/\r?\n/g;
-                            my $line      = scalar @m;
-                            foreach (@$errors) {
-                                $_->{line} += $line;
-                                $_->{message} =~ s/#/$_->{line}/
-                                    unless $depth;
-                            }
-                        }
 
              # unless (defined $rec->[2]) {
              #     my $pre_error = substr($text, 0, $sec_start);
