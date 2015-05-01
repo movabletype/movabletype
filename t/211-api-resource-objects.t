@@ -13,6 +13,36 @@ BEGIN {
         or plan skip_all => 'YAML::Syck is not installed';
 }
 
+use File::Spec;
+use File::Copy;
+
+# Disable Commercial.pack temporarily.
+BEGIN {
+    my $commercialpack_config
+        = File::Spec->catfile(qw/ addons Commercial.pack config.yaml /);
+    my $commercialpack_config_rename
+        = File::Spec->catfile(
+        qw/ addons Commercial.pack config.yaml.disabled /);
+
+    if ( -f $commercialpack_config ) {
+        move( $commercialpack_config, $commercialpack_config_rename )
+            or plan skip_all => "$commercialpack_config cannot be moved.";
+    }
+}
+
+# Recover Commercial.pack.
+END {
+    my $commercialpack_config
+        = File::Spec->catfile(qw/ addons Commercial.pack config.yaml /);
+    my $commercialpack_config_rename
+        = File::Spec->catfile(
+        qw/ addons Commercial.pack config.yaml.disabled /);
+
+    if ( -f $commercialpack_config_rename ) {
+        move( $commercialpack_config_rename, $commercialpack_config );
+    }
+}
+
 use lib qw(lib extlib t/lib);
 
 eval(
@@ -29,7 +59,7 @@ use MT::DataAPI::Resource;
 
 my $app = MT::App::DataAPI->new;
 MT->set_instance($app);
-$app->user($app->model('author')->load(1));
+$app->user( $app->model('author')->load(1) );
 $app->current_api_version(1);
 
 if ( !$app->model('placement')->load( { entry_id => 6, category_id => 2 } ) )
@@ -72,8 +102,8 @@ sub from_object {
 
     for my $d (@$suite) {
         note( $d->{note} ) if $d->{note};
-        if (my $params = $d->{params}) {
-            $app->param($_ => $params->{$_}) for keys %$params;
+        if ( my $params = $d->{params} ) {
+            $app->param( $_ => $params->{$_} ) for keys %$params;
         }
 
         my $obj = do {
@@ -99,8 +129,8 @@ sub to_object {
 
     for my $d (@$suite) {
         note( $d->{note} ) if $d->{note};
-        if (my $params = $d->{params}) {
-            $app->param($_ => $params->{$_}) for keys %$params;
+        if ( my $params = $d->{params} ) {
+            $app->param( $_ => $params->{$_} ) for keys %$params;
         }
 
         my ( $original, $expected_values );
@@ -116,10 +146,7 @@ sub to_object {
         my $obj
             = MT::DataAPI::Resource->to_object( $model, $d->{from},
             $original );
-        my $values = {
-            %{ $obj->column_values },
-            %{ $obj->meta },
-        };
+        my $values = { %{ $obj->column_values }, %{ $obj->meta }, };
 
         if ( $d->{not_to} ) {
             foreach my $k ( keys %{ $d->{not_to} } ) {

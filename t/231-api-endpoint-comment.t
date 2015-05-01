@@ -278,7 +278,8 @@ sub suite {
                         'displayName' => 'v14GrUH 4 cheep'
                     },
                     'body' => 'alert(1);',
-                    'id'   => 1
+                    'id'   => 1,
+                    MT->component('commercial') ? ( customFields => [] ) : (),
                 };
             },
         },
@@ -305,7 +306,8 @@ sub suite {
                         'displayName' => 'v14GrUH 4 cheep'
                     },
                     'body' => '<p>alert(1);</p>',
-                    'id'   => 1
+                    'id'   => 1,
+                    MT->component('commercial') ? ( customFields => [] ) : (),
                 };
             },
         },
@@ -327,7 +329,8 @@ sub suite {
                         'displayName' => 'v14GrUH 4 cheep'
                     },
                     'body' => '<p><script>alert(1);</script></p>',
-                    'id'   => 1
+                    'id'   => 1,
+                    MT->component('commercial') ? ( customFields => [] ) : (),
                 };
             },
         },
@@ -357,7 +360,8 @@ sub suite {
                         'displayName' => 'v14GrUH 4 cheep'
                     },
                     'body' => 'alert(1);',
-                    'id'   => 1
+                    'id'   => 1,
+                    MT->component('commercial') ? ( customFields => [] ) : (),
                 };
             },
         },
@@ -387,7 +391,8 @@ sub suite {
                         'displayName' => 'v14GrUH 4 cheep'
                     },
                     'body' => '<p>alert(1);</p>',
-                    'id'   => 1
+                    'id'   => 1,
+                    MT->component('commercial') ? ( customFields => [] ) : (),
                 };
             },
         },
@@ -411,7 +416,8 @@ sub suite {
                         'displayName' => 'v14GrUH 4 cheep'
                     },
                     'body' => '<p><script>alert(1);</script></p>',
-                    'id'   => 1
+                    'id'   => 1,
+                    MT->component('commercial') ? ( customFields => [] ) : (),
                 };
             },
         },
