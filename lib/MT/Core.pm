@@ -1746,7 +1746,7 @@ BEGIN {
             'SMTPSSLVersion'                => undef,
             'SMTPOptions'                   => { type => 'HASH' },
             'FTPSSSLVerifyNone'             => undef,
-            'FTPSSLVersion'                 => undef,
+            'FTPSSSLVersion'                => undef,
             'FTPSOptions'                   => { type => 'HASH' },
             'SSLVerifyNone'                 => undef,
             'SSLVersion'                    => undef,

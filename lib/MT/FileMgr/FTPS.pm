@@ -25,7 +25,7 @@ sub init {
     $options{SSL_Client_Certificate} = {
         SSL_verify_mode => $verify,
         $verify ? ( SSL_version => MT->config->SSLVersion
-                || MT->config->FTPSSLVersion
+                || MT->config->FTPSSSLVersion
                 || 'SSLv23:!SSLv3:!SSLv2' ) : (),
         ( $verify && eval { require Mozilla::CA; 1 } )
         ? ( SSL_verifycn_name   => $_[0],
