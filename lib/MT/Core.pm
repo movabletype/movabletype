@@ -1757,6 +1757,14 @@ BEGIN {
             'SMTPPassword'      => undef,
             'SMTPPort'          => undef,
             'SMTPTimeout'       => { default => 10 },
+            'SMTPSSLVerifyNone' => undef,
+            'SMTPSSLVersion'    => undef,
+            'SMTPOptions'       => { type => 'HASH' },
+            'FTPSSSLVerifyNone' => undef,
+            'FTPSSSLVersion'    => undef,
+            'FTPSOptions'       => { type => 'HASH' },
+            'SSLVerifyNone'     => undef,
+            'SSLVersion'        => undef,
             'DebugEmailAddress' => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
@@ -2057,6 +2065,7 @@ BEGIN {
             'RebuildOffsetSeconds' => { default => 20 },
 
             # Enterprise.pack
+            'LDAPOptions'           => { type => 'HASH' },
             'LDAPAuthURL'           => { type => 'ARRAY' },
             'LDAPAuthBindDN'        => { type => 'ARRAY' },
             'LDAPAuthPassword'      => { type => 'ARRAY' },
