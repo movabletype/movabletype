@@ -114,7 +114,7 @@ sub download_theme {
     my $ua           = MT->new_ua( { max_size => 500_000 } );
 
     # Do not verify SSL certificate because accessing to oneself.
-    $ua->ssl_opts( SSL_verify_mode => 0 );
+    $ua->ssl_opts( verify_hostname => 0 );
 
     my $filemgr = file_mgr()
         or return;

@@ -131,7 +131,11 @@ sub theme_for_url {
     }
     elsif ($url) {
         my $user_agent = MT->new_ua;
-        my $response   = $user_agent->get($url);
+
+        # Do not verify SSL certificate because accessing to oneself.
+        $user_agent->ssl_opts( verify_hostname => 0 );
+
+        my $response = $user_agent->get($url);
         return if !$response->is_success();
         $theme{stylesheet} = $response->content;
 
