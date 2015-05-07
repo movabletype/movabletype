@@ -772,7 +772,7 @@ my @CORE_OPT = (
     ],
 
     [   'Mozilla::CA',
-        0, 0,
+        20141217, 0,
         translate(
             'This module is used for verification of SSL certificate.'
         )

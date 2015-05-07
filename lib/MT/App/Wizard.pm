@@ -342,6 +342,7 @@ sub init_core_registry {
                 link => 'http://search.cpan.org/dist/Mozilla-CA/',
                 label =>
                     'This module is used for verification of SSL certificate.',
+                version => 20141217,
             },
         },
         required_packages => {
