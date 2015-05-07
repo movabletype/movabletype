@@ -32,7 +32,10 @@ sub fetch_themes {
 # If we have a url then we're specifying a specific theme (css) or repo (html)
 # Pick up the file (html with <link>s or a css file with metadata)
     my $user_agent = MT->new_ua;
+
+    # Do not verify SSL certificate because accessing to oneself.
     $user_agent->ssl_opts( verify_hostname => 0 );
+
     my $request = HTTP::Request->new( GET => $url );
     my $response = $user_agent->request($request);
 
@@ -109,7 +112,10 @@ sub download_theme {
     my $support_path = MT->app->support_directory_path;
     my $themeroot    = File::Spec->catdir( $support_path, 'themes' );
     my $ua           = MT->new_ua( { max_size => 500_000 } );
-    $ua->ssl_opts( verify_hostname => 0, SSL_verify_mode => 0 );
+
+    # Do not verify SSL certificate because accessing to oneself.
+    $ua->ssl_opts( SSL_verify_mode => 0 );
+
     my $filemgr = file_mgr()
         or return;
 
