@@ -1287,24 +1287,25 @@ sub _get_basename {
             return $base;
         }
     }
+
     my $base_num = 1;
-    my $last_id;
+    my @last_ids;
     while (1) {
         my %args;
-        $args{start_val} = $last_id if defined $last_id;
+        $terms{id} = {not => \@last_ids} if scalar @last_ids;
         my $existing = $class->load(
             {   basename => { like => $base . '_%' },
                 %terms,
             },
             {   limit     => 1,
-                sort      => 'id',
+                sort      => 'basename',
                 direction => 'descend',
                 %args,
             }
         );
         last if !$existing;
-        $last_id = $existing->id;
-        if ( $existing->basename =~ /^$base\_([1-9]\d*)$/o ) {
+        push @last_ids, $existing->id;
+        if ( $existing->basename =~ /^$base\_([1-9]\d*)$/ ) {
             my $num = $1;
             next if !$num;
             $base_num = $num + 1;
