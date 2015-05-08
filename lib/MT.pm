@@ -39,7 +39,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.1.1',                '__PRODUCT_VERSION_ID__',
+        '6.1.1',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -1819,11 +1819,8 @@ sub ping {
         my $ua = MT->new_ua;
 
         # Get the hostname of MT in HTTPS.
-        my $base;
-        if ( MT->app ) {
-            $base = MT->app->base;
-            $base =~ s/^http:/https:/;
-        }
+        my $base = MT->config->CGIPath;
+        $base =~ s/^http:/https:/;
 
         ## Build query string to be sent on each ping.
         my @qs;
