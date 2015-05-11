@@ -579,7 +579,8 @@ sub compile_category_filter {
             }
             else {
                 my $str
-                    = join( '||', map "#" . $_->id, @{ $cats_dir{$token} } );
+                    = join( ' OR ', map "#" . $_->id,
+                    @{ $cats_dir{$token} } );
                 $new_expr .= "($str)";
             }
             $new_expr .= $e_space;
@@ -587,13 +588,22 @@ sub compile_category_filter {
         $cat_expr = $new_expr;
         @$cats    = values %cats_used;
 
+        # when $cat_expr not containing AND, OR or NOT,
+        # parentheses are invalid.
+        my $regexp;
+        if ( $cat_expr =~ /\b(AND|OR|NOT)\b/i ) {
+            $regexp = qr/#\d+|&&|\|\||!|\(|\)/;
+        }
+        else {
+            $regexp = qr/#\d+/;
+        }
+
         $cat_expr =~ s/\bAND\b/&&/gi;
         $cat_expr =~ s/\bOR\b/||/gi;
         $cat_expr =~ s/\bNOT\b/!/gi;
 
         # replace any other 'thing' with '(0)' since it's a
         # category that doesn't even exist.
-        my $regexp   = qr/#\d+|&&|\|\||!|\(|\)/;
         my @cat_expr = split /($regexp)/,
             $cat_expr;    # Split by valid tokens, which is kept.
         @cat_expr = grep { $_ ne '' } @cat_expr;    # Remove empty tokens.
