@@ -593,19 +593,18 @@ sub compile_category_filter {
 
         # replace any other 'thing' with '(0)' since it's a
         # category that doesn't even exist.
-        my $regexp   = qr/(\s+|#\d+|&&|\|\||!|\(|\))/;
-        my @cat_expr = split $regexp,
+        my $regexp   = qr/#\d+|&&|\|\||!|\(|\)/;
+        my @cat_expr = split /($regexp)/,
             $cat_expr;    # Split by valid tokens, which is kept.
-        @cat_expr = grep { $_ ne '' }
-            @cat_expr;    # Remove empty tokens around whitespace character.
-        @cat_expr = map { $_ =~ /^$regexp$/ ? $_ : '(0)' }
+        @cat_expr = grep { $_ ne '' } @cat_expr;    # Remove empty tokens.
+        @cat_expr = map { $_ =~ /^(\s+|$regexp)$/ ? $_ : '(0)' }
             @cat_expr;    # Replace invalid tokens with '(0)'.
         $cat_expr = join '', @cat_expr;
 
         # strip out all the 'ok' stuff. if anything is left, we have
         # some invalid data in our expression:
         my $test_expr = $cat_expr;
-        $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s+|#\d+//g;
+        $test_expr =~ s/\s+|\(0\)|$regexp//g;
         return undef if $test_expr;
     }
     else {
