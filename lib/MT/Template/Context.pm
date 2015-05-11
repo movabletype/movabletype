@@ -589,7 +589,7 @@ sub compile_category_filter {
         @$cats    = values %cats_used;
 
         # when $cat_expr not containing AND, OR or NOT,
-        # parentheses are invalid.
+        # parenthesis is invalid token.
         my $regexp;
         if ( $cat_expr =~ /\b(AND|OR|NOT)\b/i ) {
             $regexp = qr/#\d+|&&|\|\||!|\(|\)/;
@@ -605,7 +605,7 @@ sub compile_category_filter {
         # replace any other 'thing' with '(0)' since it's a
         # category that doesn't even exist.
         my @cat_expr = split /($regexp)/,
-            $cat_expr;    # Split by valid tokens, which is kept.
+            $cat_expr;    # Split by valid tokens, which are kept.
         @cat_expr = grep { $_ ne '' } @cat_expr;    # Remove empty tokens.
         @cat_expr = map { $_ =~ /^(\s+|$regexp)$/ ? $_ : '(0)' }
             @cat_expr;    # Replace invalid tokens with '(0)'.
