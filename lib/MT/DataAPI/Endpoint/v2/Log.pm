@@ -187,7 +187,10 @@ sub export {
         $encoding = $app->param('encoding');
         my %valid_encodings
             = map { $_->{name} => 1 } @{ const('ENCODING_NAMES') };
-        if ( !$valid_encodings{$encoding} ) {
+        if (  !$valid_encodings{$encoding}
+            || $encoding eq 'guess'
+            || $encoding eq 'WinLatin1' )
+        {
             return $app->error(
                 $app->translate( 'Invalid encoding: [_1]', $encoding ), 400 );
         }
@@ -195,12 +198,12 @@ sub export {
 
     # Change ExportEncoding
     my $current = $app->config->ExportEncoding;
-    $app->config->ExportEncoding( $encoding );
+    $app->config->ExportEncoding($encoding);
 
     MT::CMS::Log::export($app);
 
     # Revert ExportEncoding
-    $app->config->ExportEncoding( $current );
+    $app->config->ExportEncoding($current);
 }
 
 1;
