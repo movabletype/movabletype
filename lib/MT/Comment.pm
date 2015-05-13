@@ -1115,11 +1115,11 @@ sub to_hash {
 
 sub visible {
     my $comment = shift;
-    return $comment->SUPER::visible unless @_;
+    return $comment->column('visible') unless @_;
 
     ## Note transitions in visibility in the object, so that
     ## other methods can act appropriately.
-    my $was_visible = $comment->SUPER::visible || 0;
+    my $was_visible = $comment->column('visible') || 0;
     my $is_visible = shift || 0;
 
     my $vis_delta = 0;
@@ -1132,7 +1132,7 @@ sub visible {
     $comment->{__changed}{visibility} ||= 0;
     $comment->{__changed}{visibility} += $vis_delta;
 
-    return $comment->SUPER::visible($is_visible);
+    return $comment->column( 'visible', $is_visible );
 }
 
 sub parent {

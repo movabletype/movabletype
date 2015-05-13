@@ -854,19 +854,19 @@ sub cache_key {
 sub author_id {
     my $entry = shift;
     if ( scalar @_ ) {
-        $entry->{__orig_value}->{author_id} = $entry->SUPER::author_id
+        $entry->{__orig_value}->{author_id} = $entry->column('author_id')
             unless exists( $entry->{__orig_value}->{author_id} );
     }
-    return $entry->SUPER::author_id(@_);
+    return $entry->column( 'author_id', @_ );
 }
 
 sub status {
     my $entry = shift;
     if ( scalar @_ ) {
-        $entry->{__orig_value}->{status} = $entry->SUPER::status
+        $entry->{__orig_value}->{status} = $entry->column('status')
             unless exists( $entry->{__orig_value}->{status} );
     }
-    return $entry->SUPER::status(@_);
+    return $entry->column( 'status', @_ );
 }
 
 sub status_text {

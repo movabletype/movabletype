@@ -1377,9 +1377,10 @@ sub group_count {
 sub external_id {
     my $author = shift;
     if (@_) {
-        return $author->SUPER::external_id( $author->unpack_external_id(@_) );
+        return $author->column( 'external_id',
+            $author->unpack_external_id(@_) );
     }
-    my $value = $author->SUPER::external_id;
+    my $value = $author->column('external_id');
     $value = $author->pack_external_id($value) if $value;
 }
 
