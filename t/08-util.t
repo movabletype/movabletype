@@ -4,7 +4,7 @@ use utf8;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More;
 use MT;
-use MT::Test;
+use MT::Test qw(:db :data);
 use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     start_end_period week2ymd munge_comment
     rich_text_transform html_text_transform encode_html decode_html
@@ -751,4 +751,61 @@ SKIP: {
     is( canonicalize_path($path), '..\..\baz', 'relative parent path' );
 }
 
+{
+    # make_unique_basename()
+    my $not_unique_flg = 0;
+    my $entry1 = $mt->model('entry')->load(1);
+    $entry1->basename("1111");
+    $entry1->title("漢字1111");
+    $entry1->save();
+
+    my $itr = $mt->model('entry')->load_iter();
+    while ( my $entry = $itr->() ) {
+        $entry->basename("");
+        $entry->title("漢字1111");
+        $entry->save();
+        my $not_unique_entry = $mt->model('entry')->load({
+            id => { not => $entry->id },
+            basename => $entry->basename()
+        });
+        if(defined($not_unique_entry)){
+            $not_unique_flg = 1;
+        }
+    }
+    is($not_unique_flg, 0, 'make_unique_basename()');
+}
+{
+    my $not_unique_flg = 0;
+    for(my $i = 0; $i < 10; $i++){
+        my $entry = $mt->model('entry')->new();
+        $entry->set_values(
+            {   blog_id        => 1,
+                title          => "漢字2222",
+                text           => 'On a drizzly day last weekend,',
+                text_more      => '',
+                excerpt        => 'A story of a stroll.',
+                keywords       => 'keywords',
+                created_on     => '19780131074500',
+                authored_on    => '19780131074500',
+                modified_on    => '19780131074600',
+                authored_on    => '19780131074500',
+                author_id      => 3,
+                pinged_urls    => '',
+                allow_comments => 1,
+                allow_pings    => 1,
+                status         => MT::Entry::RELEASE(),
+            }
+        );
+        $entry->save();
+        my $not_unique_entry = $mt->model('entry')->load({
+            id => { not => $entry->id },
+            basename => $entry->basename()
+        });
+        if(defined($not_unique_entry)){
+            $not_unique_flg = 1;
+        }
+    }
+    is($not_unique_flg, 0, 'make_unique_basename()');
+
+}
 done_testing();
