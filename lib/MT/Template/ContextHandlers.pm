@@ -1556,6 +1556,8 @@ sub _hdlr_if {
         $tag =~ s/^MT:?//i;
         require Storable;
         my $local_args = Storable::dclone($args);
+        delete $local_args->{tag};
+        local $ctx->{'__stash'}{'tokens_else'} = undef;
         $value = $ctx->tag( $tag, $local_args, $cond );
         $ctx->{__stash}{vars}{__cond_tag__} = $tag;
     }

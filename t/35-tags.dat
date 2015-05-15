@@ -785,5 +785,6 @@
 { "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryCategories type=\"primary\"><MTCategoryID>:<MTCategoryCommentCount top=\"1\"></MTEntryCategories></MTEntries>", "e" : "1:3" }, #769
 { "r" : "1", "t" : "<MTEntries id=\"7\"><MTEntryCategories type=\"primary\"><MTCategoryID>:<MTCategoryCommentCount top=\"1\"></MTEntryCategories></MTEntries>", "e" : "3:0" }, #770
 { "r" : "1", "t" : "<MTBlogs blog_ids=\"1\"><MTBlogCommentCount top=\"1\"></MTBlogs>", "e" : "7" }, #771
-{ "r" : "1", "t" : "<MTWebsites site_ids=\"2\"><MTWebsiteCommentCount top=\"1\"></MTWebsites>", "e" : "1" } #772
+{ "r" : "1", "t" : "<MTWebsites site_ids=\"2\"><MTWebsiteCommentCount top=\"1\"></MTWebsites>", "e" : "1" }, #772
+{ "r" : "1", "t" : "<mt:If tag=\"Entries\">true<mt:Else>false</mt:If>", "e" : "true" } #773
 ]
