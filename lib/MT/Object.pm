@@ -1167,7 +1167,7 @@ sub modified_by {
     my ($user_id) = @_;
     if ($user_id) {
         if ( $obj->properties->{audit} ) {
-            my $res = $obj->SUPER::modified_by($user_id);
+            my $res = $obj->column( 'modified_by', $user_id );
 
             my $blog;
             if ( $obj->isa('MT::Blog') ) {
@@ -1183,7 +1183,7 @@ sub modified_by {
             return $res;
         }
     }
-    return $obj->SUPER::modified_by(@_);
+    return $obj->column( 'modified_by', @_ );
 }
 
 # D::OD uses Class::Trigger. Map the call_trigger calls to also invoke
