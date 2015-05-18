@@ -17,29 +17,44 @@ MT->new;
 
 my $ctx = MT::Template::Context->new();
 
-# There is no category.
-subtest 'case A' => sub {
-    test('(test');
-    test('&test');
+subtest 'bugid 111894' => sub {
+
+    # There is no category.
+    subtest 'case A' => sub {
+        test('(test');
+        test('&test');
+    };
+
+    MT::Test::Permission->make_category( blog_id => 1 )
+        or die 'Cannot create a category.';
+
+    # There is one category.
+    subtest 'case B' => sub {
+        test('(test');
+    };
+
+    subtest 'case C' => sub {
+        test('test)');
+        test('test!');
+        test('||test');
+    };
+
+    subtest 'case D' => sub {
+        test('#test');
+        test('&test');
+    };
+
 };
 
-MT::Test::Permission->make_category( blog_id => 1 )
-    or die 'Cannot create a category.';
+subtest 'normal test' => sub {
+    test('testA AND testB');
+    test('(testA OR testB) AND testC');
+    test('NOT test');
 
-# There is one category.
-subtest 'case B' => sub {
-    test('(test');
-};
-
-subtest 'case C' => sub {
-    test('test)');
-    test('test!');
-    test('||test');
-};
-
-subtest 'case D' => sub {
-    test('#test');
-    test('&test');
+    test("'testA AND testB'");
+    test('"testA AND testB"');
+    test('testA (testb)');
+    test('foo/bar');
 };
 
 done_testing;
