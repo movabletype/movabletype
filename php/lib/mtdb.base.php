@@ -884,10 +884,9 @@ abstract class MTDatabase {
                     $category_arg = '';
                     foreach ($cats as $cat) {
                         if ($category_arg != '')
-                            $category_arg .= '|| ';
+                            $category_arg .= ' OR ';
                         $category_arg .= '#' . $cat->category_id;
                     }
-                    $category_arg = '(' . $category_arg . ')';
                 }
             } else {
                 $not_clause = preg_match('/\bNOT\b/i', $category_arg);
