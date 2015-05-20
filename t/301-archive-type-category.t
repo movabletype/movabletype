@@ -24,6 +24,15 @@ my $publisher = MT::WeblogPublisher->new( start_time => time() + 10 );
 my $map       = $mt->model('templatemap')->new;
 $map->file_template('publish_empty_archive_test/%C/index.html');
 
+# Set template_id of template map.
+my $category_archive = MT->model('template')->load(
+    {   blog_id    => 1,
+        type       => 'archive',
+        identifier => 'category_entry_listing'
+    }
+);
+$map->template_id( $category_archive->id );
+
 my $blog = $mt->model('blog')->load(1);
 my @cats = $mt->model('category')->load( { blog_id => $blog->id } );
 my ($cat_with_entry)    = grep { $_->entry_count } @cats;
