@@ -408,8 +408,8 @@ sub _insert_or_replace {
         $orig_obj->$id_col($id);
     }
 
-    $driver->end_query($sth);
     _close_sth($sth);
+    $driver->end_query($sth);
 
     $obj->call_trigger('post_save', $orig_obj);
     $obj->call_trigger('post_insert', $orig_obj);
