@@ -47,14 +47,15 @@ my @suite = (
     {   label  => 'Only "IncludeBlogs=all" is specified',
         params => {
             IncludeBlogs => 'all',
-            search => $entry->title,
-            limit  => 20,
+            search       => $entry->title,
+            limit        => 20,
         },
         expected => qr/id="entry-@{[ $entry->id ]}"/,
     },
 );
 
 for my $data (@suite) {
+
     # We should run the fresh instance.
     local %MT::mt_inst;
 
@@ -71,6 +72,29 @@ for my $data (@suite) {
     note( $data->{label} );
     ok( $out, 'Request: ' . $params_str );
     like( $out, $data->{expected} );
+}
+
+{
+    note 'No error occurs when there is no blog (bugid:113059)';
+
+    MT->model('blog')->remove_all;
+    %MT::mt_inst = ();
+
+    my %params = ( search => 'a' );
+    my $app = _run_app(
+        'MT::App::Search',
+        {   __request_method => 'GET',
+            %params,
+        }
+    );
+    my $out = delete $app->{__test_output};
+
+    ok( $out, 'Request ' . JSON::to_json( \%params ) );
+    unlike(
+        $out,
+        qr/Cannot load blog/,
+        'The error that blog cannot be loaded does not occur'
+    );
 }
 
 done_testing();

@@ -672,7 +672,8 @@ sub first_blog_id {
         if (   $q->param('IncludeBlogs') eq ''
             || $q->param('IncludeBlogs') eq 'all' )
         {
-            my @blogs = $app->model('blog')->load( {}, { limit => 1 } );
+            my @blogs = $app->model('blog')
+                ->load( {}, { no_class => 1, limit => 1 } );
             $blog_id = @blogs ? $blogs[0]->id : undef;
         }
 
@@ -968,7 +969,8 @@ sub query_parse {
     my $return = { $terms && @$terms ? ( terms => $terms ) : () };
     if ( $joins && @$joins ) {
         my $args = {};
-#        _create_join_arg( $args, $joins );
+
+        #        _create_join_arg( $args, $joins );
         $args->{joins} = $joins;
         if ( $args && %$args ) {
             $return->{args} = $args;
@@ -1183,21 +1185,21 @@ sub _join_field {
     my ( $app, $term ) = @_;
 
     eval "require CustomFields::Field;";
-    return if $@; # No Commercial.Pack installed?
+    return if $@;    # No Commercial.Pack installed?
 
     my $query = $term->{term};
     if ( 'PHRASE' eq $term->{query} ) {
         $query =~ s/'/"/g;
     }
 
-    my ($basename, $val) = split ':', $query, 2;
+    my ( $basename, $val ) = split ':', $query, 2;
     return unless $basename && $val;
 
     require MT::Meta;
-    my $field_basename = 'field.'.$basename;
+    my $field_basename = 'field.' . $basename;
     my $class          = $app->model( $app->{searchparam}{Type} );
-    my $meta_rec       = MT::Meta->metadata_by_name( $class, $field_basename );
-    my $type_col       = $meta_rec->{type};
+    my $meta_rec = MT::Meta->metadata_by_name( $class, $field_basename );
+    my $type_col = $meta_rec->{type};
     return unless $type_col;
 
     my $lucene_struct = Lucene::QueryParser::parse_query($val);
@@ -1205,15 +1207,16 @@ sub _join_field {
         $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
     }
 
-    my ( $terms ) 
-        = $app->_query_parse_core( $lucene_struct,
-        { $type_col => 'like' },
+    my ($terms)
+        = $app->_query_parse_core( $lucene_struct, { $type_col => 'like' },
         {} );
     return unless $terms && @$terms;
 
     my $meta_class = $class->meta_pkg;
-    push @$terms, '-and', { entry_id => \'= entry_id', type => $field_basename };
-    $meta_class->join_on( undef, $terms, { unique => 1, alias => "$basename" } );
+    push @$terms, '-and',
+        { entry_id => \'= entry_id', type => $field_basename };
+    $meta_class->join_on( undef, $terms,
+        { unique => 1, alias => "$basename" } );
 }
 
 # throttling related methods

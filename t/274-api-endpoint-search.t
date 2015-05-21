@@ -261,6 +261,16 @@ sub suite {
                 };
             },
         },
+
+        {    # no blog. (bugid:113059)
+            path   => '/v2/search',
+            method => 'GET',
+            params => { search => 'a', },
+            setup  => sub {
+                MT->model('blog')->remove_all;
+                is( MT->model('blog')->count, 0, 'There is no blog.' );
+            },
+        },
     ];
 }
 
