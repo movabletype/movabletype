@@ -30,7 +30,7 @@ my $unpublished_page = MT::Test::Permission->make_page(
     status  => 1,
 );
 
-$app->config->allowComments(1);
+$app->config->allowComments( 1, 1 );
 
 my $suite = suite();
 test_data_api($suite);
@@ -719,12 +719,12 @@ sub suite {
 
         # Cannot comment when config directive "AllowComments" is false.
         {   path   => '/v1/sites/1/entries/1/comments',
-            setup  => sub { $app->config->AllowComments(0) },
+            setup  => sub { $app->config->AllowComments( 0, 1 ) },
             method => 'POST',
             params =>
                 { comment => { body => 'test-api-endopoint-comment', }, },
             code     => '409',
-            complete => sub { $app->config->AllowComments(1) },
+            complete => sub { $app->config->AllowComments( 1, 1 ) },
         },
     ];
 }
