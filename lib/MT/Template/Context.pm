@@ -698,6 +698,16 @@ sub compile_tag_filter {
     # Populate array ref (passed in by reference) of used tags
     @$tags = values %tags_used;
 
+    # when $cat_expr not containing AND, OR or NOT,
+    # parenthesis is invalid token.
+    my $regexp;
+    if ( $tag_expr =~ /\b(AND|OR|NOT)\b/i ) {
+        $regexp = qr/#\d+|&&|\|\||!|\(|\)/;
+    }
+    else {
+        $regexp = qr/#\d+/;
+    }
+
     # Replace logical constructs with their perl equivalents
     $tag_expr =~ s/\bAND\b/&&/gi;
     $tag_expr =~ s/\bOR\b/||/gi;
@@ -706,26 +716,18 @@ sub compile_tag_filter {
     # If any foreign/unrecognized sequences appear in our
     # expression (such as a non-extistent tag name),
     # replace that with '(0)' which will evaluate to false.
-    $tag_expr =~ s/
-        (
-            [ ]  | # space
-            \#\d+ | # #123
-            &&   | # literal &&
-            \|\| | # literal ||
-            !    | # literal !
-            \(   | # literal (
-            \)     # literal )
-        )  |
-        (
-            [^#&|!()]+  # some unknown set of characters
-        )
-    / $2 ? '(0)' : $1 /gex;
+    my @tag_expr = split /($regexp)/,
+        $tag_expr;    # Split by valid tokens, which are kept.
+    @tag_expr = grep { $_ ne '' } @tag_expr;    # Remove empty tokens.
+    @tag_expr = map { $_ =~ /^(\s+|$regexp)$/ ? $_ : '(0)' }
+        @tag_expr;    # Replace invalid tokens with '(0)'.
+    $tag_expr = join '', @tag_expr;
 
     # Syntax check on 'tag' argument
     # Strip out all the valid stuff. if anything is left, we have
     # some invalid data in our expression:
     my $test_expr = $tag_expr;
-    $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s|#\d+//g;
+    $test_expr =~ s/\s+|\(0\)|$regexp//g;
     return undef if ($test_expr);
 
     # Replace '#TagID' with a hash lookup function.
