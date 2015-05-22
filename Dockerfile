@@ -41,6 +41,10 @@ RUN wget -O - https://cpanmin.us | perl - App::cpanminus
 # Update for installing SOAP::Lite. Cannot install by cpanm and old Archive::Tar.
 RUN cpanm Archive::Tar
 
+# LWP::Protocol::https's test fails.
+# https://rt.cpan.org/Public/Bug/Display.html?id=104150
+RUN cpanm LWP::Protocol::https -n
+
 RUN wget https://raw.githubusercontent.com/movabletype/movabletype/develop/t/cpanfile
 RUN cpanm --installdeps .
 RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage Clone Test::File
