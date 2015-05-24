@@ -1808,16 +1808,31 @@ sub delete {
 
                 if ($iter) {
                     my @ot;
-                    while ( my $obj = $iter->() ) {
-                        push @ot, $obj->id;
+                    while ( my $ot = $iter->() ) {
+                        push @ot, $ot->id;
                     }
                     foreach (@ot) {
-                        my $obj = $ot_class->load($_);
-                        next unless $obj;
-                        $obj->remove
+                        my $ot = $ot_class->load($_);
+                        next unless $ot;
+                        $ot->remove
                             or return $app->errtrans(
                             'Removing tag failed: [_1]',
-                            $obj->errstr );
+                            $ot->errstr );
+
+                        # Clear cache
+                        my $linked_class = $app->model( $ot->object_datasource );
+                        my $linked = $linked_class->load( $ot->object_id );
+                        next unless $linked;
+
+                        $linked->{__tags} = [];
+                        delete $linked->{__save_tags};
+                        MT::Tag->clear_cache(
+                            datasource => $linked->datasource,
+                            ( $linked->blog_id ? ( blog_id => $linked->blog_id ) : () )
+                        );
+
+                        require MT::Memcached;
+                        MT::Memcached->instance->delete( $linked->tag_cache_key );
                     }
                 }
 
