@@ -1832,7 +1832,9 @@ sub delete {
                         );
 
                         require MT::Memcached;
-                        MT::Memcached->instance->delete( $linked->tag_cache_key );
+                        if ( MT::Memcached->is_available ) {
+                            MT::Memcached->instance->delete( $linked->tag_cache_key );
+                        }
                     }
                 }
 
