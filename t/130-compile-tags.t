@@ -60,5 +60,5 @@ subtest 'normal test' => sub {
 done_testing;
 
 sub test {
-    ok( $ctx->compile_tag_filter( $_[0] ), $_[0] );
+    ok( $ctx->compile_tag_filter( $_[0], [] ), $_[0] );
 }
