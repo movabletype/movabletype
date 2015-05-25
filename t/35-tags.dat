@@ -786,47 +786,47 @@
 { "r" : "1", "t" : "<MTEntries id=\"7\"><MTEntryCategories type=\"primary\"><MTCategoryID>:<MTCategoryCommentCount top=\"1\"></MTEntryCategories></MTEntries>", "e" : "3:0" }, #770
 { "r" : "1", "t" : "<MTBlogs blog_ids=\"1\"><MTBlogCommentCount top=\"1\"></MTBlogs>", "e" : "7" }, #771
 { "r" : "1", "t" : "<MTWebsites site_ids=\"2\"><MTWebsiteCommentCount top=\"1\"></MTWebsites>", "e" : "1" }, #772
-{ "r" : "1", "t" : "<MTEntries category='(test'></MTEntries>", "e" : "" }, #773
-{ "r" : "1", "t" : "<MTEntries category='&test'></MTEntries>", "e" : "" }, #774
-{ "r" : "1", "t" : "<MTEntries category='test)'></MTEntries>", "e" : "" }, #775
-{ "r" : "1", "t" : "<MTEntries category='test!'></MTEntries>", "e" : "" }, #776
-{ "r" : "1", "t" : "<MTEntries category='||test'></MTEntries>", "e" : "" }, #777
-{ "r" : "1", "t" : "<MTEntries category='#test'></MTEntries>", "e" : "" }, #778
-{ "r" : "1", "t" : "<MTEntries category='&test'></MTEntries>", "e" : "" }, #779
-{ "r" : "1", "t" : "<MTEntries category='testA AND testB'></MTEntries>", "e" : "" }, #780
-{ "r" : "1", "t" : "<MTEntries category='(testA OR testB) AND testC'></MTEntries>", "e" : "" }, #781
-{ "r" : "1", "t" : "<MTEntries category='NOT test'></MTEntries>", "e" : "" }, #782
-{ "r" : "1", "t" : "<MTEntries category=\"'testA AND testB'\"></MTEntries>", "e" : "" }, #783
-{ "r" : "1", "t" : "<MTEntries category='\"testA AND testB\"'></MTEntries>", "e" : "" }, #784
-{ "r" : "1", "t" : "<MTEntries category='testA (testb)'></MTEntries>", "e" : "" }, #785
-{ "r" : "1", "t" : "<MTEntries category='foo/bar'></MTEntries>", "e" : "" }, #786
+{ "r" : "1", "t" : "<MTEntries category='(test' glue=','><MTEntryID></MTEntries>", "e" : "" }, #773
+{ "r" : "1", "t" : "<MTEntries category='&test' glue=','><MTEntryID></MTEntries>", "e" : "" }, #774
+{ "r" : "1", "t" : "<MTEntries category='test)' glue=','><MTEntryID></MTEntries>", "e" : "" }, #775
+{ "r" : "1", "t" : "<MTEntries category='test!' glue=','><MTEntryID></MTEntries>", "e" : "" }, #776
+{ "r" : "1", "t" : "<MTEntries category='||test' glue=','><MTEntryID></MTEntries>", "e" : "" }, #777
+{ "r" : "1", "t" : "<MTEntries category='#test' glue=','><MTEntryID></MTEntries>", "e" : "" }, #778
+{ "r" : "1", "t" : "<MTEntries category='&test' glue=','><MTEntryID></MTEntries>", "e" : "" }, #779
+{ "r" : "1", "t" : "<MTEntries category='testA AND testB' glue=','><MTEntryID></MTEntries>", "e" : "" }, #780
+{ "r" : "1", "t" : "<MTEntries category='(testA OR testB) AND testC' glue=','><MTEntryID></MTEntries>", "e" : "" }, #781
+{ "r" : "1", "t" : "<MTEntries category='NOT test' glue=','><MTEntryID></MTEntries>", "e" : "1,8,7,6,5,4" }, #782
+{ "r" : "1", "t" : "<MTEntries category=\"'testA AND testB'\" glue=','><MTEntryID></MTEntries>", "e" : "" }, #783
+{ "r" : "1", "t" : "<MTEntries category='\"testA AND testB\"' glue=','><MTEntryID></MTEntries>", "e" : "" }, #784
+{ "r" : "1", "t" : "<MTEntries category='testA (testb)' glue=','><MTEntryID></MTEntries>", "e" : "" }, #785
+{ "r" : "1", "t" : "<MTEntries category='foo/bar' glue=','><MTEntryID></MTEntries>", "e" : "" }, #786
 { "r" : "1", "t" : "<mt:If tag=\"Entries\">true<mt:Else>false</mt:If>", "e" : "true" }, #787
-{ "r" : "1", "t" : "<MTEntries tag='(test'></MTEntries>", "e" : "" }, #788
-{ "r" : "1", "t" : "<MTEntries tag='&test'></MTEntries>", "e" : "" }, #789
-{ "r" : "1", "t" : "<MTEntries tag='test)'></MTEntries>", "e" : "" }, #790
-{ "r" : "1", "t" : "<MTEntries tag='test!'></MTEntries>", "e" : "" }, #791
-{ "r" : "1", "t" : "<MTEntries tag='||test'></MTEntries>", "e" : "" }, #792
-{ "r" : "1", "t" : "<MTEntries tag='#test'></MTEntries>", "e" : "" }, #793
-{ "r" : "1", "t" : "<MTEntries tag='&test'></MTEntries>", "e" : "" }, #794
-{ "r" : "1", "t" : "<MTEntries tag='testA AND testB'></MTEntries>", "e" : "" }, #795
-{ "r" : "1", "t" : "<MTEntries tag='(testA OR testB) AND testC'></MTEntries>", "e" : "" }, #796
-{ "r" : "1", "t" : "<MTEntries tag='NOT test'></MTEntries>", "e" : "" }, #797
-{ "r" : "1", "t" : "<MTEntries tag=\"'testA AND testB'\"></MTEntries>", "e" : "" }, #798
-{ "r" : "1", "t" : "<MTEntries tag='\"testA AND testB\"'></MTEntries>", "e" : "" }, #799
-{ "r" : "1", "t" : "<MTEntries tag='testA (testb)'></MTEntries>", "e" : "" }, #800
-{ "r" : "1", "t" : "<MTEntries tag='foo/bar'></MTEntries>", "e" : "" }, #801
-{ "r" : "1", "t" : "<MTAssets tag='(test'></MTAssets>", "e" : "" }, #802
-{ "r" : "1", "t" : "<MTAssets tag='&test'></MTAssets>", "e" : "" }, #803
-{ "r" : "1", "t" : "<MTAssets tag='test)'></MTAssets>", "e" : "" }, #804
-{ "r" : "1", "t" : "<MTAssets tag='test!'></MTAssets>", "e" : "" }, #805
-{ "r" : "1", "t" : "<MTAssets tag='||test'></MTAssets>", "e" : "" }, #806
-{ "r" : "1", "t" : "<MTAssets tag='#test'></MTAssets>", "e" : "" }, #807
-{ "r" : "1", "t" : "<MTAssets tag='&test'></MTAssets>", "e" : "" }, #808
-{ "r" : "1", "t" : "<MTAssets tag='testA AND testB'></MTAssets>", "e" : "" }, #809
-{ "r" : "1", "t" : "<MTAssets tag='(testA OR testB) AND testC'></MTAssets>", "e" : "" }, #810
-{ "r" : "1", "t" : "<MTAssets tag='NOT test'></MTAssets>", "e" : "" }, #811
-{ "r" : "1", "t" : "<MTAssets tag=\"'testA AND testB'\"></MTAssets>", "e" : "" }, #812
-{ "r" : "1", "t" : "<MTAssets tag='\"testA AND testB\"'></MTAssets>", "e" : "" }, #813
-{ "r" : "1", "t" : "<MTAssets tag='testA (testb)'></MTAssets>", "e" : "" }, #814
-{ "r" : "1", "t" : "<MTAssets tag='foo/bar'></MTAssets>", "e" : "" } #815
+{ "r" : "1", "t" : "<MTEntries tag='(test' glue=','><MTEntryID></MTEntries>", "e" : "" }, #788
+{ "r" : "1", "t" : "<MTEntries tag='&test' glue=','><MTEntryID></MTEntries>", "e" : "" }, #789
+{ "r" : "1", "t" : "<MTEntries tag='test)' glue=','><MTEntryID></MTEntries>", "e" : "" }, #790
+{ "r" : "1", "t" : "<MTEntries tag='test!' glue=','><MTEntryID></MTEntries>", "e" : "" }, #791
+{ "r" : "1", "t" : "<MTEntries tag='||test' glue=','><MTEntryID></MTEntries>", "e" : "" }, #792
+{ "r" : "1", "t" : "<MTEntries tag='#test' glue=','><MTEntryID></MTEntries>", "e" : "" }, #793
+{ "r" : "1", "t" : "<MTEntries tag='&test' glue=','><MTEntryID></MTEntries>", "e" : "" }, #794
+{ "r" : "1", "t" : "<MTEntries tag='testA AND testB' glue=','><MTEntryID></MTEntries>", "e" : "" }, #795
+{ "r" : "1", "t" : "<MTEntries tag='(testA OR testB) AND testC' glue=','><MTEntryID></MTEntries>", "e" : "" }, #796
+{ "r" : "1", "t" : "<MTEntries tag='NOT test' glue=','><MTEntryID></MTEntries>", "e" : "1,8,7,6,5,4" }, #797
+{ "r" : "1", "t" : "<MTEntries tag=\"'testA AND testB'\" glue=','><MTEntryID></MTEntries>", "e" : "" }, #798
+{ "r" : "1", "t" : "<MTEntries tag='\"testA AND testB\"' glue=','><MTEntryID></MTEntries>", "e" : "" }, #799
+{ "r" : "1", "t" : "<MTEntries tag='testA (testb)' glue=','><MTEntryID></MTEntries>", "e" : "" }, #800
+{ "r" : "1", "t" : "<MTEntries tag='foo/bar' glue=','><MTEntryID></MTEntries>", "e" : "" }, #801
+{ "r" : "1", "t" : "<MTAssets tag='(test'><MTAssetID>,</MTAssets>", "e" : "" }, #802
+{ "r" : "1", "t" : "<MTAssets tag='&test'><MTAssetID>,</MTAssets>", "e" : "" }, #803
+{ "r" : "1", "t" : "<MTAssets tag='test)'><MTAssetID>,</MTAssets>", "e" : "" }, #804
+{ "r" : "1", "t" : "<MTAssets tag='test!'><MTAssetID>,</MTAssets>", "e" : "" }, #805
+{ "r" : "1", "t" : "<MTAssets tag='||test'><MTAssetID>,</MTAssets>", "e" : "" }, #806
+{ "r" : "1", "t" : "<MTAssets tag='#test'><MTAssetID>,</MTAssets>", "e" : "" }, #807
+{ "r" : "1", "t" : "<MTAssets tag='&test'><MTAssetID>,</MTAssets>", "e" : "" }, #808
+{ "r" : "1", "t" : "<MTAssets tag='testA AND testB'><MTAssetID>,</MTAssets>", "e" : "" }, #809
+{ "r" : "1", "t" : "<MTAssets tag='(testA OR testB) AND testC'><MTAssetID>,</MTAssets>", "e" : "" }, #810
+{ "r" : "1", "t" : "<MTAssets tag='NOT test'><MTAssetID>,</MTAssets>", "e" : "1,2," }, #811
+{ "r" : "1", "t" : "<MTAssets tag=\"'testA AND testB'\"><MTAssetID>,</MTAssets>", "e" : "" }, #812
+{ "r" : "1", "t" : "<MTAssets tag='\"testA AND testB\"'><MTAssetID>,</MTAssets>", "e" : "" }, #813
+{ "r" : "1", "t" : "<MTAssets tag='testA (testb)'><MTAssetID>,</MTAssets>", "e" : "" }, #814
+{ "r" : "1", "t" : "<MTAssets tag='foo/bar'><MTAssetID>,</MTAssets>", "e" : "" } #815
 ]
