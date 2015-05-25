@@ -814,5 +814,19 @@
 { "r" : "1", "t" : "<MTEntries tag=\"'testA AND testB'\"></MTEntries>", "e" : "" }, #798
 { "r" : "1", "t" : "<MTEntries tag='\"testA AND testB\"'></MTEntries>", "e" : "" }, #799
 { "r" : "1", "t" : "<MTEntries tag='testA (testb)'></MTEntries>", "e" : "" }, #800
-{ "r" : "1", "t" : "<MTEntries tag='foo/bar'></MTEntries>", "e" : "" } #801
+{ "r" : "1", "t" : "<MTEntries tag='foo/bar'></MTEntries>", "e" : "" }, #801
+{ "r" : "1", "t" : "<MTAssets tag='(test'></MTAssets>", "e" : "" }, #802
+{ "r" : "1", "t" : "<MTAssets tag='&test'></MTAssets>", "e" : "" }, #803
+{ "r" : "1", "t" : "<MTAssets tag='test)'></MTAssets>", "e" : "" }, #804
+{ "r" : "1", "t" : "<MTAssets tag='test!'></MTAssets>", "e" : "" }, #805
+{ "r" : "1", "t" : "<MTAssets tag='||test'></MTAssets>", "e" : "" }, #806
+{ "r" : "1", "t" : "<MTAssets tag='#test'></MTAssets>", "e" : "" }, #807
+{ "r" : "1", "t" : "<MTAssets tag='&test'></MTAssets>", "e" : "" }, #808
+{ "r" : "1", "t" : "<MTAssets tag='testA AND testB'></MTAssets>", "e" : "" }, #809
+{ "r" : "1", "t" : "<MTAssets tag='(testA OR testB) AND testC'></MTAssets>", "e" : "" }, #810
+{ "r" : "1", "t" : "<MTAssets tag='NOT test'></MTAssets>", "e" : "" }, #811
+{ "r" : "1", "t" : "<MTAssets tag=\"'testA AND testB'\"></MTAssets>", "e" : "" }, #812
+{ "r" : "1", "t" : "<MTAssets tag='\"testA AND testB\"'></MTAssets>", "e" : "" }, #813
+{ "r" : "1", "t" : "<MTAssets tag='testA (testb)'></MTAssets>", "e" : "" }, #814
+{ "r" : "1", "t" : "<MTAssets tag='foo/bar'></MTAssets>", "e" : "" } #815
 ]
