@@ -67,9 +67,14 @@ build:
          prove t/2[^01234]?-*.t t/3??-*.t
 
     - script:
+       name: test 00-99
+       code: |
+         prove t/??-*.t
+
+    - scrpit:
        name: test others
        code: |
-         prove t/??-*.t t/[^0-9]*.t
+         prove t/[^0-9]*.t
 
     - script:
        name: test plugins
