@@ -71,7 +71,7 @@ build:
        code: |
          prove t/??-*.t
 
-    - scrpit:
+    - script:
        name: test others
        code: |
          prove t/[^0-9]*.t
