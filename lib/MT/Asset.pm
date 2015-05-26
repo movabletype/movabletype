@@ -697,8 +697,9 @@ sub blog {
         && $asset->{__blog}
         && ( $asset->{__blog}->id == $blog_id );
     require MT::Blog;
-    return $asset->{__blog} = MT::Blog->load($blog_id)
+    $asset->{__blog} = MT::Blog->load($blog_id)
         or return $asset->error("Failed to load blog for file");
+    return $asset->{__blog};
 }
 
 # Returns a true/false response based on whether the active package
