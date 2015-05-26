@@ -953,7 +953,8 @@ sub query_parse {
         = $app->registry( $app->mode, 'types', $app->{searchparam}{Type} );
     my $filter_types = $reg->{'filter_types'};
     foreach my $type ( keys %$filter_types ) {
-        if ( my $filter = $app->param($type) ) {
+        my @filters = $app->param($type);
+        foreach my $filter ( @filters ) {
             if ( $filter =~ m/\s/ ) {
                 $filter = '"' . $filter . '"';
             }

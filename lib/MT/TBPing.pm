@@ -375,6 +375,12 @@ sub list_props {
             fields  => [qw(title excerpt source_url ip blog_name)],
             display => 'none',
         },
+        blog_id => {
+            auto            => 1,
+            col             => 'blog_id',
+            display         => 'none',
+            filter_editable => 0,
+        },
     };
 }
 

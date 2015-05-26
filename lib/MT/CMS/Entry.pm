@@ -2926,8 +2926,10 @@ sub post_save {
 sub post_delete {
     my ( $eh, $app, $obj ) = @_;
 
-    my $sess_obj = $app->autosave_session_obj;
-    $sess_obj->remove if $sess_obj;
+    if ( $app->can('autosave_session_obj') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        $sess_obj->remove if $sess_obj;
+    }
 
     $app->log(
         {   message => $app->translate(

@@ -160,6 +160,12 @@ sub suite {
                     }
                 );
             },
+            complete => sub {
+                my $count
+                    = $app->model('log')->count( { level => 4 } );    # ERROR
+                is( $count, 0, 'No error occurs.' );
+                $app->model('log')->remove( { level => 4 } );
+            },
         },
 
         # list_templates - irregular tests
@@ -497,6 +503,12 @@ sub suite {
             params => { template => { name => 'update-template', }, },
             result => sub {
                 $app->model('template')->load( $website_tmpl_module->id );
+            },
+            complete => sub {
+                my $count
+                    = $app->model('log')->count( { level => 4 } );    # ERROR
+                is( $count, 0, 'No error occurs.' );
+                $app->model('log')->remove( { level => 4 } );
             },
         },
 

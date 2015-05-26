@@ -42,6 +42,18 @@ sub suite {
                 };
             },
         },
+        {   path   => '/v2/search',
+            method => 'GET',
+            params => { tagSearch => 1 },
+            code   => 400,
+            result => sub {
+                +{  error => {
+                        code    => 400,
+                        message => 'A parameter "tag" is required.',
+                    },
+                };
+            },
+        },
 
         # search - normal tests
 
@@ -270,6 +282,13 @@ sub suite {
                 MT->model('blog')->remove_all;
                 is( MT->model('blog')->count, 0, 'There is no blog.' );
             },
+        },
+
+        # tagSearch=1.
+        {   path    => '/v2/search',
+            method  => 'GET',
+            params  => { tagSearch => 1, tag => 'tag' },
+            results => sub { +{ totalResults => 0, items => [] } },
         },
     ];
 }
