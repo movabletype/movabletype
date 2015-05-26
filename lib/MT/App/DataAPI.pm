@@ -1706,11 +1706,11 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to clone a template.', },
         },
-        {   id      => 'preview_template',
+        {   id      => 'preview_template_by_id',
             route   => '/sites/:site_id/templates/:template_id/preview',
             version => 2,
-            handler => "${pkg}v2::Template::preview",
-            verb    => 'GET',
+            handler => "${pkg}v2::Template::preview_by_id",
+            verb    => 'POST',
             error_codes =>
                 { 403 => 'Do not have permission to get template preview.', },
         },

@@ -266,7 +266,7 @@ sub clone {
     return +{ status => 'success' };
 }
 
-sub preview {
+sub preview_by_id {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $tmpl ) = context_objects(@_) or return;
@@ -283,6 +283,15 @@ sub preview {
         return $app->error(403);
     }
 
+    # Set JSON to Param
+    my $tmpl_json = $app->param('template');
+    my $tmpl_hash = $app->current_format->{unserialize}->($tmpl_json);
+    my $names = MT->model('template')->column_names;
+    foreach my $name ( @$names ) {
+        if ( exists $tmpl_hash->{$name} ) {
+            $app->param( $name, $tmpl_hash->{$name} );
+        }
+    }
     $app->param( 'id', $tmpl->id );
 
     my $preview_basename;
@@ -298,11 +307,12 @@ sub preview {
     require MT::CMS::Template;
     MT::CMS::Template::preview( $app );
 
+    $app->config('PreviewInNewWindow', $old);
+
     if ( $app->errstr ) {
         return $app->error( $app->errstr, 500 );
     }
 
-    $app->config('PreviewInNewWindow', $old);
 
     my $redirect_to = delete $app->{redirect}
         if $app->{redirect};
