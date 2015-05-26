@@ -57,6 +57,10 @@ if ( MT->model('formatted_text') ) {
     $formatted_text->save or die $formatted_text->errstr;
 }
 
+# Clear cache
+MT->model('entry')->driver->Disabled(1) if MT->model('entry')->driver->can('Disabled');
+MT->model('comment')->driver->Disabled(1) if MT->model('comment')->driver->can('Disabled');
+
 # Do tests
 $website->remove;
 is( MT->model('website')->load( $website->id ),

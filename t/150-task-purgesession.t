@@ -59,6 +59,9 @@ my $remembered = make_session(
 
 MT::Core::purge_session_records();
 
+# Clear cache.
+$session_class->driver->Disabled(1) if $session_class->driver->can('Disabled');
+
 ok( $session_class->load( $effective->id ),
     'An effective session record is not purged'
 );
