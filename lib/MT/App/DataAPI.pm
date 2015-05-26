@@ -1698,6 +1698,16 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to clone a template.', },
         },
+        {
+            id => 'preview_template',
+            route =>  '/sites/:site_id/templates/:template_id/preview',
+            version => 2,
+            handler => "${pkg}v2::Template::preview",
+            verb => 'GET',
+            error_codes => {
+                403 =>  'Do not have permission to get template preview.',
+            },
+        },
 
         # templatemap endpoints
         {   id      => 'list_templatemaps',
