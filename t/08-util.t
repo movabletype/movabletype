@@ -182,7 +182,7 @@ is( MT::Util::to_json( { 'foo' => 'ho1ge' } ), '{"foo":"ho1ge"}' );
 is( MT::Util::to_json( [ 'foo', 'bar', 'baz' ] ), '["foo","bar","baz"]' );
 is( MT::Util::to_json( [ 'foo', 1, 'bar', 2, 3, 4 ] ),
     '["foo",1,"bar",2,3,4]' );
-is( MT::Util::to_json( [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ] ),
+is( MT::Util::to_json( [ 'foo', 1, 'bar', { hoge => 1, moge => 'a' } ], { canonical => 1 } ),
     '["foo",1,"bar",{"hoge":1,"moge":"a"}]' );
 
 ### start_end_*
