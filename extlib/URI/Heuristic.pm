@@ -46,7 +46,7 @@ returns a C<URI> object.
 
 If the hostname portion of a URI does not contain any dots, then
 certain qualified guesses are made.  These guesses are governed by
-the following two environment variables:
+the following environment variables:
 
 =over 10
 
@@ -55,6 +55,12 @@ the following two environment variables:
 The two-letter country code (ISO 3166) for your location.  If
 the domain name of your host ends with two letters, then it is taken
 to be the default country. See also L<Locale::Country>.
+
+=item HTTP_ACCEPT_LANGUAGE, LC_ALL, LANG
+
+If COUNTRY is not set, these standard environment variables are
+examined and country (not language) information possibly found in them
+is used as the default country.
 
 =item URL_GUESS_PATTERN
 
@@ -81,13 +87,13 @@ modify it under the same terms as Perl itself.
 =cut
 
 use strict;
+use warnings;
 
-use vars qw(@EXPORT_OK $VERSION $MY_COUNTRY %LOCAL_GUESSING $DEBUG);
+use Exporter 'import';
+our @EXPORT_OK = qw(uf_uri uf_uristr uf_url uf_urlstr);
+our $VERSION = "4.20";
 
-require Exporter;
-*import = \&Exporter::import;
-@EXPORT_OK = qw(uf_uri uf_uristr uf_url uf_urlstr);
-$VERSION = "4.18";
+our ($MY_COUNTRY, $DEBUG);
 
 sub MY_COUNTRY() {
     for ($MY_COUNTRY) {
@@ -97,9 +103,22 @@ sub MY_COUNTRY() {
 	$_ = $ENV{COUNTRY};
 	return $_ if defined;
 
-	# Could use LANG, LC_ALL, etc at this point, but probably too
-	# much of a wild guess.  (Catalan != Canada, etc.)
-	#
+	# Try the country part of LC_ALL and LANG from environment
+	my @srcs = ($ENV{LC_ALL}, $ENV{LANG});
+	# ...and HTTP_ACCEPT_LANGUAGE before those if present
+	if (my $httplang = $ENV{HTTP_ACCEPT_LANGUAGE}) {
+	    # TODO: q-value processing/ordering
+	    for $httplang (split(/\s*,\s*/, $httplang)) {
+		if ($httplang =~ /^\s*([a-zA-Z]+)[_-]([a-zA-Z]{2})\s*$/) {
+		    unshift(@srcs, "${1}_${2}");
+		    last;
+		}
+	    }
+	}
+	for (@srcs) {
+	    next unless defined;
+	    return lc($1) if /^[a-zA-Z]+_([a-zA-Z]{2})(?:[.@]|$)/;
+	}
 
 	# Last bit of domain name.  This may access the network.
 	require Net::Domain;
@@ -112,14 +131,16 @@ sub MY_COUNTRY() {
     }
 }
 
-%LOCAL_GUESSING =
+our %LOCAL_GUESSING =
 (
  'us' => [qw(www.ACME.gov www.ACME.mil)],
- 'uk' => [qw(www.ACME.co.uk www.ACME.org.uk www.ACME.ac.uk)],
+ 'gb' => [qw(www.ACME.co.uk www.ACME.org.uk www.ACME.ac.uk)],
  'au' => [qw(www.ACME.com.au www.ACME.org.au www.ACME.edu.au)],
  'il' => [qw(www.ACME.co.il www.ACME.org.il www.ACME.net.il)],
  # send corrections and new entries to <gisle@aas.no>
 );
+# Backwards compatibility; uk != United Kingdom in ISO 3166
+$LOCAL_GUESSING{uk} = $LOCAL_GUESSING{gb};
 
 
 sub uf_uristr ($)
@@ -131,11 +152,11 @@ sub uf_uristr ($)
     s/^\s+//;
     s/\s+$//;
 
-    if (/^(www|web|home)\./) {
+    if (/^(www|web|home)[a-z0-9-]*(?:\.|$)/i) {
 	$_ = "http://$_";
 
-    } elsif (/^(ftp|gopher|news|wais|http|https)\./) {
-	$_ = "$1://$_";
+    } elsif (/^(ftp|gopher|news|wais|https|http)[a-z0-9-]*(?:\.|$)/i) {
+	$_ = lc($1) . "://$_";
 
     } elsif ($^O ne "MacOS" && 
 	    (m,^/,      ||          # absolute file name
@@ -158,6 +179,16 @@ sub uf_uristr ($)
     } elsif (!/^[a-zA-Z][a-zA-Z0-9.+\-]*:/) {      # no scheme specified
 	if (s/^([-\w]+(?:\.[-\w]+)*)([\/:\?\#]|$)/$2/) {
 	    my $host = $1;
+
+	    my $scheme = "http";
+	    if (/^:(\d+)\b/) {
+		# Some more or less well known ports
+		if ($1 =~ /^[56789]?443$/) {
+		    $scheme = "https";
+		} elsif ($1 eq "21") {
+		    $scheme = "ftp";
+		}
+	    }
 
 	    if ($host !~ /\./ && $host ne "localhost") {
 		my @guess;
@@ -192,7 +223,7 @@ sub uf_uristr ($)
 		    print STDERR "no\n" if $DEBUG;
 		}
 	    }
-	    $_ = "http://$host$_";
+	    $_ = "$scheme://$host$_";
 
 	} else {
 	    # pure junk, just return it unchanged...

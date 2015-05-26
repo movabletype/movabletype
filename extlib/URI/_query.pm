@@ -1,6 +1,8 @@
 package URI::_query;
 
 use strict;
+use warnings;
+
 use URI ();
 use URI::Escape qw(uri_unescape);
 
@@ -14,6 +16,7 @@ sub query
 	$$self = $1;
 	if (defined $q) {
 	    $q =~ s/([^$URI::uric])/ URI::Escape::escape_char($1)/ego;
+	    utf8::downgrade($q);
 	    $$self .= "?$q";
 	}
 	$$self .= $3;
@@ -87,6 +90,6 @@ sub query_keywords
 }
 
 # Some URI::URL compatibility stuff
-*equery = \&query;
+sub equery { goto &query }
 
 1;
