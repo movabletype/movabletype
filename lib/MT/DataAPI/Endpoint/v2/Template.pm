@@ -341,6 +341,76 @@ sub preview_by_id {
     };
 }
 
+sub preview {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site ) = context_objects(@_) or return;
+
+    # Permission check
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
+    return $app->error(403)
+        unless $perms || $app->user->is_superuser;
+    if ( $perms && !$perms->can_edit_templates ) {
+        return $app->error(403);
+    }
+
+    # Set JSON to Param
+    my $tmpl_json = $app->param('template');
+    my $tmpl_hash = $app->current_format->{unserialize}->($tmpl_json);
+    my $names = MT->model('template')->column_names;
+    foreach my $name ( @$names ) {
+        if ( exists $tmpl_hash->{$name} ) {
+            $app->param( $name, $tmpl_hash->{$name} );
+        }
+    }
+
+    my $preview_basename;
+    no warnings 'redefine';
+    local *MT::App::DataAPI::preview_object_basename = sub {
+        require MT::App::CMS;
+        $preview_basename = MT::App::CMS::preview_object_basename(@_);
+    };
+
+    my $old = $app->config('PreviewInNewWindow');
+    $app->config('PreviewInNewWindow', 1);
+
+    require MT::CMS::Template;
+    MT::CMS::Template::preview( $app );
+
+    $app->config('PreviewInNewWindow', $old);
+
+    if ( $app->errstr ) {
+        return $app->error( $app->errstr, 500 );
+    }
+
+
+    my $redirect_to = delete $app->{redirect}
+        if $app->{redirect};
+    if ( $redirect_to && !$app->param('raw') ) {
+        return +{
+            status => 'success',
+            preview => $redirect_to,
+        };
+    }
+
+    my $session_class = MT->model('session');
+    my $sess = $session_class->load({ id => $preview_basename });
+    return $app->error( $app->translate('Preview data not found.'), 404 )
+        unless $sess;
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    my $content = $fmgr->get_data($sess->name );
+
+    $fmgr->delete($sess->name);
+    $sess->remove;
+
+    return +{
+        status  => 'success',
+        preview => $content
+    };
+}
+
 1;
 
 __END__

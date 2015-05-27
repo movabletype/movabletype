@@ -1714,6 +1714,14 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to get template preview.', },
         },
+        {   id      => 'preview_template',
+            route   => '/sites/:site_id/templates/preview',
+            version => 2,
+            handler => "${pkg}v2::Template::preview",
+            verb    => 'POST',
+            error_codes =>
+                { 403 => 'Do not have permission to get template preview.', },
+        },
 
         # templatemap endpoints
         {   id      => 'list_templatemaps',
