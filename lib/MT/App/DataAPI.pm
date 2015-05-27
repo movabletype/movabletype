@@ -937,6 +937,14 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to preview entry.', },
         },
+        {   id      => 'preview_entry',
+            route   => '/sites/:site_id/entries/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Entry::preview",
+            error_codes =>
+                { 403 => 'Do not have permission to preview entry.', },
+        },
 
         # page endpoints
         {   id             => 'list_pages',

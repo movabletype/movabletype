@@ -585,6 +585,102 @@ sub preview_by_id {
     };
 }
 
+sub preview {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog ) = context_objects(@_)
+        or return;
+    my $author = $app->user;
+
+    # Create dummy new object
+    my $orig_entry = $app->model('entry')->new;
+    $orig_entry->set_values(
+        {   blog_id        => $blog->id,
+            author_id      => $author->id,
+            allow_comments => $blog->allow_comments_default,
+            allow_pings    => $blog->allow_pings_default,
+            convert_breaks => $blog->convert_paras,
+            status         => (
+                (          $app->can_do('publish_own_entry')
+                        || $app->can_do('publish_all_entry')
+                )
+                ? MT::Entry::RELEASE()
+                : MT::Entry::HOLD()
+            )
+        }
+    );
+    my $entry = $app->resource_object( 'entry', $orig_entry )
+        or return;
+    $entry->id(-1); # fake out things like MT::Taggable::__load_tags
+
+    # Update for preview
+    my $entry_json = $app->param('entry');
+    my $entry_hash = $app->current_format->{unserialize}->($entry_json);
+
+    my $names = $entry->column_names;
+    foreach my $name ( @$names ) {
+        if ( exists $entry_hash->{$name} ) {
+            $entry->$name( $entry_hash->{$name} );
+        }
+    }
+
+    if ( exists $entry_hash->{categories} ) {
+        my $cats_hash = $entry_hash->{categories};
+        $cats_hash = [$cats_hash] if ref $cats_hash ne 'ARRAY';
+
+        my @cat_ids = map { $_->{id} }
+            grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
+        my $cat_ids = join ',', @cat_ids;
+        $app->param('category_ids', $cat_ids);
+    }
+
+    my $preview_basename;
+    no warnings 'redefine';
+    local *MT::App::DataAPI::preview_object_basename = sub {
+        require MT::App::CMS;
+        $preview_basename = MT::App::CMS::preview_object_basename(@_);
+    };
+
+    my $old = $app->config('PreviewInNewWindow');
+    $app->config('PreviewInNewWindow', 1);
+
+    # Make preview file
+    require MT::CMS::Entry;
+    my $preview = MT::CMS::Entry::_build_entry_preview( $app, $entry );
+
+    $app->config('PreviewInNewWindow', $old);
+
+    if ( $app->errstr ) {
+        return $app->error( $app->errstr, 500 );
+    }
+
+    my $redirect_to = delete $app->{redirect}
+        if $app->{redirect};
+    if ( $redirect_to && !$app->param('raw') ) {
+        return +{
+            status => 'success',
+            preview => $redirect_to,
+        };
+    }
+
+    my $session_class = MT->model('session');
+    my $sess = $session_class->load({ id => $preview_basename });
+    return $app->error( $app->translate('Preview data not found.'), 404 )
+        unless $sess;
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    my $content = $fmgr->get_data($sess->name );
+
+    $fmgr->delete($sess->name);
+    $sess->remove;
+
+    return +{
+        status  => 'success',
+        preview => $content
+    };
+}
+
 1;
 
 __END__
