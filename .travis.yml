@@ -3,12 +3,6 @@ language: perl
 services:
   - memcached
 
-env:
-  matrix:
-    - TESTS="prove t/??-*.t t/[^0-9]*.t plugins/*/t"
-    - TESTS="prove t/1??-*.t"
-    - TESTS="prove t/2??-*.t t/3??-*.t && phpunit"
-
 before_install:
   # Use system Perl.
   - perlbrew switch-off
@@ -53,5 +47,5 @@ before_script:
   - rm t/90-podcoverage.t
 
 script:
-  - bash -c "${TESTS}"
+  - bash -c "prove t plugins/*/t && phpunit"
 
