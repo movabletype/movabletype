@@ -22,6 +22,15 @@ use MT;
 
 use Cwd qw( abs_path );
 
+# Speed-up tests on Windows.
+if ( $^O eq 'MSWin32' ) {
+    no warnings 'redefine';
+    require Net::SSLeay;
+    *Net::SSLeay::RAND_poll = sub () {1};
+    require MT::Util;
+    *MT::Util::check_fast_cgi = sub {0};
+}
+
 MT->add_callback( 'post_init', 1, undef, \&add_plugin_test_libs );
 
 sub add_plugin_test_libs {
