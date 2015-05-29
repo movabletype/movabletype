@@ -15,21 +15,9 @@ use MT::Lockout;
 
 $app->config( 'MailTransfer', 'debug', 1 );
 
-{
-    use MT::Mail;
-    no warnings 'redefine';
-    *MT::Mail::_send_mt_debug = sub {1};
-}
-
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
-
-{
-    use MT::Mail;
-    no warnings 'redefine';
-    *MT::Mail::_send_mt_debug = sub {1};
-}
 
 my $suite = suite();
 test_data_api($suite);

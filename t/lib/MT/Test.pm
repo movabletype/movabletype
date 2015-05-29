@@ -19,6 +19,7 @@ use File::Spec;
 use File::Temp qw( tempfile );
 use File::Basename;
 use MT;
+use MT::Mail;
 
 use Cwd qw( abs_path );
 
@@ -88,6 +89,9 @@ BEGIN {
         = sub { my ($a) = @_; $a ? CORE::time + $_[0] : CORE::time };
     *CORE::GLOBAL::sleep = sub { CORE::sleep };
 }
+
+# Suppress output when "MailTransfer debug"
+*MT::Mail::_send_mt_debug = sub {1};
 
 sub import {
     my $pkg = shift;
