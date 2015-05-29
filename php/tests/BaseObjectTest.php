@@ -23,7 +23,7 @@ class BaseObjectTest extends PHPUnit_Framework_TestCase {
     $author->Load();
     $this->assertTrue( isset( $author->id ) );
 
-    // protected variable call
+    // protected variable call (bugid:113105)
     require_once( "php/lib/class.mt_entry.php" );
     $entry = new Entry;
     $entry->Load();
