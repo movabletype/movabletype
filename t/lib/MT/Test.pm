@@ -91,7 +91,10 @@ BEGIN {
 }
 
 # Suppress output when "MailTransfer debug"
-*MT::Mail::_send_mt_debug = sub {1};
+{
+    no warnings 'redefine';
+    *MT::Mail::_send_mt_debug = sub {1};
+}
 
 sub import {
     my $pkg = shift;
