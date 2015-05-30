@@ -819,6 +819,122 @@ sub suite {
             },
         },
 
+        # preview_template_by_id
+        {    # Non-existent template.
+            path   => '/v2/sites/2/templates/500/preview',
+            method => 'POST',
+            params => {
+                template => {
+                    name => 'update-template',
+                    type => 'custom',
+                },
+            },
+            code => 404,
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/2/templates/' . $website_tmpl_module->id . '/preview',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/templates/' . $blog_index_tmpl->id . '/preview',
+            method => 'POST',
+            params => { template => { name => 'preview-template', }, },
+            restrictions => {
+                0 => [qw/ edit_templates administer_blog /],
+                1 => [qw/ edit_templates administer_blog /],
+            },
+            code  => 403,
+            error => 'Do not have permission to get template preview.',
+        },
+        {    # normal tests
+            path => '/v2/sites/1/templates/'
+                . $blog_index_tmpl->id
+                . '/preview',
+            params => {
+                template => { name => 'preview-template', text => 'template_body:<mt:BlogID>' },
+            },
+            method    => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json( $body );
+                is ( $obj->{status}, 'success', 'Preview Template make success' );
+            },
+        },
+        {    # normal tests - raw parameter
+            path => '/v2/sites/1/templates/'
+                . $blog_index_tmpl->id
+                . '/preview',
+            params => {
+                template => { name => 'preview-template', text => 'template_body:<mt:BlogID>' },
+                raw => '1',
+            },
+            method    => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json( $body );
+                is ( $obj->{status}, 'success', 'Preview Template make success' );
+            },
+        },
+
+        # preview_template
+        {    # Not logged in.
+            path      => '/v2/sites/2/templates/preview',
+            method    => 'POST',
+            params => { template => { name => 'preview-template', }, },
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # No permissions.
+            path   => '/v2/sites/1/templates/preview',
+            method => 'POST',
+            params => {
+                template => { name => 'preview-template', text => 'template_body:<mt:BlogID>' },
+            },
+            restrictions => {
+                0 => [qw/ edit_templates administer_blog /],
+                1 => [qw/ edit_templates administer_blog /],
+            },
+            code  => 403,
+            error => 'Do not have permission to get template preview.',
+        },
+        {    # normal tests
+            path => '/v2/sites/1/templates/preview',
+            params => {
+                template => {
+                    name => 'preview-template',
+                    text => 'template_body:<mt:BlogID>',
+                    type => 'index',
+                },
+            },
+            method    => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json( $body );
+                is ( $obj->{status}, 'success', 'Preview Template make success' );
+            },
+        },
+        {    # normal tests - raw parameter
+            path => '/v2/sites/1/templates/preview',
+            params => {
+                template => {
+                    name => 'preview-template',
+                    text => 'template_body:<mt:BlogID>',
+                    type => 'index',
+                },
+                raw => '1',
+            },
+            method    => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json( $body );
+                is ( $obj->{status}, 'success', 'Preview Template make success' );
+            },
+        },
+
     ];
 }
 
