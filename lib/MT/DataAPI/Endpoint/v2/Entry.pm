@@ -528,6 +528,17 @@ sub preview_by_id {
         }
     }
 
+    # Permission check
+    return $app->error(403)
+        unless $app->permissions->can_edit_entry( $entry, $app->user );
+
+    # Set authored_on as a parameter
+    my ( $yr, $mo, $dy, $hr, $mn, $sc ) = unpack( 'A4A2A2A2A2A2', $entry->authored_on );
+    my $authored_on_date = sprintf( "%04d-%02d-%02d", $yr, $mo, $dy );
+    my $authored_on_time = sprintf( "%02d:%02d:%02d", $hr, $mn, $sc );
+    $app->param('authored_on_date', $authored_on_date);
+    $app->param('authored_on_time', $authored_on_time);
+
     if ( exists $entry_hash->{categories} ) {
         my $cats_hash = $entry_hash->{categories};
         $cats_hash = [$cats_hash] if ref $cats_hash ne 'ARRAY';

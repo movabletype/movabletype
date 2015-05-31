@@ -827,6 +827,61 @@ __BODY__
             },
         },
 
+        # preview_entry_by_id
+        {    # Non-existent entry
+            path   => '/v2/sites/1/entries/500/preview',
+            method => 'POST',
+            params => {
+                entry => {
+                    title            => 'foo',
+                    text             => 'bar',
+                    status           => 'Draft',
+                },
+            },
+            code => 404,
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/entries/2/preview',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # normal tests
+            path => '/v2/sites/1/entries/2/preview',
+            params => {
+                entry => {
+                    title            => 'foo',
+                    status           => 'Draft',
+                    text             => 'bar',
+                    status           => 'Draft',
+                },
+            },
+            method    => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json( $body );
+                is ( $obj->{status}, 'success', 'Preview Entry make success' );
+            },
+        },
+        {    # normal tests - raw parameter
+            path => '/v2/sites/1/entries/2/preview',
+            params => {
+                entry => {
+                    title            => 'foo',
+                    text             => 'bar',
+                    status           => 'Draft',
+                },
+                raw => '1',
+            },
+            method    => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json( $body );
+                is ( $obj->{status}, 'success', 'Preview entry make success' );
+            },
+        },
+
     ];
 }
 
