@@ -1931,6 +1931,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid default_cat_id: [_1]' => '不正な規定のカテゴリーIDが指定されました: [_1]',
 	'An error occurred during the import process: [_1]. Please check your import file.' => 'インポートの途中でエラーが発生しました : [_1]。インポートファイルを確認してください。',
 	'Make sure that you remove the files that you imported from the \'import\' folder, so that if/when you run the import process again, those files will not be re-imported.' => '\'import\'ディレクトリからインポートしたファイルを削除することを忘れないでください。もう一度インポート機能を利用した場合に、同じファイルが再度インポートされてしまう可能性があります。',
+	'Preview data not found.' => 'プレビューするデータが存在しません。',
 
 ## lib/MT/DataAPI/Endpoint/v2/Folder.pm
 
@@ -4529,6 +4530,7 @@ use vars qw( @ISA %Lexicon );
 	'Sign out' => 'サインアウト',
 	'View Site' => 'サイトの表示',
 	'Search (q)' => '検索 (q)',
+	'Search [_1]' => '[_1]の検索',
 	'Create New' => '新規作成',
 	'Select an action' => 'アクションを選択',
 	'You have <strong>[quant,_1,message,messages]</strong> from the system.' => 'システムからのメッセージが[quant,_1,件,件]あります。',
@@ -5389,6 +5391,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/lib/Cloud/App.pm
 	'Your Movable Type will be automatically updated on [_1].' => 'ご利用中の Movable Type は、[_1] にアップデートが自動的に行われます。',
 	'New version of Movable Type has been released on [_1].' => 'Movable Type の新しいバージョンが [_1] にリリースされています。',
+	'Disk usage rate is [_1]%.' => 'ディスク使用量が[_1]%に達しています。',
+	'<a href="[_1]">Refresh cached disk usage rate data.</a>' => '<a href="[_1]">ディスク使用量を再取得する。</a>',
 	'An error occurred while reading version information.' => 'バージョン情報の取得に失敗しました。',
 
 ## addons/Cloud.pack/lib/Cloud/App/CMS.pm
@@ -5641,6 +5645,7 @@ use vars qw( @ISA %Lexicon );
 	'The systemObject "[_1]" is invalid.' => '不正なシステムオブジェクトです: [_1]',
 
 ## addons/Commercial.pack/lib/CustomFields/DataAPI/Endpoint/v2/Field.pm
+	'Invalid includeShared parameter provided: [_1]' => '無効なincludeSharedパラメータが指定されました: [_1]',
 
 ## addons/Commercial.pack/lib/CustomFields/Field.pm
 	'The template tag \'[_1]\' is already in use in the system level' => '[_1]というタグは既にシステムに存在します。',
@@ -6350,7 +6355,7 @@ use vars qw( @ISA %Lexicon );
 	'Synchronization of groups can not be performed without LDAPGroupIdAttribute and/or LDAPGroupNameAttribute being set.' => 'グループを同期するためにはLDAPGroupIdAttributeおよびLDAPGroupNameAttributeの設定が必須です。',
 	'Primary group members cannot be synchronized with Active Directory.' => 'Active Directory からプライマリグループのメンバーを同期できません。',
 	'Cannot synchronize LDAP groups members.' => 'LDAPのグループメンバーの同期に失敗しました。',
-	'User filter was not built: [_1]' => 'ユーザーフィルターを構成できません: [_1:',
+	'User filter was not built: [_1]' => 'ユーザーフィルターを構成できません: [_1]',
 	'LDAP groups synchronized with existing groups.' => '既存のグループがLDAPグループと同期されました。',
 	'Information about the following groups was modified:' => '次のグループの情報が更新されました: ',
 	'No LDAP group was found using the filter provided.' => '指定されたフィルタではLDAPグループが見つかりませんでした。',
@@ -6613,6 +6618,7 @@ use vars qw( @ISA %Lexicon );
 	'Updating MT::SyncSetting table...' => 'サーバー配信設定テーブルを更新しています...',
 	'Migrating settings of contents sync on website...' => 'ウェブサイトのサーバー配信の設定を移行しています...',
 	'Migrating settings of contents sync on blog...' => 'ブログのサーバー配信の設定を移行しています...',
+	'Re-creating job of contents sync...' => 'サーバー配信のジョブを再生成しています...',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
 	'Failed to remove sync list. (ID:\'[_1]\')' => '同期リスト (ID:[_1]) の削除に失敗しました。',
@@ -6655,6 +6661,9 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'FTPサーバー \'[_1]\' への接続中にエラーが発生しました: [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'FTPサーバーのカレントディレクトリが取得できませんでした。',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした',
+
+## addons/Sync.pack/lib/Sync/Upgrade.pm
+	'Removing all jobs of contents sync...' => '登録されているサーバー配信のジョブを削除しています...',
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'サーバー配信設定',
@@ -6934,7 +6943,6 @@ use vars qw( @ISA %Lexicon );
 	'Filters which you created from PC.' => 'PCで作成したフィルタが表示されます',
 
 ## plugins/SmartphoneOption/lib/Smartphone/CMS/Search.pm
-	'Search [_1]' => '[_1]の検索',
 
 ## plugins/SmartphoneOption/smartphone.yaml
 	'to [_1]' => 'to [_1]',
@@ -7037,7 +7045,6 @@ use vars qw( @ISA %Lexicon );
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager version 1.1; このプラグインは、古いバージョンのWidget ManagerのデータをMovable Typeのコアへ統合してアップグレードするために提供されています。アップグレード以外の機能はありません。最新のMovable Typeへアップグレードし終わった後は、このプラグインを削除してください。',
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
 	'Failed.' => '失敗',
-
 
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードが使用されます。[_2]のHTTPステータスが返されました。',
