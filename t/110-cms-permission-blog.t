@@ -628,7 +628,7 @@ subtest 'mode = list' => sub {
     ok( $out !~ m!redirect=1!i, "list by permitted user" );
 
     foreach my $blog_id ( $website->id, 0 ) {
-        diag 'blog_id: ' . $blog_id;
+        note 'blog_id: ' . $blog_id;
 
         $app = _run_app(
             'MT::App::CMS',

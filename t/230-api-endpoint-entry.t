@@ -414,6 +414,41 @@ __BODY__
                     { blog_id => 1, title => 'create-entry-with-markdown' } );
             },
         },
+        {    # Set format 0.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    format => '0',
+                    title  => 'create-entry-with-none',
+                    body   => <<'__BODY__',
+1. foo
+2. bar
+3. baz
+__BODY__
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                $app->model('entry')
+                    ->load(
+                    { blog_id => 1, title => 'create-entry-with-none' } );
+            },
+        },
 
         # update_entry - irregular tests.
         {    # Attach non-existent category

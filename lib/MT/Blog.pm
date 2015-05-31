@@ -271,6 +271,11 @@ sub list_props {
             display => 'none',
             base    => '__virtual.modified_on',
         },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( name archivePath )],
+            display => 'none',
+        },
     };
 }
 

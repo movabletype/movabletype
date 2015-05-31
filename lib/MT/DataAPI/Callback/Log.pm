@@ -37,7 +37,7 @@ sub save_filter {
     }
 
     if ( $obj->author_id && !MT->model('author')->load( $obj->author_id ) ) {
-        return $app->errtrans( 'author_id (ID:[_1] is invalid.',
+        return $app->errtrans( 'author_id (ID:[_1]) is invalid.',
             $obj->author_id );
     }
 

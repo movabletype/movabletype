@@ -143,7 +143,7 @@ jQuery(function($) {
             (clientId && clientId !== $('#ga_configured_client_id').val()) ||
             (clientSecret && clientSecret !== $('#ga_configured_client_secret').val())
         ) {
-            return window.confirm('<__trans phrase="Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?" encode_html="1">');
+            return window.confirm('<__trans phrase="Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?" escape="js">');
         }
     });
 

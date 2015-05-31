@@ -571,6 +571,41 @@ __BODY__
                 );
             },
         },
+        {    # Set format 0.
+            path   => '/v2/sites/1/pages',
+            method => 'POST',
+            params => {
+                page => {
+                    format => '0',
+                    title  => 'create-page-with-none',
+                    body   => <<'__BODY__',
+1. foo
+2. bar
+3. baz
+__BODY__
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.page',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.page',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                $app->model('page')
+                    ->load(
+                    { blog_id => 1, title => 'create-page-with-none' } );
+            },
+        },
 
         # update_page - irregular tests
         {    # Non-existent page.

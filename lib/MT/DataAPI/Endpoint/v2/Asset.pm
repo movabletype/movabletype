@@ -47,7 +47,7 @@ sub get_thumbnail {
     if ( !$asset->isa('MT::Asset::Image') ) {
         return $app->error(
             $app->translate(
-                'An asset does not support to generate thumbnail file.'),
+                'The asset does not support generating a thumbnail file.'),
             400
         );
     }
