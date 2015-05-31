@@ -57,6 +57,9 @@ sub create {
     save_object( $app, 'template', $new_tmpl )
         or return;
 
+    # Remove autosave object
+    remove_autosave_session_obj( $app, 'template');
+
     return $new_tmpl;
 }
 
@@ -74,6 +77,9 @@ sub update {
 
     save_object( $app, 'template', $new_tmpl )
         or return;
+
+    # Remove autosave object
+    remove_autosave_session_obj( $app, 'template', $new_tmpl->id );
 
     return $new_tmpl;
 }

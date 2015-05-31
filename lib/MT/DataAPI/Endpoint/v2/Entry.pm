@@ -128,6 +128,9 @@ sub create {
 
     $post_save->();
 
+    # Remove autosave object
+    remove_autosave_session_obj( $app, $new_entry->class );
+
     $new_entry;
 }
 
@@ -218,6 +221,9 @@ sub update {
     }
 
     $post_save->();
+
+    # Remove autosave object
+    remove_autosave_session_obj( $app, $new_entry->class, $new_entry->id );
 
     $new_entry;
 }
