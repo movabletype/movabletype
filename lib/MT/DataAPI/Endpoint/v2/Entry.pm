@@ -528,7 +528,7 @@ sub preview_by_id {
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
 
     my $names = $entry->column_names;
-    foreach my $name ( @$names ) {
+    foreach my $name (@$names) {
         if ( exists $entry_hash->{$name} ) {
             $entry->$name( $entry_hash->{$name} );
         }
@@ -539,11 +539,12 @@ sub preview_by_id {
         unless $app->permissions->can_edit_entry( $entry, $app->user );
 
     # Set authored_on as a parameter
-    my ( $yr, $mo, $dy, $hr, $mn, $sc ) = unpack( 'A4A2A2A2A2A2', $entry->authored_on );
+    my ( $yr, $mo, $dy, $hr, $mn, $sc )
+        = unpack( 'A4A2A2A2A2A2', $entry->authored_on );
     my $authored_on_date = sprintf( "%04d-%02d-%02d", $yr, $mo, $dy );
     my $authored_on_time = sprintf( "%02d:%02d:%02d", $hr, $mn, $sc );
-    $app->param('authored_on_date', $authored_on_date);
-    $app->param('authored_on_time', $authored_on_time);
+    $app->param( 'authored_on_date', $authored_on_date );
+    $app->param( 'authored_on_time', $authored_on_time );
 
     if ( exists $entry_hash->{categories} ) {
         my $cats_hash = $entry_hash->{categories};
@@ -552,7 +553,7 @@ sub preview_by_id {
         my @cat_ids = map { $_->{id} }
             grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
         my $cat_ids = join ',', @cat_ids;
-        $app->param('category_ids', $cat_ids);
+        $app->param( 'category_ids', $cat_ids );
     }
 
     my $preview_basename;
@@ -563,13 +564,13 @@ sub preview_by_id {
     };
 
     my $old = $app->config('PreviewInNewWindow');
-    $app->config('PreviewInNewWindow', 1);
+    $app->config( 'PreviewInNewWindow', 1 );
 
     # Make preview file
     require MT::CMS::Entry;
     my $preview = MT::CMS::Entry::_build_entry_preview( $app, $entry );
 
-    $app->config('PreviewInNewWindow', $old);
+    $app->config( 'PreviewInNewWindow', $old );
 
     if ( $app->errstr ) {
         return $app->error( $app->errstr, 500 );
@@ -579,21 +580,21 @@ sub preview_by_id {
         if $app->{redirect};
     if ( $redirect_to && !$app->param('raw') ) {
         return +{
-            status => 'success',
+            status  => 'success',
             preview => $redirect_to,
         };
     }
 
     my $session_class = MT->model('session');
-    my $sess = $session_class->load({ id => $preview_basename });
+    my $sess = $session_class->load( { id => $preview_basename } );
     return $app->error( $app->translate('Preview data not found.'), 404 )
         unless $sess;
 
     require MT::FileMgr;
-    my $fmgr = MT::FileMgr->new('Local');
-    my $content = $fmgr->get_data($sess->name );
+    my $fmgr    = MT::FileMgr->new('Local');
+    my $content = $fmgr->get_data( $sess->name );
 
-    $fmgr->delete($sess->name);
+    $fmgr->delete( $sess->name );
     $sess->remove;
 
     return +{
@@ -605,7 +606,7 @@ sub preview_by_id {
 sub preview {
     my ( $app, $endpoint ) = @_;
 
-    my ( $blog ) = context_objects(@_)
+    my ($blog) = context_objects(@_)
         or return;
     my $author = $app->user;
 
@@ -628,14 +629,14 @@ sub preview {
     );
     my $entry = $app->resource_object( 'entry', $orig_entry )
         or return;
-    $entry->id(-1); # fake out things like MT::Taggable::__load_tags
+    $entry->id(-1);    # fake out things like MT::Taggable::__load_tags
 
     # Update for preview
     my $entry_json = $app->param('entry');
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
 
     my $names = $entry->column_names;
-    foreach my $name ( @$names ) {
+    foreach my $name (@$names) {
         if ( exists $entry_hash->{$name} ) {
             $entry->$name( $entry_hash->{$name} );
         }
@@ -648,7 +649,7 @@ sub preview {
         my @cat_ids = map { $_->{id} }
             grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
         my $cat_ids = join ',', @cat_ids;
-        $app->param('category_ids', $cat_ids);
+        $app->param( 'category_ids', $cat_ids );
     }
 
     my $preview_basename;
@@ -659,13 +660,13 @@ sub preview {
     };
 
     my $old = $app->config('PreviewInNewWindow');
-    $app->config('PreviewInNewWindow', 1);
+    $app->config( 'PreviewInNewWindow', 1 );
 
     # Make preview file
     require MT::CMS::Entry;
     my $preview = MT::CMS::Entry::_build_entry_preview( $app, $entry );
 
-    $app->config('PreviewInNewWindow', $old);
+    $app->config( 'PreviewInNewWindow', $old );
 
     if ( $app->errstr ) {
         return $app->error( $app->errstr, 500 );
@@ -675,21 +676,21 @@ sub preview {
         if $app->{redirect};
     if ( $redirect_to && !$app->param('raw') ) {
         return +{
-            status => 'success',
+            status  => 'success',
             preview => $redirect_to,
         };
     }
 
     my $session_class = MT->model('session');
-    my $sess = $session_class->load({ id => $preview_basename });
+    my $sess = $session_class->load( { id => $preview_basename } );
     return $app->error( $app->translate('Preview data not found.'), 404 )
         unless $sess;
 
     require MT::FileMgr;
-    my $fmgr = MT::FileMgr->new('Local');
-    my $content = $fmgr->get_data($sess->name );
+    my $fmgr    = MT::FileMgr->new('Local');
+    my $content = $fmgr->get_data( $sess->name );
 
-    $fmgr->delete($sess->name);
+    $fmgr->delete( $sess->name );
     $sess->remove;
 
     return +{
