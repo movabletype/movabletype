@@ -634,8 +634,7 @@ sub _preview_common {
         return $app->error( $app->errstr, 500 );
     }
 
-    my $redirect_to = delete $app->{redirect}
-        if $app->{redirect};
+    my $redirect_to = delete $app->{redirect};
     if ( $redirect_to && !$app->param('raw') ) {
         return +{
             status  => 'success',
