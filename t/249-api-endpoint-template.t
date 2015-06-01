@@ -831,17 +831,35 @@ sub suite {
             },
             code => 404,
         },
+        {    # No resource.
+            path => sprintf( '/v2/sites/1/templates/%d/preview',
+                $blog_index_tmpl->id ),
+            method => 'POST',
+            code   => 400,
+            result => sub {
+                return +{
+                    error => {
+                        code    => 400,
+                        message => 'A resource "template" is required.',
+                    },
+                };
+            },
+        },
         {    # Not logged in.
-            path      => '/v2/sites/2/templates/' . $website_tmpl_module->id . '/preview',
+            path => '/v2/sites/2/templates/'
+                . $website_tmpl_module->id
+                . '/preview',
             method    => 'POST',
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/1/templates/' . $blog_index_tmpl->id . '/preview',
-            method => 'POST',
-            params => { template => { name => 'preview-template', }, },
+            path => '/v2/sites/1/templates/'
+                . $blog_index_tmpl->id
+                . '/preview',
+            method       => 'POST',
+            params       => { template => { name => 'preview-template', }, },
             restrictions => {
                 0 => [qw/ edit_templates administer_blog /],
                 1 => [qw/ edit_templates administer_blog /],
@@ -854,13 +872,17 @@ sub suite {
                 . $blog_index_tmpl->id
                 . '/preview',
             params => {
-                template => { name => 'preview-template', text => 'template_body:<mt:BlogID>' },
+                template => {
+                    name => 'preview-template',
+                    text => 'template_body:<mt:BlogID>'
+                },
             },
-            method    => 'POST',
+            method   => 'POST',
             complete => sub {
                 my ( $data, $body ) = @_;
-                my $obj = MT::Util::from_json( $body );
-                is ( $obj->{status}, 'success', 'Preview Template make success' );
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success',
+                    'Preview Template make success' );
             },
         },
         {    # normal tests - raw parameter
@@ -868,22 +890,39 @@ sub suite {
                 . $blog_index_tmpl->id
                 . '/preview',
             params => {
-                template => { name => 'preview-template', text => 'template_body:<mt:BlogID>' },
+                template => {
+                    name => 'preview-template',
+                    text => 'template_body:<mt:BlogID>'
+                },
                 raw => '1',
             },
-            method    => 'POST',
+            method   => 'POST',
             complete => sub {
                 my ( $data, $body ) = @_;
-                my $obj = MT::Util::from_json( $body );
-                is ( $obj->{status}, 'success', 'Preview Template make success' );
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success',
+                    'Preview Template make success' );
             },
         },
 
         # preview_template
+        {    # No resource.
+            path   => '/v2/sites/2/templates/preview',
+            method => 'POST',
+            code   => 400,
+            result => sub {
+                return +{
+                    error => {
+                        code    => 400,
+                        message => 'A resource "template" is required.',
+                    },
+                };
+            },
+        },
         {    # Not logged in.
             path      => '/v2/sites/2/templates/preview',
             method    => 'POST',
-            params => { template => { name => 'preview-template', }, },
+            params    => { template => { name => 'preview-template', }, },
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
@@ -892,7 +931,10 @@ sub suite {
             path   => '/v2/sites/1/templates/preview',
             method => 'POST',
             params => {
-                template => { name => 'preview-template', text => 'template_body:<mt:BlogID>' },
+                template => {
+                    name => 'preview-template',
+                    text => 'template_body:<mt:BlogID>'
+                },
             },
             restrictions => {
                 0 => [qw/ edit_templates administer_blog /],
@@ -902,7 +944,7 @@ sub suite {
             error => 'Do not have permission to get template preview.',
         },
         {    # normal tests
-            path => '/v2/sites/1/templates/preview',
+            path   => '/v2/sites/1/templates/preview',
             params => {
                 template => {
                     name => 'preview-template',
@@ -910,15 +952,16 @@ sub suite {
                     type => 'index',
                 },
             },
-            method    => 'POST',
+            method   => 'POST',
             complete => sub {
                 my ( $data, $body ) = @_;
-                my $obj = MT::Util::from_json( $body );
-                is ( $obj->{status}, 'success', 'Preview Template make success' );
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success',
+                    'Preview Template make success' );
             },
         },
         {    # normal tests - raw parameter
-            path => '/v2/sites/1/templates/preview',
+            path   => '/v2/sites/1/templates/preview',
             params => {
                 template => {
                     name => 'preview-template',
@@ -927,11 +970,12 @@ sub suite {
                 },
                 raw => '1',
             },
-            method    => 'POST',
+            method   => 'POST',
             complete => sub {
                 my ( $data, $body ) = @_;
-                my $obj = MT::Util::from_json( $body );
-                is ( $obj->{status}, 'success', 'Preview Template make success' );
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success',
+                    'Preview Template make success' );
             },
         },
 
