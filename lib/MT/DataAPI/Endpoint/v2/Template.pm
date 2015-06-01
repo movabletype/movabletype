@@ -300,7 +300,9 @@ sub preview {
     }
 
     # Set JSON to Param
-    my $tmpl_json = $app->param('template');
+    my $tmpl_json = $app->param('template')
+        or return $app->error(
+        $app->translate('A resource "template" is required.'), 400 );
     my $tmpl_hash = $app->current_format->{unserialize}->($tmpl_json);
     my $names     = MT->model('template')->column_names;
     foreach my $name (@$names) {

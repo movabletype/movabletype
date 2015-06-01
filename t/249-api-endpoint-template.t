@@ -831,6 +831,20 @@ sub suite {
             },
             code => 404,
         },
+        {    # No resource.
+            path => sprintf( '/v2/sites/1/templates/%d/preview',
+                $blog_index_tmpl->id ),
+            method => 'POST',
+            code   => 400,
+            result => sub {
+                return +{
+                    error => {
+                        code    => 400,
+                        message => 'A resource "template" is required.',
+                    },
+                };
+            },
+        },
         {    # Not logged in.
             path => '/v2/sites/2/templates/'
                 . $website_tmpl_module->id
@@ -892,6 +906,19 @@ sub suite {
         },
 
         # preview_template
+        {    # No resource.
+            path   => '/v2/sites/2/templates/preview',
+            method => 'POST',
+            code   => 400,
+            result => sub {
+                return +{
+                    error => {
+                        code    => 400,
+                        message => 'A resource "template" is required.',
+                    },
+                };
+            },
+        },
         {    # Not logged in.
             path      => '/v2/sites/2/templates/preview',
             method    => 'POST',
