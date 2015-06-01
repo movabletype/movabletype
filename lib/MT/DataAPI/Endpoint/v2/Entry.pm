@@ -524,7 +524,9 @@ sub preview_by_id {
         or return;
 
     # Update for preview
-    my $entry_json = $app->param('entry');
+    my $entry_json = $app->param('entry')
+        or return $app->error(
+        $app->translate('A resource "entry" is required.'), 400 );
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
 
     my $names = $entry->column_names;
