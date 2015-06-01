@@ -556,51 +556,7 @@ sub preview_by_id {
         $app->param( 'category_ids', $cat_ids );
     }
 
-    my $preview_basename;
-    no warnings 'redefine';
-    local *MT::App::DataAPI::preview_object_basename = sub {
-        require MT::App::CMS;
-        $preview_basename = MT::App::CMS::preview_object_basename(@_);
-    };
-
-    my $old = $app->config('PreviewInNewWindow');
-    $app->config( 'PreviewInNewWindow', 1 );
-
-    # Make preview file
-    require MT::CMS::Entry;
-    my $preview = MT::CMS::Entry::_build_entry_preview( $app, $entry );
-
-    $app->config( 'PreviewInNewWindow', $old );
-
-    if ( $app->errstr ) {
-        return $app->error( $app->errstr, 500 );
-    }
-
-    my $redirect_to = delete $app->{redirect}
-        if $app->{redirect};
-    if ( $redirect_to && !$app->param('raw') ) {
-        return +{
-            status  => 'success',
-            preview => $redirect_to,
-        };
-    }
-
-    my $session_class = MT->model('session');
-    my $sess = $session_class->load( { id => $preview_basename } );
-    return $app->error( $app->translate('Preview data not found.'), 404 )
-        unless $sess;
-
-    require MT::FileMgr;
-    my $fmgr    = MT::FileMgr->new('Local');
-    my $content = $fmgr->get_data( $sess->name );
-
-    $fmgr->delete( $sess->name );
-    $sess->remove;
-
-    return +{
-        status  => 'success',
-        preview => $content
-    };
+    return _preview_common( $app, $entry );
 }
 
 sub preview {
@@ -651,6 +607,12 @@ sub preview {
         my $cat_ids = join ',', @cat_ids;
         $app->param( 'category_ids', $cat_ids );
     }
+
+    return _preview_common( $app, $entry );
+}
+
+sub _preview_common {
+    my ( $app, $entry ) = @_;
 
     my $preview_basename;
     no warnings 'redefine';
