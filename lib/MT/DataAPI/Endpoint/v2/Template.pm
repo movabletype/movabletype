@@ -318,6 +318,10 @@ sub preview {
         $preview_basename = MT::App::CMS::preview_object_basename(@_);
     };
 
+    # TODO: PreviewInNewWindow cannot be changed
+    # when Cloud.pack is installed and this value is saved in database.
+    local $app->config->{__overwritable_keys}{previewinnewwindow};
+
     my $old = $app->config('PreviewInNewWindow');
     $app->config( 'PreviewInNewWindow', 1 );
 
