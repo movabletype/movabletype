@@ -57,5 +57,5 @@ before_script:
   - rm t/90-podcoverage.t
 
 script:
-  - bash -c "PERL_PERTURB_KEYS=0 prove t plugins/*/t && phpunit"
+  - bash -c "PERL_HASH_SEED=0 prove t plugins/*/t && phpunit"
 
