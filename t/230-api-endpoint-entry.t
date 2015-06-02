@@ -827,6 +827,132 @@ __BODY__
             },
         },
 
+        # preview_entry_by_id
+        {    # Non-existent entry
+            path   => '/v2/sites/1/entries/500/preview',
+            method => 'POST',
+            params => {
+                entry => {
+                    title  => 'foo',
+                    text   => 'bar',
+                    status => 'Draft',
+                },
+            },
+            code => 404,
+        },
+        {    # No resource.
+            path     => '/v2/sites/1/entries/2/preview',
+            method   => 'POST',
+            code     => 400,
+            resource => sub {
+                return +{
+                    error => {
+                        code    => 400,
+                        message => 'A resource "entry" is required.',
+                    },
+                };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/entries/2/preview',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # normal tests
+            path   => '/v2/sites/1/entries/2/preview',
+            params => {
+                entry => {
+                    title  => 'foo',
+                    status => 'Draft',
+                    text   => 'bar',
+                },
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview Entry make success' );
+            },
+        },
+        {    # normal tests - raw parameter
+            path   => '/v2/sites/1/entries/2/preview',
+            params => {
+                entry => {
+                    title  => 'foo',
+                    text   => 'bar',
+                    status => 'Draft',
+                },
+                raw => '1',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview entry make success' );
+            },
+        },
+
+        # preview_entry
+        {    # No resource.
+            path     => '/v2/sites/1/entries/preview',
+            method   => 'POST',
+            code     => 400,
+            resource => sub {
+                return +{
+                    error => {
+                        code    => 400,
+                        message => 'A resource "entry" is required.',
+                    },
+                };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/entries/preview',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # normal tests
+            path   => '/v2/sites/1/entries/preview',
+            params => {
+                entry => {
+                    title  => 'foo',
+                    status => 'Draft',
+                    text   => 'bar',
+                },
+                authored_on_date => '2015-01-01',
+                authored_on_time => '10:00:00',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview Entry make success' );
+            },
+        },
+        {    # normal tests - raw parameter
+            path   => '/v2/sites/1/entries/preview',
+            params => {
+                entry => {
+                    title  => 'foo',
+                    text   => 'bar',
+                    status => 'Draft',
+                },
+                raw              => '1',
+                authored_on_date => '2015-01-01',
+                authored_on_time => '10:00:00',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview entry make success' );
+            },
+        },
+
     ];
 }
 

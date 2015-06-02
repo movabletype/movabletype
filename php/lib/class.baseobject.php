@@ -99,6 +99,13 @@ abstract class BaseObject extends ADOdb_Active_Record
     }
 
     public function __isset( $name ){
+        if (is_null($this->_prefix))
+            return false;
+
+        $pattern = '/^' . $this->_prefix . "/i";
+        if (!preg_match($pattern, $name))
+            $name = $this->_prefix . $name;
+
         $value = $this->$name;
         return isset( $value );
     }

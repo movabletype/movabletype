@@ -929,6 +929,22 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to export entries.', },
         },
+        {   id      => 'preview_entry_by_id',
+            route   => '/sites/:site_id/entries/:entry_id/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Entry::preview_by_id",
+            error_codes =>
+                { 403 => 'Do not have permission to preview entry.', },
+        },
+        {   id      => 'preview_entry',
+            route   => '/sites/:site_id/entries/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Entry::preview",
+            error_codes =>
+                { 403 => 'Do not have permission to preview entry.', },
+        },
 
         # page endpoints
         {   id             => 'list_pages',
@@ -1697,6 +1713,22 @@ sub core_endpoints {
             handler => "${pkg}v2::Template::clone",
             error_codes =>
                 { 403 => 'Do not have permission to clone a template.', },
+        },
+        {   id      => 'preview_template_by_id',
+            route   => '/sites/:site_id/templates/:template_id/preview',
+            version => 2,
+            handler => "${pkg}v2::Template::preview_by_id",
+            verb    => 'POST',
+            error_codes =>
+                { 403 => 'Do not have permission to get template preview.', },
+        },
+        {   id      => 'preview_template',
+            route   => '/sites/:site_id/templates/preview',
+            version => 2,
+            handler => "${pkg}v2::Template::preview",
+            verb    => 'POST',
+            error_codes =>
+                { 403 => 'Do not have permission to get template preview.', },
         },
 
         # templatemap endpoints
