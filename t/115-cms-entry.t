@@ -8,6 +8,12 @@ BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 
+    eval 'use Test::Data qw( Array ); 1'
+        or plan skip_all => 'Test::Data is not installed';
+
+    eval 'use pQuery; 1'
+        or plan skip_all => 'pQuery is not installed';
+
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
@@ -175,20 +181,13 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        my $link_new
-            = $app->uri
-            . '?__mode=view&amp;_type=entry&amp;blog_id='
-            . $website->id;
-        $link_new = quotemeta $link_new;
-        like( $out, qr/$link_new/,
+
+        my @labels = _get_entries_menu_labels($out);
+        array_any_ok( 'New', @labels,
             '"Entries New" menu in website scope exists if admin' );
-        my $link_manage
-            = $app->uri
-            . '?__mode=list&amp;_type=entry&amp;blog_id='
-            . $website->id;
-        $link_manage = quotemeta $link_manage;
-        like( $out, qr/$link_manage/,
+        array_any_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope exists if admin' );
+
         my $fav_action_entry = 'fav-action-entry';
         like( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if admin' );
@@ -202,11 +201,14 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        like( $out, qr/$link_new/,
+
+        @labels = _get_entries_menu_labels($out);
+        array_any_ok( 'New', @labels,
             '"Entries New" menu in website scope exists if permitted user' );
-        like( $out, qr/$link_manage/,
+        array_any_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope exists if permitted user'
         );
+
         like( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if permitted user' );
 
@@ -219,12 +221,15 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/$link_new/,
-            '"Entries New" menu in website scope does not exist if other website'
+
+        @labels = _get_entries_menu_labels($out);
+        array_none_ok( 'New', @labels,
+            '"Entries New" menu and "Entries Manage" menu in website scope does not exist if other website'
         );
-        unlike( $out, qr/$link_manage/,
-            '"Entries Manage" menu in website scope does not exist if other'
+        array_none_ok( 'Manage', @labels,
+            '"Entries New" menu and "Entries Manage" menu in website scope does not exist if other website'
         );
+
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if other website' );
 
@@ -237,11 +242,14 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/$link_new/,
+
+        @labels = _get_entries_menu_labels($out);
+        array_none_ok( 'New', @labels,
             '"Entries New" menu in website scope does not exist if child blog'
         );
-        like( $out, qr/$link_manage/,
+        array_any_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope exists if child blog' );
+
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if child blog' );
 
@@ -254,12 +262,15 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/$link_new/,
+
+        @labels = _get_entries_menu_labels($out);
+        array_none_ok( 'New', @labels,
             '"Entries New" menu in website scope does not exist if other blog'
         );
-        unlike( $out, qr/$link_manage/,
+        array_none_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope does not exist if other blog'
         );
+
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if other blog' );
 
@@ -272,12 +283,15 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/$link_new/,
+
+        @labels = _get_entries_menu_labels($out);
+        array_none_ok( 'New', @labels,
             '"Entries New" menu in website scope does not exist if other permission'
         );
-        unlike( $out, qr/$link_manage/,
+        array_none_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope does not exist if other permission'
         );
+
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if other permission' );
 
@@ -825,3 +839,16 @@ subtest 'The cache of new entry check' => sub {
 };
 
 done_testing();
+
+sub _get_entries_menu_labels {
+    my $html = shift;
+
+    my @labels;
+    pQuery($html)->find('li#menu-entry > ul.sub-menu > li')->each(
+        sub {
+            push @labels, $_->find('span')->innerHTML;
+        }
+    );
+
+    return @labels;
+}

@@ -29,12 +29,14 @@ requires 'XML::Parser';
 ## recommends
 #requires 'Starlet';
 requires 'XML::LibXML';
+
 #requires 'Server::Starter';
 
 requires 'DBD::SQLite';
 requires 'Net::SFTP';
 requires 'HTTP::DAV';
 requires 'YAML::Syck';
+
 #requires 'Image::Magick';
 requires 'GD';
 requires 'IPC::Run';
@@ -47,6 +49,12 @@ requires 'Math::Pari';
 requires 'Cache::Memcached';
 requires 'Cache::Memcached::Fast';
 requires 'PHP::Serialization';
+
 #requires 'Term::Gnuplot';
+
+on 'test' => sub {
+    requires => 'pQuery';
+    requires => 'Test::Data';
+};
 
 ## % carton exec -- local/bin/start_server --port 8000 --pid-file=log/mt.pid -- plackup -s Starlet --max-workers=2 --access-log=log/access.log mt.psgi >& log/error.log &
