@@ -2231,7 +2231,7 @@ sub init_plugins {
             $pkg . 'save_filter.widget' => "${pfx}Widget::save_filter",
             $pkg . 'pre_save.widget' => '$Core::MT::CMS::Template::pre_save',
             $pkg
-                . 'post_save.widget' => '$Core::MT::CMS::Template::post:save',
+                . 'post_save.widget' => '$Core::MT::CMS::Template::post_save',
 
             # widgetset callbacks
             $pkg
@@ -2243,7 +2243,7 @@ sub init_plugins {
                 '$Core::MT::CMS::Template::pre_save',
             $pkg
                 . 'post_save.widgetset' =>
-                '$Core::MT::CMS::Template::post:save',
+                '$Core::MT::CMS::Template::post_save',
 
             # templatemap callbacks
             $pkg
