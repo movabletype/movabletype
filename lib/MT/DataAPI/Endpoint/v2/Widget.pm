@@ -51,7 +51,7 @@ sub list_for_widgetset {
     my ( $site, $ws ) = _retrieve_site_and_widgetset($app) or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
-        'template', $ws )
+        'template', $ws->id, obj_promise($ws) )
         or return;
 
     my @widget_ids = split ',', $ws->modulesets;
