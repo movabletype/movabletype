@@ -52,9 +52,9 @@ requires 'PHP::Serialization';
 
 #requires 'Term::Gnuplot';
 
-on 'test' => sub {
+#on 'test' => sub {
     requires => 'pQuery';
     requires => 'Test::Data';
-};
+#};
 
 ## % carton exec -- local/bin/start_server --port 8000 --pid-file=log/mt.pid -- plackup -s Starlet --max-workers=2 --access-log=log/access.log mt.psgi >& log/error.log &
