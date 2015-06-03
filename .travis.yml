@@ -1,22 +1,18 @@
 language: perl
 
+perl:
+  - "5.20"
+  - "5.18"
+  - "5.16"
+  - "5.14"
+  - "5.12"
+  - "5.10"
+  - "5.8"
+
 services:
   - memcached
 
-env:
-  matrix:
-    - TESTS="prove t/??-*.t t/[^0-9]*.t plugins/*/t"
-    - TESTS="prove t/1??-*.t"
-    - TESTS="prove t/2??-*.t t/3??-*.t && phpunit"
-
 before_install:
-  # Use system Perl.
-  - perlbrew switch-off
-  - PATH=${PATH#/home/travis/perl5/perlbrew/bin:}
-  - perl -v
-  - echo $PATH
-  - curl -L https://cpanmin.us | perl - --sudo App::cpanminus
-
   # Install Berkeley DB for installing DB_File module.
   # libperl-dev for installing ImageMagick.
   # php5, php5-mysql, php5-gd for tests of dynamic publishing.
@@ -30,12 +26,20 @@ before_install:
   - sudo mv phpunit.phar /usr/local/bin/phpunit
 
 install:
-  # Install Image::Magick.
-  - sudo apt-get -y install perlmagick
+  # Install ImageMagick for installing Image::Magick.
+  - mkdir local
+  - cd local
+  - wget http://www.imagemagick.org/download/ImageMagick.tar.gz
+  - tar xzvf ImageMagick.tar.gz
+  - cd ImageMagick-*
+  - ./configure --prefix=${HOME}/local --with-perl=${HOME}/perl5/perlbrew/perls/${TRAVIS_PERL_VERSION}/bin/perl
+  - make
+  - sudo make install
+  - cd ../../
 
   # Instal CPAN modules.
-  - sudo cpanm -n Crypt::CBC Test::Deep DateTime DateTime::TimeZone Clone Test::File
-  - travis_retry sudo cpanm -n --installdeps . --cpanfile ./t/cpanfile
+  - cpanm -n Crypt::CBC Test::Deep DateTime DateTime::TimeZone Clone Test::File
+  - travis_retry cpanm -n --installdeps . --cpanfile ./t/cpanfile
 
   # Build MT.
   #- SHELL=/bin/bash make me
@@ -53,5 +57,5 @@ before_script:
   - rm t/90-podcoverage.t
 
 script:
-  - bash -c "${TESTS}"
+  - bash -c "PERL_HASH_SEED=0 prove t plugins/*/t && phpunit"
 
