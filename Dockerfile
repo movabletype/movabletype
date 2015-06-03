@@ -45,8 +45,7 @@ RUN cpanm Archive::Tar
 # https://rt.cpan.org/Public/Bug/Display.html?id=104150
 RUN cpanm LWP::Protocol::https -n
 
-RUN wget https://raw.githubusercontent.com/movabletype/movabletype/$MT_BRANCH/t/cpanfile
-RUN cpanm --installdeps .
+RUN cpanm --installdeps . --cpanfile ./t/cpanfile
 RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage Clone Test::File
 
 # PHP
