@@ -1,60 +1,79 @@
 ## -*- mode: perl; coding: utf-8 -*-
-requires 'DBI';
+
+# These modules are installed in extlib directory.
+#requires 'CGI';
+#requires 'Image::Size';
+#requires 'CGI::Cookie';
+#requires 'LWP::UserAgent';
+
+# This is a core module, but there may be the environment
+# that this module is not installed...
+requires 'File::Spec', '0.8';
+
+requires 'DBI', '1.21';
 requires 'DBD::mysql';
-requires 'Digest::SHA';
-requires 'Plack';
-requires 'CGI::PSGI';
-requires 'CGI::Parse::PSGI';
-requires 'CGI::Compile';
-requires 'XMLRPC::Transport::HTTP::Plack';
-requires 'HTML::Entities';
-requires 'HTML::Parser';
-requires 'Imager';
-requires 'Crypt::DSA';
-requires 'Crypt::SSLeay';
-requires 'Cache::File';
-requires 'Archive::Tar';
-requires 'IO::Compress::Gzip';
-requires 'IO::Uncompress::Gunzip';
-requires 'Archive::Zip';
-requires 'Digest::SHA1';
-requires 'Net::SMTP';
-requires 'Authen::SASL';
-requires 'Net::SMTP::SSL';
-requires 'Net::SMTP::TLS';
-requires 'IO::Socket::SSL';
-requires 'Net::SSLeay';
-requires 'XML::Parser';
-
-## recommends
-#requires 'Starlet';
-requires 'XML::LibXML';
-
-#requires 'Server::Starter';
-
-requires 'DBD::SQLite';
-requires 'Net::SFTP';
-requires 'HTTP::DAV';
-requires 'YAML::Syck';
-
-#requires 'Image::Magick';
-requires 'GD';
-requires 'IPC::Run';
-requires 'Test::Base';
-requires 'Test::MockModule';
-requires 'Test::MockObject';
-requires 'Test::LeakTrace';
-requires 'Test::Class';
-requires 'Math::Pari';
-requires 'Cache::Memcached';
-requires 'Cache::Memcached::Fast';
-requires 'PHP::Serialization';
-
-#requires 'Term::Gnuplot';
-
-on 'test' => sub {
-    requires 'pQuery';
-    requires 'Test::Data';
+feature 'mssqlserver', 'MSSQLServer support' => sub {
+    requires 'DBD::ODBC', '1.25';
+};
+feature 'oracle', 'Oracle Database support' => sub {
+    requires 'DBD::Oracle', '1.25';
 };
 
-## % carton exec -- local/bin/start_server --port 8000 --pid-file=log/mt.pid -- plackup -s Starlet --max-workers=2 --access-log=log/access.log mt.psgi >& log/error.log &
+recommends 'Digest::SHA';
+recommends 'Plack';
+recommends 'CGI::PSGI';
+recommends 'CGI::Parse::PSGI';
+recommends 'XMLRPC::Transport::HTTP::Plack';
+recommends 'HTML::Entities';
+recommends 'HTML::Parser';
+recommends 'SOAP::Lite', '0.5';
+recommends 'File::Temp';
+recommends 'Scalar::Util';
+recommends 'List::Util';
+recommends 'Image::Magick';
+recommends 'GD';
+recommends 'Imager';
+recommends 'IPC::Run';
+recommends 'Storable';
+recommends 'Crypt::DSA';
+recommends 'Crypt::SSLeay';
+recommends 'Cache::File';
+recommends 'MIME::Base64';
+recommends 'XML::Atom';
+recommends 'Cache::Memcached';
+recommends 'Archive::Tar';
+recommends 'IO::Compress::Gzip';
+recommends 'IO::Uncompress::Gunzip';
+recommends 'Archive::Zip';
+recommends 'XML::SAX';
+recommends 'Digest::SHA1';
+recommends 'Net::SMTP';
+recommends 'Authen::SASL';
+recommends 'Net::SMTP::SSL';
+recommends 'Net::SMTP::TLS';
+recommends 'IO::Socket::SSL';
+recommends 'Net::SSLeay';
+recommends 'Safe';
+recommends 'Digest::MD5';
+recommends 'Text::Balanced';
+recommends 'XML::Parser';
+recommends 'Time::HiRes';
+recommends 'Mozilla::CA';
+recommends 'XML::SAX::ExpatXS';
+recommends 'XML::SAX::Expat';
+recommends 'XML::LibXML::SAX';
+
+on 'test' => sub {
+    requires 'PHP::Serialization';
+    requires 'pQuery';
+    requires 'DBD::SQLite';
+    requires 'Test::Base';
+    requires 'Test::Class';
+    requires 'Test::Data';
+    requires 'Test::Deep';
+    requires 'Test::File';
+    requires 'Test::LeakTrace';
+    requires 'Test::MockModule';
+    requires 'Test::MockObject';
+    requires 'Test::Pod::Coverage';
+};
