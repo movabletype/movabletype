@@ -47,7 +47,6 @@ RUN cpanm LWP::Protocol::https -n
 
 RUN wget https://raw.githubusercontent.com/movabletype/movabletype/enji/t/cpanfile
 RUN cpanm --installdeps .
-RUN cpanm DateTime DateTime::TimeZone Clone
 
 # PHP
 RUN yum -y install php php-mysql php-gd

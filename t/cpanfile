@@ -64,6 +64,9 @@ recommends 'XML::SAX::Expat';
 recommends 'XML::LibXML::SAX';
 
 on 'test' => sub {
+    requires 'Clone';
+    requires 'DateTime';
+    requires 'DateTime::TimeZone';
     requires 'PHP::Serialization';
     requires 'pQuery';
     requires 'DBD::SQLite';
