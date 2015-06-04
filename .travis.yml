@@ -39,7 +39,7 @@ install:
   - cd ../../
 
   # Instal CPAN modules.
-  - cpanm -n Crypt::CBC Test::Deep DateTime DateTime::TimeZone Clone Test::File
+  - cpanm -n Crypt::CBC DateTime DateTime::TimeZone Clone
   - travis_retry cpanm -n --installdeps . --cpanfile ./t/cpanfile
 
   # Build MT.
