@@ -1,5 +1,7 @@
 ## -*- mode: perl; coding: utf-8 -*-
 
+## requires
+
 # These modules are installed in extlib directory.
 #requires 'CGI';
 #requires 'Image::Size';
@@ -19,49 +21,51 @@ feature 'oracle', 'Oracle Database support' => sub {
     requires 'DBD::Oracle', '1.25';
 };
 
-recommends 'Digest::SHA';
-recommends 'Plack';
-recommends 'CGI::PSGI';
-recommends 'CGI::Parse::PSGI';
-recommends 'XMLRPC::Transport::HTTP::Plack';
-recommends 'HTML::Entities';
-recommends 'HTML::Parser';
-recommends 'SOAP::Lite', '0.5';
-recommends 'File::Temp';
-recommends 'Scalar::Util';
-recommends 'List::Util';
-recommends 'Image::Magick';
-recommends 'GD';
-recommends 'Imager';
-recommends 'IPC::Run';
-recommends 'Storable';
-recommends 'Crypt::DSA';
-recommends 'Crypt::SSLeay';
-recommends 'Cache::File';
-recommends 'MIME::Base64';
-recommends 'XML::Atom';
-recommends 'Cache::Memcached';
-recommends 'Archive::Tar';
-recommends 'IO::Compress::Gzip';
-recommends 'IO::Uncompress::Gunzip';
-recommends 'Archive::Zip';
-recommends 'XML::SAX';
-recommends 'Digest::SHA1';
-recommends 'Net::SMTP';
-recommends 'Authen::SASL';
-recommends 'Net::SMTP::SSL';
-recommends 'Net::SMTP::TLS';
-recommends 'IO::Socket::SSL';
-recommends 'Net::SSLeay';
-recommends 'Safe';
-recommends 'Digest::MD5';
-recommends 'Text::Balanced';
-recommends 'XML::Parser';
-recommends 'Time::HiRes';
-recommends 'Mozilla::CA';
-recommends 'XML::SAX::ExpatXS';
-recommends 'XML::SAX::Expat';
-recommends 'XML::LibXML::SAX';
+## recommends
+
+requires 'Digest::SHA';
+requires 'Plack';
+requires 'CGI::PSGI';
+requires 'CGI::Parse::PSGI';
+requires 'XMLRPC::Transport::HTTP::Plack';
+requires 'HTML::Entities';
+requires 'HTML::Parser';
+requires 'SOAP::Lite', '0.5';
+requires 'File::Temp';
+requires 'Scalar::Util';
+requires 'List::Util';
+requires 'Image::Magick';
+requires 'GD';
+requires 'Imager';
+requires 'IPC::Run';
+requires 'Storable';
+requires 'Crypt::DSA';
+requires 'Crypt::SSLeay';
+requires 'Cache::File';
+requires 'MIME::Base64';
+requires 'XML::Atom';
+requires 'Cache::Memcached';
+requires 'Archive::Tar';
+requires 'IO::Compress::Gzip';
+requires 'IO::Uncompress::Gunzip';
+requires 'Archive::Zip';
+requires 'XML::SAX';
+requires 'Digest::SHA1';
+requires 'Net::SMTP';
+requires 'Authen::SASL';
+requires 'Net::SMTP::SSL';
+requires 'Net::SMTP::TLS';
+requires 'IO::Socket::SSL';
+requires 'Net::SSLeay';
+requires 'Safe';
+requires 'Digest::MD5';
+requires 'Text::Balanced';
+requires 'XML::Parser';
+requires 'Time::HiRes';
+requires 'Mozilla::CA';
+requires 'XML::SAX::ExpatXS';
+requires 'XML::SAX::Expat';
+requires 'XML::LibXML::SAX';
 
 on 'test' => sub {
     requires 'Clone';

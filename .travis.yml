@@ -40,7 +40,7 @@ install:
 
   # Instal CPAN modules.
   - cpanm -n Crypt::CBC
-  - travis_retry cpanm -n --installdeps . --cpanfile ./t/cpanfile --with-recommends
+  - travis_retry cpanm -n --installdeps . --cpanfile ./t/cpanfile
 
   # Build MT.
   #- SHELL=/bin/bash make me
