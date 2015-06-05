@@ -588,7 +588,11 @@ is( escape_unicode( Encode::encode( 'utf8', $utf8_e38182 ) ),
     '&#12354;', 'escape_unicode()' );
 is( unescape_unicode('&#12354;'), $utf8_e38182, 'unescape_unicode()' );
 
-isa_ok( sax_parser(), 'XML::LibXML::SAX', 'sax_parser()' );
+SKIP: {
+    skip 'This test depends on installed modules', 1;
+    isa_ok( sax_parser(), 'XML::LibXML::SAX', 'sax_parser()' );
+};
+
 is( asset_cleanup(
         '<form mt:asset-id="1" contenteditable="false"><img src="http://example.com/img/foo.jpg" /></form>'
     ),

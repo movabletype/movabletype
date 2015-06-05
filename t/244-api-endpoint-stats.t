@@ -11,6 +11,9 @@ BEGIN {
     use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
+
+    eval { require YAML::Syck }
+        or plan skip_all => 'YAML::Syck is not installed';
 }
 
 use lib qw(lib extlib t/lib);

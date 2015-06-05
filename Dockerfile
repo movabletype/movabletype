@@ -45,9 +45,8 @@ RUN cpanm Archive::Tar
 # https://rt.cpan.org/Public/Bug/Display.html?id=104150
 RUN cpanm LWP::Protocol::https -n
 
-RUN wget https://raw.githubusercontent.com/movabletype/movabletype/enji/t/cpanfile
+RUN wget https://raw.githubusercontent.com/movabletype/movabletype/revise-cpanfile/t/cpanfile
 RUN cpanm --installdeps .
-RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage Clone Test::File
 
 # PHP
 RUN yum -y install php php-mysql php-gd
