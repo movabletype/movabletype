@@ -78,7 +78,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
             set_error_handler('_dummy_error_handler');
 
             try {
-                $val = $ctx->tag($tag, $largs) || '';
+                $val = $ctx->tag($tag, $largs);
             } catch (exception $e) {
                 $val = '';
             }
