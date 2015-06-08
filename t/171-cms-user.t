@@ -261,7 +261,7 @@ subtest 'Manage Users screen' => sub {
 
         # FIXME: Debug code for the above test. This test sometimes fails.
         if ( $out !~ m/saved_status=enabled/ ) {
-            print "$out\n";
+            warn "\n$out";
         }
 
         ok( $out !~ m/not_enabled=/,
