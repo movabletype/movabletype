@@ -255,8 +255,15 @@ subtest 'Manage Users screen' => sub {
         #                && $out !~ m/not_enabled=/,
         #            '1 user having name has been enabled.'
         #        );
-        ok( $out =~ m/Status: 302 Found/,    'No error occurred.' );
+        ok( $out =~ m/Status: 302 Found/, 'No error occurred.' );
+
         ok( $out =~ m/saved_status=enabled/, 'Users have been enabled.' );
+
+        # FIXME: Debug code for the above test. This test sometimes fails.
+        if ( $out !~ m/saved_status=enabled/ ) {
+            print "$out\n";
+        }
+
         ok( $out !~ m/not_enabled=/,
             'There is no user who has not been enabled.' );
     };
