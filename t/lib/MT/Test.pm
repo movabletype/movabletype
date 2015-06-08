@@ -96,6 +96,40 @@ BEGIN {
     *MT::Mail::_send_mt_debug = sub {1};
 }
 
+# Parallel test.
+my $mysqld;
+if ( $ENV{MT_TEST_PARALLEL} ) {
+    if ( $ENV{MT_CONFIG} =~ /sqlite-test\.cfg$/ ) {
+        my $cfg_file
+            = File::Spec->catfile( $ENV{MT_HOME}, "t", "sqlite-test-$$.cfg" );
+        my $db_file = File::Spec->catfile( 'db', "mt-$$.db" );
+
+        system "cp $ENV{MT_CONFIG} $cfg_file";
+        $ENV{MT_CONFIG} = $cfg_file;
+        system
+            qq( perl -i -pe "s{Database db/mt\.db}{Database $db_file}" $cfg_file );
+        END { unlink $cfg_file, $db_file }
+    }
+    else {
+        if ( eval 'use Test::mysqld; 1' ) {
+            $mysqld
+                = Test::mysqld->new( my_cnf => { 'skip-networking' => '' }, )
+                or die $Test::mysqld::errstr;
+
+            my $socket = $mysqld->my_cnf->{socket};
+            system "mysql -uroot -S $socket -e 'create database mt_test'";
+            system
+                "mysql -uroot -S $socket -e 'grant all privileges on mt_test.* to mt\@localhost;'";
+
+            require MT::ConfigMgr;
+            *MT::ConfigMgr::DBSocket = sub {$socket};
+        }
+        else {
+            warn 'Test::mysqld is not installed. Disable parallel test.';
+        }
+    }
+}
+
 sub import {
     my $pkg = shift;
     my @to_export;

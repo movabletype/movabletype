@@ -88,5 +88,6 @@ on 'test' => sub {
     requires 'Test::LeakTrace';
     requires 'Test::MockModule';
     requires 'Test::MockObject';
+    requires 'Test::mysqld';
     requires 'Test::Pod::Coverage';
 };
