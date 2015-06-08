@@ -112,9 +112,12 @@ if ( $ENV{MT_TEST_PARALLEL} ) {
     }
     else {
         if ( eval 'use Test::mysqld; 1' ) {
-            $mysqld
-                = Test::mysqld->new( my_cnf => { 'skip-networking' => '' }, )
-                or die $Test::mysqld::errstr;
+            $mysqld = Test::mysqld->new(
+                my_cnf => {
+                    'mysql_install_db' => '/usr/bin/mysql_install_db',
+                    'skip-networking'  => '',
+                },
+            ) or die $Test::mysqld::errstr;
 
             my $socket = $mysqld->my_cnf->{socket};
             system "mysql -uroot -S $socket -e 'create database mt_test'";
