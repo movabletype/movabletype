@@ -72,6 +72,7 @@ requires 'CGI::Compile';
 requires 'YAML::Syck';
 
 on 'test' => sub {
+    requires 'App::Prove::Plugin::MySQLPool';
     requires 'Clone';
     requires 'DateTime';
     requires 'DateTime::TimeZone';
