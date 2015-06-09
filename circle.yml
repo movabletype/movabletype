@@ -14,9 +14,10 @@ dependencies:
 test:
   pre:
     - cp ./t/mysql-test.cfg ./mt-config.cgi
+    - cp ./t/MTTestDB.pm ./
 
     - rm t/34-sqlite.t
     - rm t/90-podcoverage.t
 
   override:
-    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove -PMySQLPool -j2 ./t ./plugins/*/t && phpunit"
+    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove -PMySQLPool=MTTestDB -j2 ./t ./plugins/*/t && phpunit"
