@@ -58,5 +58,5 @@ before_script:
   - rm t/90-podcoverage.t
 
 script:
-  - bash -c "PERL_HASH_SEED=0 MT_TEST_PARALLEL=1 prove -j2 t plugins/*/t && phpunit"
+  - bash -c "PERL_HASH_SEED=0 prove -PMysqlPool -j2 t plugins/*/t && phpunit"
 

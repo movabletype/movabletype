@@ -98,7 +98,7 @@ BEGIN {
 
 # Parallel test.
 my $mysqld;
-if ( $ENV{MT_TEST_PARALLEL} ) {
+if ( $ENV{PERL_TEST_MYSQLPOOL_DSN} ) {
     if ( $ENV{MT_CONFIG} =~ /sqlite-test\.cfg$/ ) {
         my $cfg_file
             = File::Spec->catfile( $ENV{MT_HOME}, "t", "sqlite-test-$$.cfg" );
@@ -111,23 +111,20 @@ if ( $ENV{MT_TEST_PARALLEL} ) {
         END { unlink $cfg_file, $db_file }
     }
     else {
-        if ( eval 'use Test::mysqld; 1' ) {
-            $mysqld = Test::mysqld->new(
-                my_cnf           => { 'skip-networking' => '' },
-                mysql_install_db => '/usr/bin/mysql_install_db',
-            ) or die $Test::mysqld::errstr;
+        use DBIx::ParseDSN;
+        my $dsn    = parse_dsn( $ENV{PERL_TEST_MYSQLPOOL_DSN} );
+        my $socket = $dsn->{attr}{mysql_socket};
 
-            my $socket = $mysqld->my_cnf->{socket};
-            system "mysql -uroot -S $socket -e 'create database mt_test'";
-            system
-                "mysql -uroot -S $socket -e 'grant all privileges on mt_test.* to mt\@localhost;'";
+        my $cfg_file = $ENV{MT_CONFIG};
+        $cfg_file =~ s/\.cfg$/-$$\.cfg/;
+        system "cp $ENV{MT_CONFIG} $cfg_file";
+        $ENV{MT_CONFIG} = $cfg_file;
+        END { unlink $cfg_file }
 
-            require MT::ConfigMgr;
-            *MT::ConfigMgr::DBSocket = sub {$socket};
-        }
-        else {
-            warn 'Test::mysqld is not installed. Disable parallel test.';
-        }
+        system qq( echo "DBSocket $socket" >> $cfg_file );
+
+        system
+            qq( mysql -uroot -S $socket -e "create database if not exists mt_test; grant all privileges on mt_test.* to mt\@localhost" );
     }
 }
 
