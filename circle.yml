@@ -14,7 +14,7 @@ dependencies:
 test:
   pre:
     - cp ./t/mysql-test.cfg ./mt-config.cgi
-    - cp ./t/MTTestDB.pm ./
+    - cp ./t/lib/MTTestDB.pm ./
 
     - rm t/34-sqlite.t
     - rm t/90-podcoverage.t
