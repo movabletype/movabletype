@@ -1865,6 +1865,8 @@ sub update_categories {
         MT::Placement->remove( { entry_id => $obj->id, } )
             or return $obj->error( MT::Placement->errstr );
 
+        MT::Memcached->instance->delete(
+            MT::Entry->cache_key( $obj->id, 'categories' ) );
         $obj->clear_cache('category');
         $obj->clear_cache('categories');
 

@@ -151,26 +151,28 @@ sub update {
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
 
     my @update_cats;
+    my $do_update_cats;
     if ( exists $entry_hash->{categories} ) {
         my $cats_hash = $entry_hash->{categories};
         $cats_hash = [$cats_hash] if ref $cats_hash ne 'ARRAY';
 
-        my @cat_ids = map { $_->{id} }
-            grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
-        @update_cats = MT->model('category')->load(
-            {   id      => \@cat_ids,
-                blog_id => $blog->id,
-                class   => 'category',
-            }
-        );
+        if ( scalar @$cats_hash == 0 ) {
+            $do_update_cats = 1;
+        }
+        else {
+            my @cat_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$cats_hash;
+            @update_cats = MT->model('category')->load(
+                {   id      => \@cat_ids,
+                    blog_id => $blog->id,
+                    class   => 'category',
+                }
+            );
 
-        return $app->error( "'categories' parameter is invalid.", 400 )
-            if scalar @$cats_hash == 0
-            || scalar @$cats_hash != scalar @update_cats;
-
-        # Restore order.
-        my %update_cats_hash = map { +( $_->id => $_ ) } @update_cats;
-        @update_cats = map { $update_cats_hash{$_} } @cat_ids;
+            # Restore order.
+            my %update_cats_hash = map { +( $_->id => $_ ) } @update_cats;
+            @update_cats = map { $update_cats_hash{$_} } @cat_ids;
+        }
     }
 
     my @update_assets;
@@ -211,7 +213,7 @@ sub update {
     ) or return;
 
     # Update categories and assets.
-    if (@update_cats) {
+    if ($do_update_cats) {
         $new_entry->update_categories(@update_cats)
             or return $app->error( $new_entry->errstr );
     }
