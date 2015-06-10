@@ -20,9 +20,9 @@ use MT::PublishOption;
 use MT::Test qw(:app :db);
 my $app    = MT->instance;
 my $config = $app->config;
-$config->AllowComments(1);
-$config->StaticFilePath('./mt-static');
-$config->CommenterRegistration( { Allow => 1 } );
+$config->AllowComments( 1, 1 );
+$config->StaticFilePath( './mt-static', 1 );
+$config->CommenterRegistration( { Allow => 1 }, 1 );
 $config->save_config;
 delete $app->{__static_file_path};
 
