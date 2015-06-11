@@ -682,6 +682,33 @@ __BODY__
                 isnt( $got->{body}, $expected->text );
             },
         },
+        {    # Remove attached categories.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params =>
+                { entry => { categories => [ ] }, },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( scalar @{ $got->{categories} },
+                    0, 'Entry has no category' );
+            },
+        },
 
         # get_entry - normal tests.
         {    # no_format_filter = 1
