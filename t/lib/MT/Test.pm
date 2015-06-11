@@ -98,7 +98,7 @@ BEGIN {
 
 # Parallel test.
 my $mysqld;
-if ( $ENV{PERL_TEST_MYSQLPOOL_DSN} ) {
+if ( $ENV{PERL_TEST_MYSQLPOOL_DSN} && -f $ENV{MT_CONFIG} ) {
     if ( $ENV{MT_CONFIG} =~ /sqlite-test\.cfg$/ ) {
         my $cfg_file
             = File::Spec->catfile( $ENV{MT_HOME}, "t", "sqlite-test-$$.cfg" );
