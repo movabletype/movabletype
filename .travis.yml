@@ -46,10 +46,9 @@ before_script:
   # Some tests need mt-config.cgi.
   - cp ./t/mysql-test.cfg ./mt-config.cgi
 
-  # Remove failed tests.
-  - rm t/34-sqlite.t
-  - rm t/90-podcoverage.t
+  # Start Movable Type.
+  - plackup mt.psgi
 
 script:
-  - bash -c "PERL_HASH_SEED=0 prove -s t plugins/*/t && phpunit"
-
+  - bundle install
+  - bundle exec rake spec
