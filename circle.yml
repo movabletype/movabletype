@@ -20,7 +20,7 @@ test:
 
   override:
     - docker run -v $PWD:/var/www/mt -w /var/www/mt -p 5000:5000 mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && plackup mt.psgi":
-        backgroud: true
+        background: true
     - sleep 5
     - bundle install
     - bundle exec rake spec
