@@ -46,8 +46,8 @@ before_script:
   # Some tests need mt-config.cgi.
   - cp ./t/mysql-test.cfg ./mt-config.cgi
 
-  # Start Movable Type.
-  - plackup mt.psgi
+  # Start Movable Type in background.
+  - plackup mt.psgi &
 
 script:
   - bundle install
