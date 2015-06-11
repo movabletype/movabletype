@@ -95,6 +95,11 @@ subtest 'Edit Profile screen' => sub {
         );
         ok( $out =~ m/saved=1&saved_added=1/,
             'Created inactive user with original name.' );
+        ok( MT::Author->exist(
+                { name => 'ukawa', status => MT::Author::INACTIVE }
+            ),
+            'User "ukawa" whose status is inactive exists.'
+        );
     };
 
     subtest 'Empty name user' => sub {
