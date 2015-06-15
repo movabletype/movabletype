@@ -954,8 +954,19 @@ sub list {
                 if defined $list_permission->{inherit};
             $list_permission = $list_permission->{permit_action};
         }
-        my $allowed  = 0;
-        my @act      = split /\s*,\s*/, $list_permission;
+        my $allowed = 0;
+        my @act;
+        if ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
+            my $code = $list_permission;
+            $code = MT->handler_to_coderef($code);
+            @act  = $code->();
+        }
+        elsif ( 'ARRAY' eq ref $list_permission ) {
+            @act = @$list_permission;
+        }
+        else {
+            @act = split /\s*,\s*/, $list_permission;
+        }
         my $blog_ids = undef;
         if ($blog_id) {
             push @$blog_ids, $blog_id;
@@ -1425,8 +1436,19 @@ sub filtered_list {
                 if defined $list_permission->{inherit};
             $list_permission = $list_permission->{permit_action};
         }
-        my $allowed  = 0;
-        my @act      = split /\s*,\s*/, $list_permission;
+        my $allowed = 0;
+        my @act;
+        if ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
+            my $code = $list_permission;
+            $code = MT->handler_to_coderef($code);
+            @act  = $code->();
+        }
+        elsif ( 'ARRAY' eq ref $list_permission ) {
+            @act = @$list_permission;
+        }
+        else {
+            @act = split /\s*,\s*/, $list_permission;
+        }
         my $blog_ids = undef;
         if ($blog_id) {
             push @$blog_ids, $blog_id;
@@ -1820,7 +1842,8 @@ sub delete {
                             $ot->errstr );
 
                         # Clear cache
-                        my $linked_class = $app->model( $ot->object_datasource );
+                        my $linked_class
+                            = $app->model( $ot->object_datasource );
                         my $linked = $linked_class->load( $ot->object_id );
                         next unless $linked;
 
@@ -1828,12 +1851,16 @@ sub delete {
                         delete $linked->{__save_tags};
                         MT::Tag->clear_cache(
                             datasource => $linked->datasource,
-                            ( $linked->blog_id ? ( blog_id => $linked->blog_id ) : () )
+                            (   $linked->blog_id
+                                ? ( blog_id => $linked->blog_id )
+                                : ()
+                            )
                         );
 
                         require MT::Memcached;
                         if ( MT::Memcached->is_available ) {
-                            MT::Memcached->instance->delete( $linked->tag_cache_key );
+                            MT::Memcached->instance->delete(
+                                $linked->tag_cache_key );
                         }
                     }
                 }
