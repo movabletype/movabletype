@@ -628,7 +628,7 @@ sub cfg_web_services {
 
     my @config_templates = ();
     my $web_services     = $app->registry('web_services');
-    for my $k (%$web_services) {
+    for my $k (keys %$web_services) {
         my $plugin = $web_services->{$k}{plugin};
         my $tmpl   = $web_services->{$k}{config_template}
             or next;
