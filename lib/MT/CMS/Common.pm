@@ -959,7 +959,12 @@ sub list {
         if ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
             my $code = $list_permission;
             $code = MT->handler_to_coderef($code);
-            @act  = $code->();
+            eval { @act = $code->(); };
+            return $app->error(
+                $app->translate(
+                    'Error occurred during permission check: [_1]', $@
+                )
+            ) if $@;
         }
         elsif ( 'ARRAY' eq ref $list_permission ) {
             @act = @$list_permission;
@@ -1441,7 +1446,12 @@ sub filtered_list {
         if ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
             my $code = $list_permission;
             $code = MT->handler_to_coderef($code);
-            @act  = $code->();
+            eval { @act = $code->(); };
+            return $app->json_error(
+                $app->translate(
+                    'Error occurred during permission check: [_1]', $@
+                )
+            ) if $@;
         }
         elsif ( 'ARRAY' eq ref $list_permission ) {
             @act = @$list_permission;
