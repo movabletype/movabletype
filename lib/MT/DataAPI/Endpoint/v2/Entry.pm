@@ -531,10 +531,13 @@ sub preview_by_id {
         or return;
 
     # Update for preview
-    my $entry_json = $app->param('entry')
+    my $entry_json = $app->param( $entry->class )
         or return $app->error(
-        $app->translate('A resource "entry" is required.'), 400 );
+        $app->translate('A resource "[_1_]" is required.', $entry->class_label ), 400 );
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
+
+    $entry = $app->resource_object( $entry->class, $entry )
+        or return;
 
     my $names = $entry->column_names;
     foreach my $name (@$names) {

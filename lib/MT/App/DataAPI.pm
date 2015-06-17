@@ -1081,6 +1081,22 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to delete a page.', },
         },
+        {   id      => 'preview_page_by_id',
+            route   => '/sites/:site_id/pages/:page_id/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Entry::preview_by_id",
+            error_codes =>
+                { 403 => 'Do not have permission to preview page.', },
+        },
+        {   id      => 'preview_page',
+            route   => '/sites/:site_id/pages/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Page::preview",
+            error_codes =>
+                { 403 => 'Do not have permission to preview page.', },
+        },
 
         # comment endpoints
         {   id             => 'list_comments_for_page',

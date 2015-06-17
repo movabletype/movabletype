@@ -758,6 +758,133 @@ __BODY__
             },
         },
 
+
+        # preview_page_by_id
+        {    # Non-existent page
+            path   => '/v2/sites/1/pages/500/preview',
+            method => 'POST',
+            params => {
+                entry => {
+                    title  => 'foo',
+                    text   => 'bar',
+                    status => 'Draft',
+                },
+            },
+            code => 404,
+        },
+        {    # No resource.
+            path     => '/v2/sites/1/pages/23/preview',
+            method   => 'POST',
+            code     => 400,
+            resource => sub {
+                return +{
+                    error => {
+                        code    => 400,
+                        message => 'A resource "page" is required.',
+                    },
+                };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/pages/23/preview',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # normal tests
+            path   => '/v2/sites/1/pages/23/preview',
+            params => {
+                page => {
+                    title  => 'foo',
+                    status => 'Draft',
+                    text   => 'bar',
+                },
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview Page make success' );
+            },
+        },
+        {    # normal tests - raw parameter
+            path   => '/v2/sites/1/pages/23/preview',
+            params => {
+                page => {
+                    title  => 'foo',
+                    text   => 'bar',
+                    status => 'Draft',
+                },
+                raw => '1',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview Page make success' );
+            },
+        },
+
+        # preview_page
+        {    # No resource.
+            path     => '/v2/sites/1/pages/preview',
+            method   => 'POST',
+            code     => 400,
+            resource => sub {
+                return +{
+                    error => {
+                        code    => 400,
+                        message => 'A resource "page" is required.',
+                    },
+                };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/pages/preview',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # normal tests
+            path   => '/v2/sites/1/pages/preview',
+            params => {
+                page => {
+                    title  => 'foo',
+                    status => 'Draft',
+                    text   => 'bar',
+                },
+                authored_on_date => '2015-01-01',
+                authored_on_time => '10:00:00',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview Page make success' );
+            },
+        },
+        {    # normal tests - raw parameter
+            path   => '/v2/sites/1/pages/preview',
+            params => {
+                page => {
+                    title  => 'foo',
+                    text   => 'bar',
+                    status => 'Draft',
+                },
+                raw              => '1',
+                authored_on_date => '2015-01-01',
+                authored_on_time => '10:00:00',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview Page make success' );
+            },
+        },
+
         # delete_page - irregular tests
         {    # Non-existent page.
             path   => '/v2/sites/1/pages/500',
