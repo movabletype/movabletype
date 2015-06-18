@@ -631,6 +631,9 @@ sub preview {
 sub _preview_common {
     my ( $app, $entry ) = @_;
 
+    # Set correct class type
+    $app->param('_type', $entry->class);
+
 # TODO: Allow to make a preview content when Individual/Page mapping not found.
 # Currently, we can not make preview content when templatemap could not be found.
     require MT::TemplateMap;
