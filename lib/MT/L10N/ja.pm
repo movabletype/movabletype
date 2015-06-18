@@ -1932,6 +1932,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred during the import process: [_1]. Please check your import file.' => 'インポートの途中でエラーが発生しました : [_1]。インポートファイルを確認してください。',
 	'Make sure that you remove the files that you imported from the \'import\' folder, so that if/when you run the import process again, those files will not be re-imported.' => '\'import\'ディレクトリからインポートしたファイルを削除することを忘れないでください。もう一度インポート機能を利用した場合に、同じファイルが再度インポートされてしまう可能性があります。',
 	'Preview data not found.' => 'プレビューするデータが存在しません。',
+	'Could not found archive template for [_1].' => '[_1]のアーカイブテンプレートが見つかりません。',
 
 ## lib/MT/DataAPI/Endpoint/v2/Folder.pm
 

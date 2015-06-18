@@ -533,7 +533,12 @@ sub preview_by_id {
     # Update for preview
     my $entry_json = $app->param( $entry->class )
         or return $app->error(
-        $app->translate('A resource "[_1_]" is required.', $entry->class_label ), 400 );
+        $app->translate(
+            'A resource "[_1_]" is required.',
+            $entry->class_label
+        ),
+        400
+        );
     my $entry_hash = $app->current_format->{unserialize}->($entry_json);
 
     $entry = $app->resource_object( $entry->class, $entry )
@@ -625,6 +630,26 @@ sub preview {
 
 sub _preview_common {
     my ( $app, $entry ) = @_;
+
+# TODO: Allow to make a preview content when Individual/Page mapping not found.
+# Currently, we can not make preview content when templatemap could not be found.
+    require MT::TemplateMap;
+    my $at = $entry->class eq 'page' ? 'Page' : 'Individual';
+    my $tmpl_map = MT::TemplateMap->load(
+        {   archive_type => $at,
+            is_preferred => 1,
+            blog_id      => $entry->blog_id,
+        }
+    );
+    if ( !$tmpl_map ) {
+        return $app->error(
+            $app->translate(
+                'Could not found archive template for [_1].',
+                $entry->class_label
+            ),
+            400
+        );
+    }
 
     my $preview_basename;
     no warnings 'redefine';
