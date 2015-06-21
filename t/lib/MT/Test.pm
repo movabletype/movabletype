@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,6 +14,7 @@ use strict;
 
 # Handle cwd = MT_DIR, MT_DIR/t
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use File::Path qw( rmtree );
 use File::Spec;
 use File::Temp qw( tempfile );
 use File::Basename;
@@ -54,6 +55,7 @@ BEGIN {
         }
     }
     else {
+        require DBD::SQLite;    # Use in sqlite-test.cfg.
         $ENV{MT_CONFIG}
             = File::Spec->catfile( $ENV{MT_HOME}, "t", "sqlite-test.cfg" );
     }
@@ -64,7 +66,7 @@ BEGIN {
     }
     elsif ( -f $ds_dir . '/mt.db' ) {
         my $file = $ds_dir . '/mt.db';
-        `rm $file`;
+        unlink $file;
     }
 }
 
@@ -414,7 +416,7 @@ sub init_data {
     my $pkg = shift;
 
     # nix the old site just in case
-    `rm -fR t/site` if ( -d 't/site' );
+    rmtree('t/site') if ( -d 't/site' );
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
     MT->config->ThemesDirectory($themedir);
@@ -1460,10 +1462,11 @@ sub _run_app {
     my $cgi              = CGI->new;
     my $follow_redirects = 0;
     my $max_redirects    = 10;
-    my %app_hash_values = qw(
+    my %app_hash_values  = qw(
         __request_method request_method
         __path_info __path_info
     );
+
     while ( my ( $k, $v ) = each(%$params) ) {
         next if grep { $_ eq $k } keys %app_hash_values;
         if ( ref($v) eq 'ARRAY' && $k ne '__test_upload' ) {

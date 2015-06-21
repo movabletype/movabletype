@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -330,6 +330,8 @@ sub make_common_label_html {
     my ( $obj, $app, $col, $alt_label ) = @_;
     my $id    = $obj->id;
     my $label = $obj->$col;
+    $label = '' if !defined $label;
+    $label =~ s/^\s+|\s+$//g;
     my $blog_id
         = $obj->has_column('blog_id') ? $obj->blog_id
         : $app->blog                  ? $app->blog->id
@@ -343,7 +345,8 @@ sub make_common_label_html {
             blog_id => $blog_id,
         },
     );
-    if ($label) {
+
+    if ( defined $label && $label ne '' ) {
         my $can_double_encode = 1;
         $label = MT::Util::encode_html( $label, $can_double_encode );
         return qq{<a href="$edit_link">$label</a>};

@@ -213,7 +213,7 @@ function init() {
         if ( jQuery('#use_absolute:checked').length <= 0 ) {
           return true;
         }
-        return is_valid_absolute_path($e.val());
+        return MT.Validator.absolutePath($e.val());
       },
       '#server_offset': function ($e) {
         return $e.val() !== '';

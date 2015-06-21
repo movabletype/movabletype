@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -84,7 +84,7 @@ sub core_methods {
                 my $app = shift;
                 return 0 unless $app->param('dialog_view');
                 return 1;
-                }
+            }
         },
         'list_theme' => "${pkg}Theme::list",
 
@@ -510,8 +510,21 @@ sub init_plugins {
                 "${pfx}Entry::cms_pre_load_filtered_list",
             $pkg . 'view_permission_filter.entry' => "${pfx}Entry::can_view",
 
+            # page callbacks
+            $pkg
+                . 'pre_load_filtered_list.page' =>
+                "${pfx}Page::cms_pre_load_filtered_list",
+            $pkg . 'view_permission_filter.page' => "${pfx}Page::can_view",
+
             # user callbacks
+            $pkg . 'pre_load_filtered_list.author' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                my $terms = $opts->{terms};
+                $terms->{type} = MT::Author::AUTHOR();
+            },
             $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
+            $pkg . 'save_filter.author' => "${pfx}User::save_filter",
+            $pkg . 'pre_save.author'    => "${pfx}User::pre_save",
 
             # comment callbacks
             $pkg
@@ -531,6 +544,42 @@ sub init_plugins {
 
             # blog callbacks
             $pkg . 'view_permission_filter.blog' => "${pfx}Blog::can_view",
+            $pkg . 'save_filter.blog'            => "${pfx}Blog::save_filter",
+            $pkg
+                . 'pre_load_filtered_list.blog' =>
+                "${pfx}Blog::cms_pre_load_filtered_list",
+
+            # category callbacks
+            $pkg
+                . 'view_permission_filter.category' =>
+                "${pfx}Category::can_view",
+            $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
+            $pkg
+                . 'pre_load_filtered_list.category' =>
+                "${pfx}Category::pre_load_filtered_list",
+
+            # folder callbacks
+            $pkg
+                . 'view_permission_filter.folder' => "${pfx}Folder::can_view",
+
+            # asset callbacks
+            $pkg . 'view_permission_filter.asset' => "${pfx}Asset::can_view",
+            $pkg . 'save_filter.asset' => "${pfx}Asset::cms_save_filter",
+            $pkg . 'pre_save.asset'    => "${pfx}Asset::pre_save",
+            $pkg
+                . 'pre_load_filtered_list.asset' =>
+                "${pfx}Asset::cms_pre_load_filtered_list",
+
+            # tag callbacks
+            $pkg
+                . 'pre_load_filtered_list.tag' =>
+                "${pfx}Tag::cms_pre_load_filtered_list",
+            $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
+
+            # template callbacks
+            $pkg
+                . 'view_permission_filter.template' =>
+                "${pfx}Template::can_view",
         }
     );
 
@@ -771,7 +820,7 @@ sub core_content_actions {
                 permission  => 'export_addressbook',
                 condition   => sub {
                     MT->app && MT->app->param('blog_id');
-                    }
+                }
             },
         },
     };
@@ -825,7 +874,7 @@ sub core_list_actions {
                 condition => sub {
                     return 0 if $app->mode eq 'view';
                     return 1;
-                    }
+                }
             },
             'open_batch_editor' => {
                 label         => "Batch Edit Entries",
@@ -1164,7 +1213,7 @@ sub core_list_actions {
                             : 1
                         : $app->blog ? 1
                         :              0;
-                    }
+                }
             },
             'untrust_commenter' => {
                 label => "Untrust Commenter(s)",
@@ -1184,7 +1233,7 @@ sub core_list_actions {
                             : 1
                         : $app->blog ? 1
                         :              0;
-                    }
+                }
             },
             'ban_commenter' => {
                 label         => "Ban Commenter(s)",
@@ -1204,7 +1253,7 @@ sub core_list_actions {
                             : 1
                         : $app->blog ? 1
                         :              0;
-                    }
+                }
             },
             'unban_commenter' => {
                 label         => "Unban Commenter(s)",
@@ -1224,7 +1273,7 @@ sub core_list_actions {
                             : 1
                         : $app->blog ? 1
                         :              0;
-                    }
+                }
             },
             'publish' => {
                 label         => 'Publish',
@@ -1240,7 +1289,7 @@ sub core_list_actions {
                 condition => sub {
                     return 0 if $app->mode eq 'view';
                     return 1;
-                    }
+                }
             },
             'delete' => {
                 label      => 'Delete',
@@ -1470,7 +1519,7 @@ sub core_list_actions {
 
                     my $count = MT->model('website')->count();
                     $count > 1 ? 1 : 0;
-                    }
+                }
             },
             clone_blog => {
                 label         => "Clone Blog",
@@ -2325,7 +2374,7 @@ sub core_menus {
             condition => sub {
                 require MT::CMS::Search;
                 return MT::CMS::Search::can_search_replace($app);
-                }
+            }
         },
         'tools:plugins' => {
             label             => "Plugins",

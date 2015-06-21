@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -110,7 +110,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '6.0.6';
+    $version = '6.1.1';
 }
 
 my ( $mt, $LH );
@@ -292,6 +292,7 @@ if ( !$view ) {
                 margin: 0;
                 text-decoration: none;
                 background: #2b2b2b url($mt_static_path/images/logo/movable-type-brand-logo.png) center 3px no-repeat;
+                background-size: 150px;
                 outline: 0;
             }
 
@@ -468,6 +469,13 @@ my @CORE_REQ = (
         )
     ],
 
+    [   'Scalar::Util',
+        0, 1,
+        translate(
+            'Scalar::Util is required for initializing Movable Type application.'
+        )
+    ],
+
 );
 
 my @CORE_DATA = (
@@ -568,13 +576,6 @@ my @CORE_OPT = (
         )
     ],
 
-    [   'Scalar::Util',
-        0, 1,
-        translate(
-            'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.'
-        )
-    ],
-
     [   'List::Util',
         0, 1,
         translate(
@@ -628,7 +629,7 @@ my @CORE_OPT = (
     [   'Crypt::SSLeay',
         0, 0,
         translate(
-            'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for site statistics of Google Analytics.'
+            'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for Google Analytics site statistics.'
         )
     ],
 
@@ -730,7 +731,7 @@ my @CORE_OPT = (
     [   'IO::Socket::SSL',
         0, 0,
         translate(
-            'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for site statistics of Google Analytics.'
+            'IO::Socket::SSL is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command. Also, this module is required for Google Analytics site statistics.'
         )
     ],
 
@@ -765,7 +766,7 @@ my @CORE_OPT = (
     [   'XML::SAX::ExpatXS',
         1.30, 0,
         translate(
-            '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
+            '[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation',
             'XML::SAX::ExpatXS'
         )
     ],
@@ -773,7 +774,7 @@ my @CORE_OPT = (
     [   'XML::SAX::Expat',
         0.37, 0,
         translate(
-            '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
+            '[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation',
             'XML::SAX::Expat'
         )
     ],
@@ -781,7 +782,7 @@ my @CORE_OPT = (
     [   'XML::LibXML::SAX',
         1.70, 0,
         translate(
-            '[_1] is optional; It is one of the modules is required to restore a backup created in a backup/restore operation',
+            '[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation',
             'XML::LibXML::SAX'
         )
     ],
@@ -789,15 +790,21 @@ my @CORE_OPT = (
     [   'Mozilla::CA',
         0, 0,
         translate(
-            'This module is required for site statistics of Google Analytics.'
+            'This module is required for Google Analytics site statistics.'
         )
     ],
-
     [   'Time::HiRes',
         0, 0,
-       translate(
-           'This module is required for executing run-periodic-tasks.'
-       )
+        translate(
+            'This module is required for executing run-periodic-tasks.'
+        )
+    ],
+    [   'YAML::Syck',
+        0, 0,
+        translate(
+            '[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.',
+            'YAML::Syck'
+        )
     ],
 
 );

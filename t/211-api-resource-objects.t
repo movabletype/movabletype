@@ -30,6 +30,7 @@ use MT::DataAPI::Resource;
 my $app = MT::App::DataAPI->new;
 MT->set_instance($app);
 $app->user($app->model('author')->load(1));
+$app->current_api_version(1);
 
 if ( !$app->model('placement')->load( { entry_id => 6, category_id => 2 } ) )
 {

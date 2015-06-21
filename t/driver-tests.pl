@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1703,8 +1703,8 @@ ok( !MT::Object->driver->dbd->ddl_class->column_defs('Zot'),
 $foo = Foo->new;
 isa_ok( $foo, 'Foo', 'New Foo could be created' );
 $foo->column( 'name', 'foo' );
-is( $foo->column('name'), 'foo',
-    'Setting name field with column() persists through access' );
+is( $foo->column('name'),
+    'foo', 'Setting name field with column() persists through access' );
 $foo->name('foo');
 is( $foo->name, 'foo',
     'Setting name field with mutator method persists through access' );

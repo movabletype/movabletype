@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -57,7 +57,13 @@ sub class_label_plural {
 }
 
 sub list_props {
-    return { blog_id => { base => '__virtual.id', }, };
+    return +{
+        id         => { base => '__virtual.id', },
+        blog_id    => { base => '__virtual.id', },
+        created_on => { base => '__virtual.created_on', },
+        created_by => { auto => 1, },
+        author_id  => { base => '__virtual.author_name' },
+    };
 }
 
 sub user {

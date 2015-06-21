@@ -7,6 +7,8 @@ BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
+use Test::MockModule;
+
 use lib 't/lib', 'lib', 'extlib', '../lib', '../extlib';
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
@@ -109,6 +111,12 @@ MT::Association->link( $egawa,    $create_post, $second_blog );
 my $website_cat = MT::Test::Permission->make_category(
     blog_id   => $website->id,
     author_id => $admin->id,
+    label     => 'Foo',
+);
+my $website_cat2 = MT::Test::Permission->make_category(
+    blog_id   => $website->id,
+    author_id => $admin->id,
+    label     => 'Bar',
 );
 
 # Entry
@@ -152,10 +160,10 @@ my $website_page = MT::Test::Permission->make_page(
 # Run tests
 my ( $app, $out );
 
-diag 'Test in website scope';
+note 'Test in website scope';
 subtest 'Test in website scope' => sub {
 
-    diag 'Menu visibility check';
+    note 'Menu visibility check';
     subtest 'Menu visibility check' => sub {
         $app = _run_app(
             'MT::App::CMS',
@@ -275,7 +283,7 @@ subtest 'Test in website scope' => sub {
         done_testing();
     };
 
-    diag 'Entry listing screen visibility check';
+    note 'Entry listing screen visibility check';
     subtest 'Entry listing screen visibility check' => sub {
         $app = _run_app(
             'MT::App::CMS',
@@ -333,9 +341,9 @@ subtest 'Test in website scope' => sub {
         done_testing();
     };
 
-    diag 'Filtered list check';
+    note 'Filtered list check';
     subtest 'Filtered list check' => sub {
-        diag 'Get filtered list by admin';
+        note 'Get filtered list by admin';
         local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
         $app = _run_app(
             'MT::App::CMS',
@@ -361,7 +369,7 @@ subtest 'Test in website scope' => sub {
             'Got an entry in child blog'
         );
 
-        diag 'Get filtered list by website administrator';
+        note 'Get filtered list by website administrator';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $kemikawa,
@@ -386,7 +394,7 @@ subtest 'Test in website scope' => sub {
             'Got an entry in child blog'
         );
 
-        diag 'Get filtered list by permitted user (create post) in website';
+        note 'Get filtered list by permitted user (create post) in website';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $aikawa,
@@ -411,7 +419,7 @@ subtest 'Test in website scope' => sub {
             'Did not get an entry in child blog'
         );
 
-        diag
+        note
             'Get filtered list by other permitted user (create post) in website';
         $app = _run_app(
             'MT::App::CMS',
@@ -441,7 +449,7 @@ subtest 'Test in website scope' => sub {
             'Did not get an entry in child blog'
         );
 
-        diag
+        note
             'Get filtered list by other permitted user (edit all posts) in website';
         $app = _run_app(
             'MT::App::CMS',
@@ -467,7 +475,7 @@ subtest 'Test in website scope' => sub {
             'Did not get an entry in child blog'
         );
 
-        diag 'Get filtered list by permitted user in child blog';
+        note 'Get filtered list by permitted user in child blog';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $ukawa,
@@ -496,7 +504,7 @@ subtest 'Test in website scope' => sub {
             'Got an entry in child blog'
         );
 
-        diag 'Get filtered list by other website';
+        note 'Get filtered list by other website';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $ichikawa,
@@ -526,7 +534,7 @@ subtest 'Test in website scope' => sub {
             'Did not get an entry in child blog'
         );
 
-        diag 'Get filtered list by other blog';
+        note 'Get filtered list by other blog';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $egawa,
@@ -556,7 +564,7 @@ subtest 'Test in website scope' => sub {
             'Did not get an entry in child blog'
         );
 
-        diag 'Get filtered list by other permission';
+        note 'Get filtered list by other permission';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $ogawa,
@@ -588,7 +596,7 @@ subtest 'Test in website scope' => sub {
 
     };
 
-    diag 'Built in filter check';
+    note 'Built in filter check';
     subtest 'Built in filter check' => sub {
         $app = _run_app(
             'MT::App::CMS',
@@ -753,7 +761,7 @@ subtest 'Test in website scope' => sub {
         done_testing();
     };
 
-    diag 'Batch edit entries check';
+    note 'Batch edit entries check';
     subtest 'Batch edit entries check' => sub {
         $app = _run_app(
             'MT::App::CMS',
@@ -781,6 +789,38 @@ subtest 'Test in website scope' => sub {
     };
 
     done_testing();
+};
+
+note 'The cache of new entry check';
+subtest 'The cache of new entry check' => sub {
+    my $categories;
+
+    my $mock_entry = Test::MockModule->new('MT::Entry');
+    $mock_entry->mock(
+        'categories',
+        sub {
+            $categories = $mock_entry->original('categories')->(@_);
+        }
+    );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'entry',
+            blog_id          => $website->id,
+            author_id        => $admin->id,
+            status           => 2,
+            category_ids     => $website_cat->id . ',' . $website_cat2->id,
+        },
+    );
+
+    is_deeply(
+        [ map { $_->id } @$categories ],
+        [ $website_cat2->id, $website_cat->id ],
+        'A new entry has category "Bar" and category "Foo" in cache.'
+    );
 };
 
 done_testing();

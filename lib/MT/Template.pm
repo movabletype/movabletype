@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -107,6 +107,47 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Templates");
+}
+
+sub list_props {
+    return +{
+        id      => { base => '__virtual.id', display => 'none', },
+        name    => { auto => 1,              display => 'none' },
+        blog_id => {
+            auto    => 1,
+            display => 'none',
+        },
+        type => {
+            auto  => 1,
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                return +{ type => $args->{value} };
+            },
+            display => 'none',
+        },
+        created_on => {
+            base    => '__virtual.created_on',
+            display => 'none',
+        },
+        modified_on => {
+            base    => '__virtual.modified_on',
+            display => 'none',
+        },
+        created_by => {
+            auto    => 1,
+            display => 'none',
+        },
+        modified_by => {
+            auto    => 1,
+            display => 'none',
+        },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( name identifier text )],
+            display => 'none',
+        },
+    };
 }
 
 sub new {
@@ -310,6 +351,21 @@ sub build {
     local $ctx->{__stash}{template} = $tmpl;
     my $tokens = $tmpl->tokens
         or return;
+
+    if ( $tmpl->{errors} && @{ $tmpl->{errors} } ) {
+        my $error = "";
+        foreach my $err ( @{ $tmpl->{errors} } ) {
+            $error .= $err->{message};
+        }
+        return $tmpl->error(
+            MT->translate(
+                "Publish error in template '[_1]': [_2]",
+                $tmpl->name || $tmpl->{__file},
+                $error
+            )
+        );
+    }
+
     my $build = $ctx->{__stash}{builder} || MT::Builder->new;
     my $page_layout;
     if ( my $blog_id = $tmpl->blog_id ) {

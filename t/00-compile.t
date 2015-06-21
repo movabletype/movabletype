@@ -413,6 +413,64 @@ use_ok('MT::AccessToken');
 use_ok('MT::Stats');
 use_ok('MT::Stats::Provider');
 
+# Data API v2.
+use_ok('MT::DataAPI::Callback::Widget');
+use_ok('MT::DataAPI::Callback::Asset');
+use_ok('MT::DataAPI::Callback::Template');
+use_ok('MT::DataAPI::Callback::Tag');
+use_ok('MT::DataAPI::Callback::Page');
+use_ok('MT::DataAPI::Callback::Category');
+use_ok('MT::DataAPI::Callback::Folder');
+use_ok('MT::DataAPI::Callback::TemplateMap');
+use_ok('MT::DataAPI::Callback::Role');
+use_ok('MT::DataAPI::Callback::WidgetSet');
+use_ok('MT::DataAPI::Callback::Blog');
+use_ok('MT::DataAPI::Callback::Log');
+use_ok('MT::DataAPI::Callback::Website');
+use_ok('MT::DataAPI::Callback::Plugin');
+
+use_ok('MT::DataAPI::Resource::v2::Asset');
+use_ok('MT::DataAPI::Resource::v2::Template');
+use_ok('MT::DataAPI::Resource::v2::Permission');
+use_ok('MT::DataAPI::Resource::v2::Comment');
+use_ok('MT::DataAPI::Resource::v2::Tag');
+use_ok('MT::DataAPI::Resource::v2::Page');
+use_ok('MT::DataAPI::Resource::v2::Category');
+use_ok('MT::DataAPI::Resource::v2::Folder');
+use_ok('MT::DataAPI::Resource::v2::TemplateMap');
+use_ok('MT::DataAPI::Resource::v2::Trackback');
+use_ok('MT::DataAPI::Resource::v2::Role');
+use_ok('MT::DataAPI::Resource::v2::Entry');
+use_ok('MT::DataAPI::Resource::v2::Association');
+use_ok('MT::DataAPI::Resource::v2::Blog');
+use_ok('MT::DataAPI::Resource::v2::Log');
+use_ok('MT::DataAPI::Resource::v2::Website');
+use_ok('MT::DataAPI::Resource::v2::User');
+
+use_ok('MT::DataAPI::Resource::Util');
+
+use_ok('MT::DataAPI::Endpoint::v2::Widget');
+use_ok('MT::DataAPI::Endpoint::v2::Asset');
+use_ok('MT::DataAPI::Endpoint::v2::Template');
+use_ok('MT::DataAPI::Endpoint::v2::Permission');
+use_ok('MT::DataAPI::Endpoint::v2::Tag');
+use_ok('MT::DataAPI::Endpoint::v2::Page');
+use_ok('MT::DataAPI::Endpoint::v2::Category');
+use_ok('MT::DataAPI::Endpoint::v2::Folder');
+use_ok('MT::DataAPI::Endpoint::v2::TemplateMap');
+use_ok('MT::DataAPI::Endpoint::v2::Role');
+use_ok('MT::DataAPI::Endpoint::v2::Search');
+use_ok('MT::DataAPI::Endpoint::v2::Entry');
+use_ok('MT::DataAPI::Endpoint::v2::Theme');
+use_ok('MT::DataAPI::Endpoint::v2::WidgetSet');
+use_ok('MT::DataAPI::Endpoint::v2::Blog');
+use_ok('MT::DataAPI::Endpoint::v2::Log');
+use_ok('MT::DataAPI::Endpoint::v2::BackupRestore');
+use_ok('MT::DataAPI::Endpoint::v2::Plugin');
+use_ok('MT::DataAPI::Endpoint::v2::User');
+
+use_ok('MT::App::Search::Common');
+
 SKIP: {
     my @modules
         = qw( parent Plack CGI::PSGI CGI::Parse::PSGI XMLRPC::Transport::HTTP::Plack );

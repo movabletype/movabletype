@@ -15,13 +15,27 @@ require MT::Serialize;
 if ($MT::Serialize::VERSION <= 2) {
   plan skip_all => "This test is for MT::Serialize v3 and higher; the current version is $MT::Serialize::VERSION";
 }
-else {
-  plan tests => 100;
-}
 
 is($MT::Serialize::VERSION, 5, 'Default version is v5');
+is($MT::Serialize::SERIALIZER_VERSION, 2, 'Default serializer version is 2');
 
 my %sers = map { $_ => MT::Serialize->new($_) } qw(MTJ JSON MT MT2 MTS Storable);
+my %ser_versions = (
+  MTJ      => 4,
+  JSON     => undef,
+  MT       => 2,
+  MT2      => 2,
+  MTS      => 3,
+  Storable => undef,
+);
+
+for (qw/ MTS Storable /) {
+  isnt(
+    $ser_versions{$_},
+    $MT::Serialize::SERIALIZER_VERSION,
+    "Serializer version of $_ is not " . $MT::Serialize::SERIALIZER_VERSION,
+  );
+}
 
 my $a = [1];
 my $c = 3;
@@ -54,6 +68,13 @@ for my $label (keys %sers) {
 
   my $frozen = $ser->serialize( $json ? \$data1 : \$data2 );
   my $thawed = ${$ser->unserialize( $frozen )};
+
+  my $ser_version = $ser_versions{$label};
+  is(
+    $ser->serializer_version( $frozen ),
+    $ser_version,
+    'Returns correct serializer version ' . ( defined $ser_version ? $ser_version : '"undef"' ),
+  );
 
   is(ref $thawed, 'ARRAY', 'Returns correct type ARRAYREF');
   is(scalar @$thawed, 3, 'Returns array with 3 elements');
@@ -113,3 +134,4 @@ for my $label (qw(MT2 MTJ MTS)) {
   is($dump, ($label eq 'MTJ' ? $dj : $dn), "Serialize with $label, deserialize with MT, which provides backward compatibility");
 }
 
+done_testing;

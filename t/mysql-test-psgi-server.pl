@@ -22,23 +22,20 @@ eval(
 );
 die $@ if $@;
 
-
 my $port         = 5000;
 my @plugin_paths = ();
 GetOptions(
-    'port=i'       => \$port,
+    'port=i'        => \$port,
     'plugin-path=s' => \@plugin_paths,
 ) or exit(1);
-
 
 my $mt = MT->new;
 $mt->_init_plugins_core( {}, 1, \@plugin_paths ) if @plugin_paths;
 
-
 eval "use MT::PSGI;";
 die $@ if $@;
 
-my $app = MT::PSGI->new()->to_app();
+my $app    = MT::PSGI->new()->to_app();
 my $loader = Plack::Loader->load(
     'Starman',
     port        => $port,

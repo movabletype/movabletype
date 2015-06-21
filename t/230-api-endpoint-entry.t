@@ -3,288 +3,826 @@
 use strict;
 use warnings;
 
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
-    eval { require Test::MockModule }
-        or plan skip_all => 'Test::MockModule is not installed';
-}
-
 use lib qw(lib extlib t/lib);
 
-eval(
-    $ENV{SKIP_REINITIALIZE_DATABASE}
-    ? "use MT::Test qw(:app);"
-    : "use MT::Test qw(:app :db :data);"
-);
+use Test::More;
+use MT::Test::DataAPI;
+use MT::Test::Permission;
 
 use MT::App::DataAPI;
-my $app    = MT::App::DataAPI->new;
-my $author = MT->model('author')->load(1);
+my $app = MT::App::DataAPI->new;
 
-my $mock_author = Test::MockModule->new('MT::Author');
-$mock_author->mock( 'is_superuser', sub {0} );
-my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
-$mock_app_api->mock( 'authenticate', $author );
+my $blog    = $app->model('blog')->load;
+my $website = $app->model('website')->load;
 
-my @suite = (
-    {   path      => '/v1/sites/1/entries',
-        method    => 'GET',
-        callbacks => [
-            {   name  => 'data_api_pre_load_filtered_list.entry',
-                count => 2,
-            },
-        ],
-    },
-    {   path   => '/v1/sites/1/entries',
-        method => 'POST',
-        params => {
-            entry => {
-                title  => 'test-api-permission-entry',
-                status => 'Draft',
-            },
-        },
-        callbacks => [
-            {   name =>
-                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
-                count => 1,
-            },
-            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-                count => 1,
-            },
-            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-                count => 1,
-            },
-            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-                count => 1,
-            },
-        ],
-        result => sub {
-            require MT::Entry;
-            MT->model('entry')->load(
-                {   title  => 'test-api-permission-entry',
-                    status => MT::Entry::HOLD(),
-                }
-            );
-        },
-        complete => sub {
-            my ( $data, $body ) = @_;
-            require MT::Entry;
-            my $entry = MT->model('entry')->load(
-                {   title  => 'test-api-permission-entry',
-                    status => MT::Entry::HOLD(),
-                }
-            );
-            is( $entry->revision, 1, 'Has created new revision' );
-        },
-    },
-    {   path      => '/v1/sites/1/entries/0',
-        method    => 'GET',
-        code      => 404,
-    },
-    {   path      => '/v1/sites/1/entries/1',
-        method    => 'GET',
-        callbacks => [
-            {   name =>
-                    'MT::App::DataAPI::data_api_view_permission_filter.entry',
-                count => 1,
-            },
-        ],
-    },
-    {   path   => '/v1/sites/1/entries/1',
-        method => 'PUT',
-        setup  => sub {
-            my ($data) = @_;
-            $data->{_revision} = MT->model('entry')->load(1)->revision || 0;
-        },
-        params =>
-            { entry => { title => 'update-test-api-permission-entry', }, },
-        callbacks => [
-            {   name =>
-                    'MT::App::DataAPI::data_api_save_permission_filter.entry',
-                count => 1,
-            },
-            {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
-                count => 1,
-            },
-            {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
-                count => 1,
-            },
-            {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
-                count => 1,
-            },
-        ],
-        result => sub {
-            MT->model('entry')->load(
-                {   id    => 1,
-                    title => 'update-test-api-permission-entry',
-                }
-            );
-        },
-        complete => sub {
-            my ( $data, $body ) = @_;
-            is( MT->model('entry')->load(1)->revision - $data->{_revision},
-                1, 'Bumped-up revision number' );
-        },
-    },
-    {   path   => '/v1/sites/1/entries/1',
-        method => 'PUT',
-        params =>
-            { entry => { tags => [qw(a)] }, },
-        complete => sub {
-            is_deeply([MT->model('entry')->load(1)->tags], [qw(a)], "Entry's tag is updated");
-        },
-    },
-    {   path   => '/v1/sites/1/entries/1',
-        method => 'PUT',
-        params =>
-            { entry => { tags => [qw(a b)] }, },
-        complete => sub {
-            is_deeply([MT->model('entry')->load(1)->tags], [qw(a b)], "Entry's tag is added");
-        },
-    },
-    {   path   => '/v1/sites/1/entries/1',
-        method => 'PUT',
-        params =>
-            { entry => { tags => [] }, },
-        complete => sub {
-            is_deeply([MT->model('entry')->load(1)->tags], [], "Entry's tag is removed");
-        },
-    },
-    {   path      => '/v1/sites/1/entries/1',
-        method    => 'DELETE',
-        callbacks => [
-            {   name =>
-                    'MT::App::DataAPI::data_api_delete_permission_filter.entry',
-                count => 1,
-            },
-            {   name  => 'MT::App::DataAPI::data_api_post_delete.entry',
-                count => 1,
-            },
-        ],
-        complete => sub {
-            my $deleted = MT->model('entry')->load(1);
-            is( $deleted, undef, 'deleted' );
-        },
-    },
-    {   path      => '/v1/sites/2/entries',
-        method    => 'GET',
-        callbacks => [
-            {   name  => 'data_api_pre_load_filtered_list.entry',
-                count => 1,
-            },
-        ],
-    },
-);
+my $website_category
+    = MT::Test::Permission->make_category( blog_id => $website->id, );
+my $blog_folder = $app->model('folder')->load( { blog_id => $blog->id, } );
 
-my %callbacks = ();
-my $mock_mt   = Test::MockModule->new('MT');
-$mock_mt->mock(
-    'run_callbacks',
-    sub {
-        my ( $app, $meth, @param ) = @_;
-        $callbacks{$meth} ||= [];
-        push @{ $callbacks{$meth} }, \@param;
-        $mock_mt->original('run_callbacks')->(@_);
-    }
-);
+my $website_asset
+    = MT::Test::Permission->make_asset( blog_id => $website->id, );
 
-my $format = MT::DataAPI::Format->find_format('json');
+my $suite = suite();
+test_data_api($suite);
 
-for my $data (@suite) {
-    $data->{setup}->($data) if $data->{setup};
+done_testing;
 
-    my $path = $data->{path};
-    $path
-        =~ s/:(?:(\w+)_id)|:(\w+)/ref $data->{$1} ? $data->{$1}->id : $data->{$2}/ge;
-
-    my $params
-        = ref $data->{params} eq 'CODE'
-        ? $data->{params}->($data)
-        : $data->{params};
-
-    my $note = $path;
-    if ( lc $data->{method} eq 'get' && $data->{params} ) {
-        $note .= '?'
-            . join( '&',
-            map { $_ . '=' . $data->{params}{$_} }
-                keys %{ $data->{params} } );
-    }
-    $note .= ' ' . $data->{method};
-    $note .= ' ' . $data->{note} if $data->{note};
-    note($note);
-
-    %callbacks = ();
-    _run_app(
-        'MT::App::DataAPI',
-        {   __path_info      => $path,
-            __request_method => $data->{method},
-            ( $data->{upload} ? ( __test_upload => $data->{upload} ) : () ),
-            (   $params
-                ? map {
-                    $_ => ref $params->{$_}
-                        ? MT::Util::to_json( $params->{$_} )
-                        : $params->{$_};
+sub suite {
+    return +[
+        {   path      => '/v1/sites/1/entries',
+            method    => 'GET',
+            callbacks => [
+                {   name  => 'data_api_pre_load_filtered_list.entry',
+                    count => 2,
+                },
+            ],
+        },
+        {   path   => '/v1/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title  => 'test-api-permission-entry',
+                    status => 'Draft',
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                require MT::Entry;
+                MT->model('entry')->load(
+                    {   title  => 'test-api-permission-entry',
+                        status => MT::Entry::HOLD(),
                     }
-                    keys %{$params}
-                : ()
-            ),
-        }
-    );
-    my $out = delete $app->{__test_output};
-    my ( $headers, $body ) = split /^\s*$/m, $out, 2;
-    my %headers = map {
-        my ( $k, $v ) = split /\s*:\s*/, $_, 2;
-        $v =~ s/(\r\n|\r|\n)\z//;
-        lc $k => $v
-        }
-        split /\n/, $headers;
-    my $expected_status = $data->{code} || 200;
-    is( $headers{status}, $expected_status, 'Status ' . $expected_status );
-    if ( $data->{next_phase_url} ) {
-        like(
-            $headers{'x-mt-next-phase-url'},
-            $data->{next_phase_url},
-            'X-MT-Next-Phase-URL'
-        );
-    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                require MT::Entry;
+                my $entry = MT->model('entry')->load(
+                    {   title  => 'test-api-permission-entry',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+                is( $entry->revision, 1, 'Has created new revision' );
+            },
+        },
+        {   path   => '/v1/sites/1/entries/0',
+            method => 'GET',
+            code   => 404,
+        },
+        {   path      => '/v1/sites/1/entries/1',
+            method    => 'GET',
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_view_permission_filter.entry',
+                    count => 1,
+                },
+            ],
+        },
+        {   path   => '/v1/sites/1/entries/1',
+            method => 'PUT',
+            setup  => sub {
+                my ($data) = @_;
+                $data->{_revision}
+                    = MT->model('entry')->load(1)->revision || 0;
+            },
+            params => {
+                entry => { title => 'update-test-api-permission-entry', },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('entry')->load(
+                    {   id    => 1,
+                        title => 'update-test-api-permission-entry',
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                is( MT->model('entry')->load(1)->revision
+                        - $data->{_revision},
+                    1,
+                    'Bumped-up revision number'
+                );
+            },
+        },
+        {   path     => '/v1/sites/1/entries/1',
+            method   => 'PUT',
+            params   => { entry => { tags => [qw(a)] }, },
+            complete => sub {
+                is_deeply( [ MT->model('entry')->load(1)->tags ],
+                    [qw(a)], "Entry's tag is updated" );
+            },
+        },
+        {   path     => '/v1/sites/1/entries/1',
+            method   => 'PUT',
+            params   => { entry => { tags => [qw(a b)] }, },
+            complete => sub {
+                is_deeply( [ MT->model('entry')->load(1)->tags ],
+                    [qw(a b)], "Entry's tag is added" );
+            },
+        },
+        {   path     => '/v1/sites/1/entries/1',
+            method   => 'PUT',
+            params   => { entry => { tags => [] }, },
+            complete => sub {
+                is_deeply( [ MT->model('entry')->load(1)->tags ],
+                    [], "Entry's tag is removed" );
+            },
+        },
+        {   path      => '/v1/sites/1/entries/1',
+            method    => 'DELETE',
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_delete_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_delete.entry',
+                    count => 1,
+                },
+            ],
+            complete => sub {
+                my $deleted = MT->model('entry')->load(1);
+                is( $deleted, undef, 'deleted' );
+            },
+        },
+        {   path      => '/v1/sites/2/entries',
+            method    => 'GET',
+            callbacks => [
+                {   name  => 'data_api_pre_load_filtered_list.entry',
+                    count => 1,
+                },
+            ],
+        },
 
-    foreach my $cb ( @{ $data->{callbacks} } ) {
-        my $params_list = $callbacks{ $cb->{name} } || [];
-        if ( my $params = $cb->{params} ) {
-            for ( my $i = 0; $i < scalar(@$params); $i++ ) {
-                is_deeply( $params_list->[$i], $cb->{params}[$i] );
+        # version 2
+
+        # create_entry - irregular tests.
+        {    # Attach non-existent category.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title      => 'test-api-attach-categories-to-entry',
+                    status     => 'Draft',
+                    categories => [ { id => 100 } ],
+                },
+            },
+            code  => 400,
+            error => "'categories' parameter is invalid.",
+        },
+        {    # Attach category of other site.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title      => 'test-api-attach-categories-to-entry',
+                    status     => 'Draft',
+                    categories => [ { id => $website_category->id } ],
+                },
+            },
+            code  => 400,
+            error => "'categories' parameter is invalid.",
+        },
+        {    # Attach folder.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title      => 'test-api-attach-categories-to-entry',
+                    status     => 'Draft',
+                    categories => [ { id => $blog_folder->id } ],
+                },
+            },
+            code  => 400,
+            error => "'categories' parameter is invalid.",
+        },
+        {    # Attach non-existent asset.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title  => 'test-api-attach-assets-to-entry',
+                    status => 'Draft',
+                    assets => [ { id => 100 } ],
+                },
+            },
+            code  => 400,
+            error => "'assets' parameter is invalid.",
+        },
+        {    # Attach asset in other site.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title  => 'test-api-attach-assets-to-entry',
+                    status => 'Draft',
+                    assets => [ { id => $website_asset->id } ],
+                },
+            },
+            code  => 400,
+            error => "'assets' parameter is invalid.",
+        },
+        {    # Invalid format.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    format => 'invalid',
+                    title  => 'create-entry-with-invalid-format',
+                    body   => <<'__BODY__',
+1. foo
+2. bar
+3. baz
+__BODY__
+                },
+            },
+            code  => 409,
+            error => "Invalid format: invalid\n",
+        },
+
+        # create_entry - normal tests.
+        {    # Attach category.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title      => 'test-api-attach-categories-to-entry',
+                    status     => 'Draft',
+                    categories => [ { id => 2 }, { id => 1 }, { id => 3 } ],
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                require MT::Entry;
+                MT->model('entry')->load(
+                    {   title  => 'test-api-attach-categories-to-entry',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                require MT::Entry;
+                my $entry = MT->model('entry')->load(
+                    {   title  => 'test-api-attach-categories-to-entry',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+                is( $entry->revision, 1, 'Has created new revision' );
+
+                my $got = $app->current_format->{unserialize}->($body);
+                is( scalar @{ $got->{categories} }, 3,
+                    'Attaches 3 category' );
+                is( $got->{categories}->[0]->{id},
+                    2, 'Primary category ID is 2' );
+                is_deeply( [ map { $_->{id} } @{ $got->{categories} } ],
+                    [qw/ 2 1 3 /], 'Attached category IDs are "2 1 3"' );
+            },
+        },
+        {    # Attach assets.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title  => 'test-api-attach-assets-to-entry',
+                    status => 'Draft',
+                    assets => [ { id => 1 } ],
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                require MT::Entry;
+                MT->model('entry')->load(
+                    {   title  => 'test-api-attach-assets-to-entry',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                require MT::Entry;
+                my $entry = MT->model('entry')->load(
+                    {   title  => 'test-api-attach-assets-to-entry',
+                        status => MT::Entry::HOLD(),
+                    }
+                );
+                is( $entry->revision, 1, 'Has created new revision' );
+                my @assets = MT->model('asset')->load(
+                    { class => '*' },
+                    {   join => MT->model('objectasset')->join_on(
+                            'asset_id',
+                            {   object_ds => 'entry',
+                                object_id => $entry->id,
+                                asset_id  => 1,
+                            },
+                        ),
+                    }
+                );
+                is( scalar @assets, 1, 'Attaches an asset' );
+                is( $assets[0]->id, 1, 'Attached asset ID is 1' );
+            },
+        },
+        {    # Set format.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    format => 'markdown',
+                    title  => 'create-entry-with-markdown',
+                    body   => <<'__BODY__',
+1. foo
+2. bar
+3. baz
+__BODY__
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                $app->model('entry')
+                    ->load(
+                    { blog_id => 1, title => 'create-entry-with-markdown' } );
+            },
+        },
+        {    # Set format 0.
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    format => '0',
+                    title  => 'create-entry-with-none',
+                    body   => <<'__BODY__',
+1. foo
+2. bar
+3. baz
+__BODY__
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                $app->model('entry')
+                    ->load(
+                    { blog_id => 1, title => 'create-entry-with-none' } );
+            },
+        },
+
+        # update_entry - irregular tests.
+        {    # Attach non-existent category
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => { entry => { categories => [ id => 200 ] } },
+            code   => 400,
+            error  => "'categories' parameter is invalid.",
+        },
+        {    # Attach category in other site.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => {
+                entry => { categories => [ id => $website_category->id ] }
+            },
+            code  => 400,
+            error => "'categories' parameter is invalid.",
+        },
+        {    # Attach folder.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => { entry => { categories => [ id => 20 ] } },
+            code   => 400,
+            error  => "'categories' parameter is invalid.",
+        },
+
+        # update_entry - normal tests.
+        {    # Attach categories.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => {
+                entry => {
+                    title      => 'test-api-update-categories',
+                    categories => [ { id => 3 }, { id => 2 }, { id => 1 } ]
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('entry')->load(
+                    {   id    => 2,
+                        title => 'test-api-update-categories',
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( scalar @{ $got->{categories} },
+                    3, 'Entry has 3 category' );
+                is( $got->{categories}->[0]->{id},
+                    3, 'Primary category ID is 3' );
+                is_deeply( [ map { $_->{id} } @{ $got->{categories} } ],
+                    [qw/ 3 2 1 /], "Entry's categoy Ids are \"3 2 1\"" );
+            },
+        },
+        {    # Update attached categories.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params =>
+                { entry => { categories => [ { id => 2 }, { id => 3 } ] }, },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('entry')->load(
+                    {   id    => 2,
+                        title => 'test-api-update-categories',
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( scalar @{ $got->{categories} },
+                    2, 'Entry has 2 category' );
+                is( $got->{categories}->[0]->{id},
+                    2, 'Primary category ID is 2' );
+                is_deeply( [ map { $_->{id} } @{ $got->{categories} } ],
+                    [qw/ 2 3 /], "Entry's categoy Ids are \"2 3\"" );
+            },
+        },
+        {    # Attach assets.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => {
+                entry => {
+                    title  => 'test-api-update-assets',
+                    assets => [ { id => 1 }, { id => 2 } ],
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('entry')->load(
+                    {   id    => 2,
+                        title => 'test-api-update-assets',
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $entry = MT->model('entry')->load(2);
+                my @oa    = MT->model('objectasset')->load(
+                    {   object_ds => 'entry',
+                        object_id => $entry->id,
+                    }
+                );
+                is( scalar @oa, 2, 'Entry has 2 assets' );
+            },
+        },
+        {    # Update attached assets.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => {
+                entry => {
+                    title  => 'test-api-update-assets',
+                    assets => [ { id => 2 } ],
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('entry')->load(
+                    {   id    => 2,
+                        title => 'test-api-update-assets',
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $entry = MT->model('entry')->load(2);
+                my @oa    = MT->model('objectasset')->load(
+                    {   object_ds => 'entry',
+                        object_id => $entry->id,
+                    }
+                );
+                is( scalar @oa, 1, 'Entry has 1 asset' );
+            },
+        },
+        {    # Update format.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => {
+                entry => {
+                    format => 'markdown',
+                    body   => <<'__BODY__',
+1. foo
+2. bar
+3. baz
+__BODY__
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            result   => sub { $app->model('entry')->load(2) },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $got      = $app->current_format->{unserialize}->($body);
+                my $expected = $app->model('entry')->load(2);
+
+                isnt( $got->{body}, $expected->text );
+            },
+        },
+
+        # get_entry - normal tests.
+        {    # no_format_filter = 1
+            path      => '/v2/sites/1/entries/2',
+            method    => 'GET',
+            params    => { no_text_filter => 1, },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_view_permission_filter.entry',
+                    count => 1,
+                },
+            ],
+            result   => sub { $app->model('entry')->load(2) },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $got      = $app->current_format->{unserialize}->($body);
+                my $expected = $app->model('entry')->load(2);
+
+                is( $got->{body}, $expected->text, 'no_text_filter = 1.' );
+            },
+        },
+
+        # list_entries_for_asset
+        {   path      => '/v2/sites/1/assets/2/entries',
+            method    => 'GET',
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_view_permission_filter.asset',
+                    count => 1,
+                },
+                {   name  => 'data_api_pre_load_filtered_list.entry',
+                    count => 2,
+                },
+            ],
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+
+                is( $got->{totalResults},     1 );
+                is( $got->{items}->[0]->{id}, 2 );
+            },
+        },
+
+        # list_entries_for_category
+        {   path     => '/v2/sites/1/categories/1/entries',
+            method   => 'GET',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $result = MT::Util::from_json($body);
+
+                my $cat     = MT->model('category')->load(1);
+                my @entries = MT->model('entry')->load(
+                    { class => 'entry' },
+                    {   join => MT->model('placement')->join_on(
+                            'entry_id',
+                            {   blog_id     => $cat->blog_id,
+                                category_id => $cat->id,
+                            },
+                        ),
+                    }
+                );
+
+                is( $result->{totalResults},
+                    scalar @entries,
+                    'Category has ' . scalar @entries . 'entries'
+                );
+
+                my @json_ids = sort { $a <=> $b }
+                    map { $_->{id} } @{ $result->{items} };
+                my @entry_ids = sort { $a <=> $b } map { $_->id } @entries;
+                is_deeply( \@json_ids, \@entry_ids, 'Entry IDs are correct' );
             }
-        }
+        },
 
-        if ( my $c = $cb->{count} ) {
-            is( @$params_list, $c,
-                $cb->{name} . ' was called ' . $c . ' time(s)' );
-        }
-    }
+#        # list_entries_for_tag
+#        {   path      => '/v2/tags/2/entries',
+#            method    => 'GET',
+#            callbacks => [
+#                {   name =>
+#                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
+#                    count => 1,
+#                },
+#                {   name  => 'data_api_pre_load_filtered_list.entry',
+#                    count => 2,
+#                },
+#            ],
+#            result => sub {
+#                my @entry = $app->model('entry')->load(
+#                    undef,
+#                    {   join => $app->model('objecttag')->join_on(
+#                            undef,
+#                            {   blog_id           => \'= entry_blog_id',
+#                                object_id         => \'= entry_id',
+#                                object_datasource => 'entry',
+#                                tag_id            => 2,
+#                            },
+#                        ),
+#                        sort      => 'authored_on',
+#                        direction => 'descend',
+#                    },
+#                );
+#
+#                return +{
+#                    totalResults => scalar @entry,
+#                    items => MT::DataAPI::Resource->from_object( \@entry ),
+#                };
+#            },
+#        },
 
-    if ( my $expected_result = $data->{result} ) {
-        $expected_result = $expected_result->( $data, $body )
-            if ref $expected_result eq 'CODE';
-        if ( UNIVERSAL::isa( $expected_result, 'MT::Object' ) ) {
-            MT->instance->user($author);
-            $expected_result = $format->{unserialize}->(
-                $format->{serialize}->(
-                    MT::DataAPI::Resource->from_object($expected_result)
-                )
-            );
-        }
+        # list_entries_for_site_and_tag
+        {   path      => '/v2/sites/1/tags/2/entries',
+            method    => 'GET',
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_view_permission_filter.tag',
+                    count => 1,
+                },
+                {   name  => 'data_api_pre_load_filtered_list.entry',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                my @entry = $app->model('entry')->load(
+                    { blog_id => 1 },
+                    {   join => $app->model('objecttag')->join_on(
+                            undef,
+                            {   blog_id           => \'= entry_blog_id',
+                                object_id         => \'= entry_id',
+                                object_datasource => 'entry',
+                                tag_id            => 2,
+                            },
+                        ),
+                        sort      => 'authored_on',
+                        direction => 'descend',
+                    },
+                );
 
-        my $result = $format->{unserialize}->($body);
-        is_deeply( $result, $expected_result, 'result' );
-    }
+                return +{
+                    totalResults => scalar @entry,
+                    items => MT::DataAPI::Resource->from_object( \@entry ),
+                };
+            },
+        },
 
-    if ( my $complete = $data->{complete} ) {
-        $complete->( $data, $body );
-    }
+    ];
 }
 
-done_testing();

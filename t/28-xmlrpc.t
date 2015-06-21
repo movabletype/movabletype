@@ -1617,7 +1617,6 @@ my @apis = (
                 mt_tb_ping_urls   => ['http://127.0.0.1/'],
                 dateCreated       => '19770922T15:30:00',
             },
-            1
         ],
         result => sub {
             my ($som) = @_;
@@ -1668,7 +1667,6 @@ my @apis = (
                 mt_tb_ping_urls   => ['http://127.0.0.1/'],
                 dateCreated       => '19770922T15:30:00',
             },
-            1
         ],
         result => sub {
             my ($som) = @_;
