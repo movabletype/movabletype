@@ -800,5 +800,6 @@
 { "r" : "1", "t" : "<MTEntries category='\"testA AND testB\"'></MTEntries>", "e" : "" }, #784
 { "r" : "1", "t" : "<MTEntries category='testA (testb)'></MTEntries>", "e" : "" }, #785
 { "r" : "1", "t" : "<MTEntries category='foo/bar'></MTEntries>", "e" : "" }, #786
-{ "r" : "1", "t" : "<mt:If tag=\"Entries\">true<mt:Else>false</mt:If>", "e" : "true" } #787
+{ "r" : "1", "t" : "<mt:If tag=\"Entries\">true<mt:Else>false</mt:If>", "e" : "true" }, #787
+{ "r" : "1", "t" : "<mt:ignore>foo<mt:ignore>bar</mt:ignore></mt:ignore>", "e" : "" } #788
 ]
