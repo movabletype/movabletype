@@ -19,6 +19,8 @@ cache:
   directories:
     - ./local
     - ${HOME}/image-magick
+    - ${HOME}/perl5/perlbrew/perls/${TRAVIS_PERL_VERSION}/bin
+    - ${HOME}/perl5/perlbrew/perls/${TRAVIS_PERL_VERSION}/lib/site_perl
 
 addons:
   apt_packages:
