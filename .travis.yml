@@ -18,7 +18,6 @@ sudo: false
 cache:
   directories:
     - ./local
-    - ${HOME}/perl5/perlbrew/perls/${TRAVIS_PERL_VERSION}/lib/site_perl
     - ${HOME}/image-magick
 
 addons:
