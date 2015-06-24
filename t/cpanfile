@@ -14,12 +14,14 @@ requires 'File::Spec', '0.8';
 
 requires 'DBI', '1.21';
 requires 'DBD::mysql';
-feature 'mssqlserver', 'MSSQLServer support' => sub {
-    requires 'DBD::ODBC', '1.25';
-};
-feature 'oracle', 'Oracle Database support' => sub {
-    requires 'DBD::Oracle', '1.25';
-};
+
+# TODO: These are installed by carton install.
+#feature 'mssqlserver', 'MSSQLServer support' => sub {
+#    requires 'DBD::ODBC', '1.25';
+#};
+#feature 'oracle', 'Oracle Database support' => sub {
+#    requires 'DBD::Oracle', '1.25';
+#};
 
 ## recommends
 
@@ -45,7 +47,10 @@ requires 'IPC::Run';
 requires 'Storable';
 requires 'Crypt::DSA';
 requires 'Crypt::SSLeay';
-requires 'Cache::File';
+
+# TODO: libdb-dev is needed for installing Cache::File.
+#requires 'Cache::File';
+
 requires 'MIME::Base64';
 requires 'XML::Atom';
 requires 'Cache::Memcached';
