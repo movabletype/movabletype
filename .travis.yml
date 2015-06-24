@@ -43,7 +43,7 @@ install:
   # Instal CPAN modules.
   # Tests fail with Perl 5.10.
   - cpanm --notest XML::Parser::PerlSAX
-  - travis_retry sudo cpanm --installdeps . --cpanfile ./t/cpanfile
+  - travis_retry cpanm --installdeps . --cpanfile ./t/cpanfile
 
   # Build MT.
   #- SHELL=/bin/bash make me
