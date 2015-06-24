@@ -34,7 +34,11 @@ requires 'SOAP::Lite', '0.5';
 requires 'File::Temp';
 requires 'Scalar::Util';
 requires 'List::Util';
-requires 'Image::Magick';
+
+# Image::Magick is not installed by using cpanfile
+# on CI services.
+#requires 'Image::Magick';
+
 requires 'GD';
 requires 'Imager';
 requires 'IPC::Run';
@@ -73,6 +77,7 @@ requires 'YAML::Syck';
 
 on 'test' => sub {
     requires 'Clone';
+    requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';
     requires 'HTTP::DAV';
