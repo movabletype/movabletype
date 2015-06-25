@@ -71,5 +71,5 @@ before_script:
   - rm t/90-podcoverage.t
 
 script:
-  - bash -c "PERL_HASH_SEED=0 carton exec -- prove --rc=t/rcfile-travis --rules='seq=plugins/{Markdown,Textile}/t/0{2,3}.*.t' --rules='par=**' t plugins/*/t && phpunit"
+  - bash -c "PERL_HASH_SEED=0 carton exec -- prove --rc=t/rcfile-travis --rules='seq=plugins/Markdown/t/02.tags.t' --rules='seq=plugins/Markdown/t/03.text_filters.t' --rules='seq=plugins/Textile/t/02.tags.t' --rules='seq=plugins/Textile/t/03.text_filters.t' --rules='par=**' t plugins/*/t && phpunit"
 
