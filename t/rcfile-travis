@@ -1,5 +1,3 @@
 -PMySQLPool
--j4
--s
-
-t plugins/*/t
+--jobs 4
+--shuffle
