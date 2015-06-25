@@ -97,28 +97,32 @@ BEGIN {
 }
 
 # Parallel test.
-my $mysqld;
+my ( $mysqld, $cfg_file, $db_file );
+
+END {
+    unlink $cfg_file if $cfg_file;
+    unlink $db_file  if $db_file;
+}
+
 if ( $ENV{PERL_TEST_MYSQLPOOL_DSN} && -f $ENV{MT_CONFIG} ) {
     if ( $ENV{MT_CONFIG} =~ /sqlite-test\.cfg$/ ) {
-        my $cfg_file
+        $cfg_file
             = File::Spec->catfile( $ENV{MT_HOME}, "t", "sqlite-test-$$.cfg" );
-        my $db_file = File::Spec->catfile( 'db', "mt-$$.db" );
+        $db_file = File::Spec->catfile( 'db', "mt-$$.db" );
 
         system "cp $ENV{MT_CONFIG} $cfg_file";
         $ENV{MT_CONFIG} = $cfg_file;
         system
             qq( perl -i -pe "s{Database db/mt\.db}{Database $db_file}" $cfg_file );
-        END { unlink $cfg_file, $db_file }
     }
     else {
         my ($socket)
             = $ENV{PERL_TEST_MYSQLPOOL_DSN} =~ /mysql_socket=([^;]+);/;
 
-        my $cfg_file = $ENV{MT_CONFIG};
+        $cfg_file = $ENV{MT_CONFIG};
         $cfg_file =~ s/\.cfg$/-$$\.cfg/;
         system "cp $ENV{MT_CONFIG} $cfg_file";
         $ENV{MT_CONFIG} = $cfg_file;
-        END { unlink $cfg_file }
 
         system qq( echo "DBSocket $socket" >> $cfg_file );
 
