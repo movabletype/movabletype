@@ -14,12 +14,14 @@ requires 'File::Spec', '0.8';
 
 requires 'DBI', '1.21';
 requires 'DBD::mysql';
-feature 'mssqlserver', 'MSSQLServer support' => sub {
-    requires 'DBD::ODBC', '1.25';
-};
-feature 'oracle', 'Oracle Database support' => sub {
-    requires 'DBD::Oracle', '1.25';
-};
+
+# TODO: These are installed by carton install.
+#feature 'mssqlserver', 'MSSQLServer support' => sub {
+#    requires 'DBD::ODBC', '1.25';
+#};
+#feature 'oracle', 'Oracle Database support' => sub {
+#    requires 'DBD::Oracle', '1.25';
+#};
 
 ## recommends
 
@@ -34,14 +36,21 @@ requires 'SOAP::Lite', '0.5';
 requires 'File::Temp';
 requires 'Scalar::Util';
 requires 'List::Util';
-requires 'Image::Magick';
+
+# Image::Magick is not installed by using cpanfile
+# on CI services.
+#requires 'Image::Magick';
+
 requires 'GD';
 requires 'Imager';
 requires 'IPC::Run';
 requires 'Storable';
 requires 'Crypt::DSA';
 requires 'Crypt::SSLeay';
-requires 'Cache::File';
+
+# TODO: libdb-dev is needed for installing Cache::File.
+#requires 'Cache::File';
+
 requires 'MIME::Base64';
 requires 'XML::Atom';
 requires 'Cache::Memcached';
@@ -74,6 +83,7 @@ requires 'YAML::Syck';
 on 'test' => sub {
     requires 'App::Prove::Plugin::MySQLPool';
     requires 'Clone';
+    requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';
     requires 'DBIx::ParseDSN';

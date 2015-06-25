@@ -727,6 +727,7 @@ sub prepare_context {
         $app->blog($blog);
         $ctx->stash( 'blog_id', $blog_id );
         $ctx->stash( 'blog',    $blog );
+        $ctx->stash( 'search_blog_id', $blog_id );
     }
 
     # some basic search parameters
