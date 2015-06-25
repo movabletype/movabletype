@@ -86,7 +86,6 @@ on 'test' => sub {
     requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';
-    requires 'DBIx::ParseDSN';
     requires 'HTTP::DAV';
     requires 'Net::SFTP';
     requires 'PHP::Serialization';

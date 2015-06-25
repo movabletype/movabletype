@@ -111,9 +111,8 @@ if ( $ENV{PERL_TEST_MYSQLPOOL_DSN} && -f $ENV{MT_CONFIG} ) {
         END { unlink $cfg_file, $db_file }
     }
     else {
-        use DBIx::ParseDSN;
-        my $dsn    = parse_dsn( $ENV{PERL_TEST_MYSQLPOOL_DSN} );
-        my $socket = $dsn->{attr}{mysql_socket};
+        my ($socket)
+            = $ENV{PERL_TEST_MYSQLPOOL_DSN} =~ /mysql_socket=([^;]+);/;
 
         my $cfg_file = $ENV{MT_CONFIG};
         $cfg_file =~ s/\.cfg$/-$$\.cfg/;
