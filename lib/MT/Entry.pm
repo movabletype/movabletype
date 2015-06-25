@@ -1940,7 +1940,7 @@ sub attach_assets {
     my @attach_assets;
     my @current_oa = MT->model('objectasset')->load(
         {   blog_id   => $obj->blog->id,
-            object_ds => $obj->class,
+            object_ds => 'entry',
             object_id => $obj->id,
             asset_id  => [ map { $_->id } @assets ],
         },
@@ -1955,7 +1955,7 @@ sub attach_assets {
         my $oa = MT->model('objectasset')->new;
         $oa->set_values(
             {   blog_id   => $obj->blog->id,
-                object_ds => $obj->class,
+                object_ds => 'entry',
                 object_id => $obj->id,
                 asset_id  => $asset->id,
             }
