@@ -78,7 +78,7 @@ SKIP:
         my $block = shift;
 
         if ( $block->expected_dynamic ) {
-            open2( my $php_in, my $php_out, 'php' );
+            open2( my $php_in, my $php_out, 'php -q' );
             print $php_out &php_test_script( $block->template, $block->text );
             close $php_out;
             my $php_result = do { local $/; <$php_in> };
