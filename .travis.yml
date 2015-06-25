@@ -71,5 +71,5 @@ before_script:
   - rm t/90-podcoverage.t
 
 script:
-  - bash -c "PERL_HASH_SEED=0 carton exec prove -PMySQLPool -j4 -s t plugins/*/t && phpunit"
+  - bash -c "PERL_HASH_SEED=0 carton exec -- prove --rc=./t/rcfile-travis && phpunit"
 

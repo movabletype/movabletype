@@ -1,0 +1,5 @@
+-PMySQLPool
+-j4
+-s
+
+t plugins/*/t
