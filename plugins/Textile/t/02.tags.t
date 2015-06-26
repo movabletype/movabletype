@@ -3,13 +3,18 @@
 use strict;
 use warnings;
 
-use lib qw(lib);
+use lib qw(lib t/lib);
 
 use IPC::Open2;
 
 use Test::Base;
 plan tests => 1 * blocks;
 
+BEGIN {
+    $ENV{MT_CONFIG} ||= 'mysql-test.cfg';
+}
+
+use MT::Test qw( :app :db );
 use MT;
 my $app = MT->instance;
 
@@ -35,12 +40,12 @@ run {
 };
 
 sub php_test_script {
-    my ($template, $text) = @_;
+    my ( $template, $text ) = @_;
     $text ||= '';
     my $test_script = <<PHP;
 <?php
-\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
-\$MT_CONFIG = '@{[ $app->find_config ]}';
+\$MT_HOME   = '@{[ $ENV{MT_HOME} ]}';
+\$MT_CONFIG = '@{[ $ENV{MT_CONFIG} ]}';
 \$tmpl = <<<__TMPL__
 $template
 __TMPL__
@@ -71,7 +76,8 @@ PHP
 SKIP:
 {
     unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
-        skip "Can't find executable file: php", 1 * blocks('expected_dynamic');
+        skip "Can't find executable file: php",
+            1 * blocks('expected_dynamic');
     }
 
     run {

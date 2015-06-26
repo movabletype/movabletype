@@ -3,13 +3,18 @@
 use strict;
 use warnings;
 
-use lib qw(lib);
+use lib qw(lib t/lib);
 
 use IPC::Open2;
 
 use Test::Base;
 plan tests => 2 * blocks;
 
+BEGIN {
+    $ENV{MT_CONFIG} ||= 'mysql-test.cfg';
+}
+
+use MT::Test qw( :app :db );
 use MT;
 my $app = MT->instance;
 
@@ -36,12 +41,12 @@ run {
 };
 
 sub php_test_script {
-    my ($template, $text) = @_;
+    my ( $template, $text ) = @_;
     $text ||= '';
     my $test_script = <<PHP;
 <?php
-\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
-\$MT_CONFIG = '@{[ $app->find_config ]}';
+\$MT_HOME   = '@{[ $ENV{MT_HOME} ]}';
+\$MT_CONFIG = '@{[ $ENV{MT_CONFIG} ]}';
 \$tmpl = <<<__TMPL__
 $template
 __TMPL__
@@ -91,7 +96,6 @@ SKIP:
         is( $php_result, $block->textile_2, $block->name . ' - dynamic' );
     };
 }
-
 
 __END__
 
