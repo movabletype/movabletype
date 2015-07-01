@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use Test::More tests => 3;
-use CGI;
 
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
@@ -12,6 +11,8 @@ BEGIN {
 
 use lib qw( t/lib t );
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+
+use CGI;
 
 use MT::Test qw( :cms :db :data );
 

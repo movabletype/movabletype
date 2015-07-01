@@ -431,7 +431,7 @@ class MT {
         isset($cfg['usersessioncookietimeout']) or
             $cfg['usersessioncookietimeout'] = 60*60*4;
         isset($cfg['commenterregistration']) or
-            $cfg['commenterregistration'] = array('allow' => 1 );
+            $cfg['commenterregistration'] = array('Allow' => 1 );
         isset($cfg['userpasswordminlength']) or
             $cfg['userpasswordminlength'] = 8;
         isset($cfg['bulkloadmetaobjectslimit']) or

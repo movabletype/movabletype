@@ -674,11 +674,11 @@ sub to_hash {
 
 sub visible {
     my $ping = shift;
-    return $ping->SUPER::visible unless @_;
+    return $ping->column('visible') unless @_;
 
     ## Note transitions in visibility in the object, so that
     ## other methods can act appropriately.
-    my $was_visible = $ping->SUPER::visible || 0;
+    my $was_visible = $ping->column('visible') || 0;
     my $is_visible = shift || 0;
 
     my $vis_delta = 0;
@@ -691,7 +691,7 @@ sub visible {
     $ping->{__changed}{visibility} = $vis_delta;
 
     $ping->junk_status(NOT_JUNK) if $is_visible;
-    return $ping->SUPER::visible($is_visible);
+    return $ping->column( 'visible', $is_visible );
 }
 
 sub get_status_text {

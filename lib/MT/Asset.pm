@@ -388,6 +388,60 @@ sub list_props {
             display         => 'none',
             filter_editable => 0,
         },
+        missing_file => {
+            base        => '__virtual.single_select',
+            label       => 'Missing File',
+            singleton   => 1,
+            filter_tmpl => sub {
+                my $file = MT->translate('File');
+                return <<"__FILTER_TMPL__";
+<mt:setvar name="label" value="$file">
+<mt:var name="filter_form_single_select">
+__FILTER_TMPL__
+            },
+            single_select_options => [
+                { label => MT->translate('missing'), value => 1, },
+                { label => MT->translate('extant'),  value => 0, },
+            ],
+            label_via_param => sub {
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                if ($val) {
+                    return MT->translate('Assets with Missing File');
+                }
+                else {
+                    return MT->translate('Assets with Extant File');
+                }
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+
+                my $filter;
+
+                require MT::FileMgr;
+                my $fmgr = MT::FileMgr->new('Local');
+                if ( $args->{value} ) {
+                    $filter = sub { !$fmgr->exists( $_[0] ) };
+                }
+                else {
+                    $filter = sub { $fmgr->exists( $_[0] ) };
+                }
+
+                my @id;
+
+                require MT::Asset;
+                my $iter = MT::Asset->load_iter( $db_terms, $db_args );
+                while ( my $asset = $iter->() ) {
+                    push @id, $asset->id
+                        if defined $asset->file_path
+                        && $asset->file_path ne ''
+                        && $filter->( $asset->file_path );
+                }
+
+                return +{ id => @id ? \@id : 0 };
+            },
+        },
     };
 }
 
@@ -443,6 +497,18 @@ sub system_filters {
         order => 10000,
     };
 
+    $filters{missing_file} = {
+        label => 'Assets with Missing File',
+        items => [ { type => 'missing_file', args => { value => 1 }, } ],
+        order => 10100,
+    };
+
+    $filters{extant_file} = {
+        label => 'Assets with Extant File',
+        items => [ { type => 'missing_file', args => { value => 0 }, } ],
+        order => 10200,
+    };
+
     return \%filters;
 }
 
@@ -469,12 +535,12 @@ sub extensions {
 # This property is a meta-property.
 sub file_path {
     my $asset = shift;
-    my $path  = $asset->SUPER::file_path(@_);
+    my $path = $asset->column( 'file_path', @_ );
     return $path if defined($path) && ( $path !~ m!^\$! ) && ( -f $path );
 
     $path = $asset->cache_property(
         sub {
-            my $path = $asset->SUPER::file_path();
+            my $path = $asset->column('file_path');
             if ( $path && ( $path =~ m!^\%([ras])! ) ) {
                 my $blog = $asset->blog;
                 my $root
@@ -494,13 +560,13 @@ sub file_path {
 
 sub url {
     my $asset = shift;
-    my $url   = $asset->SUPER::url(@_);
+    my $url = $asset->column( 'url', @_ );
     return $url
         if defined($url) && ( $url !~ m!^\%! ) && ( $url =~ m!^https?://! );
 
     $url = $asset->cache_property(
         sub {
-            my $url = $asset->SUPER::url();
+            my $url = $asset->column('url');
             if ( $url =~ m!^\%([ras])! ) {
                 my $blog = $asset->blog;
                 my $root
@@ -631,8 +697,9 @@ sub blog {
         && $asset->{__blog}
         && ( $asset->{__blog}->id == $blog_id );
     require MT::Blog;
-    return $asset->{__blog} = MT::Blog->load($blog_id)
+    $asset->{__blog} = MT::Blog->load($blog_id)
         or return $asset->error("Failed to load blog for file");
+    return $asset->{__blog};
 }
 
 # Returns a true/false response based on whether the active package
@@ -724,7 +791,7 @@ sub thumbnail_url {
     if ( my ( $thumbnail_file, $w, $h ) = $asset->thumbnail_file(@_) ) {
         return $asset->stock_icon_url(@_) if !defined $thumbnail_file;
         my $file            = File::Basename::basename($thumbnail_file);
-        my $asset_file_path = $asset->SUPER::file_path();
+        my $asset_file_path = $asset->column('file_path');
         my $site_url;
         my $blog = $asset->blog;
         if ( !$blog ) {
@@ -830,7 +897,7 @@ sub _make_cache_path {
         $path = $merge_path if $merge_path;
     }
 
-    my $asset_file_path = $asset->SUPER::file_path();
+    my $asset_file_path = $asset->column('file_path');
     my $format;
     my $root_path;
     if ( !$blog ) {
@@ -889,7 +956,7 @@ sub can_create_thumbnail {
     require File::Spec;
 
     my $path            = MT->config('AssetCacheDir');
-    my $asset_file_path = $asset->SUPER::file_path();
+    my $asset_file_path = $asset->column('file_path');
     my $root_path;
     if ( !$blog ) {
         $root_path = MT->instance->support_directory_path;

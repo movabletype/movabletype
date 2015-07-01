@@ -501,7 +501,7 @@
 { "r" : "1", "t" : "<MTUserSessionCookieName>", "e" : "mt_blog_user"}, #500
 { "r" : "1", "t" : "<MTUserSessionCookiePath>", "e" : "/"}, #501
 { "r" : "1", "t" : "<MTUserSessionCookieTimeout>", "e" : "14400"}, #502
-{ "r" : "1", "t" : "<MTWebsiteCommentCount>", "e" : "0"}, #503
+{ "r" : "1", "t" : "<MTWebsiteCommentCount>", "e" : "1"}, #503
 { "r" : "1", "t" : "<MTWebsiteHost>", "e" : "narnia.na"}, #504
 { "r" : "1", "t" : "<MTWebsiteIfCommentsOpen>Opened</MTWebsiteIfCommentsOpen>", "e" : "Opened"}, #505
 { "r" : "1", "t" : "<MTWebsitePageCount>", "e" : "1"}, #506
@@ -687,8 +687,8 @@
 { "r" : "1", "t" : "<MTWebsiteCCLicenseImage>", "e" : "http://creativecommons.org/images/public/somerights20.gif"}, #671
 { "r" : "1", "t" : "<MTWebsiteFileExtension>", "e" : ".html"}, #672
 { "r" : "1", "t" : "<MTWebsiteCommentCount site_ids='1'>", "e" : "9"}, #673
-{ "r" : "1", "t" : "<MTWebsiteCommentCount site_ids='1' blog_ids='2'>", "e" : "0"}, #674
-{ "r" : "1", "t" : "<MTWebsiteCommentCount site_ids='1' include_blogs='2'>", "e" : "0"}, #675
+{ "r" : "1", "t" : "<MTWebsiteCommentCount site_ids='1' blog_ids='2'>", "e" : "1"}, #674
+{ "r" : "1", "t" : "<MTWebsiteCommentCount site_ids='1' include_blogs='2'>", "e" : "1"}, #675
 { "r" : "1", "t" : "<MTWebsiteCommentCount site_ids='1' include_websites='2'>", "e" : "9"}, #676
 { "r" : "1", "t" : "<MTWebsitePageCount site_ids='1'>", "e" : "4"}, #677
 { "r" : "1", "t" : "<MTWebsitePageCount site_ids='1' blog_ids='2'>", "e" : "1"}, #678
@@ -770,5 +770,36 @@
 { "r" : "1", "t" : "<mt:setvarblock name=\"str\"><p>abcde<br>abcde<br>abcde<br></p></mt:setvarblock><$mt:var name=\"str\" sanitize=\"br\"$>", "e" : "abcde<br>abcde<br>abcde<br>" }, #754
 { "r" : "1", "t" : "<MTBlogs blog_ids=\"1\"><MTWebsiteHasBlog>true<MTElse>false</MTWebsiteHasBlog></MTBlogs>", "e" : "true" }, #755
 { "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\" sort_method=\"{ $a->label cmp $b->label }\"><MTCategoryLabel></MTSubCategories>", "e" : "barfoo"}, #756
-{ "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\" sort_method=\"SortMethod::sort\"><MTCategoryLabel></MTSubCategories>", "e" : "barfoo"} #757
+{ "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\" sort_method=\"SortMethod::sort\"><MTCategoryLabel></MTSubCategories>", "e" : "barfoo"}, #757
+{ "r" : "1", "t" : "<MTArchiveList archive_type=\"Individual\"><mt:EntryID>:<$mt:CategoryID$>;</MTArchiveList>", "e" : "1:;8:;7:3;6:1;5:;4:;"}, #758
+{ "r" : "1", "t" : "<MTArchiveList archive_type=\"Individual\"><mt:EntryID>:<$mt:CategoryDescription$>;</MTArchiveList>", "e" : "1:;8:;7:subcat;6:bar;5:;4:;"}, #759
+{ "r" : "1", "t" : "<MTArchiveList archive_type=\"Individual\"><mt:EntryID>:<$mt:CategoryArchiveLink$>;</MTArchiveList>", "e" : "1:;8:;7:http://narnia.na/nana/archives/foo/subfoo/;6:http://narnia.na/nana/archives/foo/;5:;4:;"}, #760
+{ "r" : "1", "t" : "<MTArchiveList archive_type=\"Individual\"><mt:EntryID>:<$mt:CategoryCount$>;</MTArchiveList>", "e" : "1:;8:;7:1;6:1;5:;4:;"}, #761
+{ "r" : "1", "t" : "<MTArchiveList archive_type=\"Individual\"><mt:EntryID>:<$mt:CategoryBaseName$>;</MTArchiveList>", "e" : "1:;8:;7:subfoo;6:foo;5:;4:;"}, #762
+{ "r" : "1", "t" : "<MTArchiveList archive_type=\"Individual\"><mt:EntryID>:<$mt:CategoryLabel$>;</MTArchiveList>", "e" : "1:;8:;7:subfoo;6:foo;5:;4:;"}, #763
+{ "r" : "1", "t" : "<MTArchiveList archive_type=\"Individual\"><mt:EntryID>:<MTCategoryPrevious><MTCategoryLabel></MTCategoryPrevious>;</MTArchiveList>", "e" : "1:;8:;7:;6:;5:;4:;"}, #764
+{ "r" : "1", "t" : "<MTArchiveList archive_type=\"Individual\"><mt:EntryID>:<MTCategoryNext><MTCategoryLabel></MTCategoryNext>;</MTArchiveList>", "e" : "1:;8:;7:;6:;5:;4:;"}, #765
+{ "r" : "1", "t" : "<$mt:setvar name=\"cnt\" value=\"0\"$><MTComments top=\"1\"><$mt:setvar name=\"cnt\" op=\"++\"$></MTComments><$mt:var name=\"cnt\"$>", "e" : "7" }, #766
+{ "r" : "1", "t" : "<MTEntries id=\"1\"><MTEntryCommentCount top=\"1\"></MTEntries>", "e" : "1" }, #767
+{ "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryCommentCount top=\"1\"></MTEntries>", "e" : "3" }, #768
+{ "r" : "1", "t" : "<MTEntries id=\"6\"><MTEntryCategories type=\"primary\"><MTCategoryID>:<MTCategoryCommentCount top=\"1\"></MTEntryCategories></MTEntries>", "e" : "1:3" }, #769
+{ "r" : "1", "t" : "<MTEntries id=\"7\"><MTEntryCategories type=\"primary\"><MTCategoryID>:<MTCategoryCommentCount top=\"1\"></MTEntryCategories></MTEntries>", "e" : "3:0" }, #770
+{ "r" : "1", "t" : "<MTBlogs blog_ids=\"1\"><MTBlogCommentCount top=\"1\"></MTBlogs>", "e" : "7" }, #771
+{ "r" : "1", "t" : "<MTWebsites site_ids=\"2\"><MTWebsiteCommentCount top=\"1\"></MTWebsites>", "e" : "1" }, #772
+{ "r" : "1", "t" : "<MTEntries category='(test'></MTEntries>", "e" : "" }, #773
+{ "r" : "1", "t" : "<MTEntries category='&test'></MTEntries>", "e" : "" }, #774
+{ "r" : "1", "t" : "<MTEntries category='test)'></MTEntries>", "e" : "" }, #775
+{ "r" : "1", "t" : "<MTEntries category='test!'></MTEntries>", "e" : "" }, #776
+{ "r" : "1", "t" : "<MTEntries category='||test'></MTEntries>", "e" : "" }, #777
+{ "r" : "1", "t" : "<MTEntries category='#test'></MTEntries>", "e" : "" }, #778
+{ "r" : "1", "t" : "<MTEntries category='&test'></MTEntries>", "e" : "" }, #779
+{ "r" : "1", "t" : "<MTEntries category='testA AND testB'></MTEntries>", "e" : "" }, #780
+{ "r" : "1", "t" : "<MTEntries category='(testA OR testB) AND testC'></MTEntries>", "e" : "" }, #781
+{ "r" : "1", "t" : "<MTEntries category='NOT test'></MTEntries>", "e" : "" }, #782
+{ "r" : "1", "t" : "<MTEntries category=\"'testA AND testB'\"></MTEntries>", "e" : "" }, #783
+{ "r" : "1", "t" : "<MTEntries category='\"testA AND testB\"'></MTEntries>", "e" : "" }, #784
+{ "r" : "1", "t" : "<MTEntries category='testA (testb)'></MTEntries>", "e" : "" }, #785
+{ "r" : "1", "t" : "<MTEntries category='foo/bar'></MTEntries>", "e" : "" }, #786
+{ "r" : "1", "t" : "<mt:If tag=\"Entries\">true<mt:Else>false</mt:If>", "e" : "true" }, #787
+{ "r" : "1", "t" : "<mt:ignore>foo<mt:ignore>bar</mt:ignore></mt:ignore>", "e" : "" } #788
 ]

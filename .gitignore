@@ -36,6 +36,7 @@ plugins/mixiComment
 mt-sp.cgi
 plugins/SmartphoneOption
 mt-static/plugins/SmartphoneOption
+themes/rainier
 themes/eiger
 
 t/site/

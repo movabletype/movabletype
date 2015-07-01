@@ -30,7 +30,8 @@ sub bind_param_attributes {
 sub map_error_code {
     my $dbd = shift;
     my($code, $msg) = @_;
-    if ($msg && $msg =~ /not unique/) {
+
+    if ($msg && $msg =~ /(?:not unique|UNIQUE constraint failed)/) {
         return Data::ObjectDriver::Errors->UNIQUE_CONSTRAINT;
     } else {
         return;
@@ -77,7 +78,7 @@ database through DBI.
 This is experimental.
 
 With the 1.11 version of L<DBD::SQLite> Blobs are handled transparently,
-so C<bind_param_attributes> is optionnal.
+so C<bind_param_attributes> is optional.
 With previous version of L<DBD::SQLite> users have experimented issues
 with binary data in CHAR (partially solved by the DBI::SQL_BINARY binding).
 

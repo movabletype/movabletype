@@ -1,22 +1,64 @@
 ## -*- mode: perl; coding: utf-8 -*-
-requires 'DBI';
+
+## requires
+
+# These modules are installed in extlib directory.
+#requires 'CGI';
+#requires 'Image::Size';
+#requires 'CGI::Cookie';
+#requires 'LWP::UserAgent';
+
+# This is a core module, but there may be the environment
+# that this module is not installed...
+requires 'File::Spec', '0.8';
+
+requires 'DBI', '1.21';
 requires 'DBD::mysql';
+
+# TODO: These are installed by carton install.
+#feature 'mssqlserver', 'MSSQLServer support' => sub {
+#    requires 'DBD::ODBC', '1.25';
+#};
+#feature 'oracle', 'Oracle Database support' => sub {
+#    requires 'DBD::Oracle', '1.25';
+#};
+
+## recommends
+
 requires 'Digest::SHA';
 requires 'Plack';
 requires 'CGI::PSGI';
 requires 'CGI::Parse::PSGI';
-requires 'CGI::Compile';
 requires 'XMLRPC::Transport::HTTP::Plack';
 requires 'HTML::Entities';
 requires 'HTML::Parser';
+requires 'SOAP::Lite', '0.5';
+requires 'File::Temp';
+requires 'Scalar::Util';
+requires 'List::Util';
+
+# Image::Magick is not installed by using cpanfile
+# on CI services.
+#requires 'Image::Magick';
+
+requires 'GD';
 requires 'Imager';
+requires 'IPC::Run';
+requires 'Storable';
 requires 'Crypt::DSA';
 requires 'Crypt::SSLeay';
-requires 'Cache::File';
+
+# TODO: libdb-dev is needed for installing Cache::File.
+#requires 'Cache::File';
+
+requires 'MIME::Base64';
+requires 'XML::Atom';
+requires 'Cache::Memcached';
 requires 'Archive::Tar';
 requires 'IO::Compress::Gzip';
 requires 'IO::Uncompress::Gunzip';
 requires 'Archive::Zip';
+requires 'XML::SAX';
 requires 'Digest::SHA1';
 requires 'Net::SMTP';
 requires 'Authen::SASL';
@@ -24,29 +66,37 @@ requires 'Net::SMTP::SSL';
 requires 'Net::SMTP::TLS';
 requires 'IO::Socket::SSL';
 requires 'Net::SSLeay';
+requires 'Safe';
+requires 'Digest::MD5';
+requires 'Text::Balanced';
 requires 'XML::Parser';
+requires 'Time::HiRes';
+requires 'Mozilla::CA';
+requires 'XML::SAX::ExpatXS';
+requires 'XML::SAX::Expat';
+requires 'XML::LibXML::SAX';
 
-## recommends
-#requires 'Starlet';
-requires 'XML::LibXML';
-#requires 'Server::Starter';
-
-requires 'DBD::SQLite';
-requires 'Net::SFTP';
-requires 'HTTP::DAV';
-requires 'YAML::Syck';
-#requires 'Image::Magick';
-requires 'GD';
-requires 'IPC::Run';
-requires 'Test::Base';
-requires 'Test::MockModule';
-requires 'Test::MockObject';
-requires 'Test::LeakTrace';
-requires 'Test::Class';
-requires 'Math::Pari';
 requires 'Cache::Memcached';
-requires 'Cache::Memcached::Fast';
-requires 'PHP::Serialization';
-#requires 'Term::Gnuplot';
+requires 'CGI::Compile';
+requires 'YAML::Syck';
 
-## % carton exec -- local/bin/start_server --port 8000 --pid-file=log/mt.pid -- plackup -s Starlet --max-workers=2 --access-log=log/access.log mt.psgi >& log/error.log &
+on 'test' => sub {
+    requires 'Clone';
+    requires 'Date::Parse';
+    requires 'DateTime';
+    requires 'DateTime::TimeZone';
+    requires 'HTTP::DAV';
+    requires 'Net::SFTP';
+    requires 'PHP::Serialization';
+    requires 'pQuery';
+    requires 'DBD::SQLite';
+    requires 'Test::Base';
+    requires 'Test::Class';
+    requires 'Test::Data';
+    requires 'Test::Deep';
+    requires 'Test::File';
+    requires 'Test::LeakTrace';
+    requires 'Test::MockModule';
+    requires 'Test::MockObject';
+    requires 'Test::Pod::Coverage';
+};

@@ -163,8 +163,10 @@ sub add_trigger {
                     $row->{link}  = $obj->site_url;
                 }
             },
-            terms => { id  => [$blog_id], },
-            args  => { not => { id => 1 }, },
+            terms => {
+                id => { not => [$blog_id] },
+                class => [ 'website', 'blog' ]
+            },
             params => {
                 panel_type    => 'blog',
                 dialog_title  => $plugin->translate('MultiBlog'),

@@ -66,7 +66,7 @@ sub send_notify {
     my $entry_editurl = $app->uri(
         'mode' => 'view',
         args   => {
-            '_type' => 'entry',
+            '_type' => $entry->class,
             blog_id => $entry->blog_id,
             id      => $entry->id,
         }

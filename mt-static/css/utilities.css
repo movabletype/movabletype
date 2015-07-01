@@ -177,27 +177,22 @@ use monospace font
 }
 .rall {
     border-radius: 5px;
-    -moz-border-radius: 5px;
 }
 .rtop {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-    -moz-border-radius: 5px 5px 0 0;
 }
 .rleft {
     border-top-left-radius: 5px;
-    border-top-left-radius: 5px;
-    -moz-border-radius: 5px 0 5px 0;
+    border-bottom-left-radius: 5px;
 }
 .rright {
     border-top-right-radius: 5px;
-    border-top-right-radius: 5px;
-    -moz-border-radius: 0 5px 0 5px;
+    border-bottom-right-radius: 5px;
 }
 .rbottom {
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
-    -moz-border-radius: 0 0 5px 5px;
 }
 .odd {
     background-color: #fbfbfb;

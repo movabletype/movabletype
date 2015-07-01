@@ -26,7 +26,7 @@ my $mock_cms_common = Test::MockModule->new('MT::CMS::Common');
 $mock_cms_common->mock( 'run_web_services_save_config_callbacks', sub { } );
 
 # $blog->use_revision is always 0 when TrackRevisions is 0.
-$app->config->TrackRevisions(1);
+$app->config->TrackRevisions(1, 1);
 
 my $suite = suite();
 test_data_api($suite);

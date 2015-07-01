@@ -11,7 +11,7 @@ use Data::ObjectDriver::Iterator;
 
 __PACKAGE__->mk_accessors(qw( pk_generator txn_active ));
 
-our $VERSION = '0.08';
+our $VERSION = '0.13';
 our $DEBUG = $ENV{DOD_DEBUG} || 0;
 our $PROFILE = $ENV{DOD_PROFILE} || 0;
 our $PROFILER;
@@ -501,7 +501,7 @@ the database.
 
 This might be much faster and useful for tables without Primary Key,
 but beware that in this case B<Triggers won't be fired> because no
-objects are instanciated.
+objects are instantiated.
 
 =head2 Class->bulk_insert([col1, col2], [[d1,d2], [d1,d2]]);
 
@@ -565,7 +565,7 @@ Modifications to I<$obj> will affect the object passed to subsequent triggers
 and returned from the loading method.
 
 Note I<pre_load> should only be used as a trigger on a class, as the object to
-which the load is occuring was not previously available for triggers to be
+which the load is occurring was not previously available for triggers to be
 added.
 
 =item * pre_search -> ($class, $terms, $args)
@@ -663,7 +663,7 @@ Drivers have to implement the following methods:
 
 =item * rollback
 
-=item * commmit
+=item * commit
 
 =back
 
@@ -760,13 +760,13 @@ has been added specifically for this purpose: C<reuse_dbh>.
 
 =head1 SUPPORTED DATABASES
 
-I<Data::ObjectDriver> is very modular and it's not very diffucult to add new drivers.
+I<Data::ObjectDriver> is very modular and it's not very difficult to add new drivers.
 
 =over 4
 
 =item * MySQL is well supported and has been heavily tested.
 
-=item * PostgreSQL has been been used in production and should just work, too.
+=item * PostgreSQL has been used in production and should just work, too.
 
 =item * SQLite is supported, but YMMV depending on the version. This is the
 backend used for the test suite.
@@ -779,16 +779,6 @@ backend used for the test suite.
 
 I<Data::ObjectDriver> is free software; you may redistribute it and/or modify
 it under the same terms as Perl itself.
-
-=head1 MAILING LIST, CODE & MORE INFORMATION
-
-I<Data::ObjectDriver> developers can be reached via the following group:
-L<http://groups.google.com/group/data-objectdriver>
-
-Bugs should be reported using the CPAN RT system, patches are encouraged when
-reporting bugs.
-
-L<http://code.sixapart.com/>
 
 =head1 AUTHOR & COPYRIGHT
 

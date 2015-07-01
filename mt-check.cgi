@@ -714,20 +714,6 @@ my @CORE_OPT = (
         )
     ],
 
-    [   'Net::SMTP::SSL',
-        0, 0,
-        translate(
-            'Net::SMTP::SSL is required to use SMTP Auth over an SSL connection.'
-        )
-    ],
-
-    [   'Net::SMTP::TLS',
-        0, 0,
-        translate(
-            'Net::SMTP::TLS is required to use SMTP Auth with STARTTLS command.'
-        )
-    ],
-
     [   'IO::Socket::SSL',
         0, 0,
         translate(
@@ -788,9 +774,9 @@ my @CORE_OPT = (
     ],
 
     [   'Mozilla::CA',
-        0, 0,
+        20141217, 0,
         translate(
-            'This module is required for Google Analytics site statistics.'
+            'This module is required for Google Analytics site statistics and for verification of SSL certificate.'
         )
     ],
     [   'Time::HiRes',

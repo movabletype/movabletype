@@ -20,17 +20,6 @@ sub edit {
     return $app->return_to_dashboard( redirect => 1 )
         if $blog && !$id;
 
-    # The inflow from management screen of Websites
-    # is redirected to dashboard.
-    if ( $app->mode eq 'view' && $blog && $blog_id ) {
-        return $app->redirect(
-            $app->uri(
-                mode => 'dashboard',
-                args => { blog_id => $blog_id },
-            )
-        );
-    }
-
     return $app->permission_denied()
         if !$id && !$app->user->can_create_website();
 

@@ -2846,7 +2846,7 @@ sub pre_save {
             $obj->set_tags(@tags);
         }
         else {
-            $obj->remove_tags();
+            $obj->set_tags();
         }
     }
 

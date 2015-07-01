@@ -19,8 +19,18 @@ use File::Spec;
 use File::Temp qw( tempfile );
 use File::Basename;
 use MT;
+use MT::Mail;
 
 use Cwd qw( abs_path );
+
+# Speed-up tests on Windows.
+if ( $^O eq 'MSWin32' ) {
+    no warnings 'redefine';
+    require Net::SSLeay;
+    *Net::SSLeay::RAND_poll = sub () {1};
+    require MT::Util;
+    *MT::Util::check_fast_cgi = sub {0};
+}
 
 MT->add_callback( 'post_init', 1, undef, \&add_plugin_test_libs );
 
@@ -80,6 +90,12 @@ BEGIN {
     *CORE::GLOBAL::sleep = sub { CORE::sleep };
 }
 
+# Suppress output when "MailTransfer debug"
+{
+    no warnings 'redefine';
+    *MT::Mail::_send_mt_debug = sub {1};
+}
+
 sub import {
     my $pkg = shift;
     my @to_export;
@@ -116,7 +132,7 @@ sub init_app {
     $app->instance( $cfg ? ( Config => $cfg ) : () );
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        abs_path( $app->config->SearchTemplatePath ) );
+        File::Spec->rel2abs( $app->config->SearchTemplatePath ) );
 
     # kill __test_output for a new request
     require MT;
@@ -193,9 +209,10 @@ sub init_testdb {
 
     #MT::Upgrade->register_class(['Foo', 'Bar']);
     MT->instance;
-    MT->registry->{object_types}->{foo} = 'Foo';
-    MT->registry->{object_types}->{bar} = 'Bar';
-    MT->registry->{object_types}->{baz} = 'Baz';
+    my $registry = MT->component('core')->registry;
+    $registry->{object_types}->{foo} = 'Foo';
+    $registry->{object_types}->{bar} = 'Bar';
+    $registry->{object_types}->{baz} = 'Baz';
 
     # Replace the standard seed_database/install_template functions
     # with stubs since we're not creating a full schema.
@@ -1016,6 +1033,34 @@ It\'s a hard rain\'s a-gonna fall',
         $cmt->save() or die "Couldn't save comment record 8: " . $cmt->errstr;
     }
 
+    # entry id 24 - 1 comment visible, 1 moderated
+    unless ( MT::Comment->count( { entry_id => 24 } ) ) {
+        my $cmt = new MT::Comment();
+        $cmt->set_values(
+            {   text       => 'Comment for entry 24, visible',
+                entry_id   => 24,
+                author     => 'Comment 24',
+                visible    => 1,
+                email      => '',
+                url        => '',
+                blog_id    => 2,
+                ip         => '127.0.0.1',
+                created_on => '20040614182800',
+            }
+        );
+        $cmt->id(16);
+        $cmt->save()
+            or die "Couldn't save comment record 16: " . $cmt->errstr;
+
+        $cmt->id(17);
+        $cmt->visible(0);
+        $cmt->text('Comment for entry 24, moderated');
+        $cmt->author('JD17');
+        $cmt->created_on('20040812182800');
+        $cmt->save()
+            or die "Couldn't save comment record 17: " . $cmt->errstr;
+    }
+
     require MT::Template;
     require MT::TemplateMap;
 
@@ -1323,6 +1368,8 @@ It\'s a hard rain\'s a-gonna fall',
     );
     $page->id(24);
     $page->tags('@about');
+    $page->comment_count(
+        MT::Comment->count( { entry_id => 24, visible => 1 } ) || 0 );
     $page->save() or die "Couldn't save page record 24: " . $page->errstr;
 
     MT->instance->rebuild( BlogId => 1, );

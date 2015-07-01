@@ -976,6 +976,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Filters::_fltr_encode_xml',
             'encode_js' =>
                 '$Core::MT::Template::Tags::Filters::_fltr_encode_js',
+            'encode_json' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_encode_json',
             'encode_php' =>
                 '$Core::MT::Template::Tags::Filters::_fltr_encode_php',
             'encode_url' =>
@@ -1554,6 +1556,8 @@ sub _hdlr_if {
         $tag =~ s/^MT:?//i;
         require Storable;
         my $local_args = Storable::dclone($args);
+        delete $local_args->{tag};
+        local $ctx->{'__stash'}{'tokens_else'} = undef;
         $value = $ctx->tag( $tag, $local_args, $cond );
         $ctx->{__stash}{vars}{__cond_tag__} = $tag;
     }

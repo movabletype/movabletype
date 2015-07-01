@@ -26,6 +26,10 @@ my $unpublished_page = MT::Test::Permission->make_page(
     status  => 1,    # unpublished
 );
 
+# Clear cacne.
+MT->model('asset')->driver->Disabled(1)
+    if MT->model('asset')->driver->can('Disabled');
+
 my $suite = suite();
 test_data_api($suite);
 

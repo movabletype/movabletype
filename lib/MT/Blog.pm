@@ -14,19 +14,20 @@ use MT::Util;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'                        => 'integer not null auto_increment',
-            'parent_id'                 => 'integer',
-            'theme_id'                  => 'string(255)',
-            'name'                      => 'string(255) not null',
-            'description'               => 'text',
-            'archive_type'              => 'string(255)',
-            'archive_type_preferred'    => 'string(25)',
-            'site_path'                 => 'string(255)',
-            'site_url'                  => 'string(255)',
-            'days_on_index'             => 'integer',
-            'entries_on_index'          => 'integer',
-            'file_extension'            => 'string(10)',
-            'email_new_comments'        => 'boolean',
+            'id'                     => 'integer not null auto_increment',
+            'parent_id'              => 'integer',
+            'theme_id'               => 'string(255)',
+            'name'                   => 'string(255) not null',
+            'description'            => 'text',
+            'archive_type'           => 'string(255)',
+            'archive_type_preferred' => 'string(25)',
+            'site_path'              => 'string(255)',
+            'site_url'               => 'string(255)',
+            'days_on_index'          => 'integer',
+            'entries_on_index'       => 'integer',
+            'file_extension'         => 'string(10)',
+            'email_new_comments' =>
+                'boolean',    # This column can contain integer value.
             'allow_comment_html'        => 'boolean',
             'autolink_urls'             => 'boolean',
             'sort_order_posts'          => 'string(8)',
@@ -53,27 +54,28 @@ __PACKAGE__->install_properties(
             'date_language'             => 'string(5)',
             'welcome_msg'               => 'text',
             'google_api_key'            => 'string(32)',
-            'email_new_pings'           => 'boolean',
-            'ping_blogs'                => 'boolean',
-            'ping_technorati'           => 'boolean',
-            'ping_google'               => 'boolean',
-            'ping_others'               => 'text',
-            'autodiscover_links'        => 'boolean',
-            'sanitize_spec'             => 'string(255)',
-            'cc_license'                => 'string(255)',
-            'is_dynamic'                => 'boolean',
-            'remote_auth_token'         => 'string(50)',
-            'children_modified_on'      => 'datetime',
-            'custom_dynamic_templates'  => 'string(25)',
-            'junk_score_threshold'      => 'float',
-            'internal_autodiscovery'    => 'boolean',
-            'basename_limit'            => 'smallint',
-            'use_comment_confirmation'  => 'boolean',
-            'allow_commenter_regist'    => 'boolean',
-            'use_revision'              => 'boolean',
-            'archive_url'               => 'string(255)',
-            'archive_path'              => 'string(255)',
-            'content_css'               => 'string(255)',
+            'email_new_pings' =>
+                'boolean',    # This column can contain integer value.
+            'ping_blogs'               => 'boolean',
+            'ping_technorati'          => 'boolean',
+            'ping_google'              => 'boolean',
+            'ping_others'              => 'text',
+            'autodiscover_links'       => 'boolean',
+            'sanitize_spec'            => 'string(255)',
+            'cc_license'               => 'string(255)',
+            'is_dynamic'               => 'boolean',
+            'remote_auth_token'        => 'string(50)',
+            'children_modified_on'     => 'datetime',
+            'custom_dynamic_templates' => 'string(25)',
+            'junk_score_threshold'     => 'float',
+            'internal_autodiscovery'   => 'boolean',
+            'basename_limit'           => 'smallint',
+            'use_comment_confirmation' => 'boolean',
+            'allow_commenter_regist'   => 'boolean',
+            'use_revision'             => 'boolean',
+            'archive_url'              => 'string(255)',
+            'archive_path'             => 'string(255)',
+            'content_css'              => 'string(255)',
             ## Have to keep these around for use in mt-upgrade.cgi.
             'old_style_archive_links' => 'boolean',
             'archive_tmpl_daily'      => 'string(255)',
@@ -159,6 +161,28 @@ sub list_props {
             label   => 'Name',
             order   => 200,
             display => 'force',
+            html    => sub {
+                my $prop = shift;
+                my ( $obj, $app, $opts ) = @_;
+                my $name = $obj->name;
+                $name = '' if !defined $name;
+                $name =~ s/^\s+|\s+$//g;
+                my $dashboard_link = $app->uri(
+                    mode => 'dashboard',
+                    args => { blog_id => $obj->id, },
+                );
+                if ( defined $name && $name ne '' ) {
+                    my $can_double_encode = 1;
+                    $name
+                        = MT::Util::encode_html( $name, $can_double_encode );
+                    return qq{<a href="$dashboard_link">$name</a>};
+                }
+                else {
+                    return MT->translate(
+                        qq{[_1] (<a href="[_2]">id:[_3]</a>)},
+                        'No Name', $dashboard_link, $obj->id, );
+                }
+            }
         },
         entry_count => {
             label              => 'Entries',
@@ -530,7 +554,7 @@ sub theme {
 
 sub raw_site_url {
     my $blog = shift;
-    my $site_url = $blog->SUPER::site_url || '';
+    my $site_url = $blog->column('site_url') || '';
     if ( my ( $subdomain, $path ) = split( '/::/', $site_url ) ) {
         if ( $subdomain ne $site_url ) {
             return ( $subdomain, $path );
@@ -545,7 +569,7 @@ sub site_url {
     if (@_) {
         my $url = $_[0];
         $url .= '/' unless $url =~ m{/$};
-        return $blog->SUPER::site_url($url);
+        return $blog->column( 'site_url', $url );
     }
     elsif ( $blog->is_dynamic ) {
         my $cfg  = MT->config;
@@ -563,13 +587,13 @@ sub site_url {
         my $url = '';
         if ( $blog->is_blog() ) {
             if ( my $website = $blog->website() ) {
-                $url = $website->SUPER::site_url;
+                $url = $website->column('site_url');
             }
             else {
 
                 # FIXME: there are a few occasions where
                 # a blog does not have its parent, like (bugid:102749)
-                return $blog->SUPER::site_url;
+                return $blog->column('site_url');
             }
             my @paths = $blog->raw_site_url;
             if ( 2 == @paths ) {
@@ -585,7 +609,7 @@ sub site_url {
             }
         }
         else {
-            $url = $blog->SUPER::site_url;
+            $url = $blog->column('site_url');
         }
 
         return $url;
@@ -595,14 +619,15 @@ sub site_url {
 sub is_site_path_absolute {
     my $blog = shift;
 
-    my $raw_path;
+    my $raw_path = "";
     if ( ref $blog ) {
-        $raw_path = $blog->SUPER::site_path;
+        $raw_path = $blog->column('site_path');
     }
     else {
         $raw_path = $_[0];
     }
 
+    return 0 if !defined $raw_path;
     return 1 if $raw_path =~ m!^/!;
     return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
     return 1 if $raw_path =~ m!^\\\\[a-zA-Z0-9\.]+!;    # UNC
@@ -613,10 +638,10 @@ sub site_path {
     my $blog = shift;
 
     if (@_) {
-        $blog->SUPER::site_path(@_);
+        $blog->column( 'site_path', @_ );
     }
     else {
-        my $raw_path = $blog->SUPER::site_path;
+        my $raw_path = $blog->column('site_path');
         return $raw_path if $blog->is_site_path_absolute;
 
         my $base_path = '';
@@ -640,7 +665,7 @@ sub site_path {
 
 sub raw_archive_url {
     my $blog = shift;
-    my $archive_url = $blog->SUPER::archive_url || '';
+    my $archive_url = $blog->column('archive_url') || '';
     if ( my ( $subdomain, $path ) = split( '/::/', $archive_url ) ) {
         return ( $subdomain, $path );
         if ( $subdomain ne $archive_url ) {
@@ -656,7 +681,7 @@ sub archive_url {
     if (@_) {
         my $url = $_[0];
         $url .= '/' if $url ne "" && $url !~ m{/$};
-        $blog->SUPER::archive_url($url) || $blog->site_url;
+        $blog->column( 'archive_url', $url ) || $blog->site_url;
     }
     elsif ( $blog->is_dynamic ) {
         return $blog->site_url;
@@ -664,9 +689,9 @@ sub archive_url {
     else {
         my $url = $blog->site_url;
         if ( my $website = $blog->website() ) {
-            $url = $website->SUPER::site_url;
+            $url = $website->column('site_url');
         }
-        my $archive_url = $blog->SUPER::archive_url;
+        my $archive_url = $blog->column('archive_url');
         return $blog->site_url unless $archive_url;
         return $archive_url if $archive_url =~ m!^https?://!;
         my @paths = $blog->raw_archive_url;
@@ -688,7 +713,7 @@ sub archive_url {
 sub is_archive_path_absolute {
     my $blog = shift;
 
-    my $raw_path = $blog->SUPER::archive_path;
+    my $raw_path = $blog->column('archive_path');
     return 0 unless $raw_path;
     return 1 if $raw_path =~ m!^/!;
     return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
@@ -700,18 +725,18 @@ sub archive_path {
     my $blog = shift;
 
     if (@_) {
-        $blog->SUPER::archive_path(@_) || $blog->site_path;
+        $blog->column( 'archive_path', @_ ) || $blog->site_path;
     }
     else {
         return $blog->site_path if !$blog->column('archive_path');
 
-        my $raw_path = $blog->SUPER::archive_path;
+        my $raw_path = $blog->column('archive_path');
         return $raw_path if $blog->is_archive_path_absolute;
 
         my $base_path = '';
         my $path      = '';
         if ( my $website = $blog->website() ) {
-            $base_path = $website->SUPER::site_path;
+            $base_path = $website->column('site_path');
         }
         $path = $raw_path;
         if ($base_path) {
@@ -1642,21 +1667,21 @@ sub apply_theme {
 sub use_revision {
     my $blog = shift;
     return unless ref($blog);
-    return $blog->SUPER::use_revision(@_)
+    return $blog->column( 'use_revision', @_ )
         if 0 < scalar(@_);
     return 0 unless MT->config->TrackRevisions;
-    return $blog->SUPER::use_revision;
+    return $blog->column('use_revision');
 }
 
 sub raw_template_set {
     my $blog = shift;
-    $blog->theme_id || $blog->SUPER::template_set || '';
+    $blog->theme_id || $blog->meta('template_set') || '';
 }
 
 sub template_set {
     my $blog = shift;
     if (@_) {
-        return $blog->SUPER::template_set(@_);
+        return $blog->meta( 'template_set', @_ );
     }
 
     my $theme = $blog->theme;
@@ -1664,7 +1689,7 @@ sub template_set {
 
         # Try to load template set as theme.
         require MT::Theme;
-        $theme = MT::Theme->load( $blog->SUPER::template_set );
+        $theme = MT::Theme->load( $blog->meta('template_set') );
     }
 
     if ($theme) {
@@ -1678,7 +1703,7 @@ sub template_set {
         }
     }
 
-    $blog->SUPER::template_set;
+    $blog->meta('template_set');
 }
 
 sub to_hash {

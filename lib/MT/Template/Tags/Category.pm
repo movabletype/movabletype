@@ -414,17 +414,10 @@ sub _hdlr_category_prevnext {
     my $e          = $ctx->stash('entry');
     my $tag        = $ctx->stash('tag');
     my $step       = $tag =~ m/Next/i ? 1 : -1;
-    my $cat
-        = $e
-        ? $e->category
-            ? $e->category
-            : ( $ctx->stash('category') || $ctx->stash('archive_category') )
-        : ( $ctx->stash('category') || $ctx->stash('archive_category') );
-    return $ctx->error(
-        MT->translate(
-            "You used an [_1] tag outside of the proper context.", "<MT$tag>"
-        )
-    ) if !defined $cat;
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return '' if ( $cat eq '' );
+
     require MT::Placement;
     my $needs_entries;
     my $uncompiled = $ctx->stash('uncompiled') || '';
@@ -1384,13 +1377,12 @@ B<Example:>
 
 sub _hdlr_category_id {
     my ($ctx) = @_;
-    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
-        or return $ctx->error(
-        MT->translate(
-            "You used an [_1] tag outside of the proper context.",
-            '<$MT' . $ctx->stash('tag') . '$>'
-        )
-        );
+
+    # Get the current category
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return if ( $cat eq '' );
+
     return $cat->id;
 }
 
@@ -1421,21 +1413,12 @@ B<Example:>
 
 sub _hdlr_category_label {
     my ( $ctx, $args, $cond ) = @_;
-    my $class_type = $args->{class_type} || 'category';
-    my $e = $ctx->stash('entry');
-    my $cat
-        = ( $ctx->stash('category') || $ctx->stash('archive_category') )
-        || ( ( $e = $ctx->stash('entry') ) && $e->category )
-        or return (
-        defined( $args->{default} )
-        ? $args->{default}
-        : $ctx->error(
-            MT->translate(
-                "You used an [_1] tag outside of the proper context.",
-                '<$MT' . $ctx->stash('tag') . '$>'
-            )
-        )
-        );
+
+    # Get the current category
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return if ( $cat eq '' );
+
     my $label = $cat->label;
     $label = '' unless defined $label;
     return $label;
@@ -1471,21 +1454,12 @@ B<Example:>
 
 sub _hdlr_category_basename {
     my ( $ctx, $args, $cond ) = @_;
-    my $class_type = $args->{class_type} || 'category';
-    my $e = $ctx->stash('entry');
-    my $cat
-        = ( $ctx->stash('category') || $ctx->stash('archive_category') )
-        || ( ( $e = $ctx->stash('entry') ) && $e->category )
-        or return (
-        defined( $args->{default} )
-        ? $args->{default}
-        : $ctx->error(
-            MT->translate(
-                "You used an [_1] tag outside of the proper context.",
-                '<$MT' . $ctx->stash('tag') . '$>'
-            )
-        )
-        );
+
+    # Get the current category
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return if ( $cat eq '' );
+
     my $basename = $cat->basename || '';
     if ( my $sep = $args->{separator} ) {
         if ( $sep eq '-' ) {
@@ -1512,13 +1486,12 @@ B<Example:>
 
 sub _hdlr_category_desc {
     my ($ctx) = @_;
-    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
-        or return $ctx->error(
-        MT->translate(
-            "You used an [_1] tag outside of the proper context.",
-            '<$MT' . $ctx->stash('tag') . '$>'
-        )
-        );
+
+    # Get the current category
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return if ( $cat eq '' );
+
     return defined $cat->description ? $cat->description : '';
 }
 
@@ -1536,13 +1509,12 @@ B<Example:>
 
 sub _hdlr_category_archive {
     my ( $ctx, $args ) = @_;
-    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
-        or return $ctx->error(
-        MT->translate(
-            "You used an [_1] tag outside of the proper context.",
-            '<$MTCategoryArchiveLink$>'
-        )
-        );
+
+    # Get the current category
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return if ( $cat eq '' );
+
     my $curr_at
         = $ctx->{current_archive_type}
         || $ctx->{archive_type}
@@ -1593,13 +1565,12 @@ B<Example:>
 
 sub _hdlr_category_count {
     my ( $ctx, $args, $cond ) = @_;
-    my $cat = ( $ctx->stash('category') || $ctx->stash('archive_category') )
-        or return $ctx->error(
-        MT->translate(
-            "You used an [_1] tag outside of the proper context.",
-            '<$MT' . $ctx->stash('tag') . '$>'
-        )
-        );
+
+    # Get the current category
+    defined( my $cat = _get_category_context($ctx) )
+        or return $ctx->error( $ctx->errstr );
+    return if ( $cat eq '' );
+
     my $count = $ctx->stash('category_count');
     $count = $cat->entry_count unless defined $count;
     return $ctx->count_format( $count, $args );

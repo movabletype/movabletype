@@ -337,13 +337,14 @@ sub suite {
                 my @widget_id = split ',', $blog_ws->modulesets;
                 my @widget
                     = $app->model('template')->load( { id => \@widget_id } );
+                @widget = sort { $a->name cmp $b->name } @widget;
 
                 $app->user($author);
                 no warnings 'redefine';
                 local *boolean::true  = sub {'true'};
                 local *boolean::false = sub {'false'};
                 return +{
-                    totalResults => 3,
+                    totalResults => scalar @widget,
                     items => MT::DataAPI::Resource->from_object( \@widget ),
                 };
             },

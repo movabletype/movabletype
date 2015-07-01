@@ -488,16 +488,16 @@ sub _hdlr_entries {
             else {
                 my @cats = $cat_class->load( \%blog_terms, \%blog_args );
                 if (@cats) {
-                    $cats  = \@cats;
-                    $cexpr = $ctx->compile_category_filter(
-                        $category_arg,
-                        $cats,
-                        {   children => $cat_class_type eq 'category'
-                            ? ( $args->{include_subcategories} ? 1 : 0 )
-                            : ( $args->{include_subfolders} ? 1 : 0 )
-                        }
-                    );
+                    $cats = \@cats;
                 }
+                $cexpr = $ctx->compile_category_filter(
+                    $category_arg,
+                    $cats,
+                    {   children => $cat_class_type eq 'category'
+                        ? ( $args->{include_subcategories} ? 1 : 0 )
+                        : ( $args->{include_subfolders} ? 1 : 0 )
+                    }
+                );
             }
         }
         if ($cexpr) {

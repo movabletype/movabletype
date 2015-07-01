@@ -1757,6 +1757,14 @@ BEGIN {
             'SMTPPassword'      => undef,
             'SMTPPort'          => undef,
             'SMTPTimeout'       => { default => 10 },
+            'SMTPSSLVerifyNone' => undef,
+            'SMTPSSLVersion'    => undef,
+            'SMTPOptions'       => { type => 'HASH' },
+            'FTPSSSLVerifyNone' => undef,
+            'FTPSSSLVersion'    => undef,
+            'FTPSOptions'       => { type => 'HASH' },
+            'SSLVerifyNone'     => undef,
+            'SSLVersion'        => undef,
             'DebugEmailAddress' => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
@@ -2055,6 +2063,22 @@ BEGIN {
             },
             'DataAPIDisableSite'   => undef,
             'RebuildOffsetSeconds' => { default => 20 },
+
+            # Enterprise.pack
+            'LDAPOptions'           => { type => 'HASH' },
+            'LDAPAuthURL'           => { type => 'ARRAY' },
+            'LDAPAuthBindDN'        => { type => 'ARRAY' },
+            'LDAPAuthPassword'      => { type => 'ARRAY' },
+            'LDAPAuthSASLMechanism' => {
+                default => 'PLAIN',
+                type    => 'ARRAY',
+            },
+            'LDAPUserSearchBase'    => { type  => 'ARRAY' },
+            'LDAPGroupSearchBase'   => { type  => 'ARRAY' },
+            'AuthLDAPURL'           => { alias => 'LDAPAuthURL' },
+            'AuthLDAPBindDN'        => { alias => 'LDAPAuthBindDN' },
+            'AuthLDAPPassword'      => { alias => 'LDAPAuthPassword' },
+            'AuthLDAPSASLMechanism' => { alias => 'LDAPAuthSASLMechanism' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

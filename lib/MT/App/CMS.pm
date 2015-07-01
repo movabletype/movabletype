@@ -4874,9 +4874,9 @@ sub setup_editor_param {
 
     if ( my $blog = $app->blog ) {
         if ( my $css = $blog->content_css ) {
-            $css =~ s#{{support}}/?#$app->support_directory_url#ie;
+            $css =~ s#\{\{support}}/?#$app->support_directory_url#ie;
             if ( my $theme = $blog->theme ) {
-                $css =~ s#{{theme_static}}/?#$theme->static_file_url#ie;
+                $css =~ s#\{\{theme_static}}/?#$theme->static_file_url#ie;
             }
             if ( $css !~ m#\A(https?:)?/# ) {
                 $css = MT::Util::caturl( $blog->site_url, $css );
@@ -5098,6 +5098,46 @@ sub pre_run {
                     args => { blog_id => 0 }
                 )
             );
+        }
+        else {
+            $message->{text}
+                .= ' '
+                . $app->translate(
+                'Please contact your Movable Type system administrator.');
+        }
+        push @messages, $message;
+    }
+
+    my $has_mozilla_ca = eval { require Mozilla::CA; 1 };
+    unless ( $app->config('SSLVerifyNone') || $has_mozilla_ca ) {
+        my $message = {
+            level => 'warning',
+            text  => $app->translate('Cannot verify SSL certificate.'),
+        };
+        if ( $user && $user->is_superuser ) {
+            $message->{detail}
+                = $app->translate(
+                'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this way is not recommended.'
+                );
+        }
+        else {
+            $message->{text}
+                .= ' '
+                . $app->translate(
+                'Please contact your Movable Type system administrator.');
+        }
+        push @messages, $message;
+    }
+    elsif ( $app->config('SSLVerifyNone') && $has_mozilla_ca ) {
+        my $message = {
+            level => 'warning',
+            text  => $app->translate(
+                'Can verify SSL certificate, but do not verify now.'),
+        };
+        if ( $user && $user->is_superuser ) {
+            $message->{detail}
+                = $app->translate(
+                'You should remove "SSLVerifyNone 1" in mt-config.cgi.');
         }
         else {
             $message->{text}

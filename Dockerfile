@@ -41,9 +41,12 @@ RUN wget -O - https://cpanmin.us | perl - App::cpanminus
 # Update for installing SOAP::Lite. Cannot install by cpanm and old Archive::Tar.
 RUN cpanm Archive::Tar
 
-RUN wget https://raw.githubusercontent.com/movabletype/movabletype/develop/t/cpanfile
+# LWP::Protocol::https's test fails.
+# https://rt.cpan.org/Public/Bug/Display.html?id=104150
+RUN cpanm LWP::Protocol::https -n
+
+RUN wget https://raw.githubusercontent.com/movabletype/movabletype/enji/t/cpanfile
 RUN cpanm --installdeps .
-RUN cpanm DateTime DateTime::TimeZone Test::Pod::Coverage Clone
 
 # PHP
 RUN yum -y install php php-mysql php-gd
@@ -59,6 +62,24 @@ RUN service mysqld start & sleep 10 && \
     mysql -e "create database mt_test default character set utf8;" && \
     mysql -e "grant all privileges on mt_test.* to mt@localhost;" && \
     service mysqld stop
+
+# OpenLDAP
+RUN cpanm Net::LDAP
+RUN yum -y install openldap-clients openldap-servers
+COPY t/ldif/cn=config.ldif .
+COPY t/ldif/example_com.ldif .
+COPY t/ldif/example_jp.ldif .
+COPY t/ldif/domain1_example_jp.ldif .
+COPY t/ldif/domain2_example_jp.ldif .
+RUN mkdir /var/lib/ldap/jp
+RUN chown ldap:ldap /var/lib/ldap/jp
+RUN service slapd start & sleep 10 && \
+    ldapmodify -Y EXTERNAL -H ldapi:// -f cn=config.ldif && \
+    ldapadd -f example_com.ldif -x -D "cn=admin,dc=example,dc=com" -w secret && \
+    ldapadd -f example_jp.ldif -x -D "cn=admin,dc=example,dc=jp" -w secret && \
+    ldapadd -f domain1_example_jp.ldif -x -D "cn=admin,dc=example,dc=jp" -w secret && \
+    ldapadd -f domain2_example_jp.ldif -x -D "cn=admin,dc=example,dc=jp" -w secret && \
+    service slapd stop
 
 RUN yum clean all
 RUN rm ./cpanfile

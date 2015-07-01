@@ -95,6 +95,11 @@ subtest 'Edit Profile screen' => sub {
         );
         ok( $out =~ m/saved=1&saved_added=1/,
             'Created inactive user with original name.' );
+        ok( MT::Author->exist(
+                { name => 'ukawa', status => MT::Author::INACTIVE }
+            ),
+            'User "ukawa" whose status is inactive exists.'
+        );
     };
 
     subtest 'Empty name user' => sub {
@@ -255,8 +260,15 @@ subtest 'Manage Users screen' => sub {
         #                && $out !~ m/not_enabled=/,
         #            '1 user having name has been enabled.'
         #        );
-        ok( $out =~ m/Status: 302 Found/,    'No error occurred.' );
+        ok( $out =~ m/Status: 302 Found/, 'No error occurred.' );
+
         ok( $out =~ m/saved_status=enabled/, 'Users have been enabled.' );
+
+        # FIXME: Debug code for the above test. This test sometimes fails.
+        if ( $out !~ m/saved_status=enabled/ ) {
+            warn "\n$out";
+        }
+
         ok( $out !~ m/not_enabled=/,
             'There is no user who has not been enabled.' );
     };

@@ -227,7 +227,7 @@ your application includes the parent ID in all C<search()> calls for the
 partitioned class and instances of partitioned objects before attempting to
 save them.
 
-Optionaly you can enable a basic support of search accross multiple
+Optionaly you can enable a basic support of search across multiple
 partition by passing the 'multi_partition' arg (true value) to the search
 query.
 
