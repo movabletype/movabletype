@@ -929,6 +929,22 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to export entries.', },
         },
+        {   id      => 'preview_entry_by_id',
+            route   => '/sites/:site_id/entries/:entry_id/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Entry::preview_by_id",
+            error_codes =>
+                { 403 => 'Do not have permission to preview entry.', },
+        },
+        {   id      => 'preview_entry',
+            route   => '/sites/:site_id/entries/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Entry::preview",
+            error_codes =>
+                { 403 => 'Do not have permission to preview entry.', },
+        },
 
         # page endpoints
         {   id             => 'list_pages',
@@ -1064,6 +1080,22 @@ sub core_endpoints {
             handler => "${pkg}v2::Page::delete",
             error_codes =>
                 { 403 => 'Do not have permission to delete a page.', },
+        },
+        {   id      => 'preview_page_by_id',
+            route   => '/sites/:site_id/pages/:page_id/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Entry::preview_by_id",
+            error_codes =>
+                { 403 => 'Do not have permission to preview page.', },
+        },
+        {   id      => 'preview_page',
+            route   => '/sites/:site_id/pages/preview',
+            verb    => 'POST',
+            version => 2,
+            handler => "${pkg}v2::Page::preview",
+            error_codes =>
+                { 403 => 'Do not have permission to preview page.', },
         },
 
         # comment endpoints
@@ -1698,6 +1730,22 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to clone a template.', },
         },
+        {   id      => 'preview_template_by_id',
+            route   => '/sites/:site_id/templates/:template_id/preview',
+            version => 2,
+            handler => "${pkg}v2::Template::preview_by_id",
+            verb    => 'POST',
+            error_codes =>
+                { 403 => 'Do not have permission to get template preview.', },
+        },
+        {   id      => 'preview_template',
+            route   => '/sites/:site_id/templates/preview',
+            version => 2,
+            handler => "${pkg}v2::Template::preview",
+            verb    => 'POST',
+            error_codes =>
+                { 403 => 'Do not have permission to get template preview.', },
+        },
 
         # templatemap endpoints
         {   id      => 'list_templatemaps',
@@ -2199,7 +2247,7 @@ sub init_plugins {
             $pkg . 'save_filter.widget' => "${pfx}Widget::save_filter",
             $pkg . 'pre_save.widget' => '$Core::MT::CMS::Template::pre_save',
             $pkg
-                . 'post_save.widget' => '$Core::MT::CMS::Template::post:save',
+                . 'post_save.widget' => '$Core::MT::CMS::Template::post_save',
 
             # widgetset callbacks
             $pkg
@@ -2211,7 +2259,7 @@ sub init_plugins {
                 '$Core::MT::CMS::Template::pre_save',
             $pkg
                 . 'post_save.widgetset' =>
-                '$Core::MT::CMS::Template::post:save',
+                '$Core::MT::CMS::Template::post_save',
 
             # templatemap callbacks
             $pkg

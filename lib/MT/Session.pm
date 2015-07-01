@@ -226,6 +226,10 @@ It expiers after 10 minutes.
 
 Tag Cache is the cache of a particular tag data.
 
+=item DU
+
+Disk Usage is the cache for notify free disk space alert. Cloud.pack only.
+
 =back
 
 =head1 METHODS

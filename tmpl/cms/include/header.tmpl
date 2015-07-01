@@ -150,7 +150,7 @@
                 <input type="hidden" name="quicksearch" value="1" />
                 <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
                 <input accesskey="q" type="text" name="search" id="quick-search" autocomplete="off" class="search-query input-hint" placeholder="<__trans phrase="Search"><mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>" value="" title="<__trans phrase="Search (q)">" />
-                <button type="submit" class="button"><__trans phrase="Search"></button>
+                <button type="submit" class="button"><__trans phrase="Search [_1]" params="<mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>"></button>
               </form>
             </div>
           <!-- /Serarch --></li>

@@ -324,17 +324,10 @@ sub suite {
         {    # No permissions.
             path   => '/v2/sites/1/widgetsets/' . $blog_ws->id . '/widgets',
             method => 'GET',
-            setup  => sub {
-                $mock_perm->mock( 'can_edit_templates', 0 );
-                $mock_author->mock( 'can_edit_templates', 0 );
-            },
-            code => 403,
+            restrictions => { 1 => [qw/ edit_templates /], },
+            code         => 403,
             error =>
                 'Do not have permission to retrieve widgets of the request widgetset.',
-            complete => sub {
-                $mock_perm->unmock('can_edit_templates');
-                $mock_author->unmock('can_edit_templates');
-            },
         },
 
         # list_widgets_for_widgetset - normal tests.

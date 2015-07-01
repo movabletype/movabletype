@@ -112,6 +112,29 @@ sub suite {
             ],
         },
 
+        # Overwrite once. (version 2 or later)
+        {   path   => '/v1/sites/1/assets/upload',
+            method => 'POST',
+            code   => 409,
+            params => { overwrite_once => 1, },
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+                ),
+            ],
+        },
+        {   path   => '/v2/sites/1/assets/upload',
+            method => 'POST',
+            params => { overwrite_once => 1, },
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+                ),
+            ],
+        },
+
         # upload_asset_v2 - irregular tests.
         {    # Not logged in.
             path   => '/v2/assets/upload',
@@ -165,6 +188,51 @@ sub suite {
                     { sort => [ { column => 'id', desc => 'DESC' }, ] } );
             },
         },
+        {    # Upload again. Already exists.
+            path   => '/v2/assets/upload',
+            method => 'POST',
+            params => { site_id => 1, },
+            code   => '409',
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+                ),
+            ],
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $result = MT::Util::from_json($body);
+                $temp_data = $result->{error}{data};
+            }
+        },
+        {    # Overwrite.
+            path   => '/v2/assets/upload',
+            method => 'POST',
+            params => sub {
+                +{  site_id   => 1,
+                    overwrite => 1,
+                    %$temp_data,
+                };
+            },
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+                ),
+            ],
+        },
+        {    # Overwrite once. (version 2 or later)
+            path   => '/v2/assets/upload',
+            method => 'POST',
+            params => { site_id => 1, overwrite_once => 1, },
+            upload => [
+                'file',
+                File::Spec->catfile(
+                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+                ),
+            ],
+        },
+
         {    # System.
             path   => '/v2/assets/upload',
             method => 'POST',

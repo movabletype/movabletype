@@ -19,6 +19,7 @@ sub upload {
 
     $app->param( 'site_path', 1 );
 
+    # Rename parameters.
     my %keys = (
         overwrite            => 'overwrite_yes',
         fileName             => 'fname',
@@ -33,25 +34,53 @@ sub upload {
         }
     }
 
+    my $error_handler = sub {
+        my ( $app, %param ) = @_;
+        $app->error( $param{error} );
+    };
+    my $exists_handler = sub {
+        my ( $app, %param ) = @_;
+        my %keys = (
+            fname      => 'fileName',
+            extra_path => 'path',
+            temp       => 'temp',
+        );
+        $app->error( "A file named '" . $param{fname} . "' already exists.",
+            409, { map { $keys{$_} => $param{$_}, } keys %keys } );
+    };
+
     my ( $asset, $bytes ) = MT::CMS::Asset::_upload_file(
         $app,
-        error_handler => sub {
-            my ( $app, %param ) = @_;
-            $app->error( $param{error} );
-        },
+        error_handler  => $error_handler,
         exists_handler => sub {
             my ( $app, %param ) = @_;
-            my %keys = (
-                fname      => 'fileName',
-                extra_path => 'path',
-                temp       => 'temp',
-            );
-            $app->error(
-                "A file named '" . $param{fname} . "' already exists.",
-                409, { map { $keys{$_} => $param{$_}, } keys %keys } );
+
+            # version 1
+            if ( $app->current_api_version == 1 ) {
+                return $exists_handler->( $app, %param );
+            }
+
+            # version 2
+            # overwrite asset once when overwrite_once is 1.
+            if ( $app->param('overwrite_once') ) {
+                for my $k ( keys %param ) {
+                    $app->param( $k, $param{$k} );
+                }
+                $app->param( 'overwrite_yes', 1 );
+
+                my ($asset) = MT::CMS::Asset::_upload_file(
+                    $app,
+                    error_handler  => $error_handler,
+                    exists_handler => $exists_handler,
+                );
+                return $asset;
+            }
+
+            return $exists_handler->( $app, %param );
         },
     );
-    $asset;
+
+    return $asset;
 }
 
 1;

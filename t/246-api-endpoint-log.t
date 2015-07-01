@@ -396,6 +396,34 @@ sub suite {
             error     => 'Unauthorized',
         },
 
+        # wrong encoding parameter.
+        {   path   => '/v2/sites/1/logs/export',
+            method => 'GET',
+            params => { encoding => 'WinLatin1', },
+            code   => 400,
+            result => sub {
+                return +{
+                    error => {
+                        message => 'Invalid encoding: WinLatin1',
+                        code    => 400
+                    }
+                };
+            },
+        },
+        {   path   => '/v2/sites/1/logs/export',
+            method => 'GET',
+            params => { encoding => 'guess', },
+            code   => 400,
+            result => sub {
+                return +{
+                    error => {
+                        message => 'Invalid encoding: guess',
+                        code    => 400
+                    }
+                };
+            },
+        },
+
         # No permissions.
 
         # export_log - normal tests.
@@ -438,6 +466,16 @@ sub suite {
                 is( scalar @line, 6, '5 lines are output.' );
                 print $_[1];
             },
+        },
+        {    # encoding=utf8.
+            path   => '/v2/sites/0/logs/export',
+            method => 'GET',
+            params => { encoding => 'utf8' },
+        },
+        {    # encoding=ascii.
+            path   => '/v2/sites/0/logs/export',
+            method => 'GET',
+            params => { encoding => 'ascii' },
         },
 
         # update_log - irregular tests

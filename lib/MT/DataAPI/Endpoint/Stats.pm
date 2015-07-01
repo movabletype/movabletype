@@ -31,6 +31,7 @@ sub _invoke {
         startDate => scalar( $app->param('startDate') ),
         endDate   => scalar( $app->param('endDate') ),
         limit     => scalar( $app->param('limit') ),
+        offset    => scalar( $app->param('offset') ),
     };
     $params->{path} = do {
         if ( defined( my $path = $app->param('path') ) ) {

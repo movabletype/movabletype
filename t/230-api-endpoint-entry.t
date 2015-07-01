@@ -171,6 +171,10 @@ sub suite {
             complete => sub {
                 my $deleted = MT->model('entry')->load(1);
                 is( $deleted, undef, 'deleted' );
+
+                my $count = MT->model('log')->count( { level => 4 } ); # ERROR
+                is( $count, 0, 'No error occurs.' );
+                MT->model('log')->remove( { level => 4 } );
             },
         },
         {   path      => '/v1/sites/2/entries',
@@ -678,6 +682,33 @@ __BODY__
                 isnt( $got->{body}, $expected->text );
             },
         },
+        {    # Remove attached categories.
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params =>
+                { entry => { categories => [ ] }, },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.entry',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.entry',
+                    count => 1,
+                },
+            ],
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( scalar @{ $got->{categories} },
+                    0, 'Entry has no category' );
+            },
+        },
 
         # get_entry - normal tests.
         {    # no_format_filter = 1
@@ -820,6 +851,132 @@ __BODY__
                     totalResults => scalar @entry,
                     items => MT::DataAPI::Resource->from_object( \@entry ),
                 };
+            },
+        },
+
+        # preview_entry_by_id
+        {    # Non-existent entry
+            path   => '/v2/sites/1/entries/500/preview',
+            method => 'POST',
+            params => {
+                entry => {
+                    title  => 'foo',
+                    text   => 'bar',
+                    status => 'Draft',
+                },
+            },
+            code => 404,
+        },
+        {    # No resource.
+            path     => '/v2/sites/1/entries/2/preview',
+            method   => 'POST',
+            code     => 400,
+            resource => sub {
+                return +{
+                    error => {
+                        code    => 400,
+                        message => 'A resource "entry" is required.',
+                    },
+                };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/entries/2/preview',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # normal tests
+            path   => '/v2/sites/1/entries/2/preview',
+            params => {
+                entry => {
+                    title  => 'foo',
+                    status => 'Draft',
+                    text   => 'bar',
+                },
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview Entry make success' );
+            },
+        },
+        {    # normal tests - raw parameter
+            path   => '/v2/sites/1/entries/2/preview',
+            params => {
+                entry => {
+                    title  => 'foo',
+                    text   => 'bar',
+                    status => 'Draft',
+                },
+                raw => '1',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview entry make success' );
+            },
+        },
+
+        # preview_entry
+        {    # No resource.
+            path     => '/v2/sites/1/entries/preview',
+            method   => 'POST',
+            code     => 400,
+            resource => sub {
+                return +{
+                    error => {
+                        code    => 400,
+                        message => 'A resource "entry" is required.',
+                    },
+                };
+            },
+        },
+        {    # Not logged in.
+            path      => '/v2/sites/1/entries/preview',
+            method    => 'POST',
+            author_id => 0,
+            code      => 401,
+            error     => 'Unauthorized',
+        },
+        {    # normal tests
+            path   => '/v2/sites/1/entries/preview',
+            params => {
+                entry => {
+                    title  => 'foo',
+                    status => 'Draft',
+                    text   => 'bar',
+                },
+                authored_on_date => '2015-01-01',
+                authored_on_time => '10:00:00',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview Entry make success' );
+            },
+        },
+        {    # normal tests - raw parameter
+            path   => '/v2/sites/1/entries/preview',
+            params => {
+                entry => {
+                    title  => 'foo',
+                    text   => 'bar',
+                    status => 'Draft',
+                },
+                raw              => '1',
+                authored_on_date => '2015-01-01',
+                authored_on_time => '10:00:00',
+            },
+            method   => 'POST',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $obj = MT::Util::from_json($body);
+                is( $obj->{status}, 'success', 'Preview entry make success' );
             },
         },
 

@@ -160,6 +160,9 @@ sub create {
 
     $post_save->();
 
+    # Remove autosave object
+    remove_autosave_session_obj( $app, $new_page->class );
+
     return $new_page;
 }
 
@@ -240,6 +243,9 @@ sub update {
 
     $post_save->();
 
+    # Remove autosave object
+    remove_autosave_session_obj( $app, $new_page->class, $new_page->id );
+
     return $new_page;
 }
 
@@ -274,6 +280,48 @@ sub delete {
     $app->run_callbacks( 'rebuild', $site );
 
     return $page;
+}
+
+sub preview {
+    my ( $app, $endpoint ) = @_;
+
+    my ($blog) = context_objects(@_)
+        or return;
+    my $author = $app->user;
+
+    # Create dummy new object
+    my $orig_page = $app->model('page')->new;
+    $orig_page->set_values(
+        {   blog_id        => $blog->id,
+            author_id      => $author->id,
+            allow_comments => $blog->allow_comments_default,
+            allow_pings    => $blog->allow_pings_default,
+            convert_breaks => $blog->convert_paras,
+            status         => MT::Entry::RELEASE(),
+        }
+    );
+    my $page = $app->resource_object( 'page', $orig_page )
+        or return;
+    $page->id(-1);    # fake out things like MT::Taggable::__load_tags
+
+    # Update for preview
+    my $page_json = $app->param('page');
+    my $page_hash = $app->current_format->{unserialize}->($page_json);
+
+    my $names = $page->column_names;
+    foreach my $name (@$names) {
+        if ( exists $page_hash->{$name} ) {
+            $page->$name( $page_hash->{$name} );
+        }
+    }
+
+    if ( exists $page_hash->{folder} ) {
+        my $folder_hash = $page_hash->{folder};
+        $app->param( 'category_ids', $folder_hash->{id} );
+    }
+
+    require MT::DataAPI::Endpoint::v2::Entry;
+    return MT::DataAPI::Endpoint::v2::Entry::_preview_common( $app, $page );
 }
 
 1;
