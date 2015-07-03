@@ -638,7 +638,9 @@ sub site_path {
     my $blog = shift;
 
     if (@_) {
-        $blog->column( 'site_path', @_ );
+        my $path = $_[0];
+        $path =~ s/(\/|\\)*$//;
+        $blog->column( 'site_path', $path );
     }
     else {
         my $raw_path = $blog->column('site_path');
