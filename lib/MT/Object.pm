@@ -421,11 +421,6 @@ sub _pre_search_scope_terms_to_class {
     # scope search terms to class
 
     $terms ||= {};
-    return
-        if ( ref $terms eq 'HASH' )
-        && ( exists( $terms->{id} )
-        && ( ref $terms->{id} ne 'HASH' || !exists( $terms->{id}{not} ) ) )
-        && !exists( $args->{not}{id} );
 
     my $props = $class->properties;
     my $col   = $props->{class_column}
@@ -454,8 +449,11 @@ sub _pre_search_scope_terms_to_class {
             # no further changes.
             return;
         }
-        $terms->{$col} = $props->{class_type}
-            unless $no_class;
+        # class term is class_type if id is not exists.
+        if ( !exists( $terms->{id} ) ) {
+            $terms->{$col} = $props->{class_type}
+                unless $no_class;
+        }
     }
     elsif ( ref $terms eq 'ARRAY' ) {
         if ( my @class_terms
