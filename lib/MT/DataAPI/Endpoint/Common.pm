@@ -16,6 +16,7 @@ our @EXPORT = qw(
     save_object remove_object
     context_objects resource_objects get_target_user
     run_permission_filter filtered_list obj_promise
+    remove_autosave_session_obj
 );
 
 our $query_builder;
@@ -554,6 +555,28 @@ sub _restrict_site {
             },
         },
     );
+}
+
+sub remove_autosave_session_obj {
+    my $app  = shift;
+    my ( $type, $id ) = @_;
+    return unless $type;
+
+    $id = '0' unless $id;
+    my $ident
+        = 'autosave'
+        . ':user='
+        . $app->user->id
+        . ':type='
+        . $type . ':id='
+        . $id;
+
+    if ( my $blog = $app->blog ) {
+        $ident .= ':blog_id=' . $blog->id;
+    }
+    require MT::Session;
+    my $sess_obj = MT::Session->load( { id => $ident, kind => 'AS' } );
+    $sess_obj->remove if $sess_obj;
 }
 
 1;

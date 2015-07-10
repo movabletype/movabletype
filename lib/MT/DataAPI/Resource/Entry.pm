@@ -26,7 +26,7 @@ sub updatable_fields {
             ),
         {   name      => 'date',
             condition => sub {
-                MT->instance->can_do('edit_entry_basename');
+                MT->instance->can_do('edit_entry_authored_on');
             },
         },
         {   name      => 'basename',

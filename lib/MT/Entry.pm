@@ -1865,6 +1865,8 @@ sub update_categories {
         MT::Placement->remove( { entry_id => $obj->id, } )
             or return $obj->error( MT::Placement->errstr );
 
+        MT::Memcached->instance->delete(
+            MT::Entry->cache_key( $obj->id, 'categories' ) );
         $obj->clear_cache('category');
         $obj->clear_cache('categories');
 
@@ -1938,7 +1940,7 @@ sub attach_assets {
     my @attach_assets;
     my @current_oa = MT->model('objectasset')->load(
         {   blog_id   => $obj->blog->id,
-            object_ds => $obj->class,
+            object_ds => 'entry',
             object_id => $obj->id,
             asset_id  => [ map { $_->id } @assets ],
         },
@@ -1953,7 +1955,7 @@ sub attach_assets {
         my $oa = MT->model('objectasset')->new;
         $oa->set_values(
             {   blog_id   => $obj->blog->id,
-                object_ds => $obj->class,
+                object_ds => 'entry',
                 object_id => $obj->id,
                 asset_id  => $asset->id,
             }
