@@ -1055,7 +1055,7 @@ sub _hdlr_asset_property {
             $ret = sprintf( "%.1f", $size / 1024000 );
         }
         else {
-            $ret = $size;
+            $ret = sprintf( "%d", $size );
         }
     }
     elsif ( $prop =~ m/^image_/ && $class->can($prop) ) {

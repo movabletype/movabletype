@@ -1163,6 +1163,23 @@ It\'s a hard rain\'s a-gonna fall',
     $asset->tags('@userpic');
     $asset->save or die "Couldn't save asset record 3: " . $asset->errstr;
 
+    # not exsists file
+    $asset = new $img_pkg;
+    $asset->blog_id(0);
+    $asset->url('%s/uploads/test2.jpg');
+    $asset->file_path(
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ) );
+    $asset->file_name('test2.jpg');
+    $asset->file_ext('jpg');
+    $asset->image_width(640);
+    $asset->image_height(480);
+    $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is not exists file.');
+    $asset->created_by(1);
+    $asset->tags('not_exists');
+    $asset->save or die "Couldn't save asset record 4: " . $asset->errstr;
+
     ## ObjectScore
     my $e5 = MT::Entry->load(5);
     $e5->set_score( 'unit test', $bobd,               5, 1 );

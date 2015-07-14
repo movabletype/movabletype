@@ -13,8 +13,11 @@ function smarty_function_mtassetproperty($args, &$ctx) {
 
     if ($args['property'] == 'file_size') {
         $asset_file = smarty_function_mtassetfilepath($args, $ctx);
-
-        $filesize = filesize($asset_file);
+        if(file_exists( $asset_file )){
+            $filesize = filesize($asset_file);
+        }else{
+            $filesize = 0;
+        }
         $format = '1';
         if (isset($args['format']))
             $format = $args['format'];
