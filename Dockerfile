@@ -45,7 +45,8 @@ RUN cpanm Archive::Tar
 # https://rt.cpan.org/Public/Bug/Display.html?id=104150
 RUN cpanm LWP::Protocol::https -n
 
-RUN cpanm --installdeps ./t
+COPY t/cpanfile .
+RUN cpanm --installdeps .
 
 # PHP
 RUN yum -y install php php-mysql php-gd
