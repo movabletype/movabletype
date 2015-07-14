@@ -87,6 +87,7 @@ on 'test' => sub {
     requires 'DateTime::TimeZone';
     requires 'DBD::SQLite';
     requires 'HTTP::DAV';
+    requires 'IO::String';
     requires 'Net::SFTP';
     requires 'PHP::Serialization';
     requires 'pQuery';
