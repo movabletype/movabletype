@@ -45,8 +45,7 @@ RUN cpanm Archive::Tar
 # https://rt.cpan.org/Public/Bug/Display.html?id=104150
 RUN cpanm LWP::Protocol::https -n
 
-RUN wget https://raw.githubusercontent.com/movabletype/movabletype/enji/t/cpanfile
-RUN cpanm --installdeps .
+RUN cpanm --installdeps ./t
 
 # PHP
 RUN yum -y install php php-mysql php-gd
@@ -82,4 +81,3 @@ RUN service slapd start & sleep 10 && \
     service slapd stop
 
 RUN yum clean all
-RUN rm ./cpanfile
