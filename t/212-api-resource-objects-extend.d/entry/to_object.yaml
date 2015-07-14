@@ -14,7 +14,7 @@
     excerpt: Excerpt
     keywords: Keywords
     basename: a-basename
-    date: 2013-04-18T10:10:10+00:00
+    date: 2013-01-18T10:10:10+00:00
     tags:
       - tag1
       - tag2
@@ -29,7 +29,7 @@
     excerpt: Excerpt
     keywords: Keywords
     basename: a-basename
-    authored_on: 20130418064010
+    authored_on: 20130118064010
     tags:
       - tag1
       - tag2
@@ -50,7 +50,7 @@
     excerpt: Excerpt
     keywords: Keywords
     basename: a-basename
-    date: 2013-04-18T10:10:10+00:00
+    date: 2013-01-18T10:10:10+00:00
     tags:
       - tag1
       - tag2
@@ -65,7 +65,7 @@
     excerpt: Excerpt
     keywords: Keywords
     basename: a-basename
-    authored_on: 20130418064010
+    authored_on: 20130118064010
     tags:
       - tag1
       - tag2

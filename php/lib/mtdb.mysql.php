@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -22,6 +22,17 @@ class MTDatabasemysql extends MTDatabase {
                 $dsn = "host=$host";
             }
             $dsn = "mysql:$dsn";
+            $this->conn->Connect($dsn, $user, $password, $dbname);
+        } elseif (extension_loaded('mysqli')) {
+            $this->conn = ADONewConnection('mysqli');
+            if ( !empty($sock) ) {
+                // Connection by unix socket
+                $dsn = ":$sock";
+            } else {
+                $dsn = "$host";
+                if (!empty($port))
+                    $host .= ":$port";
+            }
             $this->conn->Connect($dsn, $user, $password, $dbname);
         } else {
             $this->conn = ADONewConnection('mysql');

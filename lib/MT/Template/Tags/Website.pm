@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -449,7 +449,11 @@ sub _hdlr_website_has_blog {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');
     return 0 unless $blog;
-    return 0 if $blog->class ne 'website';
+
+    if ( $blog->is_blog ) {
+        return 1 if $blog->website;
+        return $ctx->_no_parent_website_error;
+    }
 
     my $blog_class = MT->model('blog');
     my %terms;
@@ -545,7 +549,18 @@ sub _hdlr_website_relative_url {
 
 =head2 WebsiteThemeID
 
-Outputs applied theme's ID for the website currently in context.
+Outputs applied theme's ID for the website currently in context. The 
+identifier is modified such that underscores are changed to dashes.
+
+B<Attributes:>
+
+=over 4
+
+=item * raw (optional; default "0")
+
+If specified, the raw theme ID is returned.
+
+=back
 
 =for tags websites
 
@@ -559,7 +574,7 @@ sub _hdlr_website_theme_id {
         or return $ctx->_no_parent_website_error();
     my $id = $website->theme_id
         or return '';
-    $id =~ s/_/-/g;
+    $id =~ s/_/-/g unless $args->{raw};
     return $id;
 }
 

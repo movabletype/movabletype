@@ -1,0 +1,32 @@
+dn: dc=domain2,dc=example,dc=jp
+objectClass: dcObject
+objectClass: organization
+dc: domain2
+o: Example Corporation
+description: The Example Corporation
+
+dn: ou=users,dc=domain2,dc=example,dc=jp
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=domain2,dc=example,dc=jp
+objectClass: organizationalUnit
+ou: groups
+
+dn: cn=Bob D,ou=users,dc=domain2,dc=example,dc=jp
+uid: Bob D
+cn: Bob D
+givenName: Bob
+sn: Dylan
+mail: bobd@example.jp
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+
+dn: cn=group2,ou=groups,dc=domain2,dc=example,dc=jp
+cn: group2
+objectClass: top
+objectClass: posixGroup
+memberUid: Bob D
+gidNumber: 2001

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,13 +7,15 @@
 
 function smarty_function_mtwebsitethemeid($args, &$ctx) {
     // status: complete
-    // parameters: none
+    // parameters: raw
     $blog = $ctx->stash('blog');
     if (empty($blog)) return '';
     $website = $blog->is_blog() ? $blog->website() : $blog;
     if (empty($website)) return '';
     $id = $website->blog_theme_id;
-    $id = str_replace ('_', '-', $id);
+    $raw = isset($args['raw']) ? $args['raw'] : 0;
+    if (!$raw)
+        $id = str_replace ('_', '-', $id);
     return $id;
 }
 ?>

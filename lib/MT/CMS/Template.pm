@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -138,8 +138,10 @@ sub edit {
         }
         $app->add_breadcrumb( $param->{name} );
         $param->{has_outfile} = $obj->type eq 'index';
-        $param->{has_rebuild} = ( ( $obj->type eq 'index' )
-                && ( ( $blog->custom_dynamic_templates || "" ) ne 'all' ) );
+        $param->{has_rebuild}
+            = (    ( $obj->type eq 'index' )
+                && ( ( $blog->custom_dynamic_templates || "" ) ne 'all' ) )
+            && !$app->param('published');
 
         # FIXME: enumeration of types
         $param->{is_special}
@@ -887,6 +889,10 @@ sub list {
         $row->{type} = 'entry' if $type eq 'individual';
         my $published_url = $obj->published_url;
         $row->{published_url} = $published_url if $published_url;
+        $row->{name}          = ''             if !defined $row->{name};
+        $row->{name} =~ s/^\s+|\s+$//g;
+        $row->{name} = "(" . $app->translate("No Name") . ")"
+            if $row->{name} eq '';
     };
 
     my $params        = {};
@@ -1842,8 +1848,10 @@ sub post_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
 
-    my $sess_obj = $app->autosave_session_obj;
-    $sess_obj->remove if $sess_obj;
+    if ( $app->can('autosave_session_obj') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        $sess_obj->remove if $sess_obj;
+    }
 
     my $dynamic = 0;
     my $q       = $app->param;
@@ -2268,8 +2276,8 @@ BLOG: for my $blog_id (@id) {
                 my ($set)
                     = grep { $_->{importer} eq 'template_set' } @elements;
                 $set = $set->{data};
-                $set->{envelope} = $theme->path;
-                $theme->__deep_localize_labels($set);
+                $set->{envelope} = $theme->path if ref $set;
+                $theme->__deep_localize_labels($set) if ref $set;
                 $tmpl_list = MT::DefaultTemplates->templates($set);
             }
             else {
@@ -2505,8 +2513,8 @@ sub refresh_individual_templates {
             my @elements = $theme->elements;
             my ($set) = grep { $_->{importer} eq 'template_set' } @elements;
             $set = $set->{data};
-            $set->{envelope} = $theme->path;
-            $theme->__deep_localize_labels($set);
+            $set->{envelope} = $theme->path if ref $set;
+            $theme->__deep_localize_labels($set) if ref $set;
             $tmpl_list = MT::DefaultTemplates->templates($set);
         }
         else {
@@ -2970,7 +2978,12 @@ sub edit_widget {
     my %all_widgets;
     while ( my $m = $iter->() ) {
         next unless $m;
-        $all_widgets{ $m->id }{name}    = $m->name;
+        my $widget_name = $m->name;
+        $widget_name = '' if !defined $widget_name;
+        $widget_name =~ s/^\s+|\s+$//g;
+        $widget_name = "(" . $app->translate("No Name") . ")"
+            if $widget_name eq '';
+        $all_widgets{ $m->id }{name}    = $widget_name;
         $all_widgets{ $m->id }{blog_id} = $m->blog_id;
     }
 
@@ -3065,9 +3078,14 @@ sub list_widget {
     my @widgetmanagers;
     while ( my $widgetset = $iter->() ) {
         next unless $widgetset;
+        my $ws_name = $widgetset->name;
+        $ws_name = '' if !defined $ws_name;
+        $ws_name =~ s/^\s+|\s+$//g;
+        $ws_name = "(" . $app->translate("No Name") . ")"
+            if $ws_name eq '';
         my $ws = {
             id            => $widgetset->id,
-            widgetmanager => $widgetset->name,
+            widgetmanager => $ws_name,
         };
         if ( my $modulesets = $widgetset->modulesets ) {
             $ws->{widgets} = $modulesets;

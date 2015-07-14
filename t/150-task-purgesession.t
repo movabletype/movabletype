@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use lib qw(lib t/lib);
+use lib qw(lib extlib t/lib);
 
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
@@ -58,6 +58,9 @@ my $remembered = make_session(
 );
 
 MT::Core::purge_session_records();
+
+# Clear cache.
+$session_class->driver->Disabled(1) if $session_class->driver->can('Disabled');
 
 ok( $session_class->load( $effective->id ),
     'An effective session record is not purged'

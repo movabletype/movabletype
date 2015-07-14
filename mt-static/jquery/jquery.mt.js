@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+ * Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
@@ -818,8 +818,10 @@ $.fn.mtCheckboxOption = function() {
  *   jQuery('.msg').mtToggleField();
  *   jQuery('.msg').mtToggleField({hide_clicked: true});
  *
+ * to set open callback:
+ *   jQuery('.msg').mtToggleField({}, function(){ // do anything});
  */
-$.fn.mtToggleField = function(options) {
+$.fn.mtToggleField = function(options, openCallback) {
     var defaults = {
         click_class: 'detail-link',
         detail_class: 'detail',
@@ -834,6 +836,9 @@ $.fn.mtToggleField = function(options) {
         $field.find('.'+opts.click_class)
             .mousedown(function(event) {
                 $field.toggleClass('active').find('.'+opts.detail_class).toggle();
+                if ($field.hasClass('active') && openCallback) {
+                    openCallback();
+                }
                 return false;
             })
             .click(function(event) {

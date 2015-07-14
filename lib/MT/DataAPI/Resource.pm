@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,65 +14,170 @@ our %resources = ();
 sub core_resources {
     my $pkg = '$Core::MT::DataAPI::Resource::';
     return {
-        'entry' => {
-            fields           => "${pkg}Entry::fields",
-            updatable_fields => "${pkg}Entry::updatable_fields",
-        },
-        'category' => {
-            fields           => "${pkg}Category::fields",
-            updatable_fields => "${pkg}Category::updatable_fields",
-        },
-        'comment' => {
-            fields           => "${pkg}Comment::fields",
-            updatable_fields => "${pkg}Comment::updatable_fields",
-        },
-        'trackback' => {
-            fields           => "${pkg}Trackback::fields",
-            updatable_fields => "${pkg}Trackback::updatable_fields",
-        },
+        'entry' => [
+            {   version          => 1,
+                fields           => "${pkg}Entry::fields",
+                updatable_fields => "${pkg}Entry::updatable_fields",
+            },
+            {   version          => 2,
+                fields           => "${pkg}v2::Entry::fields",
+                updatable_fields => "${pkg}v2::Entry::updatable_fields",
+            },
+        ],
+        'page' => [
+            {   version          => 2,
+                fields           => "${pkg}v2::Page::fields",
+                updatable_fields => "${pkg}v2::Page::updatable_fields",
+            },
+        ],
+        'category' => [
+            {   version          => 1,
+                fields           => "${pkg}Category::fields",
+                updatable_fields => "${pkg}Category::updatable_fields",
+            },
+            {   version          => 2,
+                fields           => "${pkg}v2::Category::fields",
+                updatable_fields => "${pkg}v2::Category::updatable_fields",
+            },
+        ],
+        'folder' => [
+            {   version          => 2,
+                fields           => "${pkg}v2::Folder::fields",
+                updatable_fields => "${pkg}v2::Folder::updatable_fields",
+            },
+        ],
+        'comment' => [
+            {   version          => 1,
+                fields           => "${pkg}Comment::fields",
+                updatable_fields => "${pkg}Comment::updatable_fields",
+            },
+            {   version          => 2,
+                fields           => "${pkg}v2::Comment::fields",
+                updatable_fields => "${pkg}v2::Comment::updatable_fields",
+            },
+        ],
+        'trackback' => [
+            {   version          => 1,
+                fields           => "${pkg}Trackback::fields",
+                updatable_fields => "${pkg}Trackback::updatable_fields",
+            },
+            {   version          => 2,
+                fields           => "${pkg}v2::Trackback::fields",
+                updatable_fields => "${pkg}v2::Trackback::updatable_fields",
+            },
+        ],
         'tbping' => 'trackback',
-        'user'   => {
-            fields           => "${pkg}User::fields",
-            updatable_fields => "${pkg}User::updatable_fields",
-        },
+        'user'   => [
+            {   version          => 1,
+                fields           => "${pkg}User::fields",
+                updatable_fields => "${pkg}User::updatable_fields",
+            },
+            {   version          => 2,
+                fields           => "${pkg}v2::User::fields",
+                updatable_fields => "${pkg}v2::User::updatable_fields",
+            }
+        ],
         'author' => 'user',
-        'blog'   => {
-            fields           => "${pkg}Blog::fields",
-            updatable_fields => "${pkg}Blog::updatable_fields",
-        },
-        'website' => {
-            fields           => "${pkg}Website::fields",
-            updatable_fields => "${pkg}Website::updatable_fields",
-        },
-        'asset' => {
-            fields           => "${pkg}Asset::fields",
-            updatable_fields => "${pkg}Asset::updatable_fields",
-        },
-        'permission' => {
-            fields           => "${pkg}Permission::fields",
-            updatable_fields => "${pkg}Permission::updatable_fields",
-        },
+        'blog'   => [
+            {   version          => 1,
+                fields           => "${pkg}Blog::fields",
+                updatable_fields => "${pkg}Blog::updatable_fields",
+            },
+            {   version          => 2,
+                fields           => "${pkg}v2::Blog::fields",
+                updatable_fields => "${pkg}v2::Blog::updatable_fields",
+            }
+        ],
+        'website' => [
+            {   version          => 1,
+                fields           => "${pkg}Website::fields",
+                updatable_fields => "${pkg}Website::updatable_fields",
+            },
+            {   version          => 2,
+                fields           => "${pkg}v2::Website::fields",
+                updatable_fields => "${pkg}v2::Website::updatable_fields",
+            }
+        ],
+        'asset' => [
+            {   version          => 1,
+                fields           => "${pkg}Asset::fields",
+                updatable_fields => "${pkg}Asset::updatable_fields",
+            },
+            {   version          => 2,
+                fields           => "${pkg}v2::Asset::fields",
+                updatable_fields => "${pkg}v2::Asset::updatable_fields",
+            },
+        ],
+        'permission' => [
+            {   version          => 1,
+                fields           => "${pkg}Permission::fields",
+                updatable_fields => "${pkg}Permission::updatable_fields",
+            },
+            {   version          => 2,
+                fields           => "${pkg}v2::Permission::fields",
+                updatable_fields => "${pkg}v2::Permission::updatable_fields",
+            },
+        ],
+        'association' => [
+            {   version          => 2,
+                fields           => "${pkg}v2::Association::fields",
+                updatable_fields => "${pkg}v2::Association::updatable_fields",
+            },
+        ],
+        'role' => [
+            {   version          => 2,
+                fields           => "${pkg}v2::Role::fields",
+                updatable_fields => "${pkg}v2::Role::updatable_fields",
+            },
+        ],
+        'log' => [
+            {   version          => 2,
+                fields           => "${pkg}v2::Log::fields",
+                updatable_fields => "${pkg}v2::Log::updatable_fields",
+            },
+        ],
+        'tag' => [
+            {   version          => 2,
+                fields           => "${pkg}v2::Tag::fields",
+                updatable_fields => "${pkg}v2::Tag::updatable_fields",
+            },
+        ],
+        'template' => [
+            {   version          => 2,
+                fields           => "${pkg}v2::Template::fields",
+                updatable_fields => "${pkg}v2::Template::updatable_fields",
+            },
+        ],
+        'widget'      => 'template',
+        'templatemap' => [
+            {   version          => 2,
+                fields           => "${pkg}v2::TemplateMap::fields",
+                updatable_fields => "${pkg}v2::TemplateMap::updatable_fields",
+            },
+        ],
     };
 }
 
 sub resource {
-    my $class = shift;
-    my ($key) = @_;
-    my $app   = MT->instance;
+    my $class       = shift;
+    my ($key)       = @_;
+    my $app         = MT->instance;
+    my $api_version = $app->current_api_version;
 
-    if ( !%resources ) {
+    if ( !$resources{$api_version} ) {
         my %aliases = ();
-        my $regs = MT::Component->registry( 'applications', 'data_api',
-            'resources' );
-        for my $reg (@$regs) {
+        for my $c ( MT::Component->select ) {
+            my $reg = $c->registry( 'applications', 'data_api', 'resources' );
+            next unless $reg && ref $reg eq 'HASH';
+
             for my $k ( keys %$reg ) {
                 if ( ref $reg->{$k} ) {
-                    $resources{$k} ||= { aliases => [], };
+                    $resources{$api_version}{$k} ||= { aliases => [], };
 
-                    push @{ $resources{$k}{aliases} },
+                    push @{ $resources{$api_version}{$k}{aliases} },
                         {
                         key    => $k,
-                        plugin => $reg->{$k}{plugin},
+                        plugin => $c,
                         };
                 }
                 else {
@@ -82,11 +187,11 @@ sub resource {
         }
 
         for my $k ( keys %aliases ) {
-            if ( $resources{$k} ) {
-                push @{ $resources{ $aliases{$k} }{aliases} },
-                    @{ $resources{$k}{aliases} };
+            if ( $resources{$api_version}{$k} ) {
+                push @{ $resources{$api_version}{ $aliases{$k} }{aliases} },
+                    @{ $resources{$api_version}{$k}{aliases} };
             }
-            $resources{$k} = $aliases{$k};
+            $resources{$api_version}{$k} = $aliases{$k};
         }
     }
 
@@ -94,7 +199,10 @@ sub resource {
     my $resource_key;
     for my $k (
         ref $key
-        ? ( $key->class_type || '',
+        ? ( (   UNIVERSAL::isa( $key, 'MT::Log' )
+                ? ()
+                : ( $key->class_type || '' )
+            ),
             $key->datasource . '.' . ( $key->class_type || '' ),
             $key->datasource
         )
@@ -103,13 +211,14 @@ sub resource {
     {
         next unless $k;
         $resource_key = $k;
-        $res = $resources{$k} and last;
+        $res = $resources{$api_version}{$k} and last;
     }
 
     return unless $res;
 
     if ( !ref $res ) {
-        $resources{$resource_key} = $res = $class->resource($res);
+        $resources{$api_version}{$resource_key} = $res
+            = $class->resource($res);
     }
 
     return unless $res;
@@ -121,17 +230,53 @@ sub resource {
                 @{ $res->{aliases} };
         };
 
+        my @regs;
+        for ( @{ $res->{aliases} } ) {
+            my $p = $_->{plugin};
+            my $reg
+                = $p->registry( 'applications', 'data_api', 'resources',
+                $_->{key} );
+            next unless $reg;
+
+            if ( ref $reg eq 'ARRAY' ) {
+                push @regs, ( map { +{ reg => $_, plugin => $p } } @$reg );
+            }
+            else {
+                push @regs, { reg => $reg, plugin => $p };
+            }
+        }
+
+        # Get the resource registries of the version below api version,
+        # and sort these in ascending order of version.
+        @regs = do {
+            my @tmp_regs;
+            for my $ver ( 1 .. $api_version ) {
+                my @ver_regs
+                    = grep { ( $_->{reg}{version} || 1 ) == $ver } @regs;
+                push @tmp_regs, @ver_regs;
+            }
+            @tmp_regs;
+        };
+
         my %tmp_res = ();
-        for my $k (qw(fields updatable_fields)) {
-            $tmp_res{$k} = [
-                map {
-                    my $reg
-                        = $_->{plugin}
-                        ->registry( 'applications', 'data_api', 'resources',
-                        $_->{key}, $k );
-                    $reg ? @$reg : ();
-                } @{ $res->{aliases} }
-            ];
+        for (@regs) {
+            my $p = $_->{plugin};
+            for my $k (qw(fields updatable_fields)) {
+                my $r = $_->{reg}{$k};
+                next unless $r;
+                unless ( ref $r ) {
+                    my $code = MT->handler_to_coderef($r);
+                    if ( ref $code eq 'CODE' ) {
+                        my $res = $code->($p);
+                        require MT::Component;
+                        MT::Component::__deep_localize_labels( $p, $res )
+                            if $res && ref $res eq 'HASH';
+                        $r = $res;
+                    }
+                }
+                $tmp_res{$k} ||= [];
+                push @{ $tmp_res{$k} }, ( $r ? @$r : () );
+            }
         }
 
         $res->{fields} = [];
@@ -477,7 +622,7 @@ sub from_object {
         $blogs{ $_->id } = $_ for @$objs;
         @blog_ids = map { $_->id } @$objs;
     }
-    else {
+    elsif ( $objs->[0]->has_column('blog_id') ) {
         @blog_ids = map { $_->blog_id } @$objs;
         my @blogs = MT->model('blog')->load( { id => \@blog_ids, } );
         $blogs{ $_->id } = $_ for @blogs;
@@ -488,7 +633,8 @@ sub from_object {
     for ( my $i = 0; $i < $size; $i++ ) {
         my $h = $hashs->[$i];
         $h->{$name}
-            = MT::Util::ts2iso( $blogs{ $blog_ids[$i] }, $h->{$name}, 1 );
+            = MT::Util::ts2iso( @blog_ids ? $blogs{ $blog_ids[$i] } : undef,
+            $h->{$name}, 1 );
     }
 }
 

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -571,6 +571,8 @@ MT::Revisable::Local driver which saves versions within the Movable Type databas
 To change this, you would first need to create a driver that implements the
 following methods:
 
+=over
+
 =item * revision_pkg
 
 =item * revision_props
@@ -580,5 +582,7 @@ following methods:
 =item * save_revision
 
 =item * load_revision
+
+=back
 
 If some of the above methods are not applicable to your driver, simply return undef.

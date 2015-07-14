@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -278,7 +278,11 @@ sub list_props {
                 return;
             },
         },
-
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( name )],
+            display => 'none',
+        },
     };
 }
 
@@ -702,6 +706,10 @@ sub save_tags {
     require MT::ObjectTag;
     my $clear_cache = 0;
     my @tags        = @{ $obj->{__tags} };
+    if (scalar(@tags) < 1) {
+        $obj->remove_tags();
+        return 1;
+    }
     return 1 unless delete $obj->{__force_save_tags} || @tags;
 
     my $t = MT->get_timer;

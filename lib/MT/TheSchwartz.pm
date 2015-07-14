@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -148,8 +148,9 @@ sub _has_enough_swap {
         my $decoded_limit;
         if ( $mem_limit =~ /^\d+[KGM]B?$/ ) {
             my $multiplier = 1;
-            ( $mem_limit =~ /GB?$/ ) and $multiplier = 1073741824;
-            ( $mem_limit =~ /MB?$/ ) and $multiplier = 1048576;
+            ( $mem_limit =~ /GB?$/ )
+                and $multiplier = 1048576000;    # 1024 * 1024 * 1000
+            ( $mem_limit =~ /MB?$/ ) and $multiplier = 1024000;  # 1024 * 1000
             ( $mem_limit =~ /KB?$/ ) and $multiplier = 1024;
             $mem_limit =~ s/[KGM]B?$//;
             $mem_limit = $mem_limit * $multiplier;
@@ -188,8 +189,9 @@ sub _has_enough_memory {
         my $decoded_limit;
         if ( $mem_limit =~ /^\d+[KGM]B?$/ ) {
             my $multiplier = 1;
-            ( $mem_limit =~ /GB?$/ ) and $multiplier = 1073741824;
-            ( $mem_limit =~ /MB?$/ ) and $multiplier = 1048576;
+            ( $mem_limit =~ /GB?$/ )
+                and $multiplier = 1048576000;    # 1024 * 1024 * 1000
+            ( $mem_limit =~ /MB?$/ ) and $multiplier = 1024000;  # 1024 * 1000
             ( $mem_limit =~ /KB?$/ ) and $multiplier = 1024;
             $mem_limit =~ s/[KGM]B?$//;
             $mem_limit = $mem_limit * $multiplier;

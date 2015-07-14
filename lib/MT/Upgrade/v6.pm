@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -105,23 +105,6 @@ __SQL__
             version_limit => 6.0008,
             priority      => 3.2,
             code          => \&_v6_remove_indexes,
-        },
-        'v6_remove_subscribe_verify_template' => {
-            version_limit => 6.0009,
-            priority => 3.0,   # Should execute before core_upgrade_templates.
-            updater  => {
-                type      => 'template',
-                label     => 'Removing Subscribe Verify template...',
-                terms     => { identifier => 'verify-subscribe' },
-                condition => sub {
-                    $_[0]->remove;
-                    return 0;
-                },
-                sql => <<'__SQL__',
-DELETE FROM mt_template
-WHERE       template_identifier='verify-subscribe';
-__SQL__
-            },
         },
     };
 }

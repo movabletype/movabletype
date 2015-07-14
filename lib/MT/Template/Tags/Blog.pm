@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -620,7 +620,18 @@ sub _hdlr_blog_template_set_id {
 
 =head2 BlogThemeID
 
-Outputs applied theme's ID for the blog currently in context.
+Outputs applied theme's ID for the blog currently in context.  The 
+identifier is modified such that underscores are changed to dashes.
+
+B<Attributes:>
+
+=over 4
+
+=item * raw (optional; default "0")
+
+If specified, the raw theme ID is returned.
+
+=back
 
 =for tags blogs
 
@@ -632,7 +643,7 @@ sub _hdlr_blog_theme_id {
     return $ctx->_no_blog_error() unless $blog;
     my $id = $blog->theme_id
         or return '';
-    $id =~ s/_/-/g;
+    $id =~ s/_/-/g unless $args->{raw};
     return $id;
 }
 

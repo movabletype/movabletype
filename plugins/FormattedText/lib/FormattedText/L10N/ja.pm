@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -20,6 +20,11 @@ use vars qw( %Lexicon );
 ## plugins/FormattedText/lib/FormattedText/App.pm
 	'Are you sure you want to delete the selected boilerplates?' => '定型文を削除してもよろしいですか？',
 	'My Boilerplate' => '自分の定型文',
+
+## plugins/FormattedText/lib/FormattedText/DataAPI/Callback/FormattedText.pm
+	'The boilerplate \'[_1]\' is already in use in this site.' => '定型文 \'[_1]\'はすでに存在します。',
+
+## plugins/FormattedText/lib/FormattedText/DataAPI/Endpoint/v2/FormattedText.pm
 
 ## plugins/FormattedText/lib/FormattedText/FormattedText.pm
 	'Boilerplates' => '定型文',

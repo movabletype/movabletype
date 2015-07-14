@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,7 +16,9 @@ sub init {
     my $fmgr = shift;
     $fmgr->SUPER::init(@_);
     my %options = ();
-    $options{Port} = $_[3] if $_[3];
+    $options{Port}    = $_[3] if $_[3];
+    $options{Passive} = 1;
+    $options{Debug}   = 1 if $MT::DebugMode;
     my $ftp = $fmgr->{ftp} = Net::FTP->new( $_[0], %options )
         or return $fmgr->error("FTP connection failed: $@");
     $ftp->login( @_[ 1, 2 ] );
@@ -40,7 +42,8 @@ sub get_data {
         ## and this causes a warning with perl -wT.
         local $^W = 0;
         $fmgr->{ftp}->get( $from, \*FH )
-            or return $fmgr->error("FTP get failed: $@");
+            or
+            return $fmgr->error( "FTP get failed: " . $fmgr->{ftp}->message );
     }
     tied(*FH)->buffer;
 }
@@ -55,7 +58,7 @@ sub put {
         $fmgr->{ftp}->ascii;
     }
     $fmgr->{ftp}->put( $from, $to )
-        or return $fmgr->error("FTP put failed: $@");
+        or return $fmgr->error( "FTP put failed: " . $fmgr->{ftp}->message );
     $fmgr->{ftp}->size($to);
 }
 
@@ -71,7 +74,7 @@ sub put_data {
     local *FH;
     tie *FH, 'MT::FileMgr::FTP::StringTie', $data;
     $fmgr->{ftp}->put( \*FH, $to )
-        or return $fmgr->error("FTP put failed: $@");
+        or return $fmgr->error( "FTP put failed: " . $fmgr->{ftp}->message );
     length($data);
 }
 

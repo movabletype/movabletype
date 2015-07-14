@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1530,7 +1530,8 @@ MT.App = new Class( App, {
         if ( this.cpeList )
             this.cpeList.forEach( function( cpe ) { cpe.onSubmit() } );
 
-        form.submitted = true;
+        if ( form.getAttribute( "mt:once" ) )
+            form.submitted = true;
         this.stopAutoSave();
     },
 
@@ -2614,6 +2615,7 @@ MT.App.CategorySelector = new Class( Component, {
             this.list.setOption( "singleSelect", true );
             this.list.setOption( "toggleSelect", false );
         }
+        this.list.setOption( "disableUnSelect", true );
 
         this.parentID = 0;
         var cats = MT.App.categoryList;

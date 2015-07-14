@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -118,7 +118,8 @@ sub extract {
 
     $path ||= MT->config->TempDir;
     for my $file ( $obj->files ) {
-        my $file_enc = Encode::decode_utf8($file);
+        my $file_enc = Encode::decode_utf8($file)
+            unless Encode::is_utf8($file);
         my $f = File::Spec->catfile( $path, $file_enc );
         $obj->{_arc}->extract_file( $file, MT::FileMgr::Local::_local($f) );
     }

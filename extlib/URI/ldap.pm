@@ -5,13 +5,11 @@
 package URI::ldap;
 
 use strict;
+use warnings;
 
-use vars qw(@ISA $VERSION);
-$VERSION = "1.11";
+our $VERSION = "1.67";
 
-require URI::_server;
-require URI::_ldap;
-@ISA=qw(URI::_ldap URI::_server);
+use parent qw(URI::_ldap URI::_server);
 
 sub default_port { 389 }
 
@@ -105,7 +103,7 @@ the form of list that is returned.
 
 =head1 SEE ALSO
 
-L<RFC-2255|http://www.cis.ohio-state.edu/htbin/rfc/rfc2255.html>
+L<http://tools.ietf.org/html/rfc2255>
 
 =head1 AUTHOR
 

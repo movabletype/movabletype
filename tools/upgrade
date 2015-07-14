@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -90,7 +90,7 @@ sub options {
 
 sub _error {
     my $msg = shift;
-    $msg ||= 'An error occured!';
+    $msg ||= 'An error occurred!';
     if ( Encode::is_utf8($msg) ) {
         $msg = Encode::encode_utf8($msg);
     }

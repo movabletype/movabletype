@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -26,7 +26,7 @@ sub get {
 sub update {
     my ( $app, $endpoint ) = @_;
 
-    my $user = get_target_user($app)
+    my $user = get_target_user(@_)
         or return;
 
     my $new_user = $app->resource_object( 'user', $user )

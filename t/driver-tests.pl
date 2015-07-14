@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -21,6 +21,11 @@ BEGIN {
     # Set config to driver-test.cfg when run as /path/to/99-driver.t
     $ENV{MT_CONFIG} = "$1-test.cfg"
         if __FILE__ =~ m{ [\\/] \d+- ([^\\/]+) \.t \z }xms;
+
+    # Set "DisableObjectCache 1" when testing MySQL.
+    if ( $ENV{MT_CONFIG} =~ /^mysql/ ) {
+        $ENV{MT_CONFIG} = 'mysql-test-disable-object-cache.cfg';
+    }
 }
 
 use Test::More;
@@ -39,7 +44,7 @@ BEGIN {
     );
 
     my $db = $1
-        if $ENV{MT_CONFIG} =~ m/(.*)-test.cfg/;
+        if $ENV{MT_CONFIG} =~ m/(.*)-test(?:-disable-object-cache)?.cfg/;
     my $module = $modules{$db};
     eval "require $module;";
     plan skip_all => "Database driver '$module' not found."
@@ -1703,8 +1708,8 @@ ok( !MT::Object->driver->dbd->ddl_class->column_defs('Zot'),
 $foo = Foo->new;
 isa_ok( $foo, 'Foo', 'New Foo could be created' );
 $foo->column( 'name', 'foo' );
-is( $foo->column('name'), 'foo',
-    'Setting name field with column() persists through access' );
+is( $foo->column('name'),
+    'foo', 'Setting name field with column() persists through access' );
 $foo->name('foo');
 is( $foo->name, 'foo',
     'Setting name field with mutator method persists through access' );

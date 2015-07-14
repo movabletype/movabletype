@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -12,6 +12,16 @@ use MT::Entry;
 use MT::Util qw( encode_html encode_js remove_html spam_protect encode_url );
 use MT::Promise qw( delay );
 use MT::I18N qw( first_n_text );
+
+=head1 NAME
+
+MT::Template::Tags::Comment - MT tags related with comment
+
+=head1 TAGS
+
+=cut
+
+###########################################################################
 
 sub _comment_follow {
     my ( $ctx, $arg ) = @_;
@@ -324,8 +334,8 @@ sub _hdlr_comments {
         $ctx->set_blog_load_context( $args, \%terms, \%args )
             or return $ctx->error( $ctx->errstr );
 
-        if ($args->{top}) {
-            $terms{parent_id} = \'is NULL';
+        if ( $args->{top} ) {
+            $terms{parent_id} = [ \'is NULL', 0 ];
         }
 
         ## If there is a "lastn" arg, then we need to check if there is an entry
@@ -1906,8 +1916,8 @@ sub _hdlr_blog_comment_count {
         },
         {}
     );
-    if ($args->{top}) {
-        $terms{parent_id} = \'is not NULL';
+    if ( $args->{top} ) {
+        $terms{parent_id} = [ \'is NULL', 0 ];
     }
 
     require MT::Comment;
@@ -1938,8 +1948,13 @@ sub _hdlr_entry_comments {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $count;
-    if ($args->{top}) {
-        $count = MT::Comment->count({ entry_id => $e->id, parent_id => \'is NULL' });
+    if ( $args->{top} ) {
+        $count = MT::Comment->count(
+            {   entry_id  => $e->id,
+                parent_id => [ \'is NULL', 0 ],
+                visible   => 1
+            }
+        );
     }
     else {
         $count = $e->comment_count;
@@ -2002,8 +2017,8 @@ sub _hdlr_category_comment_count {
             )
         }
     );
-    if ($args->{top}) {
-        $args[0]->{parent_id} = \'is not NULL';
+    if ( $args->{top} ) {
+        $args[0]->{parent_id} = [ \'is NULL', 0 ];
     }
     require MT::Comment;
     $count = scalar MT::Comment->count(@args);

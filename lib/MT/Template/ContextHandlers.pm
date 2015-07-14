@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -364,12 +364,12 @@ sub core_tags {
                 \&MT::Template::Tags::System::_hdlr_comment_script,
             TrackbackScript =>
                 \&MT::Template::Tags::System::_hdlr_trackback_script,
-            SearchScript  => \&MT::Template::Tags::System::_hdlr_search_script,
-            XMLRPCScript  => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
-            AtomScript    => \&MT::Template::Tags::System::_hdlr_atom_script,
-            CGIHost       => \&MT::Template::Tags::System::_hdlr_cgi_host,
-            CGIPath       => \&MT::Template::Tags::System::_hdlr_cgi_path,
-            AdminCGIPath  =>
+            SearchScript => \&MT::Template::Tags::System::_hdlr_search_script,
+            XMLRPCScript => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
+            AtomScript   => \&MT::Template::Tags::System::_hdlr_atom_script,
+            CGIHost      => \&MT::Template::Tags::System::_hdlr_cgi_host,
+            CGIPath      => \&MT::Template::Tags::System::_hdlr_cgi_path,
+            AdminCGIPath =>
                 \&MT::Template::Tags::System::_hdlr_admin_cgi_path,
             CGIRelativeURL =>
                 \&MT::Template::Tags::System::_hdlr_cgi_relative_url,
@@ -930,8 +930,10 @@ sub core_tags {
             SearchTemplateBlogID => sub {0},
 
             ## DataAPI
-            DataAPIScript  => \&MT::Template::Tags::System::_hdlr_dataapi_script,
-            DataAPIVersion => \&MT::Template::Tags::System::_hdlr_dataapi_version,
+            DataAPIScript =>
+                \&MT::Template::Tags::System::_hdlr_dataapi_script,
+            DataAPIVersion =>
+                \&MT::Template::Tags::System::_hdlr_dataapi_version,
 
             ## Misc
             FeedbackScore =>
@@ -974,6 +976,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Filters::_fltr_encode_xml',
             'encode_js' =>
                 '$Core::MT::Template::Tags::Filters::_fltr_encode_js',
+            'encode_json' =>
+                '$Core::MT::Template::Tags::Filters::_fltr_encode_json',
             'encode_php' =>
                 '$Core::MT::Template::Tags::Filters::_fltr_encode_php',
             'encode_url' =>
@@ -1552,6 +1556,8 @@ sub _hdlr_if {
         $tag =~ s/^MT:?//i;
         require Storable;
         my $local_args = Storable::dclone($args);
+        delete $local_args->{tag};
+        local $ctx->{'__stash'}{'tokens_else'} = undef;
         $value = $ctx->tag( $tag, $local_args, $cond );
         $ctx->{__stash}{vars}{__cond_tag__} = $tag;
     }
@@ -5844,7 +5850,8 @@ being built.
 
 sub _hdlr_build_template_id {
     my ( $ctx, $args, $cond ) = @_;
-    my $tmpl = $ctx->stash('template');
+    my $tmpl = MT->instance->request('build_template')
+        || $ctx->stash('template');
     if ( $tmpl && $tmpl->id ) {
         return $tmpl->id;
     }

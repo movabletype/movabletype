@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -579,7 +579,8 @@ sub compile_category_filter {
             }
             else {
                 my $str
-                    = join( '||', map "#" . $_->id, @{ $cats_dir{$token} } );
+                    = join( ' OR ', map "#" . $_->id,
+                    @{ $cats_dir{$token} } );
                 $new_expr .= "($str)";
             }
             $new_expr .= $e_space;
@@ -587,18 +588,33 @@ sub compile_category_filter {
         $cat_expr = $new_expr;
         @$cats    = values %cats_used;
 
+        # when $cat_expr not containing AND, OR or NOT,
+        # parenthesis is invalid token.
+        my $regexp;
+        if ( $cat_expr =~ /\b(AND|OR|NOT)\b/i ) {
+            $regexp = qr/#\d+|&&|\|\||!|\(|\)/;
+        }
+        else {
+            $regexp = qr/#\d+/;
+        }
+
         $cat_expr =~ s/\bAND\b/&&/gi;
         $cat_expr =~ s/\bOR\b/||/gi;
         $cat_expr =~ s/\bNOT\b/!/gi;
 
         # replace any other 'thing' with '(0)' since it's a
         # category that doesn't even exist.
-        $cat_expr =~ s/( |#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/$2?'(0)':$1/ge;
+        my @cat_expr = split /($regexp)/,
+            $cat_expr;    # Split by valid tokens, which are kept.
+        @cat_expr = grep { $_ ne '' } @cat_expr;    # Remove empty tokens.
+        @cat_expr = map { $_ =~ /^(\s+|$regexp)$/ ? $_ : '(0)' }
+            @cat_expr;    # Replace invalid tokens with '(0)'.
+        $cat_expr = join '', @cat_expr;
 
         # strip out all the 'ok' stuff. if anything is left, we have
         # some invalid data in our expression:
         my $test_expr = $cat_expr;
-        $test_expr =~ s/!|&&|\|\||\(0\)|\(|\)|\s|#\d+//g;
+        $test_expr =~ s/\s+|\(0\)|$regexp//g;
         return undef if $test_expr;
     }
     else {

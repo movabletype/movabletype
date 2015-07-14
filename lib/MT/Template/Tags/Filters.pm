@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -172,10 +172,11 @@ sub _fltr_nofollowfy {
             $rel = 'rel="nofollow"';
         }
         @attr = grep { !/^rel\s*=/i } @attr;
-        @attr = map { Encode::decode_utf8($_) } @attr;
+        @attr = map { Encode::is_utf8( $_ ) ? $_ : Encode::decode_utf8($_) } @attr;
         '<a ' . (join ' ', @attr) . ' ' . $rel . '>';
     #xieg;
     $str;
+
 }
 
 ###########################################################################
@@ -448,6 +449,20 @@ sub _fltr_encode_js {
 
 ###########################################################################
 
+=head2 encode_json
+
+Encodes any special characters so that the string can be used safely as
+the value in JSON.
+
+=cut
+
+sub _fltr_encode_json {
+    my ( $str, $val, $ctx ) = @_;
+    MT::Util::encode_json($str);
+}
+
+###########################################################################
+
 =head2 encode_php
 
 Encodes any special characters so that the string can be used safely as
@@ -631,8 +646,10 @@ sub _fltr_regex_replace {
         my $re = eval {qr/$patt/};
         if ( defined $re ) {
             $replace =~ s!\\\\(\d+)!\$1!g;  # for php, \\1 is how you write $1
+            $replace =~ s{\\(?![\da-z])}{\\\\}g;
             $replace =~ s!/!\\/!g;
-            eval '$str =~ ' . "s'$re'$replace'" . ( $global ? 'g' : '' );
+            $replace =~ s/(@|\$(?![\d\&]))/\\$1/g;
+            eval '$str =~ s/$re/' . $replace . '/' . ( $global ? 'g' : '' );
             if ($@) {
                 return $ctx->error("Invalid regular expression: $@");
             }

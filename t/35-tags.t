@@ -23,6 +23,12 @@ require POSIX;
 
 my $mt = MT->new();
 
+# Set config directives.
+$mt->config->AllowComments( 1, 1 );
+$mt->config->StaticFilePath( '../mt-static', 1 );
+$mt->config->CommenterRegistration( { Allow => 1 }, 1 );
+$mt->config->save_config;
+
 # Clear cache
 my $request = MT::Request->instance;
 $request->{__stash} = {};
@@ -64,7 +70,7 @@ my %const = (
     CURRENT_WORKING_DIRECTORY => MT->instance->server_path,
     STATIC_CONSTANT => '1',
     DYNAMIC_CONSTANT => '',
-    DAYS_CONSTANT1 => $daysdiff + 1,
+    DAYS_CONSTANT1 => $daysdiff + 2,
     DAYS_CONSTANT2 => $daysdiff - 1,
     CURRENT_YEAR => POSIX::strftime("%Y", localtime),
     CURRENT_MONTH => POSIX::strftime("%m", localtime),

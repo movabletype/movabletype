@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -142,9 +142,7 @@ sub do_import {
         $pass = $q->param('password')
             or return $app->error(
             $app->translate(
-                      "You need to provide a password if you are going to "
-                    . "create new users for each user listed in your blog."
-            )
+                      'You need to provide a password if you are going to create new users for each user listed in your blog.')
             ) if ( MT::Auth->password_exists );
     }
 

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -85,19 +85,32 @@ sub list_props {
             order   => 200,
             display => 'force',
             raw     => sub {
-                MT::Util::encode_html( $_[1]->label );
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $label = $obj->label;
+                $label = '' if !defined $label;
+                $label =~ s/^\s+|\s+$//g;
+                $label = "(" . $app->translate("No Label") . ")"
+                    if $label eq '';
+                MT::Util::encode_html($label);
             },
             html_link => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
-                return $app->uri(
-                    mode => 'list',
-                    args => {
-                        _type      => $obj->object_ds,
-                        blog_id    => $obj->blog_id,
-                        filter_key => $obj->id,
-                    }
-                );
+                my $class = MT->model( $obj->object_ds );
+                if ($class) {
+                    return $app->uri(
+                        mode => 'list',
+                        args => {
+                            _type      => $obj->object_ds,
+                            blog_id    => $obj->blog_id,
+                            filter_key => $obj->id,
+                        }
+                    );
+                }
+                else {
+                    return;
+                }
             },
         },
         author_name => {
@@ -152,9 +165,11 @@ sub list_props {
                 my $label = $reg->{label} || $reg->{object_label};
                 if ( !$label ) {
                     my $class = $reg->{object_type} || $screen_id;
+                    my $cls = MT->model($class);
                     $label
                         = $class
-                        ? MT->model($class)->class_label
+                        ? (
+                        $cls ? $cls->class_label : MT->translate('Deleted') )
                         : $prop->class;
                 }
                 return ref $label ? $label->() : $label;

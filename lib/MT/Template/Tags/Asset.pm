@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1045,14 +1045,14 @@ sub _hdlr_asset_property {
                 $ret = sprintf( "%.1f KB", $size / 1024 );
             }
             else {
-                $ret = sprintf( "%.1f MB", $size / 1048576 );
+                $ret = sprintf( "%.1f MB", $size / 1024000 );
             }
         }
         elsif ( $format =~ m/k/i ) {
             $ret = sprintf( "%.1f", $size / 1024 );
         }
         elsif ( $format =~ m/m/i ) {
-            $ret = sprintf( "%.1f", $size / 1048576 );
+            $ret = sprintf( "%.1f", $size / 1024000 );
         }
         else {
             $ret = $size;
@@ -1312,8 +1312,8 @@ sub _hdlr_asset_count {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
     $terms{blog_id} = $ctx->stash('blog_id') if $ctx->stash('blog_id');
-    $terms{parent} = \'is NULL';
-    $terms{class} = $args->{type} || '*';
+    $terms{parent}  = \'is NULL';
+    $terms{class}   = $args->{type} || '*';
     my $count = MT::Asset->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );
 }

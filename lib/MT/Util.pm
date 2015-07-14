@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,6 +11,7 @@ use utf8;
 use base 'Exporter';
 use MT::I18N qw( const );
 use Time::Local qw( timegm );
+use List::Util qw( sum );
 
 our @EXPORT_OK
     = qw( start_end_day start_end_week start_end_month start_end_year
@@ -29,7 +30,8 @@ our @EXPORT_OK
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
-    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi );
+    realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
+    encode_json );
 
 {
     my $Has_Weaken;
@@ -708,30 +710,37 @@ sub decode_js {
     return $str;
 }
 
+sub encode_json {
+    my ($str) = @_;
+    return '' unless defined $str && !ref($str);
+    my $json = to_json( [$str] );
+    return ( $json =~ m/^\["(.+)"\]$/ )[0];    # ["foo"] => for
+}
+
 sub encode_php {
     my ( $str, $meth ) = @_;
     return '' unless defined $str;
     if ( $meth eq 'qq' ) {
         $str = encode_phphere($str);
-        $str =~ s!"!\\"!g;    ## Replace " with \"
+        $str =~ s!"!\\"!g;                     ## Replace " with \"
     }
     elsif ( substr( $meth, 0, 4 ) eq 'here' ) {
         $str = encode_phphere($str);
     }
     else {
-        $str =~ s!\\!\\\\!g;    ## Replace \ with \\
-        $str =~ s!'!\\'!g;      ## Replace ' with \'
+        $str =~ s!\\!\\\\!g;                   ## Replace \ with \\
+        $str =~ s!'!\\'!g;                     ## Replace ' with \'
     }
     $str;
 }
 
 sub encode_phphere {
     my ($str) = @_;
-    $str =~ s!\\!\\\\!g;        ## Replace \ with \\
-    $str =~ s!\$!\\\$!g;        ## Replace $ with \$
-    $str =~ s!\n!\\n!g;         ## Replace character \n with string \n
-    $str =~ s!\r!\\r!g;         ## Replace character \r with string \r
-    $str =~ s!\t!\\t!g;         ## Replace character \t with string \t
+    $str =~ s!\\!\\\\!g;    ## Replace \ with \\
+    $str =~ s!\$!\\\$!g;    ## Replace $ with \$
+    $str =~ s!\n!\\n!g;     ## Replace character \n with string \n
+    $str =~ s!\r!\\r!g;     ## Replace character \r with string \r
+    $str =~ s!\t!\\t!g;     ## Replace character \t with string \t
     $str;
 }
 
@@ -778,6 +787,7 @@ sub decode_url {
 
             }
             $html =~ s!"!&quot;!g;
+            $html =~ s!'!&#039;!g;
             $html =~ s!<!&lt;!g;
             $html =~ s!>!&gt;!g;
         }
@@ -798,6 +808,7 @@ sub decode_url {
         }
         else {
             $html =~ s!&quot;!"!g;
+            $html =~ s!&#039;!'!g;
             $html =~ s!&lt;!<!g;
             $html =~ s!&gt;!>!g;
             $html =~ s!&amp;!&!g;
@@ -888,7 +899,8 @@ sub remove_html {
         defined $1 ? $1 : ''
         /geisx;
     $text =~ s/<(?!\!\[CDATA\[)/&lt;/gis;
-    $text = Encode::decode_utf8($text);
+    $text = Encode::decode_utf8($text)
+        unless Encode::is_utf8($text);
     return $text;
 }
 
@@ -1136,7 +1148,8 @@ sub xliterate_utf8 {
     );
 
     $str =~ s/([\200-\377]{2})/$utf8_table{$1}||''/ge;
-    $str = Encode::decode_utf8($str);
+    $str = Encode::decode_utf8($str)
+        unless Encode::is_utf8($str);
     $str;
 }
 
@@ -1274,24 +1287,25 @@ sub _get_basename {
             return $base;
         }
     }
+
     my $base_num = 1;
-    my $last_id;
+    my @last_ids;
     while (1) {
         my %args;
-        $args{start_val} = $last_id if defined $last_id;
+        $terms{id} = {not => \@last_ids} if scalar @last_ids;
         my $existing = $class->load(
             {   basename => { like => $base . '_%' },
                 %terms,
             },
             {   limit     => 1,
-                sort      => 'id',
+                sort      => 'basename',
                 direction => 'descend',
                 %args,
             }
         );
         last if !$existing;
-        $last_id = $existing->id;
-        if ( $existing->basename =~ /^$base\_([1-9]\d*)$/o ) {
+        push @last_ids, $existing->id;
+        if ( $existing->basename =~ /^$base\_([1-9]\d*)$/ ) {
             my $num = $1;
             next if !$num;
             $base_num = $num + 1;
@@ -2836,6 +2850,35 @@ sub clear_site_stats_widget_cache {
     }
 }
 
+sub is_valid_ip {
+    my ($str) = @_;
+
+    my ( $ip, $cidr ) = split /\//, $str;
+    my @ips = split /\./, $ip;
+
+    # xxx.xxx.xxx.xxx
+    if (@ips) {
+        my $num = @ips;
+        return 0 if $num < 4;
+    }
+
+    # 0-255
+    foreach my $num (@ips) {
+        return 0 unless $num =~ /^\d+$/;
+        return 0 if ( $num < 0 || $num > 255 );
+    }
+
+    # 0.0.0.0 255.255.255.255
+    return 0 if ( sum(@ips) == 0 || sum(@ips) == 1020 );
+
+    # CIDR
+    if ( defined $cidr ) {
+        return 0 if ( $cidr < 1 || $cidr > 32 );
+    }
+
+    return $str;
+}
+
 package MT::Util::XML::SAX::LexicalHandler;
 
 sub start_dtd {
@@ -3095,6 +3138,12 @@ Clear caches for site stats dashboard widget.
 Check whether MT runs under FastCGI. The result is kept while the process runs. If $ENV{FAST_CGI}
 is defined, the result is determined based on this value. If $param is defined, the result is
 determined by reference to this value.
+
+=head2 is_valid_ip($ip_address)
+
+Checks the IP address I<$ip_address> for syntax validity; if the
+IP address is valid, I<is_valid_ip> returns the valid
+the IP address. Otherwise, it returns C<0>.
 
 =back
 

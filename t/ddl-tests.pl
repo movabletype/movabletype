@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -166,8 +166,7 @@ sub startup : Test(startup) {
 
     # The table may exist from a previous test, so delete it if it does.
     eval {
-        if ( $driver->table_exists('Ddltest') )
-        {
+        if ( $driver->table_exists('Ddltest') ) {
             my $sql = $driver->dbd->ddl_class->drop_table_sql('Ddltest');
             $driver->rw_handle->do($sql);
         }
@@ -206,7 +205,7 @@ sub _01_create_table : Tests(2) {
     ok( $create_sql, 'Create Table SQL for Ddltest is available' );
     my $res = $dbh->do($create_sql);
     ok( $res, 'Driver could perform Create Table SQL for Ddltest' );
-    diag( $dbh->errstr || $DBI::errstr ) if !$res;
+    note( $dbh->errstr || $DBI::errstr ) if !$res;
 }
 
 sub _02_create_indexes : Tests(6) {
@@ -223,8 +222,8 @@ sub _02_create_indexes : Tests(6) {
         my $res = $dbh->do($index_sql);
         ok( $res, 'Driver could perform Index Table SQL for Ddltest' );
         if ( !$res ) {
-            diag( $dbh->errstr || $DBI::errstr );
-            diag( 'SQL: ' . $index_sql );
+            note( $dbh->errstr || $DBI::errstr );
+            note( 'SQL: ' . $index_sql );
         }
     }
 }
@@ -269,7 +268,7 @@ sub is_def {
     for my $field (@fields) {
         if ( $expected->{$field} xor $got->{$field} ) {
             fail($reason);
-            diag(
+            note(
                 $expected->{$field}
                 ? "Expected $field but didn't get it"
                 : "Expected not $field but got it"
@@ -280,7 +279,7 @@ sub is_def {
 
     if ( !defined $got->{type} ) {
         fail($reason);
-        diag(
+        note(
             "Expected MT data type ",
             $expected->{type},
             " but got no type at all"
@@ -292,14 +291,14 @@ sub is_def {
     my $expected_type = $ddl_class->type2db($expected);
     if ( !defined $got_type || $expected_type ne $got_type ) {
         fail($reason);
-        diag( "Expected db data type ",
+        note( "Expected db data type ",
             $expected_type, " but got ", $got_type );
         return;
     }
 
     if ( defined $expected->{size} && $expected->{size} != $got->{size} ) {
         fail($reason);
-        diag( "Expected size ", $expected->{size}, " but got ",
+        note( "Expected size ", $expected->{size}, " but got ",
             $got->{size} );
         return;
     }
@@ -670,7 +669,7 @@ sub multikey_unique : Tests(1) {
         : defined $ret ? $dbh->errstr
         :                $@;
     ok( !$ret, q{Duplicate multikey instance wouldn't insert} );
-    diag( 'Saving error: ', $err ) if !$ret;
+    note( 'Saving error: ', $err ) if !$ret;
 }
 
 sub invalid_type : Tests(3) {
@@ -772,7 +771,7 @@ SKIP: {
         ok( @sql, 'Ddltest::Fixable can have column adding sql' );
     SQL: for my $sql (@sql) {
             $res = $dbh->do($sql);
-            diag( ( $dbh->errstr || $DBI::errstr ) . "( sql $sql)" ) if !$res;
+            note( ( $dbh->errstr || $DBI::errstr ) . "( sql $sql)" ) if !$res;
             last SQL if !$res;
         }
         ok( $res, 'Ddltest::Fixable could have a column added' );
@@ -790,7 +789,7 @@ SKIP: {
 STMT: for my $stmt ( $ddl_class->fix_class('Ddltest::Fixable') ) {
         $res = $dbh->do($stmt);
         if ( !$res ) {
-            diag( $dbh->errstr || $DBI::errstr );
+            note( $dbh->errstr || $DBI::errstr );
             last STMT;
         }
     }
@@ -822,7 +821,7 @@ sub _00_drop_table_test : Test(shutdown => 3) {
     ok( $drop_sql, 'Drop Table SQL for Ddltest is available' );
     my $res = $dbh->do($drop_sql);
     ok( $res, 'Driver could perform Drop Table SQL for Ddltest' );
-    diag( $dbh->errstr || $DBI::errstr ) if !$res;
+    note( $dbh->errstr || $DBI::errstr ) if !$res;
 
     ok( !defined $ddl_class->column_defs('Ddltest'),
         'Ddltest table no longer exists' );

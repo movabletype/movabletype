@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -10,6 +10,7 @@ use strict;
 use base qw( MT::App );
 
 use MT::Util qw( encode_html encode_url perl_sha1_digest_hex );
+use MT::App::Search::Common;
 
 sub id {'new_search'}
 
@@ -30,14 +31,9 @@ sub init {
     #        $app->param($k, $v);
     #    }
     #}
-    my $pkg = ref($app);
-    $app->_register_core_callbacks(
-        {   "${pkg}::search_post_execute" => \&_log_search,
-            "${pkg}::search_post_render"  => \&_cache_out,
-            "${pkg}::prepare_throttle"    => \&_default_throttle,
-            "${pkg}::take_down"           => \&_default_takedown,
-        }
-    );
+
+    MT::App::Search::Common::init_core_callbacks($app);
+
     $app;
 }
 
@@ -54,7 +50,7 @@ sub core_parameters {
     my $core = {
         params => [
             qw( searchTerms search count limit startIndex offset
-                category author )
+                category author field )
         ],
         types => {
             entry => {
@@ -72,6 +68,7 @@ sub core_parameters {
                 filter_types => {
                     author   => \&_join_author,
                     category => \&_join_category,
+                    field    => \&_join_field,
                 },
             },
         },
@@ -89,9 +86,11 @@ sub core_parameters {
 
 sub init_request {
     my $app = shift;
-    $app->SUPER::init_request(@_);
 
-    $app->mode('tag') if $app->param('tag');
+    if ( $app->isa('MT::App::Search') ) {
+        $app->SUPER::init_request(@_);
+        $app->mode('tag') if $app->param('tag');
+    }
 
     my $q = $app->param;
 
@@ -199,7 +198,8 @@ sub takedown {
     my $app = shift;
     delete $app->{searchparam};
     delete $app->{search_string};
-    $app->SUPER::takedown(@_);
+    delete $app->{cache_keys};
+    $app->SUPER::takedown(@_) if $app->isa('MT::App::Search');
 }
 
 sub generate_cache_keys {
@@ -214,6 +214,13 @@ sub generate_cache_keys {
             $count_key .= lc($p) . encode_url($pp)
                 if ( 'limit' ne lc($p) ) && ( 'offset' ne lc($p) );
         }
+    }
+
+    # Cache key is different for each applications.
+    if ( !$app->isa('MT::App::Search') ) {
+        my $app_key_param = 'app_id' . encode_url( $app->id );
+        $key       .= $app_key_param;
+        $count_key .= $app_key_param;
     }
 
     $key       = perl_sha1_digest_hex($key);
@@ -395,7 +402,7 @@ sub process {
     return $app->error( $app->errstr ) unless defined $out;
 
     my $result;
-    if ( ref($out) && ( $out->isa('MT::Template') ) ) {
+    if ( ref($out) && eval { $out->isa('MT::Template') } ) {
         defined( $result = $out->build() )
             or return $app->error( $out->errstr );
     }
@@ -415,14 +422,6 @@ sub count {
 
     $count = $class->count( $terms, $args );
     return $app->error( $class->errstr ) unless defined $count;
-
-    # Limit $count by $app->param('count') or $app->param('limit')
-    my $limit = $args->{limit} || '';
-    if ( $limit =~ /\d+/ && $limit > 0 ) {
-        if ( $count > $limit ) {
-            $count = $limit;
-        }
-    }
 
     my $cache_driver = $app->{cache_driver};
     $cache_driver->set( $app->{cache_keys}{count},
@@ -602,7 +601,7 @@ sub _cache_out {
     my ( $cb, $app, $count, $out ) = @_;
 
     my $result;
-    if ( ref($out) && ( $out->isa('MT::Template') ) ) {
+    if ( ref($out) && eval { $out->isa('MT::Template') } ) {
         defined( $result = $out->build() )
             or die $out->errstr;
     }
@@ -673,7 +672,8 @@ sub first_blog_id {
         if (   $q->param('IncludeBlogs') eq ''
             || $q->param('IncludeBlogs') eq 'all' )
         {
-            my @blogs = $app->model('blog')->load( {}, { limit => 1 } );
+            my @blogs = $app->model('blog')
+                ->load( {}, { no_class => 1, limit => 1 } );
             $blog_id = @blogs ? $blogs[0]->id : undef;
         }
 
@@ -727,6 +727,7 @@ sub prepare_context {
         $app->blog($blog);
         $ctx->stash( 'blog_id', $blog_id );
         $ctx->stash( 'blog',    $blog );
+        $ctx->stash( 'search_blog_id', $blog_id );
     }
 
     # some basic search parameters
@@ -953,7 +954,8 @@ sub query_parse {
         = $app->registry( $app->mode, 'types', $app->{searchparam}{Type} );
     my $filter_types = $reg->{'filter_types'};
     foreach my $type ( keys %$filter_types ) {
-        if ( my $filter = $app->param($type) ) {
+        my @filters = $app->param($type);
+        foreach my $filter ( @filters ) {
             if ( $filter =~ m/\s/ ) {
                 $filter = '"' . $filter . '"';
             }
@@ -969,7 +971,9 @@ sub query_parse {
     my $return = { $terms && @$terms ? ( terms => $terms ) : () };
     if ( $joins && @$joins ) {
         my $args = {};
-        _create_join_arg( $args, $joins );
+
+        #        _create_join_arg( $args, $joins );
+        $args->{joins} = $joins;
         if ( $args && %$args ) {
             $return->{args} = $args;
         }
@@ -1135,7 +1139,6 @@ sub _join_category {
     my ($terms)
         = $app->_query_parse_core( $lucene_struct,
         { ( $can_search_by_id ? ( id => 1 ) : () ), label => 1 }, {} );
-
     return unless $terms && @$terms;
     push @$terms, '-and',
         {
@@ -1178,6 +1181,44 @@ sub _join_author {
     push @$terms, '-and', { id => \'= entry_author_id', };
     require MT::Author;
     return MT::Author->join_on( undef, $terms, { unique => 1 } );
+}
+
+sub _join_field {
+    my ( $app, $term ) = @_;
+
+    eval "require CustomFields::Field;";
+    return if $@;    # No Commercial.Pack installed?
+
+    my $query = $term->{term};
+    if ( 'PHRASE' eq $term->{query} ) {
+        $query =~ s/'/"/g;
+    }
+
+    my ( $basename, $val ) = split ':', $query, 2;
+    return unless $basename && $val;
+
+    require MT::Meta;
+    my $field_basename = 'field.' . $basename;
+    my $class          = $app->model( $app->{searchparam}{Type} );
+    my $meta_rec = MT::Meta->metadata_by_name( $class, $field_basename );
+    my $type_col = $meta_rec->{type};
+    return unless $type_col;
+
+    my $lucene_struct = Lucene::QueryParser::parse_query($val);
+    if ( 'PROHIBITED' eq $term->{type} ) {
+        $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
+    }
+
+    my ($terms)
+        = $app->_query_parse_core( $lucene_struct, { $type_col => 'like' },
+        {} );
+    return unless $terms && @$terms;
+
+    my $meta_class = $class->meta_pkg;
+    push @$terms, '-and',
+        { entry_id => \'= entry_id', type => $field_basename };
+    $meta_class->join_on( undef, $terms,
+        { unique => 1, alias => "$basename" } );
 }
 
 # throttling related methods

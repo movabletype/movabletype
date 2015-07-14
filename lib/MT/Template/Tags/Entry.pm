@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -488,16 +488,16 @@ sub _hdlr_entries {
             else {
                 my @cats = $cat_class->load( \%blog_terms, \%blog_args );
                 if (@cats) {
-                    $cats  = \@cats;
-                    $cexpr = $ctx->compile_category_filter(
-                        $category_arg,
-                        $cats,
-                        {   children => $cat_class_type eq 'category'
-                            ? ( $args->{include_subcategories} ? 1 : 0 )
-                            : ( $args->{include_subfolders} ? 1 : 0 )
-                        }
-                    );
+                    $cats = \@cats;
                 }
+                $cexpr = $ctx->compile_category_filter(
+                    $category_arg,
+                    $cats,
+                    {   children => $cat_class_type eq 'category'
+                        ? ( $args->{include_subcategories} ? 1 : 0 )
+                        : ( $args->{include_subfolders} ? 1 : 0 )
+                    }
+                );
             }
         }
         if ($cexpr) {

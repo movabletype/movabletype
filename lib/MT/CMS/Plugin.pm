@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -363,6 +363,13 @@ sub build_plugin_table {
                 || $row->{plugin_text_filters} )
             {
                 $row->{plugin_resources} = 1;
+            }
+            if (   $row->{plugin_desc}
+                || $row->{plugin_doc_link}
+                || $row->{plugin_plugin_link}
+                || $row->{plugin_author_name} )
+            {
+                $row->{plugin_infos} = 1;
             }
             push @$data, $row;
         }

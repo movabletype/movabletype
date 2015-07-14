@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use MT::DataAPI::Resource::Common;
+use MT::DataAPI::Resource::Util;
 
 sub updatable_fields {
     [   qw(
@@ -25,7 +26,7 @@ sub updatable_fields {
             ),
         {   name      => 'date',
             condition => sub {
-                MT->instance->can_do('edit_entry_basename');
+                MT->instance->can_do('edit_entry_authored_on');
             },
         },
         {   name      => 'basename',
@@ -34,15 +35,6 @@ sub updatable_fields {
             },
         }
     ];
-}
-
-sub _int_param {
-    my ( $app, $key ) = @_;
-
-    return undef unless $app->can('param');
-
-    my $value = $app->param('maxComments');
-    ( defined($value) && $value =~ m/^\d+$/ ) ? int($value) : undef;
 }
 
 sub fields {
@@ -141,7 +133,9 @@ sub fields {
             from_object => sub {
                 my ($obj) = @_;
                 my $app = MT->instance;
-                my $max = _int_param( $app, 'maxComments' )
+                my $max
+                    = MT::DataAPI::Resource::Util::int_param( $app,
+                    'maxComments' )
                     or return [];
                 my $user = $app->user;
 
@@ -208,7 +202,9 @@ sub fields {
             from_object => sub {
                 my ($obj) = @_;
                 my $app = MT->instance;
-                my $max = _int_param( $app, 'maxTrackbacks' )
+                my $max
+                    = MT::DataAPI::Resource::Util::int_param( $app,
+                    'maxTrackbacks' )
                     or return [];
                 my $user = $app->user;
 

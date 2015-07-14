@@ -46,6 +46,11 @@ my @count_specs = (
             my $query_log = $profiler->query_log;
             shift @$query_log;
             like( $query_log->[0], qr/LIMIT 1$/, 'Has LIMIT statement' );
+
+            # FIXME: Debug code for the above test. This test sometimes fails.
+            if ( $query_log->[0] !~ /LIMIT 1$/ ) {
+                print $query_log->[0] . "\n";
+            }
         },
     },
     {   name       => 'pack with grep items',
@@ -78,7 +83,7 @@ my @count_specs = (
 
 $Data::ObjectDriver::PROFILE = 1;
 for my $spec (@count_specs) {
-    diag( $spec->{name} );
+    note( $spec->{name} );
 
     my $filter = MT::Filter->new;
     $filter->object_ds( $spec->{datasource} || 'entry' );

@@ -2,14 +2,43 @@
 use strict;
 use warnings;
 
+use Test::More;
+
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
+}
+
+# Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
+# An error occurs in save_community_prefs mode when Cloud.pack installed.
+use File::Spec;
+use File::Copy;
+
+BEGIN {
+    my $cloudpack_config
+        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
+    my $cloudpack_config_rename
+        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
+
+    if ( -f $cloudpack_config ) {
+        move( $cloudpack_config, $cloudpack_config_rename )
+            or plan skip_all => "$cloudpack_config cannot be moved.";
+    }
+}
+
+END {
+    my $cloudpack_config
+        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
+    my $cloudpack_config_rename
+        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
+
+    if ( -f $cloudpack_config_rename ) {
+        move( $cloudpack_config_rename, $cloudpack_config );
+    }
 }
 
 use lib 't/lib', 'lib', 'extlib', '../lib', '../extlib';
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
-use Test::More;
 
 ### Make test data
 
@@ -25,13 +54,13 @@ my $admin = MT->model('author')->load(1);
 # Run tests
 my ( $app, $out );
 
-diag 'Test cfg_prefs mode';
+note 'Test cfg_prefs mode';
 subtest 'Test cfg_prefs mode' => sub {
     foreach my $type ( 'website', 'blog' ) {
         my $type_ucfirst = ucfirst $type;
         my $test_blog = $type eq 'website' ? $website : $blog;
 
-        diag "$type_ucfirst scope";
+        note "$type_ucfirst scope";
         subtest "$type_ucfirst scope" => sub {
             $app = _run_app(
                 'MT::App::CMS',
@@ -186,7 +215,7 @@ subtest 'Test cfg_prefs mode' => sub {
     }
 };
 
-diag 'Test cfg_entry mode';
+note 'Test cfg_entry mode';
 subtest 'Test cfg_entry mode' => sub {
     $app = _run_app(
         'MT::App::CMS',
@@ -323,7 +352,7 @@ subtest 'Test cfg_entry mode' => sub {
     done_testing();
 };
 
-diag 'Website listing screen';
+note 'Website listing screen';
 subtest 'Website listing screen' => sub {
     $app = _run_app(
         'MT::App::CMS',

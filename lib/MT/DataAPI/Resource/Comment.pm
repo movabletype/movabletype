@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -70,8 +70,22 @@ sub fields {
             alias => 'created_on',
             type  => 'MT::DataAPI::Resource::DataType::ISO8601',
         },
-        {   name  => 'body',
-            alias => 'text',
+        {   name        => 'body',
+            alias       => 'text',
+            from_object => sub {
+                my ($obj) = @_;
+                my $text;
+
+                if ( $obj->blog->allow_comment_html ) {
+                    $text = $obj->text;
+                }
+                else {
+                    require MT::Util;
+                    $text = MT::Util::remove_html( $obj->text );
+                }
+
+                sanitize_text( $obj, $text );
+            },
         },
         {   name        => 'link',
             from_object => sub {
@@ -130,6 +144,29 @@ sub fields {
             },
         },
     ];
+}
+
+sub sanitize_text {
+    my ( $obj, $text ) = @_;
+    my $app  = MT->instance;
+    my $user = $app->user;
+    my $blog = $obj->blog;
+
+    my $val = 1;    # default value
+
+    # User can change 'sanitize' parameter when logging in.
+    if ( $user && $user->id ) {
+        $val = $app->param('sanitize');
+        $val = 1 if !defined($val) || $val eq '';
+    }
+
+    if ( $val eq '1' ) {
+        $val = ( $blog && $blog->sanitize_spec )
+            || $app->config->GlobalSanitizeSpec;
+    }
+
+    require MT::Sanitize;
+    return MT::Sanitize->sanitize( $text, $val );
 }
 
 1;

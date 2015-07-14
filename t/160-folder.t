@@ -9,7 +9,7 @@ BEGIN {
 
 use Test::More;
 use lib qw(lib extlib t/lib);
-use MT::Test qw(:app :data);
+use MT::Test qw(:app :db :data);
 use MT::Test::Permission;
 use MT::CMS::Folder;
 

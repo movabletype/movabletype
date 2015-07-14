@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -421,11 +421,6 @@ sub _pre_search_scope_terms_to_class {
     # scope search terms to class
 
     $terms ||= {};
-    return
-        if ( ref $terms eq 'HASH' )
-        && ( exists( $terms->{id} )
-        && ( ref $terms->{id} ne 'HASH' || !exists( $terms->{id}{not} ) ) )
-        && !exists( $args->{not}{id} );
 
     my $props = $class->properties;
     my $col   = $props->{class_column}
@@ -454,8 +449,11 @@ sub _pre_search_scope_terms_to_class {
             # no further changes.
             return;
         }
-        $terms->{$col} = $props->{class_type}
-            unless $no_class;
+        # class term is class_type if id is not exists.
+        if ( !exists( $terms->{id} ) ) {
+            $terms->{$col} = $props->{class_type}
+                unless $no_class;
+        }
     }
     elsif ( ref $terms eq 'ARRAY' ) {
         if ( my @class_terms
@@ -1131,11 +1129,14 @@ sub load_iter {
 sub _assign_audited_fields {
     my ( $obj, $orig_obj ) = @_;
     if ( $obj->properties->{audit} ) {
-        my $blog_id;
-        if ( $obj->can('blog_id') ) {
-            $blog_id = $obj->blog_id;
+        my $blog;
+        if ( $obj->isa('MT::Blog') ) {
+            $blog = $obj;
         }
-        my @ts = offset_time_list( time, $blog_id );
+        elsif ( $obj->can('blog_id') ) {
+            $blog = $obj->blog_id;
+        }
+        my @ts = offset_time_list( time, $blog );
         my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
             $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
 
@@ -1164,20 +1165,23 @@ sub modified_by {
     my ($user_id) = @_;
     if ($user_id) {
         if ( $obj->properties->{audit} ) {
-            my $res = $obj->SUPER::modified_by($user_id);
+            my $res = $obj->column( 'modified_by', $user_id );
 
-            my $blog_id;
-            if ( $obj->has_column('blog_id') ) {
-                $blog_id = $obj->blog_id;
+            my $blog;
+            if ( $obj->isa('MT::Blog') ) {
+                $blog = $obj;
             }
-            my @ts = offset_time_list( time, $blog_id );
+            elsif ( $obj->can('blog_id') ) {
+                $blog = $obj->blog_id;
+            }
+            my @ts = offset_time_list( time, $blog );
             my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
                 $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
             $obj->modified_on($ts);
             return $res;
         }
     }
-    return $obj->SUPER::modified_by(@_);
+    return $obj->column( 'modified_by', @_ );
 }
 
 # D::OD uses Class::Trigger. Map the call_trigger calls to also invoke

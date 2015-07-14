@@ -193,7 +193,6 @@ h3 {
     border: 1px solid #c0c6c9;
     background-color: #fff;
     border-radius: 5px;
-    -moz-border-radius: 5px;
 }
 
 .chromeless #container {

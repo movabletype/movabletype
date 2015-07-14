@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use lib qw(lib t/lib);
+use lib qw(lib extlib t/lib);
 
 BEGIN {
     $ENV{MT_CONFIG} = 'mysql-test.cfg';

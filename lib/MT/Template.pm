@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -107,6 +107,47 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Templates");
+}
+
+sub list_props {
+    return +{
+        id      => { base => '__virtual.id', display => 'none', },
+        name    => { auto => 1,              display => 'none' },
+        blog_id => {
+            auto    => 1,
+            display => 'none',
+        },
+        type => {
+            auto  => 1,
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                return +{ type => $args->{value} };
+            },
+            display => 'none',
+        },
+        created_on => {
+            base    => '__virtual.created_on',
+            display => 'none',
+        },
+        modified_on => {
+            base    => '__virtual.modified_on',
+            display => 'none',
+        },
+        created_by => {
+            auto    => 1,
+            display => 'none',
+        },
+        modified_by => {
+            auto    => 1,
+            display => 'none',
+        },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( name identifier text )],
+            display => 'none',
+        },
+    };
 }
 
 sub new {
@@ -310,6 +351,21 @@ sub build {
     local $ctx->{__stash}{template} = $tmpl;
     my $tokens = $tmpl->tokens
         or return;
+
+    if ( $tmpl->{errors} && @{ $tmpl->{errors} } ) {
+        my $error = "";
+        foreach my $err ( @{ $tmpl->{errors} } ) {
+            $error .= $err->{message};
+        }
+        return $tmpl->error(
+            MT->translate(
+                "Publish error in template '[_1]': [_2]",
+                $tmpl->name || $tmpl->{__file},
+                $error
+            )
+        );
+    }
+
     my $build = $ctx->{__stash}{builder} || MT::Builder->new;
     my $page_layout;
     if ( my $blog_id = $tmpl->blog_id ) {
@@ -497,7 +553,7 @@ sub save {
     }
 
     if ( $tmpl->linked_file ) {
-        $tmpl->_sync_to_disk( $tmpl->SUPER::text ) or return;
+        $tmpl->_sync_to_disk( $tmpl->column('text') ) or return;
     }
     $tmpl->needs_db_sync(0);
 
@@ -506,10 +562,10 @@ sub save {
 
 sub build_dynamic {
     my $tmpl = shift;
-    return $tmpl->SUPER::build_dynamic( $_[0] ) if @_;
+    return $tmpl->column( 'build_dynamic', $_[0] ) if @_;
     require MT::PublishOption;
     return 1 if $tmpl->build_type == MT::PublishOption::DYNAMIC();
-    return $tmpl->SUPER::build_dynamic;
+    return $tmpl->column('build_dynamic');
 }
 
 sub blog {
@@ -555,14 +611,14 @@ sub text {
         $tmpl->{reflow_flag} = 0;
         $text = $tmpl->reflow();
     }
-    $text = $tmpl->SUPER::text(@_);
+    $text = $tmpl->column( 'text', @_ );
 
     $tmpl->needs_db_sync(0);
     unless (@_) {
         if ( $tmpl->linked_file ) {
             if ( my $res = $tmpl->_sync_from_disk ) {
                 $text = $res;
-                $tmpl->SUPER::text($text);
+                $tmpl->column( 'text', $text );
                 $tmpl->needs_db_sync(1);
             }
         }
@@ -704,9 +760,9 @@ sub _sync_to_disk {
     ## linked file, assuming that it should not be overwritten. If the
     ## file does not already exist, or if there is template text, assume
     ## that we should update the linked file.
-    if ( -e $lfile && !$tmpl->SUPER::text ) {
+    if ( -e $lfile && !$tmpl->column('text') ) {
         open my $fh, '+<', $lfile or return;
-        do { local $/; $tmpl->SUPER::text(<$fh>) };
+        do { local $/; $tmpl->column( 'text', <$fh> ) };
         close $fh;
     }
     else {

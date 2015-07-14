@@ -1,0 +1,22 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  cache_directories:
+    - "~/docker"
+
+  override:
+    - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
+    - docker build -t mt .
+    - mkdir -p ~/docker; docker save mt > ~/docker/image.tar
+
+test:
+  pre:
+    - cp ./t/mysql-test.cfg ./mt-config.cgi
+
+    - rm t/34-sqlite.t
+    - rm t/90-podcoverage.t
+
+  override:
+    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove -s ./t ./plugins/*/t && phpunit"

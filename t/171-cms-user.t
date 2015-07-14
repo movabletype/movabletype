@@ -95,6 +95,11 @@ subtest 'Edit Profile screen' => sub {
         );
         ok( $out =~ m/saved=1&saved_added=1/,
             'Created inactive user with original name.' );
+        ok( MT::Author->exist(
+                { name => 'ukawa', status => MT::Author::INACTIVE }
+            ),
+            'User "ukawa" whose status is inactive exists.'
+        );
     };
 
     subtest 'Empty name user' => sub {
@@ -202,6 +207,9 @@ subtest 'Manage Users screen' => sub {
     };
 
     subtest 'Enable users having no name' => sub {
+        my $no_name_count = MT::Author->count(
+            { name => '', status => MT::Author::INACTIVE } );
+
         my $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $admin,
@@ -221,8 +229,8 @@ subtest 'Manage Users screen' => sub {
         my $out = delete $app->{__test_output};
         ok( $out =~ m/Status: 302 Found/
                 && $out !~ m/saved_status=enabled/
-                && $out =~ m/not_enabled=2/,
-            '2 users having no name have not been enabled.'
+                && $out =~ m/not_enabled=$no_name_count/,
+            "$no_name_count users having no name have not been enabled."
         );
     };
 
@@ -246,11 +254,23 @@ subtest 'Manage Users screen' => sub {
             },
         );
         my $out = delete $app->{__test_output};
-        ok( $out =~ m/Status: 302 Found/
-                && $out =~ m/saved_status=enabled/
-                && $out !~ m/not_enabled=/,
-            '1 user having name has been enabled.'
-        );
+
+        #        ok( $out =~ m/Status: 302 Found/
+        #                && $out =~ m/saved_status=enabled/
+        #                && $out !~ m/not_enabled=/,
+        #            '1 user having name has been enabled.'
+        #        );
+        ok( $out =~ m/Status: 302 Found/, 'No error occurred.' );
+
+        ok( $out =~ m/saved_status=enabled/, 'Users have been enabled.' );
+
+        # FIXME: Debug code for the above test. This test sometimes fails.
+        if ( $out !~ m/saved_status=enabled/ ) {
+            warn "\n$out";
+        }
+
+        ok( $out !~ m/not_enabled=/,
+            'There is no user who has not been enabled.' );
     };
 };
 

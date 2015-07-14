@@ -90,17 +90,20 @@ sub init_db {
 sub rw_handle {
     my $driver = shift;
     my $db = shift || 'main';
-    $driver->dbh(undef) if $driver->dbh and !$driver->dbh->ping;
-    my $dbh = $driver->dbh;
-    unless ($dbh) {
-        if (my $getter = $driver->get_dbh) {
-            $dbh = $getter->();
-        } else {
-            $dbh = $driver->init_db($db) or die $driver->last_error;
-            $driver->dbh($dbh);
-        }
+    my $dbh;
+    if ($dbh = $driver->dbh) {
+        return $dbh if $dbh->ping;
+
+        ## ping fails, kill cache.
+        delete $Handles{$driver->dsn};
     }
-    $dbh;
+    if (my $getter = $driver->get_dbh) {
+        $dbh = $getter->();
+    } else {
+        $dbh = $driver->init_db($db) or die $driver->last_error;
+        $driver->dbh($dbh);
+    }
+    return $dbh;
 }
 *r_handle = \&rw_handle;
 
@@ -392,8 +395,6 @@ sub _insert_or_replace {
     }
     eval { $sth->execute };
 	die "Failed to execute $sql with ".join(", ",@$cols).": $@" if $@;
-    _close_sth($sth);
-    $driver->end_query($sth);
 
     ## Now, if we didn't have an object ID, we need to grab the
     ## newly-assigned ID.
@@ -406,6 +407,9 @@ sub _insert_or_replace {
         ## the original object.
         $orig_obj->$id_col($id);
     }
+
+    _close_sth($sth);
+    $driver->end_query($sth);
 
     $obj->call_trigger('post_save', $orig_obj);
     $obj->call_trigger('post_insert', $orig_obj);
@@ -660,7 +664,7 @@ sub _end_txn {
 
 sub DESTROY {
     my $driver = shift;
-    ## Don't take the responsability of disconnecting this handler
+    ## Don't take the responsibility of disconnecting this handler
     ## if we haven't created it ourself.
     return unless $driver->{__dbh_init_by_driver};
     if (my $dbh = $driver->dbh) {

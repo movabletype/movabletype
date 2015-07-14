@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -30,6 +30,10 @@ sub list_for_entry {
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        $entry->class, $entry->id, obj_promise($entry) )
+        or return;
+
     my $res = filtered_list( $app, $endpoint, 'comment',
         { entry_id => $entry->id } );
 
@@ -54,10 +58,7 @@ sub _build_default_comment {
         }
     );
 
-    if (   $app->can_do('manage_feedback')
-        || MT::Permission->can_edit_entry( $entry, $app->user, 1 )
-        || $blog->publish_trusted_commenters )
-    {
+    if ( $blog->publish_trusted_commenters ) {
         $orig_comment->approve;
     }
     else {
@@ -115,7 +116,6 @@ sub create_reply {
     my $orig_comment
         = _build_default_comment( $app, $endpoint, $blog, $entry );
     $orig_comment->set_values( { parent_id => $parent->id, } );
-    $orig_comment->approve;
 
     my $new_comment = $app->resource_object( 'comment', $orig_comment )
         or return;

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -261,7 +261,9 @@ B<Example:>
 
 =cut
 
-sub _hdlr_template_blog_id { $_[0]->stash('blog_id') || '' }
+sub _hdlr_template_blog_id {
+    $_[0]->stash('search_blog_id') || $_[0]->stash('blog_id') || '';
+}
 
 sub _hdlr_max_results { $_[0]->stash('maxresults') || '' }
 
@@ -429,7 +431,9 @@ sub context_script {
     if ( my $include_blogs = $ctx->stash('include_blogs') ) {
         $link .= "&IncludeBlogs=" . encode_url($include_blogs);
     }
-    elsif ( my $blog_id = $ctx->stash('blog_id') ) {
+    if ( my $blog_id
+        = $ctx->stash('search_blog_id') || $ctx->stash('blog_id') )
+    {
         $link .= "&blog_id=" . encode_url($blog_id);
     }
 

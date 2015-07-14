@@ -145,9 +145,11 @@ sub pageviews_for_path {
 
     $self->_request(
         $app,
-        {   dimensions => 'ga:pagePath,ga:pageTitle',
-            metrics    => 'ga:Pageviews',
-            sort       => '-ga:Pageviews',
+        {   dimensions => $app->param('uniquePath')
+            ? 'ga:pagePath'
+            : 'ga:pagePath,ga:pageTitle',
+            metrics => 'ga:Pageviews',
+            sort    => '-ga:Pageviews',
             _extract_default_params($params),
         }
     );
@@ -159,9 +161,11 @@ sub visits_for_path {
 
     $self->_request(
         $app,
-        {   dimensions => 'ga:pagePath,ga:pageTitle',
-            metrics    => 'ga:visits',
-            sort       => '-ga:visits',
+        {   dimensions => $app->param('uniquePath')
+            ? 'ga:pagePath'
+            : 'ga:pagePath,ga:pageTitle',
+            metrics => 'ga:visits',
+            sort    => '-ga:visits',
             _extract_default_params($params),
         }
     );

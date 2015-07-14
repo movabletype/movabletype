@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -43,7 +43,6 @@ sub _hdlr_if_folder {
     my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry');
     return undef if ( $e && !defined $e->category );
-    return undef unless &_check_folder(@_);
     return $ctx->invoke_handler( 'ifcategory', $args, $cond );
 }
 
@@ -90,7 +89,6 @@ Returns true if the current folder has a sub-folder.
 =cut
 
 sub _hdlr_has_sub_folders {
-    return undef unless &_check_folder(@_);
     MT::Template::Tags::Category::_hdlr_has_sub_categories(@_);
 }
 
@@ -120,22 +118,11 @@ root.
 =cut
 
 sub _hdlr_has_parent_folder {
-    return undef unless &_check_folder(@_);
     MT::Template::Tags::Category::_hdlr_has_parent_category(@_);
 }
 
 sub _check_folder {
-    my ($ctx) = @_;
-    my $e     = $ctx->stash('entry');
-    my $cat   = ( $ctx->stash('category') )
-        || ( ( $e = $ctx->stash('entry') ) && $e->category )
-        or return $ctx->error(
-        MT->translate(
-            "You used an [_1] tag outside of the proper context.",
-            'MT' . $ctx->stash('tag')
-        )
-        );
-    1;
+    return MT::Template::Tags::Category::_get_category_context(@_);
 }
 
 ###########################################################################
@@ -423,7 +410,6 @@ B<Example:>
 =cut
 
 sub _hdlr_folder_basename {
-    return undef unless &_check_folder(@_);
     shift->invoke_handler( 'categorybasename', @_ );
 }
 
@@ -442,7 +428,6 @@ B<Example:>
 =cut
 
 sub _hdlr_folder_description {
-    return undef unless &_check_folder(@_);
     shift->invoke_handler( 'categorydescription', @_ );
 }
 
@@ -461,7 +446,6 @@ B<Example:>
 =cut
 
 sub _hdlr_folder_id {
-    return undef unless &_check_folder(@_);
     shift->invoke_handler( 'categoryid', @_ );
 }
 
@@ -480,7 +464,6 @@ B<Example:>
 =cut
 
 sub _hdlr_folder_label {
-    return undef unless &_check_folder(@_);
     shift->invoke_handler( 'categorylabel', @_ );
 }
 
@@ -499,7 +482,6 @@ B<Example:>
 =cut
 
 sub _hdlr_folder_count {
-    return undef unless &_check_folder(@_);
     shift->invoke_handler( 'categorycount', @_ );
 }
 
@@ -530,7 +512,6 @@ becomes foo/bar.
 =cut
 
 sub _hdlr_folder_path {
-    return undef unless &_check_folder(@_);
     shift->invoke_handler( 'subcategorypath', @_ );
 }
 

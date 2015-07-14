@@ -15,6 +15,36 @@ BEGIN {
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
+use File::Spec;
+use File::Copy;
+
+# Disable Commercial.pack temporarily.
+BEGIN {
+    my $commercialpack_config
+        = File::Spec->catfile(qw/ addons Commercial.pack config.yaml /);
+    my $commercialpack_config_rename
+        = File::Spec->catfile(
+        qw/ addons Commercial.pack config.yaml.disabled /);
+
+    if ( -f $commercialpack_config ) {
+        move( $commercialpack_config, $commercialpack_config_rename )
+            or plan skip_all => "$commercialpack_config cannot be moved.";
+    }
+}
+
+# Recover Commercial.pack.
+END {
+    my $commercialpack_config
+        = File::Spec->catfile(qw/ addons Commercial.pack config.yaml /);
+    my $commercialpack_config_rename
+        = File::Spec->catfile(
+        qw/ addons Commercial.pack config.yaml.disabled /);
+
+    if ( -f $commercialpack_config_rename ) {
+        move( $commercialpack_config_rename, $commercialpack_config );
+    }
+}
+
 use lib qw(lib extlib t/lib);
 
 eval(
@@ -38,8 +68,10 @@ $app->user($author);
     $app->_init_plugins_core( {}, 1,
         [ File::Spec->join( $base, 'plugins' ) ] );
 }
+$app->current_api_version(1);
 
-$app->param('maxComments', 9999);
+$app->param( 'maxComments',   9999 );
+$app->param( 'maxTrackbacks', 9999 );
 
 my $disabled_fields = $app->config->DisableResourceField;
 $disabled_fields->{entry} = 'title,excerpt';
@@ -54,6 +86,7 @@ my @specs = (
         is_anonymous => 1,
     },
 );
+
 for my $s (@specs) {
     for my $d ( glob( File::Spec->catfile( $spec_dir, $s->{label}, '*' ) ) ) {
         my $model = basename($d);

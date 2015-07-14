@@ -15,6 +15,7 @@
         }
         // user made a selection and clicked insert...
         var f = document.forms['select_asset'];
+        if(dlg.panel.tableSelect == undefined) return;
         var sel = dlg.panel.tableSelect.selected();
         f['id'].value = sel[0].value;
         f.submit();

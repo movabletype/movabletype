@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -213,6 +213,41 @@ sub _prefer_next_map {
         return 1;
     }
     return 0;
+}
+
+sub list_props {
+    return +{
+        id           => { base => '__virtual.id' },
+        archive_type => {
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                return +{ archive_type => $args->{value} };
+            },
+            display => 'none',
+        },
+        build_type => {
+            base                  => '__virtual.single_select',
+            display               => 'none',
+            single_select_options => sub {
+                require MT::DataAPI::Resource::v2::Template;
+                my $table
+                    = \%MT::DataAPI::Resource::v2::Template::BUILD_TYPE_TABLE;
+                my @options = map { +{ text => $_, value => $table->{$_} } }
+                    keys %$table;
+                return \@options;
+            }
+                ->(),
+        },
+        is_preferred => {
+            base                  => '__virtual.single_select',
+            display               => 'none',
+            single_select_options => [
+                { value => 0, text => 'False' },
+                { value => 1, text => 'True' },
+            ],
+        },
+    };
 }
 
 1;

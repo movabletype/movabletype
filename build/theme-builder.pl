@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -24,48 +24,48 @@ use File::Find;
 
 use Template::Constants ':chomp';
 
+my ( $version, $help, $man, $VERBOSE, $app );
 
-my ($version, $help, $man, $VERBOSE, $app);
-
-GetOptions (
-             'h|help'          => \$help,
-             'm|man'           => \$man,
-             'v|verbose'       => \$VERBOSE,
-             'app=s'           => \$app,
-           );
-$man and pod2usage(-verbose => 2);
+GetOptions(
+    'h|help'    => \$help,
+    'm|man'     => \$man,
+    'v|verbose' => \$VERBOSE,
+    'app=s'     => \$app,
+);
+$man and pod2usage( -verbose => 2 );
 $help and pod2usage;
 
 $app ||= 'archetype';
 
-my $themedir = "$Bin/../mt-static/themes";
+my $themedir    = "$Bin/../mt-static/themes";
 my $templatedir = "$Bin/theme_templates/auto";
-my $modulesdir = "$Bin/theme_templates/modules";
+my $modulesdir  = "$Bin/theme_templates/modules";
 
-foreach ($themedir, $templatedir) {
+foreach ( $themedir, $templatedir ) {
     s|archetype/tools/../../$app|$app|;
 }
 
 ## Set up a global TT object. (Global so that it maintains a cache.)
-our $Template = Template->new({
-    INCLUDE_PATH => $modulesdir, 
-    ABSOLUTE => 1,
-    PRE_CHOMP  => CHOMP_COLLAPSE,
-    POST_CHOMP => CHOMP_NONE,
-    TRIM => 1,
-});
+our $Template = Template->new(
+    {   INCLUDE_PATH => $modulesdir,
+        ABSOLUTE     => 1,
+        PRE_CHOMP    => CHOMP_COLLAPSE,
+        POST_CHOMP   => CHOMP_NONE,
+        TRIM         => 1,
+    }
+);
 
 # find all the templates we're going to work from
 my @templates = &find_templates;
 
 # set up all the themes we need to put out
 my @themes_todo = @ARGV;
-if (! @themes_todo) {
+if ( !@themes_todo ) {
     my $max_tmpl_module_age = &find_max_tmpl_module_age;
-    @themes_todo = &find_themes_needing_regeneration($max_tmpl_module_age, @templates);
+    @themes_todo = &find_themes_needing_regeneration( $max_tmpl_module_age,
+        @templates );
 }
-@themes_todo = &names2paths(@themes_todo);    
-
+@themes_todo = &names2paths(@themes_todo);
 
 # do the work
 foreach my $theme (@themes_todo) {
@@ -76,19 +76,19 @@ foreach my $theme (@themes_todo) {
 sub regenerate {
     my $theme = shift;
 
-    logg("regenerating ".abs2rel($theme));
+    logg( "regenerating " . abs2rel($theme) );
 
     my $yaml = load_yamls($theme);
-    
+
     foreach my $tt (@templates) {
 
-        debug("making ".abs2rel($tt));
-    
-        my ($name,$path) = fileparse($theme);
-        my $outfile = catfile($path, basename($tt));
+        debug( "making " . abs2rel($tt) );
+
+        my ( $name, $path ) = fileparse($theme);
+        my $outfile = catfile( $path, basename($tt) );
         $outfile =~ s/\.tt$//;
 
-        debug("writing to ".abs2rel($outfile));
+        debug( "writing to " . abs2rel($outfile) );
 
 #        if (-e $outfile && ! $nobackup) {
 #            my  ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
@@ -98,40 +98,42 @@ sub regenerate {
 #            rename $outfile, "$outfile.$today.bak";
 #        }
 
-        my $files_present = find_files_present(dirname($theme));
+        my $files_present = find_files_present( dirname($theme) );
 
-        $yaml->{find_file} = sub { return $files_present->{$_[0]}};
+        $yaml->{find_file} = sub { return $files_present->{ $_[0] } };
 
-        $Template->process($tt, {theme => $yaml}, $outfile) || die $Template->error;
+        $Template->process( $tt, { theme => $yaml }, $outfile )
+            || die $Template->error;
     }
 
 }
 
 sub find_files_present {
-    my ($basedir, $yaml) = @_;
+    my ( $basedir, $yaml ) = @_;
 
     my $files_present = {};
 
-    opendir (DIR, $basedir) || die "can't opendir $basedir $!";
-    while (my $file = readdir(DIR)) {
+    opendir( DIR, $basedir ) || die "can't opendir $basedir $!";
+    while ( my $file = readdir(DIR) ) {
         next unless -f "$basedir/$file";
         next if $file =~ /\.bak$/;
 
         $files_present->{$file} = $file;
 
-        my ($shortname, $path, $suffix) = fileparse($file, qw/.gif .png .jpg/);
+        my ( $shortname, $path, $suffix )
+            = fileparse( $file, qw/.gif .png .jpg/ );
 
-        #both bg-header.gif and bg-header.jpg exist, save the first one alphabetically
+#both bg-header.gif and bg-header.jpg exist, save the first one alphabetically
 
-        if ($files_present->{$shortname}) {
-            if ($file lt $files_present->{$shortname}) {
+        if ( $files_present->{$shortname} ) {
+            if ( $file lt $files_present->{$shortname} ) {
                 $files_present->{$shortname} = $file;
             }
-        }else{
-            $files_present->{$shortname} = $file;        
+        }
+        else {
+            $files_present->{$shortname} = $file;
         }
 
-        
     }
     closedir DIR;
 
@@ -143,7 +145,6 @@ sub load_yamls {
     $theme_yaml = YAML::LoadFile($theme_yaml);
     return $theme_yaml;
 }
-
 
 sub logg {
     my $msg = shift;
@@ -157,57 +158,61 @@ sub debug {
 
 sub find_templates {
     my @templates;
-    opendir (DIR, $templatedir) || die "can't opendir $templatedir $!";
-    while (my $file = readdir(DIR)) {
+    opendir( DIR, $templatedir ) || die "can't opendir $templatedir $!";
+    while ( my $file = readdir(DIR) ) {
         next if -d $file;
         next if $file =~ /^\./;
         next unless $file =~ /\.tt$/;
-        push @templates, catfile($templatedir, $file);
+        push @templates, catfile( $templatedir, $file );
     }
     closedir DIR;
     return @templates;
 }
 
 sub find_themes_needing_regeneration {
-    my ($max_tmpl_module_age, @templates) = @_;
-# first look at the data files
-    my (@yamls, %yamlage, %themes_todo, @themes_todo);
-    opendir(DIR, "$themedir") || die "can't open $themedir $!";
-    while (my $theme = readdir(DIR)) {
-        
-        next unless -d catfile($themedir, $theme);
+    my ( $max_tmpl_module_age, @templates ) = @_;
+
+    # first look at the data files
+    my ( @yamls, %yamlage, %themes_todo, @themes_todo );
+    opendir( DIR, "$themedir" ) || die "can't open $themedir $!";
+    while ( my $theme = readdir(DIR) ) {
+
+        next unless -d catfile( $themedir, $theme );
         next if $theme =~ /^\./;
-        next unless -f catfile($themedir, $theme, 'theme.yaml');
+        next unless -f catfile( $themedir, $theme, 'theme.yaml' );
 
         push @yamls, $theme;
-        $yamlage{$theme} = (stat(catfile($themedir, $theme, 'theme.yaml')))[9];
+        $yamlage{$theme}
+            = ( stat( catfile( $themedir, $theme, 'theme.yaml' ) ) )[9];
         debug("theme.yaml found for $theme, will check age");
     }
     closedir DIR;
 
     # now look each of the templates
     foreach my $templatefile (@templates) {
-        (my $css_file = basename($templatefile)) =~ s/\.tt$//;
-        my $templateage = (stat($templatefile))[9];
+        ( my $css_file = basename($templatefile) ) =~ s/\.tt$//;
+        my $templateage = ( stat($templatefile) )[9];
 
-        # the templates lead back to an output file for each 
+        # the templates lead back to an output file for each
         # data file that we loaded
         foreach my $theme (@yamls) {
 
             # if either the template or the data is newer than
             # the output, then regenerate the output
-            my $css_age = (stat(catfile($themedir, $theme, $css_file)))[9] || 0;
-            if (   $templateage     > $css_age #template has changed
-                || $yamlage{$theme} > $css_age #data has changed
-                || $max_tmpl_module_age > $css_age #a .tt module has changed
-                ) {  
+            my $css_age
+                = ( stat( catfile( $themedir, $theme, $css_file ) ) )[9] || 0;
+            if ($templateage > $css_age              #template has changed
+                || $yamlage{$theme} > $css_age       #data has changed
+                || $max_tmpl_module_age > $css_age   #a .tt module has changed
+                )
+            {
                 $themes_todo{$theme} = 1;
                 debug("$theme needs to be regenerated");
                 next;
             }
         }
     }
-    @themes_todo = map{$_} sort keys %themes_todo;
+    @themes_todo = map {$_} sort keys %themes_todo;
 
     return @themes_todo;
 }
@@ -222,37 +227,40 @@ sub names2paths {
         if (/\theme.yaml$/) {
             next if -e;
 
-        # they gave us the path to the directory, but not 'theme.yaml' 
-        # at the end, fix it up
-        }elsif (-d){
-            $_ = catfile($_, 'theme.yaml');
+            # they gave us the path to the directory, but not 'theme.yaml'
+            # at the end, fix it up
+        }
+        elsif (-d) {
+            $_ = catfile( $_, 'theme.yaml' );
             next if -e;
 
-        # they just gave us the theme name
-        }elsif (-e catfile($themedir, $_, 'theme.yaml')){
-            $_ = catfile($themedir, $_, 'theme.yaml');
+            # they just gave us the theme name
+        }
+        elsif ( -e catfile( $themedir, $_, 'theme.yaml' ) ) {
+            $_ = catfile( $themedir, $_, 'theme.yaml' );
             next if -e;
         }
 
         # whatever we tried to figure out isn't there
 
         die "I can't find $_, sorry\n";
-    }    
+    }
     return @themes_todo;
 }
 
 sub find_max_tmpl_module_age {
     $BT::max_age = 0;
 
-    find( sub {
+    find(
+        sub {
             my $mtime;
-            /\.tt$/ &&
-               (($mtime) = (lstat($_))[9]) &&
-               $mtime > $BT::max_age &&
-                ($BT::max_age = $mtime)
+            /\.tt$/
+                && ( ($mtime) = ( lstat($_) )[9] )
+                && $mtime > $BT::max_age
+                && ( $BT::max_age = $mtime );
         },
-        "$templatedir/.." #back up one .. to get out of auto/
-        );
+        "$templatedir/.."    #back up one .. to get out of auto/
+    );
     return $BT::max_age;
 }
 
@@ -293,6 +301,8 @@ build-themes.pl - generates themes from a theme.yaml file
     build-themes.pl /home/kgoess/temp/funkymusic/
 or
     build-themes.pl ../experiments/funkymusic/theme.yaml
+
+=back
 
 =head1 DESCRIPTION
 

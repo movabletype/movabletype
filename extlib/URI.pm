@@ -1,32 +1,36 @@
 package URI;
 
 use strict;
-use vars qw($VERSION);
-$VERSION = "1.40";
+use warnings;
 
-use vars qw($ABS_REMOTE_LEADING_DOTS $ABS_ALLOW_RELATIVE_SCHEME $DEFAULT_QUERY_FORM_DELIMITER);
+our $VERSION = "1.67";
+
+our ($ABS_REMOTE_LEADING_DOTS, $ABS_ALLOW_RELATIVE_SCHEME, $DEFAULT_QUERY_FORM_DELIMITER);
 
 my %implements;  # mapping from scheme to implementor class
 
 # Some "official" character classes
 
-use vars qw($reserved $mark $unreserved $uric $scheme_re);
-$reserved   = q(;/?:@&=+$,[]);
-$mark       = q(-_.!~*'());                                    #'; emacs
-$unreserved = "A-Za-z0-9\Q$mark\E";
-$uric       = quotemeta($reserved) . $unreserved . "%";
+our $reserved   = q(;/?:@&=+$,[]);
+our $mark       = q(-_.!~*'());                                    #'; emacs
+our $unreserved = "A-Za-z0-9\Q$mark\E";
+our $uric       = quotemeta($reserved) . $unreserved . "%";
 
-$scheme_re  = '[a-zA-Z][a-zA-Z0-9.+\-]*';
+our $scheme_re  = '[a-zA-Z][a-zA-Z0-9.+\-]*';
 
 use Carp ();
 use URI::Escape ();
 
 use overload ('""'     => sub { ${$_[0]} },
-	      '=='     => sub { overload::StrVal($_[0]) eq
-                                overload::StrVal($_[1])
-                              },
+              '=='     => sub { _obj_eq(@_) },
+              '!='     => sub { !_obj_eq(@_) },
               fallback => 1,
              );
+
+# Check if two objects are the same object
+sub _obj_eq {
+    return overload::StrVal($_[0]) eq overload::StrVal($_[1]);
+}
 
 sub new
 {
@@ -74,11 +78,20 @@ sub _init
     my $class = shift;
     my($str, $scheme) = @_;
     # find all funny characters and encode the bytes.
-    $str =~ s*([^$uric\#])* URI::Escape::escape_char($1) *ego;
+    $str = $class->_uric_escape($str);
     $str = "$scheme:$str" unless $str =~ /^$scheme_re:/o ||
                                  $class->_no_scheme_ok;
     my $self = bless \$str, $class;
     $self;
+}
+
+
+sub _uric_escape
+{
+    my($class, $str) = @_;
+    $str =~ s*([^$uric\#])* URI::Escape::escape_char($1) *ego;
+    utf8::downgrade($str);
+    return $str;
 }
 
 
@@ -118,7 +131,7 @@ sub implementor
         # Try to load it
         eval "require $ic";
         die $@ if $@ && $@ !~ /Can\'t locate.*in \@INC/;
-        return unless @{"${ic}::ISA"};
+        return undef unless @{"${ic}::ISA"};
     }
 
     $ic->_init_implementor($scheme);
@@ -142,6 +155,7 @@ sub clone
     bless \$other, ref $self;
 }
 
+sub TO_JSON { ${$_[0]} }
 
 sub _no_scheme_ok { 0 }
 
@@ -150,7 +164,7 @@ sub _scheme
     my $self = shift;
 
     unless (@_) {
-	return unless $$self =~ /^($scheme_re):/o;
+	return undef unless $$self =~ /^($scheme_re):/o;
 	return $1;
     }
 
@@ -180,10 +194,14 @@ sub _scheme
 sub scheme
 {
     my $scheme = shift->_scheme(@_);
-    return unless defined $scheme;
+    return undef unless defined $scheme;
     lc($scheme);
 }
 
+sub has_recognized_scheme {
+    my $self = shift;
+    return ref($self) !~ /^URI::_(?:foreign|generic)\z/;
+}
 
 sub opaque
 {
@@ -206,6 +224,7 @@ sub opaque
     my $new_opaque = shift;
     $new_opaque = "" unless defined $new_opaque;
     $new_opaque =~ s/([^$uric])/ URI::Escape::escape_char($1)/ego;
+    utf8::downgrade($new_opaque);
 
     $$self = defined($old_scheme) ? $old_scheme : "";
     $$self .= $new_opaque;
@@ -214,14 +233,14 @@ sub opaque
     $old_opaque;
 }
 
-*path = \&opaque;  # alias
+sub path { goto &opaque }  # alias
 
 
 sub fragment
 {
     my $self = shift;
     unless (@_) {
-	return unless $$self =~ /\#(.*)/s;
+	return undef unless $$self =~ /\#(.*)/s;
 	return $1;
     }
 
@@ -231,6 +250,7 @@ sub fragment
     my $new_frag = shift;
     if (defined $new_frag) {
 	$new_frag =~ s/([^$uric])/ URI::Escape::escape_char($1) /ego;
+	utf8::downgrade($new_frag);
 	$$self .= "#$new_frag";
     }
     $old;
@@ -241,6 +261,34 @@ sub as_string
 {
     my $self = shift;
     $$self;
+}
+
+
+sub as_iri
+{
+    my $self = shift;
+    my $str = $$self;
+    if ($str =~ s/%([89a-fA-F][0-9a-fA-F])/chr(hex($1))/eg) {
+	# All this crap because the more obvious:
+	#
+	#   Encode::decode("UTF-8", $str, sub { sprintf "%%%02X", shift })
+	#
+	# doesn't work before Encode 2.39.  Wait for a standard release
+	# to bundle that version.
+
+	require Encode;
+	my $enc = Encode::find_encoding("UTF-8");
+	my $u = "";
+	while (length $str) {
+	    $u .= $enc->decode($str, Encode::FB_QUIET());
+	    if (length $str) {
+		# escape next char
+		$u .= URI::Escape::escape_char(substr($str, 0, 1, ""));
+	    }
+	}
+	$str = $u;
+    }
+    return $str;
 }
 
 
@@ -280,6 +328,8 @@ sub eq {
 # generic-URI transformation methods
 sub abs { $_[0]; }
 sub rel { $_[0]; }
+
+sub secure { 0 }
 
 # help out Storable
 sub STORABLE_freeze {
@@ -372,6 +422,11 @@ the $str argument before it is processed further.
 The constructor determines the scheme, maps this to an appropriate
 URI subclass, constructs a new object of that class and returns it.
 
+If the scheme isn't one of those that URI recognizes, you still get
+an URI object back that you can access the generic methods on.  The
+C<< $uri->has_recognized_scheme >> method can be used to test for
+this.
+
 The $scheme argument is only used when $str is a
 relative URI.  It can be either a simple string that
 denotes the scheme, a string containing an absolute URI reference, or
@@ -428,7 +483,7 @@ argument, it updates the corresponding component in addition to
 returning the old value of the component.  Passing an undefined
 argument removes the component (if possible).  The description of
 each accessor method indicates whether the component is passed as
-an escaped or an unescaped string.  A component that can be further
+an escaped (percent-encoded) or an unescaped string.  A component that can be further
 divided into sub-parts are usually passed escaped, as unescaping might
 change its semantics.
 
@@ -454,6 +509,14 @@ Letter case does not matter for scheme names.  The string
 returned by $uri->scheme is always lowercase.  If you want the scheme
 just as it was written in the URI in its original case,
 you can use the $uri->_scheme method instead.
+
+=item $uri->has_recognized_scheme
+
+Returns TRUE if the URI scheme is one that URI recognizes.
+
+It will also be TRUE for relative URLs where a recognized
+scheme was provided to the constructor, even if C<< $uri->scheme >>
+returns C<undef> for these.
 
 =item $uri->opaque
 
@@ -481,10 +544,16 @@ as an escaped string.
 
 =item $uri->as_string
 
-Returns a URI object to a plain string.  URI objects are
+Returns a URI object to a plain ASCII string.  URI objects are
 also converted to plain strings automatically by overloading.  This
 means that $uri objects can be used as plain strings in most Perl
 constructs.
+
+=item $uri->as_iri
+
+Returns a Unicode string representing the URI.  Escaped UTF-8 sequences
+representing non-ASCII characters are turned into their corresponding Unicode
+code point.
 
 =item $uri->canonical
 
@@ -523,13 +592,18 @@ Returns a relative URI reference if it is possible to
 make one that denotes the same resource relative to $base_uri.
 If not, then $uri is simply returned.
 
+=item $uri->secure
+
+Returns a TRUE value if the URI is considered to point to a resource on
+a secure channel, such as an SSL or TLS encrypted one.
+
 =back
 
 =head1 GENERIC METHODS
 
 The following methods are available to schemes that use the
 common/generic syntax for hierarchical namespaces.  The descriptions of
-schemes below indicate which these are.  Unknown schemes are
+schemes below indicate which these are.  Unrecognized schemes are
 assumed to support the generic syntax, and therefore the following
 methods:
 
@@ -676,6 +750,15 @@ Sets and returns the unescaped hostname.
 If the $new_host string ends with a colon and a number, then this
 number also sets the port.
 
+For IPv6 addresses the brackets around the raw address is removed in the return
+value from $uri->host.  When setting the host attribute to an IPv6 address you
+can use a raw address or one enclosed in brackets.  The address needs to be
+enclosed in brackets if you want to pass in a new port value as well.
+
+=item $uri->ihost
+
+Returns the host in Unicode form.  Any IDNA A-labels are turned into U-labels.
+
 =item $uri->port
 
 =item $uri->port( $new_port )
@@ -695,6 +778,10 @@ Sets and returns the host and port as a single
 unit.  The returned value includes a port, even if it matches the
 default port.  The host part and the port part are separated by a
 colon: ":".
+
+For IPv6 addresses the bracketing is preserved; thus
+URI->new("http://[::1]/")->host_port returns "[::1]:80".  Contrast this with
+$uri->host which will remove the brackets.
 
 =item $uri->default_port
 
@@ -807,9 +894,13 @@ C<URI> objects belonging to the mailto scheme support the common
 methods and the generic query methods.  In addition, they support the
 following mailto-specific methods: $uri->to, $uri->headers.
 
+Note that the "foo@example.com" part of a mailto is I<not> the
+C<userinfo> and C<host> but instead the C<path>.  This allows a
+mailto URI to contain multiple comma separated email addresses.
+
 =item B<mms>:
 
-The I<mms> URL specification can be found at L<http://sdp.ppona.com/>
+The I<mms> URL specification can be found at L<http://sdp.ppona.com/>.
 C<URI> objects belonging to the mms scheme support the common,
 generic, and server methods, with the exception of userinfo and
 query-related sub-components.
@@ -857,7 +948,7 @@ instead of TCP.  The syntax is the same as rtsp.
 
 =item B<rsync>:
 
-Information about rsync is available from http://rsync.samba.org.
+Information about rsync is available from L<http://rsync.samba.org/>.
 C<URI> objects belonging to the rsync scheme support the common,
 generic and server methods.  In addition, they provide methods to
 access the userinfo sub-components: $uri->user and $uri->password.
@@ -894,7 +985,7 @@ common, generic and server methods.
 
 =item B<ssh>:
 
-Information about ssh is available at http://www.openssh.com/.
+Information about ssh is available at L<http://www.openssh.com/>.
 C<URI> objects belonging to the ssh scheme support the common,
 generic and server methods. In addition, they provide methods to
 access the userinfo sub-components: $uri->user and $uri->password.
@@ -909,7 +1000,7 @@ and the Namespace-Specific String respectively.
 The Namespace Identifier basically works like the Scheme identifier of
 URIs, and further divides the URN namespace.  Namespace Identifier
 assignments are maintained at
-<http://www.iana.org/assignments/urn-namespaces>.
+L<http://www.iana.org/assignments/urn-namespaces>.
 
 Letter case is not significant for the Namespace Identifier.  It is
 always returned in lower case by the $uri->nid method.  The $uri->_nid
@@ -980,13 +1071,32 @@ delimited by ";" instead of "&" which is the default.
 
 =head1 BUGS
 
-Using regexp variables like $1 directly as arguments to the URI methods
+There are some things that are not quite right:
+
+=over
+
+=item *
+
+Using regexp variables like $1 directly as arguments to the URI accessor methods
 does not work too well with current perl implementations.  I would argue
 that this is actually a bug in perl.  The workaround is to quote
 them. Example:
 
    /(...)/ || die;
    $u->query("$1");
+
+
+=item *
+
+The escaping (percent encoding) of chars in the 128 .. 255 range passed to the
+URI constructor or when setting URI parts using the accessor methods depend on
+the state of the internal UTF8 flag (see utf8::is_utf8) of the string passed.
+If the UTF8 flag is set the UTF-8 encoded version of the character is percent
+encoded.  If the UTF8 flag isn't set the Latin-1 version (byte) of the
+character is percent encoded.  This basically exposes the internal encoding of
+Perl strings.
+
+=back
 
 =head1 PARSING URIs WITH REGEXP
 
@@ -1007,15 +1117,15 @@ L<URI::Split>, L<URI::Heuristic>
 RFC 2396: "Uniform Resource Identifiers (URI): Generic Syntax",
 Berners-Lee, Fielding, Masinter, August 1998.
 
-http://www.iana.org/assignments/uri-schemes
+L<http://www.iana.org/assignments/uri-schemes>
 
-http://www.iana.org/assignments/urn-namespaces
+L<http://www.iana.org/assignments/urn-namespaces>
 
-http://www.w3.org/Addressing/
+L<http://www.w3.org/Addressing/>
 
 =head1 COPYRIGHT
 
-Copyright 1995-2004,2008 Gisle Aas.
+Copyright 1995-2009 Gisle Aas.
 
 Copyright 1995 Martijn Koster.
 

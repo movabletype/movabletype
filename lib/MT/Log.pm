@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -161,10 +161,16 @@ sub list_props {
             },
         },
         class => {
-            label                 => 'Class',
-            col                   => 'class',
-            display               => 'none',
-            base                  => '__virtual.single_select',
+            label   => 'Class',
+            col     => 'class',
+            display => 'none',
+            base    => '__virtual.single_select',
+            sort    => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $args->{sort} = $prop->col;
+                return;
+            },
             single_select_options => sub {
                 my $prop  = shift;
                 my $app   = shift || MT->app;
@@ -241,33 +247,58 @@ sub list_props {
             base    => '__virtual.single_select',
             display => 'none',
             col     => 'level',
-            terms   => sub {
+            sort    => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $args->{sort} = $prop->col;
+                return;
+            },
+            terms => sub {
                 my $prop = shift;
                 my ($args) = @_;
                 my @types;
-                my $val = $args->{value};
+                my $val = $prop->normalized_value(@_);
                 for ( 1, 2, 4, 8, 16 ) {
                     push @types, $_ if $val & $_;
                 }
                 return { level => \@types };
             },
             single_select_options => [
-                { label => MT->translate('Security'), value => SECURITY() },
-                { label => MT->translate('Error'),    value => ERROR() },
-                { label => MT->translate('Warning'),  value => WARNING() },
-                { label => MT->translate('Information'), value => INFO() },
-                { label => MT->translate('Debug'),       value => DEBUG() },
+                {   label => MT->translate('Security'),
+                    value => SECURITY(),
+                    text  => 'security'
+                },
+                {   label => MT->translate('Error'),
+                    value => ERROR(),
+                    text  => 'error'
+                },
+                {   label => MT->translate('Warning'),
+                    value => WARNING(),
+                    text  => 'warning'
+                },
+                {   label => MT->translate('Information'),
+                    value => INFO(),
+                    text  => 'info'
+                },
+                {   label => MT->translate('Debug'),
+                    value => DEBUG(),
+                    text  => 'debug'
+                },
                 {   label => MT->translate('Security or error'),
-                    value => SECURITY() | ERROR()
+                    value => SECURITY() | ERROR(),
+                    text  => 'sercurity_or_error',
                 },
                 {   label => MT->translate('Security/error/warning'),
-                    value => SECURITY() | ERROR() | WARNING()
+                    value => SECURITY() | ERROR() | WARNING(),
+                    text  => 'security_or_error_or_warning',
                 },
                 {   label => MT->translate('Not debug'),
-                    value => SECURITY() | ERROR() | WARNING() | INFO()
+                    value => SECURITY() | ERROR() | WARNING() | INFO(),
+                    text  => 'not_debug',
                 },
                 {   label => MT->translate('Debug/error'),
-                    value => DEBUG() | ERROR()
+                    value => DEBUG() | ERROR(),
+                    text  => 'debug_or_error',
                 },
             ],
         },
@@ -299,6 +330,23 @@ sub list_props {
             },
             display         => 'none',
             filter_editable => 0,
+        },
+        blog_id => {
+            auto            => 1,
+            col             => 'blog_id',
+            display         => 'none',
+            filter_editable => 0,
+        },
+        author_id => {
+            auto            => 1,
+            col             => 'author_id',
+            display         => 'none',
+            filter_editable => 0,
+        },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw( message ip )],
+            display => 'none',
         },
     };
 }
@@ -491,6 +539,7 @@ sub description {
 # trans('theme');
 # trans('folder');
 # trans('plugin');
+# trans('page');
 
 1;
 __END__

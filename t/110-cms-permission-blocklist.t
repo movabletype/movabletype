@@ -10,7 +10,7 @@ BEGIN {
 use lib 't/lib', 'lib', 'extlib';
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
-use Test::More;
+use Test::More skip_all => 'MT::Blocklist is deprecated.';
 
 ### Make test data
 
@@ -18,9 +18,7 @@ use Test::More;
 my $website = MT::Test::Permission->make_website();
 
 # Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
 
 # Author
 my $admin = MT::Author->load(1);
@@ -39,7 +37,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                       "Request: list" );
     ok( $out =~ m!Unknown action!i, "list by admin" );
 
     done_testing();
@@ -56,7 +54,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by admin" );
 
     done_testing();
@@ -73,7 +71,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by admin" );
 
     done_testing();

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -31,7 +31,8 @@ sub importer {
     my $mt = shift;
     my ($importer) = @_;
     init() unless %Importers;
-    return $Importers{$importer};
+    return $Importers{$importer} if defined $importer && $importer ne '';
+    return;
 }
 
 sub init {
@@ -159,6 +160,10 @@ sub import_contents {
         $code = $importer->{code} = MT->handler_to_coderef($code);
     }
     if ($code) {
+        if ( not $iter ) {
+            $importer->{type}->error( $self->errstr );
+            return;
+        }
         my $result
             = eval { $importer->{code}->( $importer->{type}, %param ); };
         print "Error: $@" if $@;
@@ -187,7 +192,8 @@ sub _get_options_tmpl {
     }
     else {    # no spaces in $tmpl; must be a filename...
         if ( my $c = $importer->{plugin} ) {
-            return $c->load_tmpl($tmpl) or die $c->errstr;
+            my $ret = $c->load_tmpl($tmpl) or die $c->errstr;
+            return $ret;
         }
         else {
             return MT->instance->load_tmpl($tmpl);

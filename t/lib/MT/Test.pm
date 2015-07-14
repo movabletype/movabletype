@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,12 +14,23 @@ use strict;
 
 # Handle cwd = MT_DIR, MT_DIR/t
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use File::Path qw( rmtree );
 use File::Spec;
 use File::Temp qw( tempfile );
 use File::Basename;
 use MT;
+use MT::Mail;
 
 use Cwd qw( abs_path );
+
+# Speed-up tests on Windows.
+if ( $^O eq 'MSWin32' ) {
+    no warnings 'redefine';
+    require Net::SSLeay;
+    *Net::SSLeay::RAND_poll = sub () {1};
+    require MT::Util;
+    *MT::Util::check_fast_cgi = sub {0};
+}
 
 MT->add_callback( 'post_init', 1, undef, \&add_plugin_test_libs );
 
@@ -54,6 +65,7 @@ BEGIN {
         }
     }
     else {
+        require DBD::SQLite;    # Use in sqlite-test.cfg.
         $ENV{MT_CONFIG}
             = File::Spec->catfile( $ENV{MT_HOME}, "t", "sqlite-test.cfg" );
     }
@@ -64,7 +76,7 @@ BEGIN {
     }
     elsif ( -f $ds_dir . '/mt.db' ) {
         my $file = $ds_dir . '/mt.db';
-        `rm $file`;
+        unlink $file;
     }
 }
 
@@ -76,6 +88,12 @@ BEGIN {
     *CORE::GLOBAL::time
         = sub { my ($a) = @_; $a ? CORE::time + $_[0] : CORE::time };
     *CORE::GLOBAL::sleep = sub { CORE::sleep };
+}
+
+# Suppress output when "MailTransfer debug"
+{
+    no warnings 'redefine';
+    *MT::Mail::_send_mt_debug = sub {1};
 }
 
 sub import {
@@ -114,7 +132,7 @@ sub init_app {
     $app->instance( $cfg ? ( Config => $cfg ) : () );
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        abs_path( $app->config->SearchTemplatePath ) );
+        File::Spec->rel2abs( $app->config->SearchTemplatePath ) );
 
     # kill __test_output for a new request
     require MT;
@@ -191,9 +209,10 @@ sub init_testdb {
 
     #MT::Upgrade->register_class(['Foo', 'Bar']);
     MT->instance;
-    MT->registry->{object_types}->{foo} = 'Foo';
-    MT->registry->{object_types}->{bar} = 'Bar';
-    MT->registry->{object_types}->{baz} = 'Baz';
+    my $registry = MT->component('core')->registry;
+    $registry->{object_types}->{foo} = 'Foo';
+    $registry->{object_types}->{bar} = 'Bar';
+    $registry->{object_types}->{baz} = 'Baz';
 
     # Replace the standard seed_database/install_template functions
     # with stubs since we're not creating a full schema.
@@ -414,7 +433,7 @@ sub init_data {
     my $pkg = shift;
 
     # nix the old site just in case
-    `rm -fR t/site` if ( -d 't/site' );
+    rmtree('t/site') if ( -d 't/site' );
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
     MT->config->ThemesDirectory($themedir);
@@ -1014,6 +1033,34 @@ It\'s a hard rain\'s a-gonna fall',
         $cmt->save() or die "Couldn't save comment record 8: " . $cmt->errstr;
     }
 
+    # entry id 24 - 1 comment visible, 1 moderated
+    unless ( MT::Comment->count( { entry_id => 24 } ) ) {
+        my $cmt = new MT::Comment();
+        $cmt->set_values(
+            {   text       => 'Comment for entry 24, visible',
+                entry_id   => 24,
+                author     => 'Comment 24',
+                visible    => 1,
+                email      => '',
+                url        => '',
+                blog_id    => 2,
+                ip         => '127.0.0.1',
+                created_on => '20040614182800',
+            }
+        );
+        $cmt->id(16);
+        $cmt->save()
+            or die "Couldn't save comment record 16: " . $cmt->errstr;
+
+        $cmt->id(17);
+        $cmt->visible(0);
+        $cmt->text('Comment for entry 24, moderated');
+        $cmt->author('JD17');
+        $cmt->created_on('20040812182800');
+        $cmt->save()
+            or die "Couldn't save comment record 17: " . $cmt->errstr;
+    }
+
     require MT::Template;
     require MT::TemplateMap;
 
@@ -1303,6 +1350,28 @@ It\'s a hard rain\'s a-gonna fall',
     $page_ping->id(3);
     $page_ping->save or die "Couldn't save TBPing record 1: " . $ping->errstr;
 
+    # About page for website
+    $page = MT::Page->new();
+    $page->set_values(
+        {   blog_id     => 2,
+            title       => 'About',
+            text        => 'About this website.',
+            text_more   => 'This website is wonderful.',
+            keywords    => 'about',
+            excerpt     => 'excerpt',
+            created_on  => '20050131074500',
+            authored_on => '20050131074500',
+            modified_on => '20050131074600',
+            author_id   => $chuckd->id,
+            status      => MT::Entry::RELEASE(),
+        }
+    );
+    $page->id(24);
+    $page->tags('@about');
+    $page->comment_count(
+        MT::Comment->count( { entry_id => 24, visible => 1 } ) || 0 );
+    $page->save() or die "Couldn't save page record 24: " . $page->errstr;
+
     MT->instance->rebuild( BlogId => 1, );
 
     ### Make ObjectAsset mappings
@@ -1440,10 +1509,11 @@ sub _run_app {
     my $cgi              = CGI->new;
     my $follow_redirects = 0;
     my $max_redirects    = 10;
-    my %app_hash_values = qw(
+    my %app_hash_values  = qw(
         __request_method request_method
         __path_info __path_info
     );
+
     while ( my ( $k, $v ) = each(%$params) ) {
         next if grep { $_ eq $k } keys %app_hash_values;
         if ( ref($v) eq 'ARRAY' && $k ne '__test_upload' ) {

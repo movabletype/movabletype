@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -164,7 +164,7 @@ sub save {
             my $s_path = $app->param('site_path_absolute');
             unless ( is_within_base_sitepath( $app, $s_path ) ) {
                 return $app->errtrans(
-                    "The blog root directory must be within [_1]", $l_path );
+                    "The blog root directory must be within [_1].", $l_path );
             }
         }
 
@@ -224,7 +224,7 @@ sub save {
             my $s_path = $values{site_path};
             unless ( is_within_base_sitepath( $app, $s_path ) ) {
                 return $app->errtrans(
-                    "The website root directory must be within [_1]",
+                    "The website root directory must be within [_1].",
                     $l_path );
             }
         }
@@ -308,11 +308,6 @@ sub save {
         if ( $values{file_extension} ) {
             $values{file_extension} =~ s/^\.*//
                 if ( $q->param('file_extension') || '' ) ne '';
-        }
-
-        unless ( ( $values{site_url} || '' ) =~ m!/$! ) {
-            my $url = $values{site_url};
-            $values{site_url} = $url;
         }
 
         my $cfg_screen = $app->param('cfg_screen') || '';
@@ -497,6 +492,8 @@ sub save {
                 $q->param( 'type',            'index-' . $obj->id );
                 $q->param( 'tmpl_id',         $obj->id );
                 $q->param( 'single_template', 1 );
+                $app->add_return_arg( 'saved'     => 1 );
+                $app->add_return_arg( 'published' => 1 );
                 return $app->forward('start_rebuild');
             }
             else {
@@ -957,8 +954,24 @@ sub list {
                 if defined $list_permission->{inherit};
             $list_permission = $list_permission->{permit_action};
         }
-        my $allowed  = 0;
-        my @act      = split /\s*,\s*/, $list_permission;
+        my $allowed = 0;
+        my @act;
+        if ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
+            my $code = $list_permission;
+            $code = MT->handler_to_coderef($code);
+            eval { @act = $code->(); };
+            return $app->error(
+                $app->translate(
+                    'Error occurred during permission check: [_1]', $@
+                )
+            ) if $@;
+        }
+        elsif ( 'ARRAY' eq ref $list_permission ) {
+            @act = @$list_permission;
+        }
+        else {
+            @act = split /\s*,\s*/, $list_permission;
+        }
         my $blog_ids = undef;
         if ($blog_id) {
             push @$blog_ids, $blog_id;
@@ -1428,8 +1441,24 @@ sub filtered_list {
                 if defined $list_permission->{inherit};
             $list_permission = $list_permission->{permit_action};
         }
-        my $allowed  = 0;
-        my @act      = split /\s*,\s*/, $list_permission;
+        my $allowed = 0;
+        my @act;
+        if ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
+            my $code = $list_permission;
+            $code = MT->handler_to_coderef($code);
+            eval { @act = $code->(); };
+            return $app->json_error(
+                $app->translate(
+                    'Error occurred during permission check: [_1]', $@
+                )
+            ) if $@;
+        }
+        elsif ( 'ARRAY' eq ref $list_permission ) {
+            @act = @$list_permission;
+        }
+        else {
+            @act = split /\s*,\s*/, $list_permission;
+        }
         my $blog_ids = undef;
         if ($blog_id) {
             push @$blog_ids, $blog_id;
@@ -1554,7 +1583,7 @@ sub filtered_list {
     if ( !defined $count_result ) {
         return $app->error(
             MT->translate(
-                "An error occured while counting objects: [_1]",
+                "An error occurred while counting objects: [_1]",
                 $filter->errstr
             )
         );
@@ -1573,7 +1602,7 @@ sub filtered_list {
         if ( !defined $objs ) {
             return $app->error(
                 MT->translate(
-                    "An error occured while loading objects: [_1]",
+                    "An error occurred while loading objects: [_1]",
                     $filter->errstr
                 )
             );
@@ -1811,16 +1840,38 @@ sub delete {
 
                 if ($iter) {
                     my @ot;
-                    while ( my $obj = $iter->() ) {
-                        push @ot, $obj->id;
+                    while ( my $ot = $iter->() ) {
+                        push @ot, $ot->id;
                     }
                     foreach (@ot) {
-                        my $obj = $ot_class->load($_);
-                        next unless $obj;
-                        $obj->remove
+                        my $ot = $ot_class->load($_);
+                        next unless $ot;
+                        $ot->remove
                             or return $app->errtrans(
                             'Removing tag failed: [_1]',
-                            $obj->errstr );
+                            $ot->errstr );
+
+                        # Clear cache
+                        my $linked_class
+                            = $app->model( $ot->object_datasource );
+                        my $linked = $linked_class->load( $ot->object_id );
+                        next unless $linked;
+
+                        $linked->{__tags} = [];
+                        delete $linked->{__save_tags};
+                        MT::Tag->clear_cache(
+                            datasource => $linked->datasource,
+                            (   $linked->blog_id
+                                ? ( blog_id => $linked->blog_id )
+                                : ()
+                            )
+                        );
+
+                        require MT::Memcached;
+                        if ( MT::Memcached->is_available ) {
+                            MT::Memcached->instance->delete(
+                                $linked->tag_cache_key );
+                        }
                     }
                 }
 
@@ -1830,49 +1881,10 @@ sub delete {
             }
         }
         elsif ( $type eq 'category' ) {
-            if ( $app->config('DeleteFilesAtRebuild') ) {
-                require MT::Blog;
-                require MT::Entry;
-                require MT::Placement;
-                my $blog = MT::Blog->load($blog_id)
-                    or return $app->error(
-                    $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
-                my $at = $blog->archive_type;
-                if ( $at && $at ne 'None' ) {
-                    my @at = split /,/, $at;
-                    for my $target (@at) {
-                        my $archiver = $app->publisher->archiver($target);
-                        next unless $archiver;
-                        if ( $archiver->category_based ) {
-                            if ( $archiver->date_based ) {
-                                my @entries = MT::Entry->load(
-                                    { status => MT::Entry::RELEASE() },
-                                    {   join => MT::Placement->join_on(
-                                            'entry_id',
-                                            { category_id => $id },
-                                            { unique      => 1 }
-                                        )
-                                    }
-                                );
-                                for (@entries) {
-                                    $app->publisher
-                                        ->remove_entry_archive_file(
-                                        Category    => $obj,
-                                        ArchiveType => $target,
-                                        Entry       => $_
-                                        );
-                                }
-                            }
-                            else {
-                                $app->publisher->remove_entry_archive_file(
-                                    Category    => $obj,
-                                    ArchiveType => $target
-                                );
-                            }
-                        }
-                    }
-                }
-            }
+            require MT::CMS::Category;
+            MT::CMS::Category::pre_delete( $app, $obj )
+                or return $app->trans_error( 'Cannot load blog #[_1].',
+                $blog_id );
         }
         elsif ( $type eq 'page' ) {
             if ( $app->config('DeleteFilesAtRebuild') ) {

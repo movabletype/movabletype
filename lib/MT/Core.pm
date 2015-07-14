@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -740,7 +740,8 @@ BEGIN {
                             = $prop->datasource->has_column('author_id')
                             ? 'author_id'
                             : 'created_by';
-                        my %author_id = map { $_->$col => 1 } @$objs;
+                        my %author_id
+                            = map { $_->$col => 1 if $_->$col } @$objs;
                         my @authors = MT->model('author')
                             ->load( { id => [ keys %author_id ] } );
                         my %nickname
@@ -1203,6 +1204,8 @@ BEGIN {
             log          => '$Core::MT::Log::list_props',
             filter       => '$Core::MT::Filter::list_props',
             permission   => '$Core::MT::Permission::list_props',
+            template     => '$Core::MT::Template::list_props',
+            templatemap  => '$Core::MT::TemplateMap::list_props',
         },
         system_filters => {
             entry     => '$Core::MT::Entry::system_filters',
@@ -1239,7 +1242,7 @@ BEGIN {
                     require MT::CMS::Blog;
                     return MT::CMS::Blog::can_view_blog_list( MT->instance );
                 },
-                data_api_condition => undef,
+                data_api_condition => sub {1},
             },
             entry => {
                 object_label        => 'Entry',
@@ -1274,11 +1277,13 @@ BEGIN {
                 },
             },
             page => {
-                object_label     => 'Page',
-                primary          => 'title',
-                default_sort_key => 'modified_on',
-                permission       => 'access_to_page_list',
-                feed_link        => sub {
+                object_label        => 'Page',
+                primary             => 'title',
+                default_sort_key    => 'modified_on',
+                data_api_scope_mode => 'this',
+                permission          => 'access_to_page_list',
+                data_api_permission => undef,
+                feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
 
@@ -1304,16 +1309,19 @@ BEGIN {
                 },
             },
             asset => {
-                object_label     => 'Asset',
-                primary          => 'label',
-                permission       => 'access_to_asset_list',
-                default_sort_key => 'created_on',
+                object_label        => 'Asset',
+                primary             => 'label',
+                data_api_scope_mode => 'strict',
+                permission          => 'access_to_asset_list',
+                data_api_permission => undef,
+                default_sort_key    => 'created_on',
             },
             log => {
-                object_label     => 'Log',
-                default_sort_key => 'created_on',
-                primary          => 'message',
-                condition        => sub {
+                object_label        => 'Log',
+                default_sort_key    => 'created_on',
+                primary             => 'message',
+                data_api_scope_mode => 'this',
+                condition           => sub {
                     my $app     = MT->instance;
                     my $user    = $app->user;
                     my $blog_id = $app->param('blog_id');
@@ -1416,9 +1424,10 @@ BEGIN {
                     permit_action => 'access_to_folder_list',
                     inherit       => 0,
                 },
-                view       => [ 'website', 'blog' ],
-                scope_mode => 'this',
-                condition  => sub {
+                data_api_permission => undef,
+                view                => [ 'website', 'blog' ],
+                scope_mode          => 'this',
+                condition           => sub {
                     my $app = shift;
                     ( $app->param('_type') || '' ) ne 'filter';
                 },
@@ -1488,12 +1497,13 @@ BEGIN {
                 },
             },
             author => {
-                object_label     => 'Author',
-                primary          => 'name',
-                permission       => 'administer',
-                default_sort_key => 'name',
-                view             => 'system',
-                scope_mode       => 'none',
+                object_label        => 'Author',
+                primary             => 'name',
+                permission          => 'administer',
+                data_api_permission => undef,
+                default_sort_key    => 'name',
+                view                => 'system',
+                scope_mode          => 'none',
             },
             commenter => {
                 primary             => 'name',
@@ -1529,9 +1539,10 @@ BEGIN {
                     permit_action => 'access_to_tag_list',
                     inherit       => 0,
                 },
-                default_sort_key => 'name',
-                view             => [ 'blog', 'website' ],
-                scope_mode       => 'none',
+                data_api_permission => undef,
+                default_sort_key    => 'name',
+                view                => [ 'blog', 'website' ],
+                scope_mode          => 'none',
             },
             association => {
                 object_label        => 'Permission',
@@ -1592,9 +1603,11 @@ BEGIN {
                 scope_mode       => 'none',
             },
             permission => {
-                condition          => sub {0},
-                data_api_condition => sub {1},
+                condition           => sub {0},
+                data_api_condition  => sub {1},
+                data_api_scope_mode => 'this',
             },
+            template => { data_api_scope_mode => 'strict', },
         },
         summaries => {
             'author' => {
@@ -1732,18 +1745,27 @@ BEGIN {
             'BaseSitePath'                   => undef,
             'HideBaseSitePath'               => { default => 0, },
             'HidePerformanceLoggingSettings' => { default => 0, },
-            'HidePaformanceLoggingSettings'  => { alias   => 'HidePerformanceLoggingSettings' },
-            'CookieDomain'                   => undef,
-            'CookiePath'                     => undef,
-            'MailEncoding'                   => { default => 'ISO-8859-1', },
-            'MailTransfer'                   => { default => 'sendmail' },
-            'SMTPServer'                     => { default => 'localhost', },
-            'SMTPAuth'                       => { default => 0, },
-            'SMTPUser'                       => undef,
-            'SMTPPassword'                   => undef,
-            'SMTPPort'                       => undef,
-            'SMTPTimeout'                    => { default => 10 },
-            'DebugEmailAddress'              => undef,
+            'HidePaformanceLoggingSettings' =>
+                { alias => 'HidePerformanceLoggingSettings' },
+            'CookieDomain'      => undef,
+            'CookiePath'        => undef,
+            'MailEncoding'      => { default => 'ISO-8859-1', },
+            'MailTransfer'      => { default => 'sendmail' },
+            'SMTPServer'        => { default => 'localhost', },
+            'SMTPAuth'          => { default => 0, },
+            'SMTPUser'          => undef,
+            'SMTPPassword'      => undef,
+            'SMTPPort'          => undef,
+            'SMTPTimeout'       => { default => 10 },
+            'SMTPSSLVerifyNone' => undef,
+            'SMTPSSLVersion'    => undef,
+            'SMTPOptions'       => { type => 'HASH' },
+            'FTPSSSLVerifyNone' => undef,
+            'FTPSSSLVersion'    => undef,
+            'FTPSOptions'       => { type => 'HASH' },
+            'SSLVerifyNone'     => undef,
+            'SSLVersion'        => undef,
+            'DebugEmailAddress' => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
                 { default => 'http://www.movabletype.org/update/', },
@@ -1805,7 +1827,7 @@ BEGIN {
             'GenerateTrackBackRSS'        => { default => 0, },
             'DBIRaiseError'               => { default => 0, },
             'SearchAlwaysAllowTemplateID' => { default => 0, },
-            'PreviewInNewWindow'          => { default => 0, },
+            'PreviewInNewWindow'          => { default => 1, },
 
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
@@ -2039,6 +2061,24 @@ BEGIN {
                 type    => 'HASH',
                 default => {}
             },
+            'DataAPIDisableSite'   => undef,
+            'RebuildOffsetSeconds' => { default => 20 },
+
+            # Enterprise.pack
+            'LDAPOptions'           => { type => 'HASH' },
+            'LDAPAuthURL'           => { type => 'ARRAY' },
+            'LDAPAuthBindDN'        => { type => 'ARRAY' },
+            'LDAPAuthPassword'      => { type => 'ARRAY' },
+            'LDAPAuthSASLMechanism' => {
+                default => 'PLAIN',
+                type    => 'ARRAY',
+            },
+            'LDAPUserSearchBase'    => { type  => 'ARRAY' },
+            'LDAPGroupSearchBase'   => { type  => 'ARRAY' },
+            'AuthLDAPURL'           => { alias => 'LDAPAuthURL' },
+            'AuthLDAPBindDN'        => { alias => 'LDAPAuthBindDN' },
+            'AuthLDAPPassword'      => { alias => 'LDAPAuthPassword' },
+            'AuthLDAPSASLMechanism' => { alias => 'LDAPAuthSASLMechanism' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2132,6 +2172,14 @@ BEGIN {
                 default_format => 'json',
                 query_builder =>
                     '$Core::MT::DataAPI::Endpoint::Common::query_builder',
+
+                # This is for search endpoint.
+                default =>
+                    sub { MT::App::Search::core_parameters( MT->app ) },
+                import_formats => sub {
+                    require MT::Import;
+                    return MT::Import->core_import_formats();
+                },
             },
         },
         web_services    => undef,
@@ -2328,14 +2376,14 @@ sub load_core_tasks {
             frequency => $cfg->FuturePostFrequency * 60,    # once per minute
             code      => sub {
                 MT->instance->publisher->publish_future_posts;
-                }
+            }
         },
         'UnpublishingPost' => {
             label     => 'Unpublish Past Entries',
             frequency => $cfg->UnpublishPostFrequency * 60,  # once per minute
             code      => sub {
                 MT->instance->publisher->unpublish_past_entries;
-                }
+            }
         },
         'AddSummaryWatcher' => {
             label     => 'Add Summary Watcher to queue',
@@ -2370,7 +2418,7 @@ sub load_core_tasks {
             frequency => 60,     # * 60 * 24,   # once a day
             code      => sub {
                 MT::Core->purge_session_records;
-                }
+            }
         },
         'PurgeExpiredDataAPISessionRecords' => {
             label => 'Purge Stale DataAPI Session Records',
@@ -2378,7 +2426,7 @@ sub load_core_tasks {
             code      => sub {
                 require MT::App::DataAPI;
                 MT::App::DataAPI->purge_session_records;
-                }
+            }
         },
         'CleanExpiredFailedLogin' => {
             label     => 'Remove expired lockout data',
@@ -2386,7 +2434,7 @@ sub load_core_tasks {
             code      => sub {
                 my $app = MT->instance;
                 $app->model('failedlogin')->cleanup($app);
-                }
+            }
         },
         'CleanFileInfoRecords' => {
             label     => 'Purge Unused FileInfo Records',
@@ -2394,7 +2442,7 @@ sub load_core_tasks {
             code      => sub {
                 my $app = MT->instance;
                 $app->model('fileinfo')->cleanup;
-                }
+            }
         },
     };
 }
@@ -3250,9 +3298,15 @@ sub CGIMaxUpload {
     my $val = $mgr->get_internal('CGIMaxUpload');
     return $mgr->default('CGIMaxUpload') unless $val;
 
-    require Scalar::Util;
-    return $mgr->default('CGIMaxUpload')
-        unless Scalar::Util::looks_like_number($val);
+    eval "require Scalar::Util";
+    if ( !$@ ) {
+        return $mgr->default('CGIMaxUpload')
+            unless Scalar::Util::looks_like_number($val);
+    }
+    else {
+        return $mgr->default('CGIMaxUpload')
+            unless ( $val =~ /^[+-]?[0-9]+$/ );
+    }
     return $val;
 }
 

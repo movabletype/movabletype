@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -337,6 +337,7 @@ sub edit {
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj ) = @_;
+
     if ( !$obj->id ) {
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
@@ -351,6 +352,7 @@ sub pre_save {
             )
             unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
     }
+
     return 1;
 }
 
@@ -420,7 +422,8 @@ sub can_save {
 
         my $author = $app->user;
         return $author->permissions( $id->id )->can_do('edit_blog_config')
-            || ( $app->param('cfg_screen')
+            || ( $app->isa('MT::App::CMS')
+            && $app->param('cfg_screen')
             && $app->param('cfg_screen') eq 'cfg_publish_profile' );
     }
     else {
@@ -455,11 +458,9 @@ sub dialog_select_website {
     my $terms = {};
     my $args  = {};
     if ($favorites) {
-        my $auth = $app->user or return;
-        if ( my @favs = @{ $auth->favorite_websites || [] } ) {
-            @favs = @favs[ 0 .. 4 ] if scalar @favs > 5;
-            $terms = { id => { not => \@favs }, };
-        }
+
+        # Do not exclude top 5 favorite websites from
+        #   select website dialog list. bugid:112372
         $confirm_js = 'saveFavorite';
     }
     if (   !$user->is_superuser

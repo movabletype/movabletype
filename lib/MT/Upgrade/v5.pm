@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -84,11 +84,6 @@ sub upgrade_functions {
             version_limit => 5.0017,
             priority      => 3.0,
             code          => \&_v5_remove_technorati,
-        },
-        'v5_remove_news_widget_cache' => {
-            version_limit => 5.0,
-            priority      => 3.0,
-            code          => \&_v5_remove_news_widget_cache,
         },
         'v5_assign_entry_ceated_by' => {
             version_limit => 5.0019,
@@ -200,7 +195,7 @@ sub upgrade_functions {
             updater       => {
                 type => 'author',
                 label =>
-                    q{Setting the 'created by' ID for any user for whom this field is not defined...},
+                    'Setting the \'created by\' ID for any user for whom this field is not defined...',
                 code => sub {
                     $_[0]->created_by( $_[0]->id )
                         if !defined $_[0]->created_by;
@@ -347,10 +342,14 @@ sub _v5_create_new_role {
     $self->progress(
         $self->translate_escape('Updating existing role name...') );
 
-    my $role
-        = $role_class->load( { name => MT->translate('_WEBMASTER_MT4'), } );
-    if ($role) {
-        return if $role->has('administer_website');
+    my @roles;
+    my $iter = $role_class->load_iter(
+        { name => MT->translate('_WEBMASTER_MT4'), } );
+    while ( my $role = $iter->() ) {
+        push @roles, $role;
+    }
+    for my $role (@roles) {
+        next if $role->has('administer_website');
         $role->name( MT->translate('Webmaster (MT4)') );
         $role->save
             or return $self->error(
@@ -363,7 +362,7 @@ sub _v5_create_new_role {
 
     $self->progress(
         $self->translate_escape('Populating new role for website...') );
-    $role = $role_class->load(
+    my $role = $role_class->load(
         { name => MT->translate('Website Administrator'), } );
     if ( !$role ) {
         $role = $role_class->new();
@@ -751,7 +750,7 @@ sub _v5_generate_websites_place_blogs {
             $website->save
                 or return $self->error(
                 $self->translate_escape(
-                    "An error occured during generating a website upon upgrade: [_1]",
+                    "An error occurred during generating a website upon upgrade: [_1]",
                     $website->errstr
                 )
                 );
@@ -794,7 +793,7 @@ sub _v5_generate_websites_place_blogs {
             $blog->save
                 or return $self->error(
                 $self->translate_escape(
-                    "An error occured during migrating a blog's site_url: [_1]",
+                    "An error occurred during migrating a blog's site_url: [_1]",
                     $website->errstr
                 )
                 );
@@ -838,16 +837,6 @@ sub _v5_remove_technorati {
             )
         );
     }
-}
-
-sub _v5_remove_news_widget_cache {
-    my $self = shift;
-    $self->progress(
-        $self->translate_escape( 'Expiring cached MT News widget...', ) );
-    my $class = MT->model('session')
-        or return $self->error(
-        $self->translate_escape( "Error loading class: [_1].", 'session' ) );
-    $class->remove( { kind => [qw( NW LW )] } );
 }
 
 sub _v5_recover_auth_type {

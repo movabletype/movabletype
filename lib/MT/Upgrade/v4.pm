@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -494,7 +494,7 @@ sub upgrade_functions {
                 my $cfg = MT->config;
                 $cfg->PluginSwitch( "Cloner/cloner.pl=0", 1 );
                 $cfg->save_config;
-                }
+            }
         },
     };
 }
@@ -924,7 +924,7 @@ sub remove_indexes {
                 'drop index mt_asset_file_path on mt_asset',
                 'drop index mt_blocklist_name on mt_blocklist',
                 'drop index mt_entry_blog_id on mt_entry',
-                'drop index mt_template_build_dynamic on mt_tempalte'
+                'drop index mt_template_build_dynamic on mt_template'
             ]
         );
     }
@@ -934,7 +934,7 @@ sub remove_indexes {
                 'drop index mt_asset.mt_asset_file_path',
                 'drop index mt_blocklist.mt_blocklist_name',
                 'drop index mt_entry.mt_entry_blog_id',
-                'drop index mt_tempalte.mt_template_build_dynamic'
+                'drop index mt_template.mt_template_build_dynamic'
             ]
         );
     }

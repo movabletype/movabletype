@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -778,7 +778,13 @@ sub list_props {
             },
         },
         current_context => { base => '__common.current_context', },
-        content         => {
+        blog_id         => {
+            auto            => 1,
+            col             => 'blog_id',
+            display         => 'none',
+            filter_editable => 0,
+        },
+        content => {
             base    => '__virtual.content',
             fields  => [qw(title text text_more keywords excerpt basename)],
             display => 'none',
@@ -848,19 +854,19 @@ sub cache_key {
 sub author_id {
     my $entry = shift;
     if ( scalar @_ ) {
-        $entry->{__orig_value}->{author_id} = $entry->SUPER::author_id
+        $entry->{__orig_value}->{author_id} = $entry->column('author_id')
             unless exists( $entry->{__orig_value}->{author_id} );
     }
-    return $entry->SUPER::author_id(@_);
+    return $entry->column( 'author_id', @_ );
 }
 
 sub status {
     my $entry = shift;
     if ( scalar @_ ) {
-        $entry->{__orig_value}->{status} = $entry->SUPER::status
+        $entry->{__orig_value}->{status} = $entry->column('status')
             unless exists( $entry->{__orig_value}->{status} );
     }
-    return $entry->SUPER::status(@_);
+    return $entry->column( 'status', @_ );
 }
 
 sub status_text {
@@ -1014,6 +1020,9 @@ sub flush_category_cache {
     my ( $copy, $place ) = @_;
     MT::Memcached->instance->delete(
         MT::Entry->cache_key( $place->entry_id, 'categories' ) );
+    my $entry = MT::Entry->load( $place->entry_id ) or return;
+    $entry->clear_cache('category');
+    $entry->clear_cache('categories');
 }
 
 MT::Placement->add_trigger( post_save   => \&flush_category_cache );
@@ -1401,6 +1410,7 @@ sub discover_tb_from_entry {
     }
 }
 
+# Deprecated (case #112321).
 sub sync_assets {
     my $entry = shift;
     my $text = ( $entry->text || '' ) . "\n" . ( $entry->text_more || '' );
@@ -1775,6 +1785,250 @@ sub terms_for_tags {
     return { status => MT::Entry::RELEASE() };
 }
 
+sub attach_categories {
+    my $obj = shift;
+    my @cats = @_ or return [];
+
+    # Check whether or not all arguments are MT:Category objects.
+    for my $cat (@cats) {
+        next if eval { $cat->isa('MT::Category') } && $cat->id;
+        return $obj->error(
+            MT->translate(
+                'Invalid arguments. They all need to be saved MT::Category objects.'
+            )
+        );
+    }
+
+    # Remove already attached categories.
+    my @attach_cats;
+    my @current_place = MT->model('placement')->load(
+        {   entry_id    => $obj->id,
+            category_id => [ map { $_->id } @cats ],
+        }
+    );
+    for my $cat (@cats) {
+        next if grep { $_->category_id == $cat->id } @current_place;
+        push @attach_cats, $cat;
+    }
+
+    # Attach assets.
+    my $has_primary = MT->model('placement')->count(
+        {   entry_id   => $obj->id,
+            is_primary => 1,
+        }
+    );
+    my $current_cats = $obj->categories;
+    for my $cat (@attach_cats) {
+        my $place = MT->model('placement')->new;
+        $place->set_values(
+            {   blog_id     => $obj->blog->id,
+                entry_id    => $obj->id,
+                category_id => $cat->id,
+                is_primary  => $has_primary ? 0 : 1,
+            },
+        );
+        $place->save or return $obj->error( $place->errstr );
+
+        # Update cache.
+        $obj->cache_property( 'category', undef, $cat )
+            unless $has_primary;
+
+        # Entry does not have more than one primary category.
+        $has_primary = 1;
+    }
+
+    # Update cache.
+    my @new_cats = (
+        @attach_cats, $current_cats && @$current_cats ? @$current_cats : ()
+    );
+    @new_cats = sort { $a->label cmp $b->label } @new_cats;
+    $obj->cache_property( 'categories', undef, \@new_cats );
+
+    return \@attach_cats;
+}
+
+sub update_categories {
+    my $obj  = shift;
+    my @cats = @_;
+
+    # Check whether or not all arguments are MT:Category objects.
+    for my $cat (@cats) {
+        next if eval { $cat->isa('MT::Category') } && $cat->id;
+        return $obj->error(
+            MT->translate(
+                'Invalid arguments. They all need to be saved MT::Category objects.'
+            )
+        );
+    }
+
+    # Detach all if no category.
+    unless (@cats) {
+        MT::Placement->remove( { entry_id => $obj->id, } )
+            or return $obj->error( MT::Placement->errstr );
+
+        MT::Memcached->instance->delete(
+            MT::Entry->cache_key( $obj->id, 'categories' ) );
+        $obj->clear_cache('category');
+        $obj->clear_cache('categories');
+
+        return [];
+    }
+
+    # Detach categories
+    MT::Placement->remove(
+        {   entry_id    => $obj->id,
+            category_id => { not => [ map { $_->id } @cats ] },
+        }
+    ) or return $obj->error( MT::Placement->errstr );
+
+    # Attach/update categories
+    my $is_primary    = 1;
+    my @current_place = MT::Placement->load(
+        {   blog_id  => $obj->blog_id,
+            entry_id => $obj->id,
+        }
+    );
+    for my $cat (@cats) {
+        my ($place) = grep { $_->category_id == $cat->id } @current_place;
+        if ($place) {
+
+            # Already attached category.
+            # If is_primary field is changed, save MT::Placement record.
+            do { $is_primary = 0; next } if $place->is_primary == $is_primary;
+            $place->is_primary($is_primary);
+        }
+        else {
+            $place = MT::Placement->new;
+            $place->set_values(
+                {   blog_id     => $obj->blog_id,
+                    entry_id    => $obj->id,
+                    category_id => $cat->id,
+                    is_primary  => $is_primary,
+                }
+            );
+        }
+        $place->save or return $obj->error( $place->errstr );
+
+        # Update cache.
+        $obj->cache_property( 'category', undef, $cat ) if $is_primary;
+
+        # Entry does not have more than one primary category.
+        $is_primary = 0;
+    }
+
+    # Update cache.
+    @cats = sort { $a->label cmp $b->label } @cats;
+    $obj->cache_property( 'categories', undef, \@cats );
+
+    return \@cats;
+}
+
+sub attach_assets {
+    my $obj = shift;
+    my @assets = @_ or return [];
+
+    # Check whether or not all arguments are MT:Asset objects.
+    for my $asset (@assets) {
+        next if eval { $asset->isa('MT::Asset') } && $asset->id;
+        return $obj->error(
+            MT->translate(
+                'Invalid arguments. They all need to be saved MT::Asset objects.'
+            )
+        );
+    }
+
+    # Remove already attached assets.
+    my @attach_assets;
+    my @current_oa = MT->model('objectasset')->load(
+        {   blog_id   => $obj->blog->id,
+            object_ds => 'entry',
+            object_id => $obj->id,
+            asset_id  => [ map { $_->id } @assets ],
+        },
+    );
+    for my $asset (@assets) {
+        next if grep { $_->asset_id == $asset->id } @current_oa;
+        push @attach_assets, $asset;
+    }
+
+    # Attach assets.
+    for my $asset (@attach_assets) {
+        my $oa = MT->model('objectasset')->new;
+        $oa->set_values(
+            {   blog_id   => $obj->blog->id,
+                object_ds => 'entry',
+                object_id => $obj->id,
+                asset_id  => $asset->id,
+            }
+        );
+        $oa->save or return $oa->errstr;
+    }
+
+    return \@attach_assets;
+}
+
+sub update_assets {
+    my $obj    = shift;
+    my @assets = @_;
+
+    # Check whether or not all arguments are MT:Asset objects.
+    for my $asset (@assets) {
+        next if eval { $asset->isa('MT::Asset') } && $asset->id;
+        return $obj->error(
+            MT->translate(
+                'Invalid arguments. They all need to be saved MT::Asset objects.'
+            )
+        );
+    }
+
+    # Detach all assets if no assets.
+    unless (@assets) {
+        MT->model('objectasset')->remove(
+            {   object_ds => $obj->class,
+                object_id => $obj->id,
+            }
+        ) or return $obj->error( MT->model('objectasset')->errstr );
+        return [];
+    }
+
+    # Detach assets.
+    my @asset_ids = map { $_->id } @assets;
+    MT->model('objectasset')->remove(
+        {   object_ds => $obj->class,
+            object_id => $obj->id,
+            asset_id  => { not => \@asset_ids },
+        }
+    ) or return $obj->error( MT->model('objectasset')->errstr );
+
+    # Remove already attached assets.
+    my @attaching_assets = @assets;
+    my @current_oa       = MT->model('objectasset')->load(
+        {   object_ds => $obj->class,
+            object_id => $obj->id,
+            asset_id  => \@asset_ids,
+        }
+    );
+    if (@current_oa) {
+        my %current_oa_id = map { ( $_->asset_id => 1 ) } @current_oa;
+        @assets = grep { !$current_oa_id{ $_->id } } @assets;
+    }
+
+    # Attach assets.
+    for my $asset (@assets) {
+        my $oa = MT->model('objectasset')->new;
+        $oa->set_values(
+            {   blog_id   => $obj->blog->id,
+                object_ds => $obj->class,
+                object_id => $obj->id,
+                asset_id  => $asset->id,
+            }
+        );
+        $oa->save or return $obj->error( $oa->errstr );
+    }
+
+    return \@attaching_assets;
+}
+
 #trans('Draft')
 #trans('Review')
 #trans('Future')
@@ -1909,6 +2163,31 @@ case the two methods give exactly the same results.
 Returns a reference to an array of text filter keynames (the short names
 that are the first argument to I<MT::add_text_filter>. This list can be
 passed directly in as the second argument to I<MT::apply_text_filters>.
+
+=head2 $entry->attach_categories(@categories)
+
+Attaches I<@categories> to the entry. If I<@categories> is empty, this method
+returns array reference of empty array. If I<@categories> contains non MT::Category
+object or unsaved MT::Category object, this method returns undef, This method
+returns array reference of attached categories.
+
+=head2 $entry->update_categories(@categories)
+
+Updates attached categories with I<@categories>. If I<@categories> is empty,
+all categories will be detached. This method returns array reference of categories
+attaching entry.
+
+=head2 $entry->attach_assets(@assets)
+
+Attaches I<@assets> to the entry. If I<@assets> is empty, this method returns array
+reference of empty array. If I<@assets> contains non MT::Asset object or
+unsaved MT::Asset object, this method returns undef. This method returns
+array reference of attached assets.
+
+=head2 $entry->update_assets(@assets)
+
+Updates attached assets with I<@assets>. If I<@assets> is empty, all assets will be detached.
+This method returns array reference of assets attaching entry.
 
 =head1 DATA ACCESS METHODS
 

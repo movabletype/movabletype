@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -57,7 +57,13 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
 
     # special tag step for stripping any conditional 'static' code.
     $tpl_source = preg_replace('/<MT:?IfStatic[^>]*?>.*?<\/MT:?IfStatic>/is', '', $tpl_source);
-    $tpl_source = preg_replace('/<MT:?Ignore\b[^>]*?>.*?<\/MT:?Ignore>/is', '', $tpl_source);
+
+    while(preg_match('/<MT:?Ignore\b[^>]*?>((?!<MT:?Ignore\b[^>]*?>).)*?<\/MT:?Ignore>/is', $tpl_source)){
+        $tpl_source = preg_replace('/<MT:?Ignore\b[^>]*?>((?!<MT:?Ignore\b[^>]*?>).)*?<\/MT:?Ignore>/is', '', $tpl_source);
+    }
+    
+
+
 
     if ($parts = preg_split('!(<(?:\$?|/)MT(?:(?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)+?)(?:\$?|/)>)!is', $tpl_source, -1,
                        PREG_SPLIT_DELIM_CAPTURE)) {

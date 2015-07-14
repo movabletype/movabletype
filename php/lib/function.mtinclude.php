@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -73,6 +73,7 @@ function smarty_function_mtinclude($args, &$ctx) {
     }
 
     # Convert to phrase of PHP Include
+    require_once('MTUtil.php');
     $ssi_enable = false;
     $include_file = '';
     if (!empty($load_type) &&
@@ -90,7 +91,6 @@ function smarty_function_mtinclude($args, &$ctx) {
         }
         $include_path_array = _include_path($base_path);
 
-        require_once('MTUtil.php');
         $filename = dirify($tmpl_meta->template_name);
         $filename or $filename = 'template_' . $tmpl_meta->template_id;
         $filename .= '.'.$blog->blog_file_extension;
@@ -109,9 +109,10 @@ function smarty_function_mtinclude($args, &$ctx) {
     $cache_id = '';
     $cache_key = '';
     $cache_ttl = 0;
+    $cache_expire_type = $tmpl_meta->cache_expire_type;
     if (!empty($load_type) &&
         isset($blog) && $blog->blog_include_cache == 1 &&
-        ($tmpl_meta->cache_expire_type == '1' || $tmpl_meta->cache_expire_type == '2') ||
+        ($cache_expire_type == '1' || $cache_expire_type == '2') ||
          ((isset($args['cache']) && $args['cache'] == '1') || isset($args['key']) || isset($args['cache_key']) || isset($args['ttl'])))
     {
         $cache_blog_id = isset($args['global']) && $args['global'] == 1
@@ -123,36 +124,38 @@ function smarty_function_mtinclude($args, &$ctx) {
             ? $args['key']
             : ( isset($args['cache_key'])
                 ? $args['cache_key']
-                : 'blog::' . $cache_blog_id . '::template_' . $load_type  . '::' . $load_name );
+                : md5('blog::' . $cache_blog_id . '::template_' . $load_type  . '::' . $load_name));
 
         if (isset($args['ttl']))
             $cache_ttl = $args['ttl'];
-        elseif (isset($tmpl_meta->cache_expire_type) && $tmpl_meta->cache_expire_type == '1')
+        elseif (isset($cache_expire_type) && $cache_expire_type == '1')
             $cache_ttl = $tmpl_meta->cache_expire_interval;
         else
             $cache_ttl = 60 * 60; # default 60 min.
 
-        if (isset($tmpl_meta->cache_expire_type) && $tmpl_meta->cache_expire_type == '2') {
+        if (isset($cache_expire_type) && $cache_expire_type == '2') {
             $expire_types = preg_split('/,/', $tmpl_meta->cache_expire_event, -1, PREG_SPLIT_NO_EMPTY);
             if (!empty($expire_types)) {
                 $latest = $ctx->mt->db()->get_latest_touch($blog_id, $expire_types);
                 if ($latest) {
+                    $latest_touch = $latest->modified_on;
                     if ($ssi_enable) {
                         $file_stat = stat($include_file);
                         if ($file_stat) {
                             $file_stamp = gmdate("Y-m-d H:i:s", $file_stat[9]);
-                            if (strtotime($latest) > strtotime($file_stamp))
+                            if (datetime_to_timestamp($latest_touch) > datetime_to_timestamp($file_stamp))
                                 $cache_ttl = 1;
                         }
                     } else {
-                      $cache_ttl = time() - strtotime($latest);
+                        $cache_ttl = time() - datetime_to_timestamp($latest_touch, 'gmt');
                     }
                 }
             }
         }
 
-        if ($cache_ttl == 0 || (time() - strtotime($tmpl_meta->template_modified_on) < $cache_ttl)) {
-            $cache_ttl = time() - strtotime($tmpl_meta->template_modified_on);
+        $elapsed_time = time() - offset_time( datetime_to_timestamp( $tmpl_meta->template_modified_on, 'gmt' ), $blog, '-' );
+        if ($cache_ttl == 0 || $elapsed_time < $cache_ttl) {
+            $cache_ttl = $elapsed_time;
         }
 
         $cache_driver = $mt->cache_driver($cache_ttl);

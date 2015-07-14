@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2014 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2015 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -884,10 +884,9 @@ abstract class MTDatabase {
                     $category_arg = '';
                     foreach ($cats as $cat) {
                         if ($category_arg != '')
-                            $category_arg .= '|| ';
+                            $category_arg .= ' OR ';
                         $category_arg .= '#' . $cat->category_id;
                     }
-                    $category_arg = '(' . $category_arg . ')';
                 }
             } else {
                 $not_clause = preg_match('/\bNOT\b/i', $category_arg);
@@ -1053,10 +1052,10 @@ abstract class MTDatabase {
         }
         $date_filter = $this->build_date_filter($args, $timestamp_field);
 
-        if (isset($args['lastn'])) {
-            if (!isset($args['entry_id'])) $limit = $args['lastn'];
-        } elseif (isset($args['days']) && !$date_filter) {
+        if (isset($args['days']) && !$date_filter) {
             $day_filter = 'and ' . $this->limit_by_day_sql('entry_authored_on', intval($args['days']));
+        } elseif (isset($args['lastn'])) {
+            if (!isset($args['entry_id'])) $limit = $args['lastn'];
         } else {
             $found_valid_args = 0;
             foreach ( array(
@@ -2635,7 +2634,7 @@ abstract class MTDatabase {
                   and comment_visible = 1
                   $blog_filter";
         if (isset($args['top']) and $args['top'] == 1) {
-            $where .= " and comment_parent_id is NULL";
+            $where .= " and (comment_parent_id is NULL or comment_parent_id = 0)";
         }
         $join = array();
         $join['mt_entry'] =
@@ -2655,7 +2654,7 @@ abstract class MTDatabase {
               and entry_status=2
               and comment_visible=1";
         if (isset($args['top']) and $args['top'] == 1) {
-            $where .= " and comment_parent_id is NULL";
+            $where .= " and (comment_parent_id is NULL or comment_parent_id = 0)";
         }
         $join['mt_entry'] =
              array(
@@ -2933,7 +2932,7 @@ abstract class MTDatabase {
             $limit = 0; $offset = 0;
         }
         if (isset($args['top']) and $args['top'] == 1)
-            $top_only = " and comment_parent_id is NULL";
+            $top_only = " and (comment_parent_id is NULL or comment_parent_id = 0)";
 
         if ($limit) $extras['limit'] = $limit;
         if ($offset) $extras['offset'] = $offset;

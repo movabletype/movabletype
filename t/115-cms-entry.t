@@ -4,6 +4,16 @@ use strict;
 use warnings;
 
 BEGIN {
+    use Test::More;
+    eval { require Test::MockModule }
+        or plan skip_all => 'Test::MockModule is not installed';
+
+    eval 'use Test::Data qw( Array ); 1'
+        or plan skip_all => 'Test::Data is not installed';
+
+    eval 'use pQuery; 1'
+        or plan skip_all => 'pQuery is not installed';
+
     $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
@@ -13,7 +23,6 @@ use MT::Test::Permission;
 use MT::Association;
 use MT::Placement;
 use MT::Util;
-use Test::More;
 
 ### Make test data
 
@@ -109,6 +118,12 @@ MT::Association->link( $egawa,    $create_post, $second_blog );
 my $website_cat = MT::Test::Permission->make_category(
     blog_id   => $website->id,
     author_id => $admin->id,
+    label     => 'Foo',
+);
+my $website_cat2 = MT::Test::Permission->make_category(
+    blog_id   => $website->id,
+    author_id => $admin->id,
+    label     => 'Bar',
 );
 
 # Entry
@@ -152,10 +167,10 @@ my $website_page = MT::Test::Permission->make_page(
 # Run tests
 my ( $app, $out );
 
-diag 'Test in website scope';
+note 'Test in website scope';
 subtest 'Test in website scope' => sub {
 
-    diag 'Menu visibility check';
+    note 'Menu visibility check';
     subtest 'Menu visibility check' => sub {
         $app = _run_app(
             'MT::App::CMS',
@@ -166,20 +181,13 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        my $link_new
-            = $app->uri
-            . '?__mode=view&amp;_type=entry&amp;blog_id='
-            . $website->id;
-        $link_new = quotemeta $link_new;
-        like( $out, qr/$link_new/,
+
+        my @labels = _get_entries_menu_labels($out);
+        array_any_ok( 'New', @labels,
             '"Entries New" menu in website scope exists if admin' );
-        my $link_manage
-            = $app->uri
-            . '?__mode=list&amp;_type=entry&amp;blog_id='
-            . $website->id;
-        $link_manage = quotemeta $link_manage;
-        like( $out, qr/$link_manage/,
+        array_any_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope exists if admin' );
+
         my $fav_action_entry = 'fav-action-entry';
         like( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if admin' );
@@ -193,11 +201,14 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        like( $out, qr/$link_new/,
+
+        @labels = _get_entries_menu_labels($out);
+        array_any_ok( 'New', @labels,
             '"Entries New" menu in website scope exists if permitted user' );
-        like( $out, qr/$link_manage/,
+        array_any_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope exists if permitted user'
         );
+
         like( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if permitted user' );
 
@@ -210,12 +221,15 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/$link_new/,
-            '"Entries New" menu in website scope does not exist if other website'
+
+        @labels = _get_entries_menu_labels($out);
+        array_none_ok( 'New', @labels,
+            '"Entries New" menu and "Entries Manage" menu in website scope does not exist if other website'
         );
-        unlike( $out, qr/$link_manage/,
-            '"Entries Manage" menu in website scope does not exist if other'
+        array_none_ok( 'Manage', @labels,
+            '"Entries New" menu and "Entries Manage" menu in website scope does not exist if other website'
         );
+
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if other website' );
 
@@ -228,11 +242,14 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/$link_new/,
+
+        @labels = _get_entries_menu_labels($out);
+        array_none_ok( 'New', @labels,
             '"Entries New" menu in website scope does not exist if child blog'
         );
-        like( $out, qr/$link_manage/,
+        array_any_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope exists if child blog' );
+
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if child blog' );
 
@@ -245,12 +262,15 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/$link_new/,
+
+        @labels = _get_entries_menu_labels($out);
+        array_none_ok( 'New', @labels,
             '"Entries New" menu in website scope does not exist if other blog'
         );
-        unlike( $out, qr/$link_manage/,
+        array_none_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope does not exist if other blog'
         );
+
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if other blog' );
 
@@ -263,19 +283,22 @@ subtest 'Test in website scope' => sub {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/$link_new/,
+
+        @labels = _get_entries_menu_labels($out);
+        array_none_ok( 'New', @labels,
             '"Entries New" menu in website scope does not exist if other permission'
         );
-        unlike( $out, qr/$link_manage/,
+        array_none_ok( 'Manage', @labels,
             '"Entries Manage" menu in website scope does not exist if other permission'
         );
+
         unlike( $out, qr/$fav_action_entry/,
             '"Entry" in compose menus exists if other permission' );
 
         done_testing();
     };
 
-    diag 'Entry listing screen visibility check';
+    note 'Entry listing screen visibility check';
     subtest 'Entry listing screen visibility check' => sub {
         $app = _run_app(
             'MT::App::CMS',
@@ -333,9 +356,9 @@ subtest 'Test in website scope' => sub {
         done_testing();
     };
 
-    diag 'Filtered list check';
+    note 'Filtered list check';
     subtest 'Filtered list check' => sub {
-        diag 'Get filtered list by admin';
+        note 'Get filtered list by admin';
         local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
         $app = _run_app(
             'MT::App::CMS',
@@ -361,7 +384,7 @@ subtest 'Test in website scope' => sub {
             'Got an entry in child blog'
         );
 
-        diag 'Get filtered list by website administrator';
+        note 'Get filtered list by website administrator';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $kemikawa,
@@ -386,7 +409,7 @@ subtest 'Test in website scope' => sub {
             'Got an entry in child blog'
         );
 
-        diag 'Get filtered list by permitted user (create post) in website';
+        note 'Get filtered list by permitted user (create post) in website';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $aikawa,
@@ -411,7 +434,7 @@ subtest 'Test in website scope' => sub {
             'Did not get an entry in child blog'
         );
 
-        diag
+        note
             'Get filtered list by other permitted user (create post) in website';
         $app = _run_app(
             'MT::App::CMS',
@@ -441,7 +464,7 @@ subtest 'Test in website scope' => sub {
             'Did not get an entry in child blog'
         );
 
-        diag
+        note
             'Get filtered list by other permitted user (edit all posts) in website';
         $app = _run_app(
             'MT::App::CMS',
@@ -467,7 +490,7 @@ subtest 'Test in website scope' => sub {
             'Did not get an entry in child blog'
         );
 
-        diag 'Get filtered list by permitted user in child blog';
+        note 'Get filtered list by permitted user in child blog';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $ukawa,
@@ -496,7 +519,7 @@ subtest 'Test in website scope' => sub {
             'Got an entry in child blog'
         );
 
-        diag 'Get filtered list by other website';
+        note 'Get filtered list by other website';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $ichikawa,
@@ -526,7 +549,7 @@ subtest 'Test in website scope' => sub {
             'Did not get an entry in child blog'
         );
 
-        diag 'Get filtered list by other blog';
+        note 'Get filtered list by other blog';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $egawa,
@@ -556,7 +579,7 @@ subtest 'Test in website scope' => sub {
             'Did not get an entry in child blog'
         );
 
-        diag 'Get filtered list by other permission';
+        note 'Get filtered list by other permission';
         $app = _run_app(
             'MT::App::CMS',
             {   __test_user      => $ogawa,
@@ -588,7 +611,7 @@ subtest 'Test in website scope' => sub {
 
     };
 
-    diag 'Built in filter check';
+    note 'Built in filter check';
     subtest 'Built in filter check' => sub {
         $app = _run_app(
             'MT::App::CMS',
@@ -753,7 +776,7 @@ subtest 'Test in website scope' => sub {
         done_testing();
     };
 
-    diag 'Batch edit entries check';
+    note 'Batch edit entries check';
     subtest 'Batch edit entries check' => sub {
         $app = _run_app(
             'MT::App::CMS',
@@ -783,4 +806,49 @@ subtest 'Test in website scope' => sub {
     done_testing();
 };
 
+note 'The cache of new entry check';
+subtest 'The cache of new entry check' => sub {
+    my $categories;
+
+    my $mock_entry = Test::MockModule->new('MT::Entry');
+    $mock_entry->mock(
+        'categories',
+        sub {
+            $categories = $mock_entry->original('categories')->(@_);
+        }
+    );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'entry',
+            blog_id          => $website->id,
+            author_id        => $admin->id,
+            status           => 2,
+            category_ids     => $website_cat->id . ',' . $website_cat2->id,
+        },
+    );
+
+    is_deeply(
+        [ map { $_->id } @$categories ],
+        [ $website_cat2->id, $website_cat->id ],
+        'A new entry has category "Bar" and category "Foo" in cache.'
+    );
+};
+
 done_testing();
+
+sub _get_entries_menu_labels {
+    my $html = shift;
+
+    my @labels;
+    pQuery($html)->find('li#menu-entry > ul.sub-menu > li')->each(
+        sub {
+            push @labels, $_->find('span')->innerHTML;
+        }
+    );
+
+    return @labels;
+}
