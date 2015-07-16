@@ -28,6 +28,12 @@ sub help {
         --kind <comma,separated,list,of,kinds> Optional:
                       if specified, only the matching kind of
                       session records are removed.
+                      If you want remove user session records,
+                      should specify "US" or "SI" as a individually.
+
+                      US: Active user session
+                      SI: Active commenter session
+
     };
 }
 
