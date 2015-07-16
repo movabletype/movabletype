@@ -302,7 +302,7 @@ sub suite {
             is_superuser => 1,
             code         => 409,
             error =>
-                "The website root directory must be an absolute path: relative\/path\/\n",
+                "The website root directory must be an absolute path: relative\/path\n",
         },
         {    # Not logged in.
             path   => '/v2/sites',
@@ -398,10 +398,10 @@ sub suite {
 
                 is( $got->{name}, 'test-api-permission-website-2', 'name' ),
                     is( $got->{url}, 'http://narnia2.na/', 'url' );
-                is( $got->{sitePath}, $FindBin::Bin . '/', 'sitePath' );
-                is( $got->{themeId}, 'classic_website', 'themeId' );
-                is( $got->{serverOffset}, -5.5, 'serverOffset' );
-                is( $got->{language},     'de', 'language' );
+                is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                is( $got->{themeId},      'classic_website', 'themeId' );
+                is( $got->{serverOffset}, -5.5,              'serverOffset' );
+                is( $got->{language},     'de',              'language' );
             },
         },
 
@@ -411,11 +411,10 @@ sub suite {
             is_superuser => 1,
             params       => {
                 website => {
-                    name        => 'test-api-website-3',
-                    url         => 'http://narnia2.na/',
-                    sitePath    => $FindBin::Bin,
-                    themeId     => 'classic_website',
-                    archivePath => $FindBin::Bin,
+                    name     => 'test-api-website-3',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $FindBin::Bin . '/',
+                    themeId  => 'classic_website',
                 },
             },
             result => sub {
@@ -427,9 +426,8 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                ok( ( $got->{sitePath} =~ m{(/|\\)$} ),    'sitePath' );
-                ok( ( $got->{archivePath} =~ m{(/|\\)$} ), 'archivePath' );
-
+                # is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
             },
         },
 
@@ -666,9 +664,9 @@ sub suite {
                 is( $got->{themeId}, 'classic_blog', 'themeId' );
                 is( $got->{name},    'blog-3 name',  'name' ),
                     is( $got->{url}, 'http://www.narnia.na/blog-3/', 'url' );
-                is( $got->{sitePath}, $FindBin::Bin . '/', 'sitePath' );
-                is( $got->{serverOffset}, 8,    'serverOffset' );
-                is( $got->{language},     'nl', 'language' );
+                is( $got->{sitePath},     $FindBin::Bin, 'sitePath' );
+                is( $got->{serverOffset}, 8,             'serverOffset' );
+                is( $got->{language},     'nl',          'language' );
             },
         },
 
@@ -678,12 +676,10 @@ sub suite {
             is_superuser => 1,
             params       => {
                 blog => {
-                    name        => 'test-api-blog-3',
-                    url         => 'http://narnia2.na/',
-                    sitePath    => $FindBin::Bin,
-                    themeId     => 'classic_blog',
-                    archivePath => $FindBin::Bin . '/archive',
-
+                    name     => 'test-api-blog-3',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $FindBin::Bin . '/',
+                    themeId  => 'classic_blog',
                 },
             },
             result => sub {
@@ -694,8 +690,8 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                ok( ( $got->{sitePath} =~ m{(/|\\)$} ),    'sitePath' );
-                ok( ( $got->{archivePath} =~ m{(/|\\)$} ), 'archivePath' );
+                # is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
             },
         },
 
@@ -887,12 +883,12 @@ sub suite {
                 is( $got->{language},     'fr', 'language' );
                 is( $got->{url}, 'http://www.sixapart.com/', 'url' );
                 is( $got->{sitePath},
-                    File::Spec->catfile( $FindBin::Bin, 'update' ) . '/',
+                    File::Spec->catfile( $FindBin::Bin, 'update' ),
                     'sitePath' );
                 is( $got->{archiveUrl}, 'http://www.sixapart.com/archive/',
                     'archiveUrl' );
                 is( $got->{archivePath},
-                    File::Spec->catfile( $FindBin::Bin, 'archive' ) . '/',
+                    File::Spec->catfile( $FindBin::Bin, 'archive' ),
                     'archivePath' );
 
                 is( $got->{fileExtension}, 'pl', 'fileExtension' );
@@ -1102,13 +1098,10 @@ sub suite {
             is_superuser => 1,
             params       => {
                 website => {
-                    name => 'test-api-website-3-update',
-                    url  => 'http://narnia2.na/update/',
-                    sitePath =>
-                        File::Spec->catfile( $FindBin::Bin, 'update' ),
-                    archivePath =>
-                        File::Spec->catfile( $FindBin::Bin, 'archive' ),
-
+                    name     => 'test-api-website-3-update',
+                    url      => 'http://narnia2.na/update/',
+                    sitePath => File::Spec->catfile( $FindBin::Bin, 'update' )
+                        . '/',
                 },
             },
             result => sub {
@@ -1121,8 +1114,8 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                ok( ( $got->{sitePath} =~ m{(/|\\)$} ),    'sitePath' );
-                ok( ( $got->{archivePath} =~ m{(/|\\)$} ), 'archivePath' );
+                # is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
             },
         },
 
