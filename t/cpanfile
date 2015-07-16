@@ -85,11 +85,12 @@ on 'test' => sub {
     requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';
+    requires 'DBD::SQLite';
     requires 'HTTP::DAV';
+    requires 'IO::String';
     requires 'Net::SFTP';
     requires 'PHP::Serialization';
     requires 'pQuery';
-    requires 'DBD::SQLite';
     requires 'Test::Base';
     requires 'Test::Class';
     requires 'Test::Data';

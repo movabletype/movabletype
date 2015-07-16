@@ -638,12 +638,7 @@ sub site_path {
     my $blog = shift;
 
     if (@_) {
-        my $path = $_[0];
-        my $delim = $^O eq 'MSWin32' ? '\\' : '/';
-        if ( $path && $path !~ /${delim}$/ ) {
-            $path .= $delim;
-        }
-        $blog->column( 'site_path', $path );
+        $blog->column( 'site_path', @_ );
     }
     else {
         my $raw_path = $blog->column('site_path');
@@ -730,12 +725,7 @@ sub archive_path {
     my $blog = shift;
 
     if (@_) {
-        my $path = $_[0];
-        my $delim = $^O eq 'MSWin32' ? '\\' : '/';
-        if ( $path && $path !~ /${delim}$/ ) {
-            $path .= $delim;
-        }
-        $blog->column( 'archive_path', $path ) || $blog->site_path;
+        $blog->column( 'archive_path', @_ ) || $blog->site_path;
     }
     else {
         return $blog->site_path if !$blog->column('archive_path');

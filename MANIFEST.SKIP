@@ -231,6 +231,7 @@ plugins/feeds-app-lite/tools/
 plugins/feeds-app-lite/t/
 plugins/MultiBlog/t/
 plugins/FormattedText/t/
+plugins/Loupe
 
 # 'Extras'
 ^extras/

@@ -26,7 +26,7 @@ my $mock_cms_common = Test::MockModule->new('MT::CMS::Common');
 $mock_cms_common->mock( 'run_web_services_save_config_callbacks', sub { } );
 
 # $blog->use_revision is always 0 when TrackRevisions is 0.
-$app->config->TrackRevisions( 1, 1 );
+$app->config->TrackRevisions(1, 1);
 
 my $suite = suite();
 test_data_api($suite);
@@ -302,7 +302,7 @@ sub suite {
             is_superuser => 1,
             code         => 409,
             error =>
-                "The website root directory must be an absolute path: relative\/path\/\n",
+                "The website root directory must be an absolute path: relative\/path\n",
         },
         {    # Not logged in.
             path   => '/v2/sites',
@@ -398,38 +398,10 @@ sub suite {
 
                 is( $got->{name}, 'test-api-permission-website-2', 'name' ),
                     is( $got->{url}, 'http://narnia2.na/', 'url' );
-                is( $got->{sitePath}, $FindBin::Bin . '/', 'sitePath' );
-                is( $got->{themeId}, 'classic_website', 'themeId' );
-                is( $got->{serverOffset}, -5.5, 'serverOffset' );
-                is( $got->{language},     'de', 'language' );
-            },
-        },
-
-        # site_path website
-        {   path         => '/v2/sites',
-            method       => 'POST',
-            is_superuser => 1,
-            params       => {
-                website => {
-                    name        => 'test-api-website-3',
-                    url         => 'http://narnia2.na/',
-                    sitePath    => $FindBin::Bin,
-                    themeId     => 'classic_website',
-                    archivePath => $FindBin::Bin,
-                },
-            },
-            result => sub {
-                $app->model('website')
-                    ->load( { name => 'test-api-website-3' } );
-            },
-            complete => sub {
-                my ( $data, $body ) = @_;
-
-                my $got = $app->current_format->{unserialize}->($body);
-
-                ok( ( $got->{sitePath} =~ m{(/|\\)$} ),    'sitePath' );
-                ok( ( $got->{archivePath} =~ m{(/|\\)$} ), 'archivePath' );
-
+                is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                is( $got->{themeId},      'classic_website', 'themeId' );
+                is( $got->{serverOffset}, -5.5,              'serverOffset' );
+                is( $got->{language},     'de',              'language' );
             },
         },
 
@@ -666,36 +638,9 @@ sub suite {
                 is( $got->{themeId}, 'classic_blog', 'themeId' );
                 is( $got->{name},    'blog-3 name',  'name' ),
                     is( $got->{url}, 'http://www.narnia.na/blog-3/', 'url' );
-                is( $got->{sitePath}, $FindBin::Bin . '/', 'sitePath' );
-                is( $got->{serverOffset}, 8,    'serverOffset' );
-                is( $got->{language},     'nl', 'language' );
-            },
-        },
-
-        # site_path blog
-        {   path         => '/v2/sites/2',
-            method       => 'POST',
-            is_superuser => 1,
-            params       => {
-                blog => {
-                    name        => 'test-api-blog-3',
-                    url         => 'http://narnia2.na/',
-                    sitePath    => $FindBin::Bin,
-                    themeId     => 'classic_blog',
-                    archivePath => $FindBin::Bin . '/archive',
-
-                },
-            },
-            result => sub {
-                $app->model('blog')->load( { name => 'test-api-blog-3' } );
-            },
-            complete => sub {
-                my ( $data, $body ) = @_;
-
-                my $got = $app->current_format->{unserialize}->($body);
-
-                ok( ( $got->{sitePath} =~ m{(/|\\)$} ),    'sitePath' );
-                ok( ( $got->{archivePath} =~ m{(/|\\)$} ), 'archivePath' );
+                is( $got->{sitePath},     $FindBin::Bin, 'sitePath' );
+                is( $got->{serverOffset}, 8,             'serverOffset' );
+                is( $got->{language},     'nl',          'language' );
             },
         },
 
@@ -887,12 +832,12 @@ sub suite {
                 is( $got->{language},     'fr', 'language' );
                 is( $got->{url}, 'http://www.sixapart.com/', 'url' );
                 is( $got->{sitePath},
-                    File::Spec->catfile( $FindBin::Bin, 'update' ) . '/',
+                    File::Spec->catfile( $FindBin::Bin, 'update' ),
                     'sitePath' );
                 is( $got->{archiveUrl}, 'http://www.sixapart.com/archive/',
                     'archiveUrl' );
                 is( $got->{archivePath},
-                    File::Spec->catfile( $FindBin::Bin, 'archive' ) . '/',
+                    File::Spec->catfile( $FindBin::Bin, 'archive' ),
                     'archivePath' );
 
                 is( $got->{fileExtension}, 'pl', 'fileExtension' );
@@ -1093,36 +1038,6 @@ sub suite {
                 # Web Services Settings screen.
                 is( $got->{pingGoogle},  0, 'pingGoogles' );          # false.
                 is( $got->{pingWeblogs}, 0, 'pingWeblogs' );          # false.
-            },
-        },
-
-        # site_path website
-        {   path         => '/v2/sites/3',
-            method       => 'PUT',
-            is_superuser => 1,
-            params       => {
-                website => {
-                    name => 'test-api-website-3-update',
-                    url  => 'http://narnia2.na/update/',
-                    sitePath =>
-                        File::Spec->catfile( $FindBin::Bin, 'update' ),
-                    archivePath =>
-                        File::Spec->catfile( $FindBin::Bin, 'archive' ),
-
-                },
-            },
-            result => sub {
-                $app->model('website')->load(3);
-            },
-            complete => sub {
-                my ( $data, $body ) = @_;
-
-                my $blog = $app->model('website')->load(3);
-
-                my $got = $app->current_format->{unserialize}->($body);
-
-                ok( ( $got->{sitePath} =~ m{(/|\\)$} ),    'sitePath' );
-                ok( ( $got->{archivePath} =~ m{(/|\\)$} ), 'archivePath' );
             },
         },
 

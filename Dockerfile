@@ -45,7 +45,7 @@ RUN cpanm Archive::Tar
 # https://rt.cpan.org/Public/Bug/Display.html?id=104150
 RUN cpanm LWP::Protocol::https -n
 
-RUN wget https://raw.githubusercontent.com/movabletype/movabletype/enji/t/cpanfile
+COPY t/cpanfile .
 RUN cpanm --installdeps .
 
 # PHP
@@ -82,4 +82,3 @@ RUN service slapd start & sleep 10 && \
     service slapd stop
 
 RUN yum clean all
-RUN rm ./cpanfile
