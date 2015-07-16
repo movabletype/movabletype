@@ -638,7 +638,11 @@ sub site_path {
     my $blog = shift;
 
     if (@_) {
-        $blog->column( 'site_path', @_ );
+        my ($new_site_path) = @_;
+        my $sep = MT::Util::dir_separator;
+        $new_site_path =~ s/$sep$//;
+
+        $blog->column( 'site_path', $new_site_path );
     }
     else {
         my $raw_path = $blog->column('site_path');
@@ -725,7 +729,11 @@ sub archive_path {
     my $blog = shift;
 
     if (@_) {
-        $blog->column( 'archive_path', @_ ) || $blog->site_path;
+        my ($new_archive_path) = @_;
+        my $sep = MT::Util::dir_separator;
+        $new_archive_path =~ s/$sep$//;
+        $blog->column( 'archive_path', $new_archive_path )
+            || $blog->site_path;
     }
     else {
         return $blog->site_path if !$blog->column('archive_path');

@@ -360,6 +360,88 @@ sub suite {
                 },
             },
         },
+        {    # SitePath ends with slash.
+            path         => '/v2/sites',
+            method       => 'POST',
+            is_superuser => 1,
+            callbacks    => [
+
+                # save_permission_filter callback is not executed,
+                # because superuser accesses.
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.website',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.website',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.website',
+                    count => 1,
+                },
+            ],
+            params => {
+                website => {
+                    name     => 'SitePath ends with slash',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $FindBin::Bin . '/',
+                },
+            },
+        },
+        {    # ArchivePath.
+            path         => '/v2/sites',
+            method       => 'POST',
+            is_superuser => 1,
+            callbacks    => [
+
+                # save_permission_filter callback is not executed,
+                # because superuser accesses.
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.website',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.website',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.website',
+                    count => 1,
+                },
+            ],
+            params => {
+                website => {
+                    name     => 'test-api-permission-website',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $FindBin::Bin,
+                    archivePath => $FindBin::Bin . '/archives',
+                    archiveUrl  => 'http://narnia2.na/archives/',
+                },
+            },
+        },
+        {    # ArchivePath - Ends with slash.
+            path         => '/v2/sites',
+            method       => 'POST',
+            is_superuser => 1,
+            callbacks    => [
+
+                # save_permission_filter callback is not executed,
+                # because superuser accesses.
+                {   name  => 'MT::App::DataAPI::data_api_save_filter.website',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.website',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.website',
+                    count => 1,
+                },
+            ],
+            params => {
+                website => {
+                    name     => 'test-api-permission-website',
+                    url      => 'http://narnia2.na/',
+                    sitePath => $FindBin::Bin,
+                    archivePath => $FindBin::Bin . '/archives/',
+                    archiveUrl => 'http://narnia2.na/archives/',
+                },
+            },
+        },
         {   path         => '/v2/sites',
             method       => 'POST',
             is_superuser => 1,
@@ -646,7 +728,7 @@ sub suite {
 
         # update_site - irregular tests
         {    # Non-existent site.
-            path   => '/v2/sites/10',
+            path   => '/v2/sites/20',
             method => 'PUT',
             code   => 404,
             result => sub {
@@ -1055,7 +1137,7 @@ sub suite {
             },
         },
         {    # Non-existent site.
-            path   => '/v2/sites/10',
+            path   => '/v2/sites/20',
             method => 'DELETE',
             code   => 404,
             result => sub {
