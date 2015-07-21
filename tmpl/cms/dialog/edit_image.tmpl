@@ -46,8 +46,8 @@ div.editor-subcolumn {
           <input id="resize-width" class="text number min" type="text" value="<mt:var name="image_width">" />
           <__trans phrase="H:">
           <input id="resize-height" class="text number min" type="text" value="<mt:var name="image_height">" />
-          <button id="resize-apply" class="button disabled"><__trans phrase="Apply"></button>
-          <button id="resize-reset" class="button disabled"><__trans phrase="Reset"></button>
+          <button id="resize-apply" class="button disabled" disabled="disabled"><__trans phrase="Apply"></button>
+          <button id="resize-reset" class="button disabled" disabled="disabled"><__trans phrase="Reset"></button>
         </div>
         <div class="editor-subcolumn">
           <input id="keep-aspect-ratio" class="cb" type="checkbox" value="1" checked="checked" />
@@ -77,14 +77,14 @@ div.editor-subcolumn {
           <button class="button editor-button" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
             <img alt="Flip vertical" src="<mt:var name="static_uri">images/image_editor/flip_vertical@2x.png" width="24" height="24" />
           </button>
-          <button id="crop" class="button editor-button disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
+          <button id="crop" class="button editor-button disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
             <img alt="Crop" src="<mt:var name="static_uri">images/image_editor/crop@2x.png" width="24" height="24" />
           </button>
         </div>
 
         <div class="editor-column">
-          <button id="undo" class="button disabled" onclick="image.undo();"><__trans phrase="Undo"></button>
-          <button id="redo" class="button disabled" onclick="image.redo();"><__trans phrase="Redo"></button>
+          <button id="undo" class="button disabled" disabled="disabled" onclick="image.undo();"><__trans phrase="Undo"></button>
+          <button id="redo" class="button disabled" disabled="disabled" onclick="image.redo();"><__trans phrase="Redo"></button>
         </div>
 
       </div><!-- /editor -->
@@ -103,7 +103,8 @@ div.editor-subcolumn {
            type="submit"
            accesskey="s"
            title="<__trans phrase="Save (s)">"
-           class="action primary button close disabled">
+           class="action primary button close disabled"
+           disabled="disabled">
           <__trans phrase="Save"></button>
         <button
            type="submit"
@@ -116,6 +117,17 @@ div.editor-subcolumn {
 
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery(document).ready(function() {
+        function enableButton(element) {
+            jQuery(element)
+                .removeClass('disabled')
+                .removeAttr('disabled');
+        }
+        function disableButton(element) {
+            jQuery(element)
+                .addClass('disabled')
+                .attr('disabled', 'disabled');
+        }
+
         var resized = false;
 
         // Resize image when clicking apply button.
@@ -125,8 +137,8 @@ div.editor-subcolumn {
             image.resize(width, height);
 
             // Disable resize buttons.
-            jQuery(this).addClass('disabled');
-            jQuery('button#resize-reset').addClass('disabled');
+            disableButton(this);
+            disableButton('button#resize-reset');
 
             resized = true;
         });
@@ -139,15 +151,15 @@ div.editor-subcolumn {
             jQuery('input#resize-height').val(height);
 
             // Disable resize buttons.
-            jQuery('button#resize-apply').addClass('disabled');
-            jQuery(this).addClass('disabled');
+            disableButton('button#resize-apply');
+            disableButton(this);
         });
 
         // Update resize-width or resize-height when changing them.
         jQuery('input#resize-width').keyup(function() {
             // Enable resize buttons.
-            jQuery('button#resize-apply').removeClass('disabled');
-            jQuery('button#resize-reset').removeClass('disabled');
+            enableButton('button#resize-apply');
+            enableButton('button#resize-reset');
 
             // Do not update when "Keep aspect ratio" checked.
             if (jQuery('input#keep-aspect-ratio:checked').length === 0) {
@@ -165,8 +177,8 @@ div.editor-subcolumn {
         });
         jQuery('input#resize-height').keyup(function() {
             // Enable resize buttons.
-            jQuery('button#resize-apply').removeClass('disabled');
-            jQuery('button#resize-reset').removeClass('disabled');
+            enableButton('button#resize-apply');
+            enableButton('button#resize-reset');
 
             // Do not update when "Keep aspect ratio" checked.
             if (jQuery('input#keep-aspect-ratio:checked').length === 0) {
@@ -206,38 +218,38 @@ div.editor-subcolumn {
                 jQuery('input#resize-height').val(height);
             }
 
-            jQuery('button#crop').addClass('disabled');
+            disableButton('button#crop');
             jQuery(document).off('keyup', document, cancelCropping);
 
             // Validate or invalidate undo button and redo button.
             if (image.undoSize() > 0) {
-                jQuery('button#undo').removeClass('disabled');
+                enableButton('button#undo');
             } else {
-                jQuery('button#undo').addClass('disabled');
+                disableButton('button#undo');
             }
             if (image.redoSize() > 0) {
-                jQuery('button#redo').removeClass('disabled');
+                enableButton('button#redo');
             } else {
-                jQuery('button#redo').addClass('disabled');
+                disableButton('button#redo');
             }
 
             // Validate or invalidate save button.
             if (image.undoSize() > 0) {
-                jQuery('button.primary').removeClass('disabled');
+                enableButton('button.primary');
             } else {
-                jQuery('button.primary').addClass('disabled');
+                disableButton('button.primary');
             }
 
             // Disable apply button and reset button in resize function.
-            jQuery('button#resize-apply').addClass('disabled');
-            jQuery('button#resize-reset').addClass('disabled');
+            disableButton('button#resize-apply');
+            disableButton('button#resize-reset');
         };
 
         function cancelCropping(event) {
             if (event.keyCode === 27) {
                 image.cropCancel();
                 // Disable crop button.
-                jQuery('button#crop').addClass('disabled');
+                disableButton('button#crop');
             }
         }
 
@@ -251,7 +263,7 @@ div.editor-subcolumn {
                  crop: {
                      postSelect: function() {
                          // Enable crop button.
-                         jQuery('button#crop').removeClass('disabled');
+                         enableButton('button#crop');
                          // Enable escape key.
                          jQuery(document).on('keyup', document, cancelCropping);
                      }
