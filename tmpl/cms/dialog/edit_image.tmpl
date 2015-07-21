@@ -102,7 +102,7 @@ div.editor-subcolumn {
         <button
            type="submit"
            accesskey="x"
-           class="cancel action button mt-close-dialog"
+           class="cancel action button image-editor-close-dialog"
            title="<__trans phrase="Cancel (x)">">
           <__trans phrase="Cancel"></button>
       </form>
@@ -298,6 +298,27 @@ div.editor-subcolumn {
                      postUpdate: update
                  }
             }
+        });
+
+        // Confirm before closing dialog.
+        function isChanged() {
+            return (image.undoSize() > 0
+                 || image.redoSize() > 0
+                 || !jQuery('button#resize-apply').hasClass('disabled')
+                 || !jQuery('button#crop').hasClass('disabled')
+            );
+        }
+        jQuery('button.image-editor-close-dialog').click(function() {
+            if (isChanged()) {
+                var message = 'You have unsaved changes to this page that will be lost. Are you sure you want to close this dialog?';
+                if (confirm(message)) {
+                    parent.jQuery.fn.mtDialog.close();
+                }
+            } else {
+                parent.jQuery.fn.mtDialog.close();
+            }
+
+            return false;
         });
     });
 </mt:setvarblock>
