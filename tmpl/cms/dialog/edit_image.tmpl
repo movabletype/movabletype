@@ -92,8 +92,13 @@ div.editor-subcolumn {
     </div><!-- /image-editor -->
 
     <div class="dialog actions-bar actions-bar-bottom">
-      <form action="" method="get" onsubmit="return false">
+      <form action="<mt:var name="script_url">" method="post" target="_parent" onsubmit="return false">
         <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+        <input type="hidden" name="__mode" value="transform_image" />
+        <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+        <input type="hidden" name="id" value="<mt:var name="id">" />
+        <input type="hidden" name="actions" />
+
         <button
            type="submit"
            accesskey="s"
@@ -182,52 +187,8 @@ div.editor-subcolumn {
         jQuery('button.primary').click(function() {
             var $form = jQuery('form');
 
-            $form
-                .removeAttr('onsubmit')
-                .attr('action', '<mt:var name="script_url">')
-                .attr('method', 'post')
-                .attr('target', '_parent')
-                .append('<input type="hidden" name="__mode" value="transform_image" />')
-                .append('<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />')
-                .append('<input type="hidden" name="id" value="<mt:var name="id">" />');
-
-            if (image.getAngle() > 0) {
-                $form.append('<input type="hidden" name="angle" value="'+image.getAngle()+'" />');
-            }
-            if (image.isFlippedX()) {
-                $form.append('<input type="hidden" name="flip_x" value="1" />');
-            }
-            if (image.isFlippedY()) {
-                $form.append('<input type="hidden" name="flip_y" value="1" />');
-            }
-
-            var width = jQuery('input#resize-width').val();
-            var height = jQuery('input#resize-height').val();
-            if (width !== image.originalWidth && height !== image.originalHeight) {
-                $form
-                    .append('<input type="hidden" name="width" value="'+width+'" />')
-                    .append('<input type="hidden" name="height" value="'+height+'" />');
-            }
-
-            if (image.crop.width > 0 && image.crop.height > 0) {
-                var left;
-                var top;
-                if (image.getAngle() % 180 === 0) {
-                    left = Math.ceil(image.crop.left * image.originalWidth / image.originalThumbnailWidth);
-                    top = Math.ceil(image.crop.top * image.originalHeight / image.originalThumbnailHeight);
-                } else {
-                    left = Math.ceil(image.crop.left * image.originalHeight / image.originalThumbnailHeight);
-                    top = Math.ceil(image.crop.top * image.originalWidth / image.originalThumbnailWidth);
-                }
-                var width = jQuery('input#resize-width').val();
-                var height = jQuery('input#resize-height').val();
-
-                $form
-                    .append('<input type="hidden" name="crop_left" value="'+left+'" />')
-                    .append('<input type="hidden" name="crop_top" value="'+top+'" />')
-                    .append('<input type="hidden" name="crop_width" value="'+width+'" />')
-                    .append('<input type="hidden" name="crop_height" value="'+height+'" />')
-            }
+            $form.removeAttr('onsubmit');
+            $form.children('input[name=actions]').val(JSON.stringify(image.backActionStack));
 
             $form.submit();
         });

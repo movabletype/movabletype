@@ -240,9 +240,47 @@
         originalThumbnailWidth: null,
         originalThumbnailHeight: null,
 
+        // Action stacks
+        backActionStack: [],
+        forwardActionStack: [],
+        saveAction: function(action) {
+            this.backActionStack.push(action);
+            this.forwardActionStack = [];
+        },
+        undoAction: function() {
+            this.forwardActionStack.push(this.backActionStack.pop());
+        },
+        redoAction: function() {
+            this.backActionStack.push(this.forwardActionStack.pop());
+        },
+
         // Crop
         crop: function() {
-            this.getPlugin('crop').cropCurrentZone();
+            var crop = this.getPlugin('crop');
+
+            var cropLeft, cropTop, cropWidth, cropHeight;
+            if (this.getAngle() % 180 === 0) {
+                cropLeft   = Math.ceil(crop.cropZone.left * this.originalWidth / this.originalThumbnailWidth);
+                cropTop    = Math.ceil(crop.cropZone.top * this.originalHeight / this.originalThumbnailHeight);
+                cropWidth  = Math.ceil(crop.cropZone.width * this.originalWidth / this.originalThumbnailWidth);
+                cropHeight = Math.ceil(crop.cropZone.height * this.originalHeight / this.originalThumbnailHeight);
+            } else {
+                cropLeft   = Math.ceil(crop.cropZone.left * this.originalHeight / this.originalThumbnailHeight);
+                cropTop    = Math.ceil(crop.cropZone.top * this.originalWidth / this.originalThumbnailWidth);
+                cropWidth  = Math.ceil(crop.cropZone.width * this.originalHeight / this.originalThumbnailHeight);
+                cropHeight = Math.ceil(crop.cropZone.height * this.originalWidth / this.originalThumbnailWidth);
+            }
+
+            crop.cropCurrentZone();
+
+            this.saveAction({
+                crop: {
+                    left: cropLeft,
+                    top: cropTop,
+                    width: cropWidth,
+                    height: cropHeight
+                }
+            });
         },
         cropCancel: function() {
             this.getPlugin('crop').releaseFocus();
@@ -251,9 +289,15 @@
         // Flip
         flipHorizontal: function() {
             this.getPlugin('flip').flip('horizontal');
+            this.saveAction({
+                flip: 'horizontal'
+            });
         },
         flipVertical: function() {
             this.getPlugin('flip').flip('vertical');
+            this.saveAction({
+                flip: 'vertical'
+            });
         },
         isFlippedX: function() {
             return this.image.flipX;
@@ -267,11 +311,15 @@
             var history = this.getPlugin('history');
             history.goBack();
             history.postUpdate();
+
+            this.undoAction();
         },
         redo: function() {
             var history = this.getPlugin('history');
             history.goForward();
             history.postUpdate();
+
+            this.redoAction();
         },
         undoSize: function() {
             return this.getPlugin('history').backHistoryStack.length;
@@ -293,6 +341,13 @@
             this.getPlugin('resize').resize(thumbnailWidth, thumbnailHeight);
 
             this.dispatchEvent('image:change');
+
+            this.saveAction({
+                resize: {
+                    width: width,
+                    height: height
+                }
+            });
         },
         getWidth: function() {
             if (this.getAngle() % 180 === 0) {
@@ -318,6 +373,9 @@
         // Rotate
         rotate: function(angle) {
             this.getPlugin('rotate').rotate(angle);
+            this.saveAction({
+                rotate: angle
+            });
         },
         getAngle: function() {
             var angle = this.image.angle;

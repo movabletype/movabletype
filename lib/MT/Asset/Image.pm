@@ -867,34 +867,29 @@ sub _transform {
 }
 
 sub transform {
-    my ( $asset, %param ) = @_;
+    my ( $asset, @actions ) = @_;
 
-    my $width       = $param{width};
-    my $height      = $param{height};
-    my $crop_top    = $param{crop_top};
-    my $crop_left   = $param{crop_left};
-    my $crop_width  = $param{crop_width};
-    my $crop_height = $param{crop_height};
-    my $angle       = $param{angle};
-    my $flip_x      = $param{flip_x};
-    my $flip_y      = $param{flip_y};
-
-    if ($angle) {
-        $asset->rotate($angle) or return;
-    }
-    if ($flip_x) {
-        $asset->flip_horizontal or return;
-    }
-    if ($flip_y) {
-        $asset->flip_vertical or return;
-    }
-    if ( $crop_width && $crop_height ) {
-        $asset->crop_rectangle( $crop_left, $crop_top, $crop_width,
-            $crop_height )
-            or return;
-    }
-    if ( $width && $height ) {
-        $asset->scale( $width, $height ) or return;
+    for my $action (@actions) {
+        if ( my $crop = $action->{crop} ) {
+            $asset->crop_rectangle(
+                $crop->{left},  $crop->{top},
+                $crop->{width}, $crop->{height}
+            ) or return;
+        }
+        elsif ( my $flip = $action->{flip} ) {
+            if ( $flip eq 'horizontal' ) {
+                $asset->flip_horizontal or return;
+            }
+            elsif ( $flip eq 'vertical' ) {
+                $asset->flip_vertical or return;
+            }
+        }
+        elsif ( my $resize = $action->{resize} ) {
+            $asset->scale( $resize->{width}, $resize->{height} ) or return;
+        }
+        elsif ( my $rotate = $action->{rotate} ) {
+            $asset->rotate($rotate) or return;
+        }
     }
 
     1;
@@ -973,7 +968,7 @@ Flip an image horizontally.
 
 Flip an image vertically.
 
-=head2 $asset->transform(%param)
+=head2 $asset->transform(@actions)
 
 Transform an image.
 

@@ -1853,17 +1853,8 @@ sub transform_image {
         return;
     }
 
-    my $id          = $app->param('id');
-    my $width       = $app->param('width');
-    my $height      = $app->param('height');
-    my $crop_left   = $app->param('crop_left');
-    my $crop_top    = $app->param('crop_top');
-    my $crop_width  = $app->param('crop_width');
-    my $crop_height = $app->param('crop_height');
-    my $angle       = $app->param('angle');
-    my $flip_x      = $app->param('flip_x');
-    my $flip_y      = $app->param('flip_y');
-
+    # Load image.
+    my $id = $app->param('id');
     my $asset = $app->model('asset')->load( { id => $id, class => 'image' } )
         or return $app->errtrans('Invalid request.');
 
@@ -1871,17 +1862,16 @@ sub transform_image {
         return $app->permission_denied;
     }
 
-    $asset->transform(
-        width       => $width,
-        height      => $height,
-        crop_top    => $crop_top,
-        crop_left   => $crop_left,
-        crop_width  => $crop_width,
-        crop_height => $crop_height,
-        angle       => $angle,
-        flip_x      => $flip_x,
-        flip_y      => $flip_y,
-        )
+    # Parse JSON.
+    my $actions = $app->param('actions');
+    $actions =~ s/^"|"$//g;
+    $actions =~ s/\\//g;
+    $actions = eval { MT::Util::from_json($actions) };
+    if ( !$actions || ref $actions ne 'ARRAY' ) {
+        return $app->errtrans('Invalid request.');
+    }
+
+    $asset->transform(@$actions)
         or return $app->errtrans( 'Transforming image failed: [_1]',
         $asset->errstr );
 
