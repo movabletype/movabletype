@@ -4,20 +4,18 @@
     // Crop plugin
     var onMouseDown = Darkroom.plugins.crop.prototype.onMouseDown;
     Darkroom.plugins.crop.prototype.onMouseDown = function(event) {
-        var _this = this.darkroom.plugins.crop;
         // Start cropping automatically when clicking the image.
-        if (!_this.hasFocus()) {
-            _this.requireFocus();
+        if (!this.hasFocus()) {
+            this.requireFocus();
         }
-        (onMouseDown.bind(_this))(event);
+        (onMouseDown.bind(this))(event);
     };
 
     var onMouseUp = Darkroom.plugins.crop.prototype.onMouseUp;
     Darkroom.plugins.crop.prototype.onMouseUp = function(event) {
-        var _this = this.darkroom.plugins.crop;
-        (onMouseUp.bind(_this))(event);
+        (onMouseUp.bind(this))(event);
         // Start event after cropping.
-        (_this.options.postSelect || function() {})();
+        (this.options.postSelect || function() {})();
     };
 
     // Flip plugin
@@ -80,20 +78,17 @@
 
     // ImageEditor
     function ImageEditor(element, options) {
-        options = jQuery.extend(true, options, this.defaults);
-        var _this = new Darkroom(element, options);
-
-        _this.originalWidth = options.originalWidth;
-        _this.originalHeight = options.originalHeight;
-        _this.originalThumbnailWidth = options.originalThumbnailWidth;
-        _this.originalThumbnailHeight = options.originalThumbnailHeight;
-
-        return _this;
+        this.init(element, options);
     }
 
-    ImageEditor.prototype = jQuery.extend(Darkroom.prototype, {
+    ImageEditor.prototype = jQuery.extend(true, Darkroom.prototype, {
         defaults: {
             init: function() {
+                this.originalWidth = this.options.originalWidth;
+                this.originalHeight = this.options.originalHeight;
+                this.originalThumbnailWidth = this.options.originalThumbnailWidth;
+                this.originalThumbnailHeight = this.options.originalThumbnailHeight;
+
                 jQuery('div.darkroom-toolbar').remove();
             },
             plugins: {
