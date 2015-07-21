@@ -229,6 +229,13 @@ sub check_upload {
     ( $w, $h, $id, $write_file );
 }
 
+sub crop {
+    my $image = shift;
+    my %param = @_;
+    $param{Width} = $param{Height} = $param{Size};
+    $image->crop_rectangle(%param);
+}
+
 1;
 
 __END__

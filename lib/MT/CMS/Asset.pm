@@ -1816,4 +1816,86 @@ sub _check_thumbnail_dir {
     $param->{thumb_dir_warnings} = \@warnings if @warnings;
 }
 
+sub dialog_edit_image {
+    my ($app) = @_;
+
+    my $asset;
+
+    my $id = $app->param('id');
+    if ($id) {
+        $asset
+            = $app->model('asset')->load( { id => $id, class => 'image' } );
+    }
+    if ( !$asset ) {
+        return $app->errtrans('Invalid request.');
+    }
+
+    # Check.
+    if ( !can_save( undef, $app, $asset ) ) {
+        return $app->permission_denied;
+    }
+
+    # Retrive data of thumbnail.
+    my $param  = {};
+    my $hasher = build_asset_hasher($app);
+    $hasher->( $asset, $param, ThumbWidth => 240, ThumbHeight => 240 );
+
+    # Disable browser cache for image.
+    $param->{modified_on} = $asset->modified_on;
+
+    $app->load_tmpl( 'dialog/edit_image.tmpl', $param );
+}
+
+sub transform_image {
+    my ($app) = @_;
+
+    if ( !$app->validate_magic ) {
+        return;
+    }
+
+    my $id          = $app->param('id');
+    my $width       = $app->param('width');
+    my $height      = $app->param('height');
+    my $crop_left   = $app->param('crop_left');
+    my $crop_top    = $app->param('crop_top');
+    my $crop_width  = $app->param('crop_width');
+    my $crop_height = $app->param('crop_height');
+    my $angle       = $app->param('angle');
+    my $flip_x      = $app->param('flip_x');
+    my $flip_y      = $app->param('flip_y');
+
+    my $asset = $app->model('asset')->load( { id => $id, class => 'image' } )
+        or return $app->errtrans('Invalid request.');
+
+    if ( !can_save( undef, $app, $asset ) ) {
+        return $app->permission_denied;
+    }
+
+    $asset->transform(
+        width       => $width,
+        height      => $height,
+        crop_top    => $crop_top,
+        crop_left   => $crop_left,
+        crop_width  => $crop_width,
+        crop_height => $crop_height,
+        angle       => $angle,
+        flip_x      => $flip_x,
+        flip_y      => $flip_y,
+        )
+        or return $app->errtrans( 'Transforming image failed: [_1]',
+        $asset->errstr );
+
+    $app->redirect(
+        $app->uri(
+            mode => 'view',
+            args => {
+                _type   => 'asset',
+                blog_id => $app->blog->id,
+                id      => $id,
+                saved   => 1,
+            },
+        )
+    );
+}
+
 1;

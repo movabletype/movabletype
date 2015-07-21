@@ -1,0 +1,305 @@
+<mt:setvar name="page_title" value="<__trans phrase="Edit Image">">
+
+<mt:setvarblock name="html_head" prepend="1">
+<style type="text/css">
+button.editor-button {
+  width: 30px;
+  height: 30px;
+}
+div.editor-column {
+  margin-bottom: 5px;
+}
+div.editor-subcolumn {
+  margin-bottom: 5px;
+  margin-left: 20px;
+}
+#editor {
+  margin-left: 250px;
+}
+#image {
+  width: 250px;
+  height: 250px;
+  float: left;
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/fabric.js"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/darkroom.min.js"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/image_editor.js"></script>
+</mt:setvarblock>
+
+<mt:include name="dialog/header.tmpl">
+
+    <div id="image-editor">
+
+      <div id="image">
+        <img src="<mt:var name="thumbnail_url" escape="html">?ts=<mt:var name="modified_on" escape="url">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
+      </div>
+
+      <div id="editor">
+
+        <div class="editor-column">
+          <__trans phrase="W:">
+          <input id="resize-width" class="text number min" type="text" value="<mt:var name="image_width">" />
+          <__trans phrase="H:">
+          <input id="resize-height" class="text number min" type="text" value="<mt:var name="image_height">" />
+          <button id="resize-apply" class="button disabled"><__trans phrase="Apply"></button>
+          <button id="resize-reset" class="button disabled"><__trans phrase="Reset"></button>
+        </div>
+        <div class="editor-subcolumn">
+          <input id="keep-aspect-ratio" class="cb" type="checkbox" value="1" checked="checked" />
+          <label for="keep-aspect-ratio"><__trans phrase="Keep aspect ratio"></label>
+        </div>
+
+        <div class="editor-column">
+          <input id="remove-gps" class="cb" type="checkbox" />
+          <label for="remove-gps"><__trans phrase="Remove GPS metadata"></label>
+        </div>
+
+        <div class="editor-column">
+          <input id="remove-exif" class="cb" type="checkbox" />
+          <label for="remove-exif"><__trans phrase="Remove EXIF metadata"></label>
+        </div>
+
+        <div class="editor-column">
+          <button class="button editor-button" onclick="image.rotate(90);">
+            <img alt="Rotate right" />
+          </button>
+          <button class="button editor-button" onclick="image.rotate(-90);">
+            <img alt="Rotate left" />
+          </button>
+          <button class="button editor-button" onclick="image.flipHorizontal();">
+            <img alt="Flip horizontal" />
+          </button>
+          <button class="button editor-button" onclick="image.flipVertical();">
+            <img alt="Flip vertical" />
+          </button>
+          <button id="crop" class="button editor-button disabled" onclick="image.crop();">
+            <img alt="Crop" />
+          </button>
+        </div>
+
+        <div class="editor-column">
+          <button id="undo" class="button disabled" onclick="image.undo();"><__trans phrase="Undo"></button>
+          <button id="redo" class="button disabled" onclick="image.redo();"><__trans phrase="Redo"></button>
+        </div>
+
+      </div><!-- /editor -->
+
+    </div><!-- /image-editor -->
+
+    <div class="dialog actions-bar actions-bar-bottom">
+      <form action="" method="get" onsubmit="return false">
+        <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Save (s)">"
+           class="action primary button close disabled">
+          <__trans phrase="Save"></button>
+        <button
+           type="submit"
+           accesskey="x"
+           class="cancel action button mt-close-dialog"
+           title="<__trans phrase="Cancel (x)">">
+          <__trans phrase="Cancel"></button>
+      </form>
+    </div>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery(document).ready(function() {
+        var resized = false;
+
+        // Resize image when clicking apply button.
+        jQuery('button#resize-apply').click(function() {
+            var width = jQuery('input#resize-width').val(),
+                height = jQuery('input#resize-height').val();
+            image.resize(width, height);
+
+            // Disable resize buttons.
+            jQuery(this).addClass('disabled');
+            jQuery('button#resize-reset').addClass('disabled');
+
+            resized = true;
+        });
+
+        // Reset resize-width and resize-height when clicking reset button.
+        jQuery('button#resize-reset').click(function() {
+            var width = image.getWidth(),
+                height = image.getHeight();
+            jQuery('input#resize-width').val(width);
+            jQuery('input#resize-height').val(height);
+
+            // Disable resize buttons.
+            jQuery('button#resize-apply').addClass('disabled');
+            jQuery(this).addClass('disabled');
+        });
+
+        // Update resize-width or resize-height when changing them.
+        jQuery('input#resize-width').keyup(function() {
+            // Enable resize buttons.
+            jQuery('button#resize-apply').removeClass('disabled');
+            jQuery('button#resize-reset').removeClass('disabled');
+
+            // Do not update when "Keep aspect ratio" checked.
+            if (jQuery('input#keep-aspect-ratio:checked').length === 0) {
+                return;
+            }
+
+            var width = jQuery(this).val();
+            var height;
+            if (image.getAngle() % 180 === 0) {
+                height = Math.ceil(width * image.originalHeight / image.originalWidth);
+            } else {
+                height = Math.ceil(width * image.originalWidth / image.originalHeight);
+            }
+            jQuery('input#resize-height').val(height);
+        });
+        jQuery('input#resize-height').keyup(function() {
+            // Enable resize buttons.
+            jQuery('button#resize-apply').removeClass('disabled');
+            jQuery('button#resize-reset').removeClass('disabled');
+
+            // Do not update when "Keep aspect ratio" checked.
+            if (jQuery('input#keep-aspect-ratio:checked').length === 0) {
+                return;
+            }
+
+            var height = jQuery(this).val();
+            var width;
+            if (image.getAngle() % 180 === 0) {
+                width = Math.ceil(height * image.originalWidth / image.originalHeight);
+            } else {
+                width = Math.ceil(height * image.originalHeight / image.originalWidth);
+            }
+            jQuery('input#resize-width').val(width);
+        });
+
+        // Submit form.
+        jQuery('button.primary').click(function() {
+            var $form = jQuery('form');
+
+            $form
+                .removeAttr('onsubmit')
+                .attr('action', '<mt:var name="script_url">')
+                .attr('method', 'post')
+                .attr('target', '_parent')
+                .append('<input type="hidden" name="__mode" value="transform_image" />')
+                .append('<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />')
+                .append('<input type="hidden" name="id" value="<mt:var name="id">" />');
+
+            if (image.getAngle() > 0) {
+                $form.append('<input type="hidden" name="angle" value="'+image.getAngle()+'" />');
+            }
+            if (image.isFlippedX()) {
+                $form.append('<input type="hidden" name="flip_x" value="1" />');
+            }
+            if (image.isFlippedY()) {
+                $form.append('<input type="hidden" name="flip_y" value="1" />');
+            }
+
+            var width = jQuery('input#resize-width').val();
+            var height = jQuery('input#resize-height').val();
+            if (width !== image.originalWidth && height !== image.originalHeight) {
+                $form
+                    .append('<input type="hidden" name="width" value="'+width+'" />')
+                    .append('<input type="hidden" name="height" value="'+height+'" />');
+            }
+
+            if (image.crop.width > 0 && image.crop.height > 0) {
+                var left;
+                var top;
+                if (image.getAngle() % 180 === 0) {
+                    left = Math.ceil(image.crop.left * image.originalWidth / image.originalThumbnailWidth);
+                    top = Math.ceil(image.crop.top * image.originalHeight / image.originalThumbnailHeight);
+                } else {
+                    left = Math.ceil(image.crop.left * image.originalHeight / image.originalThumbnailHeight);
+                    top = Math.ceil(image.crop.top * image.originalWidth / image.originalThumbnailWidth);
+                }
+                var width = jQuery('input#resize-width').val();
+                var height = jQuery('input#resize-height').val();
+
+                $form
+                    .append('<input type="hidden" name="crop_left" value="'+left+'" />')
+                    .append('<input type="hidden" name="crop_top" value="'+top+'" />')
+                    .append('<input type="hidden" name="crop_width" value="'+width+'" />')
+                    .append('<input type="hidden" name="crop_height" value="'+height+'" />')
+            }
+
+            $form.submit();
+        });
+
+        function update() {
+            // Update resize-width and resize-height.
+            if (resized) {
+                // Do not update after resizing.
+                resized = false;
+            } else {
+                var width = image.getWidth(),
+                    height = image.getHeight();
+
+                jQuery('input#resize-width').val(width);
+                jQuery('input#resize-height').val(height);
+            }
+
+            jQuery('button#crop').addClass('disabled');
+            jQuery(document).off('keyup', document, cancelCropping);
+
+            // Validate or invalidate undo button and redo button.
+            if (image.undoSize() > 0) {
+                jQuery('button#undo').removeClass('disabled');
+            } else {
+                jQuery('button#undo').addClass('disabled');
+            }
+            if (image.redoSize() > 0) {
+                jQuery('button#redo').removeClass('disabled');
+            } else {
+                jQuery('button#redo').addClass('disabled');
+            }
+
+            // Validate or invalidate save button.
+            if (image.undoSize() > 0) {
+                jQuery('button.primary').removeClass('disabled');
+            } else {
+                jQuery('button.primary').addClass('disabled');
+            }
+
+            // Disable apply button and reset button in resize function.
+            jQuery('button#resize-apply').addClass('disabled');
+            jQuery('button#resize-reset').addClass('disabled');
+        };
+
+        function cancelCropping(event) {
+            if (event.keyCode === 27) {
+                image.cropCancel();
+                // Disable crop button.
+                jQuery('button#crop').addClass('disabled');
+            }
+        }
+
+        window.image = new ImageEditor('div#image > img', {
+            originalWidth: <mt:var name="image_width">,
+            originalHeight: <mt:var name="image_height">,
+            originalThumbnailWidth: <mt:var name="thumbnail_width">,
+            originalThumbnailHeight: <mt:var name="thumbnail_height">,
+
+            plugins: {
+                 crop: {
+                     postSelect: function() {
+                         // Enable crop button.
+                         jQuery('button#crop').removeClass('disabled');
+                         // Enable escape key.
+                         jQuery(document).on('keyup', document, cancelCropping);
+                     }
+                 },
+                 history: {
+                     postUpdate: update
+                 }
+            }
+        });
+    });
+</mt:setvarblock>
+
+<mt:include name="dialog/footer.tmpl">

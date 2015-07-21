@@ -784,6 +784,122 @@ sub normalize_orientation {
     1;
 }
 
+sub scale {
+    my ( $asset, $width, $height ) = @_;
+
+    if ( !$width || !$height ) {
+        return;
+    }
+
+    $asset->_transform(
+        sub { $_[0]->scale( Width => $width, Height => $height ) } );
+}
+
+sub crop_rectangle {
+    my ( $asset, $left, $top, $width, $height ) = @_;
+
+    if ( !$width || !$height ) {
+        return;
+    }
+
+    $top  = 0 unless defined $top;
+    $left = 0 unless defined $left;
+
+    $asset->_transform(
+        sub {
+            $_[0]->crop_rectangle(
+                Width  => $width,
+                Height => $height,
+                X      => $left,
+                Y      => $top
+            );
+        }
+    );
+}
+
+sub rotate {
+    my ( $asset, $angle ) = @_;
+
+    if ( !$angle ) {
+        return;
+    }
+
+    $asset->_transform( sub { $_[0]->rotate( Degrees => $angle ) } );
+}
+
+sub flip_horizontal {
+    my ($asset) = @_;
+    $asset->_transform( sub { $_[0]->flipHorizontal } );
+}
+
+sub flip_vertical {
+    my ($asset) = @_;
+    $asset->_transform( sub { $_[0]->flipVertical } );
+}
+
+sub _transform {
+    my ( $asset, $process ) = @_;
+
+    require MT::FileMgr;
+    require MT::Image;
+
+    my $file_path = $asset->file_path;
+    my $fmgr
+        = $asset->blog ? $asset->blog->file_mgr : MT::FileMgr->new('Local');
+    my $img_data = $fmgr->get_data( $file_path, 'upload' );
+
+    my $img = MT::Image->new( Data => $img_data, Type => $asset->file_ext );
+
+    my ( $blob, $width, $height ) = $process->($img);
+
+    $fmgr->put_data( $blob, $file_path, 'upload' );
+    $asset->image_width($width);
+    $asset->image_height($height);
+
+    # Update modified_on.
+    my $app = MT->app;
+    my $user = $app->can('user') && $app->user->id ? $app->user : undef;
+    $asset->modified_by( $app->user->id );
+
+    $asset->save or return $asset->errstr;
+
+    1;
+}
+
+sub transform {
+    my ( $asset, %param ) = @_;
+
+    my $width       = $param{width};
+    my $height      = $param{height};
+    my $crop_top    = $param{crop_top};
+    my $crop_left   = $param{crop_left};
+    my $crop_width  = $param{crop_width};
+    my $crop_height = $param{crop_height};
+    my $angle       = $param{angle};
+    my $flip_x      = $param{flip_x};
+    my $flip_y      = $param{flip_y};
+
+    if ($angle) {
+        $asset->rotate($angle) or return;
+    }
+    if ($flip_x) {
+        $asset->flip_horizontal or return;
+    }
+    if ($flip_y) {
+        $asset->flip_vertical or return;
+    }
+    if ( $crop_width && $crop_height ) {
+        $asset->crop_rectangle( $crop_left, $crop_top, $crop_width,
+            $crop_height )
+            or return;
+    }
+    if ( $width && $height ) {
+        $asset->scale( $width, $height ) or return;
+    }
+
+    1;
+}
+
 1;
 
 __END__
@@ -832,6 +948,34 @@ Return the HTML I<IMG> element with the image asset attributes.
 =head2 $asset->normalize_orientation
 
 Normalize orientation if an image has a "Orientation" in Exif information.
+
+=head2 $asset->scale($width, $height)
+
+Resize an image to $width x $height size. Do nothing if $width or $height is
+zero or undefined.
+If you want to keep the ratio, you need to calculate yourself.
+This method does not have ratio option.
+
+=head2 $asset->crop_rectangle($left, $top, $width, $height)
+
+Crop an image by arguments. Do nothing if $width or $height is zero or undefined.
+$left and $top are set zero when they are undefined.
+
+=head2 $asset->rotate($angle)
+
+Rotate an image by $angle. Do nothing if $angle is zero or undefined.
+
+=head2 $asset->flip_horizontal
+
+Flip an image horizontally.
+
+=head2 $asset->flip_vertical
+
+Flip an image vertically.
+
+=head2 $asset->transform(%param)
+
+Transform an image.
 
 =head1 AUTHOR & COPYRIGHT
 

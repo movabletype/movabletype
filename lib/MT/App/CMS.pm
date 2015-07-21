@@ -90,6 +90,7 @@ sub core_methods {
 
         'asset_insert'         => "${pkg}Asset::insert",
         'asset_userpic'        => "${pkg}Asset::asset_userpic",
+        'transform_image'      => "${pkg}Asset::transform_image",
         'save_commenter_perm'  => "${pkg}Comment::save_commenter_perm",
         'trust_commenter'      => "${pkg}Comment::trust_commenter",
         'ban_commenter'        => "${pkg}Comment::ban_commenter",
@@ -294,6 +295,7 @@ sub core_methods {
         'dialog_select_assoc_type' => "${pkg}User::dialog_select_assoc_type",
         'dialog_select_author'     => "${pkg}User::dialog_select_author",
         'dialog_list_asset'        => "${pkg}Asset::dialog_list_asset",
+        'dialog_edit_image'        => "${pkg}Asset::dialog_edit_image",
 
         ## AJAX handlers
         'delete_map'        => "${pkg}Template::delete_map",
