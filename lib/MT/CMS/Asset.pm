@@ -1880,7 +1880,7 @@ sub transform_image {
             mode => 'view',
             args => {
                 _type   => 'asset',
-                blog_id => $app->blog->id,
+                blog_id => $app->blog ? $app->blog->id : 0,
                 id      => $id,
                 saved   => 1,
             },
