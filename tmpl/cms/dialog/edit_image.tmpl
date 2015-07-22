@@ -305,27 +305,28 @@ div.editor-subcolumn {
                  }
             }
         });
+    });
 
-        // Confirm before closing dialog.
+    // Confirm before closing dialog.
+    jQuery('button.image-editor-close-dialog').click(function() {
         function isChanged() {
-            return (image.undoSize() > 0
-                 || image.redoSize() > 0
+            return (!jQuery('button#undo').hasClass('disabled')
+                 || !jQuery('button#redo').hasClass('disabled')
                  || !jQuery('button#resize-apply').hasClass('disabled')
                  || !jQuery('button#crop').hasClass('disabled')
             );
         }
-        jQuery('button.image-editor-close-dialog').click(function() {
-            if (isChanged()) {
-                var message = 'You have unsaved changes to this page that will be lost. Are you sure you want to close this dialog?';
-                if (confirm(message)) {
-                    parent.jQuery.fn.mtDialog.close();
-                }
-            } else {
+
+        if (isChanged()) {
+            var message = 'You have unsaved changes to this page that will be lost. Are you sure you want to close this dialog?';
+            if (confirm(message)) {
                 parent.jQuery.fn.mtDialog.close();
             }
+        } else {
+            parent.jQuery.fn.mtDialog.close();
+        }
 
-            return false;
-        });
+        return false;
     });
 </mt:setvarblock>
 
