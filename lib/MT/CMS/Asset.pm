@@ -1822,9 +1822,11 @@ sub dialog_edit_image {
     my $asset;
 
     my $id = $app->param('id');
+    my $blog_id = $app->param('blog_id') || 0;
     if ($id) {
         $asset
-            = $app->model('asset')->load( { id => $id, class => 'image' } );
+            = $app->model('asset')
+            ->load( { id => $id, blog_id => $blog_id, class => 'image' } );
     }
     if ( !$asset ) {
         return $app->errtrans('Invalid request.');
