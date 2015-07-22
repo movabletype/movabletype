@@ -136,19 +136,16 @@ div.editor-subcolumn {
 
         // Resize image when clicking apply button.
         jQuery('button#resize-apply').click(function() {
+            resized = true;
+
             resizeWidth = jQuery('input#resize-width').val();
             resizeHeight = jQuery('input#resize-height').val();
 
             image.resize(resizeWidth, resizeHeight);
 
-            resizeWidth = width;
-            resizeHeight = height;
-
             // Disable resize buttons.
             disableButton(this);
             disableButton('button#resize-reset');
-
-            resized = true;
         });
 
         // Reset resize-width and resize-height when clicking reset button.
