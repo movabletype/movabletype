@@ -47,7 +47,7 @@ div.editor-subcolumn {
           <input id="resize-width" class="text number min" type="text" value="<mt:var name="image_width">" />
           <__trans phrase="H:">
           <input id="resize-height" class="text number min" type="text" value="<mt:var name="image_height">" />
-          <button id="resize-apply" class="button disabled" disabled="disabled"><__trans phrase="Apply"></button>
+          <button id="resize-apply" class="button enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
           <button id="resize-reset" class="button disabled" disabled="disabled"><__trans phrase="Reset"></button>
         </div>
         <div class="editor-subcolumn">
@@ -57,32 +57,32 @@ div.editor-subcolumn {
 
         <mt:if name="has_gps_metadata">
         <div class="editor-column">
-          <input id="remove-gps-metadata" class="cb" type="checkbox" />
+          <input id="remove-gps-metadata" class="cb enable-submit" type="checkbox" />
           <label for="remove-gps-metadata"><__trans phrase="Remove GPS metadata"></label>
         </div>
         </mt:if>
 
         <mt:if name="has_exif_metadata">
         <div class="editor-column">
-          <input id="remove-exif-metadata" class="cb" type="checkbox" />
+          <input id="remove-exif-metadata" class="cb enable-submit" type="checkbox" />
           <label for="remove-exif-metadata"><__trans phrase="Remove EXIF metadata"></label>
         </div>
         </mt:if>
 
         <div class="editor-column">
-          <button class="button editor-button" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
+          <button class="button editor-button enable-submit" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
             <img alt="Rotate right" src="<mt:var name="static_uri">images/image_editor/rotate_right@2x.png" width="24" height="24" />
           </button>
-          <button class="button editor-button" title="<__trans phrase="Rotate left">" onclick="image.rotate(-90);">
+          <button class="button editor-button enable-submit" title="<__trans phrase="Rotate left">" onclick="image.rotate(-90);">
             <img alt="Rotate left" src="<mt:var name="static_uri">images/image_editor/rotate_left@2x.png" width="24" height="24" />
           </button>
-          <button class="button editor-button" title="<__trans phrase="Flip horizontal">" onclick="image.flipHorizontal();">
+          <button class="button editor-button enable-submit" title="<__trans phrase="Flip horizontal">" onclick="image.flipHorizontal();">
             <img alt="Flip horizontal" src="<mt:var name="static_uri">images/image_editor/flip_horizontal@2x.png" width="24" height="24" />
           </button>
-          <button class="button editor-button" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
+          <button class="button editor-button enable-submit" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
             <img alt="Flip vertical" src="<mt:var name="static_uri">images/image_editor/flip_vertical@2x.png" width="24" height="24" />
           </button>
-          <button id="crop" class="button editor-button disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
+          <button id="crop" class="button editor-button enable-submit disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
             <img alt="Crop" src="<mt:var name="static_uri">images/image_editor/crop@2x.png" width="24" height="24" />
           </button>
         </div>
@@ -125,17 +125,6 @@ div.editor-subcolumn {
 
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery(document).ready(function() {
-        function enableButton(element) {
-            jQuery(element)
-                .removeClass('disabled')
-                .removeAttr('disabled');
-        }
-        function disableButton(element) {
-            jQuery(element)
-                .addClass('disabled')
-                .attr('disabled', 'disabled');
-        }
-
         var resized = false;
 
         var resizeWidth = jQuery('input#resize-width').val();
@@ -247,10 +236,6 @@ div.editor-subcolumn {
             }
         });
 
-        jQuery('input#remove-gps-metadata, input#remove-exif-metadata').click(function() {
-            enableButton('button.primary');
-        });
-
         // Submit form.
         jQuery('button.primary').click(function() {
             var $form = jQuery('form');
@@ -295,13 +280,6 @@ div.editor-subcolumn {
                 disableButton('button#redo');
             }
 
-            // Validate or invalidate save button.
-            if (image.undoSize() > 0) {
-                enableButton('button.primary');
-            } else {
-                disableButton('button.primary');
-            }
-
             // Disable apply button and reset button in resize function.
             disableButton('button#resize-apply');
             disableButton('button#resize-reset');
@@ -337,17 +315,27 @@ div.editor-subcolumn {
         });
     });
 
+    function enableButton(element) {
+        jQuery(element)
+            .removeClass('disabled')
+            .removeAttr('disabled');
+    }
+    function disableButton(element) {
+        jQuery(element)
+            .addClass('disabled')
+            .attr('disabled', 'disabled');
+    }
+
+    // Enable submit button when clicking checkbox/button.
+    var isDirty;
+    jQuery('.enable-submit').click(function() {
+        enableButton('button.primary');
+        isDirty = true;
+    });
+
     // Confirm before closing dialog.
     jQuery('button.image-editor-close-dialog').click(function() {
-        function isChanged() {
-            return (!jQuery('button#undo').hasClass('disabled')
-                 || !jQuery('button#redo').hasClass('disabled')
-                 || !jQuery('button#resize-apply').hasClass('disabled')
-                 || !jQuery('button#crop').hasClass('disabled')
-            );
-        }
-
-        if (isChanged()) {
+        if (isDirty) {
             var message = 'You have unsaved changes to this page that will be lost. Are you sure you want to close this dialog?';
             if (confirm(message)) {
                 parent.jQuery.fn.mtDialog.close();
