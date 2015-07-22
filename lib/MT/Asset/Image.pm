@@ -895,6 +895,42 @@ sub transform {
     1;
 }
 
+sub exif {
+    my ($asset) = @_;
+    require Image::ExifTool;
+    my $exif = Image::ExifTool->new;
+    $exif->ExtractInfo( $asset->file_path );
+    return $exif;
+}
+
+sub has_gps_metadata {
+    my ($asset) = @_;
+    my $exif = $asset->exif;
+    $exif->Options( Group1 => 'GPS' );
+    return $exif->GetTagList ? 1 : 0;
+}
+
+sub has_exif_metadata {
+    my ($asset) = @_;
+    my $exif = $asset->exif;
+    $exif->Options( Group0 => 'EXIF' );
+    return $exif->GetTagList ? 1 : 0;
+}
+
+sub remove_gps_metadata {
+    my ($asset) = @_;
+    my $exif = $asset->exif;
+    $exif->SetNewValue('GPS:*');
+    $exif->WriteInfo( $asset->file_path );
+}
+
+sub remove_exif_metadata {
+    my ($asset) = @_;
+    my $exif = $asset->exif;
+    $exif->SetNewValue('EXIF:*');
+    $exif->WriteInfo( $asset->file_path );
+}
+
 1;
 
 __END__
@@ -971,6 +1007,26 @@ Flip an image vertically.
 =head2 $asset->transform(@actions)
 
 Transform an image.
+
+=head2 $asset->exif()
+
+Return Image::ExifTool instance.
+
+=head2 $asset->has_gps_metadata()
+
+Return 1 when the image has GPS metadata.
+
+=head2 $asset->has_exif_metadata()
+
+Return 1 when the image has Exif metadata.
+
+=head2 $asset->remove_gps_metadata()
+
+Remove all GPS metadata from the image.
+
+=head2 $asset->remove_exif_metadata()
+
+Remove all Exif metadata from the image.
 
 =head1 AUTHOR & COPYRIGHT
 

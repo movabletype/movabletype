@@ -55,15 +55,19 @@ div.editor-subcolumn {
           <label for="keep-aspect-ratio"><__trans phrase="Keep aspect ratio"></label>
         </div>
 
+        <mt:if name="has_gps_metadata">
         <div class="editor-column">
-          <input id="remove-gps" class="cb" type="checkbox" />
-          <label for="remove-gps"><__trans phrase="Remove GPS metadata"></label>
+          <input id="remove-gps-metadata" class="cb" type="checkbox" />
+          <label for="remove-gps-metadata"><__trans phrase="Remove GPS metadata"></label>
         </div>
+        </mt:if>
 
+        <mt:if name="has_exif_metadata">
         <div class="editor-column">
-          <input id="remove-exif" class="cb" type="checkbox" />
-          <label for="remove-exif"><__trans phrase="Remove EXIF metadata"></label>
+          <input id="remove-exif-metadata" class="cb" type="checkbox" />
+          <label for="remove-exif-metadata"><__trans phrase="Remove EXIF metadata"></label>
         </div>
+        </mt:if>
 
         <div class="editor-column">
           <button class="button editor-button" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
@@ -98,6 +102,9 @@ div.editor-subcolumn {
         <input type="hidden" name="__mode" value="transform_image" />
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
         <input type="hidden" name="id" value="<mt:var name="id">" />
+
+        <input type="hidden" name="remove_gps_metadata" />
+        <input type="hidden" name="remove_exif_metadata" />
         <input type="hidden" name="actions" />
 
         <button
@@ -224,12 +231,38 @@ div.editor-subcolumn {
                 jQuery('input#resize-width').val(width);
         });
 
+        // Also check "Remove GPS metadata" when checking "Remove EXIF metadata".
+        var gpsPreviousState;
+        jQuery('input#remove-exif-metadata').click(function() {
+            var $checkboxGps = jQuery('input#remove-gps-metadata');
+            if (jQuery(this).prop('checked')) {
+                gpsPreviousState = $checkboxGps.prop('checked');
+                $checkboxGps
+                    .attr('disabled', 'disabled')
+                    .prop('checked', true);
+            } else {
+                $checkboxGps
+                    .removeAttr('disabled')
+                    .prop('checked', gpsPreviousState);
+            }
+        });
+
+        jQuery('input#remove-gps-metadata, input#remove-exif-metadata').click(function() {
+            enableButton('button.primary');
+        });
+
         // Submit form.
         jQuery('button.primary').click(function() {
             var $form = jQuery('form');
 
             $form.removeAttr('onsubmit');
             $form.children('input[name=actions]').val(JSON.stringify(image.backActionStack));
+            if (jQuery('input#remove-gps-metadata:checked').length > 0) {
+                $form.children('input[name=remove_gps_metadata]').val(1);
+            }
+            if (jQuery('input#remove-exif-metadata:checked').length > 0) {
+                $form.children('input[name=remove_exif_metadata]').val(1);
+            }
 
             $form.submit();
         });

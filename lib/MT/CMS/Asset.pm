@@ -1845,6 +1845,14 @@ sub dialog_edit_image {
     # Disable browser cache for image.
     $param->{modified_on} = $asset->modified_on;
 
+    # Check Exif.
+    if ( $asset->has_exif_metadata ) {
+        $param->{has_exif_metadata} = 1;
+        if ( $asset->has_gps_metadata ) {
+            $param->{has_gps_metadata} = 1;
+        }
+    }
+
     $app->load_tmpl( 'dialog/edit_image.tmpl', $param );
 }
 
@@ -1876,6 +1884,13 @@ sub transform_image {
     $asset->transform(@$actions)
         or return $app->errtrans( 'Transforming image failed: [_1]',
         $asset->errstr );
+
+    if ( $app->param('remove_exif_metadata') ) {
+        $asset->remove_exif_metadata;
+    }
+    elsif ( $app->param('remove_gps_metadata') ) {
+        $asset->remove_gps_metadata;
+    }
 
     $app->redirect(
         $app->uri(
