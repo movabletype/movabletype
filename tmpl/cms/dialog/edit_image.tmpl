@@ -1,66 +1,7 @@
 <mt:setvar name="page_title" value="<__trans phrase="Edit Image">">
 
 <mt:setvarblock name="html_head" prepend="1">
-<style type="text/css">
-div#editor {
-  margin-left: 260px;  /* 240+20 */
-}
-
-div#editor input[type=checkbox] {
-  margin-right: 3px;
-}
-div#editor label {
-  margin-right: 3px;
-  vertical-align: middle;
-}
-
-div#image {
-  width: 240px;
-  float: left;
-}
-
-/* resize block */
-div#editor-resize {
-  margin-bottom: 10px;
-}
-div.editor-resize-column,.editor-resize-subcolumn {
-  margin-bottom: 5px;
-}
-div.editor-resize-subcolumn {
-  margin-left: 22px;
-}
-input.resize {
-  width: 96px;
-  text-align: center;
-  margin-right: 8px;
-}
-button.resize {
-  margin: 0px;
-}
-
-/* metadata block */
-div#editor-metadata {
-  margin-bottom: 20px;
-}
-div.editor-metadata-column {
-  margin-bottom: 10px;
-}
-
-/* button block */
-div.editor-button-column {
-  margin-bottom: 5px;
-}
-button.editor-button {
-  width: 40px;
-  height: 40px;
-  margin: 0px;
-}
-button.history {
-  width: 84px;
-  height: 30px;
-  margin: 0px;
-}
-</style>
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/image_editor/edit_image.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
