@@ -172,16 +172,34 @@
         undo: function() {
             var history = this.getPlugin('history');
             history.goBack();
-            history.postUpdate();
 
             this.undoAction();
+
+            // Resize.
+            if (this.backActionStack.length > 0) {
+                var resize = this.backActionStack[0].resize;
+                if (resize) {
+                    this.resize(resize.width, resize.height, true);
+                }
+            }
+
+            history.postUpdate();
         },
         redo: function() {
             var history = this.getPlugin('history');
             history.goForward();
-            history.postUpdate();
 
             this.redoAction();
+
+            // Resize.
+            if (this.backActionStack.length > 0) {
+                var resize = this.backActionStack[0].resize;
+                if (resize) {
+                    this.resize(resize.width, resize.height, true);
+                }
+            }
+
+            history.postUpdate();
         },
         undoSize: function() {
             return this.getPlugin('history').backHistoryStack.length;
@@ -191,7 +209,7 @@
         },
 
         // Resize
-        resize: function(width, height) {
+        resize: function(width, height, noSaveAction) {
             var thumbnailWidth, thumbnailHeight;
             if (this.getAngle() % 180 === 0) {
                 thumbnailWidth = Math.ceil(width * this.originalThumbnailWidth / this.originalWidth);
@@ -204,12 +222,14 @@
 
             this.dispatchEvent('image:change');
 
-            this.saveAction({
-                resize: {
-                    width: width,
-                    height: height
-                }
-            });
+            if (!noSaveAction) {
+                this.saveAction({
+                    resize: {
+                        width: width,
+                        height: height
+                    }
+                });
+            }
         },
         getWidth: function() {
             if (this.getAngle() % 180 === 0) {
