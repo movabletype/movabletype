@@ -29,6 +29,7 @@ div.editor-subcolumn {
   <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/fabric.js"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/darkroom.min.js"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/jquery.numeric.min.js"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/jquery.selection.js"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/image_editor.js"></script>
 </mt:setvarblock>
 
@@ -130,6 +131,8 @@ div.editor-subcolumn {
         var resizeWidth = jQuery('input#resize-width').val();
         var resizeHeight = jQuery('input#resize-height').val();
 
+        var resizeIsDirty;
+
         // Resize image when clicking apply button.
         jQuery('button#resize-apply').click(function() {
             resized = true;
@@ -142,6 +145,8 @@ div.editor-subcolumn {
             // Disable resize buttons.
             disableButton(this);
             disableButton('button#resize-reset');
+
+            resizeIsDirty = false;
         });
 
         // Reset resize-width and resize-height when clicking reset button.
@@ -154,70 +159,115 @@ div.editor-subcolumn {
             // Disable resize buttons.
             disableButton('button#resize-apply');
             disableButton(this);
+
+            resizeIsDirty = false;
         });
 
         // Update resize-width or resize-height when changing them.
         jQuery('input#resize-width')
-            .numeric()
+            .numeric({decimal: false, negative: false})  // Positive integer only.
+            .keydown(function(event) {
+                // Forbid first zero.
+                if (event.keyCode === 48 && jQuery(this).val().length > 0 && jQuery(this).selection('getPos').start === 0) {
+                    return false;
+                }
+            })
             .keyup(function(event) {
-                // No change.
-                if (jQuery('input#resize-width').val() === resizeWidth) {
+                var $resizeWidth = jQuery(this);
+                var $resizeHeight = jQuery('input#resize-height');
+
+                // Do nothing when there is no change.
+                if (!resizeIsDirty && $resizeWidth.val() === resizeWidth) {
                     return;
                 }
+                resizeIsDirty = true;
 
-                if (event.keyCode === 13) {  // enter
+                // Change the status of resize buttons.
+                if ($resizeWidth.val() === '0' || $resizeWidth.val() === '') {
+                    disableButton('button#resize-apply');
+                } else {
+                    enableButton('button#resize-apply');
+                }
+                enableButton('button#resize-reset');
+
+                // Trigger apply button when pushing enter key.
+                if (event.keyCode === 13) {
                     jQuery('button#resize-apply').trigger('click');
                     return;
                 }
-
-                // Enable resize buttons.
-                enableButton('button#resize-apply');
-                enableButton('button#resize-reset');
     
-                // Do not update when "Keep aspect ratio" checked.
+                // Do not update resize-height when "Keep aspect ratio" checked.
                 if (jQuery('input#keep-aspect-ratio:checked').length === 0) {
                     return;
                 }
-    
-                var width = jQuery(this).val();
+
+                // Also change resize-height empty.
+                if ($resizeWidth.val() === '') {
+                    $resizeHeight.val('');
+                    return;
+                }
+
+                // Update resize-height.
+                var width = $resizeWidth.val();
                 var height;
                 if (image.getAngle() % 180 === 0) {
                     height = Math.ceil(width * image.originalHeight / image.originalWidth);
                 } else {
                     height = Math.ceil(width * image.originalWidth / image.originalHeight);
                 }
-                jQuery('input#resize-height').val(height);
+                $resizeHeight.val(height);
             });
         jQuery('input#resize-height')
-            .numeric()
+            .numeric({decimal: false, negative: false})  // Positive integer only.
+            .keydown(function(event) {
+                // Forbid first zero.
+                if (event.keyCode === 48 && jQuery(this).val().length > 0 && jQuery(this).selection('getPos').start === 0) {
+                    return false;
+                }
+            })
             .keyup(function() {
-                // No change.
-                if (jQuery('input#resize-height').val() === resizeHeight) {
+                var $resizeWidth = jQuery('input#resize-width');
+                var $resizeHeight = jQuery(this);
+
+                // Do nothing when there is no change.
+                if (!resizeIsDirty && $resizeHeight.val() === resizeHeight) {
                     return;
                 }
+                resizeIsDirty = true;
 
+                // Enable resize buttons.
+                if ($resizeHeight.val() === '0' || $resizeHeight.val() === '') {
+                    disableButton('button#resize-apply');
+                } else {
+                    enableButton('button#resize-apply');
+                }
+                enableButton('button#resize-reset');
+
+                // Trigger apply button when pushing enter key.
                 if (event.keyCode === 13) {  // enter
                     jQuery('button#resize-apply').trigger('click');
                     return;
                 }
 
-                // Enable resize buttons.
-                enableButton('button#resize-apply');
-                enableButton('button#resize-reset');
-    
                 // Do not update when "Keep aspect ratio" checked.
                 if (jQuery('input#keep-aspect-ratio:checked').length === 0) {
                     return;
                 }
-    
-                var height = jQuery(this).val();
+
+                // Also change resize-width empty.
+                if ($resizeHeight.val() === '') {
+                    $resizeWidth.val('');
+                    return;
+                }
+
+                var height = $resizeHeight.val();
                 var width;
                 if (image.getAngle() % 180 === 0) {
                     width = Math.ceil(height * image.originalWidth / image.originalHeight);
                 } else {
                     width = Math.ceil(height * image.originalHeight / image.originalWidth);
                 }
-                jQuery('input#resize-width').val(width);
+                $resizeWidth.val(width);
         });
 
         // Also check "Remove GPS metadata" when checking "Remove EXIF metadata".
