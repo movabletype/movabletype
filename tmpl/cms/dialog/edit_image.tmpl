@@ -2,25 +2,63 @@
 
 <mt:setvarblock name="html_head" prepend="1">
 <style type="text/css">
-button.editor-button {
-  width: 30px;
-  height: 30px;
-  padding: 0px;
+div#editor {
+  margin-left: 260px;  /* 240+20 */
 }
-div.editor-column {
-  margin-bottom: 5px;
+
+div#editor input[type=checkbox] {
+  margin-right: 3px;
 }
-div.editor-subcolumn {
-  margin-bottom: 5px;
-  margin-left: 20px;
+div#editor label {
+  margin-right: 3px;
+  vertical-align: middle;
 }
-#editor {
-  margin-left: 250px;
-}
-#image {
-  width: 250px;
-  height: 250px;
+
+div#image {
+  width: 240px;
   float: left;
+}
+
+/* resize block */
+div#editor-resize {
+  margin-bottom: 10px;
+}
+div.editor-resize-column,.editor-resize-subcolumn {
+  margin-bottom: 5px;
+}
+div.editor-resize-subcolumn {
+  margin-left: 22px;
+}
+input.resize {
+  width: 96px;
+  text-align: center;
+  margin-right: 8px;
+}
+button.resize {
+  margin: 0px;
+}
+
+/* metadata block */
+div#editor-metadata {
+  margin-bottom: 20px;
+}
+div.editor-metadata-column {
+  margin-bottom: 10px;
+}
+
+/* button block */
+div.editor-button-column {
+  margin-bottom: 5px;
+}
+button.editor-button {
+  width: 40px;
+  height: 40px;
+  margin: 0px;
+}
+button.history {
+  width: 84px;
+  height: 30px;
+  margin: 0px;
 }
 </style>
 </mt:setvarblock>
@@ -43,54 +81,60 @@ div.editor-subcolumn {
 
       <div id="editor">
 
-        <div class="editor-column">
-          <__trans phrase="W:">
-          <input id="resize-width" class="text number min" type="text" value="<mt:var name="image_width">" />
-          <__trans phrase="H:">
-          <input id="resize-height" class="text number min" type="text" value="<mt:var name="image_height">" />
-          <button id="resize-apply" class="button enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
-          <button id="resize-reset" class="button disabled" disabled="disabled"><__trans phrase="Reset"></button>
-        </div>
-        <div class="editor-subcolumn">
-          <input id="keep-aspect-ratio" class="cb" type="checkbox" value="1" checked="checked" />
-          <label for="keep-aspect-ratio"><__trans phrase="Keep aspect ratio"></label>
-        </div>
-
-        <mt:if name="has_gps_metadata">
-        <div class="editor-column">
-          <input id="remove-gps-metadata" class="cb enable-submit" type="checkbox" />
-          <label for="remove-gps-metadata"><__trans phrase="Remove GPS metadata"></label>
-        </div>
-        </mt:if>
-
-        <mt:if name="has_exif_metadata">
-        <div class="editor-column">
-          <input id="remove-exif-metadata" class="cb enable-submit" type="checkbox" />
-          <label for="remove-exif-metadata"><__trans phrase="Remove EXIF metadata"></label>
-        </div>
-        </mt:if>
-
-        <div class="editor-column">
-          <button class="button editor-button enable-submit" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
-            <img alt="Rotate right" src="<mt:var name="static_uri">images/image_editor/rotate_right@2x.png" width="24" height="24" />
-          </button>
-          <button class="button editor-button enable-submit" title="<__trans phrase="Rotate left">" onclick="image.rotate(-90);">
-            <img alt="Rotate left" src="<mt:var name="static_uri">images/image_editor/rotate_left@2x.png" width="24" height="24" />
-          </button>
-          <button class="button editor-button enable-submit" title="<__trans phrase="Flip horizontal">" onclick="image.flipHorizontal();">
-            <img alt="Flip horizontal" src="<mt:var name="static_uri">images/image_editor/flip_horizontal@2x.png" width="24" height="24" />
-          </button>
-          <button class="button editor-button enable-submit" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
-            <img alt="Flip vertical" src="<mt:var name="static_uri">images/image_editor/flip_vertical@2x.png" width="24" height="24" />
-          </button>
-          <button id="crop" class="button editor-button enable-submit disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
-            <img alt="Crop" src="<mt:var name="static_uri">images/image_editor/crop@2x.png" width="24" height="24" />
-          </button>
+        <div id="editor-resize">
+          <div class="editor-resize-column">
+            <label for="resize-width"><__trans phrase="W:"></label>
+            <input id="resize-width" class="text resize" type="text" value="<mt:var name="image_width">" />
+            <label for="resize-height"><__trans phrase="H:"></label>
+            <input id="resize-height" class="text resize" type="text" value="<mt:var name="image_height">" />
+            <button id="resize-apply" class="button resize enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
+            <button id="resize-reset" class="button resize disabled" disabled="disabled"><__trans phrase="Reset"></button>
+          </div>
+          <div class="editor-resize-subcolumn">
+            <input id="keep-aspect-ratio" class="checkbox" type="checkbox" value="1" checked="checked" />
+            <label for="keep-aspect-ratio"><__trans phrase="Keep aspect ratio"></label>
+          </div>
         </div>
 
-        <div class="editor-column">
-          <button id="undo" class="button disabled" disabled="disabled" onclick="image.undo();"><__trans phrase="Undo"></button>
-          <button id="redo" class="button disabled" disabled="disabled" onclick="image.redo();"><__trans phrase="Redo"></button>
+        <div id="editor-metadata">
+          <mt:if name="has_gps_metadata">
+          <div class="editor-metadata-column">
+            <input id="remove-gps-metadata" class="checkbox enable-submit" type="checkbox" />
+            <label for="remove-gps-metadata"><__trans phrase="Remove GPS metadata"></label>
+          </div>
+          </mt:if>
+
+          <mt:if name="has_exif_metadata">
+          <div class="editor-metadata-column">
+            <input id="remove-exif-metadata" class="checkbox enable-submit" type="checkbox" />
+            <label for="remove-exif-metadata"><__trans phrase="Remove EXIF metadata"></label>
+          </div>
+          </mt:if>
+        </div>
+
+        <div id="editor-button">
+          <div class="editor-button-column">
+            <button class="button editor-button enable-submit" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
+              <img alt="Rotate right" src="<mt:var name="static_uri">images/image_editor/rotate_right@2x.png" width="24" height="24" />
+            </button>
+            <button class="button editor-button enable-submit" title="<__trans phrase="Rotate left">" onclick="image.rotate(-90);">
+              <img alt="Rotate left" src="<mt:var name="static_uri">images/image_editor/rotate_left@2x.png" width="24" height="24" />
+            </button>
+            <button class="button editor-button enable-submit" title="<__trans phrase="Flip horizontal">" onclick="image.flipHorizontal();">
+              <img alt="Flip horizontal" src="<mt:var name="static_uri">images/image_editor/flip_horizontal@2x.png" width="24" height="24" />
+            </button>
+            <button class="button editor-button enable-submit" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
+              <img alt="Flip vertical" src="<mt:var name="static_uri">images/image_editor/flip_vertical@2x.png" width="24" height="24" />
+            </button>
+            <button id="crop" class="button editor-button enable-submit disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
+              <img alt="Crop" src="<mt:var name="static_uri">images/image_editor/crop@2x.png" width="24" height="24" />
+            </button>
+          </div>
+
+          <div class="editor-button-column">
+            <button id="undo" class="button history disabled" disabled="disabled" onclick="image.undo();"><__trans phrase="Undo"></button>
+            <button id="redo" class="button history disabled" disabled="disabled" onclick="image.redo();"><__trans phrase="Redo"></button>
+          </div>
         </div>
 
       </div><!-- /editor -->
