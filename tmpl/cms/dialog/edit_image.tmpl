@@ -116,7 +116,7 @@
         var resized = false;
 
         // This is true while resizing image.
-        var resizeIsDirty;
+        var resizing;
 
         var resizeWidth = jQuery('input#resize-width').val();
         var resizeHeight = jQuery('input#resize-height').val();
@@ -153,7 +153,7 @@
             resized = true;
 
             // Finish resizing.
-            resizeIsDirty = false;
+            resizing = false;
         });
 
         // Reset resize-width and resize-height when clicking reset button.
@@ -163,7 +163,7 @@
             jQuery('input#resize-height').val(resizeWidth);
 
             // Finish resizing.
-            resizeIsDirty = false;
+            resizing = false;
 
             // Update resize buttons.
             update();
@@ -185,12 +185,12 @@
             var $resizeHeight = jQuery('input#resize-height');
  
             // Do nothing when there is no change.
-            if (!resizeIsDirty && $resizeWidth.val() === resizeWidth) {
+            if (!resizing && $resizeWidth.val() === resizeWidth) {
                 return;
             }
 
             // Resizing now.
-            resizeIsDirty = true;
+            resizing = true;
  
             // Change the status of resize buttons.
             if ($resizeWidth.val() === '0' || $resizeWidth.val() === '') {
@@ -233,12 +233,12 @@
             var $resizeHeight = jQuery(this);
 
             // Do nothing when there is no change.
-            if (!resizeIsDirty && $resizeHeight.val() === resizeHeight) {
+            if (!resizing && $resizeHeight.val() === resizeHeight) {
                 return;
             }
 
             // Resizing now.
-            resizeIsDirty = true;
+            resizing = true;
 
             // Enable resize buttons.
             if ($resizeHeight.val() === '0' || $resizeHeight.val() === '') {
@@ -316,7 +316,7 @@
 
         // Confirm before closing dialog.
         jQuery('button.image-editor-close-dialog').click(function() {
-            if (isDirty) {
+            if (isDirty || resizing || image.getPlugin('crop').hasFocus()) {
                 var message = 'You have unsaved changes to this page that will be lost. Are you sure you want to close this dialog?';
                 if (confirm(message)) {
                     parent.jQuery.fn.mtDialog.close();
