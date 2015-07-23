@@ -1,26 +1,216 @@
+<form>
+  <input type="file" id="file" name="file" multiple="multiple" style="display: none;">
+  <input type="hidden" name="normalize_orientation" value="<mt:if name="normalize_orientation">1<mt:Else>0</mt:if>" />
+
+  <div id="drop-handler" style="height: 150px; background-color: #DFDFDF; border-radius: 10px; border: dotted 2px; border-color: #6f6f6f; margin-bottom: 1em;">
+    <p style="text-align: center; font-size: 1.5em; line-height: 150px;">Drag and drop here to upload files. Or <button id="open-file-dialog" style="text-decoration: underline; color: #0076BF; border: none; background: transparent;">browse</button>.</p>
+  </div>
+
+    <h2><__trans phrase="Upload Destination"></h2>
+<mtapp:setting
+  id="site_path"
+  hint="<__trans phrase="_USAGE_UPLOAD">"
+  show_hint="1"
+  show_label="0"
+  label_class="top-label">
+    <select name="site_path" id="site_path">
+      <option value="1">&#60;<__trans phrase="Site Root">&#62;</option>
+  <mt:if name="enable_archive_paths">
+      <option value="0"<mt:if name="archive_path"> selected="selected"</mt:if>>&#60;<__trans phrase="Archive Root">&#62;</option>
+  </mt:if>
+  <mt:if name="extra_paths">
+    <mt:loop name="extra_paths">
+      <option value="<mt:if name="enable_archive_paths">0<mt:else>1</mt:if>" middle_path="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+    </mt:loop>
+  </mt:if>
+    </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+</mtapp:setting>
+
+    <h2><__trans phrase="Upload Options"></h2>
+<mtapp:setting
+  id="option-file-exists"
+  show_hint="0"
+  show_label="1"
+  label="<__trans phrase="Operation for a file exists">"
+  label_class="left-label">
+    <select name="option-file-exists" id="option-file-exists">
+      <option value="auto-rename"><__trans phrase="Upload and rename"></option>
+      <option value="overwrite"><__trans phrase="Overwrite existing file"></option>
+      <option value="ignore-upload"><__trans phrase="Cancel upload"></option>
+    </select>
+</mtapp:setting>
+<mtapp:setting
+  id="option-normalize-orientation"
+  label="<__trans phrase="Normalize orientation">"
+  show_label="1">
+      <input type="checkbox" name="option-normalize-orientation" id="option-normalize-orientation" value="1"<mt:if name="enable-normalize-orientation"> checked="checked"</mt:if> class="cb" />
+      <label for="option-normalize-orientation"><__trans phrase="Enable orientation normalization"></label>
+    </mtapp:setting>
+</form>
+
+<div id="upload-progress">
+</div>
+
+
+
+
 <script type="text/javascript">
 /* <![CDATA[ */
-jQuery(document).ready(function() {
-  jQuery('#warning-site-thumb-path').css('display', 'block');
-  jQuery('#warning-archive-thumb-path').css('display', 'none');
+
+// Assign drag and drop event
+jQuery('#drop-handler').on('dragenter', function(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  jQuery(this).css('border', '2px solid #0B85A1');
+}).on('dragover', function (e) {
+  e.stopPropagation();
+  e.preventDefault();
+}).on('dragleave', function(e) {
+  jQuery(this).css('border', '2px dotted #6f6f6f');
+}).on('drop', function (e) {
+  jQuery(this).css('border', '2px dotted #6f6f6f');
+  e.preventDefault();
+
+  var files = e.originalEvent.dataTransfer.files;
+  uploadFiles(files);
 });
 
-function setExtraPath(sel) {
-   var opt = sel.options[sel.selectedIndex];
-   var path = opt.getAttribute("middle_path");
-   if (!path) path = '';
-   var middle = sel.form['middle_path'];
-   if (middle) middle.value = path;
-   
-   // Switch display of warnings
-   if (opt.value === '1') {
-     jQuery('#warning-site-thumb-path').css('display', 'block');
-     jQuery('#warning-archive-thumb-path').css('display', 'none');
-   } else if (opt.value === '0') {
-     jQuery('#warning-site-thumb-path').css('display', 'none');
-     jQuery('#warning-archive-thumb-path').css('display', 'block');
-   }
+// Ignore drop on non-droppable area
+jQuery(document).on('dragenter', function (e) {
+  e.stopPropagation();
+  e.preventDefault();
+}).on('dragover', function (e) {
+  e.stopPropagation();
+  e.preventDefault();
+}).on('drop', function (e) {
+  e.stopPropagation();
+  e.preventDefault();
+});
+
+function createFormData(file) {
+  var fd = new FormData();
+
+  // Set file object
+  fd.append('file', file);
+
+  // Set extended parameters
+  fd.append('__mode', '<mt:if name="upload_mode"><mt:var name="upload_mode" escape="html"><mt:else>js_upload_file</mt:if>');
+  fd.append('blog_id', <mt:var name="blog_id">);
+  fd.append('entry_insert', '<mt:var name="entry_insert" escape="html">');
+  fd.append('asset_select', '<mt:var name="asset_select" escape="html">');
+  fd.append('edit_field', '<mt:var name="edit_field" escape="html">');
+  fd.append('require_type', '<mt:var name="require_type" escape="html">');
+  fd.append('magic_token', '<mt:var name="magic_token">');
+
+  var normalizeOrientation = 0;
+  if ( jQuery('#option-normalize-orientation').prop('checked') ) {
+    normalizeOrientation = 1;
+  }
+  fd.append('normalize_orientation', normalizeOrientation);
+
+  fd.append('site_path', 1)     // TEMPORARY
+  fd.append('extra_path', '/'); // TEMPORARY
+
+<mt:if name="no_insert">
+  fd.append('no_insert', '<mt:var name="no_insert">');
+</mt:if>
+<mt:if name="user_id">
+  fd.append('user_id', '<mt:var name="user_id" escape="html">');
+</mt:if>
+<mt:if name="dialog">
+  fd.append('dialog', '<mt:var name="dialog">');
+</mt:if>
+    return fd;
 }
+
+var numOfRows = 0;
+function createUploadBlock () {
+  numOfRows++;
+
+  this.uploadBlock  = jQuery('<div class="upload-status-block" id="upload-status_' + numOfRows + '"></div>');
+  this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.uploadBlock);
+  this.progressbar  = jQuery('<div class="progressbar" id="upload-progressbar_' + numOfRows + '"></div>').appendTo(this.uploadBlock);
+  this.cancelUpload = jQuery('<div class="upload-cancel"><__trans phrase="Cancel"></div>').appendTo(this.uploadBlock);
+  this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.uploadBlock);
+
+  jQuery('#upload-progress').before(this.uploadBlock);
+
+  this.progressbar.progressbar({ value: 0 });
+
+  this.setFilename = function(filename) {
+    this.filename.html(filename);
+  }
+
+  this.setProgress = function(val) {
+    this.progressbar.progressbar({ value: val });
+    if( parseInt(val) >= 100 ) {
+      this.cancelUpload.hide();
+    }
+  }
+
+  this.setCancelUpload = function(xhr) {
+    var uploadBlock = this.uploadBlock;
+    this.cancelUpload.click( function() {
+      xhr.abort();
+      cancelUpload.hide();
+    });
+  }
+
+  this.setThubmanil = function(url) {
+    jQuery('<img>').attr('src', url).appendTo(this.thumbnail);
+  }
+}
+
+function uploadFiles(files) {
+  var num_files = files.length;
+  console.log('Num of Files: ' + num_files );
+
+  for (var i = 0; i < num_files; i++) {
+    var fd = createFormData( files[i] );
+    var uploadBlock = new createUploadBlock();
+    uploadBlock.setFilename(files[i].name);
+    uploadFile(fd, uploadBlock);
+  }
+}
+
+function uploadFile( formData, uploadBlock ) {
+  var xhr = jQuery.ajax({
+    xhr: function() {
+      var handler = jQuery.ajaxSettings.xhr();
+      if (handler.upload) {
+        handler.upload.addEventListener('progress', function(event) {
+          var percent = 0;
+          var position = event.loaded || event.position;
+          var total = event.total;
+          if (event.lengthComputable) {
+            percent = Math.ceil(position / total * 100);
+          }
+          uploadBlock.setProgress(percent);
+        }, false);
+      }
+      return handler;
+    },
+    url: "<mt:var name="script_url">",
+    type: "POST",
+    contentType:false,
+    processData: false,
+    cache: false,
+    data: formData
+  }).done( function(data){
+    console.log(data);
+    uploadBlock.setProgress(100);
+    uploadBlock.setThubmanil(data.result.asset.thumbnail);
+    uploadBlock.progressbar.hide();
+  });
+
+  uploadBlock.setCancelUpload(xhr);
+}
+
+jQuery('#open-file-dialog').click( function() {
+  jQuery('input[type="file"]').click();
+  return false;
+});
+
 
 function validate(f) {
 <mt:if name="extra_paths">
@@ -45,52 +235,6 @@ function is_valid_path(path_){
 /* ]]> */
 </script>
 
-<mt:if name="missing_paths">
-  <mt:if name="have_permissions">
-    <mt:if name="dialog">
-<p><__trans phrase="Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1]." params="<mt:var name="scope_label">%%<a href="javascript:void(0);" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">');">%%</a>"></p>
-    <mt:else>
-<p><__trans phrase="Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1]." params="<mt:var name="scope_label">%%<a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">">%%</a>"></p>
-    </mt:if>
-  <mt:else>
-<p><__trans phrase="Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator." params="<mt:var name="scope_label">"></p>
-  </mt:if>
-  <mt:if name="dialog">
-<div class="actions-bar">
-  <button
-     type="submit"
-     accesskey="x"
-     class="close action button mt-close-dialog"
-     title="<__trans phrase="Close (x)">"
-     class="close action button mt-close-dialog">
-    <__trans phrase="Close">
-  </button>
-</div>
-  </mt:if>
-<mt:else>
-  <mt:if name="error">
-<mtapp:statusmsg
-   id="generic-error"
-   class="error"
-   can_close="0">
-  <mt:var name="error">
-</mtapp:statusmsg>
-  </mt:if>
-  <mt:loop name="thumb_dir_warnings">
-<mtapp:statusmsg
-   id="warning-<mt:var name="key">-thumb-path"
-   class="warning"
-   can_close="0">
-  <__trans phrase="Cannot write to '[_1]'. Image upload is possible, but thumbnail is not created.", params="<mt:var name="path">" escape="html">
-</mtapp:statusmsg>
-  </mt:loop>
-  <mt:if name="uploaded">
-<mtapp:statusmsg
-   id="asset-uploaded"
-   class="success">
-  <__trans phrase="Asset file('[_1]') has been uploaded.", params="<mt:var name="uploaded_filename">" escape="html" escape="html">
-</mtapp:statusmsg>
-  </mt:if>
 
 <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" id="upload-form" onsubmit="return validate(this)">
   <input type="hidden" name="__mode" value="<mt:if name="upload_mode"><mt:var name="upload_mode" escape="html"><mt:else>upload_file</mt:if>" />
@@ -112,13 +256,6 @@ function is_valid_path(path_){
   </mt:if>
   <input type="hidden" name="auto_rename_if_exists" value="<mt:if name="auto_rename_if_exists">1<mt:Else>0</mt:if>" />
   <input type="hidden" name="normalize_orientation" value="<mt:if name="normalize_orientation">1<mt:Else>0</mt:if>" />
-
-  <mtapp:setting
-     id="file"
-     label_class="top-label"
-     label="<__trans phrase="Select File to Upload">">
-    <input type="file" name="file" id="file" />
-  </mtapp:setting>
 
   <mt:if name="enable_destination">
   <mt:setvarblock name="upload_hint"><__trans phrase="_USAGE_UPLOAD" params="<$mt:var name="blog_name" escape="html"$>"></mt:setvarblock>
@@ -211,33 +348,62 @@ function is_valid_path(path_){
   <mt:include name="include/category_selector.tmpl">
   </mt:if>
 
+
+<mt:if name="missing_paths">
+  <mt:if name="have_permissions">
+    <mt:if name="dialog">
+<p><__trans phrase="Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1]." params="<mt:var name="scope_label">%%<a href="javascript:void(0);" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">');">%%</a>"></p>
+    <mt:else>
+<p><__trans phrase="Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1]." params="<mt:var name="scope_label">%%<a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">">%%</a>"></p>
+    </mt:if>
+  <mt:else>
+<p><__trans phrase="Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator." params="<mt:var name="scope_label">"></p>
+  </mt:if>
+<mt:else>
+  <mt:if name="error">
+<mtapp:statusmsg
+   id="generic-error"
+   class="error"
+   can_close="0">
+  <mt:var name="error">
+</mtapp:statusmsg>
+  </mt:if>
+  <mt:loop name="thumb_dir_warnings">
+<mtapp:statusmsg
+   id="warning-<mt:var name="key">-thumb-path"
+   class="warning"
+   can_close="0">
+  <__trans phrase="Cannot write to '[_1]'. Image upload is possible, but thumbnail is not created.", params="<mt:var name="path">" escape="html">
+</mtapp:statusmsg>
+  </mt:loop>
+  <mt:if name="uploaded">
+<mtapp:statusmsg
+   id="asset-uploaded"
+   class="success">
+  <__trans phrase="Asset file('[_1]') has been uploaded.", params="<mt:var name="uploaded_filename">" escape="html" escape="html">
+</mtapp:statusmsg>
+  </mt:if>
+
   <div class="actions-bar">
+<mt:if name="dialog">
     <button
-       type="submit"
-       accesskey="s"
-       title="<__trans phrase="Upload (s)">"
-       class="upload action primary button">
-      <__trans phrase="Upload">
-    </button>
-  <mt:if name="dialog">
-    <button
-       type="submit"
-       accesskey="x"
-       class="cancel action button mt-close-dialog"
-       title="<__trans phrase="Cancel (x)">">
+      type="submit"
+      accesskey="x"
+      class="cancel action button mt-close-dialog"
+      title="<__trans phrase="Cancel (x)">">
       <__trans phrase="Cancel">
     </button>
-  </mt:if>
-  <mt:if name="included_upload_asset">
+</mt:if>
+<mt:if name="included_upload_asset">
     <button
-       onclick="toggleHidden('list-assets-dialog'); toggleHidden('upload-asset-dialog'); return false"
-       type="submit"
-       accesskey="b"
-       class="goback button action"
-       title="<__trans phrase="Back (b)">">
+      onclick="toggleHidden('list-assets-dialog'); toggleHidden('upload-asset-dialog'); return false"
+      type="submit"
+      accesskey="b"
+      class="goback button action"
+      title="<__trans phrase="Back (b)">">
       <__trans phrase="Back">
     </button>
-  </mt:if>
+</mt:if>
   </div>
 </form>
 </mt:if>

@@ -457,6 +457,68 @@ sub start_upload {
     $app->load_tmpl( $tmpl_file, \%param );
 }
 
+sub js_upload_file {
+    my $app = shift;
+
+    if ( my $perms = $app->permissions ) {
+        return $app->error(
+            $app->json_error( $app->translate("Permission denied.") ) )
+            unless $perms->can_do('upload');
+    }
+    else {
+        return $app->error(
+            $app->json_error( $app->translate("Permission denied.") ) );
+    }
+    $app->validate_magic()
+        or return $app->error(
+        $app->json_error( $app->translate("Invalid Request.") ) );
+
+    my ( $asset, $bytes ) = _upload_file(
+        $app,
+        require_type => ( $app->param('require_type') || '' ),
+        @_,
+    );
+
+    # Make thumbnail
+    my $thumb_url;
+    my $thumb_size = 45;
+    if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
+        my ( $orig_height, $orig_width )
+            = ( $asset->image_width, $asset->image_height );
+        if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
+            ($thumb_url) = $asset->thumbnail_url(
+                Height => $thumb_size,
+                Width  => $thumb_size,
+                Square => 1
+            );
+        }
+        elsif ( $orig_width > $thumb_size ) {
+            ($thumb_url) = $asset->thumbnail_url( Width => $thumb_size, );
+        }
+        elsif ( $orig_height > $thumb_size ) {
+            ($thumb_url) = $asset->thumbnail_url( Height => $thumb_size, );
+        }
+        else {
+            $thumb_url = $asset->url;
+        }
+    }
+    else {
+        $thumb_url
+            = MT->static_path
+            . 'images/asset/'
+            . $asset->class_type
+            . '-45.png';
+    }
+
+    my $metadata = {
+        id        => $asset->id,
+        filename  => $asset->file_name,
+        blog_id   => $asset->blog_id,
+        thumbnail => $thumb_url,
+    };
+    return $app->json_result( { asset => $metadata } );
+}
+
 sub upload_file {
     my $app = shift;
 
@@ -1082,8 +1144,6 @@ sub _set_start_upload_params {
                 $param->{have_permissions} = 1;
             }
         }
-
-        $param->{enable_destination} = 1;
 
         my $data = $app->_build_category_list(
             blog_id => $blog_id,
