@@ -15,7 +15,7 @@
     Darkroom.plugins.crop.prototype.onMouseUp = function(event) {
         (onMouseUp.bind(this))(event);
         // Start event after cropping.
-        (this.options.postSelect || function() {})();
+        (this.options.postSelectTrigger || function() {})();
     };
 
     // Flip plugin
@@ -30,6 +30,8 @@
              * (direction === 'horizontal' && angle % 180 !== 0) => flipY
              * (direction === 'vertical'   && angle % 180 === 0) => flipY
              * (direction === 'vertical'   && angle % 180 !== 0) => flipX
+
+             "image.angle" is always zero after undoing/redoing image, but it is OK.
              */
             if (direction === 'horizontal' ^ image.angle % 180 === 0) {
                 image.flipY ^= true;
@@ -48,16 +50,91 @@
     });
 
     // History plugin
-    var initialize = Darkroom.plugins.history.prototype.initialize;
-    Darkroom.plugins.history.prototype.initialize = function() {
-        (initialize.bind(this))();
-        this.postUpdate = this.options.postUpdate || function() {};
+    Darkroom.plugins.history.prototype.goBack = function() {
+      if (this.backHistoryStack.length === 0) {
+        return;
+      }
+
+      var darkroom = this.darkroom;
+
+      this.forwardHistoryStack.push({
+        image: this.currentImage,
+        width: darkroom.width,
+        height: darkroom.height,
+        thumbnailWidth: darkroom.thumbnailWidth,
+        thumbnailHeight: darkroom.thumbnailHeight,
+      });
+
+      var history = this.backHistoryStack.pop();
+
+      this.currentImage = history.image;
+      this._applyImage(this.currentImage);
+
+      darkroom.width = history.width;
+      darkroom.height = history.height;
+      darkroom.thumbnailWidth = history.thumbnailWidth;
+      darkroom.thumbnailHeight = history.thumbnailHeight;
+
+      // Dispatch an event, so listeners will know the
+      // currently viewed image has been changed.
+      this.darkroom.dispatchEvent('history:navigate');
     };
 
-    var _onImageChange = Darkroom.plugins.history.prototype._onImageChange;
+    Darkroom.plugins.history.prototype.goForward = function() {
+      if (this.forwardHistoryStack.length === 0) {
+        return;
+      }
+
+      var darkroom = this.darkroom;
+
+      this.backHistoryStack.push({
+        image: this.currentImage,
+        width: darkroom.width,
+        height: darkroom.height,
+        thumbnailWidth: darkroom.thumbnailWidth,
+        thumbnailHeight: darkroom.thumbnailHeight
+      });
+
+      var history = this.forwardHistoryStack.pop();
+
+      this.currentImage = history.image;
+      this._applyImage(this.currentImage);
+
+      darkroom.width = history.width;
+      darkroom.height = history.height;
+      darkroom.thumbnailWidth = history.thumbnailWidth;
+      darkroom.thumbnailHeight = history.thumbnailHeight;
+
+      // Dispatch an event, so listeners will know the
+      // currently viewed image has been changed.
+      this.darkroom.dispatchEvent('history:navigate');
+    };
+
     Darkroom.plugins.history.prototype._onImageChange = function() {
-        (_onImageChange.bind(this))();
-        this.postUpdate();
+        var darkroom = this.darkroom;
+
+        this.backHistoryStack.push({
+          image: this.currentImage,
+          width: darkroom.width,
+          height: darkroom.height,
+          thumbnailWidth: darkroom.thumbnailWidth,
+          thumbnailHeight: darkroom.thumbnailHeight,
+        });
+
+        // Parameters are updated here after cropping.
+        if (darkroom.temporaryParameters) {
+          var t = darkroom.temporaryParameters;
+          darkroom.width = t.width;
+          darkroom.height = t.height;
+          darkroom.thumbnailWidth = t.thumbnailWidth;
+          darkroom.thumbnailHeight = t.thumbnailHeight;
+          delete darkroom.temporaryParameters;
+        }
+
+        this._snapshotImage();
+        this.forwardHistoryStack.length = 0;
+
+        this.darkroom.postActionTrigger();
     };
 
     // Resize plugin
@@ -84,30 +161,35 @@
     ImageEditor.prototype = jQuery.extend(true, Darkroom.prototype, {
         defaults: {
             init: function() {
-                this.originalWidth = this.options.originalWidth;
-                this.originalHeight = this.options.originalHeight;
-                this.originalThumbnailWidth = this.options.originalThumbnailWidth;
-                this.originalThumbnailHeight = this.options.originalThumbnailHeight;
+                this.width = this.options.width;
+                this.height = this.options.height;
+                this.thumbnailWidth = this.options.thumbnailWidth;
+                this.thumbnailHeight = this.options.thumbnailHeight;
 
+                this.postActionTrigger = this.options.postActionTrigger || function() {};
+
+                // Remove toolbar.
                 jQuery('div.darkroom-toolbar').remove();
             },
             plugins: {
-                save: false
-            },
+                save: false  // Disable save plugin.
+            }
         },
 
+        postActionTrigger: null,
+
         // Parameters
-        originalWidth: null,
-        originalHeight: null,
-        originalThumbnailWidth: null,
-        originalThumbnailHeight: null,
+        width: null,
+        height: null,
+        thumbnailWidth: null,
+        thumbnailHeight: null,
 
         // Action stacks
         backActionStack: [],
         forwardActionStack: [],
         saveAction: function(action) {
             this.backActionStack.push(action);
-            this.forwardActionStack = [];
+            this.forwardActionStack.length = 0;
         },
         undoAction: function() {
             this.forwardActionStack.push(this.backActionStack.pop());
@@ -120,19 +202,15 @@
         crop: function() {
             var crop = this.getPlugin('crop');
 
-            var cropLeft, cropTop, cropWidth, cropHeight;
-            if (this.getAngle() % 180 === 0) {
-                cropLeft   = Math.ceil(crop.cropZone.left * this.originalWidth / this.originalThumbnailWidth);
-                cropTop    = Math.ceil(crop.cropZone.top * this.originalHeight / this.originalThumbnailHeight);
-                cropWidth  = Math.ceil(crop.cropZone.width * this.originalWidth / this.originalThumbnailWidth);
-                cropHeight = Math.ceil(crop.cropZone.height * this.originalHeight / this.originalThumbnailHeight);
-            } else {
-                cropLeft   = Math.ceil(crop.cropZone.left * this.originalHeight / this.originalThumbnailHeight);
-                cropTop    = Math.ceil(crop.cropZone.top * this.originalWidth / this.originalThumbnailWidth);
-                cropWidth  = Math.ceil(crop.cropZone.width * this.originalHeight / this.originalThumbnailHeight);
-                cropHeight = Math.ceil(crop.cropZone.height * this.originalWidth / this.originalThumbnailWidth);
-            }
+            var cropLeft = Math.ceil(crop.cropZone.left * this.width / this.thumbnailWidth);
+            var cropTop = Math.ceil(crop.cropZone.top * this.height / this.thumbnailHeight);
+            var cropWidth = Math.ceil(crop.cropZone.width * this.width / this.thumbnailWidth);
+            var cropHeight = Math.ceil(crop.cropZone.height * this.height / this.thumbnailHeight);
 
+            var cropThumbnailWidth = crop.cropZone.width;
+            var cropThumbnailHeight = crop.cropZone.height;
+
+            // Crop.
             crop.cropCurrentZone();
 
             this.saveAction({
@@ -143,6 +221,17 @@
                     height: cropHeight
                 }
             });
+
+            // These parameters will be updated in 'image:change' trigger.
+            this.temporaryParameters = {
+              width: cropWidth,
+              height: cropHeight,
+              thumbnailWidth: cropThumbnailWidth,
+              thumbnailHeight: cropThumbnailHeight
+            };
+
+            // Update dialog.
+            this.postActionTrigger();
         },
         cropCancel: function() {
             this.getPlugin('crop').releaseFocus();
@@ -161,45 +250,19 @@
                 flip: 'vertical'
             });
         },
-        isFlippedX: function() {
-            return this.image.flipX;
-        },
-        isFlippedY: function() {
-            return this.image.flipY;
-        },
 
         // History
         undo: function() {
-            var history = this.getPlugin('history');
-            history.goBack();
-
+            this.getPlugin('history').goBack();
             this.undoAction();
 
-            // Resize.
-            if (this.backActionStack.length > 0) {
-                var resize = this.backActionStack[0].resize;
-                if (resize) {
-                    this.resize(resize.width, resize.height, true);
-                }
-            }
-
-            history.postUpdate();
+            this.postActionTrigger();
         },
         redo: function() {
-            var history = this.getPlugin('history');
-            history.goForward();
-
+            this.getPlugin('history').goForward();
             this.redoAction();
 
-            // Resize.
-            if (this.backActionStack.length > 0) {
-                var resize = this.backActionStack[0].resize;
-                if (resize) {
-                    this.resize(resize.width, resize.height, true);
-                }
-            }
-
-            history.postUpdate();
+            this.postActionTrigger();
         },
         undoSize: function() {
             return this.getPlugin('history').backHistoryStack.length;
@@ -210,19 +273,16 @@
 
         // Resize
         resize: function(width, height, noSaveAction) {
-            var thumbnailWidth, thumbnailHeight;
-            if (this.getAngle() % 180 === 0) {
-                thumbnailWidth = Math.ceil(width * this.originalThumbnailWidth / this.originalWidth);
-                thumbnailHeight = Math.ceil(height * this.originalThumbnailHeight / this.originalHeight);
-            } else {
-                thumbnailWidth = Math.ceil(width * this.originalThumbnailHeight / this.originalHeight);
-                thumbnailHeight = Math.ceil(height * this.originalThumbnailWidth / this.originalWidth);
-            }
+            var thumbnailWidth = Math.ceil(width * this.thumbnailWidth / this.width);
+            var thumbnailHeight = Math.ceil(height * this.thumbnailHeight / this.height);
+
+            // Resize.
             this.getPlugin('resize').resize(thumbnailWidth, thumbnailHeight);
 
-            this.dispatchEvent('image:change');
-
+            // Save history.
             if (!noSaveAction) {
+                this.dispatchEvent('image:change');
+
                 this.saveAction({
                     resize: {
                         width: width,
@@ -230,42 +290,42 @@
                     }
                 });
             }
-        },
-        getWidth: function() {
-            if (this.getAngle() % 180 === 0) {
-                return Math.ceil(this.getThumbnailWidth() * this.originalWidth / this.originalThumbnailWidth);
-            } else {
-                return Math.ceil(this.getThumbnailWidth() * this.originalHeight / this.originalThumbnailHeight);
-            }
-        },
-        getHeight: function() {
-            if (this.getAngle() % 180 === 0) {
-                return Math.ceil(this.getThumbnailHeight() * this.originalHeight / this.originalThumbnailHeight);
-            } else {
-                return Math.ceil(this.getThumbnailHeight() * this.originalWidth / this.originalThumbnailWidth);
-            }
-        },
-        getThumbnailWidth: function() {
-            return jQuery(this.container).find('div.canvas-container').width();
-        },
-        getThumbnailHeight: function() {
-            return jQuery(this.container).find('div.canvas-container').height();
+
+            // Update current parameters.
+            this.width = width;
+            this.height = height;
+            this.thumbnailWidth = thumbnailWidth;
+            this.thumbnailHeight = thumbnailHeight;
+
+            // Update dialog.
+            this.postActionTrigger();
         },
 
         // Rotate
         rotate: function(angle) {
+            // Rotate.
             this.getPlugin('rotate').rotate(angle);
+
+            // Save action.
             this.saveAction({
                 rotate: angle
             });
+
+            // Update current parameters.
+            var newHeight = this.width;
+            this.width = this.height;
+            this.height = newHeight;
+
+            var newThumbnailHeight = this.thumbnailWidth;
+            this.thumbnailWidth = this.thumbnailHeight;
+            this.thumbnailHeight = newThumbnailHeight;
+
+            // Update dialog.
+            this.postActionTrigger();
         },
-        getAngle: function() {
-            var angle = this.image.angle;
-            if (angle < 0) angle += 360;  // Return positive value only.
-            return angle;
-        }
     });
 
+    // Globalize.
     window.ImageEditor = ImageEditor;
 
 })(window, document, Darkroom, jQuery);

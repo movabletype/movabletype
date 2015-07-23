@@ -112,32 +112,25 @@
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery(document).ready(function() {
 
-        // A flag for avoiding update just after resizing.
-        var resized = false;
-
         // This is true while resizing image.
         var resizing;
 
-        var resizeWidth = jQuery('input#resize-width').val();
-        var resizeHeight = jQuery('input#resize-height').val();
-
         window.image = new ImageEditor('div#image > img', {
-            originalWidth: <mt:var name="image_width">,
-            originalHeight: <mt:var name="image_height">,
-            originalThumbnailWidth: <mt:var name="thumbnail_width">,
-            originalThumbnailHeight: <mt:var name="thumbnail_height">,
+            width: <mt:var name="image_width">,
+            height: <mt:var name="image_height">,
+            thumbnailWidth: <mt:var name="thumbnail_width">,
+            thumbnailHeight: <mt:var name="thumbnail_height">,
+
+            postActionTrigger: update,
 
             plugins: {
                  crop: {
-                     postSelect: function() {
+                     postSelectTrigger: function() {
                          // Enable crop button.
                          enableButton('button#crop');
                          // Enable to cancelcropping by escape key.
                          jQuery(document).on('keyup', document, cancelCropping);
                      }
-                 },
-                 history: {
-                     postUpdate: update
                  }
             }
         });
@@ -145,12 +138,9 @@
         // Resize image when clicking apply button.
         jQuery('button#resize-apply').click(function() {
             // Resize.
-            resizeWidth = jQuery('input#resize-width').val();
-            resizeHeight = jQuery('input#resize-height').val();
-            image.resize(resizeWidth, resizeHeight);
-
-            // Resized.
-            resized = true;
+            var width = jQuery('input#resize-width').val();
+            var height = jQuery('input#resize-height').val();
+            image.resize(width, height);
 
             // Finish resizing.
             resizing = false;
@@ -159,8 +149,8 @@
         // Reset resize-width and resize-height when clicking reset button.
         jQuery('button#resize-reset').click(function() {
             // Reset.
-            jQuery('input#resize-width').val(resizeWidth);
-            jQuery('input#resize-height').val(resizeWidth);
+            jQuery('input#resize-width').val(image.width);
+            jQuery('input#resize-height').val(image.height);
 
             // Finish resizing.
             resizing = false;
@@ -185,7 +175,7 @@
             var $resizeHeight = jQuery('input#resize-height');
  
             // Do nothing when there is no change.
-            if (!resizing && $resizeWidth.val() === resizeWidth) {
+            if (!resizing && $resizeWidth.val() === image.width) {
                 return;
             }
 
@@ -218,13 +208,7 @@
             }
  
             // Update resize-height.
-            var width = $resizeWidth.val();
-            var height;
-            if (image.getAngle() % 180 === 0) {
-                height = Math.ceil(width * image.originalHeight / image.originalWidth);
-            } else {
-                height = Math.ceil(width * image.originalWidth / image.originalHeight);
-            }
+            var height = Math.ceil($resizeWidth.val() * image.height / image.width);
             $resizeHeight.val(height);
         });
 
@@ -233,7 +217,7 @@
             var $resizeHeight = jQuery(this);
 
             // Do nothing when there is no change.
-            if (!resizing && $resizeHeight.val() === resizeHeight) {
+            if (!resizing && $resizeHeight.val() === image.height) {
                 return;
             }
 
@@ -265,13 +249,7 @@
                 return;
             }
 
-            var height = $resizeHeight.val();
-            var width;
-            if (image.getAngle() % 180 === 0) {
-                width = Math.ceil(height * image.originalWidth / image.originalHeight);
-            } else {
-                width = Math.ceil(height * image.originalHeight / image.originalWidth);
-            }
+            var width = Math.ceil($resizeHeight.val() * image.width / image.height);
             $resizeWidth.val(width);
         });
 
@@ -339,15 +317,9 @@
         // Update textboxes and buttons on dialog.
         function update() {
             // Update resize textboxes and disable resize buttons.
-            if (resized) {
-                // Do not update just after resizing.
-                resized = false;
-            } else {
-                var width = image.getWidth();
-                var height = image.getHeight();
-                jQuery('input#resize-width').val(width);
-                jQuery('input#resize-height').val(height);
-            }
+            jQuery('input#resize-width').val(image.width);
+            jQuery('input#resize-height').val(image.height);
+
             disableButton('button#resize-apply');
             disableButton('button#resize-reset');
 
