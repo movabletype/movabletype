@@ -2863,7 +2863,9 @@ sub set_default_tmpl_params {
         my $date_format = $auth->date_format || 'relative';
         $param->{ "dates_" . $date_format } = 1;
 
-        if ( my ($url) = $auth->userpic_url( Width => 36, Height => 36 ) ) {
+        if ( my ($url)
+            = $auth->userpic_url( Width => 36, Height => 36, Ts => 1 ) )
+        {
             $param->{author_userpic_url} = $url;
         }
     }
