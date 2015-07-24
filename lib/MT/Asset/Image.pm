@@ -849,6 +849,7 @@ sub flip_vertical {
 sub _transform {
     my ( $asset, $process ) = @_;
 
+    require Image::ExifTool;
     require MT::FileMgr;
     require MT::Image;
 
@@ -859,10 +860,20 @@ sub _transform {
 
     my $img = MT::Image->new( Data => $img_data, Type => $asset->file_ext );
 
+    # Preserve metadata.
+    my $exif = Image::ExifTool->new;
+    $exif->SetNewValuesFromFile($file_path);
+
     my ( $blob, $width, $height ) = $process->($img);
 
     $fmgr->put_data( $blob, $file_path, 'upload' )
         or return $asset->error( $fmgr->errstr );
+
+    # Restore metadata.
+    $exif->WriteInfo($file_path)
+        or return $asset->trans_error( 'Writing metadata failed: [_1]',
+        $exif->GetTag('Error') );
+
     $asset->image_width($width);
     $asset->image_height($height);
 
