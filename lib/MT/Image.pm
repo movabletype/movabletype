@@ -242,7 +242,7 @@ sub remove_metadata {
     my $exif = Image::ExifTool->new;
     $exif->SetNewValue('*');
     $exif->WriteInfo($file)
-        or $class->trans_error( 'Writing metadata filed: [_1]',
+        or $class->trans_error( 'Writing metadata failed: [_1]',
         $exif->GetTag('Error') );
 }
 
