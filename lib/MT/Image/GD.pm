@@ -74,7 +74,7 @@ sub scale {
     wantarray ? ( $image->blob, $w, $h ) : $image->blob;
 }
 
-sub crop_rectanble {
+sub crop_rectangle {
     my $image = shift;
     my %param = @_;
     my ( $width, $height, $x, $y ) = @param{qw( Width Height X Y )};
