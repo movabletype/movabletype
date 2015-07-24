@@ -1,0 +1,37 @@
+<mt:include name="dialog/header.tmpl">
+
+<mt:If name="error">
+<mtapp:statusmsg
+   id="generic-error"
+   class="error"
+   can_close="0">
+  <mt:var name="error">
+</mtapp:statusmsg>
+</mt:If>
+
+<script type="text/javascript">
+(function() {
+    var oauthToken    = '<mt:Var name="oauth_token" />';
+    var oauthVerifier = '<mt:Var name="oauth_verifier" />';
+
+    if (oauthToken) {
+        var $ = window.opener.jQuery;
+
+        var consumerKey    = $('#flickr_consumer_key').val();
+        var consumerSecret = $('#flickr_consumer_secret').val();
+        var tokenUrl       = $('#flickr_get_token_url').val();
+        var magicToken     = $('input[name="magic_token"]').val();
+
+        var url = 
+            tokenUrl +
+            '&consumer_key=' + consumerKey +
+            '&consumer_secret=' + consumerSecret +
+            '&oauth_token=' + oauthToken +
+            '&oauth_verifier=' + oauthVerifier;
+        $(location).attr("href", url);
+    }
+
+})();
+</script>
+
+<mt:include name="dialog/footer.tmpl">

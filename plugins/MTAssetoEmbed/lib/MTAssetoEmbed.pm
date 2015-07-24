@@ -45,7 +45,8 @@ sub new_ua {
         )
     {
         $ua->ssl_opts(
-            SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_PEER() );
+            SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_PEER(),
+        );
     }
 
     $ua;

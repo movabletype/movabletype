@@ -17,6 +17,9 @@ settings:
 applications:
     cms:
         methods:
+            flickr_oauth_request: $MTAssetoEmbed::MTAssetoEmbed::App::flickr_oauth_request
+            flickr_oauth_callback: $MTAssetoEmbed::MTAssetoEmbed::App::flickr_oauth_callback
+            flickr_oauth_success: $MTAssetoEmbed::MTAssetoEmbed::App::flickr_oauth_success
             youtube_oauth2callback: $MTAssetoEmbed::MTAssetoEmbed::App::youtube_oauth2callback
             youtube_get_token_data: $MTAssetoEmbed::MTAssetoEmbed::App::youtube_get_token_data
 

@@ -9,6 +9,8 @@ package MTAssetoEmbed::App;
 use strict;
 use warnings;
 
+use Net::OAuth;
+$Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 use MTAssetoEmbed;
 use MTAssetoEmbed::OAuth2;
 
@@ -25,9 +27,9 @@ sub _is_youtube_effective_plugindata {
 }
 
 sub _get_session_token_data_key {
-    my ($app) = @_;
+    my ($app, $prefix) = @_;
     my $blog = $app->blog;
-    'youtube_token_data_' . ( $blog ? $blog->id : 'system' );
+    $prefix . '_token_data_' . ( $blog ? $blog->id : 'system' );
 }
 
 sub _get_session_token_data {
@@ -36,7 +38,7 @@ sub _get_session_token_data {
 }
 
 sub _set_session_token_data {
-    my ( $app, $data ) = @_;
+    my ( $app, $prefix, $data ) = @_;
     $app->session->set( _get_session_token_data_key(@_), $data );
 }
 
@@ -62,6 +64,10 @@ sub config_tmpl {
         'web_service_config.tmpl',
         {
             blog_id => $blog ? $blog->id : 0,
+            flickr_get_token_url => $app->uri(
+                mode => 'flickr_oauth_success',
+                ( $blog ? ( args => { blog_id => $app->blog->id, } ) : ()  ),
+            ),
             youtube_redirect_uri => $app->uri( mode => 'youtube_oauth2callback' ),
             youtube_authorize_url =>
                 youtube_authorize_url( $app, '__client_id__', '__redirect_uri__' ),
@@ -103,11 +109,20 @@ sub save_config {
         $config->{$k} = $app->param($k);
     }
 
-    my $token = _get_session_token_data($app);
-    if (   $token
-        && $token->{client_id} eq ( $config->{youtube_client_id} || '' ) )
+    # Flickr
+
+    my $flickr_token = _get_session_token_data($app, 'flickr');
+    if ( $flickr_token && $flickr_token->{consumer_key} eq ( $config->{flickr_consumer_key} || '' ) ) {
+        $config->{flickr_token_data} = $flickr_token;
+    }
+
+    # YouTube
+
+    my $youtube_token = _get_session_token_data($app, 'youtube');
+    if (   $youtube_token
+        && $youtube_token->{client_id} eq ( $config->{youtube_client_id} || '' ) )
     {
-        $config->{youtube_token_data} = $token;
+        $config->{youtube_token_data} = $youtube_token;
     }
 
     if ( ( !$config->{youtube_client_id} && !$config->{youtube_parent_client_id} )
@@ -120,7 +135,8 @@ sub save_config {
 
     $plugin->save_config( $config, $scope );
 
-    _clear_session_token_data($app);
+    _clear_session_token_data($app, 'flickr');
+    _clear_session_token_data($app, 'youtube');
 }
 
 sub youtube_oauth2callback {
@@ -156,7 +172,7 @@ sub youtube_get_token_data {
         scalar $app->param('redirect_uri'), $code )
         or return _render_api_error( $app, { error => $app->errstr } );
 
-    _set_session_token_data( $app, $token_data );
+    _set_session_token_data( $app, 'youtube', $token_data );
 
     my $params = {
         youtube_code => scalar $app->param('code'),
@@ -165,6 +181,109 @@ sub youtube_get_token_data {
     };
 
     plugin()->load_tmpl( 'youtube_get_token_data.tmpl', $params );
+}
+
+sub flickr_oauth_request {
+    my $app = shift;
+
+    my $request_token_url = 'https://www.flickr.com/services/oauth/request_token';
+    my $authorize_url     = 'https://www.flickr.com/services/oauth/authorize';
+    my $request_method    = 'GET';
+    my $consumer_key      = $app->param('consumer_key');
+    my $consumer_secret   = $app->param('consumer_secret');
+
+    my $request = Net::OAuth->request("request token")->new(
+                 consumer_key     => $consumer_key,
+                 consumer_secret  => $consumer_secret,
+                 request_url      => $request_token_url,
+                 request_method   => $request_method,
+                 signature_method => 'HMAC-SHA1',
+                 timestamp        => time,
+                 nonce            => int(rand(2**31 - 999999 + 1)) + 999999,
+                 callback         => $app->base . $app->uri( mode => 'flickr_oauth_callback' ),
+    );
+    $request->sign;
+    my $ua = new_ua();
+    $ua->ssl_opts( verify_hostname => 0 );
+    my $http_hdr = HTTP::Headers->new( 'Authorization' => $request->to_authorization_header );
+    my $http_req = HTTP::Request->new( $request_method,$request_token_url,$http_hdr );
+    my $res = $ua->request( $http_req );
+    my $request_token = '';
+    my $request_token_secret = '';
+    if ($res->is_success) {
+        my $response = Net::OAuth->response('request token')->from_post_body($res->content);
+        if (defined $response->token) {
+            $request_token = $response->token;
+            $request_token_secret = $response->token_secret;
+        }
+    } else {
+        return $app->error( translate('Flickr authorization error: ' . $res->status_line) );
+    }
+
+    return $app->redirect( $authorize_url . '?oauth_token=' . $request_token . '&perms=read' );
+}
+
+sub flickr_oauth_callback {
+    my $app = shift;
+
+    my $params = {
+        oauth_token => $app->param('oauth_token'),
+        oauth_verifier => $app->param('oauth_verifier'),
+    };
+
+    plugin()->load_tmpl( 'flickr_oauth_callback.tmpl', $params );
+}
+
+sub flickr_oauth_success {
+    my $app = shift;
+
+    my $access_token_url  = 'https://www.flickr.com/services/oauth/access_token';
+    my $request_method    = 'GET';
+    my $consumer_key      = $app->param('consumer_key');
+    my $consumer_secret   = $app->param('consumer_secret');
+    my $oauth_token       = $app->param('oauth_token');
+    my $oauth_verifier    = $app->param('oauth_verifier');
+
+    my $request = Net::OAuth->request("Access Token")->new(
+        consumer_key     => $consumer_key,
+        consumer_secret  => $consumer_secret,
+        request_url      => $access_token_url,
+        request_method   => $request_method,
+        signature_method => 'HMAC-SHA1',
+        timestamp        => time,
+        nonce            => int(rand(2**31 - 999999 + 1)) + 999999,
+        token            => $oauth_token,
+        verifier         => $oauth_verifier,
+        token_secret     => '',
+    );
+    $request->sign;
+    my $ua = new_ua();
+    $ua->ssl_opts( verify_hostname => 0 );
+    my $http_hdr = HTTP::Headers->new( 'User-Agent' => "Movable Type/6.2" );
+    my $http_req = HTTP::Request->new( $request_method,$access_token_url,$http_hdr,$request->to_post_body );
+    #my $res = $ua->request( $http_req );
+    my $res = $ua->get($request->to_url);
+    my $token_data = '';
+    if ($res->is_success) {
+        my $response = Net::OAuth->response('access token')->from_post_body($res->content);
+        $token_data->{consumer_key}        = $consumer_key;
+        $token_data->{consumer_secret}     = $consumer_secret;
+        $token_data->{access_token}        = $response->token;
+        $token_data->{access_token_secret} = $response->token_secret;
+    } else {
+        return $app->error( translate('Flickr authorization error: ' . $res->status_line) );
+    }
+
+    _set_session_token_data( $app, 'flickr', $token_data );
+
+    my $params = {
+        consumer_key=> $app->param('consumer_key'),
+        consumer_secret => $app->param('consumer_secret'),
+        oauth_token => $app->param('oauth_token'),
+        oauth_verifier => $app->param('oauth_verifier'),
+    };
+
+    plugin()->load_tmpl( 'flickr_oauth_finish.tmpl', $params );
 }
 
 1;

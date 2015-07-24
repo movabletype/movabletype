@@ -4,14 +4,23 @@
 
     <mtapp:setting
        id="flickr_consumer_key"
-       label="<__trans phrase="Consumer Key">">
+       label="<__trans phrase="API Key">">
       <input type="text" id="flickr_consumer_key" name="flickr_consumer_key" value="<mt:Var name="flickr_consumer_key" encode_html="1" />" />
     </mtapp:setting>
 
     <mtapp:setting
        id="flickr_consumer_secret"
-       label="<__trans phrase="Consumer Secret">">
+       label="<__trans phrase="Shared Secret">">
       <input type="text" id="flickr_consumer_secret" name="flickr_consumer_secret" value="<mt:Var name="flickr_consumer_secret" encode_html="1" />" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="flickr_token"
+       label="<__trans phrase="Access Token">"
+       show_hint="0">
+        <span id="ready_flickr_token" class="items"></span>
+    <input type="hidden" id="flickr_token" name="flickr_token" value="<mt:Var name="flickr_token" encode_html="1" />" />
+    <a href="#" id="get_flickr_token" class="button"><__trans phrase="Get Access Token" /></a>
     </mtapp:setting>
 
   </mtapp:settinggroup>
@@ -59,9 +68,37 @@
 <input type="hidden" id="youtube_configured_client_id" value="<mt:Var name="youtube_configured_client_id" encode_html="1" />" />
 <input type="hidden" id="youtube_configured_client_secret" value="<mt:Var name="youtube_configured_client_secret" encode_html="1" />" />
 <input type="hidden" id="youtube_dialog_url" value="<mt:Var name="youtube_dialog_url" encode_html="1" />" />
+<input type="hidden" id="flickr_get_token_url" value="<mt:Var name="flickr_get_token_url" encode_html="1" />" />
 
 <script type="text/javascript">
 jQuery(function($) {
+
+    // Flickr
+
+    $('#get_flickr_token').click(function() {
+        var consumer_key    = $('#flickr_consumer_key').val();
+        var consumer_secret = $('#flickr_consumer_secret').val();
+
+        if (!consumer_key) {
+            return false;
+        }
+
+        var url = 
+            ScriptURI +
+            '?__mode=flickr_oauth_request' +
+            '&consumer_key=' + consumer_key +
+            '&consumer_secret=' + consumer_secret;
+        window.open(
+            url, 'flickr_authorize',
+            'width=700, height=500, menubar=no, toolbar=no, scrollbars=yes'
+        );
+
+        return false;
+    });
+
+
+    // YouTube
+
     var redirectUri = $('#youtube_redirect_uri').val();
     if (! redirectUri.match(/^https?:\/\//)) {
         redirectUri =
