@@ -917,11 +917,23 @@ sub has_gps_metadata {
     return $exif->GetTagList ? 1 : 0;
 }
 
-sub has_exif_metadata {
+sub has_metadata {
     my ($asset) = @_;
     my $exif = $asset->exif or return;
-    $exif->Options( Group0 => 'EXIF' );
-    return $exif->GetTagList ? 1 : 0;
+
+    require Image::ExifTool;
+    for my $g ( $exif->GetGroups ) {
+        my @writable_tags = Image::ExifTool::GetWritableTags($g);
+        $exif->Options( Group => $g );
+        for my $t ( sort $exif->GetTagList ) {
+            if ( grep { $t eq $_ } @writable_tags ) {
+                return 1;
+            }
+        }
+        $exif->ClearOptions;
+    }
+
+    return 0;
 }
 
 sub remove_gps_metadata {
@@ -933,10 +945,10 @@ sub remove_gps_metadata {
         $exif->GetValue('Error') );
 }
 
-sub remove_exif_metadata {
+sub remove_all_metadata {
     my ($asset) = @_;
     my $exif = $asset->exif or return;
-    $exif->SetNewValue('EXIF:*');
+    $exif->SetNewValue('*');
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
@@ -1027,17 +1039,17 @@ Return Image::ExifTool instance.
 
 Return 1 when the image has GPS metadata.
 
-=head2 $asset->has_exif_metadata()
+=head2 $asset->has_metadata()
 
-Return 1 when the image has Exif metadata.
+Return 1 when the image has metadata.
 
 =head2 $asset->remove_gps_metadata()
 
 Remove all GPS metadata from the image.
 
-=head2 $asset->remove_exif_metadata()
+=head2 $asset->remove_all_metadata()
 
-Remove all Exif metadata from the image.
+Remove all metadata from the image.
 
 =head1 AUTHOR & COPYRIGHT
 

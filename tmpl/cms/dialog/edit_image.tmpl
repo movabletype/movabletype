@@ -111,10 +111,10 @@ button.history {
           </div>
           </mt:if>
 
-          <mt:if name="has_exif_metadata">
+          <mt:if name="has_metadata">
           <div class="editor-metadata-column">
-            <input id="remove-exif-metadata" class="checkbox enable-submit" type="checkbox" />
-            <label for="remove-exif-metadata"><__trans phrase="Remove EXIF metadata"></label>
+            <input id="remove-all-metadata" class="checkbox enable-submit" type="checkbox" />
+            <label for="remove-all-metadata"><__trans phrase="Remove All metadata"></label>
           </div>
           </mt:if>
         </div>
@@ -156,7 +156,7 @@ button.history {
         <input type="hidden" name="id" value="<mt:var name="id">" />
 
         <input type="hidden" name="remove_gps_metadata" />
-        <input type="hidden" name="remove_exif_metadata" />
+        <input type="hidden" name="remove_all_metadata" />
         <input type="hidden" name="actions" />
 
         <button
@@ -319,9 +319,9 @@ button.history {
             $resizeWidth.val(width);
         });
 
-        // Also check "Remove GPS metadata" when checking "Remove EXIF metadata".
+        // Also check "Remove GPS metadata" when checking "Remove All metadata".
         var gpsPreviousState;
-        jQuery('input#remove-exif-metadata').click(function() {
+        jQuery('input#remove-all-metadata').click(function() {
             var $checkboxGps = jQuery('input#remove-gps-metadata');
             if (jQuery(this).prop('checked')) {
                 gpsPreviousState = $checkboxGps.prop('checked');
@@ -344,8 +344,8 @@ button.history {
             if (jQuery('input#remove-gps-metadata:checked').length > 0) {
                 $form.children('input[name=remove_gps_metadata]').val(1);
             }
-            if (jQuery('input#remove-exif-metadata:checked').length > 0) {
-                $form.children('input[name=remove_exif_metadata]').val(1);
+            if (jQuery('input#remove-all-metadata:checked').length > 0) {
+                $form.children('input[name=remove_all_metadata]').val(1);
             }
 
             $form.submit();
