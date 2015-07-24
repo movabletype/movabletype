@@ -221,6 +221,12 @@ sub thumbnail_file {
         or return $asset->error(
         MT->translate( "Error creating thumbnail file: [_1]", $fmgr->errstr )
         );
+
+    # Remove metadata from thumbnail file.
+    require MT::Image;
+    MT::Image->remove_metadata($thumbnail)
+        or return $asset->error( MT::Image->errstr );
+
     return ( $thumbnail, $n_w, $n_h );
 }
 
