@@ -788,7 +788,8 @@ sub scale {
     my ( $asset, $width, $height ) = @_;
 
     if ( !$width || !$height ) {
-        return;
+        return $asset->trans_error(
+            'Scaling image failed: Invalid parameter.');
     }
 
     $asset->_transform(
@@ -799,7 +800,8 @@ sub crop_rectangle {
     my ( $asset, $left, $top, $width, $height ) = @_;
 
     if ( !$width || !$height ) {
-        return;
+        return $asset->trans_error(
+            'Cropping image failed: Invalid parameter.');
     }
 
     $top  = 0 unless defined $top;
@@ -821,7 +823,8 @@ sub rotate {
     my ( $asset, $angle ) = @_;
 
     if ( !$angle ) {
-        return;
+        return $asset->trans_error(
+            'Rotating image failed: Invalid parameter.');
     }
 
     $asset->_transform( sub { $_[0]->rotate( Degrees => $angle ) } );
@@ -852,7 +855,8 @@ sub _transform {
 
     my ( $blob, $width, $height ) = $process->($img);
 
-    $fmgr->put_data( $blob, $file_path, 'upload' );
+    $fmgr->put_data( $blob, $file_path, 'upload' )
+        or return $asset->error( $fmgr->errstr );
     $asset->image_width($width);
     $asset->image_height($height);
 
@@ -861,7 +865,7 @@ sub _transform {
     my $user = $app->can('user') && $app->user->id ? $app->user : undef;
     $asset->modified_by( $app->user->id );
 
-    $asset->save or return $asset->errstr;
+    $asset->save or return;
 
     1;
 }
@@ -899,36 +903,43 @@ sub exif {
     my ($asset) = @_;
     require Image::ExifTool;
     my $exif = Image::ExifTool->new;
-    $exif->ExtractInfo( $asset->file_path );
+    $exif->ExtractInfo( $asset->file_path )
+        or
+        return $asset->trans_error( 'Extracting image metadata failed: [_1]',
+        $exif->GetValue('Error') );
     return $exif;
 }
 
 sub has_gps_metadata {
     my ($asset) = @_;
-    my $exif = $asset->exif;
+    my $exif = $asset->exif or return;
     $exif->Options( Group1 => 'GPS' );
     return $exif->GetTagList ? 1 : 0;
 }
 
 sub has_exif_metadata {
     my ($asset) = @_;
-    my $exif = $asset->exif;
+    my $exif = $asset->exif or return;
     $exif->Options( Group0 => 'EXIF' );
     return $exif->GetTagList ? 1 : 0;
 }
 
 sub remove_gps_metadata {
     my ($asset) = @_;
-    my $exif = $asset->exif;
+    my $exif = $asset->exif or return;
     $exif->SetNewValue('GPS:*');
-    $exif->WriteInfo( $asset->file_path );
+    $exif->WriteInfo( $asset->file_path )
+        or return $asset->trans_error( 'Writing image metadata failed: [_1]',
+        $exif->GetValue('Error') );
 }
 
 sub remove_exif_metadata {
     my ($asset) = @_;
-    my $exif = $asset->exif;
+    my $exif = $asset->exif or return;
     $exif->SetNewValue('EXIF:*');
-    $exif->WriteInfo( $asset->file_path );
+    $exif->WriteInfo( $asset->file_path )
+        or return $asset->trans_error( 'Writing image metadata failed: [_1]',
+        $exif->GetValue('Error') );
 }
 
 1;

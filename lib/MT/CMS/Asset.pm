@@ -1846,10 +1846,20 @@ sub dialog_edit_image {
     $param->{modified_on} = $asset->modified_on;
 
     # Check Exif.
-    if ( $asset->has_exif_metadata ) {
-        $param->{has_exif_metadata} = 1;
-        if ( $asset->has_gps_metadata ) {
-            $param->{has_gps_metadata} = 1;
+    my $has_exif_metadata = $asset->has_exif_metadata;
+    if ( defined $has_exif_metadata ) {
+        $param->{has_exif_metadata} = $has_exif_metadata;
+    }
+    else {
+        return $app->error( $asset->errstr );
+    }
+    if ($has_exif_metadata) {
+        my $has_gps_metadata = $asset->has_gps_metadata;
+        if ( defined $has_gps_metadata ) {
+            $param->{has_gps_metadata} = $has_gps_metadata;
+        }
+        else {
+            return $app->error( $asset->errstr );
         }
     }
 
@@ -1886,10 +1896,12 @@ sub transform_image {
         $asset->errstr );
 
     if ( $app->param('remove_exif_metadata') ) {
-        $asset->remove_exif_metadata;
+        $asset->remove_exif_metadata
+            or return $app->error( $asset->errstr );
     }
     elsif ( $app->param('remove_gps_metadata') ) {
-        $asset->remove_gps_metadata;
+        $asset->remove_gps_metadata
+            or return $app->error( $asset->errstr );
     }
 
     $app->redirect(
