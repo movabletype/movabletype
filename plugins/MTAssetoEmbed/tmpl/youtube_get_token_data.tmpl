@@ -1,0 +1,30 @@
+<mt:include name="dialog/header.tmpl">
+
+<mt:If name="error">
+<mtapp:statusmsg
+   id="generic-error"
+   class="error"
+   can_close="0">
+  <mt:var name="error">
+</mtapp:statusmsg>
+</mt:If>
+
+<script type="text/javascript">
+(function() {
+    var code = '<mt:Var name="youtube_code" />';
+    var clientId = '<mt:Var name="youtube_client_id" />';
+    var clientSecret = '<mt:Var name="youtube_client_secret" />';
+
+    if (code) {
+        var $ = window.opener.jQuery;
+        $('#youtube_code').val(code);
+        $('#youtube_configured_client_id').val(clientId);
+        $('#youtube_configured_client_secret').val(clientSecret);
+        $.updateProfile();
+    }
+
+    window.close();
+})();
+</script>
+
+<mt:include name="dialog/footer.tmpl">

@@ -1,0 +1,28 @@
+id: MTAssetoEmbed
+name: MTAssetoEmbed
+version: 0.01
+author_link: http://www.movabletype.org/
+author_name: Six Apart, Ltd.
+description: <MT_TRANS phrase="MT::Asset for oEmbed.">
+l10n_class: MTAssetoEmbed::L10N
+
+settings:
+    flickr_consumer_key:
+    flickr_consumer_secret:
+    youtube_client_id:
+    youtube_client_secret:
+    youtube_code:
+    youtube_token_data:
+
+applications:
+    cms:
+        methods:
+            youtube_oauth2callback: $MTAssetoEmbed::MTAssetoEmbed::App::youtube_oauth2callback
+            youtube_get_token_data: $MTAssetoEmbed::MTAssetoEmbed::App::youtube_get_token_data
+
+web_services:
+    MTAssetoEmbed:
+        config_template:
+            code: $MTAssetoEmbed::MTAssetoEmbed::App::config_tmpl
+        save_config:
+            code: $MTAssetoEmbed::MTAssetoEmbed::App::save_config
