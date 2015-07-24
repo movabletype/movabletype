@@ -921,19 +921,22 @@ sub has_metadata {
     my ($asset) = @_;
     my $exif = $asset->exif or return;
 
-    require Image::ExifTool;
-    for my $g ( $exif->GetGroups ) {
-        my @writable_tags = Image::ExifTool::GetWritableTags($g);
-        $exif->Options( Group => $g );
-        for my $t ( sort $exif->GetTagList ) {
-            if ( grep { $t eq $_ } @writable_tags ) {
-                return 1;
-            }
-        }
-        $exif->ClearOptions;
-    }
+    # Use inccorect but easy check, because correct check is slow.
+    $exif->Options( Group0 => 'EXIF' );
+    return $exif->GetTagList ? 1 : 0;
 
-    return 0;
+    #    require Image::ExifTool;
+    #    for my $g ( $exif->GetGroups ) {
+    #        my @writable_tags = Image::ExifTool::GetWritableTags($g) or next;
+    #        $exif->Options( Group => $g );
+    #        for my $t ( sort $exif->GetTagList ) {
+    #            if ( grep { $t eq $_ } @writable_tags ) {
+    #                return 1;
+    #            }
+    #        }
+    #        $exif->ClearOptions;
+    #    }
+    #    return 0;
 }
 
 sub remove_gps_metadata {
