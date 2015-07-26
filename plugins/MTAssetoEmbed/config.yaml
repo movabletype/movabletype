@@ -9,6 +9,7 @@ l10n_class: MTAssetoEmbed::L10N
 settings:
     flickr_consumer_key:
     flickr_consumer_secret:
+    flickr_token_data:
     youtube_client_id:
     youtube_client_secret:
     youtube_code:

@@ -11,16 +11,14 @@
 
 <script type="text/javascript">
 (function() {
-    var code = '<mt:Var name="youtube_code" />';
-    var clientId = '<mt:Var name="youtube_client_id" />';
-    var clientSecret = '<mt:Var name="youtube_client_secret" />';
+    var consumerKey = '<mt:Var name="consumer_key" />';
+    var consumerSecret = '<mt:Var name="consumer_secret" />';
 
-    if (code) {
+    if (consumerKey) {
         var $ = window.opener.jQuery;
-        $('#youtube_code').val(code);
-        $('#youtube_configured_client_id').val(clientId);
-        $('#youtube_configured_client_secret').val(clientSecret);
-        $.updateProfile();
+        $('#flickr_configured_consumer_key').val(consumerKey);
+        $('#flickr_configured_consumer_key').val(consumerSecret);
+        $.flickrUpdateProfile();
     }
 
     window.close();
