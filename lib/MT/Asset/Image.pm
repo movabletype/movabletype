@@ -222,8 +222,10 @@ sub thumbnail_file {
         MT->translate( "Error creating thumbnail file: [_1]", $fmgr->errstr )
         );
 
-    # Remove metadata from thumbnail file.
+    # Normalize orientation and remove metadata.
     require MT::Image;
+    MT::Image->normalize_orientation($thumbnail)
+        or return $asset->error( MT::Image->errstr );
     MT::Image->remove_metadata($thumbnail)
         or return $asset->error( MT::Image->errstr );
 

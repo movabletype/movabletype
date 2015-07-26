@@ -236,6 +236,58 @@ sub crop {
     $image->crop_rectangle(%param);
 }
 
+sub normalize_orientation {
+    my ( $class, $file_path ) = @_;
+
+    require Image::ExifTool;
+    require MT::FileMgr;
+
+    my $exif_tool = new Image::ExifTool;
+    my $fmgr      = MT::FileMgr->new('Local');
+    my $img_data  = $fmgr->get_data( $file_path, 'upload' );
+
+    $exif_tool->ExtractInfo( \$img_data );
+    my $o = $exif_tool->GetInfo('Orientation')->{'Orientation'};
+    if ( $o && ( $o ne 'Horizontal (normal)' && $o !~ /^Unknown/i ) ) {
+        $exif_tool->SetNewValue(
+            Orientation => $o,
+            DelValue    => 1
+        );
+        $exif_tool->WriteInfo( \$img_data );
+
+        my $img = $class->new( Filename => $file_path );
+
+        my ( $blob, $width, $height ) = do {
+            if ( $o eq 'Mirror horizontal' ) {
+                $img->flipVertical();
+            }
+            elsif ( $o eq 'Rotate 180' ) {
+                $img->rotate( Degrees => 180 );
+            }
+            elsif ( $o eq 'Mirror vertical' ) {
+                $img->flipHorizontal();
+            }
+            elsif ( $o eq 'Mirror horizontal and rotate 270 CW' ) {
+                $img->flipVertical();
+                $img->rotate( Degrees => 270 );
+            }
+            elsif ( $o eq 'Rotate 90 CW' ) {
+                $img->rotate( Degrees => 90 );
+            }
+            elsif ( $o eq 'Mirror horizontal and rotate 90 CW' ) {
+                $img->flipVertical();
+                $img->rotate( Degrees => 90 );
+            }
+            elsif ( $o eq 'Rotate 270 CW' ) {
+                $img->rotate( Degrees => 270 );
+            }
+        };
+        $fmgr->put_data( $blob, $file_path, 'upload' );
+    }
+
+    1;
+}
+
 sub remove_metadata {
     my ( $class, $file ) = @_;
     require Image::ExifTool;
@@ -457,6 +509,10 @@ location.
 
 If any error occurs from this routine, it will return 'undef', and
 assign the error message, accessible using the L<errstr> class method.
+
+=head2 MT::Image->normalize_orientation($file)
+
+Normalize orientation if an image has a "Orientation" in Exif information.
 
 =head2 MT::Image->remove_metadata($file)
 
