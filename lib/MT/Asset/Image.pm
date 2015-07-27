@@ -15,8 +15,9 @@ use POSIX qw( floor );
 __PACKAGE__->install_properties(
     {   class_type  => 'image',
         column_defs => {
-            'image_width'  => 'integer meta',
-            'image_height' => 'integer meta',
+            'image_width'    => 'integer meta',
+            'image_height'   => 'integer meta',
+            'image_metadata' => 'blob meta',
         },
         child_of => [ 'MT::Blog', 'MT::Website', ],
     }
@@ -27,6 +28,12 @@ sub extensions {
     my $pkg = shift;
     return $pkg->SUPER::extensions(
         [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, qr/ico/i ] );
+}
+
+sub save {
+    my $asset = shift;
+    $asset->image_metadata( $asset->exif->GetInfo );
+    $asset->SUPER::save(@_);
 }
 
 sub class_label {
