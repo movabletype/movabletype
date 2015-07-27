@@ -1122,7 +1122,8 @@ sub _set_start_upload_params {
     $param->{require_type} = $require_type;
 
     $param->{auto_rename_if_exists} = 0;
-    $param->{normalize_orientation} = 0;
+    $param->{normalize_orientation}
+        = 1;    # TODO: Default value will be 1 in future version.
 
     $param;
 }
