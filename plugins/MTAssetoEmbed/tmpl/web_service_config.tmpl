@@ -79,8 +79,8 @@
 <input type="hidden" id="youtube_configured_client_id" value="<mt:Var name="youtube_configured_client_id" encode_html="1" />" />
 <input type="hidden" id="youtube_configured_client_secret" value="<mt:Var name="youtube_configured_client_secret" encode_html="1" />" />
 <input type="hidden" id="youtube_dialog_url" value="<mt:Var name="youtube_dialog_url" encode_html="1" />" />
-<input type="hidden" id="flickr_configured_consumer_key" value="<mt:Var name="flickr_configured_consumer_key" encode_html="1" />" />
-<input type="hidden" id="flickr_configured_consumer_secret" value="<mt:Var name="flickr_configured_consumer_secret" encode_html="1" />" />
+<input type="hidden" id="flickr_configured_consumer_key" name="flickr_configured_consumer_key" value="<mt:Var name="flickr_configured_consumer_key" encode_html="1" />" />
+<input type="hidden" id="flickr_configured_consumer_secret" name="flickr_configured_consumer_secret" value="<mt:Var name="flickr_configured_consumer_secret" encode_html="1" />" />
 <input type="hidden" id="flickr_get_token_url" value="<mt:Var name="flickr_get_token_url" encode_html="1" />" />
 
 <script type="text/javascript">
@@ -157,7 +157,7 @@ jQuery(function($) {
         var consumerKey    = $('#flickr_consumer_key').val();
         var consumerSecret = $('#flickr_consumer_secret').val();
         if (
-            (consumerKey && consumerKey !== $('#flickr_confugured_consumer_secret').val()) ||
+            (consumerKey && consumerKey !== $('#flickr_configured_consumer_key').val()) ||
             (consumerSecret && consumerSecret !== $('#flickr_configured_consumer_secret').val())
         ) {
             return window.confirm('<__trans phrase="Consumer key or consumer secret for Flickr was changed, but token was not updated. Are you sure you want to save these settings?" escape="js">');

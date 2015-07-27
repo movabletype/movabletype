@@ -64,6 +64,7 @@ sub config_tmpl {
     $plugin->load_tmpl(
         'web_service_config.tmpl',
         {
+            ( map { ( "$_" => $config->{$_} || '' ) } keys(%$config) ),
             blog_id => $blog ? $blog->id : 0,
             flickr_redirect_uri => $app->uri( mode => 'flickr_oauth_callback' ),
             flickr_get_token_url => $app->uri(
@@ -79,7 +80,6 @@ sub config_tmpl {
             youtube_redirect_uri => $app->uri( mode => 'youtube_oauth2callback' ),
             youtube_authorize_url =>
                 youtube_authorize_url( $app, '__client_id__', '__redirect_uri__' ),
-            ( map { ( "$_" => $config->{$_} || '' ) } keys(%$config) ),
             youtube_dialog_url => $app->uri(
                 mode => 'youtube_get_token_data',
                 ( $blog ? ( args => { blog_id => $app->blog->id, } ) : () ),
@@ -127,8 +127,8 @@ sub save_config {
     }
 
     if ( !$config->{flickr_consumer_key} || !$config->{flickr_consumer_secret}
-        || ( !$config->{flickr_configured_consumer_key} ne $config->{flickr_configured_consumer_key} )
-        || ( !$config->{flickr_configured_consumer_secret} ne $config->{flickr_configured_consumer_secret} ) )
+        || ( $config->{flickr_consumer_key} ne $config->{flickr_configured_consumer_key} )
+        || ( $config->{flickr_consumer_secret} ne $config->{flickr_configured_consumer_secret} ) )
     {
         delete @$config{
             qw(flickr_token_data)
