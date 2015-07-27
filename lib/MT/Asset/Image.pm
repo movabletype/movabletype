@@ -752,6 +752,7 @@ sub normalize_orientation {
         my $new_exif = Image::ExifTool->new;
         $new_exif->SetNewValuesFromFile($file_path);
         $new_exif->SetNewValue('Orientation');
+        $new_exif->SetNewValue('Thumbnail*');
 
         my $img = MT::Image->new( Data => $img_data, Type => $obj->file_ext );
 
@@ -872,6 +873,7 @@ sub _transform {
     # Preserve metadata.
     my $exif = Image::ExifTool->new;
     $exif->SetNewValuesFromFile($file_path);
+    $exif->SetNewValue('Thumbnail*');
 
     my ( $blob, $width, $height ) = $process->($img);
 
