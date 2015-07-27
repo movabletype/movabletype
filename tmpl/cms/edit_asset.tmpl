@@ -161,7 +161,7 @@ TC.attachLoadEvent( init );
 <div id="asset" class="status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
   <form id="edit_asset" method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-    <input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="__mode" value="save" />
     <input type="hidden" name="_type" value="<mt:var name="object_type">" />
     <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
     <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
@@ -214,7 +214,7 @@ TC.attachLoadEvent( init );
       <mt:unless name="file_is_missing">
         <mt:if name="has_thumbnail">
     <div class="image-editor">
-      <button class="button" onclick="jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">'); return false;">
+      <button form="image-editor" class="button" onclick="jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">'); return false;">
         <__trans phrase="Edit Image">
       </button>
     </div>
