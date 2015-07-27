@@ -16,7 +16,7 @@ use strict;
 use vars qw($VERSION $AUTOLOAD);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.35';
+$VERSION = '1.38';
 
 sub WritePS($$);
 sub ProcessPS($$;$);
@@ -160,11 +160,11 @@ sub ImageSize($$)
 # Returns: 1
 sub PSErr($$)
 {
-    my ($exifTool, $str) = @_;
+    my ($et, $str) = @_;
     # set file type if not done already
-    my $ext = $$exifTool{FILE_EXT};
-    $exifTool->SetFileType(($ext and $ext eq 'AI') ? 'AI' : 'PS');
-    $exifTool->Warn("PostScript format error ($str)");
+    my $ext = $$et{FILE_EXT};
+    $et->SetFileType(($ext and $ext eq 'AI') ? 'AI' : 'PS');
+    $et->Warn("PostScript format error ($str)");
     return 1;
 }
 
@@ -217,7 +217,8 @@ sub DecodeComment($$$;$)
                 @$lines = split /$altnl/, $buff, -1;
                 # handle case of DOS newline data inside file using Unix newlines
                 @$lines = ( $$lines[0] . $$lines[1] ) if @$lines == 2 and $$lines[1] eq $/;
-                @$lines[-1] .= $/ if $/ eq "\x0d\x0a";  # add back trailing newline
+                # add back trailing DOS newline if necessary
+                @$lines ? @$lines[-1] .= $/ : push @$lines, $/ if $/ eq "\x0d\x0a";
             } else {
                 push @$lines, $buff;
             }
@@ -320,9 +321,9 @@ sub UnescapePostScript($)
 # Returns: 1 if this was a valid PostScript file
 sub ProcessPS($$;$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $raf = $$dirInfo{RAF};
-    my $embedded = $exifTool->Options('ExtractEmbedded');
+    my $embedded = $et->Options('ExtractEmbedded');
     my ($data, $dos, $endDoc, $fontTable, $comment);
 
     # allow read from data
@@ -344,14 +345,14 @@ sub ProcessPS($$;$)
         unless ($raf->Seek(Get32u(\$dos, 0), 0) and
                 $raf->Read($data, 4) == 4 and $data eq '%!PS')
         {
-            return PSErr($exifTool, 'invalid header');
+            return PSErr($et, 'invalid header');
         }
     } else {
         # check for PostScript font file (PFA or PFB)
         my $d2;
         $data .= $d2 if $raf->Read($d2,12);
         if ($data =~ /^%!(PS-(AdobeFont-|Bitstream )|FontType1-)/) {
-            $exifTool->SetFileType('PFA');  # PostScript ASCII font file
+            $et->SetFileType('PFA');  # PostScript ASCII font file
             $fontTable = GetTagTable('Image::ExifTool::Font::PSInfo');
             # PostScript font files may contain an unformatted comments which may
             # contain useful information, so accumulate these for the Comment tag
@@ -363,7 +364,7 @@ sub ProcessPS($$;$)
 # set the newline type based on the first newline found in the file
 #
     local $/ = GetInputRecordSeparator($raf);
-    $/ or return PSErr($exifTool, 'invalid PS data');
+    $/ or return PSErr($et, 'invalid PS data');
 
     # set file type (PostScript or EPS)
     $raf->ReadLine($data) or $data = '';
@@ -381,7 +382,7 @@ sub ProcessPS($$;$)
         }
         $raf->Seek($pos, 0);
     }
-    $exifTool->SetFileType($type);
+    $et->SetFileType($type);
 #
 # extract TIFF information from DOS header
 #
@@ -392,11 +393,11 @@ sub ProcessPS($$;$)
             my $pos = $raf->Tell();
             # extract the TIFF preview
             my $len = Get32u(\$dos, 20);
-            my $val = $exifTool->ExtractBinary($base, $len, 'TIFFPreview');
+            my $val = $et->ExtractBinary($base, $len, 'TIFFPreview');
             if (defined $val and $val =~ /^(MM\0\x2a|II\x2a\0|Binary)/) {
-                $exifTool->HandleTag($tagTablePtr, 'TIFFPreview', $val);
+                $et->HandleTag($tagTablePtr, 'TIFFPreview', $val);
             } else {
-                $exifTool->Warn('Bad TIFF preview image');
+                $et->Warn('Bad TIFF preview image');
             }
             # extract information from TIFF in DOS header
             # (set Parent to '' to avoid setting FileType tag again)
@@ -405,7 +406,7 @@ sub ProcessPS($$;$)
                 RAF => $raf,
                 Base => $base,
             );
-            $exifTool->ProcessTIFF(\%dirInfo) or $exifTool->Warn('Bad embedded TIFF');
+            $et->ProcessTIFF(\%dirInfo) or $et->Warn('Bad embedded TIFF');
             # position file pointer to extract PS information
             $raf->Seek($pos, 0);
         }
@@ -478,7 +479,7 @@ sub ProcessPS($$;$)
         } elsif ($endDoc and $data =~ /^$endDoc/i) {
             $docNum =~ s/-?(\d+)$//;        # decrement nesting level
             $subDocNum = $1;                # remember our last sub-document number
-            $$exifTool{DOC_NUM} = $docNum;
+            $$et{DOC_NUM} = $docNum;
             undef $endDoc unless $docNum;   # done with document if top level
             next;
         } elsif ($data =~ /^(%{1,2})(Begin)(_xml_packet|Photoshop|ICCProfile|Document|Binary)/i) {
@@ -507,14 +508,14 @@ sub ProcessPS($$;$)
                     $docNum .= '-' . (++$subDocNum);
                 } else {
                     # this is the Nth document
-                    $docNum = $$exifTool{DOC_COUNT} + 1;
+                    $docNum = $$et{DOC_COUNT} + 1;
                 }
                 $subDocNum = 0; # new level, so reset subDocNum
                 next unless $embedded;  # skip over this document
                 # set document number for family 4-7 group names
-                $$exifTool{DOC_NUM} = $docNum;
-                $$exifTool{LIST_TAGS} = { };  # don't build lists across different documents
-                $exifTool->{PROCESSED} = { }; # re-initialize processed directory lookup too
+                $$et{DOC_NUM} = $docNum;
+                $$et{LIST_TAGS} = { };  # don't build lists across different documents
+                $$et{PROCESSED} = { }; # re-initialize processed directory lookup too
                 $endDoc = $endToken;          # parse to EndDocument token
                 # reset mode to allow parsing into sub-directories
                 undef $endToken;
@@ -524,7 +525,7 @@ sub ProcessPS($$;$)
                     my $docName = $1;
                     # remove brackets if necessary
                     $docName = $1 if $docName =~ /^\((.*)\)$/;
-                    $exifTool->HandleTag($tagTablePtr, 'EmbeddedFileName', $docName);
+                    $et->HandleTag($tagTablePtr, 'EmbeddedFileName', $docName);
                 }
             }
             next;
@@ -541,12 +542,12 @@ sub ProcessPS($$;$)
             next unless $data =~ /^%%/ or $1 eq 'ImageData';
             # decode comment string (reading continuation lines if necessary)
             $val = DecodeComment($val, $raf, \@lines);
-            $exifTool->HandleTag($tagTablePtr, $tag, $val);
+            $et->HandleTag($tagTablePtr, $tag, $val);
             next;
         } elsif ($embedded and $data =~ /^%AI12_CompressedData/) {
             # the rest of the file is compressed
-            unless (eval 'require Compress::Zlib') {
-                $exifTool->Warn('Install Compress::Zlib to extract compressed embedded data');
+            unless (eval { require Compress::Zlib }) {
+                $et->Warn('Install Compress::Zlib to extract compressed embedded data');
                 last;
             }
             # seek back to find the start of the compressed data in the file
@@ -557,12 +558,12 @@ sub ProcessPS($$;$)
             last unless $raf->Seek($backTo, 0) and $raf->Read($data, 2048);
             last unless $data =~ s/.*?%AI12_CompressedData//;
             my $inflate = Compress::Zlib::inflateInit();
-            $inflate or $exifTool->Warn('Error initializing inflate'), last;
+            $inflate or $et->Warn('Error initializing inflate'), last;
             # generate a PS-like file in memory from the compressed data
-            my $verbose = $exifTool->Options('Verbose');
+            my $verbose = $et->Options('Verbose');
             if ($verbose > 1) {
-                $exifTool->VerboseDir('AI12_CompressedData (first 4kB)');
-                $exifTool->VerboseDump(\$data);
+                $et->VerboseDir('AI12_CompressedData (first 4kB)');
+                $et->VerboseDump(\$data);
             }
             # remove header if it exists (Windows AI files only)
             $data =~ s/^.{0,256}EndData[\x0d\x0a]+//s;
@@ -581,14 +582,14 @@ sub ProcessPS($$;$)
                 }
                 $raf->Read($data, 65536) or last;
             }
-            defined $val or $exifTool->Warn('Error inflating AI compressed data'), last;
+            defined $val or $et->Warn('Error inflating AI compressed data'), last;
             if ($verbose > 1) {
-                $exifTool->VerboseDir('Uncompressed AI12 Data');
-                $exifTool->VerboseDump(\$val);
+                $et->VerboseDir('Uncompressed AI12 Data');
+                $et->VerboseDump(\$val);
             }
             # extract information from embedded images in the uncompressed data
             $val =  # add PS header in case it needs one
-            ProcessPS($exifTool, { DataPt => \$val });
+            ProcessPS($et, { DataPt => \$val });
             last;
         } elsif ($fontTable) {
             if (defined $comment) {
@@ -599,7 +600,7 @@ sub ProcessPS($$;$)
                     next;
                 } elsif ($data !~ /^%/) {
                     # stop extracting comments at the first non-comment line
-                    $exifTool->FoundTag('Comment', $comment) if length $comment;
+                    $et->FoundTag('Comment', $comment) if length $comment;
                     undef $comment;
                 }
             }
@@ -610,7 +611,7 @@ sub ProcessPS($$;$)
                 } elsif ($val =~ m{/?(\S+)}) {
                     $val = $1;
                 }
-                $exifTool->HandleTag($fontTable, $tag, $val);
+                $et->HandleTag($fontTable, $tag, $val);
             } elsif ($data =~ /^currentdict end/) {
                 # only extract tags from initial FontInfo dict
                 undef $fontTable;
@@ -628,14 +629,14 @@ sub ProcessPS($$;$)
             Parent => 'PostScript',
         );
         my $subTablePtr = GetTagTable("Image::ExifTool::${mode}::Main");
-        unless ($exifTool->ProcessDirectory(\%dirInfo, $subTablePtr)) {
-            $exifTool->Warn("Error processing $mode information in PostScript file");
+        unless ($et->ProcessDirectory(\%dirInfo, $subTablePtr)) {
+            $et->Warn("Error processing $mode information in PostScript file");
         }
         undef $buff;
         undef $mode;
     }
     $mode = 'Document' if $endDoc and not $mode;
-    $mode and PSErr($exifTool, "unterminated $mode data");
+    $mode and PSErr($et, "unterminated $mode data");
     return 1;
 }
 
@@ -668,7 +669,7 @@ This code reads meta information from EPS (Encapsulated PostScript), PS
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

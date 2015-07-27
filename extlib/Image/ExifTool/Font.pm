@@ -19,7 +19,7 @@ use strict;
 use vars qw($VERSION %ttLang);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.06';
+$VERSION = '1.07';
 
 sub ProcessOTF($$);
 
@@ -215,7 +215,7 @@ my %ttCharset = (
     NOTES => q{
         The following tags are extracted from the TrueType font "name" table found
         in OTF, TTF, TTC and DFONT files.  These tags support localized languages by
-        adding a hyphen followed by a language code to the end of the tag name (ie.
+        adding a hyphen followed by a language code to the end of the tag name (eg.
         "Copyright-fr" or "License-en-US").  Tags with no language code use the
         default language of "en".
     },
@@ -335,7 +335,7 @@ my %ttCharset = (
 # Returns: 1 on success, 0 if this wasn't a valid TrueType font collection
 sub ProcessTTC($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $i);
 
@@ -345,19 +345,19 @@ sub ProcessTTC($$)
     my $num = Get32u(\$buff, 8);
     # might as well put a limit on the number of fonts we will parse (< 256)
     return 0 unless $num < 0x100 and $raf->Read($buff, $num * 4) == $num * 4;
-    $exifTool->SetFileType('TTC');
+    $et->SetFileType('TTC');
     my $tagTablePtr = GetTagTable('Image::ExifTool::Font::Main');
-    $exifTool->HandleTag($tagTablePtr, 'numfonts', $num);
+    $et->HandleTag($tagTablePtr, 'numfonts', $num);
     # loop through all fonts in the collection
     for ($i=0; $i<$num; ++$i) {
         my $n = $i + 1;
-        $exifTool->VPrint(0, "Font $n:\n");
-        $$exifTool{SET_GROUP1} = "+$n";
+        $et->VPrint(0, "Font $n:\n");
+        $$et{SET_GROUP1} = "+$n";
         my $offset = Get32u(\$buff, $i * 4);
         $raf->Seek($offset, 0) or last;
-        ProcessOTF($exifTool, $dirInfo) or last;
+        ProcessOTF($et, $dirInfo) or last;
     }
-    delete $$exifTool{SET_GROUP1};
+    delete $$et{SET_GROUP1};
     return 1;
 }
 
@@ -367,7 +367,7 @@ sub ProcessTTC($$)
 # Returns: 1 on success, 0 if this wasn't a valid TrueType font file
 sub ProcessOTF($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($tbl, $buff, $pos, $i);
     my $base = $$dirInfo{Base} || 0;
@@ -375,17 +375,17 @@ sub ProcessOTF($$)
     return 0 unless $raf->Read($buff, 12) == 12;
     return 0 unless $buff =~ /^(\0\x01\0\0|OTTO|true|typ1|\xa5(kbd|lst))[\0\x01]/;
 
-    $exifTool->SetFileType($1 eq 'OTTO' ? 'OTF' : 'TTF');
+    $et->SetFileType($1 eq 'OTTO' ? 'OTF' : 'TTF');
     SetByteOrder('MM');
     my $numTables = Get16u(\$buff, 4);
     return 0 unless $numTables > 0 and $numTables < 0x200;
     my $len = $numTables * 16;
     return 0 unless $raf->Read($tbl, $len) == $len;
 
-    my $verbose = $exifTool->Options('Verbose');
-    my $oldIndent = $$exifTool{INDENT};
-    $$exifTool{INDENT} .= '| ';
-    $exifTool->VerboseDir('TrueType', $numTables) if $verbose;
+    my $verbose = $et->Options('Verbose');
+    my $oldIndent = $$et{INDENT};
+    $$et{INDENT} .= '| ';
+    $et->VerboseDir('TrueType', $numTables) if $verbose;
 
     for ($pos=0; $pos<$len; $pos+=16) {
         # look for 'name' table
@@ -394,27 +394,27 @@ sub ProcessOTF($$)
         my $offset = Get32u(\$tbl, $pos + 8);
         my $size   = Get32u(\$tbl, $pos + 12);
         unless ($raf->Seek($offset+$base, 0) and $raf->Read($buff, $size) == $size) {
-            $exifTool->Warn("Error reading '$tag' data");
+            $et->Warn("Error reading '$tag' data");
             next;
         }
         if ($verbose) {
             $tag =~ s/([\0-\x1f\x80-\xff])/sprintf('\x%.2x',ord $1)/ge;
             my $str = sprintf("%s%d) Tag '%s' (offset 0x%.4x, %d bytes)\n",
-                              $$exifTool{INDENT}, $pos/16, $tag, $offset, $size);
-            $exifTool->VPrint(0, $str);
-            $exifTool->VerboseDump(\$buff, Addr => $offset) if $verbose > 2;
+                              $$et{INDENT}, $pos/16, $tag, $offset, $size);
+            $et->VPrint(0, $str);
+            $et->VerboseDump(\$buff, Addr => $offset) if $verbose > 2;
             next unless $tag eq 'name';
         }
         next unless $size >= 8;
         my $entries = Get16u(\$buff, 2);
         my $recEnd = 6 + $entries * 12;
         if ($recEnd > $size) {
-            $exifTool->Warn('Truncated name record');
+            $et->Warn('Truncated name record');
             last;
         }
         my $strStart = Get16u(\$buff, 4);
         if ($strStart < $recEnd or $strStart > $size) {
-            $exifTool->Warn('Invalid string offset');
+            $et->Warn('Invalid string offset');
             last;
         }
         # parse language-tag record (in format 1 Naming table only) (ref 2)
@@ -430,15 +430,15 @@ sub ProcessOTF($$)
                     my $langPt = Get16u(\$buff, $pt + 2) + $strStart;
                     last if $langPt + $langLen > $size;
                     my $lang = substr($buff, $langPt, $langLen);
-                    $lang = $exifTool->Decode($lang,'UCS2','MM','UTF8');
+                    $lang = $et->Decode($lang,'UCS2','MM','UTF8');
                     $lang =~ tr/-_a-zA-Z0-9//dc;    # remove naughty characters
                     $langTag{$i + 0x8000} = $lang;
                 }
             }
         }
         my $tagTablePtr = GetTagTable('Image::ExifTool::Font::Name');
-        $$exifTool{INDENT} .= '| ';
-        $exifTool->VerboseDir('Name', $entries) if $verbose;
+        $$et{INDENT} .= '| ';
+        $et->VerboseDir('Name', $entries) if $verbose;
         for ($i=0; $i<$entries; ++$i) {
             my $pt = 6 + $i * 12;
             my $platform = Get16u(\$buff, $pt);
@@ -456,19 +456,19 @@ sub ProcessOTF($$)
                     $lang = $ttLang{$sys}{$langID} || $langTag{$langID};
                     $charset = $ttCharset{$sys}{$encoding};
                     if (not $charset) {
-                        if (not defined $charset and not $$exifTool{FontWarn}) {
-                            $exifTool->Warn("Unknown $sys character set ($encoding)");
-                            $$exifTool{FontWarn} = 1;
+                        if (not defined $charset and not $$et{FontWarn}) {
+                            $et->Warn("Unknown $sys character set ($encoding)");
+                            $$et{FontWarn} = 1;
                         }
                     } else {
                         # translate to ExifTool character set
-                        $val = $exifTool->Decode($val, $charset);
+                        $val = $et->Decode($val, $charset);
                     }
                 } else {
-                    $exifTool->Warn("Unknown platform ($platform) for name $nameID");
+                    $et->Warn("Unknown platform ($platform) for name $nameID");
                 }
                 # get the tagInfo for our specific language (use 'en' for default)
-                my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $nameID);
+                my $tagInfo = $et->GetTagInfo($tagTablePtr, $nameID);
                 if ($tagInfo and $lang and $lang ne 'en') {
                     my $langInfo = Image::ExifTool::GetLangInfo($tagInfo, $lang);
                     $tagInfo = $langInfo if $langInfo;
@@ -479,7 +479,7 @@ sub ProcessOTF($$)
                                "Enc=$encoding/" . ($charset || 'Unknown') . ', ' .
                                "Lang=$langID/" . ($lang || 'Unknown');
                 }
-                $exifTool->HandleTag($tagTablePtr, $nameID, $val,
+                $et->HandleTag($tagTablePtr, $nameID, $val,
                     TagInfo => $tagInfo,
                     DataPt  => \$buff,
                     DataPos => $offset,
@@ -490,10 +490,10 @@ sub ProcessOTF($$)
                 );
             }
         }
-        $$exifTool{INDENT} = $oldIndent . '| ';
+        $$et{INDENT} = $oldIndent . '| ';
         last unless $verbose;
     }
-    $$exifTool{INDENT} = $oldIndent;
+    $$et{INDENT} = $oldIndent;
     return 1;
 }
 
@@ -503,7 +503,7 @@ sub ProcessOTF($$)
 # Returns: 1 on success, 0 if this wasn't a recognized AFM-type file
 sub ProcessAFM($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $comment);
 
@@ -512,13 +512,13 @@ sub ProcessAFM($$)
     $raf->ReadLine($buff);
     return 0 unless $buff =~ /^Start(Comp|Master)?FontMetrics\s+\d+/;
     my $ftyp = $1 ? ($1 eq 'Comp' ? 'ACFM' : 'AMFM') : 'AFM';
-    $exifTool->SetFileType($ftyp, 'application/x-font-afm');
+    $et->SetFileType($ftyp, 'application/x-font-afm');
     my $tagTablePtr = GetTagTable('Image::ExifTool::Font::AFM');
 
     for (;;) {
         $raf->ReadLine($buff) or last;
         if (defined $comment and $buff !~ /^Comment\s/) {
-            $exifTool->FoundTag('Comment', $comment);
+            $et->FoundTag('Comment', $comment);
             undef $comment;
         }
         $buff =~ /^(\w+)\s+(.*?)[\x0d\x0a]/ or next;
@@ -532,7 +532,7 @@ sub ProcessAFM($$)
             $comment = defined($comment) ? "$comment\n$val" : $val;
             next;
         }
-        unless ($exifTool->HandleTag($tagTablePtr, $tag, $val)) {
+        unless ($et->HandleTag($tagTablePtr, $tag, $val)) {
             # end parsing if we start any subsection
             last if $tag =~ /^Start/ and $tag ne 'StartDirection';
         }
@@ -546,20 +546,20 @@ sub ProcessAFM($$)
 # Returns: 1 on success, 0 if this wasn't a recognized Font file
 sub ProcessFont($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $buf2, $rtnVal);
     return 0 unless $raf->Read($buff, 24) and $raf->Seek(0,0);
     if ($buff =~ /^(\0\x01\0\0|OTTO|true|typ1)[\0\x01]/) {        # OTF, TTF
-        $rtnVal = ProcessOTF($exifTool, $dirInfo);
+        $rtnVal = ProcessOTF($et, $dirInfo);
     } elsif ($buff =~ /^ttcf\0[\x01\x02]\0\0/) {                  # TTC
-        $rtnVal = ProcessTTC($exifTool, $dirInfo);
+        $rtnVal = ProcessTTC($et, $dirInfo);
     } elsif ($buff =~ /^Start(Comp|Master)?FontMetrics\s+\d+/s) { # AFM
-        $rtnVal = ProcessAFM($exifTool, $dirInfo);
+        $rtnVal = ProcessAFM($et, $dirInfo);
     } elsif ($buff =~ /^(.{6})?%!(PS-(AdobeFont-|Bitstream )|FontType1-)/s) {# PFA, PFB
-        $raf->Seek(6,0) and $exifTool->SetFileType('PFB') if $1;
+        $raf->Seek(6,0) and $et->SetFileType('PFB') if $1;
         require Image::ExifTool::PostScript;
-        $rtnVal = Image::ExifTool::PostScript::ProcessPS($exifTool, $dirInfo);
+        $rtnVal = Image::ExifTool::PostScript::ProcessPS($et, $dirInfo);
     } elsif ($buff =~ /^\0[\x01\x02]/ and $raf->Seek(0, 2) and    # PFM
              # validate file size
              $raf->Tell() > 117 and $raf->Tell() == unpack('x2V',$buff) and
@@ -571,18 +571,18 @@ sub ProcessFont($$)
              # incorrectly writes "Postscript\0", so ignore case
              $raf->Read($buf2, 11) == 11 and lc($buf2) eq "postscript\0")
     {
-        $exifTool->SetFileType('PFM');
+        $et->SetFileType('PFM');
         SetByteOrder('II');
         my $tagTablePtr = GetTagTable('Image::ExifTool::Font::Main');
         # process the PFM header
-        $exifTool->HandleTag($tagTablePtr, 'PFM', $buff);
+        $et->HandleTag($tagTablePtr, 'PFM', $buff);
         # extract the font names
         my $nameOff = Get32u(\$buff, 105);
         if ($raf->Seek($nameOff, 0) and $raf->Read($buff, 256) and
             $buff =~ /^([\x20-\xff]+)\0([\x20-\xff]+)\0/)
         {
-            $exifTool->HandleTag($tagTablePtr, 'fontname', $1);
-            $exifTool->HandleTag($tagTablePtr, 'postfont', $2);
+            $et->HandleTag($tagTablePtr, 'fontname', $1);
+            $et->HandleTag($tagTablePtr, 'postfont', $2);
         }
         $rtnVal = 1;
     } else {
@@ -611,7 +611,7 @@ types are OTF, TTF, TTC, DFONT, PFA, PFB, PFM, AFM, ACFM and AMFM.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

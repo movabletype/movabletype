@@ -15,7 +15,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.05';
+$VERSION = '1.06';
 
 my $maxOffset = 0x7fffffff; # currently supported maximum data offset/size
 
@@ -25,10 +25,10 @@ my $maxOffset = 0x7fffffff; # currently supported maximum data offset/size
 # Returns: 1 on success, otherwise returns 0 and sets a Warning
 sub ProcessBigIFD($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $raf = $$dirInfo{RAF};
-    my $verbose = $exifTool->{OPTIONS}->{Verbose};
-    my $htmlDump = $exifTool->{HTML_DUMP};
+    my $verbose = $$et{OPTIONS}{Verbose};
+    my $htmlDump = $$et{HTML_DUMP};
     my $dirName = $$dirInfo{DirName};
     my $dirStart = $$dirInfo{DirStart};
 
@@ -36,38 +36,38 @@ sub ProcessBigIFD($$$)
 
     # loop through IFD chain
     for (;;) {
-        if ($dirStart > $maxOffset and not $exifTool->Options('LargeFileSupport')) {
-            $exifTool->Warn('Huge offsets not supported (LargeFileSupport not set)');
+        if ($dirStart > $maxOffset and not $et->Options('LargeFileSupport')) {
+            $et->Warn('Huge offsets not supported (LargeFileSupport not set)');
             last;
         }
         unless ($raf->Seek($dirStart, 0)) {
-            $exifTool->Warn("Bad $dirName offset");
+            $et->Warn("Bad $dirName offset");
             return 0;
         }
         my ($dirBuff, $index);
         unless ($raf->Read($dirBuff, 8) == 8) {
-            $exifTool->Warn("Truncated $dirName count");
+            $et->Warn("Truncated $dirName count");
             return 0;
         }
         my $numEntries = Image::ExifTool::Get64u(\$dirBuff, 0);
-        $verbose > 0 and $exifTool->VerboseDir($dirName, $numEntries);
+        $verbose > 0 and $et->VerboseDir($dirName, $numEntries);
         my $bsize = $numEntries * 20;
         if ($bsize > $maxOffset) {
-            $exifTool->Warn('Huge directory counts not yet supported');
+            $et->Warn('Huge directory counts not yet supported');
             last;
         }
         my $bufPos = $raf->Tell();
         unless ($raf->Read($dirBuff, $bsize) == $bsize) {
-            $exifTool->Warn("Truncated $dirName directory");
+            $et->Warn("Truncated $dirName directory");
             return 0;
         }
         my $nextIFD;
         $raf->Read($nextIFD, 8) == 8 or undef $nextIFD; # try to read next IFD pointer
         if ($htmlDump) {
-            $exifTool->HDump($bufPos-8, 8, "$dirName entries", "Entry count: $numEntries");
+            $et->HDump($bufPos-8, 8, "$dirName entries", "Entry count: $numEntries");
             if (defined $nextIFD) {
                 my $tip = sprintf("Offset: 0x%.8x", Image::ExifTool::Get64u(\$nextIFD, 0));
-                $exifTool->HDump($bufPos + 20 * $numEntries, 8, "Next IFD", $tip, 0);
+                $et->HDump($bufPos + 20 * $numEntries, 8, "Next IFD", $tip, 0);
             }
         }
         # loop through all entries in this BigTIFF IFD
@@ -78,30 +78,30 @@ sub ProcessBigIFD($$$)
             my $count = Image::ExifTool::Get64u(\$dirBuff, $entry+4);
             my $formatSize = $Image::ExifTool::Exif::formatSize[$format];
             unless (defined $formatSize) {
-                $exifTool->HDump($bufPos+$entry,20,"[invalid IFD entry]",
-                         "Bad format value: $format", 1);
+                $et->HDump($bufPos+$entry,20,"[invalid IFD entry]",
+                           "Bad format value: $format", 1);
                 # warn unless the IFD was just padded with zeros
-                $exifTool->Warn(sprintf("Unknown format ($format) for $dirName tag 0x%x",$tagID));
+                $et->Warn(sprintf("Unknown format ($format) for $dirName tag 0x%x",$tagID));
                 return 0; # assume corrupted IFD
             }
             my $formatStr = $Image::ExifTool::Exif::formatName[$format];
             my $size = $count * $formatSize;
-            my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tagID);
+            my $tagInfo = $et->GetTagInfo($tagTablePtr, $tagID);
             next unless defined $tagInfo or $verbose;
             my $valuePtr = $entry + 12;
             my ($valBuff, $valBase, $rational);
             if ($size > 8) {
                 if ($size > $maxOffset) {
-                    $exifTool->Warn("Can't handle $dirName entry $index (huge size)");
+                    $et->Warn("Can't handle $dirName entry $index (huge size)");
                     next;
                 }
                 $valuePtr = Image::ExifTool::Get64u(\$dirBuff, $valuePtr);
-                if ($valuePtr > $maxOffset and not $exifTool->Options('LargeFileSupport')) {
-                    $exifTool->Warn("Can't handle $dirName entry $index (LargeFileSupport not set)");
+                if ($valuePtr > $maxOffset and not $et->Options('LargeFileSupport')) {
+                    $et->Warn("Can't handle $dirName entry $index (LargeFileSupport not set)");
                     next;
                 }
                 unless ($raf->Seek($valuePtr, 0) and $raf->Read($valBuff, $size) == $size) {
-                    $exifTool->Warn("Error reading $dirName entry $index");
+                    $et->Warn("Error reading $dirName entry $index");
                     next;
                 }
                 $valBase = 0;
@@ -111,7 +111,7 @@ sub ProcessBigIFD($$$)
             }
             if (defined $tagInfo and not $tagInfo) {
                 # GetTagInfo() required the value for a Condition
-                $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tagID, \$valBuff);
+                $tagInfo = $et->GetTagInfo($tagTablePtr, $tagID, \$valBuff);
             }
             my $val = ReadValue(\$valBuff, 0, $formatStr, $count, $size, \$rational);
             if ($htmlDump) {
@@ -148,16 +148,16 @@ sub ProcessBigIFD($$$)
                     }
                 }
                 $tip .= "Value: $tval";
-                $exifTool->HDump($entry+$bufPos, 20, "$dname $colName", $tip, 1);
+                $et->HDump($entry+$bufPos, 20, "$dname $colName", $tip, 1);
                 if ($size > 8) {
                     # add value data block
                     my $flg = ($tagInfo and $$tagInfo{SubDirectory} and $$tagInfo{MakerNotes}) ? 4 : 0;
-                    $exifTool->HDump($valuePtr,$size,"$tagName value",'SAME', $flg);
+                    $et->HDump($valuePtr,$size,"$tagName value",'SAME', $flg);
                 }
             }
             if ($tagInfo and $$tagInfo{SubIFD}) {
                 # process all SubIFD's as BigTIFF
-                $verbose > 0 and $exifTool->VerboseInfo($tagID, $tagInfo,
+                $verbose > 0 and $et->VerboseInfo($tagID, $tagInfo,
                     Table   => $tagTablePtr,
                     Index   => $index,
                     Value   => $val,
@@ -180,10 +180,10 @@ sub ProcessBigIFD($$$)
                         DirName  => $subdirName,
                         Parent   => $dirInfo,
                     );
-                    $exifTool->ProcessDirectory(\%subdirInfo, $tagTablePtr, \&ProcessBigIFD);
+                    $et->ProcessDirectory(\%subdirInfo, $tagTablePtr, \&ProcessBigIFD);
                 }
             } else {
-                my $tagKey = $exifTool->HandleTag($tagTablePtr, $tagID, $val,
+                my $tagKey = $et->HandleTag($tagTablePtr, $tagID, $val,
                     Index   => $index,
                     DataPt  => \$valBuff,
                     DataPos => $valBase + $valuePtr,
@@ -193,12 +193,12 @@ sub ProcessBigIFD($$$)
                     TagInfo => $tagInfo,
                     RAF     => $raf,
                 );
-                $tagKey and $exifTool->SetGroup($tagKey, $dirName);
+                $tagKey and $et->SetGroup($tagKey, $dirName);
             }
         }
         last unless $dirName =~ /^(IFD|SubIFD)(\d*)$/;
         $dirName = $1 . (($2 || 0) + 1);
-        defined $nextIFD or $exifTool->Warn("Bad $dirName pointer"), return 0;
+        defined $nextIFD or $et->Warn("Bad $dirName pointer"), return 0;
         $dirStart = Image::ExifTool::Get64u(\$nextIFD, 0);
         $dirStart or last;
     }
@@ -211,23 +211,23 @@ sub ProcessBigIFD($$$)
 # Returns: 1 on success, 0 if this wasn't a valid BigTIFF image
 sub ProcessBTF($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $buff;
 
     return 0 unless $raf->Read($buff, 16) == 16;
     return 0 unless $buff =~ /^(MM\0\x2b\0\x08\0\0|II\x2b\0\x08\0\0\0)/;
     if ($$dirInfo{OutFile}) {
-        $exifTool->Error('ExifTool does not support writing of BigTIFF images');
+        $et->Error('ExifTool does not support writing of BigTIFF images');
         return 1;
     }
-    $exifTool->SetFileType('BTF'); # set the FileType tag
+    $et->SetFileType('BTF'); # set the FileType tag
     SetByteOrder(substr($buff, 0, 2));
     my $offset = Image::ExifTool::Get64u(\$buff, 8);
-    if ($exifTool->{HTML_DUMP}) {
+    if ($$et{HTML_DUMP}) {
         my $o = (GetByteOrder() eq 'II') ? 'Little' : 'Big';
-        $exifTool->HDump(0, 8, "BigTIFF header", "Byte order: $o endian", 0);
-        $exifTool->HDump(8, 8, "IFD0 pointer", sprintf("Offset: 0x%.8x",$offset), 0);
+        $et->HDump(0, 8, "BigTIFF header", "Byte order: $o endian", 0);
+        $et->HDump(8, 8, "IFD0 pointer", sprintf("Offset: 0x%.8x",$offset), 0);
     }
     my %dirInfo = (
         RAF      => $raf,
@@ -237,7 +237,7 @@ sub ProcessBTF($$)
         Parent   => 'BigTIFF',
     );
     my $tagTablePtr = GetTagTable('Image::ExifTool::Exif::Main');
-    $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr, \&ProcessBigIFD);
+    $et->ProcessDirectory(\%dirInfo, $tagTablePtr, \&ProcessBigIFD);
     return 1;
 }
 
@@ -260,7 +260,7 @@ information in BigTIFF images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

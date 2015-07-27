@@ -14,7 +14,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::XMP;
 use Image::ExifTool::ZIP;
 
-$VERSION = '1.06';
+$VERSION = '1.07';
 
 # test for recognized OOXML document extensions
 my %isOOXML = (
@@ -208,19 +208,19 @@ sub GetTagID($)
 # Returns: 1 if valid tag was found
 sub FoundTag($$$$;$)
 {
-    my ($exifTool, $tagTablePtr, $props, $val, $attrs) = @_;
+    my ($et, $tagTablePtr, $props, $val, $attrs) = @_;
     return 0 unless @$props;
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
 
     my $tag = $$props[-1];
-    $exifTool->VPrint(0, "  | - Tag '", join('/',@$props), "'\n") if $verbose > 1;
+    $et->VPrint(0, "  | - Tag '", join('/',@$props), "'\n") if $verbose > 1;
 
     # un-escape XML character entities
     $val = Image::ExifTool::XMP::UnescapeXML($val);
-    # convert OOXML-escaped characters (ie. "_x0000d_" is a newline)
+    # convert OOXML-escaped characters (eg. "_x0000d_" is a newline)
     $val =~ s/_x([0-9a-f]{4})_/Image::ExifTool::PackUTF8(hex($1))/gie;
     # convert from UTF8 to ExifTool Charset
-    $val = $exifTool->Decode($val, 'UTF8');
+    $val = $et->Decode($val, 'UTF8');
     # queue this attribute for later if necessary
     if ($queueAttrs{$tag}) {
         $queuedAttrs{$tag} = $val;
@@ -246,7 +246,7 @@ sub FoundTag($$$$;$)
                 $tagInfo{Format} = 'date',
                 $tagInfo{PrintConv} = '$self->ConvertDateTime($val)';
             }
-            $exifTool->VPrint(0, "  | [adding $tag]\n") if $verbose;
+            $et->VPrint(0, "  | [adding $tag]\n") if $verbose;
             AddTagToTable($tagTablePtr, $tag, \%tagInfo);
         }
     } elsif ($tag eq 'xmlns') {
@@ -288,11 +288,11 @@ sub FoundTag($$$$;$)
             $val = Image::ExifTool::XMP::ConvertXMPDate($val) if $fmt eq 'date';
         }
     } else {
-        $exifTool->VPrint(0, "  [adding $tag]\n") if $verbose;
+        $et->VPrint(0, "  [adding $tag]\n") if $verbose;
         AddTagToTable($tagTablePtr, $tag, { Name => ucfirst $tag });
     }
     # save the tag
-    $exifTool->HandleTag($tagTablePtr, $tag, $val);
+    $et->HandleTag($tagTablePtr, $tag, $val);
 
     # start fresh for next tag
     undef $vectorCount;
@@ -311,7 +311,7 @@ sub FoundTag($$$$;$)
 #   ZIP     - reference to Archive::Zip object for this file
 sub ProcessDOCX($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $zip = $$dirInfo{ZIP};
     my $tagTablePtr = GetTagTable('Image::ExifTool::OOXML::Main');
     my $mime = $$dirInfo{MIME} || $Image::ExifTool::mimeType{DOCX};
@@ -320,17 +320,17 @@ sub ProcessDOCX($$)
     my $fileType = $fileType{$mime};
     if ($fileType) {
         # THMX is a special case because its contents.main MIME types is PPTX
-        if ($fileType eq 'PPTX' and $$exifTool{FILE_EXT} and $$exifTool{FILE_EXT} eq 'THMX') {
+        if ($fileType eq 'PPTX' and $$et{FILE_EXT} and $$et{FILE_EXT} eq 'THMX') {
             $fileType = 'THMX';
         }
     } else {
-        $exifTool->VPrint(0, "Unrecognized MIME type: $mime\n");
+        $et->VPrint(0, "Unrecognized MIME type: $mime\n");
         # get MIME type according to file extension
-        $fileType = $$exifTool{FILE_EXT};
+        $fileType = $$et{FILE_EXT};
         # default to 'DOCX' if this isn't a known OOXML extension
         $fileType = 'DOCX' unless $fileType and $isOOXML{$fileType};
     }
-    $exifTool->SetFileType($fileType);
+    $et->SetFileType($fileType);
 
     # must catch all Archive::Zip warnings
     local $SIG{'__WARN__'} = \&Image::ExifTool::ZIP::WarnProc;
@@ -342,19 +342,19 @@ sub ProcessDOCX($$)
         # get filename of this ZIP member
         my $file = $member->fileName();
         next unless defined $file;
-        $exifTool->VPrint(0, "File: $file\n");
+        $et->VPrint(0, "File: $file\n");
         # set the document number and extract ZIP tags
-        $$exifTool{DOC_NUM} = ++$docNum;
-        Image::ExifTool::ZIP::HandleMember($exifTool, $member);
+        $$et{DOC_NUM} = ++$docNum;
+        Image::ExifTool::ZIP::HandleMember($et, $member);
         # process only XML and JPEG/WMF thumbnail images in "docProps" directory
         next unless $file =~ m{^docProps/(.*\.xml|(thumbnail\.(jpe?g|wmf)))$}i;
         # get the file contents (CAREFUL! $buff MUST be local since we hand off a value ref)
         my ($buff, $status) = $zip->contents($member);
-        $status and $exifTool->Warn("Error extracting $file"), next;
+        $status and $et->Warn("Error extracting $file"), next;
         # extract docProps/thumbnail.(jpg|mwf) as PreviewImage|PreviewMWF
         if ($file =~ /\.(jpe?g|wmf)$/i) {
             my $tag = $file =~ /\.wmf$/i ? 'PreviewWMF' : 'PreviewImage';
-            $exifTool->FoundTag($tag, \$buff);
+            $et->FoundTag($tag, \$buff);
             next;
         }
         # process XML files (docProps/app.xml, docProps/core.xml, docProps/custom.xml)
@@ -366,10 +366,10 @@ sub ProcessDOCX($$)
                 FoundProc => \&FoundTag,
             },
         );
-        $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+        $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         undef $buff;    # (free memory now)
     }
-    delete $$exifTool{DOC_NUM};
+    delete $$et{DOC_NUM};
     return 1;
 }
 
@@ -394,7 +394,7 @@ archives of XML files.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

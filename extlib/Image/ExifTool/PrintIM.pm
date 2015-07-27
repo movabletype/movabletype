@@ -12,7 +12,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess);
 
-$VERSION = '1.06';
+$VERSION = '1.07';
 
 sub ProcessPrintIM($$$);
 
@@ -42,22 +42,22 @@ sub ProcessPrintIM($$$);
 # Returns: 1 on success
 sub ProcessPrintIM($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $offset = $$dirInfo{DirStart};
     my $size = $$dirInfo{DirLen};
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
 
     unless ($size) {
-        $exifTool->Warn('Empty PrintIM data', 1);
+        $et->Warn('Empty PrintIM data', 1);
         return 0;
     }
     unless ($size > 15) {
-        $exifTool->Warn('Bad PrintIM data');
+        $et->Warn('Bad PrintIM data');
         return 0;
     }
     unless (substr($$dataPt, $offset, 7) eq 'PrintIM') {
-        $exifTool->Warn('Invalid PrintIM header');
+        $et->Warn('Invalid PrintIM header');
         return 0;
     }
     # check size of PrintIM block
@@ -67,12 +67,12 @@ sub ProcessPrintIM($$$)
         ToggleByteOrder();
         $num = Get16u($dataPt, $offset + 14);
         if ($size < 16 + $num * 6) {
-            $exifTool->Warn('Bad PrintIM size');
+            $et->Warn('Bad PrintIM size');
             return 0;
         }
     }
-    $verbose and $exifTool->VerboseDir('PrintIM', $num);
-    $exifTool->HandleTag($tagTablePtr, 'PrintIMVersion', substr($$dataPt, $offset + 8, 4),
+    $verbose and $et->VerboseDir('PrintIM', $num);
+    $et->HandleTag($tagTablePtr, 'PrintIMVersion', substr($$dataPt, $offset + 8, 4),
         DataPt => $dataPt,
         Start  => $offset + 8,
         Size   => 4,
@@ -82,7 +82,7 @@ sub ProcessPrintIM($$$)
         my $pos = $offset + 16 + $n * 6;
         my $tag = Get16u($dataPt, $pos);
         my $val = Get32u($dataPt, $pos + 2);
-        $exifTool->HandleTag($tagTablePtr, $tag, $val,
+        $et->HandleTag($tagTablePtr, $tag, $val,
             Index  => $n,
             DataPt => $dataPt,
             Start  => $pos + 2,
@@ -112,7 +112,7 @@ Print Image Matching meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

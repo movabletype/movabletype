@@ -15,7 +15,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 sub ProcessExtData($$$);
 
@@ -162,28 +162,28 @@ sub ProcessExtData($$$);
 # Returns: 1 on success
 sub ProcessExtData($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirLen = $$dirInfo{DirLen};
     my $pos = 0;
     # loop through sub-blocks
     while ($pos + 10 < $dirLen) {
         unless (substr($$dataPt, $pos, 4) eq "~FL\0") {
-            $exifTool->Warn('Lost synchronization while reading sub blocks');
+            $et->Warn('Lost synchronization while reading sub blocks');
             last;
         }
         my $tag = Get16u($dataPt, $pos + 4);
         my $len = Get32u($dataPt, $pos + 6);
         $pos += 10 + $len;
         if ($pos > $dirLen) {
-            $exifTool->Warn("Truncated sub block ID=$tag len=$len");
+            $et->Warn("Truncated sub block ID=$tag len=$len");
             last;
         }
         next unless $$tagTablePtr{$tag};
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag) or next;
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag) or next;
         my $start = $pos - $len;
         unless ($$tagInfo{Name} eq 'EXIFInfo') {
-            $exifTool->HandleTag($tagTablePtr, $tag, undef,
+            $et->HandleTag($tagTablePtr, $tag, undef,
                 TagInfo => $tagInfo,
                 DataPt  => $dataPt,
                 DataPos => $$dirInfo{DataPos},
@@ -212,7 +212,7 @@ sub ProcessExtData($$$)
             Multi    => 0,
         );
         my $exifTable = GetTagTable($$tagInfo{SubDirectory}{TagTable});
-        Image::ExifTool::Exif::ProcessExif($exifTool, \%dirInfo, $exifTable);
+        Image::ExifTool::Exif::ProcessExif($et, \%dirInfo, $exifTable);
         SetByteOrder('II');
     }
     return 1;
@@ -224,26 +224,26 @@ sub ProcessExtData($$$)
 # Returns: 1 on success, 0 if this wasn't a valid PSP file
 sub ProcessPSP($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $tag, $len, $err);
     return 0 unless $raf->Read($buff, 32) == 32 and
                     $buff eq "Paint Shop Pro Image File\x0a\x1a\0\0\0\0\0" and
                     $raf->Read($buff, 4) == 4;
-    $exifTool->SetFileType();
+    $et->SetFileType();
     SetByteOrder('II');
     my $tagTablePtr = GetTagTable('Image::ExifTool::PSP::Main');
     my @a = unpack('v*', $buff);
     # figure out block header length for this format PSP file
     my $hlen = $a[0] > 3 ? 10 : 14;
-    $$exifTool{PSPFileVersion} = $a[0]; # save for use in Condition
-    $exifTool->HandleTag($tagTablePtr, FileVersion => "@a");
+    $$et{PSPFileVersion} = $a[0]; # save for use in Condition
+    $et->HandleTag($tagTablePtr, FileVersion => "@a");
     # loop through blocks in file
     my $pos = 36;
     for (;;) {
         last unless $raf->Read($buff, $hlen) == $hlen;
         unless ($buff =~ /^~BK\0/) {
-            $exifTool->Warn('Lost synchronization while reading main PSP blocks');
+            $et->Warn('Lost synchronization while reading main PSP blocks');
             last;
         }
         $tag = Get16u(\$buff, 4);
@@ -254,13 +254,13 @@ sub ProcessPSP($$)
             next;
         }
         $raf->Read($buff, $len) == $len or $err=1, last;
-        $exifTool->HandleTag($tagTablePtr, $tag, $buff,
+        $et->HandleTag($tagTablePtr, $tag, $buff,
             DataPt  => \$buff,
             DataPos => $pos - $len,
             Size    => $len,
         );
     }
-    $err and $exifTool->Warn("Truncated main block ID=$tag len=$len");
+    $err and $et->Warn("Truncated main block ID=$tag len=$len");
     return 1;
 }
 
@@ -283,7 +283,7 @@ information from Paint Shop Pro images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

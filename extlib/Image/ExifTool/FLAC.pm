@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.04';
+$VERSION = '1.06';
 
 sub ProcessBitStream($$$);
 
@@ -122,7 +122,7 @@ sub ProcessBitStream($$$);
             0 => 'FLAC:SampleRate',
             1 => 'FLAC:TotalSamples',
         },
-        ValueConv => '$val[0] and $val[1] ? $val[1] / $val[0] : undef',
+        ValueConv => '($val[0] and $val[1]) ? $val[1] / $val[0] : undef',
         PrintConv => 'ConvertDuration($val)',
     },
 );
@@ -136,20 +136,20 @@ Image::ExifTool::AddCompositeTags('Image::ExifTool::FLAC');
 # Inputs: 0) ExifTool object ref, 1) dirInfo ref, 2) tag table ref
 # Notes: Byte order is used to determine the ordering of bits in the stream:
 # 'MM' = bit 0 is most significant, 'II' = bit 0 is least significant
-# - can handle arbitrarily wide values (ie. 8-byte or larger integers)
+# - can handle arbitrarily wide values (eg. 8-byte or larger integers)
 sub ProcessBitStream($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt   = $$dirInfo{DataPt};
     my $dataPos  = $$dirInfo{DataPos};
     my $dirStart = $$dirInfo{DirStart} || 0;
     my $dirLen   = $$dirInfo{DirLen} || (length($$dataPt) - $dirStart);
-    my $verbose  = $exifTool->Options('Verbose');
+    my $verbose  = $et->Options('Verbose');
     my $byteOrder = GetByteOrder();
     my $tag;
 
     if ($verbose) {
-        $exifTool->VPrint(0, "  + [BitStream directory, $dirLen bytes, '$byteOrder' order]\n");
+        $et->VPrint(0, "  + [BitStream directory, $dirLen bytes, '$byteOrder' order]\n");
     }
     foreach $tag (sort keys %$tagTablePtr) {
         next unless $tag =~ /^Bit(\d+)-?(\d+)?/;
@@ -198,7 +198,7 @@ sub ProcessBitStream($$$)
             $val /= 2;
             $mask >>= 1;
         }
-        $exifTool->HandleTag($tagTablePtr, $tag, $val,
+        $et->HandleTag($tagTablePtr, $tag, $val,
             DataPt  => $dataPt,
             DataPos => $dataPos,
             Start   => $dirStart + $i1,
@@ -215,21 +215,21 @@ sub ProcessBitStream($$$)
 # Returns: 1 on success, 0 if this wasn't a valid Ogg FLAC file
 sub ProcessFLAC($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
 
     # must first check for leading/trailing ID3 information
-    unless ($exifTool->{DoneID3}) {
+    unless ($$et{DoneID3}) {
         require Image::ExifTool::ID3;
-        Image::ExifTool::ID3::ProcessID3($exifTool, $dirInfo) and return 1;
+        Image::ExifTool::ID3::ProcessID3($et, $dirInfo) and return 1;
     }
     my $raf = $$dirInfo{RAF};
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
     my ($buff, $err);
 
     # check FLAC signature
     $raf->Read($buff, 4) == 4 and $buff eq 'fLaC' or return 0;
-    $exifTool->SetFileType();
+    $et->SetFileType();
     SetByteOrder('MM');
     my $tagTablePtr = GetTagTable('Image::ExifTool::FLAC::Main');
     for (;;) {
@@ -242,15 +242,15 @@ sub ProcessFLAC($$)
         my $tag  = $flag & 0x7f;    # tag bits
         if ($verbose) {
             print $out "FLAC metadata block, type $tag:\n";
-            $exifTool->VerboseDump(\$buff, DataPos => $raf->Tell() - $size);
+            $et->VerboseDump(\$buff, DataPos => $raf->Tell() - $size);
         }
-        $exifTool->HandleTag($tagTablePtr, $tag, undef,
+        $et->HandleTag($tagTablePtr, $tag, undef,
             DataPt  => \$buff,
             DataPos => $raf->Tell() - $size,
         );
         last if $last;   # all done if  is set
     }
-    $err and $exifTool->Warn('Format error in FLAC file');
+    $err and $et->Warn('Format error in FLAC file');
     return 1;
 }
 
@@ -273,7 +273,7 @@ information from Free Lossless Audio Codec (FLAC) audio files.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

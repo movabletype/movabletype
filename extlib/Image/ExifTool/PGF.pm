@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 # PGF header information
 %Image::ExifTool::PGF::Main = (
@@ -68,33 +68,33 @@ $VERSION = '1.01';
 # Returns: 1 on success, 0 if this wasn't a valid PGF file
 sub ProcessPGF($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $buff;
 
     # read header and check magic number
     return 0 unless $raf->Read($buff, 24) == 24 and $buff =~ /^PGF(.)/s;
     my $ver = ord $1;
-    $exifTool->SetFileType();
+    $et->SetFileType();
     SetByteOrder('II');
 
     # currently support only version 0x36
     unless ($ver == 0x36) {
-        $exifTool->Error(sprintf('Unsupported PGF version 0x%.2x', $ver));
+        $et->Error(sprintf('Unsupported PGF version 0x%.2x', $ver));
         return 1;
     }
     # extract information from the PGF header
     my $tagTablePtr = GetTagTable('Image::ExifTool::PGF::Main');
-    $exifTool->ProcessDirectory({ DataPt => \$buff, DataPos => 0 }, $tagTablePtr);
+    $et->ProcessDirectory({ DataPt => \$buff, DataPos => 0 }, $tagTablePtr);
 
     my $len = Get32u(\$buff, 4) - 16; # length of post-header data
 
     # skip colour table if necessary
-    $len -= $raf->Seek(1024, 1) ? 1024 : $len if $$exifTool{PGFColorMode} == 2;
+    $len -= $raf->Seek(1024, 1) ? 1024 : $len if $$et{PGFColorMode} == 2;
 
     # extract information from the embedded metadata image (PNG format)
     if ($len > 0 and $len < 0x1000000 and $raf->Read($buff, $len) == $len) {
-        $exifTool->ExtractInfo(\$buff, { ReEntry => 1 });
+        $et->ExtractInfo(\$buff, { ReEntry => 1 });
     }
     return 1;
 }
@@ -119,7 +119,7 @@ information from Progressive Graphics File (PGF) images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

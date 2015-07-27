@@ -15,7 +15,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;  # (for Composite:ImageSize)
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 sub ProcessExtData($$$);
 
@@ -449,21 +449,21 @@ sub ProcessExtData($$$);
 # Returns: 1 on success, 0 if this wasn't a valid PhotoCD file
 sub ProcessPCD($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $buff;
     return 0 unless $raf->Seek(2048, 0) and
                     $raf->Read($buff, 2048) == 2048 and
                     $buff =~ /^PCD_IPI/;
     SetByteOrder('MM');
-    $exifTool->SetFileType();
+    $et->SetFileType();
     my %dirInfo = (
         DirName => 'PhotoCD',
         DataPt => \$buff,
         DataPos => 4096,
     );
     my $tagTablePtr = GetTagTable('Image::ExifTool::PhotoCD::Main');
-    return $exifTool->ProcessBinaryData(\%dirInfo, $tagTablePtr);
+    return $et->ProcessBinaryData(\%dirInfo, $tagTablePtr);
 }
 
 1;  # end
@@ -485,7 +485,7 @@ information from Kodak Photo CD Image Pac (PCD) files.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

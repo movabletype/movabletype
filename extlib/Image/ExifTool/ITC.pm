@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 sub ProcessITC($$);
 
@@ -83,7 +83,7 @@ sub ProcessITC($$);
 # Returns: 1 on success, 0 if this wasn't a valid ITC file
 sub ProcessITC($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $rtnVal = 0;
     my ($buff, $err, $pos, $tagTablePtr, %dirInfo);
@@ -105,7 +105,7 @@ sub ProcessITC($$)
             # (first block must be 'itch')
             last unless $tag eq 'itch';
             last unless $size >= 0x1c and $size < 0x10000;
-            $exifTool->SetFileType();
+            $et->SetFileType();
             SetByteOrder('MM');
             $rtnVal = 1;    # this is an ITC file
             $err = 1;       # format error unless we read to EOF
@@ -121,7 +121,7 @@ sub ProcessITC($$)
                 DataPos => $pos,
             );
             my $tagTablePtr = GetTagTable('Image::ExifTool::ITC::Header');
-            $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+            $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         } elsif ($tag eq 'item') {
             # don't want to read the entire item data (includes image)
             $size > 12 or last;
@@ -141,7 +141,7 @@ sub ProcessITC($$)
             $pos = $raf->Tell();
             $raf->Read($buff, $len) == $len or last;
             unless ($len >= 0xb4 and substr($buff, 0xb0, 4) eq 'data') {
-                $exifTool->Warn('Parsing error. Please submit this ITC file for testing');
+                $et->Warn('Parsing error. Please submit this ITC file for testing');
                 last;
             }
             %dirInfo = (
@@ -150,25 +150,25 @@ sub ProcessITC($$)
                 DataPos => $pos,
             );
             $tagTablePtr = GetTagTable('Image::ExifTool::ITC::Item');
-            $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+            $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
             # extract embedded image
             $pos += $len;
             if ($size > 0) {
                 $tagTablePtr = GetTagTable('Image::ExifTool::ITC::Main');
-                my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, 'data');
-                my $image = $exifTool->ExtractBinary($pos, $size, $$tagInfo{Name});
-                $exifTool->FoundTag($tagInfo, \$image);
+                my $tagInfo = $et->GetTagInfo($tagTablePtr, 'data');
+                my $image = $et->ExtractBinary($pos, $size, $$tagInfo{Name});
+                $et->FoundTag($tagInfo, \$image);
                 # skip the rest of the block if necessary
                 $raf->Seek($pos+$size, 0) or last
             } elsif ($size < 0) {
                 last;
             }
         } else {
-            $exifTool->VPrint(0, "Unknown $tag block ($size bytes)\n");
+            $et->VPrint(0, "Unknown $tag block ($size bytes)\n");
             $raf->Seek($size-8, 1) or last;
         }
     }
-    $err and $exifTool->Warn('ITC file format error');
+    $err and $et->Warn('ITC file format error');
     return $rtnVal;
 }
 
@@ -191,7 +191,7 @@ information (including artwork images) from iTunes Cover Flow files.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

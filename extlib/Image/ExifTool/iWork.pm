@@ -14,34 +14,34 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::XMP;
 use Image::ExifTool::ZIP;
 
-$VERSION = '1.02';
+$VERSION = '1.04';
 
 # test for recognized iWork document extensions and outer XML elements
 my %iWorkType = (
     # file extensions
-    NUMBERS => 'Apple Numbers',
-    PAGES   => 'Apple Pages',
-    KEY     => 'Apple Keynote',
-    KTH     => 'Apple Keynote Theme',
-    NMBTEMPLATE => 'Apple Numbers Template',
+    NUMBERS => 'NUMBERS',
+    PAGES   => 'PAGES',
+    KEY     => 'KEY',
+    KTH     => 'KTH',
+    NMBTEMPLATE => 'NMBTEMPLATE',
     # we don't support double extensions --
     # "PAGES.TEMPLATE" => 'Apple Pages Template',
     # outer XML elements
-    'ls:document' => 'Apple Numbers',
-    'sl:document' => 'Apple Pages',
-    'key:presentation' => 'Apple Keynote',
+    'ls:document' => 'NUMBERS',
+    'sl:document' => 'PAGES',
+    'key:presentation' => 'KEY',
 );
 
 # MIME types for iWork files (Apple has not registered these yet, but these
 # are my best guess after doing some googling.  I'm not 100% sure what "sff"
 # indicates, but I think it refers to the new "flattened" package format)
 my %mimeType = (
-    'Apple Numbers' => 'application/x-iwork-numbers-sffnumbers',
-    'Apple Pages'   => 'application/x-iwork-pages-sffpages',
-    'Apple Keynote' => 'application/x-iWork-keynote-sffkey',
-    'Apple Numbers Template' => 'application/x-iwork-numbers-sfftemplate',
-    'Apple Pages Template'   => 'application/x-iwork-pages-sfftemplate',
-    'Apple Keynote Theme'    => 'application/x-iWork-keynote-sffkth',
+    'NUMBERS'       => 'application/x-iwork-numbers-sffnumbers',
+    'PAGES'         => 'application/x-iwork-pages-sffpages',
+    'KEY'           => 'application/x-iWork-keynote-sffkey',
+    'NMBTEMPLATE'   => 'application/x-iwork-numbers-sfftemplate',
+    'PAGES.TEMPLATE'=> 'application/x-iwork-pages-sfftemplate',
+    'KTH'           => 'application/x-iWork-keynote-sffkth',
 );
 
 # iWork tags
@@ -70,7 +70,7 @@ sub GetTagID($)
 {
     my $props = shift;
     return 0 if $$props[-1] =~ /^\w+:ID$/;  # ignore ID tags
-    return ($$props[0] =~ /.*?:(.*)/) ? $1 : $$props[0];
+    return ($$props[0] =~ /^.*?:(.*)/) ? $1 : $$props[0];
 }
 
 #------------------------------------------------------------------------------
@@ -81,25 +81,25 @@ sub GetTagID($)
 # Returns: 1 if valid tag was found
 sub FoundTag($$$$;$)
 {
-    my ($exifTool, $tagTablePtr, $props, $val, $attrs) = @_;
+    my ($et, $tagTablePtr, $props, $val, $attrs) = @_;
     return 0 unless @$props;
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
 
-    $exifTool->VPrint(0, "  | - Tag '", join('/',@$props), "'\n") if $verbose > 1;
+    $et->VPrint(0, "  | - Tag '", join('/',@$props), "'\n") if $verbose > 1;
 
     # un-escape XML character entities
     $val = Image::ExifTool::XMP::UnescapeXML($val);
     # convert from UTF8 to ExifTool Charset
-    $val = $exifTool->Decode($val, 'UTF8');
+    $val = $et->Decode($val, 'UTF8');
     my $tag = GetTagID($props) or return 0;
 
     # add any unknown tags to table
     unless ($$tagTablePtr{$tag}) {
-        $exifTool->VPrint(0, "  [adding $tag]\n") if $verbose;
+        $et->VPrint(0, "  [adding $tag]\n") if $verbose;
         AddTagToTable($tagTablePtr, $tag, { Name => ucfirst $tag });
     }
     # save the tag
-    $exifTool->HandleTag($tagTablePtr, $tag, $val);
+    $et->HandleTag($tagTablePtr, $tag, $val);
 
     return 1;
 }
@@ -112,14 +112,14 @@ sub FoundTag($$$$;$)
 # as ZIP and the dirInfo hash contains a 'ZIP' Archive::Zip object reference
 sub Process_iWork($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $zip = $$dirInfo{ZIP};
     my ($type, $index, $indexFile, $status);
 
     # try to determine the file type
     local $SIG{'__WARN__'} = \&Image::ExifTool::ZIP::WarnProc;
     # trust type given by file extension if available
-    $type = $iWorkType{$$exifTool{FILE_EXT}} if $$exifTool{FILE_EXT};
+    $type = $iWorkType{$$et{FILE_EXT}} if $$et{FILE_EXT};
     unless ($type) {
         # read the index file
         my @members = $zip->membersMatching('^index\.(xml|apxl)$');
@@ -134,7 +134,7 @@ sub Process_iWork($$)
         }
         $type or $type = 'ZIP';     # assume ZIP by default
     }
-    $exifTool->SetFileType($type, $mimeType{$type});
+    $et->SetFileType($type, $mimeType{$type});
 
     my @members = $zip->members();
     my $docNum = 0;
@@ -143,10 +143,10 @@ sub Process_iWork($$)
         # get filename of this ZIP member
         my $file = $member->fileName();
         next unless defined $file;
-        $exifTool->VPrint(0, "File: $file\n");
+        $et->VPrint(0, "File: $file\n");
         # set the document number and extract ZIP tags
-        $$exifTool{DOC_NUM} = ++$docNum;
-        Image::ExifTool::ZIP::HandleMember($exifTool, $member);
+        $$et{DOC_NUM} = ++$docNum;
+        Image::ExifTool::ZIP::HandleMember($et, $member);
 
         # process only the index XML and JPEG thumbnail files
         next unless $file =~ m{^(index\.(xml|apxl)|QuickLook/Thumbnail\.jpg)$}i;
@@ -158,12 +158,12 @@ sub Process_iWork($$)
             $buffPt = \$index;
         } else {
             ($buff, $status) = $zip->contents($member);
-            $status and $exifTool->Warn("Error extracting $file"), next;
+            $status and $et->Warn("Error extracting $file"), next;
             $buffPt = \$buff;
         }
         # extract JPEG as PreviewImage (should only be QuickLook/Thumbnail.jpg)
         if ($file =~ /\.jpg$/) {
-            $exifTool->FoundTag('PreviewImage', $buffPt);
+            $et->FoundTag('PreviewImage', $buffPt);
             next;
         }
         # process "metadata" section of XML index file
@@ -182,10 +182,10 @@ sub Process_iWork($$)
             },
         );
         my $tagTablePtr = GetTagTable('Image::ExifTool::iWork::Main');
-        $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+        $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         undef $$buffPt; # (free memory now)
     }
-    delete $$exifTool{DOC_NUM};
+    delete $$et{DOC_NUM};
     return 1;
 }
 
@@ -208,7 +208,7 @@ information from Apple iWork '09 XML+ZIP files.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

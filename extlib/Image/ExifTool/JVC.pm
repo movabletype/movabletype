@@ -13,7 +13,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 sub ProcessJVCText($$$);
 
@@ -63,28 +63,28 @@ sub ProcessJVCText($$$);
 # Returns: 1 on success, otherwise returns 0 and sets a Warning
 sub ProcessJVCText($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirStart = $$dirInfo{DirStart} || 0;
     my $dataLen = $$dirInfo{DataLen};
     my $dirLen = $$dirInfo{DirLen} || $dataLen - $dirStart;
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
 
     my $data = substr($$dataPt, $dirStart, $dirLen);
     # validate text maker notes
     unless ($data =~ /^VER:/) {
-        $exifTool->Warn('Bad JVC text maker notes');
+        $et->Warn('Bad JVC text maker notes');
         return 0;
     }
     while ($data =~ m/([A-Z]+):(.{3,4})/sg) {
         my ($tag, $val) = ($1, $2);
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
-        $exifTool->VerboseInfo($tag, $tagInfo,
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
+        $et->VerboseInfo($tag, $tagInfo,
             Table  => $tagTablePtr,
             Value  => $val,
         ) if $verbose;
         unless ($tagInfo) {
-            next unless $exifTool->{OPTIONS}->{Unknown};
+            next unless $$et{OPTIONS}{Unknown};
             $tagInfo = {
                 Name => "JVC_Text_$tag",
                 Unknown => 1,
@@ -93,7 +93,7 @@ sub ProcessJVCText($$$)
             # add tag information to table
             AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
-        $exifTool->FoundTag($tagInfo, $val);
+        $et->FoundTag($tagInfo, $val);
     }
     return 1;
 }
@@ -117,7 +117,7 @@ notes.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -37,7 +37,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.04';
+$VERSION = '1.06';
 
 sub ProcessPrimer($$$);
 sub ProcessLocalSet($$$);
@@ -1365,7 +1365,7 @@ my %componentDataDef = (
     '060e2b34.0101.0103.02100101.04010000' => { Name => 'BroadcastRegion', Type => 'UTF-16' },
     '060e2b34.0101.0103.02300101.01000000' => { Name => 'NatureOfPersonality', Type => 'UTF-16' },
     '060e2b34.0101.0103.02300102.01010000' => { Name => 'ContributionStatus', Type => 'UTF-16' },
-    '060e2b34.0101.0103.02300103.01010000' => { Name => 'SupportorAdministrationStatus', Type => 'UTF-16' },
+    '060e2b34.0101.0103.02300103.01010000' => { Name => 'SupportOrAdministrationStatus', Type => 'UTF-16' },
     '060e2b34.0101.0103.02300201.01000000' => { Name => 'OrganizationKind', Type => 'UTF-16' },
     '060e2b34.0101.0103.02300202.01010000' => { Name => 'ProductionOrganizationRole', Type => 'UTF-16' },
     '060e2b34.0101.0103.02300203.01010000' => { Name => 'SupportOrganizationRole', Type => 'UTF-16' },
@@ -2477,12 +2477,12 @@ sub ConvLatLon($)
 # Note: All types recognized here should be defined in the %knownType lookup
 sub ReadMXFValue($$$)
 {
-    my ($exifTool, $val, $type) = @_;
+    my ($et, $val, $type) = @_;
     my $len = length($val);
     local $_;
 
     if ($type eq 'UTF-16') {
-        $val = $exifTool->Decode($val, 'UCS2'); # (until we handle UTF-16 properly)
+        $val = $et->Decode($val, 'UCS2'); # (until we handle UTF-16 properly)
     } elsif ($type eq 'ProductVersion') {
         my @a = unpack('n*', $val);
         push @a, 0 while @a < 5;
@@ -2526,7 +2526,7 @@ sub ReadMXFValue($$$)
     } elsif ($type =~ /(Array|Batch)/ and $len > 16) {
         my ($count, $size) = unpack('NN', $val);
         # validate data length
-        $len == 8 + $count * $size or $exifTool->WarnOnce("Bad array or batch size");
+        $len == 8 + $count * $size or $et->WarnOnce("Bad array or batch size");
         my ($i, @a);
         for ($i=0; $i<$count; ++$i) {
             my $pos = 8 + $i * $size;
@@ -2536,7 +2536,7 @@ sub ReadMXFValue($$$)
         if ($type =~ /^StrongReference/) {
             $_ = join('-', unpack('H8H4H4H4H12', $_)) foreach @a;
         } elsif ($type eq 'BatchOfUL' or $type =~ /^WeakReference/) {
-            $_ = ReadMXFValue($exifTool, $_, 'UL') foreach @a;
+            $_ = ReadMXFValue($et, $_, 'UL') foreach @a;
         }
         $val = \@a;
     } elsif ($len == 32) {
@@ -2569,16 +2569,16 @@ sub ReadMXFValue($$$)
 # Returns: 1 on success
 sub ProcessPrimer($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $end = $$dirInfo{DirLen};
     return 0 unless $end > 8;
     my $count = Get32u($dataPt, 0);
     my $size = Get32u($dataPt, 4);
     return 0 unless $size >= 18;
-    $exifTool->VerboseDir('MXF Primer', $count);
-    my $verbose = $exifTool->Options('Verbose');
-    my $primer = $$exifTool{MXFInfo}{Primer};
+    $et->VerboseDir('MXF Primer', $count);
+    my $verbose = $et->Options('Verbose');
+    my $primer = $$et{MXFInfo}{Primer};
     my $pos = 8;
     my $i;
     for ($i=0; $i<$count; ++$i) {
@@ -2592,7 +2592,7 @@ sub ProcessPrimer($$$)
         next unless $verbose;
         my $indx = $i . ')';
         $indx .= ' ' if length($indx) < 3;
-        $exifTool->VPrint(0, sprintf("  | $indx 0x%.4x => '$global'\n", $local));
+        $et->VPrint(0, sprintf("  | $indx 0x%.4x => '$global'\n", $local));
     }
     return 1;
 }
@@ -2603,16 +2603,16 @@ sub ProcessPrimer($$$)
 # Returns: 1 on success
 sub ProcessLocalSet($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     local $_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataPos = $$dirInfo{DataPos};
     my $end = $$dirInfo{DirLen};
-    my $mxfInfo = $$exifTool{MXFInfo};
+    my $mxfInfo = $$et{MXFInfo};
     my $primer = $$mxfInfo{Primer};
     my (@strongRef, @groups, $instance, $editRate, $trackID, $langCode, $textLang);
 
-    $exifTool->VerboseDir('MXF LocalSet', undef, $end);
+    $et->VerboseDir('MXF LocalSet', undef, $end);
 
     # loop through all tags in this local set
     my $pos = 0;
@@ -2627,7 +2627,7 @@ sub ProcessLocalSet($$$)
             $extra = sprintf(', Local 0x%.4x', $loc);
         } else {
             $tag = $loc;
-          # $exifTool->WarnOnce('Missing local key for at least one tag');
+          # $et->WarnOnce('Missing local key for at least one tag');
             $extra = ', NOT IN PRIMER!';
         }
         my $tagInfo = $$tagTablePtr{$tag};
@@ -2635,7 +2635,7 @@ sub ProcessLocalSet($$$)
         if ($tagInfo) {
             $type = $$tagInfo{Type};
             if ($type and $knownType{$type}) {
-                $val = ReadMXFValue($exifTool, substr($$dataPt, $pos, $len), $type);
+                $val = ReadMXFValue($et, substr($$dataPt, $pos, $len), $type);
                 push @strongRef, (ref $val ? @$val : $val) if $type =~ /^StrongReference/;
                 # remember instance UID of this local set
                 if ($$tagInfo{Name} eq 'InstanceUID') {
@@ -2649,12 +2649,12 @@ sub ProcessLocalSet($$$)
             }
         }
         # get tagInfo ref the standard way to handle Unknown tags
-        $tagInfo = $langInfo || $exifTool->GetTagInfo($tagTablePtr, $tag);
+        $tagInfo = $langInfo || $et->GetTagInfo($tagTablePtr, $tag);
         # set Binary flag to extract all unknown-format tags as Binary data
         if ($tagInfo and $$tagInfo{Unknown} and not defined $$tagInfo{Binary}) {
             $$tagInfo{Binary} = not ($$tagInfo{Format} or ($type and $knownType{$type}));
         }
-        my $key = $exifTool->HandleTag($tagTablePtr, $tag, $val,
+        my $key = $et->HandleTag($tagTablePtr, $tag, $val,
             Extra       => $extra,
             TagInfo     => $tagInfo,
             DataPt      => $dataPt,
@@ -2668,17 +2668,17 @@ sub ProcessLocalSet($$$)
         # save information to allow later fixup of durations and group1 names
         # (necessary because we don't have all the information we need
         #  to do this on the fly when the file is parsed linearly)
-        push @groups, $$exifTool{TAG_EXTRA}{$key};
+        push @groups, $$et{TAG_EXTRA}{$key};
         next unless $tagInfo;
         my $name = $$tagInfo{Name};
         if ($$tagInfo{IsDuration}) {
             $$mxfInfo{FixDuration}{$key} = 1;
         } elsif ($$tagInfo{LanguageCode}) {
-            $langCode = $$exifTool{VALUE}{$key};
+            $langCode = $$et{VALUE}{$key};
         } elsif ($name eq 'EditRate') {
-            $editRate = $$exifTool{VALUE}{$key};
+            $editRate = $$et{VALUE}{$key};
         } elsif ($name =~ /TrackID$/) {
-            $trackID = $$exifTool{VALUE}{$key};
+            $trackID = $$et{VALUE}{$key};
             unless ($$mxfInfo{Group1}{$trackID}) {
                 # save lookup to convert TrackID to our group 1 name
                 $$mxfInfo{Group1}{$trackID} = 'Track' . ++$$mxfInfo{NumTracks};
@@ -2700,7 +2700,7 @@ sub ProcessLocalSet($$$)
         }
         # save instance UID's in groups hash (used to remove duplicates later)
         $$_{UID} = $instance foreach @groups;
-        $$objInfo{Name} = $$exifTool{DIR_NAME};
+        $$objInfo{Name} = $$et{DIR_NAME};
         $$objInfo{TrackID} = $trackID if defined $trackID;
         $$objInfo{EditRate} = $editRate if $editRate;
         if ($langCode) {
@@ -2718,7 +2718,7 @@ sub ProcessLocalSet($$$)
             }
         }
         # save instance UID's of Preface's
-        push @{$$mxfInfo{Preface}}, $instance if $$exifTool{DIR_NAME} eq 'Preface';
+        push @{$$mxfInfo{Preface}}, $instance if $$et{DIR_NAME} eq 'Preface';
     }
     return 1;
 }
@@ -2783,10 +2783,10 @@ sub SetGroups($$;$$)
 # Inputs: 0) ExifTool object ref, 1) MXF information hash ref
 sub ConvertDurations($$)
 {
-    my ($exifTool, $mxfInfo) = @_;
-    my $valueHash = $$exifTool{VALUE};
-    my $infoHash = $$exifTool{TAG_INFO};
-    my $tagExtra = $$exifTool{TAG_EXTRA};
+    my ($et, $mxfInfo) = @_;
+    my $valueHash = $$et{VALUE};
+    my $infoHash = $$et{TAG_INFO};
+    my $tagExtra = $$et{TAG_EXTRA};
     my $editHash = $$mxfInfo{EditRate};
     my ($tag, $key, $i);
     foreach $tag (keys %{$$mxfInfo{FixDuration}}) {
@@ -2807,10 +2807,10 @@ sub ConvertDurations($$)
 # Returns: 1 on success, 0 if this wasn't a valid MXF file
 sub ProcessMXF($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
-    my $verbose = $exifTool->Options('Verbose');
-    my $unknown = $exifTool->Options('Unknown');
+    my $verbose = $et->Options('Verbose');
+    my $unknown = $et->Options('Unknown');
     my ($buff, $preface, $n, $headerEnd, $footerPos);
 
     # read enough to allow skipping over run-in if it exists
@@ -2818,9 +2818,9 @@ sub ProcessMXF($$)
     $buff =~ /\x06\x0e\x2b\x34\x02\x05\x01\x01\x0d\x01\x02/g or return 0;
     my $start = pos($buff) - 11;
 
-    $exifTool->SetFileType();
+    $et->SetFileType();
     SetByteOrder('MM');
-    $raf->Seek($start, 0) or $exifTool->Warn('Seek error'), return 1;
+    $raf->Seek($start, 0) or $et->Warn('Seek error'), return 1;
     my $tagTablePtr = GetTagTable('Image::ExifTool::MXF::Main');
 
     # determine header length and type
@@ -2833,10 +2833,10 @@ sub ProcessMXF($$)
         FixDuration => { }, # names of all Duration tags that need fixing
         Preface => [ ],     # instance UID's for all Preface objects
     );
-    $$exifTool{MXFInfo} = \%mxfInfo;
+    $$et{MXFInfo} = \%mxfInfo;
 
     # set group 1 name for all tags (so we can overwrite with track number later)
-    $$exifTool{SET_GROUP1} = 'MXF';
+    $$et{SET_GROUP1} = 'MXF';
 
     for (;;) {
         my $pos = $raf->Tell();
@@ -2847,7 +2847,7 @@ sub ProcessMXF($$)
             undef $headerEnd;   # (only test this once)
             # skip directly to footer if possible
             if ($footerPos and $footerPos > $pos and (not $verbose or not $unknown)) {
-                $exifTool->VPrint(0, "[Skipping to footer. Use Unknown option to parse body partitions]\n");
+                $et->VPrint(0, "[Skipping to footer. Use Unknown option to parse body partitions]\n");
                 $raf->Seek($footerPos, 0) or last;
                 $pos = $footerPos;
             }
@@ -2893,7 +2893,7 @@ sub ProcessMXF($$)
             $raf->Read($buff, $len) == $len or last; # get KLV Value
             $dataPt = \$buff;
             my $type = $$tagInfo{Type};
-            $val = ReadMXFValue($exifTool, $buff, $type) if $type and $knownType{$type};
+            $val = ReadMXFValue($et, $buff, $type) if $type and $knownType{$type};
         } elsif (($tagInfo and (not $$tagInfo{Unknown} or $unknown)) or $verbose) {
             if ($tagInfo) {
                 # set Binary flag to extract all unknown-format tags as Binary data
@@ -2920,7 +2920,7 @@ sub ProcessMXF($$)
             $raf->Seek($len, 1) or last;    # skip this value
             next;
         }
-        $exifTool->HandleTag($tagTablePtr, $ul, $val,
+        $et->HandleTag($tagTablePtr, $ul, $val,
             TagInfo     => $tagInfo,
             DataPt      => $dataPt,
             DataPos     => $pos + 17 + $n,
@@ -2930,16 +2930,16 @@ sub ProcessMXF($$)
     }
     # walk entire MXF object tree to fix family 1 group names
     my ($pathInfo, $tag, %did, %bestDur);
-    $pathInfo = { Path => [ 'MXF' ] } if $exifTool->Options('SavePath');
+    $pathInfo = { Path => [ 'MXF' ] } if $et->Options('SavePath');
     foreach $preface (@{$mxfInfo{Preface}}) {
         SetGroups(\%mxfInfo, $preface, $pathInfo);
     }
     # convert Duration values to seconds based on the appropriate EditRate
-    ConvertDurations($exifTool, \%mxfInfo);
+    ConvertDurations($et, \%mxfInfo);
 
     # remove tags to keep only the one from the most recent instance of the object
-    my $tagExtra = $$exifTool{TAG_EXTRA};
-    my $fileOrder = $$exifTool{FILE_ORDER};
+    my $tagExtra = $$et{TAG_EXTRA};
+    my $fileOrder = $$et{FILE_ORDER};
     # also determine our best Duration value
     if ($mxfInfo{BestDuration}) {
         my $instance = $mxfInfo{BestDuration}{Source} || $mxfInfo{BestDuration}{Other};
@@ -2952,20 +2952,20 @@ sub ProcessMXF($$)
         $tag =~ /^(\S+)/;               # get tag name without index number
         my $utag = "$1 $instance";      # instance-specific tag name
         if ($did{$utag}) {
-            Image::ExifTool::DeleteTag($exifTool, $tag); # delete the duplicate
+            Image::ExifTool::DeleteTag($et, $tag); # delete the duplicate
         } else {
             $did{$utag} = 1;
             if ($bestDur{$utag}) {
                 # save best duration value
-                my $val = $$exifTool{VALUE}{$tag};
-                $exifTool->HandleTag($tagTablePtr, '060e2b34.0101.0102.07020201.01030000', $val);
+                my $val = $$et{VALUE}{$tag};
+                $et->HandleTag($tagTablePtr, '060e2b34.0101.0102.07020201.01030000', $val);
             }
         }
     }
 
     # clean up and return
-    delete $$exifTool{SET_GROUP1};
-    delete $$exifTool{MXFInfo};
+    delete $$et{SET_GROUP1};
+    delete $$et{MXFInfo};
     return 1;
 }
 
@@ -2988,7 +2988,7 @@ information from MXF (Material Exchange Format) files.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

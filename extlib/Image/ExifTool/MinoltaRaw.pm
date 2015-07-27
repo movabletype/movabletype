@@ -17,7 +17,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Minolta;
 
-$VERSION = '1.13';
+$VERSION = '1.14';
 
 sub ProcessMRW($$;$);
 sub WriteMRW($$;$);
@@ -369,16 +369,16 @@ sub ConvertWBMode($)
 }
 
 #------------------------------------------------------------------------------
-# Write MRW directory (ie. in ARW images)
+# Write MRW directory (eg. in ARW images)
 # Inputs: 0) ExifTool object ref, 1) dirInfo ref, 2) optional tag table ref
 # Returns: new MRW data or undef on error
 sub WriteMRW($$;$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    $exifTool or return 1;      # allow dummy access
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    $et or return 1;      # allow dummy access
     my $buff = '';
     $$dirInfo{OutFile} = \$buff;
-    ProcessMRW($exifTool, $dirInfo, $tagTablePtr) > 0 or undef $buff;
+    ProcessMRW($et, $dirInfo, $tagTablePtr) > 0 or undef $buff;
     return $buff;
 }
 
@@ -389,11 +389,11 @@ sub WriteMRW($$;$)
 # Notes: File pointer must be set to start of MRW in RAF upon entry
 sub ProcessMRW($$;$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $raf = $$dirInfo{RAF};
     my $outfile = $$dirInfo{OutFile};
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
     my ($data, $err, $outBuff);
 
     if ($$dirInfo{DataPt}) {
@@ -408,10 +408,10 @@ sub ProcessMRW($$;$)
     $data =~ /^\0MR([MI])/ or return 0;
     my $hdr = "\0MR$1";
     SetByteOrder($1 . $1);
-    $exifTool->SetFileType();
+    $et->SetFileType();
     $tagTablePtr = GetTagTable('Image::ExifTool::MinoltaRaw::Main');
     if ($outfile) {
-        $exifTool->InitWriteDirs('TIFF'); # use same write dirs as TIFF
+        $et->InitWriteDirs('TIFF'); # use same write dirs as TIFF
         $outBuff = '';
     }
     my $pos = $raf->Tell();
@@ -425,18 +425,18 @@ sub ProcessMRW($$;$)
         my $tag = substr($data, 0, 4);
         my $len = Get32u(\$data, 4);
         if ($verbose) {
-            print $out "MRW ",$exifTool->Printable($tag)," segment ($len bytes):\n";
+            print $out "MRW ",$et->Printable($tag)," segment ($len bytes):\n";
             if ($verbose > 2) {
                 $raf->Read($data,$len) == $len and $raf->Seek($pos,0) or $err = 1, last;
-                $exifTool->VerboseDump(\$data);
+                $et->VerboseDump(\$data);
             }
         }
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         if ($tagInfo and $$tagInfo{SubDirectory}) {
             my $subTable = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
             my $buff;
             # save shift for values stored with wrong base offset
-            $$exifTool{MRW_WrongBase} = -($raf->Tell());
+            $$et{MRW_WrongBase} = -($raf->Tell());
             $raf->Read($buff, $len) == $len or $err = 1, last;
             my %subdirInfo = (
                 DataPt => \$buff,
@@ -450,7 +450,7 @@ sub ProcessMRW($$;$)
             );
             if ($outfile) {
                 my $writeProc = $tagInfo->{SubDirectory}->{WriteProc};
-                my $val = $exifTool->WriteDirectory(\%subdirInfo, $subTable, $writeProc);
+                my $val = $et->WriteDirectory(\%subdirInfo, $subTable, $writeProc);
                 if (defined $val and length $val) {
                     # pad to an even 4 bytes (can't hurt, and it seems to be the standard)
                     $val .= "\0" x (4 - (length($val) & 0x03)) if length($val) & 0x03;
@@ -460,7 +460,7 @@ sub ProcessMRW($$;$)
                 }
             } else {
                 my $processProc = $tagInfo->{SubDirectory}->{ProcessProc};
-                $exifTool->ProcessDirectory(\%subdirInfo, $subTable, $processProc);
+                $et->ProcessDirectory(\%subdirInfo, $subTable, $processProc);
             }
         } elsif ($outfile) {
             # add this segment to the output buffer
@@ -484,9 +484,9 @@ sub ProcessMRW($$;$)
         }
         # Sony IDC utility corrupts MRWInfo when writing ARW images,
         # so make this a minor error for these images
-        $err and $exifTool->Error("MRW format error", $$exifTool{TIFF_TYPE} eq 'ARW');
+        $err and $et->Error("MRW format error", $$et{TIFF_TYPE} eq 'ARW');
     } else {
-        $err and $exifTool->Warn("MRW format error");
+        $err and $et->Warn("MRW format error");
     }
     return $rtnVal;
 }
@@ -510,7 +510,7 @@ write Konica-Minolta RAW (MRW) images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
