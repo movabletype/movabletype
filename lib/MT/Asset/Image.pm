@@ -749,11 +749,9 @@ sub normalize_orientation {
     $exif_tool->ExtractInfo( \$img_data );
     my $o = $exif_tool->GetInfo('Orientation')->{'Orientation'};
     if ( $o && ( $o ne 'Horizontal (normal)' && $o !~ /^Unknown/i ) ) {
-        $exif_tool->SetNewValue(
-            Orientation => $o,
-            DelValue    => 1
-        );
-        $exif_tool->WriteInfo( \$img_data );
+        my $new_exif = Image::ExifTool->new;
+        $new_exif->SetNewValuesFromFile($file_path);
+        $new_exif->SetNewValue('Orientation');
 
         my $img = MT::Image->new( Data => $img_data, Type => $obj->file_ext );
 
@@ -783,6 +781,17 @@ sub normalize_orientation {
             }
         };
         $fmgr->put_data( $blob, $file_path, 'upload' );
+
+        if ( exists $exif_tool->GetInfo('ExifImageWidth')->{ExifImageWidth} )
+        {
+            $new_exif->SetNewValue( 'ExifImageWidth' => $width );
+        }
+        if (exists $exif_tool->GetInfo('ExifImageHeight')->{ExifImageHeight} )
+        {
+            $new_exif->SetNewValue( 'ExifImageHeight' => $height );
+        }
+        $new_exif->WriteInfo($file_path);
+
         $obj->image_width($width);
         $obj->image_height($height);
     }
