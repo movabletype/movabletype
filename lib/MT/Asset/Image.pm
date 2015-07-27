@@ -881,7 +881,7 @@ sub _transform {
     # Restore metadata.
     $exif->WriteInfo($file_path)
         or return $asset->trans_error( 'Writing metadata failed: [_1]',
-        $exif->GetTag('Error') );
+        $exif->GetValue('Error') );
 
     $asset->image_width($width);
     $asset->image_height($height);
