@@ -196,7 +196,7 @@ sub compress {
         my $err = $magick->Set( quality => $level );
         return $image->error(
             MT->translate(
-                'Compressing image by the level [_1] failed: [_1]',
+                'Compressing image by the level [_1] failed: [_2]',
                 $level, $err
             )
         ) if $err;
