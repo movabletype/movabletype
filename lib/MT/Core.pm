@@ -1805,6 +1805,8 @@ BEGIN {
             'HTTPNoProxy'           => { default => 'localhost', },
             'HeaderCacheControl'    => undef,
             'ImageDriver'           => { default => 'ImageMagick', },
+            'ImageQualityJpeg'      => { default => 75 },
+            'ImageQualityPng'       => { default => 7 },
             'NetPBMPath'            => undef,
             'AdminScript'           => { default => 'mt.cgi', },
             'ActivityFeedScript'    => { default => 'mt-feed.cgi', },
