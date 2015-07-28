@@ -25,6 +25,10 @@ subtest 'handler_for_file' => sub {
 subtest 'handler_for_oembed' => sub {
     my $pkg; 
 
+    $pkg = MT::Asset->handler_for_asset('https://www.flickr.com/photos/gagagagaga/xxxxxxxxxx/ga/gagagagaga/');
+    ok( $pkg,                                "Flickr" );
+    ok( $pkg eq 'MT::Asset::oEmbed::Flickr', "Flickr" );
+
     $pkg = MT::Asset->handler_for_asset('https://www.youtube.com/watch?v=gagagagagagaga');
     ok( $pkg,                                 "YouTube" );
     ok( $pkg eq 'MT::Asset::oEmbed::YouTube', "YouTube" );
@@ -32,6 +36,19 @@ subtest 'handler_for_oembed' => sub {
     $pkg = MT::Asset->handler_for_asset('https://vimeo.com/000000000');
     ok( $pkg,                        "vimeo" );
     ok( $pkg eq 'MT::Asset::oEmbed', "vimeo" );
+};
+
+subtest 'New Flickr' => sub {
+    my $asset = MT::Asset::oEmbed::Flickr->new;
+    ok( $asset, "Flickr->new" );
+
+    $asset->url('https://www.flickr.com/photos/sixapartkk/5386235207/in/album-72157625901355024/');
+    $asset->get_embed();
+    ok( $asset->title eq 'In Year 2011, Six Apart is Reborn! ' , 'Flickr->title' );
+
+    $asset->blog_id(1);
+    $asset->save;
+    ok( $asset->id, "Flickr->save" );
 };
 
 subtest 'New YouTube' => sub {

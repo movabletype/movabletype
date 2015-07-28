@@ -40,3 +40,4 @@ web_services:
 
 oembed_classes:
     - $MTAssetoEmbed::MT::Asset::oEmbed::YouTube
+    - $MTAssetoEmbed::MT::Asset::oEmbed::Flickr

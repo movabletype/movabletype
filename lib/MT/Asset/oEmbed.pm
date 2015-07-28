@@ -94,7 +94,7 @@ sub get_embed {
 
     my $ua       = MT->new_ua();
     my $endpoint = $asset->properties->{endpoint};
-    my $res      = $ua->get( $endpoint . '?url=' . $param . '&json' );
+    my $res      = $ua->get( $endpoint . '?url=' . $param . '&format=json' );
 
     if ( $res->is_success ) {
         require JSON;
