@@ -216,6 +216,25 @@ sub thumbnail_file {
                 MT->translate( "Error converting image: [_1]", $img->errstr )
                 );
         }
+
+        # Compress thumbnail image.
+        my $type = lc( $param{Type} || $asset->file_ext );
+        if ( $type eq 'jpg' || $type eq 'jpeg' ) {
+            $data = $img->compress( Level => MT->config->ImageQualityJpeg )
+                or return $asset->error(
+                MT->translate(
+                    'Error compressing image: [_1]', $img->errstr
+                )
+                );
+        }
+        elsif ( $type eq 'png' ) {
+            $data = $img->compress( Level => MT->config->ImageQualityPng )
+                or return $asset->error(
+                MT->translate(
+                    'Error compressing image: [_1]', $img->errstr
+                )
+                );
+        }
     }
     $fmgr->put_data( $data, $thumbnail, 'upload' )
         or return $asset->error(
@@ -780,6 +799,38 @@ sub normalize_orientation {
         $obj->image_width($width);
         $obj->image_height($height);
     }
+
+    1;
+}
+
+sub compress {
+    my ( $asset, %param ) = @_;
+    my $file_path = $asset->file_path;
+    my $ext       = lc $asset->file_ext;
+
+    if ( $ext ne 'jpg' && $ext ne 'jpeg' && $ext ne 'png' ) {
+        return;
+    }
+
+    require MT::Image;
+    my $img = MT::Image->new( Filename => $file_path );
+
+    my $blob;
+    if ( $ext eq 'jpg' || $ext eq 'jpeg' ) {
+        $blob = $img->compress( Level => MT->config->ImageQualityJpeg )
+            or return $asset->error( $img->errstr );
+    }
+    elsif ( $ext eq 'png' ) {
+        $blob = $img->compress( Level => MT->config->ImageQualityPng )
+            or return $asset->error( $img->errstr );
+    }
+
+    require MT::FileMgr;
+    my $fmgr
+        = $asset->blog ? $asset->blog->file_mgr : MT::FileMgr->new('Loval');
+    $fmgr->put_data( $blob, $file_path, 'upload' )
+        or return $asset->trans_error( "Error writing to '[_1]: [_2]'",
+        $file_path, $fmgr->errstr );
 
     1;
 }

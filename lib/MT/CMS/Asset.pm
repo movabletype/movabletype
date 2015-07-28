@@ -1618,6 +1618,8 @@ sub _upload_file {
         if ( $q->param('normalize_orientation') ) {
             $asset->normalize_orientation;
         }
+
+        $asset->compress;
     }
 
     $asset->mime_type($mimetype) if $mimetype;
