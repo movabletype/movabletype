@@ -8,6 +8,7 @@ package MT::Asset;
 
 use strict;
 use MT::Tag;    # Holds MT::Taggable
+use MT::Util qw(is_url);
 use base qw( MT::Object MT::Taggable MT::Scorable );
 
 __PACKAGE__->install_properties(
@@ -515,6 +516,7 @@ sub system_filters {
 require MT::Asset::Image;
 require MT::Asset::Audio;
 require MT::Asset::Video;
+require MT::Asset::oEmbed;
 
 sub extensions {
     my $pkg = shift;
@@ -711,6 +713,34 @@ sub can_handle {
     require File::Basename;
     my $ext = $pkg->extensions || [];
     return ( File::Basename::fileparse( $filename, @$ext ) )[2] ? 1 : 0;
+}
+
+sub handler_for_asset {
+    my $pkg = shift;
+    my ($string) = @_;
+
+    if ( is_url($string) ) {
+        return $pkg->handler_for_oembed(@_);
+    }
+    else {
+        return $pkg->handler_for_file(@_);
+    }
+}
+
+sub handler_for_oembed {
+    my $pkg = shift;
+    my ($url) = @_;
+
+    my $package = MT::Asset::oEmbed->new;
+    my $types
+        = [ keys %{ $package->properties->{__provider_to_class} || {} } ];
+    foreach my $type (@$types) {
+        my $this_pkg = $package->class_handler($type);
+        if ( $this_pkg->can_handle($url) ) {
+            return $this_pkg;
+        }
+    }
+    ref $package;
 }
 
 # Given a filename, returns an appropriate MT::Asset class to associate
