@@ -31,7 +31,7 @@ sub class_label {
 }
 
 sub class_label_plural {
-    MT->translate('YouTubes');
+    MT->translate('YouTube');
 }
 
 1;

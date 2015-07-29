@@ -44,7 +44,7 @@ subtest 'New Flickr' => sub {
 
     $asset->url('https://www.flickr.com/photos/sixapartkk/5386235207/in/album-72157625901355024/');
     $asset->get_embed();
-    ok( $asset->title eq 'In Year 2011, Six Apart is Reborn! ' , 'Flickr->title' );
+    ok( $asset->label eq 'In Year 2011, Six Apart is Reborn! ' , 'Flickr->label' );
 
     $asset->blog_id(1);
     $asset->save;
@@ -57,7 +57,7 @@ subtest 'New YouTube' => sub {
 
     $asset->url('https://www.youtube.com/watch?v=q2-_TNyh4W4');
     $asset->get_embed();
-    ok( $asset->title eq 'Introduction of the coding style at Six Apart', 'YouTube->title' );
+    ok( $asset->label eq 'Introduction of the coding style at Six Apart', 'YouTube->label' );
 
     $asset->blog_id(1);
     $asset->save;

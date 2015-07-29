@@ -7,8 +7,7 @@
 package MT::Asset::oEmbed;
 
 use strict;
-use base qw( MT::Object );
-@MT::Asset::oEmbed::ISA = qw( MT::Object );
+use base qw( MT::Asset );
 
 use URI::Escape;
 
@@ -16,32 +15,19 @@ __PACKAGE__->install_properties(
     {   class_type    => 'oembed',
         provider_type => 'oembed',
         column_defs   => {
-            'id'               => 'integer not null auto_increment',
-            'blog_id'          => 'integer not null',
-            'url'              => 'text',
-            'type'             => 'string(255)',
-            'version'          => 'string(10)',
-            'title'            => 'string(255)',
-            'author_name'      => 'string(255)',
-            'author_url'       => 'text',
-            'provider_name'    => 'string(255)',
-            'provider_url'     => 'text',
-            'cache_age'        => 'integer',
-            'thumbnail_url'    => 'text',
-            'thumbnail_width'  => 'integer',
-            'thumbnail_height' => 'integer',
+            'type'                      => 'vchar meta',
+            'version'                   => 'vchar meta',
+            'title'                     => 'vchar meta',
+            'author_name'               => 'vchar meta',
+            'author_url'                => 'vclob meta',
+            'provider_name'             => 'vchar meta',
+            'provider_url'              => 'vclob meta',
+            'cache_age'                 => 'integer meta',
+            'provider_thumbnail_url'    => 'vclob meta',
+            'provider_thumbnail_width'  => 'integer meta',
+            'provider_thumbnail_height' => 'integer meta',
         },
-        indexes => {
-            type        => 1,
-            title       => 1,
-            author_name => 1,
-            created_by  => 1,
-            created_on  => 1,
-        },
-        audit       => 1,
-        meta        => 1,
-        datasource  => 'asset_oembed',
-        primary_key => 'id',
+        child_of => [ 'MT::Blog', 'MT::Website', ],
     }
 );
 
@@ -100,16 +86,17 @@ sub get_embed {
         require JSON;
         my $json = JSON::from_json( $res->content() );
         for my $k (
-            qw(
-            url type version title author_name
-            author_url provider_name provider_url
-            cache_age thumbnail_url
-            thumbnail_width thumbnail_height
-            )
+            qw( type version author_name author_url provider_name provider_url cache_age )
             )
         {
             $asset->$k( $json->{$k} ) if $json->{$k};
         }
+        for my $k (qw( thumbnail_url thumbnail_width thumbnail_height )) {
+            my $method = "provider_$k";
+            $asset->$method( $json->{$k} ) if $json->{$k};
+        }
+        $asset->label( $json->{title} );
+        $asset->file_path( $json->{url} );
     }
     else {
         return $asset->error(
@@ -119,5 +106,12 @@ sub get_embed {
 }
 
 sub domains { [] }
+
+sub thumbnail_path {
+    my $asset = shift;
+    my (%param) = @_;
+
+    $asset->provider_thumbnail_url();
+}
 
 1;
