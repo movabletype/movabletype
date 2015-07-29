@@ -70,41 +70,18 @@ sub init {
 }
 
 sub blob {
-    my $image  = shift;
-    my %param  = @_;
+    my $image = shift;
+    my $blob;
     my $imager = $image->{imager};
-    my $level  = $param{Level};
-
     if (   defined $image->{type}
         && $image->{type} eq 'jpeg'
         && ( $imager->getchannels == 2 || $imager->getchannels == 4 ) )
     {
         $imager = $imager->convert( preset => "noalpha" );
     }
-
-    my $blob;
-    if ( defined $level ) {
-        if ( defined $image->{type} && $image->{type} eq 'jpeg' ) {
-            $imager->write(
-                data        => \$blob,
-                type        => $image->{type},
-                jpegquality => $level,
-            );
-        }
-        elsif ( defined $image->{type} && $image->{type} eq 'png' ) {
-
-            # Imager cannot change PNG compression level.
-            $imager->write( data => \$blob, type => $image->{type} );
-        }
-    }
-    else {
-        $imager->write( data => \$blob, type => $image->{type} );
-    }
-
+    $imager->write( data => \$blob, type => $image->{type} );
     $blob;
 }
-
-*compress = \&blob;
 
 sub scale {
     my $image = shift;

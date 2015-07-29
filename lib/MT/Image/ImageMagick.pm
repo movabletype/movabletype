@@ -185,31 +185,4 @@ sub convert {
     return $blob;
 }
 
-sub compress {
-    my $image  = shift;
-    my %param  = @_;
-    my $level  = $param{Level};
-    my $magick = $image->{magick};
-    my $blob;
-
-    eval {
-        my $err = $magick->Set( quality => $level );
-        return $image->error(
-            MT->translate(
-                'Compressing image by the level [_1] failed: [_2]',
-                $level, $err
-            )
-        ) if $err;
-        $blob = $magick->ImageToBlob;
-    };
-    return $image->error(
-        MT->translate(
-            "Compressing image by the level [_1] failed: [_2]",
-            $level, $@
-        )
-    ) if $@;
-
-    return $blob;
-}
-
 1;

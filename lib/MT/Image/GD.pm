@@ -57,18 +57,9 @@ sub _translate_filetype {
 
 sub blob {
     my $image = shift;
-    my %param = @_;
     my $type  = $image->{type};
-    my $level = $param{Level};
-    if ( defined $level ) {
-        return $image->{gd}->$type($level);
-    }
-    else {
-        return $image->{gd}->$type;
-    }
+    $image->{gd}->$type;
 }
-
-*compress = \&blob;
 
 sub scale {
     my $image = shift;

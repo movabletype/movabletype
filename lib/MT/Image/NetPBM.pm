@@ -250,46 +250,6 @@ sub convert {
     $out;
 }
 
-sub compress {
-    my $image = shift;
-    my %param = @_;
-
-    my $type = $image->{type};
-    if ( $type ne 'jpeg' && $type ne 'png' ) {
-        return;
-    }
-
-    my @options;
-    my $level = $param{Level};
-    if ( $type eq 'jpeg' ) {
-        @options = ("-quality=${level}");
-    }
-    else {
-        @options = ( '-compression', $level );
-    }
-
-    my ( $out, $err );
-    my $pbm = $image->_find_pbm or return;
-    my @in = (
-        "$pbm${type}topnm",
-        ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
-    );
-
-    my @out;
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$type";
-        @out = ( $prog, @options ), last if -x $prog;
-    }
-
-    IPC::Run::run( \@in, '<', ( $image->{data} ? \$image->{data} : \undef ),
-        '|', \@out, \$out, \$err )
-        or return $image->error(
-        MT->translate( "Compressing image failed: [_1]", $err ) );
-
-    $image->{data} = $out;
-    $out;
-}
-
 sub _find_pbm {
     my $image = shift;
     return $image->{__pbm_path} if ref $image and $image->{__pbm_path};
