@@ -784,6 +784,34 @@ sub normalize_orientation {
     1;
 }
 
+sub change_quality {
+    my ( $asset, $quality ) = @_;
+    my $type = lc $asset->file_ext;
+
+    if ( $type ne 'jpg' && $type ne 'jpeg' && $type ne 'png' ) {
+        return 1;
+    }
+
+    require MT::Image;
+    my $img = MT::Image->new( Filename => $asset->file_path );
+    my $blob = $img->blob($quality) or return $asset->error( $img->errstr );
+
+    my $fmgr;
+    if ( $asset->blog ) {
+        $fmgr = $asset->blog->file_mgr;
+    }
+    else {
+        require MT::FileMgr;
+        $fmgr = MT::FileMgr->new('Local');
+    }
+
+    $fmgr->put_data( $blob, $asset->file_path, 'upload' )
+        or return $asset->trans_error( "Error writing to '[_1]': [_2]",
+        $asset->file_path, $fmgr->errstr );
+
+    1;
+}
+
 1;
 
 __END__
@@ -832,6 +860,11 @@ Return the HTML I<IMG> element with the image asset attributes.
 =head2 $asset->normalize_orientation
 
 Normalize orientation if an image has a "Orientation" in Exif information.
+
+=head2 $asset->change_quality([$quality])
+
+Change the quality of the file of $asset only when $asset is JPEG or PNG.
+When $quality is not set, config directive "ImageQualityJpeg" or "ImageQualityPng" is used.
 
 =head1 AUTHOR & COPYRIGHT
 

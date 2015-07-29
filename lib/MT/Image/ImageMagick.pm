@@ -23,7 +23,10 @@ sub load_driver {
 sub init {
     my $image = shift;
     my %param = @_;
-    my %arg   = ();
+
+    $image->SUPER::init(%param);
+
+    my %arg = ();
     if ( my $type = $param{Type} ) {
         %arg = ( magick => lc($type) );
     }
@@ -50,6 +53,27 @@ sub init {
         ( $image->{width}, $image->{height} )
             = $magick->Get( 'width', 'height' );
     }
+
+    # Set quality.
+    my $quality;
+    if ( $arg{magick} eq 'jpg' || $arg{magick} eq 'jpeg' ) {
+        $quality = $image->jpeg_quality;
+    }
+    elsif ( $arg{magick} eq 'png' ) {
+        $quality = $image->png_quality;
+    }
+    if ( defined $quality ) {
+        eval {
+            my $err = $magick->Set( quality => $quality );
+            return $image->error(
+                MT->transalte(
+                    'Setting quality parameter [_1] failed: [_2]', $quality,
+                    $err
+                )
+            ) if $err;
+        };
+    }
+
     $image;
 }
 
@@ -176,6 +200,10 @@ sub convert {
                 $type, $err
             )
         ) if $err;
+
+        # Set quality parameter for new type.
+        $image->_set_quality($quality) or return;
+
         $blob = $magick->ImageToBlob;
     };
     return $image->error(
@@ -183,6 +211,51 @@ sub convert {
         if $@;
 
     return $blob;
+}
+
+sub blob {
+    my ( $image, $quality ) = @_;
+    my $type   = $image->{type};
+    my $magick = $image->{magick};
+    my $blob;
+
+    eval {
+        $image->_set_quality($quality) or return;
+
+        $blob = $magick->ImageToBlob;
+    };
+    return $image->error(
+        MT->translate( 'Outputting image failed: [_1]', $@ ) )
+        if $@;
+
+    return $magick->ImageToBlob;
+}
+
+sub _set_quality {
+    my ( $image, $quality ) = @_;
+    my $type   = $image->{type};
+    my $magick = $image->{magick};
+
+    if ( !defined $quality ) {
+        my $lc_type = uc($type);
+        $lc_type = 'jpeg' if $lc_type eq 'jpg';
+        my $quality_column = uc($type) . '_quality';
+        $quality
+            = $image->can($quality_column)
+            ? $image->$quality_column
+            : undef;
+    }
+    if ( defined $quality ) {
+        my $err = $magick->Set( quality => $quality );
+        return $image->error(
+            MT->transalte(
+                'Setting quality parameter [_1] failed: [_2]', $quality,
+                $err
+            )
+        ) if $err;
+    }
+
+    1;
 }
 
 1;

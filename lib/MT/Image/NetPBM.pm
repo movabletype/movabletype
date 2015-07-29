@@ -24,6 +24,9 @@ sub load_driver {
 sub init {
     my $image = shift;
     my %param = @_;
+
+    $image->SUPER::init(%param);
+
     if ( my $file = $param{Filename} ) {
         $image->{file} = $file;
         if ( !defined $param{Type} ) {
@@ -75,13 +78,9 @@ sub scale {
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
     my @scale = ( "${pbm}pnmscale", '-width', $w, '-height', $h );
-    my @out;
-
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$type";
-        @out = ($prog), last if -x $prog;
-    }
+    my @out = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
+
     if ( $type eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
     }
@@ -108,11 +107,7 @@ sub crop {
     );
 
     my @crop = ( "${pbm}pnmcut", $x, $y, $size, $size );
-    my @out;
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$type";
-        @out = ($prog), last if -x $prog;
-    }
+    my @out = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
     if ( $type eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
@@ -136,13 +131,9 @@ sub flipHorizontal {
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
     my @scale = ( "${pbm}pnmflip", '-lr' );
-    my @out;
-
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$type";
-        @out = ($prog), last if -x $prog;
-    }
+    my @out = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
+
     if ( $type eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
     }
@@ -164,13 +155,9 @@ sub flipVertical {
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
     my @scale = ( "${pbm}pnmflip", '-tb' );
-    my @out;
-
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$type";
-        @out = ($prog), last if -x $prog;
-    }
+    my @out = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
+
     if ( $type eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
     }
@@ -193,13 +180,9 @@ sub rotate {
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
     my @scale = ( "${pbm}pnmflip", '-r' . ( 360 - $degrees ) );
-    my @out;
-
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$type";
-        @out = ($prog), last if -x $prog;
-    }
+    my @out = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
+
     if ( $type eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
     }
@@ -228,11 +211,7 @@ sub convert {
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
 
-    my @out;
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$outtype";
-        @out = ($prog), last if -x $prog;
-    }
+    my @out = $image->_generate_converting_command( $pbm, $outtype );
     my (@quant);
     if ( $outtype eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
@@ -247,6 +226,31 @@ sub convert {
         );
     $image->{data} = $out;
     $image->{type} = $outtype;
+    $out;
+}
+
+sub blob {
+    my ( $image, $quality ) = @_;
+
+    my $type = $image->{type};
+    my ( $out, $err );
+    my $pbm = $image->_find_pbm or return;
+    my @in = (
+        "$pbm${type}topnm",
+        ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
+    );
+
+    my @out = $image->_generate_converting_command( $pbm, $type, $quality );
+    my (@quant);
+    if ( $type eq 'gif' ) {
+        push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
+    }
+    IPC::Run::run( \@in, '<', ( $image->{data} ? \$image->{data} : \undef ),
+        '|', @quant, \@out, \$out, \$err )
+        or return $image->error(
+        MT->translate( "Outputting image failed: [_1]", $err ) );
+    $image->{data} = $out;
+
     $out;
 }
 
@@ -267,6 +271,29 @@ sub _find_pbm {
     ) unless $pbm;
     $image->{__pbm_path} = $pbm if ref $image;
     $pbm;
+}
+
+sub _generate_converting_command {
+    my ( $image, $pbm, $type, $quality ) = @_;
+    my @out;
+
+    for my $try (qw( ppm pnm )) {
+        my $prog = "${pbm}${try}to$type";
+        @out = ($prog), last if -x $prog;
+    }
+
+    if (@out) {
+        if ( $type eq 'jpeg' ) {
+            $quality = $image->jpeg_quality if !defined $quality;
+            push @out, ( '-quality=' . $quality );
+        }
+        elsif ( $type eq 'png' ) {
+            $quality = $image->png_quality if !defined $quality;
+            push @out, ( '-compression', $quality );
+        }
+    }
+
+    @out;
 }
 
 1;

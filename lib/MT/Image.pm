@@ -8,7 +8,9 @@ package MT::Image;
 
 use strict;
 use MT;
-use base qw( MT::ErrorHandler );
+use base qw( Class::Accessor::Fast MT::ErrorHandler );
+
+__PACKAGE__->mk_accessors(qw( jpeg_quality png_quality ));
 
 sub new {
     my $class = shift;
@@ -23,6 +25,24 @@ sub new {
         $image->init(@_)
             or return $class->error( $image->errstr );
     }
+    $image;
+}
+
+sub init {
+    my ( $image, %param ) = @_;
+
+    my $jpeg_quality
+        = exists $param{JpegQuality}
+        ? $param{JpegQuality}
+        : MT->config->ImageQualityJpeg;
+    my $png_quality
+        = exists $param{PngQuality}
+        ? $param{PngQuality}
+        : MT->config->ImageQualityPng;
+
+    $image->jpeg_quality($jpeg_quality);
+    $image->png_quality($png_quality);
+
     $image;
 }
 
@@ -285,6 +305,12 @@ The image format of the data in I<Data>. This should be either I<JPG> or
 I<GIF>.
 
 =back
+
+=head2 $img->init( %arg )
+
+Set $img->jpeg_quality and $img->png_quality parameter from $arg{JpegQuality}
+and $arg{PngQuality}. When $arg{JpegQuality}/$arg{PngQuality} is not set,
+MT->config->ImageJpegQuality/MT->config->ImagePngQuality is used.
 
 =head2 $img->scale( %arg )
 
