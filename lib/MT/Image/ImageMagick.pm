@@ -262,7 +262,7 @@ sub _set_quality {
     }
     if ( defined $quality ) {
 
-        # Do not adjust the value when the valie is set by argument.
+        # Do not adjust the value when the value is set by argument.
         my $err = $magick->Set( quality => $quality );
         return $image->error(
             MT->transalte(
