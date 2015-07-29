@@ -202,7 +202,7 @@ sub convert {
         ) if $err;
 
         # Set quality parameter for new type.
-        $image->_set_quality($quality) or return;
+        $image->_set_quality or return;
 
         $blob = $magick->ImageToBlob;
     };
