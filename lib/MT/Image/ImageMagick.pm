@@ -77,6 +77,21 @@ sub init {
     $image;
 }
 
+# http://www.imagemagick.org/script/command-line-options.php#quality
+# Range of JPEG quality value of ImageMagick is between 1 and 100.
+# So, return 1 when the value is 0.
+sub jpeg_quality {
+    my $image = shift;
+    $image->SUPER::jpeg_quality(@_) || 1;
+}
+
+# http://www.imagemagick.org/script/command-line-options.php#quality
+# Return 10 times value according to the spec.
+sub png_quality {
+    $image = shift;
+    $image->SUPER::png_quality(@_) * 10;
+}
+
 sub scale {
     my $image = shift;
     my ( $w, $h ) = $image->get_dimensions(@_);
@@ -246,6 +261,8 @@ sub _set_quality {
             : undef;
     }
     if ( defined $quality ) {
+
+        # Do not adjust the value when the valie is set by argument.
         my $err = $magick->Set( quality => $quality );
         return $image->error(
             MT->transalte(
