@@ -88,7 +88,7 @@ sub jpeg_quality {
 # http://www.imagemagick.org/script/command-line-options.php#quality
 # Return 10 times value according to the spec.
 sub png_quality {
-    $image = shift;
+    my $image = shift;
     $image->SUPER::png_quality(@_) * 10;
 }
 
