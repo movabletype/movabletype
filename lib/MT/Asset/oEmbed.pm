@@ -96,7 +96,7 @@ sub get_embed {
             $asset->$method( $json->{$k} ) if $json->{$k};
         }
         $asset->label( $json->{title} );
-        $asset->file_path( $json->{url} );
+        $asset->file_path( $json->{url} || $url );
     }
     else {
         return $asset->error(

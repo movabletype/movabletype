@@ -107,13 +107,26 @@ sub list_props {
                         ? q{<span class="inuse-userpic sticky-label">Userpic</span>}
                         : '';
 
-                    if ( $file_path && $fmgr->exists($file_path) ) {
+                    if ($file_path
+                        && (   $fmgr->exists($file_path)
+                            || $obj->isa('MT::Asset::oEmbed') )
+                        )
+                    {
                         my $img
                             = MT->static_path
                             . 'images/asset/'
                             . $class_type
                             . '-45.png';
-                        if (   $obj->has_thumbnail
+                        if ( $obj->isa('MT::Asset::oEmbed') ) {
+                            my $thumb_url = $obj->provider_thumbnail_url;
+                            push @rows, qq{
+                                <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                <div class="thumbnail picture small">
+                                  <img alt="" src="$thumb_url" style="height: ${thumb_size}px; width: ${thumb_size}px; overflow: hidden;" />
+                                </div>
+                            };
+                        }
+                        elsif ($obj->has_thumbnail
                             && $obj->can_create_thumbnail )
                         {
                             my ( $orig_width, $orig_height )
