@@ -38,5 +38,19 @@ sub class_label_plural {
     MT->translate('Flickr');
 }
 
+sub image_height {
+    my $asset = shift;
+    my $height = $asset->meta( 'height', @_ );
+    return $height if $height || @_;
+
+}
+
+sub image_width {
+    my $asset = shift;
+    my $width = $asset->meta( 'width', @_ );
+    return $width if $width || @_;
+
+}
+
 1;
 

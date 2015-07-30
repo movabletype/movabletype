@@ -75,10 +75,13 @@ sub get_embed {
 
     return undef unless $url;
 
+    $asset->url($url) unless $asset->url();
+
     $url = Encode::encode_utf8($url) unless Encode::is_utf8($url);
     my $param = uri_escape_utf8($url);
 
-    my $ua       = MT->new_ua();
+    my $ua  = MT->new_ua();
+    #$ua->ssl_opts( verify_hostname => 0 );
     my $endpoint = $asset->properties->{endpoint};
     my $res      = $ua->get( $endpoint . '?url=' . $param . '&format=json' );
 
@@ -89,18 +92,26 @@ sub get_embed {
             qw( type version author_name author_url provider_name provider_url cache_age )
             )
         {
-            $asset->$k( $json->{$k} ) if $json->{$k};
+            my $item = delete $json->{$k};
+            $asset->$k($item) if $item;
         }
         for my $k (qw( thumbnail_url thumbnail_width thumbnail_height )) {
-            my $method = "provider_$k";
-            $asset->$method( $json->{$k} ) if $json->{$k};
+            my $item = delete $json->{$k};
+            if ($item) {
+                my $method = "provider_$k";
+                $asset->$method($item) if $item;
+            }
         }
-        $asset->label( $json->{title} );
+        my $title = delete $json->{title};
+        $asset->label($title);
         $asset->file_path( $json->{url} || $url );
+        foreach my $k ( keys(%$json) ) {
+            $asset->$k( $json->{$k} ) if $json->{$k};
+        }
     }
     else {
         return $asset->error(
-            MT->translate( "Error embed: [_1]", $res->msg ) );
+            MT->translate( "Error embed: [_1]", $res->content ) );
     }
     return $asset;
 }
