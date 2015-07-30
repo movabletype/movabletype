@@ -1,0 +1,49 @@
+id: GoogleOpenIDConnect
+name: GoogleOpenIDConnect
+version: 1.0
+author_link: http://www.movabletype.org/
+author_name: Six Apart, Ltd.
+description: <MT_TRANS phrase="Provides commenter registration through Google OpenIDConnect.">
+l10n_class: GoogleOpenIDConnect::L10N
+
+settings:
+    client_id:
+    client_secret:
+
+web_services:
+    GoogleOpenIDConnect:
+        config_template:
+            code: $GoogleOpenIDConnect::GoogleOpenIDConnect::App::config_tmpl
+        save_config:
+            code: $GoogleOpenIDConnect::GoogleOpenIDConnect::App::save_config
+
+commenter_authenticators:
+    GoogleOpenIDConnect:
+        class: GoogleOpenIDConnect::OIDC
+        label: GoogleOpenIDConnect
+        logo:  ../mt-static/images/comment/google_oidc.png
+        logo_small: ../mt-static/images/comment/google_oidc_logo.png
+        login_form: |
+            <form method="post" action="<mt:var name="script_url">">
+                <input type="hidden" name="__mode" value="login_external" />
+                <input type="hidden" name="openid_url" value="https://accounts.google.com/o/oauth2/auth" />
+                <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+                <input type="hidden" name="entry_id" value="<mt:var name="entry_id" escape="html">" />
+                <input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+                <input type="hidden" name="key" value="GoogleOpenIDConnect" />
+                <mtapp:setting
+                 id="GoogleOpenId_display"
+                 label="<__trans phrase="Sign in using your Gmail account">"
+                 label_class="no-header">
+                <p><__trans phrase="Sign in to Movable Type with your[_1] Account[_2]" params='<br /><strong style="font-size:16px;"><img alt="Google" src="<mt:var name="static_uri">images/comment/google_transparent.gif" />%%</strong>'></p>
+                </mtapp:setting>
+                <div class="actions-bar actions-bar-login">
+                <button
+                   type="submit"
+                   class="sign-in action primary button">
+                  <__trans phrase="Sign in">
+                </button>
+                </div>
+            </form>
+        login_form_params: GoogleOpenIDConnect::OIDC::commenter_auth_params
+        # condition: $GoogleOpenIDConnect::GoogleOpenIDConnect::OIDC::condition
