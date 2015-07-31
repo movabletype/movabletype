@@ -48,4 +48,10 @@ sub image_width {
 
 }
 
+sub has_thumbnail {
+    my $asset = shift;
+
+    $asset->provider_thumbnail_url ? 1 : 0;
+}
+
 1;

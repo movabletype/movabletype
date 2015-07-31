@@ -117,16 +117,7 @@ sub list_props {
                             . 'images/asset/'
                             . $class_type
                             . '-45.png';
-                        if ( $obj->isa('MT::Asset::oEmbed') ) {
-                            my $thumb_url = $obj->provider_thumbnail_url;
-                            push @rows, qq{
-                                <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
-                                <div class="thumbnail picture small">
-                                  <img alt="" src="$thumb_url" style="height: ${thumb_size}px; width: ${thumb_size}px; overflow: hidden;" />
-                                </div>
-                            };
-                        }
-                        elsif ($obj->has_thumbnail
+                        if (   $obj->has_thumbnail
                             && $obj->can_create_thumbnail )
                         {
                             my ( $orig_width, $orig_height )

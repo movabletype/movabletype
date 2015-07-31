@@ -52,5 +52,16 @@ sub image_width {
 
 }
 
+sub has_thumbnail {
+    my $asset = shift;
+
+    $asset->type eq 'photo'
+        ? $asset->url
+            ? 1
+            : 0
+        : $asset->provider_thumbnail_url ? 1
+        :                                  0;
+}
+
 1;
 
