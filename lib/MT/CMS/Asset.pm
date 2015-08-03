@@ -1619,6 +1619,8 @@ sub _upload_file {
             $asset->normalize_orientation;
         }
 
+        # Adjust image quality according to ImageQualityJpeg
+        # and ImageQualityPng.
         $asset->change_quality;
     }
 
