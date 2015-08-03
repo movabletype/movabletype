@@ -600,6 +600,7 @@ sub cfg_system_general {
 
     $param{image_quality_jpeg} = $cfg->ImageQualityJpeg;
     $param{image_quality_png}  = $cfg->ImageQualityPng;
+    $param{image_driver}       = lc $cfg->ImageDriver;
 
     $param{saved}        = $app->param('saved');
     $param{screen_class} = "settings-screen system-feedback-settings";
