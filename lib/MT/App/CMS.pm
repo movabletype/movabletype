@@ -183,10 +183,6 @@ sub core_methods {
         'send_notify'        => "${pkg}AddressBook::send_notify",
         'start_upload'       => "${pkg}Asset::start_upload",
         'upload_file'        => "${pkg}Asset::upload_file",
-        'js_upload_file'     => {
-            code     => "${pkg}Asset::js_upload_file",
-            app_mode => 'JSON',
-        },
         'upload_userpic'     => "${pkg}User::upload_userpic",
         'complete_insert'    => "${pkg}Asset::complete_insert",
         'cancel_upload'      => "${pkg}Asset::cancel_upload",
