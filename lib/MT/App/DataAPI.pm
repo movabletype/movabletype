@@ -2121,6 +2121,14 @@ sub core_endpoints {
 #            },
 #        },
 
+        # version 3
+        {   id             => 'authenticate',
+            route          => '/authentication',
+            verb           => 'POST',
+            version        => 3,
+            handler        => "${pkg}v3::Auth::authentication",
+            requires_login => 0,
+        },
     ];
 }
 
