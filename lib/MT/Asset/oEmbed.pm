@@ -151,9 +151,8 @@ sub thumbnail_file {
     $fmgr ||= $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
     return undef unless $fmgr;
 
-    # download image
-    my $file_path = $asset->_download_image_data();
-    return undef unless $file_path && $fmgr->file_size($file_path);
+    my $file_path = $asset->file_path;
+    return undef unless $file_path;
 
     require MT::Util;
     my $asset_cache_path = $asset->_make_cache_path( $param{Path} );
@@ -221,6 +220,10 @@ sub thumbnail_file {
 
     # stale or non-existent thumbnail. let's create one!
     return undef unless $fmgr->can_write($asset_cache_path);
+
+    # download original image
+    my $file_path = $asset->_download_image_data();
+    return undef unless $file_path && $fmgr->file_size($file_path);
 
     my $data;
     if (   ( $n_w == $i_w )
@@ -345,8 +348,10 @@ sub _download_image_data {
 
     return unless $url;
 
-    my $ua = MT->new_ua();
-    $ua->agent( 'MovableType/' . MT->version_id );
+    my $ua = MT->new_ua({
+        agent    => 'MovableType/' . MT->version_id,
+        max_size => 1_000_000,
+    });
     $ua->ssl_opts( verify_hostname => 0 );
 
     my $req = HTTP::Request->new( 'GET', $url );
