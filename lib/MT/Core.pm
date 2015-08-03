@@ -2079,6 +2079,8 @@ BEGIN {
             'AuthLDAPBindDN'        => { alias => 'LDAPAuthBindDN' },
             'AuthLDAPPassword'      => { alias => 'LDAPAuthPassword' },
             'AuthLDAPSASLMechanism' => { alias => 'LDAPAuthSASLMechanism' },
+
+            'RestrictedPSGIApp' => { type => 'ARRAY' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
