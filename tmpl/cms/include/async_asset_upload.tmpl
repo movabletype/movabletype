@@ -153,6 +153,7 @@ function createUploadBlock () {
 
   this.setCancelUpload = function(xhr) {
     var parent = this;
+    this.cancelUpload.show();
     this.cancelUpload.click( function() {
       xhr.abort();
       parent.setCancelResult(trans('Cancelled'))
