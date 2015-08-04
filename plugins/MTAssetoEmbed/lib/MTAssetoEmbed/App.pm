@@ -257,7 +257,7 @@ sub flickr_oauth_request {
     );
     $request->sign;
     my $ua = new_ua();
-    #$ua->ssl_opts( verify_hostname => 0 );
+    $ua->ssl_opts( verify_hostname => 0 );
     my $http_hdr = HTTP::Headers->new(
         'Authorization' => $request->to_authorization_header );
     my $http_req = HTTP::Request->new( $request_method, $request_token_url,
@@ -327,7 +327,7 @@ sub flickr_oauth_success {
     );
     $request->sign;
     my $ua = new_ua();
-    #$ua->ssl_opts( verify_hostname => 0 );
+    $ua->ssl_opts( verify_hostname => 0 );
     my $http_hdr = HTTP::Headers->new(
         'Authorization' => $request->to_authorization_header );
     my $http_req

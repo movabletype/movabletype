@@ -199,10 +199,10 @@ sub thumbnail_file {
     my $thumbnail = File::Spec->catfile( $asset_cache_path, $file );
 
     # thumbnail file exists and is dated on or later than source image
-    if ($fmgr->exists($thumbnail)
-        && ( $fmgr->file_mod_time($thumbnail)
-            >= $fmgr->file_mod_time($file_path) )
-        )
+    my $orig_mod_time = $asset->get_original_mod_time();
+    if (   $fmgr->exists($thumbnail)
+        && $orig_mod_time
+        && ( $fmgr->file_mod_time($thumbnail) >= $orig_mod_time ) )
     {
         my $already_exists = 1;
         if ( $asset->image_width != $asset->image_height ) {
@@ -348,10 +348,11 @@ sub _download_image_data {
 
     return unless $url;
 
-    my $ua = MT->new_ua({
-        agent    => 'MovableType/' . MT->version_id,
-        max_size => 1_000_000,
-    });
+    my $ua = MT->new_ua(
+        {   agent    => 'MovableType/' . MT->version_id,
+            max_size => 1_000_000,
+        }
+    );
     $ua->ssl_opts( verify_hostname => 0 );
 
     my $req = HTTP::Request->new( 'GET', $url );
@@ -372,6 +373,10 @@ sub _download_image_data {
         return $asset->error(
             MT->translate( "Error download: [_1]", $res->content ) );
     }
+}
+
+sub get_original_mod_time {
+    undef;
 }
 
 1;
