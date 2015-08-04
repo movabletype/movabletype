@@ -41,3 +41,5 @@ themes/eiger
 
 t/site/
 t/db/mt.db
+t/archive/
+t/update/
