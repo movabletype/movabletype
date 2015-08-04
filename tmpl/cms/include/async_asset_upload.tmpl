@@ -1,7 +1,7 @@
 <form>
   <input type="file" id="file" name="file" multiple="multiple" style="display: none;">
   <div id="drop-handler" style="height: 150px; background-color: #DFDFDF; border-radius: 10px; border: dotted 2px; border-color: #6f6f6f; margin-bottom: 1em;">
-    <p style="text-align: center; font-size: 1.5em; line-height: 150px;">Drag and drop here to upload files. Or <button id="open-file-dialog" style="text-decoration: underline; color: #0076BF; border: none; background: transparent;">browse</button>.</p>
+    <p style="text-align: center; font-size: 1.5em; line-height: 150px;">Drag and drop here to upload files, or <button id="open-file-dialog" style="text-decoration: underline; color: #0076BF; border: none; background: transparent;">browse</button>.</p>
   </div>
 
     <h2><__trans phrase="Upload Destination"></h2>
@@ -130,8 +130,8 @@ function createUploadBlock () {
   this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);
   this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.leftContent);
   this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
-  this.cancelUpload = jQuery('<div class="upload-cancel" style="margin-right: 0.25em;text-align: right;line-height: 50px;"><__trans phrase="Cancel"></div>').appendTo(this.rightPanel);
-  this.editAsset    = jQuery('<div class="edit-asset" style="margin-right: 0.25em;text-align: right;line-height: 50px;"><__trans phrase="Edit"></div>').appendTo(this.rightPanel);
+  this.cancelUpload = jQuery('<div class="upload-cancel" style="margin-right: 0.25em;text-align: right;line-height: 50px; text-decoration: underline; color: #0076BF;"><__trans phrase="Cancel"></div>').appendTo(this.rightPanel);
+  this.editAsset    = jQuery('<div class="edit-asset" style="margin-right: 0.25em;text-align: right;line-height: 50px; text-decoration: underline; color: #0076BF;"><__trans phrase="Edit"></div>').appendTo(this.rightPanel);
 
   this.editAsset.hide();
 
