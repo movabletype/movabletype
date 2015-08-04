@@ -1670,6 +1670,7 @@ BEGIN {
             'MTReleaseNumber'              => undef,
             'RequiredCompatibility'        => { default => 0 },
             'EnableSessionKeyCompat'       => { default => 0 },
+            'EnableUploadCompat'           => { default => 0 },
             'NotifyUpgrade'                => { default => 1 },
             'Database'                     => undef,
             'DBHost'                       => undef,
