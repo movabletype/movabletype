@@ -2562,57 +2562,6 @@ sub dialog_edit_image {
     $app->load_tmpl( 'dialog/edit_image.tmpl', $param );
 }
 
-sub transform_image {
-    my ($app) = @_;
-
-    if ( !$app->validate_magic ) {
-        return;
-    }
-
-    # Load image.
-    my $id = $app->param('id');
-    my $asset = $app->model('asset')->load( { id => $id, class => 'image' } )
-        or return $app->errtrans('Invalid request.');
-
-    if ( !can_save( undef, $app, $asset ) ) {
-        return $app->permission_denied;
-    }
-
-    # Parse JSON.
-    my $actions = $app->param('actions');
-    $actions =~ s/^"|"$//g;
-    $actions =~ s/\\//g;
-    $actions = eval { MT::Util::from_json($actions) };
-    if ( !$actions || ref $actions ne 'ARRAY' ) {
-        return $app->errtrans('Invalid request.');
-    }
-
-    $asset->transform(@$actions)
-        or return $app->errtrans( 'Transforming image failed: [_1]',
-        $asset->errstr );
-
-    if ( $app->param('remove_all_metadata') ) {
-        $asset->remove_all_metadata
-            or return $app->error( $asset->errstr );
-    }
-    elsif ( $app->param('remove_gps_metadata') ) {
-        $asset->remove_gps_metadata
-            or return $app->error( $asset->errstr );
-    }
-
-    $app->redirect(
-        $app->uri(
-            mode => 'view',
-            args => {
-                _type   => 'asset',
-                blog_id => $app->blog ? $app->blog->id : 0,
-                id      => $id,
-                saved   => 1,
-            },
-        )
-    );
-}
-
 sub dialog_edit_asset {
     my $app = shift;
 
