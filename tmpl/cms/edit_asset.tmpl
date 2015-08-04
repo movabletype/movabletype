@@ -214,9 +214,7 @@ TC.attachLoadEvent( init );
       <mt:unless name="file_is_missing">
         <mt:if name="has_thumbnail">
     <div class="image-editor">
-      <button form="image-editor" class="button" onclick="jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">'); return false;">
-        <__trans phrase="Edit Image">
-      </button>
+      <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">" class="button mt-open-dialog"><__trans phrase="Edit Image"></a>
     </div>
         </mt:if>
       </mt:unless>
