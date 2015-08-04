@@ -1,0 +1,285 @@
+<form>
+  <input type="file" id="file" name="file" multiple="multiple" style="display: none;">
+  <div id="drop-handler" style="height: 150px; background-color: #DFDFDF; border-radius: 10px; border: dotted 2px; border-color: #6f6f6f; margin-bottom: 1em;">
+    <p style="text-align: center; font-size: 1.5em; line-height: 150px;">Drag and drop here to upload files. Or <button id="open-file-dialog" style="text-decoration: underline; color: #0076BF; border: none; background: transparent;">browse</button>.</p>
+  </div>
+
+    <h2><__trans phrase="Upload Destination"></h2>
+<mtapp:setting
+  id="site_path"
+  hint="<__trans phrase="_USAGE_UPLOAD">"
+  show_hint="1"
+  show_label="0"
+  label_class="top-label">
+  <mt:if name="destination_loop">
+    <select name="destination" id="destination">
+    <mt:loop name="destination_loop">
+      <option value="<mt:var name="path" escape="html">"><mt:var name="label" escape="html"></option>
+    </mt:loop>
+    </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+  </mt:if>
+</mtapp:setting>
+
+    <h2><__trans phrase="Upload Options"></h2>
+<mtapp:setting
+  id="operation_if_exists"
+  show_hint="0"
+  show_label="1"
+  label="<__trans phrase="Operation for a file exists">"
+  label_class="left-label">
+    <select name="operation_if_exists" id="operation_if_exists">
+      <option value="1"><__trans phrase="Upload and rename"></option>
+      <option value="2"><__trans phrase="Overwrite existing file"></option>
+      <option value="3"><__trans phrase="Cancel upload"></option>
+    </select>
+</mtapp:setting>
+<mtapp:setting
+  id="normalize_orientation"
+  label="<__trans phrase="Normalize orientation">"
+  show_label="1">
+      <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb" />
+      <label for="option-normalize-orientation"><__trans phrase="Enable orientation normalization"></label>
+    </mtapp:setting>
+</form>
+
+<div id="upload-progress"></div>
+
+
+
+
+<script type="text/javascript">
+/* <![CDATA[ */
+
+// Assign drag and drop event
+jQuery('#drop-handler').on('dragenter', function(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  jQuery(this).css('border', '2px solid #0B85A1');
+}).on('dragover', function (e) {
+  e.stopPropagation();
+  e.preventDefault();
+}).on('dragleave', function(e) {
+  jQuery(this).css('border', '2px dotted #6f6f6f');
+}).on('drop', function (e) {
+  jQuery(this).css('border', '2px dotted #6f6f6f');
+  e.preventDefault();
+
+  var files = e.originalEvent.dataTransfer.files;
+  uploadFiles(files);
+});
+
+// Ignore drop on non-droppable area
+jQuery(document).on('dragenter', function (e) {
+  e.stopPropagation();
+  e.preventDefault();
+}).on('dragover', function (e) {
+  e.stopPropagation();
+  e.preventDefault();
+}).on('drop', function (e) {
+  e.stopPropagation();
+  e.preventDefault();
+});
+
+function createFormData(file) {
+  var fd = new FormData();
+
+  // Set file object
+  fd.append('file', file);
+
+  // Set extended parameters
+  fd.append('__mode', '<mt:if name="upload_mode"><mt:var name="upload_mode" escape="html"><mt:else>js_upload_file</mt:if>');
+  fd.append('blog_id', <mt:var name="blog_id">);
+  fd.append('entry_insert', '<mt:var name="entry_insert" escape="html">');
+  fd.append('asset_select', '<mt:var name="asset_select" escape="html">');
+  fd.append('edit_field', '<mt:var name="edit_field" escape="html">');
+  fd.append('require_type', '<mt:var name="require_type" escape="html">');
+  fd.append('magic_token', '<mt:var name="magic_token">');
+
+  var normalizeOrientation = 0;
+  if ( jQuery('#normalize_orientation').prop('checked') ) {
+    normalizeOrientation = 1;
+  }
+  fd.append('normalize_orientation', normalizeOrientation);
+  fd.append('operation_if_exists', jQuery('#operation_if_exists').val() );
+
+  fd.append('destination', jQuery('#destination').val() );
+  fd.append('extra_path', jQuery('#extra_path').val() );
+
+<mt:if name="no_insert">
+  fd.append('no_insert', '<mt:var name="no_insert">');
+</mt:if>
+<mt:if name="user_id">
+  fd.append('user_id', '<mt:var name="user_id" escape="html">');
+</mt:if>
+<mt:if name="dialog">
+  fd.append('dialog', '<mt:var name="dialog">');
+</mt:if>
+    return fd;
+}
+
+var numOfRows = 0;
+function createUploadBlock () {
+  numOfRows++;
+
+  this.uploadBlock  = jQuery('<div class="upload-status-block" id="upload-status_' + numOfRows + '" style="border: solid 1px #afafaf; margin: 0.5em; padding: 0.5em;height: 50px;overflow: hidden;"></div>');
+
+  this.leftPanel    = jQuery('<div style="float: left; width: 100%; margin: 0 -100px 0 0;"></div>').appendTo(this.uploadBlock);
+  this.rightPanel   = jQuery('<div style="float: right; width: 100px;"></div>').appendTo(this.uploadBlock);
+  this.leftContent  = jQuery('<div style="margin: 0 80px 0 0;"></div>').appendTo(this.leftPanel);
+  this.progressbar  = jQuery('<div class="progressbar"></div>').appendTo(this.leftContent);
+  this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);
+  this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.leftContent);
+  this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
+  this.cancelUpload = jQuery('<div class="upload-cancel" style="margin-right: 0.25em;text-align: right;line-height: 50px;"><__trans phrase="Cancel"></div>').appendTo(this.rightPanel);
+  this.editAsset    = jQuery('<div class="edit-asset" style="margin-right: 0.25em;text-align: right;line-height: 50px;"><__trans phrase="Edit"></div>').appendTo(this.rightPanel);
+
+  this.editAsset.hide();
+
+  jQuery('#upload-progress').append(this.uploadBlock);
+
+  this.progressbar.progressbar({ value: 0 });
+
+  this.setFilename = function(filename) {
+    this.filename.html(filename);
+  }
+
+  this.setProgress = function(val) {
+    this.progressbar.progressbar({ value: val });
+    if( parseInt(val) >= 100 ) {
+      this.filename.hide();
+      this.cancelUpload.hide();
+    }
+  }
+
+  this.setCancelUpload = function(xhr) {
+    var parent = this;
+    this.cancelUpload.click( function() {
+      xhr.abort();
+      parent.setCancelResult(trans('Cancelled'))
+    });
+  }
+
+  this.setThubmanil = function(url, fname) {
+    jQuery('<img src="' + url + '"><span class="filename" style="margin-left: 0.5em; text-align: center; line-height: 50px;">' + fname + '</span>').appendTo(this.thumbnail);
+  }
+
+  this.setError = function(err) {
+    this.cancelUpload.hide();
+    this.progressbar.hide();
+    this.filename.hide();
+    jQuery('<p class="msg-error" style="line-height: 50px; padding-left: 10px;">' + err + '</p>').appendTo(this.uploadResult);
+  }
+
+  this.setCancelResult = function(msg) {
+    this.cancelUpload.hide();
+    this.progressbar.hide();
+    jQuery('<p class="msg-warning" style="line-height: 50px; padding-left: 10px;">' + msg+ '</p>').appendTo(this.uploadResult);
+  }
+}
+
+function uploadFiles(files) {
+  var num_files = files.length;
+  var max_upload_size = <mt:var name="max_upload_size">;
+
+  for (var i = 0; i < num_files; i++) {
+    var fd = createFormData( files[i] );
+    var uploadBlock = new createUploadBlock();
+    uploadBlock.setFilename(files[i].name);
+    if ( files[i].size >= max_upload_size ) {
+      uploadBlock.setError(trans("The file you tried to upload is too large: [_1]", files[i].name));
+    }
+    else {
+      uploadFile(fd, uploadBlock);
+    }
+  }
+}
+
+function uploadFile( formData, uploadBlock ) {
+  var xhr = jQuery.ajax({
+    xhr: function() {
+      var handler = jQuery.ajaxSettings.xhr();
+      if (handler.upload) {
+        handler.upload.addEventListener('progress', function(event) {
+          var percent = 0;
+          var position = event.loaded || event.position;
+          var total = event.total;
+          if (event.lengthComputable) {
+            percent = Math.ceil(position / total * 100);
+          }
+          uploadBlock.setProgress(percent);
+        }, false);
+      }
+      return handler;
+    },
+    url: "<mt:var name="script_url">",
+    type: "POST",
+    contentType:false,
+    processData: false,
+    cache: false,
+    data: formData
+  }).done( function(data){
+    console.log(data);
+    if ( data.error ) {
+      // An eror occurrs
+      uploadBlock.setError( data.error );
+    }
+    else if ( data.result.cancel ) {
+      // Cancelled by server
+      uploadBlock.setCancelResult( data.result.cancel );
+    }
+    else {
+      // Success
+      uploadBlock.setProgress(100);
+      uploadBlock.setThubmanil(data.result.asset.thumbnail, data.result.asset.filename);
+      uploadBlock.progressbar.hide();
+      uploadBlock.editAsset.show();
+    }
+  });
+
+  uploadBlock.setCancelUpload(xhr);
+}
+
+jQuery('#open-file-dialog').click( function() {
+  jQuery('#file').click();
+  return false;
+});
+
+jQuery('#file').change( function(e) {
+  var files = e.originalEvent.target.files;
+  uploadFiles(files);
+});
+
+function validate(f) {
+<mt:if name="extra_paths">
+    if (!is_valid_path(f.extra_path.value)){
+        alert(trans('[_1] contains a character that is invalid when used in a directory name: [_2]', '<__trans phrase="Upload Destination" escape="js">', f.extra_path.value));
+        return false;
+    }
+</mt:if>
+}
+
+function is_valid_path(path_){
+    var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
+    str = encodeURIComponent(str);
+    if (str.indexOf('%') != -1) {
+        return false;
+    }
+    if (str.match(/\.\./)) {
+        return false;
+    }
+    return true;
+}
+/* ]]> */
+</script>
+
+<mt:if name="dialog">
+<div class="actions-bar">
+  <button
+    type="submit"
+    accesskey="x"
+    class="cancel action button mt-close-dialog"
+    title="<__trans phrase="Cancel (x)">">
+    <__trans phrase="Cancel">
+  </button>
+</div>
+</mt:if>
