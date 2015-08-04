@@ -16,7 +16,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::XMP;
 
-$VERSION = '1.07';
+$VERSION = '1.15';
 
 sub ProcessXtra($$$);
 
@@ -88,8 +88,8 @@ sub ProcessXtra($$$);
     Rating => {
         Name => 'RatingPercent',
         Notes => q{
-            normal Rating values of 1,2,3,4 and 5 stars correspond to RatingPercent
-            values of 1,25,50,75 and 99 respectively
+            called Rating by the spec.  XMP-xmp:Rating values of 1,2,3,4 and 5 stars
+            correspond to RatingPercent values of 1,25,50,75 and 99 respectively
         },
     },
 );
@@ -132,10 +132,15 @@ sub ProcessXtra($$$);
 my %sRegions = (
     STRUCT_NAME => 'Microsoft Regions',
     NAMESPACE   => 'MPReg',
+    NOTES => q{
+        Note that PersonLiveIdCID element is called PersonLiveCID according to the
+        Microsoft specification, but in practice their software actually writes
+        PersonLiveIdCID, so ExifTool uses this too.
+    },
     Rectangle         => { },
     PersonDisplayName => { },
     PersonEmailDigest => { },
-    PersonLiveIdCID   => { },
+    PersonLiveIdCID   => { },  # (see http://130.15.24.88/exiftool/forum/index.php?topic=4274.msg20368#msg20368)
     PersonSourceID    => { },
 );
 %Image::ExifTool::Microsoft::MP = (
@@ -380,6 +385,7 @@ my %sRegions = (
     'WM/ProviderRating'         => 'ProviderRating',
     'WM/ProviderStyle'          => 'ProviderStyle',
     'WM/Publisher'              => 'Publisher',
+    'WM/SharedUserRating'       => 'SharedUserRating',
     'WM/SubscriptionContentID'  => 'SubscriptionContentID',
     'WM/SubTitle'               => 'SubTitle',
     'WM/SubTitleDescription'    => 'SubTitleDescription',
@@ -440,7 +446,7 @@ my %sRegions = (
     '{F29F85E0-4FF9-1068-AB91-08002B27B3D9} 6'     => 'Comments',
     '{64440492-4C8B-11D1-8B70-080036B11A03} 11'    => {
         Name => 'Copyright',
-        Groups => { 2 => 'Copyright' },
+        Groups => { 2 => 'Author' },
     },
     '{56A3372E-CE9C-11D2-9F0E-006097C686F6} 2'     => 'Artist',
     '{56A3372E-CE9C-11D2-9F0E-006097C686F6} 4'     => 'AlbumTitle',
@@ -604,7 +610,7 @@ my %sRegions = (
     '{3F8472B5-E0AF-4DB2-8071-C53FE76AE7CE} 100'   => 'DueDate',
     '{C75FAA05-96FD-49E7-9CB4-9F601082D553} 100'   => 'EndDate',
     '{28636AA6-953D-11D2-B5D6-00C04FD918D0} 12'    => 'FileCount',
-    '{41CF5AE0-F75A-4806-BD87-59C7D9248EB9} 100'   => 'Filename',
+    '{41CF5AE0-F75A-4806-BD87-59C7D9248EB9} 100'   => 'WindowsFileName',
     '{67DF94DE-0CA7-4D6F-B792-053A3E4F03CF} 100'   => 'FlagColor',
     '{E3E0584C-B788-4A5A-BB20-7F5A44C9ACDD} 12'    => 'FlagStatus',
     '{9B174B35-40FF-11D2-A27E-00C04FC30871} 2'     => 'SpaceFree',
@@ -654,7 +660,7 @@ my %sRegions = (
     '{64440492-4C8B-11D1-8B70-080036B11A03} 36'    => 'EncodedBy',
     '{64440492-4C8B-11D1-8B70-080036B11A03} 22'    => 'Producers',
     '{64440492-4C8B-11D1-8B70-080036B11A03} 30'    => 'Publisher',
-    '{56A3372E-CE9C-11D2-9F0E-006097C686F6} 38'    => 'Subtitle',
+    '{56A3372E-CE9C-11D2-9F0E-006097C686F6} 38'    => 'SubTitle',
     '{64440492-4C8B-11D1-8B70-080036B11A03} 34'    => 'UserWebURL',
     '{64440492-4C8B-11D1-8B70-080036B11A03} 23'    => 'Writers',
     '{E3E0584C-B788-4A5A-BB20-7F5A44C9ACDD} 21'    => 'Attachments',
@@ -749,15 +755,15 @@ my %sRegions = (
 # Extract information from Xtra MP4 atom
 # Inputs: 0) ExifTool object ref, 1) dirInfo ref, 2) tag table ref
 # Returns: 1 on success
-# Reference: http://code.google.com/p/mp4v2/
+# Reference: http://code.google.com/p/mp4v2/ [since removed from trunk]
 sub ProcessXtra($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataPos = $$dirInfo{Base} || 0;
     my $dataLen = $$dirInfo{DataLen};
     my $pos = 0;
-    $exifTool->VerboseDir('Xtra', 0, $dataLen);
+    $et->VerboseDir('Xtra', 0, $dataLen);
     for (;;) {
         last if $pos + 4 > $dataLen;
         my $size = Get32u($dataPt, $pos); # (includes $size word)
@@ -765,72 +771,80 @@ sub ProcessXtra($$$)
         my $tagLen = Get32u($dataPt, $pos + 4);
         last if $tagLen + 18 > $size;
         my $tag = substr($$dataPt, $pos + 8, $tagLen);
-        my $version = Get32u($dataPt, $pos + $tagLen + 8);
-        # (have seen a vers=2 type=8 tag that seems to work just like vers=1 - PH)
-        if ($version > 2) {
-            $exifTool->WarnOnce("Unsupported Xtra version ($version)");
-            $pos += $size;
-            next;
+        # (version flags according to the reference, but looks more like a count - PH)
+        my $count = Get32u($dataPt, $pos + $tagLen + 8);
+        my ($i, $valPos, $valLen, $valType, $val, $format, @vals);
+        # point to start of first value (after 4-byte length and 2-byte type)
+        $valPos = $pos + $tagLen + 18;
+        for ($i=0; ;) {
+            # (stored value includes size of $valLen and $valType, so subtract 6)
+            $valLen  = Get32u($dataPt, $valPos - 6) - 6;
+            my $more = $pos + $size - $valPos - $valLen;
+            last if $more < 0;
+            $valType = Get16u($dataPt, $valPos - 2);
+            $val = substr($$dataPt, $valPos, $valLen);
+            # Note: all dumb Microsoft values are little-endian inside a big-endian-format file
+            SetByteOrder('II');
+            if ($valType == 8) {
+                $format = 'Unicode';
+                $val = $et->Decode($val, 'UCS2');
+            } elsif ($valType == 19 and $valLen == 8) {
+                $format = 'int64u';
+                $val = Get64u(\$val, 0);
+            } elsif ($valType == 21 and $valLen == 8) {
+                $format = 'date';
+                $val = Get64u(\$val, 0);
+                # convert time from 100 ns intervals since Jan 1, 1601
+                $val = $val * 1e-7 - 11644473600 if $val;
+                # (the Nikon S100 uses UTC timezone, same as ASF - PH)
+                $val = Image::ExifTool::ConvertUnixTime($val) . 'Z';
+            } elsif ($valType == 72 and $valLen == 16) {
+                $format = 'GUID';
+                $val = uc unpack('H*',pack('NnnNN',unpack('VvvNN',$val)));
+                $val =~ s/(.{8})(.{4})(.{4})(.{4})/$1-$2-$3-$4-/;
+            } elsif ($valType == 65 && $valLen > 4) { #PH (empirical)
+                $format = 'variant';
+                require Image::ExifTool::FlashPix;
+                my $vPos = $valPos; # (necessary because ReadFPXValue updates this)
+                # read entry as a VT_VARIANT (use FlashPix module for this)
+                $val = Image::ExifTool::FlashPix::ReadFPXValue($et, $dataPt, $vPos,
+                       Image::ExifTool::FlashPix::VT_VARIANT(), $valPos+$valLen, 1);
+            } else {
+                $format = "Unknown($valType)";
+            }
+            SetByteOrder('MM'); # back to native QuickTime byte ordering
+            last if ++$i >= $count or $more < 6;
+            push @vals, $val;
+            undef $val;
+            $valPos += $valLen + 6; # step to next value
         }
-        # (stored value includes size of $valLen and $valType, so subtract 6)
-        my $valLen  = Get32u($dataPt, $pos + $tagLen + 12) - 6;
-        last if $tagLen + $valLen + 18 > $size;
-        my $valType = Get16u($dataPt, $pos + $tagLen + 16);
-        my $valPos = $pos + $tagLen + 18;
-        my $val = substr($$dataPt, $valPos, $valLen);
-        my $format;
-
-        # Note: all dumb Microsoft values are little-endian inside a big-endian-format file
-        SetByteOrder('II');
-        if ($valType == 8) {
-            $format = 'Unicode';
-            $val = $exifTool->Decode($val, 'UCS2');
-        } elsif ($valType == 19 and $valLen == 8) {
-            $format = 'int64u';
-            $val = Get64u(\$val, 0);
-        } elsif ($valType == 21 and $valLen == 8) {
-            $format = 'date';
-            $val = Get64u(\$val, 0);
-            # convert time from 100 ns intervals since Jan 1, 1601
-            $val = $val * 1e-7 - 11644473600 if $val;
-            # (the Nikon S100 uses UTC timezone, same as ASF - PH)
-            $val = Image::ExifTool::ConvertUnixTime($val) . 'Z';
-        } elsif ($valType == 72 and $valLen == 16) {
-            $format = 'GUID';
-            $val = uc unpack('H*',pack('NnnNN',unpack('VvvNN',$val)));
-            $val =~ s/(.{8})(.{4})(.{4})(.{4})/$1-$2-$3-$4-/;
-        } elsif ($valType == 65 && $valLen > 4) { #PH (empirical)
-            $format = 'variant';
-            require Image::ExifTool::FlashPix;
-            my $vPos = $valPos; # (necessary because ReadFPXValue updates this)
-            # read entry as a VT_VARIANT (use FlashPix module for this)
-            $val = Image::ExifTool::FlashPix::ReadFPXValue($exifTool, $dataPt, $vPos,
-                   Image::ExifTool::FlashPix::VT_VARIANT(), $valPos+$valLen, 1);
-        } else {
-            $format = "Unknown($valType)";
+        if (@vals) {
+            push @vals, $val if defined $val;
+            $val = \@vals;
+            $valPos = $pos + $tagLen + 18;
+            $valLen = $size - 18 - $tagLen;
         }
-        SetByteOrder('MM'); # back to native QuickTime byte ordering
-        
         if ($tagLen > 0 and $valLen > 0) {
-            my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+            my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
             unless ($tagInfo) {
                 # generate tag information for unrecognized tags
                 my $name = $tag;
                 $name =~ s{^WM/}{};
               # $name =~ tr/-_A-Za-z0-9//dc;
-                if ($name =~ /^[-\w+]$/) {
+                if ($name =~ /^[-\w]+$/) {
                     $tagInfo = { Name => ucfirst($name) };
                     AddTagToTable($tagTablePtr, $tag, $tagInfo);
+                    $et->VPrint(0, $$et{INDENT}, "[adding Microsoft:$tag]\n");
                 }
             }
-            $exifTool->HandleTag($tagTablePtr, $tag, $val,
+            $et->HandleTag($tagTablePtr, $tag, $val,
                 TagInfo => $tagInfo,
                 DataPt  => $dataPt,
                 DataPos => $dataPos,
                 Start   => $valPos,
                 Size    => $valLen,
                 Format  => $format,
-                Extra   => " vers=$version type=$valType",
+                Extra   => " count=$count type=$valType",
             );
         }
         $pos += $size;  # step to next entry
@@ -857,7 +871,7 @@ Microsoft-specific EXIF and XMP tags.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

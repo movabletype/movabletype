@@ -17,7 +17,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::MakerNotes;
 use Image::ExifTool::CanonRaw;
 
-$VERSION = '1.19';
+$VERSION = '1.21';
 
 sub ProcessOriginalRaw($$$);
 sub ProcessAdobeData($$$);
@@ -143,7 +143,7 @@ sub WriteAdobeStuff($$$);
 # Returns: 1 on success, otherwise returns 0 and sets a Warning
 sub ProcessOriginalRaw($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $start = $$dirInfo{DirStart};
     my $end = $start + $$dirInfo{DirLen};
@@ -155,7 +155,7 @@ sub ProcessOriginalRaw($$$)
         last if $pos + 4 > $end;
         my $val = Get32u($dataPt, $pos);
         $val or $pos += 4, next; # ignore zero values
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $index);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $index);
         $tagInfo or $err = "Missing DNG tag $index", last;
         if ($index & 0x02) {
             # extract a simple file type (tags 2, 3, 6 and 7)
@@ -169,10 +169,10 @@ sub ProcessOriginalRaw($$$)
             my $tag = $$tagInfo{Name};
             # only extract this information if requested (because it takes time)
             my $lcTag = lc $tag;
-            if (($exifTool->{OPTIONS}{Binary} and not $exifTool->{EXCL_TAG_LOOKUP}{$lcTag}) or
-                $exifTool->{REQ_TAG_LOOKUP}{$lcTag})
+            if (($$et{OPTIONS}{Binary} and not $$et{EXCL_TAG_LOOKUP}{$lcTag}) or
+                $$et{REQ_TAG_LOOKUP}{$lcTag})
             {
-                unless (eval 'require Compress::Zlib') {
+                unless (eval { require Compress::Zlib }) {
                     $err = 'Install Compress::Zlib to extract compressed images';
                     last;
                 }
@@ -208,9 +208,9 @@ sub ProcessOriginalRaw($$$)
                 $pos += $len;   # skip over this block
             }
         }
-        $exifTool->FoundTag($tagInfo, $val);
+        $et->FoundTag($tagInfo, $val);
     }
-    $exifTool->Warn($err || 'Bad OriginalRawFileData') if defined $err;
+    $et->Warn($err || 'Bad OriginalRawFileData') if defined $err;
     return 1;
 }
 
@@ -220,23 +220,23 @@ sub ProcessOriginalRaw($$$)
 # Returns: 1 on success
 sub ProcessAdobeData($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataPos = $$dirInfo{DataPos};
     my $pos = $$dirInfo{DirStart};
     my $end = $$dirInfo{DirLen} + $pos;
     my $outfile = $$dirInfo{OutFile};
-    my $verbose = $exifTool->Options('Verbose');
-    my $htmlDump = $exifTool->Options('HtmlDump');
+    my $verbose = $et->Options('Verbose');
+    my $htmlDump = $et->Options('HtmlDump');
 
     return 0 unless $$dataPt =~ /^Adobe\0/;
     unless ($outfile) {
-        $exifTool->VerboseDir($dirInfo);
+        $et->VerboseDir($dirInfo);
         # don't parse makernotes if FastScan > 1
-        my $fast = $exifTool->Options('FastScan');
+        my $fast = $et->Options('FastScan');
         return 1 if $fast and $fast > 1;
     }
-    $htmlDump and $exifTool->HDump($dataPos, 6, 'Adobe DNGPrivateData header');
+    $htmlDump and $et->HDump($dataPos, 6, 'Adobe DNGPrivateData header');
     SetByteOrder('MM'); # always big endian
     $pos += 6;
     while ($pos + 8 <= $end) {
@@ -247,15 +247,15 @@ sub ProcessAdobeData($$$)
         if ($htmlDump) {
             my $name = "Adobe$tag";
             $name =~ tr/ //d;
-            $exifTool->HDump($dataPos + $pos - 8, 8, "$name header", "Data Size: $size bytes");
+            $et->HDump($dataPos + $pos - 8, 8, "$name header", "Data Size: $size bytes");
             # dump non-EXIF format data
             unless ($tag =~ /^(MakN|SR2 )$/) {
-                $exifTool->HDump($dataPos + $pos, $size, "$name data");
+                $et->HDump($dataPos + $pos, $size, "$name data");
             }
         }
         if ($verbose and not $outfile) {
-            $tagInfo or $exifTool->VPrint(0, "$$exifTool{INDENT}Unsupported DNGAdobeData record: ($tag)\n");
-            $exifTool->VerboseInfo($tag,
+            $tagInfo or $et->VPrint(0, "$$et{INDENT}Unsupported DNGAdobeData record: ($tag)\n");
+            $et->VerboseInfo($tag,
                 ref $tagInfo eq 'HASH' ? $tagInfo : undef,
                 DataPt => $dataPt,
                 DataPos => $dataPos,
@@ -272,7 +272,7 @@ sub ProcessAdobeData($$$)
                         # copy value across to outfile
                         $value = substr($$dataPt, $pos, $size);
                     } else {
-                        $exifTool->HandleTag($tagTablePtr, $tag, substr($$dataPt, $pos, $size));
+                        $et->HandleTag($tagTablePtr, $tag, substr($$dataPt, $pos, $size));
                     }
                     last;
                 }
@@ -295,12 +295,12 @@ sub ProcessAdobeData($$$)
             );
             if ($outfile) {
                 $dirInfo{Proc} = $processProc;  # WriteAdobeStuff() calls this to do the actual writing
-                $value = $exifTool->WriteDirectory(\%dirInfo, $subTable, \&WriteAdobeStuff);
+                $value = $et->WriteDirectory(\%dirInfo, $subTable, \&WriteAdobeStuff);
                 # use old directory if an error occurred
                 defined $value or $value = substr($$dataPt, $pos, $size);
             } else {
                 # override process proc for MakN
-                $exifTool->ProcessDirectory(\%dirInfo, $subTable, $processProc);
+                $et->ProcessDirectory(\%dirInfo, $subTable, $processProc);
             }
             last;
         }
@@ -313,7 +313,7 @@ sub ProcessAdobeData($$$)
         $pos += $size;
         ++$pos if $size & 0x01; # (darn padding)
     }
-    $pos == $end or $exifTool->Warn("$pos $end Adobe private data is corrupt");
+    $pos == $end or $et->Warn("$pos $end Adobe private data is corrupt");
     return 1;
 }
 
@@ -326,12 +326,12 @@ sub ProcessAdobeData($$$)
 #   pulled the bonehead move of reformatting the CRW information
 sub ProcessAdobeCRW($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $start = $$dirInfo{DirStart};
     my $end = $start + $$dirInfo{DirLen};
-    my $verbose = $exifTool->Options('Verbose');
-    my $buildMakerNotes = $exifTool->Options('MakerNotes');
+    my $verbose = $et->Options('Verbose');
+    my $buildMakerNotes = $et->Options('MakerNotes');
     my $outfile = $$dirInfo{OutFile};
     my ($newTags, $oldChanged);
 
@@ -341,16 +341,16 @@ sub ProcessAdobeCRW($$$)
     return 0 unless $byteOrder =~ /^(II|MM)$/;
 
     # initialize maker note data if building maker notes
-    $buildMakerNotes and Image::ExifTool::CanonRaw::InitMakerNotes($exifTool);
+    $buildMakerNotes and Image::ExifTool::CanonRaw::InitMakerNotes($et);
 
     my $entries = Get16u($dataPt, $start + 2);
     my $pos = $start + 4;
-    $exifTool->VerboseDir($dirInfo, $entries) unless $outfile;
+    $et->VerboseDir($dirInfo, $entries) unless $outfile;
     if ($outfile) {
         # get hash of new tags
-        $newTags = $exifTool->GetNewTagInfoHash($tagTablePtr);
+        $newTags = $et->GetNewTagInfoHash($tagTablePtr);
         $$outfile = substr($$dataPt, $start, 4);
-        $oldChanged = $exifTool->{CHANGED};
+        $oldChanged = $$et{CHANGED};
     }
     # loop through entries in Adobe CRW information
     my $index;
@@ -365,7 +365,7 @@ sub ProcessAdobeCRW($$$)
         my $tagType = ($tag >> 8) & 0x38;   # get tag type
         my $format = $Image::ExifTool::CanonRaw::crwTagFormat{$tagType};
         my $count;
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tagID, \$value);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tagID, \$value);
         if ($tagInfo) {
             $format = $$tagInfo{Format} if $$tagInfo{Format};
             $count = $$tagInfo{Count};
@@ -405,9 +405,9 @@ sub ProcessAdobeCRW($$$)
                     );
                     #### eval Validate ($dirData, $subdirStart, $size)
                     if (defined $$subdir{Validate} and not eval $$subdir{Validate}) {
-                        $exifTool->Warn("Invalid $name data");
+                        $et->Warn("Invalid $name data");
                     } else {
-                        $subdir = $exifTool->WriteDirectory(\%subdirInfo, $newTagTable);
+                        $subdir = $et->WriteDirectory(\%subdirInfo, $newTagTable);
                         if (defined $subdir and length $subdir) {
                             if ($subdirStart) {
                                 # add header before data directory
@@ -418,9 +418,9 @@ sub ProcessAdobeCRW($$$)
                         }
                     }
                 } elsif ($$newTags{$tagID}) {
-                    my $nvHash = $exifTool->GetNewValueHash($tagInfo);
-                    if ($exifTool->IsOverwriting($nvHash, $val)) {
-                        my $newVal = $exifTool->GetNewValues($nvHash);
+                    my $nvHash = $et->GetNewValueHash($tagInfo);
+                    if ($et->IsOverwriting($nvHash, $val)) {
+                        my $newVal = $et->GetNewValues($nvHash);
                         my $verboseVal;
                         $verboseVal = $newVal if $verbose > 1;
                         # convert to specified format if necessary
@@ -428,10 +428,10 @@ sub ProcessAdobeCRW($$$)
                             $newVal = WriteValue($newVal, $format, $count);
                         }
                         if (defined $newVal) {
-                            $exifTool->VerboseValue("- CanonRaw:$$tagInfo{Name}", $value);
-                            $exifTool->VerboseValue("+ CanonRaw:$$tagInfo{Name}", $verboseVal);
+                            $et->VerboseValue("- CanonRaw:$$tagInfo{Name}", $value);
+                            $et->VerboseValue("+ CanonRaw:$$tagInfo{Name}", $verboseVal);
                             $value = $newVal;
-                            ++$exifTool->{CHANGED};
+                            ++$$et{CHANGED};
                         }
                     }
                 }
@@ -441,7 +441,7 @@ sub ProcessAdobeCRW($$$)
             # (verified that there is no padding here)
             $$outfile .= Set16u($tag) . Set32u(length($value)) . $value;
         } else {
-            $exifTool->HandleTag($tagTablePtr, $tagID, $val,
+            $et->HandleTag($tagTablePtr, $tagID, $val,
                 Index   => $index,
                 DataPt  => $dataPt,
                 DataPos => $$dirInfo{DataPos},
@@ -451,31 +451,31 @@ sub ProcessAdobeCRW($$$)
             );
             if ($buildMakerNotes) {
                 # build maker notes information if requested
-                Image::ExifTool::CanonRaw::BuildMakerNotes($exifTool, $tagID, $tagInfo,
+                Image::ExifTool::CanonRaw::BuildMakerNotes($et, $tagID, $tagInfo,
                                                            \$value, $format, $count);
             }
         }
         # (we lost the directory structure, but the second tag 0x0805
         # should be in the ImageDescription directory)
-        $exifTool->{DIR_NAME} = 'ImageDescription' if $tagID == 0x0805;
+        $$et{DIR_NAME} = 'ImageDescription' if $tagID == 0x0805;
         SetByteOrder('MM');
         $pos += $size;
     }
     if ($outfile and (not defined $$outfile or $index != $entries or
-        $exifTool->{CHANGED} ==  $oldChanged))
+        $$et{CHANGED} ==  $oldChanged))
     {
-        $exifTool->{CHANGED} = $oldChanged; # nothing changed
+        $$et{CHANGED} = $oldChanged; # nothing changed
         undef $$outfile;    # rewrite old directory
     }
     if ($index != $entries) {
-        $exifTool->Warn('Truncated CRW notes');
+        $et->Warn('Truncated CRW notes');
     } elsif ($pos < $end) {
-        $exifTool->Warn($end-$pos . ' extra bytes at end of CRW notes');
+        $et->Warn($end-$pos . ' extra bytes at end of CRW notes');
     }
     # finish building maker notes if necessary
     if ($buildMakerNotes) {
         SetByteOrder($byteOrder);
-        Image::ExifTool::CanonRaw::SaveMakerNotes($exifTool);
+        Image::ExifTool::CanonRaw::SaveMakerNotes($et);
     }
     return 1;
 }
@@ -487,7 +487,7 @@ sub ProcessAdobeCRW($$$)
 # Notes: data has 4 byte header (2 for byte order and 2 for entry count)
 sub ProcessAdobeMRW($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirLen = $$dirInfo{DirLen};
     my $dirStart = $$dirInfo{DirStart};
@@ -499,7 +499,7 @@ sub ProcessAdobeMRW($$$)
     $buff .= substr($$dataPt, $dirStart + 4, $dirLen - 4);
     my $raf = new File::RandomAccess(\$buff);
     my %dirInfo = ( RAF => $raf, OutFile => $outfile );
-    my $rtnVal = Image::ExifTool::MinoltaRaw::ProcessMRW($exifTool, \%dirInfo);
+    my $rtnVal = Image::ExifTool::MinoltaRaw::ProcessMRW($et, \%dirInfo);
     if ($outfile and defined $$outfile and length $$outfile) {
         # remove MRW header and add Adobe header
         $$outfile = substr($$dataPt, $dirStart, 4) . substr($$outfile, 8);
@@ -513,7 +513,7 @@ sub ProcessAdobeMRW($$$)
 # Returns: 1 on success, otherwise returns 0 and sets a Warning
 sub ProcessAdobeRAF($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     return 0 if $$dirInfo{OutFile}; # (can't write this yet)
     my $dataPt = $$dirInfo{DataPt};
     my $pos = $$dirInfo{DirStart};
@@ -524,10 +524,10 @@ sub ProcessAdobeRAF($$$)
     if ($pos + 2 <= $dirEnd and SetByteOrder(substr($$dataPt, $pos, 2))) {
         $pos += 2;
     } else {
-        $exifTool->Warn('Invalid DNG RAF data');
+        $et->Warn('Invalid DNG RAF data');
         return 0;
     }
-    $exifTool->VerboseDir($dirInfo);
+    $et->VerboseDir($dirInfo);
     # make fake RAF object for processing (same acronym, different meaning)
     my $raf = new File::RandomAccess($dataPt);
     my $num = '';
@@ -545,12 +545,12 @@ sub ProcessAdobeRAF($$$)
             RAF      => $raf,
             DirStart => $pos - $len,
         );
-        $$exifTool{SET_GROUP1} = "RAF$num";
-        $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr) or $warn = 1;
-        delete $$exifTool{SET_GROUP1};
+        $$et{SET_GROUP1} = "RAF$num";
+        $et->ProcessDirectory(\%dirInfo, $tagTablePtr) or $warn = 1;
+        delete $$et{SET_GROUP1};
         $num = ($num || 1) + 1;
     }
-    $warn and $exifTool->Warn('Possibly corrupt RAF information');
+    $warn and $et->Warn('Possibly corrupt RAF information');
     return 1;
 }
 
@@ -561,7 +561,7 @@ sub ProcessAdobeRAF($$$)
 # Notes: data has 6 byte header (2 for byte order and 4 for original offset)
 sub ProcessAdobeSR2($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     return 0 if $$dirInfo{OutFile}; # (can't write this yet)
     my $dataPt = $$dirInfo{DataPt};
     my $start = $$dirInfo{DirStart};
@@ -572,7 +572,7 @@ sub ProcessAdobeSR2($$$)
     my $originalPos = Get32u($dataPt, $start + 2);
     return 0 unless SetByteOrder(substr($$dataPt, $start, 2));
 
-    $exifTool->VerboseDir($dirInfo);
+    $et->VerboseDir($dirInfo);
     my $dataPos = $$dirInfo{DataPos};
     my $dirStart = $start + 6;  # pointer to maker note directory
     my $dirLen = $len - 6;
@@ -589,11 +589,11 @@ sub ProcessAdobeSR2($$$)
         DirLen    => $dirLen,
         Parent    => $$dirInfo{DirName},
     );
-    if ($exifTool->Options('HtmlDump')) {
-        $exifTool->HDump($dataPos + $start, 6, 'Adobe SR2 data');
+    if ($et->Options('HtmlDump')) {
+        $et->HDump($dataPos + $start, 6, 'Adobe SR2 data');
     }
     # parse the SR2 directory
-    $exifTool->ProcessDirectory(\%subdirInfo, $tagTablePtr);
+    $et->ProcessDirectory(\%subdirInfo, $tagTablePtr);
     return 1;
 }
 
@@ -604,7 +604,7 @@ sub ProcessAdobeSR2($$$)
 # Notes: data has 2 byte header (byte order of the data)
 sub ProcessAdobeIFD($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     return 0 if $$dirInfo{OutFile}; # (can't write this yet)
     my $dataPt = $$dirInfo{DataPt};
     my $pos = $$dirInfo{DirStart};
@@ -619,7 +619,7 @@ sub ProcessAdobeIFD($$$)
     # - byte order of IFD entires is always big-endian, but byte order of data changes
     SetByteOrder('MM');     # IFD structure is always big-endian
     my $entries = Get16u($dataPt, $pos + 2);
-    $exifTool->VerboseDir($dirInfo, $entries);
+    $et->VerboseDir($dirInfo, $entries);
     $pos += 4;
 
     my $end = $pos + $$dirInfo{DirLen};
@@ -632,7 +632,7 @@ sub ProcessAdobeIFD($$$)
         my $count = Get32u($dataPt, $pos+4);
         if ($format < 1 or $format > 13) {
             # warn unless the IFD was just padded with zeros
-            $format and $exifTool->Warn(
+            $format and $et->Warn(
                 sprintf("Unknown format ($format) for $$dirInfo{DirName} tag 0x%x",$tagID));
             return 0; # must be corrupted
         }
@@ -641,7 +641,7 @@ sub ProcessAdobeIFD($$$)
         my $formatStr = $Image::ExifTool::Exif::formatName[$format];
         SetByteOrder($dataOrder);   # data stored in native order
         my $val = ReadValue($dataPt, $pos + 8, $formatStr, $count, $size);
-        $exifTool->HandleTag($tagTablePtr, $tagID, $val,
+        $et->HandleTag($tagTablePtr, $tagID, $val,
             Index   => $index,
             DataPt  => $dataPt,
             DataPos => $dataPos,
@@ -651,7 +651,7 @@ sub ProcessAdobeIFD($$$)
         $pos += 8 + $size;
     }
     if ($index < $entries) {
-        $exifTool->Warn("Truncated $$dirInfo{DirName} directory");
+        $et->Warn("Truncated $$dirInfo{DirName} directory");
         return 0;
     }
     return 1;
@@ -664,7 +664,7 @@ sub ProcessAdobeIFD($$$)
 # Notes: data has 6 byte header (2 for byte order and 4 for original offset)
 sub ProcessAdobeMakN($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $start = $$dirInfo{DirStart};
     my $len = $$dirInfo{DirLen};
@@ -675,13 +675,13 @@ sub ProcessAdobeMakN($$$)
     my $originalPos = Get32u($dataPt, $start + 2);
     return 0 unless SetByteOrder(substr($$dataPt, $start, 2));
 
-    $exifTool->VerboseDir($dirInfo) unless $outfile;
+    $et->VerboseDir($dirInfo) unless $outfile;
     my $dataPos = $$dirInfo{DataPos};
     my $dirStart = $start + 6;  # pointer to maker note directory
     my $dirLen = $len - 6;
 
     my $hdr = substr($$dataPt, $dirStart, $dirLen < 48 ? $dirLen : 48);
-    my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, 'MakN', \$hdr);
+    my $tagInfo = $et->GetTagInfo($tagTablePtr, 'MakN', \$hdr);
     return 0 unless $tagInfo and $$tagInfo{SubDirectory};
     my $subdir = $$tagInfo{SubDirectory};
     my $subTable = GetTagTable($$subdir{TagTable});
@@ -701,14 +701,14 @@ sub ProcessAdobeMakN($$$)
         Parent    => $$dirInfo{DirName},
     );
     # look for start of maker notes IFD
-    my $loc = Image::ExifTool::MakerNotes::LocateIFD($exifTool,\%subdirInfo);
+    my $loc = Image::ExifTool::MakerNotes::LocateIFD($et,\%subdirInfo);
     unless (defined $loc) {
-        $exifTool->Warn('Maker notes could not be parsed');
+        $et->Warn('Maker notes could not be parsed');
         return 0;
     }
-    if ($exifTool->Options('HtmlDump')) {
-        $exifTool->HDump($dataPos + $start, 6, 'Adobe MakN data');
-        $exifTool->HDump($dataPos + $dirStart, $loc, "$$tagInfo{Name} header") if $loc;
+    if ($et->Options('HtmlDump')) {
+        $et->HDump($dataPos + $start, 6, 'Adobe MakN data');
+        $et->HDump($dataPos + $dirStart, $loc, "$$tagInfo{Name} header") if $loc;
     }
 
     my $fix = 0;
@@ -721,11 +721,11 @@ sub ProcessAdobeMakN($$$)
     if ($outfile) {
         # rewrite the maker notes directory
         my $fixup = $subdirInfo{Fixup} = new Image::ExifTool::Fixup;
-        my $oldChanged = $$exifTool{CHANGED};
-        my $buff = $exifTool->WriteDirectory(\%subdirInfo, $subTable);
+        my $oldChanged = $$et{CHANGED};
+        my $buff = $et->WriteDirectory(\%subdirInfo, $subTable);
         # nothing to do if error writing directory or nothing changed
-        unless (defined $buff and $exifTool->{CHANGED} != $oldChanged) {
-            $exifTool->{CHANGED} = $oldChanged;
+        unless (defined $buff and $$et{CHANGED} != $oldChanged) {
+            $$et{CHANGED} = $oldChanged;
             return 1;
         }
         # deleting maker notes if directory is empty
@@ -752,10 +752,10 @@ sub ProcessAdobeMakN($$$)
         $$outfile = $header . $buff;
     } else {
         # parse the maker notes directory
-        $exifTool->ProcessDirectory(\%subdirInfo, $subTable, $$subdir{ProcessProc});
+        $et->ProcessDirectory(\%subdirInfo, $subTable, $$subdir{ProcessProc});
         # extract maker notes as a block if specified
-        if ($exifTool->Options('MakerNotes') or
-            $exifTool->{REQ_TAG_LOOKUP}{lc($$tagInfo{Name})})
+        if ($et->Options('MakerNotes') or
+            $$et{REQ_TAG_LOOKUP}{lc($$tagInfo{Name})})
         {
             my $val;
             if ($$tagInfo{MakerNotes}) {
@@ -764,16 +764,16 @@ sub ProcessAdobeMakN($$$)
                 $subdirInfo{DirStart} = $dirStart;
                 $subdirInfo{DirLen}   = $dirLen;
                 # rebuild the maker notes to identify all offsets that require fixing up
-                $val = Image::ExifTool::Exif::RebuildMakerNotes($exifTool, $subTable, \%subdirInfo);
+                $val = Image::ExifTool::Exif::RebuildMakerNotes($et, $subTable, \%subdirInfo);
                 if (not defined $val and $dirLen > 4) {
-                    $exifTool->Warn('Error rebuilding maker notes (may be corrupt)');
+                    $et->Warn('Error rebuilding maker notes (may be corrupt)');
                 }
             } else {
                 # extract this directory as a block if specified
                 return 1 unless $$tagInfo{Writable};
             }
             $val = substr($$dataPt, 20) unless defined $val;
-            $exifTool->FoundTag($tagInfo, $val);
+            $et->FoundTag($tagInfo, $val);
         }
     }
     return 1;
@@ -785,12 +785,12 @@ sub ProcessAdobeMakN($$$)
 # Returns: new data block (may be empty if directory is deleted) or undef on error
 sub WriteAdobeStuff($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    $exifTool or return 1;    # allow dummy access
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    $et or return 1;    # allow dummy access
     my $proc = $$dirInfo{Proc} || \&ProcessAdobeData;
     my $buff;
     $$dirInfo{OutFile} = \$buff;
-    &$proc($exifTool, $dirInfo, $tagTablePtr) or undef $buff;
+    &$proc($et, $dirInfo, $tagTablePtr) or undef $buff;
     return $buff;
 }
 
@@ -813,7 +813,7 @@ information in DNG (Digital Negative) images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

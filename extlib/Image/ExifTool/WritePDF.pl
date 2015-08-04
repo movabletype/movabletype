@@ -31,13 +31,18 @@ my %myDictTags = (
     _filtered => 1, _entry_size => 1, _table => 1,
 );
 
+# map for directories that we can add
+my %pdfMap = (
+    XMP => 'PDF',
+);
+
 #------------------------------------------------------------------------------
 # Validate raw PDF values for writing (string date integer real boolean name)
 # Inputs: 0) ExifTool object ref, 1) tagInfo hash ref, 2) raw value ref
 # Returns: error string or undef (and possibly changes value) on success
 sub CheckPDF($$$)
 {
-    my ($exifTool, $tagInfo, $valPtr) = @_;
+    my ($et, $tagInfo, $valPtr) = @_;
     my $format = $$tagInfo{Writable} || $tagInfo->{Table}->{WRITABLE};
     if (not $format) {
         return 'No writable format';
@@ -67,12 +72,12 @@ sub CheckPDF($$$)
 # Notes: Called at write time, so $pdfVer may be checked
 sub WritePDFValue($$$)
 {
-    my ($exifTool, $val, $format) = @_;
+    my ($et, $val, $format) = @_;
     if (not $format) {
         return undef;
     } elsif ($format eq 'string') {
         # encode as UCS2 if it contains any special characters
-        $val = "\xfe\xff" . $exifTool->Encode($val,'UCS2','MM') if $val =~ /[\x80-\xff]/;
+        $val = "\xfe\xff" . $et->Encode($val,'UCS2','MM') if $val =~ /[\x80-\xff]/;
         EncodeString(\$val);
     } elsif ($format eq 'date') {
         # convert date to "D:YYYYmmddHHMMSS+-HH'MM'" format
@@ -271,7 +276,7 @@ sub WriteObject($$)
 #                                      +--> Root --> Metadata
 sub WritePDF($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $outfile = $$dirInfo{OutFile};
     my ($buff, %capture, %newXRef, %newObj, $objRef);
@@ -286,35 +291,36 @@ sub WritePDF($$)
     # create a new ExifTool object and use it to read PDF and XMP information
     my $newTool = new Image::ExifTool;
     $newTool->Options(List => 1);
-    $newTool->Options(Password => $exifTool->Options('Password'));
+    $newTool->Options(Password => $et->Options('Password'));
     $$newTool{PDF_CAPTURE} = \%capture;
     my $info = $newTool->ImageInfo($raf, 'XMP', 'PDF:*', 'Error', 'Warning');
     # not a valid PDF file unless we got a version number
     # (note: can't just check $$info{PDFVersion} due to possibility of XMP-pdf:PDFVersion)
     my $vers = $newTool->GetInfo('PDF:PDFVersion');
     ($pdfVer) = values %$vers;
-    $pdfVer or $exifTool->Error('Missing PDF:PDFVersion'), return 0;
+    $pdfVer or $et->Error('Missing PDF:PDFVersion'), return 0;
     # check version number
     if ($pdfVer > 1.7) {
         if ($pdfVer >= 2.0) {
-            $exifTool->Error("Can't yet write PDF version $pdfVer"); # (future major version changes)
+            $et->Error("Can't yet write PDF version $pdfVer"); # (future major version changes)
             return 1;
         }
-        $exifTool->Warn("ExifTool is untested with PDF version $pdfVer files", 1);
+        $et->Warn("ExifTool is untested with PDF version $pdfVer files", 1);
     }
     # fail if we had any serious errors while extracting information
     if ($capture{Error} or $$info{Error}) {
-        $exifTool->Error($capture{Error} || $$info{Error});
+        $et->Error($capture{Error} || $$info{Error});
         return 1;
     }
     # make sure we have everything we need to rewrite this file
     foreach $obj (qw(Main Root xref)) {
         next if $capture{$obj};
         # any warning we received may give a clue about why this object is missing
-        $exifTool->Error($$info{Warning}) if $$info{Warning};
-        $exifTool->Error("Can't find $obj object");
+        $et->Error($$info{Warning}) if $$info{Warning};
+        $et->Error("Can't find $obj object");
         return 1;
     }
+    $et->InitWriteDirs(\%pdfMap, 'XMP');
 
     # copy file up to start of previous exiftool update or end of file
     # (comment, startxref & EOF with 11-digit offsets and 2-byte newlines is 63 bytes)
@@ -328,17 +334,17 @@ sub WritePDF($$)
         Image::ExifTool::CopyBlock($raf, $outfile, $prevUpdate) or $rtn = -1;
         # verify that we are now at the start of an ExifTool update
         unless ($raf->Read($buff, length $beginComment) and $buff eq $beginComment) {
-            $exifTool->Error('Previous ExifTool update is corrupted');
+            $et->Error('Previous ExifTool update is corrupted');
             return $rtn;
         }
         $raf->Seek($prevUpdate, 0) or $rtn = -1;
-        if ($exifTool->{DEL_GROUP}->{'PDF-update'}) {
-            $exifTool->VPrint(0, "  Reverted previous ExifTool updates\n");
-            ++$$exifTool{CHANGED};
+        if ($$et{DEL_GROUP}{'PDF-update'}) {
+            $et->VPrint(0, "  Reverted previous ExifTool updates\n");
+            ++$$et{CHANGED};
             return $rtn;
         }
-    } elsif ($exifTool->{DEL_GROUP}->{'PDF-update'}) {
-        $exifTool->Error('File contains no previous ExifTool update');
+    } elsif ($$et{DEL_GROUP}{'PDF-update'}) {
+        $et->Error('File contains no previous ExifTool update');
         return $rtn;
     } else {
         # rewrite the whole file
@@ -346,7 +352,7 @@ sub WritePDF($$)
             Write($outfile, $buff) or $rtn = -1;
         }
     }
-    $out = $exifTool->Options('TextOut') if $exifTool->Options('Verbose');
+    $out = $et->Options('TextOut') if $et->Options('Verbose');
 #
 # create our new PDF objects to write
 #
@@ -360,7 +366,7 @@ sub WritePDF($$)
     my $prevInfoRef;
     if ($prevUpdate) {
         unless ($capture{Prev}) {
-            $exifTool->Error("Can't locate trailer dictionary prior to last edit");
+            $et->Error("Can't locate trailer dictionary prior to last edit");
             return $rtn;
         }
         $prevInfoRef = $capture{Prev}->{Info};
@@ -376,7 +382,7 @@ sub WritePDF($$)
 
     # delete entire PDF group if specified
     my $infoChanged = 0;
-    if ($exifTool->{DEL_GROUP}->{PDF} and $capture{Info}) {
+    if ($$et{DEL_GROUP}{PDF} and $capture{Info}) {
         delete $capture{Info};
         $info = { XMP => $$info{XMP} }; # remove extracted PDF tags
         print $out "  Deleting PDF Info dictionary\n" if $out;
@@ -398,11 +404,11 @@ sub WritePDF($$)
     local $/ = $capture{newline};
 
     # rewrite PDF Info tags
-    my $newTags = $exifTool->GetNewTagInfoHash(\%Image::ExifTool::PDF::Info);
+    my $newTags = $et->GetNewTagInfoHash(\%Image::ExifTool::PDF::Info);
     my $tagID;
     foreach $tagID (sort keys %$newTags) {
         my $tagInfo = $$newTags{$tagID};
-        my $nvHash = $exifTool->GetNewValueHash($tagInfo);
+        my $nvHash = $et->GetNewValueHash($tagInfo);
         my (@vals, $deleted);
         my $tag = $$tagInfo{Name};
         my $val = $$info{$tag};
@@ -419,9 +425,9 @@ sub WritePDF($$)
                 $val = shift @oldVals;
             }
             for (;;) {
-                if ($exifTool->IsOverwriting($nvHash, $val) > 0) {
+                if ($et->IsOverwriting($nvHash, $val) > 0) {
                     $deleted = 1;
-                    $exifTool->VerboseValue("- PDF:$tag", $val);
+                    $et->VerboseValue("- PDF:$tag", $val);
                     ++$infoChanged;
                 } else {
                     push @vals, $val;
@@ -439,13 +445,13 @@ sub WritePDF($$)
         next unless $deleted or $$tagInfo{List} or not exists $$infoDict{$tagID};
         
         # add new values to existing ones
-        my @newVals = $exifTool->GetNewValues($nvHash);
+        my @newVals = $et->GetNewValues($nvHash);
         if (@newVals) {
             push @vals, @newVals;
             ++$infoChanged;
             if ($out) {
                 foreach $val (@newVals) {
-                    $exifTool->VerboseValue("+ PDF:$tag", $val);
+                    $et->VerboseValue("+ PDF:$tag", $val);
                 }
             }
         }
@@ -457,25 +463,25 @@ sub WritePDF($$)
         # format value(s) for writing to PDF file
         my $writable = $$tagInfo{Writable} || $Image::ExifTool::PDF::Info{WRITABLE};
         if (not $$tagInfo{List}) {
-            $val = WritePDFValue($exifTool, shift(@vals), $writable);
+            $val = WritePDFValue($et, shift(@vals), $writable);
         } elsif ($$tagInfo{List} eq 'array') {
             foreach $val (@vals) {
-                $val = WritePDFValue($exifTool, $val, $writable);
+                $val = WritePDFValue($et, $val, $writable);
                 defined $val or undef(@vals), last;
             }
             $val = @vals ? \@vals : undef;
         } else {
-            $val = WritePDFValue($exifTool, join($exifTool->Options('ListSep'), @vals), $writable);
+            $val = WritePDFValue($et, join($et->Options('ListSep'), @vals), $writable);
         }
         if (defined $val) {
             $$infoDict{$tagID} = $val;
             ++$infoChanged;
         } else {
-            $exifTool->Warn("Error converting $$tagInfo{Name} value");
+            $et->Warn("Error converting $$tagInfo{Name} value");
         }
     }
     if ($infoChanged) {
-        $$exifTool{CHANGED} += $infoChanged;
+        $$et{CHANGED} += $infoChanged;
     } elsif ($prevUpdate) {
         # must still write Info dictionary if it was previously updated
         my $oldPos = LocateObject($xref, $$infoRef);
@@ -503,19 +509,19 @@ sub WritePDF($$)
         Parent => 'PDF',
     );
     my $xmpTable = Image::ExifTool::GetTagTable('Image::ExifTool::XMP::Main');
-    my $oldChanged = $$exifTool{CHANGED};
-    my $newXMP = $exifTool->WriteDirectory(\%xmpInfo, $xmpTable);
+    my $oldChanged = $$et{CHANGED};
+    my $newXMP = $et->WriteDirectory(\%xmpInfo, $xmpTable);
     $newXMP = $$info{XMP} ? ${$$info{XMP}} : '' unless defined $newXMP;
 
     # WriteDirectory() will increment CHANGED erroneously if non-existent
     # XMP is deleted as a block -- so check for this
     unless ($newXMP or $$info{XMP}) {
-        $$exifTool{CHANGED} = $oldChanged;
-        $exifTool->VPrint(0, "  (XMP not changed -- still empty)\n");
+        $$et{CHANGED} = $oldChanged;
+        $et->VPrint(0, "  (XMP not changed -- still empty)\n");
     }
     my ($metaChanged, $rootChanged);
 
-    if ($$exifTool{CHANGED} != $oldChanged and defined $newXMP) {
+    if ($$et{CHANGED} != $oldChanged and defined $newXMP) {
         $metaChanged = 1;
     } elsif ($prevUpdate and $capture{Root}->{Metadata}) {
         # must still write Metadata dictionary if it was previously updated
@@ -550,7 +556,7 @@ sub WritePDF($$)
     # add new Root dictionary if necessary
     my $rootRef = $$mainDict{Root};
     unless ($rootRef) {
-        $exifTool->Error("Can't find Root dictionary");
+        $et->Error("Can't find Root dictionary");
         return $rtn;
     }
     if (not $rootChanged and $prevUpdate) {
@@ -562,7 +568,7 @@ sub WritePDF($$)
 #
 # write incremental update if anything was changed
 #
-    if ($$exifTool{CHANGED}) {
+    if ($$et{CHANGED}) {
         # remember position of original EOF
         my $oldEOF = Tell($outfile);
         Write($outfile, $beginComment) or $rtn = -1;
@@ -655,7 +661,7 @@ sub WritePDF($$)
                     $id = shift @ids;
                     my ($pos, $gen, $type) = @{$newXRef{$id}};
                     if ($pos > 0xffffffff) {
-                        $exifTool->Error('Huge files not yet supported');
+                        $et->Error('Huge files not yet supported');
                         last;
                     }
                     $$mainDict{_stream} .= pack('CNn', $type eq 'f' ? 0 : 1, $pos, $gen);
@@ -707,6 +713,9 @@ sub WritePDF($$)
             Write($outfile, $buff) or $rtn = -1;
         }
     }
+    if ($rtn > 0 and $$et{CHANGED} and ($$et{DEL_GROUP}{PDF} or $$et{DEL_GROUP}{XMP})) {
+        $et->Warn('ExifTool PDF edits are reversible. Deleted tags may be recovered!', 1);
+    }
     undef $newTool;
     undef %capture;
     return $rtn;
@@ -738,7 +747,7 @@ C<PDF-update> pseudo group).
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

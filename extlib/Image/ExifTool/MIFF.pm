@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.06';
+$VERSION = '1.07';
 
 # MIFF chunks
 %Image::ExifTool::MIFF::Main = (
@@ -103,16 +103,16 @@ $VERSION = '1.06';
 # Returns: 1 on success, 0 if this wasn't a valid MIFF image
 sub ProcessMIFF($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
-    my $verbose = $exifTool->{OPTIONS}->{Verbose};
+    my $verbose = $$et{OPTIONS}{Verbose};
     my ($hdr, $buff);
 
     # validate the MIFF file (note: MIFF files _may_ begin with other
     # characters, but this starting sequence is strongly suggested.)
     return 0 unless $raf->Read($hdr, 14) == 14;
     return 0 unless $hdr eq 'id=ImageMagick';
-    $exifTool->SetFileType();   # set the FileType tag
+    $et->SetFileType();   # set the FileType tag
 
     # set end-of-line character sequence to read to end of the TEXT
     # section for new-type MIFF files (text ends with Colon+Ctrl-Z)
@@ -153,15 +153,15 @@ sub ProcessMIFF($$)
                 last;
             } else {
                 # something we don't recognize -- stop parsing here
-                $exifTool->Warn('Unrecognized MIFF data');
+                $et->Warn('Unrecognized MIFF data');
                 last;
             }
-            my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+            my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
             unless ($tagInfo) {
                 $tagInfo = { Name => $tag };
                 AddTagToTable($tagTablePtr, $tag, $tagInfo);
             }
-            $verbose and $exifTool->VerboseInfo($tag, $tagInfo,
+            $verbose and $et->VerboseInfo($tag, $tagInfo,
                 Table  => $tagTablePtr,
                 DataPt => \$val,
             );
@@ -169,7 +169,7 @@ sub ProcessMIFF($$)
             if ($tag =~ /^profile-(.*)/) {
                 push @profiles, [$1, $val];
             } else {
-                $exifTool->FoundTag($tagInfo, $val);
+                $et->FoundTag($tagInfo, $val);
             }
         }
     }
@@ -178,11 +178,11 @@ sub ProcessMIFF($$)
     foreach (@profiles) {
         my ($type, $len) = @{$_};
         unless ($len =~ /^\d+$/) {
-            $exifTool->Warn("Invalid length for $type profile");
+            $et->Warn("Invalid length for $type profile");
             last;   # don't try to read the rest
         }
         unless ($raf->Read($buff, $len) == $len) {
-            $exifTool->Warn("Error reading $type profile ($len bytes)");
+            $et->Warn("Error reading $type profile ($len bytes)");
             next;
         }
         my $processed = 0;
@@ -197,12 +197,12 @@ sub ProcessMIFF($$)
         if ($type eq 'icc') {
             # ICC Profile information
             my $tagTablePtr = GetTagTable('Image::ExifTool::ICC_Profile::Main');
-            $processed = $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+            $processed = $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         } elsif ($type eq 'iptc') {
             if ($buff =~ /^8BIM/) {
                 # Photoshop information
                 my $tagTablePtr = GetTagTable('Image::ExifTool::Photoshop::Main');
-                $processed = $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+                $processed = $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
             }
         # I haven't seen 'exif' or 'xmp' profile types yet, but I have seen them
         # in newer PNG files so presumably they are possible here as well - PH
@@ -215,21 +215,21 @@ sub ProcessMIFF($$)
                 # use the usual position for EXIF data: 12 bytes from start of file
                 # (this may be wrong, but I can't see where the PNG stores this information)
                 $dirInfo{Base} = 12; # this is the usual value
-                $processed = $exifTool->ProcessTIFF(\%dirInfo);
+                $processed = $et->ProcessTIFF(\%dirInfo);
             } elsif ($buff =~ /^$Image::ExifTool::xmpAPP1hdr/) {
                 # APP1 XMP
                 my $hdrLen = length($Image::ExifTool::xmpAPP1hdr);
                 my $tagTablePtr = GetTagTable('Image::ExifTool::XMP::Main');
                 $dirInfo{DirStart} += $hdrLen;
                 $dirInfo{DirLen} -= $hdrLen;
-                $processed = $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+                $processed = $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
             }
         }
         unless ($processed) {
-            $exifTool->Warn("Unknown MIFF $type profile data");
+            $et->Warn("Unknown MIFF $type profile data");
             if ($verbose) {
-                $exifTool->VerboseDir($type, 0, $len);
-                $exifTool->VerboseDump(\$buff);
+                $et->VerboseDir($type, 0, $len);
+                $et->VerboseDump(\$buff);
             }
          }
     }
@@ -255,7 +255,7 @@ This module contains routines required by Image::ExifTool to read MIFF
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

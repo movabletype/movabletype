@@ -406,8 +406,8 @@ sub asset_userpic {
 
     my $thumb_html
         = $user
-        ? $user->userpic_html( Asset => $asset )
-        : $app->model('author')->userpic_html( Asset => $asset );
+        ? $user->userpic_html( Asset => $asset, Ts => 1 )
+        : $app->model('author')->userpic_html( Asset => $asset, Ts => 1 );
 
     $app->load_tmpl(
         'dialog/asset_userpic.tmpl',
@@ -1122,7 +1122,8 @@ sub _set_start_upload_params {
     $param->{require_type} = $require_type;
 
     $param->{auto_rename_if_exists} = 0;
-    $param->{normalize_orientation} = 0;
+    $param->{normalize_orientation}
+        = 1;    # TODO: Default value will be 1 in future version.
 
     $param;
 }
@@ -1814,6 +1815,107 @@ sub _check_thumbnail_dir {
         }
     }
     $param->{thumb_dir_warnings} = \@warnings if @warnings;
+}
+
+sub dialog_edit_image {
+    my ($app) = @_;
+
+    my $asset;
+
+    my $id = $app->param('id');
+    my $blog_id = $app->param('blog_id') || 0;
+    if ($id) {
+        $asset
+            = $app->model('asset')
+            ->load( { id => $id, blog_id => $blog_id, class => 'image' } );
+    }
+    if ( !$asset ) {
+        return $app->errtrans('Invalid request.');
+    }
+
+    # Check.
+    if ( !can_save( undef, $app, $asset ) ) {
+        return $app->permission_denied;
+    }
+
+    # Retrive data of thumbnail.
+    my $param  = {};
+    my $hasher = build_asset_hasher($app);
+    $hasher->( $asset, $param, ThumbWidth => 240, ThumbHeight => 240 );
+
+    # Disable browser cache for image.
+    $param->{modified_on} = $asset->modified_on;
+
+    # Check Exif.
+    my $has_metadata = $asset->has_metadata;
+    if ( defined $has_metadata ) {
+        $param->{has_metadata} = $has_metadata;
+    }
+    else {
+        return $app->error( $asset->errstr );
+    }
+    if ($has_metadata) {
+        my $has_gps_metadata = $asset->has_gps_metadata;
+        if ( defined $has_gps_metadata ) {
+            $param->{has_gps_metadata} = $has_gps_metadata;
+        }
+        else {
+            return $app->error( $asset->errstr );
+        }
+    }
+
+    $app->load_tmpl( 'dialog/edit_image.tmpl', $param );
+}
+
+sub transform_image {
+    my ($app) = @_;
+
+    if ( !$app->validate_magic ) {
+        return;
+    }
+
+    # Load image.
+    my $id = $app->param('id');
+    my $asset = $app->model('asset')->load( { id => $id, class => 'image' } )
+        or return $app->errtrans('Invalid request.');
+
+    if ( !can_save( undef, $app, $asset ) ) {
+        return $app->permission_denied;
+    }
+
+    # Parse JSON.
+    my $actions = $app->param('actions');
+    $actions =~ s/^"|"$//g;
+    $actions =~ s/\\//g;
+    $actions = eval { MT::Util::from_json($actions) };
+    if ( !$actions || ref $actions ne 'ARRAY' ) {
+        return $app->errtrans('Invalid request.');
+    }
+
+    $asset->transform(@$actions)
+        or return $app->errtrans( 'Transforming image failed: [_1]',
+        $asset->errstr );
+
+    if ( $app->param('remove_all_metadata') ) {
+        $asset->remove_all_metadata
+            or return $app->error( $asset->errstr );
+    }
+    elsif ( $app->param('remove_gps_metadata') ) {
+        $asset->remove_gps_metadata
+            or return $app->error( $asset->errstr );
+    }
+
+    $app->redirect(
+        $app->uri(
+            mode => 'view',
+            args => {
+                _type   => 'asset',
+                blog_id => $app->blog ? $app->blog->id : 0,
+                id      => $id,
+                saved   => 1,
+            },
+        )
+    );
 }
 
 1;

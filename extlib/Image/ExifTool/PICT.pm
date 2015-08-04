@@ -20,7 +20,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.04';
+$VERSION = '1.05';
 
 sub ReadPictValue($$$;$);
 
@@ -1024,7 +1024,7 @@ sub ReadPictValue($$$;$)
                     if ($verbose > 2) {
                         my %parms = ( Out => $out );
                         $parms{MaxLen} = 96 if $verbose < 4;
-                        Image::ExifTool::HexDump(\$val, undef, %parms);
+                        HexDump(\$val, undef, %parms);
                     }
                 } else {
                     print $out " = $val\n";
@@ -1054,7 +1054,7 @@ sub ReadPictValue($$$;$)
                     if ($verbose > 2) {
                         my %parms = ( Out => $out );
                         $parms{MaxLen} = 96 if $verbose < 4;
-                        Image::ExifTool::HexDump($val, undef, %parms);
+                        HexDump($val, undef, %parms);
                     }
                 }
             } elsif ($fmt =~ /(.+)\[(.+)\]/s) {
@@ -1081,10 +1081,10 @@ sub ReadPictValue($$$;$)
 # Returns: 1 on success, 0 if this wasn't a valid PICT image
 sub ProcessPICT($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
-    $verbose = $exifTool->Options('Verbose');
-    $out = $exifTool->Options('TextOut');
+    $verbose = $et->Options('Verbose');
+    $out = $et->Options('TextOut');
     $indent = '';
     my ($buff, $tried, @hdr, $op, $hRes, $vRes);
 
@@ -1138,14 +1138,14 @@ sub ProcessPICT($$)
         $w = int($w * $hRes / 72 + 0.5);
         $h = int($h * $vRes / 72 + 0.5);
     }
-    $exifTool->SetFileType();
-    $exifTool->FoundTag('ImageWidth', $w);
-    $exifTool->FoundTag('ImageHeight', $h);
-    $exifTool->FoundTag('XResolution', $hRes) if $hRes;
-    $exifTool->FoundTag('YResolution', $vRes) if $vRes;
+    $et->SetFileType();
+    $et->FoundTag('ImageWidth', $w);
+    $et->FoundTag('ImageHeight', $h);
+    $et->FoundTag('XResolution', $hRes) if $hRes;
+    $et->FoundTag('YResolution', $vRes) if $vRes;
 
     # don't extract image opcodes unless verbose
-    return 1 unless $verbose or $exifTool->Options('Unknown');
+    return 1 unless $verbose or $et->Options('Unknown');
 
     $verbose and printf $out "PICT version $vers%s\n", $extended ? ' extended' : '';
 
@@ -1162,14 +1162,14 @@ sub ProcessPICT($$)
             $raf->Read($buff, 2) == 2 or last;
             $op = unpack('n', $buff);
         }
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $op);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $op);
         unless ($tagInfo) {
             my $i;
             # search for reserved tag info
             for ($i=0; $i<scalar(@reserved); $i+=2) {
                 next unless $op >= $reserved[$i];
                 last if $op > $reserved[$i+1];
-                $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $reserved[$i]);
+                $tagInfo = $et->GetTagInfo($tagTablePtr, $reserved[$i]);
                 last;
             }
             last unless $tagInfo;
@@ -1181,7 +1181,7 @@ sub ProcessPICT($$)
         }
         my $format = $$tagInfo{Format};
         unless ($format) {
-            $exifTool->Warn("Missing format for $$tagInfo{Name}");
+            $et->Warn("Missing format for $$tagInfo{Name}");
             last;
         }
         # replace version number for version-dependent formats
@@ -1190,7 +1190,7 @@ sub ProcessPICT($$)
         $verbose and printf $out "Tag 0x%.${wid}x, ", $op;
         my $val = ReadPictValue($raf, $$tagInfo{Name}, $format);
         unless (defined $val) {
-            $exifTool->Warn("Error reading $$tagInfo{Name} information");
+            $et->Warn("Error reading $$tagInfo{Name} information");
             last;
         }
         if (ref $val eq 'HASH') {
@@ -1200,15 +1200,15 @@ sub ProcessPICT($$)
                 $val->{imageDescr}->{compressor} and
                 $val->{imageDescr}->{compressor} eq 'Photo - JPEG' and
                 ref $val->{imageData} eq 'SCALAR' and
-                $exifTool->ValidateImage($val->{imageData}, 'PreviewImage'))
+                $et->ValidateImage($val->{imageData}, 'PreviewImage'))
             {
-                $exifTool->FoundTag('PreviewImage', $val->{imageData});
+                $et->FoundTag('PreviewImage', $val->{imageData});
             }
         } else {
-            # $exifTool->FoundTag($tagInfo, $val);
+            # $et->FoundTag($tagInfo, $val);
         }
     }
-    $success or $exifTool->Warn('End of picture not found');
+    $success or $et->Warn('End of picture not found');
     return 1;
 }
 
@@ -1236,7 +1236,7 @@ Verbose or the Unknown option.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

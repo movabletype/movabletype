@@ -78,24 +78,24 @@ sub scale {
     wantarray ? ( $blob, $w, $h ) : $blob;
 }
 
-sub crop {
+sub crop_rectangle {
     my $image = shift;
     my %param = @_;
-    my ( $size, $x, $y ) = @param{qw( Size X Y )};
+    my ( $width, $height, $x, $y ) = @param{qw( Width Height X Y )};
     my $magick = $image->{magick};
     my $blob;
 
     eval {
         my $err = $magick->Crop(
-            width  => $size,
-            height => $size,
+            width  => $width,
+            height => $height,
             x      => $x,
             y      => $y
         );
         return $image->error(
             MT->translate(
-                "Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]",
-                $size, $x, $y, $err
+                "Cropping a [_1]x[_2] square at [_3],[_4] failed: [_5]",
+                $width, $height, $x, $y, $err
             )
         ) if $err;
 
@@ -103,17 +103,17 @@ sub crop {
         ## http://studio.imagemagick.org/pipermail/magick-users/2003-September/010803.html
         $magick->Set( page => '+0+0' );
 
-        ( $image->{width}, $image->{height} ) = ( $size, $size );
+        ( $image->{width}, $image->{height} ) = ( $width, $height );
         $blob = $magick->ImageToBlob;
     };
     return $image->error(
         MT->translate(
-            "Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]",
-            $size, $x, $y, $@
+            "Cropping a [_1]x[_2] square at [_3],[_4] failed: [_5]",
+            $width, $height, $x, $y, $@
         )
     ) if $@;
 
-    wantarray ? ( $blob, $size, $size ) : $blob;
+    wantarray ? ( $blob, $width, $height ) : $blob;
 }
 
 sub flipHorizontal {

@@ -18,7 +18,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.03';
+$VERSION = '1.05';
 
 sub ParseAnt($);
 sub ProcessAnt($$$);
@@ -28,7 +28,10 @@ sub ProcessBZZ($$$);
 # DjVu chunks that we parse (ref 4)
 %Image::ExifTool::DjVu::Main = (
     GROUPS => { 2 => 'Image' },
-    NOTES => 'Information is extracted from the following chunks in DjVu images.',
+    NOTES => q{
+        Information is extracted from the following chunks in DjVu images. See
+        L<http://www.djvu.org/> for the DjVu specification.
+    },
     INFO => {
         SubDirectory => { TagTable => 'Image::ExifTool::DjVu::Info' },
     },
@@ -246,7 +249,7 @@ Tok: for (;;) {
 # Returns: 1 on success
 sub ProcessAnt($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
 
     # quick pre-scan to check for metadata or XMP
@@ -264,10 +267,10 @@ sub ProcessAnt($$$)
         next if ref $tag or not defined $$tagTablePtr{$tag};
         if ($tag eq 'metadata') {
             # ProcessMeta() takes array reference
-            $exifTool->HandleTag($tagTablePtr, $tag, $ant);
+            $et->HandleTag($tagTablePtr, $tag, $ant);
         } else {
             next if ref $$ant[0];   # only process simple values
-            $exifTool->HandleTag($tagTablePtr, $tag, $$ant[0]);
+            $et->HandleTag($tagTablePtr, $tag, $$ant[0]);
         }
     }
     return 1;
@@ -280,10 +283,10 @@ sub ProcessAnt($$$)
 # Notes: input dirInfo DataPt is a reference to a list of pre-parsed metadata entries
 sub ProcessMeta($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     return 0 unless ref $$dataPt eq 'ARRAY';
-    $exifTool->VerboseDir('Metadata', scalar @$$dataPt);
+    $et->VerboseDir('Metadata', scalar @$$dataPt);
     my ($item, $err);
     foreach $item (@$$dataPt) {
         # make sure item is a simple tag/value pair
@@ -296,9 +299,9 @@ sub ProcessMeta($$$)
             length $name or $err = 1, next;
             AddTagToTable($tagTablePtr, $$item[0], { Name => ucfirst($name) });
         }
-        $exifTool->HandleTag($tagTablePtr, $$item[0], $$item[1]);
+        $et->HandleTag($tagTablePtr, $$item[0], $$item[1]);
     }
-    $err and $exifTool->Warn('Ignored invalid metadata entry(s)');
+    $err and $et->Warn('Ignored invalid metadata entry(s)');
     return 1;
 }
 
@@ -308,24 +311,24 @@ sub ProcessMeta($$$)
 # Returns: 1 on success
 sub ProcessBZZ($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     require Image::ExifTool::BZZ;
     my $buff = Image::ExifTool::BZZ::Decode($$dirInfo{DataPt});
     unless (defined $buff) {
-        $exifTool->Warn("Error decoding $$dirInfo{DirName}");
+        $et->Warn("Error decoding $$dirInfo{DirName}");
         return 0;
     }
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
     if ($verbose >= 3) {
         # dump the decoded data in very verbose mode
-        $exifTool->VerboseDir("Decoded $$dirInfo{DirName}", 0, length $buff);
-        $exifTool->VerboseDump(\$buff);
+        $et->VerboseDir("Decoded $$dirInfo{DirName}", 0, length $buff);
+        $et->VerboseDump(\$buff);
     }
     $$dirInfo{DataPt} = \$buff;
     $$dirInfo{DataLen} = $$dirInfo{DirLen} = length $buff;
     # process the data using the default process proc for this table
     my $processProc = $$tagTablePtr{PROCESS_PROC} or return 0;
-    return &$processProc($exifTool, $dirInfo, $tagTablePtr);
+    return &$processProc($et, $dirInfo, $tagTablePtr);
 }
 
 1;  # end
@@ -348,7 +351,7 @@ Image::ExifTool::AIFF.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

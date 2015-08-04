@@ -74,22 +74,22 @@ sub scale {
     wantarray ? ( $image->blob, $w, $h ) : $image->blob;
 }
 
-sub crop {
+sub crop_rectangle {
     my $image = shift;
     my %param = @_;
-    my ( $size, $x, $y ) = @param{qw( Size X Y )};
+    my ( $width, $height, $x, $y ) = @param{qw( Width Height X Y )};
     my $src = $image->{gd};
-    my $gd = GD::Image->new( $size, $size, 1 );    # True color image (24 bit)
+    my $gd = GD::Image->new( $width, $height, 1 );    # True color image (24 bit)
     $gd->alphaBlending(0);
     $gd->saveAlpha(1);
 
     # Use copyResampled() instead of copy(),
     # because copy() with libgd 2.0.35 or lower does not work correctly.
     # $gd->copy( $src, 0, 0, $x, $y, $size, $size );
-    $gd->copyResampled( $src, 0, 0, $x, $y, $size, $size, $size, $size );
+    $gd->copyResampled( $src, 0, 0, $x, $y, $width, $height, $width, $height );
     ( $image->{gd}, $image->{width}, $image->{height} )
-        = ( $gd, $size, $size );
-    wantarray ? ( $image->blob, $size, $size ) : $image->blob;
+        = ( $gd, $width, $height );
+    wantarray ? ( $image->blob, $width, $height ) : $image->blob;
 }
 
 sub flipHorizontal {

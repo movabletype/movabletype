@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 # supported EXR value format types (other types are extracted as undef binary data)
 my %formatType = (
@@ -155,38 +155,38 @@ my %formatType = (
 # Returns: 1 on success, 0 if this wasn't a valid OpenEXR file
 sub ProcessEXR($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
-    my $verbose = $exifTool->Options('Verbose');
-    my $binary = $exifTool->Options('Binary') || $verbose;
+    my $verbose = $et->Options('Verbose');
+    my $binary = $et->Options('Binary') || $verbose;
     my ($buff, $buf2, $dim);
 
     # verify this is a valid RIFF file
     return 0 unless $raf->Read($buff, 8) == 8;
     return 0 unless $buff =~ /^\x76\x2f\x31\x01/s;
-    $exifTool->SetFileType();
+    $et->SetFileType();
     SetByteOrder('II');
     my $tagTablePtr = GetTagTable('Image::ExifTool::OpenEXR::Main');
 
     # extract information from header
     my $ver = unpack('x4V', $buff);
-    $exifTool->HandleTag($tagTablePtr, '_ver', $ver & 0xff);
-    $exifTool->HandleTag($tagTablePtr, '_lay', $ver & 0x200);
+    $et->HandleTag($tagTablePtr, '_ver', $ver & 0xff);
+    $et->HandleTag($tagTablePtr, '_lay', $ver & 0x200);
 
     # extract attributes
     for (;;) {
         $raf->Read($buff, 68) or last;
         last if $buff =~ /^\0/;
         unless ($buff =~ /^([^\0]{1,31})\0([^\0]{1,31})\0(.{4})/sg) {
-            $exifTool->Warn('EXR format error');
+            $et->Warn('EXR format error');
             last;
         }
         my ($tag, $type, $size) = ($1, $2, unpack('V', $3));
         unless ($raf->Seek(pos($buff) - length($buff), 1)) {
-            $exifTool->Warn('Seek error');
+            $et->Warn('Seek error');
             last;
         }
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         unless ($tagInfo) {
             my $name = ucfirst $tag;
             $name =~ tr/-_a-zA-Z0-9//dc;
@@ -199,7 +199,7 @@ sub ProcessEXR($$)
             }
             $tagInfo = { Name => $name, WasAdded => 1 };
             AddTagToTable($tagTablePtr, $tag, $tagInfo);
-            $exifTool->VPrint(0, $exifTool->{INDENT}, "[adding $tag]\n");
+            $et->VPrint(0, $$et{INDENT}, "[adding $tag]\n");
         }
         my ($val, $success);
         my $format = $formatType{$type};
@@ -252,7 +252,7 @@ sub ProcessEXR($$)
             $success = $raf->Seek($size, 1);
         }
         unless ($success) {
-            $exifTool->Warn('Truncated or corrupted EXR file');
+            $et->Warn('Truncated or corrupted EXR file');
             last;
         }
         $val = '<bad>' unless defined $val;
@@ -265,7 +265,7 @@ sub ProcessEXR($$)
         }
         if ($verbose) {
             my $dataPt = ref $val ? $val : \$val,
-            $exifTool->VerboseInfo($tag, $tagInfo,
+            $et->VerboseInfo($tag, $tagInfo,
                 Table   => $tagTablePtr,
                 Value   => $val,
                 Size    => $size,
@@ -274,11 +274,11 @@ sub ProcessEXR($$)
                 Addr    => $raf->Tell() - $size,
             );
         }
-        $exifTool->FoundTag($tagInfo, $val);
+        $et->FoundTag($tagInfo, $val);
     }
     if ($dim) {
-        $exifTool->FoundTag('ImageWidth', $$dim[0]);
-        $exifTool->FoundTag('ImageHeight', $$dim[1]);
+        $et->FoundTag('ImageWidth', $$dim[0]);
+        $et->FoundTag('ImageHeight', $$dim[1]);
     }
     return 1;
 }
@@ -302,7 +302,7 @@ information from OpenEXR images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

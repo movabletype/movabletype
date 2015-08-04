@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 sub ProcessRAW($$);
 
@@ -111,7 +111,7 @@ sub ReverseString($) { pack('C*',reverse unpack('C*',shift)) }
 # Returns: 1 if this was a valid Kyocera RAW image
 sub ProcessRAW($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $size = 156; # size of header
     my $buff;
@@ -119,7 +119,7 @@ sub ProcessRAW($$)
     $raf->Read($buff, $size) == $size or return 0;
     # validate Make string ('KYOCERA' reversed)
     substr($buff, 0x19, 7) eq 'ARECOYK' or return 0;
-    $exifTool->SetFileType();
+    $et->SetFileType();
     SetByteOrder('MM');
     my %dirInfo = (
         DataPt => \$buff,
@@ -129,7 +129,7 @@ sub ProcessRAW($$)
         DirLen => $size,
     );
     my $tagTablePtr = GetTagTable('Image::ExifTool::KyoceraRaw::Main');
-    $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+    $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
     return 1;
 }
 
@@ -152,7 +152,7 @@ meta information from Kyocera Contax N Digital RAW images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

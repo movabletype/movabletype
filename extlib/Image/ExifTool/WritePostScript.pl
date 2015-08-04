@@ -94,7 +94,7 @@ sub WriteXMPDir($$@)
 # Returns: 0=error, 1=nothing written, 2=dir written ok
 sub WritePSDirectory($$$$$)
 {
-    my ($exifTool, $outfile, $dirName, $dataPt, $flags) = @_;
+    my ($et, $outfile, $dirName, $dataPt, $flags) = @_;
     my $success = 2;
     my $len = $dataPt ? length($$dataPt) : 0;
     my $create = $len ? 0 : 1;
@@ -116,14 +116,14 @@ sub WritePSDirectory($$$$$)
         # isolate the XMP
         pos($$dataPt) = 0;
         unless ($$dataPt =~ /(.*)(<\?xpacket begin=.{7,13}W5M0MpCehiHzreSzNTczkc9d)/sg) {
-            $exifTool->Warn('No XMP packet start');
+            $et->Warn('No XMP packet start');
             return WriteXMPDir($outfile, $flags, $$dataPt);
         }
         $beforeXMP = $1;
         my $xmp = $2;
         my $p1 = pos($$dataPt);
         unless ($$dataPt =~ m{<\?xpacket end=.(w|r).\?>}sg) {
-            $exifTool->Warn('No XMP packet end');
+            $et->Warn('No XMP packet end');
             return WriteXMPDir($outfile, $flags, $$dataPt);
         }
         my $p2 = pos($$dataPt);
@@ -142,7 +142,7 @@ sub WritePSDirectory($$$$$)
         $dirInfo{DataPt} = \$xmp;
     }
     my $tagTablePtr = Image::ExifTool::GetTagTable("Image::ExifTool::${dirName}::Main");
-    my $val = $exifTool->WriteDirectory(\%dirInfo, $tagTablePtr);
+    my $val = $et->WriteDirectory(\%dirInfo, $tagTablePtr);
     if (defined $val) {
         $dataPt = \$val;    # use modified directory
         $len = length $val;
@@ -160,7 +160,7 @@ sub WritePSDirectory($$$$$)
 <x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool $Image::ExifTool::VERSION'>
 </x:xmpmeta>
 EMPTY_XMP
-        $val .= ((' ' x 100) . "\n") x 24 unless $exifTool->Options('Compact');
+        $val .= ((' ' x 100) . "\n") x 24 unless $et->Options('Compact');
         $val .= q{<?xpacket end='w'?>};
         $dataPt = \$val;
         $len = length $val;
@@ -238,7 +238,7 @@ PS_AFTER
         }
         Write($outfile, $endToken, $/) or $success = 0;
     } else {
-        $exifTool->Warn("Can't write PS directory $dirName");
+        $et->Warn("Can't write PS directory $dirName");
     }
     undef $val;
     return $success;
@@ -278,7 +278,7 @@ sub EncodeTag($$)
 # Returns: true on success
 sub WriteNewTags($$$)
 {
-    my ($exifTool, $outfile, $newTags) = @_;
+    my ($et, $outfile, $newTags) = @_;
     my $success = 1;
     my $tag;
 
@@ -288,12 +288,12 @@ sub WriteNewTags($$$)
 
     foreach $tag (sort keys %$newTags) {
         my $tagInfo = $$newTags{$tag};
-        my $nvHash = $exifTool->GetNewValueHash($tagInfo);
+        my $nvHash = $et->GetNewValueHash($tagInfo);
         next unless $$nvHash{IsCreating};
-        my $val = $exifTool->GetNewValues($nvHash);
-        $exifTool->VerboseValue("+ PostScript:$$tagInfo{Name}", $val);
+        my $val = $et->GetNewValues($nvHash);
+        $et->VerboseValue("+ PostScript:$$tagInfo{Name}", $val);
         Write($outfile, EncodeTag($tag, $val)) or $success = 0;
-        ++$exifTool->{CHANGED};
+        ++$$et{CHANGED};
     }
     # write XMP hint if necessary
     Write($outfile, "%ADO_ContainsXMP: MainFirst$/") or $success = 0 if $xmpHint;
@@ -357,13 +357,13 @@ sub SplitLine($$)
 #          or -1 if a write error occurred
 sub WritePS($$)
 {
-    my ($exifTool, $dirInfo) = @_;
-    $exifTool or return 1;    # allow dummy access to autoload this package
+    my ($et, $dirInfo) = @_;
+    $et or return 1;    # allow dummy access to autoload this package
     my $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::PostScript::Main');
     my $raf = $$dirInfo{RAF};
     my $outfile = $$dirInfo{OutFile};
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
     my ($data, $buff, %flags, $err, $mode, $endToken);
     my ($dos, $psStart, $psEnd, $psNewStart, $xmpHint);
 
@@ -387,7 +387,7 @@ sub WritePS($$)
         unless ($raf->Seek($psStart, 0) and
                 $raf->Read($data, 4) == 4 and $data eq '%!PS')
         {
-            $exifTool->Error('Invalid PS header');
+            $et->Error('Invalid PS header');
             return 1;
         }
         $psEnd = $psStart + Get32u(\$dos, 8);
@@ -400,7 +400,7 @@ sub WritePS($$)
                 Base => $base,
                 NoTiffEnd => 1, # no end-of-TIFF check
             );
-            $buff = $exifTool->WriteTIFF(\%dirInfo);
+            $buff = $et->WriteTIFF(\%dirInfo);
             SetByteOrder('II'); # (WriteTIFF may change this)
             if ($buff) {
                 $buff = substr($buff, $base);   # remove header written by WriteTIFF()
@@ -408,10 +408,10 @@ sub WritePS($$)
                 # error rewriting TIFF, so just copy over original data
                 my $len = Get32u(\$dos, 24);
                 unless ($raf->Seek($base, 0) and $raf->Read($buff, $len) == $len) {
-                    $exifTool->Error('Error reading embedded TIFF');
+                    $et->Error('Error reading embedded TIFF');
                     return 1;
                 }
-                $exifTool->Warn('Bad embedded TIFF');
+                $et->Warn('Bad embedded TIFF');
             }
             Set32u(0, \$dos, 12);                   # zero metafile pointer
             Set32u(0, \$dos, 16);                   # zero metafile length
@@ -421,7 +421,7 @@ sub WritePS($$)
             # copy over metafile section
             my $len = Get32u(\$dos, 16);
             unless ($raf->Seek($base, 0) and $raf->Read($buff, $len) == $len) {
-                $exifTool->Error('Error reading metafile section');
+                $et->Error('Error reading metafile section');
                 return 1;
             }
             Set32u(length($dos), \$dos, 12);        # set metafile pointer
@@ -438,12 +438,12 @@ sub WritePS($$)
 #
     local $/ = GetInputRecordSeparator($raf);
     unless ($/ and $raf->ReadLine($buff)) {
-        $exifTool->Error('Invalid PostScript data');
+        $et->Error('Invalid PostScript data');
         return 1;
     }
     $data .= $buff;
     unless ($data =~ /^%!PS-Adobe-3\.(\d+)\b/ and $1 < 2) {
-        if ($exifTool->Error("Document does not conform to DSC spec. Metadata may be unreadable by other apps", 2)) {
+        if ($et->Error("Document does not conform to DSC spec. Metadata may be unreadable by other apps", 2)) {
             return 1;
         }
     }
@@ -452,17 +452,17 @@ sub WritePS($$)
     $flags{EPS} = 1 if $data =~ /EPSF/;
 
     # get hash of new information keyed by tagID and directories to add/edit
-    my $newTags = $exifTool->GetNewTagInfoHash($tagTablePtr);
+    my $newTags = $et->GetNewTagInfoHash($tagTablePtr);
 
     # figure out which directories we need to write (PostScript takes priority)
-    $exifTool->InitWriteDirs(\%psMap, 'PostScript');
-    my $addDirs = $exifTool->{ADD_DIRS};
-    my $editDirs = $exifTool->{EDIT_DIRS};
+    $et->InitWriteDirs(\%psMap, 'PostScript');
+    my $addDirs = $$et{ADD_DIRS};
+    my $editDirs = $$et{EDIT_DIRS};
     my %doneDir;
 
     # set XMP hint flag (1 for adding, 0 for deleting, undef for no change)
     $xmpHint = 1 if $$addDirs{XMP};
-    $xmpHint = 0 if $$exifTool{DEL_GROUP}{XMP};
+    $xmpHint = 0 if $$et{DEL_GROUP}{XMP};
     $$newTags{XMP_HINT} = $xmpHint if $xmpHint;  # add special tag to newTags list
 
     my (@lines, $changedNL);
@@ -499,9 +499,9 @@ sub WritePS($$)
                 undef $endToken;
                 # found end: process this information
                 if ($mode) {
-                    $doneDir{$mode} and $exifTool->Error("Multiple $mode directories", 1);
+                    $doneDir{$mode} and $et->Error("Multiple $mode directories", 1);
                     $doneDir{$mode} = 1;
-                    WritePSDirectory($exifTool, $outfile, $mode, \$buff, \%flags) or $err = 1;
+                    WritePSDirectory($et, $outfile, $mode, \$buff, \%flags) or $err = 1;
                     # write end token if we wrote the begin token
                     Write($outfile, $data) or $err = 1 if $flags{WROTE_BEGIN};
                     undef $buff;
@@ -531,7 +531,7 @@ sub WritePS($$)
             next;
         } elsif ($data =~ m{^(%{1,2})(Begin)(?!Object:)(.*?)[:\x0d\x0a]}i) {
             # comments section is over... write any new tags now
-            WriteNewTags($exifTool, $outfile, $newTags) or $err = 1 if %$newTags;
+            WriteNewTags($et, $outfile, $newTags) or $err = 1 if %$newTags;
             undef $xmpHint;
             # the beginning of a data block (can only write XMP and Photoshop)
             my %modeLookup = (
@@ -563,9 +563,9 @@ sub WritePS($$)
                 # (Illustrator 8 and older write PS-Adobe-3.0, newer write PS-Adobe-3.1)
                 if ($$editDirs{XMP} and $psRev == 0) {
                     if ($flags{EPS}) {
-                        $exifTool->Warn("Can't write XMP to Illustrator 8 or older EPS files");
+                        $et->Warn("Can't write XMP to Illustrator 8 or older EPS files");
                     } else {
-                        $exifTool->Warn("Can't write XMP to PS-format AI files");
+                        $et->Warn("Can't write XMP to PS-format AI files");
                     }
                     # pretend like we wrote it already so we won't try to add it later
                     $doneDir{XMP} = 1;
@@ -574,7 +574,7 @@ sub WritePS($$)
                 # (we need it to be able to recognize these files)
                 # --> find a better way to do this!
                 if ($$newTags{$tag}) {
-                    $exifTool->Warn("Can't change Postscript:Creator of Illustrator files");
+                    $et->Warn("Can't change Postscript:Creator of Illustrator files");
                     delete $$newTags{$tag};
                 }
             }
@@ -584,14 +584,14 @@ sub WritePS($$)
                 next unless ref $tagInfo;
                 # decode comment string (reading continuation lines if necessary)
                 $val = DecodeComment($val, $raf, \@lines, \$data);
-                $val = join $exifTool->Options('ListSep'), @$val if ref $val eq 'ARRAY';
-                my $nvHash = $exifTool->GetNewValueHash($tagInfo);
-                if ($exifTool->IsOverwriting($nvHash, $val)) {
-                    $exifTool->VerboseValue("- PostScript:$$tagInfo{Name}", $val);
-                    $val = $exifTool->GetNewValues($nvHash);
-                    ++$exifTool->{CHANGED};
+                $val = join $et->Options('ListSep'), @$val if ref $val eq 'ARRAY';
+                my $nvHash = $et->GetNewValueHash($tagInfo);
+                if ($et->IsOverwriting($nvHash, $val)) {
+                    $et->VerboseValue("- PostScript:$$tagInfo{Name}", $val);
+                    $val = $et->GetNewValues($nvHash);
+                    ++$$et{CHANGED};
                     next unless defined $val;   # next if tag is being deleted
-                    $exifTool->VerboseValue("+ PostScript:$$tagInfo{Name}", $val);
+                    $et->VerboseValue("+ PostScript:$$tagInfo{Name}", $val);
                     $data = EncodeTag($tag, $val);
                 }
             }
@@ -612,7 +612,7 @@ sub WritePS($$)
                 $data =~ /^%(%EndComments|%Page:|%PlateFile:|%BeginObject:|.*BeginLayer)/))
             {
                 # write new tags at end of comments section
-                WriteNewTags($exifTool, $outfile, $newTags) or $err = 1;
+                WriteNewTags($et, $outfile, $newTags) or $err = 1;
                 undef $xmpHint;
             }
             # look for start of drawing commands (AI uses "%AI5_BeginLayer",
@@ -629,12 +629,12 @@ sub WritePS($$)
                     next unless $$editDirs{$dir} and not $doneDir{$dir};
                     if ($plateFile) {
                         # PlateFile comments may contain offsets so we can't edit these files!
-                        $exifTool->Warn("Can only edit PostScript information DCS Plate files");
+                        $et->Warn("Can only edit PostScript information DCS Plate files");
                         last;
                     }
                     next unless $$addDirs{$dir} or $dir eq 'XMP';
                     $flags{WROTE_BEGIN} = 0;
-                    WritePSDirectory($exifTool, $outfile, $dir, undef, \%flags) or $err = 1;
+                    WritePSDirectory($et, $outfile, $dir, undef, \%flags) or $err = 1;
                     $doneDir{$dir} = 1;
                 }
                 # copy rest of file
@@ -684,7 +684,7 @@ sub WritePS($$)
                     print $outfile Set32u($pos - $psNewStart) and
                     seek($outfile, $pos, 0))
             {
-                $exifTool->Error("Can't write DOS-style PS files in non-seekable stream");
+                $et->Error("Can't write DOS-style PS files in non-seekable stream");
                 $err = 1;
             }
         }
@@ -696,11 +696,11 @@ sub WritePS($$)
         push @notDone, 'PostScript' if %$newTags;
         foreach $dir (qw{Photoshop ICC_Profile XMP}) {
             push @notDone, $dir if $$editDirs{$dir} and not $doneDir{$dir} and
-                                   not $$exifTool{DEL_GROUP}{$dir};
+                                   not $$et{DEL_GROUP}{$dir};
         }
-        @notDone and $exifTool->Warn("Couldn't write ".join('/',@notDone).' information');
+        @notDone and $et->Warn("Couldn't write ".join('/',@notDone).' information');
     }
-    $endToken and $exifTool->Error("File missing $endToken");
+    $endToken and $et->Error("File missing $endToken");
     return $err ? -1 : 1;
 }
 
@@ -764,7 +764,7 @@ Thanks to Tim Kordick for his help testing the EPS writer.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

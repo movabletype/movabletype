@@ -20,7 +20,7 @@ use Image::ExifTool::PostScript;
 use Image::ExifTool::XMP qw(EscapeXML UnescapeXML);
 require Exporter;
 
-$VERSION = '1.12';
+$VERSION = '1.15';
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(EscapeHTML UnescapeHTML);
 
@@ -336,15 +336,15 @@ my %entityName; # look up entity names by number (built as necessary)
 # Returns: original string
 sub SetHTMLCharset($$)
 {
-    my ($val, $exifTool) = @_;
-    $$exifTool{HTMLCharset} = $htmlCharset{lc $1} if $val =~ /charset=['"]?([-\w]+)/;
+    my ($val, $et) = @_;
+    $$et{HTMLCharset} = $htmlCharset{lc $1} if $val =~ /charset=['"]?([-\w]+)/;
     return $val;
 }
 
 #------------------------------------------------------------------------------
 # Convert single UTF-8 character to HTML character reference
 # Inputs: 0) UTF-8 character sequence
-# Returns: HTML character reference (ie. "&quot;");
+# Returns: HTML character reference (eg. "&quot;");
 # Note: Must be called via EscapeHTML to load name lookup
 sub EscapeChar($)
 {
@@ -403,20 +403,20 @@ sub UnescapeHTML($)
 # Returns: 1 on success, 0 if this wasn't a valid HTML file
 sub ProcessHTML($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $buff;
 
     # validate HTML or XHTML file
     $raf->Read($buff, 256) or return 0;
-    $buff =~ /^<(!DOCTYPE\s+HTML|HTML|\?xml)/i or return 0;
-    $buff =~ /<(!DOCTYPE\s+)?HTML/i or return 0 if $1 eq '?xml';
-    $exifTool->SetFileType();
+    $buff =~ /^(\xef\xbb\xbf)?\s*<(!DOCTYPE\s+HTML|HTML|\?xml)/i or return 0;
+    $buff =~ /<(!DOCTYPE\s+)?HTML/i or return 0 if $2 eq '?xml';
+    $et->SetFileType();
 
-    $raf->Seek(0,0) or $exifTool->Warn('Seek error'), return 1;
+    $raf->Seek(0,0) or $et->Warn('Seek error'), return 1;
 
     local $/ = Image::ExifTool::PostScript::GetInputRecordSeparator($raf);
-    $/ or $exifTool->Warn('Invalid HTML data'), return 1;
+    $/ or $et->Warn('Invalid HTML data'), return 1;
 
     # extract header information
     my $doc;
@@ -480,7 +480,7 @@ sub ProcessHTML($$)
             # isolate group name (separator is '.' in HTML, but ':' in ref 2)
             if ($tag =~ /^([\w-]+)[:.]([\w-]+)/) {
                 ($grp, $tag) = ($1, $2);
-                my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $grp);
+                my $tagInfo = $et->GetTagInfo($tagTablePtr, $grp);
                 if ($tagInfo and $$tagInfo{SubDirectory}) {
                     $table = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
                 } else {
@@ -488,12 +488,12 @@ sub ProcessHTML($$)
                 }
             }
         } elsif ($tag eq 'xml') {
-            $exifTool->VPrint(0, "Parsing XML\n");
+            $et->VPrint(0, "Parsing XML\n");
             # parse XML tags (quick-and-dirty)
             my $xml = $val;
             while ($xml =~ /<([\w-]+):([\w-]+)(\s.*?)?>([^<]*?)<\/\1:\2>/g) {
                 ($grp, $tag, $val) = ($1, $2, $4);
-                my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $grp);
+                my $tagInfo = $et->GetTagInfo($tagTablePtr, $grp);
                 next unless $tagInfo and $$tagInfo{SubDirectory};
                 $table = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
                 unless ($$table{$tag}) {
@@ -502,10 +502,10 @@ sub ProcessHTML($$)
                     $name =~ s/\s(.)/\U$1/g;     # capitalize all words in tag name
                     $name =~ tr/-_a-zA-Z0-9//dc; # remove illegal characters (also hex code wide chars)
                     AddTagToTable($table, $tag, { Name => $name });
-                    $exifTool->VPrint(0, "  [adding $tag '$name']\n");
+                    $et->VPrint(0, "  [adding $tag '$name']\n");
                 }
-                $val = $exifTool->Decode($val, $$exifTool{HTMLCharset}) if $$exifTool{HTMLCharset};
-                $exifTool->HandleTag($table, $tag, UnescapeXML($val));
+                $val = $et->Decode($val, $$et{HTMLCharset}) if $$et{HTMLCharset};
+                $et->HandleTag($table, $tag, UnescapeXML($val));
             }
             next;
         } else {
@@ -518,13 +518,13 @@ sub ProcessHTML($$)
             my $info = { Name => $name, Groups => { 0 => 'HTML' } };
             $info->{Groups}->{1} = ($grp eq 'http-equiv' ? 'HTTP-equiv' : "HTML-$grp") if $grp;
             AddTagToTable($table, $tag, $info);
-            $exifTool->VPrint(0, "  [adding $tag '$tagName']\n");
+            $et->VPrint(0, "  [adding $tag '$tagName']\n");
         }
         # recode if necessary
-        $val = $exifTool->Decode($val, $$exifTool{HTMLCharset}) if $$exifTool{HTMLCharset};
+        $val = $et->Decode($val, $$et{HTMLCharset}) if $$et{HTMLCharset};
         $val =~ s{\s*$/\s*}{ }sg;   # replace linefeeds and indenting spaces
         $val = UnescapeHTML($val);  # unescape HTML character references
-        $exifTool->HandleTag($table, $tag, $val);
+        $et->HandleTag($table, $tag, $val);
     }
     return 1;
 }
@@ -548,7 +548,7 @@ meta information from HTML documents.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

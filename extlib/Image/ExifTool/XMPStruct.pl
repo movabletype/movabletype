@@ -25,7 +25,7 @@ sub ConvertStruct($$$$;$);
 # Serialize a structure (or other object) into a simple string
 # Inputs: 0) HASH ref, ARRAY ref, or SCALAR, 1) closing bracket (or undef)
 # Returns: serialized structure string
-# ie) "{field=text with {braces|}|, and a comma, field2=val2,field3={field4=[a,b]}}"
+# eg) "{field=text with {braces|}|, and a comma, field2=val2,field3={field4=[a,b]}}"
 sub SerializeStruct($;$)
 {
     my ($obj, $ket) = @_;
@@ -176,7 +176,7 @@ sub DumpStruct($;$)
 # - un-escapes for XML or HTML as per Escape option setting
 sub CheckStruct($$$)
 {
-    my ($exifTool, $struct, $strTable) = @_;
+    my ($et, $struct, $strTable) = @_;
 
     my $strName = $$strTable{STRUCT_NAME} || ('XMP ' . RegisterNamespace($strTable));
     ref $struct eq 'HASH' or return wantarray ? (undef, "Expecting $strName structure") : undef;
@@ -196,7 +196,7 @@ Key:
             $fieldInfo = $$strTable{$tag = $fix} if $fix and not $specialStruct{$fix};
         }
         until (ref $fieldInfo eq 'HASH') {
-            # generate wildcard fields on the fly (ie. mwg-rs:Extensions)
+            # generate wildcard fields on the fly (eg. mwg-rs:Extensions)
             unless ($$strTable{NAMESPACE}) {
                 my ($grp, $tg, $langCode);
                 ($grp, $tg) = $tag =~ /^(.+):(.+)/ ? (lc $1, $2) : ('', $tag);
@@ -211,7 +211,7 @@ Key:
                 my ($tagInfo, $priority, $ti, $g1);
                 # find best matching tag
                 foreach $ti (@matches) {
-                    my @grps = $exifTool->GetGroup($ti);
+                    my @grps = $et->GetGroup($ti);
                     next unless $grps[0] eq 'XMP';
                     next if $grp and $grp ne lc $grps[1];
                     # must be lang-alt tag if we are writing an alternate language
@@ -241,7 +241,7 @@ Key:
                 delete $$fieldInfo{Groups};
                 last; # write this dynamically-generated field
             }
-            # generate lang-alt fields on the fly (ie. Iptc4xmpExt:AOTitle)
+            # generate lang-alt fields on the fly (eg. Iptc4xmpExt:AOTitle)
             my ($tg, $langCode) = GetLangCode($tag);
             if (defined $langCode) {
                 $fieldInfo = $$strTable{$tg} unless $specialStruct{$tg};
@@ -270,7 +270,7 @@ Key:
         if (ref $$struct{$key} eq 'HASH') {
             $$fieldInfo{Struct} or $warn = "$tag is not a structure in $strName", next Key;
             # recursively check this structure
-            ($val, $err) = CheckStruct($exifTool, $$struct{$key}, $$fieldInfo{Struct});
+            ($val, $err) = CheckStruct($et, $$struct{$key}, $$fieldInfo{Struct});
             $err and $warn = $err, next Key;
             $copy{$tag} = $val;
         } elsif (ref $$struct{$key} eq 'ARRAY') {
@@ -282,14 +282,14 @@ Key:
                 if (not ref $item) {
                     $item = '' unless defined $item; # use empty string for missing items
                     $$fieldInfo{Struct} and $warn = "$tag items are not valid structures", next Key;
-                    $exifTool->Sanitize(\$item);
-                    ($copy[$i],$err) = $exifTool->ConvInv($item,$fieldInfo,$tag,$strName,$type);
+                    $et->Sanitize(\$item);
+                    ($copy[$i],$err) = $et->ConvInv($item,$fieldInfo,$tag,$strName,$type,'');
                     $err and $warn = $err, next Key;
-                    $err = CheckXMP($exifTool, $fieldInfo, \$copy[$i]);
+                    $err = CheckXMP($et, $fieldInfo, \$copy[$i]);
                     $err and $warn = "$err in $strName $tag", next Key;
                 } elsif (ref $item eq 'HASH') {
                     $$fieldInfo{Struct} or $warn = "$tag is not a structure in $strName", next Key;
-                    ($copy[$i], $err) = CheckStruct($exifTool, $item, $$fieldInfo{Struct});
+                    ($copy[$i], $err) = CheckStruct($et, $item, $$fieldInfo{Struct});
                     $err and $warn = $err, next Key;
                 } else {
                     $warn = "Invalid value for $tag in $strName";
@@ -301,10 +301,10 @@ Key:
         } elsif ($$fieldInfo{Struct}) {
             $warn = "Improperly formed structure in $strName $tag";
         } else {
-            $exifTool->Sanitize(\$$struct{$key});
-            ($val,$err) = $exifTool->ConvInv($$struct{$key},$fieldInfo,$tag,$strName,$type);
+            $et->Sanitize(\$$struct{$key});
+            ($val,$err) = $et->ConvInv($$struct{$key},$fieldInfo,$tag,$strName,$type,'');
             $err and $warn = $err, next Key;
-            $err = CheckXMP($exifTool, $fieldInfo, \$val);
+            $err = CheckXMP($et, $fieldInfo, \$val);
             $err and $warn = "$err in $strName $tag", next Key;
             # turn this into a list if necessary
             $copy{$tag} = $$fieldInfo{List} ? [ $val ] : $val;
@@ -313,7 +313,7 @@ Key:
     if (%copy) {
         $rtnVal = \%copy;
         undef $err;
-        $$exifTool{CHECK_WARN} = $warn if $warn;
+        $$et{CHECK_WARN} = $warn if $warn;
     } else {
         $err = $warn || 'Structure has no fields';
     }
@@ -329,7 +329,7 @@ Key:
 # Notes: updates path to new base path for structure to be added
 sub DeleteStruct($$$$$)
 {
-    my ($exifTool, $capture, $pathPt, $nvHash, $changed) = @_;
+    my ($et, $capture, $pathPt, $nvHash, $changed) = @_;
     my ($deleted, $added, $existed, $p, $pp, $val, $delPath);
     my (@structPaths, @matchingPaths, @delPaths);
 
@@ -387,10 +387,10 @@ sub DeleteStruct($$$$$)
         $delPath = $1;
     }
     if (@delPaths) {
-        my $verbose = $exifTool->Options('Verbose');
+        my $verbose = $et->Options('Verbose');
         @delPaths = sort @delPaths if $verbose > 1;
         foreach $p (@delPaths) {
-            $exifTool->VerboseValue("- XMP-$p", $$capture{$p}[0]) if $verbose > 1;
+            $et->VerboseValue("- XMP-$p", $$capture{$p}[0]) if $verbose > 1;
             delete $$capture{$p};
             $deleted = 1;
             ++$$changed;
@@ -406,7 +406,7 @@ sub DeleteStruct($$$$$)
             if ($$capture{$path}) {
                 my $cap = $$capture{$path};
                 # an error unless this was an empty structure
-                $exifTool->Error("Improperly structured XMP ($path)",1) if ref $cap ne 'ARRAY' or $$cap[0];
+                $et->Error("Improperly structured XMP ($path)",1) if ref $cap ne 'ARRAY' or $$cap[0];
                 delete $$capture{$path};
             }
             # (match last index to put in same lang-alt list for Bag of lang-alt items)
@@ -431,7 +431,7 @@ sub DeleteStruct($$$$$)
 #         3) resource path, 4) value ref, 5) hash ref for last used index numbers
 sub AddNewTag($$$$$$)
 {
-    my ($exifTool, $tagInfo, $capture, $path, $valPtr, $langIdx) = @_;
+    my ($et, $tagInfo, $capture, $path, $valPtr, $langIdx) = @_;
     my $val = EscapeXML($$valPtr);
     my %attrs;
     # support writing RDF "resource" values
@@ -453,8 +453,8 @@ sub AddNewTag($$$$$$)
     }
     $$capture{$path} = [ $val, \%attrs ];
     # print verbose message
-    if ($exifTool and $exifTool->Options('Verbose') > 1) {
-        $exifTool->VerboseValue("+ XMP-$path", $val);
+    if ($et and $et->Options('Verbose') > 1) {
+        $et->VerboseValue("+ XMP-$path", $val);
     }
 }
 
@@ -467,8 +467,8 @@ sub AddNewTag($$$$$$)
 # Notes: Escapes values for XML
 sub AddNewStruct($$$$$$)
 {
-    my ($exifTool, $tagInfo, $capture, $basePath, $struct, $strTable) = @_;
-    my $verbose = $exifTool ? $exifTool->Options('Verbose') : 0;
+    my ($et, $tagInfo, $capture, $basePath, $struct, $strTable) = @_;
+    my $verbose = $et ? $et->Options('Verbose') : 0;
     my ($tag, %langIdx);
 
     my $ns = $$strTable{NAMESPACE} || '';
@@ -488,11 +488,11 @@ sub AddNewStruct($$$$$$)
             }
             $$fieldInfo{PropertyPath} = $propPath;  # save for next time
         }
-        my $path = $basePath . '/' . ConformPathToNamespace($exifTool, $propPath);
+        my $path = $basePath . '/' . ConformPathToNamespace($et, $propPath);
         my $addedTag;
         if (ref $val eq 'HASH') {
             my $subStruct = $$fieldInfo{Struct} or next;
-            $changed += AddNewStruct($exifTool, $tagInfo, $capture, $path, $val, $subStruct);
+            $changed += AddNewStruct($et, $tagInfo, $capture, $path, $val, $subStruct);
         } elsif (ref $val eq 'ARRAY') {
             next unless $$fieldInfo{List};
             my $i = 0;
@@ -501,7 +501,7 @@ sub AddNewStruct($$$$$$)
             foreach $item (@{$val}) {
                 if ($i) {
                     # update first index in field property (may be list of lang-alt lists)
-                    $p = ConformPathToNamespace($exifTool, $propPath);
+                    $p = ConformPathToNamespace($et, $propPath);
                     my $idx = length($i) . $i;
                     $p =~ s/ \d+/ $idx/;
                     $p = "$basePath/$p";
@@ -510,16 +510,16 @@ sub AddNewStruct($$$$$$)
                 }
                 if (ref $item eq 'HASH') {
                     my $subStruct = $$fieldInfo{Struct} or next;
-                    AddNewStruct($exifTool, $tagInfo, $capture, $p, $item, $subStruct) or next;
+                    AddNewStruct($et, $tagInfo, $capture, $p, $item, $subStruct) or next;
                 } elsif (length $item) { # don't write empty items in list
-                    AddNewTag($exifTool, $fieldInfo, $capture, $p, \$item, \%langIdx);
+                    AddNewTag($et, $fieldInfo, $capture, $p, \$item, \%langIdx);
                     $addedTag = 1;
                 }
                 ++$changed;
                 ++$i;
             }
         } else {
-            AddNewTag($exifTool, $fieldInfo, $capture, $path, \$val, \%langIdx);
+            AddNewTag($et, $fieldInfo, $capture, $path, \$val, \%langIdx);
             $addedTag = 1;
             ++$changed;
         }
@@ -527,15 +527,15 @@ sub AddNewStruct($$$$$$)
         # in the case that a whole hierarchy was added at once by writing a
         # flattened tag inside a variable-namespace structure
         if ($addedTag and $$fieldInfo{StructType} and $$fieldInfo{Table}) {
-            AddStructType($exifTool, $$fieldInfo{Table}, $capture, $propPath, $basePath);
+            AddStructType($et, $$fieldInfo{Table}, $capture, $propPath, $basePath);
         }
     }
     # add 'rdf:type' property if necessary
     if ($$strTable{TYPE} and $changed) {
-        my $path = $basePath . '/' . ConformPathToNamespace($exifTool, "rdf:type");
+        my $path = $basePath . '/' . ConformPathToNamespace($et, "rdf:type");
         unless ($$capture{$path}) {
             $$capture{$path} = [ '', { 'rdf:resource' => $$strTable{TYPE} } ];
-            $exifTool->VerboseValue("+ XMP-$path", $$strTable{TYPE}) if $verbose > 1;
+            $et->VerboseValue("+ XMP-$path", $$strTable{TYPE}) if $verbose > 1;
         }
     }
     return $changed;
@@ -549,7 +549,7 @@ sub AddNewStruct($$$$$$)
 # Notes: Makes a copy of the hash so any applied escapes won't affect raw values
 sub ConvertStruct($$$$;$)
 {
-    my ($exifTool, $tagInfo, $value, $type, $parentID) = @_;
+    my ($et, $tagInfo, $value, $type, $parentID) = @_;
     if (ref $value eq 'HASH') {
         my (%struct, $key);
         my $table = $$tagInfo{Table};
@@ -567,22 +567,31 @@ sub ConvertStruct($$$$;$)
             }
             my $v = $$value{$key};
             if (ref $v) {
-                $v = ConvertStruct($exifTool, $flatInfo, $v, $type, $tagID);
+                $v = ConvertStruct($et, $flatInfo, $v, $type, $tagID);
             } else {
-                $v = $exifTool->GetValue($flatInfo, $type, $v);
+                $v = $et->GetValue($flatInfo, $type, $v);
             }
             $struct{$key} = $v if defined $v;  # save the converted value
         }
         return \%struct;
     } elsif (ref $value eq 'ARRAY') {
-        my (@list, $val);
-        foreach $val (@$value) {    
-            my $v = ConvertStruct($exifTool, $tagInfo, $val, $type, $parentID);
-            push @list, $v if defined $v;
+        if (defined $$et{OPTIONS}{ListItem}) {
+            my $li = $$et{OPTIONS}{ListItem};
+            return undef unless defined $$value[$li];
+            undef $$et{OPTIONS}{ListItem};      # only do top-level list
+            my $val = ConvertStruct($et, $tagInfo, $$value[$li], $type, $parentID);
+            $$et{OPTIONS}{ListItem} = $li;
+            return $val;
+        } else {
+            my (@list, $val);
+            foreach $val (@$value) {    
+                my $v = ConvertStruct($et, $tagInfo, $val, $type, $parentID);
+                push @list, $v if defined $v;
+            }
+            return \@list;
         }
-        return \@list;
     } else {
-        return $exifTool->GetValue($tagInfo, $type, $value);
+        return $et->GetValue($tagInfo, $type, $value);
     }
 }
 
@@ -593,16 +602,16 @@ sub ConvertStruct($$$$;$)
 sub RestoreStruct($;$)
 {
     local $_;
-    my ($exifTool, $keepFlat) = @_;
+    my ($et, $keepFlat) = @_;
     my ($key, %structs, %var, %lists, $si, %listKeys);
-    my $ex = $$exifTool{TAG_EXTRA};
-    my $valueHash = $$exifTool{VALUE};
-    my $tagExtra = $$exifTool{TAG_EXTRA};
-    foreach $key (keys %{$$exifTool{TAG_INFO}}) {
+    my $ex = $$et{TAG_EXTRA};
+    my $valueHash = $$et{VALUE};
+    my $tagExtra = $$et{TAG_EXTRA};
+    foreach $key (keys %{$$et{TAG_INFO}}) {
         $$ex{$key} or next;
-        my ($err, $i);
         my $structProps = $$ex{$key}{Struct} or next;
-        my $tagInfo = $$exifTool{TAG_INFO}{$key};   # tagInfo for flattened tag
+        delete $$ex{$key}{Struct}; # (don't re-use)
+        my $tagInfo = $$et{TAG_INFO}{$key};   # tagInfo for flattened tag
         my $table = $$tagInfo{Table};
         my $prop = shift @$structProps;
         my $tag = $$prop[0];
@@ -614,7 +623,7 @@ sub RestoreStruct($;$)
                 # this could happen for invalid XMP containing mixed lists
                 # (or for something like this -- what should we do here?:
                 # <meta:user-defined meta:name="License">test</meta:user-defined>)
-                $exifTool->Warn("$$strInfo{Name} is not a structure!");
+                $et->Warn("$$strInfo{Name} is not a structure!") unless $$et{NO_STRUCT_WARN};
                 next;
             }
         } else {
@@ -651,6 +660,7 @@ sub RestoreStruct($;$)
         my $writable = $$tagInfo{Writable} || '';
         # walk through the stored structure property information
         # to rebuild this structure
+        my ($err, $i);
         for (;;) {
             my $index = $$prop[1];
             if ($index and not @$structProps) {
@@ -724,7 +734,10 @@ sub RestoreStruct($;$)
         if ($err) {
             # this may happen if we have a structural error in the XMP
             # (like an improperly contained list for example)
-            $exifTool->Warn("Error $err placing $$tagInfo{Name} in structure", 1);
+            unless ($$et{NO_STRUCT_WARN}) {
+                my $ns = $$tagInfo{Namespace} || $$tagInfo{Table}{NAMESPACE} || '';
+                $et->Warn("Error $err placing $ns:$$tagInfo{TagID} in structure or list", 1);
+            }
             delete $structs{$strInfo} unless $oldStruct;
         } elsif ($tagInfo eq $strInfo) {
             # just a regular list tag
@@ -733,8 +746,8 @@ sub RestoreStruct($;$)
                 # "Tag (10)" is lt "Tag (2)", but at least "Tag" is lt
                 # everything else, and this is really what we care about)
                 my $k = $listKeys{$oldStruct};
-                $k lt $key and $exifTool->DeleteTag($key), next;
-                $exifTool->DeleteTag($k);   # remove tag with greater copy number
+                $k lt $key and $et->DeleteTag($key), next;
+                $et->DeleteTag($k);   # remove tag with greater copy number
             }
             # replace existing value with new list
             $$valueHash{$key} = $structs{$strInfo};
@@ -743,11 +756,11 @@ sub RestoreStruct($;$)
             # save strInfo ref and file order
             if ($var{$strInfo}) {
                 # set file order to just before the first associated flattened tag
-                if ($var{$strInfo}[1] > $$exifTool{FILE_ORDER}{$key}) {
-                    $var{$strInfo}[1] = $$exifTool{FILE_ORDER}{$key} - 0.5;
+                if ($var{$strInfo}[1] > $$et{FILE_ORDER}{$key}) {
+                    $var{$strInfo}[1] = $$et{FILE_ORDER}{$key} - 0.5;
                 }
             } else {
-                $var{$strInfo} = [ $strInfo, $$exifTool{FILE_ORDER}{$key} - 0.5 ];
+                $var{$strInfo} = [ $strInfo, $$et{FILE_ORDER}{$key} - 0.5 ];
             }
             # preserve original flattened tags if requested
             if ($keepFlat) {
@@ -758,10 +771,10 @@ sub RestoreStruct($;$)
                     delete $$extra{NoList};
                 } elsif ($$extra{NoListDel}) {
                     # delete this tag since its value was included another list
-                    $exifTool->DeleteTag($key);
+                    $et->DeleteTag($key);
                 }
             } else {
-                $exifTool->DeleteTag($key); # delete the flattened tag
+                $et->DeleteTag($key); # delete the flattened tag
             }
         }
     }
@@ -774,9 +787,9 @@ sub RestoreStruct($;$)
     # save new structure tags
     foreach $si (keys %structs) {
         next unless $var{$si};  # already handled regular lists
-        $key = $exifTool->FoundTag($var{$si}[0], '');
+        $key = $et->FoundTag($var{$si}[0], '');
         $$valueHash{$key} = $structs{$si};
-        $$exifTool{FILE_ORDER}{$key} = $var{$si}[1];
+        $$et{FILE_ORDER}{$key} = $var{$si}[1];
     }
 }
 
@@ -800,7 +813,7 @@ information.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

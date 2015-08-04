@@ -11,7 +11,7 @@ package Image::ExifTool::Lang::zh_cn;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.07';
+$VERSION = '1.08';
 
 %Image::ExifTool::Lang::zh_cn::Translate = (
    'AEProgramMode' => {
@@ -1025,7 +1025,6 @@ $VERSION = '1.07';
         'Portrait' => '人物',
         'Shutter Priority' => '快门优先',
         'Sports' => '运动模式',
-        'Standard' => '',
         'Sunset' => '夕阳',
         'Sweep Panorama' => '扫描全景',
       },
@@ -1204,7 +1203,9 @@ $VERSION = '1.07';
     },
    'WBAdjLighting' => {
       PrintConv => {
-        'Daylight' => '太阳光',
+        'Daylight (direct sunlight)' => '太阳光 (0)',
+        'Daylight (shade)' => '太阳光 (1)',
+        'Daylight (cloudy)' => '太阳光 (2)',
         'Flash' => '闪光',
       },
     },
@@ -1312,7 +1313,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

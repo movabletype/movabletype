@@ -93,10 +93,10 @@ sub scale {
     wantarray ? ( $out, $w, $h ) : $out;
 }
 
-sub crop {
+sub crop_rectangle {
     my $image = shift;
     my %param = @_;
-    my ( $size, $x, $y ) = @param{qw( Size X Y )};
+    my ( $width, $height, $x, $y ) = @param{qw( Width Height X Y )};
 
     my ( $w, $h ) = $image->get_dimensions(@_);
     my $type = $image->{type};
@@ -107,7 +107,7 @@ sub crop {
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
 
-    my @crop = ( "${pbm}pnmcut", $x, $y, $size, $size );
+    my @crop = ( "${pbm}pnmcut", $x, $y, $width, $height );
     my @out;
     for my $try (qw( ppm pnm )) {
         my $prog = "${pbm}${try}to$type";
@@ -120,10 +120,14 @@ sub crop {
     IPC::Run::run( \@in, '<', ( $image->{data} ? \$image->{data} : \undef ),
         '|', \@crop, '|', @quant, \@out, \$out, \$err )
         or return $image->error(
-        MT->translate( "Cropping to [_1]x[_1] failed: [_2]", $size, $err ) );
+        MT->translate(
+            "Cropping to [_1]x[_2] failed: [_3]",
+            $width, $height, $err
+        )
+        );
     ( $image->{width}, $image->{height}, $image->{data} )
-        = ( $size, $size, $out );
-    wantarray ? ( $out, $size, $size ) : $out;
+        = ( $width, $height, $out );
+    wantarray ? ( $out, $width, $height ) : $out;
 }
 
 sub flipHorizontal {

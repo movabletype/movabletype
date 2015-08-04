@@ -94,16 +94,17 @@ sub scale {
     wantarray ? ( $image->blob, $w, $h ) : $image->blob;
 }
 
-sub crop {
+sub crop_rectangle {
     my $image = shift;
     my %param = @_;
-    my ( $size, $x, $y ) = @param{qw( Size X Y )};
+    my ( $width, $height, $x, $y ) = @param{qw( Width Height X Y )};
 
     $image->{imager} = $image->{imager}
-        ->crop( left => $x, top => $y, width => $size, height => $size );
-    $image->{width} = $image->{height} = $size;
+        ->crop( left => $x, top => $y, width => $width, height => $height );
+    $image->{width}  = $width;
+    $image->{height} = $height;
 
-    wantarray ? ( $image->blob, $size, $size ) : $image->blob;
+    wantarray ? ( $image->blob, $width, $height ) : $image->blob;
 }
 
 sub flipHorizontal {

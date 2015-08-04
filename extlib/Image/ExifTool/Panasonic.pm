@@ -20,6 +20,8 @@
 #              15) Zdenek Mihula private communication (TZ8)
 #              16) Olaf Ulrich private communication
 #              17) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,4922.0.html
+#              18) Thomas Modes private communication (G6)
+#              19) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,5533.0.html
 #              JD) Jens Duttke private communication (TZ3,FZ30,FZ50)
 #------------------------------------------------------------------------------
 
@@ -30,9 +32,9 @@ use vars qw($VERSION %leicaLensTypes);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.72';
+$VERSION = '1.90';
 
-sub ProcessPanasonicType2($$$);
+sub ProcessLeicaLEIC($$$);
 sub WhiteBalanceConv($;$$);
 
 # Leica lens types (ref 10)
@@ -117,6 +119,7 @@ sub WhiteBalanceConv($;$$);
     '51 2' => 'Super-Elmar-M 14mm f/3.8 Asph', # ? (ref 16)
     52 => 'Super-Elmar-M 18mm f/3.8 ASPH.', # ? (ref PH/11)
     '53 2' => 'Apo-Telyt-M 135mm f/3.4', #16
+    '53 3' => 'Apo-Summicron-M 50mm f/2 (VI)', #LibRaw
 );
 
 # M9 frame selector bits for each lens
@@ -210,8 +213,10 @@ my %shootingMode = (
     44 => 'Film Grain', #PH (FZ28)
     45 => 'My Color', #PH (GF1)
     46 => 'Photo Frame', #PH (FS7)
+    48 => 'Movie', #PH (GM1)
     # 49 - seen for FS4 (snow?)
     51 => 'HDR', #12
+    52 => 'Peripheral Defocus', #Horst Wandres
     55 => 'Handheld Night Shot', #PH (FZ47)
     57 => '3D', #PH (3D1)
     59 => 'Creative Control', #PH (FZ47)
@@ -219,6 +224,30 @@ my %shootingMode = (
     63 => 'Glass Through', #17
     64 => 'HDR', #17
     66 => 'Digital Filter', #PH (GF5 "Impressive Art", "Cross Process", "Color Select", "Star")
+    67 => 'Clear Portrait', #18
+    68 => 'Silky Skin', #18
+    69 => 'Backlit Softness', #18
+    70 => 'Clear in Backlight', #18
+    71 => 'Relaxing Tone', #18
+    72 => "Sweet Child's Face", #18
+    73 => 'Distinct Scenery', #18
+    74 => 'Bright Blue Sky', #18
+    75 => 'Romantic Sunset Glow', #18
+    76 => 'Vivid Sunset Glow', #18
+    77 => 'Glistening Water', #18
+    78 => 'Clear Nightscape', #18
+    79 => 'Cool Night Sky', #18
+    80 => 'Warm Glowing Nightscape', #18
+    81 => 'Artistic Nightscape', #18
+    82 => 'Glittering Illuminations', #18
+    83 => 'Clear Night Portrait', #18
+    84 => 'Soft Image of a Flower', #18
+    85 => 'Appetizing Food', #18
+    86 => 'Cute Desert', #18
+    87 => 'Freeze Animal Motion', #18
+    88 => 'Clear Sports Shot', #18
+    89 => 'Monochrome', #18
+    90 => 'Creative Control', #18
 );
 
 %Image::ExifTool::Panasonic::Main = (
@@ -237,6 +266,8 @@ my %shootingMode = (
             6 => 'Very High', #3 (Leica)
             7 => 'Raw', #3 (Leica)
             9 => 'Motion Picture', #PH (LZ6)
+            11 => 'Full HD Movie', #PH (V-LUX)
+            12 => '4k Movie', #PH (V-LUX)
         },
     },
     0x02 => {
@@ -280,7 +311,9 @@ my %shootingMode = (
             2 => 'Manual',
             4 => 'Auto, Focus button', #4
             5 => 'Auto, Continuous', #4
-            # have seens 6 for GF1 - PH
+            6 => 'AF-S', #18 (also seen for GF1 - PH)
+            7 => 'AF-C', #18
+            8 => 'AF-F', #18 (auto-focus flexible)
         },
     },
     0x0f => [
@@ -303,6 +336,7 @@ my %shootingMode = (
                 '0 1'   => '9-area', # (FS7)
                 '0 16'  => '3-area (high speed)', # (FZ8)
                 '0 23'  => '23-area', #PH (FZ47,NC)
+                # '0 49' - seen for LX100, V-LUX (PH)
                 '1 0'   => 'Spot Focusing', # (FZ8)
                 '1 1'   => '5-area', # (FZ8)
                 '16'    => 'Normal?', # (only mode for DMC-LC20)
@@ -315,6 +349,7 @@ my %shootingMode = (
                 '32 2'  => '3-area (center)?', # (DMC-L1 guess)
                 '32 3'  => '3-area (right)?', # (DMC-L1 guess)
                 '64 0'  => 'Face Detect',
+                '128 0' => 'Spot Focusing 2', #18
             },
         },
     ],
@@ -325,7 +360,9 @@ my %shootingMode = (
             2 => 'On, Mode 1',
             3 => 'Off',
             4 => 'On, Mode 2',
-            # GF1 also has a "Mode 3"
+            5 => 'Panning', #18
+            # GF1 also has a "Mode 3" - PH
+            6 => 'On, Mode 3', #PH (GX7, sensor shift?)
         },
     },
     0x1c => {
@@ -408,6 +445,7 @@ my %shootingMode = (
             4 => 'Black & White',
             5 => 'Sepia',
             6 => 'Happy', #PH (FX70) (yes, really. you wouldn't want sad colors now would you?)
+            8 => 'Vivid', #PH (SZ3)
         },
     },
     0x29 => { #JD
@@ -455,6 +493,8 @@ my %shootingMode = (
             1 => 'On', #PH (TZ5) [was "Low/High Quality" from ref 4]
             2 => 'Auto Exposure Bracketing (AEB)', #17
             4 => 'Unlimited', #PH (TZ5)
+            8 => 'White Balance Bracketing', #18
+            17 => 'On (with flash)', #forum5597
         },
     },
     0x2b => { #4
@@ -473,14 +513,18 @@ my %shootingMode = (
                 L10 and LC80
             },
             PrintConv => {
-                0 => 'Normal',
-                1 => 'Low',
-                2 => 'High',
-                # 3 - observed with LZ6 and TZ5 in Fireworks mode - PH
-                # 5 - observed with FX01, FX40 and FP8 (EXIF contrast "Normal") - PH
-                6 => 'Medium Low', #PH (FZ18)
-                7 => 'Medium High', #PH (FZ18)
-                13 => 'High Dynamic', #PH (FZ47 in ?)
+                0x00 => 'Normal',
+                0x01 => 'Low',
+                0x02 => 'High',
+                # 0x03 - observed with LZ6 and TZ5 in Fireworks mode
+                #        and GX7 in Fantasy/Retro/OldDays/HighKey - PH
+                # 0x04 - observed in MP4 movie with GM1 (EXIF and 0x39 Contrast "Normal") - PH
+                # 0x05 - observed with FX01, FX40 and FP8 (EXIF contrast "Normal") - PH
+                0x06 => 'Medium Low', #PH (FZ18)
+                0x07 => 'Medium High', #PH (FZ18)
+                # 0x08 - GX7 in DynamicMonochrome mode
+                0x0d => 'High Dynamic', #PH (FZ47 in ?)
+                # 0x13 - seen for LX100 (PH)
                 # DMC-LC1 values:
                 0x100 => 'Low',
                 0x110 => 'Normal',
@@ -518,8 +562,24 @@ my %shootingMode = (
                 47 => 'Dynamic Mono', #(GF5)
                 50 => 'Impressive Art', #(GF5)
                 51 => 'Cross Process', #(GF5)
+                100 => 'High Dynamic 2', #Exiv2 (G6)
+                101 => 'Retro 2', #Exiv2 (G6)
+                102 => 'High Key 2', #Exiv2 (G6)
+                103 => 'Low Key 2', #Exiv2 (G6)
+                104 => 'Toy Effect 2', #Exiv2 (G6)
                 107 => 'Expressive 2', #(GF6)
+                112 => 'Sepia', #Exiv2 (G6)
+                117 => 'Miniature', #Exiv2 (G6)
                 122 => 'Dynamic Monochrome', #(GF6)
+                127 => 'Old Days', #Exiv2 (G6)
+                132 => 'Dynamic Monochrome 2', #Exiv2 (G6)
+                135 => 'Impressive Art 2', #Exiv2 (G6)
+                136 => 'Cross Process 2', #Exiv2 (G6)
+                137 => 'Toy Pop', #Exiv2 (G6)
+                138 => 'Fantasy', #Exiv2 (G6)
+                256 => 'Normal 3', #Exiv2 (G6)
+                272 => 'Standard', #Exiv2 (G6)
+                288 => 'High', #Exiv2 (G6)
                 # more new modes for GF6:
                 # ? => 'Old Days',
                 # ? => 'Toy Pop',
@@ -555,6 +615,7 @@ my %shootingMode = (
             2 => 'High (+1)',
             3 => 'Lowest (-2)', #JD
             4 => 'Highest (+2)', #JD
+            # 65531 - seen for LX100 "NR1" test shots at imaging-resource (PH)
         },
     },
     0x2e => { #4
@@ -693,7 +754,7 @@ my %shootingMode = (
         Name => 'FilmMode',
         Writable => 'int16u',
         PrintConv => {
-            0 => 'n/a', #PH (ie. FZ100 "Photo Frame" ShootingMode)
+            0 => 'n/a', #PH (eg. FZ100 "Photo Frame" ShootingMode)
             1 => 'Standard (color)',
             2 => 'Dynamic (color)',
             3 => 'Nature (color)',
@@ -713,7 +774,19 @@ my %shootingMode = (
         Name => 'ColorTempKelvin',
         Format => 'int16u',
     },
-    # 0x45 - int16u: 0
+    0x45 => { #19
+        Name => 'BracketSettings',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'No Bracket',
+            1 => '3 Images, Sequence 0/-/+',
+            2 => '3 Images, Sequence -/0/+',
+            3 => '5 Images, Sequence 0/-/+',
+            4 => '5 Images, Sequence -/0/+',
+            5 => '7 Images, Sequence 0/-/+',
+            6 => '7 Images, Sequence -/0/+',
+        },
+    },
     0x46 => { #PH/JD
         Name => 'WBShiftAB',
         Format => 'int16s',
@@ -735,8 +808,14 @@ my %shootingMode = (
             2 => '2nd',
         },
     },
-    # 0x48 - int16u: 0
-    # 0x49 - int16u: 2
+    0x49 => { #19
+        Name => 'LongExposureNoiseReduction',
+        Writable => 'int16u',
+        PrintConv => {
+            1 => 'Off',
+            2 => 'On'
+        }
+    },
     # 0x4a - int16u: 0
     0x4b => { #PH
         Name => 'PanasonicImageWidth',
@@ -770,18 +849,26 @@ my %shootingMode = (
         Name => 'LensType',
         Writable => 'string',
         ValueConv => '$val=~s/ +$//; $val', # trim trailing spaces
+        ValueConvInv => '$val',
     },
     0x52 => { #7 (DMC-L1)
         Name => 'LensSerialNumber',
         Writable => 'string',
         ValueConv => '$val=~s/ +$//; $val', # trim trailing spaces
+        ValueConvInv => '$val',
     },
     0x53 => { #7 (DMC-L1)
         Name => 'AccessoryType',
         Writable => 'string',
         ValueConv => '$val=~s/ +$//; $val', # trim trailing spaces
+        ValueConvInv => '$val',
     },
-    # 0x54 - string[14]: "0000000"
+    0x54 => { #19
+        Name => 'AccessorySerialNumber',
+        Writable => 'string',
+        ValueConv => '$val=~s/ +$//; $val', # trim trailing spaces
+        ValueConvInv => '$val',
+    },
     # 0x55 - int16u: 1
     # 0x57 - int16u: 0
     0x59 => { #PH (FS7)
@@ -812,7 +899,15 @@ my %shootingMode = (
             3 => 'High',
         },
     },
-    # 0x5e,0x5f,0x60 - undef[4]
+    # 0x5e,0x5f - undef[4]
+    0x60 => { #18
+        Name => 'LensFirmwareVersion',
+        Writable => 'undef',
+        Format => 'int8u',
+        Count => 4,
+        PrintConv => '$val=~tr/ /./; $val',
+        PrintConvInv => '$val=~tr/./ /; $val',
+    },
     0x61 => { #PH
         Name => 'FaceRecInfo',
         SubDirectory => {
@@ -865,11 +960,12 @@ my %shootingMode = (
         Writable => 'undef', # (Count 72)
     },
     # 0x6c - int8u: 1
-    0x6d => { #PH (ZS7)
+    0x6d => { #PH (ZS7) (also see forum5997)
         Name => 'City', # (City/Town)
         Groups => { 2 => 'Location' },
         Format => 'string',
         Writable => 'undef', # (Count 72)
+        Notes => 'City/Town as stored by some models, or County/Township for others',
     },
     # 0x6e - int8u: 1
     0x6f => { #PH (ZS7)
@@ -892,7 +988,13 @@ my %shootingMode = (
         },
     },
     # 0x71 - undef[128] (maybe text stamp text?)
-    # 0x72,0x73,0x74,0x75,0x76,0x77,0x78: 0
+    0x77 => { #18
+        Name => 'BurstSpeed',
+        Writable => 'int16u',
+        Notes => 'images per second',
+    },
+    # 0x72,0x73,0x74,0x75,0x77,0x78: 0
+    # 0x76: 0, (3 for G6 with HDR on, ref 18)
     0x79 => { #PH (GH2)
         Name => 'IntelligentD-Range',
         Writable => 'int16u',
@@ -904,6 +1006,23 @@ my %shootingMode = (
         },
     },
     # 0x7a,0x7b: 0
+    0x7c => { #18
+        Name => 'ClearRetouch',
+        Writable => 'int16u',
+        PrintConv => { 0 => 'Off', 1 => 'On' },
+    },
+    0x80 => { #forum5997 (seen garbage here for SZ5 - PH)
+        Name => 'City2', # (City/Town/Village)
+        Groups => { 2 => 'Location' },
+        Format => 'string',
+        Writable => 'undef', # (Count 72)
+        Notes => 'City/Town/Village as stored by some models',
+    },
+    # 0x81 - undef[72]: "---"
+    # 0x82 - undef[72]: "---"
+    # 0x83 - undef[72]: "---"
+    # 0x84 - undef[72]: "---"
+    # 0x85 - undef[128]: "---"
     0x86 => { #http://dev.exiv2.org/issues/825
         Name => 'ManometerPressure',
         Writable => 'int16u',
@@ -913,7 +1032,7 @@ my %shootingMode = (
         PrintConv => 'sprintf("%.1f kPa",$val)',
         PrintConvInv => '$val=~s/ ?kPa//i; $val',
     },
-    0x0089 => {
+    0x89 => {
         Name => 'PhotoStyle',
         Writable => 'int16u',
         PrintConv => {
@@ -925,6 +1044,120 @@ my %shootingMode = (
             5 => 'Scenery',
             6 => 'Portrait',
         },
+    },
+    0x8a => { #18
+        Name => 'ShadingCompensation',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Off',
+            1 => 'On'
+        }
+    },
+    0x8c => {
+        Name => 'AccelerometerZ',
+        Writable => 'int16u',
+        Format => 'int16s',
+        Notes => 'positive is acceleration upwards',
+    },
+    0x8d => {
+        Name => 'AccelerometerX',
+        Writable => 'int16u',
+        Format => 'int16s',
+        Notes => 'positive is acceleration to the left',
+    },
+    0x8e => {
+        Name => 'AccelerometerY',
+        Writable => 'int16u',
+        Format => 'int16s',
+        Notes => 'positive is acceleration backwards',
+    },
+    0x8f => { #18
+        Name => 'CameraOrientation',
+        Writable => 'int8u',
+        PrintConv => {
+            0 => 'Normal',
+            1 => 'Rotate CW',
+            2 => 'Rotate 180',
+            3 => 'Rotate CCW',
+            4 => 'Tilt Upwards',
+            5 => 'Tilt Downwards'
+        }
+    },
+    0x90 => {
+        Name => 'RollAngle',
+        Writable => 'int16u',
+        Format => 'int16s',
+        Notes => 'converted to degrees of clockwise camera rotation',
+        ValueConv => '$val / 10',
+        ValueConvInv => '$val * 10',
+    },
+    0x91 => {
+        Name => 'PitchAngle',
+        Writable => 'int16u',
+        Format => 'int16s',
+        Notes => 'converted to degrees of upward camera tilt',
+        ValueConv => '-$val / 10',
+        ValueConvInv => '-$val * 10',
+    },
+    0x93 => { #18
+        Name => 'SweepPanoramaDirection',
+        Writable => 'int8u',
+        PrintConv => {
+            0 => 'Off',
+            1 => 'Left to Right',
+            2 => 'Right to Left',
+            3 => 'Top to Bottom',
+            4 => 'Bottom to Top'
+        }
+    },
+    0x94 => { #18
+        Name => 'SweepPanoramaFieldOfView',
+        Writable => 'int16u'
+    },
+    0x96 => { #18
+        Name => 'TimerRecording',
+        Writable => 'int8u',
+        PrintConv => {
+            0 => 'Off',
+            1 => 'Time Lapse',
+            2 => 'Stop-motion Animation',
+        },
+    },
+    0x9d => { #18
+        Name => 'InternalNDFilter',
+        Writable => 'rational64u'
+    },
+    0x9e => { #18
+        Name => 'HDR',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Off',
+            100 => '1 EV',
+            200 => '2 EV',
+            300 => '3 EV',
+            32868 => '1 EV (Auto)',
+            32968 => '2 EV (Auto)',
+            33068 => '3 EV (Auto)',
+        },
+    },
+    0x9f => { #18
+        Name => 'ShutterType',
+        Writable => 'int16u',
+        PrintConv => {
+            0 => 'Mechanical',
+            1 => 'Electronic',
+            2 => 'Hybrid', #PH (GM1, 1st curtain electronic, 2nd curtain mechanical)
+        },
+    },
+    0xa3 => { #18
+        Name => 'ClearRetouchValue',
+        Writable => 'rational64u',
+        # undef if ClearRetouch is off, 0 if it is on
+    },
+    0xab => { #18
+        Name => 'TouchAE',
+        Writable => 'int16u',
+        PrintConv => { 0 => 'Off', 1 => 'On' },
     },
     0x0e00 => {
         Name => 'PrintIM',
@@ -1353,7 +1586,14 @@ my %shootingMode = (
     CHECK_PROC => \&Image::ExifTool::Exif::CheckExif,
     GROUPS => { 0 => 'MakerNotes', 1 => 'Leica', 2 => 'Camera' },
     WRITABLE => 1,
-    NOTES => 'This information is written by the X1.',
+    PRIORITY => 0,
+    NOTES => 'This information is written by the X1, X2, X VARIO and T.',
+    0x0303 => {
+        Name => 'LensModel',
+        Condition => '$format eq "string"',
+        Notes => 'Leica T only',
+        Writable => 'string',
+    },
     # 0x0406 - saturation or sharpness
     0x0407 => { Name => 'OriginalFileName', Writable => 'string' },
     0x0408 => { Name => 'OriginalDirectory',Writable => 'string' },
@@ -1364,7 +1604,9 @@ my %shootingMode = (
         Count => 4,
         PrintConv => {
             '0 0 0 0' => 'Program AE',
+          # '0 1 0 0' - seen for X (Typ 113) - PH
             '1 0 0 0' => 'Aperture-priority AE',
+            '1 1 0 0' => 'Aperture-priority AE (1)', # (see for Leica T)
             '2 0 0 0' => 'Shutter speed priority AE', #(guess)
             '3 0 0 0' => 'Manual',
         },
@@ -1373,7 +1615,7 @@ my %shootingMode = (
         Name => 'ShotInfo',
         SubDirectory => { TagTable => 'Image::ExifTool::Panasonic::ShotInfo' },
     },
-    # 0x0410 - int8u[16]: first byte is FileNumber 
+    # 0x0410 - int8u[16]: first byte is FileNumber
     # 0x0411 - int8u[4]: first number is FilmMode (1=Standard,2=Vivid,3=Natural,4=BW Natural,5=BW High Contrast)
     0x0412 => { Name => 'FilmMode',         Writable => 'string' },
     0x0413 => { Name => 'WB_RGBLevels',     Writable => 'rational64u', Count => 3 },
@@ -1399,11 +1641,14 @@ my %shootingMode = (
     WRITE_PROC => \&Image::ExifTool::Exif::WriteExif,
     CHECK_PROC => \&Image::ExifTool::Exif::CheckExif,
     GROUPS => { 0 => 'MakerNotes', 1 => 'Leica', 2 => 'Camera' },
-    NOTES => 'This information is written by the S2 (as a trailer in JPEG images).',
+    NOTES => q{
+        This information is written by the S2 and M (Typ 240), as a trailer in JPEG
+        images.
+    },
     0x300 => {
         Name => 'PreviewImage',
         Writable => 'undef',
-        Notes => 'S2',
+        Notes => 'S2 and M (Typ 240)',
         DataTag => 'PreviewImage',
         RawConv => q{
             return \$val if $val =~ /^Binary/;
@@ -1425,6 +1670,7 @@ my %shootingMode = (
         Name => 'LensType',
         Writable => 'string',
         ValueConv => '$val=~s/ +$//; $val', # trim trailing spaces
+        ValueConvInv => '$val',
     },
     # 0x340 - same as 0x302
 );
@@ -1570,33 +1816,153 @@ my %shootingMode = (
     },
 );
 
+# PANA atom found in user data of MP4 videos (ref PH)
 %Image::ExifTool::Panasonic::PANA = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
     GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
     NOTES => q{
-        Tags extracted from the PANA user data found in MP4 videos from models such
-        as the DMC-FT20.
+        Tags extracted from the PANA and LEIC user data found in MP4 videos from
+        various Panasonic and Leica models.
     },
-    4 => {
+    0x00 => {
+        Name => 'Make',
+        Condition => '$$valPt =~ /^(LEICA|Panasonic)/', # (only seen "LEICA")
+        Groups => { 2 => 'Camera' },
+        Format => 'string[22]',
+        RawConv => '$$self{LeicaLEIC} = 1;$$self{Make} = $val',
+    },
+    0x04 => {
         Name => 'Model',
+        Condition => '$$valPt =~ /^[^\0]{6}/ and not $$self{LeicaLEIC}',
         Description => 'Camera Model Name',
+        Groups => { 2 => 'Camera' },
         Format => 'string[16]',
+        RawConv => '$$self{Model} = $val',
+    },
+    0x0c => { # (FZ1000)
+        Name => 'Model',
+        Condition => '$$valPt =~ /^[^\0]{6}/ and not $$self{LeicaLEIC} and not $$self{Model}',
+        Description => 'Camera Model Name',
+        Groups => { 2 => 'Camera' },
+        Format => 'string[16]',
+        RawConv => '$$self{Model} = $val',
+    },
+    0x16 => {
+        Name => 'Model',
+        Condition => '$$self{LeicaLEIC}',
+        Description => 'Camera Model Name',
+        Groups => { 2 => 'Camera' },
+        Format => 'string[30]',
+        RawConv => '$$self{Model} = $val',
+    },
+    0x40 => {
+        Name => 'ThumbnailTest',
+        Format => 'undef[0x600]',
+        Hidden => 1,
+        RawConv => q{
+            if (substr($val,0x1c,3) eq "\xff\xd8\xff") { # offset 0x5c
+                $$self{ThumbType} = 1;
+            } elsif (substr($val,0x506,3) eq "\xff\xd8\xff") { # offset 0x546
+                $$self{ThumbType} = 2;
+            } elsif (substr($val,0x51e,3) eq "\xff\xd8\xff") { # offset 0x55e (Leica T)
+                $$self{ThumbType} = 3;
+            } else {
+                $$self{ThumbType} = 0;
+            }
+            return undef;
+        },
+    },
+    0x34 => {
+        Name => 'Version1',
+        Condition => '$$self{LeicaLEIC}',
+        Format => 'string[14]',
+    },
+    0x3e => {
+        Name => 'Version2',
+        Condition => '$$self{LeicaLEIC}',
+        Format => 'string[14]',
+    },
+    0x50 => {
+        Name => 'MakerNoteLeica5',
+        Condition => '$$self{LeicaLEIC}',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Panasonic::Leica5',
+            ProcessProc => \&ProcessLeicaLEIC,
+        },
     },
     0x58 => {
         Name => 'ThumbnailWidth',
+        Condition => '$$self{ThumbType} == 1',
+        Notes => 'Panasonic models',
         Format => 'int16u',
     },
     0x5a => {
         Name => 'ThumbnailHeight',
+        Condition => '$$self{ThumbType} == 1',
         Format => 'int16u',
     },
     0x5c => {
         Name => 'ThumbnailImage',
+        Condition => '$$self{ThumbType} == 1',
         Format => 'undef[16384]',
-        RawConv => '$val=~/^\xff\xd8\xff/ ? $val : undef',
         ValueConv => '$val=~s/\0*$//; \$val',   # remove trailing zeros
     },
+    # 0x5c - there is some messed-up EXIF-IFD-looking data starting here in
+    #        Leica X VARIO MP4 videos, but it doesn't quite make sense
+    0x536 => { # (Leica X VARIO)
+        Name => 'ThumbnailWidth',
+        Condition => '$$self{ThumbType} == 2',
+        Notes => 'Leica X Vario',
+        Format => 'int32uRev', # (little-endian)
+    },
+    0x53a => { # (Leica X VARIO)
+        Name => 'ThumbnailHeight',
+        Condition => '$$self{ThumbType} == 2',
+        Format => 'int32uRev', # (little-endian)
+    },
+    0x53e => { # (Leica X VARIO)
+        Name => 'ThumbnailLength',
+        Condition => '$$self{ThumbType} == 2',
+        Format => 'int32uRev', # (little-endian)
+    },
+    0x546 => { # (Leica X VARIO)
+        Name => 'ThumbnailImage',
+        Condition => '$$self{ThumbType} == 2',
+        Format => 'undef[$val{0x53e}]',
+        Binary => 1,
+    },
+    0x54e => { # (Leica T)
+        Name => 'ThumbnailWidth',
+        Condition => '$$self{ThumbType} == 3',
+        Notes => 'Leica X Vario',
+        Format => 'int32uRev', # (little-endian)
+    },
+    0x552 => { # (Leica T)
+        Name => 'ThumbnailHeight',
+        Condition => '$$self{ThumbType} == 3',
+        Format => 'int32uRev', # (little-endian)
+    },
+    0x556 => { # (Leica T)
+        Name => 'ThumbnailLength',
+        Condition => '$$self{ThumbType} == 3',
+        Format => 'int32uRev', # (little-endian)
+    },
+    0x55e => { # (Leica T)
+        Name => 'ThumbnailImage',
+        Condition => '$$self{ThumbType} == 3',
+        Format => 'undef[$val{0x556}]',
+        Binary => 1,
+    },
     0x4068 => {
+        Name => 'ExifData',
+        Condition => '$$valPt =~ /^\xff\xd8\xff\xe1..Exif\0\0/s',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Exif::Main',
+            ProcessProc => \&Image::ExifTool::ProcessTIFF,
+            Start => 12,
+        },
+    },
+    0x4080 => { # (FZ1000)
         Name => 'ExifData',
         Condition => '$$valPt =~ /^\xff\xd8\xff\xe1..Exif\0\0/s',
         SubDirectory => {
@@ -1613,20 +1979,31 @@ my %shootingMode = (
     AdvancedSceneMode => {
         SeparateTable => 'Panasonic AdvancedSceneMode',    # print values in a separate table
         Require => {
-            0 => 'SceneMode',
-            1 => 'AdvancedSceneType',
+            0 => 'Model',
+            1 => 'SceneMode',
+            2 => 'AdvancedSceneType',
         },
-        ValueConv => '"$val[0] $val[1]"',
+        ValueConv => '"$val[0] $val[1] $val[2]"',
         PrintConv => { #PH
             OTHER => sub {
-                my $val = shift;
+                my ($val,$flag,$conv) = @_;
+                $val =~ s/.* (\d+ \d+)/$1/; # drop model name
+                return $$conv{$val} if $$conv{$val};
                 my @v = split ' ', $val;
                 my $prt = $shootingMode{$v[0]};
-                return $v[1] == 1 ? $prt : "$prt ($v[1])" if $prt;
+                # AdvancedSceneType=1 for non-automatic modes P,A,S,SCN (ref 19)
+                # AdvancedSceneType=5 for automatic mode iA (ref 19)
+                if ($prt) {
+                    return $prt if $v[1] == 1;
+                    return "$prt (intelligent auto)" if $v[1] == 5;
+                    return "$prt ($v[1])";
+                }
                 return "Unknown ($val)";
             },
-            Notes => 'A Composite tag derived from SceneMode and AdvancedSceneType.',
+            Notes => 'A Composite tag derived from Model, SceneMode and AdvancedSceneType.',
             '0 1' => 'Off',
+            # '0 7' - seen this for V-LUX movies (PH)
+            # '0 8' - seen for D-LUX(Typ104) movies (PH)
             '2 2' => 'Outdoor Portrait', #(FZ28)
             '2 3' => 'Indoor Portrait', #(FZ28)
             '2 4' => 'Creative Portrait', #(FZ28)
@@ -1660,14 +2037,34 @@ my %shootingMode = (
             '59 3' => 'High Key', #(GF5)
             '59 4' => 'Sepia', #(GF3,GF5)
             '59 5' => 'High Dynamic', #(GF3,GF5)
-            '59 6' => 'Minature', #(GF3)
+            '59 6' => 'Miniature', #(GF3)
             '59 9' => 'Low Key', #(GF5)
             '59 10' => 'Toy Effect', #(GF5)
             '59 11' => 'Dynamic Monochrome', #(GF5)
             '59 12' => 'Soft', #(GF5)
+            '66 1' => 'Impressive Art', #19
             '66 2' => 'Cross Process', #(GF5)
-            '66 3' => 'Color Select', #(GF5)
+            '66 3' => 'Color Select', #(GF5) (called "One Point Color" by some other models - PH)
             '66 4' => 'Star', #(GF5)
+            '90 3' => 'Old Days', #18
+            '90 4' => 'Sunshine', #18
+            '90 5' => 'Bleach Bypass', #18
+            '90 6' => 'Toy Pop', #18
+            '90 7' => 'Fantasy', #18
+            '90 8' => 'Monochrome', #PH (GX7)
+            '90 9' => 'Rough Monochrome', #PH (GX7)
+            '90 10' => 'Silky Monochrome', #PH (GX7)
+            # TZ40 Creative Control modes (ref 19)
+            'DMC-TZ40 90 1' => 'Expressive',
+            'DMC-TZ40 90 2' => 'Retro',
+            'DMC-TZ40 90 3' => 'High Key',
+            'DMC-TZ40 90 4' => 'Sepia',
+            'DMC-TZ40 90 5' => 'High Dynamic',
+            'DMC-TZ40 90 6' => 'Miniature',
+            'DMC-TZ40 90 9' => 'Low Key',
+            'DMC-TZ40 90 10' => 'Toy Effect',
+            'DMC-TZ40 90 11' => 'Dynamic Monochrome',
+            'DMC-TZ40 90 12' => 'Soft',
         },
     },
 );
@@ -1709,6 +2106,35 @@ sub WhiteBalanceConv($;$$)
 }
 
 #------------------------------------------------------------------------------
+# Process Leica makernotes in LEIC atom of MP4 videos (Leica T and X Vario)
+# Inputs: 0) ExifTool ref, 1) dirInfo ref, 2) tag table ref
+# Returns: 1 on success
+sub ProcessLeicaLEIC($$$)
+{
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    my $dataPt = $$dirInfo{DataPt};
+    my $dirStart = $$dirInfo{DirStart} || 0;
+    my $dirLen = $$dirInfo{DirLen} || (length($$dataPt) - $dirStart);
+    return 0 if $dirLen < 6;
+    SetByteOrder('II');
+    my $numEntries = Get16u($dataPt, $dirStart);
+    return 0 if $numEntries < 1 or $numEntries > 255;
+    my $size = Get32u($dataPt, $dirStart + 2);
+    return 0 if $size < $numEntries * 12 or $size + 6 > $dirLen;
+    # the Leica programmers want to make things difficult, so they store
+    # the entry count before the directory size, making it impossible to
+    # process as a standard TIFF IFD without a bit of reorganization...
+    Set16u($numEntries, $dataPt, $dirStart + 4);
+    my %dirInfo = %$dirInfo;
+    $dirInfo{DirStart} = $dirStart + 4;
+    $dirInfo{DirLen} = $size - 4;
+    $dirInfo{DataPos} -= $dirStart;
+    $dirInfo{Base} += $dirStart;
+    return Image::ExifTool::Exif::ProcessExif($et, \%dirInfo, $tagTablePtr);
+    return 1;
+}
+
+#------------------------------------------------------------------------------
 # Process MakerNote trailer written by Leica S2
 # Inputs: 0) ExifTool object ref, 1) new absolute position of Leica trailer when writing
 # Returns: On success: 1 when reading, directory data when writing; othewise undef
@@ -1722,38 +2148,38 @@ sub WhiteBalanceConv($;$$)
 # - deletes LeicaTrailer member and sets LeicaTrailerPos when successful
 sub ProcessLeicaTrailer($;$)
 {
-    my ($exifTool, $newPos) = @_;
-    my $trail = $$exifTool{LeicaTrailer};
-    my $raf = $$exifTool{RAF};
+    my ($et, $newPos) = @_;
+    my $trail = $$et{LeicaTrailer};
+    my $raf = $$et{RAF};
     my $trailPos = $$trail{TrailPos};
     my $pos = $trailPos || $$trail{Offset};
     my $len = $$trail{TrailLen} || $$trail{Size};
     my ($buff, $result, %tagPtr);
 
-    delete $$exifTool{LeicaTrailer} if $trailPos;   # done after this
+    delete $$et{LeicaTrailer} if $trailPos;   # done after this
     unless ($len > 0) {
-        $exifTool->Warn('Missing Leica MakerNote trailer', 1) if $trailPos;
-        delete $$exifTool{LeicaTrailer};
+        $et->Warn('Missing Leica MakerNote trailer', 1) if $trailPos;
+        delete $$et{LeicaTrailer};
         return undef;
     }
     my $oldPos = $raf->Tell();
     my $ok = ($raf->Seek($pos, 0) and $raf->Read($buff, $len) == $len);
     $raf->Seek($oldPos, 0);
     unless ($ok) {
-        $exifTool->Warn('Error reading Leica MakerNote trailer', 1) if $trailPos;
+        $et->Warn('Error reading Leica MakerNote trailer', 1) if $trailPos;
         return undef;
     }
     # look for Leica MakerNote header (should be at start of
     # trailer, but allow up to 256 bytes of garbage just in case)
     if ($buff !~ /^(.{0,256})LEICA\0..../sg) {
         my $what = $trailPos ? 'trailer' : 'offset';
-        $exifTool->Warn("Invalid Leica MakerNote $what", 1);
+        $et->Warn("Invalid Leica MakerNote $what", 1);
         return undef;
     }
     my $junk = $1;
     my $start = pos($buff) - 10;
     if ($start and not $trailPos) {
-        $exifTool->Warn('Invalid Leica MakerNote offset', 1);
+        $et->Warn('Invalid Leica MakerNote offset', 1);
         return undef;
     }
 #
@@ -1762,17 +2188,17 @@ sub ProcessLeicaTrailer($;$)
     my $hdrLen = 8;
     my $dirStart = $start + $hdrLen;
     my $tagInfo = $$trail{TagInfo};
-    if ($$exifTool{HTML_DUMP}) {
+    if ($$et{HTML_DUMP}) {
         my $name = $$tagInfo{Name};
-        $exifTool->HDump($pos+$start, $len-$start, "$name value", 'Leica MakerNote trailer', 4);
-        $exifTool->HDump($pos+$start, $hdrLen, "MakerNotes header", $name);
-    } elsif ($exifTool->Options('Verbose')) {
+        $et->HDump($pos+$start, $len-$start, "$name value", 'Leica MakerNote trailer', 4);
+        $et->HDump($pos+$start, $hdrLen, "MakerNotes header", $name);
+    } elsif ($et->Options('Verbose')) {
         my $where = sprintf('at offset 0x%x', $pos);
-        $exifTool->VPrint(0, "Leica MakerNote trailer ($len bytes $where):\n");
+        $et->VPrint(0, "Leica MakerNote trailer ($len bytes $where):\n");
     }
     # delete LeicaTrailer member so we don't try to process it again
-    delete $$exifTool{LeicaTrailer};
-    $$exifTool{LeicaTrailerPos} = $pos + $start;    # return actual start position of Leica trailer
+    delete $$et{LeicaTrailer};
+    $$et{LeicaTrailerPos} = $pos + $start;    # return actual start position of Leica trailer
 
     my $oldOrder = GetByteOrder();
     my $num = Get16u(\$buff, $dirStart);            # get entry count
@@ -1783,30 +2209,40 @@ sub ProcessLeicaTrailer($;$)
     my $fix = 0;
     if ($valStart < $len) {
         my $valBlock = Image::ExifTool::MakerNotes::GetValueBlocks(\$buff, $dirStart, \%tagPtr);
-        # find the minimum offset (excluding the PreviewImage tag 0x300)
+        # find the minimum offset (excluding the PreviewImage tag 0x300 and 0x301)
         my $minPtr;
         foreach (keys %tagPtr) {
             my $ptr = $tagPtr{$_};
-            next if $_ == 0x300 or not $ptr;
+            next if $_ == 0x300 or $_ == 0x301 or not $ptr or $ptr == 0xffffffff;
             $minPtr = $ptr if not defined $minPtr or $minPtr > $ptr;
         }
         if ($minPtr) {
             my $diff = $minPtr - ($valStart + $pos);
-            # scan value data for the first non-zero byte
             pos($buff) = $valStart;
-            if ($buff =~ /[^\0]/g) {
-                my $n = pos($buff) - 1 - $valStart; # number of zero bytes
-                # S2 writes 282 bytes of zeros, exiftool writes none
-                my $expect = $n >= 282 ? 282 : 0;
-                my $fixBase = $exifTool->Options('FixBase');
-                if ($diff != $expect or defined $fixBase) {
-                    $fix = $expect - $diff;
-                    if (defined $fixBase) {
-                        $fix = $fixBase if $fixBase ne '';
-                        $exifTool->Warn("Adjusted MakerNotes base by $fix",1);
-                    } else {
-                        $exifTool->Warn("Possibly incorrect maker notes offsets (fixed by $fix)",1);
-                    }
+            my $expect;
+            if ($$et{Model} eq 'S2') {
+                # scan value data for the first non-zero byte
+                if ($buff =~ /[^\0]/g) {
+                    my $n = pos($buff) - 1 - $valStart; # number of zero bytes
+                    # S2 writes 282 bytes of zeros, exiftool writes none
+                    $expect = $n >= 282 ? 282 : 0;
+                }
+            } else { # M (Type 240)
+                # scan for the lens type (M writes 114 bytes of garbage first)
+                if ($buff =~ /\G.{114}([\x20-\x7f]*\0*)/sg and length($1) >= 50) {
+                    $expect = 114;
+                }
+            }
+            my $fixBase = $et->Options('FixBase');
+            if (not defined $expect) {
+                $et->Warn('Unrecognized Leica trailer structure');
+            } elsif ($diff != $expect or defined $fixBase) {
+                $fix = $expect - $diff;
+                if (defined $fixBase) {
+                    $fix = $fixBase if $fixBase ne '';
+                    $et->Warn("Adjusted MakerNotes base by $fix",1);
+                } else {
+                    $et->Warn("Possibly incorrect maker notes offsets (fixed by $fix)",1);
                 }
             }
         }
@@ -1826,12 +2262,16 @@ sub ProcessLeicaTrailer($;$)
     );
     my $tagTablePtr = GetTagTable($$tagInfo{SubDirectory}{TagTable});
     if ($newPos) { # are we writing?
+        if ($$et{Model} ne 'S2') {
+            $et->Warn('Leica MakerNote trailer too messed up to edit.  Copying as a block', 1);
+            return $buff;
+        }
         # set position of new MakerNote IFD (+ 8 for Leica MakerNote header)
         $dirInfo{NewDataPos} = $newPos + $start + 8;
-        $result = $exifTool->WriteDirectory(\%dirInfo, $tagTablePtr);
+        $result = $et->WriteDirectory(\%dirInfo, $tagTablePtr);
         # write preview image last if necessary and fix up the preview offsets
-        my $previewInfo = $$exifTool{PREVIEW_INFO};
-        delete $$exifTool{PREVIEW_INFO};
+        my $previewInfo = $$et{PREVIEW_INFO};
+        delete $$et{PREVIEW_INFO};
         if ($result) {
             if ($previewInfo) {
                 my $fixup = $previewInfo->{Fixup};
@@ -1843,23 +2283,23 @@ sub ProcessLeicaTrailer($;$)
         }
     } else {
         # extract information
-        $result = $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+        $result = $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         # also extract as a block if necessary
-        if ($exifTool->Options('MakerNotes') or
-            $exifTool->{REQ_TAG_LOOKUP}{lc($$tagInfo{Name})})
+        if ($et->Options('MakerNotes') or
+            $$et{REQ_TAG_LOOKUP}{lc($$tagInfo{Name})})
         {
             # makernote header must be included in RebuildMakerNotes call
             $dirInfo{DirStart} -= 8;
             $dirInfo{DirLen} += 8;
-            $exifTool->{MAKER_NOTE_BYTE_ORDER} = GetByteOrder();
-            # rebuild maker notes (creates $exifTool->{MAKER_NOTE_FIXUP})
-            my $val = Image::ExifTool::Exif::RebuildMakerNotes($exifTool, $tagTablePtr, \%dirInfo);
+            $$et{MAKER_NOTE_BYTE_ORDER} = GetByteOrder();
+            # rebuild maker notes (creates $$et{MAKER_NOTE_FIXUP})
+            my $val = Image::ExifTool::Exif::RebuildMakerNotes($et, $tagTablePtr, \%dirInfo);
             unless (defined $val) {
-                $exifTool->Warn('Error rebuilding maker notes (may be corrupt)') if $len > 4;
+                $et->Warn('Error rebuilding maker notes (may be corrupt)') if $len > 4;
                 $val = $buff,
             }
-            my $key = $exifTool->FoundTag($tagInfo, $val);
-            $exifTool->SetGroup($key, 'ExifIFD');
+            my $key = $et->FoundTag($tagInfo, $val);
+            $et->SetGroup($key, 'ExifIFD');
         }
     }
     SetByteOrder($oldOrder);
@@ -1885,7 +2325,7 @@ Panasonic and Leica maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

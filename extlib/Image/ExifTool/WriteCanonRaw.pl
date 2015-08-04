@@ -60,8 +60,8 @@ my %mapRotation = (
 # Inputs: 0) ExifTool object reference
 sub InitMakerNotes($)
 {
-    my $exifTool = shift;
-    $exifTool->{MAKER_NOTE_INFO} = {
+    my $et = shift;
+    $$et{MAKER_NOTE_INFO} = {
         Entries => { },     # directory entries keyed by tagID
         ValBuff => "\0\0\0\0", # value data buffer (start with zero nextIFD pointer)
         FixupTags => { },   # flags for tags with data in value buffer
@@ -76,7 +76,7 @@ sub InitMakerNotes($)
 # file, which isn't sequential (but Canon's version isn't sequential either...)
 sub BuildMakerNotes($$$$$$)
 {
-    my ($exifTool, $rawTag, $tagInfo, $valuePt, $formName, $count) = @_;
+    my ($et, $rawTag, $tagInfo, $valuePt, $formName, $count) = @_;
 
     my $tagID = $mapRawTag{$rawTag} || return;
     $formName or warn(sprintf "No format for tag 0x%x!\n",$rawTag), return;
@@ -100,7 +100,7 @@ sub BuildMakerNotes($$$$$$)
         $value = $$valuePt;
     }
     my $offsetVal;
-    my $makerInfo = $exifTool->{MAKER_NOTE_INFO};
+    my $makerInfo = $$et{MAKER_NOTE_INFO};
     if ($size > 4) {
         my $len = length $makerInfo->{ValBuff};
         $offsetVal = Set32u($len);
@@ -122,10 +122,10 @@ sub BuildMakerNotes($$$$$$)
 # Inputs: 0) ExifTool object reference
 sub SaveMakerNotes($)
 {
-    my $exifTool = shift;
+    my $et = shift;
     # save maker notes
-    my $makerInfo = $exifTool->{MAKER_NOTE_INFO};
-    delete $exifTool->{MAKER_NOTE_INFO};
+    my $makerInfo = $$et{MAKER_NOTE_INFO};
+    delete $$et{MAKER_NOTE_INFO};
     my $dirEntries = $makerInfo->{Entries};
     my $numEntries = scalar(keys %$dirEntries);
     my $fixup = new Image::ExifTool::Fixup;
@@ -142,24 +142,24 @@ sub SaveMakerNotes($)
     }
     # save position of maker notes for pointer fixups
     $fixup->{Shift} += length($makerNotes);
-    $exifTool->{MAKER_NOTE_FIXUP} = $fixup;
-    $exifTool->{MAKER_NOTE_BYTE_ORDER} = GetByteOrder();
+    $$et{MAKER_NOTE_FIXUP} = $fixup;
+    $$et{MAKER_NOTE_BYTE_ORDER} = GetByteOrder();
     # add value data
     $makerNotes .= $makerInfo->{ValBuff};
     # get MakerNotes tag info
     my $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::Exif::Main');
-    my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, 0x927c, \$makerNotes);
+    my $tagInfo = $et->GetTagInfo($tagTablePtr, 0x927c, \$makerNotes);
     # save the MakerNotes
-    $exifTool->FoundTag($tagInfo, $makerNotes);
+    $et->FoundTag($tagInfo, $makerNotes);
     # save the garbage collection some work later
     delete $makerInfo->{Entries};
     delete $makerInfo->{ValBuff};
     delete $makerInfo->{FixupTags};
     # also generate Orientation tag since Rotation isn't transferred from RAW info
-    my $rotation = $exifTool->GetValue('Rotation', 'ValueConv');
+    my $rotation = $et->GetValue('Rotation', 'ValueConv');
     if (defined $rotation and defined $mapRotation{$rotation}) {
-        $tagInfo = $exifTool->GetTagInfo($tagTablePtr, 0x112);
-        $exifTool->FoundTag($tagInfo, $mapRotation{$rotation});
+        $tagInfo = $et->GetTagInfo($tagTablePtr, 0x112);
+        $et->FoundTag($tagInfo, $mapRotation{$rotation});
     }
 }
 
@@ -170,10 +170,10 @@ sub SaveMakerNotes($)
 # Returns: error string or undef (and may change value) on success
 sub CheckCanonRaw($$$)
 {
-    my ($exifTool, $tagInfo, $valPtr) = @_;
+    my ($et, $tagInfo, $valPtr) = @_;
     my $tagName = $$tagInfo{Name};
     if ($tagName eq 'JpgFromRaw' or $tagName eq 'ThumbnailImage') {
-        unless ($$valPtr =~ /^\xff\xd8/ or $exifTool->Options('IgnoreMinorErrors')) {
+        unless ($$valPtr =~ /^\xff\xd8/ or $et->Options('IgnoreMinorErrors')) {
             return '[minor] Not a valid image';
         }
     } else {
@@ -195,7 +195,7 @@ sub CheckCanonRaw($$$)
 # Returns: true on success
 sub WriteCR2($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt} or return 0;
     my $outfile = $$dirInfo{OutFile} or return 0;
     $$dirInfo{RAF} or return 0;
@@ -211,15 +211,15 @@ sub WriteCR2($$$)
         } else {
             $msg = 'Unrecognized Canon RAW file';
         }
-        return 0 if $exifTool->Error($msg, $minor);
+        return 0 if $et->Error($msg, $minor);
     }
 
     # CR2 has a 16-byte header
     $$dirInfo{NewDataPos} = 16;
-    my $newData = $exifTool->WriteDirectory($dirInfo, $tagTablePtr);
+    my $newData = $et->WriteDirectory($dirInfo, $tagTablePtr);
     return 0 unless defined $newData;
     unless ($$dirInfo{LastIFD}) {
-        $exifTool->Error("CR2 image IFD may not be deleted");
+        $et->Error("CR2 image IFD may not be deleted");
         return 0;
     }
 
@@ -235,7 +235,7 @@ sub WriteCR2($$$)
 
         # copy over image data now if necessary
         if (ref $$dirInfo{ImageData}) {
-            $exifTool->CopyImageData($$dirInfo{ImageData}, $outfile) or return 0;
+            $et->CopyImageData($$dirInfo{ImageData}, $outfile) or return 0;
             delete $$dirInfo{ImageData};
         }
     }
@@ -255,16 +255,16 @@ sub WriteCR2($$$)
 # OutFile on the fly --> much faster, efficient, and less demanding on memory!
 sub WriteCanonRaw($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    $exifTool or return 1;    # allow dummy access to autoload this package
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    $et or return 1;    # allow dummy access to autoload this package
     my $blockStart = $$dirInfo{DirStart};
     my $blockSize = $$dirInfo{DirLen};
     my $raf = $$dirInfo{RAF} or return 0;
     my $outfile = $$dirInfo{OutFile} or return 0;
     my $outPos = $$dirInfo{OutPos} or return 0;
     my $outBase = $outPos;
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
     my ($buff, $tagInfo);
 
     # 4 bytes at end of block give directory position within block
@@ -279,7 +279,7 @@ sub WriteCanonRaw($$$)
     my $newDir = '';
 
     # get hash of new information keyed by tagID
-    my $newTags = $exifTool->GetNewTagInfoHash($tagTablePtr);
+    my $newTags = $et->GetNewTagInfoHash($tagTablePtr);
 
     # generate list of tags to add or delete (currently, we only allow JpgFromRaw
     # and ThumbnailImage, to be added or deleted from the root CanonRaw directory)
@@ -307,7 +307,7 @@ sub WriteCanonRaw($$$)
         if (@addTags and (not defined($tag) or $tag >= $addTags[0])) {
             my $addTag = shift @addTags;
             $tagInfo = $$newTags{$addTag};
-            my $newVal = $exifTool->GetNewValues($tagInfo);
+            my $newVal = $et->GetNewValues($tagInfo);
             if (defined $newVal) {
                 # pad value to an even length (Canon ImageBrowser and ZoomBrowser
                 # version 6.1.1 have problems with odd-sized embedded JPEG images
@@ -321,7 +321,7 @@ sub WriteCanonRaw($$$)
                 Write($outfile, $newVal) or return 0;
                 $outPos += length($newVal);     # update current position
                 $verbose > 1 and print $out "    + CanonRaw:$$tagInfo{Name}\n";
-                ++$exifTool->{CHANGED};
+                ++$$et{CHANGED};
             }
             # set flag to delete this tag if found later
             $delTag{$addTag} = 1;
@@ -332,7 +332,7 @@ sub WriteCanonRaw($$$)
         my $tagType = ($tag >> 8) & 0x38;   # get tag type
         my $valueInDir = ($tag & 0x4000);   # flag for value in directory
 
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr,$tagID);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr,$tagID);
         my $format = $crwTagFormat{$tagType};
         my ($count, $subdir);
         if ($tagInfo) {
@@ -363,7 +363,7 @@ sub WriteCanonRaw($$$)
                     OutFile  => $outfile,
                     OutPos   => $outPos,
                 );
-                my $result = $exifTool->WriteDirectory(\%subdirInfo, $tagTablePtr);
+                my $result = $et->WriteDirectory(\%subdirInfo, $tagTablePtr);
                 return 0 unless $result;
                 # set size and pointer for this new directory
                 $size = $subdirInfo{OutPos} - $outPos;
@@ -406,9 +406,9 @@ sub WriteCanonRaw($$$)
                 );
                 #### eval Validate ($dirData, $subdirStart, $size)
                 if (defined $$subdir{Validate} and not eval $$subdir{Validate}) {
-                    $exifTool->Warn("Invalid $name data");
+                    $et->Warn("Invalid $name data");
                 } else {
-                    $subdir = $exifTool->WriteDirectory(\%subdirInfo, $newTagTable);
+                    $subdir = $et->WriteDirectory(\%subdirInfo, $newTagTable);
                     if (defined $subdir and length $subdir) {
                         if ($subdirStart) {
                             # add header before data directory
@@ -421,7 +421,7 @@ sub WriteCanonRaw($$$)
             } elsif ($$newTags{$tagID}) {
                 if ($delTag{$tagID}) {
                     $verbose > 1 and print $out "    - CanonRaw:$$tagInfo{Name}\n";
-                    ++$exifTool->{CHANGED};
+                    ++$$et{CHANGED};
                     next;   # next since we already added this tag
                 }
                 my $oldVal;
@@ -430,9 +430,9 @@ sub WriteCanonRaw($$$)
                 } else {
                     $oldVal = $value;
                 }
-                my $nvHash = $exifTool->GetNewValueHash($tagInfo);
-                if ($exifTool->IsOverwriting($nvHash, $oldVal)) {
-                    my $newVal = $exifTool->GetNewValues($nvHash);
+                my $nvHash = $et->GetNewValueHash($tagInfo);
+                if ($et->IsOverwriting($nvHash, $oldVal)) {
+                    my $newVal = $et->GetNewValues($nvHash);
                     my $verboseVal;
                     $verboseVal = $newVal if $verbose > 1;
                     # convert to specified format if necessary
@@ -441,9 +441,9 @@ sub WriteCanonRaw($$$)
                     }
                     if (defined $newVal) {
                         $value = $newVal;
-                        ++$exifTool->{CHANGED};
-                        $exifTool->VerboseValue("- CanonRaw:$$tagInfo{Name}", $oldVal);
-                        $exifTool->VerboseValue("+ CanonRaw:$$tagInfo{Name}", $verboseVal);
+                        ++$$et{CHANGED};
+                        $et->VerboseValue("- CanonRaw:$$tagInfo{Name}", $oldVal);
+                        $et->VerboseValue("+ CanonRaw:$$tagInfo{Name}", $verboseVal);
                     }
                 }
             }
@@ -505,7 +505,7 @@ sub WriteCanonRaw($$$)
 #          or -1 if a write error occurred
 sub WriteCRW($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $outfile = $$dirInfo{OutFile};
     my $raf = $$dirInfo{RAF};
     my $rtnVal = 0;
@@ -519,18 +519,18 @@ sub WriteCRW($$)
     my $type = $1;
     my $hlen = Get32u(\$buff, 0);   # get header length
 
-    if ($exifTool->{DEL_GROUP}->{MakerNotes}) {
+    if ($$et{DEL_GROUP}{MakerNotes}) {
         if ($type eq 'CCDR') {
-            $exifTool->Error("Can't delete MakerNotes group in CRW file");
+            $et->Error("Can't delete MakerNotes group in CRW file");
             return 0;
         } else {
-            ++$exifTool->{CHANGED};
+            ++$$et{CHANGED};
             return 1;
         }
     }
     # make XMP the preferred group for CRW files
-    if ($$exifTool{FILE_TYPE} eq 'CRW') {
-        $exifTool->InitWriteDirs(\%crwMap, 'XMP');
+    if ($$et{FILE_TYPE} eq 'CRW') {
+        $et->InitWriteDirs(\%crwMap, 'XMP');
     }
 
     # write header
@@ -554,7 +554,7 @@ sub WriteCRW($$)
     );
     # process the raw directory
     my $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::CanonRaw::Main');
-    my $success = $exifTool->WriteDirectory(\%dirInfo, $tagTablePtr);
+    my $success = $et->WriteDirectory(\%dirInfo, $tagTablePtr);
 
     my $trailPt;
     while ($success) {
@@ -563,7 +563,7 @@ sub WriteCRW($$)
         # rewrite the trailer(s)
         $buff = '';
         $$trailInfo{OutFile} = \$buff;
-        $success = $exifTool->ProcessTrailers($trailInfo) or last;
+        $success = $et->ProcessTrailers($trailInfo) or last;
         $trailPt = $$trailInfo{OutFile};
         # nothing to write if trailers were deleted
         undef $trailPt if length($$trailPt) < 4;
@@ -571,13 +571,13 @@ sub WriteCRW($$)
     }
     if ($success) {
         # add CanonVRD trailer if writing as a block
-        $trailPt = $exifTool->AddNewTrailers($trailPt,'CanonVRD');
-        if (not $trailPt and $$exifTool{ADD_DIRS}{CanonVRD}) {
+        $trailPt = $et->AddNewTrailers($trailPt,'CanonVRD');
+        if (not $trailPt and $$et{ADD_DIRS}{CanonVRD}) {
             # create CanonVRD from scratch if necessary
             my $outbuff = '';
             my $saveOrder = GetByteOrder();
             require Image::ExifTool::CanonVRD;
-            if (Image::ExifTool::CanonVRD::ProcessCanonVRD($exifTool, { OutFile => \$outbuff }) > 0) {
+            if (Image::ExifTool::CanonVRD::ProcessCanonVRD($et, { OutFile => \$outbuff }) > 0) {
                 $trailPt = \$outbuff;
             }
             SetByteOrder($saveOrder);
@@ -592,7 +592,7 @@ sub WriteCRW($$)
         }
         $rtnVal = $err ? -1 : 1;
     } else {
-        $exifTool->Error('Error rewriting CRW file');
+        $et->Error('Error rewriting CRW file');
     }
     return $rtnVal;
 }
@@ -623,7 +623,7 @@ files, and would lead to far fewer problems with corrupted metadata.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

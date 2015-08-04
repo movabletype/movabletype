@@ -229,6 +229,23 @@ sub check_upload {
     ( $w, $h, $id, $write_file );
 }
 
+sub crop {
+    my $image = shift;
+    my %param = @_;
+    $param{Width} = $param{Height} = $param{Size};
+    $image->crop_rectangle(%param);
+}
+
+sub remove_metadata {
+    my ( $class, $file ) = @_;
+    require Image::ExifTool;
+    my $exif = Image::ExifTool->new;
+    $exif->SetNewValue('*');
+    $exif->WriteInfo($file)
+        or $class->trans_error( 'Writing metadata failed: [_1]',
+        $exif->GetValue('Error') );
+}
+
 1;
 
 __END__
@@ -437,6 +454,13 @@ A Perl coderef that, when invoked writes the image to the specified
 location.
 
 =back
+
+If any error occurs from this routine, it will return 'undef', and
+assign the error message, accessible using the L<errstr> class method.
+
+=head2 MT::Image->remove_metadata($file)
+
+Remove metadata (e.g. Exif) from $file. 
 
 If any error occurs from this routine, it will return 'undef', and
 assign the error message, accessible using the L<errstr> class method.
