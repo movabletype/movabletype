@@ -217,7 +217,7 @@ jQuery(function($) {
 
         var url = '<mt:Var name="youtube_authorize_url" encode_js="1" />'
             .replace('__client_id__', clientId)
-            .replace('__redirect_uri__', redirectUri);
+            .replace('__redirect_uri__', youtubeRedirectUri);
         window.open(
             url, 'youtube_authorize',
             'width=700, height=500, menubar=no, toolbar=no, scrollbars=yes'
