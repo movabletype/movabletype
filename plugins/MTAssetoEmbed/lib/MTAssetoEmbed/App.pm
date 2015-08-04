@@ -164,7 +164,7 @@ sub save_config {
             $config->{flickr_configured_consumer_secret} )
         )
     {
-        delete @$config{ qw(flickr_token_data) };
+        delete @$config{qw(flickr_token_data)};
     }
 
     # YouTube
@@ -179,10 +179,10 @@ sub save_config {
 
     if ((   !$config->{youtube_client_id} && !$config->{youtube_client_secret}
         )
-        || !$config->{youtube_profile_id}
+        || !$config->{youtube_code}
         )
     {
-        delete @$config{ qw(youtube_token_data youtube_profile_id) };
+        delete @$config{qw(youtube_token_data youtube_code)};
     }
 
     $plugin->save_config( $config, $scope );
@@ -265,6 +265,7 @@ sub flickr_oauth_request {
     my $res                  = $ua->request($http_req);
     my $request_token        = '';
     my $request_token_secret = '';
+
     if ( $res->is_success ) {
         my $response = Net::OAuth->response('request token')
             ->from_post_body( $res->content );
@@ -334,6 +335,7 @@ sub flickr_oauth_success {
         = HTTP::Request->new( $request_method, $access_token_url, $http_hdr );
     my $res        = $ua->request($http_req);
     my $token_data = {};
+
     if ( $res->is_success ) {
         my $response = Net::OAuth->response('access token')
             ->from_post_body( $res->content );
