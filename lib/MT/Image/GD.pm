@@ -24,6 +24,8 @@ sub init {
     my $image = shift;
     my %param = @_;
 
+    $image->SUPER::init(%param);
+
     if ( ( !defined $param{Type} ) && ( my $file = $param{Filename} ) ) {
         ( my $ext = $file ) =~ s/.*\.//;
         $param{Type} = lc $ext;
@@ -56,9 +58,21 @@ sub _translate_filetype {
 }
 
 sub blob {
-    my $image = shift;
-    my $type  = $image->{type};
-    $image->{gd}->$type;
+    my ( $image, $quality ) = @_;
+    my $type = $image->{type};
+
+    if ( !defined $quality ) {
+        my $quality_column = "${type}_quality";
+        $quality
+            = $image->can($quality_column) ? $image->$quality_column : undef;
+    }
+
+    if ( defined $quality ) {
+        $image->{gd}->$type($quality);
+    }
+    else {
+        $image->{gd}->$type;
+    }
 }
 
 sub scale {

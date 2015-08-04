@@ -24,6 +24,9 @@ sub load_driver {
 sub init {
     my $image = shift;
     my %param = @_;
+
+    $image->SUPER::init(%param);
+
     if ( my $file = $param{Filename} ) {
         $image->{file} = $file;
         if ( !defined $param{Type} ) {
@@ -45,6 +48,7 @@ sub init {
     }
     my ( $out, $err );
     my $pbm = $image->_find_pbm or return;
+
     my @in = ( "$pbm${type}topnm", ( $image->{file} ? $image->{file} : () ) );
     my @out = ( "${pbm}pnmfile", '-allimages' );
     IPC::Run::run( \@in, '<', ( $image->{file} ? \undef : \$image->{data} ),
@@ -52,6 +56,24 @@ sub init {
         or return $image->error(
         MT->translate( "Reading image failed: [_1]", $err ) );
     ( $image->{width}, $image->{height} ) = $out =~ /(\d+)\s+by\s+(\d+)/;
+
+    # Preserve alpha channel of PNG image.
+    if ( $type eq 'png' ) {
+        my @alpha_in = (
+            "$pbm${type}topnm", '-alpha',
+            ( $image->{file} ? $image->{file} : () )
+        );
+        my $alpha_err;
+        IPC::Run::run( \@alpha_in,
+            ( $image->{file} ? \undef : \$image->{data} ),
+            \$image->{alpha}, \$alpha_err )
+            or return $image->error(
+            MT->translate(
+                "Reading alpha channel of image failed: [_1]", $alpha_err
+            )
+            );
+    }
+
     $image;
 }
 
@@ -70,18 +92,29 @@ sub scale {
     my $type = $image->{type};
     my ( $out, $err );
     my $pbm = $image->_find_pbm or return;
+
+    # Scale alpha channel.
+    if ( $image->{alpha} ) {
+        my @scale_alpha = ( "${pbm}pnmscale", '-width', $w, '-height', $h );
+        my ( $alpha, $alpha_err );
+        IPC::Run::run( \@scale_alpha, \$image->{alpha}, \$alpha, \$alpha_err )
+            or return $image->error(
+            MT->translate(
+                "Scaling to [_1]x[_2] failed: [_3]",
+                $w, $h, $alpha_err
+            )
+            );
+        $image->{alpha} = $alpha;
+    }
+
     my @in = (
         "$pbm${type}topnm",
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
     my @scale = ( "${pbm}pnmscale", '-width', $w, '-height', $h );
-    my @out;
-
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$type";
-        @out = ($prog), last if -x $prog;
-    }
+    my @out = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
+
     if ( $type eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
     }
@@ -102,17 +135,28 @@ sub crop_rectangle {
     my $type = $image->{type};
     my ( $out, $err );
     my $pbm = $image->_find_pbm or return $image->error('Failed to find pbm');
+
+    # Crop alpha channel.
+    if ( $image->{alpha} ) {
+        my @crop_alpha = ( "${pbm}pnmcut", $x, $y, $size, $size );
+        my ( $alpha, $alpha_err );
+        IPC::Run::run( \@crop_alpha, \$image->{alpha}, \$alpha, \$alpha_err )
+            or return $image->error(
+            MT->translate(
+                'Cropping to [_1]x[_1] failed: [_2]',
+                $size, $alpha_err
+            )
+            );
+        $image->{alpha} = $alpha;
+    }
+
     my @in = (
         "$pbm${type}topnm",
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
 
-    my @crop = ( "${pbm}pnmcut", $x, $y, $width, $height );
-    my @out;
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$type";
-        @out = ($prog), last if -x $prog;
-    }
+    my @crop = ( "${pbm}pnmcut", $x, $y, $size, $size );
+    my @out = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
     if ( $type eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
@@ -135,18 +179,25 @@ sub flipHorizontal {
     my $type  = $image->{type};
     my ( $out, $err );
     my $pbm = $image->_find_pbm or return;
+
+    # Flip horizontal alpha channel.
+    if ( $image->{alpha} ) {
+        my @flip_alpha = ( "${pbm}pnmflip", '-lr' );
+        my ( $alpha, $alpha_err );
+        IPC::Run::run( \@flip_alpha, \$image->{alpha}, \$alpha, \$alpha_err )
+            or return $image->error(
+            MT->translate( 'Flip horizontal failed: [_1]', $alpha_err ) );
+        $image->{alpha} = $alpha;
+    }
+
     my @in = (
         "$pbm${type}topnm",
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
     my @scale = ( "${pbm}pnmflip", '-lr' );
-    my @out;
-
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$type";
-        @out = ($prog), last if -x $prog;
-    }
+    my @out = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
+
     if ( $type eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
     }
@@ -163,18 +214,25 @@ sub flipVertical {
     my $type  = $image->{type};
     my ( $out, $err );
     my $pbm = $image->_find_pbm or return;
+
+    # Flip vertical alpha channel.
+    if ( $image->{alpha} ) {
+        my @flip_alpha = ( "${pbm}pnmflip", '-tb' );
+        my ( $alpha, $alpha_err );
+        IPC::Run::run( \@flip_alpha, \$image->{alpha}, \$alpha, \$alpha_err )
+            or return $image->error(
+            MT->translate( 'Flip vertical failed: [_1]', $alpha_err ) );
+        $image->{alpha} = $alpha;
+    }
+
     my @in = (
         "$pbm${type}topnm",
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
     my @scale = ( "${pbm}pnmflip", '-tb' );
-    my @out;
-
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$type";
-        @out = ($prog), last if -x $prog;
-    }
+    my @out = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
+
     if ( $type eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
     }
@@ -192,18 +250,30 @@ sub rotate {
     my $type = $image->{type};
     my ( $out, $err );
     my $pbm = $image->_find_pbm or return;
+
+    # Rotate alpha channel.
+    if ( $image->{alpha} ) {
+        my @rotate_alpha = ( "${pbm}pnmflip", '-r' . ( 360 - $degrees ) );
+        my ( $alpha, $alpha_err );
+        IPC::Run::run( \@rotate_alpha, \$image->{alpha}, \$alpha,
+            \$alpha_err )
+            or return $image->error(
+            MT->translate(
+                'Rotate (degrees: [_1]) failed: [_2]', $degrees,
+                $alpha_err
+            )
+            );
+        $image->{alpha} = $alpha;
+    }
+
     my @in = (
         "$pbm${type}topnm",
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
     my @scale = ( "${pbm}pnmflip", '-r' . ( 360 - $degrees ) );
-    my @out;
-
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$type";
-        @out = ($prog), last if -x $prog;
-    }
+    my @out = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
+
     if ( $type eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
     }
@@ -229,14 +299,11 @@ sub convert {
     my $pbm = $image->_find_pbm or return;
     my @in = (
         "$pbm${type}topnm",
+        ( $type eq 'png' ? '-mix' : () ),    # Mix alpha channel if needed.
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
 
-    my @out;
-    for my $try (qw( ppm pnm )) {
-        my $prog = "${pbm}${try}to$outtype";
-        @out = ($prog), last if -x $prog;
-    }
+    my @out = $image->_generate_converting_command( $pbm, $outtype );
     my (@quant);
     if ( $outtype eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
@@ -251,6 +318,48 @@ sub convert {
         );
     $image->{data} = $out;
     $image->{type} = $outtype;
+
+    # Update alpha channel.
+    if ( $outtype eq 'png' ) {
+        my @alpha_in = ( "${pbm}pngtopnm", '-alpha' );
+        my $alpha_err;
+        IPC::Run::run( \@alpha_in, \$image->{data}, \$image->{alpha},
+            \$alpha_err )
+            or return $image->error(
+            MT->translate(
+                "Reading alpha channel of image failed: [_1]", $alpha_err
+            )
+            );
+    }
+    else {
+        delete $image->{alpha};
+    }
+
+    $out;
+}
+
+sub blob {
+    my ( $image, $quality ) = @_;
+
+    my $type = $image->{type};
+    my ( $out, $err );
+    my $pbm = $image->_find_pbm or return;
+    my @in = (
+        "$pbm${type}topnm",
+        ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
+    );
+
+    my @out = $image->_generate_converting_command( $pbm, $type, $quality );
+    my (@quant);
+    if ( $type eq 'gif' ) {
+        push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
+    }
+    IPC::Run::run( \@in, '<', ( $image->{data} ? \$image->{data} : \undef ),
+        '|', @quant, \@out, \$out, \$err )
+        or return $image->error(
+        MT->translate( "Outputting image failed: [_1]", $err ) );
+    $image->{data} = $out;
+
     $out;
 }
 
@@ -271,6 +380,44 @@ sub _find_pbm {
     ) unless $pbm;
     $image->{__pbm_path} = $pbm if ref $image;
     $pbm;
+}
+
+sub _generate_converting_command {
+    my ( $image, $pbm, $type, $quality ) = @_;
+    my @out;
+
+    for my $try (qw( ppm pnm )) {
+        my $prog = "${pbm}${try}to$type";
+        @out = ($prog), last if -x $prog;
+    }
+
+    if (@out) {
+        if ( $type eq 'jpeg' ) {
+            $quality = $image->jpeg_quality if !defined $quality;
+            push @out, ( '-quality=' . $quality );
+        }
+        elsif ( $type eq 'png' ) {
+            $quality = $image->png_quality if !defined $quality;
+            push @out, ( '-compression', $quality );
+        }
+
+        # Set alpha channel data.
+        if ( $type eq 'png' && $image->{alpha} ) {
+            require File::Temp;
+            require MT::FileMgr;
+
+            ( undef, my $filename ) = File::Temp::tempfile(
+                DIR  => MT->config->TempDir,
+                OPEN => 0
+            );
+            my $fmgr = MT::FileMgr->new('Local');
+            $fmgr->put_data( $image->{alpha}, $filename, 'upload' );
+
+            push @out, ( '-alpha', $filename );
+        }
+    }
+
+    @out;
 }
 
 1;

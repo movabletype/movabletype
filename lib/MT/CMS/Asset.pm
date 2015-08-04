@@ -1619,6 +1619,10 @@ sub _upload_file {
         if ( $q->param('normalize_orientation') ) {
             $asset->normalize_orientation;
         }
+
+        # Adjust image quality according to ImageQualityJpeg
+        # and ImageQualityPng.
+        $asset->change_quality;
     }
 
     $asset->mime_type($mimetype) if $mimetype;
