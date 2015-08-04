@@ -222,8 +222,8 @@ sub thumbnail_file {
     return undef unless $fmgr->can_write($asset_cache_path);
 
     # download original image
-    my $file_path = $asset->_download_image_data();
-    return undef unless $file_path && $fmgr->file_size($file_path);
+    my $orig_img = $asset->_download_image_data();
+    return undef unless $orig_img && $fmgr->file_size($orig_img);
 
     my $data;
     if (   ( $n_w == $i_w )
@@ -231,13 +231,13 @@ sub thumbnail_file {
         && !$param{Square}
         && !$param{Type} )
     {
-        $data = $fmgr->get_data( $file_path, 'upload' );
+        $data = $fmgr->get_data( $orig_img, 'upload' );
     }
     else {
 
         # create a thumbnail for this file
         require MT::Image;
-        my $img = new MT::Image( Filename => $file_path )
+        my $img = new MT::Image( Filename => $orig_img )
             or return $asset->error( MT::Image->errstr );
 
         # Really make the image square, so our scale calculation works out.
@@ -262,7 +262,7 @@ sub thumbnail_file {
         or return $asset->error(
         MT->translate( "Error creating thumbnail file: [_1]", $fmgr->errstr )
         );
-    $fmgr->delete($file_path);
+    $fmgr->delete($orig_img);
     return ( $thumbnail, $n_w, $n_h );
 }
 
