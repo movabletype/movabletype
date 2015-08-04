@@ -131,13 +131,11 @@ function createUploadBlock () {
   this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.leftContent);
   this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
   this.cancelUpload = jQuery('<div class="upload-cancel" style="margin-right: 0.25em;text-align: right;line-height: 50px; text-decoration: underline; color: #0076BF;"><__trans phrase="Cancel"></div>').appendTo(this.rightPanel);
-  this.editAsset    = jQuery('<div class="edit-asset" style="margin-right: 0.25em;text-align: right;line-height: 50px; text-decoration: underline; color: #0076BF;"><__trans phrase="Edit"></div>').appendTo(this.rightPanel);
+  this.editAsset    = jQuery('<div class="edit-asset" style="margin-right: 0.25em;text-align: right;line-height: 50px; text-decoration: underline; color: #0076BF;"></div>').appendTo(this.rightPanel);
 
   this.editAsset.hide();
-
-  jQuery('#upload-progress').append(this.uploadBlock);
-
   this.progressbar.progressbar({ value: 0 });
+  jQuery('#upload-progress').append(this.uploadBlock);
 
   this.setFilename = function(filename) {
     this.filename.html(filename);
@@ -175,6 +173,13 @@ function createUploadBlock () {
     this.cancelUpload.hide();
     this.progressbar.hide();
     jQuery('<p class="msg-warning" style="line-height: 50px; padding-left: 10px;">' + msg+ '</p>').appendTo(this.uploadResult);
+  }
+
+  this.enableEditAsset = function(Asset) {
+    var link = jQuery('<a>');
+    link.attr('href', '<mt:var name="script_url">?__mode=dialog_edit_asset&blog_id=' + Asset.blog_id + '&id=' + Asset.id + '&magic_token=<mt:var name="magic_token">').append('<__trans phrase="Edit">').appendTo(this.editAsset);
+    link.mtDialog();
+    this.editAsset.show();
   }
 }
 
@@ -219,7 +224,6 @@ function uploadFile( formData, uploadBlock ) {
     cache: false,
     data: formData
   }).done( function(data){
-    console.log(data);
     if ( data.error ) {
       // An eror occurrs
       uploadBlock.setError( data.error );
@@ -233,7 +237,7 @@ function uploadFile( formData, uploadBlock ) {
       uploadBlock.setProgress(100);
       uploadBlock.setThubmanil(data.result.asset.thumbnail, data.result.asset.filename);
       uploadBlock.progressbar.hide();
-      uploadBlock.editAsset.show();
+      uploadBlock.enableEditAsset(data.result.asset);
     }
   });
 

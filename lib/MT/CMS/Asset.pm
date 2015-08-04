@@ -2604,4 +2604,175 @@ sub transform_image {
     );
 }
 
+sub dialog_edit_asset {
+    my $app = shift;
+
+    $app->validate_magic() or return;
+
+    my $blog_id = $app->param('blog_id');
+    return $app->return_to_dashboard( redirect => 1 )
+        if !$blog_id;
+
+    my $id = $app->param('id');
+    return $app->return_to_dashboard( redirect => 1 )
+        if !$id;
+
+    return $app->permission_denied()
+        if $blog_id && !$app->can_do('upload');
+
+    my $asset = MT::Asset->load($id)
+        or return $app->errtrans( "Cannot load asset #[_1].", $id );
+
+    my $param = {
+        blog_id           => $blog_id,
+        id                => $id,
+        file_name         => $asset->file_name,
+        label             => $asset->label,
+        description       => $asset->description,
+        asset_class_label => $asset->class_label,
+        asset_type        => $asset->class,
+        class             => $asset->class,
+    };
+
+    if ( $asset->isa('MT::Asset::Image') ) {
+        $param->{image_width}  = $asset->image_width;
+        $param->{image_height} = $asset->image_height;
+    }
+
+    if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
+        my ( $thumb_url, $thumb_w, $thumb_h );
+        my $thumb_size = 240;
+        my ( $orig_height, $orig_width )
+            = ( $asset->image_width, $asset->image_height );
+        if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
+            ( $thumb_url, $thumb_w, $thumb_h ) = $asset->thumbnail_url(
+                Height => $thumb_size,
+                Width  => $thumb_size,
+                Square => 1
+            );
+        }
+        elsif ( $orig_width > $thumb_size ) {
+            ( $thumb_url, $thumb_w, $thumb_h )
+                = $asset->thumbnail_url( Width => $thumb_size, );
+        }
+        elsif ( $orig_height > $thumb_size ) {
+            ( $thumb_url, $thumb_w, $thumb_h )
+                = $asset->thumbnail_url( Height => $thumb_size, );
+        }
+        else {
+            $thumb_url = $asset->url;
+            $thumb_w   = $orig_width;
+            $thumb_h   = $orig_height;
+        }
+        $param->{has_thumbnail}    = 1;
+        $param->{thumbnail_url}    = $thumb_url;
+        $param->{thumbnail_width}  = $thumb_w;
+        $param->{thumbnail_height} = $thumb_h;
+    }
+    else {
+        $param->{has_thumbnail} = 0;
+    }
+
+    require MT::FileMgr;
+    my $fmgr      = MT::FileMgr->new('Local');
+    my $file_path = $asset->file_path;
+    if ( $file_path && $fmgr->file_size($file_path) ) {
+        my $size = $fmgr->file_size($file_path);
+        $param->{file_size} = $size;
+        if ( $size < 1024 ) {
+            $param->{file_size_formatted} = sprintf( "%d Bytes", $size );
+        }
+        elsif ( $size < 1024000 ) {
+            $param->{file_size_formatted}
+                = sprintf( "%.1f KB", $size / 1024 );
+        }
+        else {
+            $param->{file_size_formatted}
+                = sprintf( "%.1f MB", $size / 1024000 );
+        }
+    }
+
+    require MT::Tag;
+    my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
+    my $tags = MT::Tag->join( $tag_delim, $asset->tags );
+    $param->{tags} = $tags;
+    $param->{'auth_pref_tag_delim'} = $tag_delim
+        if $tag_delim;
+
+    require MT::ObjectTag;
+    my $tags_js = MT::Util::to_json(
+        [   map { $_->name } MT::Tag->load(
+                undef,
+                {   join => [
+                        'MT::ObjectTag', 'tag_id',
+                        { blog_id => $asset->blog_id }, { unique => 1 }
+                    ]
+                }
+            )
+        ]
+    );
+    $tags_js =~ s!/!\\/!g;
+    $param->{tags_js} = $tags_js;
+
+    $app->load_tmpl( 'dialog/asset_edit.tmpl', $param );
+}
+
+sub js_save_asset {
+    my $app = shift;
+
+    $app->validate_magic()
+        or return $app->error(
+        $app->json_error( $app->translate("Invalid Request.") ) );
+
+    my $blog_id = $app->param('blog_id');
+    return $app->error(
+        $app->json_error( $app->translate("Invalid Request.") ) )
+        if !$blog_id;
+
+    my $id = $app->param('id');
+    return $app->error(
+        $app->json_error( $app->translate("Invalid Request.") ) )
+        if !$id;
+    return $app->error(
+        $app->json_error( $app->translate("Permission denied.") ) )
+        if $blog_id && !$app->can_do('upload');
+
+    my $asset = MT::Asset->load($id)
+        or return $app->error(
+        $app->json_error(
+            $app->translate( "Cannot load asset #[_1].", $id )
+        )
+        );
+
+    return $app->error( $app->json_error( $app->errstr ) )
+        unless $app->run_callbacks( 'cms_save_filter.asset', $app );
+
+    my $original = $asset->clone();
+
+    $asset->label( scalar $app->param('label') );
+    $asset->description( scalar $app->param('description') );
+    $asset->modified_by( $app->user->id ) if $asset->id;
+
+    return $app->error(
+        $app->json_error(
+            $app->translate( "Save failed: [_1]", $app->errstr )
+        )
+        )
+        unless $app->run_callbacks( 'cms_pre_save.asset', $app, $asset,
+        $original );
+
+    $asset->save
+        or return $app->error(
+        $app->json_error(
+            $app->translate( "Saving object failed: [_1]", $asset->errstr )
+        )
+        );
+
+    return $app->error( $app->json_error( $app->errstr() ) )
+        unless $app->run_callbacks( 'cms_post_save.asset', $app, $asset,
+        $original );
+
+    return $app->json_result( { success => 1 } );
+}
+
 1;

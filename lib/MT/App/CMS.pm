@@ -184,15 +184,23 @@ sub core_methods {
         'send_notify'       => "${pkg}AddressBook::send_notify",
         'start_upload'      => "${pkg}Asset::start_upload",
         'upload_file'       => "${pkg}Asset::upload_file",
-        'js_upload_file'    => {
-            code     => "${pkg}Asset::js_upload_file",
-            app_mode => 'JSON',
-        },
         'upload_userpic'     => "${pkg}User::upload_userpic",
         'complete_insert'    => "${pkg}Asset::complete_insert",
         'cancel_upload'      => "${pkg}Asset::cancel_upload",
         'complete_upload'    => "${pkg}Asset::complete_upload",
         'start_upload_entry' => "${pkg}Asset::start_upload_entry",
+
+        ## New upload mode
+        'js_upload_file'    => {
+            code     => "${pkg}Asset::js_upload_file",
+            app_mode => 'JSON',
+        },
+        'dialog_edit_asset'  => "${pkg}Asset::dialog_edit_asset",
+        'js_save_asset' =>  {
+            code     => "${pkg}Asset::js_save_asset",
+            app_mode => 'JSON',
+        },
+
         'logout'             => {
             code           => sub { $_[0]->SUPER::logout(@_) },
             requires_login => 0,
