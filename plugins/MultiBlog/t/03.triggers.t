@@ -12,7 +12,7 @@ BEGIN {
 BEGIN {
     use Test::More;
     eval { require Test::MockObject }
-      or plan skip_all => 'Test::MockObject is not installed';
+        or plan skip_all => 'Test::MockObject is not installed';
 }
 use Test::MockObject::Extends;
 
@@ -26,11 +26,10 @@ my $request = MT::Request->instance;
 ### register triggers
 my $plugin = $app->component('MultiBlog');
 $plugin->save_config(
-    {
-        blog_content_accessible => 1,
+    {   blog_content_accessible => 1,
         old_rebuild_triggers    => '',
         rebuild_triggers =>
-          'ri:1:entry_save|ri:1:entry_pub|ri:1:comment_pub|ri:1:tb_pub',
+            'ri:1:entry_save|ri:1:entry_pub|ri:1:entry_unpub|ri:1:comment_pub|ri:1:tb_pub',
     },
     'blog:2'
 );
@@ -110,7 +109,7 @@ run_test {
     MultiBlog::post_entry_pub( $plugin, undef, $app, $entry );
     MultiBlog::post_entry_pub( $plugin, undef, $app, $entry );
     is( $rebuild_count, 1,
-'called once in post_entry_pub even if trigger is called multiple times.'
+        'called once in post_entry_pub even if trigger is called multiple times.'
     );
 };
 
@@ -129,6 +128,81 @@ run_test {
     MultiBlog::post_entry_pub( $plugin, undef, $app, $entry );
     is( $rebuild_count, 0,
         'called once in post_entry_pub for blog not have trigger.' );
+};
+
+run_test {
+    my $entry = $app->model('entry')->load( { blog_id => 1 } );
+    $entry->status(MT::Entry::UNPUBLISH);
+    MultiBlog::post_entry_unpub( $plugin, undef, $app, $entry );
+    is( $rebuild_count, 1, 'called once in post_entry_unpub.' );
+};
+
+run_test {
+    my $page = $app->model('page')->load( { blog_id => 1 } );
+    $page->status(MT::Entry::UNPUBLISH);
+    MultiBlog::post_entry_unpub( $plugin, undef, $app, $page );
+    is( $rebuild_count, 1, 'called once in post_entry_unpub for page.' );
+};
+
+run_test {
+    my $entry = $app->model('entry')->load( { blog_id => 1 } );
+    $entry->status(MT::Entry::UNPUBLISH);
+    MultiBlog::post_entry_unpub( $plugin, undef, $app, $entry );
+    MultiBlog::post_entry_unpub( $plugin, undef, $app, $entry );
+    MultiBlog::post_entry_unpub( $plugin, undef, $app, $entry );
+    is( $rebuild_count, 1,
+        'called once in post_entry_unpub even if trigger is called multiple times.'
+    );
+};
+
+run_test {
+    my $page = $app->model('page')->load( { blog_id => 1 } );
+    $page->status(MT::Entry::UNPUBLISH);
+    MultiBlog::post_entry_unpub( $plugin, undef, $app, $page );
+    MultiBlog::post_entry_unpub( $plugin, undef, $app, $page );
+    MultiBlog::post_entry_unpub( $plugin, undef, $app, $page );
+    is( $rebuild_count, 1,
+        'called once in post_entry_unpub for page if trigger is called multiple times.'
+    );
+};
+
+run_test {
+    my $entry = $app->model('entry')->load( { blog_id => 1 } );
+    for my $s ( MT::Entry::HOLD, MT::Entry::RELEASE, MT::Entry::FUTURE ) {
+        $entry->status($s);
+        MultiBlog::post_entry_unpub( $plugin, undef, $app, $entry );
+    }
+    is( $rebuild_count, 0,
+        'not called in post_entry_unpub not for status UNPUBLISH.' );
+};
+
+run_test {
+    my $page = $app->model('page')->load( { blog_id => 1 } );
+    for my $s ( MT::Entry::HOLD, MT::Entry::RELEASE, MT::Entry::FUTURE ) {
+        $page->status(MT::Entry::UNPUBLISH);
+        MultiBlog::post_entry_unpub( $plugin, undef, $app, $page );
+    }
+    is( $rebuild_count, 1,
+        'not called in post_entry_unpub for page whose status is not UNPUBLISH.'
+    );
+};
+
+run_test {
+    my $entry = $app->model('entry')->new;
+    $entry->blog_id(2);
+    $entry->status(MT::Entry::UNPUBLISH);
+    MultiBlog::post_entry_unpub( $plugin, undef, $app, $entry );
+    is( $rebuild_count, 0,
+        'not called in post_entry_unpub for blog not have trigger.' );
+};
+
+run_test {
+    my $page = $app->model('page')->new;
+    $page->blog_id(2);
+    $page->status(MT::Entry::UNPUBLISH);
+    MultiBlog::post_entry_unpub( $plugin, undef, $app, $page );
+    is( $rebuild_count, 0,
+        'not called in post_entry_unpub for page in blog not have trigger.' );
 };
 
 run_test {
@@ -152,7 +226,7 @@ run_test {
     $comment->visible(1);
     MultiBlog::post_feedback_save( $plugin, 'comment_pub', undef, $comment );
     is( $rebuild_count, 0,
-'not called once in post_feedback_save for comment for blog not have trigger.'
+        'not called once in post_feedback_save for comment for blog not have trigger.'
     );
 };
 
@@ -160,7 +234,8 @@ run_test {
     my $tbping = $app->model('tbping')->load( { blog_id => 1 } );
     $tbping->visible(1);
     MultiBlog::post_feedback_save( $plugin, 'tb_pub', undef, $tbping );
-    is( $rebuild_count, 1, 'called once in post_feedback_save for trackback.' );
+    is( $rebuild_count, 1,
+        'called once in post_feedback_save for trackback.' );
 };
 
 run_test {
@@ -177,7 +252,7 @@ run_test {
     $tbping->visible(0);
     MultiBlog::post_feedback_save( $plugin, 'tb_pub', undef, $tbping );
     is( $rebuild_count, 0,
-'not called once in post_feedback_save for invisible trackback for blog not have trigger.'
+        'not called once in post_feedback_save for invisible trackback for blog not have trigger.'
     );
 };
 
