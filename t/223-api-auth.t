@@ -47,7 +47,7 @@ sub suite {
                     qr/Invalid parameter/,
                     q{Got "Invalid parameter"}
                 );
-                }
+            }
         },
         {   path      => '/v1/authorization',
             method    => 'GET',
@@ -60,7 +60,7 @@ sub suite {
                     qr/Invalid parameter/,
                     q{Got "Invalid parameter"}
                 );
-                }
+            }
         },
         {   path      => '/v1/authorization',
             method    => 'GET',
@@ -76,7 +76,7 @@ sub suite {
                     qr/Invalid parameter/,
                     q{Got "Invalid parameter"}
                 );
-                }
+            }
         },
         {   path      => '/v1/authorization',
             method    => 'GET',
@@ -92,7 +92,7 @@ sub suite {
                     qr/Invalid parameter/,
                     q{Got form successfully}
                 );
-                }
+            }
         },
         {   path      => '/v1/authorization',
             method    => 'GET',
@@ -162,6 +162,28 @@ sub suite {
                     qq{MTAuth oneTimeToken="$magic_token"},
             },
             code => 401,
+        },
+
+        # version 3
+        {   note   => 'v3 authentication with user password is failed',
+            path   => '/v3/authentication',
+            method => 'POST',
+            params => {
+                clientId => 'test',
+                username => 'Chuck D',
+                password => 'bass',
+            },
+            code => 401,
+        },
+        {   note =>
+                'v3 authentication with user web service password is succeeded',
+            path   => '/v3/authentication',
+            method => 'POST',
+            params => {
+                clientId => 'test',
+                username => 'Chuck D',
+                password => 'seecret',
+            },
         },
     ];
 }
