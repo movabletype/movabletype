@@ -45,6 +45,13 @@ RUN cpanm Archive::Tar
 # https://rt.cpan.org/Public/Bug/Display.html?id=104150
 RUN cpanm LWP::Protocol::https -n
 
+# Term::ReadKey cannot be installed by "docker build".
+RUN cpanm Term::ReadKey -n
+
+# For installing Text::Aspell.
+RUN yum -y install epel-release
+RUN yum -y install aspell-en aspell-devel
+
 COPY t/cpanfile .
 RUN cpanm --installdeps .
 
