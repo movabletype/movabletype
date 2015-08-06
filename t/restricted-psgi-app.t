@@ -14,18 +14,22 @@ use MT;
 use MT::PSGI;
 
 MT->instance;
+my $uri = MT->config->AdminCGIPath . MT->config->AdminScript;
 
 {
     my $apps      = MT::PSGI->new->to_app;
     my $test_apps = Plack::Test->create($apps);
-    isnt( $test_apps->request( GET '/mt/mt.cgi' )->content,
-        'Not Found', 'No restriction' );
+    my $res       = $test_apps->request( GET $uri );
+    like( $res->content, qr/^<!DOCTYPE/, 'Get HTML' );
+    isnt( $res->content, 'Not Found', 'No restriction' );
 }
 
 {
-    my $cms = MT::PSGI->new( application => 'cms' )->to_app;
+    my $cms      = MT::PSGI->new( application => 'cms' )->to_app;
     my $test_cms = Plack::Test->create($cms);
-    isnt( $test_cms->request( GET '/mt/mt.cgi' )->content,
+    my $res      = $test_cms->request( GET $uri );
+    like( $res->content, qr/^<!DOCTYPE/, 'Get HTML' );
+    isnt( $res->content,
         'Not Found', 'No restriction for specific application' );
 }
 
@@ -34,14 +38,15 @@ MT->config->RestrictedPSGIApp('cms');
 {
     my $apps      = MT::PSGI->new->to_app;
     my $test_apps = Plack::Test->create($apps);
-    is( $test_apps->request( GET '/mt/mt.cgi' )->content,
-        'Not Found', 'Restrict "cms"' );
+    my $res       = $test_apps->request( GET $uri );
+    is( $res->content, 'Not Found', 'Restrict "cms"' );
 }
 
 {
-    my $cms = MT::PSGI->new( application => 'cms' )->to_app;
+    my $cms      = MT::PSGI->new( application => 'cms' )->to_app;
     my $test_cms = Plack::Test->create($cms);
-    is( $test_cms->request( GET '/mt/mt.cgi' )->content,
+    my $res      = $test_cms->request( GET $uri );
+    is( $res->content,
         'Not Found', 'Restrict "cms" for specific application' );
 }
 
