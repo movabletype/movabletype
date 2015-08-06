@@ -9,6 +9,8 @@ package MT::Asset::oEmbed::Flickr;
 use strict;
 use base qw( MT::Asset::oEmbed );
 
+use MTAssetoEmbed;
+
 __PACKAGE__->install_properties(
     {   class_type    => 'flickr',
         provider_type => 'flickr',
@@ -61,6 +63,29 @@ sub has_thumbnail {
             : 0
         : $asset->provider_thumbnail_url ? 1
         :                                  0;
+}
+
+sub get_file_size {
+    my $asset = shift;
+
+    my $url = $asset->file_url;
+
+    return unless $url;
+
+    my $ua = new_ua();
+    $ua->ssl_opts( verify_hostname => 0 );
+    
+    my $req = HTTP::Request->new( 'GET', $url );
+    my $res = $ua->request($req);
+
+    if ( $res->is_success ) {
+        return $res->headers->content_length
+            if $res->headers && $res->headers->content_length;
+        return 0;
+    }
+    else {
+        return 0;
+    }
 }
 
 1;

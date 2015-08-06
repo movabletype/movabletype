@@ -18,6 +18,7 @@ __PACKAGE__->install_properties(
         provider_type => 'oembed',
         column_defs   => {
             'file_url'                  => 'vclob meta',
+            'file_size'                 => 'integer meta',
             'type'                      => 'vchar meta',
             'version'                   => 'vchar meta',
             'title'                     => 'vchar meta',
@@ -70,7 +71,7 @@ sub can_handle {
     return 0;
 }
 
-sub get_embed {
+sub get_oembed {
     my $asset = shift;
     my ($url) = @_;
 
@@ -120,6 +121,8 @@ sub get_embed {
         my $end      = length($file_url);
         my $file_ext = substr( $file_url, $start, $end - $start );
         $asset->file_ext($file_ext);
+
+        $asset->file_size( $asset->get_file_size );
 
         foreach my $k ( keys(%$json) ) {
             $asset->$k( $json->{$k} ) if $json->{$k};
@@ -369,6 +372,10 @@ sub _download_image_data {
         return $asset->error(
             MT->translate( "Error download: [_1]", $res->content ) );
     }
+}
+
+sub get_file_size {
+    0;
 }
 
 1;
