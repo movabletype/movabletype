@@ -199,11 +199,7 @@ sub thumbnail_file {
     my $thumbnail = File::Spec->catfile( $asset_cache_path, $file );
 
     # thumbnail file exists and is dated on or later than source image
-    if ($fmgr->exists($thumbnail)
-        && ( $fmgr->file_mod_time($thumbnail)
-            >= $fmgr->file_mod_time($file_path) )
-        )
-    {
+    if ( $fmgr->exists($thumbnail) ) {
         my $already_exists = 1;
         if ( $asset->image_width != $asset->image_height ) {
             require MT::Image;
@@ -348,10 +344,11 @@ sub _download_image_data {
 
     return unless $url;
 
-    my $ua = MT->new_ua({
-        agent    => 'MovableType/' . MT->version_id,
-        max_size => 1_000_000,
-    });
+    my $ua = MT->new_ua(
+        {   agent    => 'MovableType/' . MT->version_id,
+            max_size => 1_000_000,
+        }
+    );
     $ua->ssl_opts( verify_hostname => 0 );
 
     my $req = HTTP::Request->new( 'GET', $url );
