@@ -138,13 +138,13 @@ sub crop_rectangle {
 
     # Crop alpha channel.
     if ( $image->{alpha} ) {
-        my @crop_alpha = ( "${pbm}pnmcut", $x, $y, $size, $size );
+        my @crop_alpha = ( "${pbm}pnmcut", $x, $y, $width, $height );
         my ( $alpha, $alpha_err );
         IPC::Run::run( \@crop_alpha, \$image->{alpha}, \$alpha, \$alpha_err )
             or return $image->error(
             MT->translate(
-                'Cropping to [_1]x[_1] failed: [_2]',
-                $size, $alpha_err
+                'Cropping to [_1]x[_2] failed: [_3]',
+                $width, $height, $alpha_err
             )
             );
         $image->{alpha} = $alpha;
@@ -155,7 +155,7 @@ sub crop_rectangle {
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
 
-    my @crop = ( "${pbm}pnmcut", $x, $y, $size, $size );
+    my @crop = ( "${pbm}pnmcut", $x, $y, $width, $height );
     my @out = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
     if ( $type eq 'gif' ) {
