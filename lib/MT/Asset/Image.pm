@@ -32,7 +32,7 @@ sub extensions {
 
 sub save {
     my $asset = shift;
-    $asset->image_metadata( $asset->exif->GetInfo );
+    $asset->image_metadata( $asset->exif ? $asset->exif->GetInfo : undef );
     $asset->SUPER::save(@_);
 }
 
