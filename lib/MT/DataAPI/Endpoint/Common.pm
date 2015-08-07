@@ -414,7 +414,7 @@ sub filtered_list {
     }
 
     # Filter by date.
-    if ( $app->current_api_version == 3 ) {
+    if ( $app->current_api_version >= 3 ) {
         my $date_field  = $app->param('dateField') || 'created_on';
         my $date_from   = $app->param('dateFrom');
         my $date_to     = $app->param('dateTo');
