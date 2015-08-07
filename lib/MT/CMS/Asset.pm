@@ -2512,56 +2512,6 @@ sub _check_thumbnail_dir {
     $param->{thumb_dir_warnings} = \@warnings if @warnings;
 }
 
-sub dialog_edit_image {
-    my ($app) = @_;
-
-    my $asset;
-
-    my $id = $app->param('id');
-    my $blog_id = $app->param('blog_id') || 0;
-    if ($id) {
-        $asset
-            = $app->model('asset')
-            ->load( { id => $id, blog_id => $blog_id, class => 'image' } );
-    }
-    if ( !$asset ) {
-        return $app->errtrans('Invalid request.');
-    }
-
-    # Check.
-    if ( !can_save( undef, $app, $asset ) ) {
-        return $app->permission_denied;
-    }
-
-    # Retrive data of thumbnail.
-    my $param  = {};
-    my $hasher = build_asset_hasher($app);
-    $hasher->( $asset, $param, ThumbWidth => 240, ThumbHeight => 240 );
-
-    # Disable browser cache for image.
-    $param->{modified_on} = $asset->modified_on;
-
-    # Check Exif.
-    my $has_metadata = $asset->has_metadata;
-    if ( defined $has_metadata ) {
-        $param->{has_metadata} = $has_metadata;
-    }
-    else {
-        return $app->error( $asset->errstr );
-    }
-    if ($has_metadata) {
-        my $has_gps_metadata = $asset->has_gps_metadata;
-        if ( defined $has_gps_metadata ) {
-            $param->{has_gps_metadata} = $has_gps_metadata;
-        }
-        else {
-            return $app->error( $asset->errstr );
-        }
-    }
-
-    $app->load_tmpl( 'dialog/edit_image.tmpl', $param );
-}
-
 sub dialog_edit_asset {
     my $app = shift;
 
@@ -2844,6 +2794,35 @@ sub transform_image {
             )
         );
     }
+}
+
+sub open_asset_dialog {
+    my $app = shift;
+
+    my $blog_id = $app->param('blog_id');
+    my $mode_userpic = $app->param('upload_mode') || '';
+    return $app->return_to_dashboard( redirect => 1 )
+        if !$blog_id && $mode_userpic ne 'upload_userpic';
+
+    my $blog_class = $app->model('blog');
+    my $blog;
+    $blog = $blog_class->load($blog_id) if $blog_id;
+
+    if (   $app->param('edit_field')
+        && $app->param('edit_field') =~ m/^customfield_.*$/ )
+    {
+        return $app->permission_denied()
+            unless $app->permissions;
+    }
+    else {
+        return $app->permission_denied()
+            if $blog_id && !$app->can_do('access_to_insert_asset_list');
+    }
+
+    my %param;
+    _set_start_upload_params( $app, \%param );
+
+    $app->load_tmpl( 'dialog/asset_modal.tmpl', \%param );
 }
 
 1;

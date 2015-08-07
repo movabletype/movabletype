@@ -190,7 +190,7 @@ sub core_methods {
         'complete_upload'    => "${pkg}Asset::complete_upload",
         'start_upload_entry' => "${pkg}Asset::start_upload_entry",
 
-        ## New upload mode
+        ## New asset mode
         'js_upload_file'    => {
             code     => "${pkg}Asset::js_upload_file",
             app_mode => 'JSON',
@@ -199,6 +199,9 @@ sub core_methods {
         'js_save_asset' =>  {
             code     => "${pkg}Asset::js_save_asset",
             app_mode => 'JSON',
+        },
+        'open_asset_dialog'    => {
+            code      => "${pkg}Asset::open_asset_dialog",
         },
 
         'logout'             => {
