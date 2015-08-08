@@ -61,7 +61,7 @@ sub get_file_size {
     my $asset = shift;
 
     my $app     = MT->instance;
-    my $plugin  = $app->component('MTAssetoEmbed');
+    my $plugin  = plugin();
     my $blog_id = $asset->blog_id || 1;
 
     my $scope       = 'blog:' . $blog_id;
