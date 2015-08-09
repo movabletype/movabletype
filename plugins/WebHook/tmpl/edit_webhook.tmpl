@@ -1,0 +1,152 @@
+<mt:if name="new_object">
+  <mt:setvar name="page_title" value="<__trans phrase="Create WebHook">">
+<mt:else>
+  <mt:setvar name="page_title" value="<__trans phrase="Edit WebHook">">
+</mt:if>
+
+<mt:setvarblock name="system_msg">
+  <mt:if name="saved">
+    <mtapp:statusmsg
+      id="saved"
+      class="success">
+      <__trans phrase="Your changes have been saved.">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+
+<form id="edit_asset" method="post" action="<mt:var name="script_url">">
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  <input type="hidden" name="__mode" value="save" />
+  <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<mtapp:setting
+  id="label"
+  label="<__trans phrase="Label">">
+  <input type="text" name="label" value="<mt:var name="label">" />
+</mtapp:setting>
+
+<mtapp:setting
+  id="hook"
+  label="<__trans phrase="Hook">">
+  <select name="hook">
+    <option><__trans phrase="Select Hook..."></option>
+  <mt:loop name="hook_options">
+    <option name="<mt:var name="__KEY__">" <mt:if name="__KEY__" eq="$hook">selected="selected"</mt:if>>
+      <mt:var name="__VALUE__">
+    </option>
+  </mt:loop>
+  </select>
+</mtapp:setting>
+
+<mtapp:setting
+  id="url"
+  label="<__trans phrase="URL">">
+  <input type="text" name="url" value="<mt:var name="url">" />
+</mtapp:setting>
+
+<mtapp:setting
+  id="method"
+  label="<__trans phrase="Method">">
+  <select name="method">
+  <mt:loop name="method_options">
+    <option name="<mt:var name="__VALUE__">" <mt:if name="__VALUE__" eq="$method">selected="selected"</mt:if>>
+      <mt:var name="__VALUE__">
+    </option>
+  </mt:loop>
+  </select>
+</mtapp:setting>
+
+<mtapp:setting
+  id="headers"
+  label="<__trans phrase="Headers">">
+  <mt:loop name="headers">
+  <div>
+    <input type="text" class="text short" name="header_key" value="<mt:var name="__KEY__" escape="html">" /> : <input type="text med" name="header_value" value="<mt:var name="__VALUE__" escape="html">" />
+    <a class="remove-field" href="javascript:void(0);">
+      <img src="<mt:var name="static_uri">images/status_icons/close.gif" width="9" height="9" />
+    </a>
+  </div>
+  </mt:loop>
+  <div style="display: none;">
+    <input type="text" class="text short" name="header_key" disabled="disabled" /> : <input type="text med" name="header_value" disabled="disabled" />
+    <a class="remove-field" href="javascript:void(0);">
+      <img src="<mt:var name="static_uri">images/status_icons/close.gif" width="9" height="9" />
+    </a>
+  </div>
+  <div>
+    <input type="text" class="text short" name="header_key" /> : <input type="text med" name="header_value" />
+    <a class="create-field" href="javascript:void(0);">
+      <img src="<mt:var name="static_uri">images/status_icons/create.gif" width="9" height="9" />
+    </a>
+  </div>
+</mtapp:setting>
+
+<mtapp:setting
+  id="body"
+  label="<__trans phrase="Body">">
+  <mt:loop name="body">
+  <div>
+    <input type="text" class="text short" name="body_key" value="<mt:var name="__KEY__" escape="html">" /> : <input type="text med" name="body_value" value="<mt:var name="__VALUE__" escape="html">" />
+    <a class="remove-field" href="javascript:void(0);">
+      <img src="<mt:var name="static_uri">images/status_icons/close.gif" width="9" height="9" />
+    </a>
+  </div>
+  </mt:loop>
+  <div style="display: none;">
+    <input type="text" class="text short" name="body_key" disabled="disabled" /> : <input type="text med" name="body_value" disabled="disabled" />
+    <a class="remove-field" href="javascript:void(0);">
+      <img src="<mt:var name="static_uri">images/status_icons/close.gif" width="9" height="9" />
+    </a>
+  </div>
+  <div>
+    <input type="text" class="text short" name="body_key" /> : <input type="text med" name="body_value" />
+    <a class="create-field" href="javascript:void(0);">
+      <img src="<mt:var name="static_uri">images/status_icons/create.gif" width="9" height="9" />
+    </a>
+  </div>
+</mtapp:setting>
+
+<mt:setvarblock name="action_buttons">
+  <button
+     type="submit"
+     accesskey="s"
+     title="<__trans phrase="Save changes to these settings (s)">"
+     class="save action primary button">
+    <__trans phrase="Save Changes">
+  </button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+
+<mt:setvarblock name="jq_js_include">
+  jQuery('a.remove-field').click(function() {
+    jQuery(this).parent().remove();
+  });
+
+  jQuery('a.create-field').click(function() {
+    var $current = jQuery(this).parent().prev().clone(true);
+    var $new = jQuery(this).parent();
+
+    $current.insertBefore($new.prev());
+    $current.children('input').removeAttr('disabled');
+    $current.show();
+
+    $current.children('input[name=header_key]').val(
+      $new.children('input[name=header_key]').val()
+    );
+    $current.children('input[name=header_value]').val(
+      $new.children('input[name=header_value]').val()
+    );
+
+    $new.children('input[name=header_key]').val('');
+    $new.children('input[name=header_value]').val('');
+  });
+</mt:setvarblock>
+
+<mt:include name="include/footer.tmpl">

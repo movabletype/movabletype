@@ -1,0 +1,57 @@
+name: WebHook
+
+version: 0.01
+schema_version: 0.01
+
+hooks:
+  - post_save_entry
+  - post_save_page
+
+http_methods:
+  - POST
+  - GET
+  - PUT
+  - DELETE
+
+object_types:
+  webhook: MT::WebHook
+
+list_properties:
+  webhook: $WebHook::MT::WebHook::list_props
+
+listing_screens:
+  webhook: $WebHook::MT::WebHook::list_screens
+
+callbacks:
+  cms_edit.webhook: $WebHook::MT::WebHook::cms_edit
+  cms_post_save.webhook: $WebHook::MT::WebHook::cms_post_save
+
+  cms_post_save.entry: $WebHook::MT::WebHook::cms_post_save_entry
+  cms_post_save.page: $WebHook::MT::WebHook::cms_post_save_entry
+
+applications:
+  cms:
+    menus:
+      webhook:
+        label: WebHook
+        order: 1000
+      webhook:manage:
+        label: Manage
+        order: 100
+        mode: list
+        args:
+          _type: webhook
+        view:
+          - system
+          - website
+          - blog
+      webhook:create:
+        label: New
+        order: 200
+        mode: view
+        args:
+          _type: webhook
+        view:
+          - system
+          - website
+          - blog
