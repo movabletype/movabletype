@@ -45,10 +45,12 @@ subtest 'New Flickr' => sub {
     $asset->url('https://www.flickr.com/photos/sixapartkk/5386235207/in/album-72157625901355024/');
     $asset->get_oembed();
     ok( $asset->label eq 'In Year 2011, Six Apart is Reborn! ' , 'Flickr->label' );
+    ok( $asset->as_html =~ /^<a data-flickr-embed="true" /, "Flickr->as_html" );
 
     $asset->blog_id(1);
     $asset->save;
     ok( $asset->id, "Flickr->save" );
+
 };
 
 subtest 'New YouTube' => sub {
@@ -58,6 +60,7 @@ subtest 'New YouTube' => sub {
     $asset->url('https://www.youtube.com/watch?v=q2-_TNyh4W4');
     $asset->get_oembed();
     ok( $asset->label eq 'Introduction of the coding style at Six Apart', 'YouTube->label' );
+    ok( $asset->as_html =~ /^<iframe /, "YouTube->as_html" );
 
     $asset->blog_id(1);
     $asset->save;

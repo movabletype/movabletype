@@ -374,6 +374,13 @@ sub _download_image_data {
     }
 }
 
+sub as_html {
+    my $asset = shift;
+    my ($param) = @_;
+
+    $asset->html;
+}
+
 sub get_file_size {
     0;
 }
