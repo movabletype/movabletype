@@ -427,7 +427,8 @@ sub filtered_list {
                     return $app->error(
                         MT->translate(
                             'Invalid dateFrom parameter: [_1]', $date_from
-                        )
+                        ),
+                        400,
                     );
                 }
                 1;
@@ -437,7 +438,8 @@ sub filtered_list {
                     return $app->error(
                         MT->translate(
                             'Invalid dateTo parameter: [_1]', $date_to
-                        )
+                        ),
+                        400,
                     );
                 }
                 1;
