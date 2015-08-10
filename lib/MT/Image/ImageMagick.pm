@@ -230,7 +230,6 @@ sub convert {
 
 sub blob {
     my ( $image, $quality ) = @_;
-    my $type   = $image->{type};
     my $magick = $image->{magick};
     my $blob;
 
@@ -248,7 +247,7 @@ sub blob {
 
 sub _set_quality {
     my ( $image, $quality ) = @_;
-    my $type   = $image->{type};
+    my $type = $image->{type} or return 1;
     my $magick = $image->{magick};
 
     if ( !defined $quality ) {
