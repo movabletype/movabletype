@@ -1,0 +1,274 @@
+<mt:unless name="json">
+<mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog">
+
+<mt:if name="filter" ne="userpic">
+<form action="" method="get" id="modal-type-filter">
+    <span><__trans phrase="Asset Type: "></span>
+  <select name="asset-class" id="asset-class">
+    <option value=""><__trans phrase="All Types"></option>
+<mt:loop name="class_filter_loop">
+    <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"</mt:if></mt:if>><mt:var name="label"></option>
+</mt:loop>
+    </select>
+</form>
+
+<form action="" method="get" id="modal-search">
+  <input type="text" id="search" name="search" class="search-input text med" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
+  <input type="image" id="search-button"class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
+      <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
+</form>
+</mt:if>
+
+<mt:setvarblock name="list_actions">
+        <div class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /> <__trans phrase="Loading..."></div>
+        <div class="pagination"></div>
+</mt:setvarblock>
+
+<div id="listing" class="listing line has-filter">
+  <div class="unit size1of1">
+    <div id="listing-table" class="listing-table-block">
+      <div id="listing-table-overlay" class="overlay"></div>
+        <table id="asset-table" class="listing-table list-asset">
+          <thead>
+            <th class="col head cb">&nbsp;</th>
+            <th class="col head si file-status"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+            <th class="col head label primary string" style="table-cell;"><span class="col-label"><__trans phrase="label"></span></th>
+          </thead>
+          <tfoot>
+            <th class="col head cb">&nbsp;</th>
+            <th class="col head si file-status"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+            <th class="col head label primary string" style="table-cell;"><span class="col-label"><__trans phrase="label"></span></th>
+           </tfoot>
+</mt:unless>
+          <tbody>
+<mt:if name="object_loop">
+  <mt:loop name="object_loop">
+            <tr id="asset-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+              <td class="col cb"><input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" /><input type="radio" name="id" value="<mt:var name="id" escape="html">" class="select" id="asset-radio-<mt:var name="id" escape="html">" /></td>
+              <td class="col si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
+                <img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" />
+              </td>
+              <td class="col asset-label primary">
+    <mt:if name="has_thumbnail">
+                  <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name" escape="html"$>"><$mt:var name="label" escape="html"$></a>
+                  <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview"></div>
+    <mt:else>
+                  <mt:var name="label" escape="html">
+    </mt:if>
+              </td>
+            </tr>
+  </mt:loop>
+<mt:else>
+            <tr class="odd">
+                <td class="col fullwidth-row" colspan="3"><__trans phrase="No [_1] could be found." params="<mt:if name="upload_mode" eq="upload_userpic"><__trans phrase="Userpic"><mt:else><__trans phrase="Assets"></mt:if>"></td>
+            </tr>
+</mt:if>
+          </tbody>
+<mt:unless name="json">
+        </table>
+      </div>
+      <div id="actions-bar" class="line">
+        <mt:var name="list_actions">
+      </div>
+    </div>
+  </div>
+</div>
+
+<mt:setvarblock name="jq_js_include" append="1">
+var checked = [];
+
+function loadAssetList(offset) {
+  jQuery('.indicator, #listing-table-overlay').show();
+  jQuery('div.pagination').hide();
+  jQuery('#asset-class').attr("disabled", "disabled");
+  jQuery('#search').attr("disabled", "disabled");
+  jQuery('#search-button').attr("disabled", "disabled");
+
+  var opts= {
+    offset: offset,
+    __mode: 'dialog_list_asset',
+    _type: 'asset',
+<mt:if name="edit_field">
+      edit_field: '<mt:var name="edit_field">',
+</mt:if>
+<mt:if name="blog_id">
+      blog_id: <mt:var name="blog_id">,
+</mt:if>
+      dialog_view: 1,
+<mt:if name="upload_mode">
+      upload_mode: '<mt:var name="upload_mode">',
+</mt:if>
+    dialog: 1,
+    json: 1
+  };
+
+  if(jQuery('#search').val().length > 0) {
+    opts.search = jQuery('#search').val();
+  }
+
+  if(jQuery('#asset-class').val().length > 0) {
+    opts.filter = 'class';
+    opts.filter_val = jQuery('#asset-class').val();
+  }
+  else {
+    opts.filter = '';
+    opts.filter_val = '';
+  }
+
+  var canPaginate = true;
+  jQuery.ajax({
+    type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: opts,
+    success: function(data) {
+      if (data.html) {
+        jQuery('#asset-table tbody').remove();
+        jQuery('#asset-table').append(data.html);
+        if (data.pager) {
+          renderPagination(data.pager);
+        }
+        else {
+          canPaginate = false;
+        }
+      }
+    },
+    complete: function() {
+      jQuery('.indicator, #listing-table-overlay').hide();
+      if (canPaginate) {
+        jQuery('div.pagination').show();
+      }
+      jQuery('#asset-class').removeAttr("disabled");
+      jQuery('#search').removeAttr("disabled");
+      jQuery('#search-button').removeAttr("disabled");
+    },
+    error: function(xhr, status, error) {
+      console.log('error: ' + status + ":" + error);
+    }
+  });
+}
+
+function renderPagination(pager) {
+  var $e = jQuery('.pagination').empty();
+
+  if ( pager.rows == 0 ) {
+    return;
+  }
+
+  var usefirst = false;
+  var uselast = false;
+  var prevPos = 0;
+  var nextPos = 0;
+  var start;
+  var end;
+  var page = parseInt(pager.offset / pager.limit) + 1;
+  var maxPage = Math.ceil(pager.listTotal / pager.limit);
+
+  if ( page > 1 ) {
+    usefirst = true;
+    prevPos = pager.offset - pager.limit;
+    start = pager.offset + 1;
+  }
+  else {
+    prevPos = 0;
+    start = 1;
+  }
+
+  if (page < maxPage) {
+    uselast = true;
+    nextPos = pager.offset + pager.limit;
+    end = pager.offset + pager.limit;
+    last = (maxPage-1) * pager.limit;
+  }
+  else {
+    nextPos = pager.offset + pager.limit;
+    end = pager.listTotal;
+    last = (maxPage-1) * pager.limit;
+  }
+
+  var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
+
+  if (usefirst) {
+    $e.append('<a href="#" class="pagenav start">&laquo; <__trans phrase="First" escape="js"></a>')
+      .append('<a href="#" class="pagenav to-start">&lsaquo; <__trans phrase="Prev" escape="js"></a>');
+  } else {
+    $e.append('<span class="pagenav start disabled">&laquo; <__trans phrase="First" escape="js"></span>')
+      .append('<span class="pagenav to-start disabled">&lsaquo; <__trans phrase="Prev" escape="js"></span>');
+  }
+
+  $e.append('<span class="current-rows">'+page_status+'</span>')
+
+  if (uselast) {
+    $e.append('<a href="#" class="pagenav to-end"><__trans phrase="Next" escape="js"> &rsaquo;</a>')
+      .append('<a href="#" class="pagenav end"><__trans phrase="Last" escape="js"> &raquo;</a>');
+  } else {
+    $e.append('<span class="pagenav to-end disabled"><__trans phrase="Next" escape="js"> &rsaquo;</span>')
+      .append('<span class="pagenav end disabled"><__trans phrase="Last" escape="js"> &raquo;</span>');
+  }
+
+  jQuery('a.start').click(function() {
+    saveChecked(page);
+    loadAssetList(0);
+    return false;
+  });
+  jQuery('a.to-start').click(function() {
+    saveChecked(page);
+    loadAssetList(prevPos);
+    return false;
+  });
+  jQuery('a.to-end').click(function() {
+    saveChecked(page);
+    loadAssetList(nextPos);
+    return false;
+  });
+  jQuery('a.end').click(function() {
+    saveChecked(page);
+    loadAssetList(last);
+    return false;
+  });
+}
+
+function saveChecked(page) {
+  checked[page] = [];
+  jQuery('table.listing-table tbody tr input:checked').each(function() {
+    var id = jQuery(this).parents('tr').attr('id');
+    checked[page][id] = 1;
+  });
+}
+
+jQuery('#asset-class').change(function() {
+  loadAssetList(0);
+});
+
+jQuery('#modal-search').submit(function(){
+  loadAssetList(0);
+  jQuery('.search-reset').removeClass('hidden').show();
+  return false;
+})
+
+
+jQuery('.search-reset').click(function() {
+  jQuery('#search').val('');
+  loadAssetList(0);
+  jQuery('.search-reset').addClass('hidden').hide();
+});
+    
+// Initial laoading
+loadAssetList(0);
+
+</mt:setvarblock>
+
+
+<mt:if name="dialog">
+<div class="actions-bar">
+  <button
+    type="submit"
+    accesskey="x"
+    class="cancel action button mt-close-dialog"
+    title="<__trans phrase="Cancel (x)">">
+    <__trans phrase="Cancel">
+  </button>
+</div>
+</mt:if>
+</mt:unless>

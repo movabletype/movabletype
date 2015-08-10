@@ -164,6 +164,10 @@ sub edit {
 sub dialog_list_asset {
     my $app = shift;
 
+    # Backward compatibility
+    return open_asset_dialog( $app, @_ )
+        if !$app->param('json') && !$app->config('EnableUploadCompat');
+
     my $blog_id = $app->param('blog_id');
     my $mode_userpic = $app->param('upload_mode') || '';
     return $app->return_to_dashboard( redirect => 1 )
@@ -269,8 +273,10 @@ sub dialog_list_asset {
             args     => \%args,
             type     => 'asset',
             code     => $hasher,
-            template => 'dialog/asset_list.tmpl',
-            params   => {
+            template => $app->config('EnableUploadCompat')
+            ? 'dialog/asset_list.tmpl'
+            : 'include/async_asset_list.tmpl',
+            params => {
                 (   $blog
                     ? ( blog_id      => $blog_id,
                         blog_name    => $blog->name || '',
@@ -1201,7 +1207,8 @@ sub _set_start_upload_params_compat {
     $param->{require_type} = $require_type;
 
     $param->{auto_rename_if_exists} = 0;
-    $param->{normalize_orientation} = 1; # TODO: Default value will be 1 in future version.
+    $param->{normalize_orientation}
+        = 1;    # TODO: Default value will be 1 in future version.
 
     $param->{compat_upload_template} = 1;
 
@@ -2799,6 +2806,10 @@ sub transform_image {
 sub open_asset_dialog {
     my $app = shift;
 
+    # Backward compatibility
+    return dialog_list_asset( $app, @_ )
+        if $app->config('EnableUploadCompat');
+
     my $blog_id = $app->param('blog_id');
     my $mode_userpic = $app->param('upload_mode') || '';
     return $app->return_to_dashboard( redirect => 1 )
@@ -2821,6 +2832,28 @@ sub open_asset_dialog {
 
     my %param;
     _set_start_upload_params( $app, \%param );
+
+    $param{filter} = $app->param('filter') if defined $app->param('filter');
+    $param{filter_val} = $app->param('filter_val')
+        if defined $app->param('filter_val');
+    $param{search} = $app->param('search') if defined $app->param('search');
+    $param{edit_field} = $app->param('edit_field')
+        if defined $app->param('edit_field');
+    $param{upload_mode} = $mode_userpic;
+
+    require MT::Asset;
+    my $subclasses = MT::Asset->list_subclasses;
+
+    my @class_filters;
+    foreach my $k (@$subclasses) {
+        my $c = $k->{class};
+        push @class_filters,
+            {
+            key   => $k->{type},
+            label => $c->class_label_plural,
+            };
+    }
+    $param{class_filter_loop} = \@class_filters if @class_filters;
 
     $app->load_tmpl( 'dialog/asset_modal.tmpl', \%param );
 }

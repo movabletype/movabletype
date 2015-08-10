@@ -983,6 +983,24 @@ sub can_create_thumbnail {
         && !$fmgr->can_write($real_thumb_path) ? 0 : 1;
 }
 
+sub list_subclasses {
+
+    my $types = MT->registry('object_types');
+    my @types;
+
+    foreach my $k ( keys %$types ) {
+        if ( $k =~ m/^asset\.(.*)/ ) {
+            push @types,
+                {
+                class => $types->{$k},
+                type  => $1,
+                };
+        }
+    }
+
+    return \@types;
+}
+
 1;
 
 __END__

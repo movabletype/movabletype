@@ -88,7 +88,9 @@ function createFormData(file) {
 
   // Set extended parameters
   fd.append('__mode', '<mt:if name="upload_mode"><mt:var name="upload_mode" escape="html"><mt:else>js_upload_file</mt:if>');
+<mt:if name="blog_id">
   fd.append('blog_id', <mt:var name="blog_id">);
+</mt:if>
   fd.append('entry_insert', '<mt:var name="entry_insert" escape="html">');
   fd.append('asset_select', '<mt:var name="asset_select" escape="html">');
   fd.append('edit_field', '<mt:var name="edit_field" escape="html">');

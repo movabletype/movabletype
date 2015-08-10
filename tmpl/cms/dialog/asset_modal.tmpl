@@ -1,0 +1,78 @@
+<mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog">
+<mt:setvarblock name="html_head" append="1">
+<style>
+  #content-body-left {
+    float:
+    left;
+    width: 130px;
+  }
+
+  #content-body-right {
+    float: right;
+    width: 100%;
+    margin: 0 0 0 -130px;
+  }
+
+  #content-body-right-body {
+    margin: 0 0 0 150px;
+  }
+
+  #asset-menu li {
+    margin-bottom: 0px;
+    list-style-type: none;
+    height: 50px;
+    border: solid 1px #aaa;
+    border-bottom: 0px;
+    line-height: 50px;
+    padding-left: .5em;
+  }
+
+  #asset-menu li.last-child {
+    border-bottom: solid 1px #aaa;
+  }
+</style>
+</mt:setvarblock>
+
+<mt:include name="dialog/header.tmpl">
+
+<div id="content-body-right">
+  <div id="content-body-right-body">
+
+    <div id="upload-asset-panel" class="panel">
+<mt:setvar name="included_upload_asset" value="1">
+<mt:if name="compat_upload_template">
+  <mt:include name="include/asset_upload.tmpl" dialog="1">
+<mtelse>
+  <mt:include name="include/async_asset_upload.tmpl" dialog="1">
+</mt:if>
+    </div>
+
+    <div id="list-asset-panel" class="hidden panel">
+<mt:include name="include/async_asset_list.tmpl" dialog="1">
+    </div>
+
+  </div>
+</div>
+
+<div id="content-body-left">
+  <div id="asset-menu">
+    <ul>
+      <li>
+        <a href="#" class="left-menu-item" data-panel-id="#upload-asset-panel">アップロード</a>
+      </li>
+      <li>
+        <a href="#" class="left-menu-item" data-panel-id="#list-asset-panel">ライブラリ</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+<mt:setvarblock name="jq_js_include" append="1">
+  jQuery('.left-menu-item').click( function() {
+    jQuery('div.panel').addClass('hidden').hide();
+    jQuery(jQuery(this).attr('data-panel-id')).removeClass('hidden').show();
+});
+</mt:setvarblock>
+
+<mt:include name="dialog/footer.tmpl">
