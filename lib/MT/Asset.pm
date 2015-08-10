@@ -108,11 +108,7 @@ sub list_props {
                         ? q{<span class="inuse-userpic sticky-label">Userpic</span>}
                         : '';
 
-                    if ($file_path
-                        && (   $fmgr->exists($file_path)
-                            || $obj->isa('MT::Asset::oEmbed') )
-                        )
-                    {
+                    if ( $obj->file_size ) {
                         my $img
                             = MT->static_path
                             . 'images/asset/'

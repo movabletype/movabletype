@@ -110,16 +110,6 @@ sub get_oembed {
         $asset->label($title);
         my $file_url = $json->{url} || $asset->provider_thumbnail_url;
         $asset->file_url($file_url);
-        $asset->file_path($file_url);
-        my $file_name
-            = $file_url =~ /(.*)\/(.*)/
-            ? $2
-            : $file_url;
-        $asset->file_name($file_name);
-        my $start    = rindex( $file_url, "." ) + 1;
-        my $end      = length($file_url);
-        my $file_ext = substr( $file_url, $start, $end - $start );
-        $asset->file_ext($file_ext);
 
         $asset->file_size( $asset->get_file_size );
 
@@ -153,7 +143,7 @@ sub thumbnail_file {
     $fmgr ||= $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
     return undef unless $fmgr;
 
-    my $file_path = $asset->file_path;
+    my $file_path = $asset->file_url || $asset->provider_thumbnail_url;
     return undef unless $file_path;
 
     require MT::Util;
@@ -316,9 +306,13 @@ sub _get_dimension {
 }
 
 sub thumbnail_filename {
-    my $asset   = shift;
-    my (%param) = @_;
-    my $file    = $asset->file_name or return;
+    my $asset    = shift;
+    my (%param)  = @_;
+    my $file_url = $asset->file_url;
+    my $file
+        = $file_url =~ /(.*)\/(.*)/
+        ? $2
+        : $file_url;
 
     require MT::Util;
     my $format = $param{Format} || MT->translate('%f-thumb-%wx%h-%i%x');
