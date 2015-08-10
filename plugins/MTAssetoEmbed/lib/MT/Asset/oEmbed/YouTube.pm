@@ -60,19 +60,11 @@ sub has_thumbnail {
 sub get_file_size {
     my $asset = shift;
 
-    my $app     = MT->instance;
-    my $plugin  = plugin();
-    my $blog_id = $asset->blog_id || 1;
-
-    my $scope       = 'blog:' . $blog_id;
-    my $plugin_data = $plugin->get_config_obj($scope);
-    my $token       = MTAssetoEmbed::OAuth2::youtube_effective_token( $app,
-        $plugin_data );
+    my $token = $asset->get_token_data();
 
     return unless $token;
 
-    my $id = $asset->url;
-    $id =~ s!^https://www\.youtube\.com/watch\?v=(.*)$!$1!;
+    my $id = $asset->get_id;
 
     my $uri = URI->new('https://www.googleapis.com/youtube/v3/videos');
     $uri->query_form(
@@ -88,13 +80,52 @@ sub get_file_size {
     if ( $res->is_success ) {
         my $data
             = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+        return 0 unless $data;
         return $data->{items}[0]{fileDetails}{fileSize}
-            if $data && $data->{items}[0]{fileDetails}{fileSize};
-        return 0;
+            if $data->{items}[0]{fileDetails}{fileSize};
     }
-    else {
-        return 0;
-    }
+    return 0;
+}
+
+sub get_token_data {
+    my $asset = shift;
+
+    my $app    = MT->instance;
+    my $plugin = plugin();
+    my $blog_id
+        = $asset->blog_id ? $asset->blog_id : $app->blog ? $app->blog->id : 0;
+
+    return undef unless $blog_id;
+
+    my $scope       = 'blog:' . $blog_id;
+    my $plugin_data = $plugin->get_config_obj($scope);
+    my $token       = MTAssetoEmbed::OAuth2::youtube_effective_token( $app,
+        $plugin_data );
+
+    return undef unless $token;
+
+    return $token;
+}
+
+sub get_id {
+    my $asset = shift;
+    my $id    = $asset->url;
+    $id =~ s!^https://www\.youtube\.com/watch\?v=([^&]*).*!$1!;
+    return $id;
+}
+
+sub thumbnail_basename {
+    my $asset = shift;
+    my $id    = $asset->get_id;
+    my $file
+        = $asset->file_url =~ /.*\/(.*)/
+        ? $1
+        : $asset->file_url;
+    my $ext
+        = $file =~ /\.(\w+)$/
+        ? $1
+        : '';
+    return ( $id, $ext );
 }
 
 1;

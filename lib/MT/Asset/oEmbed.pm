@@ -74,8 +74,11 @@ sub get_oembed {
     my $asset = shift;
     my ($url) = @_;
 
-    $url = $url || $asset->url();
+    my $token = $asset->get_token_data();
+    return $asset->error( MT->translate("Token data isn't registered.") )
+        unless $token;
 
+    $url = $url || $asset->url();
     return undef unless $url;
 
     $asset->url($url) unless $asset->url();
@@ -306,13 +309,9 @@ sub _get_dimension {
 }
 
 sub thumbnail_filename {
-    my $asset    = shift;
-    my (%param)  = @_;
-    my $file_url = $asset->file_url;
-    my $file
-        = $file_url =~ /(.*)\/(.*)/
-        ? $2
-        : $file_url;
+    my $asset = shift;
+    my (%param) = @_;
+    my ( $file, $ext ) = $asset->thumbnail_basename;
 
     require MT::Util;
     my $format = $param{Format} || MT->translate('%f-thumb-%wx%h-%i%x');
@@ -321,7 +320,6 @@ sub thumbnail_filename {
     $file =~ s/\.\w+$//;
     my $base = File::Basename::basename($file);
     my $id   = $asset->id;
-    my $ext  = lc( $param{Type} || '' ) || $asset->file_ext || '';
     $ext = '.' . $ext;
     $format =~ s/%w/$width/g;
     $format =~ s/%h/$height/g;
@@ -376,6 +374,10 @@ sub as_html {
 
 sub get_file_size {
     0;
+}
+
+sub get_token_data {
+    undef;
 }
 
 1;

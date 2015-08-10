@@ -74,7 +74,7 @@ sub get_file_size {
 
     my $ua = new_ua();
     $ua->ssl_opts( verify_hostname => 0 );
-    
+
     my $req = HTTP::Request->new( 'GET', $url );
     my $res = $ua->request($req);
 
@@ -86,6 +86,49 @@ sub get_file_size {
     else {
         return 0;
     }
+}
+
+sub get_oembed {
+    my $asset = shift;
+    my ($url) = @_;
+
+    $asset->SUPER::get_oembed(@_);
+
+    $asset->url( $asset->web_page );
+
+    return $asset;
+}
+
+sub get_token_data {
+    my $asset = shift;
+
+    my $app    = MT->instance;
+    my $plugin = plugin();
+    my $blog_id
+        = $asset->blog_id ? $asset->blog_id : $app->blog ? $app->blog->id : 0;
+
+    return undef unless $blog_id;
+
+    my $scope       = 'blog:' . $blog_id;
+    my $plugin_data = $plugin->get_config_obj($scope);
+    my $token       = $plugin_data->data->{flickr_token_data};
+
+    return undef unless $token;
+
+    return $token;
+}
+
+sub thumbnail_basename {
+    my $asset = shift;
+    my $file
+        = $asset->file_url =~ /.*\/(.*)/
+        ? $1
+        : $asset->file_url;
+    my $ext
+        = $file =~ /\.(\w+)$/
+        ? $1
+        : '';
+    return ( $file, $ext );
 }
 
 1;
