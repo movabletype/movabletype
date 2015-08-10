@@ -368,6 +368,10 @@ sub save {
             }
         }
         $param->{return_args} = $app->param('return_args');
+        my %app_param = $app->param_hash;
+        while ( my ( $key, $value ) = each(%app_param) ) {
+            $param->{$key} = $value unless $param->{$key};
+        }
         return edit(
             $app,
             {   %$param,
@@ -806,7 +810,8 @@ sub edit {
 
     if ( $type eq 'website' || $type eq 'blog' ) {
         require MT::Theme;
-        $param{theme_loop} = MT::Theme->load_theme_loop($type);
+        $param{theme_loop} = MT::Theme->load_theme_loop( $type,
+            $app->param( $type . '_theme' ) );
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
         my $limit = File::Spec->catdir( $cfg->BaseSitePath, 'PATH' );
         $limit =~ s/PATH$//;

@@ -17,6 +17,7 @@ sub edit {
     my $blog    = $obj || $app->blog;
     my $blog_id = $id;
 
+    my $lang;
     if ($id) {
         my $output = $param->{output} ||= 'cfg_prefs.tmpl';
         $param->{need_full_rebuild} = 1 if $q->param('need_full_rebuild');
@@ -32,7 +33,7 @@ sub edit {
             $param->{'list_on_index'} = ( $obj->days_on_index || 0 );
             $param->{'days'} = 1;
         }
-        my $lang = $obj->language || 'en';
+        $lang = $obj->language || 'en';
         $lang = 'en' if lc($lang) eq 'en-us' || lc($lang) eq 'en_us';
         $lang = 'ja' if lc($lang) eq 'jp';
         $param->{ 'language_' . $lang } = 1;
@@ -103,7 +104,7 @@ sub edit {
         if ( $output eq 'cfg_prefs.tmpl' ) {
             $app->add_breadcrumb( $app->translate('General Settings') );
 
-            my $lang = $obj->language || 'en';
+            $lang = $obj->language || 'en';
             $lang = 'en' if lc($lang) eq 'en-us' || lc($lang) eq 'en_us';
             $lang = 'ja' if lc($lang) eq 'jp';
             $param->{ 'language_' . $lang } = 1;
@@ -335,28 +336,36 @@ sub edit {
             if !$blog || ( $blog && $blog->is_blog() );
 
         $app->add_breadcrumb( $app->translate('New Blog') );
-        ( my $tz = $cfg->DefaultTimezone ) =~ s![-\.]!_!g;
+        my $tz;
+        if ( defined( $param->{server_offset} ) ) {
+            ( $tz = $param->{server_offset} ) =~ s![-\.]!_!g;
+        }
+        else {
+            ( $tz = $cfg->DefaultTimezone ) =~ s![-\.]!_!g;
+        }
         $tz =~ s!_00$!!;    # fix syntax highlight ->!
         $param->{ 'server_offset_' . $tz } = 1;
         $param->{'can_edit_config'} = $app->can_do('edit_new_blog_config');
         $param->{'can_set_publish_paths'}
             = $app->can_do('set_new_blog_publish_paths');
+        $lang = $param->{'blog_language'};
+
     }
 
     $param->{languages} = MT::I18N::languages_list( $app,
-        $id ? $obj->language : MT->config->DefaultLanguage );
+        $id ? $obj->language : $lang || MT->config->DefaultLanguage );
 
     if ( !$param->{site_path} ) {
         $param->{suggested_site_path} = 'BLOG-NAME';
     }
 
-    if ( !$param->{site_url} ) {
+    if ( !$param->{site_url_path} ) {
         $param->{suggested_site_url} = 'BLOG-NAME';
     }
     if ( !$param->{id} ) {
-        if ( $param->{site_url} ) {
-            $param->{site_url} .= '/'
-                unless $param->{site_url} =~ /\/$/;
+        if ( $param->{site_url_path} ) {
+            $param->{site_url_path} .= '/'
+                unless $param->{site_url_path} =~ /\/$/;
         }
         else {
             $param->{suggested_site_url} .= '/'
@@ -436,13 +445,21 @@ sub cfg_prefs {
         $archive_label = $at unless $archive_label;
         $archive_label = $archive_label->()
             if ( ref $archive_label ) eq 'CODE';
-        push @data,
-            {
+        my $row = {
             archive_type_translated => $archive_label,
             archive_type            => $at,
             archive_type_is_preferred =>
                 ( $blog->archive_type_preferred eq $at ? 1 : 0 ),
-            };
+        };
+        if (   $q->param('preferred_archive_type')
+            && $q->param('preferred_archive_type') eq $at )
+        {
+            $row->{archive_type_is_preferred} = 1;
+        }
+        elsif ( $blog->archive_type_preferred eq $at ) {
+            $row->{archive_type_is_preferred} = 1;
+        }
+        push @data, $row;
     }
     @data = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @data;
     unless ( grep $_->{archive_type_is_preferred}, @data ) {
