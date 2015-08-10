@@ -100,11 +100,16 @@ sub authorization {
 
 sub authentication {
     my ($app) = @_;
+    _authentication( $app, sub { $_[0]->login } );
+}
+
+sub _authentication {
+    my ( $app, $login ) = @_;
 
     $app->current_client_id
         or return $app->error(400);
 
-    my ( $author, $new_login ) = $app->login;
+    my ( $author, $new_login ) = $login->($app);
     my $session = $app->{session}
         or return $app->error( 'Invalid login', 401 );
 

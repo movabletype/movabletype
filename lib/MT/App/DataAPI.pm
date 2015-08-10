@@ -21,7 +21,7 @@ use MT::AccessToken;
 our %endpoints = ();
 
 sub id                 {'data_api'}
-sub DEFAULT_VERSION () {2}
+sub DEFAULT_VERSION () {3}
 
 sub init {
     my $app = shift;
@@ -2121,6 +2121,14 @@ sub core_endpoints {
 #            },
 #        },
 
+        # version 3
+        {   id             => 'authenticate',
+            route          => '/authentication',
+            verb           => 'POST',
+            version        => 3,
+            handler        => "${pkg}v3::Auth::authentication",
+            requires_login => 0,
+        },
     ];
 }
 
