@@ -49,7 +49,7 @@ sub upload {
             409, { map { $keys{$_} => $param{$_}, } keys %keys } );
     };
 
-    my ( $asset, $bytes ) = MT::CMS::Asset::_upload_file(
+    my ( $asset, $bytes ) = MT::CMS::Asset::_upload_file_compat(
         $app,
         error_handler  => $error_handler,
         exists_handler => sub {
@@ -68,7 +68,7 @@ sub upload {
                 }
                 $app->param( 'overwrite_yes', 1 );
 
-                my ($asset) = MT::CMS::Asset::_upload_file(
+                my ($asset) = MT::CMS::Asset::_upload_file_compat(
                     $app,
                     error_handler  => $error_handler,
                     exists_handler => $exists_handler,
