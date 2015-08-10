@@ -23,6 +23,7 @@ __PACKAGE__->install_properties(
             'file_ext'    => 'string(20)',
             'mime_type'   => 'string(255)',
             'parent'      => 'integer',
+            'file_size'   => 'integer meta',
         },
         indexes => {
             label      => 1,
@@ -1007,6 +1008,25 @@ sub can_create_thumbnail {
 
     return $fmgr->exists($real_thumb_path)
         && !$fmgr->can_write($real_thumb_path) ? 0 : 1;
+}
+
+sub file_size {
+    my $asset = shift;
+    my $file_size = $asset->meta( 'file_size', @_ );
+    return $file_size if $file_size || @_;
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    if ( !-e $asset->file_path || !-r $asset->file_path ) {
+        return undef;
+    }
+    $file_size = $fmgr->file_size( $asset->file_path );
+
+    $asset->meta( 'file_size', $file_size );
+    if ( $asset->id ) {
+        $asset->save;
+    }
+    return $file_size;
 }
 
 1;

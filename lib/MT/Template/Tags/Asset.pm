@@ -1031,15 +1031,7 @@ sub _hdlr_asset_property {
     my $class = ref($a);
     my $ret;
     if ( $prop =~ m/file_size/i ) {
-        my $size;
-        if ( $a->isa('MT::Asset::oEmbed') && $a->file_size ) {
-            $size = $a->file_size;
-        }
-        else {
-            require MT::FileMgr;
-            my $fmgr = MT::FileMgr->new('Local');
-            $size = $fmgr->file_size( $a->file_path );
-        }
+        my $size   = $a->file_size;
         my $format = $args->{format};
         $format = 1 if !defined $format;
 

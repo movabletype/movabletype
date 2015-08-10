@@ -848,17 +848,9 @@ sub build_asset_hasher {
         require MT::FileMgr;
         my $fmgr = MT::FileMgr->new('Local');
         ## TBD: Make sure $file_path is file, not directory.
-        if ($file_path
-            && (   $fmgr->file_size($file_path)
-                || $obj->isa('MT::Asset::oEmbed') )
-            )
-        {
+        if ( my $size = $obj->file_size ) {
             $row->{file_path} = $file_path;
             $row->{file_name} = File::Basename::basename($file_path);
-            my $size
-                = $obj->isa('MT::Asset::oEmbed')
-                ? $obj->file_size
-                : $fmgr->file_size($file_path);
             $row->{file_size} = $size;
             if ( $size < 1024 ) {
                 $row->{file_size_formatted} = sprintf( "%d Bytes", $size );

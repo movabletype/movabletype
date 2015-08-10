@@ -18,7 +18,6 @@ __PACKAGE__->install_properties(
         provider_type => 'oembed',
         column_defs   => {
             'file_url'                  => 'vclob meta',
-            'file_size'                 => 'integer meta',
             'type'                      => 'vchar meta',
             'version'                   => 'vchar meta',
             'title'                     => 'vchar meta',
