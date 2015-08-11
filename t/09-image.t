@@ -126,6 +126,24 @@ for my $rec (@Img) {
                 "result of cropping $img_filename to 50x50 with $driver is $y px high"
             );
 
+            undef $blob;
+            ( $blob, $w, $h ) = $img->crop_rectangle(
+                Width  => 20,
+                Height => 30,
+                X      => 10,
+                Y      => 10
+            ) or die $img->errstr;
+
+            ok( $blob, "do crop" );
+
+            ( $x, $y ) = ( 20, 30 );
+            is( $w, $x,
+                "result of cropping $img_filename to 20x30 with $driver is $x px wide"
+            );
+            is( $h, $y,
+                "result of cropping $img_filename to 20x30 with $driver is $y px high"
+            );
+
             ( my $type = $img_file ) =~ s/.*\.//;
             for my $to (qw( JPG PNG GIF )) {
                 next if lc $to eq lc $type;
