@@ -75,6 +75,8 @@
 </div>
 
 <mt:setvarblock name="jq_js_include" append="1">
+isModal = getByID("list-assets-dialog");
+
 var checked = [];
 
 function loadAssetList(offset) {
@@ -259,16 +261,4 @@ loadAssetList(0);
 
 </mt:setvarblock>
 
-
-<mt:if name="dialog">
-<div class="actions-bar">
-  <button
-    type="submit"
-    accesskey="x"
-    class="cancel action button mt-close-dialog"
-    title="<__trans phrase="Cancel (x)">">
-    <__trans phrase="Cancel">
-  </button>
-</div>
-</mt:if>
 </mt:unless>

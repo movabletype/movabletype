@@ -1,5 +1,8 @@
 <mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog">
 <mt:setvarblock name="html_head" append="1">
+  <script type="text/javascript" src="<mt:var name="static_uri">js/assetdetail.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
 <style>
   #content-body-left {
     float:
@@ -64,6 +67,18 @@
         <a href="#" class="left-menu-item" data-panel-id="#list-asset-panel">ライブラリ</a>
       </li>
     </ul>
+  </div>
+</div>
+
+<div class="dialog-screen">
+  <div class="actions-bar actions-bar-bottom">
+    <button
+      type="submit"
+      accesskey="x"
+      class="cancel action button mt-close-dialog"
+      title="<__trans phrase="Cancel (x)">">
+      <__trans phrase="Cancel">
+    </button>
   </div>
 </div>
 
