@@ -38,8 +38,8 @@ RUN yum -y install zip unzip
 RUN yum -y install wget
 RUN wget -O - https://cpanmin.us | perl - App::cpanminus
 
-# Installation of Math::BigInt@1.9995 is failed on CircleCI.
-RUN cpanm Math::BigInt@1.9994
+# Installation of Math::BigInt >=1.9994 is failed on CircleCI.
+RUN cpanm Math::BigInt@1.9993
 
 # Update for installing SOAP::Lite. Cannot install by cpanm and old Archive::Tar.
 RUN cpanm Archive::Tar
