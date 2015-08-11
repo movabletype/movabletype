@@ -19,7 +19,7 @@ use MT;
 use vars qw( @Img @drivers $TESTS_FOR_EACH );
 
 BEGIN {
-    $TESTS_FOR_EACH = 26;
+    $TESTS_FOR_EACH = 29;
 
     @Img = (
         [ 'test.gif', 400, 300 ],
@@ -134,7 +134,7 @@ for my $rec (@Img) {
                 Y      => 10
             ) or die $img->errstr;
 
-            ok( $blob, "do crop" );
+            ok( $blob, "do crop_rectangle" );
 
             ( $x, $y ) = ( 20, 30 );
             is( $w, $x,

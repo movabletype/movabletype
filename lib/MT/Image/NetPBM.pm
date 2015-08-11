@@ -406,10 +406,11 @@ sub _generate_converting_command {
             require File::Temp;
             require MT::FileMgr;
 
-            ( undef, my $filename ) = File::Temp::tempfile(
-                DIR  => MT->config->TempDir,
-                OPEN => 0
-            );
+            # 'OPEN => 0' option outputs a warning.
+            my ( $fh, $filename )
+                = File::Temp::tempfile( DIR => MT->config->TempDir );
+            close $fh;
+
             my $fmgr = MT::FileMgr->new('Local');
             $fmgr->put_data( $image->{alpha}, $filename, 'upload' );
 
