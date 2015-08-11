@@ -118,6 +118,82 @@ sub get_token_data {
     return $token;
 }
 
+sub get_file_url {
+    my $asset = shift;
+    my ($json) = @_;
+
+    return $asset->get_original_source( $json->{url} );
+}
+
+sub _cache_key {
+    return join ':', 'flickr', 'getSizes', $_[0];
+}
+
+sub get_original_source {
+    my $asset = shift;
+    my ($url) = @_;
+
+    my $original_sizes = $asset->get_original_sizes(@_);
+
+    return $original_sizes->{source};
+}
+
+sub get_original_sizes {
+    my $asset = shift;
+    my ($url) = @_;
+
+    my $filename
+        = $url =~ /.*\/(.*)/
+        ? $1
+        : $url;
+    my ($photo_id) = split '_', $filename;
+
+    my $cache_key = _cache_key($photo_id);
+    my $cache     = MT->request->cache($cache_key);
+
+    return $cache if $cache;
+
+    my $token_data = $asset->get_token_data();
+    return undef unless $token_data;
+
+    my $request = Net::OAuth->request("protected resource")->new(
+        consumer_key     => $token_data->{consumer_key},
+        consumer_secret  => $token_data->{consumer_secret},
+        request_url      => 'https://api.flickr.com/services/rest/',
+        request_method   => 'GET',
+        signature_method => 'HMAC-SHA1',
+        timestamp        => time,
+        nonce            => int( rand( 2**31 - 999999 + 1 ) ) + 999999,
+        token            => $token_data->{access_token},
+        token_secret     => $token_data->{access_token_secret},
+        extra_params     => {
+            method         => 'flickr.photos.getSizes',
+            photo_id       => $photo_id,
+            nojsoncallback => 1,
+        },
+    );
+    $request->sign;
+    my $ua = new_ua();
+    $ua->ssl_opts( verify_hostname => 0 );
+    my $res = $ua->get( $request->to_url . '&format=json' );
+
+    if ( $res->is_success ) {
+        my $data
+            = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+        my @size = @{ $data->{sizes}{size} };
+        foreach my $item (@size) {
+            if ( $item->{label} eq 'Original' ) {
+                MT::Request->instance->cache( $cache_key, $item );
+                return $item;
+            }
+        }
+    }
+    else {
+        return $asset->error(
+            translate( 'Flickr getSizes error: ' . $res->status_line ) );
+    }
+}
+
 sub thumbnail_basename {
     my $asset = shift;
     my $file

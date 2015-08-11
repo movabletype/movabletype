@@ -111,9 +111,7 @@ sub get_oembed {
         }
         my $title = delete $json->{title};
         $asset->label($title);
-        my $file_url = $json->{url} || $asset->provider_thumbnail_url;
-        $asset->file_url($file_url);
-
+        $asset->file_url( $asset->get_file_url($json) );
         $asset->file_size( $asset->get_file_size );
 
         foreach my $k ( keys(%$json) ) {
@@ -370,6 +368,12 @@ sub as_html {
     my ($param) = @_;
 
     $asset->html;
+}
+
+sub get_file_url {
+    my $asset = shift;
+    my ($json) = @_;
+    return $json->{url} || $asset->provider_thumbnail_url;
 }
 
 sub get_file_size {
