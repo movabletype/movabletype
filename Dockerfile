@@ -95,3 +95,5 @@ RUN service slapd start & sleep 10 && \
 COPY t/cpanfile /var/www/mt/cpanfile
 RUN carton install
 
+ENV PERL5LIB /var/www/mt/local/lib/perl5
+
