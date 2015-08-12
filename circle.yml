@@ -19,4 +19,4 @@ test:
     - rm t/90-podcoverage.t
 
   override:
-    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && prove -s ./t ./plugins/*/t && phpunit"
+    - docker run -v $PWD:/var/www/mt -w /var/www/mt mt bash -c "service mysqld start & sleep 10 && service memcached start & sleep 10 && carton exec prove -s ./t ./plugins/*/t && phpunit"

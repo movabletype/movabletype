@@ -37,6 +37,9 @@ RUN yum -y install zip unzip
 
 RUN yum -y install wget
 RUN wget -O - https://cpanmin.us | perl - App::cpanminus
+RUN cpanm Carton
+WORKDIR /var/www/mt
+ENV PERL_CPANM_OPT -L ./local
 
 # Installation of Math::BigInt >=1.9994 is failed on CircleCI.
 RUN cpanm Math::BigInt@1.9993
@@ -54,9 +57,6 @@ RUN cpanm Term::ReadKey -n
 # For installing Text::Aspell.
 RUN yum -y install epel-release
 RUN yum -y install aspell-en aspell-devel
-
-COPY t/cpanfile .
-RUN cpanm --installdeps .
 
 # PHP
 RUN yum -y install php php-mysql php-gd
@@ -76,11 +76,11 @@ RUN service mysqld start & sleep 10 && \
 # OpenLDAP
 RUN cpanm Net::LDAP
 RUN yum -y install openldap-clients openldap-servers
-COPY t/ldif/cn=config.ldif .
-COPY t/ldif/example_com.ldif .
-COPY t/ldif/example_jp.ldif .
-COPY t/ldif/domain1_example_jp.ldif .
-COPY t/ldif/domain2_example_jp.ldif .
+COPY t/ldif/cn=config.ldif /var/www/mt/cn=config.ldif
+COPY t/ldif/example_com.ldif /var/www/mt/example_com.ldif
+COPY t/ldif/example_jp.ldif /var/www/mt/example_jp.ldif
+COPY t/ldif/domain1_example_jp.ldif /var/www/mt/domain1_example_jp.ldif
+COPY t/ldif/domain2_example_jp.ldif /var/www/mt/domain2_example_jp.ldif
 RUN mkdir /var/lib/ldap/jp
 RUN chown ldap:ldap /var/lib/ldap/jp
 RUN service slapd start & sleep 10 && \
@@ -91,4 +91,7 @@ RUN service slapd start & sleep 10 && \
     ldapadd -f domain2_example_jp.ldif -x -D "cn=admin,dc=example,dc=jp" -w secret && \
     service slapd stop
 
-RUN yum clean all
+# Install CPAN modules
+COPY t/cpanfile /var/www/mt/cpanfile
+RUN carton install
+
