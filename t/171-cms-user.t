@@ -13,7 +13,7 @@ use MT::Association;
 use MT::CMS::User;
 use MT::Role;
 
-use MT::Test qw( :app :db );
+use MT::Test qw( :app :db :data );
 use MT::Test::Permission;
 
 use Test::More;
@@ -275,35 +275,20 @@ subtest 'Manage Users screen' => sub {
 };
 
 subtest 'Batch Edit Entries screen' => sub {
+    my $website = MT->model('website')->load;
+    MT::Test::Permission->make_entry( blog_id => $website->id );
+    my $role = MT::Role->load( { name => 'Website Administrator' } );
+    MT::Association->link( $admin, $role, $website );
+
     foreach my $blog_type (qw( blog website )) {
         my $blog_class = MT->model($blog_type);
         my %blog_terms = ( class => $blog_type );
-        my $blog;
-        if ( $blog_class->count( \%blog_terms ) ) {
-            $blog = $blog_class->load( \%blog_terms );
-        }
-        else {
-            my $role;
-            if ( $blog_type eq 'blog' ) {
-                $blog = MT::Test::Permission->make_blog;
-                $role = MT::Role->load( { name => 'Blog Administrator' } );
-            }
-            else {
-                $blog = MT::Test::Permission->make_website;
-                $role = MT::Role->load( { name => 'Website Administrator' } );
-            }
-            MT::Association->link( $admin, $role, $blog );
-        }
+        my $blog       = $blog_class->load( \%blog_terms );
         foreach my $entry_type (qw( entry page )) {
             my $entry_class = MT->model($entry_type);
             my %entry_terms = ( class => $entry_type, blog_id => $blog->id );
-            my $entry
-                = $entry_class->count( \%entry_terms )
-                ? $entry_class->load( \%entry_terms )
-                : $entry_type eq 'entry'
-                ? MT::Test::Permission->make_entry( blog_id => $blog->id )
-                : MT::Test::Permission->make_page( blog_id => $blog->id );
-            my $app = _run_app(
+            my $entry       = $entry_class->load( \%entry_terms );
+            my $app         = _run_app(
                 'MT::App::CMS',
                 {   __test_user => $admin,
                     __mode      => 'dialog_select_author',
