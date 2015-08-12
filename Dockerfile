@@ -5,7 +5,7 @@ RUN yum -y update
 
 RUN yum -y install httpd
 
-RUN yum -y install mysql mysql-server
+RUN yum -y install mysql mysql-server mysql-devel
 RUN yum -y install memcached
 
 #### Perl
@@ -18,7 +18,7 @@ RUN yum -y install gcc
 RUN yum -y install openssl-devel
 
 # Install GD from RPM.
-RUN yum -y install perl-GD
+RUN yum -y install perl-GD gd-devel
 
 # Install Image::Magick from RPM.
 RUN yum -y install ImageMagick-perl
