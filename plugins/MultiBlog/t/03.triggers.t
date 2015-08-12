@@ -179,10 +179,10 @@ run_test {
 run_test {
     my $page = $app->model('page')->load( { blog_id => 1 } );
     for my $s ( MT::Entry::HOLD, MT::Entry::RELEASE, MT::Entry::FUTURE ) {
-        $page->status(MT::Entry::UNPUBLISH);
+        $page->status($s);
         MultiBlog::post_entry_unpub( $plugin, undef, $app, $page );
     }
-    is( $rebuild_count, 1,
+    is( $rebuild_count, 0,
         'not called in post_entry_unpub for page whose status is not UNPUBLISH.'
     );
 };
