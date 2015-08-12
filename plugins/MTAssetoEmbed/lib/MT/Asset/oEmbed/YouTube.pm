@@ -16,7 +16,9 @@ __PACKAGE__->install_properties(
     {   class_type    => 'youtube',
         provider_type => 'youtube',
         endpoint      => 'http://www.youtube.com/oembed',
-        column_defs   => {
+        url_schemes =>
+            [ 'http://*.youtube.com/watch*', 'http://youtu.be/*', ],
+        column_defs => {
             'html'   => 'vclob meta',
             'width'  => 'integer meta',
             'height' => 'integer meta',
@@ -24,10 +26,6 @@ __PACKAGE__->install_properties(
         child_of => [ 'MT::Blog', 'MT::Website', ],
     }
 );
-
-sub domains {
-    return [ qr/youtube\.com/i, qr/youtu\.be/i ];
-}
 
 sub class_label {
     MT->translate('YouTube');

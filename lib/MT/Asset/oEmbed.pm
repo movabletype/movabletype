@@ -63,9 +63,14 @@ sub install_properties {
 sub can_handle {
     my ( $pkg, $url ) = @_;
 
-    my $domains = $pkg->domains || [];
-    foreach my $domain (@$domains) {
-        return 1 if ( $url =~ /$domain/ );
+    my $url_schemes = $pkg->properties->{url_schemes} || [];
+    foreach my $url_scheme (@$url_schemes) {
+        my $str = $url_scheme;
+        $str =~ s/http:/https?:/g;
+        $str =~ s/\./\\./g;
+        $str =~ s/\*/.+/g;
+        my $regex = qr/$str/i;
+        return 1 if ( $url =~ /$regex/ );
     }
     return 0;
 }
@@ -125,7 +130,7 @@ sub get_oembed {
     return $asset;
 }
 
-sub domains { [] }
+sub url_schemes { [] }
 
 sub thumbnail_path {
     my $asset = shift;

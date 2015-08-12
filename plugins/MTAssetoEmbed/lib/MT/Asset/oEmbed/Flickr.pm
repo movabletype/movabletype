@@ -15,7 +15,11 @@ __PACKAGE__->install_properties(
     {   class_type    => 'flickr',
         provider_type => 'flickr',
         endpoint      => 'http://www.flickr.com/services/oembed/',
-        column_defs   => {
+        url_schemes   => [
+            'http://*.flickr.com/photos/*', 'http://flic.kr/p/*',
+            'http://*.staticflickr.com/*'
+        ],
+        column_defs => {
             'html'               => 'vclob meta',
             'width'              => 'integer meta',
             'height'             => 'integer meta',
@@ -27,10 +31,6 @@ __PACKAGE__->install_properties(
         child_of => [ 'MT::Blog', 'MT::Website', ],
     }
 );
-
-sub domains {
-    return [ qr/flickr\.com/i, qr/flic\.kr/i ];
-}
 
 sub class_label {
     MT->translate('Flickr');
