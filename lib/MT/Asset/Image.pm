@@ -1108,7 +1108,7 @@ Transform an image.
 
 =head2 $asset->exif()
 
-Return Image::ExifTool instance.
+Return Image::ExifTool instance. Metadata is read from file each time exif method is called.
 
 =head2 $asset->has_gps_metadata()
 
