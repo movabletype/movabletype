@@ -36,5 +36,5 @@ web_services:
             code: $MTAssetoEmbed::MTAssetoEmbed::App::save_config
 
 oembed_classes:
-    - $MTAssetoEmbed::MT::Asset::oEmbed::YouTube
-    - $MTAssetoEmbed::MT::Asset::oEmbed::Flickr
+    youtube: $MTAssetoEmbed::MT::Asset::oEmbed::YouTube
+    flickr: $MTAssetoEmbed::MT::Asset::oEmbed::Flickr

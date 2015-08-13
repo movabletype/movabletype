@@ -13,9 +13,8 @@ use MTAssetoEmbed;
 use HTTP::Request::Common;
 
 __PACKAGE__->install_properties(
-    {   class_type    => 'youtube',
-        provider_type => 'youtube',
-        endpoint      => 'http://www.youtube.com/oembed',
+    {   class_type => 'youtube',
+        endpoint   => 'http://www.youtube.com/oembed',
         url_schemes =>
             [ 'http://*.youtube.com/watch*', 'http://youtu.be/*', ],
         column_defs => {
@@ -72,7 +71,7 @@ sub get_file_size {
         'fields'       => 'items(fileDetails(fileSize))',
     );
 
-    my $ua  = new_ua();
+    my $ua = new_ua();
     my $res = $ua->request( GET($uri) );
 
     if ( $res->is_success ) {

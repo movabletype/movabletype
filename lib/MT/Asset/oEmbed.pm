@@ -34,32 +34,6 @@ __PACKAGE__->install_properties(
     }
 );
 
-sub install_properties {
-    my $class = shift;
-    my ($props) = @_;
-
-    my $super_props = $class->SUPER::properties();
-    if ($super_props) {
-        if ( $super_props->{provider_type} ) {
-
-            # copy reference of class_to_provider/provider_to_class hashes
-            $props->{__class_to_provider}
-                = $super_props->{__class_to_provider};
-            $props->{__provider_to_class}
-                = $super_props->{__provider_to_class};
-        }
-    }
-
-    if ( my $type = $props->{provider_type} ) {
-        $props->{__class_to_provider}{$class} = $type;
-        $props->{__provider_to_class}{$type}  = $class;
-    }
-
-    $class->SUPER::install_properties($props);
-
-    return $props;
-}
-
 sub can_handle {
     my ( $pkg, $url ) = @_;
 

@@ -18,11 +18,11 @@ sub post_init {
     my ( $cb, $app ) = @_;
     use Data::Dumper;
     my $oembed_classes = $app->registry('oembed_classes');
-    my @oembed_classes
-        = map { ref $_ eq 'ARRAY' ? @$_ : $_ } @$oembed_classes;
     my $component;
-    foreach my $oembed_class (@oembed_classes) {
-        if ( $oembed_class =~ m!^\$! ) {
+    my $oembed_class;
+    foreach my $key ( keys %$oembed_classes ) {
+        if ( $oembed_classes->{$key} =~ m!^\$! ) {
+            $oembed_class = $oembed_classes->{$key};
             if ( $oembed_class =~ s/^\$(\w+)::// ) {
                 $component = $1;
             }

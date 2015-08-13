@@ -732,11 +732,12 @@ sub handler_for_oembed {
     my $pkg = shift;
     my ($url) = @_;
 
+    my $app            = MT->instance;
+    my $oembed_classes = $app->registry('oembed_classes');
+
     my $package = MT::Asset::oEmbed->new;
-    my $types
-        = [ keys %{ $package->properties->{__provider_to_class} || {} } ];
-    foreach my $type (@$types) {
-        my $this_pkg = $package->class_handler($type);
+    foreach my $key ( keys %$oembed_classes ) {
+        my $this_pkg = $package->class_handler($key);
         if ( $this_pkg->can_handle($url) ) {
             return $this_pkg;
         }

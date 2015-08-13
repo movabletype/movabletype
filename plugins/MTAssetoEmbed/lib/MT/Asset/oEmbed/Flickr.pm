@@ -12,10 +12,9 @@ use base qw( MT::Asset::oEmbed );
 use MTAssetoEmbed;
 
 __PACKAGE__->install_properties(
-    {   class_type    => 'flickr',
-        provider_type => 'flickr',
-        endpoint      => 'http://www.flickr.com/services/oembed/',
-        url_schemes   => [
+    {   class_type  => 'flickr',
+        endpoint    => 'http://www.flickr.com/services/oembed/',
+        url_schemes => [
             'http://*.flickr.com/photos/*', 'http://flic.kr/p/*',
             'http://*.staticflickr.com/*'
         ],
