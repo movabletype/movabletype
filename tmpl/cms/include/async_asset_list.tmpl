@@ -44,7 +44,11 @@
 <mt:if name="object_loop">
   <mt:loop name="object_loop">
             <tr id="asset-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-              <td class="col cb"><input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" /><input type="radio" name="id" value="<mt:var name="id" escape="html">" class="select" id="asset-radio-<mt:var name="id" escape="html">" /></td>
+    <mt:if name="can_multi">
+              <td class="col cb"><input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" /><input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" id="asset-select-<mt:var name="id" escape="html">" /></td>
+    <mt:else>
+              <td class="col cb"><input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" /><input type="radio" name="id" value="<mt:var name="id" escape="html">" class="select" id="asset-select-<mt:var name="id" escape="html">" /></td>
+    </mt:if>
               <td class="col si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
                 <img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" />
               </td>
@@ -101,9 +105,14 @@ function loadAssetList(offset) {
       upload_mode: '<mt:var name="upload_mode">',
 </mt:if>
     dialog: 1,
-    json: 1
+    json: 1,
+    can_multi: <mt:var name="can_multi" default="0">
   };
 
+<mt:if name="filter" eq="userpic">
+    opts.filter = 'userpic';
+    opts.filter_val = 1;        
+<mt:else>
   if(jQuery('#search').val().length > 0) {
     opts.search = jQuery('#search').val();
   }
@@ -116,6 +125,7 @@ function loadAssetList(offset) {
     opts.filter = '';
     opts.filter_val = '';
   }
+</mt:if>
 
   var canPaginate = true;
   jQuery.ajax({
@@ -243,6 +253,7 @@ jQuery('#asset-class').change(function() {
   loadAssetList(0);
 });
 
+<mt:if name="filter" ne="userpic">
 jQuery('#modal-search').submit(function(){
   loadAssetList(0);
   jQuery('.search-reset').removeClass('hidden').show();
@@ -255,7 +266,8 @@ jQuery('.search-reset').click(function() {
   loadAssetList(0);
   jQuery('.search-reset').addClass('hidden').hide();
 });
-    
+</mt:if>
+
 // Initial laoading
 loadAssetList(0);
 

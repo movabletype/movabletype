@@ -174,37 +174,34 @@ sub core_methods {
             no_direct => 1,
         },
 
-        'ping'              => "${pkg}Entry::send_pings",
-        'rebuild_phase'     => "${pkg}Blog::rebuild_phase",
-        'rebuild'           => "${pkg}Blog::rebuild_pages",
-        'rebuild_new_phase' => "${pkg}Blog::rebuild_new_phase",
-        'start_rebuild'     => "${pkg}Blog::start_rebuild_pages",
-        'rebuild_confirm'   => "${pkg}Blog::rebuild_confirm",
-        'entry_notify'      => "${pkg}AddressBook::entry_notify",
-        'send_notify'       => "${pkg}AddressBook::send_notify",
-        'start_upload'      => "${pkg}Asset::start_upload",
-        'upload_file'       => "${pkg}Asset::upload_file",
-        'upload_userpic'     => "${pkg}User::upload_userpic",
+        'ping'               => "${pkg}Entry::send_pings",
+        'rebuild_phase'      => "${pkg}Blog::rebuild_phase",
+        'rebuild'            => "${pkg}Blog::rebuild_pages",
+        'rebuild_new_phase'  => "${pkg}Blog::rebuild_new_phase",
+        'start_rebuild'      => "${pkg}Blog::start_rebuild_pages",
+        'rebuild_confirm'    => "${pkg}Blog::rebuild_confirm",
+        'entry_notify'       => "${pkg}AddressBook::entry_notify",
+        'send_notify'        => "${pkg}AddressBook::send_notify",
+        'start_upload'       => "${pkg}Asset::start_upload",
+        'upload_file'        => "${pkg}Asset::upload_file",
         'complete_insert'    => "${pkg}Asset::complete_insert",
         'cancel_upload'      => "${pkg}Asset::cancel_upload",
         'complete_upload'    => "${pkg}Asset::complete_upload",
         'start_upload_entry' => "${pkg}Asset::start_upload_entry",
 
         ## New asset mode
-        'js_upload_file'    => {
+        'js_upload_file' => {
             code     => "${pkg}Asset::js_upload_file",
             app_mode => 'JSON',
         },
-        'dialog_edit_asset'  => "${pkg}Asset::dialog_edit_asset",
-        'js_save_asset' =>  {
+        'dialog_edit_asset' => "${pkg}Asset::dialog_edit_asset",
+        'js_save_asset'     => {
             code     => "${pkg}Asset::js_save_asset",
             app_mode => 'JSON',
         },
-        'open_asset_dialog'    => {
-            code      => "${pkg}Asset::open_asset_dialog",
-        },
+        'open_asset_dialog' => { code => "${pkg}Asset::open_asset_dialog", },
 
-        'logout'             => {
+        'logout' => {
             code           => sub { $_[0]->SUPER::logout(@_) },
             requires_login => 0,
         },
@@ -347,6 +344,7 @@ sub core_methods {
         'list_blogs'        => "${pkg}Blog::list",
         'list_associations' => "${pkg}User::list_association",
         'list_roles'        => "${pkg}User::list_role",
+        'upload_userpic'    => "${pkg}User::upload_userpic",
     };
 }
 

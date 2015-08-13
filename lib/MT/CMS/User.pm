@@ -554,6 +554,7 @@ sub recover_lockout {
     $app->load_tmpl( 'recover_lockout.tmpl', $params );
 }
 
+## DEPRECATED: v6.2
 sub upload_userpic {
     my $app = shift;
 

@@ -3,22 +3,24 @@
   <div id="drop-handler" style="height: 150px; background-color: #DFDFDF; border-radius: 10px; border: dotted 2px; border-color: #6f6f6f; margin-bottom: 1em;">
     <p style="text-align: center; font-size: 1.5em; line-height: 150px;">Drag and drop here to upload files, or <button id="open-file-dialog" style="text-decoration: underline; color: #0076BF; border: none; background: transparent;">browse</button>.</p>
   </div>
-
+  
+<mt:if name="filter" ne="userpic">  
     <h2><__trans phrase="Upload Destination"></h2>
-<mtapp:setting
-  id="site_path"
-  hint="<__trans phrase="_USAGE_UPLOAD">"
-  show_hint="1"
-  show_label="0"
-  label_class="top-label">
-  <mt:if name="destination_loop">
-    <select name="destination" id="destination">
-    <mt:loop name="destination_loop">
-      <option value="<mt:var name="path" escape="html">"><mt:var name="label" escape="html"></option>
-    </mt:loop>
-    </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
-  </mt:if>
-</mtapp:setting>
+  <mtapp:setting
+    id="site_path"
+    hint="<__trans phrase="_USAGE_UPLOAD">"
+    show_hint="1"
+    show_label="0"
+    label_class="top-label">
+    <mt:if name="destination_loop">
+      <select name="destination" id="destination">
+      <mt:loop name="destination_loop">
+        <option value="<mt:var name="path" escape="html">"><mt:var name="label" escape="html"></option>
+      </mt:loop>
+      </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+    </mt:if>
+  </mtapp:setting>
+</mtif>
 
     <h2><__trans phrase="Upload Options"></h2>
 <mtapp:setting
@@ -44,12 +46,8 @@
 
 <div id="upload-progress"></div>
 
-
-
-
 <script type="text/javascript">
 /* <![CDATA[ */
-
 // Assign drag and drop event
 jQuery('#drop-handler').on('dragenter', function(e) {
   e.stopPropagation();
@@ -87,7 +85,10 @@ function createFormData(file) {
   fd.append('file', file);
 
   // Set extended parameters
-  fd.append('__mode', '<mt:if name="upload_mode"><mt:var name="upload_mode" escape="html"><mt:else>js_upload_file</mt:if>');
+  fd.append('__mode', 'js_upload_file');
+<mt:if name="filter" eq="userpic">
+  fd.append('type', 'userpic');
+</mt:if>
 <mt:if name="blog_id">
   fd.append('blog_id', <mt:var name="blog_id">);
 </mt:if>
@@ -160,8 +161,9 @@ function createUploadBlock () {
     });
   }
 
-  this.setThubmanil = function(url, fname) {
+  this.setThubmanil = function(url, fname, id) {
     jQuery('<img src="' + url + '"><span class="filename" style="margin-left: 0.5em; text-align: center; line-height: 50px;">' + fname + '</span>').appendTo(this.thumbnail);
+    this.thumbnail.parents('.upload-status-block').attr('data-asset-id', id);
   }
 
   this.setError = function(err) {
@@ -186,9 +188,19 @@ function createUploadBlock () {
 }
 
 function uploadFiles(files) {
-  var num_files = files.length;
+<mt:if name="can_multi">
+    var num_files = files.length;
+<mt:else>
+    var num_files = 1; // Always 1 file only
+    jQuery('#upload-progress').empty();
+</mt:if>    
   var max_upload_size = <mt:var name="max_upload_size">;
 
+  // Disable submit button
+  jQuery('.actions-bar button.primary')
+    .attr('disabled', 'disabled')
+    .addClass('disabled');
+  
   for (var i = 0; i < num_files; i++) {
     var fd = createFormData( files[i] );
     var uploadBlock = new createUploadBlock();
@@ -237,9 +249,17 @@ function uploadFile( formData, uploadBlock ) {
     else {
       // Success
       uploadBlock.setProgress(100);
-      uploadBlock.setThubmanil(data.result.asset.thumbnail, data.result.asset.filename);
+      uploadBlock.setThubmanil(data.result.asset.thumbnail, data.result.asset.filename, data.result.asset.id);
       uploadBlock.progressbar.hide();
       uploadBlock.enableEditAsset(data.result.asset);
+
+      // Enable submit button
+      jQuery('.actions-bar button.primary')
+        .removeAttr('disabled')
+        .removeClass('disabled');
+
+      // Set asset ID
+      jQuery('#select_asset input[name="id"]').val(data.result.asset.id);
     }
   });
 
@@ -276,5 +296,20 @@ function is_valid_path(path_){
     }
     return true;
 }
+
 /* ]]> */
 </script>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  jQuery('#upload-asset-panel').on('changePanel', function() {
+    if(jQuery('#upload-progress').children('.upload-status-block').length > 0) {
+      var id = jQuery('#upload-progress').children('.upload-status-block').attr('data-asset-id');
+      jQuery('#select_asset input[name="id"]').val(id);
+
+      // Enable submit button
+      jQuery('.actions-bar button.primary')
+        .removeAttr('disabled')
+        .removeClass('disabled');
+    }
+  });
+</mt:setvarblock>

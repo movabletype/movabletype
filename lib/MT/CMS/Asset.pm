@@ -256,8 +256,11 @@ sub dialog_list_asset {
 
     my $dialog    = $app->param('dialog')    ? 1 : 0;
     my $no_insert = $app->param('no_insert') ? 1 : 0;
-    my %carry_params = map { $_ => $app->param($_) || '' }
-        (qw( edit_field upload_mode require_type next_mode asset_select ));
+    my %carry_params
+        = map { $_ => $app->param($_) || '' }
+        (
+        qw( edit_field upload_mode require_type next_mode asset_select can_multi )
+        );
     $carry_params{'user_id'} = $app->param('filter_val')
         if $filter eq 'userpic';
     _set_start_upload_params( $app, \%carry_params )
@@ -466,14 +469,33 @@ sub start_upload {
 sub js_upload_file {
     my $app = shift;
 
-    if ( my $perms = $app->permissions ) {
+    my $is_userpic = $app->param('type') eq 'userpic' ? 1 : 0;
+    my $user_id = $app->param('user_id');
+    if ($is_userpic) {
         return $app->error(
-            $app->json_error( $app->translate("Permission denied.") ) )
-            unless $perms->can_do('upload');
+            $app->json_error( $app->translate("Invalid Request.") ) )
+            unless $user_id;
+
+        my $user = $app->model('author')->load( { id => $user_id } )
+            or return $app->error(
+            $app->json_error( $app->translate("Invalid Request.") ) );
+
+        my $appuser = $app->user;
+        if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+            return $app->error(
+                $app->json_error( $app->translate("Permission denied.") ) );
+        }
     }
     else {
-        return $app->error(
-            $app->json_error( $app->translate("Permission denied.") ) );
+        if ( my $perms = $app->permissions ) {
+            return $app->error(
+                $app->json_error( $app->translate("Permission denied.") ) )
+                unless $perms->can_do('upload');
+        }
+        else {
+            return $app->error(
+                $app->json_error( $app->translate("Permission denied.") ) );
+        }
     }
     $app->validate_magic()
         or return $app->error(
@@ -499,6 +521,13 @@ sub js_upload_file {
         },
     );
     return unless $asset;
+
+    # Set tag for userpic
+    if ($is_userpic) {
+        $asset->tags('@userpic');
+        $asset->created_by($user_id);
+        $asset->save;
+    }
 
     # Make thumbnail
     my $thumb_url;
@@ -2833,13 +2862,23 @@ sub open_asset_dialog {
     my %param;
     _set_start_upload_params( $app, \%param );
 
+    $param{can_multi} = 1
+        unless ( $app->param('upload_mode') || '' ) eq 'upload_userpic';
+
     $param{filter} = $app->param('filter') if defined $app->param('filter');
     $param{filter_val} = $app->param('filter_val')
         if defined $app->param('filter_val');
     $param{search} = $app->param('search') if defined $app->param('search');
     $param{edit_field} = $app->param('edit_field')
         if defined $app->param('edit_field');
+    $param{next_mode} = $app->param('next_mode');
+
     $param{upload_mode} = $mode_userpic;
+    if ($mode_userpic) {
+        $param{user_id}      = $app->user->id;
+        $param{require_type} = 'image';
+        $param{'is_image'}   = 1;
+    }
 
     require MT::Asset;
     my $subclasses = MT::Asset->list_subclasses;

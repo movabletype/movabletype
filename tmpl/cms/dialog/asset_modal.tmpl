@@ -72,21 +72,74 @@
 
 <div class="dialog-screen">
   <div class="actions-bar actions-bar-bottom">
-    <button
-      type="submit"
-      accesskey="x"
-      class="cancel action button mt-close-dialog"
-      title="<__trans phrase="Cancel (x)">">
-      <__trans phrase="Cancel">
-    </button>
+    <form action="" method="get" onsubmit="return false">
+      <button
+        type="submit"
+        accesskey="s"
+        title="<mt:if name="is_image"><__trans phrase="Next (s)"><mt:else><__trans phrase="Insert (s)"></mt:if>"
+        class="action primary button close disabled"
+        disabled="true">
+          <mt:if name="is_image"><__trans phrase="Continue"><mt:else><__trans phrase="Insert"></mt:if>
+      </button>
+      <button
+        type="submit"
+        accesskey="x"
+        class="cancel action button mt-close-dialog"
+        title="<__trans phrase="Cancel (x)">">
+        <__trans phrase="Cancel">
+      </button>
+    </form>
   </div>
 </div>
 
+<form method="post" action="<mt:var name="script_url">" name="select_asset" id="select_asset">
+  <input type="hidden" name="__mode" value="<mt:if name="next_mode"><mt:var name="next_mode" escape="html"><mt:else>complete_insert</mt:if>" />
+  <input type="hidden" name="_type" value="asset" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <input type="hidden" name="dialog_view" value="1" />
+  <input type="hidden" name="no_insert" value="<mt:var name="no_insert">" />
+  <input type="hidden" name="dialog" value="1" />
+  <input type="hidden" name="id" value="" />
+  <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
+<mt:if name="edit_blog_id">
+  <input type="hidden" name="blog_id" value="<mt:var name="edit_blog_id">" />
+  <input type="hidden" name="direct_asset_insert" value="1" />
+  <mt:unless name="is_image">
+  <input type="hidden" name="force_insert" value="1" />
+  </mt:unless>
+  <mt:unless name="asset_select">
+  <input type="hidden" name="entry_insert" value="1" />
+  </mt:unless>
+</mt:if>
+<mt:if name="asset_select">
+  <input type="hidden" name="asset_select" value="1" />
+</mt:if>
+<mt:if name="user_id">
+  <input type="hidden" name="user_id" value="<mt:var name="user_id" escape="html">" />
+</mt:if>
+</form>
 
 <mt:setvarblock name="jq_js_include" append="1">
-  jQuery('.left-menu-item').click( function() {
-    jQuery('div.panel').addClass('hidden').hide();
-    jQuery(jQuery(this).attr('data-panel-id')).removeClass('hidden').show();
+jQuery('.left-menu-item').click( function() {
+  // Make custom event
+  var event = new jQuery.Event('changePanel');
+
+  jQuery('#select_asset input[name="id"]').val('');
+  jQuery('.actions-bar button.primary')
+    .attr('disabled', 'disabled')
+    .addClass('disabled');
+  jQuery('div.panel')
+    .addClass('hidden')
+    .hide();
+  jQuery(jQuery(this).attr('data-panel-id'))
+    .removeClass('hidden')
+    .addClass('active')
+    .show()
+    .trigger(event);
+});
+jQuery('.actions-bar button.primary').click(function() {
+  jQuery('#select_asset').submit();
 });
 </mt:setvarblock>
 
