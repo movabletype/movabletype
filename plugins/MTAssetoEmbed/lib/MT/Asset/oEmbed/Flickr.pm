@@ -122,7 +122,7 @@ sub get_file_url {
     my $asset = shift;
     my ($json) = @_;
 
-    return $asset->get_original_source( $json->{url} );
+    return $asset->get_original_source( $json->{web_page} );
 }
 
 sub _cache_key {
@@ -142,11 +142,10 @@ sub get_original_sizes {
     my $asset = shift;
     my ($url) = @_;
 
-    my $filename
-        = $url =~ /.*\/(.*)/
+    my $photo_id
+        = $url =~ /.*\/(.*)\//
         ? $1
         : $url;
-    my ($photo_id) = split '_', $filename;
 
     my $cache_key = _cache_key($photo_id);
     my $cache     = MT->request->cache($cache_key);
