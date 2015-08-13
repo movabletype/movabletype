@@ -26,6 +26,7 @@ __PACKAGE__->install_properties(
             'web_page_short_url' => 'vclob meta',
             'license'            => 'vchar meta',
             'license_id'         => 'integer meta',
+            'license_url'        => 'vclob meta',
         },
         child_of => [ 'MT::Blog', 'MT::Website', ],
     }
