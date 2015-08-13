@@ -23,6 +23,9 @@ RUN yum -y install perl-GD gd-devel
 # Install Image::Magick from RPM.
 RUN yum -y install ImageMagick-perl
 
+# Enable Imager to manipulate GIF.
+RUN yum -y install giflib-devel
+
 # For installing Math::GMP.
 RUN yum -y install gmp-devel
 
