@@ -38,7 +38,7 @@ RUN yum -y install zip unzip
 RUN yum -y install wget
 RUN wget -O - https://cpanmin.us | perl - App::cpanminus
 RUN cpanm Carton
-WORKDIR /var/www/mt
+WORKDIR /var/www/docker_build
 ENV PERL_CPANM_OPT -L ./local
 
 # Installation of Math::BigInt >=1.9994 is failed on CircleCI.
@@ -76,11 +76,11 @@ RUN service mysqld start & sleep 10 && \
 # OpenLDAP
 RUN cpanm Net::LDAP
 RUN yum -y install openldap-clients openldap-servers
-COPY t/ldif/cn=config.ldif /var/www/mt/cn=config.ldif
-COPY t/ldif/example_com.ldif /var/www/mt/example_com.ldif
-COPY t/ldif/example_jp.ldif /var/www/mt/example_jp.ldif
-COPY t/ldif/domain1_example_jp.ldif /var/www/mt/domain1_example_jp.ldif
-COPY t/ldif/domain2_example_jp.ldif /var/www/mt/domain2_example_jp.ldif
+COPY t/ldif/cn=config.ldif /var/www/docker_build/cn=config.ldif
+COPY t/ldif/example_com.ldif /var/www/docker_build/example_com.ldif
+COPY t/ldif/example_jp.ldif /var/www/docker_build/example_jp.ldif
+COPY t/ldif/domain1_example_jp.ldif /var/www/docker_build/domain1_example_jp.ldif
+COPY t/ldif/domain2_example_jp.ldif /var/www/docker_build/domain2_example_jp.ldif
 RUN mkdir /var/lib/ldap/jp
 RUN chown ldap:ldap /var/lib/ldap/jp
 RUN service slapd start & sleep 10 && \
@@ -92,8 +92,8 @@ RUN service slapd start & sleep 10 && \
     service slapd stop
 
 # Install CPAN modules
-COPY t/cpanfile /var/www/mt/cpanfile
+COPY t/cpanfile /var/www/docker_build/cpanfile
 RUN carton install
 
-ENV PERL5LIB /var/www/mt/local/lib/perl5
+ENV PERL5LIB /var/www/docker_build/local/lib/perl5
 
