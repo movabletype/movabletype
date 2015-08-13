@@ -51,7 +51,7 @@ sub can_handle {
 
 sub get_oembed {
     my $asset = shift;
-    my ($url) = @_;
+    my ( $url, $maxwidth, $maxheight ) = @_;
 
     my $token = $asset->get_token_data();
     return $asset->error( MT->translate("Token data isn't registered.") )
@@ -63,13 +63,20 @@ sub get_oembed {
     $asset->url($url) unless $asset->url();
 
     $url = Encode::encode_utf8($url) unless Encode::is_utf8($url);
-    my $param = uri_escape_utf8($url);
+
+    my $endpoint = $asset->properties->{endpoint};
+    my $uri      = URI->new($endpoint);
+    my $query    = {};
+    $query->{url}       = $url;
+    $query->{maxwidth}  = $maxwidth if $maxwidth;
+    $query->{maxheight} = $maxheight if $maxheight;
+    $query->{format}    = 'json';
+    $uri->query_form($query);
 
     my $ua = MT->new_ua();
     $ua->agent( 'MovableType/' . MT->version_id );
     $ua->ssl_opts( verify_hostname => 0 );
-    my $endpoint = $asset->properties->{endpoint};
-    my $res      = $ua->get( $endpoint . '?url=' . $param . '&format=json' );
+    my $res = $ua->get( $uri->as_string );
 
     if ( $res->is_success ) {
         require JSON;
