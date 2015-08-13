@@ -317,7 +317,7 @@ sub _download_image_data {
 
     my $ua = MT->new_ua(
         {   agent    => 'MovableType/' . MT->version_id,
-            max_size => 1_000_000,
+            max_size => 10_000_000,
         }
     );
     $ua->ssl_opts( verify_hostname => 0 );
