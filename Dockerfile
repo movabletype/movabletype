@@ -39,7 +39,7 @@ RUN yum -y install wget
 RUN wget -O - https://cpanmin.us | perl - App::cpanminus
 RUN cpanm Carton
 WORKDIR /var/www/docker_build
-ENV PERL_CPANM_OPT -L ./local
+ENV PERL_CPANM_OPT -L /var/www/docker_build/local
 
 # Installation of Math::BigInt >=1.9994 is failed on CircleCI.
 RUN cpanm Math::BigInt@1.9993
