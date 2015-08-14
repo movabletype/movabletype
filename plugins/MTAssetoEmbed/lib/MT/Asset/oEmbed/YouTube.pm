@@ -13,10 +13,12 @@ use MTAssetoEmbed;
 use HTTP::Request::Common;
 
 __PACKAGE__->install_properties(
-    {   class_type => 'youtube',
-        endpoint   => 'http://www.youtube.com/oembed',
-        url_schemes =>
-            [ 'http://*.youtube.com/watch*', 'http://youtu.be/*', ],
+    {   class_type  => 'youtube',
+        endpoint    => 'http://www.youtube.com/oembed',
+        url_schemes => [
+            qr!https?://[0-9a-zA-Z\-]+\.youtube\.com\/watch[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
+            qr!https?://youtu\.be\/[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
+        ],
         column_defs => {
             'html'   => 'vclob meta',
             'width'  => 'integer meta',
@@ -71,7 +73,7 @@ sub get_file_size {
         'fields'       => 'items(fileDetails(fileSize))',
     );
 
-    my $ua = new_ua();
+    my $ua  = new_ua();
     my $res = $ua->request( GET($uri) );
 
     if ( $res->is_success ) {

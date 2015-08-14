@@ -15,8 +15,9 @@ __PACKAGE__->install_properties(
     {   class_type  => 'flickr',
         endpoint    => 'http://www.flickr.com/services/oembed/',
         url_schemes => [
-            'http://*.flickr.com/photos/*', 'http://flic.kr/p/*',
-            'http://*.staticflickr.com/*'
+            qr!https?://[0-9a-zA-Z\-]+\.flickr\.com\/photos\/[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
+            qr!https?://flic\.kr\/p\/[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
+            qr!https?://[0-9a-zA-Z\-]+\.staticflickr\.com\/[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
         ],
         column_defs => {
             'html'               => 'vclob meta',

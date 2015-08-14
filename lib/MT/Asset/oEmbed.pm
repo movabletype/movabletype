@@ -38,12 +38,7 @@ sub can_handle {
     my ( $pkg, $url ) = @_;
 
     my $url_schemes = $pkg->properties->{url_schemes} || [];
-    foreach my $url_scheme (@$url_schemes) {
-        my $str = $url_scheme;
-        $str =~ s/http:/https?:/g;
-        $str =~ s/\./\\./g;
-        $str =~ s/\*/.+/g;
-        my $regex = qr/$str/i;
+    foreach my $regex (@$url_schemes) {
         return 1 if ( $url =~ /$regex/ );
     }
     return 0;
