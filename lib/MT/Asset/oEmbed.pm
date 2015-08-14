@@ -93,7 +93,11 @@ sub get_oembed {
         my $title = delete $json->{title};
         $asset->label($title);
         $asset->file_url( $asset->get_file_url($json) );
-        $asset->file_size( $asset->get_file_size );
+
+        my $file_size = $asset->get_file_size;
+        return $asset->error( MT->translate("file_size could not be got.") )
+            unless $file_size;
+        $asset->file_size($file_size);
 
         foreach my $k ( keys(%$json) ) {
             $asset->$k( $json->{$k} ) if $json->{$k};
