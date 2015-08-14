@@ -293,17 +293,12 @@ sub edit {
                 = $cfg->BaseSitePath
                 ? $cfg->BaseSitePath
                 : $app->document_root;
-            $cwd = File::Spec->catdir( $cwd, 'WEBSITE-NAME' )
-                ;    # for including the end of directory separator
-            $cwd =~ s!WEBSITE-NAME\z!!;    # canonpath() remove it
             $cwd =~ s!([\\/])cgi(?:-bin)?([\\/].*)?$!$1!;
             $cwd =~ s!([\\/])mt[\\/]?$!$1!i;
             $param->{site_path} = $param->{suggested_site_path} = $cwd;
         }
         else {
             my $cwd = $param->{site_path};
-            $cwd = File::Spec->catdir( $cwd, 'WEBSITE-NAME' );
-            $cwd =~ s!WEBSITE-NAME\z!!;
             $param->{site_path} = $cwd;
         }
     }
