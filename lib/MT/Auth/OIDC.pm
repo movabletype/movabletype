@@ -15,8 +15,6 @@ my $authorization_endpoint = 'http://localhost:5001/authorize';
 my $token_endpoint         = 'http://localhost:5001/token';
 my $userinfo_endpoint      = 'http://localhost:5001/userinfo';
 my $scope                  = 'openid email profile phone address';
-my $client_id = 'sample_client_id';
-my $client_scr = 'sample_client_secret';
 
 sub login {
     my $class    = shift;
@@ -31,20 +29,31 @@ sub login {
         $identity = $class->url_for_userid($u);
     }
 
-    return $app->redirect( $class->_uri_to_authorizatin_endpoint($app,$blog) );
+    return $app->redirect(
+        $class->_uri_to_authorizatin_endpoint( $app, $blog ) );
 
 }
 
 sub handle_sign_in {
     my $class = shift;
     my ( $app, $auth_type ) = @_;
-    my $q = $app->{query};
+    my $q        = $app->{query};
+    my $INTERVAL = 60 * 60 * 24 * 7;
+
+    if ( $q->param("error") ) {
+        return $app->error(
+            $app->translate(
+                "Authentication failure: [_1]",
+                $q->param("error")
+            )
+        );
+    }
 
     my $state = decode_json( MT::Util::decode_url( $q->param('state') ) );
     $app->param( 'blog_id', $state->{blog_id} );
     $app->param( 'static',  $state->{static} );
 
-    my $blog  = $app->model('blog')->load( $state->{blog_id} );
+    my $blog = $app->model('blog')->load( $state->{blog_id} );
 
     my $state_session = $state->{onetimetoken};
     if (my $state_session = MT::Session::get_unexpired_value(
@@ -67,12 +76,12 @@ sub handle_sign_in {
         return $app->error('The code parameter is missing.');
     }
 
-    my $client = $class->_client($app,$blog);
+    my $client = $class->_client( $app, $blog );
 
     # get_access_token
     my $token = $client->get_access_token(
         code         => $code,
-        redirect_uri => _create_return_url($app,$blog),
+        redirect_uri => _create_return_url( $app, $blog ),
     );
     my $res          = $client->last_response;
     my $request_body = $res->request->content;
@@ -97,7 +106,7 @@ sub handle_sign_in {
     # get_user_info
     my $userinfo_res = $class->_get_userinfo( $token->access_token );
     unless ( $userinfo_res->is_success ) {
-        return $app->error('Failed to get userinfo response');
+        return $app->error( $userinfo_res->message );
     }
     my $user_info    = $userinfo_res->content;
     my $user_info    = decode_json($user_info);
@@ -110,7 +119,25 @@ sub handle_sign_in {
             auth_type => $auth_type,
         }
     );
-    if ( not $cmntr ) {
+
+    if ($cmntr) {
+        unless (
+            (   $cmntr->modified_on
+                && ( MT::Util::ts2epoch( $blog, $cmntr->modified_on )
+                    > time - $INTERVAL )
+            )
+            || ($cmntr->created_on
+                && ( MT::Util::ts2epoch( $blog, $cmntr->created_on )
+                    > time - $INTERVAL )
+            )
+            )
+        {
+            $class->set_commenter_properties( $cmntr, $user_info );
+            $cmntr->save or return 0;
+        }
+
+    }
+    else {
         $cmntr = $app->make_commenter(
             name        => $sub,
             nickname    => $nickname,
@@ -118,9 +145,11 @@ sub handle_sign_in {
             external_id => $sub,
             url         => $user_info->{profile},
         );
+        if ($cmntr) {
+            $class->set_commenter_properties( $cmntr, $user_info );
+            $cmntr->save or return 0;
+        }
     }
-
-    # __get_userpic($cmntr);
 
     my $session = $app->make_commenter_session($cmntr);
     unless ($session) {
@@ -141,10 +170,10 @@ sub _get_userinfo {
 }
 
 sub _uri_to_authorizatin_endpoint {
-    my $class = shift;
-    my $app = shift;
-    my $blog = shift;
-    my $q     = $app->param;
+    my $class   = shift;
+    my $app     = shift;
+    my $blog    = shift;
+    my $q       = $app->param;
     my $blog_id = $blog->id || '';
 
     my $static = $q->param('static') || '';
@@ -171,7 +200,7 @@ sub _uri_to_authorizatin_endpoint {
     };
     my $state_string = encode_json($state);
 
-    my $client = $class->_client($app,$blog);
+    my $client = $class->_client( $app, $blog );
     $client->uri_to_redirect(
         redirect_uri => _create_return_url( $app, $blog ),
         scope        => $scope,
@@ -181,20 +210,16 @@ sub _uri_to_authorizatin_endpoint {
 }
 
 sub _client {
-    my $class   = shift;
-    my $app = shift;
-    my $blog = shift;
-    my $config_scope  = $blog ? ( 'blog:' . $blog->id ) : 'system';
-    my $plugin  = plugin();
-    my $config = $plugin->get_config_hash($config_scope);
+    my $class = shift;
+    my $app   = shift;
+    my $blog  = shift;
 
-    my $google_client_id  = $config->{"client_id"};
-    my $google_client_secret = $config->{"client_secret"};
-
+    my $client_id     = $blog->meta("client_id");
+    my $client_secret = $blog->meta("client_id");
 
     return OIDC::Lite::Client::WebServer->new(
-        id               => $google_client_id,
-        secret           => $google_client_secret,
+        id               => $client_id,
+        secret           => $client_secret,
         authorize_uri    => $authorization_endpoint,
         access_token_uri => $token_endpoint,
     );

@@ -2,19 +2,6 @@
 
 <mtapp:settinggroup id="google-oidc-settings">
 
-<div id="use-parent-client" style="<mt:Unless name="parent_client">display: none</mt:Unless>">
-<mtapp:setting
-   id="setup_own_client_id"
-   label="<__trans phrase="OpenIDConnect settings">">
-<__trans phrase="This [_2] is using the settings of [_1]." params="<mt:If name="has_parent_client_permission"><a href="<mt:Var name="mt_url">?__mode=cfg_web_services&amp;_type=blog<mt:If name="parent_client_blog_id">&amp;blog_id=<mt:Var name="parent_client_blog_id" /></mt:If>"></mt:If><mt:If name="parent_client_blog_id"><mt:Var name="parent_client_blog_name" /><mt:Else><__trans phrase="System" /></mt:If><mt:If name="has_parent_client_permission"></a></mt:If>%%<mt:var name="scope_label" escape="html">" />
-<a href="#" id="setup_own_client_id" class="button"><__trans phrase="Other Google account" /></a>
-<input type="hidden" id="goidc_parent_client_id" value="<mt:Var name="parent_client_id" encode_html="1" />" />
-</mtapp:setting>
-</div>
-
-<div id="use-own-client" style="<mt:If name="parent_client">display: none</mt:If>">
-<mt:SetVarBlock name="hint"><__trans phrase="Create an OpenIDConnect application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a> before selecting profile." /></mt:SetVarBlock>
-
 <mtapp:setting
    id="goidc_client_id"
    label="<__trans phrase="Client ID of the OpenIDConnect application">"
@@ -28,7 +15,6 @@
    show_hint="0">
     <input type="text" id="google_oidc_client_secret" name="google_oidc_client_secret" value="<mt:Var name="google_oidc_client_secret" encode_html="1" />" />
 </mtapp:setting>
-</div>
 
 </mtapp:settinggroup>
 

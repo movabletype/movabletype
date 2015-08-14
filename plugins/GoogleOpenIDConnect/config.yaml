@@ -46,4 +46,4 @@ commenter_authenticators:
                 </div>
             </form>
         login_form_params: GoogleOpenIDConnect::OIDC::commenter_auth_params
-        # condition: $GoogleOpenIDConnect::GoogleOpenIDConnect::OIDC::condition
+        condition: $GoogleOpenIDConnect::GoogleOpenIDConnect::OIDC::condition
