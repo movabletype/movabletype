@@ -199,7 +199,8 @@ sub core_methods {
             code     => "${pkg}Asset::js_save_asset",
             app_mode => 'JSON',
         },
-        'open_asset_dialog' => { code => "${pkg}Asset::open_asset_dialog", },
+        'dialog_asset_modal' =>
+            { code => "${pkg}Asset::dialog_asset_modal", },
 
         'logout' => {
             code           => sub { $_[0]->SUPER::logout(@_) },

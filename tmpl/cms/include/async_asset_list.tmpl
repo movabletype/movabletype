@@ -82,6 +82,7 @@
 isModal = getByID("list-assets-dialog");
 
 var checked = [];
+var currentPage = 1;
 
 function loadAssetList(offset) {
   jQuery('.indicator, #listing-table-overlay').show();
@@ -154,6 +155,22 @@ function loadAssetList(offset) {
       jQuery('#asset-class').removeAttr("disabled");
       jQuery('#search').removeAttr("disabled");
       jQuery('#search-button').removeAttr("disabled");
+
+      jQuery('table.listing-table tbody tr input[name="id"]').on('click', function(){
+        if (jQuery('table.listing-table tbody tr input:checked').length > 0) {
+          // Enable submit button
+          jQuery('.actions-bar button.primary')
+            .removeAttr('disabled')
+            .removeClass('disabled');
+        }
+        else {
+          // Disable submit button
+          jQuery('.actions-bar button.primary')
+            .attr('disabled')
+            .addClass('disabled');
+        }
+        saveChecked(currentPage);
+      })
     },
     error: function(xhr, status, error) {
       console.log('error: ' + status + ":" + error);
@@ -176,6 +193,7 @@ function renderPagination(pager) {
   var end;
   var page = parseInt(pager.offset / pager.limit) + 1;
   var maxPage = Math.ceil(pager.listTotal / pager.limit);
+  currentPage = page;  
 
   if ( page > 1 ) {
     usefirst = true;
@@ -245,16 +263,18 @@ function saveChecked(page) {
   checked[page] = [];
   jQuery('table.listing-table tbody tr input:checked').each(function() {
     var id = jQuery(this).parents('tr').attr('id');
-    checked[page][id] = 1;
+    checked[page][id] = jQuery(this).val();
   });
 }
 
 jQuery('#asset-class').change(function() {
+  checked = [];
   loadAssetList(0);
 });
 
 <mt:if name="filter" ne="userpic">
 jQuery('#modal-search').submit(function(){
+  checked = [];
   loadAssetList(0);
   jQuery('.search-reset').removeClass('hidden').show();
   return false;
@@ -262,11 +282,29 @@ jQuery('#modal-search').submit(function(){
 
 
 jQuery('.search-reset').click(function() {
+  checked = [];
   jQuery('#search').val('');
   loadAssetList(0);
   jQuery('.search-reset').addClass('hidden').hide();
 });
 </mt:if>
+
+jQuery('.actions-bar button.primary').click(function() {
+  if ( currentPanel != '#list-asset-panel' ) {
+    return;
+  }
+
+  var ids = [];
+  var page_keys = Object.keys(checked);
+  for(i=0; i < page_keys.length; i++) {
+    var item_keys = Object.keys(checked[page_keys[i]]);
+    for(j=0;j < item_keys.length; j++) {
+      ids.push(checked[page_keys[i]][item_keys[j]]);
+    }
+  }
+  // Set asset ID
+  jQuery('#select_asset input[name="id"]').val(ids.join(','));
+})
 
 // Initial laoading
 loadAssetList(0);

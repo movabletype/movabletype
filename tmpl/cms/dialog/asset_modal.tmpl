@@ -121,18 +121,21 @@
 </form>
 
 <mt:setvarblock name="jq_js_include" append="1">
+var currentPanel = '#upload-asset-panel';
 jQuery('.left-menu-item').click( function() {
   // Make custom event
   var event = new jQuery.Event('changePanel');
 
+  currentPanel = jQuery(this).attr('data-panel-id');
   jQuery('#select_asset input[name="id"]').val('');
+  
   jQuery('.actions-bar button.primary')
     .attr('disabled', 'disabled')
     .addClass('disabled');
   jQuery('div.panel')
     .addClass('hidden')
     .hide();
-  jQuery(jQuery(this).attr('data-panel-id'))
+  jQuery(currentPanel)
     .removeClass('hidden')
     .addClass('active')
     .show()

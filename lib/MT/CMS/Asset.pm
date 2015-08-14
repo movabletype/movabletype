@@ -165,7 +165,7 @@ sub dialog_list_asset {
     my $app = shift;
 
     # Backward compatibility
-    return open_asset_dialog( $app, @_ )
+    return dialog_asset_modal( $app, @_ )
         if !$app->param('json') && !$app->config('EnableUploadCompat');
 
     my $blog_id = $app->param('blog_id');
@@ -2832,7 +2832,7 @@ sub transform_image {
     }
 }
 
-sub open_asset_dialog {
+sub dialog_asset_modal {
     my $app = shift;
 
     # Backward compatibility
