@@ -906,8 +906,11 @@ sub _transform {
 
     # Update modified_on.
     my $app = MT->app;
-    my $user = $app->can('user') && $app->user->id ? $app->user : undef;
-    $asset->modified_by( $app->user->id );
+    my $user
+        = $app->can('user')
+        && $app->user
+        && $app->user->id ? $app->user : undef;
+    $asset->modified_by( $user->id ) if $user;
 
     $asset->save or return;
 
