@@ -49,7 +49,7 @@ sub get_oembed {
     my ( $url, $maxwidth, $maxheight ) = @_;
 
     my $token = $asset->get_token_data();
-    return $asset->error( MT->translate("Token data isn't registered.") )
+    return $asset->error( MT->translate("Token data is not registered.") )
         unless $token;
 
     $url = $url || $asset->url();
@@ -76,6 +76,13 @@ sub get_oembed {
     if ( $res->is_success ) {
         require JSON;
         my $json = JSON::from_json( $res->content() );
+
+        return $asset->error(
+            MT->translate(
+                'oEmbed error: "type" parameter is "link". Perhaps it is not "Public".'
+            )
+        ) if $json->{type} eq 'link';
+
         for my $k (
             qw( type version author_name author_url provider_name provider_url cache_age )
             )
@@ -93,6 +100,10 @@ sub get_oembed {
         my $title = delete $json->{title};
         $asset->label($title);
         $asset->file_url( $asset->get_file_url($json) );
+        if ( $asset->errstr ) {
+            return $asset->error(
+                MT->translate( "Get file url error: [_1]", $asset->errstr ) );
+        }
 
         my $file_size = $asset->get_file_size;
         return $asset->error( MT->translate("file_size could not be got.") )

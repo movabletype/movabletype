@@ -154,7 +154,8 @@ sub get_original_sizes {
     return $cache if $cache;
 
     my $token_data = $asset->get_token_data();
-    return undef unless $token_data;
+    return $asset->error( translate('Token data is not registered.') )
+        unless $token_data;
 
     my $request = Net::OAuth->request("protected resource")->new(
         consumer_key     => $token_data->{consumer_key},
@@ -180,6 +181,9 @@ sub get_original_sizes {
     if ( $res->is_success ) {
         my $data
             = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+        return $asset->error(
+            translate( 'Flickr getSizes error: ' . $data->{message} ) )
+            if ( $data->{stat} eq 'fail' );
         my @size = @{ $data->{sizes}{size} };
         foreach my $item (@size) {
             if ( $item->{label} eq 'Original' ) {
