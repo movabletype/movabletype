@@ -370,4 +370,18 @@ sub get_token_data {
     undef;
 }
 
+sub thumbnail_basename {
+    my $asset = shift;
+
+    require Digest::MD5;
+    my $file = Digest::MD5::md5_hex( $asset->url );
+
+    my $ext
+        = $asset->provider_thumbnail_url =~ /.*\/.*\.(\w+)$/
+        ? $1
+        : '';
+
+    return ( $file, $ext );
+}
+
 1;
