@@ -184,11 +184,30 @@ sub get_original_sizes {
         return $asset->error(
             translate( 'Flickr getSizes error: ' . $data->{message} ) )
             if ( $data->{stat} eq 'fail' );
-        my @size = @{ $data->{sizes}{size} };
+        my @size      = @{ $data->{sizes}{size} };
+        my $max_width = 0;
+        my $max_size_item;
         foreach my $item (@size) {
             if ( $item->{label} eq 'Original' ) {
                 MT::Request->instance->cache( $cache_key, $item );
                 return $item;
+            }
+            else {
+                if ( $max_width < $item->{width} ) {
+                    $max_width     = $item->{width};
+                    $max_size_item = $item;
+                }
+            }
+            if ($max_size_item) {
+                MT::Request->instance->cache( $cache_key, $max_size_item );
+                return $max_size_item;
+            }
+            else {
+                return $asset->error(
+                    translate(
+                        'Flickr getSizes error: Size parameter was not found.'
+                    )
+                );
             }
         }
     }

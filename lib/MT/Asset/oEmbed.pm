@@ -207,7 +207,7 @@ sub thumbnail_file {
     return undef unless $fmgr->can_write($asset_cache_path);
 
     # download original image
-    my $orig_img = $asset->_download_image_data();
+    my $orig_img = $asset->_download_image_data( $n_w, $n_h );
     return undef unless $orig_img && $fmgr->file_size($orig_img);
 
     my $data;
@@ -325,10 +325,14 @@ sub thumbnail_filename {
 
 sub _download_image_data {
     my $asset = shift;
+    my ( $n_w, $n_h ) = @_;
+
+    my $t_w = $asset->embed_thumbnail_width;
+    my $t_h = $asset->embed_thumbnail_height;
     my $url
-        = $asset->type eq 'photo'
-        ? $asset->original_file_url
-        : $asset->embed_thumbnail_url;
+        = ( $t_w >= $n_w && $t_h >= $n_h )
+        ? $asset->embed_thumbnail_url
+        : $asset->original_file_url;
 
     return unless $url;
 
