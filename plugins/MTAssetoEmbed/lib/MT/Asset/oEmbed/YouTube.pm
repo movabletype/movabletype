@@ -53,7 +53,7 @@ sub image_width {
 sub has_thumbnail {
     my $asset = shift;
 
-    $asset->provider_thumbnail_url ? 1 : 0;
+    $asset->embed_thumbnail_url ? 1 : 0;
 }
 
 sub get_file_size {
@@ -117,9 +117,9 @@ sub thumbnail_basename {
     my $asset = shift;
     my $id    = $asset->get_id;
     my $file
-        = $asset->file_url =~ /.*\/(.*)/
+        = $asset->original_file_url =~ /.*\/(.*)/
         ? $1
-        : $asset->file_url;
+        : $asset->original_file_url;
     my $ext
         = $file =~ /\.(\w+)$/
         ? $1

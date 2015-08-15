@@ -62,14 +62,14 @@ sub has_thumbnail {
         ? $asset->url
             ? 1
             : 0
-        : $asset->provider_thumbnail_url ? 1
-        :                                  0;
+        : $asset->embed_thumbnail_url ? 1
+        :                               0;
 }
 
 sub get_file_size {
     my $asset = shift;
 
-    my $url = $asset->file_url;
+    my $url = $asset->original_file_url;
 
     return unless $url;
 
@@ -119,7 +119,7 @@ sub get_token_data {
     return $token;
 }
 
-sub get_file_url {
+sub get_original_file_url {
     my $asset = shift;
     my ($json) = @_;
 
@@ -201,9 +201,9 @@ sub get_original_sizes {
 sub thumbnail_basename {
     my $asset = shift;
     my $file
-        = $asset->file_url =~ /.*\/(.*)/
+        = $asset->original_file_url =~ /.*\/(.*)/
         ? $1
-        : $asset->file_url;
+        : $asset->original_file_url;
     my $ext
         = $file =~ /\.(\w+)$/
         ? $1

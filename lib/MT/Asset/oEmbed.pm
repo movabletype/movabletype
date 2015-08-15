@@ -17,18 +17,18 @@ __PACKAGE__->install_properties(
     {   class_type    => 'oembed',
         provider_type => 'oembed',
         column_defs   => {
-            'file_url'                  => 'vclob meta',
-            'type'                      => 'vchar meta',
-            'version'                   => 'vchar meta',
-            'title'                     => 'vchar meta',
-            'author_name'               => 'vchar meta',
-            'author_url'                => 'vclob meta',
-            'provider_name'             => 'vchar meta',
-            'provider_url'              => 'vclob meta',
-            'cache_age'                 => 'integer meta',
-            'provider_thumbnail_url'    => 'vclob meta',
-            'provider_thumbnail_width'  => 'integer meta',
-            'provider_thumbnail_height' => 'integer meta',
+            'original_file_url'      => 'vclob meta',
+            'type'                   => 'vchar meta',
+            'version'                => 'vchar meta',
+            'title'                  => 'vchar meta',
+            'author_name'            => 'vchar meta',
+            'author_url'             => 'vclob meta',
+            'provider_name'          => 'vchar meta',
+            'provider_url'           => 'vclob meta',
+            'cache_age'              => 'integer meta',
+            'embed_thumbnail_url'    => 'vclob meta',
+            'embed_thumbnail_width'  => 'integer meta',
+            'embed_thumbnail_height' => 'integer meta',
         },
         child_of => [ 'MT::Blog', 'MT::Website', ],
     }
@@ -93,13 +93,13 @@ sub get_oembed {
         for my $k (qw( thumbnail_url thumbnail_width thumbnail_height )) {
             my $item = delete $json->{$k};
             if ($item) {
-                my $method = "provider_$k";
+                my $method = "embed_$k";
                 $asset->$method($item) if $item;
             }
         }
         my $title = delete $json->{title};
         $asset->label($title);
-        $asset->file_url( $asset->get_file_url($json) );
+        $asset->original_file_url( $asset->get_original_file_url($json) );
         if ( $asset->errstr ) {
             return $asset->error(
                 MT->translate( "Get file url error: [_1]", $asset->errstr ) );
@@ -127,7 +127,7 @@ sub thumbnail_path {
     my $asset = shift;
     my (%param) = @_;
 
-    $asset->provider_thumbnail_url();
+    $asset->embed_thumbnail_url();
 }
 
 sub thumbnail_file {
@@ -140,7 +140,7 @@ sub thumbnail_file {
     $fmgr ||= $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
     return undef unless $fmgr;
 
-    my $file_path = $asset->file_url || $asset->provider_thumbnail_url;
+    my $file_path = $asset->original_file_url || $asset->embed_thumbnail_url;
     return undef unless $file_path;
 
     require MT::Util;
@@ -327,8 +327,8 @@ sub _download_image_data {
     my $asset = shift;
     my $url
         = $asset->type eq 'photo'
-        ? $asset->file_url
-        : $asset->provider_thumbnail_url;
+        ? $asset->original_file_url
+        : $asset->embed_thumbnail_url;
 
     return unless $url;
 
@@ -366,10 +366,10 @@ sub as_html {
     $asset->html;
 }
 
-sub get_file_url {
+sub get_original_file_url {
     my $asset = shift;
     my ($json) = @_;
-    return $json->{url} || $asset->provider_thumbnail_url;
+    return $json->{url} || $asset->embed_thumbnail_url;
 }
 
 sub get_file_size {
@@ -387,7 +387,7 @@ sub thumbnail_basename {
     my $file = Digest::MD5::md5_hex( $asset->url );
 
     my $ext
-        = $asset->provider_thumbnail_url =~ /.*\/.*\.(\w+)$/
+        = $asset->embed_thumbnail_url =~ /.*\/.*\.(\w+)$/
         ? $1
         : '';
 
