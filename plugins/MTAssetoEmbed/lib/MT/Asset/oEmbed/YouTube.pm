@@ -15,10 +15,6 @@ use HTTP::Request::Common;
 __PACKAGE__->install_properties(
     {   class_type  => 'youtube',
         endpoint    => 'http://www.youtube.com/oembed',
-        url_schemes => [
-            qr!https?://[0-9a-zA-Z\-]+\.youtube\.com\/watch[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
-            qr!https?://youtu\.be\/[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
-        ],
         column_defs => {
             'html'   => 'vclob meta',
             'width'  => 'integer meta',
@@ -27,6 +23,13 @@ __PACKAGE__->install_properties(
         child_of => [ 'MT::Blog', 'MT::Website', ],
     }
 );
+
+sub url_schemes {
+    return [
+        qr!https?://[0-9a-zA-Z\-]+\.youtube\.com\/watch[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
+        qr!https?://youtu\.be\/[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
+    ];
+}
 
 sub class_label {
     MT->translate('YouTube');

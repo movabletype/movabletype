@@ -14,11 +14,6 @@ use MTAssetoEmbed;
 __PACKAGE__->install_properties(
     {   class_type  => 'flickr',
         endpoint    => 'http://www.flickr.com/services/oembed/',
-        url_schemes => [
-            qr!https?://[0-9a-zA-Z\-]+\.flickr\.com\/photos\/[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
-            qr!https?://flic\.kr\/p\/[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
-            qr!https?://[0-9a-zA-Z\-]+\.staticflickr\.com\/[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
-        ],
         column_defs => {
             'html'               => 'vclob meta',
             'width'              => 'integer meta',
@@ -32,6 +27,14 @@ __PACKAGE__->install_properties(
         child_of => [ 'MT::Blog', 'MT::Website', ],
     }
 );
+
+sub url_schemes {
+    return [
+        qr!https?://[0-9a-zA-Z\-]+\.flickr\.com\/photos\/[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
+        qr!https?://flic\.kr\/p\/[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
+        qr!https?://[0-9a-zA-Z\-]+\.staticflickr\.com\/[\;\/\?\:\@\&\=\+\$\,\[\]A-Za-z0-9\-_\.\!\~\*\'\(\)%]+!i,
+    ];
+}
 
 sub class_label {
     MT->translate('Flickr');

@@ -37,7 +37,7 @@ __PACKAGE__->install_properties(
 sub can_handle {
     my ( $pkg, $url ) = @_;
 
-    my $url_schemes = $pkg->properties->{url_schemes} || [];
+    my $url_schemes = $pkg->url_schemes || [];
     foreach my $regex (@$url_schemes) {
         return 1 if ( $url =~ /$regex/ );
     }
