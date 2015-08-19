@@ -342,7 +342,7 @@ sub flickr_oauth_success {
         $token_data->{consumer_secret}     = $consumer_secret;
         $token_data->{access_token}        = $response->token;
         $token_data->{access_token_secret} = $response->token_secret;
-        $token_data->{access_user_nsid}    = $response->extra_params->{user_nsid};
+        $token_data->{user_nsid}           = $response->extra_params->{user_nsid};
     }
     else {
         return $app->error(
