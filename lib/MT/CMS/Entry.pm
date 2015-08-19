@@ -326,17 +326,19 @@ sub edit {
                 my $asset_1;
                 if ( $asset->class eq 'image' ) {
                     $asset_1 = {
-                        asset_id    => $asset->id,
-                        asset_name  => $asset->file_name,
-                        asset_thumb => $asset->thumbnail_url( Width => 100 ),
-                        asset_type  => $asset->class
+                        asset_id      => $asset->id,
+                        asset_name    => $asset->file_name,
+                        asset_thumb   => $asset->thumbnail_url( Width => 100 ),
+                        asset_type    => $asset->class,
+                        asset_blog_id => $asset->blog_id,
                     };
                 }
                 else {
                     $asset_1 = {
-                        asset_id   => $asset->id,
-                        asset_name => $asset->file_name,
-                        asset_type => $asset->class
+                        asset_id      => $asset->id,
+                        asset_name    => $asset->file_name,
+                        asset_type    => $asset->class,
+                        asset_blog_id => $asset->blog_id,
                     };
                 }
                 push @{$assets}, $asset_1;
