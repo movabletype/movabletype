@@ -334,19 +334,21 @@ sub insert {
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
-            {   upload_html => $text || '',
-                edit_field => scalar $app->param('edit_field') || '',
+            {   upload_html       => $text || '',
+                edit_field        => scalar $app->param('edit_field') || '',
                 extension_message => $extension_message,
                 asset_type        => $asset->class,
+                asset_blog_id     => $asset->blog_id,
             },
         );
     }
     else {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
-            {   upload_html => $text                            || '',
-                edit_field  => scalar $app->param('edit_field') || '',
-                asset_type  => $asset->class,
+            {   upload_html   => $text                            || '',
+                edit_field    => scalar $app->param('edit_field') || '',
+                asset_type    => $asset->class,
+                asset_blog_id => $asset->blog_id,
             },
         );
     }
