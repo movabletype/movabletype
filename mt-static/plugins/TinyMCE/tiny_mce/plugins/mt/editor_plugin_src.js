@@ -575,7 +575,7 @@
                 onclick : function() {
                     ed.execCommand('mtSaveBookmark');
                     openDialog(
-                        'open_asset_dialog',
+                        'dialog_asset_modal',
                         '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image'
                     );
                 }
@@ -586,7 +586,7 @@
                 onclick : function() {
                     ed.execCommand('mtSaveBookmark');
                     openDialog(
-                        'open_asset_dialog',
+                        'dialog_asset_modal',
                         '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1'
                     );
                 }

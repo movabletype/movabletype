@@ -93,7 +93,7 @@
 </div>
 
 <form method="post" action="<mt:var name="script_url">" name="select_asset" id="select_asset">
-  <input type="hidden" name="__mode" value="<mt:if name="next_mode"><mt:var name="next_mode" escape="html"><mt:else>complete_insert</mt:if>" />
+  <input type="hidden" name="__mode" value="<mt:if name="next_mode"><mt:var name="next_mode" escape="html"><mt:else>dialog_insert_options</mt:if>" />
   <input type="hidden" name="_type" value="asset" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />

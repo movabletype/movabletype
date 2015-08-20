@@ -359,8 +359,9 @@ sub insert {
             },
         );
     }
-    my $ctx = $tmpl->context;
-    $ctx->stash( 'asset', $asset );
+    my $ctx    = $tmpl->context;
+    my $assets = [$asset];
+    $ctx->stash( 'assets', $assets );
     return $tmpl;
 }
 
@@ -2872,6 +2873,12 @@ sub dialog_asset_modal {
     $param{edit_field} = $app->param('edit_field')
         if defined $app->param('edit_field');
     $param{next_mode} = $app->param('next_mode');
+    $param{no_insert} = $app->param('no_insert') ? 1 : 0;
+
+    if ($blog_id) {
+        $param{blog_id}      = $blog_id;
+        $param{edit_blog_id} = $blog_id,;
+    }
 
     $param{upload_mode} = $mode_userpic;
     if ($mode_userpic) {
@@ -2897,4 +2904,182 @@ sub dialog_asset_modal {
     $app->load_tmpl( 'dialog/asset_modal.tmpl', \%param );
 }
 
+sub dialog_insert_options {
+    my $app    = shift;
+    my (%args) = @_;
+    my $assets = $args{assets};
+
+    # Validate magic token
+    $app->validate_magic() or return;
+
+    # Load assets
+    if ( !$assets ) {
+        my $ids = $app->param('id');
+        return $app->errtrans('Invalid request.') unless $ids;
+
+        my @ids = split ',', $ids;
+        return $app->errtrans('Invalid request.') unless @ids;
+
+        my @assets = $app->model('asset')->load( { id => \@ids } );
+        return $app->errtrans('Invalid request.')
+            unless scalar @ids == scalar @assets;
+        $assets = \@assets;
+    }
+    $assets = [$assets] if 'ARRAY' ne ref $assets;
+
+    # Should not allow to insert asset from other site.
+    my $blog_id = $app->param('blog_id');
+    foreach my $a (@$assets) {
+        return $app->errtrans('Invalid request.')
+            unless $a->blog_id == $blog_id;
+    }
+
+    # If no_insert option provided, should not displaying insert option
+    if ( $app->param('no_insert') ) {
+        return insert_asset( $app, { assets => $assets } );
+    }
+
+    # Permission check
+    my $perms = $app->permissions
+        or return $app->errtrans('No permissions');
+    return $app->errtrans('No permissions')
+        unless $perms->can_do('insert_asset');
+
+    # Make a insert option loop
+    my $options_loop;
+    foreach my $a (@$assets) {
+        my $param = {
+            id          => $a->id,
+            filename    => $a->file_name,
+            url         => $a->url,
+            label       => $a->label,
+            thumbnail   => _make_thumbnail_url( $a, { size => 45 } ),
+            class_label => $a->class_label,
+        };
+        my $html = $a->insert_options($param) || '';
+        $param->{options} = $html;
+        push @$options_loop, $param;
+    }
+
+    my %param;
+    $param{options_loop} = $options_loop;
+    $param{can_save_image_defaults}
+        = $perms->can_do('save_image_defaults') ? 1 : 0;
+    $param{edit_field} = scalar $app->param('edit_field');
+    $param{new_entry} = $app->param('asset_select') ? 0 : 1;
+
+    $app->load_tmpl( 'dialog/multi_asset_options.tmpl', \%param );
+}
+
+sub insert_asset {
+    my $app = shift;
+    my ($param) = @_;
+
+    $app->validate_magic() or return;
+
+    if (   $app->param('edit_field')
+        && $app->param('edit_field') =~ m/^customfield_.*$/ )
+    {
+        return $app->permission_denied()
+            unless $app->permissions;
+    }
+    else {
+        return $app->permission_denied()
+            unless $app->can_do('insert_asset');
+    }
+
+    require MT::Asset;
+    my $text;
+    my $assets;
+    if ( $app->param('no_insert') ) {
+        $text   = '';
+        $assets = $param->{assets};
+    }
+    else {
+        # Parse JSON.
+        my $prefs = $app->param('prefs_json');
+        $prefs =~ s/^"|"$//g;
+        $prefs =~ s/\\//g;
+        $prefs = eval { MT::Util::from_json($prefs) };
+        if ( !$prefs ) {
+            return $app->errtrans('Invalid request.');
+        }
+
+        foreach my $item (@$prefs) {
+            my $id = $item->{id};
+            return $app->errtrans('Invalid request.')
+                unless $id;
+            my $asset = MT::Asset->load($id)
+                or return $app->errtrans( 'Cannot load asset #[_1]', $id );
+            my %param;
+            foreach my $k ( keys %$item ) {
+                my $name = $k;
+                if ( $k =~ m/(.*)[-|_]$id/ig ) {
+                    $name = $1;
+                }
+                $param{$name} = $item->{$k};
+            }
+            $param{wrap_text} = 1;
+            $param{new_entry} = $app->param('new_entry') ? 1 : 0;
+
+            $asset->on_upload( \%param );
+            $param{enclose}
+                = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+            my $html = $asset->as_html( \%param );
+            return $app->error( $asset->error ) unless defined $html;
+
+            $text .= $html;
+            push @$assets, $asset;
+        }
+    }
+
+    my $tmpl;
+    $tmpl = $app->load_tmpl(
+        'dialog/asset_insert.tmpl',
+        {   upload_html => $text || '',
+            edit_field => scalar $app->param('edit_field') || '',
+        },
+    );
+
+    my $ctx = $tmpl->context;
+    $ctx->stash( 'assets', $assets );
+    return $tmpl;
+}
+
+sub _make_thumbnail_url {
+    my $asset = shift;
+    my ($param) = @_;
+    my $thumb_url;
+    my $thumb_size = $param && $param->{size} ? $param->{size} : 45;
+
+    if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
+        my ( $orig_height, $orig_width )
+            = ( $asset->image_width, $asset->image_height );
+        if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
+            ($thumb_url) = $asset->thumbnail_url(
+                Height => $thumb_size,
+                Width  => $thumb_size,
+                Square => 1
+            );
+        }
+        elsif ( $orig_width > $thumb_size ) {
+            ($thumb_url) = $asset->thumbnail_url( Width => $thumb_size, );
+        }
+        elsif ( $orig_height > $thumb_size ) {
+            ($thumb_url) = $asset->thumbnail_url( Height => $thumb_size, );
+        }
+        else {
+            $thumb_url = $asset->url;
+        }
+    }
+    else {
+        $thumb_url
+            = MT->static_path
+            . 'images/asset/'
+            . $asset->class_type
+            . '-45.png';
+    }
+
+    return $thumb_url;
+}
 1;

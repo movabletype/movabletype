@@ -201,6 +201,8 @@ sub core_methods {
         },
         'dialog_asset_modal' =>
             { code => "${pkg}Asset::dialog_asset_modal", },
+        'dialog_insert_options' => "${pkg}Asset::dialog_insert_options",
+        'insert_asset'          => "${pkg}Asset::insert_asset",
 
         'logout' => {
             code           => sub { $_[0]->SUPER::logout(@_) },

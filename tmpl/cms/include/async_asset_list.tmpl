@@ -1,7 +1,7 @@
 <mt:unless name="json">
 <mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog">
 
-<mt:if name="filter" ne="userpic">
+<mt:unless name="filter" eq="userpic">
 <form action="" method="get" id="modal-type-filter">
     <span><__trans phrase="Asset Type: "></span>
   <select name="asset-class" id="asset-class">
@@ -17,7 +17,7 @@
   <input type="image" id="search-button"class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
       <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
 </form>
-</mt:if>
+</mt:unless>
 
 <mt:setvarblock name="list_actions">
         <div class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /> <__trans phrase="Loading..."></div>

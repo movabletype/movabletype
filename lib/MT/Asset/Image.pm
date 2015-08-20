@@ -319,7 +319,6 @@ sub as_html {
     $param->{enclose} = 0 unless exists $param->{enclose};
 
     if ( $param->{include} ) {
-
         my $fname = $asset->file_name;
         require MT::Util;
 
@@ -420,7 +419,8 @@ sub as_html {
 
 # Return a HTML snippet of form options for inserting this asset
 # into a web page. Default behavior is no options.
-sub insert_options {
+# DEPRECATED: v6.2
+sub insert_options_compat {
     my $asset = shift;
     my ($param) = @_;
 
@@ -450,6 +450,40 @@ sub insert_options {
         || 0;
 
     return $app->build_page( 'dialog/asset_options_image.tmpl', $param );
+}
+
+# Return a HTML snippet of form options for inserting this asset
+# into a web page. Default behavior is no options.
+sub insert_options {
+    my $asset = shift;
+    my ($param) = @_;
+
+    # Backward compatibility
+    return insert_options_compat( $asset, @_ )
+        if MT->config('EnableUploadCompat');
+
+    my $app   = MT->instance;
+    my $perms = $app->{perms};
+    my $blog  = $asset->blog or return;
+
+    $param->{do_thumb}
+        = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
+
+    $param->{popup}      = $blog->image_default_popup     ? 1 : 0;
+    $param->{wrap_text}  = $blog->image_default_wrap_text ? 1 : 0;
+    $param->{make_thumb} = $blog->image_default_thumb     ? 1 : 0;
+    $param->{ 'align_' . $_ }
+        = ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
+        for qw(none left center right);
+    $param->{ 'unit_w' . $_ }
+        = ( $blog->image_default_wunits || 'pixels' ) eq $_ ? 1 : 0
+        for qw(percent pixels);
+    $param->{thumb_width}
+        = $blog->image_default_width
+        || $asset->image_width
+        || 0;
+
+    return $app->build_page( 'include/insert_options_image.tmpl', $param );
 }
 
 sub on_upload {
@@ -524,6 +558,11 @@ sub on_upload {
         require MT::Image;
         my $image_type = scalar $param->{image_type};
         my ( $w, $h ) = map $param->{$_}, qw( thumb_width thumb_height );
+        if ( !$h ) {
+            my $pct = $w / $width;
+            my $h = floor( ( $pct * $height ) + 0.5 );
+        }
+
         my ($pseudo_thumbnail_url)
             = $asset->thumbnail_url( Height => $h, Width => $w, Pseudo => 1 );
         my ($thumbnail)
