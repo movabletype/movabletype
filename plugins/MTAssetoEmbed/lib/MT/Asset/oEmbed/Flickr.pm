@@ -10,6 +10,7 @@ use strict;
 use base qw( MT::Asset::oEmbed );
 
 use MTAssetoEmbed;
+use MTAssetoEmbed::Flickr;
 
 __PACKAGE__->install_properties(
     {   class_type  => 'flickr',
@@ -106,20 +107,8 @@ sub get_oembed {
 sub get_token_data {
     my $asset = shift;
 
-    my $app    = MT->instance;
-    my $plugin = plugin();
-    my $blog_id
-        = $asset->blog_id ? $asset->blog_id : $app->blog ? $app->blog->id : 0;
-
-    return undef unless $blog_id;
-
-    my $scope       = 'blog:' . $blog_id;
-    my $plugin_data = $plugin->get_config_obj($scope);
-    my $token       = $plugin_data->data->{flickr_token_data};
-
-    return undef unless $token;
-
-    return $token;
+    my $app = MT->instance;
+    return get_token( $app, $asset );
 }
 
 sub get_original_file_url {
@@ -156,30 +145,13 @@ sub get_original_sizes {
 
     return $cache if $cache;
 
-    my $token_data = $asset->get_token_data();
+    my $app = MT->instance;
+    my $token = get_token( $app, $asset );
     return $asset->error( translate('Token data is not registered.') )
-        unless $token_data;
+        unless $token;
 
-    my $request = Net::OAuth->request("protected resource")->new(
-        consumer_key     => $token_data->{consumer_key},
-        consumer_secret  => $token_data->{consumer_secret},
-        request_url      => 'https://api.flickr.com/services/rest/',
-        request_method   => 'GET',
-        signature_method => 'HMAC-SHA1',
-        timestamp        => time,
-        nonce            => int( rand( 2**31 - 999999 + 1 ) ) + 999999,
-        token            => $token_data->{access_token},
-        token_secret     => $token_data->{access_token_secret},
-        extra_params     => {
-            method         => 'flickr.photos.getSizes',
-            photo_id       => $photo_id,
-            nojsoncallback => 1,
-        },
-    );
-    $request->sign;
-    my $ua = new_ua();
-    $ua->ssl_opts( verify_hostname => 0 );
-    my $res = $ua->get( $request->to_url . '&format=json' );
+    my $res = get_request( $app, $token, 'flickr.photos.getSizes',
+        { photo_id => $photo_id } );
 
     if ( $res->is_success ) {
         my $data
