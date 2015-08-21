@@ -1,0 +1,16 @@
+#thumbnails .flickr-thumbnail {
+  float: left;
+  margin: 3px;
+  width: 156px;
+  overflow: hidden;
+}
+
+#thumbnails .title {
+  white-space: nowrap;
+}
+
+#pages span.link {
+  text-decoration: underline;
+  color: #0000FF;
+  cursor: pointer;
+}

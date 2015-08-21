@@ -92,21 +92,8 @@ sub get_file_size {
 sub get_token_data {
     my $asset = shift;
 
-    my $app    = MT->instance;
-    my $plugin = plugin();
-    my $blog_id
-        = $asset->blog_id ? $asset->blog_id : $app->blog ? $app->blog->id : 0;
-
-    return undef unless $blog_id;
-
-    my $scope       = 'blog:' . $blog_id;
-    my $plugin_data = $plugin->get_config_obj($scope);
-    my $token       = MTAssetoEmbed::OAuth2::youtube_effective_token( $app,
-        $plugin_data );
-
-    return undef unless $token;
-
-    return $token;
+    my $app = MT->instance;
+    return get_token( $app, $asset );
 }
 
 sub get_id {

@@ -9,6 +9,7 @@ package MTAssetoEmbed::App;
 use strict;
 use warnings;
 
+use URI;
 use Net::OAuth;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 use MTAssetoEmbed;
@@ -476,6 +477,64 @@ sub get_flickr_list {
     }
 
     $param->{success} = 1;
+    return $app->json_result($param);
+}
+
+sub start_youtube {
+    my ( $app, $param ) = @_;
+    my $q      = $app->param;
+    my $plugin = $app->component("MTAssetoEmbed");
+    my $cfg    = $app->config;
+
+    $app->build_page( $plugin->load_tmpl('start_youtube.tmpl'), $param );
+}
+
+sub get_youtube_list {
+    my ($app)  = @_;
+    my $q      = $app->param;
+    my $plugin = $app->component("MTAssetoEmbed");
+    my $cfg    = $app->config;
+    my $blog   = $app->blog;
+    my $param  = {};
+
+    my $token = get_token_from_plugindata($app);
+
+    return unless $token;
+
+    my $uri = URI->new('https://www.googleapis.com/youtube/v3/search');
+    $uri->query_form(
+        'access_token' => $token->{data}{access_token},
+        'forMine'      => 'true',
+        'type'         => 'video',
+        'part'         => 'id,snippet',
+        'pageToken'    => $q->param('page_token') || '',
+        'q'            => $q->param('text') || '',
+    );
+
+    my $ua  = new_ua();
+    my $req = HTTP::Request->new( 'GET', $uri );
+    my $res = $ua->request($req);
+
+    if ( $res->is_success ) {
+        my $data
+            = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+        my @videos;
+        foreach my $item ( @{ $data->{items} } ) {
+            my $tumbnail = $item->{snippet}{thumbnails}{default}{url};
+            push @videos,
+                {
+                title     => $item->{snippet}{title},
+                id        => $item->{id}{videoId},
+                thumbnail => $item->{snippet}{thumbnails}{default}{url},
+                };
+        }
+        $param->{videos}          = \@videos;
+        $param->{next_page_token} = $data->{nextPageToken}
+            if $data->{nextPageToken};
+        $param->{prev_page_token} = $data->{prevPageToken}
+            if $data->{prevPageToken};
+    }
+
     return $app->json_result($param);
 }
 

@@ -9,7 +9,8 @@ package MTAssetoEmbed::OAuth2;
 use strict;
 use warnings;
 
-our @EXPORT = qw(youtube_authorize_url youtube_get_token youtube_effective_token);
+our @EXPORT
+    = qw(youtube_authorize_url youtube_get_token youtube_effective_token get_token_from_plugindata);
 use base qw(Exporter);
 
 use MTAssetoEmbed;
@@ -20,11 +21,11 @@ sub youtube_authorize_url {
 
     my $uri = URI->new('https://accounts.google.com/o/oauth2/auth');
     $uri->query_form(
-        response_type => 'code',
-        client_id     => $client_id,
-        redirect_uri  => $redirect_uri,
-        scope         => 'https://www.googleapis.com/auth/youtube.readonly',
-        access_type   => 'offline',
+        response_type   => 'code',
+        client_id       => $client_id,
+        redirect_uri    => $redirect_uri,
+        scope           => 'https://www.googleapis.com/auth/youtube.readonly',
+        access_type     => 'offline',
         approval_prompt => 'force',
     );
 
@@ -129,6 +130,25 @@ sub youtube_effective_token {
     }
 
     $token_data;
+}
+
+sub get_token_from_plugindata {
+    my ( $app, $asset ) = @_;
+
+    my $plugin = $app->component("MTAssetoEmbed");
+    my $blog_id = $app->blog ? $app->blog->id : $asset
+        && $asset->blog_id ? $asset->blog_id : 0;
+
+    return undef unless $blog_id;
+
+    my $scope       = 'blog:' . $blog_id;
+    my $plugin_data = $plugin->get_config_obj($scope);
+    my $token       = MTAssetoEmbed::OAuth2::youtube_effective_token( $app,
+        $plugin_data );
+
+    return undef unless $token;
+
+    return $token;
 }
 
 1;
