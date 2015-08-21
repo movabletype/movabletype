@@ -27,6 +27,8 @@ applications:
             flickr_oauth_success: $MTAssetoEmbed::MTAssetoEmbed::App::flickr_oauth_success
             youtube_oauth2callback: $MTAssetoEmbed::MTAssetoEmbed::App::youtube_oauth2callback
             youtube_get_token_data: $MTAssetoEmbed::MTAssetoEmbed::App::youtube_get_token_data
+            start_flickr: $MTAssetoEmbed::MTAssetoEmbed::App::start_flickr
+            get_flickr_list: $MTAssetoEmbed::MTAssetoEmbed::App::get_flickr_list
 
 web_services:
     MTAssetoEmbed:

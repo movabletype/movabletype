@@ -1,0 +1,161 @@
+<mt:setvar name="page_title" value="<__trans phrase="Start Flickr">">
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="screen_id" value="manage-contents-sync">
+<mt:setvar name="screen_class" value="contents-sync">
+
+<mt:setvarblock name="html_head" append="1">
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/MTAssetoEmbed/css/start_flickr.css?v=<$mt:var name="mt_version_id" escape="url"$>">
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl" id="header_include">
+
+<div id="msg-block"></div>
+<mt:if name="err_msg">
+  <mtapp:statusmsg
+     id="error"
+     class="error"
+     can_close="0">
+    <mt:var name="err_msg">
+  </mtapp:statusmsg>
+</mt:if>
+
+<mtapp:form id="start-flickr-form" name="start-flickr-form" mode="save_start_flickr">
+
+  <select id="photoset" name="photoset" style="width: 200px;">
+    <option value="0"><__trans phrase="Select Photoset"></option>
+  <mt:loop name="photosets">
+    <option value="<mt:var name="id">"><mt:var name="title"></option>
+  </mt:loop>
+  </select>
+
+  <input type="button" id="select-button" value="<__trans phrase="Select">" />
+
+  <input id="search-text" name="search_text" type="text" class="text short" />
+
+  <input type="button" id="search-button" value="<__trans phrase="Search">" />
+
+  <div id="thumbnails"></div>
+
+  <div id="pages"></div>
+
+</mtapp:form>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  jQuery(function() {
+    var magic_token = '<mt:var name="magic_token">';
+    var blog_id = '<mt:var name="blog_id">';
+
+    function get_thumbnails( method, page, param ) {
+      jQuery("#thumbnails").empty();
+      jQuery("#pages").empty();
+      jQuery("#navi").empty();
+
+      jQuery("#thumbnails").html('<div id="progressbar" class="progressbar indeterminate"></div>');
+
+      jQuery.ajax({
+        type: 'POST',
+        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+        async: true,
+        url: ScriptURI,
+        dataType: 'json',
+        data: {
+          __mode: 'get_flickr_list',
+          magic_token: magic_token,
+          blog_id: blog_id,
+          method: method,
+          page: page,
+          param: param
+        },
+        success: function(data) {
+          jQuery("#thumbnails").empty();
+
+          var photos = data.result.photos;
+          var thumbnails = jQuery('<div/>');
+
+          if (photos.length > 0) {
+            var count = 1;
+            jQuery.each(photos, function (index) {
+              if ( count == 6 ) {
+                thumbnails.append(jQuery('<br/>').css('clear', 'both'));
+              }
+              thumbnails.append(
+                jQuery('<div/>').addClass('flickr-thumbnail').append(
+                  jQuery('<img/>').attr({
+                    src: photos[index].thumbnail,
+                    title: photos[index].title,
+                    alt: photos[index].id
+                  })
+                ).append(
+                  jQuery('<br/>')
+                ).append(
+                  jQuery('<span/>').addClass('title').text(photos[index].title)
+                )
+              )
+              count++;
+            });
+            thumbnails.append(jQuery('<br/>').css('clear', 'both'));
+            jQuery("#thumbnails").append(thumbnails);
+            if ( data.result.page > 1 ) {
+              jQuery("#pages").append(
+                jQuery('<span/>').attr({ id: 'prev-link' }).addClass('link').text('< prev')
+              );
+              jQuery('#prev-link').click(function() {
+                get_thumbnails( method, parseInt(data.result.page) - 1, param );
+              });
+            }
+            jQuery("#pages").append(
+              jQuery('<span/>').text(" " + data.result.page + "/" + data.result.pages + " ")
+            );
+            if ( data.result.page < data.result.pages ) {
+              jQuery("#pages").append(
+                jQuery('<span/>').attr({ id: 'next-link' }).addClass('link').text('next >')
+              );
+              jQuery('#next-link').click(function() {
+                get_thumbnails( method, parseInt(data.result.page) + 1, param );
+              });
+            }
+          }
+          else {
+            jQuery("#thumbnails").text('<__trans phrase="Photo was not found.">');
+          }
+        },
+        error: function(xhr, status, errorThrown) {
+          if ( xhr.status == 401 ) {
+            loginAgain(function(){
+              $this.click();
+            });
+          }
+          else
+            generate_error(xhr.status+' '+errorThrown);
+        }
+      });
+    }
+
+    function generate_error(msg) {
+      if ( jQuery('div.msg-error')[0] )
+          return;
+      jQuery('#msg-block').append('<div class="msg msg-error additem-error">'+msg+'</div>');
+    }
+
+    jQuery('#select-button').click( function() {
+        var photoset_id = jQuery('#photoset option:selected').val();
+        if ( photoset_id === '0' ) {
+          alert("<__trans phrase="Photoset was not selected.">");
+          return;
+        }
+        get_thumbnails( 'photoset', 1, photoset_id );
+    });
+
+    jQuery('#search-button').click( function() {
+        var keyword = jQuery('#search-text').val();
+        if (!keyword) {
+          return;
+        }
+        get_thumbnails( 'search', 1, keyword );
+    });
+
+    get_thumbnails('search');
+  });
+</mt:setvarblock>
+
+<mt:include name="include/footer.tmpl">

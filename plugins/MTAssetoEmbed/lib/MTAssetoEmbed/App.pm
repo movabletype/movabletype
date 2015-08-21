@@ -13,6 +13,7 @@ use Net::OAuth;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 use MTAssetoEmbed;
 use MTAssetoEmbed::OAuth2;
+use MTAssetoEmbed::Flickr;
 
 sub post_init {
     my ( $cb, $app ) = @_;
@@ -342,7 +343,7 @@ sub flickr_oauth_success {
         $token_data->{consumer_secret}     = $consumer_secret;
         $token_data->{access_token}        = $response->token;
         $token_data->{access_token_secret} = $response->token_secret;
-        $token_data->{user_nsid}           = $response->extra_params->{user_nsid};
+        $token_data->{user_nsid} = $response->extra_params->{user_nsid};
     }
     else {
         return $app->error(
@@ -359,6 +360,123 @@ sub flickr_oauth_success {
     };
 
     plugin()->load_tmpl( 'flickr_oauth_finish.tmpl', $params );
+}
+
+sub start_flickr {
+    my ( $app, $param ) = @_;
+    my $q      = $app->param;
+    my $plugin = $app->component("MTAssetoEmbed");
+    my $cfg    = $app->config;
+
+    my $token = get_token($app);
+    return $app->error( translate('Token data is not registered.') )
+        unless $token;
+
+    my $res = get_request( $app, $token, 'flickr.photosets.getList',
+        { user_id => $token->{user_nsid}, } );
+
+    if ( $res->is_success ) {
+        my $data
+            = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+        my $photosets = $data->{photosets}{photoset};
+        my @photosets;
+        foreach my $photoset (@$photosets) {
+            push @photosets,
+                {
+                id    => $photoset->{id},
+                title => $photoset->{title}{_content},
+                };
+        }
+        $param->{photosets} = \@photosets;
+    }
+    else {
+        return $app->error(
+            translate( 'Flickr getSizes error: ' . $res->status_line ) );
+    }
+
+    $app->build_page( $plugin->load_tmpl('start_flickr.tmpl'), $param );
+}
+
+sub get_flickr_list {
+    my ($app)  = @_;
+    my $q      = $app->param;
+    my $plugin = $app->component("MTAssetoEmbed");
+    my $cfg    = $app->config;
+    my $blog   = $app->blog;
+    my $param  = {};
+
+    my $token = get_token($app);
+    return $app->error( translate('Token data is not registered.') )
+        unless $token;
+
+    my $method;
+    my $extra_params = {
+        privacy_filter => 1,
+        per_page       => 10,
+        page           => $q->param('page') || 1,
+    };
+    if ( $q->param('method') eq 'search' ) {
+        $method = 'flickr.photos.search';
+        $extra_params->{user_id} = $token->{user_nsid};
+        $extra_params->{text} = $q->param('param') if $q->param('param');
+        $extra_params->{'sort'} = 'date-posted-desc';
+    }
+    else {
+        $method                      = 'flickr.photosets.getPhotos';
+        $extra_params->{user_id}     = $token->{user_nsid};
+        $extra_params->{photoset_id} = $q->param('param');
+    }
+
+    my $res = get_request( $app, $token, $method, $extra_params );
+
+    if ( $res->is_success ) {
+        my $data
+            = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+        my $key = $q->param('method') eq 'search' ? 'photos' : 'photoset';
+        my $photos = $data->{$key}{photo};
+        if ($photos) {
+            my @photos;
+            foreach my $photo (@$photos) {
+                my $res
+                    = get_request( $app, $token, 'flickr.photos.getSizes',
+                    { photo_id => $photo->{id}, },
+                    );
+                if ( $res->is_success ) {
+                    my $data
+                        = MT::Util::from_json(
+                        Encode::decode( 'utf-8', $res->content ) );
+                    my $sizes = $data->{sizes}{size};
+                    foreach my $size (@$sizes) {
+                        if ( $size->{label} eq 'Large Square' ) {
+                            push @photos,
+                                {
+                                title     => $photo->{title},
+                                id        => $photo->{id},
+                                thumbnail => $size->{source},
+                                };
+                        }
+                    }
+                }
+                else {
+                    return $app->error(
+                        translate(
+                            'Flickr search error: ' . $res->status_line
+                        )
+                    );
+                }
+            }
+            $param->{photos} = \@photos;
+            $param->{page}   = $data->{$key}{page};
+            $param->{pages}  = $data->{$key}{pages};
+        }
+    }
+    else {
+        return $app->error(
+            translate( 'Flickr getSizes error: ' . $res->status_line ) );
+    }
+
+    $param->{success} = 1;
+    return $app->json_result($param);
 }
 
 1;
