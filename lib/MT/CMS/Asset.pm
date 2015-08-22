@@ -2864,7 +2864,7 @@ sub dialog_asset_modal {
     _set_start_upload_params( $app, \%param );
 
     $param{can_multi} = 1
-        unless ( $app->param('upload_mode') || '' ) eq 'upload_userpic';
+        if ( $app->param('upload_mode') || '' ) ne 'upload_userpic' && $app->param('can_multi');
 
     $param{filter} = $app->param('filter') if defined $app->param('filter');
     $param{filter_val} = $app->param('filter_val')
@@ -2935,7 +2935,7 @@ sub dialog_insert_options {
     }
 
     # If no_insert option provided, should not displaying insert option
-    if ( $app->param('no_insert') ) {
+    if ( $app->param('no_insert') || $app->param('direct_asset_insert') ) {
         return insert_asset( $app, { assets => $assets } );
     }
 
@@ -2995,6 +2995,22 @@ sub insert_asset {
         $text   = '';
         $assets = $param->{assets};
     }
+    elsif ( $app->param('direct_asset_insert') ) {
+        $assets = $param->{assets};
+        foreach my $a ( @$assets ) {
+           my %param;
+           $param{wrap_text} = 1;
+           $param{new_entry} = $app->param('new_entry') ? 1 : 0;
+
+           $a->on_upload( \%param );
+           $param{enclose}
+               = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+           my $html = $a->as_html( \%param );
+           return $app->error( $a->error ) unless defined $html;
+
+           $text .= $html;
+        }
+    }
     else {
         # Parse JSON.
         my $prefs = $app->param('prefs_json');
@@ -3032,7 +3048,6 @@ sub insert_asset {
             push @$assets, $asset;
         }
     }
-
     my $tmpl;
     $tmpl = $app->load_tmpl(
         'dialog/asset_insert.tmpl',

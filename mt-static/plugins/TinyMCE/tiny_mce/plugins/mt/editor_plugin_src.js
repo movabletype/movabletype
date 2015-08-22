@@ -576,7 +576,7 @@
                     ed.execCommand('mtSaveBookmark');
                     openDialog(
                         'dialog_asset_modal',
-                        '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image'
+                        '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;filter=class&amp;filter_val=image&amp;can_multi=1'
                     );
                 }
             });
@@ -587,7 +587,7 @@
                     ed.execCommand('mtSaveBookmark');
                     openDialog(
                         'dialog_asset_modal',
-                        '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1'
+                        '_type=asset&amp;edit_field=' + id + '&amp;blog_id=' + blogId + '&amp;dialog_view=1&amp;can_multi=1'
                     );
                 }
             });
