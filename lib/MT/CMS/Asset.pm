@@ -458,6 +458,8 @@ sub start_upload {
     $param{search_label} = $app->translate('Assets');
     $param{search_type}  = 'asset';
 
+    $param{can_multi} = $app->param('can_multi');
+
     # Check directory for thumbnail image
     _check_thumbnail_dir( $app, \%param );
 
