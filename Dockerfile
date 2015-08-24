@@ -5,7 +5,7 @@ RUN yum -y update
 
 RUN yum -y install httpd
 
-RUN yum -y install mysql mysql-server
+RUN yum -y install mysql mysql-server mysql-devel
 RUN yum -y install memcached
 
 #### Perl
@@ -18,10 +18,13 @@ RUN yum -y install gcc
 RUN yum -y install openssl-devel
 
 # Install GD from RPM.
-RUN yum -y install perl-GD
+RUN yum -y install perl-GD gd-devel
 
 # Install Image::Magick from RPM.
 RUN yum -y install ImageMagick-perl
+
+# Enable Imager to manipulate GIF.
+RUN yum -y install giflib-devel
 
 # For installing Math::GMP.
 RUN yum -y install gmp-devel
@@ -37,6 +40,12 @@ RUN yum -y install zip unzip
 
 RUN yum -y install wget
 RUN wget -O - https://cpanmin.us | perl - App::cpanminus
+RUN cpanm Carton
+WORKDIR /var/www/docker_build
+ENV PERL_CPANM_OPT -L /var/www/docker_build/local
+
+# Installation of Math::BigInt >=1.9994 is failed on CircleCI.
+RUN cpanm Math::BigInt@1.9993
 
 # Update for installing SOAP::Lite. Cannot install by cpanm and old Archive::Tar.
 RUN cpanm Archive::Tar
@@ -51,9 +60,6 @@ RUN cpanm Term::ReadKey -n
 # For installing Text::Aspell.
 RUN yum -y install epel-release
 RUN yum -y install aspell-en aspell-devel
-
-COPY t/cpanfile .
-RUN cpanm --installdeps .
 
 # PHP
 RUN yum -y install php php-mysql php-gd
@@ -73,11 +79,11 @@ RUN service mysqld start & sleep 10 && \
 # OpenLDAP
 RUN cpanm Net::LDAP
 RUN yum -y install openldap-clients openldap-servers
-COPY t/ldif/cn=config.ldif .
-COPY t/ldif/example_com.ldif .
-COPY t/ldif/example_jp.ldif .
-COPY t/ldif/domain1_example_jp.ldif .
-COPY t/ldif/domain2_example_jp.ldif .
+COPY t/ldif/cn=config.ldif /var/www/docker_build/cn=config.ldif
+COPY t/ldif/example_com.ldif /var/www/docker_build/example_com.ldif
+COPY t/ldif/example_jp.ldif /var/www/docker_build/example_jp.ldif
+COPY t/ldif/domain1_example_jp.ldif /var/www/docker_build/domain1_example_jp.ldif
+COPY t/ldif/domain2_example_jp.ldif /var/www/docker_build/domain2_example_jp.ldif
 RUN mkdir /var/lib/ldap/jp
 RUN chown ldap:ldap /var/lib/ldap/jp
 RUN service slapd start & sleep 10 && \
@@ -88,4 +94,9 @@ RUN service slapd start & sleep 10 && \
     ldapadd -f domain2_example_jp.ldif -x -D "cn=admin,dc=example,dc=jp" -w secret && \
     service slapd stop
 
-RUN yum clean all
+# Install CPAN modules
+COPY t/cpanfile /var/www/docker_build/cpanfile
+RUN carton install
+
+ENV PERL5LIB /var/www/docker_build/local/lib/perl5
+
