@@ -257,12 +257,13 @@ function uploadFile( formData, uploadBlock ) {
       jQuery('.actions-bar button.primary')
         .removeAttr('disabled')
         .removeClass('disabled');
-
+<mt:if name="dialog">
       // Set asset ID
       if (jQuery('#select_asset input[name="id"]').val().length > 0 ) {
         jQuery('#select_asset input[name="id"]').val( jQuery('#select_asset input[name="id"]').val() + ',');
       }
       jQuery('#select_asset input[name="id"]').val(jQuery('#select_asset input[name="id"]').val() +  data.result.asset.id);
+</mt:if>
     }
   });
 
@@ -294,7 +295,8 @@ function is_valid_path(path_){
 /* ]]> */
 </script>
 
-<mt:setvarblock name="jq_js_include" append="1">
+<mt:if name="dialog">
+  <mt:setvarblock name="jq_js_include" append="1">
   jQuery('#upload-asset-panel').on('changePanel', function() {
     if(jQuery('#upload-progress').children('.upload-status-block').length > 0) {
       var id = jQuery('#upload-progress').children('.upload-status-block').attr('data-asset-id');
@@ -306,4 +308,5 @@ function is_valid_path(path_){
         .removeClass('disabled');
     }
   });
-</mt:setvarblock>
+  </mt:setvarblock>
+</mt:if>
