@@ -2,7 +2,8 @@
 <mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog">
 
 <mt:unless name="filter" eq="userpic">
-<form action="" method="get" id="modal-type-filter">
+<div style="float: left; margin-right: 15px;">
+    <form action="" method="get" id="modal-type-filter">
     <span><__trans phrase="Asset Type: "></span>
   <select name="asset-class" id="asset-class">
     <option value=""><__trans phrase="All Types"></option>
@@ -10,13 +11,15 @@
     <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"</mt:if></mt:if>><mt:var name="label"></option>
 </mt:loop>
     </select>
-</form>
-
+    </form>
+</div>
+<div>
 <form action="" method="get" id="modal-search">
-  <input type="text" id="search" name="search" class="search-input text med" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
+  <input type="text" id="search" name="search" class="search-input text" style="width: 40%" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
   <input type="image" id="search-button"class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
       <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
 </form>
+</div>
 </mt:unless>
 
 <mt:setvarblock name="list_actions">
