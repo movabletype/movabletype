@@ -1,9 +1,90 @@
+<style>
+#drop-handler {
+    height: 150px;
+    background-color: #DFDFDF;
+    border-radius: 10px;
+    border: dotted 2px #6f6f6f;
+    margin-bottom: 1em;
+}
+
+#drop-handler p{
+    text-align: center;
+    font-size: 1.5em;
+    line-height: 150px;
+}
+
+#drop-handler button{
+    text-align: center;
+    font-size: 1.5em;
+    line-height: 150px;
+    text-decoration: underline;
+    color: #0076BF;
+    border: none;
+    background: transparent;
+}
+
+.upload-status-block {
+    border: solid 1px #afafaf;
+    margin: 0.5em;
+    padding: 0.5em;
+    height: 50px;
+    overflow: hidden;
+}
+
+.upload-status-block-left-panel {
+    float: left;
+    width: 100%;
+    margin: 0 -100px 0 0;
+}
+
+.upload-status-block-right-panel {
+    float: right;
+    width: 100px;
+}
+
+.upload-status-block-left-content {
+    margin: 0 80px 0 0;
+}
+
+.upload-cancel {
+    margin-right: 0.25em;
+    text-align: right;
+    line-height: 50px;
+    text-decoration: underline;
+    color: #0076BF;
+}
+
+.edit-asset {
+    margin-right: 0.25em;
+    text-align: right;
+    line-height: 50px;
+    text-decoration: underline;
+    color: #0076BF;
+}
+
+span.filename {
+    margin-left: 0.5em;
+    text-align: center;
+    line-height: 50px;
+}
+
+p.msg-error {
+    line-height: 50px;
+    padding-left: 10px;
+}
+
+p.msg-warning {
+    line-height: 50px;
+    padding-left: 10px;
+}
+</style>
+
 <form>
   <input type="file" id="file" name="file" multiple="multiple" style="display: none;">
-  <div id="drop-handler" style="height: 150px; background-color: #DFDFDF; border-radius: 10px; border: dotted 2px; border-color: #6f6f6f; margin-bottom: 1em;">
-    <p style="text-align: center; font-size: 1.5em; line-height: 150px;">Drag and drop here to upload files, or <button id="open-file-dialog" style="text-decoration: underline; color: #0076BF; border: none; background: transparent;">browse</button>.</p>
+  <div id="drop-handler">
+    <p>Drag and drop here to upload files, or <button id="open-file-dialog">browse</button>.</p>
   </div>
-  
+
 <mt:if name="filter" ne="userpic">  
     <h2><__trans phrase="Upload Destination"></h2>
   <mtapp:setting
@@ -124,17 +205,17 @@ var numOfRows = 0;
 function createUploadBlock () {
   numOfRows++;
 
-  this.uploadBlock  = jQuery('<div class="upload-status-block" id="upload-status_' + numOfRows + '" style="border: solid 1px #afafaf; margin: 0.5em; padding: 0.5em;height: 50px;overflow: hidden;"></div>');
+  this.uploadBlock  = jQuery('<div class="upload-status-block" id="upload-status_' + numOfRows + '"></div>');
 
-  this.leftPanel    = jQuery('<div style="float: left; width: 100%; margin: 0 -100px 0 0;"></div>').appendTo(this.uploadBlock);
-  this.rightPanel   = jQuery('<div style="float: right; width: 100px;"></div>').appendTo(this.uploadBlock);
-  this.leftContent  = jQuery('<div style="margin: 0 80px 0 0;"></div>').appendTo(this.leftPanel);
+  this.leftPanel    = jQuery('<div class="upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
+  this.rightPanel   = jQuery('<div class="upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
+  this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
   this.progressbar  = jQuery('<div class="progressbar"></div>').appendTo(this.leftContent);
   this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);
   this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.leftContent);
   this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
-  this.cancelUpload = jQuery('<div class="upload-cancel" style="margin-right: 0.25em;text-align: right;line-height: 50px; text-decoration: underline; color: #0076BF;"><__trans phrase="Cancel"></div>').appendTo(this.rightPanel);
-  this.editAsset    = jQuery('<div class="edit-asset" style="margin-right: 0.25em;text-align: right;line-height: 50px; text-decoration: underline; color: #0076BF;"></div>').appendTo(this.rightPanel);
+  this.cancelUpload = jQuery('<div class="upload-cancel"><__trans phrase="Cancel"></div>').appendTo(this.rightPanel);
+  this.editAsset    = jQuery('<div class="edit-asset"></div>').appendTo(this.rightPanel);
 
   this.editAsset.hide();
   this.progressbar.progressbar({ value: 0 });
@@ -162,7 +243,7 @@ function createUploadBlock () {
   }
 
   this.setThubmanil = function(url, fname, id) {
-    jQuery('<img src="' + url + '"><span class="filename" style="margin-left: 0.5em; text-align: center; line-height: 50px;">' + fname + '</span>').appendTo(this.thumbnail);
+    jQuery('<img src="' + url + '"><span class="filename">' + fname + '</span>').appendTo(this.thumbnail);
     this.thumbnail.parents('.upload-status-block').attr('data-asset-id', id);
   }
 
@@ -170,13 +251,13 @@ function createUploadBlock () {
     this.cancelUpload.hide();
     this.progressbar.hide();
     this.filename.hide();
-    jQuery('<p class="msg-error" style="line-height: 50px; padding-left: 10px;">' + err + '</p>').appendTo(this.uploadResult);
+    jQuery('<p class="msg-error">' + err + '</p>').appendTo(this.uploadResult);
   }
 
   this.setCancelResult = function(msg) {
     this.cancelUpload.hide();
     this.progressbar.hide();
-    jQuery('<p class="msg-warning" style="line-height: 50px; padding-left: 10px;">' + msg+ '</p>').appendTo(this.uploadResult);
+    jQuery('<p class="msg-warning">' + msg+ '</p>').appendTo(this.uploadResult);
   }
 
   this.enableEditAsset = function(Asset) {
