@@ -122,7 +122,6 @@
   <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
 <mt:if name="edit_blog_id">
   <input type="hidden" name="blog_id" value="<mt:var name="edit_blog_id">" />
-  <input type="hidden" name="direct_asset_insert" value="1" />
   <mt:unless name="is_image">
   <input type="hidden" name="force_insert" value="1" />
   </mt:unless>
@@ -131,6 +130,7 @@
   </mt:unless>
 </mt:if>
 <mt:if name="asset_select">
+  <input type="hidden" name="direct_asset_insert" value="1" />
   <input type="hidden" name="asset_select" value="1" />
 </mt:if>
 <mt:if name="user_id">
