@@ -4,35 +4,53 @@
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
 <style>
-  #content-body-left {
-    float:
-    left;
-    width: 130px;
-  }
+#container {
+    height: 100%;
+}
 
-  #content-body-right {
+#content {
+    height: 100%;
+    padding: 0px;
+}
+
+#content-body {
+    margin-top: 0px;
+}
+
+#content-body-left {
+    float: left;
+    width: 134px;
+    height: 100%;
+    min-height: 100%;
+    border-right: solid 1px #aaa;
+}
+
+#content-body-right {
     float: right;
     width: 100%;
-    margin: 0 0 0 -130px;
-  }
+    margin: 15px 15px 0 -150px;
+}
 
-  #content-body-right-body {
-    margin: 0 0 0 150px;
-  }
+#content-body-right-body {
+    margin: 0 0 0 165px;
+}
 
-  #asset-menu li {
+#asset-menu li {
     margin-bottom: 0px;
     list-style-type: none;
     height: 50px;
-    border: solid 1px #aaa;
-    border-bottom: 0px;
+    border-bottom: solid 1px #aaa;
     line-height: 50px;
     padding-left: .5em;
-  }
+}
 
-  #asset-menu li.last-child {
+#asset-menu li.last-child {
     border-bottom: solid 1px #aaa;
-  }
+}
+
+#asset-menu li.active {
+    background-color: #cae5f8
+}
 </style>
 </mt:setvarblock>
 
@@ -60,7 +78,7 @@
 <div id="content-body-left">
   <div id="asset-menu">
     <ul>
-      <li>
+      <li class="active">
         <a href="#" class="left-menu-item" data-panel-id="#upload-asset-panel">アップロード</a>
       </li>
       <li>
@@ -137,9 +155,15 @@ jQuery('.left-menu-item').click( function() {
     .hide();
   jQuery(currentPanel)
     .removeClass('hidden')
-    .addClass('active')
     .show()
     .trigger(event);
+  jQuery(this)
+    .parent('li')
+    .siblings()
+    .removeClass('active');
+  jQuery(this)
+    .parent('li')
+    .addClass('active');
 });
 jQuery('.actions-bar button.primary').click(function() {
   jQuery('#select_asset').submit();
