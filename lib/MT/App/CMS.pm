@@ -2111,7 +2111,6 @@ sub core_menus {
             label      => "New",
             order      => 200,
             mode       => 'start_upload',
-            args       => { 'can_multi' => '1' },
             permission => 'upload,edit_assets',
             view       => [ "blog", 'website' ],
         },
