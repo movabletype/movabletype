@@ -436,36 +436,10 @@ sub get_flickr_list {
         my $key = $q->param('method') eq 'search' ? 'photos' : 'photoset';
         my $photos = $data->{$key}{photo};
         if ($photos) {
-            my @photos;
-            foreach my $photo (@$photos) {
-                my $res
-                    = get_request( $app, $token, 'flickr.photos.getSizes',
-                    { photo_id => $photo->{id}, },
-                    );
-                if ( $res->is_success ) {
-                    my $data
-                        = MT::Util::from_json(
-                        Encode::decode( 'utf-8', $res->content ) );
-                    my $sizes = $data->{sizes}{size};
-                    foreach my $size (@$sizes) {
-                        if ( $size->{label} eq 'Large Square' ) {
-                            push @photos,
-                                {
-                                title     => $photo->{title},
-                                id        => $photo->{id},
-                                thumbnail => $size->{source},
-                                };
-                        }
-                    }
-                }
-                else {
-                    return $app->error(
-                        translate(
-                            'Flickr search error: ' . $res->status_line
-                        )
-                    );
-                }
-            }
+            my @photos = map {
+                my $hash = { title => $_->{title}, id => $_->{id} };
+                $hash;
+            } @$photos;
             $param->{photos} = \@photos;
             $param->{page}   = $data->{$key}{page};
             $param->{pages}  = $data->{$key}{pages};
@@ -474,6 +448,41 @@ sub get_flickr_list {
     else {
         return $app->error(
             translate( 'Flickr getSizes error: ' . $res->status_line ) );
+    }
+
+    $param->{success} = 1;
+    return $app->json_result($param);
+}
+
+sub get_flickr_thumbnail {
+    my ($app)  = @_;
+    my $q      = $app->param;
+    my $plugin = $app->component("MTAssetoEmbed");
+    my $cfg    = $app->config;
+    my $blog   = $app->blog;
+    my $param  = {};
+
+    my $token = get_token($app);
+    return $app->error( translate('Token data is not registered.') )
+        unless $token;
+
+    my $res
+        = get_request( $app, $token, 'flickr.photos.getSizes',
+        { photo_id => $q->param("photo_id"), },
+        );
+    if ( $res->is_success ) {
+        my $data
+            = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+        my $sizes = $data->{sizes}{size};
+        foreach my $size (@$sizes) {
+            if ( $size->{label} eq 'Large Square' ) {
+                $param->{thumbnail} = $size->{source};
+            }
+        }
+    }
+    else {
+        return $app->error(
+            translate( 'Flickr search error: ' . $res->status_line ) );
     }
 
     $param->{success} = 1;

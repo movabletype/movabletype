@@ -28,8 +28,9 @@ applications:
             youtube_oauth2callback: $MTAssetoEmbed::MTAssetoEmbed::App::youtube_oauth2callback
             youtube_get_token_data: $MTAssetoEmbed::MTAssetoEmbed::App::youtube_get_token_data
             start_flickr: $MTAssetoEmbed::MTAssetoEmbed::App::start_flickr
-            start_youtube: $MTAssetoEmbed::MTAssetoEmbed::App::start_youtube
             get_flickr_list: $MTAssetoEmbed::MTAssetoEmbed::App::get_flickr_list
+            get_flickr_thumbnail: $MTAssetoEmbed::MTAssetoEmbed::App::get_flickr_thumbnail
+            start_youtube: $MTAssetoEmbed::MTAssetoEmbed::App::start_youtube
             get_youtube_list: $MTAssetoEmbed::MTAssetoEmbed::App::get_youtube_list
 
 web_services:

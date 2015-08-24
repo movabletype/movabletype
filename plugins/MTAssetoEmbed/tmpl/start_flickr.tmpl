@@ -75,25 +75,50 @@
           if (photos.length > 0) {
             var count = 1;
             jQuery.each(photos, function (index) {
-              if ( count == 6 ) {
-                thumbnails.append(jQuery('<br/>').css('clear', 'both'));
-              }
-              thumbnails.append(
-                jQuery('<div/>').addClass('flickr-thumbnail').append(
-                  jQuery('<img/>').attr({
-                    src: photos[index].thumbnail,
-                    title: photos[index].title,
-                    alt: photos[index].id
-                  })
-                ).append(
-                  jQuery('<br/>')
-                ).append(
-                  jQuery('<span/>').addClass('title').text(photos[index].title)
-                )
-              )
-              count++;
+              jQuery.ajax({
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                async: true,
+                url: ScriptURI,
+                dataType: 'json',
+                data: {
+                  __mode: 'get_flickr_thumbnail',
+                  magic_token: magic_token,
+                  blog_id: blog_id,
+                  photo_id: photos[index].id
+                },
+                success: function(data) {
+                  var thumbnail = data.result.thumbnail;
+
+                  if ( count == 6 ) {
+                    thumbnails.append(jQuery('<br/>').css('clear', 'both'));
+                  }
+                  thumbnails.append(
+                    jQuery('<div/>').addClass('flickr-thumbnail').append(
+                      jQuery('<img/>').attr({
+                        src: thumbnail,
+                        title: photos[index].title,
+                        alt: photos[index].id
+                      })
+                    ).append(
+                      jQuery('<br/>')
+                    ).append(
+                      jQuery('<span/>').addClass('title').text(photos[index].title)
+                    )
+                  )
+                  count++;
+                },
+                error: function(xhr, status, errorThrown) {
+                  if ( xhr.status == 401 ) {
+                    loginAgain(function(){
+                      $this.click();
+                    });
+                  }
+                  else
+                    generate_error(xhr.status+' '+errorThrown);
+                }
+              });
             });
-            thumbnails.append(jQuery('<br/>').css('clear', 'both'));
             jQuery("#thumbnails").append(thumbnails);
             if ( data.result.page > 1 ) {
               jQuery("#pages").append(
@@ -114,7 +139,7 @@
                 get_thumbnails( method, parseInt(data.result.page) + 1, param );
               });
             }
-          }
+	  }
           else {
             jQuery("#thumbnails").text('<__trans phrase="Photo was not found.">');
           }

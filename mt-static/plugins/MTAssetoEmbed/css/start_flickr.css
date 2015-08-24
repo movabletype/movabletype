@@ -1,3 +1,7 @@
+#pages{
+  clear: both;
+}
+
 #thumbnails .flickr-thumbnail {
   float: left;
   margin: 3px;
