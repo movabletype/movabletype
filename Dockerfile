@@ -26,6 +26,9 @@ RUN yum -y install ImageMagick-perl
 # Enable Imager to manipulate GIF.
 RUN yum -y install giflib-devel
 
+# Install netpbm commands.
+RUN yum -y install netpbm-progs
+
 # For installing Math::GMP.
 RUN yum -y install gmp-devel
 
