@@ -15,6 +15,10 @@ use MT::Util;
 use GoogleOpenIDConnect;
 use GoogleOpenIDConnect::OIDC;
 
+sub _key {
+    return 'GoogleOpenIDConnect';
+}
+
 sub _is_effective_plugindata {
     my ( $app, $plugindata, $client_id ) = @_;
 
@@ -55,6 +59,7 @@ sub config_tmpl {
     my $blog   = $app->blog;
     my $scope  = $blog ? ( 'blog:' . $blog->id ) : 'system';
     my $config = $plugin->get_config_hash($scope);
+    $app->param( 'key', _key() );
 
     my $missing = undef;
     $missing = $app->translate(
@@ -70,6 +75,7 @@ sub config_tmpl {
             (   map { ( "google_oidc_$_" => $config->{$_} || '' ) }
                     keys(%$config)
             ),
+            redirect_uri => MT::Auth::OIDC::_create_return_url( $app, $blog ),
             (   $blog
                 ? ( scope_label => $blog->class_label, )
                 : ()

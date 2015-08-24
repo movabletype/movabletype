@@ -5,6 +5,15 @@
 <mt:Else>
 <mtapp:settinggroup id="google-oidc-settings">
 
+<mt:SetVarBlock name="hint"><__trans phrase="Create an OpenIDConnect application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a>" /></mt:SetVarBlock>
+<mtapp:setting
+   id="ga_redirect_uri"
+   label="<__trans phrase="Redirect URI of the OpenIDConnect application">"
+   hint="$hint"
+   show_hint="1">
+    <span id="google_oidc_redirect_uri_text"><mt:Var name="redirect_uri" encode_html="1" /></span>
+</mtapp:setting>
+
 <mtapp:setting
    id="goidc_client_id"
    label="<__trans phrase="Client ID of the OpenIDConnect application">"
@@ -20,5 +29,4 @@
 </mtapp:setting>
 
 </mtapp:settinggroup>
-
 </mt:If>
