@@ -30,7 +30,7 @@ sub login {
     }
 
     return $app->redirect(
-        $class->_uri_to_authorizatin_endpoint( $app, $blog ) );
+        $class->_uri_to_authorization_endpoint( $app, $blog ) );
 
 }
 
@@ -169,7 +169,7 @@ sub _get_userinfo {
     return LWP::UserAgent->new->request($req);
 }
 
-sub _uri_to_authorizatin_endpoint {
+sub _uri_to_authorization_endpoint {
     my $class   = shift;
     my $app     = shift;
     my $blog    = shift;
