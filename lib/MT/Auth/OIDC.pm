@@ -16,6 +16,14 @@ my $token_endpoint         = 'http://localhost:5001/token';
 my $userinfo_endpoint      = 'http://localhost:5001/userinfo';
 my $scope                  = 'openid email profile phone address';
 
+BEGIN {
+    if (    ( not eval { require OIDC::Lite::Client::WebServer; 1; } )
+        and ( not eval { require OIDC::Lite::Model::IDToken; 1; } ) )
+    {
+        die $@;
+    }
+}
+
 sub login {
     my $class    = shift;
     my ($app)    = @_;

@@ -18,8 +18,7 @@ use GoogleOpenIDConnect::OIDC;
 sub _is_effective_plugindata {
     my ( $app, $plugindata, $client_id ) = @_;
 
-    my $result
-        = $plugindata
+    my $result = $plugindata
         && $plugindata->data->{client_id};
     $app->error(undef);
 
@@ -57,10 +56,20 @@ sub config_tmpl {
     my $scope  = $blog ? ( 'blog:' . $blog->id ) : 'system';
     my $config = $plugin->get_config_hash($scope);
 
+    my $missing = undef;
+    $missing = $app->translate(
+        'A Perl module required for using Google Open ID Connect is missing: [_1].',
+        'OIDC::Lite'
+        )
+        unless eval { require OIDC::Lite::Client::WebServer }
+        || eval     { require OIDC::Lite::Model::IDToken };
+
     $plugin->load_tmpl(
         'web_service_config.tmpl',
-        {
-            ( map { ( "google_oidc_$_" => $config->{$_} || '' ) } keys(%$config) ),
+        {   missing_modules => $missing,
+            (   map { ( "google_oidc_$_" => $config->{$_} || '' ) }
+                    keys(%$config)
+            ),
             (   $blog
                 ? ( scope_label => $blog->class_label, )
                 : ()

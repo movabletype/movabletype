@@ -4,8 +4,6 @@ use strict;
 
 use base qw( MT::Auth::OIDC );
 use GoogleOpenIDConnect;
-use OIDC::Lite::Client::WebServer;
-use OIDC::Lite::Model::IDToken;
 use JSON qw/encode_json decode_json/;
 use MT::Util;
 
@@ -22,6 +20,13 @@ sub _login_form {
 sub condition {
     my ( $blog, $reason ) = @_;
     return 1 unless $blog;
+
+    if (    ( not eval { require OIDC::Lite::Client::WebServer; 1; } )
+        and ( not eval { require OIDC::Lite::Model::IDToken; 1; } ) )
+    {
+        return 0;
+    }
+
     my $plugin  = plugin();
     my $blog_id = $blog->id;
     my $app     = MT->instance;
@@ -34,6 +39,7 @@ sub condition {
         = '<a href="?__mode=cfg_web_services&amp;blog_id='
         . $blog->id . '">'
         . $plugin->translate('Set up GoogleOpenIDConnect') . '</a>';
+
     return 0;
 }
 
@@ -82,11 +88,11 @@ sub _client {
 sub set_commenter_properties {
     my $class = shift;
     my ( $commenter, $user_info ) = @_;
-    my $nickname     = $user_info->{name};
-    my $sub          = $user_info->{sub};
-    my $email          = $user_info->{email};
+    my $nickname = $user_info->{name};
+    my $sub      = $user_info->{sub};
+    my $email    = $user_info->{email};
 
     $commenter->nickname( $nickname || $user_info->url );
-    $commenter->email( $email   || '' );
+    $commenter->email( $email || '' );
 }
 1;

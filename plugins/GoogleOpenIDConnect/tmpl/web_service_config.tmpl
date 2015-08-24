@@ -1,5 +1,8 @@
 <h2><__trans phrase="Google OpenIDConnect"></h2>
 
+<mt:If name="missing_modules">
+<p><mt:Var name="missing_modules" /></p>
+<mt:Else>
 <mtapp:settinggroup id="google-oidc-settings">
 
 <mtapp:setting
@@ -18,3 +21,4 @@
 
 </mtapp:settinggroup>
 
+</mt:If>
