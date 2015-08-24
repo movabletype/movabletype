@@ -12,7 +12,6 @@ use MT::Util;
 my $authorization_endpoint = 'https://accounts.google.com/o/oauth2/auth';
 my $token_endpoint         = 'https://accounts.google.com/o/oauth2/token';
 my $userinfo_endpoint      = 'https://www.googleapis.com/oauth2/v3/userinfo';
-my $scope                  = 'openid email profile';
 
 sub _login_form {
     my $class = shift;
