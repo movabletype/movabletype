@@ -802,5 +802,9 @@
 { "r" : "1", "t" : "<MTEntries category='foo/bar'></MTEntries>", "e" : "" }, #786
 { "r" : "1", "t" : "<mt:If tag=\"Entries\">true<mt:Else>false</mt:If>", "e" : "true" }, #787
 { "r" : "1", "t" : "<mt:ignore>foo<mt:ignore>bar</mt:ignore></mt:ignore>", "e" : "" }, #788
-{ "r" : "1", "t" : " <mt:assets tag=\"not_exists\"><mt:if tag=\"categorybasename\"></mt:if><mt:assetproperty property=\"file_size\" format=\"0\"></mt:assets>", "e" : " " } #789
+{ "r" : "1", "t" : " <mt:assets tag=\"not_exists\"><mt:if tag=\"categorybasename\"></mt:if><mt:assetproperty property=\"file_size\" format=\"0\"></mt:assets>", "e" : " " }, #789
+{ "r" : "1", "t" : "<MTAssets limit='1'><MTAssetBlogID></MTAssets>", "e" : "1"}, #790
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicAsset><MTAssetBlogID></MTAuthorUserpicAsset></MTAuthors>", "e" : "0"}, #791
+{ "r" : "1", "t" : "<MTAssets limit='1'><MTAssetBlogID pad='1'></MTAssets>", "e" : "000001"}, #792
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicAsset><MTAssetBlogID pad='1'></MTAuthorUserpicAsset></MTAuthors>", "e" : "000000"} #793
 ]

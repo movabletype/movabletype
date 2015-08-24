@@ -787,7 +787,7 @@ sub core_tags {
             ## Asset
             AssetID => '$Core::MT::Template::Tags::Asset::_hdlr_asset_id',
             AssetBlogID =>
-                '$Core::MT::Template::Tags::Asset::_hdlr_assetblog__id',
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_blog_id',
             AssetFileName =>
                 '$Core::MT::Template::Tags::Asset::_hdlr_asset_file_name',
             AssetLabel =>
