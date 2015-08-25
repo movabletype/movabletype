@@ -276,7 +276,17 @@ function uploadFiles(files) {
 </mt:if>    
   var max_upload_size = <mt:var name="max_upload_size">;
 
-  // Disable submit button
+<mt:unless name="filter" eq="userpic">  
+  // Validate extra path
+  var $extra_path = jQuery('#extra_path');
+  if ($extra_path.val().length > 0 ) {
+    if (!$extra_path.mtValidate('simple')) {
+      return;
+    }
+  }
+</mt:unless>
+
+// Disable submit button
   jQuery('.actions-bar button.primary')
     .attr('disabled', 'disabled')
     .addClass('disabled');
@@ -360,7 +370,12 @@ jQuery('#file').change( function(e) {
   uploadFiles(files);
 });
 
-function is_valid_path(path_){
+/* ]]> */
+</script>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  <mt:unless name="filter" eq="userpic">  
+  function is_valid_path(path_){
     var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
     str = encodeURIComponent(str);
     if (str.indexOf('%') != -1) {
@@ -370,13 +385,18 @@ function is_valid_path(path_){
         return false;
     }
     return true;
-}
+  }
 
-/* ]]> */
-</script>
-
-<mt:if name="dialog">
-  <mt:setvarblock name="jq_js_include" append="1">
+  jQuery.mtValidateAddRules({
+    "#extra_path": function($e) {
+      return is_valid_path($e.val());
+    }
+  });
+  jQuery.mtValidateAddMessages({
+    "#extra_path": '<__trans phrase="You must set a valid path." escape="singlequotes">',
+  });
+  </mt:unless>
+  <mt:if name="dialog">
   jQuery('#upload-asset-panel').on('changePanel', function() {
     if(jQuery('#upload-progress').children('.upload-status-block').length > 0) {
       var id = jQuery('#upload-progress').children('.upload-status-block').attr('data-asset-id');
@@ -388,5 +408,5 @@ function is_valid_path(path_){
         .removeClass('disabled');
     }
   });
-  </mt:setvarblock>
-</mt:if>
+  </mt:if>
+</mt:setvarblock>
