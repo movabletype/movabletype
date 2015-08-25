@@ -3,15 +3,20 @@
   text-align: center;
 }
 
-#thumbnails .flickr-thumbnail {
+#thumbnails .youtube-thumbnail {
   float: left;
-  margin: 3px;
-  width: 126px;
+  padding: 5px;
+  width: 120px;
+  height: 110px;
   overflow: hidden;
 }
 
 #thumbnails .title {
   white-space: nowrap;
+}
+
+#thumbnails .selected {
+  background-color: #CCCCFF;
 }
 
 #pages span.link {

@@ -68,23 +68,31 @@
               if ( count == 6 ) {
                 thumbnails.append(jQuery('<br/>').css('clear', 'both'));
               }
+              var video_id = videos[index].id;
               thumbnails.append(
-                jQuery('<div/>').addClass('flickr-thumbnail').append(
+                jQuery('<div/>').addClass('youtube-thumbnail').attr({ id: "thumb-" + videos[index].id }).append(
                   jQuery('<img/>').attr({
                     src: videos[index].thumbnail,
-                    title: videos[index].title,
-                    alt: videos[index].id
+                    alt: videos[index].title
                   })
                 ).append(
                   jQuery('<br/>')
                 ).append(
                   jQuery('<span/>').addClass('title').text(videos[index].title)
                 )
-              )
+              );
               count++;
             });
             thumbnails.append(jQuery('<br/>').css('clear', 'both'));
             jQuery("#thumbnails").append(thumbnails);
+            jQuery(".youtube-thumbnail").click( function() {
+              if ( jQuery(this).hasClass("selected") ) {
+                jQuery(this).removeClass("selected");
+              }
+              else {
+                jQuery(this).addClass("selected");
+              }
+            });
             if ( data.result.prev_page_token ) {
               jQuery("#pages").append(
                 jQuery('<span/>').attr({ id: 'prev-link' }).addClass('link').text('< prev')

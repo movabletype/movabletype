@@ -5,13 +5,18 @@
 
 #thumbnails .flickr-thumbnail {
   float: left;
-  margin: 3px;
-  width: 156px;
+  padding: 5px;
+  width: 150px;
+  height: 170px;
   overflow: hidden;
 }
 
 #thumbnails .title {
   white-space: nowrap;
+}
+
+#thumbnails .selected {
+  background-color: #CCCCFF;
 }
 
 #pages span.link {

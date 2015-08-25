@@ -79,7 +79,7 @@
                 thumbnails.append(jQuery('<br/>').css('clear', 'both'));
               }
               thumbnails.append(
-                jQuery('<div/>').addClass('flickr-thumbnail').append(
+                jQuery('<div/>').addClass('flickr-thumbnail').attr({ id: "thumb-" + photos[index].id }).append(
                   jQuery('<img/>').attr({
                     id: photos[index].id,
                     src: "<$mt:var name="static_uri"$>plugins/MTAssetoEmbed/img/flickr_blank_thumbnail.png",
@@ -95,6 +95,7 @@
             });
             jQuery("#thumbnails").append(thumbnails);
             jQuery.each(photos, function (index) {
+              var photo_id = photos[index].id;
               jQuery.ajax({
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8',
@@ -105,10 +106,18 @@
                   __mode: 'get_flickr_thumbnail',
                   magic_token: magic_token,
                   blog_id: blog_id,
-                  photo_id: photos[index].id
+                  photo_id: photo_id
                 },
                 success: function(data) {
-                  jQuery("#" + photos[index].id).attr({ src: data.result.thumbnail });
+                  jQuery("#" + photo_id).attr({ src: data.result.thumbnail });
+                  jQuery("#thumb-" + photo_id).click( function() {
+                    if ( jQuery(this).hasClass("selected") ) {
+                      jQuery(this).removeClass("selected");
+                    }
+                    else {
+                      jQuery(this).addClass("selected");
+                    }
+                  });
                 },
                 error: function(xhr, status, errorThrown) {
                   if ( xhr.status == 401 ) {
