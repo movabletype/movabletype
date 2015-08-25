@@ -353,6 +353,11 @@ sub init_core_registry {
                 label =>
                     'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.',
             },
+            'OIDC::Lite' => {
+                link => 'http://search.cpan.org/dist/OIDC-Lite/',
+                label =>
+                    'OIDC::Lite is required if you would like to be able to allow commenters to be authenticated by Google as OpenIDConnect.',
+            },
         },
         required_packages => {
             'Image::Size' => {

@@ -6,8 +6,6 @@
 
 package MT::Auth::OIDC;
 use strict;
-use OIDC::Lite::Client::WebServer;
-use OIDC::Lite::Model::IDToken;
 use JSON qw/encode_json decode_json/;
 use MT::Util;
 
@@ -17,11 +15,10 @@ my $userinfo_endpoint      = 'http://localhost:5001/userinfo';
 my $scope                  = 'openid email profile phone address';
 
 BEGIN {
-    if (    ( not eval { require OIDC::Lite::Client::WebServer; 1; } )
-        and ( not eval { require OIDC::Lite::Model::IDToken; 1; } ) )
-    {
-        die $@;
-    }
+    eval {
+        require OIDC::Lite::Client::WebServer;
+        require OIDC::Lite::Model::IDToken;
+    };
 }
 
 sub login {

@@ -792,6 +792,12 @@ my @CORE_OPT = (
             'YAML::Syck'
         )
     ],
+    [   'OIDC::Lite',
+        0, 0,
+        translate(
+            'OIDC::Lite is required if you would like to be able to allow commenters to be authenticated by Google as OpenIDConnect.'
+        )
+    ],
 
 );
 
