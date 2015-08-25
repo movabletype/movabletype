@@ -2866,7 +2866,8 @@ sub dialog_asset_modal {
     _set_start_upload_params( $app, \%param );
 
     $param{can_multi} = 1
-        if ( $app->param('upload_mode') || '' ) ne 'upload_userpic' && $app->param('can_multi');
+        if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
+        && $app->param('can_multi');
 
     $param{filter} = $app->param('filter') if defined $app->param('filter');
     $param{filter_val} = $app->param('filter_val')
@@ -2874,8 +2875,8 @@ sub dialog_asset_modal {
     $param{search} = $app->param('search') if defined $app->param('search');
     $param{edit_field} = $app->param('edit_field')
         if defined $app->param('edit_field');
-    $param{next_mode} = $app->param('next_mode');
-    $param{no_insert} = $app->param('no_insert') ? 1 : 0;
+    $param{next_mode}    = $app->param('next_mode');
+    $param{no_insert}    = $app->param('no_insert') ? 1 : 0;
     $param{asset_select} = $app->param('asset_select');
 
     if ($blog_id) {
@@ -2932,9 +2933,16 @@ sub dialog_insert_options {
 
     # Should not allow to insert asset from other site.
     my $blog_id = $app->param('blog_id');
+    my $blog    = MT->model('blog')->load($blog_id)
+        or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
+    my %blog_ids;
+    if ( !$blog->is_blog ) {
+        %blog_ids = map { $_->id => 1 } @{ $blog->blogs };
+    }
+    $blog_ids{$blog_id} = 1;
     foreach my $a (@$assets) {
         return $app->errtrans('Invalid request.')
-            unless $a->blog_id == $blog_id;
+            unless defined $blog_ids{ $a->blog_id };
     }
 
     # If no_insert option provided, should not displaying insert option
@@ -3000,18 +3008,18 @@ sub insert_asset {
     }
     elsif ( $app->param('direct_asset_insert') ) {
         $assets = $param->{assets};
-        foreach my $a ( @$assets ) {
-           my %param;
-           $param{wrap_text} = 1;
-           $param{new_entry} = $app->param('new_entry') ? 1 : 0;
+        foreach my $a (@$assets) {
+            my %param;
+            $param{wrap_text} = 1;
+            $param{new_entry} = $app->param('new_entry') ? 1 : 0;
 
-           $a->on_upload( \%param );
-           $param{enclose}
-               = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
-           my $html = $a->as_html( \%param );
-           return $app->error( $a->error ) unless defined $html;
+            $a->on_upload( \%param );
+            $param{enclose}
+                = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+            my $html = $a->as_html( \%param );
+            return $app->error( $a->error ) unless defined $html;
 
-           $text .= $html;
+            $text .= $html;
         }
     }
     else {
