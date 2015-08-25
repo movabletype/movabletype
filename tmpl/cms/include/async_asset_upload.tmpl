@@ -84,8 +84,7 @@ p.msg-warning {
   <div id="drop-handler">
     <p>Drag and drop here to upload files, or <button id="open-file-dialog">browse</button>.</p>
   </div>
-
-<mt:if name="filter" ne="userpic">  
+<mt:unless name="filter" eq="userpic">  
     <h2><__trans phrase="Upload Destination"></h2>
   <mtapp:setting
     id="site_path"
@@ -101,7 +100,7 @@ p.msg-warning {
       </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
     </mt:if>
   </mtapp:setting>
-</mtif>
+</mtunless>
 
     <h2><__trans phrase="Upload Options"></h2>
 <mtapp:setting
