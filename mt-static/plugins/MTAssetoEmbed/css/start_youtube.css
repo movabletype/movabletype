@@ -1,3 +1,8 @@
+#pages{
+  clear: both;
+  text-align: center;
+}
+
 #thumbnails .flickr-thumbnail {
   float: left;
   margin: 3px;
