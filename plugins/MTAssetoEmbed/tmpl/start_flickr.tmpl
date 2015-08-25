@@ -75,6 +75,26 @@
           if (photos.length > 0) {
             var count = 1;
             jQuery.each(photos, function (index) {
+              if ( count == 6 ) {
+                thumbnails.append(jQuery('<br/>').css('clear', 'both'));
+              }
+              thumbnails.append(
+                jQuery('<div/>').addClass('flickr-thumbnail').append(
+                  jQuery('<img/>').attr({
+                    id: photos[index].id,
+                    src: "<$mt:var name="static_uri"$>plugins/MTAssetoEmbed/img/flickr_blank_thumbnail.png",
+                    alt: photos[index].title
+                  })
+                ).append(
+                  jQuery('<br/>')
+                ).append(
+                  jQuery('<span/>').addClass('title').text(photos[index].title)
+                )
+              )
+              count++;
+            });
+            jQuery("#thumbnails").append(thumbnails);
+            jQuery.each(photos, function (index) {
               jQuery.ajax({
                 type: 'POST',
                 contentType: 'application/x-www-form-urlencoded; charset=utf-8',
@@ -88,25 +108,7 @@
                   photo_id: photos[index].id
                 },
                 success: function(data) {
-                  var thumbnail = data.result.thumbnail;
-
-                  if ( count == 6 ) {
-                    thumbnails.append(jQuery('<br/>').css('clear', 'both'));
-                  }
-                  thumbnails.append(
-                    jQuery('<div/>').addClass('flickr-thumbnail').append(
-                      jQuery('<img/>').attr({
-                        src: thumbnail,
-                        title: photos[index].title,
-                        alt: photos[index].id
-                      })
-                    ).append(
-                      jQuery('<br/>')
-                    ).append(
-                      jQuery('<span/>').addClass('title').text(photos[index].title)
-                    )
-                  )
-                  count++;
+                  jQuery("#" + photos[index].id).attr({ src: data.result.thumbnail });
                 },
                 error: function(xhr, status, errorThrown) {
                   if ( xhr.status == 401 ) {
