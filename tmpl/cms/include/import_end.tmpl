@@ -12,6 +12,7 @@ if (progress) {
 
 <mt:if name="import_success">
 <h2><__trans phrase="All data imported successfully!"></h2>
+<p><__trans phrase="<a href="#" onclick="[_1]" class="mt-build">Publish your site</a> to see these changes take effect." params="<mt:var name="rebuild_open">"></p>
 <mt:unless name="import_upload">
 <p><__trans phrase="Make sure that you remove the files that you imported from the 'import' folder, so that if/when you run the import process again, those files will not be re-imported."></p>
 </mt:unless>

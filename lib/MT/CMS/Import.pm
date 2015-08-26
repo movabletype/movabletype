@@ -142,7 +142,8 @@ sub do_import {
         $pass = $q->param('password')
             or return $app->error(
             $app->translate(
-                      'You need to provide a password if you are going to create new users for each user listed in your blog.')
+                'You need to provide a password if you are going to create new users for each user listed in your blog.'
+            )
             ) if ( MT::Auth->password_exists );
     }
 
@@ -199,6 +200,15 @@ sub do_import {
 
     $param->{import_success} = $import_result;
     $param->{error} = $importer->{type}->errstr unless $import_result;
+
+    if ($import_result) {
+        my $rebuild_url = $app->uri(
+            mode => 'rebuild_confirm',
+            args => { blog_id => $blog_id, }
+        );
+        $param->{rebuild_open}
+            = qq!window.open('$rebuild_url', 'rebuild_blog_$blog_id', 'width=400,height=400,resizable=yes'); return false;!;
+    }
 
     $app->print_encode(
         $app->build_page( "include/import_end.tmpl", $param ) );
