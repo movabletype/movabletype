@@ -412,6 +412,9 @@ sub get_flickr_list {
     my $blog   = $app->blog;
     my $param  = {};
 
+    $app->validate_magic
+        or return $app->errtrans("Invalid request.");
+
     my $token = get_token($app);
     return $app->error( translate('Token data is not registered.') )
         unless $token;
@@ -468,6 +471,9 @@ sub get_flickr_thumbnail {
     my $blog   = $app->blog;
     my $param  = {};
 
+    $app->validate_magic
+        or return $app->errtrans("Invalid request.");
+
     my $token = get_token($app);
     return $app->error( translate('Token data is not registered.') )
         unless $token;
@@ -517,6 +523,9 @@ sub get_youtube_list {
     my $cfg    = $app->config;
     my $blog   = $app->blog;
     my $param  = {};
+
+    $app->validate_magic
+        or return $app->errtrans("Invalid request.");
 
     my $token = get_token_from_plugindata($app);
 
