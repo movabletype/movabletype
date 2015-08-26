@@ -1826,8 +1826,10 @@ sub pre_save {
     }
 
     require MT::PublishOption;
-    my $build_type = $app->param('build_type');
-
+    my $build_type
+        = $app->param('build_type')
+        ? $app->param('build_type')
+        : $obj->build_type;
     if ( $build_type == MT::PublishOption::SCHEDULED() ) {
         my $period   = $app->param('schedule_period');
         my $interval = $app->param('schedule_interval');
@@ -1835,10 +1837,8 @@ sub pre_save {
         $obj->build_interval($sec);
     }
     my $rebuild_me = 1;
-    if (defined($build_type)
-        && (   $build_type == MT::PublishOption::DISABLED()
-            || $build_type == MT::PublishOption::MANUALLY() )
-        )
+    if (   $build_type == MT::PublishOption::DISABLED()
+        || $build_type == MT::PublishOption::MANUALLY() )
     {
         $rebuild_me = 0;
     }
