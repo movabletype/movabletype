@@ -16,7 +16,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Canon;
 
-$VERSION = '1.04';
+$VERSION = '1.05';
 
 sub ProcessRealMeta($$$);
 sub ProcessRealProperties($$$);
@@ -355,13 +355,13 @@ my %metadataFlag = (
 # Returns: 1 on success
 sub ProcessRealProperties($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirLen = $$dirInfo{DirLen};
     my $pos = $$dirInfo{DirStart};
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
 
-    $verbose and $exifTool->VerboseDir('RealProperties', undef, $dirLen);
+    $verbose and $et->VerboseDir('RealProperties', undef, $dirLen);
 
     while ($pos + 6 <= $dirLen) {
 
@@ -390,7 +390,7 @@ sub ProcessRealProperties($$$)
         my $count = int($valLen / Image::ExifTool::FormatSize($format));
         my $val = ReadValue($dataPt, $pos, $format, $count, $dirLen-$pos);
 
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         unless ($tagInfo) {
             my $tagName;
             ($tagName = $tag) =~ s/\s+//g;
@@ -399,7 +399,7 @@ sub ProcessRealProperties($$$)
             AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
         if ($verbose) {
-            $exifTool->VerboseInfo($tag, $tagInfo,
+            $et->VerboseInfo($tag, $tagInfo,
                 Table  => $tagTablePtr,
                 Value  => $val,
                 DataPt => $dataPt,
@@ -410,7 +410,7 @@ sub ProcessRealProperties($$$)
                 Count  => $count,
             );
         }
-        $exifTool->FoundTag($tagInfo, $val);
+        $et->FoundTag($tagInfo, $val);
         $pos += $valLen;
     }
     return 1;
@@ -422,16 +422,16 @@ sub ProcessRealProperties($$$)
 # Returns: 1 on success
 sub ProcessRealMeta($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataPos = $$dirInfo{DataPos};
     my $pos = $$dirInfo{DirStart};
     my $dirEnd = $pos + $$dirInfo{DirLen};
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
     my $prefix = $$dirInfo{Prefix} || '';
     $prefix and $prefix .= '/';
 
-    $verbose and $exifTool->VerboseDir('RealMetadata', undef, $$dirInfo{DirLen});
+    $verbose and $et->VerboseDir('RealMetadata', undef, $$dirInfo{DirLen});
 
     for (;;) {
         last if $pos + 28 > $dirEnd;
@@ -454,7 +454,7 @@ sub ProcessRealMeta($$$)
         last if $valuePos + $valueLen > $dirEnd;
 
         my $format = $metadataFormat{$type};
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         unless ($tagInfo) {
             my $tagName = $tag;
             $tagName =~ tr/A-Za-z0-9//dc;
@@ -480,7 +480,7 @@ sub ProcessRealMeta($$$)
             }
             my $count = int($valueLen / Image::ExifTool::FormatSize($format));
             my $val = ReadValue($dataPt, $valuePos, $format, $count, $dirEnd-$valuePos);
-            $exifTool->HandleTag($tagTablePtr, $tag, $val,
+            $et->HandleTag($tagTablePtr, $tag, $val,
                 DataPt => $dataPt,
                 DataPos => $dataPos,
                 Start => $valuePos,
@@ -498,12 +498,12 @@ sub ProcessRealMeta($$$)
                 DirLen => $pos + $size - $dirStart,
                 Prefix => $tag,
             );
-            $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+            $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         }
         $pos += $size;  # step to next Metadata structure
     }
     unless ($pos == $dirEnd) {
-        $exifTool->Warn('Format error in Real Metadata');
+        $et->Warn('Format error in Real Metadata');
         return 0;
     }
     return 1;
@@ -515,7 +515,7 @@ sub ProcessRealMeta($$$)
 # Returns: 1 on success, 0 if this wasn't a valid Real file
 sub ProcessReal($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $tag, $vers, $extra, @mimeTypes, %dirCount);
 
@@ -531,7 +531,7 @@ sub ProcessReal($$)
         $type = 'RA';
     } else {
         $tagTablePtr = GetTagTable('Image::ExifTool::Real::Metafile');
-        my $ext = $exifTool->{FILE_EXT};
+        my $ext = $$et{FILE_EXT};
         $type = ($ext and $ext eq 'RPM') ? 'RPM' : 'RAM';
         require Image::ExifTool::PostScript;
         local $/ = Image::ExifTool::PostScript::GetInputRecordSeparator($raf) || "\n";
@@ -543,19 +543,19 @@ sub ProcessReal($$)
             if ($type) {
                 # must be a Real file type if protocol is http
                 return 0 if $buff =~ /^http/ and $buff !~ /\.(ra|rm|rv|rmvb|smil)$/i;
-                $exifTool->SetFileType($type);
+                $et->SetFileType($type);
                 undef $type;
             }
             # save URL or Text from RAM file
             my $tag = $buff =~ m{^[a-z]{3,4}://} ? 'url' : 'txt';
-            $exifTool->HandleTag($tagTablePtr, $tag, $buff);
+            $et->HandleTag($tagTablePtr, $tag, $buff);
         }
         return 1;
     }
 
-    $exifTool->SetFileType($type);
+    $et->SetFileType($type);
     SetByteOrder('MM');
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
 #
 # Process RealAudio file
 #
@@ -564,12 +564,12 @@ sub ProcessReal($$)
         $tag = ".ra$vers";
         my $fpos = $raf->Tell();
         unless ($raf->Read($buff, 512)) {
-            $exifTool->Warn('Error reading audio header');
+            $et->Warn('Error reading audio header');
             return 1;
         }
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         if ($verbose > 2) {
-            $exifTool->VerboseInfo($tag, $tagInfo, DataPt => \$buff, DataPos => $fpos);
+            $et->VerboseInfo($tag, $tagInfo, DataPt => \$buff, DataPos => $fpos);
         }
         if ($tagInfo) {
             my $subTablePtr = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
@@ -579,9 +579,9 @@ sub ProcessReal($$)
                 DirLen   => length $buff,
                 DirStart => 0,
             );
-            $exifTool->ProcessDirectory(\%dirInfo, $subTablePtr);
+            $et->ProcessDirectory(\%dirInfo, $subTablePtr);
         } else {
-            $exifTool->Warn('Unsupported RealAudio version');
+            $et->Warn('Unsupported RealAudio version');
         }
         return 1;
     }
@@ -591,7 +591,7 @@ sub ProcessReal($$)
     # skip the rest of the RM header
     my $size = unpack('x4N', $buff);
     unless ($raf->Seek($size - 8, 1)) {
-        $exifTool->Warn('Error seeking in file');
+        $et->Warn('Error seeking in file');
         return 0;
     }
 
@@ -601,23 +601,23 @@ sub ProcessReal($$)
         ($tag, $size, $vers) = unpack('a4Nn', $buff);
         last if $tag eq "\0\0\0\0";
         if ($verbose) {
-            $exifTool->VPrint(0, "$tag chunk ($size bytes):\n");
+            $et->VPrint(0, "$tag chunk ($size bytes):\n");
         } else {
             last if $tag eq 'DATA'; # stop normal parsing at DATA tag
         }
         if ($size & 0x80000000) {
-            $exifTool->Warn('Bad chunk header');
+            $et->Warn('Bad chunk header');
             last;
         }
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         if ($tagInfo and $$tagInfo{SubDirectory}) {
             my $fpos = $raf->Tell();
             unless ($raf->Read($buff, $size-10) == $size-10) {
-                $exifTool->Warn("Error reading $tag chunk");
+                $et->Warn("Error reading $tag chunk");
                 last;
             }
             if ($verbose > 2) {
-                $exifTool->VerboseInfo($tag, $tagInfo, DataPt => \$buff, DataPos => $fpos);
+                $et->VerboseInfo($tag, $tagInfo, DataPt => \$buff, DataPos => $fpos);
             }
             my $subTablePtr = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
             my %dirInfo = (
@@ -627,30 +627,30 @@ sub ProcessReal($$)
                 DirStart => 0,
             );
             if ($dirCount{$tag}) {
-                $exifTool->{SET_GROUP1} = '+' . ++$dirCount{$tag};
+                $$et{SET_GROUP1} = '+' . ++$dirCount{$tag};
             } else {
                 $dirCount{$tag} = 1;
             }
-            $exifTool->ProcessDirectory(\%dirInfo, $subTablePtr);
-            delete $exifTool->{SET_GROUP1};
+            $et->ProcessDirectory(\%dirInfo, $subTablePtr);
+            delete $$et{SET_GROUP1};
             # keep track of stream MIME types
-            my $mime = $exifTool->{RealStreamMime};
+            my $mime = $$et{RealStreamMime};
             if ($mime) {
-                delete $exifTool->{RealStreamMime};
+                delete $$et{RealStreamMime};
                 $mime =~ s/\0.*//s;
                 push @mimeTypes, $mime unless $mime =~ /^logical-/;
             }
         } else {
             unless ($raf->Seek($size-10, 1)) {
-                $exifTool->Warn('Error seeking in file');
+                $et->Warn('Error seeking in file');
                 last;
             }
         }
     }
     # override MIMEType with stream MIME type if we only have one stream
     if (@mimeTypes == 1 and length $mimeTypes[0]) {
-        $exifTool->{VALUE}->{MIMEType} = $mimeTypes[0];
-        $exifTool->VPrint(0, "  MIMEType = $mimeTypes[0]\n");
+        $$et{VALUE}{MIMEType} = $mimeTypes[0];
+        $et->VPrint(0, "  MIMEType = $mimeTypes[0]\n");
     }
 #
 # Process footer containing Real metadata and ID3 information
@@ -668,19 +668,19 @@ sub ProcessReal($$)
                 DirLen => length($buff) - 8,
             );
             my $tagTablePtr = GetTagTable('Image::ExifTool::Real::Metadata');
-            $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+            $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         } else {
-            $exifTool->Warn('Bad metadata footer');
+            $et->Warn('Bad metadata footer');
         }
         if ($raf->Seek(-128, 2) and $raf->Read($buff, 128) == 128 and $buff =~ /^TAG/) {
-            $exifTool->VPrint(0, "ID3v1:\n");
+            $et->VPrint(0, "ID3v1:\n");
             my %dirInfo = (
                 DataPt => \$buff,
                 DirStart => 0,
                 DirLen => length($buff),
             );
             my $tagTablePtr = GetTagTable('Image::ExifTool::ID3::v1');
-            $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+            $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         }
     }
     return 1;
@@ -712,7 +712,7 @@ little-endian, but the Real format is big-endian.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

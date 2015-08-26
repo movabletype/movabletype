@@ -18,7 +18,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.14';
+$VERSION = '1.15';
 
 %Image::ExifTool::MPEG::Audio = (
     GROUPS => { 2 => 'Audio' },
@@ -441,7 +441,7 @@ Image::ExifTool::AddCompositeTags('Image::ExifTool::MPEG');
 # Inputs: 0) ExifTool object ref, 1) tag table ref, 2-N) list of 32-bit data words
 sub ProcessFrameHeader($$@)
 {
-    my ($exifTool, $tagTablePtr, @data) = @_;
+    my ($et, $tagTablePtr, @data) = @_;
     my $tag;
     foreach $tag (sort keys %$tagTablePtr) {
         next unless $tag =~ /^Bit(\d{2})-?(\d{2})?/;
@@ -453,7 +453,7 @@ sub ProcessFrameHeader($$@)
             $mask += (1 << $_);
         }
         my $val = ($word >> (31 + 32*$index - $b2)) & $mask;
-        $exifTool->HandleTag($tagTablePtr, $tag, $val);
+        $et->HandleTag($tagTablePtr, $tag, $val);
     }
 }
 
@@ -464,9 +464,9 @@ sub ProcessFrameHeader($$@)
 # Returns: 1 on success, 0 if no audio header was found
 sub ParseMPEGAudio($$;$)
 {
-    my ($exifTool, $buffPt, $mp3) = @_;
+    my ($et, $buffPt, $mp3) = @_;
     my ($word, $pos);
-    my $ext = $$exifTool{FILE_EXT} || '';
+    my $ext = $$et{FILE_EXT} || '';
 
     for (;;) {
         # find frame sync
@@ -494,13 +494,13 @@ sub ParseMPEGAudio($$;$)
         last;
     }
     # set file type if not done already
-    $exifTool->SetFileType();
+    $et->SetFileType();
 
     my $tagTablePtr = GetTagTable('Image::ExifTool::MPEG::Audio');
-    ProcessFrameHeader($exifTool, $tagTablePtr, $word);
+    ProcessFrameHeader($et, $tagTablePtr, $word);
 
     # extract the VBR information (ref MP3::Info)
-    my ($v, $m) = ($$exifTool{MPEG_Vers}, $$exifTool{MPEG_Mode});
+    my ($v, $m) = ($$et{MPEG_Vers}, $$et{MPEG_Mode});
     while (defined $v and defined $m) {
         my $len = length $$buffPt;
         $pos += $v == 3 ? ($m == 3 ? 17 : 32) : ($m == 3 ?  9 : 17);
@@ -514,12 +514,12 @@ sub ParseMPEGAudio($$;$)
         $pos += 8;
         if ($flags & 0x01) {    # VBRFrames
             last if $pos + 4 > $len;
-            $exifTool->HandleTag($xingTable, 1, unpack("x${pos}N", $$buffPt)) if $isVBR;
+            $et->HandleTag($xingTable, 1, unpack("x${pos}N", $$buffPt)) if $isVBR;
             $pos += 4;
         }
         if ($flags & 0x02) {    # VBRBytes
             last if $pos + 4 > $len;
-            $exifTool->HandleTag($xingTable, 2, unpack("x${pos}N", $$buffPt)) if $isVBR;
+            $et->HandleTag($xingTable, 2, unpack("x${pos}N", $$buffPt)) if $isVBR;
             $pos += 4;
         }
         if ($flags & 0x04) {    # VBR_TOC
@@ -530,7 +530,7 @@ sub ParseMPEGAudio($$;$)
         if ($flags & 0x08) {    # VBRScale
             last if $pos + 4 > $len;
             $vbrScale = unpack("x${pos}N", $$buffPt);
-            $exifTool->HandleTag($xingTable, 3, $vbrScale) if $isVBR;
+            $et->HandleTag($xingTable, 3, $vbrScale) if $isVBR;
             $pos += 4;
         }
         # process Lame header (ref 5)
@@ -552,7 +552,7 @@ sub ParseMPEGAudio($$;$)
                 } else {
                     last;
                 }
-                $exifTool->HandleTag($xingTable, 4, $lib);
+                $et->HandleTag($xingTable, 4, $lib);
                 last;
             }
         }
@@ -560,10 +560,10 @@ sub ParseMPEGAudio($$;$)
         last if $lameLen < 9;
         my $enc = substr($$buffPt, $pos, 9);
         if ($enc ge 'LAME3.90') {
-            $exifTool->HandleTag($xingTable, 4, $enc);
+            $et->HandleTag($xingTable, 4, $enc);
             if ($vbrScale <= 100) {
-                $exifTool->HandleTag($xingTable, 5, int((100 - $vbrScale) / 10));
-                $exifTool->HandleTag($xingTable, 6, (100 - $vbrScale) % 10);
+                $et->HandleTag($xingTable, 5, int((100 - $vbrScale) / 10));
+                $et->HandleTag($xingTable, 6, (100 - $vbrScale) % 10);
             }
             my %dirInfo = (
                 DataPt   => $buffPt,
@@ -571,9 +571,9 @@ sub ParseMPEGAudio($$;$)
                 DirLen   => length($$buffPt) - $pos,
             );
             my $subTablePtr = GetTagTable('Image::ExifTool::MPEG::Lame');
-            $exifTool->ProcessDirectory(\%dirInfo, $subTablePtr);
+            $et->ProcessDirectory(\%dirInfo, $subTablePtr);
         } else {
-            $exifTool->HandleTag($xingTable, 4, substr($$buffPt, $pos, 20));
+            $et->HandleTag($xingTable, 4, substr($$buffPt, $pos, 20));
         }
         last;   # (didn't want to loop anyway)
     }
@@ -587,7 +587,7 @@ sub ParseMPEGAudio($$;$)
 # Returns: 1 on success, 0 if no video header was found
 sub ProcessMPEGVideo($$)
 {
-    my ($exifTool, $buffPt) = @_;
+    my ($et, $buffPt) = @_;
 
     return 0 unless length $$buffPt >= 4;
     my ($w1, $w2) = unpack('N2', $$buffPt);
@@ -600,10 +600,10 @@ sub ProcessMPEGVideo($$)
         return 0;
     }
     # set file type if not done already
-    $exifTool->SetFileType('MPEG') unless $exifTool->{VALUE}->{FileType};
+    $et->SetFileType('MPEG') unless $$et{VALUE}{FileType};
 
     my $tagTablePtr = GetTagTable('Image::ExifTool::MPEG::Video');
-    ProcessFrameHeader($exifTool, $tagTablePtr, $w1, $w2);
+    ProcessFrameHeader($et, $tagTablePtr, $w1, $w2);
     return 1;
 }
 
@@ -627,22 +627,22 @@ sub ProcessMPEGVideo($$)
 #   0xe0-0xef - video stream
 sub ParseMPEGAudioVideo($$)
 {
-    my ($exifTool, $buffPt) = @_;
+    my ($et, $buffPt) = @_;
     my (%found, $didHdr);
     my $rtnVal = 0;
     my %proc = ( audio => \&ParseMPEGAudio, video => \&ProcessMPEGVideo );
 
-    delete $exifTool->{AudioBitrate};
-    delete $exifTool->{VideoBitrate};
+    delete $$et{AudioBitrate};
+    delete $$et{VideoBitrate};
 
     while ($$buffPt =~ /\0\0\x01(\xb3|\xc0)/g) {
         my $type = $1 eq "\xb3" ? 'video' : 'audio';
         unless ($didHdr) {
-            # make sure we didn't miss an audio frame sync before this (ie. MP3 file)
+            # make sure we didn't miss an audio frame sync before this (eg. MP3 file)
             # (the last byte of the 4-byte MP3 audio frame header word may be zero,
             # but the 2nd last must be non-zero, so we need only check to pos-3)
             my $buff = substr($$buffPt, 0, pos($$buffPt) - 3);
-            $found{audio} = 1 if ParseMPEGAudio($exifTool, \$buff);
+            $found{audio} = 1 if ParseMPEGAudio($et, \$buff);
             $didHdr = 1;
         }
         next if $found{$type};
@@ -651,7 +651,7 @@ sub ParseMPEGAudioVideo($$)
         $len > 256 and $len = 256;
         my $dat = substr($$buffPt, pos($$buffPt), $len);
         # process MPEG audio or video
-        if (&{$proc{$type}}($exifTool, \$dat)) {
+        if (&{$proc{$type}}($et, \$dat)) {
             $rtnVal = 1;
             $found{$type} = 1;
             # done if we found audio and video
@@ -667,18 +667,18 @@ sub ParseMPEGAudioVideo($$)
 # Returns: 1 on success, 0 if this wasn't a valid MPEG file
 sub ProcessMPEG($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $buff;
 
     $raf->Read($buff, 4) == 4 or return 0;
     return 0 unless $buff =~ /^\0\0\x01[\xb0-\xbf]/;
-    $exifTool->SetFileType();
+    $et->SetFileType();
 
     $raf->Seek(0,0);
     $raf->Read($buff, 65536*4) or return 0;
 
-    return ParseMPEGAudioVideo($exifTool, \$buff);
+    return ParseMPEGAudioVideo($et, \$buff);
 }
 
 1;  # end
@@ -705,7 +705,7 @@ based on unofficial sources which may be incomplete, inaccurate or outdated.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

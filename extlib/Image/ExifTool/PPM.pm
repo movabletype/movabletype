@@ -16,7 +16,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.06';
+$VERSION = '1.07';
 
 #------------------------------------------------------------------------------
 # Read or write information in a PPM/PGM/PBM image
@@ -24,11 +24,11 @@ $VERSION = '1.06';
 # Returns: 1 on success, 0 if this wasn't a valid PPM file, -1 on write error
 sub ProcessPPM($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $outfile = $$dirInfo{OutFile};
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
     my ($buff, $num, $type, %info);
 #
 # read as much of the image as necessary to extract the header and comments
@@ -78,19 +78,19 @@ sub ProcessPPM($$)
         $info{Comment} =~ s/^# ?//mg;   # remove "# " at the start of each line
         $info{Comment} =~ s/\n$//;      # remove trailing newline
     }
-    $exifTool->SetFileType($type);
+    $et->SetFileType($type);
     my $len = pos($buff);
 #
 # rewrite the file if requested
 #
     if ($outfile) {
         my $nvHash;
-        my $newComment = $exifTool->GetNewValues('Comment', \$nvHash);
+        my $newComment = $et->GetNewValues('Comment', \$nvHash);
         my $oldComment = $info{Comment};
-        if ($exifTool->IsOverwriting($nvHash, $oldComment)) {
-            ++$exifTool->{CHANGED};
-            $exifTool->VerboseValue('- Comment', $oldComment) if defined $oldComment;
-            $exifTool->VerboseValue('+ Comment', $newComment) if defined $newComment;
+        if ($et->IsOverwriting($nvHash, $oldComment)) {
+            ++$$et{CHANGED};
+            $et->VerboseValue('- Comment', $oldComment) if defined $oldComment;
+            $et->VerboseValue('+ Comment', $newComment) if defined $newComment;
         } else {
             $newComment = $oldComment;  # use existing comment
         }
@@ -114,11 +114,11 @@ sub ProcessPPM($$)
 #
     if ($verbose > 2) {
         print $out "$type header ($len bytes):\n";
-        Image::ExifTool::HexDump(\$buff, $len, Out => $out);
+        HexDump(\$buff, $len, Out => $out);
     }
     my $tag;
     foreach $tag (qw{Comment ImageWidth ImageHeight MaxVal}) {
-        $exifTool->FoundTag($tag, $info{$tag}) if defined $info{$tag};
+        $et->FoundTag($tag, $info{$tag}) if defined $info{$tag};
     }
     return 1;
 }
@@ -143,7 +143,7 @@ BitMap) images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

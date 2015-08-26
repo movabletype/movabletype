@@ -636,7 +636,6 @@ $VERSION = '1.06';
         'Night View/Portrait' => '夜景/肖像',
         'Portrait' => '肖像',
         'Sports' => '運動場面',
-        'Standard' => '',
         'Sunset' => '夕陽',
         'Sweep Panorama' => '全景攝影',
       },
@@ -785,7 +784,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

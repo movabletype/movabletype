@@ -164,6 +164,10 @@ sub edit {
 sub dialog_list_asset {
     my $app = shift;
 
+    # Backward compatibility
+    return dialog_asset_modal( $app, @_ )
+        if !$app->param('json') && !$app->config('EnableUploadCompat');
+
     my $blog_id = $app->param('blog_id');
     my $mode_userpic = $app->param('upload_mode') || '';
     return $app->return_to_dashboard( redirect => 1 )
@@ -252,8 +256,11 @@ sub dialog_list_asset {
 
     my $dialog    = $app->param('dialog')    ? 1 : 0;
     my $no_insert = $app->param('no_insert') ? 1 : 0;
-    my %carry_params = map { $_ => $app->param($_) || '' }
-        (qw( edit_field upload_mode require_type next_mode asset_select ));
+    my %carry_params
+        = map { $_ => $app->param($_) || '' }
+        (
+        qw( edit_field upload_mode require_type next_mode asset_select can_multi )
+        );
     $carry_params{'user_id'} = $app->param('filter_val')
         if $filter eq 'userpic';
     _set_start_upload_params( $app, \%carry_params )
@@ -269,8 +276,10 @@ sub dialog_list_asset {
             args     => \%args,
             type     => 'asset',
             code     => $hasher,
-            template => 'dialog/asset_list.tmpl',
-            params   => {
+            template => $app->config('EnableUploadCompat')
+            ? 'dialog/asset_list.tmpl'
+            : 'include/async_asset_list.tmpl',
+            params => {
                 (   $blog
                     ? ( blog_id      => $blog_id,
                         blog_name    => $blog->name || '',
@@ -350,8 +359,9 @@ sub insert {
             },
         );
     }
-    my $ctx = $tmpl->context;
-    $ctx->stash( 'asset', $asset );
+    my $ctx    = $tmpl->context;
+    my $assets = [$asset];
+    $ctx->stash( 'assets', $assets );
     return $tmpl;
 }
 
@@ -406,8 +416,8 @@ sub asset_userpic {
 
     my $thumb_html
         = $user
-        ? $user->userpic_html( Asset => $asset )
-        : $app->model('author')->userpic_html( Asset => $asset );
+        ? $user->userpic_html( Asset => $asset, Ts => 1 )
+        : $app->model('author')->userpic_html( Asset => $asset, Ts => 1 );
 
     $app->load_tmpl(
         'dialog/asset_userpic.tmpl',
@@ -448,6 +458,8 @@ sub start_upload {
     $param{search_label} = $app->translate('Assets');
     $param{search_type}  = 'asset';
 
+    $param{can_multi} = 1;
+
     # Check directory for thumbnail image
     _check_thumbnail_dir( $app, \%param );
 
@@ -457,6 +469,110 @@ sub start_upload {
     $app->load_tmpl( $tmpl_file, \%param );
 }
 
+sub js_upload_file {
+    my $app = shift;
+
+    my $is_userpic = $app->param('type') eq 'userpic' ? 1 : 0;
+    my $user_id = $app->param('user_id');
+    if ($is_userpic) {
+        return $app->error(
+            $app->json_error( $app->translate("Invalid Request.") ) )
+            unless $user_id;
+
+        my $user = $app->model('author')->load( { id => $user_id } )
+            or return $app->error(
+            $app->json_error( $app->translate("Invalid Request.") ) );
+
+        my $appuser = $app->user;
+        if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+            return $app->error(
+                $app->json_error( $app->translate("Permission denied.") ) );
+        }
+    }
+    else {
+        if ( my $perms = $app->permissions ) {
+            return $app->error(
+                $app->json_error( $app->translate("Permission denied.") ) )
+                unless $perms->can_do('upload');
+        }
+        else {
+            return $app->error(
+                $app->json_error( $app->translate("Permission denied.") ) );
+        }
+    }
+    $app->validate_magic()
+        or return $app->error(
+        $app->json_error( $app->translate("Invalid Request.") ) );
+
+    # Save as asset
+    my ( $asset, $bytes ) = _upload_file(
+        $app,
+        require_type => ( $app->param('require_type') || '' ),
+        error_handler => sub {
+            my ( $_app, %params ) = @_;
+            return $app->error( $app->json_error( $params{error} ) );
+        },
+        cancel_handler => sub {
+            my ( $_app, %params ) = @_;
+            return $app->json_result(
+                {   cancel => $app->translate(
+                        "File with name '[_1]' already exists. Upload has been cancelled.",
+                        $params{fname}
+                    )
+                }
+            );
+        },
+    );
+    return unless $asset;
+
+    # Set tag for userpic
+    if ($is_userpic) {
+        $asset->tags('@userpic');
+        $asset->created_by($user_id);
+        $asset->save;
+    }
+
+    # Make thumbnail
+    my $thumb_url;
+    my $thumb_size = $app->param('thumbnail_size') || 45;
+    if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
+        my ( $orig_height, $orig_width )
+            = ( $asset->image_width, $asset->image_height );
+        if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
+            ($thumb_url) = $asset->thumbnail_url(
+                Height => $thumb_size,
+                Width  => $thumb_size,
+                Square => 1
+            );
+        }
+        elsif ( $orig_width > $thumb_size ) {
+            ($thumb_url) = $asset->thumbnail_url( Width => $thumb_size, );
+        }
+        elsif ( $orig_height > $thumb_size ) {
+            ($thumb_url) = $asset->thumbnail_url( Height => $thumb_size, );
+        }
+        else {
+            $thumb_url = $asset->url;
+        }
+    }
+    else {
+        $thumb_url
+            = MT->static_path
+            . 'images/asset/'
+            . $asset->class_type
+            . '-45.png';
+    }
+
+    my $metadata = {
+        id        => $asset->id,
+        filename  => $asset->file_name,
+        blog_id   => $asset->blog_id,
+        thumbnail => $thumb_url,
+    };
+    return $app->json_result( { asset => $metadata } );
+}
+
+### DEPRECATED: v6.2
 sub upload_file {
     my $app = shift;
 
@@ -470,7 +586,7 @@ sub upload_file {
 
     $app->validate_magic() or return;
 
-    my ( $asset, $bytes ) = _upload_file(
+    my ( $asset, $bytes ) = _upload_file_compat(
         $app,
         require_type => ( $app->param('require_type') || '' ),
         @_,
@@ -1024,7 +1140,8 @@ sub cms_save_filter {
     1;
 }
 
-sub _set_start_upload_params {
+### DEPRECATED: v6.2
+sub _set_start_upload_params_compat {
     my $app = shift;
     my ($param) = @_;
 
@@ -1122,12 +1239,110 @@ sub _set_start_upload_params {
     $param->{require_type} = $require_type;
 
     $param->{auto_rename_if_exists} = 0;
-    $param->{normalize_orientation} = 0;
+    $param->{normalize_orientation}
+        = 1;    # TODO: Default value will be 1 in future version.
+
+    $param->{compat_upload_template} = 1;
 
     $param;
 }
 
-sub _upload_file {
+sub _set_start_upload_params {
+    my $app = shift;
+    my ($param) = @_;
+
+    # Backward compatibility
+    return _set_start_upload_params_compat( $app, @_ )
+        if $app->config('EnableUploadCompat');
+
+    if ( my $perms = $app->permissions ) {
+        return $app->permission_denied()
+            unless $perms->can_do('upload');
+
+        my $blog_id = $app->param('blog_id');
+        require MT::Blog;
+        my $blog = MT::Blog->load($blog_id)
+            or return $app->error(
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
+
+        # Make a list of upload destination
+        my $dest_root;
+        my $class_label = $blog->class_label;
+
+        push @$dest_root,
+            {
+            label => $app->translate( '<[_1] Root>', $class_label ),
+            path  => '%s',
+            };
+        push @$dest_root,
+            {
+            label => $app->translate( '<[_1] Root>/username', $class_label ),
+            path  => '%s/%u',
+            };
+        push @$dest_root,
+            {
+            label => $app->translate( '<[_1] Root>/yyyy', $class_label ),
+            path  => '%s/%y',
+            };
+        push @$dest_root,
+            {
+            label => $app->translate( '<[_1] Root>/yyyy/mm', $class_label ),
+            path  => '%s/%y/%m',
+            };
+        push @$dest_root,
+            {
+            label =>
+                $app->translate( '<[_1] Root>/yyyy/mm/dd', $class_label ),
+            path => '%s/%y/%m/%d',
+            };
+
+        if ( $blog->column('archive_path') ) {
+            $class_label = MT->translate('Archive');
+            push @$dest_root,
+                {
+                label => $app->translate( '<[_1] Root>', $class_label ),
+                path  => '%a',
+                };
+            push @$dest_root,
+                {
+                label =>
+                    $app->translate( '<[_1] Root>/username', $class_label ),
+                path => '%a/%u',
+                };
+            push @$dest_root,
+                {
+                label => $app->translate( '<[_1] Root>/yyyy', $class_label ),
+                path  => '%a/%y',
+                };
+            push @$dest_root,
+                {
+                label =>
+                    $app->translate( '<[_1] Root>/yyyy/mm', $class_label ),
+                path => '%a/%y/%m',
+                };
+            push @$dest_root,
+                {
+                label =>
+                    $app->translate( '<[_1] Root>/yyyy/mm/dd', $class_label ),
+                path => '%a/%y/%m/%d',
+                };
+        }
+        $param->{destination_loop} = $dest_root;
+    }
+
+    my $require_type
+        = defined( $param->{require_type} ) ? $param->{require_type} : '';
+    $require_type =~ s/\W//g;
+    $param->{require_type}          = $require_type;
+    $param->{normalize_orientation} = 1;
+
+    $param->{max_upload_size} = $app->config->CGIMaxUpload;
+
+    $param;
+}
+
+### DEPRECATED: v6.2
+sub _upload_file_compat {
     my $app = shift;
     my (%upload_param) = @_;
     require MT::Image;
@@ -1618,6 +1833,509 @@ sub _upload_file {
         if ( $q->param('normalize_orientation') ) {
             $asset->normalize_orientation;
         }
+
+        # Adjust image quality according to ImageQualityJpeg
+        # and ImageQualityPng.
+        $asset->change_quality;
+    }
+
+    $asset->mime_type($mimetype) if $mimetype;
+    $app->run_callbacks( $app_id . '_pre_save.asset',
+        $app, $asset, $original )
+        || return $app->errtrans( "Saving [_1] failed: [_2]", 'asset',
+        $app->errstr );
+
+    $asset->save;
+    $app->run_callbacks( $app_id . '_post_save.asset',
+        $app, $asset, $original );
+
+    if ($is_image) {
+        $app->run_callbacks(
+            $app_id . '_upload_file.' . $asset->class,
+            File  => $local_file,
+            file  => $local_file,
+            Url   => $url,
+            url   => $url,
+            Size  => $bytes,
+            size  => $bytes,
+            Asset => $asset,
+            asset => $asset,
+            Type  => 'image',
+            type  => 'image',
+            Blog  => $blog,
+            blog  => $blog
+        );
+        $app->run_callbacks(
+            $app_id . '_upload_image',
+            File       => $local_file,
+            file       => $local_file,
+            Url        => $url,
+            url        => $url,
+            Size       => $bytes,
+            size       => $bytes,
+            Asset      => $asset,
+            asset      => $asset,
+            Height     => $h,
+            height     => $h,
+            Width      => $w,
+            width      => $w,
+            Type       => 'image',
+            type       => 'image',
+            ImageType  => $id,
+            image_type => $id,
+            Blog       => $blog,
+            blog       => $blog
+        );
+    }
+    else {
+        $app->run_callbacks(
+            $app_id . '_upload_file.' . $asset->class,
+            File  => $local_file,
+            file  => $local_file,
+            Url   => $url,
+            url   => $url,
+            Size  => $bytes,
+            size  => $bytes,
+            Asset => $asset,
+            asset => $asset,
+            Type  => 'file',
+            type  => 'file',
+            Blog  => $blog,
+            blog  => $blog
+        );
+    }
+
+    return ( $asset, $bytes );
+}
+
+sub _upload_file {
+    my $app = shift;
+    my (%upload_param) = @_;
+
+    # Backward compatibility
+    return _upload_file_compat( $app, @_ )
+        if $app->config('EnableUploadCompat');
+
+    require MT::Image;
+    my $app_id = $app->id;
+
+    # Setup handlers
+    my $eh = $upload_param{error_handler} || sub {
+        start_upload(@_);
+    };
+
+    my $q = $app->param;
+    my ( $fh, $info ) = $app->upload_info('file');
+    my $mimetype;
+    if ($info) {
+        $mimetype = $info->{'Content-Type'};
+    }
+    my %param = (
+        entry_insert => scalar( $q->param('entry_insert') ),
+        edit_field   => scalar( $q->param('edit_field') ),
+        destination  => scalar( $q->param('destination') ),
+        extra_path   => scalar( $q->param('extra_path') ),
+        upload_mode  => $app->mode,
+    );
+    return $eh->(
+        $app, %param,
+        error => $app->translate("Please select a file to upload.")
+    ) if !$fh;
+
+    my $basename = $q->param('file') || $q->param('fname');
+    $basename =~ s!\\!/!g;    ## Change backslashes to forward slashes
+    $basename =~ s!^.*/!!;    ## Get rid of full directory paths
+    if ( $basename =~ m!\.\.|\0|\|! ) {
+        return $eh->(
+            $app, %param,
+            error => $app->translate( "Invalid filename '[_1]'", $basename )
+        );
+    }
+    $basename
+        = Encode::is_utf8($basename)
+        ? $basename
+        : Encode::decode( $app->charset,
+        File::Basename::basename($basename) );
+
+    # Setup exists/cancel handler
+    my $exists_handler = $upload_param{exists_handler} || sub {
+        return $eh->(
+            $app, %param,
+            error => $app->translate(
+                "File with name '[_1]' already exists.", $basename
+            )
+        );
+    };
+    my $cancel_handler = $upload_param{cancel_handler} || sub {
+        start_upload(@_);
+    };
+
+    if ( my $asset_type = $upload_param{require_type} ) {
+        require MT::Asset;
+        my $asset_pkg = MT::Asset->handler_for_file($basename);
+
+        my %settings_for = (
+            audio => {
+                class => 'MT::Asset::Audio',
+                error =>
+                    $app->translate("Please select an audio file to upload."),
+            },
+            image => {
+                class => 'MT::Asset::Image',
+                error => $app->translate("Please select an image to upload."),
+            },
+            video => {
+                class => 'MT::Asset::Video',
+                error => $app->translate("Please select a video to upload."),
+            },
+        );
+
+        if ( my $settings = $settings_for{$asset_type} ) {
+            return $eh->( $app, %param, error => $settings->{error} )
+                if !$asset_pkg->isa( $settings->{class} );
+        }
+    }
+
+    my ($blog_id,        $blog,         $fmgr,
+        $local_file,     $asset_file,   $base_url,
+        $asset_base_url, $relative_url, $extra_path
+    );
+    if ( $blog_id = $q->param('blog_id') ) {
+
+        # Change to real file extension
+        if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
+            my $ext_old
+                = (
+                File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
+                [2];
+            if (   $ext_new ne lc($ext_old)
+                && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
+                && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
+            {
+                $basename =~ s/$ext_old$/$ext_new/;
+                $app->param( "changed_file_ext", "$ext_old,$ext_new" );
+            }
+        }
+
+        $param{blog_id} = $blog_id;
+        require MT::Blog;
+        $blog = MT::Blog->load($blog_id)
+            or return $app->error(
+            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
+        $fmgr = $blog->file_mgr;
+
+        ## Build upload destination path
+        my $user_basename = $app->user->basename;
+        my $now           = MT::Util::offset_time(time);
+        my $y             = POSIX::strftime( "%Y", gmtime($now) );
+        my $m             = POSIX::strftime( "%m", gmtime($now) );
+        my $d             = POSIX::strftime( "%d", gmtime($now) );
+        my $dest          = $q->param('destination');
+        my $root_path;
+        my $is_sitepath;
+
+        if ( $dest =~ m/^%s/i ) {
+
+            # sitepath
+            $root_path   = $blog->site_path;
+            $is_sitepath = 1;
+        }
+        else {
+            $root_path   = $blog->archive_path;
+            $is_sitepath = 0;
+        }
+        $dest =~ s|%s/?||g;
+        $dest =~ s|%a/?||g;
+        $dest =~ s|%u|$user_basename|g;
+        $dest =~ s|%y|$y|g;
+        $dest =~ s|%m|$m|g;
+        $dest =~ s|%d|$d|g;
+
+        # Make directory if not exists
+        $extra_path = $q->param('extra_path') || '';
+        if ($extra_path) {
+            if ( $extra_path =~ m!\.\.|\0|\|! ) {
+                return $eh->(
+                    $app, %param,
+                    error => $app->translate(
+                        "Invalid extra path '[_1]'", $extra_path
+                    )
+                );
+            }
+        }
+        if ( $dest ne '' ) {
+            $extra_path = File::Spec->catdir( $dest, $extra_path );
+        }
+
+        my $path = File::Spec->catdir( $root_path, $extra_path );
+        ## Untaint. We already checked for security holes in $relative_path.
+        ($path) = $path =~ /(.+)/s;
+        ## Build out the directory structure if it doesn't exist. DirUmask
+        ## determines the permissions of the new directories.
+        unless ( $fmgr->exists($path) ) {
+            $fmgr->mkpath($path)
+                or return $eh->(
+                $app, %param,
+                error => $app->translate(
+                    "Cannot make path '[_1]': [_2]",
+                    $path, $fmgr->errstr
+                )
+                );
+        }
+
+        # Rename filename automatically, or overwrite, or cancel upload
+        {
+            my $path_info = {};
+            @$path_info{qw(rootPath relativePath basename)}
+                = ( $root_path, $extra_path, $basename );
+            my $local_file = File::Spec->catfile(
+                ( $root_path, $extra_path, $basename ) );
+            if ( $fmgr->exists($local_file) ) {
+                if ( $q->param('operation_if_exists') == 1 ) {
+
+                    # Auto-rename
+                    _rename_filename( $app, $fmgr, $path_info );
+                }
+                elsif ( $q->param('operation_if_exists') == 2 ) {
+
+                    # Overwrite, do nothing
+                }
+                elsif ( $q->param('operation_if_exists') == 3 ) {
+
+                    # Call cancel handler
+                    return $cancel_handler->(
+                        $app,
+                        site_path  => $root_path,
+                        extra_path => $extra_path,
+                        fname      => $basename,
+                    );
+                }
+                else {
+                    # Call exists handler
+                    return $exists_handler->(
+                        $app,
+                        site_path  => $root_path,
+                        extra_path => $extra_path,
+                        fname      => $basename,
+                    );
+                }
+            }
+
+            $app->run_callbacks( $app_id . '_asset_upload_path',
+                $app, $fmgr, $path_info );
+
+            ( $root_path, $extra_path, $basename )
+                = @$path_info{qw(rootPath relativePath basename)};
+        }
+
+        $relative_url
+            = File::Spec->catfile( $extra_path, encode_url($basename) );
+        $extra_path
+            = $extra_path
+            ? File::Spec->catfile( $extra_path, $basename )
+            : $basename;
+        $asset_file = $is_sitepath ? '%r' : '%a';
+        $extra_path =~ s/^[\/\\]//;
+        $asset_file = File::Spec->catfile( $asset_file, $extra_path );
+        $local_file = File::Spec->catfile( $path,       $basename );
+        $base_url
+            = $is_sitepath
+            ? $blog->site_url
+            : $blog->archive_url;
+        $asset_base_url = $is_sitepath ? '%r' : '%a';
+
+        ## Untaint. We have already tested $basename and $extra_path for security
+        ## issues above, and we have to assume that we can trust the user's
+        ## Local Archive Path setting. So we should be safe.
+        ($local_file) = $local_file =~ /(.+)/s;
+    }
+    else {
+        $blog_id        = 0;
+        $asset_base_url = '%s/uploads';
+        $base_url       = $app->support_directory_url . 'uploads';
+        $param{support_path}
+            = File::Spec->catdir( $app->support_directory_path, 'uploads' );
+
+        require MT::FileMgr;
+        $fmgr = MT::FileMgr->new('Local');
+        unless ( $fmgr->exists( $param{support_path} ) ) {
+            $fmgr->mkpath( $param{support_path} );
+            unless ( $fmgr->exists( $param{support_path} ) ) {
+                return $app->error(
+                    $app->translate(
+                        "Could not create upload path '[_1]': [_2]",
+                        $param{support_path},
+                        $fmgr->errstr
+                    )
+                );
+            }
+        }
+
+        require File::Basename;
+        my ( $stem, undef, $type )
+            = File::Basename::fileparse( $basename, qr/\.[A-Za-z0-9]+$/ );
+        my $unique_stem = $stem;
+        $local_file = File::Spec->catfile( $param{support_path},
+            $unique_stem . $type );
+        my $i = 1;
+        while ( $fmgr->exists($local_file) ) {
+            $unique_stem = join q{-}, $stem, $i++;
+            $local_file = File::Spec->catfile( $param{support_path},
+                $unique_stem . $type );
+        }
+
+        my $unique_basename = $unique_stem . $type;
+        $extra_path   = $unique_basename;
+        $relative_url = encode_url($unique_basename);
+        $asset_file
+            = File::Spec->catfile( '%s', 'uploads', $unique_basename );
+    }
+
+    my ( $base, $uploaded_path, $ext )
+        = File::Basename::fileparse( $basename, '\.[^\.]*' );
+
+    if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
+        my @deny_exts = map {
+            if   ( $_ =~ m/^\./ ) {qr/$_/i}
+            else                  {qr/\.$_/i}
+        } split '\s?,\s?', $deny_exts;
+        my @ret = File::Basename::fileparse( $basename, @deny_exts );
+        if ( $ret[2] ) {
+            return $app->error(
+                $app->translate(
+                    '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                    $ext,
+                    $basename
+                )
+            );
+        }
+
+    }
+
+    if ( my $allow_exts = $app->config('AssetFileExtensions') ) {
+        my @allow_exts = map {
+            if   ( $_ =~ m/^\./ ) {qr/$_/i}
+            else                  {qr/\.$_/i}
+        } split '\s?,\s?', $allow_exts;
+        my @ret = File::Basename::fileparse( $local_file, @allow_exts );
+        unless ( $ret[2] ) {
+            return $app->error(
+                $app->translate(
+                    '\'[_1]\' is not allowed to upload by system settings.: [_2]',
+                    $ext,
+                    $basename
+                )
+            );
+        }
+    }
+
+    my ( $w, $h, $id, $write_file ) = MT::Image->check_upload(
+        Fh     => $fh,
+        Fmgr   => $fmgr,
+        Local  => $local_file,
+        Max    => $upload_param{max_size},
+        MaxDim => $upload_param{max_image_dimension}
+    );
+
+    return $app->error( MT::Image->errstr )
+        unless $write_file;
+
+    ## File does not exist, or else we have confirmed that we can overwrite.
+    my $umask = oct $app->config('UploadUmask');
+    my $old   = umask($umask);
+    defined( my $bytes = $write_file->() )
+        or return $app->error(
+        $app->translate(
+            "Error writing upload to '[_1]': [_2]", $local_file,
+            $fmgr->errstr
+        )
+        );
+    umask($old);
+
+    ## Close up the filehandle.
+    close $fh;
+
+    ## We are going to use $extra_path as the filename and as the url passed
+    ## in to the templates. So, we want to replace all of the '\' characters
+    ## with '/' characters so that it won't look like backslashed characters.
+    ## Also, get rid of a slash at the front, if present.
+    $extra_path =~ s!\\!/!g;
+    $extra_path =~ s!^/!!;
+    $relative_url =~ s!\\!/!g;
+    $relative_url =~ s!^/!!;
+    my $url = $base_url;
+    $url .= '/' unless $url =~ m!/$!;
+    $url .= $relative_url;
+    my $asset_url = $asset_base_url . '/' . $relative_url;
+
+    require File::Basename;
+    my $local_basename = File::Basename::basename($local_file);
+    my $local_ext
+        = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+
+    require MT::Asset;
+    my $asset_pkg = MT::Asset->handler_for_file($local_basename);
+    my $is_image  = 0;
+    if ( defined($w) && defined($h) ) {
+        $is_image = 1
+            if $asset_pkg->isa('MT::Asset::Image');
+    }
+    else {
+
+        # rebless to file type
+        $asset_pkg = 'MT::Asset'
+            if $asset_pkg->isa('MT::Asset::Image');
+    }
+    return $app->errtrans('Uploaded file is not an image.')
+        if !$is_image
+        && exists( $upload_param{require_type} )
+        && $upload_param{require_type} eq 'image';
+    my ( $asset, $original );
+    if (!(  $asset = $asset_pkg->load(
+                {   class     => '*',
+                    file_path => $asset_file,
+                    blog_id   => $blog_id
+                },
+                { binary => { file_path => 1 } }
+            )
+        )
+        )
+    {
+        $asset    = $asset_pkg->new();
+        $original = $asset->clone;
+        $asset->file_path($asset_file);
+        $asset->file_name($local_basename);
+        $asset->file_ext($local_ext);
+        $asset->blog_id($blog_id);
+        $asset->label($local_basename);
+        $asset->created_by( $app->user->id );
+    }
+    else {
+        if ( $asset->class ne $asset_pkg->class_type ) {
+            return $app->error(
+                $app->translate(
+                    "Cannot overwrite an existing file with a file of a different type. Original: [_1] Uploaded: [_2]",
+                    $asset->class_label,
+                    $asset_pkg->class_label
+                )
+            );
+        }
+        $original = $asset->clone;
+        $asset->modified_by( $app->user->id );
+    }
+    $asset->url($asset_url);
+
+    if ($is_image) {
+        $asset->image_width($w);
+        $asset->image_height($h);
+
+        if ( $q->param('normalize_orientation') ) {
+            $asset->normalize_orientation;
+        }
+
+        # Adjust image quality according to ImageQualityJpeg
+        # and ImageQualityPng.
+        $asset->change_quality;
     }
 
     $asset->mime_type($mimetype) if $mimetype;
@@ -1694,6 +2412,23 @@ sub _is_valid_tempfile_basename {
     $filename
         && File::Basename::basename($filename) eq $filename
         && $filename !~ m!^\.\.|\0|\|!;
+}
+
+sub _rename_filename {
+    my ( $app, $fmgr, $path_info ) = @_;
+
+    my $ext = (
+        File::Basename::fileparse(
+            $path_info->{basename},
+            qr/\.[A-Za-z0-9]+$/
+        )
+    )[2];
+
+    $path_info->{basename} = perl_sha1_digest_hex(
+        join( '-',
+            epoch2ts( $app->blog, time ), $app->remote_ip,
+            $path_info->{basename} )
+    ) . $ext;
 }
 
 sub _rename_if_exists {
@@ -1816,4 +2551,561 @@ sub _check_thumbnail_dir {
     $param->{thumb_dir_warnings} = \@warnings if @warnings;
 }
 
+sub dialog_edit_asset {
+    my $app = shift;
+
+    $app->validate_magic() or return;
+
+    my $blog_id = $app->param('blog_id');
+    return $app->return_to_dashboard( redirect => 1 )
+        if !$blog_id;
+
+    my $id = $app->param('id');
+    return $app->return_to_dashboard( redirect => 1 )
+        if !$id;
+
+    return $app->permission_denied()
+        if $blog_id && !$app->can_do('upload');
+
+    my $asset = MT::Asset->load($id)
+        or return $app->errtrans( "Cannot load asset #[_1].", $id );
+
+    my $param = {
+        blog_id           => $blog_id,
+        id                => $id,
+        file_name         => $asset->file_name,
+        label             => $asset->label,
+        description       => $asset->description,
+        asset_class_label => $asset->class_label,
+        asset_type        => $asset->class,
+        class             => $asset->class,
+    };
+
+    if ( $asset->isa('MT::Asset::Image') ) {
+        $param->{image_width}  = $asset->image_width;
+        $param->{image_height} = $asset->image_height;
+    }
+
+    if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
+        my ( $thumb_url, $thumb_w, $thumb_h );
+        my $thumb_size = 240;
+        my ( $orig_height, $orig_width )
+            = ( $asset->image_width, $asset->image_height );
+        if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
+            ( $thumb_url, $thumb_w, $thumb_h ) = $asset->thumbnail_url(
+                Height => $thumb_size,
+                Width  => $thumb_size,
+                Square => 1
+            );
+        }
+        elsif ( $orig_width > $thumb_size ) {
+            ( $thumb_url, $thumb_w, $thumb_h )
+                = $asset->thumbnail_url( Width => $thumb_size, );
+        }
+        elsif ( $orig_height > $thumb_size ) {
+            ( $thumb_url, $thumb_w, $thumb_h )
+                = $asset->thumbnail_url( Height => $thumb_size, );
+        }
+        else {
+            $thumb_url = $asset->url;
+            $thumb_w   = $orig_width;
+            $thumb_h   = $orig_height;
+        }
+        $param->{has_thumbnail}    = 1;
+        $param->{thumbnail_url}    = $thumb_url;
+        $param->{thumbnail_width}  = $thumb_w;
+        $param->{thumbnail_height} = $thumb_h;
+    }
+    else {
+        $param->{has_thumbnail} = 0;
+    }
+
+    require MT::FileMgr;
+    my $fmgr      = MT::FileMgr->new('Local');
+    my $file_path = $asset->file_path;
+    if ( $file_path && $fmgr->file_size($file_path) ) {
+        my $size = $fmgr->file_size($file_path);
+        $param->{file_size} = $size;
+        if ( $size < 1024 ) {
+            $param->{file_size_formatted} = sprintf( "%d Bytes", $size );
+        }
+        elsif ( $size < 1024000 ) {
+            $param->{file_size_formatted}
+                = sprintf( "%.1f KB", $size / 1024 );
+        }
+        else {
+            $param->{file_size_formatted}
+                = sprintf( "%.1f MB", $size / 1024000 );
+        }
+    }
+
+    require MT::Tag;
+    my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
+    my $tags = MT::Tag->join( $tag_delim, $asset->tags );
+    $param->{tags} = $tags;
+    $param->{'auth_pref_tag_delim'} = $tag_delim
+        if $tag_delim;
+
+    require MT::ObjectTag;
+    my $tags_js = MT::Util::to_json(
+        [   map { $_->name } MT::Tag->load(
+                undef,
+                {   join => [
+                        'MT::ObjectTag', 'tag_id',
+                        { blog_id => $asset->blog_id }, { unique => 1 }
+                    ]
+                }
+            )
+        ]
+    );
+    $tags_js =~ s!/!\\/!g;
+    $param->{tags_js} = $tags_js;
+
+    $param->{return_args} = $app->make_return_args;
+    $param->{saved_image} = 1
+        if $app->param('saved_image');
+
+    $app->load_tmpl( 'dialog/asset_edit.tmpl', $param );
+}
+
+sub js_save_asset {
+    my $app = shift;
+
+    $app->validate_magic()
+        or return $app->error(
+        $app->json_error( $app->translate("Invalid Request.") ) );
+
+    my $blog_id = $app->param('blog_id');
+    return $app->error(
+        $app->json_error( $app->translate("Invalid Request.") ) )
+        if !$blog_id;
+
+    my $id = $app->param('id');
+    return $app->error(
+        $app->json_error( $app->translate("Invalid Request.") ) )
+        if !$id;
+    return $app->error(
+        $app->json_error( $app->translate("Permission denied.") ) )
+        if $blog_id && !$app->can_do('upload');
+
+    my $asset = MT::Asset->load($id)
+        or return $app->error(
+        $app->json_error(
+            $app->translate( "Cannot load asset #[_1].", $id )
+        )
+        );
+
+    return $app->error( $app->json_error( $app->errstr ) )
+        unless $app->run_callbacks( 'cms_save_filter.asset', $app );
+
+    my $original = $asset->clone();
+
+    $asset->label( scalar $app->param('label') );
+    $asset->description( scalar $app->param('description') );
+    $asset->modified_by( $app->user->id ) if $asset->id;
+
+    return $app->error(
+        $app->json_error(
+            $app->translate( "Save failed: [_1]", $app->errstr )
+        )
+        )
+        unless $app->run_callbacks( 'cms_pre_save.asset', $app, $asset,
+        $original );
+
+    $asset->save
+        or return $app->error(
+        $app->json_error(
+            $app->translate( "Saving object failed: [_1]", $asset->errstr )
+        )
+        );
+
+    return $app->error( $app->json_error( $app->errstr() ) )
+        unless $app->run_callbacks( 'cms_post_save.asset', $app, $asset,
+        $original );
+
+    return $app->json_result( { success => 1 } );
+}
+
+sub dialog_edit_image {
+    my ($app) = @_;
+
+    my $asset;
+
+    my $id = $app->param('id');
+    my $blog_id = $app->param('blog_id') || 0;
+    if ($id) {
+        $asset
+            = $app->model('asset')
+            ->load( { id => $id, blog_id => $blog_id, class => 'image' } );
+    }
+    if ( !$asset ) {
+        return $app->errtrans('Invalid request.');
+    }
+
+    # Check.
+    if ( !can_save( undef, $app, $asset ) ) {
+        return $app->permission_denied;
+    }
+
+    # Retrive data of thumbnail.
+    my $param  = {};
+    my $hasher = build_asset_hasher($app);
+    $hasher->( $asset, $param, ThumbWidth => 240, ThumbHeight => 240 );
+
+    # Disable browser cache for image.
+    $param->{modified_on} = $asset->modified_on;
+
+    # Check Exif.
+    my $has_metadata = $asset->has_metadata;
+    if ( defined $has_metadata ) {
+        $param->{has_metadata} = $has_metadata;
+    }
+    else {
+        return $app->error( $asset->errstr );
+    }
+    if ($has_metadata) {
+        my $has_gps_metadata = $asset->has_gps_metadata;
+        if ( defined $has_gps_metadata ) {
+            $param->{has_gps_metadata} = $has_gps_metadata;
+        }
+        else {
+            return $app->error( $asset->errstr );
+        }
+    }
+
+    $param->{return_args} = $app->param('return_args') || '';
+
+    $app->load_tmpl( 'dialog/edit_image.tmpl', $param );
+}
+
+sub transform_image {
+    my ($app) = @_;
+
+    if ( !$app->validate_magic ) {
+        return;
+    }
+
+    # Load image.
+    my $id = $app->param('id');
+    my $asset = $app->model('asset')->load( { id => $id, class => 'image' } )
+        or return $app->errtrans('Invalid request.');
+
+    if ( !can_save( undef, $app, $asset ) ) {
+        return $app->permission_denied;
+    }
+
+    # Parse JSON.
+    my $actions = $app->param('actions');
+    $actions =~ s/^"|"$//g;
+    $actions =~ s/\\//g;
+    $actions = eval { MT::Util::from_json($actions) };
+    if ( !$actions || ref $actions ne 'ARRAY' ) {
+        return $app->errtrans('Invalid request.');
+    }
+
+    $asset->transform(@$actions)
+        or return $app->errtrans( 'Transforming image failed: [_1]',
+        $asset->errstr );
+
+    if ( $app->param('remove_all_metadata') ) {
+        $asset->remove_all_metadata
+            or return $app->error( $asset->errstr );
+    }
+    elsif ( $app->param('remove_gps_metadata') ) {
+        $asset->remove_gps_metadata
+            or return $app->error( $asset->errstr );
+    }
+
+    if ( $app->param('return_args') ) {
+        $app->add_return_arg( 'saved_image' => 1 );
+        $app->call_return;
+    }
+    else {
+        $app->redirect(
+            $app->uri(
+                mode => 'view',
+                args => {
+                    _type   => 'asset',
+                    blog_id => $app->blog ? $app->blog->id : 0,
+                    id      => $id,
+                    saved   => 1,
+                },
+            )
+        );
+    }
+}
+
+sub dialog_asset_modal {
+    my $app = shift;
+
+    # Backward compatibility
+    return dialog_list_asset( $app, @_ )
+        if $app->config('EnableUploadCompat');
+
+    my $blog_id = $app->param('blog_id');
+    my $mode_userpic = $app->param('upload_mode') || '';
+    return $app->return_to_dashboard( redirect => 1 )
+        if !$blog_id && $mode_userpic ne 'upload_userpic';
+
+    my $blog_class = $app->model('blog');
+    my $blog;
+    $blog = $blog_class->load($blog_id) if $blog_id;
+
+    if (   $app->param('edit_field')
+        && $app->param('edit_field') =~ m/^customfield_.*$/ )
+    {
+        return $app->permission_denied()
+            unless $app->permissions;
+    }
+    else {
+        return $app->permission_denied()
+            if $blog_id && !$app->can_do('access_to_insert_asset_list');
+    }
+
+    my %param;
+    _set_start_upload_params( $app, \%param );
+
+    $param{can_multi} = 1
+        if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
+        && $app->param('can_multi');
+
+    $param{filter} = $app->param('filter') if defined $app->param('filter');
+    $param{filter_val} = $app->param('filter_val')
+        if defined $app->param('filter_val');
+    $param{search} = $app->param('search') if defined $app->param('search');
+    $param{edit_field} = $app->param('edit_field')
+        if defined $app->param('edit_field');
+    $param{next_mode}    = $app->param('next_mode');
+    $param{no_insert}    = $app->param('no_insert') ? 1 : 0;
+    $param{asset_select} = $app->param('asset_select');
+
+    if ($blog_id) {
+        $param{blog_id}      = $blog_id;
+        $param{edit_blog_id} = $blog_id,;
+    }
+
+    $param{upload_mode} = $mode_userpic;
+    if ($mode_userpic) {
+        $param{user_id}      = $app->user->id;
+        $param{require_type} = 'image';
+        $param{'is_image'}   = 1;
+    }
+
+    require MT::Asset;
+    my $subclasses = MT::Asset->list_subclasses;
+
+    my @class_filters;
+    foreach my $k (@$subclasses) {
+        my $c = $k->{class};
+        push @class_filters,
+            {
+            key   => $k->{type},
+            label => $c->class_label_plural,
+            };
+    }
+    $param{class_filter_loop} = \@class_filters if @class_filters;
+
+    $app->load_tmpl( 'dialog/asset_modal.tmpl', \%param );
+}
+
+sub dialog_insert_options {
+    my $app    = shift;
+    my (%args) = @_;
+    my $assets = $args{assets};
+
+    # Validate magic token
+    $app->validate_magic() or return;
+
+    # Load assets
+    if ( !$assets ) {
+        my $ids = $app->param('id');
+        return $app->errtrans('Invalid request.') unless $ids;
+
+        my @ids = split ',', $ids;
+        return $app->errtrans('Invalid request.') unless @ids;
+
+        my @assets = $app->model('asset')->load( { id => \@ids } );
+        return $app->errtrans('Invalid request.')
+            unless scalar @ids == scalar @assets;
+        $assets = \@assets;
+    }
+    $assets = [$assets] if 'ARRAY' ne ref $assets;
+
+    # Should not allow to insert asset from other site.
+    my $blog_id = $app->param('blog_id');
+    my $blog    = MT->model('blog')->load($blog_id)
+        or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
+    my %blog_ids;
+    if ( !$blog->is_blog ) {
+        %blog_ids = map { $_->id => 1 } @{ $blog->blogs };
+    }
+    $blog_ids{$blog_id} = 1;
+    foreach my $a (@$assets) {
+        return $app->errtrans('Invalid request.')
+            unless defined $blog_ids{ $a->blog_id };
+    }
+
+    # If no_insert option provided, should not displaying insert option
+    if ( $app->param('no_insert') || $app->param('direct_asset_insert') ) {
+        return insert_asset( $app, { assets => $assets } );
+    }
+
+    # Permission check
+    my $perms = $app->permissions
+        or return $app->errtrans('No permissions');
+    return $app->errtrans('No permissions')
+        unless $perms->can_do('insert_asset');
+
+    # Make a insert option loop
+    my $options_loop;
+    foreach my $a (@$assets) {
+        my $param = {
+            id          => $a->id,
+            filename    => $a->file_name,
+            url         => $a->url,
+            label       => $a->label,
+            thumbnail   => _make_thumbnail_url( $a, { size => 45 } ),
+            class_label => $a->class_label,
+        };
+        my $html = $a->insert_options($param) || '';
+        $param->{options} = $html;
+        push @$options_loop, $param;
+    }
+
+    my %param;
+    $param{options_loop} = $options_loop;
+    $param{can_save_image_defaults}
+        = $perms->can_do('save_image_defaults') ? 1 : 0;
+    $param{edit_field} = scalar $app->param('edit_field');
+    $param{new_entry} = $app->param('asset_select') ? 0 : 1;
+
+    $app->load_tmpl( 'dialog/multi_asset_options.tmpl', \%param );
+}
+
+sub insert_asset {
+    my $app = shift;
+    my ($param) = @_;
+
+    $app->validate_magic() or return;
+
+    if (   $app->param('edit_field')
+        && $app->param('edit_field') =~ m/^customfield_.*$/ )
+    {
+        return $app->permission_denied()
+            unless $app->permissions;
+    }
+    else {
+        return $app->permission_denied()
+            unless $app->can_do('insert_asset');
+    }
+
+    require MT::Asset;
+    my $text;
+    my $assets;
+    if ( $app->param('no_insert') ) {
+        $text   = '';
+        $assets = $param->{assets};
+    }
+    elsif ( $app->param('direct_asset_insert') ) {
+        $assets = $param->{assets};
+        foreach my $a (@$assets) {
+            my %param;
+            $param{wrap_text} = 1;
+            $param{new_entry} = $app->param('new_entry') ? 1 : 0;
+
+            $a->on_upload( \%param );
+            $param{enclose}
+                = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+            my $html = $a->as_html( \%param );
+            return $app->error( $a->error ) unless defined $html;
+
+            $text .= $html;
+        }
+    }
+    else {
+        # Parse JSON.
+        my $prefs = $app->param('prefs_json');
+        $prefs =~ s/^"|"$//g;
+        $prefs =~ s/\\//g;
+        $prefs = eval { MT::Util::from_json($prefs) };
+        if ( !$prefs ) {
+            return $app->errtrans('Invalid request.');
+        }
+
+        foreach my $item (@$prefs) {
+            my $id = $item->{id};
+            return $app->errtrans('Invalid request.')
+                unless $id;
+            my $asset = MT::Asset->load($id)
+                or return $app->errtrans( 'Cannot load asset #[_1]', $id );
+            my %param;
+            foreach my $k ( keys %$item ) {
+                my $name = $k;
+                if ( $k =~ m/(.*)[-|_]$id/ig ) {
+                    $name = $1;
+                }
+                $param{$name} = $item->{$k};
+            }
+            $param{wrap_text} = 1;
+            $param{new_entry} = $app->param('new_entry') ? 1 : 0;
+
+            $asset->on_upload( \%param );
+            $param{enclose}
+                = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
+            my $html = $asset->as_html( \%param );
+            return $app->error( $asset->error ) unless defined $html;
+
+            $text .= $html;
+            push @$assets, $asset;
+        }
+    }
+    my $tmpl;
+    $tmpl = $app->load_tmpl(
+        'dialog/asset_insert.tmpl',
+        {   upload_html => $text || '',
+            edit_field => scalar $app->param('edit_field') || '',
+        },
+    );
+
+    my $ctx = $tmpl->context;
+    $ctx->stash( 'assets', $assets );
+    return $tmpl;
+}
+
+sub _make_thumbnail_url {
+    my $asset = shift;
+    my ($param) = @_;
+    my $thumb_url;
+    my $thumb_size = $param && $param->{size} ? $param->{size} : 45;
+
+    if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
+        my ( $orig_height, $orig_width )
+            = ( $asset->image_width, $asset->image_height );
+        if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
+            ($thumb_url) = $asset->thumbnail_url(
+                Height => $thumb_size,
+                Width  => $thumb_size,
+                Square => 1
+            );
+        }
+        elsif ( $orig_width > $thumb_size ) {
+            ($thumb_url) = $asset->thumbnail_url( Width => $thumb_size, );
+        }
+        elsif ( $orig_height > $thumb_size ) {
+            ($thumb_url) = $asset->thumbnail_url( Height => $thumb_size, );
+        }
+        else {
+            $thumb_url = $asset->url;
+        }
+    }
+    else {
+        $thumb_url
+            = MT->static_path
+            . 'images/asset/'
+            . $asset->class_type
+            . '-45.png';
+    }
+
+    return $thumb_url;
+}
 1;

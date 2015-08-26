@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.07';
+$VERSION = '1.08';
 
 # BMP chunks
 %Image::ExifTool::BMP::Main = (
@@ -112,7 +112,7 @@ $VERSION = '1.07';
 # Returns: 1 on success, 0 if this wasn't a valid BMP file
 sub ProcessBMP($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $tagTablePtr);
 
@@ -123,7 +123,7 @@ sub ProcessBMP($$)
     my $len = Get32u(\$buff, 14);
     return 0 unless $len == 12 or $len >= 40;
     return 0 unless $raf->Seek(-4, 1) and $raf->Read($buff, $len) == $len;
-    $exifTool->SetFileType();   # set the FileType tag
+    $et->SetFileType();   # set the FileType tag
     my %dirInfo = (
         DataPt => \$buff,
         DirStart => 0,
@@ -134,7 +134,7 @@ sub ProcessBMP($$)
     } else {
         $tagTablePtr = GetTagTable('Image::ExifTool::BMP::Main');
     }
-    $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+    $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
     return 1;
 }
 
@@ -157,7 +157,7 @@ This module contains definitions required by Image::ExifTool to read BMP
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

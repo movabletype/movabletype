@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.01';
+$VERSION = '1.03';
 
 # currently support this version Rawzor images
 my $implementedRawzorVersion = 199; # (up to version 1.99)
@@ -51,7 +51,7 @@ my $implementedRawzorVersion = 199; # (up to version 1.99)
 # Returns: 1 on success, 0 if this wasn't a valid Rawzor file
 sub ProcessRWZ($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $buf2);
 
@@ -71,23 +71,23 @@ sub ProcessRWZ($$)
     my $rwzSize = Get64u(\$buff, 10);
     my $origSize = Get64u(\$buff, 18);
     my $tagTablePtr = GetTagTable('Image::ExifTool::Rawzor::Main');
-    $exifTool->HandleTag($tagTablePtr, RawzorRequiredVersion => $reqVers);
-    $exifTool->HandleTag($tagTablePtr, RawzorCreatorVersion => $creatorVers);
-    $exifTool->HandleTag($tagTablePtr, OriginalFileSize => $origSize);
-    $exifTool->HandleTag($tagTablePtr, CompressionFactor => $origSize/$rwzSize) if $rwzSize;
+    $et->HandleTag($tagTablePtr, RawzorRequiredVersion => $reqVers);
+    $et->HandleTag($tagTablePtr, RawzorCreatorVersion => $creatorVers);
+    $et->HandleTag($tagTablePtr, OriginalFileSize => $origSize);
+    $et->HandleTag($tagTablePtr, CompressionFactor => $origSize/$rwzSize) if $rwzSize;
     # check version numbers
     if ($reqVers > $implementedRawzorVersion) {
-        $exifTool->Warn("Version $reqVers Rawzor images not yet supported");
+        $et->Warn("Version $reqVers Rawzor images not yet supported");
         return 1;
     }
     my $metaOffset = Get64u(\$buff, 38);
     if ($metaOffset > 0x7fffffff) {
-        $exifTool->Warn('Bad metadata offset');
+        $et->Warn('Bad metadata offset');
         return 1;
     }
     # check for the ability to uncompress the information
-    unless (eval 'require IO::Uncompress::Bunzip2') {
-        $exifTool->Warn('Install IO::Compress::Bzip2 to decode Rawzor bzip2 compression');
+    unless (eval { require IO::Uncompress::Bunzip2 }) {
+        $et->Warn('Install IO::Compress::Bzip2 to decode Rawzor bzip2 compression');
         return 1;
     }
     # read the metadata header:
@@ -99,7 +99,7 @@ sub ProcessRWZ($$)
     # 36 int32u - original metadata size
     # 40 int32u - compressed metadata size
     unless ($raf->Seek($metaOffset, 0) and $raf->Read($buff, 44) == 44) {
-        $exifTool->Warn('Error reading metadata header');
+        $et->Warn('Error reading metadata header');
         return 1;
     }
     my $metaSize = Get32u(\$buff, 36);
@@ -114,14 +114,14 @@ sub ProcessRWZ($$)
             $end0 + ($end1 - $pos1) + ($origSize - $pos2) == $metaSize and
             $end0 <= $pos1 and $pos1 <= $end1 and $end1 <= $pos2)
         {
-            $exifTool->Warn('Error reading image metadata');
+            $et->Warn('Error reading image metadata');
             return 1;
         }
         # uncompress the metadata
         unless (IO::Uncompress::Bunzip2::bunzip2(\$buff, \$buf2) and
             length($buf2) eq $metaSize)
         {
-            $exifTool->Warn('Error uncompressing image metadata');
+            $et->Warn('Error uncompressing image metadata');
             return 1;
         }
         # re-assemble the original file (sans image data)
@@ -132,19 +132,19 @@ sub ProcessRWZ($$)
         undef $buf2;
 
         # extract original information by calling ExtractInfo recursively
-        $exifTool->ExtractInfo(\$buff, { ReEntry => 1 });
+        $et->ExtractInfo(\$buff, { ReEntry => 1 });
         undef $buff;
     }
     # set OriginalFileType from FileType of original file
     # then change FileType and MIMEType to indicate a Rawzor image
-    my $origFileType = $exifTool->{VALUE}->{FileType};
+    my $origFileType = $$et{VALUE}{FileType};
     if ($origFileType) {
-        $exifTool->HandleTag($tagTablePtr, OriginalFileType => $origFileType);
-        $exifTool->{VALUE}->{FileType} = 'RWZ';
-        $exifTool->{VALUE}->{MIMEType} = 'image/x-rawzor';
+        $et->HandleTag($tagTablePtr, OriginalFileType => $origFileType);
+        $$et{VALUE}{FileType} = 'RWZ';
+        $$et{VALUE}{MIMEType} = 'image/x-rawzor';
     } else {
-        $exifTool->HandleTag($tagTablePtr, OriginalFileType => 'Unknown');
-        $exifTool->SetFileType();
+        $et->HandleTag($tagTablePtr, OriginalFileType => 'Unknown');
+        $et->SetFileType();
     }
     return 1;
 }
@@ -168,7 +168,7 @@ information from Rawzor compressed images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

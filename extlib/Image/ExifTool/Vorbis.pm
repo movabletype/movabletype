@@ -17,7 +17,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.06';
+$VERSION = '1.07';
 
 sub ProcessComments($$$);
 
@@ -139,7 +139,7 @@ Image::ExifTool::AddCompositeTags('Image::ExifTool::Vorbis');
 # Returns: 1 on success, otherwise returns 0 and sets a Warning
 sub ProcessComments($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataPos = $$dirInfo{DataPos};
     my $pos = $$dirInfo{DirStart} || 0;
@@ -165,7 +165,7 @@ sub ProcessComments($$$)
             $tag = 'vendor';
             $val = $buff;
             $num = ($pos + 4 < $end) ? Get32u($dataPt, $pos) : 0;
-            $exifTool->VPrint(0, "  + [Vorbis comments with $num entries]\n");
+            $et->VPrint(0, "  + [Vorbis comments with $num entries]\n");
             $pos += 4;
         }
         # add tag to table unless it exists already
@@ -176,7 +176,7 @@ sub ProcessComments($$$)
             $name =~ s/([a-z0-9])_([a-z])/$1\U$2/g;
             AddTagToTable($tagTablePtr, $tag, { Name => $name });
         }
-        $exifTool->HandleTag($tagTablePtr, $tag, $exifTool->Decode($val, 'UTF8'),
+        $et->HandleTag($tagTablePtr, $tag, $et->Decode($val, 'UTF8'),
             Index   => $index,
             DataPt  => $dataPt,
             DataPos => $dataPos,
@@ -187,7 +187,7 @@ sub ProcessComments($$$)
         $num-- or return 1;
         $index = (defined $index) ? $index + 1 : 0;
     }
-    $exifTool->Warn('Format error in Vorbis comments');
+    $et->Warn('Format error in Vorbis comments');
     return 0;
 }
 
@@ -210,7 +210,7 @@ information from Ogg Vorbis audio headers.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

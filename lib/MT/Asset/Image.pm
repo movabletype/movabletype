@@ -15,8 +15,9 @@ use POSIX qw( floor );
 __PACKAGE__->install_properties(
     {   class_type  => 'image',
         column_defs => {
-            'image_width'  => 'integer meta',
-            'image_height' => 'integer meta',
+            'image_width'    => 'integer meta',
+            'image_height'   => 'integer meta',
+            'image_metadata' => 'blob meta',
         },
         child_of => [ 'MT::Blog', 'MT::Website', ],
     }
@@ -27,6 +28,12 @@ sub extensions {
     my $pkg = shift;
     return $pkg->SUPER::extensions(
         [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, qr/ico/i ] );
+}
+
+sub save {
+    my $asset = shift;
+    $asset->image_metadata( $asset->exif ? $asset->exif->GetInfo : undef );
+    $asset->SUPER::save(@_);
 }
 
 sub class_label {
@@ -221,6 +228,12 @@ sub thumbnail_file {
         or return $asset->error(
         MT->translate( "Error creating thumbnail file: [_1]", $fmgr->errstr )
         );
+
+    # Remove metadata from thumbnail file.
+    require MT::Image;
+    MT::Image->remove_metadata($thumbnail)
+        or return $asset->error( MT::Image->errstr );
+
     return ( $thumbnail, $n_w, $n_h );
 }
 
@@ -306,7 +319,6 @@ sub as_html {
     $param->{enclose} = 0 unless exists $param->{enclose};
 
     if ( $param->{include} ) {
-
         my $fname = $asset->file_name;
         require MT::Util;
 
@@ -407,7 +419,8 @@ sub as_html {
 
 # Return a HTML snippet of form options for inserting this asset
 # into a web page. Default behavior is no options.
-sub insert_options {
+# DEPRECATED: v6.2
+sub insert_options_compat {
     my $asset = shift;
     my ($param) = @_;
 
@@ -437,6 +450,40 @@ sub insert_options {
         || 0;
 
     return $app->build_page( 'dialog/asset_options_image.tmpl', $param );
+}
+
+# Return a HTML snippet of form options for inserting this asset
+# into a web page. Default behavior is no options.
+sub insert_options {
+    my $asset = shift;
+    my ($param) = @_;
+
+    # Backward compatibility
+    return insert_options_compat( $asset, @_ )
+        if MT->config('EnableUploadCompat');
+
+    my $app   = MT->instance;
+    my $perms = $app->{perms};
+    my $blog  = $asset->blog or return;
+
+    $param->{do_thumb}
+        = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
+
+    $param->{popup}      = $blog->image_default_popup     ? 1 : 0;
+    $param->{wrap_text}  = $blog->image_default_wrap_text ? 1 : 0;
+    $param->{make_thumb} = $blog->image_default_thumb     ? 1 : 0;
+    $param->{ 'align_' . $_ }
+        = ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
+        for qw(none left center right);
+    $param->{ 'unit_w' . $_ }
+        = ( $blog->image_default_wunits || 'pixels' ) eq $_ ? 1 : 0
+        for qw(percent pixels);
+    $param->{thumb_width}
+        = $blog->image_default_width
+        || $asset->image_width
+        || 0;
+
+    return $app->build_page( 'include/insert_options_image.tmpl', $param );
 }
 
 sub on_upload {
@@ -511,6 +558,11 @@ sub on_upload {
         require MT::Image;
         my $image_type = scalar $param->{image_type};
         my ( $w, $h ) = map $param->{$_}, qw( thumb_width thumb_height );
+        if ( !$h ) {
+            my $pct = $w / $width;
+            my $h = floor( ( $pct * $height ) + 0.5 );
+        }
+
         my ($pseudo_thumbnail_url)
             = $asset->thumbnail_url( Height => $h, Width => $w, Pseudo => 1 );
         my ($thumbnail)
@@ -743,11 +795,10 @@ sub normalize_orientation {
     $exif_tool->ExtractInfo( \$img_data );
     my $o = $exif_tool->GetInfo('Orientation')->{'Orientation'};
     if ( $o && ( $o ne 'Horizontal (normal)' && $o !~ /^Unknown/i ) ) {
-        $exif_tool->SetNewValue(
-            Orientation => $o,
-            DelValue    => 1
-        );
-        $exif_tool->WriteInfo( \$img_data );
+        my $new_exif = Image::ExifTool->new;
+        $new_exif->SetNewValuesFromFile($file_path);
+        $new_exif->SetNewValue('Orientation');
+        $new_exif->SetNewValue('Thumbnail*');
 
         my $img = MT::Image->new( Data => $img_data, Type => $obj->file_ext );
 
@@ -777,11 +828,247 @@ sub normalize_orientation {
             }
         };
         $fmgr->put_data( $blob, $file_path, 'upload' );
+
+        if ( exists $exif_tool->GetInfo('ExifImageWidth')->{ExifImageWidth} )
+        {
+            $new_exif->SetNewValue( 'ExifImageWidth' => $width );
+        }
+        if (exists $exif_tool->GetInfo('ExifImageHeight')->{ExifImageHeight} )
+        {
+            $new_exif->SetNewValue( 'ExifImageHeight' => $height );
+        }
+        $new_exif->WriteInfo($file_path);
+
         $obj->image_width($width);
         $obj->image_height($height);
     }
 
     1;
+}
+
+sub scale {
+    my ( $asset, $width, $height ) = @_;
+
+    if ( !$width || !$height ) {
+        return $asset->trans_error(
+            'Scaling image failed: Invalid parameter.');
+    }
+
+    $asset->_transform(
+        sub { $_[0]->scale( Width => $width, Height => $height ) } );
+}
+
+sub crop_rectangle {
+    my ( $asset, $left, $top, $width, $height ) = @_;
+
+    if ( !$width || !$height ) {
+        return $asset->trans_error(
+            'Cropping image failed: Invalid parameter.');
+    }
+
+    $top  = 0 unless defined $top;
+    $left = 0 unless defined $left;
+
+    $asset->_transform(
+        sub {
+            $_[0]->crop_rectangle(
+                Width  => $width,
+                Height => $height,
+                X      => $left,
+                Y      => $top
+            );
+        }
+    );
+}
+
+sub rotate {
+    my ( $asset, $angle ) = @_;
+
+    if ( !$angle ) {
+        return $asset->trans_error(
+            'Rotating image failed: Invalid parameter.');
+    }
+
+    $asset->_transform( sub { $_[0]->rotate( Degrees => $angle ) } );
+}
+
+sub flip_horizontal {
+    my ($asset) = @_;
+    $asset->_transform( sub { $_[0]->flipHorizontal } );
+}
+
+sub flip_vertical {
+    my ($asset) = @_;
+    $asset->_transform( sub { $_[0]->flipVertical } );
+}
+
+sub _transform {
+    my ( $asset, $process ) = @_;
+
+    require Image::ExifTool;
+    require MT::FileMgr;
+    require MT::Image;
+
+    my $file_path = $asset->file_path;
+    my $fmgr
+        = $asset->blog ? $asset->blog->file_mgr : MT::FileMgr->new('Local');
+    my $img_data = $fmgr->get_data( $file_path, 'upload' );
+
+    my $img = MT::Image->new( Data => $img_data, Type => $asset->file_ext );
+
+    # Preserve metadata.
+    my $exif      = $asset->exif;
+    my $next_exif = Image::ExifTool->new;
+    $next_exif->SetNewValuesFromFile($file_path);
+    $next_exif->SetNewValue('Thumbnail*');
+
+    my ( $blob, $width, $height ) = $process->($img);
+
+    $fmgr->put_data( $blob, $file_path, 'upload' )
+        or return $asset->error( $fmgr->errstr );
+
+    # Update Exif.
+    if ( exists $exif->GetInfo('ExifImageWidth')->{ExifImageWidth} ) {
+        $next_exif->SetNewValue( 'ExifImageWidth' => $width );
+    }
+    if ( exists $exif->GetInfo('ExifImageHeight')->{ExifImageHeight} ) {
+        $next_exif->SetNewValue( 'ExifImageHeight' => $height );
+    }
+
+    # Restore metadata.
+    $next_exif->WriteInfo($file_path)
+        or return $asset->trans_error( 'Writing metadata failed: [_1]',
+        $next_exif->GetValue('Error') );
+
+    $asset->image_width($width);
+    $asset->image_height($height);
+
+    # Update modified_on.
+    my $app = MT->app;
+    my $user
+        = $app->can('user')
+        && $app->user
+        && $app->user->id ? $app->user : undef;
+    $asset->modified_by( $user->id ) if $user;
+
+    $asset->save or return;
+
+    1;
+}
+
+sub change_quality {
+    my ( $asset, $quality ) = @_;
+    my $type = lc $asset->file_ext;
+
+    if ( $type ne 'jpg' && $type ne 'jpeg' && $type ne 'png' ) {
+        return 1;
+    }
+
+    require MT::Image;
+    my $img = MT::Image->new( Filename => $asset->file_path );
+    my $blob = $img->blob($quality) or return $asset->error( $img->errstr );
+
+    my $fmgr;
+    if ( $asset->blog ) {
+        $fmgr = $asset->blog->file_mgr;
+    }
+    else {
+        require MT::FileMgr;
+        $fmgr = MT::FileMgr->new('Local');
+    }
+
+    $fmgr->put_data( $blob, $asset->file_path, 'upload' )
+        or return $asset->trans_error( "Error writing to '[_1]': [_2]",
+        $asset->file_path, $fmgr->errstr );
+
+    1;
+}
+
+sub transform {
+    my ( $asset, @actions ) = @_;
+
+    for my $action (@actions) {
+        if ( my $crop = $action->{crop} ) {
+            $asset->crop_rectangle(
+                $crop->{left},  $crop->{top},
+                $crop->{width}, $crop->{height}
+            ) or return;
+        }
+        elsif ( my $flip = $action->{flip} ) {
+            if ( $flip eq 'horizontal' ) {
+                $asset->flip_horizontal or return;
+            }
+            elsif ( $flip eq 'vertical' ) {
+                $asset->flip_vertical or return;
+            }
+        }
+        elsif ( my $resize = $action->{resize} ) {
+            $asset->scale( $resize->{width}, $resize->{height} ) or return;
+        }
+        elsif ( my $rotate = $action->{rotate} ) {
+            $asset->rotate($rotate) or return;
+        }
+    }
+
+    1;
+}
+
+sub exif {
+    my ($asset) = @_;
+    require Image::ExifTool;
+    my $exif = Image::ExifTool->new;
+    $exif->ExtractInfo( $asset->file_path )
+        or
+        return $asset->trans_error( 'Extracting image metadata failed: [_1]',
+        $exif->GetValue('Error') );
+    return $exif;
+}
+
+sub has_gps_metadata {
+    my ($asset) = @_;
+    my $exif = $asset->exif or return;
+    $exif->Options( Group1 => 'GPS' );
+    return $exif->GetTagList ? 1 : 0;
+}
+
+sub has_metadata {
+    my ($asset) = @_;
+    my $exif = $asset->exif or return;
+
+    # Use inccorect but easy check, because correct check is slow.
+    $exif->Options( Group0 => 'EXIF' );
+    return $exif->GetTagList ? 1 : 0;
+
+    #    require Image::ExifTool;
+    #    for my $g ( $exif->GetGroups ) {
+    #        my @writable_tags = Image::ExifTool::GetWritableTags($g) or next;
+    #        $exif->Options( Group => $g );
+    #        for my $t ( sort $exif->GetTagList ) {
+    #            if ( grep { $t eq $_ } @writable_tags ) {
+    #                return 1;
+    #            }
+    #        }
+    #        $exif->ClearOptions;
+    #    }
+    #    return 0;
+}
+
+sub remove_gps_metadata {
+    my ($asset) = @_;
+    my $exif = $asset->exif or return;
+    $exif->SetNewValue('GPS:*');
+    $exif->WriteInfo( $asset->file_path )
+        or return $asset->trans_error( 'Writing image metadata failed: [_1]',
+        $exif->GetValue('Error') );
+}
+
+sub remove_all_metadata {
+    my ($asset) = @_;
+    my $exif = $asset->exif or return;
+    $exif->SetNewValue('*');
+    $exif->WriteInfo( $asset->file_path )
+        or return $asset->trans_error( 'Writing image metadata failed: [_1]',
+        $exif->GetValue('Error') );
 }
 
 1;
@@ -832,6 +1119,59 @@ Return the HTML I<IMG> element with the image asset attributes.
 =head2 $asset->normalize_orientation
 
 Normalize orientation if an image has a "Orientation" in Exif information.
+
+=head2 $asset->scale($width, $height)
+
+Resize an image to $width x $height size. Do nothing if $width or $height is
+zero or undefined.
+If you want to keep the ratio, you need to calculate yourself.
+This method does not have ratio option.
+
+=head2 $asset->crop_rectangle($left, $top, $width, $height)
+
+Crop an image by arguments. Do nothing if $width or $height is zero or undefined.
+$left and $top are set zero when they are undefined.
+
+=head2 $asset->rotate($angle)
+
+Rotate an image by $angle. Do nothing if $angle is zero or undefined.
+
+=head2 $asset->flip_horizontal
+
+Flip an image horizontally.
+
+=head2 $asset->flip_vertical
+
+Flip an image vertically.
+
+=head2 $asset->transform(@actions)
+
+Transform an image.
+
+=head2 $asset->exif()
+
+Return Image::ExifTool instance. Metadata is read from file each time exif method is called.
+
+=head2 $asset->has_gps_metadata()
+
+Return 1 when the image has GPS metadata.
+
+=head2 $asset->has_metadata()
+
+Return 1 when the image has metadata.
+
+=head2 $asset->remove_gps_metadata()
+
+Remove all GPS metadata from the image.
+
+=head2 $asset->remove_all_metadata()
+
+Remove all metadata from the image.
+
+=head2 $asset->change_quality([$quality])
+
+Change the quality of the file of $asset only when $asset is JPEG or PNG.
+When $quality is not set, config directive "ImageQualityJpeg" or "ImageQualityPng" is used.
 
 =head1 AUTHOR & COPYRIGHT
 

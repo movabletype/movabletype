@@ -16,7 +16,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 my $MAX_PACKETS = 2;    # maximum packets to scan from each stream at start of file
 
@@ -39,14 +39,14 @@ my $MAX_PACKETS = 2;    # maximum packets to scan from each stream at start of f
 # Returns: 1 on success
 sub ProcessPacket($$)
 {
-    my ($exifTool, $dataPt) = @_;
+    my ($et, $dataPt) = @_;
     my $rtnVal = 0;
     if ($$dataPt =~ /^(.)(vorbis|theora)/s) {
         my ($tag, $type) = (ord($1), ucfirst($2));
         # this is an OGV file if it contains Theora video
-        $exifTool->OverrideFileType('OGV') if $type eq 'Theora' and $$exifTool{FILE_TYPE} eq 'OGG';
+        $et->OverrideFileType('OGV') if $type eq 'Theora' and $$et{FILE_TYPE} eq 'OGG';
         my $tagTablePtr = GetTagTable("Image::ExifTool::${type}::Main");
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         return 0 unless $tagInfo and $$tagInfo{SubDirectory};
         my $subdir = $$tagInfo{SubDirectory};
         my %dirInfo = (
@@ -56,11 +56,11 @@ sub ProcessPacket($$)
         );
         my $table = GetTagTable($$subdir{TagTable});
         # set group1 so Theoris comments can be distinguised from Vorbis comments
-        $$exifTool{SET_GROUP1} = $type if $type eq 'Theora';
+        $$et{SET_GROUP1} = $type if $type eq 'Theora';
         SetByteOrder($$subdir{ByteOrder}) if $$subdir{ByteOrder};
-        $rtnVal = $exifTool->ProcessDirectory(\%dirInfo, $table);
+        $rtnVal = $et->ProcessDirectory(\%dirInfo, $table);
         SetByteOrder('II');
-        delete $$exifTool{SET_GROUP1};
+        delete $$et{SET_GROUP1};
     }
     return $rtnVal;
 }
@@ -71,16 +71,16 @@ sub ProcessPacket($$)
 # Returns: 1 on success, 0 if this wasn't a valid Ogg file
 sub ProcessOGG($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
 
     # must first check for leading/trailing ID3 information
-    unless ($exifTool->{DoneID3}) {
+    unless ($$et{DoneID3}) {
         require Image::ExifTool::ID3;
-        Image::ExifTool::ID3::ProcessID3($exifTool, $dirInfo) and return 1;
+        Image::ExifTool::ID3::ProcessID3($et, $dirInfo) and return 1;
     }
     my $raf = $$dirInfo{RAF};
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
     my ($success, $page, $packets, $streams, $stream) = (0,0,0,0,'');
     my ($buff, $flag, %val, $numFlac, %streamPage);
 
@@ -91,13 +91,13 @@ sub ProcessOGG($$)
         if ($raf and $raf->Read($buff, 28) == 28) {
             # validate magic number
             unless ($buff =~ /^OggS/) {
-                $success and $exifTool->Warn('Lost synchronization');
+                $success and $et->Warn('Lost synchronization');
                 last;
             }
             unless ($success) {
                 # set file type and initialize on first page
                 $success = 1;
-                $exifTool->SetFileType();
+                $et->SetFileType();
                 SetByteOrder('II');
             }
             $flag = Get8u(\$buff, 5);       # page flag
@@ -125,7 +125,7 @@ sub ProcessOGG($$)
             # can finally process previous packet from this stream
             # unless this is a continuation page
             if (defined $val{$stream} and not $flag & 0x01) {
-                ProcessPacket($exifTool, \$val{$stream});
+                ProcessPacket($et, \$val{$stream});
                 delete $val{$stream};
                 # only read the first $MAX_PACKETS packets from each stream
                 if ($packets > $MAX_PACKETS * $streams or not defined $raf) {
@@ -151,7 +151,7 @@ sub ProcessOGG($$)
             if ($page == $pageNum) {
                 $streamPage{$stream} = ++$page;
             } else {
-                $exifTool->Warn('Missing page(s) in Ogg file');
+                $et->Warn('Missing page(s) in Ogg file');
                 undef $page;
                 delete $streamPage{$stream};
             }
@@ -161,7 +161,7 @@ sub ProcessOGG($$)
         if ($verbose > 1) {
             printf $out "Page %d, stream 0x%x, flag 0x%x (%d bytes)\n",
                    $pageNum, $stream, $flag, $dataLen;
-            $exifTool->VerboseDump(\$buff, DataPos => $raf->Tell() - $dataLen);
+            $et->VerboseDump(\$buff, DataPos => $raf->Tell() - $dataLen);
         }
         if (defined $val{$stream}) {
             $val{$stream} .= $buff;     # add this continuation page
@@ -179,7 +179,7 @@ sub ProcessOGG($$)
             last if $numFlac <= 0;
         } elsif (defined $val{$stream} and $flag & 0x04) {
             # process Ogg packet now if end-of-stream bit is set
-            ProcessPacket($exifTool, \$val{$stream});
+            ProcessPacket($et, \$val{$stream});
             delete $val{$stream};
         }
     }
@@ -187,7 +187,7 @@ sub ProcessOGG($$)
         # process FLAC headers as if it was a complete FLAC file
         require Image::ExifTool::FLAC;
         my %dirInfo = ( RAF => new File::RandomAccess(\$val{$stream}) );
-        Image::ExifTool::FLAC::ProcessFLAC($exifTool, \%dirInfo);
+        Image::ExifTool::FLAC::ProcessFLAC($et, \%dirInfo);
     }
     return $success;
 }
@@ -211,7 +211,7 @@ information from Ogg bitstream container files.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

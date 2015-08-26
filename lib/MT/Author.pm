@@ -1513,9 +1513,14 @@ sub userpic_url {
 
 sub userpic_html {
     my $author = shift;
-    my ( $thumb_url, $w, $h ) = $author->userpic_url(@_) or return;
+    my %param  = @_;
+    my ( $thumb_url, $w, $h ) = $author->userpic_url(%param) or return;
     return unless $thumb_url;
-    sprintf q{<img src="%s?%d" width="%d" height="%d" alt="" />},
+    my $format
+        = $param{Ts}
+        ? q{<img src="%s&%d" width="%d" height="%d" alt="" />}
+        : q{<img src="%s?%d" width="%d" height="%d" alt="" />};
+    sprintf $format,
         MT::Util::encode_html($thumb_url), $author->userpic(@_)->id, $w, $h;
 }
 

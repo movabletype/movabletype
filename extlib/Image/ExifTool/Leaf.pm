@@ -13,7 +13,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.04';
+$VERSION = '1.05';
 
 sub ProcessLeaf($$$);
 
@@ -394,17 +394,17 @@ sub ProcessLeaf($$$);
 # Returns: 1 on success, otherwise returns 0 and sets a Warning
 sub ProcessLeaf($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirStart = $$dirInfo{DirStart} || 0;
     my $dirLen = $$dirInfo{DirLen} || $$dirInfo{DataLen} - $dirStart;
     my $dirEnd = $dirStart + $dirLen;
-    my $verbose = $exifTool->Options('Verbose');
+    my $verbose = $et->Options('Verbose');
     my $pos = $dirStart;
     my $hdrLen = 52;    # header length for PKTS information
     my $success;
 
-    $verbose and $exifTool->VerboseDir('Leaf');
+    $verbose and $et->VerboseDir('Leaf');
     for (;;) {
         last if $pos + $hdrLen > $dirEnd;
         my $header = substr($$dataPt, $pos, $hdrLen);
@@ -413,13 +413,13 @@ sub ProcessLeaf($$$)
         my $size = Get32u(\$header, 48);
         $pos += $hdrLen;
         if ($pos + $size > $dirEnd) {
-            $exifTool->Warn('Truncated Leaf data');
+            $et->Warn('Truncated Leaf data');
             last;
         }
         my $tag = substr($header, 8, 40);
         $tag =~ s/\0.*//s;
         next unless $tag;
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
         # generate tag info for unknown tags
         my $val;
         if ($tagInfo and $$tagInfo{Format}) {
@@ -437,7 +437,7 @@ sub ProcessLeaf($$$)
                     SubDirectory => { TagTable => 'Image::ExifTool::Leaf::Unknown' },
                 };
             } elsif ($tagTablePtr ne \%Image::ExifTool::Leaf::Main or
-                     $exifTool->Options('Unknown'))
+                     $et->Options('Unknown'))
             {
                 $tagInfo = {
                     Name => $name,
@@ -450,7 +450,7 @@ sub ProcessLeaf($$$)
             $tagInfo and AddTagToTable($tagTablePtr, $tag, $tagInfo);
         }
         if ($verbose) {
-            $exifTool->VerboseInfo($tag, $tagInfo,
+            $et->VerboseInfo($tag, $tagInfo,
                 Table   => $tagTablePtr,
                 Value   => $val,
                 DataPt  => $dataPt,
@@ -469,16 +469,16 @@ sub ProcessLeaf($$$)
                     DirName => 'Leaf PKTS',
                 );
                 my $subTable = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
-                $exifTool->ProcessDirectory(\%subdirInfo, $subTable);
+                $et->ProcessDirectory(\%subdirInfo, $subTable);
             } else {
                 $val =~ tr/\n/ /;   # translate newlines to spaces
                 $val =~ s/\0+$//;   # remove null terminators
-                $exifTool->FoundTag($tagInfo, $val);
+                $et->FoundTag($tagInfo, $val);
             }
         }
         $pos += $size;
     }
-    $success or $exifTool->Warn('Bad format Leaf data');
+    $success or $et->Warn('Bad format Leaf data');
     return $success;
 }
 
@@ -502,7 +502,7 @@ Capture.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
