@@ -125,6 +125,7 @@ BEGIN {
             'audio'           => 'MT::Asset::Audio',
             'asset.video'     => 'MT::Asset::Video',
             'video'           => 'MT::Asset::Video',
+            'oembed'          => 'MT::Asset::oEmbed',
             'entry.page'      => 'MT::Page',
             'page'            => 'MT::Page',
             'category.folder' => 'MT::Folder',
