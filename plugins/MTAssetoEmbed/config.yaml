@@ -7,6 +7,12 @@ author_name: Six Apart, Ltd.
 description: <MT_TRANS phrase="MT::Asset for oEmbed.">
 l10n_class: MTAssetoEmbed::L10N
 
+object_types:
+    asset.flickr: MT::Asset::oEmbed::Flickr
+    flickr: MT::Asset::oEmbed::Flickr
+    asset.youtube: MT::Asset::oEmbed::YouTube
+    youtube: MT::Asset::oEmbed::YouTube
+
 settings:
     flickr_consumer_key:
     flickr_consumer_secret:
