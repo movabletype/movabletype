@@ -1,56 +1,75 @@
-<mt:setvar name="page_title" value="<__trans phrase="Start Flickr">">
-<mt:setvar name="position_actions_bottom" value="1">
-<mt:setvar name="screen_id" value="start-flickr">
-<mt:setvar name="screen_class" value="contents-sync">
+<style>
+#flickr-search-box {
+  margin-bottom: 10px;
+}
 
-<mt:setvarblock name="html_head" append="1">
-<link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/MTAssetoEmbed/css/start_flickr.css?v=<$mt:var name="mt_version_id" escape="url"$>">
-</mt:setvarblock>
+#flickr-thumbnails {
+  margin-bottom: 10px;
+}
 
-<mt:include name="include/header.tmpl" id="header_include">
+#flickr-pages{
+  clear: both;
+  text-align: center;
+}
 
-<div id="msg-block"></div>
-<mt:if name="err_msg">
-  <mtapp:statusmsg
-     id="error"
-     class="error"
-     can_close="0">
-    <mt:var name="err_msg">
-  </mtapp:statusmsg>
-</mt:if>
+#flickr-thumbnails .flickr-thumbnail {
+  float: left;
+  padding: 13px;
+  width: 75px;
+  height: 90px;
+  overflow: hidden;
+}
+
+#flickr-thumbnails .title {
+  white-space: nowrap;
+}
+
+#flickr-thumbnails .selected {
+  background-color: #CCCCFF;
+}
+
+#flickr-pages span.link {
+  text-decoration: underline;
+  color: #0000FF;
+  cursor: pointer;
+}
+</style>
 
 <mtapp:form id="start-flickr-form" name="start-flickr-form" mode="save_start_flickr">
 
-  <select id="photoset" name="photoset" style="width: 200px;">
-    <option value="0"><__trans phrase="Select Photoset"></option>
-  <mt:loop name="photosets">
-    <option value="<mt:var name="id">"><mt:var name="title"></option>
-  </mt:loop>
-  </select>
+  <div id="flickr-search-box">
 
-  <input type="button" id="select-button" value="<__trans phrase="Select">" />
+    <select id="photoset" name="photoset" style="width: 200px;">
+      <option value="0"><__trans phrase="Select Photoset"></option>
+    <mt:loop name="photosets">
+      <option value="<mt:var name="id">"><mt:var name="title"></option>
+    </mt:loop>
+    </select>
 
-  <input id="search-text" name="search_text" type="text" class="text short" />
+    <input type="button" id="select-button" value="<__trans phrase="Select">" />
 
-  <input type="button" id="search-button" value="<__trans phrase="Search">" />
+    <input id="search-text" name="search_text" type="text" class="text short" />
 
-  <div id="thumbnails"></div>
+    <input type="button" id="search-button" value="<__trans phrase="Search">" />
 
-  <div id="pages"></div>
+  </div>
+
+  <div id="flickr-thumbnails"></div>
+
+  <div id="flickr-pages"></div>
 
 </mtapp:form>
 
-<mt:setvarblock name="jq_js_include" append="1">
+<script type="text/javascript">
   jQuery(function() {
     var magic_token = '<mt:var name="magic_token">';
     var blog_id = '<mt:var name="blog_id">';
 
-    function get_thumbnails( method, page, param ) {
-      jQuery("#thumbnails").empty();
-      jQuery("#pages").empty();
-      jQuery("#navi").empty();
+    function get_flickr_thumbnails( method, page, param ) {
+      jQuery("#flickr-thumbnails").empty();
+      jQuery("#flickr-pages").empty();
 
-      jQuery("#thumbnails").html('<div id="progressbar" class="progressbar indeterminate"></div>');
+      jQuery("#flickr-thumbnails").html('<div id="progressbar" class="progressbar indeterminate"></div>');
 
       jQuery.ajax({
         type: 'POST',
@@ -67,7 +86,7 @@
           param: param
         },
         success: function(data) {
-          jQuery("#thumbnails").empty();
+          jQuery("#flickr-thumbnails").empty();
 
           var photos = data.result.photos;
           var thumbnails = jQuery('<div/>');
@@ -93,7 +112,7 @@
               )
               count++;
             });
-            jQuery("#thumbnails").append(thumbnails);
+            jQuery("#flickr-thumbnails").append(thumbnails);
             jQuery.each(photos, function (index) {
               var photo_id = photos[index].id;
               jQuery.ajax({
@@ -130,29 +149,29 @@
                 }
               });
             });
-            jQuery("#thumbnails").append(thumbnails);
+            jQuery("#flickr-thumbnails").append(thumbnails);
             if ( data.result.page > 1 ) {
-              jQuery("#pages").append(
-                jQuery('<span/>').attr({ id: 'prev-link' }).addClass('link').text('< prev')
+              jQuery("#flickr-pages").append(
+                jQuery('<span/>').attr({ id: 'flickr-prev-link' }).addClass('link').text('< prev')
               );
-              jQuery('#prev-link').click(function() {
-                get_thumbnails( method, parseInt(data.result.page) - 1, param );
+              jQuery('#flickr-prev-link').click(function() {
+                get_flickr_thumbnails( method, parseInt(data.result.page) - 1, param );
               });
             }
-            jQuery("#pages").append(
+            jQuery("#flickr-pages").append(
               jQuery('<span/>').text(" " + data.result.page + "/" + data.result.pages + " ")
             );
             if ( data.result.page < data.result.pages ) {
-              jQuery("#pages").append(
-                jQuery('<span/>').attr({ id: 'next-link' }).addClass('link').text('next >')
+              jQuery("#flickr-pages").append(
+                jQuery('<span/>').attr({ id: 'flickr-next-link' }).addClass('link').text('next >')
               );
-              jQuery('#next-link').click(function() {
-                get_thumbnails( method, parseInt(data.result.page) + 1, param );
+              jQuery('#flickr-next-link').click(function() {
+                get_flickr_thumbnails( method, parseInt(data.result.page) + 1, param );
               });
             }
 	  }
           else {
-            jQuery("#thumbnails").text('<__trans phrase="Photo was not found.">');
+            jQuery("#flickr-thumbnails").text('<__trans phrase="Photo was not found.">');
           }
         },
         error: function(xhr, status, errorThrown) {
@@ -179,7 +198,7 @@
           alert("<__trans phrase="Photoset was not selected.">");
           return;
         }
-        get_thumbnails( 'photoset', 1, photoset_id );
+        get_flickr_thumbnails( 'photoset', 1, photoset_id );
     });
 
     jQuery('#search-button').click( function() {
@@ -187,11 +206,9 @@
         if (!keyword) {
           return;
         }
-        get_thumbnails( 'search', 1, keyword );
+        get_flickr_thumbnails( 'search', 1, keyword );
     });
 
-    get_thumbnails('search');
+    get_flickr_thumbnails('search');
   });
-</mt:setvarblock>
-
-<mt:include name="include/footer.tmpl">
+</script>

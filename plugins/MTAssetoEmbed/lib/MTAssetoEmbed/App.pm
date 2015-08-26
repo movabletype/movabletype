@@ -22,8 +22,8 @@ sub post_init {
     my $component;
     my $oembed_class;
     foreach my $key ( keys %$oembed_classes ) {
-        if ( $oembed_classes->{$key} =~ m!^\$! ) {
-            $oembed_class = $oembed_classes->{$key};
+        if ( $oembed_classes->{$key}{class} =~ m!^\$! ) {
+            $oembed_class = $oembed_classes->{$key}{class};
             if ( $oembed_class =~ s/^\$(\w+)::// ) {
                 $component = $1;
             }
@@ -364,10 +364,13 @@ sub flickr_oauth_success {
 }
 
 sub start_flickr {
-    my ( $app, $param ) = @_;
-    my $q      = $app->param;
-    my $plugin = $app->component("MTAssetoEmbed");
-    my $cfg    = $app->config;
+    my $app    = MT->instance;
+    my $user   = $app->user;
+    my $plugin = plugin();
+    my $blog   = $app->blog;
+    my $param  = {};
+
+    return unless $blog;
 
     my $token = get_token($app);
     return $app->error( translate('Token data is not registered.') )
@@ -395,7 +398,10 @@ sub start_flickr {
             translate( 'Flickr getSizes error: ' . $res->status_line ) );
     }
 
-    $app->build_page( $plugin->load_tmpl('start_flickr.tmpl'), $param );
+    $param->{blog_id} = $blog->id;
+    $param->{magic_token} = $app->current_magic if $app->user;
+
+    $plugin->load_tmpl( 'start_flickr.tmpl', $param )->build;
 }
 
 sub get_flickr_list {
@@ -475,7 +481,7 @@ sub get_flickr_thumbnail {
             = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
         my $sizes = $data->{sizes}{size};
         foreach my $size (@$sizes) {
-            if ( $size->{label} eq 'Large Square' ) {
+            if ( $size->{label} eq 'Square' ) {
                 $param->{thumbnail} = $size->{source};
             }
         }
@@ -490,12 +496,18 @@ sub get_flickr_thumbnail {
 }
 
 sub start_youtube {
-    my ( $app, $param ) = @_;
-    my $q      = $app->param;
-    my $plugin = $app->component("MTAssetoEmbed");
-    my $cfg    = $app->config;
+    my $app    = MT->instance;
+    my $user   = $app->user;
+    my $plugin = plugin();
+    my $blog   = $app->blog;
+    my $param  = {};
 
-    $app->build_page( $plugin->load_tmpl('start_youtube.tmpl'), $param );
+    return unless $blog;
+
+    $param->{blog_id} = $blog->id;
+    $param->{magic_token} = $app->current_magic if $app->user;
+
+    $plugin->load_tmpl( 'start_youtube.tmpl', $param )->build;
 }
 
 sub get_youtube_list {

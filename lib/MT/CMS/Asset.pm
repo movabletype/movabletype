@@ -2902,6 +2902,40 @@ sub dialog_asset_modal {
     }
     $param{class_filter_loop} = \@class_filters if @class_filters;
 
+    # oEmbed classes
+    my $oembed_classes = $app->registry('oembed_classes');
+    my @oembed_classes;
+    my @insert_templates = ();
+    foreach my $k ( keys %$oembed_classes ) {
+        my $c = MT::Asset->class_handler($k);
+        push @oembed_classes,
+            {
+            key   => $k,
+            label => $c->class_label,
+            panel => $k . '-panel',
+            };
+
+        my $plugin = $oembed_classes->{$k}{plugin};
+        my $tmpl   = $oembed_classes->{$k}{insert_template}
+            or next;
+
+        if ( ref $tmpl eq 'HASH' ) {
+            $tmpl = MT->handler_to_coderef( $tmpl->{code} );
+        }
+
+        push @insert_templates,
+            {
+            panel => $k . '-panel',
+            tmpl  => (
+                  ref $tmpl eq 'CODE' ? $tmpl->( $plugin, @_ )
+                : $plugin             ? $plugin->load_tmpl($tmpl)
+                :                       $app->load_tmpl($tmpl)
+            )
+            };
+    }
+    $param{oembed_class_loop} = \@oembed_classes   if @oembed_classes;
+    $param{insert_templates}  = \@insert_templates if @insert_templates;
+
     $app->load_tmpl( 'dialog/asset_modal.tmpl', \%param );
 }
 

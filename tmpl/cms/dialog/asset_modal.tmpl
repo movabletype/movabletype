@@ -72,6 +72,12 @@
 <mt:include name="include/async_asset_list.tmpl" dialog="1">
     </div>
 
+<mt:loop name="insert_templates">
+    <div id="<mt:var name="panel">" class="hidden panel">
+  <mt:var name="tmpl" />
+    </div>
+</mt:loop>
+
   </div>
 </div>
 
@@ -84,6 +90,11 @@
       <li>
         <a href="#" class="left-menu-item" data-panel-id="#list-asset-panel"><__trans phrase="Library"></a>
       </li>
+<mt:loop name="oembed_class_loop">
+      <li>
+        <a href="#" class="left-menu-item" data-panel-id="#<mt:var name="panel">"><__trans phrase="<mt:var name="label">"></a>
+      </li>
+</mt:loop>
     </ul>
   </div>
 </div>

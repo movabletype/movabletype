@@ -1,47 +1,66 @@
-<mt:setvar name="page_title" value="<__trans phrase="Start YouTube">">
-<mt:setvar name="position_actions_bottom" value="1">
-<mt:setvar name="screen_id" value="start-youtube">
-<mt:setvar name="screen_class" value="contents-sync">
+<style>
+#youtube-search-box {
+  margin-bottom: 10px;
+}
 
-<mt:setvarblock name="html_head" append="1">
-<link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/MTAssetoEmbed/css/start_youtube.css?v=<$mt:var name="mt_version_id" escape="url"$>">
-</mt:setvarblock>
+#youtube-thumbnails {
+  margin-bottom: 10px;
+}
 
-<mt:include name="include/header.tmpl" id="header_include">
+#youtube-pages{
+  clear: both;
+  text-align: center;
+}
 
-<div id="msg-block"></div>
-<mt:if name="err_msg">
-  <mtapp:statusmsg
-     id="error"
-     class="error"
-     can_close="0">
-    <mt:var name="err_msg">
-  </mtapp:statusmsg>
-</mt:if>
+#youtube-thumbnails .youtube-thumbnail {
+  float: left;
+  padding: 5px;
+  width: 110px;
+  height: 110px;
+  overflow: hidden;
+}
+
+#youtube-thumbnails .title {
+  white-space: nowrap;
+}
+
+#youtube-thumbnails .selected {
+  background-color: #CCCCFF;
+}
+
+#youtube-pages span.link {
+  text-decoration: underline;
+  color: #0000FF;
+  cursor: pointer;
+}
+</style>
 
 <mtapp:form id="start-youtube-form" name="start-youtube-form" mode="save_start_youtube">
 
-  <input id="search-text" name="search_text" type="text" class="text short" />
+  <div id="youtube-search-box">
 
-  <input type="button" id="search-button" value="<__trans phrase="Search">" />
+    <input id="youtube-search-text" name="youtube_search_text" type="text" class="text short" />
 
-  <div id="thumbnails"></div>
+    <input type="button" id="youtunbe-search-button" value="<__trans phrase="Search">" />
 
-  <div id="pages"></div>
+  </div>
+
+  <div id="youtube-thumbnails"></div>
+
+  <div id="youtube-pages"></div>
 
 </mtapp:form>
 
-<mt:setvarblock name="jq_js_include" append="1">
+<script type="text/javascript">
   jQuery(function() {
     var magic_token = '<mt:var name="magic_token">';
     var blog_id = '<mt:var name="blog_id">';
 
-    function get_thumbnails( page_token, text ) {
-      jQuery("#thumbnails").empty();
-      jQuery("#pages").empty();
-      jQuery("#navi").empty();
+    function get_youtube_thumbnails( page_token, text ) {
+      jQuery("#youtube-thumbnails").empty();
+      jQuery("#youtube-pages").empty();
 
-      jQuery("#thumbnails").html('<div id="progressbar" class="progressbar indeterminate"></div>');
+      jQuery("#youtube-thumbnails").html('<div id="progressbar" class="progressbar indeterminate"></div>');
 
       jQuery.ajax({
         type: 'POST',
@@ -57,7 +76,7 @@
           page_token: page_token
         },
         success: function(data) {
-          jQuery("#thumbnails").empty();
+          jQuery("#youtube-thumbnails").empty();
 
           var videos = data.result.videos;
           var thumbnails = jQuery('<div/>');
@@ -73,7 +92,9 @@
                 jQuery('<div/>').addClass('youtube-thumbnail').attr({ id: "thumb-" + videos[index].id }).append(
                   jQuery('<img/>').attr({
                     src: videos[index].thumbnail,
-                    alt: videos[index].title
+                    alt: videos[index].title,
+                    width: "110px",
+                    height: "82px"
                   })
                 ).append(
                   jQuery('<br/>')
@@ -84,7 +105,7 @@
               count++;
             });
             thumbnails.append(jQuery('<br/>').css('clear', 'both'));
-            jQuery("#thumbnails").append(thumbnails);
+            jQuery("#youtube-thumbnails").append(thumbnails);
             jQuery(".youtube-thumbnail").click( function() {
               if ( jQuery(this).hasClass("selected") ) {
                 jQuery(this).removeClass("selected");
@@ -94,27 +115,27 @@
               }
             });
             if ( data.result.prev_page_token ) {
-              jQuery("#pages").append(
-                jQuery('<span/>').attr({ id: 'prev-link' }).addClass('link').text('< prev')
+              jQuery("#youtube-pages").append(
+                jQuery('<span/>').attr({ id: 'youtube-prev-link' }).addClass('link').text('< prev')
               );
-              jQuery('#prev-link').click(function() {
-                get_thumbnails( data.result.prev_page_token, text );
+              jQuery('#youtube-prev-link').click(function() {
+                get_youtube_thumbnails( data.result.prev_page_token, text );
               });
             }
-            jQuery("#pages").append(
+            jQuery("#youtube-pages").append(
               jQuery('<span/>').text(" ")
             );
             if ( data.result.next_page_token ) {
-              jQuery("#pages").append(
-                jQuery('<span/>').attr({ id: 'next-link' }).addClass('link').text('next >')
+              jQuery("#youtube-pages").append(
+                jQuery('<span/>').attr({ id: 'youtube-next-link' }).addClass('link').text('next >')
               );
-              jQuery('#next-link').click(function() {
-                get_thumbnails( data.result.next_page_token, text );
+              jQuery('#youtube-next-link').click(function() {
+                get_youtube_thumbnails( data.result.next_page_token, text );
               });
             }
           }
           else {
-            jQuery("#thumbnails").text('<__trans phrase="Photo was not found.">');
+            jQuery("#youtube-thumbnails").text('<__trans phrase="Photo was not found.">');
           }
         },
         error: function(xhr, status, errorThrown) {
@@ -135,16 +156,14 @@
       jQuery('#msg-block').append('<div class="msg msg-error additem-error">'+msg+'</div>');
     }
 
-    jQuery('#search-button').click( function() {
-        var text = jQuery('#search-text').val();
+    jQuery('#youtube-search-button').click( function() {
+        var text = jQuery('#youtube-search-text').val();
         if (!text) {
           return;
         }
-        get_thumbnails( '', text );
+        get_youtube_thumbnails( '', text );
     });
 
-    get_thumbnails();
+    get_youtube_thumbnails();
   });
-</mt:setvarblock>
-
-<mt:include name="include/footer.tmpl">
+</script>
