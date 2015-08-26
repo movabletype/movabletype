@@ -19,7 +19,7 @@ use strict;
 use vars qw($VERSION $warnString);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.11';
+$VERSION = '1.18';
 
 sub WarnProc($) { $warnString = $_[0]; }
 
@@ -33,7 +33,8 @@ my %openDocType = (
     'application/vnd.oasis.opendocument.presentation' => 'ODP',
     'application/vnd.oasis.opendocument.spreadsheet'  => 'ODS',
     'application/vnd.oasis.opendocument.text'         => 'ODT',
-    'application/vnd.adobe.indesign-idml-package'     => 'IDML', #6
+    'application/vnd.adobe.indesign-idml-package'     => 'IDML', #6 (not open doc)
+    'application/epub+zip' => 'EPUB', #PH (not open doc)
 );
 
 # ZIP metadata blocks
@@ -45,9 +46,10 @@ my %openDocType = (
         The following tags are extracted from ZIP archives.  ExifTool also extracts
         additional meta information from compressed documents inside some ZIP-based
         files such Office Open XML (DOCX, PPTX and XLSX), Open Document (ODB, ODC,
-        ODF, ODG, ODI, ODP, ODS and ODT), iWork (KEY, PAGES, NUMBERS), and Capture
-        One Enhanced Image Package (EIP).  The ExifTool family 3 groups may be used
-        to organize the output by embedded document number (ie. the exiftool C<-g3>
+        ODF, ODG, ODI, ODP, ODS and ODT), iWork (KEY, PAGES, NUMBERS), Capture One
+        Enhanced Image Package (EIP), Adobe InDesign Markup Language (IDML), and
+        Electronic Publication (EPUB).  The ExifTool family 3 groups may be used to
+        organize ZIP tags by embedded document number (ie. the exiftool C<-g3>
         option).
     },
     2 => 'ZipRequiredVersion',
@@ -243,13 +245,13 @@ my %openDocType = (
 # Returns: 1 on success, 0 if this wasn't a valid RAR file
 sub ProcessRAR($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($flags, $buff);
 
     return 0 unless $raf->Read($buff, 7) and $buff eq "Rar!\x1a\x07\0";
 
-    $exifTool->SetFileType();
+    $et->SetFileType();
     SetByteOrder('II');
     my $tagTablePtr = GetTagTable('Image::ExifTool::ZIP::RAR');
     my $docNum = 0;
@@ -266,8 +268,8 @@ sub ProcessRAR($$)
         last if $size < 0;
         next unless $size;  # ignore blocks with no data
         # don't try to read very large blocks unless LargeFileSupport is enabled
-        if ($size > 0x80000000 and not $exifTool->Options('LargeFileSupport')) {
-            $exifTool->Warn('Large block encountered. Aborting.');
+        if ($size > 0x80000000 and not $et->Options('LargeFileSupport')) {
+            $et->Warn('Large block encountered. Aborting.');
             last;
         }
         # process the block
@@ -277,21 +279,21 @@ sub ProcessRAR($$)
             $raf->Read($buff, $n) == $n or last;
             # add compressed size to start of data so we can extract it with the other tags
             $buff = pack('V',$size) . $buff;
-            $$exifTool{DOC_NUM} = ++$docNum;
-            $exifTool->ProcessDirectory({ DataPt => \$buff }, $tagTablePtr);
+            $$et{DOC_NUM} = ++$docNum;
+            $et->ProcessDirectory({ DataPt => \$buff }, $tagTablePtr);
             $size -= $n;
         } elsif ($type == 0x75 and $size > 6) { # comment block
             $raf->Read($buff, $size) == $size or last;
             # save comment, only if "Stored" (this is untested)
             if (Get8u(\$buff, 3) == 0x30) {
-                $exifTool->FoundTag('Comment', substr($buff, 6));
+                $et->FoundTag('Comment', substr($buff, 6));
             }
             next;
         }
         # seek to the start of the next block
         $raf->Seek($size, 1) or last if $size;
     }
-    $$exifTool{DOC_NUM} = 0;
+    $$et{DOC_NUM} = 0;
 
     return 1;
 }
@@ -302,21 +304,21 @@ sub ProcessRAR($$)
 # Returns: 1 on success, 0 if this wasn't a valid GZIP file
 sub ProcessGZIP($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($flags, $buff);
 
     return 0 unless $raf->Read($buff, 10) and $buff =~ /^\x1f\x8b\x08/;
 
-    $exifTool->SetFileType();
+    $et->SetFileType();
     SetByteOrder('II');
 
     my $tagTablePtr = GetTagTable('Image::ExifTool::ZIP::GZIP');
-    $exifTool->HandleTag($tagTablePtr, 2, Get8u(\$buff, 2));
-    $exifTool->HandleTag($tagTablePtr, 3, $flags = Get8u(\$buff, 3));
-    $exifTool->HandleTag($tagTablePtr, 4, Get32u(\$buff, 4));
-    $exifTool->HandleTag($tagTablePtr, 8, Get8u(\$buff, 8));
-    $exifTool->HandleTag($tagTablePtr, 9, Get8u(\$buff, 9));
+    $et->HandleTag($tagTablePtr, 2, Get8u(\$buff, 2));
+    $et->HandleTag($tagTablePtr, 3, $flags = Get8u(\$buff, 3));
+    $et->HandleTag($tagTablePtr, 4, Get32u(\$buff, 4));
+    $et->HandleTag($tagTablePtr, 8, Get8u(\$buff, 8));
+    $et->HandleTag($tagTablePtr, 9, Get8u(\$buff, 9));
 
     # extract file name and comment if they exist
     if ($flags & 0x18) {
@@ -338,7 +340,7 @@ sub ProcessGZIP($$)
             # but in OS X it seems to be UTF-8, so don't translate
             # it because I could just as easily screw it up)
             my $str = substr($buff, $pos, $end - $pos);
-            $exifTool->HandleTag($tagTablePtr, $tagID, $str);
+            $et->HandleTag($tagTablePtr, $tagID, $str);
             last if $end >= length $buff;
             $pos = $end + 1;
         }
@@ -351,25 +353,25 @@ sub ProcessGZIP($$)
 # Inputs: 0) ExifTool object ref, 1) member ref, 2) optional tag table ref
 sub HandleMember($$;$)
 {
-    my ($exifTool, $member, $tagTablePtr) = @_;
+    my ($et, $member, $tagTablePtr) = @_;
     $tagTablePtr or  $tagTablePtr = GetTagTable('Image::ExifTool::ZIP::Main');
-    $exifTool->HandleTag($tagTablePtr, 2, $member->versionNeededToExtract());
-    $exifTool->HandleTag($tagTablePtr, 3, $member->bitFlag());
-    $exifTool->HandleTag($tagTablePtr, 4, $member->compressionMethod());
-    $exifTool->HandleTag($tagTablePtr, 5, $member->lastModFileDateTime());
-    $exifTool->HandleTag($tagTablePtr, 7, $member->crc32());
-    $exifTool->HandleTag($tagTablePtr, 9, $member->compressedSize());
-    $exifTool->HandleTag($tagTablePtr, 11, $member->uncompressedSize());
-    $exifTool->HandleTag($tagTablePtr, 15, $member->fileName());
+    $et->HandleTag($tagTablePtr, 2, $member->versionNeededToExtract());
+    $et->HandleTag($tagTablePtr, 3, $member->bitFlag());
+    $et->HandleTag($tagTablePtr, 4, $member->compressionMethod());
+    $et->HandleTag($tagTablePtr, 5, $member->lastModFileDateTime());
+    $et->HandleTag($tagTablePtr, 7, $member->crc32());
+    $et->HandleTag($tagTablePtr, 9, $member->compressedSize());
+    $et->HandleTag($tagTablePtr, 11, $member->uncompressedSize());
+    $et->HandleTag($tagTablePtr, 15, $member->fileName());
 }
 
 #------------------------------------------------------------------------------
-# Extract information from an ZIP file
+# Extract information from a ZIP file
 # Inputs: 0) ExifTool object reference, 1) dirInfo reference
 # Returns: 1 on success, 0 if this wasn't a valid ZIP file
 sub ProcessZIP($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $buf2, $zip, $docNum);
 
@@ -379,38 +381,38 @@ sub ProcessZIP($$)
 
     # use Archive::Zip if avilable
     for (;;) {
-        unless (eval 'require Archive::Zip' and eval 'require IO::File') {
-            if ($$exifTool{FILE_EXT} and $$exifTool{FILE_EXT} ne 'ZIP') {
-                $exifTool->Warn("Install Archive::Zip to decode compressed ZIP information");
+        unless (eval { require Archive::Zip } and eval { require IO::File }) {
+            if ($$et{FILE_EXT} and $$et{FILE_EXT} ne 'ZIP') {
+                $et->Warn("Install Archive::Zip to decode compressed ZIP information");
             }
             last;
         }
         # Archive::Zip requires a seekable IO::File object
         my $fh;
         if ($raf->{TESTED} >= 0) {
-            unless (eval 'require IO::File') {
+            unless (eval { require IO::File }) {
                 # (this shouldn't happen because IO::File is a prerequisite of Archive::Zip)
-                $exifTool->Warn("Install IO::File to decode compressed ZIP information");
+                $et->Warn("Install IO::File to decode compressed ZIP information");
                 last;
             }
             $raf->Seek(0,0);
             $fh = $raf->{FILE_PT};
             bless $fh, 'IO::File';  # Archive::Zip expects an IO::File object
-        } elsif (eval 'require IO::String') {
+        } elsif (eval { require IO::String }) {
             # read the whole file into memory (what else can I do?)
             $raf->Slurp();
             $fh = new IO::String ${$raf->{BUFF_PT}};
         } else {
             my $type = $raf->{FILE_PT} ? 'pipe or socket' : 'scalar reference';
-            $exifTool->Warn("Install IO::String to decode compressed ZIP information from a $type");
+            $et->Warn("Install IO::String to decode compressed ZIP information from a $type");
             last;
         }
-        $exifTool->VPrint(1, "  --- using Archive::Zip ---\n");
+        $et->VPrint(1, "  --- using Archive::Zip ---\n");
         $zip = new Archive::Zip;
         # catch all warnings! (Archive::Zip is bad for this)
         local $SIG{'__WARN__'} = \&WarnProc;
         my $status = $zip->readFromFileHandle($fh);
-        if ($status eq '4' and $raf->{TESTED} >= 0 and eval 'require IO::String' and
+        if ($status eq '4' and $raf->{TESTED} >= 0 and eval { require IO::String } and
             $raf->Seek(0,2) and $raf->Tell() < 100000000)
         {
             # try again, reading it ourself this time in an attempt to avoid
@@ -425,14 +427,14 @@ sub ProcessZIP($$)
             undef $zip;
             my %err = ( 1=>'Stream end error', 3=>'Format error', 4=>'IO error' );
             my $err = $err{$status} || "Error $status";
-            $exifTool->Warn("$err reading ZIP file");
+            $et->Warn("$err reading ZIP file");
             last;
         }
         $$dirInfo{ZIP} = $zip;
 
         # check for an Office Open file (DOCX, etc)
         # --> read '[Content_Types].xml' to determine the file type
-        my ($mime, @members);
+        my ($mime, @members, $epub);
         my $cType = $zip->memberNamed('[Content_Types].xml');
         if ($cType) {
             ($buff, $status) = $zip->contents($cType);
@@ -445,7 +447,7 @@ sub ProcessZIP($$)
         if ($mime or @members) {
             $$dirInfo{MIME} = $mime;
             require Image::ExifTool::OOXML;
-            Image::ExifTool::OOXML::ProcessDOCX($exifTool, $dirInfo);
+            Image::ExifTool::OOXML::ProcessDOCX($et, $dirInfo);
             delete $$dirInfo{MIME};
             last;
         }
@@ -454,7 +456,7 @@ sub ProcessZIP($$)
         @members = $zip->membersMatching('^CaptureOne/.*\.(cos|COS)$');
         if (@members) {
             require Image::ExifTool::CaptureOne;
-            Image::ExifTool::CaptureOne::ProcessEIP($exifTool, $dirInfo);
+            Image::ExifTool::CaptureOne::ProcessEIP($et, $dirInfo);
             last;
         }
 
@@ -462,19 +464,19 @@ sub ProcessZIP($$)
         @members = $zip->membersMatching('^(index\.(xml|apxl)|QuickLook/Thumbnail\.jpg)$');
         if (@members) {
             require Image::ExifTool::iWork;
-            Image::ExifTool::iWork::Process_iWork($exifTool, $dirInfo);
+            Image::ExifTool::iWork::Process_iWork($et, $dirInfo);
             last;
         }
 
-        # check for an Open Document or IDML file
+        # check for an Open Document, IDML or EPUB file
         my $mType = $zip->memberNamed('mimetype');
         if ($mType) {
             ($mime, $status) = $zip->contents($mType);
             if (not $status and $mime =~ /([\x21-\xfe]+)/s) {
                 # clean up MIME type just in case (note that MIME is case insensitive)
                 $mime = lc $1;
-                $exifTool->SetFileType($openDocType{$mime} || 'ZIP', $mime);
-                $exifTool->Warn('Unrecognized MIMEType') unless $openDocType{$mime};
+                $et->SetFileType($openDocType{$mime} || 'ZIP', $mime);
+                $et->Warn("Unrecognized MIMEType $mime") unless $openDocType{$mime};
                 # extract Open Document metadata from "meta.xml"
                 my $meta = $zip->memberNamed('meta.xml');
                 # IDML files have metadata in a different place (ref 6)
@@ -487,9 +489,48 @@ sub ProcessZIP($$)
                             DirLen => length $buff,
                             DataLen => length $buff,
                         );
-                        my $xmpTable = GetTagTable('Image::ExifTool::XMP::Main');
-                        $exifTool->ProcessDirectory(\%dirInfo, $xmpTable);
+                        # (avoid structure warnings when copying from XML)
+                        my $oldWarn = $$et{NO_STRUCT_WARN};
+                        $$et{NO_STRUCT_WARN} = 1;
+                        $et->ProcessDirectory(\%dirInfo, GetTagTable('Image::ExifTool::XMP::Main'));
+                        $$et{NO_STRUCT_WARN} = $oldWarn;
                     }
+                }
+                # process rootfile of EPUB container if applicable
+                for (;;) {
+                    last if $meta and $mime ne 'application/epub+zip';
+                    my $container = $zip->memberNamed('META-INF/container.xml');
+                    ($buff, $status) = $zip->contents($container);
+                    last if $status;
+                    $buff =~ /<rootfile\s+[^>]*?\bfull-path=(['"])(.*?)\1/s or last;
+                    # load the rootfile data (OPF extension; contains XML metadata)
+                    my $meta2 = $zip->memberNamed($2) or last;
+                    $meta = $meta2;
+                    ($buff, $status) = $zip->contents($meta);
+                    last if $status;
+                    # use opf:event to generate more meaningful tag names for dc:date
+                    while ($buff =~ s{<dc:date opf:event="(\w+)">([^<]+)</dc:date>}{<dc:${1}Date>$2</dc:${1}Date>}s) {
+                        my $dcTable = GetTagTable('Image::ExifTool::XMP::dc');
+                        my $tag = "${1}Date";
+                        AddTagToTable($dcTable, $tag, {
+                            Name => ucfirst $tag,
+                            Groups => { 2 => 'Time' },
+                            List => 'Seq',
+                            %Image::ExifTool::XMP::dateTimeInfo
+                        }) unless $$dcTable{$tag};
+                    }
+                    my %dirInfo = (
+                        DataPt => \$buff,
+                        DirLen => length $buff,
+                        DataLen => length $buff,
+                        IgnoreProp => { 'package' => 1, metadata => 1 },
+                    );
+                    # (avoid structure warnings when copying from XML)
+                    my $oldWarn = $$et{NO_STRUCT_WARN};
+                    $$et{NO_STRUCT_WARN} = 1;
+                    $et->ProcessDirectory(\%dirInfo, GetTagTable('Image::ExifTool::XMP::XML'));
+                    $$et{NO_STRUCT_WARN} = $oldWarn;
+                    last;
                 }
                 if ($openDocType{$mime} or $meta) {
                     # extract preview image(s) from "Thumbnails" directory if they exist
@@ -499,7 +540,7 @@ sub ProcessZIP($$)
                         my $thumb = $zip->memberNamed("Thumbnails/thumbnail.$type");
                         next unless $thumb;
                         ($buff, $status) = $zip->contents($thumb);
-                        $exifTool->FoundTag($tag{$type}, $buff) unless $status;
+                        $et->FoundTag($tag{$type}, $buff) unless $status;
                     }
                     last;   # all done since we recognized the MIME type or found metadata
                 }
@@ -508,29 +549,29 @@ sub ProcessZIP($$)
         }
 
         # otherwise just extract general ZIP information
-        $exifTool->SetFileType();
+        $et->SetFileType();
         @members = $zip->members();
         $docNum = 0;
         my $member;
         foreach $member (@members) {
-            $$exifTool{DOC_NUM} = ++$docNum;
-            HandleMember($exifTool, $member, $tagTablePtr);
+            $$et{DOC_NUM} = ++$docNum;
+            HandleMember($et, $member, $tagTablePtr);
         }
         last;
     }
     # all done if we processed this using Archive::Zip
     if ($zip) {
         delete $$dirInfo{ZIP};
-        delete $$exifTool{DOC_NUM};
+        delete $$et{DOC_NUM};
         return 1;
     }
 #
 # process the ZIP file by hand (funny, but this seems easier than using Archive::Zip)
 #
     $docNum = 0;
-    $exifTool->VPrint(1, "  -- processing as binary data --\n");
+    $et->VPrint(1, "  -- processing as binary data --\n");
     $raf->Seek(30, 0);
-    $exifTool->SetFileType();
+    $et->SetFileType();
     SetByteOrder('II');
 
     #  A.  Local file header:
@@ -549,7 +590,7 @@ sub ProcessZIP($$)
         my $len = Get16u(\$buff, 26) + Get16u(\$buff, 28);
         $raf->Read($buf2, $len) == $len or last;
 
-        $$exifTool{DOC_NUM} = ++$docNum;
+        $$et{DOC_NUM} = ++$docNum;
         $buff .= $buf2;
         my %dirInfo = (
             DataPt => \$buff,
@@ -558,21 +599,21 @@ sub ProcessZIP($$)
             DirStart => 0,
             DirLen => 30 + $len,
         );
-        $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+        $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         my $flags = Get16u(\$buff, 6);
         if ($flags & 0x08) {
             # we don't yet support skipping stream mode data
             # (when this happens, the CRC, compressed size and uncompressed
             #  sizes are set to 0 in the header.  Instead, they are stored
             #  after the compressed data with an optional header of 0x08074b50)
-            $exifTool->Warn('Stream mode data encountered, file list may be incomplete');
+            $et->Warn('Stream mode data encountered, file list may be incomplete');
             last;
         }
         $len = Get32u(\$buff, 18);      # file data length
         $raf->Seek($len, 1) or last;    # skip file data
         $raf->Read($buff, 30) == 30 and $buff =~ /^PK\x03\x04/ or last;
     }
-    delete $$exifTool{DOC_NUM};
+    delete $$et{DOC_NUM};
     return 1;
 }
 
@@ -592,11 +633,14 @@ This module is used by Image::ExifTool
 
 This module contains definitions required by Image::ExifTool to extract meta
 information from ZIP, GZIP and RAR archives.  This includes ZIP-based file
-types like DOCX, PPTX, XLSX, ODB, ODC, ODF, ODG, ODI, ODP, ODS, ODT and EIP.
+types like Office Open XML (DOCX, PPTX and XLSX), Open Document (ODB, ODC,
+ODF, ODG, ODI, ODP, ODS and ODT), iWork (KEY, PAGES, NUMBERS), Capture One
+Enhanced Image Package (EIP), Adobe InDesign Markup Language (IDML), and
+Electronic Publication (EPUB).
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

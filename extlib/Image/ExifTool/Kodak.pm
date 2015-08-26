@@ -8,6 +8,7 @@
 # References:   1) http://search.cpan.org/dist/Image-MetaData-JPEG/
 #               2) http://www.ozhiker.com/electronics/pjmt/jpeg_info/meta.html
 #               3) http://www.cybercom.net/~dcoffin/dcraw/
+#               4) Iliah Borg private communication (LibRaw)
 #
 # Notes:        There really isn't much public information about Kodak formats.
 #               The only source I could find was Image::MetaData::JPEG, which
@@ -23,7 +24,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.32';
+$VERSION = '1.39';
 
 sub ProcessKodakIFD($$$);
 sub ProcessKodakText($$$);
@@ -750,7 +751,7 @@ sub WriteKodakIFD($$$);
         Notes => 'Kodak only',
     },
     0xa8 => {
-        Name => 'UnknownNumber', # (was SerialNumber, but not unique for all cameras. ie C1013)
+        Name => 'UnknownNumber', # (was SerialNumber, but not unique for all cameras. eg. C1013)
         Condition => '$$self{Make} =~ /Kodak/i and $$valPt =~ /^([A-Z0-9]{1,11}\0|[A-Z0-9]{12})/i',
         Format => 'string[12]',
         Notes => 'Kodak only',
@@ -845,6 +846,31 @@ sub WriteKodakIFD($$$);
     # 0x3fe undef[2540]
 );
 
+# Kodak PixPro S-1 maker notes (ref PH)
+# (similar to Ricoh::Type2 and GE::Main)
+%Image::ExifTool::Kodak::Type11 = (
+    # (can't currently write these)
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    NOTES =>q{
+        These tags are found in models such as the PixPro S-1.  They are not
+        writable because the inconsistency of Kodak maker notes is beginning to get
+        on my nerves.
+    },
+    0x0203 => {
+        Name => 'PictureEffect',
+        PrintConv => {
+            0 => 'None',
+            3 => 'Monochrome',
+            9 => 'Kodachrome',
+        },
+    },
+    # 0x0204 - ExposureComp or FlashExposureComp maybe?
+    0x0207 => 'KodakModel',
+    0x0300 => 'KodakMake',
+    0x0308 => 'LensSerialNumber',
+    0x0309 => 'LensModel',
+);
+
 # Kodak SubIFD0 tags (ref PH)
 %Image::ExifTool::Kodak::SubIFD0 = (
     WRITE_PROC => \&Image::ExifTool::Exif::WriteExif,
@@ -854,7 +880,7 @@ sub WriteKodakIFD($$$);
     0xfa02 => {
         Name => 'SceneMode',
         Writable => 'int16u',
-        Notes => 'may not be valid for some models', # ie. M580?
+        Notes => 'may not be valid for some models', # eg. M580?
         PrintConvColumns => 2,
         PrintConv => {
             1 => 'Sport',
@@ -876,8 +902,8 @@ sub WriteKodakIFD($$$);
             25 => 'Back Light',
             28 => 'Candlelight',
             29 => 'Sunset',
-            31 => 'Panorama Left-Right',
-            32 => 'Panorama Right-Left',
+            31 => 'Panorama Left-right',
+            32 => 'Panorama Right-left',
             33 => 'Smart Scene',
             34 => 'High ISO',
         },
@@ -1334,6 +1360,10 @@ my %sceneModeUsed = (
             TagTable => 'Image::ExifTool::Kodak::TextualInfo',
         },
     },
+    # 0x03f2 - FlashMode (ref 4)
+    # 0x03f3 - FlashCompensation (ref 4)
+    # 0x03f8 - MinAperture (ref 4)
+    # 0x03f9 - MaxAperture (ref 4)
     0x03fc => { #3
         Name => 'WhiteBalance',
         Writable => 'int16u',
@@ -1352,11 +1382,36 @@ my %sceneModeUsed = (
         Groups => { 2 => 'Time' },
         Writable => 'string',
     },
+    0x0406 => { #4
+        Name => 'CameraTemperature',
+        # (when count is 2, values seem related to temperature, but are not Celius)
+        Condition => '$count == 1',
+        Groups => { 2 => 'Camera' },
+        Writable => 'rational64s',
+        PrintConv => '"$val C"',
+        PrintConvInv => '$val=~s/ ?C//; $val',
+    },
+    0x0407 => { #4
+        Name => 'AdapterVoltage',
+        Groups => { 2 => 'Camera' },
+        Writable => 'rational64u',
+    },
+    0x0408 => { #4
+        Name => 'BatteryVoltage',
+        Groups => { 2 => 'Camera' },
+        Writable => 'rational64u',
+    },
     0x0414 => { Name => 'NCDFileInfo',      Writable => 'string' },
     0x0846 => { #3
         Name => 'ColorTemperature',
         Writable => 'int16u',
     },
+    0x0848 => 'WB_RGBLevelsDaylight', #4
+    0x0849 => 'WB_RGBLevelsTungsten', #4
+    0x084a => 'WB_RGBLevelsFluorescent', #4
+    0x084b => 'WB_RGBLevelsFlash', #4
+    0x084c => 'WB_RGBLevelsCustom', #4
+    0x084d => 'WB_RGBLevelsAuto', #4
     0x0852 => 'WB_RGBMul0', #3
     0x0853 => 'WB_RGBMul1', #3
     0x0854 => 'WB_RGBMul2', #3
@@ -1365,9 +1420,26 @@ my %sceneModeUsed = (
     0x085d => { Name => 'WB_RGBCoeffs1', Binary => 1 }, #3
     0x085e => { Name => 'WB_RGBCoeffs2', Binary => 1 }, #3
     0x085f => { Name => 'WB_RGBCoeffs3', Binary => 1 }, #3
+    # 0x089d => true analogue ISO values possible (ref 4)
+    # 0x089e => true analogue ISO used at capture (ref 4)
+    # 0x089f => ISO calibration gain (ref 4)
+    # 0x08a0 => ISO calibration gain table (ref 4)
+    # 0x08a1 => exposure headroom coefficient (ref 4)
+    0x0903 => { Name => 'BaseISO', Writable => 'rational64u' }, #4 (ISO before digital gain)
     # 0x090d: linear table (ref 3)
+    0x09ce => { Name => 'SensorSerialNumber', Writable => 'string', Groups => { 2 => 'Camera' } }, #4
     # 0x0c81: some sort of date (manufacture date?) - PH
-    0x0ce5 => { Name => 'FirmwareVersion',  Writable => 'string' },
+    0x0ce5 => { Name => 'FirmwareVersion',  Writable => 'string', Groups => { 2 => 'Camera' } },
+    0x0e4c => { #4
+        Name => 'KodakLook',
+        Format => 'undef',
+        Writable => 'string',
+        ValueConv => '$val=~tr/\0/\n/; $val',
+        ValueConvInv => '$val=~tr/\n/\0/; $val',
+    },
+    0x1389 => { Name => 'InputProfile',     Writable => 'undef', Binary => 1 }, #4
+    0x138a => { Name => 'KodakLookProfile', Writable => 'undef', Binary => 1 }, #4
+    0x138b => { Name => 'OutputProfile',    Writable => 'undef', Binary => 1 }, #4
     # 0x1390: value: "DCSProSLRn" (tone curve name?) - PH
     0x1391 => { Name => 'ToneCurveFileName',Writable => 'string' },
     0x1784 => { Name => 'ISO',              Writable => 'int32u' }, #3
@@ -1782,6 +1854,15 @@ my %sceneModeUsed = (
     },
 );
 
+# tags in "frea" atom of Kodak PixPro SP360 MP4 videos (ref PH)
+%Image::ExifTool::Kodak::frea = (
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
+    NOTES => 'Information stored in the "frea" atom of Kodak PixPro SP360 MP4 videos.',
+    # tima - 4 bytes: 0 0 0 0x20
+    thma => { Name => 'ThumbnailImage', Binary => 1 },
+    scra => { Name => 'PreviewImage',   Binary => 1 },
+);
+
 # preview information in free/Scrn atom of MP4 videos (ref PH)
 %Image::ExifTool::Kodak::Scrn = (
     GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
@@ -1879,7 +1960,7 @@ sub CalculateRGBLevels(@)
 # Returns: 1 on success
 sub ProcessKodakText($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dirStart = $$dirInfo{DirStart} || 0;
     my $dirLen = $$dirInfo{DirLen} || length($$dataPt) - $dirStart;
@@ -1887,12 +1968,12 @@ sub ProcessKodakText($$$)
     $data =~ s/\0.*//s;     # truncate at null if it exists
     my @lines = split /[\n\r]+/, $data;
     my ($line, $success, @other, $tagInfo);
-    $exifTool->VerboseDir('Kodak Text');
+    $et->VerboseDir('Kodak Text');
     foreach $line (@lines) {
         if ($line =~ /(.*?):\s*(.*)/) {
             my ($tag, $val) = ($1, $2);
             if ($$tagTablePtr{$tag}) {
-                $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+                $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
             } else {
                 my $tagName = $tag;
                 $tagName =~ s/([A-Z])\s+([A-Za-z])/${1}_\U$2/g;
@@ -1903,7 +1984,7 @@ sub ProcessKodakText($$$)
                 $tagInfo = { Name => $tagName };
                 AddTagToTable($tagTablePtr, $tag, $tagInfo);
             }
-            $exifTool->HandleTag($tagTablePtr, $tag, $val, TagInfo => $tagInfo);
+            $et->HandleTag($tagTablePtr, $tag, $val, TagInfo => $tagInfo);
             $success = 1;
         } else {
             # strip off leading/trailing white space and ignore blank lines
@@ -1912,11 +1993,11 @@ sub ProcessKodakText($$$)
     }
     if ($success) {
         if (@other) {
-            $tagInfo = $exifTool->GetTagInfo($tagTablePtr, '_other_info');
-            $exifTool->FoundTag($tagInfo, \@other);
+            $tagInfo = $et->GetTagInfo($tagTablePtr, '_other_info');
+            $et->FoundTag($tagInfo, \@other);
         }
     } else {
-        $exifTool->Warn("Can't parse Kodak TextualInfo data", 1);
+        $et->Warn("Can't parse Kodak TextualInfo data", 1);
     }
     return $success;
 }
@@ -1927,21 +2008,21 @@ sub ProcessKodakText($$$)
 # Returns: 1 on success, otherwise returns 0 and sets a Warning
 sub ProcessKodakIFD($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dirStart = $$dirInfo{DirStart} || 0;
     return 1 if $dirStart <= 0 or $dirStart + 2 > $$dirInfo{DataLen};
     my $byteOrder = substr(${$$dirInfo{DataPt}}, $dirStart, 2);
     unless (Image::ExifTool::SetByteOrder($byteOrder)) {
-        $exifTool->Warn("Invalid Kodak $$dirInfo{Name} directory");
+        $et->Warn("Invalid Kodak $$dirInfo{Name} directory");
         return 1;
     }
     $$dirInfo{DirStart} += 2;   # skip byte order mark
     $$dirInfo{DirLen} -= 2;
-    if ($exifTool->{HTML_DUMP}) {
+    if ($$et{HTML_DUMP}) {
         my $base = $$dirInfo{Base} + $$dirInfo{DataPos};
-        $exifTool->HDump($dirStart+$base, 2, "Byte Order Mark");
+        $et->HDump($dirStart+$base, 2, "Byte Order Mark");
     }
-    return Image::ExifTool::Exif::ProcessExif($exifTool, $dirInfo, $tagTablePtr);
+    return Image::ExifTool::Exif::ProcessExif($et, $dirInfo, $tagTablePtr);
 }
 
 #------------------------------------------------------------------------------
@@ -1950,14 +2031,14 @@ sub ProcessKodakIFD($$$)
 # Returns: Exif data block (may be empty if no Exif data) or undef on error
 sub WriteKodakIFD($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dirStart = $$dirInfo{DirStart} || 0;
     return '' if $dirStart <= 0 or $dirStart + 2 > $$dirInfo{DataLen};
     my $byteOrder = substr(${$$dirInfo{DataPt}}, $dirStart, 2);
     return '' unless Image::ExifTool::SetByteOrder($byteOrder);
     $$dirInfo{DirStart} += 2;   # skip byte order mark
     $$dirInfo{DirLen} -= 2;
-    my $buff = Image::ExifTool::Exif::WriteExif($exifTool, $dirInfo, $tagTablePtr);
+    my $buff = Image::ExifTool::Exif::WriteExif($et, $dirInfo, $tagTablePtr);
     return $buff unless defined $buff and length $buff;
     # apply one-time fixup for length of byte order mark
     if ($$dirInfo{Fixup}) {
@@ -1987,7 +2068,7 @@ interpret Kodak maker notes EXIF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

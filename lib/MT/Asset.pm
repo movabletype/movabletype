@@ -130,7 +130,8 @@ sub list_props {
                                     = $obj->thumbnail_url(
                                     Height => $thumb_size,
                                     Width  => $thumb_size,
-                                    Square => 1
+                                    Square => 1,
+                                    Ts     => 1
                                     );
                             }
                             elsif ( $orig_width > $thumb_size ) {
@@ -138,21 +139,27 @@ sub list_props {
                                     $thumbnail_height
                                     )
                                     = $obj->thumbnail_url(
-                                    Width => $thumb_size, );
+                                    Width => $thumb_size,
+                                    Ts    => 1
+                                    );
                             }
                             elsif ( $orig_height > $thumb_size ) {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
                                     = $obj->thumbnail_url(
-                                    Height => $thumb_size, );
+                                    Height => $thumb_size,
+                                    Ts     => 1
+                                    );
                             }
                             else {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
-                                    = ( $obj->url, $orig_width,
-                                    $orig_height );
+                                    = (
+                                    $obj->url . '?ts=' . $obj->modified_on,
+                                    $orig_width, $orig_height
+                                    );
                             }
 
                             my $thumbnail_width_offset = int(
@@ -854,6 +861,7 @@ sub thumbnail_url {
             }
             $file = MT::Util::encode_url($file);
             $site_url = MT::Util::caturl( $site_url, $path, $file );
+            $site_url .= '?ts=' . $asset->modified_on if $param{Ts};
             return ( $site_url, $w, $h );
         }
     }
@@ -1005,6 +1013,24 @@ sub can_create_thumbnail {
 
     return $fmgr->exists($real_thumb_path)
         && !$fmgr->can_write($real_thumb_path) ? 0 : 1;
+}
+
+sub list_subclasses {
+
+    my $types = MT->registry('object_types');
+    my @types;
+
+    foreach my $k ( keys %$types ) {
+        if ( $k =~ m/^asset\.(.*)/ ) {
+            push @types,
+                {
+                class => $types->{$k},
+                type  => $1,
+                };
+        }
+    }
+
+    return \@types;
 }
 
 sub file_size {

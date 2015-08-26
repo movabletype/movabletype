@@ -219,6 +219,38 @@ sub post_entry_pub {
     }
 }
 
+sub post_entry_unpub {
+    my $plugin = shift;
+    my ( $eh, $app, $entry ) = @_;
+    my $blog_id = $entry->blog_id;
+
+    my $code = sub {
+        my ($d) = @_;
+
+        require MT::Entry;
+        if ( ( $entry->status || 0 ) == MT::Entry::UNPUBLISH() ) {
+            while ( my ( $id, $a ) = each( %{ $d->{'entry_unpub'} } ) ) {
+                next if $id == $blog_id;
+                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+            }
+        }
+    };
+
+    foreach my $scope ( "blog:$blog_id", "system" ) {
+        my $d = $plugin->get_config_value(
+            $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
+        $code->($d);
+    }
+
+    my $blog = $entry->blog;
+    if ( my $website = $blog->website ) {
+        my $scope = "blog:" . $website->id;
+        my $d     = $plugin->get_config_value( 'blogs_in_website_triggers',
+            $scope );
+        $code->($d);
+    }
+}
+
 sub init_rebuilt_cache {
     my ($app) = @_;
     $app->request( 'multiblog_rebuilt', {} );

@@ -12,7 +12,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 sub ProcessHP($$$);
 sub ProcessTDHD($$$);
@@ -141,13 +141,13 @@ sub ProcessTDHD($$$);
 # Returns: 1 on success
 sub ProcessTDHD($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataPos = $$dirInfo{DataPos};
     my $pos = $$dirInfo{DirStart};
     my $dirEnd = $pos + $$dirInfo{DirLen};
-    my $unknown = $exifTool->Options('Unknown') || $exifTool->Options('Verbose');
-    $exifTool->VerboseDir('TDHD', undef, $$dirInfo{DirLen});
+    my $unknown = $et->Options('Unknown') || $et->Options('Verbose');
+    $et->VerboseDir('TDHD', undef, $$dirInfo{DirLen});
     SetByteOrder('II');
     while ($pos + 12 < $dirEnd) {
         my $tag = substr($$dataPt, $pos, 4);
@@ -163,7 +163,7 @@ sub ProcessTDHD($$$)
                 DirStart => $pos,
                 DirLen   => $size,
             );
-            $exifTool->ProcessDirectory(\%dirInfo, $tagTablePtr);
+            $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         } else {
             if (not $$tagTablePtr{$tag} and $unknown) {
                 my $name = $tag;
@@ -184,7 +184,7 @@ sub ProcessTDHD($$$)
                 }
                 AddTagToTable($tagTablePtr, $tag, \%tagInfo);
             }
-            $exifTool->HandleTag($tagTablePtr, $tag, undef,
+            $et->HandleTag($tagTablePtr, $tag, undef,
                 DataPt  => $dataPt,
                 DataPos => $dataPos,
                 Start   => $pos,
@@ -202,7 +202,7 @@ sub ProcessTDHD($$$)
 # Returns: 1 on success, otherwise returns 0 and sets a Warning
 sub ProcessHP($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataLen = $$dirInfo{DataLen};
     my $dirStart = $$dirInfo{DirStart} || 0;
@@ -216,7 +216,7 @@ sub ProcessHP($$$)
     my $tagID;
     # brute-force scan for PreviewImage
     if ($$tagTablePtr{PreviewImage} and $$dataPt =~ /(\xff\xd8\xff\xdb.*\xff\xd9)/gs) {
-        $exifTool->HandleTag($tagTablePtr, 'PreviewImage', $1);
+        $et->HandleTag($tagTablePtr, 'PreviewImage', $1);
         # truncate preview to speed subsequent tag scans
         my $buff = substr($$dataPt, 0, pos($$dataPt)-length($1));
         $dataPt = \$buff;
@@ -225,7 +225,7 @@ sub ProcessHP($$$)
     foreach $tagID (sort(TagTableKeys($tagTablePtr))) {
         next if $tagID eq 'PreviewImage';
         next unless $$dataPt =~ /$tagID:\s*([\x20-\x7f]+)/i;
-        $exifTool->HandleTag($tagTablePtr, $tagID, $1);
+        $et->HandleTag($tagTablePtr, $tagID, $1);
     }
     return 1;
 }
@@ -249,7 +249,7 @@ Hewlett-Packard maker notes.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

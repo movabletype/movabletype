@@ -8,7 +8,9 @@ package MT::Image;
 
 use strict;
 use MT;
-use base qw( MT::ErrorHandler );
+use base qw( Class::Accessor::Fast MT::ErrorHandler );
+
+__PACKAGE__->mk_accessors(qw( jpeg_quality png_quality ));
 
 sub new {
     my $class = shift;
@@ -23,6 +25,24 @@ sub new {
         $image->init(@_)
             or return $class->error( $image->errstr );
     }
+    $image;
+}
+
+sub init {
+    my ( $image, %param ) = @_;
+
+    my $jpeg_quality
+        = exists $param{JpegQuality}
+        ? $param{JpegQuality}
+        : MT->config->ImageQualityJpeg;
+    my $png_quality
+        = exists $param{PngQuality}
+        ? $param{PngQuality}
+        : MT->config->ImageQualityPng;
+
+    $image->jpeg_quality($jpeg_quality);
+    $image->png_quality($png_quality);
+
     $image;
 }
 
@@ -229,6 +249,23 @@ sub check_upload {
     ( $w, $h, $id, $write_file );
 }
 
+sub crop {
+    my $image = shift;
+    my %param = @_;
+    $param{Width} = $param{Height} = $param{Size};
+    $image->crop_rectangle(%param);
+}
+
+sub remove_metadata {
+    my ( $class, $file ) = @_;
+    require Image::ExifTool;
+    my $exif = Image::ExifTool->new;
+    $exif->SetNewValue('*');
+    $exif->WriteInfo($file)
+        or $class->trans_error( 'Writing metadata failed: [_1]',
+        $exif->GetValue('Error') );
+}
+
 1;
 
 __END__
@@ -285,6 +322,12 @@ The image format of the data in I<Data>. This should be either I<JPG> or
 I<GIF>.
 
 =back
+
+=head2 $img->init( %arg )
+
+Set $img->jpeg_quality and $img->png_quality parameter from $arg{JpegQuality}
+and $arg{PngQuality}. When $arg{JpegQuality}/$arg{PngQuality} is not set,
+MT->config->ImageJpegQuality/MT->config->ImagePngQuality is used.
 
 =head2 $img->scale( %arg )
 
@@ -437,6 +480,13 @@ A Perl coderef that, when invoked writes the image to the specified
 location.
 
 =back
+
+If any error occurs from this routine, it will return 'undef', and
+assign the error message, accessible using the L<errstr> class method.
+
+=head2 MT::Image->remove_metadata($file)
+
+Remove metadata (e.g. Exif) from $file. 
 
 If any error occurs from this routine, it will return 'undef', and
 assign the error message, accessible using the L<errstr> class method.

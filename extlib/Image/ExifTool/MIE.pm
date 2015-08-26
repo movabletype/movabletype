@@ -14,7 +14,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '1.39';
+$VERSION = '1.42';
 
 sub ProcessMIE($$);
 sub ProcessMIEGroup($$$);
@@ -143,13 +143,13 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         written by adding a language/country code to the tag name in the form
         C<TAG-xx_YY>, where C<TAG> is the tag name, C<xx> is a 2-character lower
         case ISO 639-1 language code, and C<YY> is a 2-character upper case ISO
-        3166-1 alpha 2 country code (ie. C<Title-en_US>).  But as usual, the user
+        3166-1 alpha 2 country code (eg. C<Title-en_US>).  But as usual, the user
         interface is case-insensitive, and ExifTool will write the correct case to
         the file.
 
         3) Some numerical MIE tags allow units of measurement to be specified.  For
         these tags, units may be added in brackets immediately following the value
-        (ie. C<55(mi/h)>).  If no units are specified, the default units are
+        (eg. C<55(mi/h)>).  If no units are specified, the default units are
         written.
 
         See L<http://owl.phy.queensu.ca/~phil/exiftool/MIE1.1-20070121.pdf> for the
@@ -784,7 +784,7 @@ sub UpdateMieMap()
 
 #------------------------------------------------------------------------------
 # Get localized version of tagInfo hash
-# Inputs: 0) tagInfo hash ref, 1) locale code (ie. "en_CA")
+# Inputs: 0) tagInfo hash ref, 1) locale code (eg. "en_CA")
 # Returns: new tagInfo hash ref, or undef if invalid
 sub GetLangInfo($$)
 {
@@ -805,7 +805,7 @@ sub GetLangInfo($$)
 sub HasZlib($$)
 {
     unless (defined $hasZlib) {
-        $hasZlib = eval 'require Compress::Zlib';
+        $hasZlib = eval { require Compress::Zlib };
         unless ($hasZlib) {
             $hasZlib = 0;
             $_[0]->Warn("Install Compress::Zlib to $_[1] compressed information");
@@ -873,7 +873,7 @@ sub ReadMIEValue($$$$$;$)
 # Returns: error string or undef (and possibly changes value) on success
 sub CheckMIE($$$)
 {
-    my ($exifTool, $tagInfo, $valPtr) = @_;
+    my ($et, $tagInfo, $valPtr) = @_;
     my $format = $$tagInfo{Writable} || $tagInfo->{Table}->{WRITABLE};
     my $err;
 
@@ -890,11 +890,11 @@ sub CheckMIE($$$)
     } elsif ($format !~ /^(utf|string|undef)/ and $$valPtr =~ /\)$/) {
         return 'Units not supported';
     } else {
-        if ($format eq 'string' and $exifTool->{OPTIONS}->{Charset} ne 'UTF8' and
+        if ($format eq 'string' and $$et{OPTIONS}{Charset} ne 'UTF8' and
             $$valPtr =~ /[\x80-\xff]/)
         {
             # convert from Charset to UTF-8
-            $$valPtr = $exifTool->Encode($$valPtr,'UTF8');
+            $$valPtr = $et->Encode($$valPtr,'UTF8');
         }
         $err = Image::ExifTool::CheckValue($valPtr, $format, $$tagInfo{Count});
     }
@@ -907,21 +907,21 @@ sub CheckMIE($$$)
 # Returns: undef on success, otherwise error message (empty message if nothing to write)
 sub WriteMIEGroup($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $outfile = $$dirInfo{OutFile};
     my $dirName = $$dirInfo{DirName};
     my $toWrite = $$dirInfo{ToWrite} || '';
     my $raf = $$dirInfo{RAF};
-    my $verbose = $exifTool->Options('Verbose');
-    my $optCompress = $exifTool->Options('Compress');
-    my $out = $exifTool->Options('TextOut');
+    my $verbose = $et->Options('Verbose');
+    my $optCompress = $et->Options('Compress');
+    my $out = $et->Options('TextOut');
     my ($msg, $err, $ok, $sync, $delGroup);
     my $tag = '';
     my $deletedTag = '';
 
     # count each MIE directory found and make name for this specific instance
     my ($grp1, %isWriting);
-    my $cnt = $exifTool->{MIE_COUNT};
+    my $cnt = $$et{MIE_COUNT};
     my $grp = $tagTablePtr->{GROUPS}->{1};
     my $n = $$cnt{'MIE-Main'} || 0;
     if ($grp eq 'MIE-Main') {
@@ -930,26 +930,26 @@ sub WriteMIEGroup($$$)
     } else {
         ($grp1 = $grp) =~ s/MIE-/MIE$n-/;
         my $m = $$cnt{$grp1} = ($$cnt{$grp1} || 0) + 1;
-        $isWriting{"$grp$m"} = 1;   # ie. 'MIE-Doc2'
-        $isWriting{$grp1} = 1;      # ie. 'MIE1-Doc'
+        $isWriting{"$grp$m"} = 1;   # eg. 'MIE-Doc2'
+        $isWriting{$grp1} = 1;      # eg. 'MIE1-Doc'
         $grp1 .= $m;
     }
     # build lookup for all valid group names for this MIE group
-    $isWriting{$grp} = 1;           # ie. 'MIE-Doc'
-    $isWriting{$grp1} = 1;          # ie. 'MIE1-Doc2'
-    $isWriting{"MIE$n"} = 1;        # ie. 'MIE1'
+    $isWriting{$grp} = 1;           # eg. 'MIE-Doc'
+    $isWriting{$grp1} = 1;          # eg. 'MIE1-Doc2'
+    $isWriting{"MIE$n"} = 1;        # eg. 'MIE1'
 
     # determine if we are deleting this group
-    if (%{$exifTool->{DEL_GROUP}}) {
-        $delGroup = 1 if $exifTool->{DEL_GROUP}->{MIE} or
-                         $exifTool->{DEL_GROUP}->{$grp} or
-                         $exifTool->{DEL_GROUP}->{$grp1} or
-                         $exifTool->{DEL_GROUP}->{"MIE$n"};
+    if (%{$$et{DEL_GROUP}}) {
+        $delGroup = 1 if $$et{DEL_GROUP}{MIE} or
+                         $$et{DEL_GROUP}{$grp} or
+                         $$et{DEL_GROUP}{$grp1} or
+                         $$et{DEL_GROUP}{"MIE$n"};
     }
 
     # prepare lookups and lists for writing
-    my $newTags = $exifTool->GetNewTagInfoHash($tagTablePtr);
-    my ($addDirs, $editDirs) = $exifTool->GetAddDirHash($tagTablePtr, $dirName);
+    my $newTags = $et->GetNewTagInfoHash($tagTablePtr);
+    my ($addDirs, $editDirs) = $et->GetAddDirHash($tagTablePtr, $dirName);
     my @editTags = sort keys %$newTags, keys %$editDirs;
     $verbose and print $out $raf ? 'Writing' : 'Creating', " $grp1:\n";
 
@@ -974,7 +974,7 @@ sub WriteMIEGroup($$$)
             if ($tagLen) {
                 $raf->Read($tag, $tagLen) == $tagLen or last;
                 $oldHdr .= $tag;    # add tag to element header
-                $exifTool->Warn("MIE tag '$tag' out of sequence") if $tag lt $lastTag;
+                $et->Warn("MIE tag '$tag' out of sequence") if $tag lt $lastTag;
                 # separate units from tag name if they exist
                 $units = $1 if $tag =~ s/\((.*)\)$//;
             } else {
@@ -1001,7 +1001,7 @@ sub WriteMIEGroup($$$)
                     my $free = ($format eq 0x80) ? ' free' : '';
                     print $out "    - $grp1:$tag ($valLen$free bytes)\n";
                 }
-                ++$exifTool->{CHANGED} if $delGroup;
+                ++$$et{CHANGED} if $delGroup;
                 next;
             }
         } else {
@@ -1022,7 +1022,7 @@ sub WriteMIEGroup($$$)
                 # create the new subdirectory or rewrite existing non-MIE directory
                 my $subTablePtr = GetTagTable($newInfo->{SubDirectory}->{TagTable});
                 unless ($subTablePtr) {
-                    $exifTool->Warn("No tag table for $newTag $$newInfo{Name}");
+                    $et->Warn("No tag table for $newTag $$newInfo{Name}");
                     next;
                 }
                 my %subdirInfo;
@@ -1032,12 +1032,12 @@ sub WriteMIEGroup($$$)
                 if ($newTag eq $tag) {
                     # make sure that either both or neither old and new tags are MIE groups
                     if ($isMieGroup xor ($format & 0xf3) == 0x10) {
-                        $exifTool->Warn("Tag '$tag' not expected type");
+                        $et->Warn("Tag '$tag' not expected type");
                         next;   # don't write our new tag
                     }
                     # uncompress existing directory into $oldVal since we are editing it
                     if ($format & 0x04) {
-                        last unless HasZlib($exifTool, 'edit');
+                        last unless HasZlib($et, 'edit');
                         $raf->Read($oldVal, $valLen) == $valLen or last MieElement;
                         my $stat;
                         my $inflate = Compress::Zlib::inflateInit();
@@ -1083,7 +1083,7 @@ sub WriteMIEGroup($$$)
                     $subdirInfo{Parent} = $dirName;
                     # don't compress elements of an already compressed group
                     $subdirInfo{IsCompressed} = $$dirInfo{IsCompressed} || $compress;
-                    $msg = WriteMIEGroup($exifTool, \%subdirInfo, $subTablePtr);
+                    $msg = WriteMIEGroup($et, \%subdirInfo, $subTablePtr);
                     last MieElement if $msg;
                     # message is defined but empty if nothing was written
                     if (defined $msg) {
@@ -1116,7 +1116,7 @@ sub WriteMIEGroup($$$)
                         );
                         # write Compact subdirectories if we will compress the data
                         if (($compress or $optCompress or $$dirInfo{IsCompressed}) and
-                            eval 'require Compress::Zlib')
+                            eval { require Compress::Zlib })
                         {
                             $subdirInfo{Compact} = 1;
                         }
@@ -1124,8 +1124,8 @@ sub WriteMIEGroup($$$)
                     $subdirInfo{Parent} = $dirName;
                     my $writeProc = $newInfo->{SubDirectory}->{WriteProc};
                     # reset processed lookup to avoid errors in case of multiple EXIF blocks
-                    $exifTool->{PROCESSED} = { };
-                    $newVal = $exifTool->WriteDirectory(\%subdirInfo, $subTablePtr, $writeProc);
+                    $$et{PROCESSED} = { };
+                    $newVal = $et->WriteDirectory(\%subdirInfo, $subTablePtr, $writeProc);
                     if (defined $newVal) {
                         if ($newVal eq '') {
                             next MieElement if $newTag eq $tag; # deleting the directory
@@ -1142,7 +1142,7 @@ sub WriteMIEGroup($$$)
 
                 # get the new tag information
                 $newInfo = $$newTags{$newTag};
-                my $nvHash = $exifTool->GetNewValueHash($newInfo);
+                my $nvHash = $et->GetNewValueHash($newInfo);
                 my @newVals;
 
                 # write information only to specified group
@@ -1157,13 +1157,13 @@ sub WriteMIEGroup($$$)
                         last if $$nvHash{CreateOnly};
                         $isOverwriting = -1;    # force processing list elements individually
                     } else {
-                        $isOverwriting = $exifTool->IsOverwriting($nvHash);
+                        $isOverwriting = $et->IsOverwriting($nvHash);
                         last unless $isOverwriting;
                     }
                     my ($val, $cmpVal);
                     if ($isOverwriting < 0 or $verbose > 1) {
                         # check to be sure we can uncompress the value if necessary
-                        HasZlib($exifTool, 'edit') or last if $format & 0x04;
+                        HasZlib($et, 'edit') or last if $format & 0x04;
                         # read the old value
                         $raf->Read($oldVal, $valLen) == $valLen or last MieElement;
                         # uncompress if necessary
@@ -1194,12 +1194,12 @@ sub WriteMIEGroup($$$)
                                 }
                                 # keep any list items that we aren't overwriting
                                 foreach $v (@vals) {
-                                    next if $exifTool->IsOverwriting($nvHash, $v);
+                                    next if $et->IsOverwriting($nvHash, $v);
                                     push @newVals, $v;
                                 }
                             } else {
                                 # test to see if we really want to overwrite the value
-                                $isOverwriting = $exifTool->IsOverwriting($nvHash, $val);
+                                $isOverwriting = $et->IsOverwriting($nvHash, $val);
                             }
                         }
                     }
@@ -1210,10 +1210,10 @@ sub WriteMIEGroup($$$)
                         }
                         if ($verbose > 1) {
                             $val .= "($units)" if defined $units;
-                            $exifTool->VerboseValue("- $grp1:$$newInfo{Name}", $val);
+                            $et->VerboseValue("- $grp1:$$newInfo{Name}", $val);
                         }
                         $deletedTag = $tag;     # remember that we deleted this tag
-                        ++$exifTool->{CHANGED}; # we deleted the old value
+                        ++$$et{CHANGED}; # we deleted the old value
                     } else {
                         if (defined $oldVal) {
                             # write original compressed value
@@ -1239,7 +1239,7 @@ sub WriteMIEGroup($$$)
                         and not $$nvHash{EditOnly}));
                 }
                 # get the new value to write (undef to delete)
-                push @newVals, $exifTool->GetNewValues($nvHash);
+                push @newVals, $et->GetNewValues($nvHash);
                 next unless @newVals;
                 $writable = $$newInfo{Writable} || $$tagTablePtr{WRITABLE};
                 if ($writable eq 'string') {
@@ -1292,13 +1292,13 @@ sub WriteMIEGroup($$$)
                 # convert value if necessary
                 if ($writable !~ /^(utf|string|undef)/) {
                     my $val3 = WriteValue($$valPt, $writable, $$newInfo{Count});
-                    defined $val3 or $exifTool->Warn("Error writing $newTag"), last;
+                    defined $val3 or $et->Warn("Error writing $newTag"), last;
                     $valPt = \$val3;
                 }
                 my $len = length $$valPt;
                 # compress value before writing if required
                 if (($compress or $optCompress) and not $$dirInfo{IsCompressed} and
-                    HasZlib($exifTool, 'write'))
+                    HasZlib($et, 'write'))
                 {
                     my $deflate = Compress::Zlib::deflateInit();
                     my $val4;
@@ -1319,7 +1319,7 @@ sub WriteMIEGroup($$$)
                             print $out "  [$newTag compression saved $saved bytes -- written uncompressed]\n";
                         }
                     } else {
-                        $exifTool->Warn("Error deflating $newTag (written uncompressed)");
+                        $et->Warn("Error deflating $newTag (written uncompressed)");
                     }
                 }
                 # calculate the DataLength code
@@ -1333,7 +1333,7 @@ sub WriteMIEGroup($$$)
                     $extLen = Set32u($len);
                     $len = 254;
                 } else {
-                    $exifTool->Warn("Can't write $newTag (DataLength > 2GB not yet suppported)");
+                    $et->Warn("Can't write $newTag (DataLength > 2GB not yet suppported)");
                     last; # don't write this tag
                 }
                 # write this element (with leading MIE group element if not done already)
@@ -1342,8 +1342,8 @@ sub WriteMIEGroup($$$)
                 $toWrite = '';
                 # we changed a tag unless just editing a subdirectory
                 unless ($$editDirs{$newTag}) {
-                    $exifTool->VerboseValue("+ $grp1:$$newInfo{Name}", $newVal);
-                    ++$exifTool->{CHANGED};
+                    $et->VerboseValue("+ $grp1:$$newInfo{Name}", $newVal);
+                    ++$$et{CHANGED};
                 }
                 last;   # didn't want to loop anyway
             }
@@ -1377,7 +1377,7 @@ sub WriteMIEGroup($$$)
         # descend into existing uncompressed MIE group
         if ($format == 0x10 or $format == 0x18) {
             my ($subTablePtr, $dirName);
-            my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+            my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
             if ($tagInfo and $$tagInfo{SubDirectory}) {
                 $dirName = $tagInfo->{SubDirectory}->{DirName};
                 my $subTable = $tagInfo->{SubDirectory}->{TagTable};
@@ -1396,7 +1396,7 @@ sub WriteMIEGroup($$$)
             );
             my $oldOrder = GetByteOrder();
             SetByteOrder($format & 0x08 ? 'II' : 'MM');
-            $msg = WriteMIEGroup($exifTool, \%subdirInfo, $subTablePtr);
+            $msg = WriteMIEGroup($et, \%subdirInfo, $subTablePtr);
             SetByteOrder($oldOrder);
             last if $msg;
             if (defined $msg) {
@@ -1434,17 +1434,17 @@ sub WriteMIEGroup($$$)
 # Notes: file pointer is positioned at the MIE end on entry
 sub ProcessMIEGroup($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $raf = $$dirInfo{RAF};
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
-    my $notUTF8 = ($exifTool->{OPTIONS}->{Charset} ne 'UTF8');
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
+    my $notUTF8 = ($$et{OPTIONS}{Charset} ne 'UTF8');
     my ($msg, $buff, $ok, $oldIndent, $mime);
     my $lastTag = '';
 
-    # get group 1 names: $grp doesn't have numbers (ie. 'MIE-Doc'),
-    # and $grp1 does (ie. 'MIE1-Doc1')
-    my $cnt = $exifTool->{MIE_COUNT};
+    # get group 1 names: $grp doesn't have numbers (eg. 'MIE-Doc'),
+    # and $grp1 does (eg. 'MIE1-Doc1')
+    my $cnt = $$et{MIE_COUNT};
     my $grp1 = $tagTablePtr->{GROUPS}->{1};
     my $n = $$cnt{'MIE-Main'} || 0;
     if ($grp1 eq 'MIE-Main') {
@@ -1456,12 +1456,12 @@ sub ProcessMIEGroup($$$)
         $grp1 .= $$cnt{$grp1} if $$cnt{$grp1} > 1;
     }
     # set group1 name for all tags extracted from this group
-    $exifTool->{SET_GROUP1} = $grp1;
+    $$et{SET_GROUP1} = $grp1;
 
     if ($verbose) {
-        $oldIndent = $exifTool->{INDENT};
-        $exifTool->{INDENT} .= '| ';
-        $exifTool->VerboseDir($grp1);
+        $oldIndent = $$et{INDENT};
+        $$et{INDENT} .= '| ';
+        $et->VerboseDir($grp1);
     }
     my $wasCompressed = $$dirInfo{WasCompressed};
 
@@ -1475,7 +1475,7 @@ sub ProcessMIEGroup($$$)
         my ($tag, $units);
         if ($tagLen) {
             $raf->Read($tag, $tagLen) == $tagLen or last;
-            $exifTool->Warn("MIE tag '$tag' out of sequence") if $tag lt $lastTag;
+            $et->Warn("MIE tag '$tag' out of sequence") if $tag lt $lastTag;
             $lastTag = $tag;
             # separate units from tag name if they exist
             $units = $1 if $tag =~ s/\((.*)\)$//;
@@ -1505,17 +1505,17 @@ sub ProcessMIEGroup($$$)
         # get tag information hash unless this is free space
         my ($tagInfo, $value);
         while ($format != 0x80) {
-            $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $tag);
+            $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
             last if $tagInfo;
             # extract tags with locale code
             if ($tag =~ /\W/) {
                 if ($tag =~ /^(\w+)-([a-z]{2}_[A-Z]{2})$/) {
                     my ($baseTag, $langCode) = ($1, $2);
-                    $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $baseTag);
+                    $tagInfo = $et->GetTagInfo($tagTablePtr, $baseTag);
                     $tagInfo = GetLangInfo($tagInfo, $langCode) if $tagInfo;
                     last if $tagInfo;
                 } else {
-                    $exifTool->Warn('Invalid MIE tag name');
+                    $et->Warn('Invalid MIE tag name');
                     last;
                 }
             }
@@ -1535,14 +1535,14 @@ sub ProcessMIEGroup($$$)
             $raf->Read($value, $valLen) == $valLen or last;
             if ($format & 0x04) {
                 if ($verbose) {
-                    print $out "$$exifTool{INDENT}\[Tag '$tag' $valLen bytes compressed]\n";
+                    print $out "$$et{INDENT}\[Tag '$tag' $valLen bytes compressed]\n";
                 }
-                next unless HasZlib($exifTool, 'decode');
+                next unless HasZlib($et, 'decode');
                 my $stat;
                 my $inflate = Compress::Zlib::inflateInit();
                 $inflate and ($value, $stat) = $inflate->inflate($value);
                 unless ($inflate and $stat == Compress::Zlib::Z_STREAM_END()) {
-                    $exifTool->Warn("Error inflating $tag");
+                    $et->Warn("Error inflating $tag");
                     next;
                 }
                 $valLen = length $value;
@@ -1563,7 +1563,7 @@ sub ProcessMIEGroup($$$)
             }
             if ($verbose) {
                 my $order = ', byte order ' . GetByteOrder();
-                $exifTool->VerboseInfo($tag, $tagInfo, Size => $valLen, Extra => $order);
+                $et->VerboseInfo($tag, $tagInfo, Size => $valLen, Extra => $order);
             }
             my %subdirInfo = (
                 DirName => $dirName || $tag,
@@ -1576,9 +1576,9 @@ sub ProcessMIEGroup($$$)
 
             my $oldOrder = GetByteOrder();
             SetByteOrder($format & 0x08 ? 'II' : 'MM');
-            $msg = ProcessMIEGroup($exifTool, \%subdirInfo, $subTablePtr);
+            $msg = ProcessMIEGroup($et, \%subdirInfo, $subTablePtr);
             SetByteOrder($oldOrder);
-            $exifTool->{SET_GROUP1} = $grp1;    # restore this group1 name
+            $$et{SET_GROUP1} = $grp1;    # restore this group1 name
             last if $msg;
         } else {
             # process MIE data format types
@@ -1587,7 +1587,7 @@ sub ProcessMIEGroup($$$)
                 # extract tag value
                 my $val = ReadMIEValue(\$value, 0, $formatStr, undef, $valLen, \$rational);
                 unless (defined $val) {
-                    $exifTool->Warn("Error reading $tag value");
+                    $et->Warn("Error reading $tag value");
                     $val = '<err>';
                 }
                 # save type or mime type
@@ -1598,7 +1598,7 @@ sub ProcessMIEGroup($$$)
                     if ($s and $formatStr !~ /^(utf|string|undef)/) {
                         $count = $valLen / $s;
                     }
-                    $exifTool->VerboseInfo($lastTag, $tagInfo,
+                    $et->VerboseInfo($lastTag, $tagInfo,
                         DataPt  => \$value,
                         DataPos => $raf->Tell() - $valLen,
                         Size    => $valLen,
@@ -1625,17 +1625,17 @@ sub ProcessMIEGroup($$$)
                     }
                     # reset PROCESSED lookup for each MIE directory
                     # (there is no possibility of double-processing a MIE directory)
-                    $exifTool->{PROCESSED} = { };
+                    $$et{PROCESSED} = { };
                     my $processProc = $tagInfo->{SubDirectory}->{ProcessProc};
-                    delete $exifTool->{SET_GROUP1};
-                    delete $exifTool->{NO_LIST};
-                    $exifTool->ProcessDirectory(\%subdirInfo, $subTablePtr, $processProc);
-                    $exifTool->{SET_GROUP1} = $grp1;
-                    $exifTool->{NO_LIST} = 1;
+                    delete $$et{SET_GROUP1};
+                    delete $$et{NO_LIST};
+                    $et->ProcessDirectory(\%subdirInfo, $subTablePtr, $processProc);
+                    $$et{SET_GROUP1} = $grp1;
+                    $$et{NO_LIST} = 1;
                 } else {
                     # convert to specified character set if necessary
                     if ($notUTF8 and $formatStr =~ /^(utf|string)/) {
-                        $val = $exifTool->Decode($val, 'UTF8');
+                        $val = $et->Decode($val, 'UTF8');
                     }
                     if ($formatStr =~ /_list$/) {
                         # split list value into separate strings
@@ -1647,21 +1647,21 @@ sub ProcessMIEGroup($$$)
                         # add units to value if specified
                         $val .= "($units)" if defined $units;
                     }
-                    my $key = $exifTool->FoundTag($tagInfo, $val);
-                    $$exifTool{RATIONAL}{$key} = $rational if defined $rational and defined $key;
+                    my $key = $et->FoundTag($tagInfo, $val);
+                    $$et{RATIONAL}{$key} = $rational if defined $rational and defined $key;
                 }
             } else {
                 # skip over unknown information or free bytes
                 $raf->Seek($valLen, 1) or $msg = 'Seek error', last;
-                $verbose and $exifTool->VerboseInfo($tag, undef, Size => $valLen);
+                $verbose and $et->VerboseInfo($tag, undef, Size => $valLen);
             }
         }
     }
     # modify MIME type if necessary
-    $mime and not $$dirInfo{Parent} and $exifTool->ModifyMimeType($mime);
+    $mime and not $$dirInfo{Parent} and $et->ModifyMimeType($mime);
 
     $ok or $msg or $msg = 'Unexpected end of file';
-    $verbose and $exifTool->{INDENT} = $oldIndent;
+    $verbose and $$et{INDENT} = $oldIndent;
     return $msg;
 }
 
@@ -1672,8 +1672,8 @@ sub ProcessMIEGroup($$$)
 # - process as a trailer if "Trailer" flag set in dirInfo
 sub ProcessMIE($$)
 {
-    my ($exifTool, $dirInfo) = @_;
-    return 1 unless defined $exifTool;
+    my ($et, $dirInfo) = @_;
+    return 1 unless defined $et;
     my $raf = $$dirInfo{RAF};
     my $outfile = $$dirInfo{OutFile};
     my ($buff, $err, $msg, $pos, $end, $isCreating);
@@ -1710,13 +1710,13 @@ sub ProcessMIE($$)
         # update DataPos and DirLen for ProcessTrailers()
         $$dirInfo{DataPos} = $pos;
         $$dirInfo{DirLen} = $end - $pos;
-        if ($outfile and $exifTool->{DEL_GROUP}->{MIE}) {
+        if ($outfile and $$et{DEL_GROUP}{MIE}) {
             # delete the trailer
-            $exifTool->VPrint(0,"  Deleting MIE trailer\n");
-            ++$exifTool->{CHANGED};
+            $et->VPrint(0,"  Deleting MIE trailer\n");
+            ++$$et{CHANGED};
             return 1;
-        } elsif ($exifTool->Options('Verbose') or $exifTool->{HTML_DUMP}) {
-            $exifTool->DumpTrailer($dirInfo);
+        } elsif ($et->Options('Verbose') or $$et{HTML_DUMP}) {
+            $et->DumpTrailer($dirInfo);
         }
     }
 #
@@ -1751,24 +1751,24 @@ sub ProcessMIE($$)
             # we have the ability to create a MIE file from scratch
             $buff = ''; # start from nothing
             # set byte order according to preferences
-            $exifTool->SetPreferredByteOrder();
+            $et->SetPreferredByteOrder();
             $isCreating = 1;
         }
         if ($msg) {
             last if $$dirInfo{Trailer}; # allow other trailers after MIE
             if ($outfile) {
-                $exifTool->Error($msg);
+                $et->Error($msg);
             } else {
-                $exifTool->Warn($msg);
+                $et->Warn($msg);
             }
             last;
         }
         # this is a new MIE document -- increment document count
         unless ($numDocs) {
             # this is a valid MIE file (unless a trailer on another file)
-            $exifTool->SetFileType();
-            $exifTool->{NO_LIST} = 1;   # handle lists ourself
-            $exifTool->{MIE_COUNT} = { };
+            $et->SetFileType();
+            $$et{NO_LIST} = 1;   # handle lists ourself
+            $$et{MIE_COUNT} = { };
             undef $hasZlib;
         }
         ++$numDocs;
@@ -1795,27 +1795,27 @@ sub ProcessMIE($$)
             # (note that this may re-initialize directories when writing trailer
             #  to another type of image, but this is OK because we are done writing
             #  the other format by the time we start writing the trailer)
-            $exifTool->InitWriteDirs(\%mieMap, 'MIE');
+            $et->InitWriteDirs(\%mieMap, 'MIE');
             $subdirInfo{ToWrite} = '~' . MIEGroupFormat(1) . "\x04\xfe0MIE\0\0\0\0";
-            $msg = WriteMIEGroup($exifTool, \%subdirInfo, $tagTablePtr);
+            $msg = WriteMIEGroup($et, \%subdirInfo, $tagTablePtr);
             if ($msg) {
-                $exifTool->Error($msg);
+                $et->Error($msg);
                 $err = 1;
                 last;
             } elsif (defined $msg and $isCreating) {
                 last;
             }
         } else {
-            $msg = ProcessMIEGroup($exifTool, \%subdirInfo, $tagTablePtr);
+            $msg = ProcessMIEGroup($et, \%subdirInfo, $tagTablePtr);
             if ($msg) {
-                $exifTool->Warn($msg);
+                $et->Warn($msg);
                 last;
             }
         }
     }
-    delete $exifTool->{NO_LIST};
-    delete $exifTool->{MIE_COUNT};
-    delete $exifTool->{SET_GROUP1};
+    delete $$et{NO_LIST};
+    delete $$et{MIE_COUNT};
+    delete $$et{SET_GROUP1};
     return $err ? -1 : 1;
 }
 
@@ -2070,7 +2070,7 @@ FormatSize 0x01).
 =item 2.
 
 The TagName of a string element may have an 6-character suffix to indicate a
-specific locale. (ie. "Title-en_US", or "Keywords-de_DE").
+specific locale. (eg. "Title-en_US", or "Keywords-de_DE").
 
 =item 3.
 
@@ -2099,7 +2099,7 @@ null character is 2 or 4 zero bytes respectively.
 both 32-bit words and bytes within these words.  For instance, the high
 order byte is always the first byte if big-endian, and the eighth byte if
 little-endian.  This means that some swapping is always necessary for these
-values on systems where the byte order differs from the word order (ie. some
+values on systems where the byte order differs from the word order (eg. some
 ARM systems), regardless of the endian-ness of the stored values.
 
 =item 7.
@@ -2107,13 +2107,13 @@ ARM systems), regardless of the endian-ness of the stored values.
 Rational values are treated as two separate integers.  The numerator always
 comes first regardless of the byte ordering.  In a signed rational value,
 only the numerator is signed.  The denominator of all rational values is
-unsigned (ie. a signed 64-bit rational of 0x80000000/0x80000000 evaluates to
+unsigned (eg. a signed 64-bit rational of 0x80000000/0x80000000 evaluates to
 -1, not +1).
 
 =item 8.
 
 32-bit fixed point values are converted to floating point by treating them
-as an integer and dividing by an appropriate value.  ie)
+as an integer and dividing by an appropriate value.  eg)
 
     16-bit fixed value = 16-bit integer value / 256.0
     32-bit fixed value = 32-bit integer value / 65536.0
@@ -2162,7 +2162,7 @@ TagNames should be meaningful.  Case is significant.  Words should be
 lowercase with an uppercase first character, and acronyms should be all
 upper case.  The underline ("_") is provided to allow separation of two
 acronyms or two numbers, but it shouldn't be used unless necessary.  No
-separation is necessary between an acronym and a word (ie. "ISOSetting").
+separation is necessary between an acronym and a word (eg. "ISOSetting").
 
 All TagNames should start with an uppercase letter.  An exception to this
 rule allows tags to begin with a digit (0-9) if they must come before other
@@ -2174,7 +2174,7 @@ meta information tags in the main "0MIE" group.
 Tag names for localized text strings have an 6-character suffix with the
 following format:  The first character is a dash ('-'), followed by a
 2-character lower case ISO 639-1 language code, then an underline ('_'), and
-ending with a 2-character upper case ISO 3166-1 alpha 2 country code.  (ie.
+ending with a 2-character upper case ISO 3166-1 alpha 2 country code.  (eg.
 "-en_US", "-en_GB", "-de_DE" or "-fr_FR".  Note that "GB", and not "UK" is
 the code for Great Britain, although "UK" should be recognized for
 compatibility reasons.)  The suffix is included when sorting the tags
@@ -2185,7 +2185,7 @@ should be used.
 Tags with numerical values may allow units of measurement to be specified.
 The units string is stored in brackets at the end of the tag name, and is
 composed of zero or more ASCII characters in the range 0x21 to 0x7d,
-excluding the bracket characters 0x28 and 0x29.  (ie. "Resolution(/cm)" or
+excluding the bracket characters 0x28 and 0x29.  (eg. "Resolution(/cm)" or
 "SpecificHeat(J/kg.K)".)  See L<Image::ExifTool::MIEUnits> for details. Unit
 strings are not localized, and may not be used in combination with localized
 text strings.
@@ -2378,10 +2378,10 @@ allows a more reasonable interpretation of unrecognized values.
 
 Integer and floating point numbers may be represented in binary or string
 form.  In string form, integers are a series of digits with an optional
-leading sign (ie. "[+|-]DDDDDD"), and multiple values are separated by a
-single space character (ie. "23 128 -32").  Floating point numbers are
+leading sign (eg. "[+|-]DDDDDD"), and multiple values are separated by a
+single space character (eg. "23 128 -32").  Floating point numbers are
 similar but may also contain a decimal point and/or a signed exponent with a
-leading 'e' character (ie. "[+|-]DD[.DDDDDD][e(+|-)EEE]").  The string "inf"
+leading 'e' character (eg. "[+|-]DD[.DDDDDD][e(+|-)EEE]").  The string "inf"
 is used to represent infinity.  One advantage of numerical strings is that
 they can have an arbitrarily high precision because the possible number of
 significant digits is virtually unlimited.
@@ -2429,7 +2429,7 @@ groups, but should be able to process the remaining information.
 Some software may limit the maximum size of a MIE group or element.
 Historically, a limit of 2GB may be imposed by some systems.  However,
 8-byte data lengths should be supported by all applications provided the
-value doesn't exceed the system limit.  (ie. For systems with a 2GB limit,
+value doesn't exceed the system limit.  (eg. For systems with a 2GB limit,
 8-byte data lengths should be supported if the upper 17 bits are all zero.)
 If a data length above the system limit is encountered, it may be necessary
 for the application to stop processing if it can not seek to the next
@@ -2522,7 +2522,7 @@ tag name.  For example:
 
 =head1 REVISIONS
 
-  2010-04-05 - Fixed “Format Size” Note 7 to give the correct number of bits
+  2010-04-05 - Fixed "Format Size" Note 7 to give the correct number of bits
                in the example rational value
   2007-01-21 - Specified LF character (0x0a) for text newline sequence
   2007-01-19 - Specified ISO 8859-1 character set for extended ASCII codes
@@ -2538,7 +2538,7 @@ tag name.  For example:
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.  The MIE format itself is also

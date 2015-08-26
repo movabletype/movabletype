@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 sub ProcessParasites($$$);
 
@@ -134,12 +134,12 @@ sub ProcessParasites($$$);
 # Returns: 1 on success
 sub ProcessParasites($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    my $unknown = $exifTool->Options('Unknown') || $exifTool->Options('Verbose');
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    my $unknown = $et->Options('Unknown') || $et->Options('Verbose');
     my $dataPt = $$dirInfo{DataPt};
     my $pos = $$dirInfo{DirStart} || 0;
     my $end = length $$dataPt;
-    $exifTool->VerboseDir('Parasites', undef, $end);
+    $et->VerboseDir('Parasites', undef, $end);
     for (;;) {
         last if $pos + 4 > $end;
         my $size = Get32u($dataPt, $pos);   # length of tag string
@@ -162,7 +162,7 @@ sub ProcessParasites($$$)
             $name = "GIMP-$name" unless length($name) > 1;
             AddTagToTable($tagTablePtr, $tag, { Name => $name, Unknown => 1 });
         }
-        $exifTool->HandleTag($tagTablePtr, $tag, undef,
+        $et->HandleTag($tagTablePtr, $tag, undef,
             DataPt => $dataPt,
             Start  => $pos,
             Size   => $size,
@@ -178,7 +178,7 @@ sub ProcessParasites($$$)
 # Returns: 1 on success, 0 if this wasn't a valid XCF file
 sub ProcessXCF($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $buff;
 
@@ -186,25 +186,25 @@ sub ProcessXCF($$)
     return 0 unless $buff =~ /^gimp xcf /;
 
     my $tagTablePtr = GetTagTable('Image::ExifTool::GIMP::Main');
-    my $verbose = $exifTool->Options('Verbose');
-    $exifTool->SetFileType();
+    my $verbose = $et->Options('Verbose');
+    $et->SetFileType();
     SetByteOrder('MM');
 
     # process the XCF header
-    $exifTool->HandleTag($tagTablePtr, 'header', $buff);
+    $et->HandleTag($tagTablePtr, 'header', $buff);
 
     # loop through image properties
     for (;;) {
         $raf->Read($buff, 8) == 8 or last;
         my $tag  = Get32u(\$buff, 0) or last;
         my $size = Get32u(\$buff, 4);
-        $verbose and $exifTool->VPrint(0, "XCF property $tag ($size bytes):\n");
+        $verbose and $et->VPrint(0, "XCF property $tag ($size bytes):\n");
         unless ($$tagTablePtr{$tag}) {
             $raf->Seek($size, 1);
             next;
         }
         $raf->Read($buff, $size) == $size or last;
-        $exifTool->HandleTag($tagTablePtr, $tag, undef,
+        $et->HandleTag($tagTablePtr, $tag, undef,
             DataPt  => \$buff,
             DataPos => $raf->Tell() - $size,
             Size    => $size,
@@ -234,7 +234,7 @@ GIMP software.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

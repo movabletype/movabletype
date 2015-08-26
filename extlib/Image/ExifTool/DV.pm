@@ -15,7 +15,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 # DV profiles (ref 1)
 my @dvProfiles = (
@@ -159,7 +159,7 @@ my @dvTags = (
 # Returns: 1 on success, 0 if this wasn't a valid DV file
 sub ProcessDV($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     local $_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $start, $profile, $tag, $i, $j);
@@ -179,7 +179,7 @@ sub ProcessDV($$)
     # must at least have a full DIF header
     return 0 if $start + 80 * 6 > $len;
 
-    $exifTool->SetFileType();
+    $et->SetFileType();
 
     my $pos = $start;
     my $dsf = Get8u(\$buff, $pos + 3) & 0x80 >> 7;
@@ -194,13 +194,13 @@ sub ProcessDV($$)
             $profile = $_;
             last;
         }
-        $profile or $exifTool->Warn("Unrecognized DV profile"), return 1;
+        $profile or $et->Warn("Unrecognized DV profile"), return 1;
     }
     my $tagTablePtr = GetTagTable('Image::ExifTool::DV::Main');
 
     # calculate total bit rate and duration
     my $byteRate = $$profile{FrameSize} * $$profile{FrameRate};
-    my $fileSize = $$exifTool{VALUE}{FileSize};
+    my $fileSize = $$et{VALUE}{FileSize};
     $$profile{TotalBitrate} = 8 * $byteRate;
     $$profile{Duration} = $fileSize / $byteRate if defined $fileSize;
 
@@ -270,7 +270,7 @@ sub ProcessDV($$)
     # save our metadata
     foreach $tag (@dvTags) {
         next unless defined $$profile{$tag};
-        $exifTool->HandleTag($tagTablePtr, $tag, $$profile{$tag});
+        $et->HandleTag($tagTablePtr, $tag, $$profile{$tag});
     }
 
     return 1;
@@ -295,7 +295,7 @@ information from DV (raw Digital Video) files.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

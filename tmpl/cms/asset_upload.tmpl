@@ -2,6 +2,10 @@
 
 <mt:include name="include/header.tmpl" id="header_include">
 
-<mt:include name="include/asset_upload.tmpl">
+<mt:if name="compat_upload_template">
+  <mt:include name="include/asset_upload.tmpl">
+<mtelse>
+  <mt:include name="include/async_asset_upload.tmpl">
+</mt:if>
 
 <mt:include name="include/footer.tmpl" id="footer_include">

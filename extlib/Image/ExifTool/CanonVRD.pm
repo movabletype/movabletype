@@ -20,7 +20,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.20';
+$VERSION = '1.23';
 
 sub ProcessCanonVRD($$;$);
 sub WriteCanonVRD($$;$);
@@ -956,9 +956,11 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
     },
     0xea => {
         Name => 'DLOData',
+        LargeTag => 1, # large tag, so avoid storing unnecessarily
         Notes => 'variable-length Digital Lens Optimizer data, stored in JPEG-like format',
         Format => 'var_undef[$val{0xdf}]',
         Writable => 0,
+        Binary => 1,
         RawConv => 'length($val) ? \$val : undef', # (don't extract if zero length)
     },
 );
@@ -998,19 +1000,19 @@ sub ToneCurvePrintInv($)
 # Returns: Reading: 1 on success; Writing: modified edit data, or undef if nothing changed
 sub ProcessEditData($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    $exifTool or return 1;    # allow dummy access
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    $et or return 1;    # allow dummy access
     my $dataPt = $$dirInfo{DataPt};
     my $pos = $$dirInfo{DirStart};
     my $dataPos = $$dirInfo{DataPos};
     my $outfile = $$dirInfo{OutFile};
     my $dirLen = $$dirInfo{DirLen};
     my $dirEnd = $pos + $dirLen;
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
-    my $oldChanged = $$exifTool{CHANGED};
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
+    my $oldChanged = $$et{CHANGED};
 
-    $exifTool->VerboseDir('VRD Edit Data', 0, $dirLen) unless $outfile;
+    $et->VerboseDir('VRD Edit Data', 0, $dirLen) unless $outfile;
 
     # loop through all records in the edit data
     my ($recNum, $recLen, $err);
@@ -1023,22 +1025,22 @@ sub ProcessEditData($$$)
         }
         $pos += 4;          # move to start of record
         if ($pos + $recLen > $dirEnd) {
-            $exifTool->Warn('Possibly corrupt CanonVRD Edit record');
+            $et->Warn('Possibly corrupt CanonVRD Edit record');
             $err = 1;
             last;
         }
         if ($verbose > 1 and not $outfile) {
-            printf $out "$$exifTool{INDENT}CanonVRD Edit record ($recLen bytes at offset 0x%x)\n",
+            printf $out "$$et{INDENT}CanonVRD Edit record ($recLen bytes at offset 0x%x)\n",
                    $pos + $dataPos;
             if ($recNum and $verbose > 2) {
                 my %parms = (
                     Start  => $pos,
                     Addr   => $pos + $dataPos,
                     Out    => $out,
-                    Prefix => $$exifTool{INDENT},
+                    Prefix => $$et{INDENT},
                 );
                 $parms{MaxLen} = $verbose == 3 ? 96 : 2048 if $verbose < 5;
-                Image::ExifTool::HexDump($dataPt, $recLen, %parms);
+                HexDump($dataPt, $recLen, %parms);
             }
         }
 
@@ -1048,56 +1050,57 @@ sub ProcessEditData($$$)
         # process VRD edit information
         my $subTablePtr = GetTagTable('Image::ExifTool::CanonVRD::Edit');
         my $index;
-        my $editData = substr($$dataPt, $pos, $recLen);
         my %subdirInfo = (
-            DataPt => \$editData,
-            DataPos => $dataPos + $pos,
+            DataPt   => $dataPt,
+            DataPos  => $dataPos,
+            DirStart => $pos,
+            DirLen   => $recLen,
         );
-        my $start = 0;
+        my $subStart = 0;
         # loop through various sections of the VRD edit data
         for ($index=0; ; ++$index) {
             my $tagInfo = $$subTablePtr{$index} or last;
-            my $dirLen;
-            my $maxLen = $recLen - $start;
+            my $subLen;
+            my $maxLen = $recLen - $subStart;
             if ($$tagInfo{Size}) {
-                $dirLen = $$tagInfo{Size};
+                $subLen = $$tagInfo{Size};
             } elsif (defined $$tagInfo{Size}) {
-                # get size from int32u at $start
-                last unless $start + 4 <= $recLen;
-                $dirLen = Get32u(\$editData, $start);
-                $start += 4; # skip the length word
+                # get size from int32u at $subStart
+                last unless $subStart + 4 <= $recLen;
+                $subLen = Get32u($dataPt, $subStart + $pos);
+                $subStart += 4; # skip the length word
             } else {
-                $dirLen = $maxLen;
+                $subLen = $maxLen;
             }
-            $dirLen > $maxLen and $dirLen = $maxLen;
-            if ($dirLen) {
+            $subLen > $maxLen and $subLen = $maxLen;
+            if ($subLen) {
                 my $subTable = GetTagTable($tagInfo->{SubDirectory}->{TagTable});
                 my $subName = $$tagInfo{Name};
-                $subdirInfo{DirStart} = $start;
-                $subdirInfo{DirLen} = $dirLen;
+                $subdirInfo{DirStart} = $subStart + $pos;
+                $subdirInfo{DirLen} = $subLen;
                 $subdirInfo{DirName} = $subName;
                 if ($outfile) {
                     # rewrite this section of the VRD edit information
                     $verbose and print $out "  Rewriting Canon $subName\n";
-                    my $newVal = $exifTool->WriteDirectory(\%subdirInfo, $subTable);
-                    substr($$dataPt, $pos+$start, $dirLen) = $newVal if $newVal;
+                    my $newVal = $et->WriteDirectory(\%subdirInfo, $subTable);
+                    substr($$dataPt, $pos+$subStart, $subLen) = $newVal if $newVal;
                 } else {
-                    $exifTool->VPrint(0, "$$exifTool{INDENT}$subName (SubDirectory) -->\n");
-                    $exifTool->VerboseDump(\$editData,
-                        Start => $start,
-                        Addr  => $dataPos + $pos + $start,
-                        Len   => $dirLen,
+                    $et->VPrint(0, "$$et{INDENT}$subName (SubDirectory) -->\n");
+                    $et->VerboseDump($dataPt,
+                        Start => $pos + $subStart,
+                        Addr  => $dataPos + $pos + $subStart,
+                        Len   => $subLen,
                     );
                     # extract tags from this section of the VRD edit information
-                    $exifTool->ProcessDirectory(\%subdirInfo, $subTable);
+                    $et->ProcessDirectory(\%subdirInfo, $subTable);
                 }
             }
             # next section starts at the end of this one
-            $start += $dirLen;
+            $subStart += $subLen;
         }
     }
     if ($outfile) {
-        return undef if $oldChanged == $$exifTool{CHANGED};
+        return undef if $oldChanged == $$et{CHANGED};
         return substr($$dataPt, $$dirInfo{DirStart}, $dirLen);
     }
     return $err ? 0 : 1;
@@ -1109,31 +1112,31 @@ sub ProcessEditData($$$)
 # Returns: 1 on success
 sub ProcessIHL($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataPos = $$dirInfo{DataPos};
     my $pos = $$dirInfo{DirStart};
     my $dirLen = $$dirInfo{DirLen};
     my $dirEnd = $pos + $dirLen;
 
-    $exifTool->VerboseDir('VRD IHL', 0, $dirLen);
+    $et->VerboseDir('VRD IHL', 0, $dirLen);
 
     SetByteOrder('II'); # (make up your mind, Canon!)
     while ($pos + 48 <= $dirEnd) {
         my $hdr = substr($$dataPt, $pos, 48);
         unless ($hdr =~ /^IHL Created Optional Item Data\0\0/) {
-            $exifTool->Warn('Possibly corrupted VRD IHL data');
+            $et->Warn('Possibly corrupted VRD IHL data');
             last;
         }
         my $tag  = Get32u($dataPt, $pos + 36);
         my $size = Get32u($dataPt, $pos + 40); # size of data in IHL record
         my $next = Get32u($dataPt, $pos + 44); # size of complete IHL record
         if ($size > $next or $pos + 48 + $next > $dirEnd) {
-            $exifTool->Warn(sprintf('Bad size for VRD IHL tag 0x%.4x', $tag));
+            $et->Warn(sprintf('Bad size for VRD IHL tag 0x%.4x', $tag));
             last;
         }
         $pos += 48;
-        $exifTool->HandleTag($tagTablePtr, $tag, substr($$dataPt, $pos, $size),
+        $et->HandleTag($tagTablePtr, $tag, substr($$dataPt, $pos, $size),
             DataPt  => $dataPt,
             DataPos => $dataPos,
             Start   => $pos,
@@ -1150,13 +1153,13 @@ sub ProcessIHL($$$)
 # Returns: 1 on success
 sub ProcessIHLExif($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    $$exifTool{DOC_NUM} = 1;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    $$et{DOC_NUM} = 1;
     # the IHL-edited maker notes may look messed up, but the offsets should be OK
-    my $oldFix = $exifTool->Options(FixBase => 0);
-    my $rtnVal = $exifTool->ProcessTIFF($dirInfo, $tagTablePtr);
-    $exifTool->Options(FixBase => $oldFix);
-    delete $$exifTool{DOC_NUM};
+    my $oldFix = $et->Options(FixBase => 0);
+    my $rtnVal = $et->ProcessTIFF($dirInfo, $tagTablePtr);
+    $et->Options(FixBase => $oldFix);
+    delete $$et{DOC_NUM};
     return $rtnVal;
 }
 
@@ -1166,41 +1169,41 @@ sub ProcessIHLExif($$$)
 # Returns: 1 if this was a Canon VRD file, 0 otherwise, -1 on write error
 sub ProcessVRD($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my $buff;
     my $num = $raf->Read($buff, 0x1c);
 
     # initialize write directories if necessary
-    $exifTool->InitWriteDirs(\%vrdMap, 'XMP') if $$dirInfo{OutFile};
+    $et->InitWriteDirs(\%vrdMap, 'XMP') if $$dirInfo{OutFile};
 
     if (not $num and $$dirInfo{OutFile}) {
         # create new VRD file from scratch
-        my $newVal = $exifTool->GetNewValues('CanonVRD');
+        my $newVal = $et->GetNewValues('CanonVRD');
         if ($newVal) {
-            $exifTool->VPrint(0, "  Writing CanonVRD as a block\n");
+            $et->VPrint(0, "  Writing CanonVRD as a block\n");
             Write($$dirInfo{OutFile}, $newVal) or return -1;
-            ++$exifTool->{CHANGED};
+            ++$$et{CHANGED};
         } else {
             # allow VRD to be created from individual tags
-            if ($$exifTool{ADD_DIRS}{CanonVRD}) {
+            if ($$et{ADD_DIRS}{CanonVRD}) {
                 my $newVal = '';
-                if (ProcessCanonVRD($exifTool, { OutFile => \$newVal }) > 0) {
+                if (ProcessCanonVRD($et, { OutFile => \$newVal }) > 0) {
                     Write($$dirInfo{OutFile}, $newVal) or return -1;
-                    ++$exifTool->{CHANGED};
+                    ++$$et{CHANGED};
                     return 1;
                 }
             }
-            $exifTool->Error('No CanonVRD information to write');
+            $et->Error('No CanonVRD information to write');
         }
     } else {
         $num == 0x1c or return 0;
         $buff =~ /^CANON OPTIONAL DATA\0/ or return 0;
-        $exifTool->SetFileType();
+        $et->SetFileType();
         $$dirInfo{DirName} = 'CanonVRD';    # set directory name for verbose output
-        my $result = ProcessCanonVRD($exifTool, $dirInfo);
+        my $result = ProcessCanonVRD($et, $dirInfo);
         return $result if $result < 0;
-        $result or $exifTool->Warn('Format error in VRD file');
+        $result or $et->Warn('Format error in VRD file');
     }
     return 1;
 }
@@ -1212,13 +1215,13 @@ sub ProcessVRD($$)
 # Notes: Increments ExifTool CHANGED flag if changed
 sub WriteCanonVRD($$;$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
-    $exifTool or return 1;    # allow dummy access
-    my $nvHash = $exifTool->GetNewValueHash($Image::ExifTool::Extra{CanonVRD});
-    return undef unless $exifTool->IsOverwriting($nvHash);
-    my $val = $exifTool->GetNewValues($nvHash);
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    $et or return 1;    # allow dummy access
+    my $nvHash = $et->GetNewValueHash($Image::ExifTool::Extra{CanonVRD});
+    my $val = $et->GetNewValues($nvHash);
     $val = '' unless defined $val;
-    ++$exifTool->{CHANGED};
+    return undef unless $et->IsOverwriting($nvHash, $val);
+    ++$$et{CHANGED};
     return $val;
 }
 
@@ -1227,131 +1230,166 @@ sub WriteCanonVRD($$;$)
 # Inputs: 0) ExifTool object reference, 1) dirInfo reference
 # Returns: 1 on success, 0 not valid VRD, or -1 error writing
 # - updates DataPos to point to start of CanonVRD information
-# - updates DirLen to trailer length
+# - updates DirLen to existing trailer length
 sub ProcessCanonVRD($$;$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $raf = $$dirInfo{RAF};
     my $offset = $$dirInfo{Offset} || 0;
     my $outfile = $$dirInfo{OutFile};
-    my $verbose = $exifTool->Options('Verbose');
-    my $out = $exifTool->Options('TextOut');
-    my ($buff, $footer, $header, $created, $err);
-    my ($blockLen, $blockType, $size, %didDir);
-
-    if (not $raf) {
-        my $vrdPt = $$dirInfo{DataPt};
-        unless ($vrdPt) {
+    my $dataPt = $$dirInfo{DataPt};
+    my $verbose = $et->Options('Verbose');
+    my $out = $et->Options('TextOut');
+    my ($buff, $created, $err, $blockLen, $blockType, %didDir, $fromFile);
+#
+# The CanonVRD trailer has a 0x1c-byte header and a 0x40-byte footer,
+# each beginning with "CANON OPTIONAL DATA\0" and containing an int32u
+# giving the size of the contained data (at byte 0x18 and 0x14 respectively)
+#
+    if ($raf) {
+        $fromFile = 1;
+    } else {
+        unless ($dataPt) {
             return 1 unless $outfile;
             # create blank VRD data from scratch
             my $blank = "CANON OPTIONAL DATA\0\0\x01\0\0\0\0\0\0" .
                         "CANON OPTIONAL DATA\0" . ("\0" x 42) . "\xff\xd9";
-            $vrdPt = \$blank;
+            $dataPt = \$blank;
             $verbose and printf $out "  Creating CanonVRD trailer\n";
             $created = 1;
         }
-        $raf = new File::RandomAccess($vrdPt);
+        $raf = new File::RandomAccess($dataPt);
     }
-    # read and validate the trailer footer
-    $raf->Seek(-64-$offset, 2)    or return 0;
-    $raf->Read($footer, 64) == 64 or return 0;
-    $footer =~ /^CANON OPTIONAL DATA\0(.{4})/s or return 0;
-    $size = unpack('N', $1);
+    # read and validate the footer
+    $raf->Seek(-0x40-$offset, 2)    or return 0;
+    $raf->Read($buff, 0x40) == 0x40 or return 0;
+    $buff =~ /^CANON OPTIONAL DATA\0(.{4})/s or return 0;
+    my $dirLen = unpack('N', $1) + 0x5c;  # size including header+footer
 
-    # read and validate the header too
-    # (header is 0x1c bytes and footer is 0x40 bytes)
-    unless (($size & 0x80000000) == 0 and
-            $raf->Seek(-$size-0x5c, 1) and
-            $raf->Read($header, 0x1c) == 0x1c and
-            $header =~ /^CANON OPTIONAL DATA\0/ and
-            $raf->Read($buff, $size) == $size)
+    # read and validate the header
+    unless ($dirLen < 0x80000000 and
+            $raf->Seek(-$dirLen, 1) and
+            $raf->Read($buff, 0x1c) == 0x1c and
+            $buff =~ /^CANON OPTIONAL DATA\0/ and
+            $raf->Seek(-0x1c, 1))
     {
-        $exifTool->Warn('Bad CanonVRD trailer');
+        $et->Warn('Bad CanonVRD trailer');
         return 0;
     }
-    # extract CanonVRD block if copying tags, or if requested
-    if (($exifTool->{TAGS_FROM_FILE} and not $exifTool->{EXCL_TAG_LOOKUP}{canonvrd}) or
-        $exifTool->{REQ_TAG_LOOKUP}{canonvrd})
-    {
-        $exifTool->FoundTag('CanonVRD', $header . $buff . $footer);
-    }
     # set variables returned in dirInfo hash
-    $$dirInfo{DataPos} = $raf->Tell() - $size - 0x1c;
-    $$dirInfo{DirLen} = $size + 0x5c;
+    $$dirInfo{DataPos} = $raf->Tell();
+    $$dirInfo{DirLen} = $dirLen;
+
+    if ($outfile and ref $outfile eq 'SCALAR' and not length $$outfile) {
+        # write directly to outfile to avoid duplicating data in memory
+        $$outfile = $$dataPt unless $fromFile;
+        # TRICKY! -- copy to outfile memory buffer and edit in place
+        # (so we must disable all Write() calls for this case)
+        $dataPt = $outfile;
+    }
+    if ($fromFile) {
+        $dataPt = \$buff unless $dataPt;
+        # read VRD data into memory if necessary
+        unless ($raf->Read($$dataPt, $dirLen) == $dirLen) {
+            $$dataPt = '' if $outfile eq $dataPt;
+            $et->Warn('Error reading CanonVRD data');
+            return 0;
+        }
+    }
+    # exit quickly if writing and no CanonVRD tags are being edited
+    if ($outfile and not exists $$et{EDIT_DIRS}{CanonVRD}) {
+        print $out "$$et{INDENT}  [nothing changed]\n" if $verbose;
+        return 1 if $outfile eq $dataPt;
+        return Write($outfile, $$dataPt) ? 1 : -1;
+    }
+    # extract CanonVRD block if copying tags, or if requested
+    if (($$et{TAGS_FROM_FILE} and not $$et{EXCL_TAG_LOOKUP}{canonvrd}) or
+        $$et{REQ_TAG_LOOKUP}{canonvrd})
+    {
+        $et->FoundTag('CanonVRD', $buff);
+    }
 
     if ($outfile) {
         $verbose and not $created and printf $out "  Rewriting CanonVRD trailer\n";
         # delete CanonVRD information if specified
-        if ($exifTool->{DEL_GROUP}->{CanonVRD} or $exifTool->{DEL_GROUP}->{Trailer} or
+        if ($$et{DEL_GROUP}{CanonVRD} or $$et{DEL_GROUP}{Trailer} or
             # also delete if writing as a block (will get added back again later)
-            $exifTool->{NEW_VALUE}->{$Image::ExifTool::Extra{CanonVRD}})
+            $$et{NEW_VALUE}{$Image::ExifTool::Extra{CanonVRD}})
         {
-            if ($exifTool->{FILE_TYPE} eq 'VRD') {
-                my $newVal = $exifTool->GetNewValues('CanonVRD');
+            if ($$et{FILE_TYPE} eq 'VRD') {
+                my $newVal = $et->GetNewValues('CanonVRD');
                 if ($newVal) {
                     $verbose and printf $out "  Writing CanonVRD as a block\n";
-                    Write($outfile, $newVal) or return -1;
-                    ++$exifTool->{CHANGED};
+                    if ($outfile eq $dataPt) {
+                        $$outfile = $newVal;
+                    } else {
+                        Write($outfile, $newVal) or return -1;
+                    }
+                    ++$$et{CHANGED};
                 } else {
-                    $exifTool->Error("Can't delete all CanonVRD information from a VRD file");
+                    $et->Error("Can't delete all CanonVRD information from a VRD file");
                 }
             } else {
                 $verbose and printf $out "  Deleting CanonVRD trailer\n";
-                ++$exifTool->{CHANGED};
+                $$outfile = '' if $outfile eq $dataPt;
+                ++$$et{CHANGED};
             }
             return 1;
         }
         # write now and return if CanonVRD was set as a block
-        my $val = $exifTool->GetNewValues('CanonVRD');
+        my $val = $et->GetNewValues('CanonVRD');
         if ($val) {
             $verbose and print $out "  Writing CanonVRD as a block\n";
-            Write($outfile, $val) or return -1;
-            ++$exifTool->{CHANGED};
+            if ($outfile eq $dataPt) {
+                $$outfile = $val;
+            } else {
+                Write($outfile, $val) or return -1;
+            }
+            ++$$et{CHANGED};
             return 1;
         }
-    } elsif ($verbose or $exifTool->{HTML_DUMP}) {
-        $exifTool->DumpTrailer($dirInfo) if $$dirInfo{RAF};
+    } elsif ($verbose or $$et{HTML_DUMP}) {
+        $et->DumpTrailer($dirInfo) if $$dirInfo{RAF};
     }
 
     $tagTablePtr = GetTagTable('Image::ExifTool::CanonVRD::Main');
 
     # validate VRD trailer and get position and length of edit record
     SetByteOrder('MM');
-    my $pos = 0;
-    my $vrdPos = $$dirInfo{DataPos} + length($header);
-    my $dataPt = \$buff;
+    my $pos = 0x1c; # start at end of header
 
     # loop through the VRD blocks
     for (;;) {
-        if ($pos + 8 > $size) {
-            last if $pos == $size;
-            $blockLen = $size;  # mark as invalid
+        my $end = $dirLen - 0x40;   # end of last VRD block (and start of footer)
+        if ($pos + 8 > $end) {
+            last if $pos == $end;
+            $blockLen = $end;       # mark as invalid
         } else {
             $blockType = Get32u($dataPt, $pos);
             $blockLen = Get32u($dataPt, $pos + 4);
         }
-        $pos += 8;          # move to start of block
-        if ($pos + $blockLen > $size) {
-            $exifTool->Warn('Possibly corrupt CanonVRD block');
+        $pos += 8;  # move to start of block
+        if ($pos + $blockLen > $end) {
+            $et->Warn('Possibly corrupt CanonVRD block');
             last;
         }
         if ($verbose > 1 and not $outfile) {
             printf $out "  CanonVRD block 0x%.8x ($blockLen bytes at offset 0x%x)\n",
-                $blockType, $pos + $vrdPos;
+                $blockType, $pos + $$dirInfo{DataPos};
             if ($verbose > 2) {
                 my %parms = (
                     Start  => $pos,
-                    Addr   => $pos + $vrdPos,
+                    Addr   => $pos + $$dirInfo{DataPos},
                     Out    => $out,
-                    Prefix => $$exifTool{INDENT},
+                    Prefix => $$et{INDENT},
                 );
                 $parms{MaxLen} = $verbose == 3 ? 96 : 2048 if $verbose < 5;
-                Image::ExifTool::HexDump($dataPt, $blockLen, %parms);
+                HexDump($dataPt, $blockLen, %parms);
             }
         }
         my $tagInfo = $$tagTablePtr{$blockType};
         unless ($tagInfo) {
-            unless ($exifTool->Options('Unknown')) {
+            unless ($et->Options('Unknown')) {
                 $pos += $blockLen;  # step to next block
                 next;
             }
@@ -1370,7 +1408,7 @@ sub ProcessCanonVRD($$;$)
             my %subdirInfo = (
                 DataPt   => $dataPt,
                 DataLen  => length $$dataPt,
-                DataPos  => $vrdPos,
+                DataPos  => $$dirInfo{DataPos},
                 DirStart => $pos,
                 DirLen   => $blockLen,
                 DirName  => $$tagInfo{Name},
@@ -1380,65 +1418,65 @@ sub ProcessCanonVRD($$;$)
             if ($outfile) {
                 # set flag indicating we did this directory
                 $didDir{$$tagInfo{Name}} = 1;
-                my $dat;
-                if ($$exifTool{NEW_VALUE}{$tagInfo}) {
+                my ($dat, $diff);
+                if ($$et{NEW_VALUE}{$tagInfo}) {
                     # write as a block
-                    $exifTool->VPrint(0, "Writing $$tagInfo{Name} as a block\n");
-                    $dat = $exifTool->GetNewValues($tagInfo);
+                    $et->VPrint(0, "Writing $$tagInfo{Name} as a block\n");
+                    $dat = $et->GetNewValues($tagInfo);
                     $dat = '' unless defined $dat;
-                    ++$$exifTool{CHANGED};
+                    ++$$et{CHANGED};
                 } else {
-                    $dat = $exifTool->WriteDirectory(\%subdirInfo, $subTablePtr);
+                    $dat = $et->WriteDirectory(\%subdirInfo, $subTablePtr);
                 }
                 # update data with new directory
                 if (defined $dat) {
-                    my $buf2;
-                    if (length $dat or $$exifTool{FILE_TYPE} !~ /^(CRW|VRD)$/) {
+                    if (length $dat or $$et{FILE_TYPE} !~ /^(CRW|VRD)$/) {
                         # replace with new block (updating the block length word)
-                        $buf2 = substr($$dataPt, 0, $pos - 4) . Set32u(length $dat) . $dat;
+                        substr($$dataPt, $pos-4, $blockLen+4) = Set32u(length $dat) . $dat;
                     } else {
                         # remove block totally (CRW/VRD files only)
-                        $buf2 = substr($$dataPt, 0, $pos - 8);
+                        substr($$dataPt, $pos-8, $blockLen+8) = '';
                     }
-                    my $oldBlockEnd = $pos + $blockLen;
-                    $pos = length $$dataPt; # set to start of next block
-                    $buf2 .= substr($$dataPt, $oldBlockEnd);
-                    undef $$dataPt;         # free the memory
-                    $dataPt = \$buf2;
-                    # update the new VRD length in the header/footer
-                    Set32u(length($buf2), \$header, 0x18);
-                    Set32u(length($buf2), \$footer, 0x14);
-                    next;
+                    # make necessary adjustments if block changes length
+                    if (($diff = length($$dataPt) - $dirLen) != 0) {
+                        $pos += $diff;
+                        $dirLen += $diff;
+                        # update the new VRD length in the header/footer
+                        Set32u($dirLen - 0x5c, $dataPt, 0x18);
+                        Set32u($dirLen - 0x5c, $dataPt, $dirLen - 0x2c);
+                    }
                 }
             } else {
                 # extract as a block if requested
-                $exifTool->ProcessDirectory(\%subdirInfo, $subTablePtr);
+                $et->ProcessDirectory(\%subdirInfo, $subTablePtr);
             }
         } else {
-            $exifTool->HandleTag($tagTablePtr, $blockType, substr($$dataPt, $pos, $blockLen));
+            $et->HandleTag($tagTablePtr, $blockType, substr($$dataPt, $pos, $blockLen));
         }
         $pos += $blockLen;  # step to next block
     }
     if ($outfile) {
         # create XMP block if necessary (CRW/VRD files only)
-        if ($$exifTool{ADD_DIRS}{CanonVRD} and not $didDir{XMP}) {
+        if ($$et{ADD_DIRS}{CanonVRD} and not $didDir{XMP}) {
             my $subTablePtr = GetTagTable('Image::ExifTool::XMP::Main');
-            my $dat = $exifTool->WriteDirectory({ Parent => 'CanonVRD' }, $subTablePtr);
+            my $dat = $et->WriteDirectory({ Parent => 'CanonVRD' }, $subTablePtr);
             if ($dat) {
-                $$dataPt .= Set32u(0xffff00f6) . Set32u(length $dat) . $dat;
+                my $blockLen = length $dat;
+                substr($$dataPt, -0x40, 0) = Set32u(0xffff00f6) . Set32u(length $dat) . $dat;
+                $dirLen = length $$dataPt;
                 # update the new VRD length in the header/footer
-                Set32u(length($$dataPt), \$header, 0x18);
-                Set32u(length($$dataPt), \$footer, 0x14);
+                Set32u($dirLen - 0x5c, $dataPt, 0x18);
+                Set32u($dirLen - 0x5c, $dataPt, $dirLen - 0x2c);
             }
         }
         # write CanonVRD trailer unless it is empty
         if (length $$dataPt) {
-            Write($outfile, $header, $$dataPt, $footer) or $err = 1;
+            Write($outfile, $$dataPt) or $err = 1 unless $outfile eq $dataPt;
         } else {
             $verbose and printf $out "  Deleting CanonVRD trailer\n";
         }
     }
-    undef $$dataPt;
+    undef $buff;
     return $err ? -1 : 1;
 }
 
@@ -1463,7 +1501,7 @@ trailer in JPEG, CRW, CR2 and TIFF images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

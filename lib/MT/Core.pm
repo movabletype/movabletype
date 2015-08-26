@@ -378,8 +378,9 @@ BEGIN {
                     terms => sub {
                         my $prop = shift;
                         my ( $args, $db_terms, $db_args ) = @_;
-                        my $col    = $prop->col;
-                        my $option = $args->{option};
+                        my $col      = $prop->col;
+                        my $option   = $args->{option};
+                        my $boundary = $args->{boundary};
                         my $query;
                         my $blog = MT->app ? MT->app->blog : undef;
                         require MT::Util;
@@ -411,22 +412,44 @@ BEGIN {
                             ];
                         }
                         elsif ( 'before' eq $option ) {
-                            $query = {
-                                op    => '<',
-                                value => $origin . '000000'
-                            };
+                            if ($boundary) {
+                                $query = {
+                                    op    => '<=',
+                                    value => $origin . '235959',
+                                };
+                            }
+                            else {
+                                $query = {
+                                    op    => '<',
+                                    value => $origin . '000000'
+                                };
+                            }
                         }
                         elsif ( 'after' eq $option ) {
-                            $query = {
-                                op    => '>',
-                                value => $origin . '235959'
-                            };
+                            if ($boundary) {
+                                $query = {
+                                    op    => '>=',
+                                    value => $origin . '000000',
+                                };
+                            }
+                            else {
+                                $query = {
+                                    op    => '>',
+                                    value => $origin . '235959'
+                                };
+                            }
                         }
                         elsif ( 'future' eq $option ) {
-                            $query = { op => '>', value => $now };
+                            $query = {
+                                op    => '>',
+                                value => $now
+                            };
                         }
                         elsif ( 'past' eq $option ) {
-                            $query = { op => '<', value => $now };
+                            $query = {
+                                op    => '<',
+                                value => $now
+                            };
                         }
 
                         if ( $prop->is_meta ) {
@@ -1670,6 +1693,7 @@ BEGIN {
             'MTReleaseNumber'              => undef,
             'RequiredCompatibility'        => { default => 0 },
             'EnableSessionKeyCompat'       => { default => 0 },
+            'EnableUploadCompat'           => { default => 0 },
             'NotifyUpgrade'                => { default => 1 },
             'Database'                     => undef,
             'DBHost'                       => undef,
@@ -1805,6 +1829,8 @@ BEGIN {
             'HTTPNoProxy'           => { default => 'localhost', },
             'HeaderCacheControl'    => undef,
             'ImageDriver'           => { default => 'ImageMagick', },
+            'ImageQualityJpeg'      => { default => 75 },
+            'ImageQualityPng'       => { default => 7 },
             'NetPBMPath'            => undef,
             'AdminScript'           => { default => 'mt.cgi', },
             'ActivityFeedScript'    => { default => 'mt-feed.cgi', },
@@ -2079,6 +2105,8 @@ BEGIN {
             'AuthLDAPBindDN'        => { alias => 'LDAPAuthBindDN' },
             'AuthLDAPPassword'      => { alias => 'LDAPAuthPassword' },
             'AuthLDAPSASLMechanism' => { alias => 'LDAPAuthSASLMechanism' },
+
+            'RestrictedPSGIApp' => { type => 'ARRAY' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

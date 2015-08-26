@@ -26,7 +26,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::FLAC;
 
-$VERSION = '1.09';
+$VERSION = '1.11';
 
 sub ProcessMeta($$$;$);
 
@@ -289,14 +289,14 @@ my %isStruct = ( 0x03 => 1, 0x08 => 1, 0x10 => 1 );
 # Notes: Updates DataPos in dirInfo if extracting single value
 sub ProcessMeta($$$;$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr, $single) = @_;
+    my ($et, $dirInfo, $tagTablePtr, $single) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $dataPos = $$dirInfo{DataPos};
     my $dirLen = $$dirInfo{DirLen} || length($$dataPt);
     my $pos = $$dirInfo{Pos} || 0;
     my ($type, $val, $rec);
 
-    $exifTool->VerboseDir('Meta') unless $single;
+    $et->VerboseDir('Meta') unless $single;
 
 Record: for ($rec=0; ; ++$rec) {
         last if $pos >= $dirLen;
@@ -341,7 +341,7 @@ Record: for ($rec=0; ; ++$rec) {
             $val = substr($$dataPt, $pos + 2, $len);
             $pos += 2 + $len;
         } elsif ($isStruct{$type}) {   # object, mixed array or typed object
-            $exifTool->VPrint(1, "  + [$amfType[$type]]\n");
+            $et->VPrint(1, "  + [$amfType[$type]]\n");
             my $getName;
             $val = '';  # dummy value
             if ($type == 0x08) {        # mixed array
@@ -356,14 +356,14 @@ Record: for ($rec=0; ; ++$rec) {
                 last Record if $pos + 2 > $dirLen;
                 my $len = Get16u($dataPt, $pos);
                 if ($pos + 2 + $len > $dirLen) {
-                    $exifTool->Warn("Truncated $amfType[$type] record");
+                    $et->Warn("Truncated $amfType[$type] record");
                     last Record;
                 }
                 my $tag = substr($$dataPt, $pos + 2, $len);
                 $pos += 2 + $len;
                 # first string of a typed object is the object name
                 if ($getName) {
-                    $exifTool->VPrint(1,"  | (object name '$tag')\n");
+                    $et->VPrint(1,"  | (object name '$tag')\n");
                     undef $getName;
                     next; # (ignore name for now)
                 }
@@ -385,7 +385,7 @@ Record: for ($rec=0; ; ++$rec) {
                 # add structure name to start of tag name
                 $tag = $structName . ucfirst($tag) if defined $structName;
                 $$dirInfo{StructName} = $tag;       # set new structure name
-                my ($t, $v) = ProcessMeta($exifTool, $dirInfo, $subTablePtr, 1);
+                my ($t, $v) = ProcessMeta($et, $dirInfo, $subTablePtr, 1);
                 $$dirInfo{StructName} = $structName;# restore original structure name
                 $pos = $$dirInfo{Pos};  # update to new position in packet
                 # all done if this value contained tags
@@ -395,9 +395,9 @@ Record: for ($rec=0; ; ++$rec) {
                 last if $t == 0x09; # (end of object)
                 if (not $$subTablePtr{$tag} and $tag =~ /^\w+$/) {
                     AddTagToTable($subTablePtr, $tag, { Name => ucfirst($tag) });
-                    $exifTool->VPrint(1, "  | (adding $tag)\n");
+                    $et->VPrint(1, "  | (adding $tag)\n");
                 }
-                $exifTool->HandleTag($subTablePtr, $tag, $v,
+                $et->HandleTag($subTablePtr, $tag, $v,
                     DataPt  => $dataPt,
                     DataPos => $dataPos,
                     Start   => $valPos,
@@ -422,7 +422,7 @@ Record: for ($rec=0; ; ++$rec) {
             my $structName = $$dirInfo{StructName};
             for ($i=0; $i<$num; ++$i) {
                 $$dirInfo{StructName} = $structName . $i if defined $structName;
-                my ($t, $v) = ProcessMeta($exifTool, $dirInfo, $tagTablePtr, 1);
+                my ($t, $v) = ProcessMeta($et, $dirInfo, $tagTablePtr, 1);
                 last Record unless defined $v;
                 # save value unless contained in a sub-structure
                 push @vals, $v unless $isStruct{$t};
@@ -440,7 +440,7 @@ Record: for ($rec=0; ; ++$rec) {
       # } elsif ($type == 0x11) {   # AMF3 data (can't add support for this without a test sample)
         } else {
             my $t = $amfType[$type] || sprintf('type 0x%x',$type);
-            $exifTool->Warn("AMF $t record not yet supported");
+            $et->Warn("AMF $t record not yet supported");
             undef $type;    # (so we don't print another warning)
             last;           # can't continue
         }
@@ -449,17 +449,17 @@ Record: for ($rec=0; ; ++$rec) {
             # only process certain Meta packets
             if ($type == 0x02 and not $rec) {
                 my $verb = $processMetaPacket{$val} ? 'processing' : 'ignoring';
-                $exifTool->VPrint(0, "  | ($verb $val information)\n");
+                $et->VPrint(0, "  | ($verb $val information)\n");
                 last unless $processMetaPacket{$val};
             } else {
                 # give verbose indication if we ignore a lone value
                 my $t = $amfType[$type] || sprintf('type 0x%x',$type);
-                $exifTool->VPrint(1, "  | (ignored lone $t value '$val')\n");
+                $et->VPrint(1, "  | (ignored lone $t value '$val')\n");
             }
         }
     }
     if (not defined $val and defined $type) {
-        $exifTool->Warn(sprintf("Truncated AMF record 0x%x",$type));
+        $et->Warn(sprintf("Truncated AMF record 0x%x",$type));
     }
     return 1 unless $single;    # all done
     $$dirInfo{Pos} = $pos;      # update position
@@ -472,15 +472,15 @@ Record: for ($rec=0; ; ++$rec) {
 # Returns: 1 on success, 0 if this wasn't a valid Flash Video file
 sub ProcessFLV($$)
 {
-    my ($exifTool, $dirInfo) = @_;
-    my $verbose = $exifTool->Options('Verbose');
+    my ($et, $dirInfo) = @_;
+    my $verbose = $et->Options('Verbose');
     my $raf = $$dirInfo{RAF};
     my $buff;
 
     $raf->Read($buff, 9) == 9 or return 0;
     $buff =~ /^FLV\x01/ or return 0;
     SetByteOrder('MM');
-    $exifTool->SetFileType();
+    $et->SetFileType();
     my ($flags, $offset) = unpack('x4CN', $buff);
     $raf->Seek($offset-9, 1) or return 1 if $offset > 9;
     $flags &= 0x05; # only look for audio/video
@@ -491,10 +491,10 @@ sub ProcessFLV($$)
         my $len = unpack('x4N', $buff);
         my $type = $len >> 24;
         $len &= 0x00ffffff;
-        my $tagInfo = $exifTool->GetTagInfo($tagTablePtr, $type);
+        my $tagInfo = $et->GetTagInfo($tagTablePtr, $type);
         if ($verbose > 1) {
             my $name = $tagInfo ? $$tagInfo{Name} : "type $type";
-            $exifTool->VPrint(1, "FLV $name packet, len $len\n");
+            $et->VPrint(1, "FLV $name packet, len $len\n");
         }
         undef $buff;
         if ($tagInfo and $$tagInfo{SubDirectory}) {
@@ -507,19 +507,19 @@ sub ProcessFLV($$)
                     if ($len>=1 and $raf->Read($buff, 1) == 1) {
                         $len -= 1;
                     } else {
-                        $exifTool->Warn("Bad $$tagInfo{Name} packet");
+                        $et->Warn("Bad $$tagInfo{Name} packet");
                         last;
                     }
                 }
             } elsif ($raf->Read($buff, $len) == $len) {
                 $len = 0;
             } else {
-                $exifTool->Warn('Truncated Meta packet');
+                $et->Warn('Truncated Meta packet');
                 last;
             }
         }
         if (defined $buff) {
-            $exifTool->HandleTag($tagTablePtr, $type, undef,
+            $et->HandleTag($tagTablePtr, $type, undef,
                 DataPt  => \$buff,
                 DataPos => $raf->Tell() - length($buff),
             );
@@ -535,8 +535,8 @@ sub ProcessFLV($$)
 # Inputs: 0) ExifTool object ref, 1) tag name, 2) tag value
 sub FoundFlashTag($$$)
 {
-    my ($exifTool, $tag, $val) = @_;
-    $exifTool->HandleTag(\%Image::ExifTool::Flash::Main, $tag, $val);
+    my ($et, $tag, $val) = @_;
+    $et->HandleTag(\%Image::ExifTool::Flash::Main, $tag, $val);
 }
 
 #------------------------------------------------------------------------------
@@ -557,7 +557,7 @@ sub ReadCompressed($$$$)
     # uncompress if necessary
     if ($inflate) {
         unless (ref $inflate) {
-            unless (eval 'require Compress::Zlib') {
+            unless (eval { require Compress::Zlib }) {
                 $_[3] = 'Install Compress::Zlib to extract compressed information';
                 return 0;
             }
@@ -596,7 +596,7 @@ sub ReadCompressed($$$$)
 # Returns: 1 on success, 0 if this wasn't a valid Flash file
 sub ProcessSWF($$)
 {
-    my ($exifTool, $dirInfo) = @_;
+    my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
     my ($buff, $hasMeta);
 
@@ -605,16 +605,16 @@ sub ProcessSWF($$)
     my ($compressed, $vers) = ($1 eq 'C' ? 1 : 0, ord($2));
 
     SetByteOrder('II');
-    $exifTool->SetFileType();
+    $et->SetFileType();
     GetTagTable('Image::ExifTool::Flash::Main');  # make sure table is initialized
 
-    FoundFlashTag($exifTool, FlashVersion => $vers);
-    FoundFlashTag($exifTool, Compressed => $compressed);
+    FoundFlashTag($et, FlashVersion => $vers);
+    FoundFlashTag($et, Compressed => $compressed);
 
     # read the next 64 bytes of the file (and inflate if necessary)
     $buff = '';
     unless (ReadCompressed($raf, $buff, 64, $compressed)) {
-        $exifTool->Warn($compressed) if $compressed;
+        $et->Warn($compressed) if $compressed;
         return 1;
     }
 
@@ -623,7 +623,7 @@ sub ProcessSWF($$)
     my $totBits = 5 + $nBits * 4;           # total bits in Rect structure
     my $nBytes = int(($totBits + 7) / 8);   # byte length of Rect structure
     if (length $buff < $nBytes + 4) {
-        $exifTool->Warn('Truncated Flash file');
+        $et->Warn('Truncated Flash file');
         return 1;
     }
     my $bits = unpack("B$totBits", $buff);
@@ -633,14 +633,14 @@ sub ProcessSWF($$)
     map { $_ = unpack('N', pack('B32', '0' x (32 - length $_) . $_)) } @vals;
 
     # calculate and store ImageWidth/Height
-    FoundFlashTag($exifTool, ImageWidth  => ($vals[1] - $vals[0]) / 20);
-    FoundFlashTag($exifTool, ImageHeight => ($vals[3] - $vals[2]) / 20);
+    FoundFlashTag($et, ImageWidth  => ($vals[1] - $vals[0]) / 20);
+    FoundFlashTag($et, ImageHeight => ($vals[3] - $vals[2]) / 20);
 
     # get frame rate and count
     @vals = unpack("x${nBytes}v2", $buff);
-    FoundFlashTag($exifTool, FrameRate => $vals[0] / 256);
-    FoundFlashTag($exifTool, FrameCount => $vals[1]);
-    FoundFlashTag($exifTool, Duration => $vals[1] * 256 / $vals[0]) if $vals[0];
+    FoundFlashTag($et, FrameRate => $vals[0] / 256);
+    FoundFlashTag($et, FrameCount => $vals[1]);
+    FoundFlashTag($et, Duration => $vals[1] * 256 / $vals[0]) if $vals[0];
 
     # scan through the tags to find FileAttributes and XMP
     $buff = substr($buff, $nBytes + 4);
@@ -651,13 +651,13 @@ sub ProcessSWF($$)
         my $pos = 2;
         my $tag = $code >> 6;
         my $size = $code & 0x3f;
-        $exifTool->VPrint(1, "SWF tag $tag ($size bytes):\n");
+        $et->VPrint(1, "SWF tag $tag ($size bytes):\n");
         last unless $tag == 69 or $tag == 77 or $hasMeta;
         # read enough to get a complete short record
         if ($pos + $size > $buffLen) {
             # (read 2 extra bytes if available to get next tag word)
             unless (ReadCompressed($raf, $buff, $size + 2, $compressed)) {
-                $exifTool->Warn($compressed) if $compressed;
+                $et->Warn($compressed) if $compressed;
                 return 1;
             }
             $buffLen = length $buff;
@@ -671,23 +671,23 @@ sub ProcessSWF($$)
             last if $size > 1000000; # don't read anything huge
             if ($pos + $size > $buffLen) {
                 unless (ReadCompressed($raf, $buff, $size + 2, $compressed)) {
-                    $exifTool->Warn($compressed) if $compressed;
+                    $et->Warn($compressed) if $compressed;
                     return 1;
                 }
                 $buffLen = length $buff;
                 last if $pos + $size > $buffLen;
             }
-            $exifTool->VPrint(1, "  [extended size $size bytes]\n");
+            $et->VPrint(1, "  [extended size $size bytes]\n");
         }
         if ($tag == 69) {       # FileAttributes
             last unless $size;
             my $flags = Get8u(\$buff, $pos);
-            FoundFlashTag($exifTool, $tag => $flags);
+            FoundFlashTag($et, $tag => $flags);
             last unless $flags & 0x10;  # only continue if we have metadata (XMP)
             $hasMeta = 1;
         } elsif ($tag == 77) {  # Metadata
             my $val = substr($buff, $pos, $size);
-            FoundFlashTag($exifTool, $tag => $val);
+            FoundFlashTag($et, $tag => $val);
             last;
         }
         last if $pos + 2 > $buffLen;
@@ -721,7 +721,7 @@ will add AMF3 support.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

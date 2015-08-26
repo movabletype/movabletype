@@ -180,7 +180,7 @@ subtest 'Test cfg_prefs mode' => sub {
                 is( $test_blog->column('archive_url'),
                     $archive_url, 'Can save archive_url correctly.' );
                 is( $test_blog->column('archive_path'),
-                    "$archive_path/", 'Can save archive_path correctly.' );
+                    $archive_path, 'Can save archive_path correctly.' );
             }
 
             if ( $type eq 'blog' ) {

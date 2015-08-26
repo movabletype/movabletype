@@ -5,7 +5,7 @@
 #
 # Revisions:    06/12/2009 - P. Harvey Created
 #
-# References:   1) http://www.cipa.jp/english/hyoujunka/kikaku/pdf/DC-007_E.pdf
+# References:   1) http://www.cipa.jp/std/documents/e/DC-007_E.pdf
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::MPF;
@@ -15,7 +15,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.06';
+$VERSION = '1.09';
 
 sub ProcessMPImageList($$$);
 
@@ -28,8 +28,8 @@ sub ProcessMPImageList($$$);
         from this segment is stored as a JPEG trailer.  The MPF tags are not
         writable, however the MPG segment may be deleted as a group (with "MPF:All")
         but then the JPEG trailer should also be deleted (with "Trailer:All").  See
-        L<http://www.cipa.jp/english/hyoujunka/kikaku/pdf/DC-007_E.pdf> for the
-        official specification.
+        L<http://www.cipa.jp/std/documents/e/DC-007_E.pdf> for the official
+        specification.
     },
     0xb000 => 'MPFVersion',
     0xb001 => 'NumberOfImages',
@@ -183,27 +183,27 @@ Image::ExifTool::AddCompositeTags('Image::ExifTool::MPF');
 # Returns: undef
 sub ExtractMPImages($)
 {
-    my $exifTool = shift;
-    my $ee = $exifTool->Options('ExtractEmbedded');
-    my $saveBinary = $exifTool->Options('Binary');
+    my $et = shift;
+    my $ee = $et->Options('ExtractEmbedded');
+    my $saveBinary = $et->Options('Binary');
     my ($i, $didPreview, $xtra);
 
     for ($i=1; $xtra or not defined $xtra; ++$i) {
         # run through MP images in the same order they were extracted
-        $xtra = defined $$exifTool{VALUE}{"MPImageStart ($i)"} ? " ($i)" : '';
-        my $off = $exifTool->GetValue("MPImageStart$xtra");
-        my $len = $exifTool->GetValue("MPImageLength$xtra");
+        $xtra = defined $$et{VALUE}{"MPImageStart ($i)"} ? " ($i)" : '';
+        my $off = $et->GetValue("MPImageStart$xtra");
+        my $len = $et->GetValue("MPImageLength$xtra");
         if ($off and $len) {
-            my $type = $exifTool->GetValue("MPImageType$xtra", 'ValueConv');
+            my $type = $et->GetValue("MPImageType$xtra", 'ValueConv');
             my $tag = "MPImage$i";
             # store first "Large Thumbnail" as a PreviewImage
             if (not $didPreview and $type and ($type & 0x0f0000) == 0x010000) {
                 $tag = 'PreviewImage';
                 $didPreview = 1;
             }
-            $exifTool->Options('Binary', 1) if $ee;
-            my $val = Image::ExifTool::Exif::ExtractImage($exifTool, $off, $len, $tag);
-            $exifTool->Options('Binary', $saveBinary) if $ee;
+            $et->Options('Binary', 1) if $ee;
+            my $val = Image::ExifTool::Exif::ExtractImage($et, $off, $len, $tag);
+            $et->Options('Binary', $saveBinary) if $ee;
             next unless defined $val;
             unless ($Image::ExifTool::Extra{$tag}) {
                 AddTagToTable(\%Image::ExifTool::Extra, $tag, {
@@ -211,17 +211,20 @@ sub ExtractMPImages($)
                     Groups => { 0 => 'Composite', 1 => 'Composite', 2 => 'Image'},
                 });
             }
-            my $key = $exifTool->FoundTag($tag, $val);
+            my $key = $et->FoundTag($tag, $val);
             # set groups for PreviewImage
             if ($tag eq 'PreviewImage') {
-                $exifTool->SetGroup($key, 'Composite', 0);
-                $exifTool->SetGroup($key, 'Composite');
+                $et->SetGroup($key, 'Composite', 0);
+                $et->SetGroup($key, 'Composite');
             }
             # extract information from MP images if ExtractEmbedded option used
             if ($ee) {
-                $$exifTool{DOC_NUM} = $i;
-                $exifTool->ExtractInfo($val, { ReEntry => 1 });
-                delete $$exifTool{DOC_NUM};
+                my $oldBase = $$et{BASE};
+                $$et{BASE} = $off;
+                $$et{DOC_NUM} = $i;
+                $et->ExtractInfo($val, { ReEntry => 1 });
+                delete $$et{DOC_NUM};
+                $$et{BASE} = $oldBase;
             }
         }
     }
@@ -234,17 +237,17 @@ sub ExtractMPImages($)
 # Returns: 1 on success
 sub ProcessMPImageList($$$)
 {
-    my ($exifTool, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTablePtr) = @_;
     my $num = int($$dirInfo{DirLen} / 16); # (16 bytes per MP Entry)
     $$dirInfo{DirLen} = 16;
     my ($i, $success);
-    my $oldG1 = $$exifTool{SET_GROUP1};
+    my $oldG1 = $$et{SET_GROUP1};
     for ($i=0; $i<$num; ++$i) {
-        $$exifTool{SET_GROUP1} = '+' . ($i + 1);
-        $success = $exifTool->ProcessBinaryData($dirInfo, $tagTablePtr);
+        $$et{SET_GROUP1} = '+' . ($i + 1);
+        $success = $et->ProcessBinaryData($dirInfo, $tagTablePtr);
         $$dirInfo{DirStart} += 16;
     }
-    $$exifTool{SET_GROUP1} = $oldG1;
+    $$et{SET_GROUP1} = $oldG1;
     return $success;
 }
 
@@ -267,7 +270,7 @@ Format (MPF) information from JPEG images.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -276,7 +279,7 @@ under the same terms as Perl itself.
 
 =over 4
 
-=item L<http://www.cipa.jp/english/hyoujunka/kikaku/pdf/DC-007_E.pdf>
+=item L<http://www.cipa.jp/std/documents/e/DC-007_E.pdf>
 
 =back
 

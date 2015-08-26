@@ -161,7 +161,7 @@ TC.attachLoadEvent( init );
 <div id="asset" class="status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
   <form id="edit_asset" method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-    <input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="__mode" value="save" />
     <input type="hidden" name="_type" value="<mt:var name="object_type">" />
     <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
     <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
@@ -180,7 +180,7 @@ TC.attachLoadEvent( init );
       <mt:if name="has_thumbnail">
       <div class="asset-preview-thumb picture small">
         <div class="thumbnail">
-          <img src="<mt:var name="thumbnail_url" escape="html">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
+          <img src="<mt:var name="thumbnail_url" escape="html">?ts=<mt:var name="modified_on" escape="url">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
         </div>
       </div>
       <mt:elseif name="asset_type" eq="image">
@@ -190,21 +190,35 @@ TC.attachLoadEvent( init );
           can_close="0">
           <__trans phrase="Error creating thumbnail file.">
         </mtapp:statusmsg>
+      <mt:else>
+      <div class="asset-type-icon picture small">
+        <img src="<mt:var name="static_uri">images/asset/<mt:var name="asset_type">-45.png" width="45" height="45" />
+      </div>
       </mt:if>
     </mt:if>
     <div class="asset-metadata">
       <ul class="metadata">
         <li class="metadata-item asset-name"><strong><__trans phrase="File Name">:</strong><mt:var name="file_name" escape="html"></li>
         <li class="metadata-item asset-type"><strong><__trans phrase="Type">:</strong><mt:var name="asset_class_label" escape="html"></li>
-        <li class="metadata-item asset-size">
-          <strong><__trans phrase="Dimensions">:</strong>
         <mt:if name="class" eq="image">
-          <mt:var name="image_width" escape="html"> &times; <mt:var name="image_height" escape="html"><mt:if name="file_size_formatted"> - </mt:if>
+        <li class="metadata-item asset-dimensions">
+          <strong><__trans phrase="Dimensions">:</strong><mt:var name="image_width" escape="html"> &times; <mt:var name="image_height" escape="html">
+        </li>
         </mt:if>
-          <mt:var name="file_size_formatted" escape="html">
+        <li class="metadata-item asset-size">
+          <strong><__trans phrase="File Size">:</strong><mt:var name="file_size_formatted" escape="html">
         </li>
       </ul>
     </div>
+    <mt:if name="asset_type" eq="image">
+      <mt:unless name="file_is_missing">
+        <mt:if name="has_thumbnail">
+    <div class="image-editor">
+      <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">" class="button mt-open-dialog"><__trans phrase="Edit Image"></a>
+    </div>
+        </mt:if>
+      </mt:unless>
+    </mt:if>
     </div>
 
     <div class="asset-info">

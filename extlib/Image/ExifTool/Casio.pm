@@ -9,7 +9,7 @@
 # References:   1) http://park2.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html
 #               2) Joachim Loehr private communication
 #               3) http://homepage3.nifty.com/kamisaka/makernote/makernote_casio.htm
-#               4) http://www.gvsoft.homedns.org/exif/makernote-casio.html
+#               4) http://gvsoft.homedns.org/exif/makernote-casio-type1.html
 #               5) Robert Chi private communication (EX-F1)
 #               6) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3701.html
 #               JD) Jens Duttke private communication
@@ -21,7 +21,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.34';
+$VERSION = '1.36';
 
 # older Casio maker notes (ref 1)
 %Image::ExifTool::Casio::Main = (
@@ -236,9 +236,9 @@ $VERSION = '1.34';
             4 => 'Near Left/Right of Center',
             5 => 'Far Left/Right of Center',
             6 => 'Far Left/Right of Center/Bottom',
-            7 => 'Top Near-Left',
+            7 => 'Top Near-left',
             8 => 'Near Upper/Left',
-            9 => 'Top Near-Right',
+            9 => 'Top Near-right',
             10 => 'Top Left',
             11 => 'Top Center',
             12 => 'Top Right',
@@ -1510,6 +1510,50 @@ $VERSION = '1.34';
             # this camera also supports 100 modes that you can apparently load
             # from a CD-ROM, but I don't know how these map into these numbers
         },
+    },{ #Manfred, email
+        Name => 'BestShotMode',
+        Writable => 'int16u',
+        Condition => '$$self{Model} eq "EX-ZR300"',
+        Notes => 'EX-ZR300',
+        PrintConvColumns => 2,
+        PrintConv => {
+            1 => 'High Speed Night Shot',
+            2 => 'Blurred Background',
+            3 => 'Toy Camera',
+            4 => 'Soft Focus',
+            5 => 'Light Tone',
+            6 => 'Pop',
+            7 => 'Sepia',
+            8 => 'Monochrome',
+            9 => 'Miniature',
+            10 => 'Wide Shot',
+            11 => 'High Speed Best Selection',
+            12 => 'Lag Correction',
+            13 => 'High Speed Night Scene',
+            14 => 'High Speed Night Scene and Portrait',
+            15 => 'High Speed Anti Shake',
+            16 => 'Portrait',
+            17 => 'Scenery',
+            18 => 'Portrait with Scenery',
+            19 => 'Children',
+            20 => 'Sports',
+            21 => 'Candlelight Portrait',
+            22 => 'Party',
+            23 => 'Pet',
+            24 => 'Flower',
+            25 => 'Natural Green',
+            26 => 'Autumn Leaves',
+            27 => 'Soft Flowing Water',
+            28 => 'Splashing Water',
+            29 => 'Sundown',
+            30 => 'Fireworks',
+            31 => 'Food',
+            32 => 'Text',
+            33 => 'Collection',
+            34 => 'Auction',
+            35 => 'Prerecord (Movie)',
+            36 => 'For YouTube',
+        },
     },{
         Name => 'BestShotMode',
         Writable => 'int16u',
@@ -1987,7 +2031,7 @@ Casio maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2013, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
