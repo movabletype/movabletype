@@ -36,6 +36,7 @@ applications:
             get_flickr_list: $MTAssetoEmbed::MTAssetoEmbed::App::get_flickr_list
             get_flickr_thumbnail: $MTAssetoEmbed::MTAssetoEmbed::App::get_flickr_thumbnail
             get_youtube_list: $MTAssetoEmbed::MTAssetoEmbed::App::get_youtube_list
+            add_asset_oembed_multi: $MTAssetoEmbed::MTAssetoEmbed::App::add_asset_oembed_multi
 
 web_services:
     MTAssetoEmbed:

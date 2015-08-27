@@ -10,6 +10,7 @@ use strict;
 use base qw( MT::Asset::oEmbed );
 
 use MTAssetoEmbed;
+use MTAssetoEmbed::OAuth2;
 use HTTP::Request::Common;
 
 __PACKAGE__->install_properties(
@@ -93,7 +94,7 @@ sub get_token_data {
     my $asset = shift;
 
     my $app = MT->instance;
-    return get_token( $app, $asset );
+    return get_token_from_plugindata( $app, $asset );
 }
 
 sub get_id {

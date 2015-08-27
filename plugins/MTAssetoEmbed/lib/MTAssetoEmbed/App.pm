@@ -407,7 +407,7 @@ sub start_flickr {
 sub get_flickr_list {
     my ($app)  = @_;
     my $q      = $app->param;
-    my $plugin = $app->component("MTAssetoEmbed");
+    my $plugin = plugin();
     my $cfg    = $app->config;
     my $blog   = $app->blog;
     my $param  = {};
@@ -466,7 +466,7 @@ sub get_flickr_list {
 sub get_flickr_thumbnail {
     my ($app)  = @_;
     my $q      = $app->param;
-    my $plugin = $app->component("MTAssetoEmbed");
+    my $plugin = plugin();
     my $cfg    = $app->config;
     my $blog   = $app->blog;
     my $param  = {};
@@ -519,7 +519,7 @@ sub start_youtube {
 sub get_youtube_list {
     my ($app)  = @_;
     my $q      = $app->param;
-    my $plugin = $app->component("MTAssetoEmbed");
+    my $plugin = plugin();
     my $cfg    = $app->config;
     my $blog   = $app->blog;
     my $param  = {};
@@ -566,6 +566,51 @@ sub get_youtube_list {
     }
 
     return $app->json_result($param);
+}
+
+sub add_asset_oembed_multi {
+    my ($app)  = @_;
+    my $q      = $app->param;
+    my $plugin = plugin();
+    my $cfg    = $app->config;
+    my $blog   = $app->blog;
+    my $param  = {};
+
+    $app->validate_magic
+        or return $app->errtrans("Invalid request.");
+
+    my $urls;
+    if ( my $json = $app->param('urls') ) {
+        if ( $json =~ /^".*"$/ ) {
+            $json =~ s/^"//;
+            $json =~ s/"$//;
+            $json = MT::Util::decode_js($json);
+        }
+        require JSON;
+        my $decode = JSON->new->utf8(0);
+        $urls = $decode->decode($json);
+    }
+    else {
+        $urls = {};
+    }
+
+    my @ids;
+    foreach my $url (@$urls) {
+        my $pkg   = MT::Asset->handler_for_asset($url);
+        my $asset = $pkg->new;
+        $asset->get_oembed($url);
+        $asset->blog_id( $blog->id );
+        $asset->save;
+        push @ids, $asset->id;
+    }
+
+    return $app->json_result( { error => 1 } ) unless @ids;
+
+    return $app->json_result(
+        {   success => 1,
+            ids     => \@ids,
+        }
+    );
 }
 
 1;

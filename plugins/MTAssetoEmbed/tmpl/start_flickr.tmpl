@@ -7,9 +7,10 @@
   margin-bottom: 10px;
 }
 
-#flickr-pages{
+#flickr-read-more{
   clear: both;
   text-align: center;
+  margin-bottom: 50px;
 }
 
 #flickr-thumbnails .flickr-thumbnail {
@@ -28,7 +29,15 @@
   background-color: #cae5f8;
 }
 
-#flickr-pages span.link {
+#flickr-thumbnails .selected img {
+  -webkit-filter: brightness(0.5);
+  -moz-filter: brightness(0.5);
+  -o-filter: brightness(0.5);
+  -ms-filter: brightness(0.5);
+  filter: brightness(0.5);
+}
+
+#flickr-read-more span.link {
   text-decoration: underline;
   color: #0000FF;
   cursor: pointer;
@@ -56,7 +65,7 @@
 
   <div id="flickr-thumbnails"></div>
 
-  <div id="flickr-pages"></div>
+  <div id="flickr-read-more"></div>
 
 </form>
 
@@ -66,10 +75,8 @@
     var blog_id = '<mt:var name="blog_id">';
 
     function get_flickr_thumbnails( method, page, param ) {
-      jQuery("#flickr-thumbnails").empty();
-      jQuery("#flickr-pages").empty();
-
-      jQuery("#flickr-thumbnails").html('<div id="progressbar" class="progressbar indeterminate"></div>');
+      if (!page)
+        page = 1;
 
       jQuery.ajax({
         type: 'POST',
@@ -86,10 +93,8 @@
           param: param
         },
         success: function(data) {
-          jQuery("#flickr-thumbnails").empty();
-
           var photos = data.result.photos;
-          var thumbnails = jQuery('<div/>');
+          var thumbnails = jQuery('<div/>').attr({ id: "flickr-page-" + page });
 
           if (photos.length > 0) {
             var count = 1;
@@ -166,22 +171,13 @@
               });
             });
             jQuery("#flickr-thumbnails").append(thumbnails);
-            if ( data.result.page > 1 ) {
-              jQuery("#flickr-pages").append(
-                jQuery('<span/>').attr({ id: 'flickr-prev-link' }).addClass('link').text('< prev')
-              );
-              jQuery('#flickr-prev-link').click(function() {
-                get_flickr_thumbnails( method, parseInt(data.result.page) - 1, param );
-              });
-            }
-            jQuery("#flickr-pages").append(
-              jQuery('<span/>').text(" " + data.result.page + "/" + data.result.pages + " ")
-            );
+            jQuery("#flickr-read-more").empty();
             if ( data.result.page < data.result.pages ) {
-              jQuery("#flickr-pages").append(
-                jQuery('<span/>').attr({ id: 'flickr-next-link' }).addClass('link').text('next >')
+              jQuery("#flickr-read-more").append(
+                jQuery('<span/>').addClass('link').text('<__trans phrase="Read More">')
               );
-              jQuery('#flickr-next-link').click(function() {
+              jQuery('#flickr-read-more').off("click");
+              jQuery('#flickr-read-more').click(function() {
                 get_flickr_thumbnails( method, parseInt(data.result.page) + 1, param );
               });
             }
@@ -214,6 +210,7 @@
           alert("<__trans phrase="Photoset was not selected.">");
           return;
         }
+        jQuery("#flickr-thumbnails").empty();
         get_flickr_thumbnails( 'photoset', 1, photoset_id );
     });
 
@@ -222,7 +219,43 @@
         if (!keyword) {
           return;
         }
+        jQuery("#flickr-thumbnails").empty();
         get_flickr_thumbnails( 'search', 1, keyword );
+    });
+
+    jQuery('#select_asset').submit( function() {
+      if ( !jQuery('#flickr-panel').hasClass('hidden') ) {
+        var urls = [];
+        jQuery("#flickr-thumbnails").find(".selected").each( function() {
+          urls.push( jQuery(this).find("img").attr("src") );
+        });
+        jQuery.ajax({
+          type: 'POST',
+          contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+          async: false,
+          url: ScriptURI,
+          dataType: 'json',
+          data: {
+            __mode: 'add_asset_oembed_multi',
+            magic_token: magic_token,
+            blog_id: blog_id,
+            urls: jQuery.toJSON(urls)
+          },
+          success: function(data) {
+            var ids = data.result.ids;
+            jQuery('#select_asset input[name="id"]').val(ids.join(','));
+          },
+          error: function(xhr, status, errorThrown) {
+            if ( xhr.status == 401 ) {
+              loginAgain(function(){
+                $this.click();
+              });
+            }
+            else
+              generate_error(xhr.status+' '+errorThrown);
+          }
+        });
+      }
     });
 
     get_flickr_thumbnails('search');

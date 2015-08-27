@@ -7,7 +7,7 @@
   margin-bottom: 10px;
 }
 
-#youtube-pages{
+#youtube-read-more{
   clear: both;
   text-align: center;
 }
@@ -28,7 +28,15 @@
   background-color: #cae5f8;
 }
 
-#youtube-pages span.link {
+#youtube-thumbnails .selected img {
+  -webkit-filter: brightness(0.5);
+  -moz-filter: brightness(0.5);
+  -o-filter: brightness(0.5);
+  -ms-filter: brightness(0.5);
+  filter: brightness(0.5);
+}
+
+#youtube-read-more span.link {
   text-decoration: underline;
   color: #0000FF;
   cursor: pointer;
@@ -47,7 +55,7 @@
 
   <div id="youtube-thumbnails"></div>
 
-  <div id="youtube-pages"></div>
+  <div id="youtube-read-more"></div>
 
 </form>
 
@@ -57,11 +65,6 @@
     var blog_id = '<mt:var name="blog_id">';
 
     function get_youtube_thumbnails( page_token, text ) {
-      jQuery("#youtube-thumbnails").empty();
-      jQuery("#youtube-pages").empty();
-
-      jQuery("#youtube-thumbnails").html('<div id="progressbar" class="progressbar indeterminate"></div>');
-
       jQuery.ajax({
         type: 'POST',
         contentType: 'application/x-www-form-urlencoded; charset=utf-8',
@@ -76,8 +79,6 @@
           page_token: page_token
         },
         success: function(data) {
-          jQuery("#youtube-thumbnails").empty();
-
           var videos = data.result.videos;
           var thumbnails = jQuery('<div/>');
 
@@ -130,22 +131,13 @@
                   .addClass('disabled');
               }
             });
-            if ( data.result.prev_page_token ) {
-              jQuery("#youtube-pages").append(
-                jQuery('<span/>').attr({ id: 'youtube-prev-link' }).addClass('link').text('< prev')
-              );
-              jQuery('#youtube-prev-link').click(function() {
-                get_youtube_thumbnails( data.result.prev_page_token, text );
-              });
-            }
-            jQuery("#youtube-pages").append(
-              jQuery('<span/>').text(" ")
-            );
+            jQuery("#youtube-read-more").empty();
             if ( data.result.next_page_token ) {
-              jQuery("#youtube-pages").append(
-                jQuery('<span/>').attr({ id: 'youtube-next-link' }).addClass('link').text('next >')
+              jQuery("#youtube-read-more").append(
+                jQuery('<span/>').addClass('link').text('<__trans phrase="Read More">')
               );
-              jQuery('#youtube-next-link').click(function() {
+              jQuery('#youtube-read-more').off("click");
+              jQuery('#youtube-read-more').click(function() {
                 get_youtube_thumbnails( data.result.next_page_token, text );
               });
             }
@@ -173,11 +165,48 @@
     }
 
     jQuery('#youtube-search-button').click( function() {
+        jQuery("#youtube-thumbnails").empty();
         var text = jQuery('#youtube-search-text').val();
         if (!text) {
           return;
         }
         get_youtube_thumbnails( '', text );
+    });
+
+    jQuery('#select_asset').submit( function() {
+      if ( !jQuery('#youtube-panel').hasClass('hidden') ) {
+        var urls = [];
+        jQuery("#youtube-thumbnails").find(".selected").each( function() {
+          var id = jQuery(this).attr("id").replace("thumb-", "");
+          urls.push( "https://www.youtube.com/watch?v=" + id );
+        });
+        jQuery.ajax({
+          type: 'POST',
+          contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+          async: false,
+          url: ScriptURI,
+          dataType: 'json',
+          data: {
+            __mode: 'add_asset_oembed_multi',
+            magic_token: magic_token,
+            blog_id: blog_id,
+            urls: jQuery.toJSON(urls)
+          },
+          success: function(data) {
+            var ids = data.result.ids;
+            jQuery('#select_asset input[name="id"]').val(ids.join(','));
+          },
+          error: function(xhr, status, errorThrown) {
+            if ( xhr.status == 401 ) {
+              loginAgain(function(){
+                $this.click();
+              });
+            }
+            else
+              generate_error(xhr.status+' '+errorThrown);
+          }
+        });
+      }
     });
 
     get_youtube_thumbnails();
