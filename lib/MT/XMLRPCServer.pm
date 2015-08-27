@@ -1571,7 +1571,38 @@ sub newMediaObject {
         ) unless $ret[2];
     }
 
-    my $local_file = File::Spec->catfile( $blog->site_path, $file->{name} );
+    my $basename    = $base . $ext;
+    my $upload_dest = $blog->site_path;
+    my $middle_path = '';
+    if ( $blog->upload_destination ) {
+        require POSIX;
+        my $user_basename = $author->basename;
+        my $now           = MT::Util::offset_time(time);
+        my $y             = POSIX::strftime( "%Y", gmtime($now) );
+        my $m             = POSIX::strftime( "%m", gmtime($now) );
+        my $d             = POSIX::strftime( "%d", gmtime($now) );
+        my $dest          = $blog->upload_destination;
+        my $root_path
+            = ( $dest =~ m/^%s/i ) ? $blog->site_path : $blog->archive_path;
+        my $extra_path = $blog->extra_path || '';
+        $dest =~ s|%s/?||g;
+        $dest =~ s|%a/?||g;
+        $dest =~ s|%u|$user_basename|g;
+        $dest =~ s|%y|$y|g;
+        $dest =~ s|%m|$m|g;
+        $dest =~ s|%d|$d|g;
+        $middle_path = File::Spec->catdir( $dest, $extra_path );
+
+        if ( $blog->allow_to_change_at_upload ) {
+            $middle_path = File::Spec->catdir( $middle_path, $uploaded_path );
+        }
+        $upload_dest = File::Spec->catdir( $root_path, $middle_path );
+    }
+    else {
+        $middle_path = $uploaded_path;
+        $upload_dest = File::Spec->catdir( $blog->site_path, $uploaded_path );
+    }
+    my $local_file = File::Spec->catfile( $upload_dest, $basename );
     $ext = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
     require MT::Asset::Image;
     if ( MT::Asset::Image->can_handle($ext) ) {
@@ -1609,7 +1640,7 @@ sub newMediaObject {
             = $fmgr->put_data( $file->{bits}, $local_file, 'upload' ) )
         or die _fault(
         MT->translate( "Error writing uploaded file: [_1]", $fmgr->errstr ) );
-    my $url = $blog->site_url . $fname;
+    my $url = MT::Util::caturl( $blog->site_url, $middle_path, $basename );
 
     require File::Basename;
     my $local_basename = File::Basename::basename($local_file);
