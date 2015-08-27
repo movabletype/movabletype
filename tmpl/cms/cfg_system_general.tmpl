@@ -240,7 +240,7 @@ function validate (f) {
     label="<__trans phrase="Image quality(JPEG)">"
     hint="<__trans phrase="Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.">"
     show_hint="1">
-    <input type="text" class="text num jpeg-quality" name="image_quality_jpeg" value="<mt:var name="image_quality_jpeg">" <mt:if name="config_warnings_imagequalityjpeg">disabled="disabled"</mt:if> />
+    <input type="text" class="text num required jpeg-quality" name="image_quality_jpeg" value="<mt:var name="image_quality_jpeg">" <mt:if name="config_warnings_imagequalityjpeg">disabled="disabled"</mt:if> />
   </mtapp:setting>
 
   <mtapp:setting
@@ -248,7 +248,7 @@ function validate (f) {
     label="<__trans phrase="Image quality(PNG)">"
     hint="<__trans phrase="Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.">"
     show_hint="1">
-    <input type="text" class="text num png-quality" name="image_quality_png" value="<mt:var name="image_quality_png">" <mt:if name="config_warnings_imagequalitypng">disabled="disabled"<mt:elseif name="image_driver" eq="imager">disabled="disabled"</mt:if> />
+    <input type="text" class="text num required png-quality" name="image_quality_png" value="<mt:var name="image_quality_png">" <mt:if name="config_warnings_imagequalitypng">disabled="disabled"<mt:elseif name="image_driver" eq="imager">disabled="disabled"</mt:if> />
   </mtapp:setting>
 </mtapp:settinggroup>
 
