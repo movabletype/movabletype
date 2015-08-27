@@ -107,11 +107,27 @@
             thumbnails.append(jQuery('<br/>').css('clear', 'both'));
             jQuery("#youtube-thumbnails").append(thumbnails);
             jQuery(".youtube-thumbnail").click( function() {
+
+              // Select thumbnail
               if ( jQuery(this).hasClass("selected") ) {
                 jQuery(this).removeClass("selected");
               }
               else {
                 jQuery(this).addClass("selected");
+              }
+
+              // Submit button
+              if (jQuery("#youtube-thumbnails .selected").length > 0) {
+                // Enable submit button
+                jQuery('.actions-bar button.primary')
+                  .removeAttr('disabled')
+                  .removeClass('disabled');
+              }
+              else {
+                // Disable submit button
+                jQuery('.actions-bar button.primary')
+                  .attr('disabled')
+                  .addClass('disabled');
               }
             });
             if ( data.result.prev_page_token ) {
