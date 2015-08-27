@@ -695,6 +695,20 @@ sub response_content {
     $app->{response_content};
 }
 
+sub set_x_frame_options_header {
+    my $app             = shift;
+    my $x_frame_options = $app->config->XFrameOptions;
+
+    unless ( lc $x_frame_options eq 'deny'
+        || lc $x_frame_options eq 'sameorigin'
+        || $x_frame_options =~ /^allow-from\s+\S+/i )
+    {
+        $x_frame_options = $app->config->default('XFrameOptions');
+    }
+
+    $app->set_header( 'X-Frame-Options', $x_frame_options );
+}
+
 sub send_http_header {
     my $app = shift;
     my ($type) = @_;
@@ -3025,6 +3039,8 @@ sub run {
     if ( my $cache_control = $app->config->HeaderCacheControl ) {
         $app->set_header( 'Cache-Control' => $cache_control );
     }
+
+    $app->set_x_frame_options_header;
 
     my ($body);
 
