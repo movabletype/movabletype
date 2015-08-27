@@ -86,20 +86,30 @@ p.msg-warning {
   </div>
 <mt:unless name="filter" eq="userpic">  
     <h2><__trans phrase="Upload Destination"></h2>
-  <mtapp:setting
-    id="site_path"
-    hint="<__trans phrase="_USAGE_UPLOAD">"
-    show_hint="1"
-    show_label="0"
-    label_class="top-label">
-    <mt:if name="destination_loop">
-      <select name="destination" id="destination">
-      <mt:loop name="destination_loop">
-        <option value="<mt:var name="path" escape="html">"><mt:var name="label" escape="html"></option>
-      </mt:loop>
-      </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
-    </mt:if>
-  </mtapp:setting>
+  <mt:if name="allow_to_change_at_upload">
+    <mtapp:setting
+      id="site_path"
+      hint="<__trans phrase="_USAGE_UPLOAD">"
+      show_hint="1"
+      show_label="0"
+      label_class="top-label">
+      <mt:if name="destination_loop">
+        <select name="destination" id="destination">
+        <mt:loop name="destination_loop">
+          <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
+        </mt:loop>
+        </select> / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+      </mt:if>
+    </mtapp:setting>
+  <mt:else>
+    <div id="site_path-field" class="field field-top-label">
+      <div class="field-content">
+        <mt:var name="upload_destination_label">/<mt:var name="extra_path">
+        <input type="hidden" name="destination" value="<mt:var name="upload_destination_value" escape="html">" />
+        <input type="hidden" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
+      </div>
+    </div>
+  </mt:if>
 </mtunless>
 
     <h2><__trans phrase="Upload Options"></h2>
@@ -110,9 +120,9 @@ p.msg-warning {
   label="<__trans phrase="Operation for a file exists">"
   label_class="left-label">
     <select name="operation_if_exists" id="operation_if_exists">
-      <option value="1"><__trans phrase="Upload and rename"></option>
-      <option value="2"><__trans phrase="Overwrite existing file"></option>
-      <option value="3"><__trans phrase="Cancel upload"></option>
+      <option value="1"<mt:if name="operation_if_exists" eq="1"> selected="selected"</mtif>><__trans phrase="Upload and rename"></option>
+      <option value="2"<mt:if name="operation_if_exists" eq="2"> selected="selected"</mtif>><__trans phrase="Overwrite existing file"></option>
+      <option value="3"<mt:if name="operation_if_exists" eq="3"> selected="selected"</mtif>><__trans phrase="Cancel upload"></option>
     </select>
 </mtapp:setting>
 <mtapp:setting

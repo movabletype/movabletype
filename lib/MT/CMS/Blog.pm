@@ -184,6 +184,19 @@ sub edit {
                 = (    $obj->max_revisions_template
                     || $MT::Revisable::MAX_REVISIONS );
             $param->{publish_empty_archive} = $obj->publish_empty_archive;
+
+            # Default options for upload
+            $param->{'upload_destination'} = $obj->upload_destination;
+            $param->{'extra_path'}         = $obj->extra_path;
+            $param->{'allow_to_change_at_upload'}
+                = $obj->allow_to_change_at_upload;
+            $param->{'operation_if_exists'}   = $obj->operation_if_exists;
+            $param->{'normalize_orientation'} = $obj->normalize_orientation;
+
+            require MT::CMS::Asset;
+            my @dest_root
+                = MT::CMS::Asset::_make_upload_destinations( $app, $obj );
+            $param->{destination_loop} = \@dest_root;
         }
         elsif ( $output eq 'cfg_entry.tmpl' ) {
             ## load entry preferences for new/edit entry page of the blog
@@ -1526,7 +1539,8 @@ sub pre_save {
         elsif ( $screen eq 'cfg_plugins' ) {
         }
         elsif ( $screen eq 'cfg_prefs' ) {
-            @fields = qw( use_revision );
+            @fields
+                = qw( use_revision allow_to_change_at_upload normalize_orientation );
         }
         for my $cb (@fields) {
             unless ( defined $app->param($cb) ) {
@@ -2391,6 +2405,14 @@ sub cfg_prefs_save {
         $blog->max_revisions_template( $app->param('max_revisions_template') )
             if $app->param('max_revisions_template');
     }
+
+    $blog->upload_destination( scalar $app->param('upload_destination') );
+    $blog->extra_path( scalar $app->param('extra_path') );
+    $blog->allow_to_change_at_upload(
+        $app->param('allow_to_change_at_upload') ? 1 : 0 );
+    $blog->operation_if_exists( scalar $app->param('operation_if_exists') );
+    $blog->normalize_orientation(
+        $app->param('normalize_orientation') ? 1 : 0 );
 
     $blog->save
         or return $app->error(

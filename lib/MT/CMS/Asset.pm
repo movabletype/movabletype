@@ -1247,6 +1247,108 @@ sub _set_start_upload_params_compat {
     $param;
 }
 
+sub _make_upload_destinations {
+    my $app = shift;
+    my ( $blog, $real_path ) = @_;
+
+    my @dest_root;
+    my $class_label = $blog->class_label;
+
+    require POSIX;
+    my $user_basename;
+    my $y;
+    my $ym;
+    my $ymd;
+
+    if ($real_path) {
+        my $now = MT::Util::offset_time(time);
+        $user_basename = $app->user->basename;
+        $y             = POSIX::strftime( "%Y", gmtime($now) );
+        $ym            = POSIX::strftime( "%Y/%m", gmtime($now) );
+        $ymd           = POSIX::strftime( "%Y/%m/%d", gmtime($now) );
+    }
+    else {
+        $user_basename = $app->translate('basename of user');
+        $y             = 'yyyy';
+        $ym            = 'yyyy/mm';
+        $ymd           = 'yyyy/mm/dd';
+    }
+
+    print STDERR "Y: $y\n";
+    print STDERR "YM: $ym\n";
+    print STDERR "YMD: $ymd\n";
+
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>', $class_label ),
+        path  => '%s',
+        };
+    push @dest_root,
+        {
+        label => $app->translate(
+            '<[_1] Root>/[_2]',
+            $class_label, $user_basename
+        ),
+        path => '%s/%u',
+        };
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>/[_2]', $class_label, $y ),
+        path  => '%s/%y',
+        };
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>/[_2]', $class_label, $ym ),
+        path  => '%s/%y/%m',
+        };
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>/[_2]', $class_label, $ymd ),
+        path  => '%s/%y/%m/%d',
+        };
+
+    if ( $blog->column('archive_path') ) {
+        $class_label = MT->translate('Archive');
+        push @dest_root,
+            {
+            label => $app->translate( '<[_1] Root>', $class_label ),
+            path  => '%a',
+            };
+        push @dest_root,
+            {
+            label => $app->translate(
+                '<[_1] Root>/[_2]]',
+                $class_label, $user_basename
+            ),
+            path => '%a/%u',
+            };
+        push @dest_root,
+            {
+            label => $app->translate( '<[_1] Root>/[_2]', $class_label, $y ),
+            path  => '%a/%y',
+            };
+        push @dest_root,
+            {
+            label => $app->translate( '<[_1] Root>/[_2]', $class_label, $ym ),
+            path  => '%a/%y/%m',
+            };
+        push @dest_root,
+            {
+            label =>
+                $app->translate( '<[_1] Root>/[_2]', $class_label, $ymd ),
+            path => '%a/%y/%m/%d',
+            };
+    }
+
+    if ( $blog->upload_destination ) {
+        foreach (@dest_root) {
+            $_->{selected} = 1 if $blog->upload_destination eq $_->{path};
+        }
+    }
+
+    return @dest_root;
+}
+
 sub _set_start_upload_params {
     my $app = shift;
     my ($param) = @_;
@@ -1266,76 +1368,35 @@ sub _set_start_upload_params {
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
         # Make a list of upload destination
-        my $dest_root;
-        my $class_label = $blog->class_label;
+        my @dest_root = _make_upload_destinations( $app, $blog, 1 );
+        $param->{destination_loop} = \@dest_root;
 
-        push @$dest_root,
-            {
-            label => $app->translate( '<[_1] Root>', $class_label ),
-            path  => '%s',
-            };
-        push @$dest_root,
-            {
-            label => $app->translate( '<[_1] Root>/username', $class_label ),
-            path  => '%s/%u',
-            };
-        push @$dest_root,
-            {
-            label => $app->translate( '<[_1] Root>/yyyy', $class_label ),
-            path  => '%s/%y',
-            };
-        push @$dest_root,
-            {
-            label => $app->translate( '<[_1] Root>/yyyy/mm', $class_label ),
-            path  => '%s/%y/%m',
-            };
-        push @$dest_root,
-            {
-            label =>
-                $app->translate( '<[_1] Root>/yyyy/mm/dd', $class_label ),
-            path => '%s/%y/%m/%d',
-            };
-
-        if ( $blog->column('archive_path') ) {
-            $class_label = MT->translate('Archive');
-            push @$dest_root,
-                {
-                label => $app->translate( '<[_1] Root>', $class_label ),
-                path  => '%a',
-                };
-            push @$dest_root,
-                {
-                label =>
-                    $app->translate( '<[_1] Root>/username', $class_label ),
-                path => '%a/%u',
-                };
-            push @$dest_root,
-                {
-                label => $app->translate( '<[_1] Root>/yyyy', $class_label ),
-                path  => '%a/%y',
-                };
-            push @$dest_root,
-                {
-                label =>
-                    $app->translate( '<[_1] Root>/yyyy/mm', $class_label ),
-                path => '%a/%y/%m',
-                };
-            push @$dest_root,
-                {
-                label =>
-                    $app->translate( '<[_1] Root>/yyyy/mm/dd', $class_label ),
-                path => '%a/%y/%m/%d',
-                };
+        # Set default upload options
+        $param->{allow_to_change_at_upload}
+            = defined $blog->allow_to_change_at_upload
+            ? $blog->allow_to_change_at_upload
+            : 1;
+        if ( !$param->{allow_to_change_at_upload} ) {
+            foreach my $opt ( grep { $_->{selected} } @dest_root ) {
+                $param->{upload_destination_label} = $opt->{label};
+                $param->{upload_destination_value} = $opt->{path};
+            }
         }
-        $param->{destination_loop} = $dest_root;
+        $param->{extra_path}          = $blog->extra_path;
+        $param->{operation_if_exists} = $blog->operation_if_exists;
+        $param->{normalize_orientation}
+            = defined $blog->normalize_orientation
+            ? $blog->normalize_orientation
+            : 1;
+    }
+    else {
+        $param->{normalize_orientation} = 1;
     }
 
     my $require_type
         = defined( $param->{require_type} ) ? $param->{require_type} : '';
     $require_type =~ s/\W//g;
-    $param->{require_type}          = $require_type;
-    $param->{normalize_orientation} = 1;
-
+    $param->{require_type}    = $require_type;
     $param->{max_upload_size} = $app->config->CGIMaxUpload;
 
     $param;
@@ -2025,6 +2086,7 @@ sub _upload_file {
         $fmgr = $blog->file_mgr;
 
         ## Build upload destination path
+        require POSIX;
         my $user_basename = $app->user->basename;
         my $now           = MT::Util::offset_time(time);
         my $y             = POSIX::strftime( "%Y", gmtime($now) );
