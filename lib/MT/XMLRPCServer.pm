@@ -1591,7 +1591,8 @@ sub newMediaObject {
         $dest =~ s|%y|$y|g;
         $dest =~ s|%m|$m|g;
         $dest =~ s|%d|$d|g;
-        $middle_path = File::Spec->catdir( $dest, $extra_path );
+        my @dest = split '/', $dest;
+        $middle_path = File::Spec->catdir( @dest, $extra_path );
 
         if ( $blog->allow_to_change_at_upload ) {
             $middle_path = File::Spec->catdir( $middle_path, $uploaded_path );

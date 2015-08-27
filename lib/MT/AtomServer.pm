@@ -1078,9 +1078,38 @@ sub _upload_to_asset {
         ) unless $ret[2];
     }
 
-    my $local_relative = File::Spec->catfile( '%r',             $fname );
-    my $local          = File::Spec->catfile( $blog->site_path, $fname );
-    my $fmgr           = $blog->file_mgr;
+    my $upload_dest = $blog->site_path;
+    my $middle_path;
+    my $middle_url;
+    if ( $blog->upload_destination ) {
+        require POSIX;
+        my $user_basename = $user->basename;
+        my $now           = MT::Util::offset_time(time);
+        my $y             = POSIX::strftime( "%Y", gmtime($now) );
+        my $m             = POSIX::strftime( "%m", gmtime($now) );
+        my $d             = POSIX::strftime( "%d", gmtime($now) );
+        my $dest          = $blog->upload_destination;
+        my $root_path
+            = ( $dest =~ m/^%s/i ) ? $blog->site_path : $blog->archive_path;
+        my $extra_path = $blog->extra_path || '';
+        $dest =~ s|%s/?||g;
+        $dest =~ s|%a/?||g;
+        $dest =~ s|%u|$user_basename|g;
+        $dest =~ s|%y|$y|g;
+        $dest =~ s|%m|$m|g;
+        $dest =~ s|%d|$d|g;
+        my @dest = split '/', $dest;
+        $middle_path = File::Spec->catdir( @dest, $extra_path );
+        $middle_url = MT::Util::caturl( $dest, $extra_path );
+        $upload_dest = File::Spec->catdir( $root_path, $middle_path );
+    }
+
+    my $local_relative
+        = $middle_path
+        ? File::Spec->catfile( '%r', $middle_path, $fname )
+        : File::Spec->catfile( '%r', $fname );
+    my $local = File::Spec->catfile( $upload_dest, $fname );
+    my $fmgr = $blog->file_mgr;
     my $path;
     ( $base, $path, $ext ) = File::Basename::fileparse( $local, '\.[^\.]*' );
     $ext = $MIME2EXT{$type} unless $ext;
@@ -1153,7 +1182,13 @@ sub _upload_to_asset {
         $asset->modified_by( $user->id );
     }
     my $original = $asset->clone;
-    my $url      = '%r/' . $base . $ext;
+    my $url;
+    if ($middle_path) {
+        $url = MT::Util::caturl( '%r', $middle_url, $base . $ext );
+    }
+    else {
+        $url = '%r/' . $base . $ext;
+    }
     $asset->url($url);
     if ($is_image) {
         $asset->image_width($w);
