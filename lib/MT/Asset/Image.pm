@@ -889,11 +889,6 @@ sub rotate {
             'Rotating image failed: Invalid parameter.');
     }
 
-    # NetPBM driver cannot use negative angle.
-    if ( $angle < 0 ) {
-        $angle += 360;
-    }
-
     $asset->_transform( sub { $_[0]->rotate( Degrees => $angle ) } );
 }
 
