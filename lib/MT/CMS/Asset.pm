@@ -1274,10 +1274,6 @@ sub _make_upload_destinations {
         $ymd           = 'yyyy/mm/dd';
     }
 
-    print STDERR "Y: $y\n";
-    print STDERR "YM: $ym\n";
-    print STDERR "YMD: $ymd\n";
-
     push @dest_root,
         {
         label => $app->translate( '<[_1] Root>', $class_label ),
