@@ -1754,8 +1754,10 @@ MT.App = new Class( App, {
 
         var data = DOM.getFormData( this.form );
         data["_autosave"] = 1;
-        if(data["_type"] == "entry")
+        if(data["_type"] == "entry" || data["_type"] == "page")
             data["__mode"] = "save_entry";
+        if(data["_type"] == "template")
+            data["__mode"] = "save";
 
         if ( this.cpeList )
             this.cpeList.forEach( function( cpe ) { cpe.autoSave( data ) } );
