@@ -246,8 +246,6 @@ sub _create_return_url {
     $path .= '/' unless $path =~ m!/$!;
     $path .= MT->config->CommentScript;
 
-    my $blog_id = $blog->id || '';
-
     my $static = $q->param('static') || '';
     $static = MT::Util::encode_url($static)
         if $static =~ m/[^a-zA-Z0-9_.~%-]/;
@@ -256,13 +254,7 @@ sub _create_return_url {
     $key = MT::Util::encode_url($key)
         if $key =~ m/[^a-zA-Z0-9_.~%-]/;
 
-    my $entry_id = $q->param('entry_id') || '';
-    $entry_id =~ s/\D//g;
-
     my $return_to = $path . '?__mode=handle_sign_in' . '&key=' . $key;
-
-    $return_to .= '&entry_id=' . $entry_id
-        if $entry_id;
 
     return $return_to;
 

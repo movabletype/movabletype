@@ -19,46 +19,14 @@ sub _key {
     return 'GoogleOpenIDConnect';
 }
 
-sub _is_effective_plugindata {
-    my ( $app, $plugindata, $client_id ) = @_;
-
-    my $result = $plugindata
-        && $plugindata->data->{client_id};
-    $app->error(undef);
-
-    $result;
-}
-
-sub _extract_blog_from_plugindata {
-    my ( $app, $current_blog, $plugindata ) = @_;
-
-    my @empty = ( undef, undef );
-    return @empty unless $plugindata;
-
-    my ($blog_id) = $plugindata->key =~ m/blog:(\d+)/;
-    if ( !$blog_id || $blog_id != $current_blog->id ) {
-        my $blog;
-
-        if ($blog_id) {
-            $blog = $app->model('blog')->load($blog_id);
-        }
-        else {
-            $blog_id = '';
-        }
-
-        return $blog_id, $blog;
-    }
-
-    return @empty;
-}
-
 sub config_tmpl {
-    my $app    = MT->instance;
-    my $user   = $app->user;
-    my $plugin = plugin();
-    my $blog   = $app->blog;
-    my $scope  = $blog ? ( 'blog:' . $blog->id ) : 'system';
-    my $config = $plugin->get_config_hash($scope);
+    my $app           = MT->instance;
+    my $user          = $app->user;
+    my $plugin        = plugin();
+    my $blog          = $app->blog;
+    my $scope         = $blog ? ( 'blog:' . $blog->id ) : 'system';
+    my $config        = $plugin->get_config_hash($scope);
+    my $system_config = $plugin->get_config_hash('system');
     $app->param( 'key', _key() );
 
     my $missing = undef;
@@ -69,11 +37,25 @@ sub config_tmpl {
         unless eval { require OIDC::Lite::Client::WebServer }
         || eval     { require OIDC::Lite::Model::IDToken };
 
+    my $current_client = '';
+    if ( $config->{client_id} && $config->{client_secret} ) {
+        $current_client = 'blog';
+    }
+    elsif ( $system_config->{client_id} && $system_config->{client_secret} ) {
+        $current_client = 'system';
+    }
+
     $plugin->load_tmpl(
         'web_service_config.tmpl',
         {   missing_modules => $missing,
+            current_client  => $current_client,
             (   map { ( "google_oidc_$_" => $config->{$_} || '' ) }
                     keys(%$config)
+            ),
+            (   map {
+                    ( "google_oidc_system_$_" => $system_config->{$_} || '' )
+                    }
+                    keys(%$system_config)
             ),
             redirect_uri => MT::Auth::OIDC::_create_return_url( $app, $blog ),
             (   $blog
@@ -93,21 +75,11 @@ sub save_config {
     my $scope = $obj ? ( 'blog:' . $obj->id ) : 'system';
     my $config = $plugin->get_config_hash($scope);
 
-    my $old_client_id  = $config->{client_id}  || '';
-    my $old_profile_id = $config->{profile_id} || '';
-
     for my $k (qw(client_id client_secret)) {
         $config->{$k} = $app->param( 'google_oidc_' . $k );
     }
     $plugin->save_config( $config, $scope );
 
-}
-
-sub _render_api_error {
-    my ( $app, $params ) = @_;
-    $params ||= {};
-
-    plugin()->load_tmpl( 'api_error.tmpl', $params );
 }
 
 1;

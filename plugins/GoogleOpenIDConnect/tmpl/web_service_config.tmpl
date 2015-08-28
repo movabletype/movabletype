@@ -5,9 +5,20 @@
 <mt:Else>
 <mtapp:settinggroup id="google-oidc-settings">
 
+<div id="use-system-goidc-client" style="display: <mt:If name="current_client" eq="system">block<mt:else>none;</mt:If>">
+<mtapp:setting
+   id="goidc_setup_own_client_id"
+   label="<__trans phrase="OpenIDConnect settings">">
+<__trans phrase="This [_2] is using the settings of [_1]." params="<a href="<mt:Var name="mt_url">?__mode=cfg_web_services&amp;_type=blog"><__trans phrase="System" /></a>%%<mt:var name="scope_label" escape="html">" />
+<a href="#" id="goidc_setup_own_client_id" class="button"><__trans phrase="Other Google account" /></a>
+<input type="hidden" id="google_oidc_system_client_id" value="<mt:Var name="google_oidc_system_client_id" encode_html="1" />" />
+</mtapp:setting>
+</div>
+
+<div id="use-own-goidc-client" style="<mt:If name="current_client" eq="system">display: none</mt:If>">
 <mt:SetVarBlock name="hint"><__trans phrase="Create an OpenIDConnect application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a>" /></mt:SetVarBlock>
 <mtapp:setting
-   id="ga_redirect_uri"
+   id="goidc_redirect_uri"
    label="<__trans phrase="Redirect URI of the OpenIDConnect application">"
    hint="$hint"
    show_hint="1">
@@ -27,6 +38,18 @@
    show_hint="0">
     <input type="text" id="google_oidc_client_secret" name="google_oidc_client_secret" value="<mt:Var name="google_oidc_client_secret" encode_html="1" />" />
 </mtapp:setting>
+</div>
 
+
+<script type="text/javascript">
+jQuery(function($) {
+    $('#goidc_setup_own_client_id').on('click', function() {
+        $('#use-system-goidc-client').hide();
+        $('#use-own-goidc-client').show();
+        return false;
+    });
+});
+</script>
 </mtapp:settinggroup>
+
 </mt:If>

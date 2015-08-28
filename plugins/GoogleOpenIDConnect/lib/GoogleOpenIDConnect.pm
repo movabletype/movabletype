@@ -9,7 +9,7 @@ package GoogleOpenIDConnect;
 use strict;
 use warnings;
 
-our @EXPORT = qw( plugin translate new_ua );
+our @EXPORT = qw( plugin translate get_pugindata );
 use base qw(Exporter);
 
 sub translate {
@@ -20,20 +20,30 @@ sub plugin {
     MT->component('GoogleOpenIDConnect');
 }
 
-sub extract_response_error {
-    my ($res) = @_;
-
-    my $message = eval {
-        MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
-    };
-    if ( ref $message ) {
-        $message = $message->{error};
+sub get_pugindata {
+    my $scope  = shift;
+    my $plugin = plugin();
+    my ( $scope_plugindata, $system_plugindata );
+    if ( $scope ne 'system' ) {
+        $scope_plugindata = $plugin->get_config_hash($scope);
     }
-    if ( ref $message ) {
-        $message = $message->{message};
-    }
+    my $system_plugindata = $plugin->get_config_hash('system');
 
-    $res->status_line, $message;
+    MT->log( scalar( keys(%$scope_plugindata) ) );
+    MT->log( scalar( keys(%$system_plugindata) ) );
+
+    if (   $scope_plugindata->{client_id}
+        && $scope_plugindata->{client_secret} )
+    {
+        return $scope_plugindata;
+    }
+    elsif ($system_plugindata->{client_id}
+        && $system_plugindata->{client_secret} )
+    {
+        return $system_plugindata;
+    }
+    else {
+        return {};
+    }
 }
-
 1;

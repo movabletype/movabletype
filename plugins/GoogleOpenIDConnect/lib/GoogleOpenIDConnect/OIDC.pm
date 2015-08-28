@@ -27,14 +27,15 @@ sub condition {
         return 0;
     }
 
-    my $plugin  = plugin();
-    my $blog_id = $blog->id;
-    my $app     = MT->instance;
-    my $google_client_id
-        = $plugin->get_config_value( 'client_id', "blog:$blog_id" );
-    my $google_client_secret
-        = $plugin->get_config_value( 'client_secret', "blog:$blog_id" );
-    return 1 if $google_client_id && $google_client_secret;
+    my $plugin               = plugin();
+    my $blog_id              = $blog->id;
+    my $app                  = MT->instance;
+    my $config_scope         = $blog_id ? ( 'blog:' . $blog_id ) : 'system';
+    my $config               = get_pugindata($config_scope);
+    my $google_client_id     = $config->{"client_id"};
+    my $google_client_secret = $config->{"client_secret"};
+    return 1 if ( $google_client_id && $google_client_secret );
+
     $$reason
         = '<a href="?__mode=cfg_web_services&amp;blog_id='
         . $blog->id . '">'
@@ -71,7 +72,7 @@ sub _client {
     my $blog         = shift;
     my $config_scope = $blog ? ( 'blog:' . $blog->id ) : 'system';
     my $plugin       = plugin();
-    my $config       = $plugin->get_config_hash($config_scope);
+    my $config       = get_pugindata($config_scope);
 
     my $google_client_id     = $config->{"client_id"};
     my $google_client_secret = $config->{"client_secret"};
