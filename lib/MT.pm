@@ -2916,6 +2916,7 @@ sub core_commenter_authenticators {
             logo              => 'images/comment/google.png',
             logo_small        => 'images/comment/google_logo.png',
             order             => 13,
+            disable           => 1,
         },
         'Yahoo' => {
             class             => 'MT::Auth::Yahoo',
