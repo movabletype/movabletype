@@ -17,7 +17,8 @@ sub upload {
 
     return $app->error(403) unless $app->can_do('upload');
 
-    $app->param( 'site_path', 1 );
+    $app->param( 'site_path', 1 )
+        if !defined $app->param('site_path');
 
     # Rename parameters.
     my %keys = (

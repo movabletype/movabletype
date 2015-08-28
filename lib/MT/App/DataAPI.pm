@@ -2129,6 +2129,30 @@ sub core_endpoints {
             handler        => "${pkg}v3::Auth::authentication",
             requires_login => 0,
         },
+        {
+            id             => 'upload_asset',
+            route          => '/assets/upload',
+            verb           => 'POST',
+            version        => 3,
+            handler        => "${pkg}v3::Asset::upload",
+            default_params => {
+                autoRenameIfExists   => 0,
+                normalizeOrientation => 1,
+            },
+            error_codes => { 403 => 'Do not have permission to upload.', },
+        },
+        {
+            id             => 'upload_asset_for_site',
+            route          => '/sites/:site_id/assets/upload',
+            verb           => 'POST',
+            version        => 3,
+            handler        => "${pkg}v3::Asset::upload",
+            default_params => {
+                autoRenameIfExists   => 0,
+                normalizeOrientation => 1,
+            },
+            error_codes => { 403 => 'Do not have permission to upload.', },
+        },
     ];
 }
 
