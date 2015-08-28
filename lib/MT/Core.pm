@@ -2107,7 +2107,8 @@ BEGIN {
             'AuthLDAPPassword'      => { alias => 'LDAPAuthPassword' },
             'AuthLDAPSASLMechanism' => { alias => 'LDAPAuthSASLMechanism' },
 
-            'RestrictedPSGIApp' => { type => 'ARRAY' },
+            'RestrictedPSGIApp' => { type    => 'ARRAY' },
+            'XFrameOptions'     => { default => 'SAMEORIGIN' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

@@ -471,6 +471,20 @@ sub js_add_category {
 
     $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $original );
 
+    # Update category/folder order by low cost method.
+    # So, broken order cannot be updated correctly.
+    my $order_field = "${type}_order";
+    my @order = split ',', ( $blog->$order_field || '' );
+    if ($parent) {
+        @order = map { $_ == $parent->id ? ( $_, $obj->id ) : $_ } @order;
+    }
+    else {
+        unshift @order, $obj->id;
+    }
+    my $new_order = join ',', @order;
+    $blog->$order_field($new_order);
+    $blog->save;    # Ignore error.
+
     return $app->json_result(
         {   id       => $obj->id,
             basename => $obj->basename

@@ -10,6 +10,9 @@ window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:va
   <mt:var name="insert_script">
 </mt:if>
 
+// Set dirty flag
+window.parent.app.setDirty();
+ 
 // remove the no assets text if it's there
 var Node = window.parent.document.getElementById("empty-asset-list");
 if (Node) {

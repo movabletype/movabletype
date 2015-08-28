@@ -217,7 +217,7 @@
 { "r" : "1", "t" : "<MTEntries offset=\"2\"> * <MTEntryTitle></MTEntries>", "e" : " * Verse 4 * Verse 3 * Verse 2 * Verse 1"}, #216
 { "r" : "1", "t" : "<MTArchiveList archive_type='Category'><MTArchiveCategory></MTArchiveList>", "e" : "foosubfoo"}, #217
 { "r" : "1", "t" : "<MTArchiveList><MTArchiveFile></MTArchiveList>", "e" : "a_rainy_day.htmlverse_5.htmlverse_4.htmlverse_3.htmlverse_2.htmlverse_1.html"}, #218
-{ "r" : "1", "t" : "<MTArchives><MTArchiveType></MTArchives>", "e" : "IndividualMonthlyWeeklyDailyCategoryPage"}, #219
+{ "r" : "1", "t" : "<MTArchives><MTArchiveType></MTArchives>", "e" : "IndividualMonthlyWeeklyDailyCategoryPageAuthor"}, #219
 { "r" : "1", "t" : "<MTArchiveList archive_type='Monthly'><MTArchiveDateEnd></MTArchiveList>", "e" : "January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanuary 31, 1963 11:59 PMJanuary 31, 1962 11:59 PMJanuary 31, 1961 11:59 PM"}, #220
 { "r" : "1", "t" : "<MTArchiveList archive_type='Daily'><MTArchiveDateEnd></MTArchiveList>", "e" : "January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanuary 31, 1963 11:59 PMJanuary 31, 1962 11:59 PMJanuary 31, 1961 11:59 PM"}, #221
 { "r" : "1", "t" : "<MTArchiveList archive_type='Weekly'><MTArchiveDateEnd></MTArchiveList>", "e" : "February  4, 1978 11:59 PMFebruary  6, 1965 11:59 PMFebruary  1, 1964 11:59 PMFebruary  2, 1963 11:59 PMFebruary  3, 1962 11:59 PMFebruary  4, 1961 11:59 PM"}, #222
@@ -353,7 +353,7 @@
 { "r" : "1", "t" : "<MTAuthors username='Chuck D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</MTAuthors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #352
 { "r" : "0", "t" : "<MTArchiveList type='Monthly'><MTPages><MTPageTitle></MTPages></MTArchiveList>", "e" : "Watching the River Flow" }, #353
 { "r" : "1", "t" : "<MTAuthors sort_by='display_name' sort_order='descend'><MTAuthorID>;</MTAuthors>", "e" : "3;2;"}, #354
-{ "r" : "1", "t" : "<MTArchives><MTArchiveLabel></MTArchives>", "e" : "EntryMonthlyWeeklyDailyCategoryPage"}, #355
+{ "r" : "1", "t" : "<MTArchives><MTArchiveLabel></MTArchives>", "e" : "EntryMonthlyWeeklyDailyCategoryPageAuthor"}, #355
 { "r" : "1", "t" : "<MTEntries><$MTEntryID$>:<MTComments><MTIfCommenterIsAuthor><MTIfCommenterIsEntryAuthor>2<MTElse>1</MTIfCommenterIsEntryAuthor><MTElse>0</MTIfCommenterIsAuthor>;</MTComments></MTEntries>", "e" : "1:0;0;0;8:0;7:6:2;1;0;5:0;4:"}, #356
 { "r" : "1", "t" : "<MTPages id='20'><$MTPageMore$></MTPages>", "e" : "<p>I don't have much to say,</p>"}, #357
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetlabel$></MTAssets>", "e" : "Image photo"}, #358
@@ -806,5 +806,6 @@
 { "r" : "1", "t" : "<MTAssets limit='1'><MTAssetBlogID></MTAssets>", "e" : "1"}, #790
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicAsset><MTAssetBlogID></MTAuthorUserpicAsset></MTAuthors>", "e" : "0"}, #791
 { "r" : "1", "t" : "<MTAssets limit='1'><MTAssetBlogID pad='1'></MTAssets>", "e" : "000001"}, #792
-{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicAsset><MTAssetBlogID pad='1'></MTAuthorUserpicAsset></MTAuthors>", "e" : "000000"} #793
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicAsset><MTAssetBlogID pad='1'></MTAuthorUserpicAsset></MTAuthors>", "e" : "000000"}, #793
+{ "r" : "1", "t" : "<MTEntries limit='1'><MTArchiveLink archive_type=\"Author\"></MTEntries>", "e" : "http://narnia.na/nana/archives/author/chucky-dee/"} #794
 ]
