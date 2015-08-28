@@ -1007,7 +1007,7 @@ sub _hdlr_if_category {
         $cat           = $e->category;
         $entry_context = 1;
     }
-    my $cats;
+    my $cats = [];
     if ( $cat && ( $primary || !$entry_context ) ) {
         $cats = [$cat];
     }
