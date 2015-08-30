@@ -111,6 +111,8 @@ sub get_oembed {
         $asset->file_size($file_size);
 
         foreach my $k ( keys(%$json) ) {
+            my $column_defs = $asset->column_defs;
+            next if ( !$column_defs->{$k} && !$asset->has_meta($k) );
             $asset->$k( $json->{$k} ) if $json->{$k};
         }
     }
