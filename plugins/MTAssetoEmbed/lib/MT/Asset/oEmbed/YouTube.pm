@@ -118,4 +118,69 @@ sub thumbnail_basename {
     return ( $id, $ext );
 }
 
+sub insert_options {
+    my $asset = shift;
+    my ($param) = @_;
+
+    my $app    = MT->instance;
+    my $blog   = $asset->blog or return;
+    my $plugin = plugin();
+
+    $param->{ 'align_' . $_ }
+        = ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
+        for qw(none left center right);
+
+    $param->{embed_width}
+        = $blog->image_default_width
+        || $asset->image_width
+        || 0;
+
+    return $app->build_page(
+        $plugin->load_tmpl('cms/include/insert_options_youtube.tmpl'),
+        $param );
+}
+
+sub as_html {
+    my $asset = shift;
+    my ($param) = @_;
+
+    $asset->html;
+}
+
+sub on_upload {
+    my $asset = shift;
+    my ($param) = @_;
+
+    my $width = $param->{embed_width};
+    my $url   = $asset->url;
+    my $res   = $asset->get_oembed_data( $url, $width );
+    if ( $res->is_success ) {
+        require JSON;
+        my $json = JSON::from_json( $res->content() );
+        my $html = $json->{html};
+
+        my $wrap_style = 'class="mt-image-' . $param->{align} . '" ';
+        if ( $param->{align} eq 'none' ) {
+            $wrap_style .= q{style=""};
+        }
+        elsif ( $param->{align} eq 'left' ) {
+            $wrap_style .= q{style="float: left; margin: 0 20px 20px 0;"};
+        }
+        elsif ( $param->{align} eq 'right' ) {
+            $wrap_style .= q{style="float: right; margin: 0 0 20px 20px;"};
+        }
+        elsif ( $param->{align} eq 'center' ) {
+            $wrap_style
+                .= q{style="text-align: center; display: block; margin: 0 auto 20px;"};
+        }
+
+        $asset->html( "<div " . $wrap_style . ">" . $html . "</div>" );
+        $asset->save;
+    }
+    else {
+        return $asset->error(
+            MT->translate( "Error embed: [_1]", $res->content ) );
+    }
+}
+
 1;
