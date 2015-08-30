@@ -563,6 +563,13 @@ function setLicense() {
       </div>
     </mtapp:setting>
     <mtapp:setting
+      id="auto_rename_non_ascii"
+      class="has-option"
+      label="<__trans phrase="Rename filename">">
+      <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb" />
+      <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically."></label>
+    </mtapp:setting>
+    <mtapp:setting
       id="operation_if_exists"
       label="<__trans phrase="Operation for a file exists">">
       <select name="operation_if_exists" id="operation_if_exists">

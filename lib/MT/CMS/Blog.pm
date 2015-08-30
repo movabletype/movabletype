@@ -192,6 +192,7 @@ sub edit {
                 = $obj->allow_to_change_at_upload;
             $param->{'operation_if_exists'}   = $obj->operation_if_exists;
             $param->{'normalize_orientation'} = $obj->normalize_orientation;
+            $param->{'auto_rename_non_ascii'} = $obj->auto_rename_non_ascii;
 
             require MT::CMS::Asset;
             my @dest_root
@@ -1540,7 +1541,7 @@ sub pre_save {
         }
         elsif ( $screen eq 'cfg_prefs' ) {
             @fields
-                = qw( use_revision allow_to_change_at_upload normalize_orientation );
+                = qw( use_revision allow_to_change_at_upload normalize_orientation auto_rename_non_ascii );
         }
         for my $cb (@fields) {
             unless ( defined $app->param($cb) ) {
@@ -2413,6 +2414,8 @@ sub cfg_prefs_save {
     $blog->operation_if_exists( scalar $app->param('operation_if_exists') );
     $blog->normalize_orientation(
         $app->param('normalize_orientation') ? 1 : 0 );
+    $blog->auto_rename_non_ascii(
+        $app->param('auto_rename_non_ascii') ? 1 : 0 );
 
     $blog->save
         or return $app->error(

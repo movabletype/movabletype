@@ -114,6 +114,13 @@ p.msg-warning {
 
     <h2><__trans phrase="Upload Options"></h2>
 <mtapp:setting
+  id="auto_rename_non_ascii"
+  label="<__trans phrase="Rename filename">"
+  show_label="1">
+      <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb" />
+      <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically."></label>
+</mtapp:setting>
+<mtapp:setting
   id="operation_if_exists"
   show_hint="0"
   show_label="1"
@@ -131,7 +138,7 @@ p.msg-warning {
   show_label="1">
       <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb" />
       <label for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
-    </mtapp:setting>
+</mtapp:setting>
 </form>
 
 <div id="upload-progress"></div>
@@ -194,6 +201,7 @@ function createFormData(file) {
   }
   fd.append('normalize_orientation', normalizeOrientation);
   fd.append('operation_if_exists', jQuery('#operation_if_exists').val() );
+  fd.append('auto_rename_non_ascii', jQuery('#auto_rename_non_ascii').val() );  
 
   fd.append('destination', jQuery('#destination').val() );
   fd.append('extra_path', jQuery('#extra_path').val() );
