@@ -59,19 +59,7 @@ sub get_oembed {
 
     $url = Encode::encode_utf8($url) unless Encode::is_utf8($url);
 
-    my $endpoint = $asset->properties->{endpoint};
-    my $uri      = URI->new($endpoint);
-    my $query    = {};
-    $query->{url}       = $url;
-    $query->{maxwidth}  = $maxwidth if $maxwidth;
-    $query->{maxheight} = $maxheight if $maxheight;
-    $query->{format}    = 'json';
-    $uri->query_form($query);
-
-    my $ua = MT->new_ua();
-    $ua->agent( 'MovableType/' . MT->version_id );
-    $ua->ssl_opts( verify_hostname => 0 );
-    my $res = $ua->get( $uri->as_string );
+    my $res = $asset->get_oembed_data( $url, $maxwidth, $maxheight );
 
     if ( $res->is_success ) {
         require JSON;
@@ -121,6 +109,27 @@ sub get_oembed {
             MT->translate( "Error embed: [_1]", $res->content ) );
     }
     return $asset;
+}
+
+sub get_oembed_data {
+    my $asset = shift;
+    my ( $url, $maxwidth, $maxheight ) = @_;
+
+    my $endpoint = $asset->properties->{endpoint};
+    my $uri      = URI->new($endpoint);
+    my $query    = {};
+    $query->{url}       = $url;
+    $query->{maxwidth}  = $maxwidth if $maxwidth;
+    $query->{maxheight} = $maxheight if $maxheight;
+    $query->{format}    = 'json';
+    $uri->query_form($query);
+
+    my $ua = MT->new_ua();
+    $ua->agent( 'MovableType/' . MT->version_id );
+    $ua->ssl_opts( verify_hostname => 0 );
+    my $res = $ua->get( $uri->as_string );
+
+    return $res;
 }
 
 sub url_schemes { [] }

@@ -24,6 +24,7 @@ __PACKAGE__->install_properties(
             'license'            => 'vchar meta',
             'license_id'         => 'integer meta',
             'license_url'        => 'vclob meta',
+            'thumb_sizes'        => 'vblob meta',
         },
         child_of => [ 'MT::Blog', 'MT::Website', ],
     }
@@ -159,7 +160,14 @@ sub get_original_sizes {
         return $asset->error(
             translate( 'Flickr getSizes error: ' . $data->{message} ) )
             if ( $data->{stat} eq 'fail' );
-        my @size      = @{ $data->{sizes}{size} };
+        my @size = @{ $data->{sizes}{size} };
+
+        my @thumb_sizes = grep {
+                   ( $_->{width} <= 640 && $_->{height} <= 640 )
+                && ( $_->{width} > 75 && $_->{height} > 75 )
+        } @size;
+        $asset->thumb_sizes( \@thumb_sizes );
+
         my $max_width = 0;
         my $max_size_item;
         foreach my $item (@size) {
@@ -203,6 +211,68 @@ sub thumbnail_basename {
         ? $1
         : '';
     return ( $file, $ext );
+}
+
+sub insert_options {
+    my $asset = shift;
+    my ($param) = @_;
+
+    my $app    = MT->instance;
+    my $blog   = $asset->blog or return;
+    my $plugin = plugin();
+
+    $param->{ 'align_' . $_ }
+        = ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
+        for qw(none left center right);
+
+    $param->{thumb_sizes_loop} = $asset->thumb_sizes;
+
+    return $app->build_page(
+        $plugin->load_tmpl('cms/include/insert_options_flickr.tmpl'),
+        $param );
+}
+
+sub as_html {
+    my $asset = shift;
+    my ($param) = @_;
+
+    $asset->html;
+}
+
+sub on_upload {
+    my $asset = shift;
+    my ($param) = @_;
+
+    my ( $width, $height ) = split ',', $param->{thumb_size};
+    my $url = $asset->url;
+    my $res = $asset->get_oembed_data( $url, $width, $height );
+    if ( $res->is_success ) {
+        require JSON;
+        my $json = JSON::from_json( $res->content() );
+        my $html = $json->{html};
+
+        my $wrap_style = 'class="mt-image-' . $param->{align} . '" ';
+        if ( $param->{align} eq 'none' ) {
+            $wrap_style .= q{style=""};
+        }
+        elsif ( $param->{align} eq 'left' ) {
+            $wrap_style .= q{style="float: left; margin: 0 20px 20px 0;"};
+        }
+        elsif ( $param->{align} eq 'right' ) {
+            $wrap_style .= q{style="float: right; margin: 0 0 20px 20px;"};
+        }
+        elsif ( $param->{align} eq 'center' ) {
+            $wrap_style
+                .= q{style="text-align: center; display: block; margin: 0 auto 20px;"};
+        }
+
+        $asset->html( "<div " . $wrap_style . ">" . $html . "</div>" );
+        $asset->save;
+    }
+    else {
+        return $asset->error(
+            MT->translate( "Error embed: [_1]", $res->content ) );
+    }
 }
 
 1;
