@@ -2082,16 +2082,10 @@ sub _upload_file {
         $fmgr = $blog->file_mgr;
 
         ## Build upload destination path
-        require POSIX;
-        my $user_basename = $app->user->basename;
-        my $now           = MT::Util::offset_time(time);
-        my $y             = POSIX::strftime( "%Y", gmtime($now) );
-        my $m             = POSIX::strftime( "%m", gmtime($now) );
-        my $d             = POSIX::strftime( "%d", gmtime($now) );
-        my $dest          = $q->param('destination');
+        my $dest = $q->param('destination');
+        my $dest_url;
         my $root_path;
         my $is_sitepath;
-
         if ( $dest =~ m/^%s/i ) {
 
             # sitepath
@@ -2102,14 +2096,9 @@ sub _upload_file {
             $root_path   = $blog->archive_path;
             $is_sitepath = 0;
         }
-        $dest =~ s|%s/?||g;
-        $dest =~ s|%a/?||g;
-        $dest =~ s|%u|$user_basename|g;
-        $dest =~ s|%y|$y|g;
-        $dest =~ s|%m|$m|g;
-        $dest =~ s|%d|$d|g;
+        $dest = MT::Util::build_upload_destination($dest);
 
-        # Make directory if not exists
+        # Make directory if 1not exists
         $extra_path = $q->param('extra_path') || '';
         if ($extra_path) {
             if ( $extra_path =~ m!\.\.|\0|\|! ) {

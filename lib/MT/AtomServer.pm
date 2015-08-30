@@ -1081,33 +1081,40 @@ sub _upload_to_asset {
     my $upload_dest = $blog->site_path;
     my $middle_path;
     my $middle_url;
-    if ( $blog->upload_destination ) {
-        require POSIX;
-        my $user_basename = $user->basename;
-        my $now           = MT::Util::offset_time(time);
-        my $y             = POSIX::strftime( "%Y", gmtime($now) );
-        my $m             = POSIX::strftime( "%m", gmtime($now) );
-        my $d             = POSIX::strftime( "%d", gmtime($now) );
-        my $dest          = $blog->upload_destination;
-        my $root_path
-            = ( $dest =~ m/^%s/i ) ? $blog->site_path : $blog->archive_path;
-        my $extra_path = $blog->extra_path || '';
-        $dest =~ s|%s/?||g;
-        $dest =~ s|%a/?||g;
-        $dest =~ s|%u|$user_basename|g;
-        $dest =~ s|%y|$y|g;
-        $dest =~ s|%m|$m|g;
-        $dest =~ s|%d|$d|g;
-        my @dest = split '/', $dest;
-        $middle_path = File::Spec->catdir( @dest, $extra_path );
-        $middle_url = MT::Util::caturl( $dest, $extra_path );
-        $upload_dest = File::Spec->catdir( $root_path, $middle_path );
+    my $base_path = '%r';
+    if ( defined $blog->allow_to_change_at_upload
+        && !$blog->allow_to_change_at_upload )
+    {
+        if ( $blog->upload_destination ) {
+            my $dest = $blog->upload_destination;
+            my $root_path;
+            if ( $dest =~ m/^%s/i ) {
+                $root_path = $blog->site_path;
+            }
+            else {
+                $root_path = $blog->archive_path;
+                $base_path = '%a';
+            }
+            my $extra_path = $blog->extra_path || '';
+            $dest = MT::Util::build_upload_destination($dest);
+            $middle_path = File::Spec->catdir( $dest, $extra_path );
+            ( $middle_url = $middle_path ) =~ s!\\!/!g;
+            $upload_dest = File::Spec->catdir( $root_path, $middle_path );
+        }
+        else {
+            $middle_path = '';
+            $middle_url  = '';
+        }
+    }
+    else {
+        $middle_path = '';
+        $middle_url  = '';
     }
 
     my $local_relative
         = $middle_path
-        ? File::Spec->catfile( '%r', $middle_path, $fname )
-        : File::Spec->catfile( '%r', $fname );
+        ? File::Spec->catfile( $base_path, $middle_path, $fname )
+        : File::Spec->catfile( $base_path, $fname );
     my $local = File::Spec->catfile( $upload_dest, $fname );
     my $fmgr = $blog->file_mgr;
     my $path;
@@ -1184,10 +1191,10 @@ sub _upload_to_asset {
     my $original = $asset->clone;
     my $url;
     if ($middle_path) {
-        $url = MT::Util::caturl( '%r', $middle_url, $base . $ext );
+        $url = MT::Util::caturl( $base_path, $middle_url, $base . $ext );
     }
     else {
-        $url = '%r/' . $base . $ext;
+        $url = $base_path . '/' . $base . $ext;
     }
     $asset->url($url);
     if ($is_image) {

@@ -27,31 +27,19 @@ sub upload {
     my $site = MT->model('blog')->load($site_id);
     $app->blog($site);
 
-    if ( $site ) {
+    if ($site) {
         if ( defined $site->allow_to_change_at_upload
             && !$site->allow_to_change_at_upload )
         {
             # Ignore path parameter, using default upload destination instead.
             my $path;
             if ( $site->upload_destination ) {
-                require POSIX;
-                my $author        = $app->user;
-                my $user_basename = $author->basename;
-                my $now           = MT::Util::offset_time(time);
-                my $y             = POSIX::strftime( "%Y", gmtime($now) );
-                my $m             = POSIX::strftime( "%m", gmtime($now) );
-                my $d             = POSIX::strftime( "%d", gmtime($now) );
-                my $dest          = $site->upload_destination;
-                my $extra_path    = $site->extra_path || '';
-                $dest =~ s|%s/?||g;
-                $dest =~ s|%a/?||g;
-                $dest =~ s|%u|$user_basename|g;
-                $dest =~ s|%y|$y|g;
-                $dest =~ s|%m|$m|g;
-                $dest =~ s|%d|$d|g;
-                my @dest = split '/', $dest;
-                $path = File::Spec->catdir( @dest, $extra_path );
-                $app->param( 'site_path', ( $site->upload_destination =~ m/^%s/i ) ? 1 : 0 );
+                my $dest = $site->upload_destination;
+                my $extra_path = $site->extra_path || '';
+                $dest = MT::Util::build_upload_destination($dest);
+                $path = File::Spec->catdir( $dest, $extra_path );
+                $app->param( 'site_path',
+                    ( $site->upload_destination =~ m/^%s/i ) ? 1 : 0 );
             }
             else {
                 $path = '';

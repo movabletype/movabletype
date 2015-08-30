@@ -1579,14 +1579,8 @@ sub newMediaObject {
         && !$blog->allow_to_change_at_upload )
     {
         if ( $blog->upload_destination ) {
-            require POSIX;
-            my $user_basename = $author->basename;
-            my $now           = MT::Util::offset_time(time);
-            my $y             = POSIX::strftime( "%Y", gmtime($now) );
-            my $m             = POSIX::strftime( "%m", gmtime($now) );
-            my $d             = POSIX::strftime( "%d", gmtime($now) );
-            my $dest          = $blog->upload_destination;
-            my $extra_path    = $blog->extra_path || '';
+            my $dest = $blog->upload_destination;
+            my $extra_path = $blog->extra_path || '';
             my $root_path;
 
             if ( $dest =~ m/^%s/i ) {
@@ -1597,16 +1591,10 @@ sub newMediaObject {
                 $is_site_root = 0;
             }
 
-            $dest =~ s|%s/?||g;
-            $dest =~ s|%a/?||g;
-            $dest =~ s|%u|$user_basename|g;
-            $dest =~ s|%y|$y|g;
-            $dest =~ s|%m|$m|g;
-            $dest =~ s|%d|$d|g;
-            my @dest = split '/', $dest;
+            $dest = MT::Util::build_upload_destination( $dest, $author );
             $middle_path = MT::Util::caturl( $dest, $extra_path );
             $upload_dest
-                = File::Spec->catdir( $root_path, @dest, $extra_path );
+                = File::Spec->catdir( $root_path, $dest, $extra_path );
         }
         else {
             $middle_path = '';
@@ -1656,9 +1644,17 @@ sub newMediaObject {
             = $fmgr->put_data( $file->{bits}, $local_file, 'upload' ) )
         or die _fault(
         MT->translate( "Error writing uploaded file: [_1]", $fmgr->errstr ) );
-    my $url
-        = MT::Util::caturl(
-        ( $is_site_root ? $blog->site_url : $blog->archive_url ),
+    $middle_path =~ s!\\!/!g;
+    $middle_path =~ s!^/!!;
+    my $url = MT::Util::caturl(
+        (     $is_site_root
+            ? $blog->site_url
+            : $blog->archive_url
+        ),
+        $middle_path,
+        $basename
+    );
+    my $asset_url = MT::Util::caturl( ( $is_site_root ? '%r' : '%a' ),
         $middle_path, $basename );
 
     require File::Basename;
@@ -1701,7 +1697,7 @@ sub newMediaObject {
         $asset->modified_by( $author->id );
     }
     my $original = $asset->clone;
-    $asset->url($url);
+    $asset->url($asset_url);
     if ($is_image) {
         $asset->image_width($w);
         $asset->image_height($h);

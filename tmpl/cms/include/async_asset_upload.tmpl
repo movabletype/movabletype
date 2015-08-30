@@ -105,8 +105,8 @@ p.msg-warning {
     <div id="site_path-field" class="field field-top-label">
       <div class="field-content">
         <mt:var name="upload_destination_label">/<mt:var name="extra_path">
-        <input type="hidden" name="destination" value="<mt:var name="upload_destination_value" escape="html">" />
-        <input type="hidden" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
+        <input type="hidden" id="destination" name="destination" value="<mt:var name="upload_destination_value" escape="html">" />
+        <input type="hidden" id="extra_path" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
       </div>
     </div>
   </mt:if>
@@ -286,7 +286,8 @@ function uploadFiles(files) {
 </mt:if>    
   var max_upload_size = <mt:var name="max_upload_size">;
 
-<mt:unless name="filter" eq="userpic">  
+<mt:unless name="filter" eq="userpic">
+  <mt:if name="allow_to_change_at_upload">    
   // Validate extra path
   var $extra_path = jQuery('#extra_path');
   if ($extra_path.val().length > 0 ) {
@@ -294,6 +295,7 @@ function uploadFiles(files) {
       return;
     }
   }
+  </mt:if>
 </mt:unless>
 
 // Disable submit button
@@ -385,6 +387,7 @@ jQuery('#file').change( function(e) {
 
 <mt:setvarblock name="jq_js_include" append="1">
   <mt:unless name="filter" eq="userpic">  
+    <mt:if name="allow_to_change_at_upload">    
   function is_valid_path(path_){
     var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
     str = encodeURIComponent(str);
@@ -405,6 +408,7 @@ jQuery('#file').change( function(e) {
   jQuery.mtValidateAddMessages({
     "#extra_path": '<__trans phrase="You must set a valid path." escape="singlequotes">',
   });
+    </mt:if>
   </mt:unless>
   <mt:if name="dialog">
   jQuery('#upload-asset-panel').on('changePanel', function() {
