@@ -232,6 +232,7 @@
         if ( !jQuery("#list_on_index").mtValidate('simple2') ) return false;
         if ( !jQuery("#words_in_excerpt").mtValidate('simple') ) return false;
         if ( !jQuery("#basename_limit").mtValidate('simple') ) return false;
+        if ( !jQuery("#image_default_width").mtValidate('simple') ) return false;
         jQuery('input[name="page_custom_prefs"], input[name="entry_custom_prefs"]').removeAttr("disabled");
     });
 </mt:setvarblock>
@@ -275,6 +276,48 @@
       </ul>
     </mtapp:setting>
   </mt:unless>
+  </mtapp:settinggroup>
+
+  <h2><__trans phrase="Image default insertion options"></h2>
+  <mtapp:settinggroup id="default-insert-options">
+
+    <mtapp:setting
+       id="image_default_thumb"
+       label="<__trans phrase="Use thumbnail">">
+      <input type="checkbox" name="image_default_thumb" id="image_default_thumb" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
+    <label for="image_default_thumb"><__trans phrase="Use thumbnail"></label>
+    (<label for="image_default_width"><__trans phrase="width:"></label> <input type="text" name="image_default_width" id="image_default_width" class="text num" value="<mt:var name="thumb_width" escape="html">"/> <__trans phrase="pixels">)
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="image_default_align"
+       label="<__trans phrase="Alignment">">
+      <ul id="alignment-<mt:var name="id">">
+        <li style="display: inline-block">
+          <input type="radio" name="image_default_align" id="image_default_align-none" class="rb" value="none" <mt:if name="align_none">checked="checked" </mt:if>/>
+          <label for="image_default_align-none" class="icon-left icon-left-xwide icon-align icon-align-none"><__trans phrase="None"></label>
+        </li>
+        <li style="display: inline-block">
+          <input type="radio" name="image_default_align" id="image_default_align-left" class="rb" value="left" <mt:if name="align_left">checked="checked" </mt:if>/>
+          <label for="image_default_align-left" class="icon-left-xwide icon-align icon-align-left"><__trans phrase="Left"></label>
+        </li>
+        <li style="display: inline-block">
+          <input type="radio" name="image_default_align" id="image_default_align-center" class="rb" value="center" <mt:if name="align_center">checked="checked" </mt:if>/>
+          <label for="image_default_align-center" class="icon-left-xwide icon-align icon-align-center"><__trans phrase="Center"></label>
+        </li>
+        <li style="display: inline-block">
+          <input type="radio" name="image_default_align" id="image_default_align-right" class="rb" value="right" <mt:if name="align_right">checked="checked" </mt:if>/>
+          <label for="image_default_align-right" class="icon-left-xwide icon-align icon-align-right"><__trans phrase="Right"></label>
+        </li>
+      </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="image_default_popup"
+       label="<__trans phrase="Link to popup window">">
+      <input type="checkbox" name="image_default_popup" id="image_default_popup" value="1" <mt:if name="popup">checked="checked" </mt:if>/>
+      <label for="image_default_popup"><__trans phrase="Link image to full-size version in a popup window."></label>
+    </mtapp:setting>
   </mtapp:settinggroup>
 
 <mt:setvarblock name="action_buttons" id="action-buttons">
