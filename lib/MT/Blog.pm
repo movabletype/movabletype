@@ -117,6 +117,7 @@ __PACKAGE__->install_properties(
             'allow_to_change_at_upload' => 'boolean meta',
             'operation_if_exists'       => 'integer meta',
             'normalize_orientation'     => 'boolean meta',
+            'auto_rename_non_ascii'     => 'boolean meta',
         },
         meta    => 1,
         audit   => 1,

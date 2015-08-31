@@ -105,14 +105,21 @@ p.msg-warning {
     <div id="site_path-field" class="field field-top-label">
       <div class="field-content">
         <mt:var name="upload_destination_label">/<mt:var name="extra_path">
-        <input type="hidden" name="destination" value="<mt:var name="upload_destination_value" escape="html">" />
-        <input type="hidden" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
+        <input type="hidden" id="destination" name="destination" value="<mt:var name="upload_destination_value" escape="html">" />
+        <input type="hidden" id="extra_path" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
       </div>
     </div>
   </mt:if>
 </mtunless>
 
     <h2><__trans phrase="Upload Options"></h2>
+<mtapp:setting
+  id="auto_rename_non_ascii"
+  label="<__trans phrase="Rename filename">"
+  show_label="1">
+      <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb" />
+      <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically."></label>
+</mtapp:setting>
 <mtapp:setting
   id="operation_if_exists"
   show_hint="0"
@@ -131,7 +138,7 @@ p.msg-warning {
   show_label="1">
       <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb" />
       <label for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
-    </mtapp:setting>
+</mtapp:setting>
 </form>
 
 <div id="upload-progress"></div>
@@ -194,6 +201,7 @@ function createFormData(file) {
   }
   fd.append('normalize_orientation', normalizeOrientation);
   fd.append('operation_if_exists', jQuery('#operation_if_exists').val() );
+  fd.append('auto_rename_non_ascii', jQuery('#auto_rename_non_ascii').val() );  
 
   fd.append('destination', jQuery('#destination').val() );
   fd.append('extra_path', jQuery('#extra_path').val() );
@@ -286,7 +294,8 @@ function uploadFiles(files) {
 </mt:if>    
   var max_upload_size = <mt:var name="max_upload_size">;
 
-<mt:unless name="filter" eq="userpic">  
+<mt:unless name="filter" eq="userpic">
+  <mt:if name="allow_to_change_at_upload">    
   // Validate extra path
   var $extra_path = jQuery('#extra_path');
   if ($extra_path.val().length > 0 ) {
@@ -294,6 +303,7 @@ function uploadFiles(files) {
       return;
     }
   }
+  </mt:if>
 </mt:unless>
 
 // Disable submit button
@@ -385,6 +395,7 @@ jQuery('#file').change( function(e) {
 
 <mt:setvarblock name="jq_js_include" append="1">
   <mt:unless name="filter" eq="userpic">  
+    <mt:if name="allow_to_change_at_upload">    
   function is_valid_path(path_){
     var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
     str = encodeURIComponent(str);
@@ -405,6 +416,7 @@ jQuery('#file').change( function(e) {
   jQuery.mtValidateAddMessages({
     "#extra_path": '<__trans phrase="You must set a valid path." escape="singlequotes">',
   });
+    </mt:if>
   </mt:unless>
   <mt:if name="dialog">
   jQuery('#upload-asset-panel').on('changePanel', function() {

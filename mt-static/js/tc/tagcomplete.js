@@ -175,12 +175,20 @@ TC.TagComplete.prototype.keyUp = function( evt )
     var caret_pos = TC.getCaretPosition(element);
     if (caret_pos == null) caret_pos = element.value.length - 1;
     var ch = element.value.charAt(caret_pos);
-    if ( (evt.keyCode > 64) && (evt.keyCode < 91) ) {
-        return false;
+    if ( ( String.fromCharCode(evt.keyCode) == this.delimiter ) ||
+              ( ( evt.keyCode == 188 ) && ( this.delimiter == ',' ) ) ) {
+        this.currentWord = '';
+        this.clearCompletions();
+    }
+    else if ( (evt.keyCode > 64) && (evt.keyCode < 91) ) { // uppercase A-Z
+        this.updateWord( String.fromCharCode(evt.keyCode).toLowerCase() );
+    }
+    else if ( (evt.keyCode > 47) && (evt.keyCode < 58) ) { // 0-9
+        if (evt.shiftKey) return true;
+        this.updateWord( String.fromCharCode(evt.keyCode) );
     }
     else if (this.symbols.test(ch)) {
         this.updateWord( ch.toLowerCase() );
-        return true;
     }
     
     return true;

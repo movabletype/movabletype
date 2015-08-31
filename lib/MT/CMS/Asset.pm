@@ -1271,10 +1271,6 @@ sub _make_upload_destinations {
         $ymd           = 'yyyy/mm/dd';
     }
 
-    print STDERR "Y: $y\n";
-    print STDERR "YM: $ym\n";
-    print STDERR "YMD: $ymd\n";
-
     push @dest_root,
         {
         label => $app->translate( '<[_1] Root>', $class_label ),
@@ -1314,7 +1310,7 @@ sub _make_upload_destinations {
         push @dest_root,
             {
             label => $app->translate(
-                '<[_1] Root>/[_2]]',
+                '<[_1] Root>/[_2]',
                 $class_label, $user_basename
             ),
             path => '%a/%u',
@@ -1385,6 +1381,10 @@ sub _set_start_upload_params {
             = defined $blog->normalize_orientation
             ? $blog->normalize_orientation
             : 1;
+        $param->{auto_rename_non_ascii}
+            = defined $blog->auto_rename_non_ascii
+            ? $blog->auto_rename_non_ascii
+            : 1;
     }
     else {
         $param->{normalize_orientation} = 1;
@@ -1447,6 +1447,16 @@ sub _upload_file_compat {
             error => $app->translate( "Invalid filename '[_1]'", $basename )
         );
     }
+
+    if (   $app->param('auto_rename_non_ascii')
+        && $basename =~ m/[^\x20-\x7E]/ )
+    {
+        # Auto-rename
+        my $path_info = { basename => $basename };
+        _rename_filename( $app, $path_info );
+        $basename = $path_info->{basename};
+    }
+
     $basename
         = Encode::is_utf8($basename)
         ? $basename
@@ -2083,16 +2093,10 @@ sub _upload_file {
         $fmgr = $blog->file_mgr;
 
         ## Build upload destination path
-        require POSIX;
-        my $user_basename = $app->user->basename;
-        my $now           = MT::Util::offset_time(time);
-        my $y             = POSIX::strftime( "%Y", gmtime($now) );
-        my $m             = POSIX::strftime( "%m", gmtime($now) );
-        my $d             = POSIX::strftime( "%d", gmtime($now) );
-        my $dest          = $q->param('destination');
+        my $dest = $q->param('destination');
+        my $dest_url;
         my $root_path;
         my $is_sitepath;
-
         if ( $dest =~ m/^%s/i ) {
 
             # sitepath
@@ -2103,14 +2107,9 @@ sub _upload_file {
             $root_path   = $blog->archive_path;
             $is_sitepath = 0;
         }
-        $dest =~ s|%s/?||g;
-        $dest =~ s|%a/?||g;
-        $dest =~ s|%u|$user_basename|g;
-        $dest =~ s|%y|$y|g;
-        $dest =~ s|%m|$m|g;
-        $dest =~ s|%d|$d|g;
+        $dest = MT::Util::build_upload_destination($dest);
 
-        # Make directory if not exists
+        # Make directory if 1not exists
         $extra_path = $q->param('extra_path') || '';
         if ($extra_path) {
             if ( $extra_path =~ m!\.\.|\0|\|! ) {
@@ -2149,11 +2148,12 @@ sub _upload_file {
                 = ( $root_path, $extra_path, $basename );
             my $local_file = File::Spec->catfile(
                 ( $root_path, $extra_path, $basename ) );
+
             if ( $fmgr->exists($local_file) ) {
                 if ( $q->param('operation_if_exists') == 1 ) {
 
                     # Auto-rename
-                    _rename_filename( $app, $fmgr, $path_info );
+                    _rename_filename( $app, $path_info );
                 }
                 elsif ( $q->param('operation_if_exists') == 2 ) {
 
@@ -2178,6 +2178,14 @@ sub _upload_file {
                         fname      => $basename,
                     );
                 }
+            }
+
+            # Rename non-ascii filename automatically if option provided.
+            if (   $q->param('auto_rename_non_ascii')
+                && $path_info->{basename} =~ m/[^\x20-\x7E]/ )
+            {
+                # Auto-rename
+                _rename_filename( $app, $path_info );
             }
 
             $app->run_callbacks( $app_id . '_asset_upload_path',
@@ -2474,7 +2482,7 @@ sub _is_valid_tempfile_basename {
 }
 
 sub _rename_filename {
-    my ( $app, $fmgr, $path_info ) = @_;
+    my ( $app, $path_info ) = @_;
 
     my $ext = (
         File::Basename::fileparse(
