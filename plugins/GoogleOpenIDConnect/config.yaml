@@ -3,7 +3,7 @@ name: GoogleOpenIDConnect
 version: 1.0
 author_link: http://www.movabletype.org/
 author_name: Six Apart, Ltd.
-description: <MT_TRANS phrase="Provides commenter registration through Google OpenIDConnect.">
+description: <MT_TRANS phrase="Provides commenter registration through Google OpenID Connect.">
 l10n_class: GoogleOpenIDConnect::L10N
 
 settings:
@@ -20,7 +20,7 @@ web_services:
 commenter_authenticators:
     GoogleOpenIDConnect:
         class: GoogleOpenIDConnect::OIDC
-        label: GoogleOpenIDConnect
+        label: Google OpenID Connect
         logo: images/comment/google.png
         logo_small: images/comment/google_logo.png
         login_form: |

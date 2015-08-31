@@ -1,4 +1,4 @@
-<h2><__trans phrase="Google OpenIDConnect"></h2>
+<h2><__trans phrase="Google OpenID Connect"></h2>
 
 <mt:If name="missing_modules">
 <p><mt:Var name="missing_modules" /></p>
@@ -8,7 +8,7 @@
 <div id="use-system-goidc-client" style="display: <mt:If name="current_client" eq="system">block<mt:else>none;</mt:If>">
 <mtapp:setting
    id="goidc_setup_own_client_id"
-   label="<__trans phrase="OpenIDConnect settings">">
+   label="<__trans phrase="OpenID Connect settings">">
 <__trans phrase="This [_2] is using the settings of [_1]." params="<a href="<mt:Var name="mt_url">?__mode=cfg_web_services&amp;_type=blog"><__trans phrase="System" /></a>%%<mt:var name="scope_label" escape="html">" />
 <a href="#" id="goidc_setup_own_client_id" class="button"><__trans phrase="Other Google account" /></a>
 <input type="hidden" id="google_oidc_system_client_id" value="<mt:Var name="google_oidc_system_client_id" encode_html="1" />" />
@@ -16,10 +16,10 @@
 </div>
 
 <div id="use-own-goidc-client" style="<mt:If name="current_client" eq="system">display: none</mt:If>">
-<mt:SetVarBlock name="hint"><__trans phrase="Create an OpenIDConnect application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a>" /></mt:SetVarBlock>
+<mt:SetVarBlock name="hint"><__trans phrase="Create an OpenID Connect application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a>" /></mt:SetVarBlock>
 <mtapp:setting
    id="goidc_redirect_uri"
-   label="<__trans phrase="Redirect URI of the OpenIDConnect application">"
+   label="<__trans phrase="Redirect URI of the OpenID Connect application">"
    hint="$hint"
    show_hint="1">
     <span id="google_oidc_redirect_uri_text"><mt:Var name="redirect_uri" encode_html="1" /></span>
@@ -27,14 +27,14 @@
 
 <mtapp:setting
    id="goidc_client_id"
-   label="<__trans phrase="Client ID of the OpenIDConnect application">"
+   label="<__trans phrase="Client ID of the OpenID Connect application">"
    show_hint="0">
     <input type="text" id="google_oidc_client_id" name="google_oidc_client_id" value="<mt:Var name="google_oidc_client_id" encode_html="1" />" />
 </mtapp:setting>
 
 <mtapp:setting
    id="goidc_client_secret"
-   label="<__trans phrase="Client secret of the OpenIDConnect application">"
+   label="<__trans phrase="Client secret of the OpenID Connect application">"
    show_hint="0">
     <input type="text" id="google_oidc_client_secret" name="google_oidc_client_secret" value="<mt:Var name="google_oidc_client_secret" encode_html="1" />" />
 </mtapp:setting>

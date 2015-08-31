@@ -356,7 +356,7 @@ sub init_core_registry {
             'OIDC::Lite' => {
                 link => 'http://search.cpan.org/dist/OIDC-Lite/',
                 label =>
-                    'OIDC::Lite is required if you would like to be able to allow commenters to be authenticated by Google as OpenIDConnect.',
+                    'OIDC::Lite is required if you would like to be able to allow commenters to be authenticated by Google as OpenID Connect.',
             },
         },
         required_packages => {

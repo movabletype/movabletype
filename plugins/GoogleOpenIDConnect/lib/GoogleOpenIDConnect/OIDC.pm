@@ -39,7 +39,7 @@ sub condition {
     $$reason
         = '<a href="?__mode=cfg_web_services&amp;blog_id='
         . $blog->id . '">'
-        . $plugin->translate('Set up GoogleOpenIDConnect') . '</a>';
+        . $plugin->translate('Set up Google OpenID Connect') . '</a>';
 
     return 0;
 }
