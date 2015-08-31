@@ -27,10 +27,7 @@ sub get_pugindata {
     if ( $scope ne 'system' ) {
         $scope_plugindata = $plugin->get_config_hash($scope);
     }
-    my $system_plugindata = $plugin->get_config_hash('system');
-
-    MT->log( scalar( keys(%$scope_plugindata) ) );
-    MT->log( scalar( keys(%$system_plugindata) ) );
+    $system_plugindata = $plugin->get_config_hash('system');
 
     if (   $scope_plugindata->{client_id}
         && $scope_plugindata->{client_secret} )

@@ -113,8 +113,8 @@ sub handle_sign_in {
     unless ( $userinfo_res->is_success ) {
         return $app->error( $userinfo_res->message );
     }
-    my $user_info    = $userinfo_res->content;
-    my $user_info    = decode_json($user_info);
+    my $user_info = $userinfo_res->content;
+    $user_info = decode_json($user_info);
     my $nickname     = $user_info->{name};
     my $sub          = $user_info->{sub};
     my $author_class = $app->model('author');
