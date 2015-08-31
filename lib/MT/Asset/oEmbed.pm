@@ -94,8 +94,6 @@ sub get_oembed {
         }
 
         my $file_size = $asset->get_file_size;
-        return $asset->error( MT->translate("file_size could not be got.") )
-            unless $file_size;
         $asset->file_size($file_size);
 
         foreach my $k ( keys(%$json) ) {
@@ -388,7 +386,7 @@ sub get_original_file_url {
 }
 
 sub get_file_size {
-    0;
+    undef;
 }
 
 sub get_token_data {

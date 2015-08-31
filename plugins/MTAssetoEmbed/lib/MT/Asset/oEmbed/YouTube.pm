@@ -83,11 +83,11 @@ sub get_file_size {
     if ( $res->is_success ) {
         my $data
             = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
-        return 0 unless $data;
+        return undef unless $data;
         return $data->{items}[0]{fileDetails}{fileSize}
             if $data->{items}[0]{fileDetails}{fileSize};
     }
-    return 0;
+    return undef;
 }
 
 sub get_token_data {
