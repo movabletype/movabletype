@@ -246,6 +246,13 @@ function createUploadBlock () {
   this.progressbar.progressbar({ value: 0 });
   jQuery('#upload-progress').append(this.uploadBlock);
 
+  // Recalculate block height
+  jQuery('#content-body-right-body').height(
+    jQuery('#content-body-right-body').height()
+    + this.uploadBlock.height()
+    + parseFloat(this.uploadBlock.css('padding-bottom'))
+    + parseFloat(this.uploadBlock.css('padding-top')) + 10);
+
   this.setFilename = function(filename) {
     this.filename.html(filename);
   }
