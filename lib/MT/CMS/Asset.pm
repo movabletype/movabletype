@@ -1313,7 +1313,7 @@ sub _make_upload_destinations {
         push @dest_root,
             {
             label => $app->translate(
-                '<[_1] Root>/[_2]]',
+                '<[_1] Root>/[_2]',
                 $class_label, $user_basename
             ),
             path => '%a/%u',
