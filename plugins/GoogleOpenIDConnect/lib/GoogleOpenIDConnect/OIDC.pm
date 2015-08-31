@@ -31,7 +31,7 @@ sub condition {
     my $blog_id              = $blog->id;
     my $app                  = MT->instance;
     my $config_scope         = $blog_id ? ( 'blog:' . $blog_id ) : 'system';
-    my $config               = get_pugindata($config_scope);
+    my $config               = get_plugindata($config_scope);
     my $google_client_id     = $config->{"client_id"};
     my $google_client_secret = $config->{"client_secret"};
     return 1 if ( $google_client_id && $google_client_secret );
@@ -72,7 +72,7 @@ sub _client {
     my $blog         = shift;
     my $config_scope = $blog ? ( 'blog:' . $blog->id ) : 'system';
     my $plugin       = plugin();
-    my $config       = get_pugindata($config_scope);
+    my $config       = get_plugindata($config_scope);
 
     my $google_client_id     = $config->{"client_id"};
     my $google_client_secret = $config->{"client_secret"};

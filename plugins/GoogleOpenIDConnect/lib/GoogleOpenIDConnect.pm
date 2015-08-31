@@ -9,7 +9,7 @@ package GoogleOpenIDConnect;
 use strict;
 use warnings;
 
-our @EXPORT = qw( plugin translate get_pugindata );
+our @EXPORT = qw( plugin translate get_plugindata );
 use base qw(Exporter);
 
 sub translate {
@@ -20,7 +20,7 @@ sub plugin {
     MT->component('GoogleOpenIDConnect');
 }
 
-sub get_pugindata {
+sub get_plugindata {
     my $scope  = shift;
     my $plugin = plugin();
     my ( $scope_plugindata, $system_plugindata );
