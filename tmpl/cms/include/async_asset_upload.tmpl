@@ -46,6 +46,14 @@
     margin: 0 80px 0 0;
 }
 
+.upload-status-block-left-content.full-width {
+    margin: 0 0 0 0;
+}
+
+.upload-status-block-left-content.full-width {
+    margin: 0 0 0 0;
+}
+
 .upload-cancel {
     margin-right: 0.25em;
     text-align: right;
@@ -255,7 +263,7 @@ function createUploadBlock () {
     this.cancelUpload.show();
     this.cancelUpload.click( function() {
       xhr.abort();
-      parent.setCancelResult(trans('Cancelled'))
+      parent.setCancelResult(trans('Cancelled: [_1]', parent.filename.html()));
     });
   }
 
@@ -268,12 +276,15 @@ function createUploadBlock () {
     this.cancelUpload.hide();
     this.progressbar.hide();
     this.filename.hide();
+    jQuery('.upload-status-block-left-content').addClass('full-width');  
     jQuery('<p class="msg-error">' + err + '</p>').appendTo(this.uploadResult);
   }
 
   this.setCancelResult = function(msg) {
     this.cancelUpload.hide();
     this.progressbar.hide();
+    this.filename.hide();
+    jQuery('.upload-status-block-left-content').addClass('full-width');  
     jQuery('<p class="msg-warning">' + msg+ '</p>').appendTo(this.uploadResult);
   }
 
