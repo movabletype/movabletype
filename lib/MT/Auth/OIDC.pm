@@ -5,38 +5,28 @@
 # $Id$
 
 package MT::Auth::OIDC;
+
 use strict;
+
 use JSON qw/encode_json decode_json/;
+use MT;
 use MT::Util;
 
-my $authorization_endpoint = 'http://localhost:5001/authorize';
-my $token_endpoint         = 'http://localhost:5001/token';
-my $userinfo_endpoint      = 'http://localhost:5001/userinfo';
-my $scope                  = 'openid email profile phone address';
+sub authorization_endpoint { }
+sub token_endpoint         { }
+sub userinfo_endpoint      { }
+sub scope                  {'openid email profile'}
 
-BEGIN {
-    eval {
-        require OIDC::Lite::Client::WebServer;
-        require OIDC::Lite::Model::IDToken;
-    };
-}
+sub client_id     { }
+sub client_secret { }
 
 sub login {
-    my $class    = shift;
-    my ($app)    = @_;
-    my $q        = $app->param;
-    my $blog     = $app->model('blog')->load( scalar $q->param('blog_id') );
-    my $identity = $q->param('openid_url');
-    if (   !$identity
-        && ( my $u = $q->param('openid_userid') )
-        && $class->can('url_for_userid') )
-    {
-        $identity = $class->url_for_userid($u);
-    }
-
+    my $class = shift;
+    my ($app) = @_;
+    my $q     = $app->param;
+    my $blog  = $app->model('blog')->load( scalar $q->param('blog_id') );
     return $app->redirect(
         $class->_uri_to_authorization_endpoint( $app, $blog ) );
-
 }
 
 sub handle_sign_in {
@@ -101,6 +91,7 @@ sub handle_sign_in {
     };
 
     # ID Token validation
+    require OIDC::Lite::Model::IDToken;
     my $id_token = OIDC::Lite::Model::IDToken->load( $token->id_token );
     $info->{'id_token'} = {
         header  => encode_json( $id_token->header ),
@@ -113,8 +104,7 @@ sub handle_sign_in {
     unless ( $userinfo_res->is_success ) {
         return $app->error( $userinfo_res->message );
     }
-    my $user_info = $userinfo_res->content;
-    $user_info = decode_json($user_info);
+    my $user_info    = decode_json( $userinfo_res->content );
     my $nickname     = $user_info->{name};
     my $sub          = $user_info->{sub};
     my $author_class = $app->model('author');
@@ -166,25 +156,38 @@ sub handle_sign_in {
     return ( $cmntr, $session );
 }
 
+sub set_commenter_properties {
+    my $class = shift;
+    my ( $commenter, $user_info ) = @_;
+    my $nickname = $user_info->{name};
+    my $sub      = $user_info->{sub};
+    my $email    = $user_info->{email};
+
+    $commenter->nickname( $nickname || $user_info->url );
+    $commenter->email( $email || '' );
+}
+
 sub _get_userinfo {
     my ( $class, $access_token ) = @_;
 
-    my $req = HTTP::Request->new( GET => $userinfo_endpoint );
+    require HTTP::Request;
+    my $req = HTTP::Request->new( GET => $class->userinfo_endpoint );
     $req->header( Authorization => sprintf( q{Bearer %s}, $access_token ) );
-    return LWP::UserAgent->new->request($req);
+
+    my $ua = MT->new_ua( { paranoid => 1 } );
+    $ua->request($req);
 }
 
 sub _uri_to_authorization_endpoint {
-    my $class   = shift;
-    my $app     = shift;
-    my $blog    = shift;
-    my $q       = $app->param;
+    my ( $class, $app, $blog ) = @_;
+    my $q = $app->param;
     my $blog_id = $blog->id || '';
 
     my $static = $q->param('static') || '';
     $static = MT::Util::encode_url($static)
         if $static =~ m/[^a-zA-Z0-9_.~%-]/;
 
+    require MT::App;
     my $state_session = MT->model('session')->new();
     $state_session->kind('OT');    # One time Token
     $state_session->id( MT::App::make_magic_token() );
@@ -208,27 +211,22 @@ sub _uri_to_authorization_endpoint {
     my $client = $class->_client( $app, $blog );
     $client->uri_to_redirect(
         redirect_uri => _create_return_url( $app, $blog ),
-        scope        => $scope,
+        scope        => $class->scope,
         state        => $state_string,
-        extra => { access_type => q{offline}, },
+        extra => { access_type => q{offline} },
     );
 }
 
 sub _client {
-    my $class = shift;
-    my $app   = shift;
-    my $blog  = shift;
+    my ( $class, $app, $blog ) = @_;
 
-    my $client_id     = $blog->meta("client_id");
-    my $client_secret = $blog->meta("client_id");
-
+    require OIDC::Lite::Client::WebServer;
     return OIDC::Lite::Client::WebServer->new(
-        id               => $client_id,
-        secret           => $client_secret,
-        authorize_uri    => $authorization_endpoint,
-        access_token_uri => $token_endpoint,
+        id               => $class->client_id( $app,     $blog ),
+        secret           => $class->client_secret( $app, $blog ),
+        authorize_uri    => $class->authorization_endpoint,
+        access_token_uri => $class->token_endpoint,
     );
-
 }
 
 sub _create_return_url {
@@ -257,7 +255,6 @@ sub _create_return_url {
     my $return_to = $path . '?__mode=handle_sign_in' . '&key=' . $key;
 
     return $return_to;
-
 }
 
 1;
