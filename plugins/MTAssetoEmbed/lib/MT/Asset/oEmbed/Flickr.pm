@@ -79,7 +79,6 @@ sub get_file_size {
     return unless $url;
 
     my $ua = new_ua();
-    $ua->ssl_opts( verify_hostname => 0 );
 
     my $req = HTTP::Request->new( 'GET', $url );
     my $res = $ua->request($req);
