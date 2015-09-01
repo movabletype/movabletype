@@ -10,7 +10,7 @@ use strict;
 use base qw( MT::Asset::oEmbed );
 
 use MTAssetoEmbed;
-use MTAssetoEmbed::OAuth2;
+use MTAssetoEmbed::YouTube;
 use HTTP::Request::Common;
 
 __PACKAGE__->install_properties(

@@ -13,7 +13,7 @@ use URI;
 use Net::OAuth;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 use MTAssetoEmbed;
-use MTAssetoEmbed::OAuth2;
+use MTAssetoEmbed::YouTube;
 use MTAssetoEmbed::Flickr;
 
 sub post_init {

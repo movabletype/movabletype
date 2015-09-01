@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MTAssetoEmbed::OAuth2;
+package MTAssetoEmbed::YouTube;
 
 use strict;
 use warnings;
@@ -143,7 +143,7 @@ sub get_token_from_plugindata {
 
     my $scope       = 'blog:' . $blog_id;
     my $plugin_data = $plugin->get_config_obj($scope);
-    my $token       = MTAssetoEmbed::OAuth2::youtube_effective_token( $app,
+    my $token       = MTAssetoEmbed::YouTube::youtube_effective_token( $app,
         $plugin_data );
 
     return undef unless $token;
