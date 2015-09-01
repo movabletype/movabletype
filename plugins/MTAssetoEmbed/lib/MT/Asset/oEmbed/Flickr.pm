@@ -112,6 +112,15 @@ sub get_token_data {
     return get_token( $app, $asset );
 }
 
+sub exist_access_token {
+    my $asset = shift;
+
+    my $app = MT->instance;
+    my $token_data = get_token( $app, $asset );
+
+    return $token_data->{access_token} ? 1 : 0;
+}
+
 sub get_original_file_url {
     my $asset = shift;
     my ($json) = @_;

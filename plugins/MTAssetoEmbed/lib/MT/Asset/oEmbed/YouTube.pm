@@ -97,6 +97,15 @@ sub get_token_data {
     return get_token_from_plugindata( $app, $asset );
 }
 
+sub exist_access_token {
+    my $asset = shift;
+
+    my $app = MT->instance;
+    my $token_data = get_token_from_plugindata( $app, $asset );
+
+    return $token_data->{data}{access_token} ? 1 : 0;
+}
+
 sub get_id {
     my $asset = shift;
     my $id    = $asset->url;

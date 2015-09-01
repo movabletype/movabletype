@@ -2978,6 +2978,9 @@ sub dialog_asset_modal {
     my @insert_templates = ();
     foreach my $k ( keys %$oembed_classes ) {
         my $c = MT::Asset->class_handler($k);
+
+        next unless $c->exist_access_token($app);
+
         push @oembed_classes,
             {
             key   => $k,
