@@ -2690,7 +2690,7 @@ sub new_ua {
             SSL_ca_file => Mozilla::CA::SSL_ca_file(),
         );
     }
-    $ua->max_size($max_size) if ( defined $max_size ) && $ua->can('max_size');
+    $ua->max_size($max_size) if $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
     eval { require HTML::HeadParser; };

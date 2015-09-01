@@ -225,6 +225,12 @@ sub edit {
             $param->{ 'nwc_smart_replace_' . ( $blog->smart_replace || 0 ) }
                 = 1;
             $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
+
+            $param->{popup}      = $blog->image_default_popup ? 1 : 0;
+            $param->{make_thumb} = $blog->image_default_thumb ? 1 : 0;
+            $param->{ 'align_' . ( $blog->image_default_align || 'none' ) }
+                = 1;
+            $param->{thumb_width} = $blog->image_default_width || 0;
         }
         elsif ( $output eq 'cfg_web_services.tmpl' ) {
             $param->{system_disabled_notify_pings}
@@ -1535,7 +1541,7 @@ sub pre_save {
         }
         elsif ( $screen eq 'cfg_entry' ) {
             @fields = qw( allow_comments_default
-                allow_pings_default );
+                allow_pings_default image_default_thumb image_default_popup );
         }
         elsif ( $screen eq 'cfg_plugins' ) {
         }
@@ -1680,6 +1686,15 @@ sub pre_save {
                 if $obj->basename_limit < 15;    # 15 is the *minimum*
             $obj->basename_limit(250)
                 if $obj->basename_limit > 250;    # 15 is the *maximum*
+
+            $obj->image_default_thumb(
+                $app->param('image_default_thumb') ? 1 : 0 );
+            $obj->image_default_width(
+                scalar $app->param('image_default_width') );
+            $obj->image_default_align(
+                scalar $app->param('image_default_align') );
+            $obj->image_default_popup(
+                $app->param('image_default_popup') ? 1 : 0 );
         }
         if ( $screen eq 'cfg_prefs' ) {
             $obj->include_system( $app->param('include_system') || '' );
