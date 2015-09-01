@@ -142,7 +142,7 @@ sub extract_response_error {
 }
 
 sub new_ua {
-    my $ua = MT->new_ua;
+    my $ua = MT->new_ua( { max_size => undef } );
 
     if (eval { require IO::Socket::SSL }
         && $IO::Socket::SSL::VERSION >= 1.79 &&
