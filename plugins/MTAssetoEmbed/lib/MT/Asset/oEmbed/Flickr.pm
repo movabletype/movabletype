@@ -101,6 +101,18 @@ sub get_oembed {
 
     $asset->url( $asset->web_page );
 
+    my $orig_src = $asset->get_original_source( $asset->web_page );
+    my $name
+        = $orig_src =~ /.*\/(.*\.\w+)$/
+        ? $1
+        : '';
+    $asset->file_name($name);
+    my $ext
+        = $name =~ /.*\.(\w+)$/
+        ? $1
+        : '';
+    $asset->file_ext($ext);
+
     return $asset;
 }
 
