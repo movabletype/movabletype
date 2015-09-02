@@ -808,5 +808,6 @@
 { "r" : "1", "t" : "<MTAssets limit='1'><MTAssetBlogID pad='1'></MTAssets>", "e" : "000001"}, #792
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicAsset><MTAssetBlogID pad='1'></MTAuthorUserpicAsset></MTAuthors>", "e" : "000000"}, #793
 { "r" : "1", "t" : "<MTEntries limit='1'><MTArchiveLink archive_type=\"Author\"></MTEntries>", "e" : "http://narnia.na/nana/archives/author/chucky-dee/"}, #794
-{ "r" : "1", "t" : "<mt:ArchiveList type='Monthly'><MTIfFolder>foge</MTIfFolder><mt</mt:ArchiveList>", "e" : ""} #795
+{ "r" : "1", "t" : "<mt:ArchiveList type='Monthly'><MTIfFolder>foge</MTIfFolder></mt:ArchiveList>", "e" : ""}, #795
+{ "r" : "1", "t" : "<MTIfFolder>foge</MTIfFolder>", "e" : ""} #796
 ]
