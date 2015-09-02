@@ -302,7 +302,8 @@ function createUploadBlock () {
     this.editAsset.show();
   }
 }
-
+ 
+var queue = [];
 function uploadFiles(files) {
 <mt:if name="can_multi">
     var num_files = files.length;
@@ -324,11 +325,11 @@ function uploadFiles(files) {
   </mt:if>
 </mt:unless>
 
-// Disable submit button
+  // Disable submit button
   jQuery('.actions-bar button.primary')
     .attr('disabled', 'disabled')
     .addClass('disabled');
-  
+
   for (var i = 0; i < num_files; i++) {
     var fd = createFormData( files[i] );
     var uploadBlock = new createUploadBlock();
@@ -337,13 +338,25 @@ function uploadFiles(files) {
       uploadBlock.setError(trans("The file you tried to upload is too large: [_1]", files[i].name));
     }
     else {
-      uploadFile(fd, uploadBlock);
+      var f = uploadFile(fd, uploadBlock);
+      queue.push(f);
     }
   }
+<mt:if name="dialog">
+  jQuery.when.apply(null, queue).then( function() {
+    // Enable submit button
+    if ( jQuery('#select_asset input[name="id"]').val().length > 0 ) {
+      jQuery('.actions-bar button.primary')
+        .removeAttr('disabled')
+        .removeClass('disabled');
+    }
+  });
+</mt:if>
 }
 
 function uploadFile( formData, uploadBlock ) {
-  var xhr = jQuery.ajax({
+    var d = new jQuery.Deferred();
+    var xhr = jQuery.ajax({
     xhr: function() {
       var handler = jQuery.ajaxSettings.xhr();
       if (handler.upload) {
@@ -381,10 +394,6 @@ function uploadFile( formData, uploadBlock ) {
       uploadBlock.progressbar.hide();
       uploadBlock.enableEditAsset(data.result.asset);
 
-      // Enable submit button
-      jQuery('.actions-bar button.primary')
-        .removeAttr('disabled')
-        .removeClass('disabled');
 <mt:if name="dialog">
       // Set asset ID
       if (jQuery('#select_asset input[name="id"]').val().length > 0 ) {
@@ -393,9 +402,11 @@ function uploadFile( formData, uploadBlock ) {
       jQuery('#select_asset input[name="id"]').val(jQuery('#select_asset input[name="id"]').val() +  data.result.asset.id);
 </mt:if>
     }
+    d.resolve();
   });
 
   uploadBlock.setCancelUpload(xhr);
+  return d.promise();
 }
 
 jQuery('#open-file-dialog').click( function() {
