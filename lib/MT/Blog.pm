@@ -644,8 +644,8 @@ sub site_path {
 
     if (@_) {
         my ($new_site_path) = @_;
-        my $sep = MT::Util::dir_separator;
-        $new_site_path =~ s/$sep$//;
+        my $sep = quotemeta MT::Util::dir_separator;
+        $new_site_path =~ s/$sep*$//;
 
         $blog->column( 'site_path', $new_site_path );
     }
