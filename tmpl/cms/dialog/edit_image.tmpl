@@ -149,7 +149,7 @@ button.history {
     </div><!-- /image-editor -->
 
     <div class="dialog actions-bar actions-bar-bottom">
-      <form action="<mt:var name="script_url">" method="post" target="_parent" onsubmit="return false">
+      <form action="<mt:var name="script_url">" method="post" target="_parent">
         <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
         <input type="hidden" name="__mode" value="transform_image" />
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -339,8 +339,6 @@ button.history {
         // Set parameters and submit form.
         jQuery('button.primary').click(function() {
             var $form = jQuery('form');
-
-            $form.removeAttr('onsubmit');
             $form.children('input[name=actions]').val(JSON.stringify(image.backActionStack));
             if (jQuery('input#remove-gps-metadata:checked').length > 0) {
                 $form.children('input[name=remove_gps_metadata]').val(1);
@@ -348,8 +346,6 @@ button.history {
             if (jQuery('input#remove-all-metadata:checked').length > 0) {
                 $form.children('input[name=remove_all_metadata]').val(1);
             }
-
-            $form.submit();
         });
 
         // Enable submit button when clicking checkbox/button.
