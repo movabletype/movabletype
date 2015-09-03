@@ -214,29 +214,6 @@
     </mtapp:setting>
   </mtapp:settinggroup>
 
-<mt:setvarblock name="jq_js_include" append="1">
-    jQuery.mtValidateAddRules({
-        "#basename_limit": function($e) {
-            if ( $e.val() < 15 || $e.val() > 250 ) {
-                return false;
-            }
-            return true;
-        }
-    });
-
-    jQuery.mtValidateAddMessages({
-        "#basename_limit": '<__trans phrase="The range for Basename Length is 15 to 250." escape="singlequotes">',
-    });
-
-    jQuery('#cfg_entry').submit(function(eventObject) {
-        if ( !jQuery("#list_on_index").mtValidate('simple2') ) return false;
-        if ( !jQuery("#words_in_excerpt").mtValidate('simple') ) return false;
-        if ( !jQuery("#basename_limit").mtValidate('simple') ) return false;
-        if ( !jQuery("#image_default_width").mtValidate('simple') ) return false;
-        jQuery('input[name="page_custom_prefs"], input[name="entry_custom_prefs"]').removeAttr("disabled");
-    });
-</mt:setvarblock>
-
   <h2><__trans phrase="WYSIWYG Editor Setting"></h2>
   <mtapp:settinggroup id="wysiwyg-editor-setting">
     <mtapp:setting
@@ -287,6 +264,7 @@
       <input type="checkbox" name="image_default_thumb" id="image_default_thumb" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
     <label for="image_default_thumb"><__trans phrase="Use thumbnail"></label>
     (<label for="image_default_width"><__trans phrase="width:"></label> <input type="text" name="image_default_width" id="image_default_width" class="text num" value="<mt:var name="thumb_width" escape="html">"/> <__trans phrase="pixels">)
+      <div id="image_default_thumb-field-msg-block" style="display: none;"></div>
     </mtapp:setting>
 
     <mtapp:setting
@@ -331,5 +309,29 @@
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </mtapp:form>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery.mtValidateAddRules({
+        "#basename_limit": function($e) {
+            if ( $e.val() < 15 || $e.val() > 250 ) {
+                return false;
+            }
+            return true;
+        }
+    });
+
+    jQuery.mtValidateAddMessages({
+        "#basename_limit": '<__trans phrase="The range for Basename Length is 15 to 250." escape="singlequotes">',
+    });
+
+    jQuery('#cfg_entry').submit(function(eventObject) {
+        if ( !jQuery("#list_on_index").mtValidate('simple2') ) return false;
+        if ( !jQuery("#words_in_excerpt").mtValidate('simple') ) return false;
+        if ( !jQuery("#basename_limit").mtValidate('simple') ) return false;
+        if ( !jQuery("#image_default_width").mtValidate('simple2') ) return false;
+        jQuery('input[name="page_custom_prefs"], input[name="entry_custom_prefs"]').removeAttr("disabled");
+    });
+</mt:setvarblock>
+
 
 <mt:include name="include/footer.tmpl">
