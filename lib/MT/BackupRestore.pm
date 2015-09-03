@@ -91,20 +91,12 @@ sub _populate_obj_to_backup {
         # author will be handled at last
         $populated{ MT->model('author') } = 1;
 
-        my $blog_class = MT->model('blog');
-        if ( my @blogs
-            = $blog_class->load( { id => \@$blog_ids, class => '*' } ) )
+        # Do not run the process of backing up websites when backing up blog.
+        unless ( MT->model('website')
+            ->exist( { id => \@$blog_ids, class => 'website' } ) )
         {
-            my $is_blog;
-            foreach my $blog (@blogs) {
-                $is_blog = 1, last
-                    if $blog->is_blog();
-            }
-            if ($is_blog) {
-                $populated{ MT->model('website') } = 1;
-            }
+            $populated{ MT->model('website') } = 1;
         }
-
     }
 
     my @object_hashes;
