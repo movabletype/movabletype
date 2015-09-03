@@ -317,11 +317,24 @@
                 return false;
             }
             return true;
+        },
+        "#image_default_width": function($e) {
+          if ( jQuery('#image_default_thumb').prop('checked') ) {
+            if (!$e.val()) {
+              return false;
+            }
+            else if ($e.val() <= 0) {
+              return false;
+            }
+            return /^\d+$/.test($e.val());
+          }
+          return true;
         }
     });
 
     jQuery.mtValidateAddMessages({
         "#basename_limit": '<__trans phrase="The range for Basename Length is 15 to 250." escape="singlequotes">',
+        "#image_default_width": '<__trans phrase="You must set valid default thumbnail width." escape="singlequotes">'
     });
 
     jQuery('#cfg_entry').submit(function(eventObject) {
@@ -330,6 +343,15 @@
         if ( !jQuery("#basename_limit").mtValidate('simple') ) return false;
         if ( !jQuery("#image_default_width").mtValidate('simple2') ) return false;
         jQuery('input[name="page_custom_prefs"], input[name="entry_custom_prefs"]').removeAttr("disabled");
+    });
+
+    jQuery('#image_default_thumb').click(function() {
+      if ( jQuery('#image_default_thumb').prop('checked') ) {
+        jQuery("#image_default_width").mtValidate('simple2');
+      }
+      else {
+        jQuery("#image_default_width").mtUnvalidate();
+      }
     });
 </mt:setvarblock>
 
