@@ -256,11 +256,17 @@
             this.getPlugin('history').goBack();
             this.undoAction();
 
+            // Need to resize image here.
+            this.getPlugin('resize').resize(this.thumbnailWidth, this.thumbnailHeight);
+
             this.postActionTrigger();
         },
         redo: function() {
             this.getPlugin('history').goForward();
             this.redoAction();
+
+            // Need to resize image here.
+            this.getPlugin('resize').resize(this.thumbnailWidth, this.thumbnailHeight);
 
             this.postActionTrigger();
         },
@@ -319,6 +325,9 @@
             var newThumbnailHeight = this.thumbnailWidth;
             this.thumbnailWidth = this.thumbnailHeight;
             this.thumbnailHeight = newThumbnailHeight;
+
+            // Need to resize image here.
+            this.getPlugin('resize').resize(this.thumbnailWidth, this.thumbnailHeight);
 
             // Update dialog.
             this.postActionTrigger();
