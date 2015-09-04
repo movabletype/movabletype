@@ -330,17 +330,24 @@ function uploadFiles(files) {
     .attr('disabled', 'disabled')
     .addClass('disabled');
 
+  var require_type = '<mt:var name="require_type" escape="js">';
   for (var i = 0; i < num_files; i++) {
     var fd = createFormData( files[i] );
     var uploadBlock = new createUploadBlock();
     uploadBlock.setFilename(files[i].name);
     if ( files[i].size >= max_upload_size ) {
       uploadBlock.setError(trans("The file you tried to upload is too large: [_1]", files[i].name));
+      continue;  
     }
-    else {
-      var f = uploadFile(fd, uploadBlock);
-      queue.push(f);
+    if ( require_type ) {
+      var regexp = new RegExp('^' + require_type + '/.*');
+      if(!files[i].type.match(regexp)) {
+        uploadBlock.setError(trans("[_1] is not a valid [_2] file.", files[i].name, trans(require_type)));
+        continue;  
+      }
     }
+    var f = uploadFile(fd, uploadBlock);
+    queue.push(f);
   }
 <mt:if name="dialog">
   jQuery.when.apply(null, queue).then( function() {

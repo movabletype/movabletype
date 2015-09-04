@@ -2939,15 +2939,17 @@ sub dialog_asset_modal {
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
         && $app->param('can_multi');
 
-    $param{filter} = $app->param('filter') if defined $app->param('filter');
-    $param{filter_val} = $app->param('filter_val')
+    $param{filter} = scalar $app->param('filter')
+        if defined $app->param('filter');
+    $param{filter_val} = scalar $app->param('filter_val')
         if defined $app->param('filter_val');
     $param{search} = $app->param('search') if defined $app->param('search');
-    $param{edit_field} = $app->param('edit_field')
+    $param{edit_field} = scalar $app->param('edit_field')
         if defined $app->param('edit_field');
-    $param{next_mode}    = $app->param('next_mode');
-    $param{no_insert}    = $app->param('no_insert') ? 1 : 0;
-    $param{asset_select} = $app->param('asset_select');
+    $param{next_mode}    = scalar $app->param('next_mode');
+    $param{no_insert}    = scalar $app->param('no_insert') ? 1 : 0;
+    $param{asset_select} = scalar $app->param('asset_select');
+    $param{require_type} = scalar $app->param('require_type');
 
     if ($blog_id) {
         $param{blog_id}      = $blog_id;
