@@ -213,7 +213,6 @@ sub _uri_to_authorization_endpoint {
         redirect_uri => _create_return_url( $app, $blog ),
         scope        => $class->scope,
         state        => $state_string,
-        extra => { access_type => q{offline} },
     );
 }
 
