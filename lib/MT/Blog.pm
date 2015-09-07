@@ -735,8 +735,8 @@ sub archive_path {
 
     if (@_) {
         my ($new_archive_path) = @_;
-        my $sep = MT::Util::dir_separator;
-        $new_archive_path =~ s/$sep$//;
+        my $sep = quotemeta MT::Util::dir_separator;
+        $new_archive_path =~ s/$sep*$//;
         $blog->column( 'archive_path', $new_archive_path )
             || $blog->site_path;
     }
