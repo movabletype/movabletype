@@ -286,14 +286,16 @@ sub edit {
                             asset_name => $asset->file_name,
                             asset_type => $asset->class,
                             asset_thumb =>
-                                $asset->thumbnail_url( Width => 100 )
+                                $asset->thumbnail_url( Width => 100 ),
+                            asset_blog_id => $asset->blog_id,
                         };
                     }
                     else {
                         $asset_1 = {
-                            asset_id   => $asset->id,
-                            asset_name => $asset->file_name,
-                            asset_type => $asset->class,
+                            asset_id      => $asset->id,
+                            asset_name    => $asset->file_name,
+                            asset_type    => $asset->class,
+                            asset_blog_id => $asset->blog_id,
                         };
                     }
                     push @{$assets}, $asset_1;
@@ -303,9 +305,10 @@ sub edit {
         elsif ( $q->param('asset_id') && !$id ) {
             my $asset   = MT::Asset->load( $q->param('asset_id') );
             my $asset_1 = {
-                asset_id   => $asset->id,
-                asset_name => $asset->file_name,
-                asset_type => $asset->class
+                asset_id      => $asset->id,
+                asset_name    => $asset->file_name,
+                asset_type    => $asset->class,
+                asset_blog_id => $asset->blog_id,
             };
             push @{$assets}, $asset_1;
         }
@@ -329,14 +332,16 @@ sub edit {
                         asset_id    => $asset->id,
                         asset_name  => $asset->file_name,
                         asset_thumb => $asset->thumbnail_url( Width => 100 ),
-                        asset_type  => $asset->class
+                        asset_type  => $asset->class,
+                        asset_blog_id => $asset->blog_id,
                     };
                 }
                 else {
                     $asset_1 = {
-                        asset_id   => $asset->id,
-                        asset_name => $asset->file_name,
-                        asset_type => $asset->class
+                        asset_id      => $asset->id,
+                        asset_name    => $asset->file_name,
+                        asset_type    => $asset->class,
+                        asset_blog_id => $asset->blog_id,
                     };
                 }
                 push @{$assets}, $asset_1;
