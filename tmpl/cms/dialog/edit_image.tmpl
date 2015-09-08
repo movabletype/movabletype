@@ -279,7 +279,8 @@ button.history {
             $resizeHeight.val(height);
         });
 
-        jQuery('input#resize-height').keyup(function() {
+        jQuery('input#resize-height').keyup(function(event) {
+
             var $resizeWidth = jQuery('input#resize-width');
             var $resizeHeight = jQuery(this);
 
