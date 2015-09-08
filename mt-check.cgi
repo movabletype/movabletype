@@ -774,7 +774,7 @@ my @CORE_OPT = (
     ],
 
     [   'Mozilla::CA',
-        20141217, 0,
+        0, 0,
         translate(
             'This module is required for Google Analytics site statistics and for verification of SSL certificate.'
         )
