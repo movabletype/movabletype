@@ -32,7 +32,8 @@ sub extensions {
 
 sub save {
     my $asset = shift;
-    $asset->image_metadata( $asset->exif ? $asset->exif->GetInfo : undef );
+    $asset->image_metadata( $asset->has_metadata
+            && $asset->exif ? $asset->exif->GetInfo : undef );
     $asset->SUPER::save(@_);
 }
 
@@ -1060,19 +1061,31 @@ sub has_metadata {
 sub remove_gps_metadata {
     my ($asset) = @_;
     my $exif = $asset->exif or return;
+
     $exif->SetNewValue('GPS:*');
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
+
+    $asset->image_metadata( $asset->exif->GetInfo );
+    $asset->save or return;
+
+    1;
 }
 
 sub remove_all_metadata {
     my ($asset) = @_;
     my $exif = $asset->exif or return;
+
     $exif->SetNewValue('*');
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
+
+    $asset->image_metadata(undef);
+    $asset->save or return;
+
+    1;
 }
 
 1;
