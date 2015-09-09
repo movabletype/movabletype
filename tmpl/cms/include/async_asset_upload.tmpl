@@ -209,7 +209,7 @@ function createFormData(file) {
   }
   fd.append('normalize_orientation', normalizeOrientation);
   fd.append('operation_if_exists', jQuery('#operation_if_exists').val() );
-  fd.append('auto_rename_non_ascii', jQuery('#auto_rename_non_ascii').val() );  
+  fd.append('auto_rename_non_ascii', jQuery('#auto_rename_non_ascii').prop('checked')? 1 : 0 );  
 
   fd.append('destination', jQuery('#destination').val() );
   fd.append('extra_path', jQuery('#extra_path').val() );
