@@ -2820,29 +2820,12 @@ sub dialog_edit_image {
     }
 
     # Retrive data of thumbnail.
-    my $param          = {};
-    my $hasher         = build_asset_hasher($app);
-    my $thumbnail_size = 240;
-    $hasher->(
-        $asset, $param,
-        ThumbWidth  => $thumbnail_size,
-        ThumbHeight => $thumbnail_size,
-    );
+    my $param  = {};
+    my $hasher = build_asset_hasher($app);
+    $hasher->( $asset, $param, ThumbWidth => 240, ThumbHeight => 240 );
 
-    # Use data URI scheme for not violating same-origin policy.
-    require URI;
-    my $uri = URI->new('data:');
-    $uri->media_type( $param->{mime_type} );
-
-    require MT::FileMgr;
-    my $fmgr = MT::FileMgr->new('Local');
-    my ($thumbnail) = $asset->thumbnail_file(
-        Width  => $thumbnail_size,
-        Height => $thumbnail_size,
-    );
-    $uri->data( $fmgr->get_data( $thumbnail, 'upload' ) );
-
-    $param->{thumbnail_data_uri_scheme} = $uri;
+    # Disable browser cache for image.
+    $param->{modified_on} = $asset->modified_on;
 
     # Check Exif.
     my $has_metadata = $asset->has_metadata;
