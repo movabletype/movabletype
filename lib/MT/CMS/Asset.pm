@@ -2850,6 +2850,45 @@ sub dialog_edit_image {
     $app->load_tmpl( 'dialog/edit_image.tmpl', $param );
 }
 
+sub thumbnail_image {
+    my ($app) = @_;
+
+    my $id = $app->param('id');
+    my $blog_id = $app->param('blog_id') || 0;
+
+    # Thumbnail size on "Edit Image" screen is 240.
+    my $width  = $app->param('width')  || 240;
+    my $height = $app->param('height') || 240;
+
+    my $asset;
+
+    if ($id) {
+        $asset
+            = $app->model('asset')
+            ->load( { id => $id, blog_id => $blog_id, class => 'image' } );
+    }
+    if ( !$asset ) {
+        return $app->errtrans('Invalid request.');
+    }
+
+    # Check permission.
+    if ( !can_view( undef, $app, $id ) ) {
+        return $app->permission_denied;
+    }
+
+    my ($thumbnail)
+        = $asset->thumbnail_file( Width => $width, Height => $height )
+        or return $app->error( $asset->errstr );
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    my $data = $fmgr->get_data( $thumbnail, 'upload' );
+
+    $app->{no_print_body} = 1;
+    $app->send_http_header( $asset->mime_type );
+    $app->print($data);
+}
+
 sub transform_image {
     my ($app) = @_;
 
@@ -3034,10 +3073,10 @@ sub dialog_insert_options {
     my $options_loop;
     foreach my $a (@$assets) {
         my $param = {
-            id          => $a->id,
-            filename    => $a->file_name,
-            url         => $a->url,
-            label       => $a->label,
+            id       => $a->id,
+            filename => $a->file_name,
+            url      => $a->url,
+            label    => $a->label,
             thumbnail   => _make_thumbnail_url( $a, { size => 45 } ),
             class_label => $a->class_label,
         };

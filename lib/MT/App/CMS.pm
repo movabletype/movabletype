@@ -312,6 +312,9 @@ sub core_methods {
         'dialog_list_asset'        => "${pkg}Asset::dialog_list_asset",
         'dialog_edit_image'        => "${pkg}Asset::dialog_edit_image",
 
+        'thumbnail_image' =>
+            "${pkg}Asset::thumbnail_image",    # Used in Edit Image dialog.
+
         ## AJAX handlers
         'delete_map'        => "${pkg}Template::delete_map",
         'add_map'           => "${pkg}Template::add_map",
