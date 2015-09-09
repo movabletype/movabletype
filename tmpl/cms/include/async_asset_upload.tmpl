@@ -240,9 +240,11 @@ function createUploadBlock () {
   this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.leftContent);
   this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
   this.cancelUpload = jQuery('<div class="upload-cancel"><__trans phrase="Cancel"></div>').appendTo(this.rightPanel);
+<mt:unless name="filter" eq="userpic">
   this.editAsset    = jQuery('<div class="edit-asset"></div>').appendTo(this.rightPanel);
 
   this.editAsset.hide();
+</mt:unless>
   this.progressbar.progressbar({ value: 0 });
   jQuery('#upload-progress').append(this.uploadBlock);
 
@@ -295,12 +297,14 @@ function createUploadBlock () {
     jQuery('<p class="msg-warning">' + msg+ '</p>').appendTo(this.uploadResult);
   }
 
+<mt:unless name="filter" eq="userpic">
   this.enableEditAsset = function(Asset) {
     var link = jQuery('<a>');
     link.attr('href', '<mt:var name="script_url">?__mode=dialog_edit_asset&blog_id=' + Asset.blog_id + '&id=' + Asset.id + '&magic_token=<mt:var name="magic_token">').append('<__trans phrase="Edit">').appendTo(this.editAsset);
     link.mtDialog();
     this.editAsset.show();
   }
+</mt:unless>
 }
  
 var queue = [];
@@ -399,7 +403,9 @@ function uploadFile( formData, uploadBlock ) {
       uploadBlock.setProgress(100);
       uploadBlock.setThubmanil(data.result.asset.thumbnail, data.result.asset.filename, data.result.asset.id);
       uploadBlock.progressbar.hide();
+<mt:unless name="filter" eq="userpic">
       uploadBlock.enableEditAsset(data.result.asset);
+</mt:unless>
 
 <mt:if name="dialog">
       // Set asset ID
