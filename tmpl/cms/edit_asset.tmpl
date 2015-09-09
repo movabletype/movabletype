@@ -210,14 +210,16 @@ TC.attachLoadEvent( init );
         </li>
       </ul>
     </div>
-    <mt:if name="asset_type" eq="image">
-      <mt:unless name="file_is_missing">
-        <mt:if name="has_thumbnail">
+    <mt:if name="can_edit_image">
+      <mt:if name="asset_type" eq="image">
+        <mt:unless name="file_is_missing">
+          <mt:if name="has_thumbnail">
     <div class="image-editor">
       <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">" class="button mt-open-dialog"><__trans phrase="Edit Image"></a>
     </div>
-        </mt:if>
-      </mt:unless>
+          </mt:if>
+        </mt:unless>
+      </mt:if>
     </mt:if>
     </div>
 

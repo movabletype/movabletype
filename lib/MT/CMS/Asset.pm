@@ -993,7 +993,8 @@ sub build_asset_hasher {
             || $app->translate('Untitled');
 
         if ( $obj->has_thumbnail && $obj->can_create_thumbnail ) {
-            $row->{has_thumbnail} = 1;
+            $row->{has_thumbnail}  = 1;
+            $row->{can_edit_image} = 1;
             my $height = $thumb_height || $default_thumb_height || 45;
             my $width  = $thumb_width  || $default_thumb_width  || 45;
             my $square = $height == 45 && $width == 45;
@@ -2682,6 +2683,7 @@ sub dialog_edit_asset {
             $thumb_h   = $orig_height;
         }
         $param->{has_thumbnail}    = 1;
+        $param->{can_edit_image}   = 1;
         $param->{thumbnail_url}    = $thumb_url;
         $param->{thumbnail_width}  = $thumb_w;
         $param->{thumbnail_height} = $thumb_h;
