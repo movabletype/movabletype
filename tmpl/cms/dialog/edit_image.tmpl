@@ -104,17 +104,17 @@ button.history {
         </div>
 
         <div id="editor-metadata">
-          <mt:if name="has_gps_metadata">
-          <div class="editor-metadata-column">
-            <input id="remove-gps-metadata" class="checkbox enable-submit" type="checkbox" />
-            <label for="remove-gps-metadata"><__trans phrase="Remove GPS metadata"></label>
-          </div>
-          </mt:if>
-
           <mt:if name="has_metadata">
           <div class="editor-metadata-column">
             <input id="remove-all-metadata" class="checkbox enable-submit" type="checkbox" />
             <label for="remove-all-metadata"><__trans phrase="Remove All metadata"></label>
+          </div>
+          </mt:if>
+
+          <mt:if name="has_gps_metadata">
+          <div class="editor-metadata-column">
+            <input id="remove-gps-metadata" class="checkbox enable-submit" type="checkbox" />
+            <label for="remove-gps-metadata"><__trans phrase="Remove GPS metadata"></label>
           </div>
           </mt:if>
         </div>
