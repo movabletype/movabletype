@@ -3037,10 +3037,7 @@ sub dialog_insert_options {
 
         my @ids = split ',', $ids;
         return $app->errtrans('Invalid request.') unless @ids;
-
         my @assets = $app->model('asset')->load( { id => \@ids } );
-        return $app->errtrans('Invalid request.')
-            unless scalar @ids == scalar @assets;
         $assets = \@assets;
     }
     $assets = [$assets] if 'ARRAY' ne ref $assets;
