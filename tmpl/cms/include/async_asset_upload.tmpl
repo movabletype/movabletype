@@ -333,6 +333,9 @@ function uploadFiles(files) {
 
   var require_type = '<mt:var name="require_type" escape="js">';
   for (var i = 0; i < num_files; i++) {
+    if( files[i].type.length === 0 ) {
+      continue;
+    }
     var fd = createFormData( files[i] );
     var uploadBlock = new createUploadBlock();
     uploadBlock.setFilename(files[i].name);
