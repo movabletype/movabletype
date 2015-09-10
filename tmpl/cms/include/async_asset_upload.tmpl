@@ -416,6 +416,7 @@ function uploadFile( formData, uploadBlock ) {
   </mt:if>
 </mt:if>
     }
+  }).always(function() {
     d.resolve();
   });
 
