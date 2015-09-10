@@ -340,7 +340,7 @@ function uploadFiles(files) {
       uploadBlock.setError(trans("The file you tried to upload is too large: [_1]", files[i].name));
       continue;  
     }
-    if ( require_type ) {
+    if ( require_type && require_type !== 'file' ) {
       var regexp = new RegExp('^' + require_type + '/.*');
       if(!files[i].type.match(regexp)) {
         uploadBlock.setError(trans("[_1] is not a valid [_2] file.", files[i].name, trans(require_type)));
