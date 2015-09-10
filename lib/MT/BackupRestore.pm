@@ -818,15 +818,22 @@ sub cb_restore_objects {
         }
         elsif ( $key =~ /^MT::(?:Blog|Website)#(\d+)$/ ) {
             my $blog = $all_objects->{$key};
-            if ( my $cat_order = $blog->category_order ) {
-                my @cats = split ',', $cat_order;
-                my @new_cats
-                    = map $_->id,
-                    grep defined $_,
-                    map $all_objects->{ 'MT::Category#' . $_ },
-                    @cats;
-                $blog->category_order( join ',', @new_cats );
-                $blog->save;
+            my $orders = {
+                category => 'MT::Category#',
+                folder   => 'MT::Folder#',
+            };
+            foreach my $c ( keys %$orders ) {
+                my $col = "${c}_order";
+                if ( my $cat_order = $blog->$col ) {
+                    my @cats = split ',', $cat_order;
+                    my @new_cats
+                        = map $_->id,
+                        grep defined $_,
+                        map $all_objects->{ $orders->{$c} . $_ },
+                        @cats;
+                    $blog->$col( join ',', @new_cats );
+                    $blog->save;
+                }
             }
         }
     }
