@@ -2974,7 +2974,8 @@ sub dialog_asset_modal {
     }
 
     my %param;
-    _set_start_upload_params( $app, \%param );
+    _set_start_upload_params( $app, \%param )
+        if $app->can_do('upload');
 
     $param{can_multi} = 1
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'

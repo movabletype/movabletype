@@ -64,6 +64,7 @@
 <div id="content-body-right">
   <div id="content-body-right-body">
 
+<mt:if name="can_upload">
     <div id="upload-asset-panel" class="panel">
 <mt:setvar name="included_upload_asset" value="1">
 <mt:if name="compat_upload_template">
@@ -72,8 +73,8 @@
   <mt:include name="include/async_asset_upload.tmpl" dialog="1">
 </mt:if>
     </div>
-
-    <div id="list-asset-panel" class="hidden panel">
+</mtif>
+    <div id="list-asset-panel" class="<mt:if name="can_upload">hidden </mtif>panel">
 <mt:include name="include/async_asset_list.tmpl" dialog="1">
     </div>
 
@@ -83,10 +84,12 @@
 <div id="content-body-left">
   <div id="asset-menu">
     <ul>
+<mt:if name="can_upload">
       <li class="active">
         <a href="#" class="left-menu-item" data-panel-id="#upload-asset-panel"><__trans phrase="Upload"></a>
       </li>
-      <li>
+</mtif>
+      <li<mt:unless name="can_upload"> class="active"</mt:unless>>
         <a href="#" class="left-menu-item" data-panel-id="#list-asset-panel"><__trans phrase="Library"></a>
       </li>
     </ul>
@@ -144,7 +147,11 @@
 </form>
 
 <mt:setvarblock name="jq_js_include" append="1">
+<mt:if name="can_upload">
 var currentPanel = '#upload-asset-panel';
+<mt:else>
+var currentPanel = '#list-asset-panel';
+</mt:if>
 jQuery('.left-menu-item').click( function() {
   // Make custom event
   var event = new jQuery.Event('changePanel');
