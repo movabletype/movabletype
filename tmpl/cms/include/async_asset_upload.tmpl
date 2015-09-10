@@ -85,7 +85,7 @@ p.msg-warning {
 </style>
 
 <form>
-  <input type="file" id="file" name="file" multiple="multiple" style="display: none;">
+    <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
   <div id="drop-handler">
     <p>Drag and drop here to upload files, or <button id="open-file-dialog">browse</button></p>
   </div>
@@ -406,10 +406,14 @@ function uploadFile( formData, uploadBlock ) {
 
 <mt:if name="dialog">
       // Set asset ID
+  <mt:if name="can_multi">
       if (jQuery('#select_asset input[name="id"]').val().length > 0 ) {
         jQuery('#select_asset input[name="id"]').val( jQuery('#select_asset input[name="id"]').val() + ',');
       }
       jQuery('#select_asset input[name="id"]').val(jQuery('#select_asset input[name="id"]').val() +  data.result.asset.id);
+<mt:else>
+      jQuery('#select_asset input[name="id"]').val(data.result.asset.id);
+  </mt:if>
 </mt:if>
     }
     d.resolve();
