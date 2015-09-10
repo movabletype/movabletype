@@ -4285,6 +4285,9 @@ input#system_performance_logging_threshold {
     border: 1px solid #c0c6c9;
     background-color: #fff;
 }
+#list-themes #current-theme-group .theme {
+    border-radius: 3px 3px 3px 3px;
+}
 #list-themes .theme.first-child {
     border-radius: 3px 3px 0 0;
 }
