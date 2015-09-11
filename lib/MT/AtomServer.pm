@@ -1147,6 +1147,16 @@ sub _upload_to_asset {
     }
     $local = $path . $base . $ext;
     my $data = $content->body;
+
+    unless ( $fmgr->exists($path) ) {
+        $fmgr->mkpath($path)
+            or return $app->error(
+                $app->translate(
+                    "Cannot make path '[_1]': [_2]", $path,
+                    $fmgr->errstr
+                )
+            );
+    }
     defined( my $bytes = $fmgr->put_data( $data, $local, 'upload' ) )
         or return $app->error( 500, "Error writing uploaded file" );
 
