@@ -2245,15 +2245,49 @@ sub _upload_file {
         require File::Basename;
         my ( $stem, undef, $type )
             = File::Basename::fileparse( $basename, qr/\.[A-Za-z0-9]+$/ );
-        my $unique_stem = $stem;
+
+        # Rename non-ascii filename automatically if option provided.
+        my $path_info = { basename => $stem };
+        if ( $q->param('auto_rename_non_ascii') && $path_info->{basename} =~ m/[^\x20-\x7E]/ ) {
+            # Auto-rename
+            _rename_filename( $app, $path_info );
+        }
+        my $unique_stem = $path_info->{basename};
         $local_file = File::Spec->catfile( $param{support_path},
             $unique_stem . $type );
-        my $i = 1;
-        while ( $fmgr->exists($local_file) ) {
-            $unique_stem = join q{-}, $stem, $i++;
-            $local_file = File::Spec->catfile( $param{support_path},
-                $unique_stem . $type );
+        if ( $fmgr->exists($local_file) ) {
+            if ( $q->param('operation_if_exists') == 1 ) {
+
+                # Auto-rename
+                _rename_filename( $app, $path_info );
+            }
+            elsif ( $q->param('operation_if_exists') == 2 ) {
+
+                # Overwrite, do nothing
+            }
+            elsif ( $q->param('operation_if_exists') == 3 ) {
+
+                # Call cancel handler
+                return $cancel_handler->(
+                    $app,
+                    site_path  => $param{support_path},
+                    extra_path => '',
+                    fname      => $unique_stem,
+                );
+            }
+            else {
+                # Call exists handler
+                return $exists_handler->(
+                    $app,
+                    site_path  => $param{support_path},
+                    extra_path => '',
+                    fname      => $unique_stem,
+                );
+            }
         }
+        $unique_stem = $path_info->{basename};
+        $local_file = File::Spec->catfile( $param{support_path},
+            $unique_stem . $type );
 
         my $unique_basename = $unique_stem . $type;
         $extra_path   = $unique_basename;
