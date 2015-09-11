@@ -51,7 +51,7 @@ subtest 'exif method' => sub {
 
 subtest 'has_metadata method' => sub {
     ok( $image->can('has_metadata'), 'Has has_metadata method.' );
-    ok( !$image->has_metadata,       'Does not have metadata.' );
+    ok( $image->has_metadata,        'has metadata.' );
 
     my $exif = $image->exif;
     $exif->SetNewValue( 'Orientation', 1 );
