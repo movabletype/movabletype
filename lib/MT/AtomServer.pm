@@ -1096,7 +1096,7 @@ sub _upload_to_asset {
                 $base_path = '%a';
             }
             my $extra_path = $blog->extra_path || '';
-            $dest = MT::Util::build_upload_destination($dest);
+            $dest = MT::Util::build_upload_destination($dest, $user);
             $middle_path = File::Spec->catdir( $dest, $extra_path );
             ( $middle_url = $middle_path ) =~ s!\\!/!g;
             $upload_dest = File::Spec->catdir( $root_path, $middle_path );
