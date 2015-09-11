@@ -3003,6 +3003,7 @@ sub dialog_asset_modal {
         $param{user_id}      = $app->user->id;
         $param{require_type} = 'image';
         $param{'is_image'}   = 1;
+        $param{can_upload}   = 1;
     }
 
     require MT::Asset;
