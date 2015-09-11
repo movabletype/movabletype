@@ -164,8 +164,7 @@ jQuery('#drop-handler').on('dragenter', function(e) {
   jQuery(this).css('border', '2px dotted #6f6f6f');
   e.preventDefault();
 
-  var files = e.originalEvent.dataTransfer.files;
-  uploadFiles(files);
+  uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
 });
 
 // Ignore drop on non-droppable area
@@ -305,7 +304,7 @@ function createUploadBlock () {
 }
  
 var queue = [];
-function uploadFiles(files) {
+function uploadFiles(files, items) {
 <mt:if name="can_multi">
     var num_files = files.length;
 <mt:else>
@@ -333,9 +332,15 @@ function uploadFiles(files) {
 
   var require_type = '<mt:var name="require_type" escape="js">';
   for (var i = 0; i < num_files; i++) {
-    if( files[i].type.length === 0 ) {
+    if( files[i].size === 0 ) {
+      // Maybe directory1
       continue;
     }
+    if ( items && items[i].webkitGetAsEntry && items[i].webkitGetAsEntry().isDirectory ) {
+      // Maybe directory only for Chrome
+      continue;
+    }
+
     var fd = createFormData( files[i] );
     var uploadBlock = new createUploadBlock();
     uploadBlock.setFilename(files[i].name);
