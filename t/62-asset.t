@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use File::Copy;
+use File::Temp qw( tempfile );
 
 use lib qw( t t/lib ./extlib ./lib);
 
@@ -75,6 +76,12 @@ isa_ok( $mt, 'MT', 'Is MT' );
     {
         note('Remove metadata from thumbnail file');
 
+        # Changing t/images/test.jpg affects t/35-tags.t,
+        # so preserve this image file here.
+        my ( undef, $temp_file )
+            = tempfile( DIR => MT->config->TempDir, OPEN => 0 );
+        copy( $asset->file_path, $temp_file );
+
         my $exif = $asset->exif;
         $exif->SetNewValue( 'GPSVersionID', '2.2.1.0' );
         $exif->WriteInfo( $asset->file_path );
@@ -91,6 +98,9 @@ isa_ok( $mt, 'MT', 'Is MT' );
         ok( !exists $info->{GPSVersionID},
             'removed metadata from thumbnail file'
         );
+
+        # Restore t/images/test.jpg.
+        copy( $temp_file, $asset->file_path );
     }
 
     is( $asset->image_width,  640, 'image_width' );
