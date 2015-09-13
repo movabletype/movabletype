@@ -1602,7 +1602,10 @@ sub newMediaObject {
         }
     }
     else {
-        $middle_path = $uploaded_path;
+        $middle_path
+            = ( $uploaded_path eq '.' . MT::Util::dir_separator )
+            ? ''
+            : $uploaded_path;
         $upload_dest = File::Spec->catdir( $blog->site_path, $uploaded_path );
     }
 
