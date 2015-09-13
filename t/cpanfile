@@ -76,7 +76,6 @@ requires 'XML::SAX::ExpatXS';
 requires 'XML::SAX::Expat';
 requires 'XML::LibXML::SAX';
 
-requires 'Cache::Memcached';
 requires 'CGI::Compile';
 requires 'YAML::Syck';
 
