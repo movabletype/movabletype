@@ -79,6 +79,10 @@ requires 'XML::LibXML::SAX';
 requires 'CGI::Compile';
 requires 'YAML::Syck';
 
+# Cloud.pack
+requires 'Net::CIDR';
+requires 'Net::IP';
+
 on 'test' => sub {
     requires 'Clone';
     requires 'Date::Parse';
