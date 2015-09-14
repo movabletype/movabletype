@@ -2980,10 +2980,10 @@ sub transform_image {
             $app->uri(
                 mode => 'view',
                 args => {
-                    _type   => 'asset',
-                    blog_id => $app->blog ? $app->blog->id : 0,
-                    id      => $id,
-                    saved   => 1,
+                    _type       => 'asset',
+                    blog_id     => $app->blog ? $app->blog->id : 0,
+                    id          => $id,
+                    saved_image => 1,
                 },
             )
         );
