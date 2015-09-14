@@ -85,9 +85,9 @@ p.msg-warning {
 </style>
 
 <form>
-    <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
+  <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
   <div id="drop-handler">
-    <p>Drag and drop here to upload files, or <button id="open-file-dialog">browse</button></p>
+    <p><mt:if name="can_multi"><__trans phrase="Drag and drop here to upload files, or<button id='open-file-dialog'>Browse</button>"><mt:else><__trans phrase="Drag and drop here to upload a single file, or<button id='open-file-dialog'>Browse</button>"></mt:if></p>
   </div>
 <mt:unless name="filter" eq="userpic">  
     <h2><__trans phrase="Upload Destination"></h2>
