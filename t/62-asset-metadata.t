@@ -16,80 +16,102 @@ use lib qw( lib extlib t/lib );
 use MT::Test qw(:db);
 use MT::Test::Permission;
 use MT;
+
 use Image::ExifTool;
 
-my $jpg_file
-    = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
-my ( $fh, $tempfile )
-    = tempfile( DIR => MT->config->TempDir, SUFFIX => '.jpg' );
-close $fh;
-copy( $jpg_file, $tempfile );
-ok( -s $tempfile, 'Copy JPEG file.' );
+my $cfg = MT->config;
 
-my $image = MT::Test::Permission->make_asset(
-    blog_id   => 1,
-    class     => 'image',
-    file_ext  => 'jpg',
-    file_name => basename($tempfile),
-    file_path => $tempfile,
-);
-ok( $image, 'Create MT::Asset::Image record.' );
+for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
+    subtest $driver => sub {
+        $cfg->ImageDriver($driver);
+        is( $cfg->ImageDriver, $driver, 'Set ImageDriver' );
 
-subtest 'image_metadata field' => sub {
-    ok( $image->has_meta('image_metadata'), 'Has image_metadata field.' );
-    isa_ok( $image->image_metadata, 'HASH' );
-    isnt( %{ $image->image_metadata },
-        (), 'image_metadata field is not empty.' );
-};
+        my $jpg_file
+            = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
+        my ( $fh, $tempfile )
+            = tempfile( DIR => MT->config->TempDir, SUFFIX => '.jpg' );
+        close $fh;
+        copy( $jpg_file, $tempfile );
+        ok( -s $tempfile, 'Copy JPEG file.' );
 
-subtest 'exif method' => sub {
-    ok( $image->can('exif'), 'Has exif method.' );
-    my $exif = Image::ExifTool->new;
-    $exif->ExtractInfo( $image->file_path );
-    is_deeply( $image->exif, $exif, 'Check exif data.' );
-};
+        my $image = MT::Test::Permission->make_asset(
+            blog_id   => 1,
+            class     => 'image',
+            file_ext  => 'jpg',
+            file_name => basename($tempfile),
+            file_path => $tempfile,
+        );
+        ok( $image, 'Create MT::Asset::Image record.' );
 
-subtest 'has_metadata method' => sub {
-    ok( $image->can('has_metadata'), 'Has has_metadata method.' );
-    ok( $image->has_metadata,        'has metadata.' );
+        subtest 'image_metadata field' => sub {
+            ok( $image->has_meta('image_metadata'),
+                'Has image_metadata field.'
+            );
+            isa_ok( $image->image_metadata, 'HASH' );
+            isnt( %{ $image->image_metadata },
+                (), 'image_metadata field is not empty.' );
+        };
 
-    my $exif = $image->exif;
-    $exif->SetNewValue( 'Orientation', 1 );
-    $exif->WriteInfo( $image->file_path );
+        subtest 'exif method' => sub {
+            ok( $image->can('exif'), 'Has exif method.' );
+            my $exif = Image::ExifTool->new;
+            $exif->ExtractInfo( $image->file_path );
+            is_deeply( $image->exif, $exif, 'Check exif data.' );
+        };
 
-    ok( $image->has_metadata, 'Added metadata.' );
-};
+        subtest 'has_metadata method' => sub {
+            ok( $image->can('has_metadata'), 'Has has_metadata method.' );
+            ok( $image->has_metadata,        'has metadata.' );
 
-subtest 'has_gps_metadata method' => sub {
-    ok( $image->can('has_gps_metadata'), 'Has has_gps_metadata method.' );
-    ok( !$image->has_gps_metadata,       'Does not have GPS metadata.' );
+            my $exif = $image->exif;
+            $exif->SetNewValue( 'Orientation', 1 );
+            $exif->WriteInfo( $image->file_path );
 
-    my $exif = $image->exif;
-    $exif->SetNewValue( 'GPSVersionID', '2.2.1.0' );
-    $exif->WriteInfo( $image->file_path );
+            ok( $image->has_metadata, 'Added metadata.' );
+        };
 
-    ok( $image->has_gps_metadata, 'Added GPS metadata.' );
-};
+        subtest 'has_gps_metadata method' => sub {
+            ok( $image->can('has_gps_metadata'),
+                'Has has_gps_metadata method.'
+            );
+            ok( !$image->has_gps_metadata, 'Does not have GPS metadata.' );
 
-subtest 'remove_gps_metadata method' => sub {
-    ok( $image->can('remove_gps_metadata'),
-        'Has remove_gps_metadata method.'
-    );
+            my $exif = $image->exif;
+            $exif->SetNewValue( 'GPSVersionID', '2.2.1.0' );
+            $exif->WriteInfo( $image->file_path );
 
-    $image->remove_gps_metadata;
+            ok( $image->has_gps_metadata, 'Added GPS metadata.' );
+        };
 
-    ok( !$image->has_gps_metadata, 'Removed GPS metadata.' );
-    ok( $image->has_metadata,      'Other metadata still remains.' );
-};
+        subtest 'change_quality method' => sub {
+            ok( $image->can('change_quality'), 'Has change_quality method.' );
+            $image->change_quality(70);
+            ok( $image->has_gps_metadata,
+                'GPS metadata is remaining after doing change_quality method.'
+            );
+        };
 
-subtest 'remove_all_metadata method' => sub {
-    ok( $image->can('remove_all_metadata'),
-        'Has remove_all_metadata method.'
-    );
+        subtest 'remove_gps_metadata method' => sub {
+            ok( $image->can('remove_gps_metadata'),
+                'Has remove_gps_metadata method.'
+            );
 
-    $image->remove_all_metadata;
+            $image->remove_gps_metadata;
 
-    ok( !$image->has_metadata, 'Removed metadata.' );
-};
+            ok( !$image->has_gps_metadata, 'Removed GPS metadata.' );
+            ok( $image->has_metadata,      'Other metadata still remains.' );
+        };
+
+        subtest 'remove_all_metadata method' => sub {
+            ok( $image->can('remove_all_metadata'),
+                'Has remove_all_metadata method.'
+            );
+
+            $image->remove_all_metadata;
+
+            ok( !$image->has_metadata, 'Removed metadata.' );
+        };
+    };
+}
 
 done_testing;

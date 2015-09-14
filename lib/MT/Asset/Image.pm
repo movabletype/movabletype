@@ -969,6 +969,11 @@ sub change_quality {
         return 1;
     }
 
+    # Preserve metadata. ImageDriver other than ImageMagick removes metadata.
+    require Image::ExifTool;
+    my $new_exif = Image::ExifTool->new;
+    $new_exif->SetNewValuesFromFile( $asset->file_path );
+
     require MT::Image;
     my $img = MT::Image->new( Filename => $asset->file_path );
     my $blob = $img->blob($quality) or return $asset->error( $img->errstr );
@@ -985,6 +990,12 @@ sub change_quality {
     $fmgr->put_data( $blob, $asset->file_path, 'upload' )
         or return $asset->trans_error( "Error writing to '[_1]': [_2]",
         $asset->file_path, $fmgr->errstr );
+
+    # Restore metadata.
+    $new_exif->WriteInfo( $asset->file_path )
+        or
+        return $asset->trans_error( "Error writing metadata to '[_1]': [_2]",
+        $asset->file_path, $new_exif->GetValue('Error') );
 
     1;
 }
