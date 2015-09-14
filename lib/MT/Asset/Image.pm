@@ -1068,8 +1068,11 @@ sub has_metadata {
 
 sub remove_gps_metadata {
     my ($asset) = @_;
-    my $exif = $asset->exif or return;
 
+    require Image::ExifTool;
+    my $exif = Image::ExifTool->new;
+
+    $exif->SetNewValuesFromFile( $asset->file_path );
     $exif->SetNewValue('GPS:*');
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
