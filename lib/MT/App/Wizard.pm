@@ -345,7 +345,7 @@ sub init_core_registry {
             'Mozilla::CA' => {
                 link => 'http://search.cpan.org/dist/Mozilla-CA/',
                 label =>
-                    'This module is required for Google Analytics site statistics and for verification of SSL certificate.',
+                    'This module is required for Google Analytics site statistics and for verification of SSL certificates.',
             },
             'YAML::Syck' => {
                 link => 'http://search.cpan.org/dist/YAML-Syck',

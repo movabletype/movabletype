@@ -776,7 +776,7 @@ my @CORE_OPT = (
     [   'Mozilla::CA',
         0, 0,
         translate(
-            'This module is required for Google Analytics site statistics and for verification of SSL certificate.'
+            'This module is required for Google Analytics site statistics and for verification of SSL certificates.'
         )
     ],
     [   'Time::HiRes',

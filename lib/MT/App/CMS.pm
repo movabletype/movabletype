@@ -5140,7 +5140,7 @@ sub pre_run {
         if ( $user && $user->is_superuser ) {
             $message->{detail}
                 = $app->translate(
-                'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this way is not recommended.'
+                'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this is not recommended.'
                 );
         }
         else {
@@ -5155,7 +5155,7 @@ sub pre_run {
         my $message = {
             level => 'warning',
             text  => $app->translate(
-                'Can verify SSL certificate, but do not verify now.'),
+                'Can verify SSL certificate, but verification is disabled.'),
         };
         if ( $user && $user->is_superuser ) {
             $message->{detail}
