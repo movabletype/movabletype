@@ -1044,7 +1044,9 @@ sub has_gps_metadata {
     my ($asset) = @_;
     my $exif = $asset->exif or return;
     $exif->Options( Group1 => 'GPS' );
-    return $exif->GetTagList ? 1 : 0;
+    return ( $exif->GetTagList || $asset->exif->GetValue('GPSDateTime') )
+        ? 1
+        : 0;
 }
 
 sub has_metadata {
@@ -1074,6 +1076,7 @@ sub remove_gps_metadata {
 
     $exif->SetNewValuesFromFile( $asset->file_path );
     $exif->SetNewValue('GPS:*');
+    $exif->SetNewValue('GPSDateTime');
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );

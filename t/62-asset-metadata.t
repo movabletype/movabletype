@@ -77,10 +77,15 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
             ok( !$image->has_gps_metadata, 'Does not have GPS metadata.' );
 
             my $exif = $image->exif;
+            $exif->SetNewValue( 'GPSDateTime', '2015:08:30 00:00:00Z' );
+            $exif->WriteInfo( $image->file_path );
+
+            ok( $image->has_gps_metadata, 'Has GPS metadata.' );
+
             $exif->SetNewValue( 'GPSVersionID', '2.2.1.0' );
             $exif->WriteInfo( $image->file_path );
 
-            ok( $image->has_gps_metadata, 'Added GPS metadata.' );
+            ok( $image->has_gps_metadata, 'Has GPS metadata.' );
         };
 
         subtest 'change_quality method' => sub {
