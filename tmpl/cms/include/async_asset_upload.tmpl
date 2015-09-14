@@ -272,8 +272,14 @@ function createUploadBlock () {
     });
   }
 
-  this.setThubmanil = function(url, fname, id) {
-    jQuery('<img src="' + url + '"><span class="filename">' + fname + '</span>').appendTo(this.thumbnail);
+  this.setThumbnail = function(url, fname, id, msg) {
+    var data = '<img src="' + url + '"><span class="filename">' + fname;
+    if ( msg ) {
+      data += ' <span class="msg-warning" style="padding:0.5em">' + msg + '</span>';
+    }
+    data += '</span>';
+
+    jQuery(data).appendTo(this.thumbnail);
     this.thumbnail.parents('.upload-status-block').attr('data-asset-id', id);
   }
 
@@ -406,7 +412,8 @@ function uploadFile( formData, uploadBlock ) {
     else {
       // Success
       uploadBlock.setProgress(100);
-      uploadBlock.setThubmanil(data.result.asset.thumbnail, data.result.asset.filename, data.result.asset.id);
+      uploadBlock.setThumbnail(data.result.asset.thumbnail, data.result.asset.filename, data.result.asset.id, data.result.asset.message);
+        
       uploadBlock.progressbar.hide();
 <mt:unless name="filter" eq="userpic">
       uploadBlock.enableEditAsset(data.result.asset);

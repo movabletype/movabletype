@@ -563,11 +563,21 @@ sub js_upload_file {
             . '-45.png';
     }
 
+    # Check extension auto-change
+    my $file_ext_changes = $app->param('changed_file_ext');
+    my ( $ext_from, $ext_to ) = split( ",", $file_ext_changes )
+        if $file_ext_changes;
+    my $extension_message
+        = $app->translate( "Extension changed from [_1] to [_2]",
+        $ext_from, $ext_to )
+        if ( $ext_from && $ext_to );
+
     my $metadata = {
         id        => $asset->id,
         filename  => $asset->file_name,
         blog_id   => $asset->blog_id,
         thumbnail => $thumb_url,
+        ( $extension_message ? ( message => $extension_message ) : () ),
     };
     return $app->json_result( { asset => $metadata } );
 }
