@@ -145,7 +145,7 @@ TC.attachLoadEvent( init );
     <button
       type="button"
       accesskey="x"
-      class="cancel action button mt-close-dialog"
+      class="cancel action button close-dialog"
       title="<__trans phrase="Close (x)">">
       <__trans phrase="Close">
     </button>
@@ -185,7 +185,37 @@ jQuery('#save').click(function(){
   return false;
 });
 
-jQuery('a.mt-open-dialog').mtDialog();
+var isDirty = false;
+jQuery(':input:visible').on('keydown', function(){
+    isDirty = true;
+});
+
+jQuery('.image-editor a').click(function(event) {
+    if (isDirty) {
+        var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?" escape="js">';
+        if ( confirm(msg) ) {
+            jQuery(this).mtDialog.open(jQuery(this).attr('href'));
+            isDirty = false;
+        }
+    }
+    else {
+        jQuery(this).mtDialog.open(jQuery(this).attr('href'));
+    }
+    return false;
+});
+
+jQuery('button.close-dialog').click(function() {
+    if (isDirty) {
+        var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to close this dialog?" escape="js">';
+        if ( confirm(msg) ) {
+            parent.jQuery.fn.mtDialog.close();
+        }
+    } else {
+        parent.jQuery.fn.mtDialog.close();
+    }
+
+    return false;
+});
 
 </mt:setvarblock>
 
