@@ -1089,11 +1089,16 @@ sub has_metadata {
 
     return 0 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
 
-    my $exif = $asset->exif or return;
-
     require Image::ExifTool;
+    my $exif    = $asset->exif or return;
+    my $is_jpeg = lc( $asset->file_ext ) =~ /^jpe?g$/;
+    my $is_tiff = lc( $asset->file_ext ) =~ /^tiff?$/;
     for my $g ( $exif->GetGroups ) {
-        next if $g eq 'ExifTool' || $g eq 'File' || $g eq 'JFIF';
+        next
+            if $g eq 'ExifTool'
+            || $g eq 'File'
+            || ( $is_jpeg && $g eq 'JFIF' )
+            || ( $is_tiff && $g eq 'EXIF' );
         my @writable_tags = Image::ExifTool::GetWritableTags($g) or next;
         $exif->Options( Group => $g );
         $exif->ExtractInfo( $asset->file_path );
