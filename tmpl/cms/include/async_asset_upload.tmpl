@@ -8,10 +8,14 @@
 }
 
 #drop-handler p{
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
     text-align: center;
     font-size: 1.5em;
-    line-height: 150px;
-}
+}        
 
 #drop-handler button{
     text-decoration: underline;
@@ -87,7 +91,7 @@ p.msg-warning {
 <form>
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
   <div id="drop-handler">
-      <p><mt:if name="can_multi"><__trans phrase="Drag and drop here to upload files, or<button id='open-file-dialog'>Browse</button>"><mt:else><__trans phrase="Drag and drop here to upload <strong>a file</strong>, or<button id='open-file-dialog'>Browse</button>"></mt:if></p>
+      <p><mt:if name="can_multi"><__trans phrase="Drag and drop here to upload files, or<button id='open-file-dialog'>Browse</button>"><mt:else><__trans phrase="Drag and drop here to upload a file, or<button id='open-file-dialog'>Browse</button>"><br /><__trans phrase="(If you upload multiple files, last uploaded files will be used.)"></mt:if></p>
   </div>
 <mt:unless name="filter" eq="userpic">  
     <h2><__trans phrase="Upload Destination"></h2>
