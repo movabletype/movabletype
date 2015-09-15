@@ -797,10 +797,14 @@ sub normalize_orientation {
     $exif_tool->ExtractInfo( \$img_data );
     my $o = $exif_tool->GetInfo('Orientation')->{'Orientation'};
     if ( $o && ( $o ne 'Horizontal (normal)' && $o !~ /^Unknown/i ) ) {
-        my $new_exif = Image::ExifTool->new;
-        $new_exif->SetNewValuesFromFile($file_path);
-        $new_exif->SetNewValue('Orientation');
-        $new_exif->SetNewValue('Thumbnail*');
+
+        # Preserve metadata.
+        my $new_exif;
+        my $has_metadata = $obj->has_metadata;
+        if ($has_metadata) {
+            $new_exif = Image::ExifTool->new;
+            $new_exif->SetNewValuesFromFile($file_path);
+        }
 
         my $img = MT::Image->new( Data => $img_data, Type => $obj->file_ext );
 
@@ -831,15 +835,23 @@ sub normalize_orientation {
         };
         $fmgr->put_data( $blob, $file_path, 'upload' );
 
-        if ( exists $exif_tool->GetInfo('ExifImageWidth')->{ExifImageWidth} )
-        {
-            $new_exif->SetNewValue( 'ExifImageWidth' => $width );
+        # Update and write metadata.
+        if ($has_metadata) {
+            $new_exif->SetNewValue('Orientation');
+            $new_exif->SetNewValue('Thumbnail*');
+            if (exists $exif_tool->GetInfo('ExifImageWidth')->{ExifImageWidth}
+                )
+            {
+                $new_exif->SetNewValue( 'ExifImageWidth' => $width );
+            }
+            if (exists $exif_tool->GetInfo('ExifImageHeight')
+                ->{ExifImageHeight} )
+            {
+                $new_exif->SetNewValue( 'ExifImageHeight' => $height );
+            }
+
+            $new_exif->WriteInfo($file_path);    # Do not check error.
         }
-        if (exists $exif_tool->GetInfo('ExifImageHeight')->{ExifImageHeight} )
-        {
-            $new_exif->SetNewValue( 'ExifImageHeight' => $height );
-        }
-        $new_exif->WriteInfo($file_path);    # Do not check error.
 
         $obj->image_width($width);
         $obj->image_height($height);
@@ -923,29 +935,38 @@ sub _transform {
     my $img = MT::Image->new( Data => $img_data, Type => $asset->file_ext );
 
     # Preserve metadata.
-    my $exif      = $asset->exif;
-    my $next_exif = Image::ExifTool->new;
-    $next_exif->SetNewValuesFromFile($file_path);
-    $next_exif->SetNewValue('Thumbnail*');
+    my ( $exif, $next_exif );
+    my $has_metadata = $asset->has_metadata;
+    if ($has_metadata) {
+        $exif      = $asset->exif;
+        $next_exif = Image::ExifTool->new;
+        $next_exif->SetNewValuesFromFile($file_path);
+        $next_exif->SetNewValue('Thumbnail*');
+    }
 
     my ( $blob, $width, $height ) = $process->($img);
 
     $fmgr->put_data( $blob, $file_path, 'upload' )
         or return $asset->error( $fmgr->errstr );
 
-    # Update Exif.
-    if ( exists $exif->GetInfo('ExifImageWidth')->{ExifImageWidth} ) {
-        $next_exif->SetNewValue( 'ExifImageWidth' => $width );
-    }
-    if ( exists $exif->GetInfo('ExifImageHeight')->{ExifImageHeight} ) {
-        $next_exif->SetNewValue( 'ExifImageHeight' => $height );
-    }
+    if ($has_metadata) {
 
-    # Restore metadata.
-    if ( !$asset->is_metadata_broken ) {
-        $next_exif->WriteInfo($file_path)
-            or return $asset->trans_error( 'Writing metadata failed: [_1]',
-            $next_exif->GetValue('Error') );
+        # Update Exif.
+        if ( exists $exif->GetInfo('ExifImageWidth')->{ExifImageWidth} ) {
+            $next_exif->SetNewValue( 'ExifImageWidth' => $width );
+        }
+        if ( exists $exif->GetInfo('ExifImageHeight')->{ExifImageHeight} ) {
+            $next_exif->SetNewValue( 'ExifImageHeight' => $height );
+        }
+
+        # Restore metadata.
+        if ( !$asset->is_metadata_broken ) {
+            $next_exif->WriteInfo($file_path)
+                or return $asset->trans_error(
+                'Writing metadata failed: [_1]',
+                $next_exif->GetValue('Error')
+                );
+        }
     }
 
     $asset->image_width($width);
@@ -973,9 +994,13 @@ sub change_quality {
     }
 
     # Preserve metadata. ImageDriver other than ImageMagick removes metadata.
-    require Image::ExifTool;
-    my $new_exif = Image::ExifTool->new;
-    $new_exif->SetNewValuesFromFile( $asset->file_path );
+    my $new_exif;
+    my $has_metadata = $asset->has_metadata;
+    if ($has_metadata) {
+        require Image::ExifTool;
+        $new_exif = Image::ExifTool->new;
+        $new_exif->SetNewValuesFromFile( $asset->file_path );
+    }
 
     require MT::Image;
     my $img = MT::Image->new( Filename => $asset->file_path );
@@ -995,7 +1020,7 @@ sub change_quality {
         $asset->file_path, $fmgr->errstr );
 
     # Restore metadata.
-    if ( !$asset->is_metadata_broken ) {
+    if ( $has_metadata && !$asset->is_metadata_broken ) {
         $new_exif->WriteInfo( $asset->file_path )
             or return $asset->trans_error(
             "Error writing metadata to '[_1]': [_2]",
