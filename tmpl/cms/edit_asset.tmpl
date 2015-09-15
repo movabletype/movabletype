@@ -222,7 +222,7 @@ TC.attachLoadEvent( init );
         <mt:unless name="file_is_missing">
           <mt:if name="has_thumbnail">
     <div class="image-editor">
-      <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">" class="button mt-open-dialog"><__trans phrase="Edit Image"></a>
+      <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">" class="button"><__trans phrase="Edit Image"></a>
     </div>
           </mt:if>
         </mt:unless>
@@ -293,6 +293,30 @@ TC.attachLoadEvent( init );
             element.parents('div.field').addClass('error-field');
             error.removeAttr('generated').insertAfter(element);
         }
+    });
+
+    var isDirty = false;
+    jQuery(':input:visible').on('keydown', function(){
+        isDirty = true;
+    });
+
+    jQuery(window).on('beforeunload', function() {
+        if (isDirty) {
+            return '<__trans phrase="You have unsaved changes to this asset that will be lost." escape="js">';
+        }
+    });
+    jQuery('.image-editor a').click(function(event) {
+        if (isDirty) {
+            var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?" escape="js">';
+            if ( confirm(msg) ) {
+                jQuery(this).mtDialog.open(jQuery(this).attr('href'));
+                isDirty = false;
+            }
+        }
+        else {
+            jQuery(this).mtDialog.open(jQuery(this).attr('href'));
+        }
+        return false;
     });
 </mt:setvarblock>
 
