@@ -936,8 +936,11 @@ sub _transform {
 
     # Preserve metadata.
     my ( $exif, $next_exif );
-    my $has_metadata = $asset->has_metadata;
-    if ($has_metadata) {
+    my $update_metadata
+        = lc( $asset->file_ext ) =~ /^(jpe?g|tiff?)$/
+        && $asset->has_metadata
+        && !$asset->is_metadata_broken;
+    if ($update_metadata) {
         $exif      = $asset->exif;
         $next_exif = Image::ExifTool->new;
         $next_exif->SetNewValuesFromFile($file_path);
@@ -949,7 +952,7 @@ sub _transform {
     $fmgr->put_data( $blob, $file_path, 'upload' )
         or return $asset->error( $fmgr->errstr );
 
-    if ($has_metadata) {
+    if ($update_metadata) {
 
         # Update Exif.
         if ( exists $exif->GetInfo('ExifImageWidth')->{ExifImageWidth} ) {
@@ -960,13 +963,9 @@ sub _transform {
         }
 
         # Restore metadata.
-        if ( !$asset->is_metadata_broken ) {
-            $next_exif->WriteInfo($file_path)
-                or return $asset->trans_error(
-                'Writing metadata failed: [_1]',
-                $next_exif->GetValue('Error')
-                );
-        }
+        $next_exif->WriteInfo($file_path)
+            or return $asset->trans_error( 'Writing metadata failed: [_1]',
+            $next_exif->GetValue('Error') );
     }
 
     $asset->image_width($width);
@@ -995,8 +994,11 @@ sub change_quality {
 
     # Preserve metadata. ImageDriver other than ImageMagick removes metadata.
     my $new_exif;
-    my $has_metadata = $asset->has_metadata;
-    if ($has_metadata) {
+    my $update_metadata
+        = lc( $asset->file_ext ) =~ /^jpe?g$/
+        && $asset->has_metadata
+        && !$asset->is_metadata_broken;
+    if ($update_metadata) {
         require Image::ExifTool;
         $new_exif = Image::ExifTool->new;
         $new_exif->SetNewValuesFromFile( $asset->file_path );
@@ -1020,7 +1022,7 @@ sub change_quality {
         $asset->file_path, $fmgr->errstr );
 
     # Restore metadata.
-    if ( $has_metadata && !$asset->is_metadata_broken ) {
+    if ($update_metadata) {
         $new_exif->WriteInfo( $asset->file_path )
             or return $asset->trans_error(
             "Error writing metadata to '[_1]': [_2]",
@@ -1072,6 +1074,9 @@ sub exif {
 
 sub has_gps_metadata {
     my ($asset) = @_;
+
+    return 0 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
+
     my $exif = $asset->exif or return;
     $exif->Options( Group1 => 'GPS' );
     return ( $exif->GetTagList || $asset->exif->GetValue('GPSDateTime') )
@@ -1081,6 +1086,9 @@ sub has_gps_metadata {
 
 sub has_metadata {
     my ($asset) = @_;
+
+    return 0 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
+
     my $exif = $asset->exif or return;
 
     require Image::ExifTool;
@@ -1101,6 +1109,7 @@ sub has_metadata {
 sub remove_gps_metadata {
     my ($asset) = @_;
 
+    return 1 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
     return 1 if $asset->is_metadata_broken;
 
     require Image::ExifTool;
@@ -1122,12 +1131,13 @@ sub remove_gps_metadata {
 sub remove_all_metadata {
     my ($asset) = @_;
 
+    return 1 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
     return 1 if $asset->is_metadata_broken;
 
     my $exif = $asset->exif or return;
-
     $exif->SetNewValue('*');
-    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
+    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 )
+        if lc( $asset->file_ext =~ /^jpe?g$/ );
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
