@@ -4,21 +4,20 @@
 #
 # $Id$
 
-package MT::Auth::OIDC;
+package GoogleOpenIDConnect::Auth::OIDC;
 use strict;
 use JSON qw/encode_json decode_json/;
 use MT::Util;
 
-my $authorization_endpoint = 'http://localhost:5001/authorize';
-my $token_endpoint         = 'http://localhost:5001/token';
-my $userinfo_endpoint      = 'http://localhost:5001/userinfo';
-my $scope                  = 'openid email profile phone address';
+my $scope = 'openid email profile phone address';
 
 BEGIN {
     eval {
         require OIDC::Lite::Client::WebServer;
         require OIDC::Lite::Model::IDToken;
+        require Crypt::OpenSSL::CA;
     };
+    die $@ if $@;
 }
 
 sub login {
@@ -53,31 +52,32 @@ sub handle_sign_in {
             )
         );
     }
-
-    my $state = decode_json( MT::Util::decode_url( $q->param('state') ) );
-    $app->param( 'blog_id', $state->{blog_id} );
-    $app->param( 'static',  $state->{static} );
-
-    my $blog = $app->model('blog')->load( $state->{blog_id} );
-
-    my $state_session = $state->{onetimetoken};
-    if (my $state_session = MT::Session::get_unexpired_value(
-            5 * 60, { id => $state_session, kind => 'OT' }
+    my $state_session_id = $q->param('state');
+    my $state_session;
+    my $blog_id;
+    my $static;
+    if ($state_session = MT::Session::get_unexpired_value(
+            5 * 60, { id => $state_session_id, kind => 'OT' }
         )
         )
     {
+        $blog_id = $state_session->get('blog_id');
+        $static  = $state_session->get('static');
         $state_session->remove();
     }
     else {
         return $app->error(
             'The state parameter is missing or not matched with session.');
     }
+    $app->param( 'blog_id', $blog_id );
+    $app->param( 'static',  $static );
+    my $blog = $app->model('blog')->load($blog_id);
 
     # code
     my $code = $q->param('code');
     unless ($code) {
 
-        # invalid state
+        # invalid code
         return $app->error('The code parameter is missing.');
     }
 
@@ -102,14 +102,16 @@ sub handle_sign_in {
 
     # ID Token validation
     my $id_token = OIDC::Lite::Model::IDToken->load( $token->id_token );
-    $info->{'id_token'} = {
-        header  => encode_json( $id_token->header ),
-        payload => encode_json( $id_token->payload ),
-        string  => $id_token->token_string,
-    };
+
+    # fetch pubkey and verify signature
+    my $key = $class->_get_pub_key( $app, $id_token->header->{kid} );
+    $id_token->key($key);
+    unless ( $id_token->verify ) {
+        return $app->error('Failed verify signature.');
+    }
 
     # get_user_info
-    my $userinfo_res = $class->_get_userinfo( $token->access_token );
+    my $userinfo_res = $class->_get_userinfo( $app, $token->access_token );
     unless ( $userinfo_res->is_success ) {
         return $app->error( $userinfo_res->message );
     }
@@ -162,12 +164,32 @@ sub handle_sign_in {
                 || $app->translate("Could not save the session") );
         return 0;
     }
-
     return ( $cmntr, $session );
 }
 
+sub _get_pub_key {
+    my ( $class, $app, $kid ) = @_;
+
+    my $authenticator = _get_commenter_authenticator($app);
+
+    my $res = LWP::UserAgent->new->request(
+        HTTP::Request->new( GET => $authenticator->{certs_url} ) );
+    return unless $res->is_success;
+
+    my $certs = decode_json( $res->content );
+    return unless ( $certs && $certs->{"$kid"} );
+
+    my $pub_key = Crypt::OpenSSL::CA::X509->parse( $certs->{"$kid"} )
+        ->get_public_key->to_PEM;
+    return $pub_key;
+}
+
 sub _get_userinfo {
-    my ( $class, $access_token ) = @_;
+    my ( $class, $app, $access_token ) = @_;
+
+    my $authenticator = _get_commenter_authenticator($app);
+
+    my $userinfo_endpoint = $authenticator->{userinfo_endpoint};
 
     my $req = HTTP::Request->new( GET => $userinfo_endpoint );
     $req->header( Authorization => sprintf( q{Bearer %s}, $access_token ) );
@@ -182,14 +204,14 @@ sub _uri_to_authorization_endpoint {
     my $blog_id = $blog->id || '';
 
     my $static = $q->param('static') || '';
-    $static = MT::Util::encode_url($static)
-        if $static =~ m/[^a-zA-Z0-9_.~%-]/;
 
     my $state_session = MT->model('session')->new();
     $state_session->kind('OT');    # One time Token
     $state_session->id( MT::App::make_magic_token() );
     $state_session->start(time);
     $state_session->duration( time + 5 * 60 );
+    $state_session->set( 'blog_id', $blog_id );
+    $state_session->set( 'static',  $static );
     $state_session->save
         or return $app->error(
         $app->translate(
@@ -197,19 +219,11 @@ sub _uri_to_authorization_endpoint {
             $state_session->errstr
         )
         );
-
-    my $state = {
-        'blog_id'      => $blog_id,
-        'static'       => $static,
-        'onetimetoken' => $state_session->id
-    };
-    my $state_string = encode_json($state);
-
     my $client = $class->_client( $app, $blog );
     $client->uri_to_redirect(
         redirect_uri => _create_return_url( $app, $blog ),
         scope        => $scope,
-        state        => $state_string,
+        state        => $state_session->id,
         extra => { access_type => q{offline}, },
     );
 }
@@ -219,16 +233,28 @@ sub _client {
     my $app   = shift;
     my $blog  = shift;
 
-    my $client_id     = $blog->meta("client_id");
-    my $client_secret = $blog->meta("client_id");
+    my $client = $class->_get_client_info( $app, $blog );
+    return undef unless $client;
+    my $authenticator = _get_commenter_authenticator($app);
 
     return OIDC::Lite::Client::WebServer->new(
-        id               => $client_id,
-        secret           => $client_secret,
-        authorize_uri    => $authorization_endpoint,
-        access_token_uri => $token_endpoint,
+        id               => $client->{id},
+        secret           => $client->{secret},
+        authorize_uri    => $authenticator->{authorization_endpoint},
+        access_token_uri => $authenticator->{token_endpoint},
     );
 
+}
+
+sub set_commenter_properties {
+    my $class = shift;
+    my ( $commenter, $user_info ) = @_;
+    my $nickname = $user_info->{name};
+    my $sub      = $user_info->{sub};
+    my $email    = $user_info->{email};
+
+    $commenter->nickname( $nickname || $user_info->url );
+    $commenter->email( $email || '' );
 }
 
 sub _create_return_url {
@@ -257,6 +283,12 @@ sub _create_return_url {
     my $return_to = $path . '?__mode=handle_sign_in' . '&key=' . $key;
 
     return $return_to;
+
+}
+
+sub _get_commenter_authenticator {
+    my $app = shift;
+    return MT->commenter_authenticator( $app->param('key') );
 
 }
 

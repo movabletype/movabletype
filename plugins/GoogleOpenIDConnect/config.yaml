@@ -19,10 +19,14 @@ web_services:
 
 commenter_authenticators:
     GoogleOpenIDConnect:
-        class: GoogleOpenIDConnect::OIDC
+        class: GoogleOpenIDConnect::Auth::GoogleOIDC
         label: Google OpenID Connect
         logo: images/comment/google.png
         logo_small: images/comment/google_logo.png
         login_form: comment/auth_oidc.tmpl
-        login_form_params: GoogleOpenIDConnect::OIDC::commenter_auth_params
-        condition: $GoogleOpenIDConnect::GoogleOpenIDConnect::OIDC::condition
+        login_form_params: GoogleOpenIDConnect::Auth::GoogleOIDC::commenter_auth_params
+        condition: $GoogleOpenIDConnect::GoogleOpenIDConnect::Auth::GoogleOIDC::condition
+        authorization_endpoint: https://accounts.google.com/o/oauth2/auth
+        token_endpoint: https://accounts.google.com/o/oauth2/token
+        userinfo_endpoint: https://www.googleapis.com/oauth2/v3/userinfo
+        certs_url: https://www.googleapis.com/oauth2/v1/certs
