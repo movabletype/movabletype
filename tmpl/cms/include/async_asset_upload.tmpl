@@ -311,6 +311,10 @@ function createUploadBlock () {
  
 var queue = [];
 function uploadFiles(files, items) {
+    if (!files || files.length === 0 ) {
+        return;
+    }
+
 <mt:if name="can_multi">
     var num_files = files.length;
 <mt:else>
