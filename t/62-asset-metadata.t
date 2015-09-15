@@ -115,7 +115,10 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
 
             $image->remove_all_metadata;
 
-            ok( !$image->has_metadata, 'Removed metadata.' );
+            ok( !$image->has_metadata, 'has_metadata method returns false.' );
+            ok( $image->exif->GetValue('JFIFVersion'),
+                'JFIFVersion tag is still remaining.'
+            );
             ok( MT::Image->new( Filename => $image->file_path ),
                 'Read the image having no metadata.' );
         };

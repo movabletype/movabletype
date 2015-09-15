@@ -1055,7 +1055,7 @@ sub has_metadata {
 
     require Image::ExifTool;
     for my $g ( $exif->GetGroups ) {
-        next if $g eq 'ExifTool' || $g eq 'File';
+        next if $g eq 'ExifTool' || $g eq 'File' || $g eq 'JFIF';
         my @writable_tags = Image::ExifTool::GetWritableTags($g) or next;
         $exif->Options( Group => $g );
         $exif->ExtractInfo( $asset->file_path );
@@ -1092,6 +1092,7 @@ sub remove_all_metadata {
     my $exif = $asset->exif or return;
 
     $exif->SetNewValue('*');
+    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );

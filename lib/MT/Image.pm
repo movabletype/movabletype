@@ -260,7 +260,9 @@ sub remove_metadata {
     my ( $class, $file ) = @_;
     require Image::ExifTool;
     my $exif = Image::ExifTool->new;
+    $exif->SetNewValuesFromFile($file);
     $exif->SetNewValue('*');
+    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
     $exif->WriteInfo($file)
         or $class->trans_error( 'Writing metadata failed: [_1]',
         $exif->GetValue('Error') );
