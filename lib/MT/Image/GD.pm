@@ -12,6 +12,8 @@ use base qw( MT::Image );
 
 use Class::Method::Modifiers;
 
+our $OVERRIDE;
+
 sub load_driver {
     my $image = shift;
     eval { require GD };
@@ -21,12 +23,15 @@ sub load_driver {
     GD::Image->trueColor(1);
 
     # All file starting SOI is JPEG.
-    around 'GD::Image::_image_type' => sub {
-        my ( $orig, $data ) = @_;
-        my $magic = unpack( 'H*', substr( $data, 0, 2 ) );
-        return 'Jpeg' if $magic eq 'ffd8';
-        $orig->($data);
-    };
+    if ( !$OVERRIDE ) {
+        $OVERRIDE = 1;
+        around 'GD::Image::_image_type' => sub {
+            my ( $orig, $data ) = @_;
+            my $magic = unpack( 'H*', substr( $data, 0, 2 ) );
+            return 'Jpeg' if $magic eq 'ffd8';
+            $orig->($data);
+        };
+    }
 
     1;
 }
