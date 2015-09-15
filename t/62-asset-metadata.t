@@ -16,6 +16,7 @@ use lib qw( lib extlib t/lib );
 use MT::Test qw(:db);
 use MT::Test::Permission;
 use MT;
+use MT::Image;
 
 use Image::ExifTool;
 
@@ -115,6 +116,8 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
             $image->remove_all_metadata;
 
             ok( !$image->has_metadata, 'Removed metadata.' );
+            ok( MT::Image->new( Filename => $image->file_path ),
+                'Read the image having no metadata.' );
         };
     };
 }

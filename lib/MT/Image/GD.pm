@@ -10,6 +10,8 @@ use warnings;
 
 use base qw( MT::Image );
 
+use Class::Method::Modifiers;
+
 sub load_driver {
     my $image = shift;
     eval { require GD };
@@ -17,6 +19,15 @@ sub load_driver {
         return $image->error( MT->translate( "Cannot load GD: [_1]", $err ) );
     }
     GD::Image->trueColor(1);
+
+    # All file starting SOI is JPEG.
+    around 'GD::Image::_image_type' => sub {
+        my ( $orig, $data ) = @_;
+        my $magic = unpack( 'H*', substr( $data, 0, 2 ) );
+        return 'Jpeg' if $magic eq 'ffd8';
+        $orig->($data);
+    };
+
     1;
 }
 
@@ -93,14 +104,15 @@ sub crop_rectangle {
     my %param = @_;
     my ( $width, $height, $x, $y ) = @param{qw( Width Height X Y )};
     my $src = $image->{gd};
-    my $gd = GD::Image->new( $width, $height, 1 );    # True color image (24 bit)
+    my $gd = GD::Image->new( $width, $height, 1 ); # True color image (24 bit)
     $gd->alphaBlending(0);
     $gd->saveAlpha(1);
 
     # Use copyResampled() instead of copy(),
     # because copy() with libgd 2.0.35 or lower does not work correctly.
     # $gd->copy( $src, 0, 0, $x, $y, $size, $size );
-    $gd->copyResampled( $src, 0, 0, $x, $y, $width, $height, $width, $height );
+    $gd->copyResampled( $src, 0, 0, $x, $y, $width, $height, $width,
+        $height );
     ( $image->{gd}, $image->{width}, $image->{height} )
         = ( $gd, $width, $height );
     wantarray ? ( $image->blob, $width, $height ) : $image->blob;
