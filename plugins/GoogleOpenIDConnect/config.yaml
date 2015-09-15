@@ -30,3 +30,4 @@ commenter_authenticators:
         token_endpoint: https://accounts.google.com/o/oauth2/token
         userinfo_endpoint: https://www.googleapis.com/oauth2/v3/userinfo
         certs_url: https://www.googleapis.com/oauth2/v1/certs
+        issuer_identifier: accounts.google.com

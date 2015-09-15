@@ -15,7 +15,6 @@ BEGIN {
     eval {
         require OIDC::Lite::Client::WebServer;
         require OIDC::Lite::Model::IDToken;
-        require Crypt::OpenSSL::CA;
     };
     die $@ if $@;
 }
@@ -88,27 +87,22 @@ sub handle_sign_in {
         code         => $code,
         redirect_uri => _create_return_url( $app, $blog ),
     );
-    my $res          = $client->last_response;
-    my $request_body = $res->request->content;
-    $request_body =~ s/client_secret=[^\&]+/client_secret=(hidden)/;
-
     unless ($token) {
         return $app->error('Failed to get access token response');
     }
-    my $info = {
-        token_request  => $request_body,
-        token_response => $res->content,
-    };
 
     # ID Token validation
     my $id_token = OIDC::Lite::Model::IDToken->load( $token->id_token );
-
-    # fetch pubkey and verify signature
-    my $key = $class->_get_pub_key( $app, $id_token->header->{kid} );
-    $id_token->key($key);
-    unless ( $id_token->verify ) {
-        return $app->error('Failed verify signature.');
+    my $config = $class->_get_client_info( $app, $blog );
+    my $authenticator = _get_commenter_authenticator($app);
+    $config->{iss} = $authenticator->{issuer_identifier};
+    if(my $error = $class->_validate_id_token( 
+        $id_token->payload, 
+        $config,
+    )){
+        return $app->error($error);
     }
+
 
     # get_user_info
     my $userinfo_res = $class->_get_userinfo( $app, $token->access_token );
@@ -167,23 +161,46 @@ sub handle_sign_in {
     return ( $cmntr, $session );
 }
 
-sub _get_pub_key {
-    my ( $class, $app, $kid ) = @_;
+sub _validate_id_token {
+    my ( $class, $payload, $config ) = @_;
 
-    my $authenticator = _get_commenter_authenticator($app);
+    # iss
+    unless ( $payload->{iss} ) {
+        return 'iss does not exist.';
+    }
 
-    my $res = LWP::UserAgent->new->request(
-        HTTP::Request->new( GET => $authenticator->{certs_url} ) );
-    return unless $res->is_success;
+    unless ( $payload->{iss} eq $config->{iss} ) {
+        return 'iss is not matched.';
+    }
 
-    my $certs = decode_json( $res->content );
-    return unless ( $certs && $certs->{"$kid"} );
+    # iat
+    unless ( $payload->{iat} ) {
+        return 'iat does not exist.';
+    }
+    my $now = time();
+    unless ( $payload->{iat} <= $now ) {
+        return 'iat is greater than current timestamp.';
+    }
 
-    my $pub_key = Crypt::OpenSSL::CA::X509->parse( $certs->{"$kid"} )
-        ->get_public_key->to_PEM;
-    return $pub_key;
+    # exp
+    unless ( $payload->{exp} ) {
+        return 'exp does not exist';
+    }
+    unless ( $payload->{exp} >= $now ) {
+        return 'exp is not greater than current timestamp.';
+    }
+
+    # aud anz azp
+    unless ( $payload->{aud} || $payload->{azp} ) {
+        return 'aud does not exist';
+    }
+    unless ( $payload->{aud} eq $config->{client_id} ) {
+        return 'aud does not match with this app\'s client_id.';
+    }
+
+    return undef;
+
 }
-
 sub _get_userinfo {
     my ( $class, $app, $access_token ) = @_;
 
@@ -238,8 +255,8 @@ sub _client {
     my $authenticator = _get_commenter_authenticator($app);
 
     return OIDC::Lite::Client::WebServer->new(
-        id               => $client->{id},
-        secret           => $client->{secret},
+        id               => $client->{client_id},
+        secret           => $client->{client_secret},
         authorize_uri    => $authenticator->{authorization_endpoint},
         access_token_uri => $authenticator->{token_endpoint},
     );

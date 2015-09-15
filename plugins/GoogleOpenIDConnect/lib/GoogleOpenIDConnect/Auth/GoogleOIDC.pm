@@ -59,8 +59,8 @@ sub _get_client_info {
 
     my $info = undef;
     if ($config) {
-        $info->{id}     = $config->{"client_id"};
-        $info->{secret} = $config->{"client_secret"};
+        $info->{client_id}     = $config->{"client_id"};
+        $info->{client_secret} = $config->{"client_secret"};
     }
     return $info;
 }
