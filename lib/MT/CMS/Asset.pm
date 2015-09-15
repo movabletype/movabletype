@@ -157,6 +157,8 @@ sub edit {
                 $param->{modified_by} = $app->translate('(user deleted)');
             }
         }
+
+        $param->{broken_metadata} = $obj->is_metadata_broken;
     }
     1;
 }
@@ -2258,7 +2260,9 @@ sub _upload_file {
 
         # Rename non-ascii filename automatically if option provided.
         my $path_info = { basename => $stem };
-        if ( $q->param('auto_rename_non_ascii') && $path_info->{basename} =~ m/[^\x20-\x7E]/ ) {
+        if (   $q->param('auto_rename_non_ascii')
+            && $path_info->{basename} =~ m/[^\x20-\x7E]/ )
+        {
             # Auto-rename
             _rename_filename( $app, $path_info );
         }
@@ -2296,7 +2300,7 @@ sub _upload_file {
             }
         }
         $unique_stem = $path_info->{basename};
-        $local_file = File::Spec->catfile( $param{support_path},
+        $local_file  = File::Spec->catfile( $param{support_path},
             $unique_stem . $type );
 
         my $unique_basename = $unique_stem . $type;
@@ -2872,20 +2876,23 @@ sub dialog_edit_image {
     $param->{modified_on} = $asset->modified_on;
 
     # Check Exif.
-    my $has_metadata = $asset->has_metadata;
-    if ( defined $has_metadata ) {
-        $param->{has_metadata} = $has_metadata;
-    }
-    else {
-        return $app->error( $asset->errstr );
-    }
-    if ($has_metadata) {
-        my $has_gps_metadata = $asset->has_gps_metadata;
-        if ( defined $has_gps_metadata ) {
-            $param->{has_gps_metadata} = $has_gps_metadata;
+    # Cannot remove metadata when it is broken.
+    if ( !$asset->is_metadata_broken ) {
+        my $has_metadata = $asset->has_metadata;
+        if ( defined $has_metadata ) {
+            $param->{has_metadata} = $has_metadata;
         }
         else {
             return $app->error( $asset->errstr );
+        }
+        if ($has_metadata) {
+            my $has_gps_metadata = $asset->has_gps_metadata;
+            if ( defined $has_gps_metadata ) {
+                $param->{has_gps_metadata} = $has_gps_metadata;
+            }
+            else {
+                return $app->error( $asset->errstr );
+            }
         }
     }
 
@@ -3116,10 +3123,10 @@ sub dialog_insert_options {
     my $options_loop;
     foreach my $a (@$assets) {
         my $param = {
-            id       => $a->id,
-            filename => $a->file_name,
-            url      => $a->url,
-            label    => $a->label,
+            id          => $a->id,
+            filename    => $a->file_name,
+            url         => $a->url,
+            label       => $a->label,
             thumbnail   => _make_thumbnail_url( $a, { size => 45 } ),
             class_label => $a->class_label,
         };

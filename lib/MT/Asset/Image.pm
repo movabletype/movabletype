@@ -839,7 +839,7 @@ sub normalize_orientation {
         {
             $new_exif->SetNewValue( 'ExifImageHeight' => $height );
         }
-        $new_exif->WriteInfo($file_path);
+        $new_exif->WriteInfo($file_path);    # Do not check error.
 
         $obj->image_width($width);
         $obj->image_height($height);
@@ -942,9 +942,11 @@ sub _transform {
     }
 
     # Restore metadata.
-    $next_exif->WriteInfo($file_path)
-        or return $asset->trans_error( 'Writing metadata failed: [_1]',
-        $next_exif->GetValue('Error') );
+    if ( !$asset->is_metadata_broken ) {
+        $next_exif->WriteInfo($file_path)
+            or return $asset->trans_error( 'Writing metadata failed: [_1]',
+            $next_exif->GetValue('Error') );
+    }
 
     $asset->image_width($width);
     $asset->image_height($height);
@@ -993,10 +995,12 @@ sub change_quality {
         $asset->file_path, $fmgr->errstr );
 
     # Restore metadata.
-    $new_exif->WriteInfo( $asset->file_path )
-        or
-        return $asset->trans_error( "Error writing metadata to '[_1]': [_2]",
-        $asset->file_path, $new_exif->GetValue('Error') );
+    if ( !$asset->is_metadata_broken ) {
+        $new_exif->WriteInfo( $asset->file_path )
+            or return $asset->trans_error(
+            "Error writing metadata to '[_1]': [_2]",
+            $asset->file_path, $new_exif->GetValue('Error') );
+    }
 
     1;
 }
@@ -1072,6 +1076,8 @@ sub has_metadata {
 sub remove_gps_metadata {
     my ($asset) = @_;
 
+    return 1 if $asset->is_metadata_broken;
+
     require Image::ExifTool;
     my $exif = Image::ExifTool->new;
 
@@ -1090,6 +1096,9 @@ sub remove_gps_metadata {
 
 sub remove_all_metadata {
     my ($asset) = @_;
+
+    return 1 if $asset->is_metadata_broken;
+
     my $exif = $asset->exif or return;
 
     $exif->SetNewValue('*');
@@ -1102,6 +1111,18 @@ sub remove_all_metadata {
     $asset->save or return;
 
     1;
+}
+
+sub is_metadata_broken {
+    my ($asset) = @_;
+    if ( my $exif = $asset->exif ) {
+        return ( $exif->GetValue('Error') || $exif->GetValue('Warning') )
+            ? 1
+            : 0;
+    }
+    else {
+        return 0;
+    }
 }
 
 1;
@@ -1195,16 +1216,20 @@ Return 1 when the image has metadata.
 
 =head2 $asset->remove_gps_metadata()
 
-Remove all GPS metadata from the image.
+Remove all GPS metadata from the image. Do nothing when $asset's metadata is broken.
 
 =head2 $asset->remove_all_metadata()
 
-Remove all metadata from the image.
+Remove all metadata from the image. Do nothing when $asset's metadata is broken.
 
 =head2 $asset->change_quality([$quality])
 
 Change the quality of the file of $asset only when $asset is JPEG or PNG.
 When $quality is not set, config directive "ImageQualityJpeg" or "ImageQualityPng" is used.
+
+=head2 $asset->is_metadata_broken()
+
+Return 1 when $asset's metadata seems to be broken.
 
 =head1 AUTHOR & COPYRIGHT
 

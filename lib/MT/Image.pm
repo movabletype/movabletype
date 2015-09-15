@@ -259,7 +259,14 @@ sub crop {
 sub remove_metadata {
     my ( $class, $file ) = @_;
     require Image::ExifTool;
+
     my $exif = Image::ExifTool->new;
+    $exif->ExtractInfo($file);
+    if ( $exif->GetValue('Error') || $exif->GetValue('Warning') ) {
+        return 1;
+    }
+
+    $exif = Image::ExifTool->new;
     $exif->SetNewValuesFromFile($file);
     $exif->SetNewValue('*');
     $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
@@ -492,6 +499,8 @@ Remove metadata (e.g. Exif) from $file.
 
 If any error occurs from this routine, it will return 'undef', and
 assign the error message, accessible using the L<errstr> class method.
+
+Do nothing when $file's metadata is broken.
 
 =head1 AUTHOR & COPYRIGHT
 
