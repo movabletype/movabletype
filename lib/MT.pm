@@ -68,6 +68,9 @@ BEGIN {
 
     # Alias these; Components is the preferred array for MT 4
     *Plugins = \@Components;
+
+    # Do not read ExifTool configFile.
+    $Image::ExifTool::configFile = '';
 }
 
 # On-demand loading of compatibility module, if a plugin asks for it, using

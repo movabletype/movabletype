@@ -8,6 +8,7 @@ package MT::Asset::Image;
 
 use strict;
 use base qw( MT::Asset );
+use MT;
 use MT::Blog;
 use MT::Website;
 use POSIX qw( floor );
