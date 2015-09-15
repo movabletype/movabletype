@@ -2785,6 +2785,8 @@ sub dialog_edit_asset {
     $param->{saved_image} = 1
         if $app->param('saved_image');
 
+    $param->{broken_metadata} = $asset->is_metadata_broken;
+
     $app->load_tmpl( 'dialog/asset_edit.tmpl', $param );
 }
 
