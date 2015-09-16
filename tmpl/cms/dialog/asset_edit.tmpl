@@ -161,6 +161,7 @@ TC.attachLoadEvent( init );
 </form>
 
 <mt:setvarblock name="jq_js_include" append="1">
+var isDirty = false;
 jQuery('#save').click(function(){
   jQuery('#msg-block').empty();
   jQuery.ajax({
@@ -185,6 +186,7 @@ jQuery('#save').click(function(){
     else {
       jQuery('#msg-block').append('<div class="msg msg-success"><__trans phrase="Your changes have been saved."></div>');
     }
+    isDirty = false;
   })
   .fail(function(XMLHttpRequest, textStatus, errorThrown) {
     jQuery('#msg-block').append('<div class="msg msg-error"><__trans phrase="An error occurred."></div>');
@@ -193,7 +195,6 @@ jQuery('#save').click(function(){
   return false;
 });
 
-var isDirty = false;
 jQuery(':input:visible').on('keydown', function(){
     isDirty = true;
 });
