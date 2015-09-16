@@ -2041,6 +2041,21 @@ sub _upload_file {
         : Encode::decode( $app->charset,
         File::Basename::basename($basename) );
 
+    # Change to real file extension
+    if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
+        my $ext_old
+            = (
+            File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
+            [2];
+        if (   $ext_new ne lc($ext_old)
+            && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
+            && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
+        {
+            $basename =~ s/$ext_old$/$ext_new/;
+            $app->param( "changed_file_ext", "$ext_old,$ext_new" );
+        }
+    }
+
     # Setup exists/cancel handler
     my $exists_handler = $upload_param{exists_handler} || sub {
         return $eh->(
@@ -2086,21 +2101,6 @@ sub _upload_file {
     );
     if ( $blog_id = $q->param('blog_id') ) {
 
-        # Change to real file extension
-        if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
-            my $ext_old
-                = (
-                File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
-                [2];
-            if (   $ext_new ne lc($ext_old)
-                && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
-                && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
-            {
-                $basename =~ s/$ext_old$/$ext_new/;
-                $app->param( "changed_file_ext", "$ext_old,$ext_new" );
-            }
-        }
-
         $param{blog_id} = $blog_id;
         require MT::Blog;
         $blog = MT::Blog->load($blog_id)
@@ -2125,7 +2125,7 @@ sub _upload_file {
         }
         $dest = MT::Util::build_upload_destination($dest);
 
-        # Make directory if 1not exists
+        # Make directory if not exists
         $extra_path = $q->param('extra_path') || '';
         if ($extra_path) {
             if ( $extra_path =~ m!\.\.|\0|\|! ) {
