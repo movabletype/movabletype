@@ -201,14 +201,15 @@
         // Crop
         crop: function() {
             var crop = this.getPlugin('crop');
+            var canvas = this.canvas;
 
-            var cropLeft = Math.ceil(crop.cropZone.left * this.width / this.thumbnailWidth);
-            var cropTop = Math.ceil(crop.cropZone.top * this.height / this.thumbnailHeight);
-            var cropWidth = Math.ceil(crop.cropZone.width * this.width / this.thumbnailWidth);
-            var cropHeight = Math.ceil(crop.cropZone.height * this.height / this.thumbnailHeight);
+            var cropLeft = Math.ceil(crop.cropZone.left * this.width / canvas.width);
+            var cropTop = Math.ceil(crop.cropZone.top * this.height / canvas.height);
+            var cropWidth = Math.ceil(crop.cropZone.width * this.width / canvas.width);
+            var cropHeight = Math.ceil(crop.cropZone.height * this.height / canvas.height);
 
-            var cropThumbnailWidth = crop.cropZone.width;
-            var cropThumbnailHeight = crop.cropZone.height;
+            var cropThumbnailWidth = Math.ceil(crop.cropZone.width * this.thumbnailWidth / canvas.width);
+            var cropThumbnailHeight = Math.ceil(crop.cropZone.height * this.thumbnailHeight / canvas.height);
 
             // Crop.
             crop.cropCurrentZone();
