@@ -3855,6 +3855,7 @@ use vars qw( @ISA %Lexicon );
 	'Undo' => '取り消す',
 	'Redo' => 'やり直す',
 	'Save (s)' => '保存',
+	'You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?' => '保存されていない画像の変更は失われます。編集を終了しますか？',
 
 ## tmpl/cms/dialog/entry_notify.tmpl
 	'Send a Notification' => '通知の送信',
