@@ -211,6 +211,14 @@
             var cropThumbnailWidth = Math.ceil(crop.cropZone.currentWidth * this.thumbnailWidth / canvas.width);
             var cropThumbnailHeight = Math.ceil(crop.cropZone.currentHeight * this.thumbnailHeight / canvas.height);
 
+            // These parameters will be updated in 'image:change' trigger.
+            this.temporaryParameters = {
+              width: cropWidth,
+              height: cropHeight,
+              thumbnailWidth: cropThumbnailWidth,
+              thumbnailHeight: cropThumbnailHeight
+            };
+
             // Crop.
             crop.cropCurrentZone();
 
@@ -222,17 +230,6 @@
                     height: cropHeight
                 }
             });
-
-            // These parameters will be updated in 'image:change' trigger.
-            this.temporaryParameters = {
-              width: cropWidth,
-              height: cropHeight,
-              thumbnailWidth: cropThumbnailWidth,
-              thumbnailHeight: cropThumbnailHeight
-            };
-
-            // Update dialog.
-            this.postActionTrigger();
         },
         cropCancel: function() {
             this.getPlugin('crop').releaseFocus();
@@ -256,19 +253,11 @@
         undo: function() {
             this.getPlugin('history').goBack();
             this.undoAction();
-
-            // Need to resize image here.
-            this.getPlugin('resize').resize(this.thumbnailWidth, this.thumbnailHeight);
-
             this.postActionTrigger();
         },
         redo: function() {
             this.getPlugin('history').goForward();
             this.redoAction();
-
-            // Need to resize image here.
-            this.getPlugin('resize').resize(this.thumbnailWidth, this.thumbnailHeight);
-
             this.postActionTrigger();
         },
         undoSize: function() {
@@ -326,9 +315,6 @@
             var newThumbnailHeight = this.thumbnailWidth;
             this.thumbnailWidth = this.thumbnailHeight;
             this.thumbnailHeight = newThumbnailHeight;
-
-            // Need to resize image here.
-            this.getPlugin('resize').resize(this.thumbnailWidth, this.thumbnailHeight);
 
             // Update dialog.
             this.postActionTrigger();

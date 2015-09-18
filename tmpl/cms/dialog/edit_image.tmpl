@@ -402,6 +402,9 @@ button.history {
             } else {
                 disableButton('button#redo');
             }
+
+            // Resize thumbnail image.
+            image.getPlugin('resize').resize(image.thumbnailWidth, image.thumbnailHeight);
         };
 
         // Enable element.
