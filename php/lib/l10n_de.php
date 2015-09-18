@@ -24,6 +24,7 @@ $Lexicon_de = array(
 	'Category Monthly' => 'Kategorie monatlich',
 	'Category Daily' => 'Kategorie täglich',
 	'Category Weekly' => 'Kategorie wöchentlich',
+	'Category' => 'Kategorie',
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'Sort_by="score" erfordert einen Namespace.',

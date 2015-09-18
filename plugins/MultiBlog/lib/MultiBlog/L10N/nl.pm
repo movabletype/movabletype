@@ -16,13 +16,6 @@ use vars qw( %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
-## plugins/MultiBlog/lib/MultiBlog.pm
-	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'MultiBlog trigger voor blog #[_1] aan het terugzetten...',
-
-## plugins/MultiBlog/lib/MultiBlog/Tags.pm
-	'MTMultiBlog tags cannot be nested.' => 'MTMultiBlog tags mogen niet genest zijn.',
-	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'Onbekende "mode" attribuutwaarde: [_1].  Geldige waarden zijn "loop" en "context".',
-
 ## plugins/MultiBlog/multiblog.pl
 	'MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.' => 'Met MultiBlog kunt u inhoud van andere blogs publiceren en kunt u onderlinge publicatieregels en toegangsbeheer regelen.',
 	'MultiBlog' => 'MultiBlog',
@@ -35,17 +28,17 @@ use vars qw( %Lexicon );
 	'Select to apply this trigger to all websites and blogs in this system.' => 'Selecteer dit om deze trigger toe te passen op alle websites en blogs in dit systeem',
 	'saves an entry/page' => 'een bericht/pagina opslaat',
 	'publishes an entry/page' => 'een bericht/pagina publiceert',
+	'unpublishes an entry/page' => 'een bericht/pagina ontpubliceert', # Translate - New
 	'publishes a comment' => 'een reactie publiceert',
 	'publishes a TrackBack' => 'een TrackBack publiceert',
 	'rebuild indexes.' => 'indexen opnieuw opbouwt.',
 	'rebuild indexes and send pings.' => 'indexen opnieuw opbouwt en pings verstuurt.',
-	'Updating the MultiBlog trigger cache...' => 'Bezig de trigger cache van MultiBlog bij te werken', # Translate - New
+	'Updating the MultiBlog trigger cache...' => 'Bezig de trigger cache van MultiBlog bij te werken',
 
 ## plugins/MultiBlog/tmpl/blog_config.tmpl
 	'When' => 'Wanneer',
 	'Trigger' => 'Trigger',
 	'Action' => 'Actie',
-	'Weblog' => 'Weblog',
 	'Content Privacy' => 'Privacy inhoud',
 	'Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.' => 'Geef aan of andere blogs op deze installatie inhoud van deze blog mogen publiceren.  Deze instelling krijgt voorrang op het standaard aggregatiebeleid op systeemniveau wat u kunt terugvinden in het configuratiescherm voor MultiBlog op systeemniveau.',
 	'Use system default' => 'Standaard systeeminstelling gebruiken',
