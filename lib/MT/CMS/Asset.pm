@@ -1406,10 +1406,6 @@ sub _set_start_upload_params {
         $param->{normalize_orientation} = 1;
     }
 
-    my $require_type
-        = defined( $param->{require_type} ) ? $param->{require_type} : '';
-    $require_type =~ s/\W//g;
-    $param->{require_type}    = $require_type;
     $param->{max_upload_size} = $app->config->CGIMaxUpload;
 
     $param;
@@ -3057,6 +3053,11 @@ sub dialog_asset_modal {
         $param{require_type} = 'image';
         $param{'is_image'}   = 1;
         $param{can_upload}   = 1;
+    }
+
+    if ( $param{require_type} ) {
+        my $req_class = $app->model($param{require_type});
+        $param{require_type_label} = $req_class->class_label;
     }
 
     require MT::Asset;

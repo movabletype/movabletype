@@ -345,9 +345,10 @@ function uploadFiles(files, items) {
     .addClass('disabled');
 
   var require_type = '<mt:var name="require_type" escape="js">';
+  var require_type_label = '<mt:var name="require_type_label" escape="js">';
   for (var i = 0; i < num_files; i++) {
     if( files[i].size === 0 ) {
-      // Maybe directory1
+      // Maybe directory
       continue;
     }
     if ( items && items[i].webkitGetAsEntry && items[i].webkitGetAsEntry().isDirectory ) {
@@ -365,7 +366,7 @@ function uploadFiles(files, items) {
     if ( require_type && require_type !== 'file' ) {
       var regexp = new RegExp('^' + require_type + '/.*');
       if(!files[i].type.match(regexp)) {
-        uploadBlock.setError(trans("[_1] is not a valid [_2] file.", files[i].name, trans(require_type)));
+        uploadBlock.setError(trans("[_1] is not a valid [_2] file.", files[i].name, require_type_label));
         continue;  
       }
     }
