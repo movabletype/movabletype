@@ -359,7 +359,7 @@ button.history {
         // Confirm before closing dialog.
         jQuery('button.image-editor-close-dialog').click(function() {
             if (isDirty || resizing || image.getPlugin('crop').hasFocus()) {
-                var message = 'You have unsaved changes to this page that will be lost. Are you sure you want to close this dialog?';
+                var message = '<__trans phrase="You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?">';
                 if (confirm(message)) {
                     parent.jQuery.fn.mtDialog.close();
                 }
@@ -402,6 +402,9 @@ button.history {
             } else {
                 disableButton('button#redo');
             }
+
+            // Resize thumbnail image.
+            image.getPlugin('resize').resize(image.thumbnailWidth, image.thumbnailHeight);
         };
 
         // Enable element.

@@ -258,8 +258,10 @@ sub crop {
 
 sub remove_metadata {
     my ( $class, $file ) = @_;
-    require Image::ExifTool;
 
+    return 1 if lc($file) !~ /\.(jpe?g|tiff?)$/;
+
+    require Image::ExifTool;
     my $exif = Image::ExifTool->new;
     $exif->ExtractInfo($file);
     if ( $exif->GetValue('Error') || $exif->GetValue('Warning') ) {
@@ -269,7 +271,8 @@ sub remove_metadata {
     $exif = Image::ExifTool->new;
     $exif->SetNewValuesFromFile($file);
     $exif->SetNewValue('*');
-    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
+    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 )
+        if lc($file) =~ /\.jpe?g$/;
     $exif->WriteInfo($file)
         or $class->trans_error( 'Writing metadata failed: [_1]',
         $exif->GetValue('Error') );

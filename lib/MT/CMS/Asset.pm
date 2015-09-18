@@ -1406,10 +1406,6 @@ sub _set_start_upload_params {
         $param->{normalize_orientation} = 1;
     }
 
-    my $require_type
-        = defined( $param->{require_type} ) ? $param->{require_type} : '';
-    $require_type =~ s/\W//g;
-    $param->{require_type}    = $require_type;
     $param->{max_upload_size} = $app->config->CGIMaxUpload;
 
     $param;
@@ -2041,6 +2037,21 @@ sub _upload_file {
         : Encode::decode( $app->charset,
         File::Basename::basename($basename) );
 
+    # Change to real file extension
+    if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
+        my $ext_old
+            = (
+            File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
+            [2];
+        if (   $ext_new ne lc($ext_old)
+            && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
+            && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
+        {
+            $basename =~ s/$ext_old$/$ext_new/;
+            $app->param( "changed_file_ext", "$ext_old,$ext_new" );
+        }
+    }
+
     # Setup exists/cancel handler
     my $exists_handler = $upload_param{exists_handler} || sub {
         return $eh->(
@@ -2086,21 +2097,6 @@ sub _upload_file {
     );
     if ( $blog_id = $q->param('blog_id') ) {
 
-        # Change to real file extension
-        if ( my $ext_new = lc( MT::Image->get_image_type($fh) ) ) {
-            my $ext_old
-                = (
-                File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
-                [2];
-            if (   $ext_new ne lc($ext_old)
-                && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
-                && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
-            {
-                $basename =~ s/$ext_old$/$ext_new/;
-                $app->param( "changed_file_ext", "$ext_old,$ext_new" );
-            }
-        }
-
         $param{blog_id} = $blog_id;
         require MT::Blog;
         $blog = MT::Blog->load($blog_id)
@@ -2125,7 +2121,7 @@ sub _upload_file {
         }
         $dest = MT::Util::build_upload_destination($dest);
 
-        # Make directory if 1not exists
+        # Make directory if not exists
         $extra_path = $q->param('extra_path') || '';
         if ($extra_path) {
             if ( $extra_path =~ m!\.\.|\0|\|! ) {
@@ -2785,6 +2781,8 @@ sub dialog_edit_asset {
     $param->{saved_image} = 1
         if $app->param('saved_image');
 
+    $param->{broken_metadata} = $asset->is_metadata_broken;
+
     $app->load_tmpl( 'dialog/asset_edit.tmpl', $param );
 }
 
@@ -3055,6 +3053,11 @@ sub dialog_asset_modal {
         $param{require_type} = 'image';
         $param{'is_image'}   = 1;
         $param{can_upload}   = 1;
+    }
+
+    if ( $param{require_type} ) {
+        my $req_class = $app->model($param{require_type});
+        $param{require_type_label} = $req_class->class_label;
     }
 
     require MT::Asset;

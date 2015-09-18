@@ -308,6 +308,10 @@ TC.attachLoadEvent( init );
         isDirty = true;
     });
 
+    jQuery('button.primary').click( function() {
+      isDirty = false;
+    })
+
     jQuery(window).on('beforeunload', function() {
         if (isDirty) {
             return '<__trans phrase="You have unsaved changes to this asset that will be lost." escape="js">';

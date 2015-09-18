@@ -121,6 +121,10 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
             );
             ok( MT::Image->new( Filename => $image->file_path ),
                 'Read the image having no metadata.' );
+
+            $image->rotate(90);
+            ok( !$image->has_metadata,
+                'Has no metadata after rotating image.' );
         };
     };
 }

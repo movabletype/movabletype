@@ -797,10 +797,14 @@ sub normalize_orientation {
     $exif_tool->ExtractInfo( \$img_data );
     my $o = $exif_tool->GetInfo('Orientation')->{'Orientation'};
     if ( $o && ( $o ne 'Horizontal (normal)' && $o !~ /^Unknown/i ) ) {
-        my $new_exif = Image::ExifTool->new;
-        $new_exif->SetNewValuesFromFile($file_path);
-        $new_exif->SetNewValue('Orientation');
-        $new_exif->SetNewValue('Thumbnail*');
+
+        # Preserve metadata.
+        my $new_exif;
+        my $has_metadata = $obj->has_metadata;
+        if ($has_metadata) {
+            $new_exif = Image::ExifTool->new;
+            $new_exif->SetNewValuesFromFile($file_path);
+        }
 
         my $img = MT::Image->new( Data => $img_data, Type => $obj->file_ext );
 
@@ -831,15 +835,23 @@ sub normalize_orientation {
         };
         $fmgr->put_data( $blob, $file_path, 'upload' );
 
-        if ( exists $exif_tool->GetInfo('ExifImageWidth')->{ExifImageWidth} )
-        {
-            $new_exif->SetNewValue( 'ExifImageWidth' => $width );
+        # Update and write metadata.
+        if ($has_metadata) {
+            $new_exif->SetNewValue('Orientation');
+            $new_exif->SetNewValue('Thumbnail*');
+            if (exists $exif_tool->GetInfo('ExifImageWidth')->{ExifImageWidth}
+                )
+            {
+                $new_exif->SetNewValue( 'ExifImageWidth' => $width );
+            }
+            if (exists $exif_tool->GetInfo('ExifImageHeight')
+                ->{ExifImageHeight} )
+            {
+                $new_exif->SetNewValue( 'ExifImageHeight' => $height );
+            }
+
+            $new_exif->WriteInfo($file_path);    # Do not check error.
         }
-        if (exists $exif_tool->GetInfo('ExifImageHeight')->{ExifImageHeight} )
-        {
-            $new_exif->SetNewValue( 'ExifImageHeight' => $height );
-        }
-        $new_exif->WriteInfo($file_path);    # Do not check error.
 
         $obj->image_width($width);
         $obj->image_height($height);
@@ -923,26 +935,34 @@ sub _transform {
     my $img = MT::Image->new( Data => $img_data, Type => $asset->file_ext );
 
     # Preserve metadata.
-    my $exif      = $asset->exif;
-    my $next_exif = Image::ExifTool->new;
-    $next_exif->SetNewValuesFromFile($file_path);
-    $next_exif->SetNewValue('Thumbnail*');
+    my ( $exif, $next_exif );
+    my $update_metadata
+        = lc( $asset->file_ext ) =~ /^(jpe?g|tiff?)$/
+        && $asset->has_metadata
+        && !$asset->is_metadata_broken;
+    if ($update_metadata) {
+        $exif      = $asset->exif;
+        $next_exif = Image::ExifTool->new;
+        $next_exif->SetNewValuesFromFile($file_path);
+        $next_exif->SetNewValue('Thumbnail*');
+    }
 
     my ( $blob, $width, $height ) = $process->($img);
 
     $fmgr->put_data( $blob, $file_path, 'upload' )
         or return $asset->error( $fmgr->errstr );
 
-    # Update Exif.
-    if ( exists $exif->GetInfo('ExifImageWidth')->{ExifImageWidth} ) {
-        $next_exif->SetNewValue( 'ExifImageWidth' => $width );
-    }
-    if ( exists $exif->GetInfo('ExifImageHeight')->{ExifImageHeight} ) {
-        $next_exif->SetNewValue( 'ExifImageHeight' => $height );
-    }
+    if ($update_metadata) {
 
-    # Restore metadata.
-    if ( !$asset->is_metadata_broken ) {
+        # Update Exif.
+        if ( exists $exif->GetInfo('ExifImageWidth')->{ExifImageWidth} ) {
+            $next_exif->SetNewValue( 'ExifImageWidth' => $width );
+        }
+        if ( exists $exif->GetInfo('ExifImageHeight')->{ExifImageHeight} ) {
+            $next_exif->SetNewValue( 'ExifImageHeight' => $height );
+        }
+
+        # Restore metadata.
         $next_exif->WriteInfo($file_path)
             or return $asset->trans_error( 'Writing metadata failed: [_1]',
             $next_exif->GetValue('Error') );
@@ -973,9 +993,16 @@ sub change_quality {
     }
 
     # Preserve metadata. ImageDriver other than ImageMagick removes metadata.
-    require Image::ExifTool;
-    my $new_exif = Image::ExifTool->new;
-    $new_exif->SetNewValuesFromFile( $asset->file_path );
+    my $new_exif;
+    my $update_metadata
+        = lc( $asset->file_ext ) =~ /^jpe?g$/
+        && $asset->has_metadata
+        && !$asset->is_metadata_broken;
+    if ($update_metadata) {
+        require Image::ExifTool;
+        $new_exif = Image::ExifTool->new;
+        $new_exif->SetNewValuesFromFile( $asset->file_path );
+    }
 
     require MT::Image;
     my $img = MT::Image->new( Filename => $asset->file_path );
@@ -995,7 +1022,7 @@ sub change_quality {
         $asset->file_path, $fmgr->errstr );
 
     # Restore metadata.
-    if ( !$asset->is_metadata_broken ) {
+    if ($update_metadata) {
         $new_exif->WriteInfo( $asset->file_path )
             or return $asset->trans_error(
             "Error writing metadata to '[_1]': [_2]",
@@ -1047,6 +1074,9 @@ sub exif {
 
 sub has_gps_metadata {
     my ($asset) = @_;
+
+    return 0 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
+
     my $exif = $asset->exif or return;
     $exif->Options( Group1 => 'GPS' );
     return ( $exif->GetTagList || $asset->exif->GetValue('GPSDateTime') )
@@ -1056,11 +1086,19 @@ sub has_gps_metadata {
 
 sub has_metadata {
     my ($asset) = @_;
-    my $exif = $asset->exif or return;
+
+    return 0 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
 
     require Image::ExifTool;
+    my $exif    = $asset->exif or return;
+    my $is_jpeg = lc( $asset->file_ext ) =~ /^jpe?g$/;
+    my $is_tiff = lc( $asset->file_ext ) =~ /^tiff?$/;
     for my $g ( $exif->GetGroups ) {
-        next if $g eq 'ExifTool' || $g eq 'File' || $g eq 'JFIF';
+        next
+            if $g eq 'ExifTool'
+            || $g eq 'File'
+            || ( $is_jpeg && $g eq 'JFIF' )
+            || ( $is_tiff && $g eq 'EXIF' );
         my @writable_tags = Image::ExifTool::GetWritableTags($g) or next;
         $exif->Options( Group => $g );
         $exif->ExtractInfo( $asset->file_path );
@@ -1076,6 +1114,7 @@ sub has_metadata {
 sub remove_gps_metadata {
     my ($asset) = @_;
 
+    return 1 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
     return 1 if $asset->is_metadata_broken;
 
     require Image::ExifTool;
@@ -1097,12 +1136,13 @@ sub remove_gps_metadata {
 sub remove_all_metadata {
     my ($asset) = @_;
 
+    return 1 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
     return 1 if $asset->is_metadata_broken;
 
     my $exif = $asset->exif or return;
-
     $exif->SetNewValue('*');
-    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
+    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 )
+        if lc( $asset->file_ext =~ /^jpe?g$/ );
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
