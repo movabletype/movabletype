@@ -80,6 +80,10 @@ requires 'Cache::Memcached';
 requires 'CGI::Compile';
 requires 'YAML::Syck';
 
+# GoogleOpenIDConnect plugin
+requires 'OIDC::Lite';
+
+
 on 'test' => sub {
     requires 'Clone';
     requires 'Date::Parse';
